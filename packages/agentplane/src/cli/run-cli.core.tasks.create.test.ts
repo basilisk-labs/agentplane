@@ -297,7 +297,36 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
     expect(await pathExists(path.join(root, ".agentplane", "tasks"))).toBe(false);
   });
 
-  it("task new stores structured blueprint intent fields", async () => {
+  it("task new rejects incomplete controlled ops intent before creating a task", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Clean host cache",
+        "--description",
+        "Remove selected Docker cache data",
+        "--owner",
+        "OPS",
+        "--tag",
+        "ops",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Incomplete controlled ops intent");
+      expect(io.stderr).toContain("--task-kind ops");
+      expect(io.stderr).toContain("--mutation-scope ops");
+      expect(io.stderr).toContain("--risk <credentials|deploy|security|external_system>");
+    } finally {
+      io.restore();
+    }
+    expect(await pathExists(path.join(root, ".agentplane", "tasks"))).toBe(false);
+  });
+
+  it("task new accepts and persists complete controlled ops intent", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();
     let taskId = "";
@@ -306,23 +335,19 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
         "task",
         "new",
         "--title",
-        "Market analysis note",
+        "Clean host cache",
         "--description",
-        "Analyze the current market context without repository mutation",
-        "--priority",
-        "med",
+        "Remove selected Docker cache data",
         "--owner",
-        "CODER",
+        "OPS",
         "--tag",
-        "content",
+        "ops",
         "--task-kind",
-        "analysis",
+        "ops",
         "--mutation-scope",
-        "none",
+        "ops",
         "--risk",
-        "network",
-        "--blueprint-request",
-        "analysis.light",
+        "external_system",
         "--root",
         root,
       ]);
@@ -333,10 +358,40 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
     }
 
     const task = await readTask({ cwd: root, rootOverride: root, taskId });
-    expect(task.frontmatter.task_kind).toBe("analysis");
-    expect(task.frontmatter.mutation_scope).toBe("none");
-    expect(task.frontmatter.risk_flags).toEqual(["network"]);
-    expect(task.frontmatter.blueprint_request).toBe("analysis.light");
+    expect(task.frontmatter.task_kind).toBe("ops");
+    expect(task.frontmatter.mutation_scope).toBe("ops");
+    expect(task.frontmatter.risk_flags).toEqual(["external_system"]);
+    expect(task.frontmatter.execution_route).toMatchObject({ selected_mode: "branch_pr" });
+  });
+
+  it("task new rejects explicit ops intent without a controlled ops risk", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Restart a worker",
+        "--description",
+        "Restart one external worker",
+        "--owner",
+        "OPS",
+        "--tag",
+        "maintenance",
+        "--task-kind",
+        "ops",
+        "--mutation-scope",
+        "ops",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("--risk <credentials|deploy|security|external_system>");
+    } finally {
+      io.restore();
+    }
+    expect(await pathExists(path.join(root, ".agentplane", "tasks"))).toBe(false);
   });
 
   it("task new persists an explainable automatic execution route", async () => {
@@ -419,57 +474,6 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
       requested_mode: "auto",
       selected_mode: "branch_pr",
     });
-  });
-
-  it("task new can preview the resolved blueprint route without changing stdout", async () => {
-    const root = await mkGitRepoRoot();
-    const io = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Market analysis route preview",
-        "--description",
-        "Analyze market context without repository mutation",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "analysis",
-        "--task-kind",
-        "analysis",
-        "--mutation-scope",
-        "none",
-        "--blueprint-request",
-        "analysis.light",
-        "--show-blueprint",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = io.stdout.trim();
-      expect(taskId).toMatch(/^\d{12}-[A-Z0-9]{6}$/);
-      expect(io.stdout).toBe(`${taskId}\n`);
-      expect(io.stderr).toContain("Blueprint route preview:");
-      expect(io.stderr).toContain("blueprint_id: analysis.light");
-      expect(io.stderr).toContain(
-        "workflow_git: implementation_commit_location=current_checkout finish_commit_source=explicit_hash_or_comment_commit close_tail_required=no finish_commit_from_comment=yes",
-      );
-      expect(io.stderr).toContain(
-        "route: intake -> scope -> context_resolve -> work_unit -> artifact_write -> verify_record -> quality_gate -> finish",
-      );
-      expect(io.stderr).toContain(
-        "selection_reasons: explicit blueprint requested: analysis.light",
-      );
-      expect(io.stderr).toContain("required_evidence: analysis.sources");
-      expect(io.stderr).toContain(`explain_command: agentplane blueprint explain ${taskId}`);
-      expect(io.stderr).toContain(`snapshot_command: agentplane blueprint snapshot ${taskId}`);
-    } finally {
-      io.restore();
-    }
   });
 
   it("task new warns but allows highly similar open task titles by default", async () => {

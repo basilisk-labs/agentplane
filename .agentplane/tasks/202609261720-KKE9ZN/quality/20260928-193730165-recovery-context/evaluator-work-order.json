@@ -1,0 +1,123 @@
+{
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609261720-KKE9ZN-c6d1eac3c23e541daa8ee102",
+  "prepared_at": "2026-09-28T19:37:30.165Z",
+  "task": {
+    "id": "202609261720-KKE9ZN",
+    "revision": 140,
+    "objective": "Implement and qualify AgentPlane 0.7.12 planning reuse for PL-01 through PL-12\n\nUser authorizes all necessary work to implement and release 0.7.12 without repeated permission requests. Use agentplane-roadmap-r2/tasks/PL-01.md through PL-12.md and EXECUTION-CHARTER.md as the scope contract. Inspect current main and accepted LC-24 evidence, preserve one Kernel and coordinator, reuse compact Plan proposal normalization, retain approval and EVALUATOR floors, implement managed and external planning reuse and recovery, run installed-package and release-critical qualification, record M04 measurement with honest unknown accounting, and document observed behavior. Use sequential independently verifiable WorkItems. Include bootstrap lockfile workspace version reconciliation. Release publication follows exact-SHA release checks in a subsequent release task. Do not implement 0.7.13 or 0.7.14.",
+    "acceptance_criteria": [
+      "bun run package:install-smoke",
+      "bun run test:release:critical",
+      "bun run typecheck",
+      "- In scope: User authorizes all necessary work to implement and release 0.7.12 without repeated permission requests. Use agentplane-roadmap-r2/tasks/PL-01.md through PL-12.md and EXECUTION-CHARTER.md as the scope contract. Inspect current main and accepted LC-24 evidence, preserve one Kernel and coordinator, reuse compact Plan proposal normalization, retain approval and EVALUATOR floors, implement managed and external planning reuse and recovery, run installed-package and release-critical qualification, record M04 measurement with honest unknown accounting, and document observed behavior. Use sequential independently verifiable WorkItems. Include bootstrap lockfile workspace version reconciliation. Release publication follows exact-SHA release checks in a subsequent release task. Do not implement 0.7.13 or 0.7.14.\n- Out of scope: unrelated refactors not required for \"Implement and qualify AgentPlane 0.7.12 planning reuse for PL-01 through PL-12\".",
+      "1. Execute approved WorkItem PL-01.\n2. Execute approved WorkItem PL-02.\n3. Execute approved WorkItem PL-03.\n4. Execute approved WorkItem PL-04.\n5. Execute approved WorkItem PL-05.\n6. Execute approved WorkItem PL-06.\n7. Execute approved WorkItem PL-07.\n8. Execute approved WorkItem PL-08.\n9. Execute approved WorkItem PL-09.\n10. Execute approved WorkItem PL-10.\n11. Execute approved WorkItem PL-11.\n12. Execute approved WorkItem PL-12.",
+      "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run test:release:critical`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Run `bun run package:install-smoke`. Expected: it succeeds and confirms the requested outcome for this task.\n4. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings."
+    ]
+  },
+  "evaluated_sha": "6b5310b1550f3628c3081103e10bccdf498068d9",
+  "diff_base_sha": "96724bb7176ac317ac20cceed805c5a94ec8f778",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-193730165-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:e5ca1ada7cfa517b7706f8b3442f1747b9e64135a09e70fa011f0a559e5f610e",
+    "prompt_path": ".agentplane/tasks/202609261720-KKE9ZN/quality/objects/sha256/32bb40af5b64a1dab28c4f973653923ee840fa963f3dfc25e66fb1123a266c86.md",
+    "result_schema_path": ".agentplane/tasks/202609261720-KKE9ZN/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "schema_version": 2,
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202609261720-KKE9ZN",
+    "plan_digest": "sha256:ae660cb856d9ae18885cf469d5286a620e225c6d5b162bef08f910b3838413a5",
+    "policy_digest": "sha256:52a6030fbca6829ee88630fe05652083690e70f778040ec2236c8fa36987382f",
+    "capability_digest": "sha256:6a71333fddada8af8267e08f448f909b966bc077b1211a609dc508f45057aa9c",
+    "checks_digest": "sha256:96f47414ad14df65b57881b5f3da9e78f820bbd5196594a885c0958fbcd22213",
+    "verification_input_digest": "sha256:22b74cac6fef6e84d60f2b1fa5ae234ef97c14df0fcc017551349d883d61b77e",
+    "acceptance_digest": "sha256:7a88656e564ab7ea4f216be4f0cd0ad0a44ef8351ccc6426dcdce87319a85f44",
+    "implementation_sha": "6b5310b1550f3628c3081103e10bccdf498068d9",
+    "digest": "sha256:ea318db585ca9181c9b3f30329a0aba14b87ac0c980d87af443a22567ef89a01"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609261720-KKE9ZN/README.md",
+      "sha256": "sha256:17f1571753e46a5e9cbb6fd5f89049aeadd7b6fcdfcc8d0adf66b5ad32f6d504",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609261720-KKE9ZN/quality/objects/sha256/83a1ce27512cc48b57285cc16545b78d53cb1f94e7a992e907c47f898a6ffb6f.patch",
+      "sha256": "sha256:83a1ce27512cc48b57285cc16545b78d53cb1f94e7a992e907c47f898a6ffb6f",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609261720-KKE9ZN/quality/objects/sha256/84108de9c694b1a8924269dc8ad2b596dd812835ec5922e8c723ac059862c5dc.json",
+      "sha256": "sha256:84108de9c694b1a8924269dc8ad2b596dd812835ec5922e8c723ac059862c5dc",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609261720-KKE9ZN/verification/20260928193632778-bdab509bdaa54c39.json",
+      "sha256": "sha256:a2df07a7c3d4de8398da11c33c1cd61586280ccb9c8ee766cc6d67c7a7bf4f9b",
+      "required": true
+    },
+    {
+      "id": "native-identity",
+      "kind": "plan",
+      "path": ".agentplane/tasks/202609261720-KKE9ZN/quality/objects/sha256/5f593bad60d4a6acdc387193a789efb58828159dfc0eff141a50696d37888390.json",
+      "sha256": "sha256:5f593bad60d4a6acdc387193a789efb58828159dfc0eff141a50696d37888390",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

@@ -6,6 +6,7 @@ import {
   type TaskData,
   type TaskSummary,
 } from "../../../backends/task-backend.js";
+import { isRecord } from "../../../shared/guards.js";
 import { CliError } from "../../../shared/errors.js";
 import { dedupeStrings } from "../../../shared/strings.js";
 import { taskListBranchPrExtraFields, taskListStatusLabel } from "./branch-pr-list-state.js";
@@ -201,6 +202,14 @@ export function formatTaskLine(
     ...taskListBranchPrExtraFields(task),
     ...extraFields.filter((field) => field.trim().length > 0),
   );
+  const projectionSource = task.extensions?.["agentplane.task_projection_source"];
+  if (
+    isRecord(projectionSource) &&
+    projectionSource.state === "local_projection_unavailable" &&
+    typeof projectionSource.readme_path === "string"
+  ) {
+    extras.push(`projection=local_unavailable`, `source=${projectionSource.readme_path}`);
+  }
   const suffix = extras.length > 0 ? ` (${extras.join(", ")})` : "";
   return `${task.id} [${status}] ${task.title?.trim() || "(untitled task)"}${suffix}`;
 }

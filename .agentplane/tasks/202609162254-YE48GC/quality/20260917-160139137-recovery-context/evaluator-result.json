@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "No material semantic divergence found: active Blueprint routing and mutation are removed; native plan, capability, policy, checks, and task obligations replace active ownership; ambiguous legacy work fails closed; historical decoding remains non-executable; and stable-channel promotion is SemVer-gated.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609162254-YE48GC/quality/objects/sha256/6df9e23889b1ab1d2a39d33ce1add5309cc66f905bdecd0d58260036e097149b.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted CI and exact-head integration are intentionally pending supervisor/provider lifecycle steps and must pass before merge or publication.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609162254-YE48GC/quality/objects/sha256/6df9e23889b1ab1d2a39d33ce1add5309cc66f905bdecd0d58260036e097149b.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Residual risk: M02 remains NOT ESTABLISHED because no matched quality-equivalent paid-provider 0.7.9/0.7.10 evidence pair exists.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609162254-YE48GC/quality/objects/sha256/6df9e23889b1ab1d2a39d33ce1add5309cc66f905bdecd0d58260036e097149b.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

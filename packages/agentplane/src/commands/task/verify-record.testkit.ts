@@ -1,14 +1,19 @@
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
 import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
+import { defaultConfig } from "@agentplaneorg/core/config";
 import {
   makeTaskBackendDouble,
   makeTaskCommandContext,
   makeTaskFixture,
 } from "@agentplane/testkit/task";
 import type { CommandContext } from "../shared/task-backend.js";
+import { withLegacyDrainIdentityFixture } from "../shared/native-task-identity-fixture.js";
 
 export function makeVerifyRecordTask(overrides: Partial<TaskData>): TaskData {
-  return makeTaskFixture({ status: "DONE", owner: "me", ...overrides });
+  return withLegacyDrainIdentityFixture({
+    task: makeTaskFixture({ status: "DONE", owner: "me", ...overrides }),
+    config: defaultConfig(),
+  });
 }
 
 export function makeVerifyRecordDoc(opts: {

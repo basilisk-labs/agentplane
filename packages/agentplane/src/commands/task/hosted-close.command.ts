@@ -47,6 +47,7 @@ import {
   readHostedPrMetaOrFallback,
   resolveHostedTaskCommitInfo,
 } from "./hosted-close-recovery.js";
+import { classifyKernelCutover } from "./kernel-cutover.js";
 
 export { taskHostedCloseSpec } from "./hosted-close.spec.js";
 
@@ -149,6 +150,12 @@ async function closeHostedTask(opts: {
     });
     if (!recovered) throw err;
     task = recovered;
+  }
+  if (classifyKernelCutover(task).kind === "canonical") {
+    return {
+      outcome: "noop",
+      detail: `${target.taskId} remains owned by the canonical Task Kernel lifecycle`,
+    };
   }
   if (!(await fileExists(taskReadmePath))) {
     await opts.ctx.taskBackend.writeTask(task);

@@ -1,0 +1,123 @@
+{
+  "details": "Command: bunx --no-install vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts packages/agentplane/src/agents/agents-template.test.ts --maxWorkers=2\nResult: pass\nEvidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609071219-QV0SX9 declared verification\n\nCommand: bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609071219-QV0SX9 declared verification\n\nCommand: bun run ci:local:full\nResult: fail\nEvidence: .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-3\nScope: branch_pr task 202609071219-QV0SX9 declared verification",
+  "digest": "sha256:06f98b2879c9fc5ee3dbb5d228bd50249125aebabea64636023779e5aeb3e721",
+  "implementation_sha": "4e57fd16b87422e1d88b96e7cce2aa85ac8d3c0e",
+  "input": {
+    "context": {
+      "digest": "sha256:c59f15672b9a3b8d43130b18b274b5e3c58c5b4b87fe53a644febc8ff3e09663",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:50371e453165236ffbfba85159868a6e8c985951d0b85bff33d89781886953dd",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:b6d29305400f5bae626c37d98eb4c364df36267efde03041eb09f29647684c75",
+      "digest": "sha256:89e630c7b379d33e8ce3e59e60814468361c02a959470182f7650afe73d6cf7d",
+      "references": [
+        {
+          "digest": "sha256:c38b0ff8b83f09e3c01ae7dbbb82bdf0e7ab4bdca13b364538fe0ce50383f6fe",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:c38b0ff8b83f09e3c01ae7dbbb82bdf0e7ab4bdca13b364538fe0ce50383f6fe",
+          "fragment": "check-2",
+          "path": ".agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-2",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:c38b0ff8b83f09e3c01ae7dbbb82bdf0e7ab4bdca13b364538fe0ce50383f6fe",
+          "fragment": "check-3",
+          "path": ".agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json#check-3",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "ca07204eed841a1aa245e3bb8d14832d7ea3ac30",
+      "digest": "sha256:889fdeb198a76da097d9df076a59a6b61d007ebc9cbf73b2538008cc9ad7d79b",
+      "primary_task_id": "202609071219-QV0SX9",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "auto",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609071219-QV0SX9"
+      ]
+    },
+    "implementation": {
+      "base_sha": "ca07204eed841a1aa245e3bb8d14832d7ea3ac30",
+      "digest": "sha256:4bf72b49bce25afd485719f6d55cea6c3a7c69b8db2013fb8791258bb5bea5dc",
+      "strategy": "branch_diff",
+      "target_sha": "4e57fd16b87422e1d88b96e7cce2aa85ac8d3c0e"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:a7c05d44e9eb8ff3926a934360639469a1512b87ad71679ed6a2e20a2b8bfc34",
+    "verify_steps_digest": "sha256:6a1b4018be21ed5150e62c6860d7575e5769d7f72a2c1ea083fd2fd97132cc7f"
+  },
+  "kind": "task_verification_record",
+  "note": "Rework: Declared check failed: bun run ci:local:full",
+  "recorded_at": "2026-09-07T13:53:48.547Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "1. Run the four declared focused test files. Expected: language rules reach every external episode and managed continuation; literals, effective authority, stop conditions, and four valid result statuses remain covered.\n2. Run bun run typecheck and Prettier on the nine changed files. Expected: no type or formatting errors.\n3. Run bun run ci:local:full as required by the repository verification floor. Expected: all required verification groups pass.\n4. Compare fixed prompt fixtures with the pre-change baseline. Expected: EXECUTOR 7744 bytes versus 8590; EVALUATOR 8350 versus 9196. Report bytes only.\n5. Confirm installed and bundled PLANNER profiles are identical and use TaskPlanProposal with internal WorkItems. Inspect the final diff for unrelated changes.\n6. Before merge, require passing hosted checks for the exact PR head and record any remaining limitations.",
+  "scope_digest": "sha256:6a1b4018be21ed5150e62c6860d7575e5769d7f72a2c1ea083fd2fd97132cc7f",
+  "task_id": "202609071219-QV0SX9",
+  "verification_command": "agentplane verify 202609071219-QV0SX9 --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

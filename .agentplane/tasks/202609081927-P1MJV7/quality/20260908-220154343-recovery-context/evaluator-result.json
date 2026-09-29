@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "Compared the current source with the previously reviewed implementation. Direct verification imports remove the cycle without changing verification behavior. The recovery test now checks current reassessment claims while retaining stale-plan, altered-evidence, and receipt-digest rejection. The Bun entry preserves identifiers during rebundling. Other build entries retain their existing options. All frozen evidence digests match. No source changed after the evaluated commit.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609081927-P1MJV7/quality/objects/sha256/1cb20fe7cc77fc52abad63bdb6adc6fa4e5ee96efbc8c3006a2d6967606c7408.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Residual risk: Provider token usage and latency were not measured. Context deltas require explicit retention acknowledgement in the same live session.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609081927-P1MJV7/quality/objects/sha256/1cb20fe7cc77fc52abad63bdb6adc6fa4e5ee96efbc8c3006a2d6967606c7408.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted CI and integration remain pending outside this read-only review.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609081927-P1MJV7/quality/objects/sha256/1cb20fe7cc77fc52abad63bdb6adc6fa4e5ee96efbc8c3006a2d6967606c7408.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Residual risk: The measured compiled Bun binary is approximately 1.9 percent larger.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609081927-P1MJV7/quality/objects/sha256/1cb20fe7cc77fc52abad63bdb6adc6fa4e5ee96efbc8c3006a2d6967606c7408.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

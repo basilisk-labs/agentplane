@@ -1,0 +1,138 @@
+diff --git a/packages/agentplane/src/commands/release/task-state-script.test.ts b/packages/agentplane/src/commands/release/task-state-script.test.ts
+index c7e5c2b23..6ace3e7b6 100644
+--- a/packages/agentplane/src/commands/release/task-state-script.test.ts
++++ b/packages/agentplane/src/commands/release/task-state-script.test.ts
+@@ -1,3 +1,4 @@
++import { createHash } from "node:crypto";
+ import { execFile } from "node:child_process";
+ import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
+ import { tmpdir } from "node:os";
+@@ -41,4 +42,60 @@ describe("check-task-state script", () => {
+       );
+     }
+   });
++
++  it("allows a README-less directory that contains only valid content-addressed quality objects", async () => {
++    const root = await mkdtemp(path.join(tmpdir(), "agentplane-task-state-"));
++    await writePackageVersion(root);
++    const contents = '{"title":"schema"}\n';
++    const digest = createHash("sha256").update(contents).digest("hex");
++    const objectRoot = path.join(
++      root,
++      ".agentplane",
++      "tasks",
++      "202605230000-OBJECT",
++      "quality",
++      "objects",
++      "sha256",
++    );
++    await mkdir(objectRoot, { recursive: true });
++    await writeFile(path.join(objectRoot, `${digest}.json`), contents, "utf8");
++
++    await expect(
++      execFileAsync(
++        "node",
++        [path.join(process.cwd(), "scripts", "release", "check-task-registry-ready.mjs")],
++        { cwd: root },
++      ),
++    ).resolves.toBeDefined();
++  });
++
++  it.each([
++    ["a digest mismatch", "quality/objects/sha256", `${"0".repeat(64)}.json`],
++    ["an unexpected quality artifact", "quality", "quality-report.json"],
++    ["an unexpected task artifact", "", "observations.jsonl"],
++  ])("rejects a README-less directory with %s", async (_label, directory, filename) => {
++    const root = await mkdtemp(path.join(tmpdir(), "agentplane-task-state-"));
++    await writePackageVersion(root);
++    const taskRoot = path.join(root, ".agentplane", "tasks", "202605230000-MALFORMED");
++    const artifactRoot = path.join(taskRoot, directory);
++    await mkdir(artifactRoot, { recursive: true });
++    await writeFile(path.join(artifactRoot, filename), "invalid\n", "utf8");
++
++    try {
++      await execFileAsync(
++        "node",
++        [path.join(process.cwd(), "scripts", "release", "check-task-registry-ready.mjs")],
++        { cwd: root },
++      );
++      throw new Error("expected check-task-registry-ready to fail");
++    } catch (err) {
++      const stderr =
++        typeof (err as { stderr?: unknown }).stderr === "string"
++          ? (err as { stderr: string }).stderr
++          : "";
++      expect(stderr).toContain(
++        ".agentplane/tasks/202605230000-MALFORMED/README.md: missing task README artifact",
++      );
++    }
++  });
+ });
+diff --git a/scripts/checks/check-task-state.mjs b/scripts/checks/check-task-state.mjs
+index 5d777aebe..af7b1cc8f 100644
+--- a/scripts/checks/check-task-state.mjs
++++ b/scripts/checks/check-task-state.mjs
+@@ -1,3 +1,4 @@
++import { createHash } from "node:crypto";
+ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
+ import path from "node:path";
+ import { pathToFileURL } from "node:url";
+@@ -46,6 +47,50 @@ function listTaskDirs(tasksRoot) {
+     .toSorted((a, b) => a.localeCompare(b));
+ }
+ 
++function hasOnlyValidQualityObjects(taskDir) {
++  const qualityEntries = readdirSync(taskDir, { withFileTypes: true });
++  if (
++    qualityEntries.length !== 1 ||
++    qualityEntries[0]?.name !== "quality" ||
++    !qualityEntries[0].isDirectory()
++  ) {
++    return false;
++  }
++
++  const qualityRoot = path.join(taskDir, "quality");
++  const objectEntries = readdirSync(qualityRoot, { withFileTypes: true });
++  if (
++    objectEntries.length !== 1 ||
++    objectEntries[0]?.name !== "objects" ||
++    !objectEntries[0].isDirectory()
++  ) {
++    return false;
++  }
++
++  const objectsRoot = path.join(qualityRoot, "objects");
++  const algorithmEntries = readdirSync(objectsRoot, { withFileTypes: true });
++  if (
++    algorithmEntries.length !== 1 ||
++    algorithmEntries[0]?.name !== "sha256" ||
++    !algorithmEntries[0].isDirectory()
++  ) {
++    return false;
++  }
++
++  const sha256Root = path.join(objectsRoot, "sha256");
++  const objects = readdirSync(sha256Root, { withFileTypes: true });
++  if (objects.length === 0) return false;
++  return objects.every((entry) => {
++    if (!entry.isFile()) return false;
++    const match = /^([0-9a-f]{64})\.[^/]+$/u.exec(entry.name);
++    if (!match) return false;
++    const digest = createHash("sha256")
++      .update(readFileSync(path.join(sha256Root, entry.name)))
++      .digest("hex");
++    return digest === match[1];
++  });
++}
++
+ function readObservationLines(filePath) {
+   if (!existsSync(filePath)) return { observations: [], errors: [] };
+   const observations = [];
+@@ -129,6 +174,7 @@ export function checkTaskState(repoRoot, opts = {}) {
+     const readmePath = path.join(tasksRoot, taskId, "README.md");
+     const relReadmePath = normalizePath(path.relative(repoRoot, readmePath));
+     if (!existsSync(readmePath)) {
++      if (hasOnlyValidQualityObjects(path.join(tasksRoot, taskId))) continue;
+       failures.push(`${relReadmePath}: missing task README artifact`);
+       continue;
+     }

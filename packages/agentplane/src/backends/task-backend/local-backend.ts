@@ -1,5 +1,5 @@
 import path from "node:path";
-import { rm } from "node:fs/promises";
+import { lstat, rm } from "node:fs/promises";
 import {
   parseTaskReadme,
   taskReadmePath,
@@ -14,6 +14,7 @@ import {
 } from "../../shared/contained-stable-file.js";
 import {
   DEFAULT_DOC_UPDATED_BY,
+  mapLimit,
   type TaskBackend,
   type TaskData,
   type TaskSummary,
@@ -21,12 +22,7 @@ import {
   type TaskWriteOptions,
 } from "./shared.js";
 import { setLocalTaskDoc, touchLocalTaskDocMetadata } from "./local-backend-doc.js";
-import {
-  getLocalTask,
-  getLocalTaskDoc,
-  getLocalTasks,
-  listLocalTasks,
-} from "./local-backend-read.js";
+import { getLocalTask, getLocalTaskDoc, listLocalTasks } from "./local-backend-read.js";
 import {
   generateLocalTaskId,
   normalizeLocalTasks,
@@ -88,16 +84,19 @@ export class LocalBackend implements TaskBackend {
     supports_snapshot_export: false,
   } as const;
   root: string;
+  readonly historyRoot: string | null;
   updatedBy: string;
   private lastListWarnings: string[] = [];
 
-  constructor(settings?: { dir?: string; updatedBy?: string }) {
+  constructor(settings?: { dir?: string; historyDir?: string; updatedBy?: string }) {
     this.root = path.resolve(settings?.dir ?? ".agentplane/tasks");
+    this.historyRoot = settings?.historyDir ? path.resolve(settings.historyDir) : null;
     this.updatedBy = settings?.updatedBy ?? DEFAULT_DOC_UPDATED_BY;
   }
 
   async generateTaskId(opts: { length: number; attempts: number }): Promise<string> {
-    return await generateLocalTaskId(this.backendContext(), opts);
+    const history = await this.historyContext();
+    return await generateLocalTaskId(this.backendContext(), opts, history?.root ?? null);
   }
 
   private backendContext() {
@@ -108,6 +107,23 @@ export class LocalBackend implements TaskBackend {
         this.lastListWarnings = warnings;
       },
     };
+  }
+
+  private async historyContext() {
+    if (!this.historyRoot) return null;
+    const stats = await lstat(this.historyRoot);
+    if (!stats.isDirectory() || stats.isSymbolicLink()) {
+      throw new Error(`Canonical task store is not a directory: ${this.historyRoot}`);
+    }
+    return { root: this.historyRoot, updatedBy: this.updatedBy };
+  }
+
+  private async assertLocalWrite(taskId: string): Promise<void> {
+    const history = await this.historyContext();
+    if (!history || (await getLocalTask(this.backendContext(), taskId))) return;
+    if (await getLocalTask(history, taskId)) {
+      throw new Error(`Refusing to write historical task ${taskId} from a compact worktree.`);
+    }
   }
 
   async listTasks(): Promise<TaskData[]> {
@@ -127,15 +143,59 @@ export class LocalBackend implements TaskBackend {
         this.lastListWarnings = [...warnings];
       },
     };
-    const tasks = (await listLocalTasks(context, "full", opts)) as TaskData[];
-    return { tasks, warnings: requestWarnings };
+    const local = (await listLocalTasks(context, "full", opts)) as TaskData[];
+    const history = await this.historyContext();
+    if (!history) return { tasks: local, warnings: requestWarnings };
+    let historyWarnings: string[] = [];
+    const historical = (await listLocalTasks(
+      {
+        ...history,
+        setLastListWarnings: (warnings) => {
+          historyWarnings = warnings;
+        },
+      },
+      "full",
+      { writeIndex: false, writeProjection: false, strictRoot: true },
+    )) as TaskData[];
+    const tasks = [
+      ...new Map([...historical, ...local].map((task) => [task.id, task])).values(),
+    ].toSorted((a, b) => a.id.localeCompare(b.id));
+    const warnings = [
+      ...requestWarnings,
+      ...historyWarnings.map((warning) => `history:${warning}`),
+    ];
+    this.lastListWarnings = warnings;
+    return { tasks, warnings };
   }
 
   async listProjectionTasks(opts?: { status?: readonly string[] }): Promise<TaskSummary[]> {
-    return (await listLocalTasks(this.backendContext(), "projection", {
+    const local = (await listLocalTasks(this.backendContext(), "projection", {
       writeIndex: false,
-      status: opts?.status,
     })) as TaskSummary[];
+    const history = await this.historyContext();
+    let historyWarnings: string[] = [];
+    const historical = history
+      ? ((await listLocalTasks(
+          {
+            ...history,
+            setLastListWarnings: (warnings) => {
+              historyWarnings = warnings;
+            },
+          },
+          "projection",
+          {
+            writeIndex: false,
+            writeProjection: false,
+            readProjectionCache: false,
+            strictRoot: true,
+          },
+        )) as TaskSummary[])
+      : [];
+    this.lastListWarnings.push(...historyWarnings.map((warning) => `history:${warning}`));
+    const statuses = new Set(opts?.status?.map((status) => status.trim().toUpperCase()));
+    return [...new Map([...historical, ...local].map((task) => [task.id, task])).values()]
+      .filter((task) => statuses.size === 0 || statuses.has(task.status.trim().toUpperCase()))
+      .toSorted((a, b) => a.id.localeCompare(b.id));
   }
 
   getLastListWarnings(): string[] {
@@ -143,15 +203,21 @@ export class LocalBackend implements TaskBackend {
   }
 
   async getTask(taskId: string): Promise<TaskData | null> {
-    return await getLocalTask(this.backendContext(), taskId);
+    const local = await getLocalTask(this.backendContext(), taskId);
+    if (local) return local;
+    const history = await this.historyContext();
+    return history ? await getLocalTask(history, taskId) : null;
   }
 
   async getTasks(taskIds: string[]): Promise<(TaskData | null)[]> {
-    return await getLocalTasks(this.backendContext(), taskIds);
+    return await mapLimit(taskIds, 8, async (taskId) => await this.getTask(taskId));
   }
 
   async getTaskDoc(taskId: string): Promise<string> {
-    return await getLocalTaskDoc(this.backendContext(), taskId);
+    const local = await getLocalTask(this.backendContext(), taskId);
+    if (local) return await getLocalTaskDoc(this.backendContext(), taskId);
+    const history = await this.historyContext();
+    return await getLocalTaskDoc(history ?? this.backendContext(), taskId);
   }
 
   async writeTask(task: TaskData, opts?: TaskWriteOptions): Promise<void> {
@@ -159,6 +225,7 @@ export class LocalBackend implements TaskBackend {
   }
 
   async writeTaskWithResult(task: TaskData, opts?: TaskWriteOptions): Promise<TaskWriteResult> {
+    await this.assertLocalWrite(task.id);
     const receipt = await writeLocalTaskWithReceipt(this.backendContext(), task, opts);
     return {
       ...receipt,
@@ -171,6 +238,7 @@ export class LocalBackend implements TaskBackend {
     opts: TaskWriteOptions | undefined,
     beforePublication: () => Promise<void>,
   ): Promise<LocalTaskWriteReceipt> {
+    await this.assertLocalWrite(task.id);
     return await writeLocalTaskWithReceipt(this.backendContext(), task, opts, beforePublication);
   }
 
@@ -180,6 +248,7 @@ export class LocalBackend implements TaskBackend {
     updatedBy?: string,
     opts?: TaskWriteOptions,
   ): Promise<void> {
+    await this.assertLocalWrite(taskId);
     await setLocalTaskDoc(this.backendContext(), taskId, doc, updatedBy, opts);
   }
 
@@ -188,10 +257,12 @@ export class LocalBackend implements TaskBackend {
     updatedBy?: string,
     opts?: TaskWriteOptions,
   ): Promise<void> {
+    await this.assertLocalWrite(taskId);
     await touchLocalTaskDocMetadata(this.backendContext(), taskId, updatedBy, opts);
   }
 
   async writeTasks(tasks: TaskData[], opts?: TaskWriteOptions): Promise<void> {
+    for (const task of tasks) await this.assertLocalWrite(task.id);
     await writeLocalTasks(this.backendContext(), tasks, opts);
   }
 
@@ -207,6 +278,7 @@ export class LocalBackend implements TaskBackend {
     opts?: Pick<TaskWriteOptions, "expectedRevision">,
     beforeDeletion?: () => Promise<void>,
   ): Promise<void> {
+    await this.assertLocalWrite(taskId);
     const readmePath = taskReadmePath(this.root, taskId);
     await withTaskReadmeTransaction(readmePath, async () => {
       const label = `task README ${taskId}`;

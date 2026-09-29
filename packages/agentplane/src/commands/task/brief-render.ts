@@ -14,7 +14,7 @@ function splitNonEmptyLines(text: string): string[] {
 function formatSourceConfidence(
   sourceConfidence: TaskBriefWithWorkflowStep["source_confidence"],
 ): string {
-  const keys = ["route", "next_action", "verify_steps", "snapshot", "remote"] as const;
+  const keys = ["route", "next_action", "verify_steps", "task_obligations", "remote"] as const;
   return keys
     .map((key) => {
       const value = sourceConfidence[key];
@@ -30,6 +30,12 @@ export function reportTaskBriefText(brief: TaskBriefWithWorkflowStep, taskId: st
       { label: "task", value: `${brief.task.id} ${brief.task.status}` },
       { label: "title", value: brief.task.title },
       { label: "owner", value: brief.task.owner },
+      { label: "task_kind", value: brief.task.task_kind ?? "unset" },
+      { label: "mutation_scope", value: brief.task.mutation_scope ?? "unset" },
+      {
+        label: "risk_flags",
+        value: brief.task.risk_flags?.length ? brief.task.risk_flags.join(", ") : "none",
+      },
       ...(brief.task.token_usage
         ? [
             {
@@ -240,18 +246,19 @@ export function reportTaskBriefText(brief: TaskBriefWithWorkflowStep, taskId: st
     output.line(`  ${line}`);
   }
   output.report([
-    { label: "blueprint_id", value: brief.blueprint.blueprint_id ?? "unresolved" },
-    { label: "blueprint_route", value: brief.blueprint.route?.join(" -> ") ?? "none" },
+    { label: "task_profile", value: brief.task_obligations.profile },
     {
       label: "policy_modules",
-      value: brief.policy_modules.join(", ") || "none",
+      value: brief.task_obligations.policy_modules.join(", ") || "none",
     },
     {
       label: "required_evidence",
-      value: brief.evidence_required.join(", ") || "none",
+      value:
+        brief.task_obligations.evidence_requirements.map((item) => item.id).join(", ") || "none",
     },
-    { label: "snapshot_state", value: brief.snapshot.state },
-    { label: "snapshot_safe_command", value: brief.snapshot.safe_command },
-    { label: "stop_rules", value: brief.stop_rules.join(", ") || "none" },
+    {
+      label: "stop_rules",
+      value: brief.task_obligations.stop_rules.map((item) => item.id).join(", ") || "none",
+    },
   ]);
 }

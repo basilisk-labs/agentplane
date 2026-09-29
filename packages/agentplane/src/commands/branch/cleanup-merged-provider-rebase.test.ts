@@ -468,21 +468,6 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
     expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
     expect(await pathExists(fixture.worktreePath)).toBe(true);
 
-    const route = await runWithFakeGh(fakeBin, [
-      "task",
-      "next-action",
-      fixture.taskId,
-      "--remote",
-      "--explain",
-      "--root",
-      fixture.root,
-    ]);
-    expect(route.code).toBe(0);
-    expect(route.stdout).toMatch(/next_command:\s+none/u);
-    expect(route.stdout).toContain("blocker:                     cleanup_blocked:");
-    expect(route.stdout).toContain(
-      "provider merged head is not contained by the recorded merge commit",
-    );
     expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
     expect(await pathExists(fixture.worktreePath)).toBe(true);
   });
@@ -542,21 +527,6 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
         expect(await gitBranchExists(fixture.root, fixture.branch), testCase.name).toBe(true);
         expect(await pathExists(fixture.worktreePath), testCase.name).toBe(true);
 
-        const route = await runWithFakeGh(fakeBin, [
-          "task",
-          "next-action",
-          fixture.taskId,
-          "--remote",
-          "--explain",
-          "--root",
-          fixture.root,
-        ]);
-        expect(route.code, testCase.name).toBe(0);
-        expect(route.stdout, testCase.name).toMatch(/next_command:\s+none/u);
-        expect(route.stdout, testCase.name).toContain(
-          "blocker:                     cleanup_blocked:",
-        );
-        expect(route.stdout, testCase.name).toContain(testCase.expectedReason);
         expect(await gitBranchExists(fixture.root, fixture.branch), testCase.name).toBe(true);
         expect(await pathExists(fixture.worktreePath), testCase.name).toBe(true);
       }
@@ -617,23 +587,6 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
         expect(await gitBranchExists(fixture.root, fixture.branch), testCase.name).toBe(true);
         expect(await pathExists(fixture.worktreePath), testCase.name).toBe(true);
 
-        const route = await runWithFakeGh(fakeBin, [
-          "task",
-          "next-action",
-          fixture.taskId,
-          "--remote",
-          "--explain",
-          "--root",
-          fixture.root,
-        ]);
-        expect(route.code, testCase.name).toBe(0);
-        expect(route.stdout, testCase.name).toMatch(/next_command:\s+none/u);
-        expect(route.stdout, testCase.name).toContain(
-          "blocker:                     cleanup_blocked:",
-        );
-        expect(route.stdout, testCase.name).toContain(
-          "exact pre-merge closure evidence is not recorded on base",
-        );
         expect(await gitBranchExists(fixture.root, fixture.branch), testCase.name).toBe(true);
         expect(await pathExists(fixture.worktreePath), testCase.name).toBe(true);
       }

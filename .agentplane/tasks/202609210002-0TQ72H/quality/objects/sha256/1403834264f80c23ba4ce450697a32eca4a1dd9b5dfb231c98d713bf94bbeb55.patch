@@ -1,0 +1,1010 @@
+diff --git a/packages/agentplane/src/adapters/task-backend/kernel-record.ts b/packages/agentplane/src/adapters/task-backend/kernel-record.ts
+index fac95cbdd..70c3fdfa7 100644
+--- a/packages/agentplane/src/adapters/task-backend/kernel-record.ts
++++ b/packages/agentplane/src/adapters/task-backend/kernel-record.ts
+@@ -1,5 +1,6 @@
+ import { kernelAuthorityRecordSchema } from "./kernel-authority-schema.js";
+ import { kernelRecordIssues } from "./kernel-record-invariants.js";
++import { projectKernelTask } from "./kernel-projector.js";
+ import {
+   kernelDocumentIssues,
+   kernelDocumentsSchema,
+@@ -251,6 +252,13 @@ export function readKernelRecord(
+     };
+   }
+   const aggregate = contents.aggregate;
++  if (task.status !== projectKernelTask(aggregate).status) {
++    return {
++      kind: "malformed",
++      reason: "canonical_projection_mismatch",
++      fields: ["status"],
++    };
++  }
+   const persistedIssues = [
+     ...kernelRecordIssues(aggregate, contents.events),
+     ...kernelDocumentIssues(aggregate, contents.documents),
+diff --git a/packages/agentplane/src/commands/shared/canonical-pre-merge-evidence.test.ts b/packages/agentplane/src/commands/shared/canonical-pre-merge-evidence.test.ts
+index 2e0e2440f..fc099c097 100644
+--- a/packages/agentplane/src/commands/shared/canonical-pre-merge-evidence.test.ts
++++ b/packages/agentplane/src/commands/shared/canonical-pre-merge-evidence.test.ts
+@@ -1,9 +1,13 @@
+ import { describe, expect, it } from "vitest";
++import { buildStateFingerprint } from "@agentplaneorg/core/schemas";
+ import { taskKernel as k } from "@agentplaneorg/core/tasks";
+ 
++import type { TaskData } from "../../backends/task-backend.js";
++import type { WorkflowRouteState } from "./workflow-step.js";
+ import { hasCanonicalPreMergeEvidence } from "./route-decision-blockers.js";
++import { reduceRouteState } from "./workflow-step-reducer.js";
+ 
+-function canonicalTask() {
++function canonicalTask(): TaskData {
+   const verificationEvidence = k.kernelDigest("verification");
+   const reviewIdentity = k.kernelDigest("review");
+   const implementationCommit = "a".repeat(40);
+@@ -41,7 +45,7 @@ function canonicalTask() {
+         digest: k.kernelDigest(projectionContents),
+       },
+     },
+-  } as never;
++  } as TaskData;
+ }
+ 
+ describe("canonical pre-merge evidence", () => {
+@@ -100,6 +104,99 @@ describe("canonical pre-merge evidence", () => {
+     expect(hasCanonicalPreMergeEvidence(task as never)).toBe(false);
+   });
+ 
++  it("routes canonical pre-merge evidence before stale compatibility planning state", () => {
++    const task = {
++      ...canonicalTask(),
++      id: "202609210000-CANON1",
++      title: "Canonical closeout",
++      description: "Route immutable Kernel evidence to branch closeout.",
++      status: "DOING",
++      priority: "high",
++      owner: "CODER",
++      depends_on: [],
++      tags: [],
++      verify: [],
++      plan_approval: { state: "pending" },
++      verification: { state: "ok" },
++      doc: "## Plan\n\nPLANNER semantic plan required. Replace this placeholder.\n",
++    };
++    const branch = `task/${task.id}/canonical-closeout`;
++    const component = {
++      state: "present" as const,
++      source: "canonical_pre_merge_test",
++      value: { task_id: task.id },
++    };
++    const fingerprint = buildStateFingerprint({
++      task_id: task.id,
++      task_revision: 1,
++      git_head: task.commit.hash,
++      worktree: `/repo/.agentplane/worktrees/${task.id}`,
++      components: {
++        task: component,
++        git: component,
++        backend_projection: component,
++        plan: component,
++        policy: component,
++        capability: component,
++        knowledge: component,
++        provider: component,
++        authority: component,
++      },
++    });
++    const state = {
++      task: task as never,
++      resume: {
++        task_id: task.id,
++        task_status: task.status,
++        branch,
++        base_branch: "main",
++        head_sha: task.commit.hash,
++        workspace_root: `/repo/.agentplane/worktrees/${task.id}`,
++        pr_branch: branch,
++        latest_handoff: null,
++        runner: {
++          run_id: null,
++          status: null,
++          heartbeat_at: null,
++          state_path: null,
++          trace_path: null,
++          next_action: "run",
++          next_command: `agentplane task run ${task.id}`,
++          resume_command: `agentplane task run ${task.id}`,
++          retry_command: null,
++        },
++      },
++      workflowMode: "branch_pr",
++      prFlow: {
++        task: { id: task.id, status: task.status, verification: "ok" },
++        branch: { name: branch, headSha: task.commit.hash, metaHeadSha: null },
++        pr: { provider: "github", state: "not_found", source: "metadata" },
++        closeTail: { state: "not_applicable", reason: "implementation PR is not linked yet" },
++        hostedChecks: { checked: false, reason: "not requested" },
++        reviewThreads: { checked: false, reason: "not requested" },
++        queue: { present: false },
++        handoff: { present: false },
++        nextAction: "open PR",
++      },
++      cleanupProbe: { state: "not_requested" },
++      blockers: [{ code: "remote_pr_missing", summary: "task branch is not linked" }],
++      batchOwnership: { role: "none" },
++      taskWorktree: {
++        state: "clean",
++        branch,
++        worktreePath: `/repo/.agentplane/worktrees/${task.id}`,
++        changedPaths: [],
++      },
++      preconditionFingerprint: fingerprint,
++    } as WorkflowRouteState;
++
++    expect(reduceRouteState(state)).toMatchObject({
++      kind: "approval",
++      phase: "side_effect_authority_required",
++      request: { type: "side_effect", operationId: "pr.open" },
++    });
++  });
++
+   it("fails closed after either projection is changed", () => {
+     const task = canonicalTask() as {
+       extensions: {
+diff --git a/packages/agentplane/src/commands/shared/native-task-identity.test.ts b/packages/agentplane/src/commands/shared/native-task-identity.test.ts
+index 4ad55054c..eef551c75 100644
+--- a/packages/agentplane/src/commands/shared/native-task-identity.test.ts
++++ b/packages/agentplane/src/commands/shared/native-task-identity.test.ts
+@@ -37,6 +37,7 @@ function kernelTask(planState: k.PlanRecord["state"]) {
+   const contractDigest = digest("verification-contract");
+   const task = {
+     id: "T-1",
++    status: "DOING",
+     extensions: {
+       [TASK_KERNEL_EXTENSION]: makeKernelRecord(repositoryIdentity, aggregate, []),
+     },
+diff --git a/packages/agentplane/src/commands/shared/roadmap-single-mutation-gateway.test.ts b/packages/agentplane/src/commands/shared/roadmap-single-mutation-gateway.test.ts
+new file mode 100644
+index 000000000..f95b63d0c
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/roadmap-single-mutation-gateway.test.ts
+@@ -0,0 +1,184 @@
++import { makeTaskBackendDouble } from "@agentplane/testkit/task";
++import { taskKernel } from "@agentplaneorg/core/tasks";
++import { describe, expect, it, vi } from "vitest";
++
++import type { TaskData } from "../../backends/task-backend.js";
++import {
++  KernelBackendAdapter,
++  type KernelCommandInput,
++} from "../../adapters/task-backend/kernel-backend-adapter.js";
++import {
++  readKernelRecord,
++  TASK_KERNEL_EXTENSION,
++} from "../../adapters/task-backend/kernel-record.js";
++import { projectKernelTask } from "../../adapters/task-backend/kernel-projector.js";
++
++const taskId = "202609210000-LC0201";
++const identity = taskKernel.kernelDigest("lc-02-repository");
++const fingerprint = taskKernel.kernelDigest("lc-02-state");
++
++function task(): TaskData {
++  return {
++    id: taskId,
++    title: "Single mutation gateway",
++    description: "LC-02 fixture",
++    status: "TODO",
++    priority: "high",
++    owner: "CODER",
++    depends_on: [],
++    tags: [],
++    verify: ["focused"],
++  };
++}
++
++function input(): KernelCommandInput {
++  return {
++    command: {
++      kind: "capture_intent",
++      task_id: taskId,
++      expected_task_revision: 0,
++      expected_state_fingerprint: fingerprint,
++      intent_digest: taskKernel.kernelDigest("lc-02-intent"),
++    },
++    actor: {
++      id: "lc-02-user",
++      kind: "USER",
++      transport: "manual",
++      capabilities: ["repository_write"],
++    },
++    authority: {
++      digest: taskKernel.kernelDigest("lc-02-authority"),
++      task_id: taskId,
++      plan_revision: 0,
++      plan_digest: taskKernel.kernelDigest("no-plan"),
++      work_item_id: null,
++      repository_identity: identity,
++      repository_fingerprint: fingerprint,
++      scope_roots: ["."],
++      repository_effects: ["repository_write"],
++      external_effects: [],
++      capabilities: ["repository_write"],
++      resources: [],
++      validation_requirements: [],
++      policy_digests: [],
++      completion_requirements: [],
++      risk: { requirements: "bounded", implementation: "bounded", reversibility: "reversible" },
++      provenance: {
++        kind: "USER",
++        actor_id: "lc-02-user",
++        evidence_digest: taskKernel.kernelDigest("lc-02-user-decision"),
++        parent_authority_digest: null,
++      },
++      expires_at: null,
++    },
++    repository_fingerprint: fingerprint,
++    occurred_at: "2026-09-21T00:00:00.000Z",
++    mutation_id: "capture",
++  };
++}
++
++function plan(id: string): taskKernel.PlanRecord {
++  const work_items: taskKernel.WorkItemDefinition[] = [
++    {
++      id,
++      depends_on: [],
++      required_inputs: [],
++      expected_outputs: [`${id}-output`],
++      execution_requirements: {
++        scope_roots: ["."],
++        repository_effects: ["repository_write"],
++        external_effects: [],
++        capabilities: ["repository_write"],
++        resources: [],
++      },
++      optional: false,
++    },
++  ];
++  return {
++    revision: 1,
++    digest: taskKernel.kernelDigest({ revision: 1, work_items }),
++    state: "PROPOSED",
++    approval_actor_id: null,
++    approval_evidence_digest: null,
++    work_items,
++  };
++}
++
++function memoryGateway() {
++  let stored: TaskData | null = null;
++  const base = makeTaskBackendDouble();
++  const backend = makeTaskBackendDouble({
++    capabilities: { ...base.capabilities, canonical_source: "local", atomic_task_record: true },
++    getTask: () => Promise.resolve(structuredClone(stored)),
++    writeTask: (next, options) => {
++      if ((stored?.revision ?? 0) !== options?.expectedRevision) {
++        return Promise.reject(new Error("CAS conflict"));
++      }
++      stored = structuredClone(next);
++      return Promise.resolve();
++    },
++  });
++  return {
++    adapter: new KernelBackendAdapter(backend, identity),
++    backend,
++    current: () => structuredClone(stored),
++  };
++}
++
++describe("LC-02 single Kernel mutation gateway", () => {
++  it("uses one CAS boundary and records one event and receipt for the accepted transition", async () => {
++    const gateway = memoryGateway();
++    expect(await gateway.adapter.create(task(), input())).toMatchObject({ kind: "committed" });
++
++    const invoke = (id: string) =>
++      gateway.adapter.execute({
++        ...input(),
++        mutation_id: `propose-${id}`,
++        command: {
++          kind: "propose_plan",
++          task_id: taskId,
++          expected_task_revision: 1,
++          expected_state_fingerprint: fingerprint,
++          plan: plan(id),
++        },
++      });
++    const results = await Promise.all([invoke("first"), invoke("second")]);
++
++    expect(results.filter((result) => result.kind === "committed")).toHaveLength(1);
++    expect(results).toContainEqual(
++      expect.objectContaining({ kind: "unavailable", code: "concurrent_write" }),
++    );
++    const read = await gateway.adapter.read(taskId);
++    expect(read.kind).toBe("canonical");
++    if (read.kind !== "canonical") throw new Error(JSON.stringify(read));
++    expect(read.record.events).toHaveLength(2);
++    expect(Object.keys(read.record.aggregate.mutation_receipts)).toHaveLength(2);
++  });
++
++  it("renders compatibility state without writing and rejects a conflicting outer status", async () => {
++    const gateway = memoryGateway();
++    await gateway.adapter.create(task(), input());
++    const read = await gateway.adapter.read(taskId);
++    if (read.kind !== "canonical") throw new Error(JSON.stringify(read));
++    const write = vi.spyOn(gateway.backend, "writeTask");
++
++    expect(projectKernelTask(read.record.aggregate)).toMatchObject({
++      state: "PLANNING",
++      status: "TODO",
++    });
++    expect(write).not.toHaveBeenCalled();
++    expect(readKernelRecord({ ...read.task, status: "DONE" }, identity)).toMatchObject({
++      kind: "malformed",
++      reason: "canonical_projection_mismatch",
++      fields: ["status"],
++    });
++    expect(write).not.toHaveBeenCalled();
++  });
++
++  it("keeps non-Kernel historical records on the explicit legacy decoder path", () => {
++    expect(readKernelRecord({ ...task(), status: "DONE" }, identity)).toMatchObject({
++      kind: "legacy_unmigrated",
++    });
++    expect(task()).not.toHaveProperty(`extensions.${TASK_KERNEL_EXTENSION}`);
++  });
++});
+diff --git a/packages/agentplane/src/commands/shared/task-mutation.ts b/packages/agentplane/src/commands/shared/task-mutation.ts
+index 0f5800c9e..bbf1dcc3d 100644
+--- a/packages/agentplane/src/commands/shared/task-mutation.ts
++++ b/packages/agentplane/src/commands/shared/task-mutation.ts
+@@ -1,4 +1,8 @@
+-import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
++import {
++  TASK_KERNEL_EXTENSION,
++  type KernelRecord,
++} from "../../adapters/task-backend/kernel-record.js";
++import { projectKernelTask } from "../../adapters/task-backend/kernel-projector.js";
+ import { projectTaskCentricCompatibilityMutation } from "../../adapters/task-backend/task-centric-backend-adapter.js";
+ import {
+   projectTaskLifecycleToLegacyStatus,
+@@ -38,6 +42,24 @@ function assertCanonicalProjectionPreserved(opts: { current: TaskData; next: Tas
+   if (current === undefined || JSON.stringify(current) !== JSON.stringify(next)) {
+     throw new Error("Canonical compatibility projection changed the Task Kernel record");
+   }
++  const aggregate = (current as Partial<KernelRecord>).aggregate;
++  if (!aggregate) return;
++  const expectedStatus = projectKernelTask(aggregate).status;
++  if (opts.current.status !== expectedStatus || opts.next.status !== expectedStatus) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message:
++        `Canonical compatibility projection conflicts with accepted Kernel state for ${opts.current.id}: ` +
++        `expected status ${expectedStatus}, observed ${opts.current.status} -> ${opts.next.status}.`,
++      context: {
++        reason_code: "canonical_projection_mismatch",
++        task_id: opts.current.id,
++        expected_status: expectedStatus,
++        current_status: opts.current.status,
++        next_status: opts.next.status,
++      },
++    });
++  }
+ }
+ 
+ function assertTaskCentricProjection(opts: { current: TaskData; next: TaskData }): void {
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-reducer.ts b/packages/agentplane/src/commands/shared/workflow-step-reducer.ts
+index 9e0228ac2..e89c21dd3 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-reducer.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-reducer.ts
+@@ -5,6 +5,7 @@ import {
+   taskCentricAggregateFromExtensions,
+   taskCentricReplanRequiredFromExtensions,
+ } from "@agentplaneorg/core/tasks";
++import { hasCanonicalPreMergeEvidence } from "./canonical-pre-merge-evidence.js";
+ import { branchStep, doneBranchStep } from "./workflow-step-branch.js";
+ import {
+   approvalStep,
+@@ -51,8 +52,10 @@ export function reduceRouteState(state: WorkflowRouteState): WorkflowStep {
+       selectedBlocker: null,
+     });
+   }
++  const canonicalPreMergeReady =
++    state.workflowMode === "branch_pr" && hasCanonicalPreMergeEvidence(state.task);
+   if (
+-    state.task.status === "DONE" &&
++    (state.task.status === "DONE" || canonicalPreMergeReady) &&
+     state.workflowMode === "branch_pr" &&
+     state.batchOwnership.role !== "included"
+   ) {
+diff --git a/packages/agentplane/src/commands/task/active.command.unit.test.ts b/packages/agentplane/src/commands/task/active.command.unit.test.ts
+index 04eb91e7b..95f0219ea 100644
+--- a/packages/agentplane/src/commands/task/active.command.unit.test.ts
++++ b/packages/agentplane/src/commands/task/active.command.unit.test.ts
+@@ -33,7 +33,7 @@ describe("task active route evaluation", () => {
+     vi.restoreAllMocks();
+   });
+ 
+-  it("selects canonical work despite a contradictory legacy DONE status", async () => {
++  it("diagnoses a contradictory outer status instead of selecting canonical work", async () => {
+     const identity = taskKernel.kernelDigest("repo");
+     const aggregate: taskKernel.TaskAggregate = {
+       schema_version: 1,
+@@ -71,9 +71,8 @@ describe("task active route evaluation", () => {
+     });
+     expect(result.items).toHaveLength(1);
+     expect(result.items[0]).toMatchObject({
+-      task: { id: "T-1", status: "PLANNING" },
+-      next_action: { code: "kernel_plan_required", command: null },
+-      dependency_readiness: { state: "kernel_work_items", depends_on: [] },
++      task: { id: "T-1", status: "malformed" },
++      next_action: { code: "kernel_record_invalid", command: null },
+       kernel: { source: "task_kernel", authority: { grants_authority: false } },
+     });
+     expect(route).not.toHaveBeenCalled();
+diff --git a/packages/agentplane/src/commands/task/kernel-advance.ts b/packages/agentplane/src/commands/task/kernel-advance.ts
+index f196b3f5a..dddd9cdb1 100644
+--- a/packages/agentplane/src/commands/task/kernel-advance.ts
++++ b/packages/agentplane/src/commands/task/kernel-advance.ts
+@@ -21,7 +21,7 @@ import {
+   decideCanonicalWorkflowEffect,
+   prepareCanonicalWorkflowEffect,
+ } from "./kernel-provider-effect-coordinator.js";
+-import { ensureKernelOperationalProjectionStatus } from "./kernel-operational-projection.js";
++import { ensureKernelOperationalProjectionEvidence } from "./kernel-operational-projection.js";
+ import { transferCanonicalControllerToBase } from "./kernel-controller-handoff.js";
+ import { acceptKernelSemanticResult } from "./kernel-semantic-result.js";
+ import { ensureCanonicalTaskWorktree } from "./kernel-worktree-routing.js";
+@@ -175,7 +175,7 @@ export async function advanceCanonicalTask(opts: {
+           workflow.workflowStep.operation.id,
+         );
+       if (postMergeBaseOperation || terminalOnBase) {
+-        await ensureKernelOperationalProjectionStatus({
++        await ensureKernelOperationalProjectionEvidence({
+           command: opts.command,
+           task_id: opts.task_id,
+           verification_evidence_digest: persistedValidationEvidence,
+@@ -337,7 +337,7 @@ export async function advanceCanonicalTask(opts: {
+               },
+             };
+           }
+-          await ensureKernelOperationalProjectionStatus({
++          await ensureKernelOperationalProjectionEvidence({
+             command: opts.command,
+             task_id: opts.task_id,
+             verification_evidence_digest: finalValidation.evidence_digest,
+diff --git a/packages/agentplane/src/commands/task/kernel-operational-projection.test.ts b/packages/agentplane/src/commands/task/kernel-operational-projection.test.ts
+index 2fd8b774b..156e7af73 100644
+--- a/packages/agentplane/src/commands/task/kernel-operational-projection.test.ts
++++ b/packages/agentplane/src/commands/task/kernel-operational-projection.test.ts
+@@ -4,7 +4,7 @@ import { taskKernel as k } from "@agentplaneorg/core/tasks";
+ import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
+ import type { TaskWriteOptions } from "../../backends/task-backend.js";
+ import {
+-  ensureKernelOperationalProjectionStatus,
++  ensureKernelOperationalProjectionEvidence,
+   projectKernelOperationalEvidence,
+   readKernelOperationalProjection,
+ } from "./kernel-operational-projection.js";
+@@ -43,6 +43,7 @@ describe("canonical operational evidence projection", () => {
+     const task = {
+       id: "T-1",
+       revision: 7,
++      status: "DOING",
+       verification: { state: "pending", attempts: 0 },
+       extensions: { [TASK_KERNEL_EXTENSION]: kernel },
+     };
+@@ -71,7 +72,7 @@ describe("canonical operational evidence projection", () => {
+     const [written, options] = writeTask.mock.calls[0]!;
+     expect(options).toEqual({ expectedRevision: 7 });
+     expect(written.revision).toBe(8);
+-    expect(written.status).toBe("DONE");
++    expect(written.status).toBe("DOING");
+     expect(written.commit?.hash).toBe("a".repeat(40));
+     expect(written.commit?.message).toBeTruthy();
+     expect(written.plan_approval).toMatchObject({ state: "approved", updated_by: "USER" });
+@@ -130,7 +131,7 @@ describe("canonical operational evidence projection", () => {
+     expect(writeTask.mock.calls[0]![0].verification).toEqual(verification);
+   });
+ 
+-  it("restores the pre-merge status projection after a Kernel effect write", async () => {
++  it("restores evidence without changing the Kernel-derived status", async () => {
+     const writeTask = taskWriter();
+     const projectionContents = {
+       schema_version: 1 as const,
+@@ -152,7 +153,7 @@ describe("canonical operational evidence projection", () => {
+       extensions: { "agentplane.kernel_operational_projection": projection },
+     };
+ 
+-    await ensureKernelOperationalProjectionStatus({
++    await ensureKernelOperationalProjectionEvidence({
+       command: {
+         taskBackend: { getTask: vi.fn().mockResolvedValue(task), writeTask },
+       } as never,
+@@ -162,7 +163,7 @@ describe("canonical operational evidence projection", () => {
+     expect(writeTask).toHaveBeenCalledOnce();
+     const [written, options] = writeTask.mock.calls[0]!;
+     expect(options).toEqual({ expectedRevision: 9 });
+-    expect(written).toMatchObject({ ...task, revision: 10, status: "DONE" });
++    expect(written).toMatchObject({ ...task, revision: 10, status: "DOING" });
+     expect(written.verification).toMatchObject({
+       state: "ok",
+       attempts: 1,
+@@ -194,7 +195,7 @@ describe("canonical operational evidence projection", () => {
+     };
+     const finalEvidence = k.kernelDigest("final-validation");
+ 
+-    await ensureKernelOperationalProjectionStatus({
++    await ensureKernelOperationalProjectionEvidence({
+       command: {
+         taskBackend: { getTask: vi.fn().mockResolvedValue(task), writeTask },
+       } as never,
+diff --git a/packages/agentplane/src/commands/task/kernel-operational-projection.ts b/packages/agentplane/src/commands/task/kernel-operational-projection.ts
+index e86e56f4e..b8c808c47 100644
+--- a/packages/agentplane/src/commands/task/kernel-operational-projection.ts
++++ b/packages/agentplane/src/commands/task/kernel-operational-projection.ts
+@@ -72,9 +72,6 @@ export async function projectKernelOperationalEvidence(opts: {
+     {
+       ...task,
+       revision: revision + 1,
+-      // This is the mature branch workflow's pre-merge closure projection. Kernel completion is
+-      // still authoritative and happens only after provider and cleanup effects are observed.
+-      status: "DONE",
+       plan_approval: {
+         state: "approved",
+         updated_at: opts.projected_at,
+@@ -112,8 +109,8 @@ export async function projectKernelOperationalEvidence(opts: {
+   );
+ }
+ 
+-/** Keep the non-authoritative branch closure projection stable across later Kernel effect writes. */
+-export async function ensureKernelOperationalProjectionStatus(opts: {
++/** Keep non-authoritative evidence stable across later Kernel effect writes. */
++export async function ensureKernelOperationalProjectionEvidence(opts: {
+   command: CommandContext;
+   task_id: string;
+   verification_evidence_digest?: k.Sha256Digest;
+@@ -141,20 +138,24 @@ export async function ensureKernelOperationalProjectionStatus(opts: {
+     ...projectionContents,
+     digest: k.kernelDigest(projectionContents),
+   };
+-  if (task.status === "DONE" && projection.digest === existing.digest) return;
++  const fallbackVerification = projectedVerification(task.verification, {
++    state: "ok",
++    attempts: 1,
++    updated_at: existing.projected_at,
++    updated_by: "SUPERVISOR",
++    note: `Canonical validation ${verificationEvidenceDigest}`,
++  });
++  if (
++    projection.digest === existing.digest &&
++    task.verification?.state === fallbackVerification.state
++  )
++    return;
+   const revision = task.revision ?? 0;
+   await opts.command.taskBackend.writeTask(
+     {
+       ...task,
+       revision: revision + 1,
+-      status: "DONE",
+-      verification: projectedVerification(task.verification, {
+-        state: "ok",
+-        attempts: 1,
+-        updated_at: existing.projected_at,
+-        updated_by: "SUPERVISOR",
+-        note: `Canonical validation ${verificationEvidenceDigest}`,
+-      }),
++      verification: fallbackVerification,
+       extensions: {
+         ...task.extensions,
+         [KERNEL_OPERATIONAL_PROJECTION]: projection,
+diff --git a/packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts b/packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts
+index d4b476894..5b11cf052 100644
+--- a/packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts
++++ b/packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts
+@@ -35,7 +35,7 @@ vi.mock("../../shared/stable-file.js", () => ({
+   readStableRegularTextNoFollow: mocks.readEnvelope,
+ }));
+ vi.mock("./kernel-operational-projection.js", () => ({
+-  ensureKernelOperationalProjectionStatus: mocks.ensureProjection,
++  ensureKernelOperationalProjectionEvidence: mocks.ensureProjection,
+ }));
+ vi.mock("../shared/task-backend.js", async (importOriginal) => ({
+   ...(await importOriginal<typeof TaskBackendModule>()),
+diff --git a/packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.ts b/packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.ts
+index e9855ffd1..43e5d045f 100644
+--- a/packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.ts
++++ b/packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.ts
+@@ -29,7 +29,7 @@ import {
+   recoverCanonicalControllerSuspension,
+   withCanonicalControllerSuspendedForOperation,
+ } from "./kernel-controller-handoff.js";
+-import { ensureKernelOperationalProjectionStatus } from "./kernel-operational-projection.js";
++import { ensureKernelOperationalProjectionEvidence } from "./kernel-operational-projection.js";
+ 
+ type Runtime = Awaited<ReturnType<typeof createKernelRuntime>>;
+ 
+@@ -293,7 +293,7 @@ export function createKernelProviderEffectPortResolver(opts: {
+     if (!opts.allow_remote || !expectedOperationId) return null;
+     const port: KernelEffectPort = {
+       async dispatch(input) {
+-        await ensureKernelOperationalProjectionStatus({
++        await ensureKernelOperationalProjectionEvidence({
+           command: opts.command,
+           task_id: input.task_id,
+         });
+@@ -391,7 +391,7 @@ export function createKernelProviderEffectPortResolver(opts: {
+         };
+       },
+       async observe(input) {
+-        await ensureKernelOperationalProjectionStatus({
++        await ensureKernelOperationalProjectionEvidence({
+           command: opts.command,
+           task_id: input.task_id,
+         });
+diff --git a/packages/agentplane/src/commands/task/show-kernel.test.ts b/packages/agentplane/src/commands/task/show-kernel.test.ts
+index df21ffbde..11018cb7a 100644
+--- a/packages/agentplane/src/commands/task/show-kernel.test.ts
++++ b/packages/agentplane/src/commands/task/show-kernel.test.ts
+@@ -44,7 +44,7 @@ function capturedTask() {
+     migration_receipts: [],
+   };
+   return makeTaskFixture({
+-    status: "DONE",
++    status: "TODO",
+     depends_on: ["LEGACY-MISSING"],
+     extensions: { [TASK_KERNEL_EXTENSION]: makeKernelRecord(identity, aggregate, []) },
+   });
+@@ -252,7 +252,7 @@ describe("task show canonical projection", () => {
+     mocks.load.mockRejectedValue(new Error("backend inaccessible"));
+     await expect(readTaskKernel(ctx, "T-1")).rejects.toThrow("backend inaccessible");
+   });
+-  it("ignores a contradictory legacy status and rejects corrupted canonical records", async () => {
++  it("rejects contradictory outer status and corrupted canonical records", async () => {
+     const identity = taskKernel.kernelDigest("repository");
+     const aggregate: taskKernel.TaskAggregate = {
+       schema_version: 1,
+@@ -281,12 +281,7 @@ describe("task show canonical projection", () => {
+     const stdout = vi.spyOn(process.stdout, "write").mockReturnValue(true);
+     await expect(
+       cmdTaskShow({ ctx, cwd: ctx.resolvedProject.gitRoot, taskId: "T-1" }),
+-    ).resolves.toBe(0);
+-    expect(JSON.parse(String(stdout.mock.calls[0]?.[0]))).toMatchObject({
+-      source: "task_kernel",
+-      state: "PLANNING",
+-      status: "TODO",
+-    });
++    ).rejects.toMatchObject({ code: "E_VALIDATION" });
+     mocks.load.mockResolvedValue({
+       ...fixture,
+       extensions: {
+@@ -296,6 +291,6 @@ describe("task show canonical projection", () => {
+     await expect(
+       cmdTaskShow({ ctx, cwd: ctx.resolvedProject.gitRoot, taskId: "T-1" }),
+     ).rejects.toMatchObject({ code: "E_VALIDATION" });
+-    expect(stdout).toHaveBeenCalledTimes(1);
++    expect(stdout).not.toHaveBeenCalled();
+   });
+ });
+diff --git a/packages/core/src/tasks/task-centric/index.ts b/packages/core/src/tasks/task-centric/index.ts
+index f2d0fbc56..b0b2a1b62 100644
+--- a/packages/core/src/tasks/task-centric/index.ts
++++ b/packages/core/src/tasks/task-centric/index.ts
+@@ -40,7 +40,6 @@ export {
+   assertWorkItemTransition,
+   evaluateTaskCompletion,
+   incompleteRequiredWorkItems,
+-  LifecycleEngine,
+   type CompletionEvaluation,
+ } from "./lifecycle.js";
+ export {
+diff --git a/packages/core/src/tasks/task-centric/lifecycle.ts b/packages/core/src/tasks/task-centric/lifecycle.ts
+index 0c8b322d8..3002203f5 100644
+--- a/packages/core/src/tasks/task-centric/lifecycle.ts
++++ b/packages/core/src/tasks/task-centric/lifecycle.ts
+@@ -1,19 +1,6 @@
+-import { taskCentricDigest } from "./digest.js";
+-import {
+-  computeReadyWorkItems,
+-  requiredOutputManifestsPresent,
+-  WorkItemScheduler,
+-} from "./graph.js";
+-import { decideConfirmation, recoveryDecisionForFailure } from "./policy.js";
++import { requiredOutputManifestsPresent } from "./graph.js";
+ import type {
+-  ActorIdentity,
+-  ContextBundle,
+-  DomainEvent,
+-  ExecutionAuthority,
+-  LifecycleCommand,
+-  LifecycleInput,
+   ReconciliationSnapshot,
+-  SemanticWorkRequest,
+   Sha256Digest,
+   TaskAggregate,
+   TaskLifecycleState,
+@@ -117,224 +104,6 @@ export function evaluateTaskCompletion(opts: {
+   return Object.freeze({ eligible: reasons.length === 0, reason_codes: reasons });
+ }
+ 
+-function event(opts: {
+-  snapshot: ReconciliationSnapshot;
+-  entity: DomainEvent["entity"];
+-  work_item_id: string | null;
+-  from: string | null;
+-  to: string;
+-  actor_id: string;
+-  cause_refs?: readonly string[];
+-}): DomainEvent {
+-  const plan = opts.snapshot.task.current_plan;
+-  const identity = {
+-    task_id: opts.snapshot.task.id,
+-    task_revision: opts.snapshot.task.revision,
+-    plan_revision: plan?.revision ?? null,
+-    plan_digest: plan?.digest ?? null,
+-    work_item_id: opts.work_item_id,
+-    entity: opts.entity,
+-    from: opts.from,
+-    to: opts.to,
+-    cause_refs: opts.cause_refs ?? [],
+-    actor_id: opts.actor_id,
+-    repository_fingerprint: opts.snapshot.repository.digest,
+-  };
+-  const digest = taskCentricDigest(identity);
+-  return Object.freeze({
+-    schema_version: 1,
+-    id: `event_${digest.slice(7, 31)}`,
+-    mutation_id: `mutation_${digest.slice(31, 55)}`,
+-    ...identity,
+-    at: opts.snapshot.repository.captured_at,
+-  });
+-}
+-
+-function requestFor(opts: {
+-  snapshot: ReconciliationSnapshot;
+-  item: WorkItem;
+-  actor: ActorIdentity;
+-  context: ContextBundle;
+-  kind: SemanticWorkRequest["kind"];
+-}): SemanticWorkRequest {
+-  const plan = opts.snapshot.task.current_plan;
+-  if (!plan) throw new Error("Cannot request semantic work without a current plan.");
+-  const authority: ExecutionAuthority = {
+-    task_id: opts.snapshot.task.id,
+-    plan_revision: plan.revision,
+-    plan_digest: plan.digest,
+-    work_item_id: opts.item.id,
+-    repository_snapshot_digest: opts.snapshot.repository.digest,
+-    workspace: opts.context.authority.workspace,
+-    writable_roots: opts.item.scope_roots,
+-    allowed_operations: opts.context.authority.allowed_operations,
+-    expires_at: opts.context.authority.expires_at,
+-  };
+-  return Object.freeze({
+-    schema_version: 1,
+-    kind: opts.kind,
+-    task_id: opts.snapshot.task.id,
+-    plan_revision: plan.revision,
+-    plan_digest: plan.digest,
+-    work_item: opts.item,
+-    context: opts.context,
+-    authority,
+-    required_outputs: opts.item.expected_outputs,
+-    stop_rules: [
+-      "Do not mutate lifecycle, approval, Git integration, or validation truth.",
+-      "Return only semantic claims, questions, and artifact references.",
+-    ],
+-  });
+-}
+-
+-export class LifecycleEngine {
+-  readonly scheduler: WorkItemScheduler;
+-
+-  constructor(scheduler = new WorkItemScheduler(1)) {
+-    this.scheduler = scheduler;
+-  }
+-
+-  decide(input: LifecycleInput & { context?: ContextBundle }): readonly LifecycleCommand[] {
+-    const { snapshot } = input;
+-    const task = snapshot.task;
+-    const plan = task.current_plan;
+-    if (task.lifecycle === "COMPLETED" || task.lifecycle === "CANCELLED") {
+-      return [{ kind: "complete" }];
+-    }
+-    if (snapshot.pending_effects.some((effect) => effect.state === "effect_in_doubt")) {
+-      return [
+-        {
+-          kind: "decision",
+-          decision: { action: "wait", rule: "effect_in_doubt_reconciliation", evidence: [] },
+-        },
+-      ];
+-    }
+-    if (plan?.approval.state !== "approved" || plan.approval.approved_digest !== plan.digest) {
+-      return [
+-        {
+-          kind: "decision",
+-          decision: decideConfirmation({
+-            plan_approved: false,
+-            plan_digest_matches: false,
+-            safe_local_effect: false,
+-            external_effect: false,
+-            destructive_effect: false,
+-            credentials_required: false,
+-            policy_allows_external_effect: false,
+-            effect_state: "none",
+-          }),
+-        },
+-      ];
+-    }
+-    if (input.failure) {
+-      const recovery = recoveryDecisionForFailure(input.failure);
+-      return [
+-        {
+-          kind: "decision",
+-          decision: {
+-            action:
+-              recovery.action === "require_human"
+-                ? "require_human"
+-                : recovery.action === "reconcile_effect"
+-                  ? "wait"
+-                  : recovery.action === "block"
+-                    ? "deny"
+-                    : "proceed",
+-            rule: recovery.reason_code,
+-            evidence: recovery.failure.cause_refs,
+-          },
+-        },
+-      ];
+-    }
+-    if (input.semantic_result) {
+-      const result = input.semantic_result;
+-      if (
+-        result.task_id !== task.id ||
+-        result.plan_revision !== plan.revision ||
+-        result.plan_digest !== plan.digest ||
+-        result.context_digest !== input.context?.digest
+-      ) {
+-        return [
+-          {
+-            kind: "decision",
+-            decision: { action: "deny", rule: "stale_semantic_result", evidence: [] },
+-          },
+-        ];
+-      }
+-    }
+-    if (input.validation_result) {
+-      const workItemId = input.semantic_result?.work_item_id ?? null;
+-      if (input.validation_result.status === "passed") {
+-        return [
+-          {
+-            kind: "transition",
+-            event: event({
+-              snapshot,
+-              entity: workItemId ? "work_item" : "task",
+-              work_item_id: workItemId,
+-              from: workItemId ? (task.work_items[workItemId]?.state ?? null) : task.lifecycle,
+-              to: workItemId ? "COMPLETED" : "COMPLETED",
+-              actor_id: input.actor?.id ?? "agentplane",
+-              cause_refs: input.validation_result.evidence.map((evidence) => evidence.check_id),
+-            }),
+-          },
+-        ];
+-      }
+-      return [
+-        {
+-          kind: "transition",
+-          event: event({
+-            snapshot,
+-            entity: "work_item",
+-            work_item_id: workItemId,
+-            from: workItemId ? (task.work_items[workItemId]?.state ?? null) : null,
+-            to: "REWORK_READY",
+-            actor_id: input.actor?.id ?? "agentplane",
+-            cause_refs: input.validation_result.unsatisfied_criteria,
+-          }),
+-        },
+-      ];
+-    }
+-
+-    const selected = this.scheduler.select({
+-      graph: plan.proposal.work_items,
+-      runtime: task.work_items,
+-      active_leases: snapshot.active_leases,
+-    });
+-    if (selected.length > 0 && input.actor && input.context) {
+-      const item = selected[0]!;
+-      const runtime = task.work_items[item.id];
+-      const kind = runtime?.state === "REWORK_READY" ? "repair" : "execute";
+-      return [
+-        {
+-          kind: "request_semantic_work",
+-          request: requestFor({ snapshot, item, actor: input.actor, context: input.context, kind }),
+-        },
+-      ];
+-    }
+-    const readiness = computeReadyWorkItems({
+-      graph: plan.proposal.work_items,
+-      runtime: task.work_items,
+-      active_leases: snapshot.active_leases,
+-    });
+-    if (readiness.every((item) => task.work_items[item.work_item_id]?.state === "COMPLETED")) {
+-      return [
+-        { kind: "run_validation", plan: plan.proposal.top_level_validation, work_item_id: null },
+-      ];
+-    }
+-    return [
+-      {
+-        kind: "decision",
+-        decision: {
+-          action: "wait",
+-          rule: "no_ready_work_item",
+-          evidence: readiness.flatMap((item) => item.reason_codes),
+-        },
+-      },
+-    ];
+-  }
+-}
+-
+ export function aggregateValidation(
+   plan: {
+     checks: readonly { id: string; required: boolean }[];
+diff --git a/scripts/checks/lifecycle-owner-map.json b/scripts/checks/lifecycle-owner-map.json
+index 8526832f5..264d6d450 100644
+--- a/scripts/checks/lifecycle-owner-map.json
++++ b/scripts/checks/lifecycle-owner-map.json
+@@ -37,7 +37,6 @@
+     "status": "mapped_not_converged",
+     "target_application_coordinator": "packages/agentplane/src/commands/shared/workflow-supervisor.ts#superviseWorkflowStep",
+     "current_parallel_owners": [
+-      "packages/core/src/tasks/task-centric/lifecycle.ts#LifecycleEngine",
+       "packages/core/src/tasks/task-centric/orchestrator.ts#TaskCentricOrchestrator",
+       "packages/agentplane/src/commands/task/kernel-advance.ts#advanceCanonicalTask",
+       "packages/agentplane/src/commands/task/kernel-run.ts#runCanonicalTask",
+@@ -163,12 +162,6 @@
+     }
+   ],
+   "symbol_classifications": [
+-    {
+-      "path": "packages/core/src/tasks/task-centric/lifecycle.ts",
+-      "symbol": "LifecycleEngine",
+-      "classification": "later_deletion_candidate",
+-      "reason": "Competing lifecycle decision engine; Task Kernel owns domain transitions."
+-    },
+     {
+       "path": "packages/core/src/tasks/task-centric/orchestrator.ts",
+       "symbol": "TaskCentricOrchestrator",
+@@ -276,11 +269,6 @@
+       "symbol": "superviseWorkflowStep",
+       "classification": "canonical_owner"
+     },
+-    {
+-      "path": "packages/core/src/tasks/task-centric/lifecycle.ts",
+-      "symbol": "LifecycleEngine",
+-      "classification": "later_deletion_candidate"
+-    },
+     {
+       "path": "packages/core/src/tasks/task-centric/orchestrator.ts",
+       "symbol": "TaskCentricOrchestrator",
+diff --git a/scripts/checks/lifecycle-owner-map.test.mjs b/scripts/checks/lifecycle-owner-map.test.mjs
+index 93247ad54..ba1827e46 100644
+--- a/scripts/checks/lifecycle-owner-map.test.mjs
++++ b/scripts/checks/lifecycle-owner-map.test.mjs
+@@ -156,7 +156,6 @@ test("classifies competing owners and every retained helper individually", () =>
+     assertSymbolExists(row.path, row.symbol);
+   }
+   for (const symbol of [
+-    "LifecycleEngine",
+     "TaskCentricOrchestrator",
+     "advanceCanonicalTask",
+     "runCanonicalTask",
+@@ -169,6 +168,11 @@ test("classifies competing owners and every retained helper individually", () =>
+       `${symbol}: competing owner retained`,
+     );
+   }
++  assert.doesNotMatch(
++    sourceFor("packages/core/src/tasks/task-centric/lifecycle.ts"),
++    /\bclass\s+LifecycleEngine\b/u,
++    "the parallel task-centric lifecycle reducer must be deleted",
++  );
+   for (const symbol of [
+     "WorkItemScheduler",
+     "incompleteRequiredWorkItems",

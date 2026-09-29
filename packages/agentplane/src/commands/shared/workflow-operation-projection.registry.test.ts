@@ -23,7 +23,7 @@ const state = {
   preconditionFingerprint: {
     task_id: taskId,
     digest: "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-    schema_version: 1,
+    schema_version: 2,
     kind: "state_fingerprint",
     observed_by: "agentplane",
     task_revision: 1,
@@ -35,7 +35,8 @@ const state = {
         "git",
         "backend_projection",
         "policy",
-        "blueprint",
+        "plan",
+        "capability",
         "knowledge",
         "provider",
         "authority",
@@ -151,6 +152,16 @@ describe("Workflow operation projection registry", () => {
       "task.artifacts.commit": {
         params: { taskId },
         argv: ["agentplane", "commit", taskId, "--close", "--unstage-others"],
+      },
+      "task.branch.sync_base": {
+        params: {
+          taskId,
+          branch: taskBranch,
+          baseBranch: "main",
+          expectedHeadSha: taskHead,
+          expectedBaseSha: "2222222222222222222222222222222222222222",
+        },
+        argv: ["agentplane", "task", "run", taskId, "--json"],
       },
       "task.branch.start": {
         params: { taskId, author: "CODER", body: "Start: branch work." },

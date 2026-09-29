@@ -7,14 +7,17 @@ import * as taskBackend from "../../backends/task-backend.js";
 import { defaultConfig } from "@agentplaneorg/core/config";
 import { cmdTaskAdd, cmdTaskDocSet } from "../workflow.js";
 import { loadCommandContext } from "../shared/task-backend.js";
+import { materializeLegacyDrainIdentityFixture } from "../shared/native-task-identity-fixture.js";
 import * as taskMutation from "../shared/task-mutation.js";
 import {
   resolveTaskExecutionContract,
   reconcileTaskExecutionContract,
 } from "../../runtime/task-routing/index.js";
-import { cmdVerifyParsed } from "./verify-record.js";
+import { cmdVerifyParsed as executeVerify } from "./verify-record.js";
 import {
+  resolveObservedVerificationChangeSet,
   resolveObservedVerificationChangedPaths,
+  resolveObservedVerificationRepositoryEffects,
   resolveInheritedVerificationPaths,
   reconcileVerificationExecutionContract,
 } from "./verify-record-observed-changes.js";
@@ -69,6 +72,15 @@ async function addTask(root: string, taskId: string): Promise<void> {
     updatedBy: "TEST",
     fullDoc: false,
   });
+  await materializeLegacyDrainIdentityFixture({ root, task_id: taskId });
+}
+
+async function cmdVerifyParsed(opts: Parameters<typeof executeVerify>[0]): Promise<number> {
+  const root = opts.rootOverride ?? opts.cwd;
+  const refreshed = await materializeLegacyDrainIdentityFixture({ root, task_id: opts.taskId });
+  if (!refreshed) return executeVerify(opts);
+  const ctx = await loadCommandContext({ cwd: root, rootOverride: opts.rootOverride ?? null });
+  return executeVerify({ ...opts, ctx });
 }
 
 describe("task verification durability", () => {
@@ -470,6 +482,7 @@ describe("task verification durability", () => {
       const worktreeParent = await mkdtemp(path.join(tmpdir(), "agentplane-verify-worktree-"));
       const taskWorktree = path.join(worktreeParent, "task");
       await execFileAsync("git", ["worktree", "add", taskWorktree, taskBranch], { cwd: root });
+      await materializeLegacyDrainIdentityFixture({ root: taskWorktree, task_id: taskId });
       if (checkout !== "task") {
         await writeFile(path.join(root, "unrelated.ts"), "export const unrelated = true;\n");
         await execFileAsync("git", ["add", "unrelated.ts"], { cwd: root });
@@ -580,7 +593,7 @@ describe("task verification durability", () => {
         });
         const inherited = await resolveInheritedVerificationPaths({
           ctx: authoritativeCtx,
-          taskId,
+          task: task!,
           evaluatedSha: implementationSha,
           artifactTaskIds: [taskId],
           execution: { ...execution, base_sha: implementationSha },
@@ -601,7 +614,7 @@ describe("task verification durability", () => {
         await expect(
           resolveInheritedVerificationPaths({
             ctx: authoritativeCtx,
-            taskId,
+            task: task!,
             evaluatedSha: implementationSha,
             artifactTaskIds: [taskId],
             execution: { ...execution, base_sha: implementationSha },
@@ -625,7 +638,7 @@ describe("task verification durability", () => {
         );
         expect(record).toMatchObject({
           implementation_sha: implementationSha,
-          input: { verification_contract_digest: contract?.digest },
+          input: { obligations: { verification_contract_digest: contract?.digest } },
         });
       }
       const currentHead = await execFileAsync("git", ["rev-parse", "HEAD"], {
@@ -735,7 +748,7 @@ describe("task verification durability", () => {
     },
   );
 
-  it("observes the complete direct task diff from the frozen execution base", async () => {
+  it("observes direct paths and effects from one task snapshot without rereading a concurrent writer", async () => {
     const root = await makeRepo();
     const taskId = "202602050900-V1F4B";
     await addTask(root, taskId);
@@ -748,7 +761,7 @@ describe("task verification durability", () => {
     const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
     const task = await ctx.taskBackend.getTask(taskId);
     if (!task) throw new Error("missing direct task fixture");
-    await ctx.taskBackend.writeTask?.({
+    const frozenTask = {
       ...task,
       extensions: {
         ...task.extensions,
@@ -756,7 +769,8 @@ describe("task verification durability", () => {
           start_head_sha: baseSha,
         },
       },
-    });
+    };
+    await ctx.taskBackend.writeTask?.(frozenTask);
     await mkdir(path.join(root, "packages", "app"), { recursive: true });
     await writeFile(path.join(root, "packages", "app", "first.ts"), "export const first = 1;\n");
     await execFileAsync("git", ["add", "packages/app/first.ts"], { cwd: root });
@@ -767,10 +781,15 @@ describe("task verification durability", () => {
     const { stdout: evaluatedShaOutput } = await execFileAsync("git", ["rev-parse", "HEAD"], {
       cwd: root,
     });
-    const changedPaths = await resolveObservedVerificationChangedPaths({
+    const getTask = vi
+      .spyOn(ctx.taskBackend, "getTask")
+      .mockRejectedValue(
+        new Error("Concurrent task reads must not replace the transaction snapshot."),
+      );
+    const observed = await resolveObservedVerificationChangeSet({
       ctx,
       evaluatedSha: evaluatedShaOutput.trim(),
-      taskId,
+      task: frozenTask,
       artifactTaskIds: [taskId],
       execution: {
         schema_version: 1,
@@ -787,7 +806,91 @@ describe("task verification durability", () => {
       },
     });
 
-    expect(changedPaths).toEqual(["packages/app/first.ts", "packages/app/second.ts"]);
+    expect(observed).toEqual({
+      changed_paths: ["packages/app/first.ts", "packages/app/second.ts"],
+      inherited_paths: [],
+      repository_effects: ["repository_write", "source_code"],
+    });
+    expect(getTask).not.toHaveBeenCalled();
+  });
+
+  it("observes package dependency effects from manifest content instead of its path", async () => {
+    const root = await makeRepo();
+    const taskId = "202602050900-V1F4M";
+    await addTask(root, taskId);
+    await mkdir(path.join(root, "packages", "app"), { recursive: true });
+    await writeFile(
+      path.join(root, "packages", "app", "package.json"),
+      `${JSON.stringify({ name: "before", dependencies: { alpha: "1" } }, null, 2)}\n`,
+    );
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: seed manifest base"], { cwd: root });
+    const { stdout: baseShaOutput } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    const baseSha = baseShaOutput.trim();
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
+    const task = await ctx.taskBackend.getTask(taskId);
+    if (!task) throw new Error("missing manifest task fixture");
+    const frozenTask = {
+      ...task,
+      extensions: { ...task.extensions, workflow_route_baseline: { start_head_sha: baseSha } },
+    };
+    await ctx.taskBackend.writeTask?.(frozenTask);
+    const execution = {
+      schema_version: 1 as const,
+      primary_task_id: taskId,
+      task_ids: [taskId],
+      repository_mode: "direct" as const,
+      selected_mode: "direct" as const,
+      requested_mode: "direct" as const,
+      route_source: "execution_contract" as const,
+      reason_codes: [],
+      base_ref: "main",
+      base_sha: baseSha,
+      authoritative_task_source: "base_checkout" as const,
+    };
+    const manifestPath = "packages/app/package.json";
+
+    await writeFile(
+      path.join(root, manifestPath),
+      `${JSON.stringify({ name: "after", dependencies: { alpha: "1" } }, null, 2)}\n`,
+    );
+    await execFileAsync("git", ["add", manifestPath], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: update manifest metadata"], { cwd: root });
+    const metadataHead = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+    const metadataSha = metadataHead.stdout.trim();
+    const metadataEffects = await resolveObservedVerificationRepositoryEffects({
+      ctx,
+      evaluatedSha: metadataSha,
+      task: frozenTask,
+      artifactTaskIds: [taskId],
+      execution,
+      changed_paths: [manifestPath],
+      inherited_paths: [],
+    });
+    expect(metadataEffects).toEqual(["repository_write"]);
+
+    await writeFile(
+      path.join(root, manifestPath),
+      `${JSON.stringify({ name: "after", dependencies: { alpha: "2" } }, null, 2)}\n`,
+    );
+    await execFileAsync("git", ["add", manifestPath], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: update manifest dependency"], {
+      cwd: root,
+    });
+    const dependencyHead = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+    const dependencySha = dependencyHead.stdout.trim();
+    const dependencyEffects = await resolveObservedVerificationRepositoryEffects({
+      ctx,
+      evaluatedSha: dependencySha,
+      task: frozenTask,
+      artifactTaskIds: [taskId],
+      execution,
+      changed_paths: [manifestPath],
+      inherited_paths: [],
+    });
+    expect(dependencyEffects).toEqual(["dependencies", "repository_write"]);
   });
 
   it("uses the single-commit fallback when a legacy direct base was not frozen", async () => {
@@ -812,11 +915,13 @@ describe("task verification durability", () => {
     });
     const evaluatedSha = evaluatedShaOutput.trim();
     const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
+    const task = await ctx.taskBackend.getTask(taskId);
+    if (!task) throw new Error("missing legacy direct task fixture");
 
     const changedPaths = await resolveObservedVerificationChangedPaths({
       ctx,
       evaluatedSha,
-      taskId,
+      task,
       artifactTaskIds: [taskId],
       execution: {
         schema_version: 1,

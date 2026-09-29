@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609071427-7J5DJQ-eda237cb36b41f9bc9d3ebd4",
+  "prepared_at": "2026-09-07T22:24:27.281Z",
+  "task": {
+    "id": "202609071427-7J5DJQ",
+    "revision": 31,
+    "objective": "Upgrade Bun to 1.4.2 and qualify runtime migration boundaries\n\nImplement the staged Bun adoption agreed with the user. Upgrade repository and CI Bun pins from 1.3.6 to 1.4.2. Qualify frozen installs, SQLite driver behavior, compiled CLI, process supervision, and existing Node-based verification. Compare representative Node and Bun runtime behavior and timings without replacing Vitest or tsup or dropping Node support. Preserve dependency versions and unrelated work. Record evidence and remaining platform gaps. Do not publish, push, merge, or globally replace runtimes.",
+    "acceptance_criteria": [
+      "- In scope: Implement the staged Bun adoption agreed with the user. Upgrade repository and CI Bun pins from 1.3.6 to 1.4.2. Qualify frozen installs, SQLite driver behavior, compiled CLI, process supervision, and existing Node-based verification. Compare representative Node and Bun runtime behavior and timings without replacing Vitest or tsup or dropping Node support. Preserve dependency versions and unrelated work. Record evidence and remaining platform gaps. Do not publish, push, merge, or globally replace runtimes.\n- Out of scope: unrelated refactors not required for \"Upgrade Bun to 1.4.2 and qualify runtime migration boundaries\".",
+      "One bounded WorkItem: upgrade and qualify Bun 1.4.2. Execute the following stages sequentially after plan approval.\n\n1. Pin Bun 1.4.2 in packageManager and all eight existing Bun workflows. Preserve Node engines, Vitest, tsup, dependency versions, historical baselines, and unrelated task artifacts.\n\n2. Use a task-local Bun 1.4.2 binary and task-local download/cache directories. Verify the official binary identity. Do not replace the global Bun or the AgentPlane supervisor runtime. Permit only network reads for official Bun downloads and package installation.\n\n3. Run bun install --frozen-lockfile --ignore-scripts at the root and for website under Bun 1.4.2. Prefer retaining both existing lockfiles. If migration is required, allow only lockfile format changes and prove dependency resolutions are unchanged.\n\n4. Exercise openSqliteDatabase under Node and Bun 1.4.2 for persisted reads/writes, commit, rollback, readonly rejection, and parameter/result behavior. Add a focused driver contract test using existing Vitest infrastructure. Correct only demonstrated adapter incompatibility and its stale Node-SQLite availability comment.\n\n5. Run the existing process-supervision and SQLite-related suites with Node. Run representative existing suites with Vitest under Bun as a comparison. Report differences and skipped tests. Do not replace the default test runtime or remove skips without evidence.\n\n6. With the task-local Bun first on PATH, run bun run build, bun run release:bun:smoke, bun run workflows:lint, bun run ci:local:full, bun run docs:site:typecheck, and bun run docs:site:build:check. Run the compiled CLI smoke on the host. Inspect the five-target release contract; explicitly report unavailable non-host execution as a remaining qualification gap.\n\n7. Measure repeated warm CLI startup and representative test runs under Node and Bun with identical inputs. Record binary versions, commands, run counts, median durations, and output parity. Use the results to recommend the next migration step; no speedup is an acceptance requirement.\n\n8. Return the scoped patch and qualification evidence through the semantic result. Keep source verification and runtime comparison findings separate. Stop at AgentPlane approval or external-effect boundaries. Do not publish, push, merge, drop Node support, switch the distribution default, or migrate Vitest/tsup.\n\nRollback: restore only task-owned changes to the prior Bun pins and lockfiles; leave the global runtime untouched. Validation capability: task.verify observes the declared task verification contract. Runtime comparison evidence is supplementary and cannot replace required Node regression checks.",
+      "1. Run bun run ci:local:full with the task-local Bun 1.4.2 binary first on PATH. Expected: exit 0 for the existing full repository contract. Preserve any failed attempt as evidence.\n2. Run node node_modules/vitest/vitest.mjs --config vitest.config.ts run packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts -t \"commits workflow changes\". Expected: all three CI authority cases pass. An approved workflow is committed. Missing ci authority and an unauthorized path are rejected before a commit.\n3. Run the existing SQLite and process-supervision suites under Node. Run the five SQLite driver contract tests under Bun 1.4.2. Expected: persisted reads, parameter bindings, transaction commit and rollback, and readonly behavior pass.\n4. Run frozen root and website workspace installation, build, compiled CLI smoke, workflow lint, site typecheck, and site build checks as listed in the approved Plan. Expected: the supported local checks pass and both lockfiles preserve dependency resolutions.\n5. Review .agentplane/cache/bun-qualification/report.md and its command logs. Expected: the runtime benchmark has repeated samples and output parity, Bun-hosted Vitest incompatibilities and non-host execution gaps remain explicit, and Node support and default tooling are preserved.\n6. Run git diff --check. Expected: no whitespace errors or unrelated source changes. The supervisor records verification before evaluation and merging."
+    ]
+  },
+  "evaluated_sha": "11887ec4e7d9907c46aba9c236fa9b4fc4b83bf9",
+  "diff_base_sha": "2639130b3181867f53fa37121783c67c9ef1d064",
+  "blueprint_digest": "8f2130e288a16077cfae674e1c7bc0ec440f14e4d7e7d51288958d5ff54ee911",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609071427-7J5DJQ/quality/20260907-222427281-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:7e5d6e795b7912e43052b6e51dd7b571ec7afd2744f963f390fa7795eb15493c",
+    "prompt_path": ".agentplane/tasks/202609071427-7J5DJQ/quality/objects/sha256/92c0aca130dd9633800133fe3c3f199ec6360644fbb7efbdf6174d67a6e5cd50.md",
+    "result_schema_path": ".agentplane/tasks/202609071427-7J5DJQ/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609071427-7J5DJQ/README.md",
+      "sha256": "sha256:2667ac0dc32614a78c9a86768ef9ee778902759ef4130ed10f36cbfb06d3cd6c",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609071427-7J5DJQ/quality/objects/sha256/cac6265406627c38f0b435313a398226cd2545d275475bd55c5201eaca3a545c.patch",
+      "sha256": "sha256:cac6265406627c38f0b435313a398226cd2545d275475bd55c5201eaca3a545c",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609071427-7J5DJQ/quality/objects/sha256/1909bab07e8b6ec9530e265b3255f1cd2c047a11da8a53fedf86bac0741c09d6.json",
+      "sha256": "sha256:1909bab07e8b6ec9530e265b3255f1cd2c047a11da8a53fedf86bac0741c09d6",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609071427-7J5DJQ/verification/20260907221715994-1ca167368ecbd76d.json",
+      "sha256": "sha256:6f39d4198a70fb0e0353a8b29ff8030509385c829faa522db7d370850aef12ef",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609071427-7J5DJQ/quality/objects/sha256/53fcf1d0956b33eaafa5262f8db61b7427ce0eb080dcce0b375be500c1098492.json",
+      "sha256": "sha256:53fcf1d0956b33eaafa5262f8db61b7427ce0eb080dcce0b375be500c1098492",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

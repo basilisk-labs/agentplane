@@ -5,11 +5,9 @@ import {
   resolveTaskExecutionContext,
   type TaskExecutionContext,
 } from "../../runtime/task-execution-context/index.js";
+import { resolveExecutionProfileRuntime } from "../../runtime/execution-profile/index.js";
+import { resolveNativeTaskObligations } from "../../runtime/task-obligations/index.js";
 import { CliError } from "../../shared/errors.js";
-import {
-  checkTaskBlueprintSnapshotDrift,
-  buildTaskBlueprintResolvedSnapshot,
-} from "../blueprint/snapshot-artifact.js";
 import { normalizeBranchPrBatchTaskIds } from "../pr/internal/sync-batch-ownership.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import { recordedTaskImplementationCommitSha } from "../shared/quality-review-target.js";
@@ -18,6 +16,11 @@ import {
   assessLocalVerificationRecords,
   requiredVerificationContractChecks,
 } from "../shared/task-verification-records.js";
+import {
+  buildNativeQualityReviewIdentity,
+  latestVerificationInputDigest,
+  resolveNativeTaskIdentity,
+} from "../shared/native-task-identity.js";
 
 import type { EvaluatorModule } from "../../evaluators/catalog.js";
 import {
@@ -28,13 +31,12 @@ import {
 import {
   evaluatorQualityDir,
   freezeEvaluatorFile,
-  readEvaluatorFileDigest,
   readDirectSupervisionEvidence,
   readVerifiedSupervisorJournalHistory,
   writeEvaluatorArtifact,
 } from "./evaluator-review-artifacts.js";
+import type { FrozenEvaluatorEvidence } from "./evaluator-review-artifacts.js";
 import {
-  assertEvaluatorPacketCurrent,
   putEvaluatorEvidenceObject,
   writeEvaluatorPacketManifest,
 } from "./evaluator-evidence-store.js";
@@ -51,7 +53,6 @@ import {
 import {
   evaluatorAcceptanceCriteria,
   evaluatorObjective,
-  isWithinRoot,
   relative,
   type PreparedEvaluatorReview,
 } from "./evaluator-review-shared.js";
@@ -67,7 +68,6 @@ import {
   EVALUATOR_ALLOWED_TOOL_CLASSES,
   EVALUATOR_WORK_ORDER_SCHEMA,
   evaluatorWorkOrderId,
-  type EvaluatorWorkOrder,
 } from "./evaluator-work-order.js";
 
 export {
@@ -85,6 +85,10 @@ export {
 export { validateStrictEvaluatorResult } from "./evaluator-result-validation.js";
 export { assertResultEvidenceIsFrozen, readWorkOrder } from "./evaluator-work-order.js";
 export type { EvaluatorWorkOrder } from "./evaluator-work-order.js";
+export {
+  assertFrozenEvaluatorArtifactsCurrent,
+  assertWorkOrderCurrent,
+} from "./evaluator-work-order-current.js";
 
 const EVALUATOR_PACKET_MANIFEST_FILE = "evaluator-evidence-manifest.json";
 
@@ -170,12 +174,21 @@ async function prepareEvaluatorReviewLocked(
     reason: "preparation",
     execution: opts.execution,
   });
-  const diffBaseSha = await resolveEvaluatorDiffBase({
+  const currentBaseSha = await resolveEvaluatorDiffBase({
     gitRoot,
     evaluatedSha,
-    baseRef: evaluatedSha ? opts.execution.base_sha : null,
+    baseRef: evaluatedSha ? opts.execution.base_ref : null,
     allowSingleCommitFallback: opts.execution.selected_mode !== "branch_pr",
   });
+  const diffBaseSha =
+    evaluatedSha && currentBaseSha === evaluatedSha && opts.execution.base_sha !== evaluatedSha
+      ? await resolveEvaluatorDiffBase({
+          gitRoot,
+          evaluatedSha,
+          baseRef: opts.execution.base_sha,
+          allowSingleCommitFallback: opts.execution.selected_mode !== "branch_pr",
+        })
+      : currentBaseSha;
   const taskArtifactPrefixes = normalizeBranchPrBatchTaskIds(opts.task, opts.task.id).map(
     (taskId) => `${opts.ctx.config.paths.workflow_dir.replaceAll("\\", "/")}/${taskId}/`,
   );
@@ -201,9 +214,34 @@ async function prepareEvaluatorReviewLocked(
       },
     });
   }
-  const blueprint = await buildTaskBlueprintResolvedSnapshot({
-    ctx: opts.ctx,
+  const nativeIdentity = resolveNativeTaskIdentity(opts.task);
+  if (!nativeIdentity) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: `Task ${opts.task.id} has no canonical execution identity; migrate it before evaluator preparation.`,
+    });
+  }
+  const reviewIdentity = buildNativeQualityReviewIdentity({
     task: opts.task,
+    native_identity: nativeIdentity,
+    verification_input_digest: latestVerificationInputDigest(opts.task),
+    acceptance_criteria: evaluatorAcceptanceCriteria(opts.task),
+    implementation_sha: evaluatedSha,
+  });
+  if (!reviewIdentity) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: `Task ${opts.task.id} has no canonical quality-review identity.`,
+    });
+  }
+  const taskObligations = resolveNativeTaskObligations({
+    task_kind: opts.task.task_kind,
+    mutation_scope: opts.task.mutation_scope,
+    risk_flags: opts.task.risk_flags,
+    execution_contract: opts.task.execution_contract,
+    selected_mode: opts.execution.selected_mode,
+    route_reason_codes: opts.execution.reason_codes,
+    execution_profile: resolveExecutionProfileRuntime(opts.ctx.config),
   });
   const verificationTargetSha =
     qualificationPacket?.packet.implementation_sha ??
@@ -302,7 +340,7 @@ async function prepareEvaluatorReviewLocked(
       : { state: "not_required", reason: "not a milestone qualification task" },
   };
   const taskQualityRoot = path.join(taskRoot, "quality");
-  const [diffArtifact, observedChecksArtifact, blueprintArtifact] = await Promise.all([
+  const [diffArtifact, observedChecksArtifact, identityArtifact] = await Promise.all([
     putEvaluatorEvidenceObject({
       gitRoot,
       taskQualityRoot,
@@ -329,15 +367,15 @@ async function prepareEvaluatorReviewLocked(
     putEvaluatorEvidenceObject({
       gitRoot,
       taskQualityRoot,
-      logicalName: "evaluator-blueprint",
-      kind: "blueprint",
+      logicalName: "evaluator-native-identity",
+      kind: "plan",
       extension: ".json",
       mediaType: "application/json",
-      contents: `${JSON.stringify(blueprint, null, 2)}\n`,
+      contents: `${JSON.stringify({ native_identity: nativeIdentity, review_identity: reviewIdentity }, null, 2)}\n`,
     }),
   ]);
 
-  const evidence: EvaluatorWorkOrder["evidence"] = [
+  const evidence: FrozenEvaluatorEvidence[] = [
     await freezeEvaluatorFile({
       gitRoot,
       id: "task-document",
@@ -371,13 +409,13 @@ async function prepareEvaluatorReviewLocked(
         ]
       : []),
     frozenObjectEvidence({
-      id: "blueprint",
-      kind: "blueprint",
-      artifact: blueprintArtifact,
+      id: "native-identity",
+      kind: "plan",
+      artifact: identityArtifact,
       required: true,
     }),
   ];
-  for (const [index, policyModule] of blueprint.policyModules.entries()) {
+  for (const [index, policyModule] of taskObligations.policy_modules.entries()) {
     const policyPath = path.join(gitRoot, policyModule);
     try {
       evidence.push(
@@ -446,13 +484,13 @@ async function prepareEvaluatorReviewLocked(
     artifacts: [
       diffArtifact,
       observedChecksArtifact,
-      blueprintArtifact,
+      identityArtifact,
       promptArtifact,
       resultSchemaArtifact,
     ],
   });
   const workOrder = EVALUATOR_WORK_ORDER_SCHEMA.parse({
-    schema_version: 1,
+    schema_version: 2,
     kind: "evaluator_work_order",
     work_order_id: nextWorkOrderId,
     prepared_at: at,
@@ -464,7 +502,7 @@ async function prepareEvaluatorReviewLocked(
     },
     evaluated_sha: evaluatedSha,
     diff_base_sha: diffBaseSha,
-    blueprint_digest: blueprint.digest.value,
+    review_identity: reviewIdentity,
     evaluator: {
       id: opts.evaluator.id,
       profile: opts.evaluator.profile,
@@ -496,72 +534,4 @@ async function prepareEvaluatorReviewLocked(
     output_schema_path: path.resolve(gitRoot, resultSchemaArtifact.path),
     packet_manifest_path: packetManifestPath,
   };
-}
-
-export async function assertFrozenEvaluatorArtifactsCurrent(opts: {
-  gitRoot: string;
-  workOrder: EvaluatorWorkOrder;
-}): Promise<void> {
-  if (opts.workOrder.packet) {
-    await assertEvaluatorPacketCurrent({
-      gitRoot: opts.gitRoot,
-      taskId: opts.workOrder.task.id,
-      manifestPath: opts.workOrder.packet.manifest_path,
-      manifestSha256: opts.workOrder.packet.manifest_sha256,
-      promptPath: opts.workOrder.packet.prompt_path,
-      resultSchemaPath: opts.workOrder.packet.result_schema_path,
-    });
-  }
-  for (const evidence of opts.workOrder.evidence) {
-    const evidencePath = path.resolve(opts.gitRoot, evidence.path);
-    if (
-      !isWithinRoot(opts.gitRoot, evidencePath) ||
-      (await readEvaluatorFileDigest(evidencePath)) !== evidence.sha256
-    ) {
-      throw new CliError({
-        code: "E_VALIDATION",
-        message: `Evaluator work order is stale because frozen evidence changed: ${evidence.path}`,
-      });
-    }
-  }
-}
-
-export async function assertWorkOrderCurrent(opts: {
-  ctx: CommandContext;
-  task: TaskData;
-  workOrder: EvaluatorWorkOrder;
-}): Promise<void> {
-  if ((opts.task.revision ?? null) !== opts.workOrder.task.revision) {
-    throw new CliError({
-      code: "E_VALIDATION",
-      message: "Evaluator work order is stale because the task revision changed after preparation.",
-    });
-  }
-  const gitRoot = opts.ctx.resolvedProject.gitRoot;
-  const execution = await resolveTaskExecutionContext({
-    ctx: opts.ctx,
-    tasks: [opts.task],
-    primaryTaskId: opts.task.id,
-  });
-  const { evaluatedSha: currentSha } = await resolveEvaluatorReviewTarget({
-    ctx: opts.ctx,
-    task: opts.task,
-    reason: "staleness",
-    execution,
-  });
-  if (currentSha !== opts.workOrder.evaluated_sha) {
-    throw new CliError({
-      code: "E_VALIDATION",
-      message: "Evaluator work order is stale because the evaluated SHA changed after preparation.",
-    });
-  }
-  const snapshot = await checkTaskBlueprintSnapshotDrift({ ctx: opts.ctx, task: opts.task });
-  if (snapshot.current.digest !== opts.workOrder.blueprint_digest) {
-    throw new CliError({
-      code: "E_VALIDATION",
-      message:
-        "Evaluator work order is stale because the resolved blueprint changed after preparation.",
-    });
-  }
-  await assertFrozenEvaluatorArtifactsCurrent({ gitRoot, workOrder: opts.workOrder });
 }

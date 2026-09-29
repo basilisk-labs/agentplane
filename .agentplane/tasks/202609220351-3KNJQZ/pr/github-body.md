@@ -1,0 +1,60 @@
+Task: `202609220351-3KNJQZ`
+Title: Remove marketing and recipes Git submodules
+Canonical task record: `.agentplane/tasks/202609220351-3KNJQZ/README.md`
+
+## Summary
+
+Remove marketing and recipes Git submodules
+
+Remove the marketing and agentplane-recipes gitlinks from the AgentPlane superproject. Keep both external repositories independent. Replace recipe submodule assumptions in CI, publish, developer bootstrap, documentation inventory generation, tests, and docs with explicit on-demand remote access or repository-neutral behavior. Preserve runtime recipe installation from the signed public catalog.
+
+## Scope
+
+- In scope: Remove the marketing and agentplane-recipes gitlinks from the AgentPlane superproject. Keep both external repositories independent. Replace recipe submodule assumptions in CI, publish, developer bootstrap, documentation inventory generation, tests, and docs with explicit on-demand remote access or repository-neutral behavior. Preserve runtime recipe installation from the signed public catalog.
+- Out of scope: unrelated refactors not required for "Remove marketing and recipes Git submodules".
+
+## Verification
+
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
+- Canonical workflow state lives in the task README.
+
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-09-22T06:26:43.870Z
+- Branch: task/202609220351-3KNJQZ/remove-marketing-and-recipes-git-submodules
+- Head: computed live by `agentplane pr check` / `agentplane integrate`
+
+```text
+ .github/workflows/ci.yml                           |   5 -
+ .github/workflows/publish-distribution-module.yml  |   1 -
+ .github/workflows/publish.yml                      |  26 ----
+ .gitmodules                                        |   6 -
+ .prettierignore                                    |   2 -
+ agentplane-recipes                                 |   1 -
+ docs/README.md                                     |   7 +-
+ docs/developer/project-layout.mdx                  |   4 +-
+ docs/developer/recipes-development.mdx             |  19 +++
+ docs/developer/testing-and-quality.mdx             |   1 -
+ docs/help/troubleshooting.mdx                      |   1 -
+ docs/recipes-inventory.json                        |  45 +------
+ eslint.config.cjs                                  |   1 -
+ marketing                                          |   1 -
+ packages/agentplane/bin/framework-dev-contract.js  |   1 -
+ .../src/cli/bootstrap-framework-dev-script.test.ts | 144 +++------------------
+ .../cli/generate-recipes-inventory-script.test.ts  |  63 ++++-----
+ .../cli/run-cli.core.pr-conflict-rework.test.ts    |   2 +-
+ .../run-cli.core.pr-flow.worktree-runtime.test.ts  |   9 --
+ ...i.core.task-advance.worktree-resolution.test.ts |   3 +-
+ .../commands/branch/work-start.materialize.test.ts |   6 +-
+ .../src/commands/branch/work-start.materialize.ts  |   2 +-
+ .../release/publish-workflow-contract.test.ts      |   6 +-
+ scripts/checks/check-recipes-inventory-fresh.mjs   |  64 +++++++--
+ scripts/generate/generate-recipes-inventory.mjs    |  54 +++++---
+ scripts/lib/github-ci-capabilities.mjs             |   7 +-
+ scripts/workflow/bootstrap-framework-dev.mjs       |  58 +--------
+ 27 files changed, 176 insertions(+), 363 deletions(-)
+```
+
+</details>

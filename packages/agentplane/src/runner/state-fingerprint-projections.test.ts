@@ -355,7 +355,6 @@ describe("runner state fingerprint production projections", () => {
     const preparedTask = task({ owner: "CODER" });
     const changedTask = task({ owner: "TESTER" });
     const preparedBundle = bundle(preparedTask);
-    preparedBundle.blueprint!.policyModules = [];
     preparedBundle.base_prompts.push({
       id: "base.owner_profile",
       role: "profile",
@@ -363,25 +362,8 @@ describe("runner state fingerprint production projections", () => {
       priority: 300,
       content: '{"id":"CODER"}\n',
     });
-    preparedBundle.blueprint!.contextManifest = [
-      {
-        id: "base.owner_profile",
-        kind: "prompt",
-        reason: "Resolved owner profile.",
-        source: ".agentplane/agents/CODER.json",
-      },
-    ];
     setResolvedAuthority(preparedBundle);
     const changedBundle = bundle(changedTask);
-    changedBundle.blueprint = structuredClone(preparedBundle.blueprint);
-    changedBundle.blueprint.contextManifest = [
-      {
-        id: "base.owner_profile",
-        kind: "prompt",
-        reason: "Resolved owner profile.",
-        source: ".agentplane/agents/TESTER.json",
-      },
-    ];
     changedBundle.base_prompts.push({
       id: "base.owner_profile",
       role: "profile",
@@ -392,11 +374,9 @@ describe("runner state fingerprint production projections", () => {
     setResolvedAuthority(changedBundle);
     const preparedProbes = probes({ task: preparedTask, bundle: preparedBundle });
     delete preparedProbes.observe_policy;
-    delete preparedProbes.observe_blueprint;
     delete preparedProbes.observe_authority;
     const changedProbes = probes({ task: changedTask, bundle: changedBundle });
     delete changedProbes.observe_policy;
-    delete changedProbes.observe_blueprint;
     delete changedProbes.observe_authority;
 
     const prepared = await capturePreparedRunnerStateFingerprint({
@@ -428,7 +408,6 @@ describe("runner state fingerprint production projections", () => {
   it("assigns execution-profile approvals exclusively to authority", async () => {
     const taskData = task();
     const preparedBundle = bundle(taskData);
-    preparedBundle.blueprint!.policyModules = [];
     setResolvedAuthority(preparedBundle);
     preparedBundle.base_prompts.push({
       id: "base.execution_profile",
@@ -461,11 +440,9 @@ describe("runner state fingerprint production projections", () => {
     executionProfile.content = `${JSON.stringify(parsedProfile, null, 2)}\n`;
     const preparedProbes = probes({ task: taskData, bundle: preparedBundle });
     delete preparedProbes.observe_policy;
-    delete preparedProbes.observe_blueprint;
     delete preparedProbes.observe_authority;
     const changedProbes = probes({ task: taskData, bundle: changedBundle });
     delete changedProbes.observe_policy;
-    delete changedProbes.observe_blueprint;
     delete changedProbes.observe_authority;
 
     const prepared = await capturePreparedRunnerStateFingerprint({
@@ -503,31 +480,13 @@ describe("runner state fingerprint production projections", () => {
       const taskData = task();
       const preparedBundle = bundle(taskData);
       preparedBundle.repository.git_root = root;
-      preparedBundle.blueprint!.policyModules = ["policy-a.md"];
-      preparedBundle.blueprint!.contextManifest = [
-        {
-          id: "policy-a.md",
-          kind: "policy_module",
-          reason: "Selected by the resolved blueprint.",
-          source: "policy-a.md",
-        },
-      ];
+      preparedBundle.task_obligations!.policy_modules = ["policy-a.md"];
       const changedBundle = structuredClone(preparedBundle);
-      changedBundle.blueprint!.policyModules = ["policy-b.md"];
-      changedBundle.blueprint!.contextManifest = [
-        {
-          id: "policy-b.md",
-          kind: "policy_module",
-          reason: "Selected by the resolved blueprint.",
-          source: "policy-b.md",
-        },
-      ];
+      changedBundle.task_obligations!.policy_modules = ["policy-b.md"];
       const preparedProbes = probes({ task: taskData, bundle: preparedBundle });
       delete preparedProbes.observe_policy;
-      delete preparedProbes.observe_blueprint;
       const changedProbes = probes({ task: taskData, bundle: changedBundle });
       delete changedProbes.observe_policy;
-      delete changedProbes.observe_blueprint;
       const ctx = contextAtRoot(taskData, root);
 
       const prepared = await capturePreparedRunnerStateFingerprint({
@@ -558,15 +517,17 @@ describe("runner state fingerprint production projections", () => {
     }
   });
 
-  it("assigns resolved plan changes exclusively to the blueprint component", async () => {
+  it("assigns resolved plan changes exclusively to the plan component", async () => {
     const taskData = task();
     const preparedBundle = bundle(taskData);
     const changedBundle = structuredClone(preparedBundle);
-    changedBundle.blueprint!.allowedCommands = ["bun run typecheck"];
+    changedBundle.work_order!.state_fingerprint.components.plan = {
+      state: "present",
+      source: "native_plan",
+      digest: `sha256:${"4".repeat(64)}`,
+    };
     const preparedProbes = probes({ task: taskData, bundle: preparedBundle });
-    delete preparedProbes.observe_blueprint;
     const changedProbes = probes({ task: taskData, bundle: changedBundle });
-    delete changedProbes.observe_blueprint;
     const prepared = await capturePreparedRunnerStateFingerprint({
       ctx: context(taskData),
       bundle: preparedBundle,
@@ -587,9 +548,7 @@ describe("runner state fingerprint production projections", () => {
         policy: RUNNER_STATE_FINGERPRINT_POLICY,
       }),
     );
-    expect(error.diagnostic.changed_components.map((entry) => entry.component)).toEqual([
-      "blueprint",
-    ]);
+    expect(error.diagnostic.changed_components.map((entry) => entry.component)).toEqual(["plan"]);
   });
 
   it("assigns manifest-lock changes exclusively to the knowledge component", async () => {
@@ -693,7 +652,7 @@ describe("runner state fingerprint production projections", () => {
       const taskData = task();
       const runnerBundle = bundle(taskData);
       runnerBundle.repository.git_root = root;
-      runnerBundle.blueprint!.policyModules = ["policy.md"];
+      runnerBundle.task_obligations!.policy_modules = ["policy.md"];
       const ctx = contextAtRoot(taskData, root);
       const stateProbes = probes({ task: taskData, bundle: runnerBundle });
       delete stateProbes.observe_policy;
@@ -950,7 +909,7 @@ describe("runner state fingerprint production projections", () => {
       const taskData = task();
       const runnerBundle = bundle(taskData);
       runnerBundle.repository.git_root = root;
-      runnerBundle.blueprint!.policyModules = ["missing-policy.md"];
+      runnerBundle.task_obligations!.policy_modules = ["missing-policy.md"];
       const ctx = contextAtRoot(taskData, root);
       const stateProbes = probes({ task: taskData, bundle: runnerBundle });
       delete stateProbes.observe_policy;

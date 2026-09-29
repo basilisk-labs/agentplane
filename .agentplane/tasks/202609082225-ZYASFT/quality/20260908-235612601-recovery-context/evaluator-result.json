@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The evaluated implementation b026d6113ea9e3f6f7bcce790d0d26aad6cbdd5f contains the 15 intended source, test, benchmark and baseline files. All 14 restored files match their reviewed SHA-256 manifest; the additional evaluator fixture has the approved one-line usage correction.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609082225-ZYASFT/quality/objects/sha256/04af4456332a5b7cdc7dda9ea62b8ff2ed0a9ca2138d77bf9ba43430bf66d1b3.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Provider output includes reasoning exactly once. Transport tests cover valid usage after semantic failure, duplicate and conflicting completion events, cache subsets and identity. Persisted journal tests cover failed attempts, role projection and replay deduplication. Missing external-agent usage remains explicit.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609082225-ZYASFT/quality/objects/sha256/04af4456332a5b7cdc7dda9ea62b8ff2ed0a9ca2138d77bf9ba43430bf66d1b3.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Bun and bunx resolve to 1.4.2. Runtime preflight tests cover mismatch rejection before CI. Compiled macOS ARM64 smoke supports removal of the identifier-minification workaround.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609082225-ZYASFT/quality/objects/sha256/04af4456332a5b7cdc7dda9ea62b8ff2ed0a9ca2138d77bf9ba43430bf66d1b3.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "The 54-turn provider artifact reports raw usage and paired comparisons without claiming end-to-end engineering savings. Retained-turn reduction is 1.6737 percent; the measured two-turn sequence increases 0.7397 percent.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609082225-ZYASFT/quality/objects/sha256/04af4456332a5b7cdc7dda9ea62b8ff2ed0a9ca2138d77bf9ba43430bf66d1b3.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "The frozen verification record .agentplane/tasks/202609082225-ZYASFT/verification/20260908235602054-cbd79f041fdf2e4b.json binds successful bun run ci:local:full to the actual implementation SHA. This supersedes recovery-baseline evidence for this review.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609082225-ZYASFT/quality/objects/sha256/04af4456332a5b7cdc7dda9ea62b8ff2ed0a9ca2138d77bf9ba43430bf66d1b3.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: Do not generalize the contract microbenchmark to full engineering tasks.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609082225-ZYASFT/quality/objects/sha256/04af4456332a5b7cdc7dda9ea62b8ff2ed0a9ca2138d77bf9ba43430bf66d1b3.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-7",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted CI, publication and integration have not been performed or authorized.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609082225-ZYASFT/quality/objects/sha256/04af4456332a5b7cdc7dda9ea62b8ff2ed0a9ca2138d77bf9ba43430bf66d1b3.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

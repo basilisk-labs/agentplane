@@ -85,7 +85,7 @@ const resolutionSchema = z
       .min(1),
   })
   .strict();
-export type WorkflowEffectResolution = z.infer<typeof resolutionSchema>;
+type WorkflowEffectResolution = z.infer<typeof resolutionSchema>;
 type Operation = SupervisorExecutionEpisodeJournal["operations"][number];
 
 function reject(message: string): never {

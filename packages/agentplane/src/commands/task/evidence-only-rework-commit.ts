@@ -1,3 +1,5 @@
+import { gitProofEnv } from "@agentplaneorg/core/git";
+import { runProcess } from "@agentplaneorg/core/process";
 import { parseTaskReadme, renderTaskReadme } from "@agentplaneorg/core/tasks";
 import { isRecord } from "../../shared/guards.js";
 
@@ -70,4 +72,29 @@ export function selectRecordedImplementationRecoveryCommit(opts: {
   return opts.task_level_rework
     ? opts.evidence_commit
     : (opts.recorded_commit ?? opts.evidence_commit);
+}
+
+export async function exactChangedPaths(
+  root: string,
+  base: string,
+  head: string,
+): Promise<string[] | null> {
+  const diff = await runProcess({
+    command: "git",
+    args: [
+      "diff",
+      "--no-ext-diff",
+      "--no-textconv",
+      "--no-renames",
+      "--name-only",
+      "-z",
+      base,
+      head,
+      "--",
+    ],
+    cwd: root,
+    env: gitProofEnv(),
+    reject: false,
+  });
+  return diff.exitCode === 0 ? diff.stdout.split("\0").filter(Boolean) : null;
 }

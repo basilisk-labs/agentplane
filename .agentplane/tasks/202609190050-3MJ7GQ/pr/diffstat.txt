@@ -1,0 +1,3 @@
+ .../commands/shared/native-task-identity.test.ts   | 99 ++++++++++++++++++++++
+ .../src/commands/shared/native-task-identity.ts    | 45 ++++++++--
+ 2 files changed, 135 insertions(+), 9 deletions(-)

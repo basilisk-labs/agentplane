@@ -23,14 +23,12 @@ import { observeRunnerPolicyComponent } from "./state-fingerprint-policy.js";
 import { observeRunnerTaskProjection, runnerTaskProjectionReader } from "./task-observation.js";
 import type { RunnerContextBundle, RunnerPromptBlock, RunnerRecipeContext } from "./types.js";
 import { assembleRunnerRecipeContext } from "./context/recipe-context.js";
-import { resolveRunnerBlueprintPlan } from "./usecases/task-run-blueprint-plan.js";
 
 export type RunnerStateFingerprintComponentProbes = {
   load_context?: () => Promise<CommandContext>;
   load_task?: () => Promise<TaskData | null>;
   observe_backend_projection?: () => Promise<StateFingerprintComponentInput>;
   observe_policy?: () => Promise<StateFingerprintComponentInput>;
-  observe_blueprint?: () => Promise<StateFingerprintComponentInput>;
   observe_knowledge?: () => Promise<StateFingerprintComponentInput>;
   observe_authority?: () => Promise<StateFingerprintComponentInput>;
   resolve_route_decision?: () => Promise<TaskRouteDecision>;
@@ -42,7 +40,6 @@ export type RunnerStateFingerprintObservedComponents = {
   task: StateFingerprintComponentInput;
   backend_projection: StateFingerprintComponentInput;
   policy: StateFingerprintComponentInput;
-  blueprint: StateFingerprintComponentInput;
   knowledge: StateFingerprintComponentInput;
   provider: StateFingerprintComponentInput;
   authority: StateFingerprintComponentInput;
@@ -52,7 +49,6 @@ type LiveResolution = {
   ctx: CommandContext | null;
   task: TaskData | null;
   base_prompts: RunnerPromptBlock[] | null;
-  blueprint: RunnerContextBundle["blueprint"] | null;
   route_decision: RunnerContextBundle["route_decision"] | null;
   recipe: RunnerRecipeContext | null;
   harness_task: NonNullable<RunnerContextBundle["framework_explain"]>["harness"]["task"] | null;
@@ -193,29 +189,6 @@ function providerComponent(task: TaskData | null): StateFingerprintComponentInpu
   );
 }
 
-function blueprintComponent(
-  blueprint: RunnerContextBundle["blueprint"] | null | undefined,
-): StateFingerprintComponentInput {
-  if (!blueprint) {
-    return missingComponent("blueprint_resolver", "blueprint_not_resolved");
-  }
-  const projection = structuredClone(blueprint);
-  Reflect.deleteProperty(projection, "taskId");
-  Reflect.deleteProperty(projection, "taskIntent");
-  Reflect.deleteProperty(projection, "policyModules");
-  Reflect.deleteProperty(projection, "contextManifest");
-  projection.states = projection.states.map((state) => {
-    const projectedState = structuredClone(state);
-    Reflect.deleteProperty(projectedState, "policyModules");
-    return projectedState;
-  });
-  return {
-    state: "present",
-    source: "blueprint_resolver",
-    value: projection,
-  };
-}
-
 async function resolveLiveState(opts: {
   ctx: CommandContext;
   bundle: RunnerContextBundle;
@@ -252,7 +225,6 @@ async function resolveLiveState(opts: {
       ctx: liveContext,
       task,
       base_prompts: null,
-      blueprint: null,
       route_decision: null,
       recipe: null,
       harness_task: null,
@@ -297,13 +269,6 @@ async function resolveLiveState(opts: {
       harness: executionContext.harness,
       execution_profile: executionProfile,
     });
-    const blueprint = await resolveRunnerBlueprintPlan({
-      taskEnvelope,
-      config: executionContext.config,
-      projectRoot: executionContext.repo.git_root,
-      recipe,
-      basePrompts,
-    });
     const routeDecision =
       (await opts.probes?.resolve_route_decision?.()) ??
       (await buildTaskRouteDecision({
@@ -317,7 +282,6 @@ async function resolveLiveState(opts: {
       ctx: liveContext,
       task,
       base_prompts: basePrompts,
-      blueprint,
       route_decision: serializeTaskRouteDecision(routeDecision),
       recipe: recipe ?? null,
       harness_task: executionContext.frameworkExplain.harness.task,
@@ -334,7 +298,6 @@ async function resolveLiveState(opts: {
       ctx: liveContext,
       task,
       base_prompts: null,
-      blueprint: null,
       route_decision: null,
       recipe: null,
       harness_task: null,
@@ -359,20 +322,18 @@ export async function observePreparedRunnerStateComponents(opts: {
       : await observeRunnerTaskProjection(opts.ctx, opts.bundle.task.metadata.task_id)
     : null;
   const repositoryRoot = authoritativePreparedRepositoryRoot(opts);
-  const [backend, policy, knowledge, blueprint, authority] = await Promise.all([
+  const [backend, policy, knowledge, authority] = await Promise.all([
     opts.probes?.observe_backend_projection?.() ?? observeBackendProjection(opts.ctx),
     opts.probes?.observe_policy?.() ??
       observeRunnerPolicyComponent({
         repository_root: repositoryRoot,
         prompts: opts.policy_prompts ?? opts.bundle.base_prompts,
-        policy_modules: opts.bundle.blueprint?.policyModules ?? [],
+        policy_modules: opts.bundle.task_obligations?.policy_modules ?? [],
         evaluator_skepticism_level: opts.ctx.config.evaluator.skepticism_level,
         harness_task: opts.bundle.framework_explain?.harness.task,
         recipe: opts.bundle.recipe,
       }),
     opts.probes?.observe_knowledge?.() ?? observeKnowledgeProjection(repositoryRoot),
-    opts.probes?.observe_blueprint?.() ??
-      Promise.resolve(blueprintComponent(opts.bundle.blueprint)),
     opts.probes?.observe_authority?.() ??
       Promise.resolve(
         authorityComponent({
@@ -391,7 +352,6 @@ export async function observePreparedRunnerStateComponents(opts: {
     task: taskComponent(task),
     backend_projection: backend,
     policy,
-    blueprint,
     knowledge,
     provider: providerComponent(task),
     authority,
@@ -405,7 +365,7 @@ export async function observeLiveRunnerStateComponents(opts: {
 }): Promise<RunnerStateFingerprintObservedComponents> {
   const live = await resolveLiveState(opts);
   const repositoryRoot = live.ctx?.resolvedProject.gitRoot ?? opts.ctx.resolvedProject.gitRoot;
-  const policyModules = live.blueprint?.policyModules ?? [];
+  const policyModules = opts.bundle.task_obligations?.policy_modules ?? [];
   const sandboxSource = opts.bundle.execution.sandbox_policy?.source;
   const requestedSandbox =
     sandboxSource === "cli_override" ? opts.bundle.execution.sandbox_policy?.requested : undefined;
@@ -434,7 +394,7 @@ export async function observeLiveRunnerStateComponents(opts: {
         })
       : null;
 
-  const [backend, policy, blueprint, knowledge, authority] = await Promise.all([
+  const [backend, policy, knowledge, authority] = await Promise.all([
     opts.probes?.observe_backend_projection?.() ??
       (live.ctx
         ? observeBackendProjection(live.ctx)
@@ -442,7 +402,7 @@ export async function observeLiveRunnerStateComponents(opts: {
             unavailableComponent("task_backend_runtime", "backend_projection_unavailable"),
           )),
     opts.probes?.observe_policy?.() ??
-      (live.ctx && live.base_prompts && live.blueprint
+      (live.ctx && live.base_prompts
         ? observeRunnerPolicyComponent({
             repository_root: repositoryRoot,
             prompts: live.base_prompts,
@@ -454,12 +414,6 @@ export async function observeLiveRunnerStateComponents(opts: {
         : Promise.resolve(
             unavailableComponent("runner_policy_resolution", "policy_resolution_unavailable"),
           )),
-    opts.probes?.observe_blueprint?.() ??
-      Promise.resolve(
-        live.blueprint
-          ? blueprintComponent(live.blueprint)
-          : unavailableComponent("blueprint_resolver", "blueprint_resolution_unavailable"),
-      ),
     opts.probes?.observe_knowledge?.() ?? observeKnowledgeProjection(repositoryRoot),
     opts.probes?.observe_authority?.() ??
       Promise.resolve(
@@ -483,7 +437,6 @@ export async function observeLiveRunnerStateComponents(opts: {
     task: taskComponent(live.task),
     backend_projection: backend,
     policy,
-    blueprint,
     knowledge,
     provider: providerComponent(live.task),
     authority,

@@ -108,10 +108,16 @@ export async function cleanupMergedLocalBranch(opts: {
         branch: opts.branch,
         expectedHeadSha: opts.expectedHeadSha,
       });
+      await removeUnregisteredWorktreeDirectory({
+        gitRoot: opts.gitRoot,
+        branch: opts.branch,
+        worktreePath,
+        cause: new Error("worktree is already unregistered"),
+      });
       const removedBranch = await removeBranch(opts.gitRoot, opts.branch, opts.expectedHeadSha);
       return {
         removedBranch,
-        removedWorktree: false,
+        removedWorktree: true,
         worktreePath,
         skippedReason: null,
         preservedDirtyState: false,

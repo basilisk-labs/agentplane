@@ -1,6 +1,5 @@
 import path from "node:path";
 import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
-
 import type { TaskData } from "../../backends/task-backend.js";
 import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import type { PrFlowStatusReport } from "../pr/flow-status.js";
@@ -21,9 +20,13 @@ import {
   summarizeTaskWorktreeChanges,
   type TaskWorktreeCleanliness,
 } from "./task-worktree-cleanliness.js";
+
+import { hasCanonicalPreMergeEvidence } from "./canonical-pre-merge-evidence.js";
+export { hasCanonicalPreMergeEvidence } from "./canonical-pre-merge-evidence.js";
 import {
   qualityReviewHasRetiredExchange,
   qualityReviewIsFreshForHead,
+  qualityReviewReworkIsFreshForHead,
 } from "./quality-review-retirement.js";
 import {
   hasAcceptedVerificationForCurrentImplementation,
@@ -358,6 +361,7 @@ export async function deriveBlockers(opts: {
           branch: opts.prFlow.branch.name,
           prNumber: opts.prFlow.pr.prNumber,
           branchHeadSha: opts.prFlow.branch.headSha,
+          workflowDir: opts.ctx.config.paths.workflow_dir,
         })
       : { fresh: false as const, reason: "PR metadata is unavailable" };
     if (!freshness.fresh) {
@@ -392,13 +396,19 @@ export async function deriveBlockers(opts: {
     }
   }
   if (opts.task.status === "DONE") {
-    if (opts.workflowMode === "branch_pr" && qualityReviewRequiresImplementationRework(opts.task)) {
+    if (
+      opts.workflowMode === "branch_pr" &&
+      qualityReviewRequiresImplementationRework(opts.task) &&
+      (await qualityReviewReworkIsFreshForHead({
+        ...opts,
+        headSha: opts.prFlow?.branch.headSha ?? opts.resume.head_sha,
+      }))
+    )
       addBlocker(
         blockers,
         "implementation_rework_required",
         "latest EVALUATOR result requires implementation rework before integration",
       );
-    }
     if (opts.workflowMode === "branch_pr" && opts.cleanupProbe.state === "blocked") {
       addBlocker(
         blockers,
@@ -456,13 +466,9 @@ export async function deriveBlockers(opts: {
       qualityReviewRequiresImplementationRework(opts.task) &&
       !qualityReworkHasNewVerification(opts.task)
     ) {
-      implementationReworkRequired = await qualityReviewIsFreshForHead({
-        ctx: opts.ctx,
-        task: opts.task,
+      implementationReworkRequired = await qualityReviewReworkIsFreshForHead({
+        ...opts,
         headSha: opts.prFlow?.branch.headSha ?? opts.resume.head_sha,
-        batchOwnership: opts.batchOwnership,
-        expectedState: opts.task.quality_review?.state === "blocked" ? "blocked" : "rework",
-        workflowMode: opts.workflowMode,
       });
     }
     if (implementationReworkRequired) {
@@ -545,7 +551,10 @@ export async function deriveBlockers(opts: {
             taskId: opts.task.id,
             workflowMode: opts.workflowMode,
           });
-          if (opts.prFlow?.pr.state === "OPEN" || preMerge.open) {
+          if (
+            (opts.prFlow?.pr.state === "OPEN" || preMerge.open) &&
+            !hasCanonicalPreMergeEvidence(opts.task)
+          ) {
             addBlocker(
               blockers,
               "pre_merge_closure_missing",

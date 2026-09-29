@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202609261720-KKE9ZN-5cfbed745893b3c8b93d43be",
+  "task_id": "202609261720-KKE9ZN",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Supply frozen final repository-state evidence for c0b3be603d850883aae69d3117428609ce446761, including disposition of any concurrent or untracked artifacts. Current declared checks already have passing SHA-bound evidence; this finding does not require repeating them.",
+  "findings": [
+    {
+      "id": "current-repository-state-evidence-missing",
+      "summary": "Final workspace cleanliness is evidenced only for 679f2a797368bbed591abdaa183ac469fe485d01, not the evaluated c0b3be603d850883aae69d3117428609ce446761. The frozen patch and current passing verification do not establish the disposition of untracked artifacts or concurrent workspace drift.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609261720-KKE9ZN/quality/objects/sha256/3df9bbcc79489e85627c4a5e9a9ec9fed33fc94c2f32aadc1358e4a9f53f15ff.json",
+          "sha256": "sha256:3df9bbcc79489e85627c4a5e9a9ec9fed33fc94c2f32aadc1358e4a9f53f15ff",
+          "section": "direct_supervision"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "DoD: core"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202609261720-KKE9ZN/quality/20260928-153749907-recovery-context/evaluator-result.json"
+}

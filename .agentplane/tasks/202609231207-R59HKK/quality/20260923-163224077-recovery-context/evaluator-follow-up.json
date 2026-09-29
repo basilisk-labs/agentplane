@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202609231207-R59HKK-462829a19c9db3aaf5928fa1",
+  "task_id": "202609231207-R59HKK",
+  "verdict": "human_review",
+  "next_owner": "USER",
+  "instruction": "Do you approve the bun.lock synchronization to 0.7.12-beta.1 as an explicit scope expansion for this task?",
+  "findings": [
+    {
+      "id": "scope-approval-gap",
+      "summary": "The frozen diff updates bun.lock workspace versions to 0.7.12-beta.1, outside the approved WorkItem scope. No approval for this expansion appears in the supplied evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/96c42aaff1d9618c7f1893e1e504ab2d6d73cccf5a5fef605d2c0853ed931571.patch",
+          "sha256": "sha256:96c42aaff1d9618c7f1893e1e504ab2d6d73cccf5a5fef605d2c0853ed931571",
+          "line": 1
+        },
+        {
+          "path": ".agentplane/tasks/202609231207-R59HKK/README.md",
+          "sha256": "sha256:caecc922211d7a8fe8b0cf9b0c9f27d34eee3db182f6e717f22d7c04c4cc1c23",
+          "line": 1135,
+          "section": "extensions.task_kernel.aggregate.current_plan.work_items"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "Material drift criteria"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202609231207-R59HKK/quality/20260923-163224077-recovery-context/evaluator-result.json"
+}

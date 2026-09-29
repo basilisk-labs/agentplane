@@ -1,4 +1,4 @@
-import { taskKernel } from "@agentplaneorg/core/tasks";
+import { selectSchedulableWorkItems, taskKernel } from "@agentplaneorg/core/tasks";
 import type { KernelRead } from "./kernel-record.js";
 
 export type KernelNextAction = Readonly<{
@@ -8,6 +8,48 @@ export type KernelNextAction = Readonly<{
   effect_id: string | null;
   grants_authority: false;
 }>;
+
+const CLAIM_HOLDING_STATES = new Set<taskKernel.WorkItemState>([
+  "CLAIMED",
+  "EXECUTING",
+  "RESULT_RECEIVED",
+  "INSPECTING",
+  "VALIDATING",
+  "BLOCKED",
+  "EFFECT_IN_DOUBT",
+]);
+
+function resourceClaims(item: taskKernel.WorkItemRuntime) {
+  return item.definition.execution_requirements.resources.map((resource) => ({
+    kind: "exclusive" as const,
+    resource,
+    mode: "exclusive" as const,
+  }));
+}
+
+function selectItemInState(
+  items: readonly taskKernel.WorkItemRuntime[],
+  state: taskKernel.WorkItemState,
+): taskKernel.WorkItemRuntime | null {
+  const resourceAware = state === "READY" || state === "REWORK_READY";
+  return (
+    selectSchedulableWorkItems({
+      candidates: items.map((item) => ({
+        id: item.definition.id,
+        priority: 0,
+        ready: item.state === state,
+        resource_claims: resourceAware ? resourceClaims(item) : [],
+        value: item,
+      })),
+      open_slots: 1,
+      active_resource_claims: resourceAware
+        ? items
+            .filter((item) => item.claim_id !== null && CLAIM_HOLDING_STATES.has(item.state))
+            .flatMap((item) => resourceClaims(item))
+        : [],
+    })[0] ?? null
+  );
+}
 
 /** Read projection only. The supervisor must obtain fresh command authority before any effect. */
 export function readKernelNextAction(
@@ -57,9 +99,7 @@ export function readKernelNextAction(
           ? "kernel_task_completion_required"
           : "kernel_final_validation_required",
     );
-  const definitions = [...aggregate.current_plan.work_items].toSorted(
-    (a, b) => Number(a.id > b.id) - Number(a.id < b.id),
-  );
+  const definitions = aggregate.current_plan.work_items;
   if (definitions.some((definition) => !aggregate.work_items[definition.id]))
     return action("kernel_work_item_materialization_required");
   const items = definitions.map((definition) => aggregate.work_items[definition.id]!);
@@ -82,12 +122,7 @@ export function readKernelNextAction(
     "READY",
     "BLOCKED",
   ] as const) {
-    const item = items.find(
-      (candidate) =>
-        candidate.state === state &&
-        (!(state === "READY" || state === "REWORK_READY") ||
-          taskKernel.workItemResourceConflicts(candidate, items).length === 0),
-    );
+    const item = selectItemInState(items, state);
     if (!item) continue;
     const reasons: Record<typeof state, string> = {
       EFFECT_IN_DOUBT: "kernel_work_item_reconciliation_required",

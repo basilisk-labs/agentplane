@@ -1,3 +1,4 @@
+import type { WorkOrderContextManifest } from "../context/work-order-context.js";
 import type {
   EvaluatorSkepticismLevel,
   RunnerTraceConfig,
@@ -13,10 +14,10 @@ import type {
 import type { TaskExecutionContract } from "@agentplaneorg/core/tasks";
 
 import type { TaskEvent } from "../../backends/task-backend.js";
-import type { BlueprintPlanArtifact } from "../../blueprints/index.js";
 import type { TaskRouteDecision } from "../../commands/shared/route-decision-types.js";
 import type { AgentplaneCapabilityRegistry } from "../../runtime/capabilities/index.js";
 import type { ResolvedExecutionProfileRuntime } from "../../runtime/execution-profile/index.js";
+import type { NativeTaskObligations } from "../../runtime/task-obligations/index.js";
 import type { FrameworkExplainPayload } from "../../runtime/explain/index.js";
 import type { FrameworkProtocolSurface } from "../../runtime/protocol/index.js";
 import type { AgentWorkOrderPreparationView } from "../usecases/agent-work-order.js";
@@ -70,7 +71,6 @@ type TaskEpisodeMetadata = {
   tags: string[];
   task_kind: string | null;
   mutation_scope: string | null;
-  blueprint_request: string | null;
   execution_contract?: TaskExecutionContract;
 };
 
@@ -150,9 +150,6 @@ export type RunnerArtifactPaths = {
   artifact_root?: string;
   run_dir: string;
   bundle_path: string;
-  blueprint_plan_path: string;
-  blueprint_execution_plan_path: string;
-  blueprint_execution_state_path: string;
   context_manifest_path: string;
   bootstrap_path: string;
   state_path: string;
@@ -199,10 +196,12 @@ export type RunnerContextBundle = {
   repository: RunnerRepositoryContext;
   task?: RunnerTaskContext;
   recipe?: RunnerRecipeContext;
-  blueprint?: BlueprintPlanArtifact;
+  /** Native policy, lifecycle, evidence, and stop floors for current execution. */
+  task_obligations?: NativeTaskObligations;
   playbook?: RunnerExecutionPlaybookContract;
   /** Canonical V2 work order for the semantic episode; optional for v1 bundles. */
   work_order?: AgentWorkOrderV2;
+  semantic_context?: WorkOrderContextManifest;
   /** Canonical V2 preparation projection paired with `work_order`; optional for v1 bundles. */
   work_order_preparation?: AgentWorkOrderPreparationView;
   /** Internal typed route source retained for runner state-fingerprint observation. */

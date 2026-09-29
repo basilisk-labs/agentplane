@@ -491,6 +491,23 @@
                 "type": "string",
                 "enum": ["observed", "partial", "unavailable"]
               },
+              "cached_input_tokens": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "cached_input_observed_agent_runs": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
               "input_tokens": {
                 "anyOf": [
                   {
@@ -827,6 +844,20 @@
                         "deploy",
                         "destructive_git"
                       ]
+                    }
+                  },
+                  "allowed_capabilities": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "allowed_resources": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
                     }
                   }
                 },
@@ -1554,24 +1585,6 @@
               ]
             }
           },
-          "blueprint_request": {
-            "type": "string",
-            "enum": [
-              "analysis.light",
-              "content.light",
-              "docs.change",
-              "code.direct",
-              "code.branch_pr",
-              "performance.benchmark",
-              "quality.regression",
-              "context.assimilation",
-              "context.maximum_assimilation",
-              "runner.execution",
-              "post_run.improvement_review",
-              "release.strict",
-              "ops.approval"
-            ]
-          },
           "verify": {
             "type": "array",
             "items": {
@@ -1723,7 +1736,7 @@
                   }
                 ]
               },
-              "blueprint_digest": {
+              "review_identity_digest": {
                 "anyOf": [
                   {
                     "type": "string"
@@ -1754,7 +1767,7 @@
               "updated_by",
               "note",
               "evaluated_sha",
-              "blueprint_digest"
+              "review_identity_digest"
             ],
             "additionalProperties": {}
           },

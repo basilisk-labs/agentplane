@@ -1,0 +1,43 @@
+{
+  "native_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_task_identity",
+    "task_id": "202609231207-R59HKK",
+    "plan": {
+      "revision": 1,
+      "digest": "sha256:c7e4e13963ee3e176d46d80eff725163587d243761643fc175af5d05a235650d",
+      "approval_state": "approved",
+      "approved_digest": "sha256:c7e4e13963ee3e176d46d80eff725163587d243761643fc175af5d05a235650d"
+    },
+    "policy": {
+      "digest": "sha256:a5ab5000ca9215caf2e1a7dbd093cadfe6347f6c8f0c1f4a6af1a7e6f7770ffb"
+    },
+    "capability": {
+      "digest": "sha256:44668150af015035b4f9295eeb1e83a605e3c89b183ce28b4421a381c9bdb75f"
+    },
+    "checks": {
+      "verification_contract_digest": "sha256:2c5dd5cb65a55821c0f80815c0d5b029b313169783acdc71d6cafe910cfd2498",
+      "required_check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "full_regression",
+        "task_outcome"
+      ],
+      "digest": "sha256:6b883bac0c56e99384b87f8343fc9c2b7824338fd108c0f47b68339806833a58"
+    },
+    "digest": "sha256:0979090da62c2342b003d74d1758cc92f93b74a4353ae67afb0659d1fcb93a2d"
+  },
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202609231207-R59HKK",
+    "plan_digest": "sha256:c7e4e13963ee3e176d46d80eff725163587d243761643fc175af5d05a235650d",
+    "policy_digest": "sha256:a5ab5000ca9215caf2e1a7dbd093cadfe6347f6c8f0c1f4a6af1a7e6f7770ffb",
+    "capability_digest": "sha256:44668150af015035b4f9295eeb1e83a605e3c89b183ce28b4421a381c9bdb75f",
+    "checks_digest": "sha256:6b883bac0c56e99384b87f8343fc9c2b7824338fd108c0f47b68339806833a58",
+    "verification_input_digest": "sha256:268be08ede32876e60614518646d98be57859da4972104529e40b34ad143d3d3",
+    "acceptance_digest": "sha256:27c333689cb1f3e027e220b3728dee9c1cf266228687123518847a062f1eb6f4",
+    "implementation_sha": "1663b3c247eb098033997ad12a007220dd39601e",
+    "digest": "sha256:c88cdc580f353ac8adedd2dc69d2d76aa945e00a56c7a117ce2c0d5a3062971f"
+  }
+}

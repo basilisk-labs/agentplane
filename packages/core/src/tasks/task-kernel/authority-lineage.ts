@@ -1,15 +1,120 @@
-import { compareExecutionAuthority } from "./invariants.js";
+import { compareExecutionAuthority, executionRequirementsAreSubset } from "./invariants.js";
 import { kernelDigest } from "./digest.js";
 import type {
   CanonicalAuthorityRecord,
   ExecutionAuthority,
   KernelInput,
+  PlanRecord,
+  Sha256Digest,
   TaskAggregate,
 } from "./model.js";
+
+export function planScopeExpansionApprovalDigest(input: {
+  task_id: string;
+  current_plan_digest: Sha256Digest;
+  amended_plan_digest: Sha256Digest;
+  actor_id: string;
+}): Sha256Digest {
+  return kernelDigest({ kind: "canonical_plan_scope_expansion_approval", ...input });
+}
+
+function sameStringSet(left: readonly string[], right: readonly string[]): boolean {
+  const sortedRight = [...right].toSorted();
+  return (
+    left.length === right.length &&
+    [...left].toSorted().every((value, index) => value === sortedRight[index])
+  );
+}
+
+function scopeCovers(scopeRoots: readonly string[], candidate: string): boolean {
+  return scopeRoots.some(
+    (root) => root === "." || candidate === root || candidate.startsWith(`${root}/`),
+  );
+}
+
+function approvedPlanScopeExpansionRoots(input: {
+  task_id: string;
+  source: PlanRecord;
+  amended: PlanRecord;
+  authority: ExecutionAuthority;
+}): string[] | null {
+  if (
+    input.amended.approval_actor_id === null ||
+    input.amended.approval_evidence_digest !==
+      planScopeExpansionApprovalDigest({
+        task_id: input.task_id,
+        current_plan_digest: input.source.digest,
+        amended_plan_digest: input.amended.digest,
+        actor_id: input.amended.approval_actor_id,
+      })
+  )
+    return null;
+  const added = additivePlanScopeExpansionRoots({
+    current: input.source,
+    amended: input.amended,
+    authority: input.authority,
+  });
+  return added?.filter((root) => !scopeCovers(input.authority.scope_roots, root)) ?? null;
+}
+
+export function additivePlanScopeExpansionRoots(input: {
+  current: Pick<PlanRecord, "work_items">;
+  amended: Pick<PlanRecord, "work_items">;
+  authority: ExecutionAuthority;
+}): string[] | null {
+  if (input.current.work_items.length !== input.amended.work_items.length) return null;
+  const originals = new Map(input.current.work_items.map((item) => [item.id, item]));
+  const addedRoots = new Set<string>();
+  const valid = input.amended.work_items.every((item) => {
+    const original = originals.get(item.id);
+    if (!original) return false;
+    const { execution_requirements: currentRequirements, ...currentDefinition } = original;
+    const { execution_requirements: amendedRequirements, ...amendedDefinition } = item;
+    if (
+      kernelDigest(currentDefinition) !== kernelDigest(amendedDefinition) ||
+      !currentRequirements ||
+      !amendedRequirements ||
+      !currentRequirements.scope_roots.every((root) =>
+        amendedRequirements.scope_roots.includes(root),
+      ) ||
+      !sameStringSet(
+        currentRequirements.repository_effects,
+        amendedRequirements.repository_effects,
+      ) ||
+      !sameStringSet(currentRequirements.external_effects, amendedRequirements.external_effects) ||
+      !sameStringSet(currentRequirements.capabilities, amendedRequirements.capabilities) ||
+      !sameStringSet(currentRequirements.resources, amendedRequirements.resources) ||
+      !executionRequirementsAreSubset(input.authority, {
+        ...amendedRequirements,
+        scope_roots: currentRequirements.scope_roots,
+      })
+    )
+      return false;
+    for (const root of amendedRequirements.scope_roots) {
+      if (!currentRequirements.scope_roots.includes(root)) addedRoots.add(root);
+    }
+    return true;
+  });
+  return valid && addedRoots.size > 0 ? [...addedRoots].toSorted() : null;
+}
+
+export function isAdditivePlanScopeExpansion(
+  input: Parameters<typeof additivePlanScopeExpansionRoots>[0],
+): boolean {
+  return additivePlanScopeExpansionRoots(input) !== null;
+}
 
 export function authorityDigest(authority: Omit<ExecutionAuthority, "digest">) {
   const { digest: _digest, ...contents } = authority as ExecutionAuthority;
   return kernelDigest(contents);
+}
+
+export function authorityDeltaApprovalEvidence(input: {
+  task_id: string;
+  request_digest: Sha256Digest;
+  actor_id: string;
+}) {
+  return kernelDigest({ kind: "canonical_authority_delta_approval", ...input });
 }
 
 export function canonicalAuthorityIssues(aggregate: TaskAggregate): string[] {
@@ -26,19 +131,120 @@ export function canonicalAuthorityIssues(aggregate: TaskAggregate): string[] {
       (entry) =>
         entry?.revision === authority.plan_revision && entry.digest === authority.plan_digest,
     );
-    if (plan?.approval_evidence_digest !== authority.provenance.evidence_digest)
+    const parent = records[index - 1]?.authority;
+    const source = parent
+      ? [aggregate.current_plan, ...aggregate.plan_history].find(
+          (entry) => entry?.digest === parent.plan_digest,
+        )
+      : undefined;
+    const approvedExpansionRoots =
+      record.observation?.kind === "plan_amendment" && parent && source && plan
+        ? approvedPlanScopeExpansionRoots({
+            task_id: aggregate.id,
+            source,
+            amended: plan,
+            authority: parent,
+          })
+        : null;
+    const approvedPlanAmendment =
+      approvedExpansionRoots !== null &&
+      authority.provenance.evidence_digest === parent?.provenance.evidence_digest &&
+      JSON.stringify(record.observation?.added_scope_roots ?? []) ===
+        JSON.stringify(approvedExpansionRoots);
+    const continuedApprovedPlanAuthority =
+      record.approval_mode === null &&
+      parent?.plan_revision === authority.plan_revision &&
+      parent.plan_digest === authority.plan_digest &&
+      parent.provenance.evidence_digest === authority.provenance.evidence_digest;
+    if (
+      record.observation?.kind !== "authority_delta" &&
+      plan?.approval_evidence_digest !== authority.provenance.evidence_digest &&
+      !approvedPlanAmendment &&
+      !continuedApprovedPlanAuthority
+    )
       issues.push("authority_plan");
-    if (record.approval_mode === null) {
+    if (record.observation?.kind === "authority_delta") {
+      const observation = record.observation;
+      const immutable = parent
+        ? {
+            ...authority,
+            digest: parent.digest,
+            repository_fingerprint: parent.repository_fingerprint,
+            scope_roots: parent.scope_roots,
+            repository_effects: parent.repository_effects,
+            provenance: parent.provenance,
+          }
+        : null;
+      if (
+        !parent ||
+        record.approval_mode === null ||
+        record.approval_mode !== "manual_operator" ||
+        authority.provenance.kind !== "USER" ||
+        authority.provenance.parent_authority_digest !== parent.digest ||
+        authority.provenance.evidence_digest !== parent.provenance.evidence_digest ||
+        observation.evidence_digest !==
+          authorityDeltaApprovalEvidence({
+            task_id: aggregate.id,
+            request_digest: observation.request_digest!,
+            actor_id: authority.provenance.actor_id,
+          }) ||
+        observation.request_task_revision === undefined ||
+        observation.repository_evidence_digest === undefined ||
+        observation.added_scope_roots === undefined ||
+        observation.added_repository_effects === undefined ||
+        observation.added_scope_roots.length === 0 ||
+        JSON.stringify(observation.changed_paths) !==
+          JSON.stringify([...new Set(observation.changed_paths)].toSorted()) ||
+        JSON.stringify(observation.added_scope_roots) !==
+          JSON.stringify([...new Set(observation.added_scope_roots)].toSorted()) ||
+        JSON.stringify(observation.added_repository_effects) !==
+          JSON.stringify([...new Set(observation.added_repository_effects)].toSorted()) ||
+        observation.added_scope_roots.some((root) => !observation.changed_paths.includes(root)) ||
+        JSON.stringify(authority.scope_roots) !==
+          JSON.stringify(
+            [...new Set([...parent.scope_roots, ...observation.added_scope_roots])].toSorted(),
+          ) ||
+        JSON.stringify(authority.repository_effects) !==
+          JSON.stringify(
+            [
+              ...new Set([...parent.repository_effects, ...observation.added_repository_effects]),
+            ].toSorted(),
+          ) ||
+        !immutable ||
+        kernelDigest(immutable) !== kernelDigest(parent) ||
+        kernelDigest({
+          task_id: aggregate.id,
+          task_revision: observation.request_task_revision,
+          plan_revision: parent.plan_revision,
+          plan_digest: parent.plan_digest,
+          parent_authority_digest: parent.digest,
+          repository_identity: parent.repository_identity,
+          previous_fingerprint: parent.repository_fingerprint,
+          repository_fingerprint: authority.repository_fingerprint,
+          repository_evidence_digest: observation.repository_evidence_digest,
+          changed_paths: observation.changed_paths,
+          added_scope_roots: observation.added_scope_roots,
+          added_repository_effects: observation.added_repository_effects,
+        }) !== observation.request_digest
+      )
+        issues.push("authority_delta");
+    } else if (record.approval_mode === null) {
       const parent = records[index - 1]?.authority;
       if (!parent || !record.observation || continuationIssues(parent, record).length > 0)
         issues.push("authority_continuation");
-    } else if (
-      record.observation !== null ||
-      authority.provenance.kind !== "USER" ||
-      authority.provenance.parent_authority_digest !== null ||
-      plan?.approval_actor_id !== authority.provenance.actor_id
-    )
-      issues.push("authority_approval");
+    } else {
+      const validRootProvenance =
+        record.approval_mode === "repository_policy"
+          ? authority.provenance.kind === "SYSTEM"
+          : authority.provenance.kind === "USER";
+      if (
+        record.observation !== null ||
+        !validRootProvenance ||
+        authority.provenance.parent_authority_digest !== null ||
+        plan?.approval_actor_id !== authority.provenance.actor_id
+      )
+        issues.push("authority_approval");
+    }
   }
   return issues;
 }
@@ -57,11 +263,22 @@ export function continuationIssues(
     plan_digest: parent.plan_digest,
     repository_fingerprint: parent.repository_fingerprint,
   };
-  const comparison = compareExecutionAuthority(parent, sameContext);
+  const comparableContext =
+    observation.kind === "plan_amendment"
+      ? {
+          ...sameContext,
+          scope_roots: parent.scope_roots,
+          provenance: {
+            ...sameContext.provenance,
+            evidence_digest: parent.provenance.evidence_digest,
+          },
+        }
+      : sameContext;
+  const comparison = compareExecutionAuthority(parent, comparableContext);
   if (!comparison.ok) return [...comparison.violations];
   // Continuation cannot remove approved obligations, even if a dispatch may narrow capabilities.
   const originalDimensions = {
-    ...sameContext,
+    ...comparableContext,
     digest: parent.digest,
     provenance: parent.provenance,
   };
@@ -74,13 +291,20 @@ export function continuationIssues(
   )
     return ["observation_binding"];
   if (observation.kind === "plan_amendment") {
+    const addedScopeRoots = observation.added_scope_roots ?? [];
     if (
       child.plan_revision !== parent.plan_revision + 1 ||
       child.plan_digest === parent.plan_digest ||
       child.repository_fingerprint !== parent.repository_fingerprint ||
-      observation.changed_paths.length > 0
+      observation.changed_paths.length > 0 ||
+      JSON.stringify(addedScopeRoots) !==
+        JSON.stringify([...new Set(addedScopeRoots)].toSorted()) ||
+      JSON.stringify(child.scope_roots) !==
+        JSON.stringify([...new Set([...parent.scope_roots, ...addedScopeRoots])].toSorted())
     )
       return ["plan_observation_binding"];
+  } else if (observation.kind === "authority_delta") {
+    return ["authority_delta_requires_user"];
   } else if (
     child.plan_revision !== parent.plan_revision ||
     child.plan_digest !== parent.plan_digest ||
@@ -125,12 +349,26 @@ export function continuationAdmissionIssues(
     const source = input.aggregate.plan_history.find(
       (entry) => entry.digest === parent.plan_digest,
     );
+    const unchangedApproval =
+      source?.approval_actor_id === plan.approval_actor_id &&
+      source?.approval_evidence_digest === plan.approval_evidence_digest;
+    const addedAuthorityRoots = source
+      ? approvedPlanScopeExpansionRoots({
+          task_id: input.aggregate.id,
+          source,
+          amended: plan,
+          authority: parent,
+        })
+      : null;
+    const approvedScopeExpansion =
+      addedAuthorityRoots !== null &&
+      JSON.stringify(record.observation.added_scope_roots ?? []) ===
+        JSON.stringify(addedAuthorityRoots);
     if (
-      source?.approval_actor_id !== plan.approval_actor_id ||
-      source.approval_evidence_digest !== plan.approval_evidence_digest ||
-      source.work_items.length !== plan.work_items.length ||
+      (!unchangedApproval && !approvedScopeExpansion) ||
+      source?.work_items.length !== plan.work_items.length ||
       plan.work_items.some((item) => {
-        const original = source.work_items.find((entry) => entry.id === item.id);
+        const original = source?.work_items.find((entry) => entry.id === item.id);
         return !original || original.contract_digest !== item.contract_digest;
       })
     )

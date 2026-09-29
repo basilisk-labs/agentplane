@@ -1,0 +1,175 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "ci",
+        "repository_write",
+        "security_boundary",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [
+        "network_read"
+      ],
+      "components": [
+        ".github/codeql/codeql-config.yml",
+        ".github/workflows/ci.yml",
+        "packages/agentplane/src/commands/release/github-ci-plan.test.ts",
+        "packages/agentplane/src/shared/package-paths.test.ts",
+        "packages/agentplane/src/shared/package-paths.ts",
+        "scripts/lib/github-ci-capabilities.mjs"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "reversible"
+      },
+      "evidence_requirements": [
+        "external_effect:network_read",
+        "hosted_integration",
+        "repository_effect:ci",
+        "repository_effect:repository_write",
+        "repository_effect:security_boundary",
+        "repository_effect:source_code",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "ci",
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        ".github",
+        "packages/agentplane",
+        "scripts"
+      ],
+      "changed_files": [
+        ".github/workflows/ci.yml",
+        "packages/agentplane/src/commands/release/github-ci-plan.test.ts",
+        "packages/agentplane/src/shared/package-paths.test.ts",
+        "packages/agentplane/src/shared/package-paths.ts",
+        "scripts/lib/github-ci-capabilities.mjs"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "full_regression",
+      "hosted_integration",
+      "real_e2e",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "central_component:.github/codeql/codeql-config.yml",
+      "central_component:.github/workflows/ci.yml",
+      "central_component:scripts/lib/github-ci-capabilities.mjs",
+      "central_path:.github/workflows/ci.yml",
+      "central_path:scripts/lib/github-ci-capabilities.mjs",
+      "effect_ci",
+      "effect_security_boundary"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": false,
+    "digest": "sha256:ff6819a93cd9d4d6ebda9f7481fec6891b0be2411a67fbb37243f4126504036c"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-09-07T17:49:31.879Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202609071444-7MNJXE/verification/20260907174931879-268bcb6272ba765f.json",
+      "sha256": "sha256:eaad88cae393e2664ec192d394ae9bdecb4c9fda4a49228010f6ada7ce82409c"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check c7c4dcfcfe6295b1184c841d34f775cbd68abae7..5cb6963362b19c8e38123b375c7993dec3f7ca7b",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB c7c4dcfcfe6295b1184c841d34f775cbd68abae7..5cb6963362b19c8e38123b375c7993dec3f7ca7b",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\t.agentplane/tasks/202609071444-7MNJXE/pr/diffstat.txt",
+          "M\t.agentplane/tasks/202609071444-7MNJXE/pr/github-body.md",
+          "M\t.agentplane/tasks/202609071444-7MNJXE/pr/meta.json",
+          "M\t.agentplane/tasks/202609071444-7MNJXE/pr/review.md",
+          "M\tpackages/agentplane/src/shared/package-paths.test.ts"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "c7c4dcfcfe6295b1184c841d34f775cbd68abae7",
+    "implementation_commit": "5cb6963362b19c8e38123b375c7993dec3f7ca7b",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [],
+      "classification": [],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202609071444-7MNJXE",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202609071444-7MNJXE/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

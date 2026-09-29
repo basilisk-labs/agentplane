@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202609122236-JFNN6B/simplify-the-test-suite-without-weakening-safety",
+  "created_at": "2026-09-12T22:42:33.380Z",
+  "diffstat_sha256": "sha256:aedceb95db7c8a7bc902364c78477fc943c63574f088c7a471e454e5102cd52b",
+  "last_verified_at": "2026-09-13T00:43:48.447Z",
+  "last_verified_diffstat_sha256": "sha256:aedceb95db7c8a7bc902364c78477fc943c63574f088c7a471e454e5102cd52b",
+  "pr_number": 5943,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5943",
+  "pre_merge_closure": {
+    "basis_commit": "87ed5bd69257c28958b9fa1444ab60562c40693b",
+    "branch": "task/202609122236-JFNN6B/simplify-the-test-suite-without-weakening-safety",
+    "pr_number": 5943,
+    "recorded_at": "2026-09-13T00:47:10.302Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202609122236-JFNN6B",
+  "updated_at": "2026-09-12T23:23:45.211Z",
+  "verify": {
+    "status": "pass"
+  }
+}

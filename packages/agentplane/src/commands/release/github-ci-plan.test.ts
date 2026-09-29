@@ -28,6 +28,7 @@ type GithubCiPlan = {
   route: string;
   route_reason: string;
   release_ready: boolean;
+  codeql_languages: string[];
   capabilities: GithubCiCapabilities;
   expected_jobs: string[];
   executing_jobs_count: number;
@@ -577,6 +578,21 @@ describe("GitHub CI capability planning", () => {
     expect(result.expected_jobs).toEqual(
       expect.arrayContaining(["plan", "verify-contract", "verify-static", "verify-tests"]),
     );
+  });
+
+  it.each([
+    ["source", ["packages/core/src/git/git-client.ts"]],
+    ["workflow", [".github/workflows/ci.yml"]],
+    ["mixed", ["packages/core/src/git/git-client.ts", ".github/workflows/ci.yml"]],
+  ])("keeps CodeQL language coverage stable for %s changes", (_label, changedFiles) => {
+    const result = plan(changedFiles);
+
+    expect(result.codeql_languages).toEqual(["javascript-typescript", "actions"]);
+    expect(result.capabilities).toMatchObject({
+      codeql_javascript: true,
+      codeql_actions: true,
+    });
+    expect(result.expected_jobs).toContain("verify-security");
   });
 
   it("keeps task-lifecycle artifacts neutral", () => {

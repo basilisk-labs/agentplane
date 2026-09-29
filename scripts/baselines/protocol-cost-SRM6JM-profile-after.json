@@ -1,0 +1,551 @@
+{
+  "schema_version": 1,
+  "source": {
+    "head": "389e1f2f2126f26ea885c341bad37fdab19424a1",
+    "tracked_patch_digest": "sha256:ba5fcdda933e3cdf11f384fedcc05671b0493829ba57ce4dfc5a3e3264393e6d",
+    "probe_digest": "sha256:3e8940fa32642ddacb2e1feb2e82c698fb7afe6967d668b1146885b1dc19994f"
+  },
+  "runtime": {
+    "node": "v24.18.0",
+    "executable": "/Users/densmirnov/.local/share/mise/installs/node/24.18.0/bin/node",
+    "platform": "darwin",
+    "architecture": "arm64",
+    "harness": "Vitest in-process runCli; no provider"
+  },
+  "fixture": {
+    "before": "module.exports = (value) => value > 10;\n",
+    "after": "module.exports = (value) => value >= 10;\n",
+    "check": "const assert = require('node:assert/strict');\nconst eligible = require('./eligible.cjs');\nassert.equal(eligible(9), false);\nassert.equal(eligible(10), true);\nassert.equal(eligible(11), true);",
+    "digest": "sha256:9f1476e9220a98897879e24eae4bd409b9d56287d2b1bbb3cbb4f4a819aed747"
+  },
+  "exchanges": [
+    {
+      "role": "PLANNER",
+      "schema": {
+        "files": 1,
+        "bytes": 28528
+      },
+      "work_order_bytes": 12653,
+      "manifest_bytes": 8069,
+      "result_bytes": 2121
+    },
+    {
+      "role": "EXECUTOR",
+      "schema": {
+        "files": 1,
+        "bytes": 7860
+      },
+      "work_order_bytes": 11844,
+      "manifest_bytes": 10827,
+      "result_bytes": 223
+    },
+    {
+      "role": "EVALUATOR",
+      "schema": {
+        "files": 1,
+        "bytes": 8295
+      },
+      "work_order_bytes": 13444,
+      "manifest_bytes": 11337,
+      "result_bytes": 402
+    }
+  ],
+  "calls": [
+    {
+      "stage": "setup",
+      "duration_ms": 781.0753339999999,
+      "exit_code": 0,
+      "preparation": [
+        {
+          "node": "project",
+          "status": "resolved",
+          "duration_ms": 0.005749999999807187,
+          "fingerprint": "sha256:5feb6df7b663b29817c9a9b86b133dd69169391d7f465b2708328eb6d25e6bd2",
+          "output_digest": "sha256:54ffbdff779beb9a6bceb3c393feb5b78a663df0eecd6d313391c8d4e3b84bc3"
+        },
+        {
+          "node": "config",
+          "status": "resolved",
+          "duration_ms": 0.86200000000008,
+          "fingerprint": "sha256:84180cf32f70936cba05e4d9b2e5ca2c27d6d34007560a17a60e773c780b74e5",
+          "output_digest": "sha256:e2fc7527b31125e5bf0b7ae0c887dce659e1163539596f8d47156791b10a99aa"
+        },
+        {
+          "node": "command_context",
+          "status": "resolved",
+          "duration_ms": 1.7078329999999369,
+          "fingerprint": "sha256:73055ee392429075831fd9c501ac93deda5b0de632ab57f0128883b8a17e9675",
+          "output_digest": "sha256:da396b507cc2673c92532373f3fe7c331229da52009654f36bb07fb35abdd6d2"
+        }
+      ],
+      "observed_calls": [
+        {
+          "operation": "loadCommandContext",
+          "duration_ms": 0.4147499999999127
+        }
+      ]
+    },
+    {
+      "stage": "prepare:PLANNER",
+      "duration_ms": 736.1862080000001,
+      "exit_code": 0,
+      "preparation": [
+        {
+          "node": "project",
+          "status": "resolved",
+          "duration_ms": 0.01912499999980355,
+          "fingerprint": "sha256:5feb6df7b663b29817c9a9b86b133dd69169391d7f465b2708328eb6d25e6bd2",
+          "output_digest": "sha256:54ffbdff779beb9a6bceb3c393feb5b78a663df0eecd6d313391c8d4e3b84bc3"
+        },
+        {
+          "node": "config",
+          "status": "resolved",
+          "duration_ms": 0.17591700000002675,
+          "fingerprint": "sha256:84180cf32f70936cba05e4d9b2e5ca2c27d6d34007560a17a60e773c780b74e5",
+          "output_digest": "sha256:e2fc7527b31125e5bf0b7ae0c887dce659e1163539596f8d47156791b10a99aa"
+        },
+        {
+          "node": "command_context",
+          "status": "resolved",
+          "duration_ms": 0.7052089999997406,
+          "fingerprint": "sha256:73055ee392429075831fd9c501ac93deda5b0de632ab57f0128883b8a17e9675",
+          "output_digest": "sha256:da396b507cc2673c92532373f3fe7c331229da52009654f36bb07fb35abdd6d2"
+        },
+        {
+          "node": "command_context",
+          "status": "reused",
+          "duration_ms": 0,
+          "fingerprint": "sha256:73055ee392429075831fd9c501ac93deda5b0de632ab57f0128883b8a17e9675",
+          "output_digest": "sha256:da396b507cc2673c92532373f3fe7c331229da52009654f36bb07fb35abdd6d2"
+        },
+        {
+          "node": "command_context",
+          "status": "reused",
+          "duration_ms": 0,
+          "fingerprint": "sha256:73055ee392429075831fd9c501ac93deda5b0de632ab57f0128883b8a17e9675",
+          "output_digest": "sha256:da396b507cc2673c92532373f3fe7c331229da52009654f36bb07fb35abdd6d2"
+        }
+      ],
+      "observed_calls": [
+        {
+          "operation": "loadCommandContext",
+          "duration_ms": 0.23487499999964712
+        },
+        {
+          "operation": "buildTaskRouteDecision",
+          "duration_ms": 51.85112499999968
+        },
+        {
+          "operation": "loadCommandContext",
+          "duration_ms": 2.00649999999996
+        },
+        {
+          "operation": "prepareAgentWorkOrder",
+          "duration_ms": 27.54150000000027
+        }
+      ]
+    },
+    {
+      "stage": "admit:PLANNER",
+      "duration_ms": 235.3106670000002,
+      "exit_code": 0,
+      "preparation": [
+        {
+          "node": "project",
+          "status": "resolved",
+          "duration_ms": 0.0032499999997526174,
+          "fingerprint": "sha256:5feb6df7b663b29817c9a9b86b133dd69169391d7f465b2708328eb6d25e6bd2",
+          "output_digest": "sha256:54ffbdff779beb9a6bceb3c393feb5b78a663df0eecd6d313391c8d4e3b84bc3"
+        },
+        {
+          "node": "config",
+          "status": "resolved",
+          "duration_ms": 0.05529100000012477,
+          "fingerprint": "sha256:84180cf32f70936cba05e4d9b2e5ca2c27d6d34007560a17a60e773c780b74e5",
+          "output_digest": "sha256:e2fc7527b31125e5bf0b7ae0c887dce659e1163539596f8d47156791b10a99aa"
+        },
+        {
+          "node": "command_context",
+          "status": "resolved",
+          "duration_ms": 0.3615420000000995,
+          "fingerprint": "sha256:73055ee392429075831fd9c501ac93deda5b0de632ab57f0128883b8a17e9675",
+          "output_digest": "sha256:da396b507cc2673c92532373f3fe7c331229da52009654f36bb07fb35abdd6d2"
+        },
+        {
+          "node": "command_context",
+          "status": "reused",
+          "duration_ms": 0,
+          "fingerprint": "sha256:73055ee392429075831fd9c501ac93deda5b0de632ab57f0128883b8a17e9675",
+          "output_digest": "sha256:da396b507cc2673c92532373f3fe7c331229da52009654f36bb07fb35abdd6d2"
+        },
+        {
+          "node": "command_context",
+          "status": "reused",
+          "duration_ms": 0,
+          "fingerprint": "sha256:73055ee392429075831fd9c501ac93deda5b0de632ab57f0128883b8a17e9675",
+          "output_digest": "sha256:da396b507cc2673c92532373f3fe7c331229da52009654f36bb07fb35abdd6d2"
+        }
+      ],
+      "observed_calls": [
+        {
+          "operation": "loadCommandContext",
+          "duration_ms": 0.12783399999989342
+        },
+        {
+          "operation": "loadCommandContext",
+          "duration_ms": 2.124084000000039
+        },
+        {
+          "operation": "loadCommandContext",
+          "duration_ms": 1.921458999999686
+        },
+        {
+          "operation": "buildTaskRouteDecision",
+          "duration_ms": 45.989416999999776
+        },
+        {
+          "operation": "loadCommandContext",
+          "duration_ms": 1.8455410000001393
+        },
+        {
+          "operation": "buildTaskRouteDecision",
+          "duration_ms": 49.84583299999986
+        },
+        {
+          "operation": "loadCommandContext",
+          "duration_ms": 2.8649579999996604
+        },
+        {
+          "operation": "loadCommandContext",
+          "duration_ms": 1.5071250000000873
+        },
+        {
+          "operation": "prepareAgentWorkOrder",
+          "duration_ms": 19.601709000000028
+        },
+        {
+          "operation": "loadCommandContext",
+          "duration_ms": 0.12091599999985192
+        }
+      ]
+    },
+    {
+      "stage": "fixture_approval",
+      "duration_ms": 45.803042000000005,
+      "exit_code": 0,
+      "preparation": [
+        {
+          "node": "project",
+          "status": "resolved",
+          "duration_ms": 0.0021660000002157176,
+          "fingerprint": "sha256:5feb6df7b663b29817c9a9b86b133dd69169391d7f465b2708328eb6d25e6bd2",
+          "output_digest": "sha256:54ffbdff779beb9a6bceb3c393feb5b78a663df0eecd6d313391c8d4e3b84bc3"
+        },
+        {
+          "node": "config",
+          "status": "resolved",
+          "duration_ms": 0.056207999999969616,
+          "fingerprint": "sha256:84180cf32f70936cba05e4d9b2e5ca2c27d6d34007560a17a60e773c780b74e5",
+          "output_digest": "sha256:e2fc7527b31125e5bf0b7ae0c887dce659e1163539596f8d47156791b10a99aa"
+        },
+        {
+          "node": "command_context",
+          "status": "resolved",
+          "duration_ms": 0.40850000000000364,
+          "fingerprint": "sha256:73055ee392429075831fd9c501ac93deda5b0de632ab57f0128883b8a17e9675",
+          "output_digest": "sha256:da396b507cc2673c92532373f3fe7c331229da52009654f36bb07fb35abdd6d2"
+        }
+      ],
+      "observed_calls": [
+        {
+          "operation": "loadCommandContext",
+          "duration_ms": 0.16433299999971496
+        }
+      ]
+    },
+    {
+      "stage": "prepare:EXECUTOR",
+      "duration_ms": 377.7185830000003,
+      "exit_code": 0,
+      "preparation": [
+        {
+          "node": "project",
+          "status": "resolved",
+          "duration_ms": 0.0018329999998059066,
+          "fingerprint": "sha256:5feb6df7b663b29817c9a9b86b133dd69169391d7f465b2708328eb6d25e6bd2",
+          "output_digest": "sha256:54ffbdff779beb9a6bceb3c393feb5b78a663df0eecd6d313391c8d4e3b84bc3"
+        },
+        {
+          "node": "config",
+          "status": "resolved",
+          "duration_ms": 0.04579199999989214,
+          "fingerprint": "sha256:84180cf32f70936cba05e4d9b2e5ca2c27d6d34007560a17a60e773c780b74e5",
+          "output_digest": "sha256:e2fc7527b31125e5bf0b7ae0c887dce659e1163539596f8d47156791b10a99aa"
+        },
+        {
+          "node": "command_context",
+          "status": "resolved",
+          "duration_ms": 0.34720900000002075,
+          "fingerprint": "sha256:73055ee392429075831fd9c501ac93deda5b0de632ab57f0128883b8a17e9675",
+          "output_digest": "sha256:da396b507cc2673c92532373f3fe7c331229da52009654f36bb07fb35abdd6d2"
+        },
+        {
+          "node": "command_context",
+          "status": "reused",
+          "duration_ms": 0,
+          "fingerprint": "sha256:73055ee392429075831fd9c501ac93deda5b0de632ab57f0128883b8a17e9675",
+          "output_digest": "sha256:da396b507cc2673c92532373f3fe7c331229da52009654f36bb07fb35abdd6d2"
+        },
+        {
+          "node": "command_context",
+          "status": "reused",
+          "duration_ms": 0,
+          "fingerprint": "sha256:73055ee392429075831fd9c501ac93deda5b0de632ab57f0128883b8a17e9675",
+          "output_digest": "sha256:da396b507cc2673c92532373f3fe7c331229da52009654f36bb07fb35abdd6d2"
+        }
+      ],
+      "observed_calls": [
+        {
+          "operation": "loadCommandContext",
+          "duration_ms": 0.14862499999981083
+        },
+        {
+          "operation": "buildTaskRouteDecision",
+          "duration_ms": 52.19166600000017
+        },
+        {
+          "operation": "loadCommandContext",
+          "duration_ms": 2.2775000000001455
+        },
+        {
+          "operation": "loadCommandContext",
+          "duration_ms": 1.6732500000002801
+        },
+        {
+          "operation": "buildTaskRouteDecision",
+          "duration_ms": 55.19999999999982
+        },
+        {
+          "operation": "loadCommandContext",
+          "duration_ms": 1.7100000000000364
+        },
+        {
+          "operation": "prepareAgentWorkOrder",
+          "duration_ms": 19.370499999999993
+        }
+      ]
+    },
+    {
+      "stage": "admit:EXECUTOR",
+      "duration_ms": 1398.2916250000003,
+      "exit_code": 0,
+      "preparation": [
+        {
+          "node": "project",
+          "status": "resolved",
+          "duration_ms": 0.0024170000001504377,
+          "fingerprint": "sha256:5feb6df7b663b29817c9a9b86b133dd69169391d7f465b2708328eb6d25e6bd2",
+          "output_digest": "sha256:54ffbdff779beb9a6bceb3c393feb5b78a663df0eecd6d313391c8d4e3b84bc3"
+        },
+        {
+          "node": "config",
+          "status": "resolved",
+          "duration_ms": 0.048334000000068045,
+          "fingerprint": "sha256:84180cf32f70936cba05e4d9b2e5ca2c27d6d34007560a17a60e773c780b74e5",
+          "output_digest": "sha256:e2fc7527b31125e5bf0b7ae0c887dce659e1163539596f8d47156791b10a99aa"
+        },
+        {
+          "node": "command_context",
+          "status": "resolved",
+          "duration_ms": 0.32245899999998073,
+          "fingerprint": "sha256:73055ee392429075831fd9c501ac93deda5b0de632ab57f0128883b8a17e9675",
+          "output_digest": "sha256:da396b507cc2673c92532373f3fe7c331229da52009654f36bb07fb35abdd6d2"
+        },
+        {
+          "node": "command_context",
+          "status": "reused",
+          "duration_ms": 0,
+          "fingerprint": "sha256:73055ee392429075831fd9c501ac93deda5b0de632ab57f0128883b8a17e9675",
+          "output_digest": "sha256:da396b507cc2673c92532373f3fe7c331229da52009654f36bb07fb35abdd6d2"
+        },
+        {
+          "node": "command_context",
+          "status": "reused",
+          "duration_ms": 0,
+          "fingerprint": "sha256:73055ee392429075831fd9c501ac93deda5b0de632ab57f0128883b8a17e9675",
+          "output_digest": "sha256:da396b507cc2673c92532373f3fe7c331229da52009654f36bb07fb35abdd6d2"
+        }
+      ],
+      "observed_calls": [
+        {
+          "operation": "loadCommandContext",
+          "duration_ms": 0.12095799999997325
+        },
+        {
+          "operation": "loadCommandContext",
+          "duration_ms": 1.467167000000245
+        },
+        {
+          "operation": "loadCommandContext",
+          "duration_ms": 1.3092910000000302
+        },
+        {
+          "operation": "buildTaskRouteDecision",
+          "duration_ms": 54.47312499999998
+        },
+        {
+          "operation": "loadCommandContext",
+          "duration_ms": 2.2333749999997963
+        },
+        {
+          "operation": "buildTaskRouteDecision",
+          "duration_ms": 56.2099589999998
+        },
+        {
+          "operation": "loadCommandContext",
+          "duration_ms": 1.5880409999999756
+        },
+        {
+          "operation": "buildTaskRouteDecision",
+          "duration_ms": 55.761499999999614
+        },
+        {
+          "operation": "buildTaskRouteDecision",
+          "duration_ms": 58.928125000000364
+        },
+        {
+          "operation": "buildTaskRouteDecision",
+          "duration_ms": 58.07054200000039
+        },
+        {
+          "operation": "buildTaskRouteDecision",
+          "duration_ms": 57.056665999999495
+        },
+        {
+          "operation": "loadCommandContext",
+          "duration_ms": 1.8131659999999101
+        },
+        {
+          "operation": "prepareAgentWorkOrder",
+          "duration_ms": 19.588541000000077
+        },
+        {
+          "operation": "loadCommandContext",
+          "duration_ms": 1.614249999999629
+        },
+        {
+          "operation": "buildTaskRouteDecision",
+          "duration_ms": 58.33470899999975
+        }
+      ]
+    },
+    {
+      "stage": "admit:EVALUATOR",
+      "duration_ms": 806.6964170000001,
+      "exit_code": 0,
+      "preparation": [
+        {
+          "node": "project",
+          "status": "resolved",
+          "duration_ms": 0.00166700000045239,
+          "fingerprint": "sha256:5feb6df7b663b29817c9a9b86b133dd69169391d7f465b2708328eb6d25e6bd2",
+          "output_digest": "sha256:54ffbdff779beb9a6bceb3c393feb5b78a663df0eecd6d313391c8d4e3b84bc3"
+        },
+        {
+          "node": "config",
+          "status": "resolved",
+          "duration_ms": 0.044958999999835214,
+          "fingerprint": "sha256:84180cf32f70936cba05e4d9b2e5ca2c27d6d34007560a17a60e773c780b74e5",
+          "output_digest": "sha256:e2fc7527b31125e5bf0b7ae0c887dce659e1163539596f8d47156791b10a99aa"
+        },
+        {
+          "node": "command_context",
+          "status": "resolved",
+          "duration_ms": 0.37383300000055897,
+          "fingerprint": "sha256:73055ee392429075831fd9c501ac93deda5b0de632ab57f0128883b8a17e9675",
+          "output_digest": "sha256:da396b507cc2673c92532373f3fe7c331229da52009654f36bb07fb35abdd6d2"
+        },
+        {
+          "node": "command_context",
+          "status": "reused",
+          "duration_ms": 0,
+          "fingerprint": "sha256:73055ee392429075831fd9c501ac93deda5b0de632ab57f0128883b8a17e9675",
+          "output_digest": "sha256:da396b507cc2673c92532373f3fe7c331229da52009654f36bb07fb35abdd6d2"
+        },
+        {
+          "node": "command_context",
+          "status": "reused",
+          "duration_ms": 0,
+          "fingerprint": "sha256:73055ee392429075831fd9c501ac93deda5b0de632ab57f0128883b8a17e9675",
+          "output_digest": "sha256:da396b507cc2673c92532373f3fe7c331229da52009654f36bb07fb35abdd6d2"
+        }
+      ],
+      "observed_calls": [
+        {
+          "operation": "loadCommandContext",
+          "duration_ms": 0.12824999999975262
+        },
+        {
+          "operation": "loadCommandContext",
+          "duration_ms": 1.3922910000001139
+        },
+        {
+          "operation": "loadCommandContext",
+          "duration_ms": 1.8731250000000728
+        },
+        {
+          "operation": "buildTaskRouteDecision",
+          "duration_ms": 58.34929199999988
+        },
+        {
+          "operation": "loadCommandContext",
+          "duration_ms": 1.8145840000006501
+        },
+        {
+          "operation": "buildTaskRouteDecision",
+          "duration_ms": 60.909333999999944
+        },
+        {
+          "operation": "loadCommandContext",
+          "duration_ms": 1.632499999999709
+        },
+        {
+          "operation": "buildTaskRouteDecision",
+          "duration_ms": 59.07916699999987
+        },
+        {
+          "operation": "buildTaskRouteDecision",
+          "duration_ms": 65.12779200000023
+        },
+        {
+          "operation": "loadCommandContext",
+          "duration_ms": 1.606166999999914
+        },
+        {
+          "operation": "prepareAgentWorkOrder",
+          "duration_ms": 19.998999999999796
+        }
+      ]
+    }
+  ],
+  "totals": {
+    "semantic_exchanges": 3,
+    "result_retries": 0,
+    "required_schema_bytes": 44683,
+    "agent_result_bytes": 2746,
+    "cli_protocol_ms": 3554.203500000001
+  },
+  "model": {
+    "elapsed_ms": null,
+    "input_tokens": null,
+    "output_tokens": null,
+    "cached_tokens": null
+  },
+  "user_wait_ms": null,
+  "limitations": [
+    "Scripted semantic results, not a model run.",
+    "CLI admission includes native transitions and checks, and can prepare the next episode.",
+    "Schema bytes count each complete reference closure per exchange; they are not token counts.",
+    "WorkOrder and manifest sizes exclude referenced source contents and provider transport."
+  ]
+}

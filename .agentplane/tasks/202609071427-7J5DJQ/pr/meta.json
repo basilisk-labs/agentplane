@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202609071427-7J5DJQ/upgrade-bun-to-1-4-2-and-qualify-runtime-migrati",
+  "created_at": "2026-09-07T14:33:24.150Z",
+  "diffstat_sha256": "sha256:bb1eb4f4d3e2a832be1adc239ca2a4708a443bfabd0b75751ae45ac7148d7261",
+  "last_verified_at": "2026-09-07T22:17:15.994Z",
+  "last_verified_diffstat_sha256": "sha256:bb1eb4f4d3e2a832be1adc239ca2a4708a443bfabd0b75751ae45ac7148d7261",
+  "pr_number": 5917,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5917",
+  "pre_merge_closure": {
+    "basis_commit": "064123ffbd3bbc2609a60e60eb7ad5bc57db5403",
+    "branch": "task/202609071427-7J5DJQ/upgrade-bun-to-1-4-2-and-qualify-runtime-migrati",
+    "pr_number": 5917,
+    "recorded_at": "2026-09-07T22:29:51.680Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202609071427-7J5DJQ",
+  "updated_at": "2026-09-07T16:02:15.372Z",
+  "verify": {
+    "status": "pass"
+  }
+}

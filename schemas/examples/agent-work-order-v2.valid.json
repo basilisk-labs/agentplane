@@ -17,7 +17,7 @@
     "unresolved_questions": []
   },
   "state_fingerprint": {
-    "schema_version": 1,
+    "schema_version": 2,
     "kind": "state_fingerprint",
     "observed_by": "agentplane",
     "task_id": "task-example-001",
@@ -43,16 +43,22 @@
         "digest": "sha256:138deb6dcb7e92f5cb96931fabca9a167404fb9f40a9e9da71cab8cbba18f9ee",
         "reason_code": null
       },
+      "plan": {
+        "state": "present",
+        "source": "fixture",
+        "digest": "sha256:e6aa4583481a2aa3fb68de60350bc245961566ac720a18c949dfd90bc01c63f7",
+        "reason_code": null
+      },
       "policy": {
         "state": "present",
         "source": "fixture",
         "digest": "sha256:0de2597fcd404b8bf481da3dd9c1c6cb5ef1dffd8f5108bcc8e5187c234e661b",
         "reason_code": null
       },
-      "blueprint": {
+      "capability": {
         "state": "present",
         "source": "fixture",
-        "digest": "sha256:875000d93e3e9ae5bacc91341065716c934c2cade606f4ad18c0cf92d39764f5",
+        "digest": "sha256:b15230aea406d9f2ccbdb9ee22de0519cdfbccc44d6045ac8a1900cc6aeee6da",
         "reason_code": null
       },
       "knowledge": {
@@ -74,15 +80,17 @@
         "reason_code": null
       }
     },
-    "digest": "sha256:0e9a3e3024d8ac85148f4439d0e3d8420b4d35d33bc92b54805d1863600e06ed"
+    "digest": "sha256:5994822cf6eb2030e30429cb19a85ee44297b0e5810dd43a4db9fbae42b5c8b0"
   },
   "state_fingerprint_policy": {
+    "fingerprint_schema_version": 2,
     "required_components": [
       "task",
       "git",
       "backend_projection",
+      "plan",
       "policy",
-      "blueprint",
+      "capability",
       "knowledge",
       "authority"
     ],

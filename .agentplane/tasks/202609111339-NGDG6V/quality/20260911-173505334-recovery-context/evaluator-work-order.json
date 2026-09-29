@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609111339-NGDG6V-d14aa0b5b8e5f825458898ed",
+  "prepared_at": "2026-09-11T17:35:05.334Z",
+  "task": {
+    "id": "202609111339-NGDG6V",
+    "revision": 26,
+    "objective": "Route direct verification rework to bounded repair instead of repeated verification for GitHub issue #4893\n\nGitHub issue #4893 remains relevant on current main. After agentplane verify <task-id> --rework, directStep can select direct verification again from the completed runner instead of granting a CODER repair episode, and task-document correction has no executable route. Add a direct-mode regression for verify --rework followed by task next-action/status, route repository-fixable findings to a semantic implementation or task-contract repair episode with safe_to_mutate=true, preserve evidence, and return to TESTER only after a new implementation or approved contract correction. Keep approval and task-centric provenance fail closed. Issue: https://github.com/basilisk-labs/agentplane/issues/4893",
+    "acceptance_criteria": [
+      "bunx --no-install vitest run packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts --maxWorkers=1",
+      "- In scope: GitHub issue #4893 remains relevant on current main. After agentplane verify <task-id> --rework, directStep can select direct verification again from the completed runner instead of granting a CODER repair episode, and task-document correction has no executable route. Add a direct-mode regression for verify --rework followed by task next-action/status, route repository-fixable findings to a semantic implementation or task-contract repair episode with safe_to_mutate=true, preserve evidence, and return to TESTER only after a new implementation or approved contract correction. Keep approval and task-centric provenance fail closed. Issue: https://github.com/basilisk-labs/agentplane/issues/4893.\n- Out of scope: unrelated refactors not required for \"Route direct verification rework to bounded repair instead of repeated verification for GitHub issue #4893\".",
+      "Refine the route fix for branch tasks whose implementation SHA exists only in the supervisor event.",
+      "1. With approved network access, run `MISE_DATA_DIR=\"$PWD/node_modules/.cache/agentplane-mise/data\" MISE_CACHE_DIR=\"$PWD/node_modules/.cache/agentplane-mise/cache\" mise install bun@1.4.2`. Expected: Bun 1.4.2 is available only in the ignored task-local cache.\n2. With the task-local Bun directory prepended to `PATH`, run `bunx --no-install vitest run packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts --maxWorkers=1`. Expected: all focused direct rework and workflow-step routing regressions pass.\n3. Inspect `task next-action --json` and `task status --json` in the regression after `verify --rework`. Expected: both expose a CODER `implementation_rework` episode, `safeToMutate=true`, and no repeated TESTER verification.\n4. With the same task-local Bun directory prepended to `PATH`, run `bun run ci:local:full`. Expected: the repository full local CI gate passes under the pinned Bun 1.4.2 runtime."
+    ]
+  },
+  "evaluated_sha": "11319e1aa570abf361648bc1c25ca0393818cee3",
+  "diff_base_sha": "f774282d4a6ef8ce7da5bc08c8e2fd9abb99303d",
+  "blueprint_digest": "e97b1fd1a75bc5686aa2dae9c329b2c71bd2e2d2f3051c0ee4515431ec279181",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609111339-NGDG6V/quality/20260911-173505334-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:5800e5bc6e16ebe1560f450cc3e6ab1df43e2d01bf2c135f802578387913b9b2",
+    "prompt_path": ".agentplane/tasks/202609111339-NGDG6V/quality/objects/sha256/133a16ec03939963768e16e15c99904bdf4e77baabfb0da0f78f8444274ffb65.md",
+    "result_schema_path": ".agentplane/tasks/202609111339-NGDG6V/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609111339-NGDG6V/README.md",
+      "sha256": "sha256:9a16bd846689ad3385618465021203749a5f51d827f4c5c3d8f9d34019becb83",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609111339-NGDG6V/quality/objects/sha256/4618e515a90acc2cb6c970fb5b59a6b953c88a4de76e982917c327bc5f57316d.patch",
+      "sha256": "sha256:4618e515a90acc2cb6c970fb5b59a6b953c88a4de76e982917c327bc5f57316d",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609111339-NGDG6V/quality/objects/sha256/2463927d892b07cb7a28fc9092ed23bec47a886031a6953f20bff49765984d56.json",
+      "sha256": "sha256:2463927d892b07cb7a28fc9092ed23bec47a886031a6953f20bff49765984d56",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609111339-NGDG6V/verification/20260911173454989-336ac954a2848665.json",
+      "sha256": "sha256:50c380d5b7bfa82c254d1e16a10e72d09d03b1db59910d62b7317584afc77b34",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609111339-NGDG6V/quality/objects/sha256/c54d46060b266cef66c635886e79cff83492db35de8c3efb33dc3ba6083a6945.json",
+      "sha256": "sha256:c54d46060b266cef66c635886e79cff83492db35de8c3efb33dc3ba6083a6945",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

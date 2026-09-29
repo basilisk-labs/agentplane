@@ -1,0 +1,63 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 98ebb7dd92506bbdd509ce81022eeb580dea9fe4..086025d419444b01aaf1f4e2b58bb6fce25ff662",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 98ebb7dd92506bbdd509ce81022eeb580dea9fe4..086025d419444b01aaf1f4e2b58bb6fce25ff662",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202609121424-ZEJ656/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202609121424-ZEJ656/pr/github-body.md",
+        "M\t.agentplane/tasks/202609121424-ZEJ656/pr/meta.json",
+        "M\t.agentplane/tasks/202609121424-ZEJ656/pr/review.md",
+        "M\tpackages/agentplane/src/runner/adapters/codex-result-transport.ts",
+        "M\tpackages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "98ebb7dd92506bbdd509ce81022eeb580dea9fe4",
+  "implementation_commit": "086025d419444b01aaf1f4e2b58bb6fce25ff662",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      " M packages/agentplane/src/runner/adapters/codex-result-transport.ts",
+      " M packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/adapters/codex-result-transport.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M packages/agentplane/src/runner/adapters/codex-result-transport.ts",
+      " M packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609121424-ZEJ656"
+}

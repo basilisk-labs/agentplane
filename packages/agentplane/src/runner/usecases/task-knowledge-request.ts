@@ -1,10 +1,10 @@
 import {
-  validateAgentSemanticResult,
   type AgentWorkOrderV2,
   type KnowledgeRef,
   type PreparedKnowledgeExcerpt,
 } from "@agentplaneorg/core/schemas";
 
+import { admitSemanticResult } from "../../commands/shared/semantic-result-admission.js";
 import { prepareKnowledgeExcerpt } from "../../context/knowledge-ref.js";
 import { readContextProjection, searchContextProjection } from "../../context/reindex.js";
 import { approximateTokens, compactQuery, requestDigest } from "./task-knowledge-request-codec.js";
@@ -48,44 +48,15 @@ function responseMatchesBinding(opts: {
 export async function serveTaskKnowledgeRequest(opts: {
   repository_root: string;
   invocation: KnowledgeRequestInvocation;
-  work_order: Pick<
-    AgentWorkOrderV2,
-    "work_order_id" | "role" | "state_fingerprint" | "authority" | "knowledge_refs"
-  >;
+  work_order: AgentWorkOrderV2;
   semantic_result: unknown;
   prior_audits?: readonly TaskKnowledgeRequestAudit[];
 }): Promise<TaskKnowledgeRequestResponse> {
-  let semantic;
-  try {
-    semantic = validateAgentSemanticResult(opts.semantic_result);
-  } catch {
+  if (opts.invocation.work_order_id !== opts.work_order.work_order_id) {
     return response({
       invocation: opts.invocation,
       work_order: opts.work_order,
       round: 1,
-      request_digest: null,
-      outcome: "denied",
-      omissions: [
-        {
-          code: "invalid_semantic_result",
-          detail: "The agent result is not a valid AgentSemanticResult v2 knowledge request.",
-        },
-      ],
-    });
-  }
-  const request = "knowledge_request" in semantic ? semantic.knowledge_request : undefined;
-  const prior = (opts.prior_audits ?? []).filter((audit) =>
-    responseMatchesBinding({ audit, invocation: opts.invocation }),
-  );
-  const round = prior.length + 1;
-  if (
-    semantic.work_order_id !== opts.invocation.work_order_id ||
-    semantic.work_order_id !== opts.work_order.work_order_id
-  ) {
-    return response({
-      invocation: opts.invocation,
-      work_order: opts.work_order,
-      round,
       request_digest: null,
       outcome: "denied",
       omissions: [
@@ -96,6 +67,43 @@ export async function serveTaskKnowledgeRequest(opts: {
       ],
     });
   }
+  let semantic;
+  try {
+    semantic = admitSemanticResult({
+      owner: {
+        task_id: opts.work_order.task.id,
+        work_order_id: opts.work_order.work_order_id,
+        role: opts.work_order.role,
+      },
+      work_order: opts.work_order,
+      result: opts.semantic_result,
+    }).result;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "";
+    const workOrderMismatch = /work_order_id must match|exchange owner does not match/iu.test(
+      message,
+    );
+    return response({
+      invocation: opts.invocation,
+      work_order: opts.work_order,
+      round: 1,
+      request_digest: null,
+      outcome: "denied",
+      omissions: [
+        {
+          code: workOrderMismatch ? "work_order_mismatch" : "invalid_semantic_result",
+          detail: workOrderMismatch
+            ? "The agent result is not bound to the current work order."
+            : "The agent result is not a valid AgentSemanticResult v2 knowledge request.",
+        },
+      ],
+    });
+  }
+  const request = "knowledge_request" in semantic ? semantic.knowledge_request : undefined;
+  const prior = (opts.prior_audits ?? []).filter((audit) =>
+    responseMatchesBinding({ audit, invocation: opts.invocation }),
+  );
+  const round = prior.length + 1;
   if (opts.work_order.state_fingerprint.digest !== opts.invocation.state_fingerprint_digest) {
     return response({
       invocation: opts.invocation,
@@ -111,7 +119,11 @@ export async function serveTaskKnowledgeRequest(opts: {
       ],
     });
   }
-  if (opts.work_order.role !== "EXECUTOR" && opts.work_order.role !== "EVALUATOR") {
+  if (
+    opts.work_order.role !== "CURATOR" &&
+    opts.work_order.role !== "EXECUTOR" &&
+    opts.work_order.role !== "EVALUATOR"
+  ) {
     return response({
       invocation: opts.invocation,
       work_order: opts.work_order,
@@ -121,7 +133,7 @@ export async function serveTaskKnowledgeRequest(opts: {
       omissions: [
         {
           code: "role_forbidden",
-          detail: "Only EXECUTOR and EVALUATOR work orders may request knowledge.",
+          detail: "Only CURATOR, EXECUTOR, and EVALUATOR work orders may request knowledge.",
         },
       ],
     });

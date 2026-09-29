@@ -1,0 +1,45 @@
+{
+  "native_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_task_identity",
+    "task_id": "202609162254-YE48GC",
+    "plan": {
+      "revision": 8,
+      "digest": "sha256:e17ec6eda7c7926e5e1379d0e7caaea02c6311d301fca98a8969264e33af9949",
+      "approval_state": "approved",
+      "approved_digest": "sha256:e17ec6eda7c7926e5e1379d0e7caaea02c6311d301fca98a8969264e33af9949"
+    },
+    "policy": {
+      "digest": "sha256:3190c8fe14390b259766cff27cbd886e2e4656b8a439a8bf997a4aed099ffed6"
+    },
+    "capability": {
+      "digest": "sha256:095839e7c8ad04c8ede890b2cb808422cf26a9901830fd92d9830b51b15207d6"
+    },
+    "checks": {
+      "verification_contract_digest": "sha256:591deed7eafa25d9c4aed69a12f3182ace55260f50067c79d088a4e7c6432f0e",
+      "required_check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "full_regression",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "digest": "sha256:193169d9d4b9f3db52098cdb742dccb36984dd584c4d84e1a8ab428de9fe2155"
+    },
+    "digest": "sha256:096e65eb3b5d9fc3f869cc5b51a549bdfa79057782686442e1eeb1fdbf123763"
+  },
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202609162254-YE48GC",
+    "plan_digest": "sha256:e17ec6eda7c7926e5e1379d0e7caaea02c6311d301fca98a8969264e33af9949",
+    "policy_digest": "sha256:3190c8fe14390b259766cff27cbd886e2e4656b8a439a8bf997a4aed099ffed6",
+    "capability_digest": "sha256:095839e7c8ad04c8ede890b2cb808422cf26a9901830fd92d9830b51b15207d6",
+    "checks_digest": "sha256:193169d9d4b9f3db52098cdb742dccb36984dd584c4d84e1a8ab428de9fe2155",
+    "verification_input_digest": "sha256:d19e55a4119791761c8ac9b92c9c7fc66d25422d5378a35fbc97e3bdb42472d7",
+    "acceptance_digest": "sha256:4780f2468f39ae89fffce0463e36e71158ae07d8e00354e33b648886357dea67",
+    "implementation_sha": "d949071048f769e0728af190eafa7b74ddfbe9fa",
+    "digest": "sha256:0a5eceb935a6e44b4a67e46dfd59b91a7e418cf9477911043566e0e8f7ba738e"
+  }
+}

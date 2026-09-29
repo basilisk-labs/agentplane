@@ -369,9 +369,68 @@ describe("DOING route verification rework", () => {
       expect.arrayContaining([expect.objectContaining({ code: "verification_required" })]),
     );
   });
+
+  it("accepts a newer supervisor implementation event when branch task commit is unset", async () => {
+    const task = verificationReworkTask(true);
+    task.commit = undefined;
+
+    const blockers = await blockersFor(headSha, undefined, openPrFlow(), task);
+
+    expect(blockers).not.toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: "implementation_rework_required" })]),
+    );
+  });
+
+  it("rejects a newer non-supervisor event when branch task commit is unset", async () => {
+    const task = verificationReworkTask(true);
+    task.commit = undefined;
+    task.events![0]!.author = "CODER";
+
+    const blockers = await blockersFor(headSha, undefined, openPrFlow(), task);
+
+    expect(blockers).toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: "implementation_rework_required" })]),
+    );
+  });
+
+  it("keeps rework semantic when the newer event does not match a populated task commit", async () => {
+    const task = verificationReworkTask(true);
+    task.commit = { hash: "c".repeat(40), message: "fix: current implementation" };
+
+    const blockers = await blockersFor(headSha, undefined, openPrFlow(), task);
+
+    expect(blockers).toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: "implementation_rework_required" })]),
+    );
+  });
 });
 
 describe("DONE route quality-review target", () => {
+  it("moves a completed task with implementation after evaluator rework back to verification", async () => {
+    const task = reworkTask("2026-07-23T23:59:59.000Z");
+    task.status = "DONE";
+
+    const blockers = await blockersFor(headSha, undefined, openPrFlow(), task);
+
+    expect(blockers).not.toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: "implementation_rework_required" })]),
+    );
+    expect(blockers).toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: "verification_required" })]),
+    );
+  });
+
+  it("keeps evaluator rework blocking a completed task until implementation changes", async () => {
+    const task = reworkTask("2026-07-23T23:59:59.000Z");
+    task.status = "DONE";
+
+    const blockers = await blockersFor(reviewedSha, undefined, openPrFlow(), task);
+
+    expect(blockers).toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: "implementation_rework_required" })]),
+    );
+  });
+
   it("keeps a reviewed metadata target fresh across managed closure artifacts", async () => {
     await expect(blockersFor(reviewedSha)).resolves.not.toEqual(
       expect.arrayContaining([expect.objectContaining({ code: "quality_review_stale" })]),

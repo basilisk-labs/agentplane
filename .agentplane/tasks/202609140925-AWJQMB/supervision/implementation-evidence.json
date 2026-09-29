@@ -1,0 +1,64 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 2288f5d74b7a3cd9405f469558dfb15ccc8815df..6e5882531c8521a5f4c6a2cf82581172e67011c8",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 2288f5d74b7a3cd9405f469558dfb15ccc8815df..6e5882531c8521a5f4c6a2cf82581172e67011c8",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202609140925-AWJQMB/README.md",
+        "M\t.agentplane/tasks/202609140925-AWJQMB/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202609140925-AWJQMB/pr/github-body.md",
+        "M\t.agentplane/tasks/202609140925-AWJQMB/pr/meta.json",
+        "M\t.agentplane/tasks/202609140925-AWJQMB/pr/review.md",
+        "M\t.agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json",
+        "M\tpackages/agentplane/src/commands/evaluator/roadmap-failed-usage.test.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "2288f5d74b7a3cd9405f469558dfb15ccc8815df",
+  "implementation_commit": "6e5882531c8521a5f4c6a2cf82581172e67011c8",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      " M .agentplane/tasks/202609140925-AWJQMB/README.md",
+      " M .agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202609140925-AWJQMB/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M .agentplane/tasks/202609140925-AWJQMB/README.md",
+      " M .agentplane/tasks/202609140925-AWJQMB/supervision/declared-checks.json"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609140925-AWJQMB"
+}

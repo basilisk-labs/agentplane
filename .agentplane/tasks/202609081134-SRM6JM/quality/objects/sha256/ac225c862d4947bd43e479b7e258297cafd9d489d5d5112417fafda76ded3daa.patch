@@ -1,0 +1,4062 @@
+diff --git a/packages/agentplane/src/backends/task-backend.local-handoff.test.ts b/packages/agentplane/src/backends/task-backend.local-handoff.test.ts
+index 2784db8ab..0d64c4bb6 100644
+--- a/packages/agentplane/src/backends/task-backend.local-handoff.test.ts
++++ b/packages/agentplane/src/backends/task-backend.local-handoff.test.ts
+@@ -1,4 +1,5 @@
+-import { mkdir, rm, writeFile } from "node:fs/promises";
++import { createHash } from "node:crypto";
++import { mkdir, rm, symlink, writeFile } from "node:fs/promises";
+ import path from "node:path";
+ import { afterEach, beforeEach, describe, expect, it } from "vitest";
+ 
+@@ -56,4 +57,50 @@ describe("LocalBackend handoff artifacts", () => {
+     expect(warnings).not.toContain("skip:202601300000-EMPTY: missing_or_unreadable_readme");
+     expect(warnings).not.toContain("skip:202601300000-HANDOF: missing_or_unreadable_readme");
+   });
++
++  it.each(
++    ["agent-semantic-result", "agent-semantic-payload"].flatMap((schemaName) =>
++      ["valid", "tampered", "not_schema", "unknown_schema", "mixed", "symlink", "readme"].map(
++        (scenario) => [schemaName, scenario] as const,
++      ),
++    ),
++  )("recognizes only intact schema-only directories: %s / %s", async (schemaName, scenario) => {
++    const backend = new LocalBackend({ dir: tempDir });
++    const taskId = "202601300000-SCHEMA";
++    const directory = path.join(tempDir, taskId);
++    const objectRoot = path.join(directory, "quality", "objects", "sha256");
++    await mkdir(objectRoot, { recursive: true });
++    const contents = JSON.stringify(
++      scenario === "not_schema"
++        ? { kind: "task", status: "DOING" }
++        : {
++            $id: `https://agentplane.org/schemas/${scenario === "unknown_schema" ? "unknown" : schemaName}.schema.json`,
++            $schema: "http://json-schema.org/draft-07/schema#",
++            type: "object",
++          },
++    );
++    const objectPath = path.join(
++      objectRoot,
++      `${createHash("sha256").update(contents).digest("hex")}.json`,
++    );
++    if (scenario === "symlink") {
++      const target = path.join(tempDir, "schema.json");
++      await writeFile(target, contents);
++      await symlink(target, objectPath);
++    } else await writeFile(objectPath, scenario === "tampered" ? "{}" : contents);
++    if (scenario === "mixed") await writeFile(path.join(directory, "task-state.json"), "{}");
++    if (scenario === "readme") await mkdir(path.join(directory, "README.md"));
++
++    expect(await backend.listTasks()).toEqual([]);
++    const warnings = backend.getLastListWarnings();
++    if (scenario === "valid") expect(warnings).toEqual([]);
++    else expect(warnings).toContain(`skip:${taskId}: missing_or_unreadable_readme`);
++    // A warm projection must not erase a scan warning.
++    await backend.listProjectionTasks();
++    if (scenario === "valid") expect(backend.getLastListWarnings()).toEqual([]);
++    else
++      expect(backend.getLastListWarnings()).toContain(
++        `skip:${taskId}: missing_or_unreadable_readme`,
++      );
++  });
+ });
+diff --git a/packages/agentplane/src/backends/task-backend/local-backend-read.ts b/packages/agentplane/src/backends/task-backend/local-backend-read.ts
+index 6ca0a9e46..9b2961ce6 100644
+--- a/packages/agentplane/src/backends/task-backend/local-backend-read.ts
++++ b/packages/agentplane/src/backends/task-backend/local-backend-read.ts
+@@ -1,3 +1,4 @@
++import { createHash } from "node:crypto";
+ import { lstat, readdir } from "node:fs/promises";
+ import path from "node:path";
+ import type { TaskRecord } from "@agentplaneorg/core/tasks";
+@@ -171,9 +172,41 @@ async function isIgnorableMissingReadmeTaskDir(root: string, dirName: string): P
+   try {
+     const entries = await readdir(path.join(root, dirName), { withFileTypes: true });
+     if (entries.length === 0) return true;
+-    return (
+-      entries.length === 1 && entries[0]?.isDirectory() === true && entries[0].name === "handoff"
+-    );
++    if (entries.length !== 1 || !entries[0]?.isDirectory()) return false;
++    if (entries[0].name === "handoff") return true;
++    if (entries[0].name !== "quality") return false;
++
++    // Shared result schemas can survive their task document in a checkout. Only recognize
++    // this exact object-store shape; a damaged task or other quality evidence still warns.
++    let directory = path.join(root, dirName, "quality");
++    for (const component of ["objects", "sha256"]) {
++      const children = await readdir(directory, { withFileTypes: true });
++      if (children.length !== 1 || !children[0]?.isDirectory() || children[0].name !== component)
++        return false;
++      directory = path.join(directory, component);
++    }
++    const objects = await readdir(directory, { withFileTypes: true });
++    if (objects.length === 0) return false;
++    for (const object of objects) {
++      if (!object.isFile() || !/^[a-f0-9]{64}\.json$/u.test(object.name)) return false;
++      const contents = await readContainedStableTextNoFollow({
++        repository_root: root,
++        file_path: path.join(directory, object.name),
++        label: "orphan result schema object",
++        max_bytes: 1024 * 1024,
++      });
++      if (createHash("sha256").update(contents).digest("hex") !== object.name.slice(0, -5))
++        return false;
++      const schema: unknown = JSON.parse(contents);
++      if (
++        !isRecord(schema) ||
++        (schema.$id !== "https://agentplane.org/schemas/agent-semantic-result.schema.json" &&
++          schema.$id !== "https://agentplane.org/schemas/agent-semantic-payload.schema.json") ||
++        typeof schema.$schema !== "string"
++      )
++        return false;
++    }
++    return true;
+   } catch {
+     return false;
+   }
+diff --git a/packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts b/packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts
+index 0b426b931..308b8d91c 100644
+--- a/packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts
+@@ -1,3 +1,4 @@
++import { readKernelOrderResult } from "../commands/task/kernel-exchange.js";
+ import { KernelTaskLifecycle } from "../runner/usecases/kernel-task-lifecycle.js";
+ import { execFileSync } from "node:child_process";
+ import * as finalChecks from "../commands/task/direct-task-verification.js";
+@@ -129,7 +130,7 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
+     await writeFile(path.join(linked, "local-change.txt"), "local change");
+     expect(await runtime.observe()).not.toMatchObject({ fingerprint: before.fingerprint });
+   });
+-  it.each(["local", "cloud"] as const)(
++  it.each(["local", "cloud", "compact"] as const)(
+     "canonical first-write and host lifecycle on %s storage",
+     async (backendKind) => {
+       const root = await mkGitRepoRootWithCommit();
+@@ -202,7 +203,17 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
+           scope_roots: ["more"],
+         },
+       });
+-      await writeFile(planningExchange.result_path, JSON.stringify(semantic));
++      const wireResult = (value: Record<string, unknown>) => {
++        if (backendKind !== "compact") return JSON.stringify(value);
++        const {
++          schema_version: _version,
++          kind: _kind,
++          canonical_binding: _binding,
++          ...payload
++        } = value;
++        return JSON.stringify(payload);
++      };
++      await writeFile(planningExchange.result_path, wireResult(semantic));
+       const approval = await runJson(root, [
+         "task",
+         "advance",
+@@ -279,7 +290,7 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
+         expect(await runtime.adapter.read(taskId)).toEqual(beforeInvalid);
+       }
+       await writeFile(path.join(root, "outside.txt"), "not authorized");
+-      await writeFile(implementationExchange.result_path, JSON.stringify(result));
++      await writeFile(implementationExchange.result_path, wireResult(result));
+       await refused(
+         root,
+         ["task", "advance", taskId, "--result", implementationExchange.result_path, "--agent-json"],
+@@ -293,7 +304,7 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
+         "legacy mutation is refused",
+       );
+       expect(await runtime.adapter.read(taskId)).toEqual(beforeInvalid);
+-      await writeFile(implementationExchange.result_path, JSON.stringify(result));
++      await writeFile(implementationExchange.result_path, wireResult(result));
+       const accepted = await runJson(root, [
+         "task",
+         "advance",
+@@ -369,7 +380,7 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
+         canonical_binding: inspection.canonical_binding,
+         status: "completed" as const,
+         summary: "Independent inspection passed",
+-        findings: [],
++        findings: ["Implementation satisfies the declared contract."],
+         uncertainty: [],
+         review: {
+           verdict: "pass" as const,
+@@ -378,6 +389,33 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
+           residual_risks: [],
+         },
+       };
++      if (backendKind === "compact") {
++        await writeFile(inspectionExchange.result_path, wireResult(review));
++        const compactReview = await readKernelOrderResult(
++          command,
++          taskId,
++          inspectionExchange.result_path,
++        );
++        expect(compactReview.semantic).toEqual(review);
++        const ownerPath = path.join(inspectionExchange.directory, "transport-owner.json");
++        const ownerText = await readFile(ownerPath, "utf8");
++        const { result_format: _format, ...historicalOwner } = JSON.parse(ownerText) as Record<
++          string,
++          unknown
++        >;
++        await writeFile(ownerPath, JSON.stringify(historicalOwner));
++        await expect(
++          readKernelOrderResult(command, taskId, inspectionExchange.result_path),
++        ).rejects.toThrow("does not accept compact");
++        await writeFile(inspectionExchange.result_path, JSON.stringify(review));
++        const historicalReview = await readKernelOrderResult(
++          command,
++          taskId,
++          inspectionExchange.result_path,
++        );
++        expect(historicalReview.semantic).toEqual(review);
++        await writeFile(ownerPath, ownerText);
++      }
+       await writeFile(path.join(root, "result.txt"), "changed after inspection");
+       await expect(
+         acceptKernelInspection(command, runtime, inspectionExchange.directory, review),
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-advance.protocol-cost.test.ts b/packages/agentplane/src/cli/run-cli.core.task-advance.protocol-cost.test.ts
+new file mode 100644
+index 000000000..774ff7eeb
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli.core.task-advance.protocol-cost.test.ts
+@@ -0,0 +1,353 @@
++import type { ExternalAgentResultEnvelope } from "../commands/task/external-agent-exchange.js";
++import { execFile } from "node:child_process";
++import { createHash } from "node:crypto";
++import { cp, readFile, writeFile } from "node:fs/promises";
++import path from "node:path";
++import { performance } from "node:perf_hooks";
++import { promisify } from "node:util";
++import { afterEach, expect, it, vi } from "vitest";
++import * as contexts from "../commands/shared/task-backend.js";
++import * as routes from "../commands/shared/route-decision.js";
++import * as orders from "../runner/usecases/agent-work-order.js";
++import {
++  captureStdIO,
++  installRunCliIntegrationHarness,
++  mkGitRepoRootWithCommit,
++  setTaskVerifySteps,
++  writeConfig,
++} from "@agentplane/testkit";
++import { defaultConfig } from "./core-imports.js";
++import { runCli } from "./run-cli.js";
++import { writeCompletedResult, type AgentPacket } from "./run-cli.core.task-advance.testkit.js";
++
++installRunCliIntegrationHarness();
++afterEach(() => vi.restoreAllMocks());
++const exec = promisify(execFile);
++const digest = (text: string) => `sha256:${createHash("sha256").update(text).digest("hex")}`;
++const before = "module.exports = (value) => value > 10;\n";
++const after = "module.exports = (value) => value >= 10;\n";
++const check = [
++  "const assert = require('node:assert/strict');",
++  "const eligible = require('./eligible.cjs');",
++  "assert.equal(eligible(9), false);",
++  "assert.equal(eligible(10), true);",
++  "assert.equal(eligible(11), true);",
++].join("\n");
++
++// Count the full schema closure, not only a small envelope that references a large schema.
++async function schemaClosure(entry: string) {
++  const files = new Map<string, number>();
++  async function visit(file: string): Promise<void> {
++    const absolute = path.resolve(file);
++    if (files.has(absolute)) return;
++    const text = await readFile(absolute, "utf8");
++    files.set(absolute, Buffer.byteLength(text));
++    async function walk(value: unknown): Promise<void> {
++      if (!value || typeof value !== "object") return;
++      for (const [key, child] of Object.entries(value)) {
++        if (key === "$ref" && typeof child === "string" && !child.startsWith("#")) {
++          const ref = child.split("#")[0]!;
++          if (/^[a-z]+:/iu.test(ref)) throw new Error(`Unmeasured remote schema: ${ref}`);
++          await visit(path.resolve(path.dirname(absolute), ref));
++        } else await walk(child);
++      }
++    }
++    await walk(JSON.parse(text));
++  }
++  await visit(entry);
++  return { files: files.size, bytes: [...files.values()].reduce((a, b) => a + b, 0) };
++}
++
++it("measures a one-condition protocol round trip without claiming model telemetry", async () => {
++  const root = await mkGitRepoRootWithCommit();
++  const config = defaultConfig();
++  config.workflow_mode = "direct";
++  await writeConfig(root, config);
++  await cp(path.join(process.cwd(), ".agentplane/policy"), path.join(root, ".agentplane/policy"), {
++    recursive: true,
++  });
++  await writeFile(path.join(root, "eligible.cjs"), before);
++  await writeFile(path.join(root, "check.cjs"), check);
++  await writeFile(
++    path.join(root, "package.json"),
++    JSON.stringify({ scripts: { check: "node check.cjs", "ci:local:full": "node check.cjs" } }),
++  );
++  await exec("git", ["add", "."], { cwd: root });
++  await exec("git", ["commit", "-m", "test: seed boundary condition fixture"], { cwd: root });
++  await expect(exec(process.execPath, ["check.cjs"], { cwd: root })).rejects.toThrow();
++
++  const calls: {
++    stage: string;
++    duration_ms: number;
++    exit_code: number;
++    observed_calls?: { operation: string; duration_ms: number }[];
++    preparation?: {
++      node: string;
++      status: string;
++      duration_ms: number;
++      fingerprint: string;
++      output_digest: string;
++    }[];
++  }[] = [];
++  const exchanges: {
++    role: string;
++    schema: { files: number; bytes: number };
++    work_order_bytes: number;
++    manifest_bytes: number;
++    result_bytes: number;
++  }[] = [];
++  let observedCalls: { operation: string; duration_ms: number }[] = [];
++  if (process.env.AGENTPLANE_TRACE === "1") {
++    async function observe<T>(operation: string, run: () => Promise<T>): Promise<T> {
++      const start = performance.now();
++      try {
++        return await run();
++      } finally {
++        observedCalls.push({ operation, duration_ms: performance.now() - start });
++      }
++    }
++    const load = contexts.loadCommandContext;
++    const route = routes.buildTaskRouteDecision;
++    const order = orders.prepareAgentWorkOrder;
++    vi.spyOn(contexts, "loadCommandContext").mockImplementation((...args) =>
++      observe("loadCommandContext", () => load(...args)),
++    );
++    vi.spyOn(routes, "buildTaskRouteDecision").mockImplementation((...args) =>
++      observe("buildTaskRouteDecision", () => route(...args)),
++    );
++    vi.spyOn(orders, "prepareAgentWorkOrder").mockImplementation((...args) =>
++      observe("prepareAgentWorkOrder", () => order(...args)),
++    );
++  }
++  async function invoke(stage: string, argv: string[]) {
++    observedCalls = [];
++    const io = captureStdIO();
++    const start = performance.now();
++    try {
++      const code = await runCli([...argv, "--root", root]);
++      const durationMs = performance.now() - start;
++      const preparation = io.stderr.split("\n").flatMap((line) => {
++        if (!line.startsWith("{")) return [];
++        const event = JSON.parse(line) as {
++          component: string;
++          event: string;
++          details: {
++            node: string;
++            status: string;
++            duration_ms: number;
++            fingerprint: string;
++            output_digest: string;
++          };
++        };
++        if (
++          event.component !== "preparation-graph" &&
++          !(event.component === "command-session" && event.event === "preparation_node")
++        )
++          return [];
++        const { node, status, duration_ms, fingerprint, output_digest } = event.details;
++        return [{ node, status, duration_ms, fingerprint, output_digest }];
++      });
++      calls.push({
++        stage,
++        duration_ms: durationMs,
++        exit_code: code,
++        ...(preparation.length > 0 ? { preparation } : {}),
++        ...(observedCalls.length > 0 ? { observed_calls: observedCalls } : {}),
++      });
++      expect(code, io.stderr).toBe(0);
++      return io.stdout;
++    } finally {
++      io.restore();
++    }
++  }
++  const taskIdOutput = await invoke("setup", [
++    "task",
++    "new",
++    "--title",
++    "Include the exact threshold",
++    "--description",
++    "Change value > 10 to value >= 10 in eligible.cjs. Check 9, 10 and 11.",
++    "--owner",
++    "CODER",
++    "--tag",
++    "code",
++    "--verify",
++    "bun run check",
++  ]);
++  const taskId = taskIdOutput.trim();
++  const planning = JSON.parse(
++    await invoke("prepare:PLANNER", ["task", "advance", taskId, "--agent-json"]),
++  ) as AgentPacket;
++  expect(planning.authority.role).toBe("PLANNER");
++
++  async function submit(packet: AgentPacket, summary: string) {
++    const exchange = packet.exchange!;
++    const resultPath = await writeCompletedResult(
++      packet,
++      summary,
++      packet.authority.role === "EVALUATOR"
++        ? { verdict: "pass", missing_tests: [], hidden_assumptions: [], residual_risks: [] }
++        : undefined,
++      packet.authority.role === "PLANNER"
++        ? {
++            task_kind: "code",
++            mutation_scope: "code",
++            risk_flags: [],
++            tags: ["code"],
++            execution: {
++              schema_version: 2,
++              preferred_mode: "direct",
++              scope_roots: ["eligible.cjs"],
++              repository_effects: ["repository_write", "source_code"],
++              external_effects: [],
++              requirements_uncertainty: "bounded",
++              implementation_uncertainty: "bounded",
++              reversibility: "reversible",
++              rationale: ["Change one local condition and preserve the existing boundary check."],
++            },
++          }
++        : undefined,
++      packet.authority.role === "PLANNER",
++    );
++    if (packet.authority.role === "PLANNER") {
++      const result = JSON.parse(await readFile(resultPath, "utf8")) as ExternalAgentResultEnvelope;
++      const proposal = result.result.task_plan_proposal!;
++      const item = proposal.work_items.work_items[0]!;
++      item.objective = "Include value 10 in eligible.cjs and preserve the neighboring cases.";
++      item.scope_roots = ["eligible.cjs"];
++      item.acceptance_criteria[0]!.description = "The boundary test passes for 9, 10 and 11.";
++      item.validation.criteria[0]!.description = item.acceptance_criteria[0]!.description;
++      proposal.top_level_validation.criteria[0]!.description =
++        item.acceptance_criteria[0]!.description;
++      await writeFile(resultPath, `${JSON.stringify(result, null, 2)}\n`);
++    }
++    if (exchange.result_format === "semantic_payload_v1") {
++      const envelope = JSON.parse(
++        await readFile(resultPath, "utf8"),
++      ) as ExternalAgentResultEnvelope;
++      const {
++        schema_version: _version,
++        kind: _kind,
++        canonical_binding: _binding,
++        ...semantic
++      } = envelope.result;
++      const payload: Record<string, unknown> = { ...semantic };
++      const proposal = semantic.task_plan_proposal;
++      if (proposal) {
++        const { acceptance_criteria, validation, ...item } = proposal.work_items.work_items[0]!;
++        payload.task_plan_proposal = {
++          schema_version: 2,
++          criteria: acceptance_criteria,
++          checks: validation.checks,
++          work_items: [item],
++        };
++      }
++      await writeFile(resultPath, `${JSON.stringify(payload, null, 2)}\n`);
++    }
++    const workOrderBytes = await readFile(path.join(exchange.directory, exchange.work_order_ref));
++    const manifestBytes = await readFile(path.join(exchange.directory, "work-order-context.json"));
++    const resultBytes = await readFile(resultPath);
++    exchanges.push({
++      role: packet.authority.role,
++      schema: await schemaClosure(path.join(exchange.directory, exchange.result_schema_ref)),
++      work_order_bytes: workOrderBytes.length,
++      manifest_bytes: manifestBytes.length,
++      result_bytes: resultBytes.length,
++    });
++    return JSON.parse(
++      await invoke(`admit:${packet.authority.role}`, exchange.resume_argv.slice(1)),
++    ) as AgentPacket;
++  }
++  const approval = await submit(planning, "Include the threshold and run the boundary check.");
++  expect(approval.action.kind).toBe("approval_required");
++  await setTaskVerifySteps(root, taskId);
++  await invoke("fixture_approval", ["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR"]);
++  const implementation = JSON.parse(
++    await invoke("prepare:EXECUTOR", ["task", "advance", taskId, "--agent-json"]),
++  ) as AgentPacket;
++  expect(implementation.authority.role).toBe("EXECUTOR");
++  await writeFile(path.join(root, "eligible.cjs"), after);
++  await exec(process.execPath, ["check.cjs"], { cwd: root });
++  const review = await submit(
++    implementation,
++    "Included the exact threshold. Boundary check passed.",
++  );
++  expect(review.authority.role).toBe("EVALUATOR");
++  const terminal = await submit(review, "The boundary and neighboring cases are correct.");
++  expect(terminal.action.kind).toBe("terminal");
++  expect(exchanges.map((item) => item.role)).toEqual(["PLANNER", "EXECUTOR", "EVALUATOR"]);
++  expect(await readFile(path.join(root, "eligible.cjs"), "utf8")).toBe(after);
++
++  const baseline = JSON.parse(
++    await readFile(path.resolve("scripts/baselines/protocol-cost-SRM6JM-before-01.json"), "utf8"),
++  ) as { totals: { required_schema_bytes: number; agent_result_bytes: number } };
++  expect(exchanges.reduce((sum, item) => sum + item.schema.bytes, 0)).toBeLessThanOrEqual(
++    baseline.totals.required_schema_bytes * 0.3,
++  );
++  expect(exchanges.reduce((sum, item) => sum + item.result_bytes, 0)).toBeLessThanOrEqual(
++    baseline.totals.agent_result_bytes * 0.5,
++  );
++
++  const reportPath = process.env.AGENTPLANE_PROTOCOL_COST_REPORT;
++  if (reportPath) {
++    const output = path.resolve(reportPath);
++    const outputRoot = path.resolve("scripts/baselines");
++    expect(path.dirname(output)).toBe(outputRoot);
++    const head = await exec("git", ["rev-parse", "HEAD"], { cwd: process.cwd() });
++    const patch = await exec("git", ["diff", "HEAD", "--", "packages", "scripts"], {
++      cwd: process.cwd(),
++      maxBuffer: 10 * 1024 * 1024,
++    });
++    await writeFile(
++      output,
++      `${JSON.stringify(
++        {
++          schema_version: 1,
++          source: {
++            head: head.stdout.trim(),
++            tracked_patch_digest: digest(patch.stdout),
++            probe_digest: digest(await readFile(new URL(import.meta.url), "utf8")),
++          },
++          runtime: {
++            node: process.version,
++            executable: process.execPath,
++            platform: process.platform,
++            architecture: process.arch,
++            harness: "Vitest in-process runCli; no provider",
++            profiling: process.env.AGENTPLANE_TRACE === "1",
++          },
++          fixture: {
++            before,
++            after,
++            check,
++            digest: digest(JSON.stringify({ before, after, check })),
++          },
++          exchanges,
++          calls,
++          totals: {
++            semantic_exchanges: exchanges.length,
++            result_retries: calls.filter(
++              (call) => call.stage.startsWith("admit:") && call.exit_code !== 0,
++            ).length,
++            required_schema_bytes: exchanges.reduce((sum, item) => sum + item.schema.bytes, 0),
++            agent_result_bytes: exchanges.reduce((sum, item) => sum + item.result_bytes, 0),
++            cli_protocol_ms: calls
++              .filter((call) => /^(prepare|admit):/u.test(call.stage))
++              .reduce((sum, call) => sum + call.duration_ms, 0),
++          },
++          model: { elapsed_ms: null, input_tokens: null, output_tokens: null, cached_tokens: null },
++          user_wait_ms: null,
++          limitations: [
++            "Scripted semantic results, not a model run.",
++            "CLI admission includes native transitions and checks, and can prepare the next episode.",
++            "Schema bytes count each complete reference closure per exchange; they are not token counts.",
++            "WorkOrder and manifest sizes exclude referenced source contents and provider transport.",
++          ],
++        },
++        null,
++        2,
++      )}\n`,
++      { flag: "wx" },
++    );
++  }
++}, 60_000);
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-advance.test.ts b/packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+index 862cbd93c..b3269d82c 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-advance.test.ts
+@@ -48,6 +48,7 @@ import { buildObservedGithubPrMeta, buildOpenedPrMeta } from "../commands/shared
+ import {
+   externalAgentResultDigest,
+   type ExternalAgentExchange,
++  type ExternalAgentResultEnvelope,
+   validateExternalAgentResultEnvelope,
+ } from "../commands/task/external-agent-exchange.js";
+ import { applyExternalPlanningResult } from "../commands/task/external-agent-planning-authority.js";
+@@ -567,41 +568,51 @@ describe("runCli task advance", { timeout: 180_000 }, () => {
+     );
+   });
+ 
+-  it("rejects a stale planning result before applying semantic task state", async () => {
+-    const root = await mkGitRepoRootWithMainCommit();
+-    const config = defaultConfig();
+-    config.workflow_mode = "branch_pr";
+-    await writeConfig(root, config);
+-    const taskId = await createTask(root, "Stale planning result");
+-    const issued = await readAgentPacket(root, taskId);
+-    const resultPath = await writeCompletedResult(
+-      issued,
+-      "This stale plan must not be applied.",
+-      undefined,
+-      undefined,
+-      true,
+-    );
+-    await runCliSilent([
+-      "task",
+-      "comment",
+-      taskId,
+-      "--author",
+-      "USER",
+-      "--body",
+-      "Concurrent scope clarification.",
+-      "--root",
+-      root,
+-    ]);
++  it.each(["envelope", "compact"])(
++    "rejects a stale %s planning result before applying semantic task state",
++    async (format) => {
++      const root = await mkGitRepoRootWithMainCommit();
++      const config = defaultConfig();
++      config.workflow_mode = "branch_pr";
++      await writeConfig(root, config);
++      const taskId = await createTask(root, "Stale planning result");
++      const issued = await readAgentPacket(root, taskId);
++      const resultPath = await writeCompletedResult(
++        issued,
++        "This stale plan must not be applied.",
++        undefined,
++        undefined,
++        true,
++      );
++      if (format === "compact") {
++        const envelope = JSON.parse(
++          await readFile(resultPath, "utf8"),
++        ) as ExternalAgentResultEnvelope;
++        const { schema_version: _version, kind: _kind, ...payload } = envelope.result;
++        await writeFile(resultPath, JSON.stringify(payload));
++      }
++      await runCliSilent([
++        "task",
++        "comment",
++        taskId,
++        "--author",
++        "USER",
++        "--body",
++        "Concurrent scope clarification.",
++        "--root",
++        root,
++      ]);
+ 
+-    const stale = await returnAgentResult(root, taskId, resultPath);
+-    expect(stale.code).not.toBe(0);
+-    expect(stale.stderr).toContain("stale");
+-    const readme = await readFile(
+-      path.join(root, ".agentplane", "tasks", taskId, "README.md"),
+-      "utf8",
+-    );
+-    expect(readme).not.toContain("This stale plan must not be applied.");
+-  });
++      const stale = await returnAgentResult(root, taskId, resultPath);
++      expect(stale.code).not.toBe(0);
++      expect(stale.stderr).toContain("stale");
++      const readme = await readFile(
++        path.join(root, ".agentplane", "tasks", taskId, "README.md"),
++        "utf8",
++      );
++      expect(readme).not.toContain("This stale plan must not be applied.");
++    },
++  );
+ 
+   it("rejects a read-only evaluator result after a concurrent commit transition", async () => {
+     const root = await mkGitRepoRootWithCommit();
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-advance.testkit.ts b/packages/agentplane/src/cli/run-cli.core.task-advance.testkit.ts
+index d93e03bc1..bf9df1612 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-advance.testkit.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-advance.testkit.ts
+@@ -84,6 +84,7 @@ export type AgentPacket = {
+     authority_reference: string;
+   };
+   exchange?: {
++    result_format?: "semantic_payload_v1";
+     directory: string;
+     work_order_ref: string;
+     result_schema_ref: string;
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts b/packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts
+index 83f371b8d..4d3b84202 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts
+@@ -462,7 +462,12 @@ it("shares canonical result schemas across new exchanges and preserves historica
+   const firstPath = path.resolve(first.exchange.directory, first.exchange.result_schema_ref);
+   const secondPath = path.resolve(second.exchange.directory, second.exchange.result_schema_ref);
+   expect(firstPath).toBe(secondPath);
+-  expect(await readFile(firstPath, "utf8")).toBe(renderAgentSemanticResultSchemaJson());
++  expect(await readFile(firstPath, "utf8")).toBe(
++    renderAgentSemanticResultSchemaJson({
++      role: order.role,
++      phase: order.canonical_binding?.phase,
++    }),
++  );
+   expect(await readdir(path.dirname(firstPath))).toHaveLength(1);
+   expect(await readdir(first.exchange.directory)).not.toContain("result-schema.json");
+   const contents = await readFile(firstPath);
+diff --git a/packages/agentplane/src/commands/shared/task-backend.ts b/packages/agentplane/src/commands/shared/task-backend.ts
+index 88bcb7009..861524617 100644
+--- a/packages/agentplane/src/commands/shared/task-backend.ts
++++ b/packages/agentplane/src/commands/shared/task-backend.ts
+@@ -31,12 +31,10 @@ import {
+ 
+ export {
+   loadTaskFromBranchSnapshot,
+-  resolveAuthoritativeTaskWorktree,
+   resolveTaskBranchFromContext,
+-  taskBranchHasLocalRef,
+ } from "./task-backend-branch-snapshot.js";
+ 
+-export type CommandMemo = {
++type CommandMemo = {
+   tasks?: Promise<TaskData[]>;
+   taskProjection?: Promise<TaskSummary[]>;
+   taskBranchInventory?: Promise<{
+@@ -163,11 +161,11 @@ export function getTaskBackendCapabilities(ctx: CommandContext) {
+   } satisfies TaskBackendCapabilities;
+ }
+ 
+-export function backendHasLocalCanonicalSource(ctx: CommandContext): boolean {
++function backendHasLocalCanonicalSource(ctx: CommandContext): boolean {
+   return getTaskBackendCapabilities(ctx).canonical_source === "local";
+ }
+ 
+-export function backendWritesTaskReadmes(ctx: CommandContext): boolean {
++function backendWritesTaskReadmes(ctx: CommandContext): boolean {
+   return getTaskBackendCapabilities(ctx).writes_task_readmes === true;
+ }
+ 
+diff --git a/packages/agentplane/src/commands/task/advance.command.ts b/packages/agentplane/src/commands/task/advance.command.ts
+index 0a164e089..eb25e8613 100644
+--- a/packages/agentplane/src/commands/task/advance.command.ts
++++ b/packages/agentplane/src/commands/task/advance.command.ts
+@@ -120,15 +120,21 @@ export function makeRunTaskAdvanceHandler(deps: {
+         result_path: parsed.result,
+         include_remote: parsed.remote,
+       });
+-      const checkout = accepted.executionPacket.mustRunFrom ?? accepted.workspace.root;
+-      const refreshedCommand = await loadCommandContext({ cwd: checkout, rootOverride: null });
+-      current = await buildTaskRouteDecision({
+-        ctx: refreshedCommand,
+-        cwd: checkout,
+-        rootOverride: null,
+-        includeRemote: parsed.remote,
+-        taskId: parsed.taskId,
+-      });
++      if (accepted.workflowMode === "direct") {
++        // Admission observed the route after semantic mutation. Its subsequent journal
++        // bookkeeping does not change direct route inputs; native transitions refresh below.
++        current = accepted;
++      } else {
++        const checkout = accepted.executionPacket.mustRunFrom ?? accepted.workspace.root;
++        const refreshedCommand = await loadCommandContext({ cwd: checkout, rootOverride: null });
++        current = await buildTaskRouteDecision({
++          ctx: refreshedCommand,
++          cwd: checkout,
++          rootOverride: null,
++          includeRemote: parsed.remote,
++          taskId: parsed.taskId,
++        });
++      }
+     } else {
+       const routed = await decide();
+       current =
+@@ -386,6 +392,9 @@ export function makeRunTaskAdvanceHandler(deps: {
+       ...(exchange
+         ? {
+             exchange: {
++              ...(exchange.exchange.result_format
++                ? { result_format: exchange.exchange.result_format }
++                : {}),
+               directory: exchange.paths.directory,
+               work_order_ref: "work-order.json",
+               result_schema_ref: "result-schema.json",
+diff --git a/packages/agentplane/src/commands/task/agent-action-packet.ts b/packages/agentplane/src/commands/task/agent-action-packet.ts
+index a03b90c7e..1226c8770 100644
+--- a/packages/agentplane/src/commands/task/agent-action-packet.ts
++++ b/packages/agentplane/src/commands/task/agent-action-packet.ts
+@@ -84,6 +84,7 @@ export type AgentActionPacket = {
+     };
+   };
+   exchange?: {
++    result_format?: "semantic_payload_v1";
+     directory: string;
+     work_order_ref: string;
+     result_schema_ref: string;
+@@ -451,6 +452,16 @@ export function buildAgentActionPacket(opts: {
+     ...(opts.recovery ? { recovery: opts.recovery } : {}),
+   };
+ 
++  if (packet.exchange?.result_format === "semantic_payload_v1") {
++    packet.action.instruction =
++      packet.action.instruction
++        .replaceAll(/\bresult\./gu, "")
++        .replace(
++          "Copy work_order.planning_context.repository_snapshot exactly into planning_baseline.",
++          "Use the issued result schema for the plan representation. Keep summary short; do not repeat the plan.",
++        ) +
++      "\nReturn only the semantic payload described by result_schema_ref. Copy work_order_id from the issued WorkOrder.";
++  }
+   if (packet.exchange) {
+     const manifest = buildWorkOrderContextManifest(
+       opts.work_order,
+diff --git a/packages/agentplane/src/commands/task/external-agent-exchange.test.ts b/packages/agentplane/src/commands/task/external-agent-exchange.test.ts
+index ad7656b56..523918f2a 100644
+--- a/packages/agentplane/src/commands/task/external-agent-exchange.test.ts
++++ b/packages/agentplane/src/commands/task/external-agent-exchange.test.ts
+@@ -6,7 +6,17 @@ import path from "node:path";
+ import { describe, expect, it, vi } from "vitest";
+ 
+ import * as stableFile from "../../shared/stable-file.js";
+-import { resolveExternalAgentExchangePaths } from "./external-agent-exchange.js";
++import {
++  AGENT_WORK_ORDER_V2_VALID_FIXTURE,
++  buildAgentSemanticResultV2ValidFixtures,
++} from "@agentplaneorg/core/schemas";
++import { externalAgentResultIdentity } from "./external-agent-result-routing.js";
++import {
++  resolveExternalAgentExchangePaths,
++  validateExternalAgentResultEnvelope,
++  externalAgentIssueDigest,
++  type ExternalAgentExchange,
++} from "./external-agent-exchange.js";
+ import { captureExternalTaskArtifacts } from "./external-agent-task-artifact-baseline.js";
+ 
+ describe("resolveExternalAgentExchangePaths", () => {
+@@ -69,3 +79,94 @@ describe("external exchange task artifact snapshot", () => {
+     }
+   });
+ });
++
++describe("compact external result admission", () => {
++  it("requires issuance opt-in and binds the normalized envelope to immutable identity", () => {
++    const order = AGENT_WORK_ORDER_V2_VALID_FIXTURE;
++    const exchange: ExternalAgentExchange = {
++      schema_version: 1,
++      kind: "external_agent_exchange",
++      status: "issued",
++      issue_digest_version: 2,
++      task_id: order.task.id,
++      transition_id: `tr_${"b".repeat(32)}`,
++      state_fingerprint: order.state_fingerprint.digest,
++      role: order.role,
++      purpose: "implementation",
++      checkout: "/repo",
++      work_order_id: order.work_order_id,
++      work_order_ref: "work-order.json",
++      result_schema_ref: "result-schema.json",
++      result_ref: "result.json",
++      evaluator_work_order_ref: null,
++      baseline: { head: null, changed_paths: [] },
++      result_digest: null,
++      result: null,
++      postcondition_fingerprint: null,
++      created_at: "2026-09-08T00:00:00Z",
++      updated_at: "2026-09-08T00:00:00Z",
++    };
++    const result = buildAgentSemanticResultV2ValidFixtures(order.work_order_id).completed;
++    const { schema_version: _version, kind: _kind, ...payload } = result;
++    const compact = { ...exchange, result_format: "semantic_payload_v1" as const };
++    const envelope = {
++      schema_version: 1,
++      kind: "agent_action_result",
++      task_id: exchange.task_id,
++      transition_id: exchange.transition_id,
++      state_fingerprint: exchange.state_fingerprint,
++      role: exchange.role,
++      result,
++    };
++    const validate = (raw: unknown, issued = compact) =>
++      validateExternalAgentResultEnvelope({ raw, exchange: issued, work_order: order });
++    expect(validate(payload)).toEqual(envelope);
++    expect(validate(envelope)).toEqual(envelope);
++    expect(
++      validateExternalAgentResultEnvelope({ raw: envelope, exchange, work_order: order }),
++    ).toEqual(envelope);
++    expect(() =>
++      validateExternalAgentResultEnvelope({ raw: payload, exchange, work_order: order }),
++    ).toThrow();
++    expect(externalAgentIssueDigest({ exchange: compact, work_order: order })).not.toBe(
++      externalAgentIssueDigest({ exchange, work_order: order }),
++    );
++    for (const raw of [
++      { ...payload, work_order_id: "foreign" },
++      { ...payload, role: "PLANNER" },
++      { ...envelope, task_id: "foreign" },
++    ])
++      expect(() => validate(raw)).toThrow();
++    const root = "/repo/.git/agentplane/external-agent";
++    const issuedPath = {
++      exchange_root: root,
++      task_id: order.task.id,
++      result_path: path.join(
++        root,
++        order.task.id,
++        exchange.transition_id,
++        exchange.state_fingerprint.slice(7),
++        "result.json",
++      ),
++    };
++    expect(externalAgentResultIdentity(payload, issuedPath)).toEqual({
++      task_id: exchange.task_id,
++      transition_id: exchange.transition_id,
++      state_fingerprint: exchange.state_fingerprint,
++    });
++    for (const result_path of [
++      "/tmp/result.json",
++      path.join(
++        root,
++        "foreign",
++        exchange.transition_id,
++        exchange.state_fingerprint.slice(7),
++        "result.json",
++      ),
++    ]) {
++      expect(() => externalAgentResultIdentity(payload, { ...issuedPath, result_path })).toThrow(
++        "issued result path",
++      );
++    }
++  });
++});
+diff --git a/packages/agentplane/src/commands/task/external-agent-exchange.ts b/packages/agentplane/src/commands/task/external-agent-exchange.ts
+index 04da7f45f..6a1e5a291 100644
+--- a/packages/agentplane/src/commands/task/external-agent-exchange.ts
++++ b/packages/agentplane/src/commands/task/external-agent-exchange.ts
+@@ -36,6 +36,7 @@ export type ExternalAgentExchange = {
+   kind: "external_agent_exchange";
+   status: "prepared" | "issued" | "result_received" | "accepted" | "consumed" | "retired";
+   issue_digest_version?: 2;
++  result_format?: "semantic_payload_v1";
+   task_id: string;
+   transition_id: string;
+   state_fingerprint: string;
+@@ -197,14 +198,20 @@ export async function persistExternalAgentExchangeArtifacts(opts: {
+     ),
+     atomicWriteFile(
+       opts.paths.result_schema,
+-      `${JSON.stringify(resultEnvelopeSchema(), null, 2)}\n`,
+-      "utf8",
+-    ),
+-    atomicWriteFile(
+-      opts.paths.semantic_result_schema,
+-      renderAgentSemanticResultSchemaJson(),
++      opts.exchange.result_format === "semantic_payload_v1"
++        ? renderAgentSemanticResultSchemaJson({ role: opts.work_order.role })
++        : `${JSON.stringify(resultEnvelopeSchema(), null, 2)}\n`,
+       "utf8",
+     ),
++    ...(opts.exchange.result_format === "semantic_payload_v1"
++      ? []
++      : [
++          atomicWriteFile(
++            opts.paths.semantic_result_schema,
++            renderAgentSemanticResultSchemaJson(),
++            "utf8",
++          ),
++        ]),
+   ]);
+   await atomicWriteFile(
+     path.join(opts.paths.directory, WORK_ORDER_CONTEXT_FILENAME),
+@@ -231,8 +238,10 @@ export function validateExternalAgentResultEnvelope(opts: {
+     });
+   }
+   const raw = opts.raw as Record<string, unknown>;
++  const compact = opts.exchange.result_format === "semantic_payload_v1" && raw.kind === undefined;
+   if (
+-    !exactKeys(raw, [
++    !compact &&
++    (!exactKeys(raw, [
+       "kind",
+       "result",
+       "role",
+@@ -241,8 +250,8 @@ export function validateExternalAgentResultEnvelope(opts: {
+       "task_id",
+       "transition_id",
+     ]) ||
+-    raw.schema_version !== 1 ||
+-    raw.kind !== "agent_action_result"
++      raw.schema_version !== 1 ||
++      raw.kind !== "agent_action_result")
+   ) {
+     throw new CliError({
+       code: "E_VALIDATION",
+@@ -255,7 +264,7 @@ export function validateExternalAgentResultEnvelope(opts: {
+     ["state_fingerprint", opts.exchange.state_fingerprint],
+     ["role", opts.exchange.role],
+   ] as const) {
+-    if (raw[field] !== expected) {
++    if (!compact && raw[field] !== expected) {
+       throw new CliError({
+         code: "E_VALIDATION",
+         message: `External-agent result ${field} does not match the issued exchange.`,
+@@ -266,7 +275,8 @@ export function validateExternalAgentResultEnvelope(opts: {
+   try {
+     result = validateAgentSemanticResultForWorkOrder({
+       work_order: opts.work_order,
+-      semantic_result: raw.result,
++      semantic_result: compact ? raw : raw.result,
++      ...(compact ? { format: "semantic_payload_v1" } : {}),
+     });
+   } catch (error) {
+     throw new CliError({
+@@ -312,6 +322,7 @@ export function externalAgentIssueDigest(opts: {
+     evaluator_work_order_ref: exchange.evaluator_work_order_ref,
+     baseline: exchange.baseline,
+     work_order: validateAgentWorkOrderV2(opts.work_order),
++    ...(exchange.result_format ? { result_format: exchange.result_format } : {}),
+   };
+   return sha256(
+     JSON.stringify(
+diff --git a/packages/agentplane/src/commands/task/external-agent-purpose.ts b/packages/agentplane/src/commands/task/external-agent-purpose.ts
+index d9c675a04..f7e2a52c9 100644
+--- a/packages/agentplane/src/commands/task/external-agent-purpose.ts
++++ b/packages/agentplane/src/commands/task/external-agent-purpose.ts
+@@ -1,3 +1,4 @@
++import type { TaskRouteDecision } from "../shared/route-decision-types.js";
+ import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
+ 
+ import type { ExternalAgentExchange } from "./external-agent-exchange.js";
+@@ -19,3 +20,18 @@ export function recoversRecordedImplementationCommit(
+ ): boolean {
+   return purpose === "implementation";
+ }
++
++export function semanticPurpose(
++  decision: TaskRouteDecision,
++): ExternalAgentExchange["purpose"] | null {
++  const step = decision.workflowStep;
++  if (step.kind === "agent_episode") return step.episode.purpose;
++  if (
++    step.kind === "cli_operation" &&
++    step.operation.id === "runner.follow" &&
++    step.operation.params.mode === "run"
++  ) {
++    return "implementation";
++  }
++  return null;
++}
+diff --git a/packages/agentplane/src/commands/task/external-agent-result-routing.ts b/packages/agentplane/src/commands/task/external-agent-result-routing.ts
+index 090ed9d8a..c2a3416bf 100644
+--- a/packages/agentplane/src/commands/task/external-agent-result-routing.ts
++++ b/packages/agentplane/src/commands/task/external-agent-result-routing.ts
+@@ -1,9 +1,17 @@
++import path from "node:path";
+ import { CliError } from "../../shared/errors.js";
+ import { buildTaskRouteDecision } from "../shared/route-decision.js";
+ import type { TaskRouteDecision } from "../shared/route-decision-types.js";
+ import { loadCommandContext } from "../shared/task-backend.js";
+ 
+-export function externalAgentResultIdentity(raw: unknown): {
++export function externalAgentResultIdentity(
++  raw: unknown,
++  issuedPath?: {
++    task_id: string;
++    exchange_root: string;
++    result_path: string;
++  },
++): {
+   task_id: string;
+   transition_id: string;
+   state_fingerprint: string;
+@@ -15,6 +23,28 @@ export function externalAgentResultIdentity(raw: unknown): {
+     });
+   }
+   const value = raw as Record<string, unknown>;
++  if (value.kind === undefined && typeof value.work_order_id === "string" && issuedPath) {
++    const parts = path
++      .relative(path.join(issuedPath.exchange_root, issuedPath.task_id), issuedPath.result_path)
++      .split(path.sep);
++    const [transition, fingerprint, file] = parts;
++    if (
++      parts.length !== 3 ||
++      !/^tr_[a-f0-9]{32}$/u.test(transition ?? "") ||
++      !/^[a-f0-9]{64}$/u.test(fingerprint ?? "") ||
++      file !== "result.json"
++    ) {
++      throw new CliError({
++        code: "E_VALIDATION",
++        message: "Compact result must use its issued result path.",
++      });
++    }
++    return {
++      task_id: issuedPath.task_id,
++      transition_id: transition!,
++      state_fingerprint: `sha256:${fingerprint}`,
++    };
++  }
+   const taskId = typeof value.task_id === "string" ? value.task_id : "";
+   const transitionId = typeof value.transition_id === "string" ? value.transition_id : "";
+   const fingerprint = typeof value.state_fingerprint === "string" ? value.state_fingerprint : "";
+diff --git a/packages/agentplane/src/commands/task/external-agent-supervisor.ts b/packages/agentplane/src/commands/task/external-agent-supervisor.ts
+index 959ea2dd7..64561c13d 100644
+--- a/packages/agentplane/src/commands/task/external-agent-supervisor.ts
++++ b/packages/agentplane/src/commands/task/external-agent-supervisor.ts
+@@ -44,7 +44,7 @@ import {
+   assertExternalAgentSupervisorIntent,
+   finalizeCompletedExternalAgentExchange,
+ } from "./external-agent-exchange-authority.js";
+-import { usesExternalImplementationAuthority } from "./external-agent-purpose.js";
++import { semanticPurpose, usesExternalImplementationAuthority } from "./external-agent-purpose.js";
+ import {
+   bindPreparedEvaluatorState,
+   evaluatorReturnFingerprint,
+@@ -70,19 +70,6 @@ export type IssuedExternalAgentExchange = {
+   work_order: AgentWorkOrderV2;
+ };
+ 
+-function semanticPurpose(decision: TaskRouteDecision): ExternalAgentExchange["purpose"] | null {
+-  const step = decision.workflowStep;
+-  if (step.kind === "agent_episode") return step.episode.purpose;
+-  if (
+-    step.kind === "cli_operation" &&
+-    step.operation.id === "runner.follow" &&
+-    step.operation.params.mode === "run"
+-  ) {
+-    return "implementation";
+-  }
+-  return null;
+-}
+-
+ function digestText(value: string): string {
+   return `sha256:${createHash("sha256").update(value, "utf8").digest("hex")}`;
+ }
+@@ -237,6 +224,7 @@ async function issueExternalAgentExchangeUnlocked(opts: {
+     schema_version: 1,
+     kind: "external_agent_exchange",
+     issue_digest_version: 2,
++    result_format: "semantic_payload_v1",
+     status: "prepared",
+     task_id: opts.decision.task.id,
+     transition_id: transitionId,
+@@ -347,15 +335,20 @@ export async function acceptExternalAgentResult(opts: {
+   result_path: string;
+   include_remote: boolean;
+ }): Promise<TaskRouteDecision> {
+-  const raw = await readExternalAgentResult(path.resolve(opts.ctx.cwd, opts.result_path));
+-  const identity = externalAgentResultIdentity(raw);
++  const resultPath = path.resolve(opts.ctx.cwd, opts.result_path);
++  const raw = await readExternalAgentResult(resultPath);
++  const commonGitDir = await resolveCommandGitCommonDir(opts.command);
++  const identity = externalAgentResultIdentity(raw, {
++    task_id: opts.task_id,
++    exchange_root: path.join(commonGitDir, "agentplane", "external-agent"),
++    result_path: resultPath,
++  });
+   if (identity.task_id !== opts.task_id) {
+     throw new CliError({
+       code: "E_VALIDATION",
+       message: "Result task_id does not match command task id.",
+     });
+   }
+-  const commonGitDir = await resolveCommandGitCommonDir(opts.command);
+   const paths = await resolveExternalAgentExchangePaths({
+     git_root: opts.command.resolvedProject.gitRoot,
+     common_git_dir: commonGitDir,
+diff --git a/packages/agentplane/src/commands/task/kernel-exchange.ts b/packages/agentplane/src/commands/task/kernel-exchange.ts
+index 7f9d8e5e7..f3aedff06 100644
+--- a/packages/agentplane/src/commands/task/kernel-exchange.ts
++++ b/packages/agentplane/src/commands/task/kernel-exchange.ts
+@@ -1,3 +1,4 @@
++import { isRecord } from "../../shared/guards.js";
+ import {
+   putEvaluatorEvidenceObject,
+   readEvaluatorEvidenceObject,
+@@ -14,6 +15,7 @@ import {
+   AGENT_WORK_ORDER_V2_ZOD_SCHEMA,
+   renderAgentSemanticResultSchemaJson,
+   AGENT_SEMANTIC_RESULT_ZOD_SCHEMA,
++  validateAgentSemanticResultForWorkOrder,
+   type AgentWorkOrderV2,
+ } from "@agentplaneorg/core/schemas";
+ import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js";
+@@ -67,14 +69,20 @@ export async function readKernelOrderResult(
+   taskId: string,
+   resultPath: string,
+ ) {
+-  const semantic = AGENT_SEMANTIC_RESULT_ZOD_SCHEMA.parse(
+-    JSON.parse(
+-      await readStableRegularTextNoFollow(resultPath, "canonical semantic result", {
+-        max_bytes: 4 * 1024 * 1024,
+-      }),
+-    ),
++  const raw: unknown = JSON.parse(
++    await readStableRegularTextNoFollow(resultPath, "canonical semantic result", {
++      max_bytes: 4 * 1024 * 1024,
++    }),
+   );
+-  const directory = await kernelExchangeDirectory(ctx, taskId, semantic.work_order_id);
++  if (
++    !raw ||
++    typeof raw !== "object" ||
++    Array.isArray(raw) ||
++    !("work_order_id" in raw) ||
++    typeof raw.work_order_id !== "string"
++  )
++    throw new Error("Canonical result requires its issued work_order_id");
++  const directory = await kernelExchangeDirectory(ctx, taskId, raw.work_order_id);
+   if (path.resolve(resultPath) !== path.join(directory, "result.json"))
+     throw new Error("Canonical result path mismatch");
+   const workOrder = AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse(
+@@ -85,6 +93,28 @@ export async function readKernelOrderResult(
+       ),
+     ),
+   );
++  const compact = !("kind" in raw);
++  if (compact) {
++    const owner: unknown = JSON.parse(
++      await readStableRegularTextNoFollow(
++        path.join(directory, "transport-owner.json"),
++        "canonical transport owner",
++      ),
++    );
++    if (
++      !isRecord(owner) ||
++      owner.result_format !== "semantic_payload_v1" ||
++      owner.work_order_id !== workOrder.work_order_id
++    )
++      throw new Error("This canonical exchange does not accept compact results");
++  }
++  const semantic = compact
++    ? validateAgentSemanticResultForWorkOrder({
++        work_order: workOrder,
++        semantic_result: raw,
++        format: "semantic_payload_v1",
++      })
++    : AGENT_SEMANTIC_RESULT_ZOD_SCHEMA.parse(raw);
+   if (
+     workOrder.task.id !== taskId ||
+     workOrder.work_order_id !== semantic.work_order_id ||
+@@ -178,10 +208,31 @@ export async function issueKernelExchange(
+ ) {
+   const directory = await kernelExchangeDirectory(ctx, order.task.id, order.work_order_id);
+   order = await withKernelReworkEvidence(order, directory, record);
+-  await writeKernelArtifact(directory, "transport-owner.json", {
+-    transport,
+-    work_order_id: order.work_order_id,
+-  });
++  let resultFormat: "semantic_payload_v1" | undefined;
++  try {
++    const owner: unknown = JSON.parse(
++      await readStableRegularTextNoFollow(
++        path.join(directory, "transport-owner.json"),
++        "canonical transport owner",
++      ),
++    );
++    if (
++      !isRecord(owner) ||
++      owner.transport !== transport ||
++      owner.work_order_id !== order.work_order_id ||
++      (owner.result_format !== undefined && owner.result_format !== "semantic_payload_v1")
++    )
++      throw new Error("Canonical transport owner mismatch");
++    resultFormat = owner.result_format;
++  } catch (error) {
++    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
++    resultFormat = "semantic_payload_v1";
++    await writeKernelArtifact(directory, "transport-owner.json", {
++      transport,
++      work_order_id: order.work_order_id,
++      result_format: resultFormat,
++    });
++  }
+   await writeKernelArtifact(directory, "work-order.json", order);
+   const qualityRoot = path.join(
+     ctx.resolvedProject.gitRoot,
+@@ -215,7 +266,14 @@ export async function issueKernelExchange(
+         kind: "result_schema",
+         extension: ".json",
+         mediaType: "application/schema+json",
+-        contents: renderAgentSemanticResultSchemaJson(),
++        contents: renderAgentSemanticResultSchemaJson(
++          resultFormat
++            ? {
++                role: order.role,
++                phase: order.canonical_binding?.phase,
++              }
++            : undefined,
++        ),
+       });
+       // Publish the descriptor after its object. Interrupted publication reuses verified bytes.
+       await writeKernelArtifact(directory, "result-schema-object.json", stored);
+@@ -264,6 +322,7 @@ export async function issueKernelExchange(
+           : null,
+     },
+     exchange: {
++      ...(resultFormat ? { result_format: resultFormat } : {}),
+       directory,
+       work_order_ref: "work-order.json",
+       result_schema_ref: resultSchemaRef,
+diff --git a/packages/core/src/runner/agent-semantic-result.test.ts b/packages/core/src/runner/agent-semantic-result.test.ts
+index b8bed7f1b..ff3309792 100644
+--- a/packages/core/src/runner/agent-semantic-result.test.ts
++++ b/packages/core/src/runner/agent-semantic-result.test.ts
+@@ -246,6 +246,36 @@ describe("agent semantic result contract", () => {
+     ).not.toEqual([]);
+   });
+ 
++  it.each([
++    { role: "PLANNER" },
++    { role: "EXECUTOR" },
++    { role: "EVALUATOR" },
++    { role: "PLANNER", phase: "planning" },
++    { role: "EXECUTOR", phase: "implementation" },
++    { role: "EVALUATOR", phase: "inspection" },
++  ] as const)("renders a closed role schema with resolvable shared definitions: %j", (context) => {
++    const text = renderAgentSemanticResultSchemaJson(context);
++    const schema = JSON.parse(text) as Record<string, unknown>;
++    expect(schema.additionalProperties).toBe(false);
++    expect(text.length).toBeLessThan(renderAgentSemanticResultSchemaJson().length * 0.3);
++    function visit(value: unknown) {
++      if (!value || typeof value !== "object") return;
++      const ref = (value as { $ref?: string }).$ref;
++      if (ref) {
++        expect(ref.startsWith("#/"), ref).toBe(true);
++        let resolved: unknown = schema;
++        for (const segment of ref.slice(2).split("/")) {
++          resolved = (resolved as Record<string, unknown>)[
++            segment.replaceAll("~1", "/").replaceAll("~0", "~")
++          ];
++        }
++        expect(resolved, ref).toBeDefined();
++      }
++      for (const child of Object.values(value)) visit(child);
++    }
++    visit(schema);
++  });
++
+   it("renders a strict public schema with the status requirements", () => {
+     const rendered = JSON.parse(renderAgentSemanticResultSchemaJson()) as {
+       oneOf?: {
+diff --git a/packages/core/src/runner/agent-semantic-result.ts b/packages/core/src/runner/agent-semantic-result.ts
+index fa90c72ce..1e0b0ac74 100644
+--- a/packages/core/src/runner/agent-semantic-result.ts
++++ b/packages/core/src/runner/agent-semantic-result.ts
+@@ -11,7 +11,10 @@ import {
+   buildJsonSchemaDocument,
+   schemaErrors,
+ } from "../tasks/task-artifact-schema.shared.js";
+-import { TASK_PLAN_PROPOSAL_ZOD_SCHEMA } from "../tasks/task-centric/schema.js";
++import {
++  COMPACT_TASK_PLAN_PROPOSAL_ZOD_SCHEMA,
++  TASK_PLAN_PROPOSAL_ZOD_SCHEMA,
++} from "../tasks/task-centric/schema.js";
+ 
+ export const AGENT_SEMANTIC_RESULT_SCHEMA_VERSION = 2 as const;
+ export const AGENT_SEMANTIC_RESULT_KIND = "agent_semantic_result" as const;
+@@ -441,8 +444,109 @@ export function validateAgentSemanticResult(value: unknown): AgentSemanticResult
+   return assertValid("agent semantic result", AGENT_SEMANTIC_RESULT_ZOD_SCHEMA, value);
+ }
+ 
+-export function renderAgentSemanticResultSchemaJson(): string {
+-  return `${JSON.stringify(AGENT_SEMANTIC_RESULT_SCHEMA, null, 2)}\n`;
++type SemanticPayloadContext = {
++  role: "PLANNER" | "CURATOR" | "EXECUTOR" | "EVALUATOR";
++  phase?: "planning" | "implementation" | "inspection";
++};
++
++export function buildAgentSemanticPayloadSchema(context: SemanticPayloadContext) {
++  const fields: Record<string, z.ZodType> = {
++    work_order_id: NON_EMPTY_STRING,
++    status: z.enum(AGENT_SEMANTIC_RESULT_STATUS_VALUES),
++    summary: NON_EMPTY_STRING,
++    findings: z.array(z.string()),
++    uncertainty: z.array(z.string()),
++    claimed_checks: AGENT_SEMANTIC_RESULT_BASE_SHAPE.claimed_checks,
++    blocker: AGENT_SEMANTIC_RESULT_BLOCKER_ZOD_SCHEMA.optional(),
++    knowledge_request: AGENT_SEMANTIC_RESULT_KNOWLEDGE_REQUEST_ZOD_SCHEMA.optional(),
++  };
++  if (context.phase === "planning") fields.canonical_plan = kernelPlanProposalSchema.optional();
++  else if (context.phase === "implementation")
++    fields.canonical_outputs = kernelOutputClaimsSchema.optional();
++  else if (!context.phase && context.role === "PLANNER") {
++    fields.task_intent = AGENT_SEMANTIC_RESULT_BASE_SHAPE.task_intent;
++    fields.task_plan_proposal = z
++      .union([COMPACT_TASK_PLAN_PROPOSAL_ZOD_SCHEMA, TASK_PLAN_PROPOSAL_ZOD_SCHEMA])
++      .describe(
++        "Prefer compact schema_version 2. Version 1 remains accepted for previously issued results.",
++      )
++      .optional();
++  } else if (!context.phase && context.role === "EXECUTOR")
++    fields.plan_refinement = AGENT_SEMANTIC_RESULT_BASE_SHAPE.plan_refinement;
++  if (context.role === "EVALUATOR") fields.review = AGENT_SEMANTIC_RESULT_REVIEW_ZOD_SCHEMA;
++  return z.strictObject(fields);
++}
++
++export function renderAgentSemanticResultSchemaJson(context?: SemanticPayloadContext): string {
++  if (!context) return `${JSON.stringify(AGENT_SEMANTIC_RESULT_SCHEMA, null, 2)}\n`;
++  const schema = buildJsonSchemaDocument(
++    buildAgentSemanticPayloadSchema(context),
++    {
++      $id: "https://agentplane.org/schemas/agent-semantic-payload.schema.json",
++      title: `Agent semantic payload (${context.role}, ${context.phase ?? "legacy"})`,
++      description:
++        "Copy work_order_id from the issued WorkOrder. Return only this payload. The CLI binds it to that immutable episode and supplies its service fields. Keep summary short and report each finding once.",
++    },
++    { reused: "ref" },
++  );
++  const completedField =
++    context.phase === "planning"
++      ? "canonical_plan"
++      : context.phase === "implementation"
++        ? "canonical_outputs"
++        : null;
++  /* eslint-disable unicorn/no-thenable -- JSON Schema conditionals require the then keyword. */
++  schema.allOf = [
++    { if: { properties: { status: { const: "blocked" } } }, then: { required: ["blocker"] } },
++    {
++      if: { properties: { status: { const: "needs_context" } } },
++      then: { required: ["knowledge_request"] },
++    },
++    ...(context.role === "EVALUATOR"
++      ? [
++          {
++            if: {
++              properties: { review: { properties: { verdict: { enum: ["pass", "rework"] } } } },
++            },
++            then: { properties: { findings: { minItems: 1 } } },
++          },
++          {
++            if: { properties: { review: { properties: { verdict: { const: "human_review" } } } } },
++            then: { properties: { review: { required: ["recovery_context"] } } },
++          },
++        ]
++      : []),
++    ...(completedField
++      ? [
++          {
++            if: { properties: { status: { const: "completed" } } },
++            then: { required: [completedField] },
++          },
++        ]
++      : []),
++  ];
++  /* eslint-enable unicorn/no-thenable */
++  schema.examples = [
++    {
++      work_order_id: "copy-the-issued-work-order-id",
++      status: "blocked",
++      summary: "The required input is unavailable.",
++      findings: [],
++      uncertainty: [],
++      blocker: { summary: "Describe the concrete missing input." },
++      ...(context.role === "EVALUATOR"
++        ? {
++            review: {
++              verdict: "blocked",
++              missing_tests: [],
++              hidden_assumptions: [],
++              residual_risks: [],
++            },
++          }
++        : {}),
++    },
++  ];
++  return `${JSON.stringify(schema, null, 2)}\n`;
+ }
+ 
+ export function renderAgentSemanticResultV2ValidFixtureJson(
+diff --git a/packages/core/src/runner/agent-work-order.test.ts b/packages/core/src/runner/agent-work-order.test.ts
+index 496a81ff0..859eb6e77 100644
+--- a/packages/core/src/runner/agent-work-order.test.ts
++++ b/packages/core/src/runner/agent-work-order.test.ts
+@@ -83,6 +83,26 @@ describe("AgentWorkOrder v2 contract", () => {
+         },
+       }),
+     ).toThrow("canonical_binding");
++    const {
++      schema_version: _version,
++      kind: _kind,
++      canonical_binding: _binding,
++      ...payload
++    } = result;
++    expect(
++      validateAgentSemanticResultForWorkOrder({
++        work_order: order,
++        semantic_result: payload,
++        format: "semantic_payload_v1",
++      }),
++    ).toEqual(result);
++    expect(() =>
++      validateAgentSemanticResultForWorkOrder({
++        work_order: order,
++        semantic_result: { ...payload, canonical_outputs: undefined },
++        format: "semantic_payload_v1",
++      }),
++    ).toThrow();
+     expect(
+       listAgentWorkOrderV2SchemaErrors({
+         ...order,
+@@ -97,6 +117,38 @@ describe("AgentWorkOrder v2 contract", () => {
+     ).not.toEqual([]);
+   });
+ 
++  it("normalizes only opted-in compact payloads and rejects service or foreign role fields", () => {
++    const order = AGENT_WORK_ORDER_V2_VALID_FIXTURE;
++    const full = buildAgentSemanticResultV2ValidFixtures(order.work_order_id).completed;
++    const { schema_version: _version, kind: _kind, ...payload } = full;
++    const validate = (value: unknown) =>
++      validateAgentSemanticResultForWorkOrder({
++        work_order: order,
++        semantic_result: value,
++        format: "semantic_payload_v1",
++      });
++    expect(validate(payload)).toEqual(full);
++    expect(() =>
++      validateAgentSemanticResultForWorkOrder({
++        work_order: order,
++        semantic_result: payload,
++      }),
++    ).toThrow();
++    for (const invalid of [
++      { ...payload, work_order_id: "foreign-episode" },
++      { ...payload, task_id: "foreign-task" },
++      { ...payload, schema_version: 2 },
++      { ...payload, canonical_binding: {} },
++      {
++        ...payload,
++        review: { verdict: "pass", missing_tests: [], hidden_assumptions: [], residual_risks: [] },
++      },
++      { ...payload, status: "blocked" },
++      { ...payload, status: "needs_context" },
++    ])
++      expect(() => validate(invalid)).toThrow();
++  });
++
+   it("accepts the generated public fixture", async () => {
+     const fixture = JSON.parse(
+       await readFile(
+diff --git a/packages/core/src/runner/agent-work-order.ts b/packages/core/src/runner/agent-work-order.ts
+index f18923729..0971a8d00 100644
+--- a/packages/core/src/runner/agent-work-order.ts
++++ b/packages/core/src/runner/agent-work-order.ts
+@@ -8,6 +8,7 @@ import {
+ } from "../tasks/task-artifact-schema.shared.js";
+ import {
+   AGENT_SEMANTIC_RESULT_ZOD_SCHEMA,
++  buildAgentSemanticPayloadSchema,
+   type AgentSemanticResult,
+ } from "./agent-semantic-result.js";
+ import {
+@@ -22,7 +23,10 @@ import {
+   type StateFingerprint,
+   type StateFingerprintPreconditionDiagnostic,
+ } from "./state-fingerprint.js";
+-import { REPOSITORY_SNAPSHOT_ZOD_SCHEMA } from "../tasks/task-centric/schema.js";
++import {
++  normalizeCompactTaskPlanProposal,
++  REPOSITORY_SNAPSHOT_ZOD_SCHEMA,
++} from "../tasks/task-centric/schema.js";
+ import { taskCentricDigest } from "../tasks/task-centric/digest.js";
+ 
+ export const AGENT_WORK_ORDER_SCHEMA_VERSION = 2 as const;
+@@ -492,9 +496,42 @@ export function assertAgentWorkOrderReadyForInvocation(opts: {
+ export function validateAgentSemanticResultForWorkOrder(opts: {
+   work_order: unknown;
+   semantic_result: unknown;
++  format?: "semantic_payload_v1";
+ }): AgentSemanticResult {
+   const workOrder = validateAgentWorkOrderV2(opts.work_order);
+-  const semanticResult = AGENT_SEMANTIC_RESULT_ZOD_SCHEMA.parse(opts.semantic_result);
++  const payload =
++    opts.format === "semantic_payload_v1"
++      ? buildAgentSemanticPayloadSchema({
++          role: workOrder.role,
++          phase: workOrder.canonical_binding?.phase,
++        }).parse(opts.semantic_result)
++      : null;
++  const proposal = payload?.task_plan_proposal;
++  if (
++    proposal &&
++    typeof proposal === "object" &&
++    "schema_version" in proposal &&
++    proposal.schema_version === 2
++  ) {
++    if (!workOrder.planning_context)
++      throw new Error("Compact planning requires an issued repository baseline");
++    payload.task_plan_proposal = normalizeCompactTaskPlanProposal(proposal, {
++      task_id: workOrder.task.id,
++      planning_baseline: workOrder.planning_context.repository_snapshot,
++    });
++  }
++  const semanticResult = AGENT_SEMANTIC_RESULT_ZOD_SCHEMA.parse(
++    payload
++      ? {
++          ...payload,
++          schema_version: 2,
++          kind: "agent_semantic_result",
++          ...(workOrder.canonical_binding
++            ? { canonical_binding: workOrder.canonical_binding }
++            : {}),
++        }
++      : opts.semantic_result,
++  );
+   if (semanticResult.work_order_id !== workOrder.work_order_id) {
+     throw new Error("Agent semantic result work_order_id must match the prepared AgentWorkOrder.");
+   }
+diff --git a/packages/core/src/tasks/task-artifact-schema.shared.ts b/packages/core/src/tasks/task-artifact-schema.shared.ts
+index 982d8b030..8e43e0452 100644
+--- a/packages/core/src/tasks/task-artifact-schema.shared.ts
++++ b/packages/core/src/tasks/task-artifact-schema.shared.ts
+@@ -10,12 +10,12 @@ export const ISO_UTC_TIMESTAMP = z.string().datetime({ offset: true });
+ export const NULLABLE_NON_EMPTY_STRING = NON_EMPTY_STRING.nullable();
+ export const NULLABLE_ISO_UTC_TIMESTAMP = ISO_UTC_TIMESTAMP.nullable();
+ 
+-function zodToDraft7JsonSchema(schema: z.ZodTypeAny): JsonSchemaDocument {
++function zodToDraft7JsonSchema(schema: z.ZodTypeAny, reused: "inline" | "ref"): JsonSchemaDocument {
+   return z.toJSONSchema(schema, {
+     target: "draft-07",
+     unrepresentable: "any",
+     io: "input",
+-    reused: "inline",
++    reused,
+     cycles: "throw",
+   }) as JsonSchemaDocument;
+ }
+@@ -27,14 +27,16 @@ export function buildJsonSchemaDocument(
+     title: string;
+     description?: string;
+   },
++  options: { reused?: "inline" | "ref" } = {},
+ ): JsonSchemaDocument {
+-  const generated = zodToDraft7JsonSchema(schema);
++  const generated = zodToDraft7JsonSchema(schema, options.reused ?? "inline");
+   const { $schema: _schema, definitions: _definitions, ...rest } = generated;
+   return {
+     $schema: "http://json-schema.org/draft-07/schema#",
+     $id: meta.$id,
+     title: meta.title,
+     ...(meta.description ? { description: meta.description } : {}),
++    ...(options.reused === "ref" && _definitions ? { definitions: _definitions } : {}),
+     ...rest,
+   };
+ }
+diff --git a/packages/core/src/tasks/task-centric/replacement-plan-recovery.test.ts b/packages/core/src/tasks/task-centric/replacement-plan-recovery.test.ts
+index 2d754ef3c..87f6374a5 100644
+--- a/packages/core/src/tasks/task-centric/replacement-plan-recovery.test.ts
++++ b/packages/core/src/tasks/task-centric/replacement-plan-recovery.test.ts
+@@ -1,3 +1,4 @@
++import { normalizeCompactTaskPlanProposal, parseTaskPlanProposal } from "./schema.js";
+ import { describe, expect, it } from "vitest";
+ 
+ import {
+@@ -314,3 +315,41 @@ describe("replacement-plan WorkItem recovery", () => {
+     expect(taskCentricDigest(reset)).toBe(before);
+   });
+ });
++
++describe("compact plan persistence compatibility", () => {
++  it("expands one compact WorkItem without changing its scope or validation contract", () => {
++    const original = item();
++    const baseline = snapshot();
++    const { acceptance_criteria, validation: plan, ...definition } = original;
++    const input = {
++      schema_version: 2,
++      criteria: acceptance_criteria,
++      checks: plan.checks,
++      work_items: [definition],
++    };
++    const normalize = (value: unknown) =>
++      normalizeCompactTaskPlanProposal(value, { task_id: "task-1", planning_baseline: baseline });
++    const expanded = normalize(input);
++    const expectedValidation = { ...plan, evidence_fingerprint: baseline.digest };
++    expect(expanded).toEqual({
++      ...proposal({ ...original, validation: expectedValidation }),
++      top_level_validation: expectedValidation,
++    });
++    expect(parseTaskPlanProposal(expanded)).toEqual(expanded);
++    for (const invalid of [
++      { ...input, criteria: [...input.criteria, ...input.criteria] },
++      { ...input, checks: [...input.checks, ...input.checks] },
++      { ...input, criteria: [{ ...acceptance_criteria[0], check_ids: ["missing"] }] },
++      { ...input, work_items: [{ ...definition, criterion_ids: ["missing"] }] },
++      { ...input, work_items: [{ ...definition, check_ids: ["missing"] }] },
++      {
++        ...input,
++        work_items: [{ ...definition, check_ids: [plan.checks[0]!.id, plan.checks[0]!.id] }],
++      },
++      { ...input, work_items: [{ ...definition, scope_roots: undefined }] },
++      { ...input, planning_baseline: snapshot() },
++      { ...input, task_id: "foreign" },
++    ])
++      expect(() => normalize(invalid)).toThrow();
++  });
++});
+diff --git a/packages/core/src/tasks/task-centric/schema.ts b/packages/core/src/tasks/task-centric/schema.ts
+index 2252b1fd1..3472105da 100644
+--- a/packages/core/src/tasks/task-centric/schema.ts
++++ b/packages/core/src/tasks/task-centric/schema.ts
+@@ -1,7 +1,7 @@
+ import { z } from "zod";
+ import { taskCentricDigest } from "./digest.js";
+ import { validateWorkItemGraph } from "./graph.js";
+-import type { Sha256Digest } from "./model.js";
++import type { RepositorySnapshot, Sha256Digest } from "./model.js";
+ 
+ const NON_EMPTY = z.string().trim().min(1);
+ const DIGEST = z.custom<Sha256Digest>(
+@@ -151,3 +151,106 @@ export type ParsedTaskPlanProposal = z.infer<typeof TASK_PLAN_PROPOSAL_ZOD_SCHEM
+ export function parseTaskPlanProposal(value: unknown): ParsedTaskPlanProposal {
+   return TASK_PLAN_PROPOSAL_ZOD_SCHEMA.parse(value);
+ }
++
++const VALIDATION_REFERENCES = z.strictObject({
++  criterion_ids: z.array(NON_EMPTY).min(1),
++  check_ids: z.array(NON_EMPTY).min(1),
++});
++
++// This is an input format. Persisted plans retain the complete v1 contract.
++export const COMPACT_TASK_PLAN_PROPOSAL_ZOD_SCHEMA = z
++  .strictObject({
++    schema_version: z.literal(2),
++    criteria: z.array(ACCEPTANCE_CRITERION).min(1),
++    checks: z.array(VALIDATION_CHECK).min(1),
++    work_items: z
++      .array(
++        WORK_ITEM.omit({ acceptance_criteria: true, validation: true }).extend({
++          criterion_ids: z.array(NON_EMPTY).min(1).optional(),
++          check_ids: z.array(NON_EMPTY).min(1).optional(),
++        }),
++      )
++      .min(1),
++    top_level_validation: VALIDATION_REFERENCES.optional(),
++    assumptions: z.array(z.string()).default([]),
++    unresolved_questions: z.array(z.string()).default([]),
++  })
++  .describe(
++    "Define criteria and checks once. One WorkItem may omit criterion_ids, check_ids and top_level_validation to use all definitions. Multiple WorkItems must declare these references explicitly. The CLI supplies the task identity and issued repository baseline.",
++  );
++
++export function normalizeCompactTaskPlanProposal(
++  value: unknown,
++  context: { task_id: string; planning_baseline: RepositorySnapshot },
++): ParsedTaskPlanProposal {
++  const compact = COMPACT_TASK_PLAN_PROPOSAL_ZOD_SCHEMA.parse(value);
++  function indexById<T extends { id: string }>(values: T[], label: string) {
++    const byId = new Map<string, T>();
++    for (const value of values) {
++      if (byId.has(value.id)) throw new Error(`Duplicate ${label} id: ${value.id}`);
++      byId.set(value.id, value);
++    }
++    return byId;
++  }
++  const criteria = indexById(compact.criteria, "criterion");
++  const checks = indexById(compact.checks, "check");
++  const usedCriteria = new Set<string>();
++  const usedChecks = new Set<string>();
++  function resolve<T>(
++    ids: string[],
++    entries: Map<string, T>,
++    used: Set<string>,
++    label: string,
++  ): T[] {
++    if (new Set(ids).size !== ids.length) throw new Error(`Duplicate ${label} reference`);
++    return ids.map((id) => {
++      const entry = entries.get(id);
++      if (!entry) throw new Error(`Unknown ${label} reference: ${id}`);
++      used.add(id);
++      return entry;
++    });
++  }
++  function validation(refs: { criterion_ids?: string[]; check_ids?: string[] }) {
++    if (compact.work_items.length > 1 && (!refs.criterion_ids || !refs.check_ids))
++      throw new Error("Multiple WorkItems require explicit validation references");
++    const selectedCriteria = resolve(
++      refs.criterion_ids ?? [...criteria.keys()],
++      criteria,
++      usedCriteria,
++      "criterion",
++    );
++    const selectedChecks = resolve(
++      refs.check_ids ?? [...checks.keys()],
++      checks,
++      usedChecks,
++      "check",
++    );
++    const checkIds = new Set(selectedChecks.map((check) => check.id));
++    for (const criterion of selectedCriteria) {
++      if (criterion.check_ids.some((id) => !checkIds.has(id)))
++        throw new Error(`Criterion ${criterion.id} references a check outside its validation plan`);
++    }
++    return {
++      schema_version: 1 as const,
++      criteria: selectedCriteria,
++      checks: selectedChecks,
++      evidence_fingerprint: context.planning_baseline.digest,
++    };
++  }
++  const workItems = compact.work_items.map(({ criterion_ids, check_ids, ...item }) => {
++    const plan = validation({ criterion_ids, check_ids });
++    return { ...item, acceptance_criteria: plan.criteria, validation: plan };
++  });
++  const topLevel = validation(compact.top_level_validation ?? {});
++  if (usedCriteria.size !== criteria.size || usedChecks.size !== checks.size)
++    throw new Error("Compact plan contains unused criteria or checks");
++  return TASK_PLAN_PROPOSAL_ZOD_SCHEMA.parse({
++    schema_version: 1,
++    task_id: context.task_id,
++    planning_baseline: context.planning_baseline,
++    work_items: { schema_version: 1, work_items: workItems },
++    assumptions: compact.assumptions,
++    unresolved_questions: compact.unresolved_questions,
++    top_level_validation: topLevel,
++  });
++}
+diff --git a/packages/core/src/tasks/task-centric/task-centric.test.ts b/packages/core/src/tasks/task-centric/task-centric.test.ts
+index ef2f04f09..4d9bc1331 100644
+--- a/packages/core/src/tasks/task-centric/task-centric.test.ts
++++ b/packages/core/src/tasks/task-centric/task-centric.test.ts
+@@ -1,3 +1,4 @@
++import { normalizeCompactTaskPlanProposal } from "./schema.js";
+ import { describe, expect, it } from "vitest";
+ 
+ import {
+@@ -630,6 +631,58 @@ describe("task-centric domain", () => {
+     expect(() => parseTaskPlanProposal({ ...parsed, task_id: "" })).toThrow();
+   });
+ 
++  it("requires explicit multi-WorkItem coverage and preserves unresolved questions", () => {
++    const items = [
++      item({ id: "a" }),
++      item({ id: "b", depends_on: ["a"], required_inputs: ["out-a"] }),
++    ];
++    const input = {
++      schema_version: 2,
++      criteria: items.flatMap((item) => item.acceptance_criteria),
++      checks: items.flatMap((item) => item.validation.checks),
++      work_items: items.map(({ acceptance_criteria, validation, ...definition }) => ({
++        ...definition,
++        criterion_ids: acceptance_criteria.map((criterion) => criterion.id),
++        check_ids: validation.checks.map((check) => check.id),
++      })),
++      top_level_validation: { criterion_ids: ["criterion-b"], check_ids: ["check-b"] },
++      unresolved_questions: ["Material scope choice"],
++    };
++    const baseline = snapshot();
++    const normalize = (value: unknown) =>
++      normalizeCompactTaskPlanProposal(value, { task_id: "task-1", planning_baseline: baseline });
++    const normalized = normalize(input);
++    expect(normalized.work_items.work_items[1]!.depends_on).toEqual(["a"]);
++    expect(normalized.top_level_validation.criteria).toEqual(items[1]!.acceptance_criteria);
++    expect(
++      validateTaskPlanProposal({
++        proposal: normalized,
++        expected_task_id: "task-1",
++        current_repository_digest: baseline.digest,
++      }).map((issue) => issue.code),
++    ).toContain("material_question");
++    for (const invalid of [
++      { ...input, top_level_validation: undefined },
++      {
++        ...input,
++        work_items: input.work_items.map((item) => ({ ...item, criterion_ids: undefined })),
++      },
++      {
++        ...input,
++        top_level_validation: { criterion_ids: ["criterion-b"], check_ids: ["check-a"] },
++      },
++      { ...input, criteria: [...input.criteria, { ...input.criteria[0], id: "unused" }] },
++      {
++        ...input,
++        work_items: input.work_items.map((item) => ({
++          ...item,
++          depends_on: [item.id === "a" ? "b" : "a"],
++        })),
++      },
++    ])
++      expect(() => normalize(invalid)).toThrow();
++  });
++
+   it("computes readiness and deterministic resource-aware scheduling", () => {
+     const a = item({
+       id: "a",
+diff --git a/scripts/baselines/protocol-cost-SRM6JM-after-01.json b/scripts/baselines/protocol-cost-SRM6JM-after-01.json
+new file mode 100644
+index 000000000..465a5efb4
+--- /dev/null
++++ b/scripts/baselines/protocol-cost-SRM6JM-after-01.json
+@@ -0,0 +1,111 @@
++{
++  "schema_version": 1,
++  "source": {
++    "head": "389e1f2f2126f26ea885c341bad37fdab19424a1",
++    "tracked_patch_digest": "sha256:5541895756d65d2164382f939715b05bf094efa7754cbb4a25ddad936163707f",
++    "probe_digest": "sha256:c3fe1e9baebc50929017744b9234d54d62a5f6f3098f89ac19a5d85fb3932e55"
++  },
++  "runtime": {
++    "node": "v24.18.0",
++    "executable": "/Users/densmirnov/.local/share/mise/installs/node/24.18.0/bin/node",
++    "platform": "darwin",
++    "architecture": "arm64",
++    "harness": "Vitest in-process runCli; no provider",
++    "profiling": false
++  },
++  "fixture": {
++    "before": "module.exports = (value) => value > 10;\n",
++    "after": "module.exports = (value) => value >= 10;\n",
++    "check": "const assert = require('node:assert/strict');\nconst eligible = require('./eligible.cjs');\nassert.equal(eligible(9), false);\nassert.equal(eligible(10), true);\nassert.equal(eligible(11), true);",
++    "digest": "sha256:9f1476e9220a98897879e24eae4bd409b9d56287d2b1bbb3cbb4f4a819aed747"
++  },
++  "exchanges": [
++    {
++      "role": "PLANNER",
++      "schema": {
++        "files": 1,
++        "bytes": 28528
++      },
++      "work_order_bytes": 12953,
++      "manifest_bytes": 9570,
++      "result_bytes": 2121
++    },
++    {
++      "role": "EXECUTOR",
++      "schema": {
++        "files": 1,
++        "bytes": 7860
++      },
++      "work_order_bytes": 12244,
++      "manifest_bytes": 12828,
++      "result_bytes": 223
++    },
++    {
++      "role": "EVALUATOR",
++      "schema": {
++        "files": 1,
++        "bytes": 8295
++      },
++      "work_order_bytes": 13681,
++      "manifest_bytes": 13438,
++      "result_bytes": 402
++    }
++  ],
++  "calls": [
++    {
++      "stage": "setup",
++      "duration_ms": 879.6300839999999,
++      "exit_code": 0
++    },
++    {
++      "stage": "prepare:PLANNER",
++      "duration_ms": 779.9975829999998,
++      "exit_code": 0
++    },
++    {
++      "stage": "admit:PLANNER",
++      "duration_ms": 242.98066700000027,
++      "exit_code": 0
++    },
++    {
++      "stage": "fixture_approval",
++      "duration_ms": 45.71766699999989,
++      "exit_code": 0
++    },
++    {
++      "stage": "prepare:EXECUTOR",
++      "duration_ms": 353.977625,
++      "exit_code": 0
++    },
++    {
++      "stage": "admit:EXECUTOR",
++      "duration_ms": 1377.8195419999993,
++      "exit_code": 0
++    },
++    {
++      "stage": "admit:EVALUATOR",
++      "duration_ms": 768.3302910000002,
++      "exit_code": 0
++    }
++  ],
++  "totals": {
++    "semantic_exchanges": 3,
++    "result_retries": 0,
++    "required_schema_bytes": 44683,
++    "agent_result_bytes": 2746,
++    "cli_protocol_ms": 3523.1057079999996
++  },
++  "model": {
++    "elapsed_ms": null,
++    "input_tokens": null,
++    "output_tokens": null,
++    "cached_tokens": null
++  },
++  "user_wait_ms": null,
++  "limitations": [
++    "Scripted semantic results, not a model run.",
++    "CLI admission includes native transitions and checks, and can prepare the next episode.",
++    "Schema bytes count each complete reference closure per exchange; they are not token counts.",
++    "WorkOrder and manifest sizes exclude referenced source contents and provider transport."
++  ]
++}
+diff --git a/scripts/baselines/protocol-cost-SRM6JM-after-02.json b/scripts/baselines/protocol-cost-SRM6JM-after-02.json
+new file mode 100644
+index 000000000..9133a03bd
+--- /dev/null
++++ b/scripts/baselines/protocol-cost-SRM6JM-after-02.json
+@@ -0,0 +1,111 @@
++{
++  "schema_version": 1,
++  "source": {
++    "head": "389e1f2f2126f26ea885c341bad37fdab19424a1",
++    "tracked_patch_digest": "sha256:5541895756d65d2164382f939715b05bf094efa7754cbb4a25ddad936163707f",
++    "probe_digest": "sha256:c3fe1e9baebc50929017744b9234d54d62a5f6f3098f89ac19a5d85fb3932e55"
++  },
++  "runtime": {
++    "node": "v24.18.0",
++    "executable": "/Users/densmirnov/.local/share/mise/installs/node/24.18.0/bin/node",
++    "platform": "darwin",
++    "architecture": "arm64",
++    "harness": "Vitest in-process runCli; no provider",
++    "profiling": false
++  },
++  "fixture": {
++    "before": "module.exports = (value) => value > 10;\n",
++    "after": "module.exports = (value) => value >= 10;\n",
++    "check": "const assert = require('node:assert/strict');\nconst eligible = require('./eligible.cjs');\nassert.equal(eligible(9), false);\nassert.equal(eligible(10), true);\nassert.equal(eligible(11), true);",
++    "digest": "sha256:9f1476e9220a98897879e24eae4bd409b9d56287d2b1bbb3cbb4f4a819aed747"
++  },
++  "exchanges": [
++    {
++      "role": "PLANNER",
++      "schema": {
++        "files": 1,
++        "bytes": 28528
++      },
++      "work_order_bytes": 12953,
++      "manifest_bytes": 9570,
++      "result_bytes": 2121
++    },
++    {
++      "role": "EXECUTOR",
++      "schema": {
++        "files": 1,
++        "bytes": 7860
++      },
++      "work_order_bytes": 12244,
++      "manifest_bytes": 12828,
++      "result_bytes": 223
++    },
++    {
++      "role": "EVALUATOR",
++      "schema": {
++        "files": 1,
++        "bytes": 8295
++      },
++      "work_order_bytes": 13686,
++      "manifest_bytes": 13438,
++      "result_bytes": 402
++    }
++  ],
++  "calls": [
++    {
++      "stage": "setup",
++      "duration_ms": 813.344791,
++      "exit_code": 0
++    },
++    {
++      "stage": "prepare:PLANNER",
++      "duration_ms": 740.3660830000003,
++      "exit_code": 0
++    },
++    {
++      "stage": "admit:PLANNER",
++      "duration_ms": 233.74108400000023,
++      "exit_code": 0
++    },
++    {
++      "stage": "fixture_approval",
++      "duration_ms": 44.905125000000226,
++      "exit_code": 0
++    },
++    {
++      "stage": "prepare:EXECUTOR",
++      "duration_ms": 354.02008300000034,
++      "exit_code": 0
++    },
++    {
++      "stage": "admit:EXECUTOR",
++      "duration_ms": 1376.2823340000004,
++      "exit_code": 0
++    },
++    {
++      "stage": "admit:EVALUATOR",
++      "duration_ms": 780.6192500000006,
++      "exit_code": 0
++    }
++  ],
++  "totals": {
++    "semantic_exchanges": 3,
++    "result_retries": 0,
++    "required_schema_bytes": 44683,
++    "agent_result_bytes": 2746,
++    "cli_protocol_ms": 3485.028834000002
++  },
++  "model": {
++    "elapsed_ms": null,
++    "input_tokens": null,
++    "output_tokens": null,
++    "cached_tokens": null
++  },
++  "user_wait_ms": null,
++  "limitations": [
++    "Scripted semantic results, not a model run.",
++    "CLI admission includes native transitions and checks, and can prepare the next episode.",
++    "Schema bytes count each complete reference closure per exchange; they are not token counts.",
++    "WorkOrder and manifest sizes exclude referenced source contents and provider transport."
++  ]
++}
+diff --git a/scripts/baselines/protocol-cost-SRM6JM-after-03.json b/scripts/baselines/protocol-cost-SRM6JM-after-03.json
+new file mode 100644
+index 000000000..cda332e3f
+--- /dev/null
++++ b/scripts/baselines/protocol-cost-SRM6JM-after-03.json
+@@ -0,0 +1,111 @@
++{
++  "schema_version": 1,
++  "source": {
++    "head": "389e1f2f2126f26ea885c341bad37fdab19424a1",
++    "tracked_patch_digest": "sha256:5541895756d65d2164382f939715b05bf094efa7754cbb4a25ddad936163707f",
++    "probe_digest": "sha256:c3fe1e9baebc50929017744b9234d54d62a5f6f3098f89ac19a5d85fb3932e55"
++  },
++  "runtime": {
++    "node": "v24.18.0",
++    "executable": "/Users/densmirnov/.local/share/mise/installs/node/24.18.0/bin/node",
++    "platform": "darwin",
++    "architecture": "arm64",
++    "harness": "Vitest in-process runCli; no provider",
++    "profiling": false
++  },
++  "fixture": {
++    "before": "module.exports = (value) => value > 10;\n",
++    "after": "module.exports = (value) => value >= 10;\n",
++    "check": "const assert = require('node:assert/strict');\nconst eligible = require('./eligible.cjs');\nassert.equal(eligible(9), false);\nassert.equal(eligible(10), true);\nassert.equal(eligible(11), true);",
++    "digest": "sha256:9f1476e9220a98897879e24eae4bd409b9d56287d2b1bbb3cbb4f4a819aed747"
++  },
++  "exchanges": [
++    {
++      "role": "PLANNER",
++      "schema": {
++        "files": 1,
++        "bytes": 28528
++      },
++      "work_order_bytes": 12953,
++      "manifest_bytes": 9570,
++      "result_bytes": 2121
++    },
++    {
++      "role": "EXECUTOR",
++      "schema": {
++        "files": 1,
++        "bytes": 7860
++      },
++      "work_order_bytes": 12244,
++      "manifest_bytes": 12828,
++      "result_bytes": 223
++    },
++    {
++      "role": "EVALUATOR",
++      "schema": {
++        "files": 1,
++        "bytes": 8295
++      },
++      "work_order_bytes": 13682,
++      "manifest_bytes": 13438,
++      "result_bytes": 402
++    }
++  ],
++  "calls": [
++    {
++      "stage": "setup",
++      "duration_ms": 771.1718329999999,
++      "exit_code": 0
++    },
++    {
++      "stage": "prepare:PLANNER",
++      "duration_ms": 699.5047500000001,
++      "exit_code": 0
++    },
++    {
++      "stage": "admit:PLANNER",
++      "duration_ms": 232.55979200000002,
++      "exit_code": 0
++    },
++    {
++      "stage": "fixture_approval",
++      "duration_ms": 43.83266700000013,
++      "exit_code": 0
++    },
++    {
++      "stage": "prepare:EXECUTOR",
++      "duration_ms": 342.9299579999997,
++      "exit_code": 0
++    },
++    {
++      "stage": "admit:EXECUTOR",
++      "duration_ms": 1320.6182500000004,
++      "exit_code": 0
++    },
++    {
++      "stage": "admit:EVALUATOR",
++      "duration_ms": 743.9174169999997,
++      "exit_code": 0
++    }
++  ],
++  "totals": {
++    "semantic_exchanges": 3,
++    "result_retries": 0,
++    "required_schema_bytes": 44683,
++    "agent_result_bytes": 2746,
++    "cli_protocol_ms": 3339.530167
++  },
++  "model": {
++    "elapsed_ms": null,
++    "input_tokens": null,
++    "output_tokens": null,
++    "cached_tokens": null
++  },
++  "user_wait_ms": null,
++  "limitations": [
++    "Scripted semantic results, not a model run.",
++    "CLI admission includes native transitions and checks, and can prepare the next episode.",
++    "Schema bytes count each complete reference closure per exchange; they are not token counts.",
++    "WorkOrder and manifest sizes exclude referenced source contents and provider transport."
++  ]
++}
+diff --git a/scripts/baselines/protocol-cost-SRM6JM-before-01.json b/scripts/baselines/protocol-cost-SRM6JM-before-01.json
+new file mode 100644
+index 000000000..d5ab9e69e
+--- /dev/null
++++ b/scripts/baselines/protocol-cost-SRM6JM-before-01.json
+@@ -0,0 +1,110 @@
++{
++  "schema_version": 1,
++  "source": {
++    "head": "33e106d611fe92603cb836bdcd500a1c624d206b",
++    "tracked_patch_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++    "probe_digest": "sha256:b8dad7aeca91d897a1357568a4733f6486922550bf4f92e95f34d5eece9c037c"
++  },
++  "runtime": {
++    "node": "v24.18.0",
++    "executable": "/Users/densmirnov/.local/share/mise/installs/node/24.18.0/bin/node",
++    "platform": "darwin",
++    "architecture": "arm64",
++    "harness": "Vitest in-process runCli; no provider"
++  },
++  "fixture": {
++    "before": "module.exports = (value) => value > 10;\n",
++    "after": "module.exports = (value) => value >= 10;\n",
++    "check": "const assert = require('node:assert/strict');\nconst eligible = require('./eligible.cjs');\nassert.equal(eligible(9), false);\nassert.equal(eligible(10), true);\nassert.equal(eligible(11), true);",
++    "digest": "sha256:9f1476e9220a98897879e24eae4bd409b9d56287d2b1bbb3cbb4f4a819aed747"
++  },
++  "exchanges": [
++    {
++      "role": "PLANNER",
++      "schema": {
++        "files": 2,
++        "bytes": 150852
++      },
++      "work_order_bytes": 12953,
++      "manifest_bytes": 9570,
++      "result_bytes": 4882
++    },
++    {
++      "role": "EXECUTOR",
++      "schema": {
++        "files": 2,
++        "bytes": 150852
++      },
++      "work_order_bytes": 12244,
++      "manifest_bytes": 12828,
++      "result_bytes": 583
++    },
++    {
++      "role": "EVALUATOR",
++      "schema": {
++        "files": 2,
++        "bytes": 150852
++      },
++      "work_order_bytes": 13682,
++      "manifest_bytes": 13438,
++      "result_bytes": 779
++    }
++  ],
++  "calls": [
++    {
++      "stage": "setup",
++      "duration_ms": 781.3588749999999,
++      "exit_code": 0
++    },
++    {
++      "stage": "prepare:PLANNER",
++      "duration_ms": 739.3347919999997,
++      "exit_code": 0
++    },
++    {
++      "stage": "admit:PLANNER",
++      "duration_ms": 295.7971670000002,
++      "exit_code": 0
++    },
++    {
++      "stage": "fixture_approval",
++      "duration_ms": 44.83020799999986,
++      "exit_code": 0
++    },
++    {
++      "stage": "prepare:EXECUTOR",
++      "duration_ms": 356.1184589999998,
++      "exit_code": 0
++    },
++    {
++      "stage": "admit:EXECUTOR",
++      "duration_ms": 1504.2258339999994,
++      "exit_code": 0
++    },
++    {
++      "stage": "admit:EVALUATOR",
++      "duration_ms": 842.6791669999993,
++      "exit_code": 0
++    }
++  ],
++  "totals": {
++    "semantic_exchanges": 3,
++    "result_retries": 0,
++    "required_schema_bytes": 452556,
++    "agent_result_bytes": 6244,
++    "cli_protocol_ms": 3738.1554189999983
++  },
++  "model": {
++    "elapsed_ms": null,
++    "input_tokens": null,
++    "output_tokens": null,
++    "cached_tokens": null
++  },
++  "user_wait_ms": null,
++  "limitations": [
++    "Scripted semantic results, not a model run.",
++    "CLI admission includes native transitions and checks, and can prepare the next episode.",
++    "Schema bytes count each complete reference closure per exchange; they are not token counts.",
++    "WorkOrder and manifest sizes exclude referenced source contents and provider transport."
++  ]
++}
+diff --git a/scripts/baselines/protocol-cost-SRM6JM-before-02.json b/scripts/baselines/protocol-cost-SRM6JM-before-02.json
+new file mode 100644
+index 000000000..2fe4e2449
+--- /dev/null
++++ b/scripts/baselines/protocol-cost-SRM6JM-before-02.json
+@@ -0,0 +1,110 @@
++{
++  "schema_version": 1,
++  "source": {
++    "head": "33e106d611fe92603cb836bdcd500a1c624d206b",
++    "tracked_patch_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++    "probe_digest": "sha256:b8dad7aeca91d897a1357568a4733f6486922550bf4f92e95f34d5eece9c037c"
++  },
++  "runtime": {
++    "node": "v24.18.0",
++    "executable": "/Users/densmirnov/.local/share/mise/installs/node/24.18.0/bin/node",
++    "platform": "darwin",
++    "architecture": "arm64",
++    "harness": "Vitest in-process runCli; no provider"
++  },
++  "fixture": {
++    "before": "module.exports = (value) => value > 10;\n",
++    "after": "module.exports = (value) => value >= 10;\n",
++    "check": "const assert = require('node:assert/strict');\nconst eligible = require('./eligible.cjs');\nassert.equal(eligible(9), false);\nassert.equal(eligible(10), true);\nassert.equal(eligible(11), true);",
++    "digest": "sha256:9f1476e9220a98897879e24eae4bd409b9d56287d2b1bbb3cbb4f4a819aed747"
++  },
++  "exchanges": [
++    {
++      "role": "PLANNER",
++      "schema": {
++        "files": 2,
++        "bytes": 150852
++      },
++      "work_order_bytes": 12953,
++      "manifest_bytes": 9570,
++      "result_bytes": 4882
++    },
++    {
++      "role": "EXECUTOR",
++      "schema": {
++        "files": 2,
++        "bytes": 150852
++      },
++      "work_order_bytes": 12244,
++      "manifest_bytes": 12828,
++      "result_bytes": 583
++    },
++    {
++      "role": "EVALUATOR",
++      "schema": {
++        "files": 2,
++        "bytes": 150852
++      },
++      "work_order_bytes": 13682,
++      "manifest_bytes": 13438,
++      "result_bytes": 779
++    }
++  ],
++  "calls": [
++    {
++      "stage": "setup",
++      "duration_ms": 775.0112500000002,
++      "exit_code": 0
++    },
++    {
++      "stage": "prepare:PLANNER",
++      "duration_ms": 701.0443329999998,
++      "exit_code": 0
++    },
++    {
++      "stage": "admit:PLANNER",
++      "duration_ms": 285.25366699999995,
++      "exit_code": 0
++    },
++    {
++      "stage": "fixture_approval",
++      "duration_ms": 44.948459000000184,
++      "exit_code": 0
++    },
++    {
++      "stage": "prepare:EXECUTOR",
++      "duration_ms": 354.8657910000002,
++      "exit_code": 0
++    },
++    {
++      "stage": "admit:EXECUTOR",
++      "duration_ms": 1405.6301249999997,
++      "exit_code": 0
++    },
++    {
++      "stage": "admit:EVALUATOR",
++      "duration_ms": 828.069375,
++      "exit_code": 0
++    }
++  ],
++  "totals": {
++    "semantic_exchanges": 3,
++    "result_retries": 0,
++    "required_schema_bytes": 452556,
++    "agent_result_bytes": 6244,
++    "cli_protocol_ms": 3574.8632909999997
++  },
++  "model": {
++    "elapsed_ms": null,
++    "input_tokens": null,
++    "output_tokens": null,
++    "cached_tokens": null
++  },
++  "user_wait_ms": null,
++  "limitations": [
++    "Scripted semantic results, not a model run.",
++    "CLI admission includes native transitions and checks, and can prepare the next episode.",
++    "Schema bytes count each complete reference closure per exchange; they are not token counts.",
++    "WorkOrder and manifest sizes exclude referenced source contents and provider transport."
++  ]
++}
+diff --git a/scripts/baselines/protocol-cost-SRM6JM-before-03.json b/scripts/baselines/protocol-cost-SRM6JM-before-03.json
+new file mode 100644
+index 000000000..b2716fb8a
+--- /dev/null
++++ b/scripts/baselines/protocol-cost-SRM6JM-before-03.json
+@@ -0,0 +1,110 @@
++{
++  "schema_version": 1,
++  "source": {
++    "head": "33e106d611fe92603cb836bdcd500a1c624d206b",
++    "tracked_patch_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++    "probe_digest": "sha256:b8dad7aeca91d897a1357568a4733f6486922550bf4f92e95f34d5eece9c037c"
++  },
++  "runtime": {
++    "node": "v24.18.0",
++    "executable": "/Users/densmirnov/.local/share/mise/installs/node/24.18.0/bin/node",
++    "platform": "darwin",
++    "architecture": "arm64",
++    "harness": "Vitest in-process runCli; no provider"
++  },
++  "fixture": {
++    "before": "module.exports = (value) => value > 10;\n",
++    "after": "module.exports = (value) => value >= 10;\n",
++    "check": "const assert = require('node:assert/strict');\nconst eligible = require('./eligible.cjs');\nassert.equal(eligible(9), false);\nassert.equal(eligible(10), true);\nassert.equal(eligible(11), true);",
++    "digest": "sha256:9f1476e9220a98897879e24eae4bd409b9d56287d2b1bbb3cbb4f4a819aed747"
++  },
++  "exchanges": [
++    {
++      "role": "PLANNER",
++      "schema": {
++        "files": 2,
++        "bytes": 150852
++      },
++      "work_order_bytes": 12953,
++      "manifest_bytes": 9570,
++      "result_bytes": 4882
++    },
++    {
++      "role": "EXECUTOR",
++      "schema": {
++        "files": 2,
++        "bytes": 150852
++      },
++      "work_order_bytes": 12244,
++      "manifest_bytes": 12828,
++      "result_bytes": 583
++    },
++    {
++      "role": "EVALUATOR",
++      "schema": {
++        "files": 2,
++        "bytes": 150852
++      },
++      "work_order_bytes": 13682,
++      "manifest_bytes": 13438,
++      "result_bytes": 779
++    }
++  ],
++  "calls": [
++    {
++      "stage": "setup",
++      "duration_ms": 776.3502500000002,
++      "exit_code": 0
++    },
++    {
++      "stage": "prepare:PLANNER",
++      "duration_ms": 704.0602090000002,
++      "exit_code": 0
++    },
++    {
++      "stage": "admit:PLANNER",
++      "duration_ms": 288.4498749999998,
++      "exit_code": 0
++    },
++    {
++      "stage": "fixture_approval",
++      "duration_ms": 47.103834000000006,
++      "exit_code": 0
++    },
++    {
++      "stage": "prepare:EXECUTOR",
++      "duration_ms": 396.40274999999974,
++      "exit_code": 0
++    },
++    {
++      "stage": "admit:EXECUTOR",
++      "duration_ms": 1600.0943329999996,
++      "exit_code": 0
++    },
++    {
++      "stage": "admit:EVALUATOR",
++      "duration_ms": 900.9508329999999,
++      "exit_code": 0
++    }
++  ],
++  "totals": {
++    "semantic_exchanges": 3,
++    "result_retries": 0,
++    "required_schema_bytes": 452556,
++    "agent_result_bytes": 6244,
++    "cli_protocol_ms": 3889.957999999999
++  },
++  "model": {
++    "elapsed_ms": null,
++    "input_tokens": null,
++    "output_tokens": null,
++    "cached_tokens": null
++  },
++  "user_wait_ms": null,
++  "limitations": [
++    "Scripted semantic results, not a model run.",
++    "CLI admission includes native transitions and checks, and can prepare the next episode.",
++    "Schema bytes count each complete reference closure per exchange; they are not token counts.",
++    "WorkOrder and manifest sizes exclude referenced source contents and provider transport."
++  ]
++}
+diff --git a/scripts/baselines/protocol-cost-SRM6JM-exchange-01.json b/scripts/baselines/protocol-cost-SRM6JM-exchange-01.json
+new file mode 100644
+index 000000000..07a82886a
+--- /dev/null
++++ b/scripts/baselines/protocol-cost-SRM6JM-exchange-01.json
+@@ -0,0 +1,110 @@
++{
++  "schema_version": 1,
++  "source": {
++    "head": "f34f2829cfbfc5a2f3645da325ea016e68ac5162",
++    "tracked_patch_digest": "sha256:4521ec262be019369331d2f6fc753944c32524289db3638f50073d5cabbba31c",
++    "probe_digest": "sha256:c254bf0429bcff1d82bf42e6dc841714cdc37fbace9a970386de6d35bd6577bf"
++  },
++  "runtime": {
++    "node": "v24.18.0",
++    "executable": "/Users/densmirnov/.local/share/mise/installs/node/24.18.0/bin/node",
++    "platform": "darwin",
++    "architecture": "arm64",
++    "harness": "Vitest in-process runCli; no provider"
++  },
++  "fixture": {
++    "before": "module.exports = (value) => value > 10;\n",
++    "after": "module.exports = (value) => value >= 10;\n",
++    "check": "const assert = require('node:assert/strict');\nconst eligible = require('./eligible.cjs');\nassert.equal(eligible(9), false);\nassert.equal(eligible(10), true);\nassert.equal(eligible(11), true);",
++    "digest": "sha256:9f1476e9220a98897879e24eae4bd409b9d56287d2b1bbb3cbb4f4a819aed747"
++  },
++  "exchanges": [
++    {
++      "role": "PLANNER",
++      "schema": {
++        "files": 1,
++        "bytes": 24012
++      },
++      "work_order_bytes": 12953,
++      "manifest_bytes": 9570,
++      "result_bytes": 4241
++    },
++    {
++      "role": "EXECUTOR",
++      "schema": {
++        "files": 1,
++        "bytes": 7860
++      },
++      "work_order_bytes": 12244,
++      "manifest_bytes": 12828,
++      "result_bytes": 223
++    },
++    {
++      "role": "EVALUATOR",
++      "schema": {
++        "files": 1,
++        "bytes": 7495
++      },
++      "work_order_bytes": 13686,
++      "manifest_bytes": 13438,
++      "result_bytes": 402
++    }
++  ],
++  "calls": [
++    {
++      "stage": "setup",
++      "duration_ms": 836.8897910000001,
++      "exit_code": 0
++    },
++    {
++      "stage": "prepare:PLANNER",
++      "duration_ms": 761.1709999999998,
++      "exit_code": 0
++    },
++    {
++      "stage": "admit:PLANNER",
++      "duration_ms": 300.00641700000006,
++      "exit_code": 0
++    },
++    {
++      "stage": "fixture_approval",
++      "duration_ms": 45.96133400000008,
++      "exit_code": 0
++    },
++    {
++      "stage": "prepare:EXECUTOR",
++      "duration_ms": 357.28320799999983,
++      "exit_code": 0
++    },
++    {
++      "stage": "admit:EXECUTOR",
++      "duration_ms": 1521.1158329999998,
++      "exit_code": 0
++    },
++    {
++      "stage": "admit:EVALUATOR",
++      "duration_ms": 855.54475,
++      "exit_code": 0
++    }
++  ],
++  "totals": {
++    "semantic_exchanges": 3,
++    "result_retries": 0,
++    "required_schema_bytes": 39367,
++    "agent_result_bytes": 4866,
++    "cli_protocol_ms": 3795.1212079999996
++  },
++  "model": {
++    "elapsed_ms": null,
++    "input_tokens": null,
++    "output_tokens": null,
++    "cached_tokens": null
++  },
++  "user_wait_ms": null,
++  "limitations": [
++    "Scripted semantic results, not a model run.",
++    "CLI admission includes native transitions and checks, and can prepare the next episode.",
++    "Schema bytes count each complete reference closure per exchange; they are not token counts.",
++    "WorkOrder and manifest sizes exclude referenced source contents and provider transport."
++  ]
++}
+diff --git a/scripts/baselines/protocol-cost-SRM6JM-plan-01.json b/scripts/baselines/protocol-cost-SRM6JM-plan-01.json
+new file mode 100644
+index 000000000..80fc104e2
+--- /dev/null
++++ b/scripts/baselines/protocol-cost-SRM6JM-plan-01.json
+@@ -0,0 +1,110 @@
++{
++  "schema_version": 1,
++  "source": {
++    "head": "be477c4ee587c661070c69bb517e26e5762d7154",
++    "tracked_patch_digest": "sha256:3e0e0ea26eab535d3527e754ccc7b0c7c3f2768264cf50ad61c3bdb080acea2f",
++    "probe_digest": "sha256:78e9e52433a01587b643ffddd70d83064cd8a3d8a549dcae523f9dcf44469a70"
++  },
++  "runtime": {
++    "node": "v24.18.0",
++    "executable": "/Users/densmirnov/.local/share/mise/installs/node/24.18.0/bin/node",
++    "platform": "darwin",
++    "architecture": "arm64",
++    "harness": "Vitest in-process runCli; no provider"
++  },
++  "fixture": {
++    "before": "module.exports = (value) => value > 10;\n",
++    "after": "module.exports = (value) => value >= 10;\n",
++    "check": "const assert = require('node:assert/strict');\nconst eligible = require('./eligible.cjs');\nassert.equal(eligible(9), false);\nassert.equal(eligible(10), true);\nassert.equal(eligible(11), true);",
++    "digest": "sha256:9f1476e9220a98897879e24eae4bd409b9d56287d2b1bbb3cbb4f4a819aed747"
++  },
++  "exchanges": [
++    {
++      "role": "PLANNER",
++      "schema": {
++        "files": 1,
++        "bytes": 28533
++      },
++      "work_order_bytes": 12653,
++      "manifest_bytes": 8069,
++      "result_bytes": 2121
++    },
++    {
++      "role": "EXECUTOR",
++      "schema": {
++        "files": 1,
++        "bytes": 7860
++      },
++      "work_order_bytes": 11844,
++      "manifest_bytes": 10827,
++      "result_bytes": 223
++    },
++    {
++      "role": "EVALUATOR",
++      "schema": {
++        "files": 1,
++        "bytes": 8295
++      },
++      "work_order_bytes": 13444,
++      "manifest_bytes": 11337,
++      "result_bytes": 402
++    }
++  ],
++  "calls": [
++    {
++      "stage": "setup",
++      "duration_ms": 839.5065000000002,
++      "exit_code": 0
++    },
++    {
++      "stage": "prepare:PLANNER",
++      "duration_ms": 765.3900000000003,
++      "exit_code": 0
++    },
++    {
++      "stage": "admit:PLANNER",
++      "duration_ms": 294.7636669999997,
++      "exit_code": 0
++    },
++    {
++      "stage": "fixture_approval",
++      "duration_ms": 55.329417000000376,
++      "exit_code": 0
++    },
++    {
++      "stage": "prepare:EXECUTOR",
++      "duration_ms": 374.30687499999976,
++      "exit_code": 0
++    },
++    {
++      "stage": "admit:EXECUTOR",
++      "duration_ms": 1496.6838749999997,
++      "exit_code": 0
++    },
++    {
++      "stage": "admit:EVALUATOR",
++      "duration_ms": 856.1973749999997,
++      "exit_code": 0
++    }
++  ],
++  "totals": {
++    "semantic_exchanges": 3,
++    "result_retries": 0,
++    "required_schema_bytes": 44688,
++    "agent_result_bytes": 2746,
++    "cli_protocol_ms": 3787.3417919999993
++  },
++  "model": {
++    "elapsed_ms": null,
++    "input_tokens": null,
++    "output_tokens": null,
++    "cached_tokens": null
++  },
++  "user_wait_ms": null,
++  "limitations": [
++    "Scripted semantic results, not a model run.",
++    "CLI admission includes native transitions and checks, and can prepare the next episode.",
++    "Schema bytes count each complete reference closure per exchange; they are not token counts.",
++    "WorkOrder and manifest sizes exclude referenced source contents and provider transport."
++  ]
++}
+diff --git a/scripts/baselines/protocol-cost-SRM6JM-profile-after.json b/scripts/baselines/protocol-cost-SRM6JM-profile-after.json
+new file mode 100644
+index 000000000..6fbaae3ec
+--- /dev/null
++++ b/scripts/baselines/protocol-cost-SRM6JM-profile-after.json
+@@ -0,0 +1,551 @@
++{
++  "schema_version": 1,
++  "source": {
++    "head": "389e1f2f2126f26ea885c341bad37fdab19424a1",
++    "tracked_patch_digest": "sha256:ba5fcdda933e3cdf11f384fedcc05671b0493829ba57ce4dfc5a3e3264393e6d",
++    "probe_digest": "sha256:3e8940fa32642ddacb2e1feb2e82c698fb7afe6967d668b1146885b1dc19994f"
++  },
++  "runtime": {
++    "node": "v24.18.0",
++    "executable": "/Users/densmirnov/.local/share/mise/installs/node/24.18.0/bin/node",
++    "platform": "darwin",
++    "architecture": "arm64",
++    "harness": "Vitest in-process runCli; no provider"
++  },
++  "fixture": {
++    "before": "module.exports = (value) => value > 10;\n",
++    "after": "module.exports = (value) => value >= 10;\n",
++    "check": "const assert = require('node:assert/strict');\nconst eligible = require('./eligible.cjs');\nassert.equal(eligible(9), false);\nassert.equal(eligible(10), true);\nassert.equal(eligible(11), true);",
++    "digest": "sha256:9f1476e9220a98897879e24eae4bd409b9d56287d2b1bbb3cbb4f4a819aed747"
++  },
++  "exchanges": [
++    {
++      "role": "PLANNER",
++      "schema": {
++        "files": 1,
++        "bytes": 28528
++      },
++      "work_order_bytes": 12653,
++      "manifest_bytes": 8069,
++      "result_bytes": 2121
++    },
++    {
++      "role": "EXECUTOR",
++      "schema": {
++        "files": 1,
++        "bytes": 7860
++      },
++      "work_order_bytes": 11844,
++      "manifest_bytes": 10827,
++      "result_bytes": 223
++    },
++    {
++      "role": "EVALUATOR",
++      "schema": {
++        "files": 1,
++        "bytes": 8295
++      },
++      "work_order_bytes": 13444,
++      "manifest_bytes": 11337,
++      "result_bytes": 402
++    }
++  ],
++  "calls": [
++    {
++      "stage": "setup",
++      "duration_ms": 781.0753339999999,
++      "exit_code": 0,
++      "preparation": [
++        {
++          "node": "project",
++          "status": "resolved",
++          "duration_ms": 0.005749999999807187,
++          "fingerprint": "sha256:5feb6df7b663b29817c9a9b86b133dd69169391d7f465b2708328eb6d25e6bd2",
++          "output_digest": "sha256:54ffbdff779beb9a6bceb3c393feb5b78a663df0eecd6d313391c8d4e3b84bc3"
++        },
++        {
++          "node": "config",
++          "status": "resolved",
++          "duration_ms": 0.86200000000008,
++          "fingerprint": "sha256:84180cf32f70936cba05e4d9b2e5ca2c27d6d34007560a17a60e773c780b74e5",
++          "output_digest": "sha256:e2fc7527b31125e5bf0b7ae0c887dce659e1163539596f8d47156791b10a99aa"
++        },
++        {
++          "node": "command_context",
++          "status": "resolved",
++          "duration_ms": 1.7078329999999369,
++          "fingerprint": "sha256:73055ee392429075831fd9c501ac93deda5b0de632ab57f0128883b8a17e9675",
++          "output_digest": "sha256:da396b507cc2673c92532373f3fe7c331229da52009654f36bb07fb35abdd6d2"
++        }
++      ],
++      "observed_calls": [
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 0.4147499999999127
++        }
++      ]
++    },
++    {
++      "stage": "prepare:PLANNER",
++      "duration_ms": 736.1862080000001,
++      "exit_code": 0,
++      "preparation": [
++        {
++          "node": "project",
++          "status": "resolved",
++          "duration_ms": 0.01912499999980355,
++          "fingerprint": "sha256:5feb6df7b663b29817c9a9b86b133dd69169391d7f465b2708328eb6d25e6bd2",
++          "output_digest": "sha256:54ffbdff779beb9a6bceb3c393feb5b78a663df0eecd6d313391c8d4e3b84bc3"
++        },
++        {
++          "node": "config",
++          "status": "resolved",
++          "duration_ms": 0.17591700000002675,
++          "fingerprint": "sha256:84180cf32f70936cba05e4d9b2e5ca2c27d6d34007560a17a60e773c780b74e5",
++          "output_digest": "sha256:e2fc7527b31125e5bf0b7ae0c887dce659e1163539596f8d47156791b10a99aa"
++        },
++        {
++          "node": "command_context",
++          "status": "resolved",
++          "duration_ms": 0.7052089999997406,
++          "fingerprint": "sha256:73055ee392429075831fd9c501ac93deda5b0de632ab57f0128883b8a17e9675",
++          "output_digest": "sha256:da396b507cc2673c92532373f3fe7c331229da52009654f36bb07fb35abdd6d2"
++        },
++        {
++          "node": "command_context",
++          "status": "reused",
++          "duration_ms": 0,
++          "fingerprint": "sha256:73055ee392429075831fd9c501ac93deda5b0de632ab57f0128883b8a17e9675",
++          "output_digest": "sha256:da396b507cc2673c92532373f3fe7c331229da52009654f36bb07fb35abdd6d2"
++        },
++        {
++          "node": "command_context",
++          "status": "reused",
++          "duration_ms": 0,
++          "fingerprint": "sha256:73055ee392429075831fd9c501ac93deda5b0de632ab57f0128883b8a17e9675",
++          "output_digest": "sha256:da396b507cc2673c92532373f3fe7c331229da52009654f36bb07fb35abdd6d2"
++        }
++      ],
++      "observed_calls": [
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 0.23487499999964712
++        },
++        {
++          "operation": "buildTaskRouteDecision",
++          "duration_ms": 51.85112499999968
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 2.00649999999996
++        },
++        {
++          "operation": "prepareAgentWorkOrder",
++          "duration_ms": 27.54150000000027
++        }
++      ]
++    },
++    {
++      "stage": "admit:PLANNER",
++      "duration_ms": 235.3106670000002,
++      "exit_code": 0,
++      "preparation": [
++        {
++          "node": "project",
++          "status": "resolved",
++          "duration_ms": 0.0032499999997526174,
++          "fingerprint": "sha256:5feb6df7b663b29817c9a9b86b133dd69169391d7f465b2708328eb6d25e6bd2",
++          "output_digest": "sha256:54ffbdff779beb9a6bceb3c393feb5b78a663df0eecd6d313391c8d4e3b84bc3"
++        },
++        {
++          "node": "config",
++          "status": "resolved",
++          "duration_ms": 0.05529100000012477,
++          "fingerprint": "sha256:84180cf32f70936cba05e4d9b2e5ca2c27d6d34007560a17a60e773c780b74e5",
++          "output_digest": "sha256:e2fc7527b31125e5bf0b7ae0c887dce659e1163539596f8d47156791b10a99aa"
++        },
++        {
++          "node": "command_context",
++          "status": "resolved",
++          "duration_ms": 0.3615420000000995,
++          "fingerprint": "sha256:73055ee392429075831fd9c501ac93deda5b0de632ab57f0128883b8a17e9675",
++          "output_digest": "sha256:da396b507cc2673c92532373f3fe7c331229da52009654f36bb07fb35abdd6d2"
++        },
++        {
++          "node": "command_context",
++          "status": "reused",
++          "duration_ms": 0,
++          "fingerprint": "sha256:73055ee392429075831fd9c501ac93deda5b0de632ab57f0128883b8a17e9675",
++          "output_digest": "sha256:da396b507cc2673c92532373f3fe7c331229da52009654f36bb07fb35abdd6d2"
++        },
++        {
++          "node": "command_context",
++          "status": "reused",
++          "duration_ms": 0,
++          "fingerprint": "sha256:73055ee392429075831fd9c501ac93deda5b0de632ab57f0128883b8a17e9675",
++          "output_digest": "sha256:da396b507cc2673c92532373f3fe7c331229da52009654f36bb07fb35abdd6d2"
++        }
++      ],
++      "observed_calls": [
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 0.12783399999989342
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 2.124084000000039
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 1.921458999999686
++        },
++        {
++          "operation": "buildTaskRouteDecision",
++          "duration_ms": 45.989416999999776
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 1.8455410000001393
++        },
++        {
++          "operation": "buildTaskRouteDecision",
++          "duration_ms": 49.84583299999986
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 2.8649579999996604
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 1.5071250000000873
++        },
++        {
++          "operation": "prepareAgentWorkOrder",
++          "duration_ms": 19.601709000000028
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 0.12091599999985192
++        }
++      ]
++    },
++    {
++      "stage": "fixture_approval",
++      "duration_ms": 45.803042000000005,
++      "exit_code": 0,
++      "preparation": [
++        {
++          "node": "project",
++          "status": "resolved",
++          "duration_ms": 0.0021660000002157176,
++          "fingerprint": "sha256:5feb6df7b663b29817c9a9b86b133dd69169391d7f465b2708328eb6d25e6bd2",
++          "output_digest": "sha256:54ffbdff779beb9a6bceb3c393feb5b78a663df0eecd6d313391c8d4e3b84bc3"
++        },
++        {
++          "node": "config",
++          "status": "resolved",
++          "duration_ms": 0.056207999999969616,
++          "fingerprint": "sha256:84180cf32f70936cba05e4d9b2e5ca2c27d6d34007560a17a60e773c780b74e5",
++          "output_digest": "sha256:e2fc7527b31125e5bf0b7ae0c887dce659e1163539596f8d47156791b10a99aa"
++        },
++        {
++          "node": "command_context",
++          "status": "resolved",
++          "duration_ms": 0.40850000000000364,
++          "fingerprint": "sha256:73055ee392429075831fd9c501ac93deda5b0de632ab57f0128883b8a17e9675",
++          "output_digest": "sha256:da396b507cc2673c92532373f3fe7c331229da52009654f36bb07fb35abdd6d2"
++        }
++      ],
++      "observed_calls": [
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 0.16433299999971496
++        }
++      ]
++    },
++    {
++      "stage": "prepare:EXECUTOR",
++      "duration_ms": 377.7185830000003,
++      "exit_code": 0,
++      "preparation": [
++        {
++          "node": "project",
++          "status": "resolved",
++          "duration_ms": 0.0018329999998059066,
++          "fingerprint": "sha256:5feb6df7b663b29817c9a9b86b133dd69169391d7f465b2708328eb6d25e6bd2",
++          "output_digest": "sha256:54ffbdff779beb9a6bceb3c393feb5b78a663df0eecd6d313391c8d4e3b84bc3"
++        },
++        {
++          "node": "config",
++          "status": "resolved",
++          "duration_ms": 0.04579199999989214,
++          "fingerprint": "sha256:84180cf32f70936cba05e4d9b2e5ca2c27d6d34007560a17a60e773c780b74e5",
++          "output_digest": "sha256:e2fc7527b31125e5bf0b7ae0c887dce659e1163539596f8d47156791b10a99aa"
++        },
++        {
++          "node": "command_context",
++          "status": "resolved",
++          "duration_ms": 0.34720900000002075,
++          "fingerprint": "sha256:73055ee392429075831fd9c501ac93deda5b0de632ab57f0128883b8a17e9675",
++          "output_digest": "sha256:da396b507cc2673c92532373f3fe7c331229da52009654f36bb07fb35abdd6d2"
++        },
++        {
++          "node": "command_context",
++          "status": "reused",
++          "duration_ms": 0,
++          "fingerprint": "sha256:73055ee392429075831fd9c501ac93deda5b0de632ab57f0128883b8a17e9675",
++          "output_digest": "sha256:da396b507cc2673c92532373f3fe7c331229da52009654f36bb07fb35abdd6d2"
++        },
++        {
++          "node": "command_context",
++          "status": "reused",
++          "duration_ms": 0,
++          "fingerprint": "sha256:73055ee392429075831fd9c501ac93deda5b0de632ab57f0128883b8a17e9675",
++          "output_digest": "sha256:da396b507cc2673c92532373f3fe7c331229da52009654f36bb07fb35abdd6d2"
++        }
++      ],
++      "observed_calls": [
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 0.14862499999981083
++        },
++        {
++          "operation": "buildTaskRouteDecision",
++          "duration_ms": 52.19166600000017
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 2.2775000000001455
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 1.6732500000002801
++        },
++        {
++          "operation": "buildTaskRouteDecision",
++          "duration_ms": 55.19999999999982
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 1.7100000000000364
++        },
++        {
++          "operation": "prepareAgentWorkOrder",
++          "duration_ms": 19.370499999999993
++        }
++      ]
++    },
++    {
++      "stage": "admit:EXECUTOR",
++      "duration_ms": 1398.2916250000003,
++      "exit_code": 0,
++      "preparation": [
++        {
++          "node": "project",
++          "status": "resolved",
++          "duration_ms": 0.0024170000001504377,
++          "fingerprint": "sha256:5feb6df7b663b29817c9a9b86b133dd69169391d7f465b2708328eb6d25e6bd2",
++          "output_digest": "sha256:54ffbdff779beb9a6bceb3c393feb5b78a663df0eecd6d313391c8d4e3b84bc3"
++        },
++        {
++          "node": "config",
++          "status": "resolved",
++          "duration_ms": 0.048334000000068045,
++          "fingerprint": "sha256:84180cf32f70936cba05e4d9b2e5ca2c27d6d34007560a17a60e773c780b74e5",
++          "output_digest": "sha256:e2fc7527b31125e5bf0b7ae0c887dce659e1163539596f8d47156791b10a99aa"
++        },
++        {
++          "node": "command_context",
++          "status": "resolved",
++          "duration_ms": 0.32245899999998073,
++          "fingerprint": "sha256:73055ee392429075831fd9c501ac93deda5b0de632ab57f0128883b8a17e9675",
++          "output_digest": "sha256:da396b507cc2673c92532373f3fe7c331229da52009654f36bb07fb35abdd6d2"
++        },
++        {
++          "node": "command_context",
++          "status": "reused",
++          "duration_ms": 0,
++          "fingerprint": "sha256:73055ee392429075831fd9c501ac93deda5b0de632ab57f0128883b8a17e9675",
++          "output_digest": "sha256:da396b507cc2673c92532373f3fe7c331229da52009654f36bb07fb35abdd6d2"
++        },
++        {
++          "node": "command_context",
++          "status": "reused",
++          "duration_ms": 0,
++          "fingerprint": "sha256:73055ee392429075831fd9c501ac93deda5b0de632ab57f0128883b8a17e9675",
++          "output_digest": "sha256:da396b507cc2673c92532373f3fe7c331229da52009654f36bb07fb35abdd6d2"
++        }
++      ],
++      "observed_calls": [
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 0.12095799999997325
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 1.467167000000245
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 1.3092910000000302
++        },
++        {
++          "operation": "buildTaskRouteDecision",
++          "duration_ms": 54.47312499999998
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 2.2333749999997963
++        },
++        {
++          "operation": "buildTaskRouteDecision",
++          "duration_ms": 56.2099589999998
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 1.5880409999999756
++        },
++        {
++          "operation": "buildTaskRouteDecision",
++          "duration_ms": 55.761499999999614
++        },
++        {
++          "operation": "buildTaskRouteDecision",
++          "duration_ms": 58.928125000000364
++        },
++        {
++          "operation": "buildTaskRouteDecision",
++          "duration_ms": 58.07054200000039
++        },
++        {
++          "operation": "buildTaskRouteDecision",
++          "duration_ms": 57.056665999999495
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 1.8131659999999101
++        },
++        {
++          "operation": "prepareAgentWorkOrder",
++          "duration_ms": 19.588541000000077
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 1.614249999999629
++        },
++        {
++          "operation": "buildTaskRouteDecision",
++          "duration_ms": 58.33470899999975
++        }
++      ]
++    },
++    {
++      "stage": "admit:EVALUATOR",
++      "duration_ms": 806.6964170000001,
++      "exit_code": 0,
++      "preparation": [
++        {
++          "node": "project",
++          "status": "resolved",
++          "duration_ms": 0.00166700000045239,
++          "fingerprint": "sha256:5feb6df7b663b29817c9a9b86b133dd69169391d7f465b2708328eb6d25e6bd2",
++          "output_digest": "sha256:54ffbdff779beb9a6bceb3c393feb5b78a663df0eecd6d313391c8d4e3b84bc3"
++        },
++        {
++          "node": "config",
++          "status": "resolved",
++          "duration_ms": 0.044958999999835214,
++          "fingerprint": "sha256:84180cf32f70936cba05e4d9b2e5ca2c27d6d34007560a17a60e773c780b74e5",
++          "output_digest": "sha256:e2fc7527b31125e5bf0b7ae0c887dce659e1163539596f8d47156791b10a99aa"
++        },
++        {
++          "node": "command_context",
++          "status": "resolved",
++          "duration_ms": 0.37383300000055897,
++          "fingerprint": "sha256:73055ee392429075831fd9c501ac93deda5b0de632ab57f0128883b8a17e9675",
++          "output_digest": "sha256:da396b507cc2673c92532373f3fe7c331229da52009654f36bb07fb35abdd6d2"
++        },
++        {
++          "node": "command_context",
++          "status": "reused",
++          "duration_ms": 0,
++          "fingerprint": "sha256:73055ee392429075831fd9c501ac93deda5b0de632ab57f0128883b8a17e9675",
++          "output_digest": "sha256:da396b507cc2673c92532373f3fe7c331229da52009654f36bb07fb35abdd6d2"
++        },
++        {
++          "node": "command_context",
++          "status": "reused",
++          "duration_ms": 0,
++          "fingerprint": "sha256:73055ee392429075831fd9c501ac93deda5b0de632ab57f0128883b8a17e9675",
++          "output_digest": "sha256:da396b507cc2673c92532373f3fe7c331229da52009654f36bb07fb35abdd6d2"
++        }
++      ],
++      "observed_calls": [
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 0.12824999999975262
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 1.3922910000001139
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 1.8731250000000728
++        },
++        {
++          "operation": "buildTaskRouteDecision",
++          "duration_ms": 58.34929199999988
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 1.8145840000006501
++        },
++        {
++          "operation": "buildTaskRouteDecision",
++          "duration_ms": 60.909333999999944
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 1.632499999999709
++        },
++        {
++          "operation": "buildTaskRouteDecision",
++          "duration_ms": 59.07916699999987
++        },
++        {
++          "operation": "buildTaskRouteDecision",
++          "duration_ms": 65.12779200000023
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 1.606166999999914
++        },
++        {
++          "operation": "prepareAgentWorkOrder",
++          "duration_ms": 19.998999999999796
++        }
++      ]
++    }
++  ],
++  "totals": {
++    "semantic_exchanges": 3,
++    "result_retries": 0,
++    "required_schema_bytes": 44683,
++    "agent_result_bytes": 2746,
++    "cli_protocol_ms": 3554.203500000001
++  },
++  "model": {
++    "elapsed_ms": null,
++    "input_tokens": null,
++    "output_tokens": null,
++    "cached_tokens": null
++  },
++  "user_wait_ms": null,
++  "limitations": [
++    "Scripted semantic results, not a model run.",
++    "CLI admission includes native transitions and checks, and can prepare the next episode.",
++    "Schema bytes count each complete reference closure per exchange; they are not token counts.",
++    "WorkOrder and manifest sizes exclude referenced source contents and provider transport."
++  ]
++}
+diff --git a/scripts/baselines/protocol-cost-SRM6JM-profile-before-03.json b/scripts/baselines/protocol-cost-SRM6JM-profile-before-03.json
+new file mode 100644
+index 000000000..9747ab1a5
+--- /dev/null
++++ b/scripts/baselines/protocol-cost-SRM6JM-profile-before-03.json
+@@ -0,0 +1,575 @@
++{
++  "schema_version": 1,
++  "source": {
++    "head": "389e1f2f2126f26ea885c341bad37fdab19424a1",
++    "tracked_patch_digest": "sha256:99d42935348a3f94355eb9f9e097e4b725ea958f1c3b83a51fbb9fac8142698f",
++    "probe_digest": "sha256:3e8940fa32642ddacb2e1feb2e82c698fb7afe6967d668b1146885b1dc19994f"
++  },
++  "runtime": {
++    "node": "v24.18.0",
++    "executable": "/Users/densmirnov/.local/share/mise/installs/node/24.18.0/bin/node",
++    "platform": "darwin",
++    "architecture": "arm64",
++    "harness": "Vitest in-process runCli; no provider"
++  },
++  "fixture": {
++    "before": "module.exports = (value) => value > 10;\n",
++    "after": "module.exports = (value) => value >= 10;\n",
++    "check": "const assert = require('node:assert/strict');\nconst eligible = require('./eligible.cjs');\nassert.equal(eligible(9), false);\nassert.equal(eligible(10), true);\nassert.equal(eligible(11), true);",
++    "digest": "sha256:9f1476e9220a98897879e24eae4bd409b9d56287d2b1bbb3cbb4f4a819aed747"
++  },
++  "exchanges": [
++    {
++      "role": "PLANNER",
++      "schema": {
++        "files": 1,
++        "bytes": 28528
++      },
++      "work_order_bytes": 12653,
++      "manifest_bytes": 8069,
++      "result_bytes": 2121
++    },
++    {
++      "role": "EXECUTOR",
++      "schema": {
++        "files": 1,
++        "bytes": 7860
++      },
++      "work_order_bytes": 11844,
++      "manifest_bytes": 10827,
++      "result_bytes": 223
++    },
++    {
++      "role": "EVALUATOR",
++      "schema": {
++        "files": 1,
++        "bytes": 8295
++      },
++      "work_order_bytes": 13443,
++      "manifest_bytes": 11337,
++      "result_bytes": 402
++    }
++  ],
++  "calls": [
++    {
++      "stage": "setup",
++      "duration_ms": 823.0946670000001,
++      "exit_code": 0,
++      "preparation": [
++        {
++          "node": "project",
++          "status": "resolved",
++          "duration_ms": 0.005916999999953987,
++          "fingerprint": "sha256:1cdae52b98c00e9edd4eb2ac809419273b2affafed8b8011ed566f6fc1ee4eb5",
++          "output_digest": "sha256:74319e8b18f67072a72e2c9c32568d0c03ef8f2f0419d50794d4701255f19029"
++        },
++        {
++          "node": "config",
++          "status": "resolved",
++          "duration_ms": 0.8616250000000036,
++          "fingerprint": "sha256:494e4c00bdaf51ff10fa3bdbeb328ed33185b11ca71cb4a14381204c33da453a",
++          "output_digest": "sha256:c88525b7917b582cabc285e3c15f3119f59d812032c25ae2f64bd9141690f85c"
++        },
++        {
++          "node": "command_context",
++          "status": "resolved",
++          "duration_ms": 1.8357080000000678,
++          "fingerprint": "sha256:91c35fb7eb619c22ddb16631561b51c01fd3221350994ef394362e5cc5db0bec",
++          "output_digest": "sha256:10969a3ec3a7b25a993f255b315ebe00d97b17418aba13971011b6d8a7f46d9a"
++        }
++      ],
++      "observed_calls": [
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 0.48633399999971516
++        }
++      ]
++    },
++    {
++      "stage": "prepare:PLANNER",
++      "duration_ms": 725.4034999999999,
++      "exit_code": 0,
++      "preparation": [
++        {
++          "node": "project",
++          "status": "resolved",
++          "duration_ms": 0.01633399999991525,
++          "fingerprint": "sha256:1cdae52b98c00e9edd4eb2ac809419273b2affafed8b8011ed566f6fc1ee4eb5",
++          "output_digest": "sha256:74319e8b18f67072a72e2c9c32568d0c03ef8f2f0419d50794d4701255f19029"
++        },
++        {
++          "node": "config",
++          "status": "resolved",
++          "duration_ms": 0.14495899999974426,
++          "fingerprint": "sha256:494e4c00bdaf51ff10fa3bdbeb328ed33185b11ca71cb4a14381204c33da453a",
++          "output_digest": "sha256:c88525b7917b582cabc285e3c15f3119f59d812032c25ae2f64bd9141690f85c"
++        },
++        {
++          "node": "command_context",
++          "status": "resolved",
++          "duration_ms": 0.6095840000002681,
++          "fingerprint": "sha256:91c35fb7eb619c22ddb16631561b51c01fd3221350994ef394362e5cc5db0bec",
++          "output_digest": "sha256:10969a3ec3a7b25a993f255b315ebe00d97b17418aba13971011b6d8a7f46d9a"
++        },
++        {
++          "node": "command_context",
++          "status": "reused",
++          "duration_ms": 0,
++          "fingerprint": "sha256:91c35fb7eb619c22ddb16631561b51c01fd3221350994ef394362e5cc5db0bec",
++          "output_digest": "sha256:10969a3ec3a7b25a993f255b315ebe00d97b17418aba13971011b6d8a7f46d9a"
++        },
++        {
++          "node": "command_context",
++          "status": "reused",
++          "duration_ms": 0,
++          "fingerprint": "sha256:91c35fb7eb619c22ddb16631561b51c01fd3221350994ef394362e5cc5db0bec",
++          "output_digest": "sha256:10969a3ec3a7b25a993f255b315ebe00d97b17418aba13971011b6d8a7f46d9a"
++        }
++      ],
++      "observed_calls": [
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 0.20175000000017462
++        },
++        {
++          "operation": "buildTaskRouteDecision",
++          "duration_ms": 54.90687500000013
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 2.4874159999999392
++        },
++        {
++          "operation": "prepareAgentWorkOrder",
++          "duration_ms": 25.6550000000002
++        }
++      ]
++    },
++    {
++      "stage": "admit:PLANNER",
++      "duration_ms": 287.166416,
++      "exit_code": 0,
++      "preparation": [
++        {
++          "node": "project",
++          "status": "resolved",
++          "duration_ms": 0.0032079999996312836,
++          "fingerprint": "sha256:1cdae52b98c00e9edd4eb2ac809419273b2affafed8b8011ed566f6fc1ee4eb5",
++          "output_digest": "sha256:74319e8b18f67072a72e2c9c32568d0c03ef8f2f0419d50794d4701255f19029"
++        },
++        {
++          "node": "config",
++          "status": "resolved",
++          "duration_ms": 0.05395799999996598,
++          "fingerprint": "sha256:494e4c00bdaf51ff10fa3bdbeb328ed33185b11ca71cb4a14381204c33da453a",
++          "output_digest": "sha256:c88525b7917b582cabc285e3c15f3119f59d812032c25ae2f64bd9141690f85c"
++        },
++        {
++          "node": "command_context",
++          "status": "resolved",
++          "duration_ms": 0.35962500000005093,
++          "fingerprint": "sha256:91c35fb7eb619c22ddb16631561b51c01fd3221350994ef394362e5cc5db0bec",
++          "output_digest": "sha256:10969a3ec3a7b25a993f255b315ebe00d97b17418aba13971011b6d8a7f46d9a"
++        },
++        {
++          "node": "command_context",
++          "status": "reused",
++          "duration_ms": 0,
++          "fingerprint": "sha256:91c35fb7eb619c22ddb16631561b51c01fd3221350994ef394362e5cc5db0bec",
++          "output_digest": "sha256:10969a3ec3a7b25a993f255b315ebe00d97b17418aba13971011b6d8a7f46d9a"
++        },
++        {
++          "node": "command_context",
++          "status": "reused",
++          "duration_ms": 0,
++          "fingerprint": "sha256:91c35fb7eb619c22ddb16631561b51c01fd3221350994ef394362e5cc5db0bec",
++          "output_digest": "sha256:10969a3ec3a7b25a993f255b315ebe00d97b17418aba13971011b6d8a7f46d9a"
++        }
++      ],
++      "observed_calls": [
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 0.12725000000000364
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 1.8662920000001577
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 1.994499999999789
++        },
++        {
++          "operation": "buildTaskRouteDecision",
++          "duration_ms": 47.69737500000019
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 1.872624999999971
++        },
++        {
++          "operation": "buildTaskRouteDecision",
++          "duration_ms": 50.13583400000016
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 1.9023329999999987
++        },
++        {
++          "operation": "buildTaskRouteDecision",
++          "duration_ms": 49.4409999999998
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 1.8900410000001102
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 1.5775000000003274
++        },
++        {
++          "operation": "prepareAgentWorkOrder",
++          "duration_ms": 18.36875000000009
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 0.12770899999986796
++        }
++      ]
++    },
++    {
++      "stage": "fixture_approval",
++      "duration_ms": 45.94391599999972,
++      "exit_code": 0,
++      "preparation": [
++        {
++          "node": "project",
++          "status": "resolved",
++          "duration_ms": 0.0019170000000485743,
++          "fingerprint": "sha256:1cdae52b98c00e9edd4eb2ac809419273b2affafed8b8011ed566f6fc1ee4eb5",
++          "output_digest": "sha256:74319e8b18f67072a72e2c9c32568d0c03ef8f2f0419d50794d4701255f19029"
++        },
++        {
++          "node": "config",
++          "status": "resolved",
++          "duration_ms": 0.04241700000011406,
++          "fingerprint": "sha256:494e4c00bdaf51ff10fa3bdbeb328ed33185b11ca71cb4a14381204c33da453a",
++          "output_digest": "sha256:c88525b7917b582cabc285e3c15f3119f59d812032c25ae2f64bd9141690f85c"
++        },
++        {
++          "node": "command_context",
++          "status": "resolved",
++          "duration_ms": 0.3173749999996289,
++          "fingerprint": "sha256:91c35fb7eb619c22ddb16631561b51c01fd3221350994ef394362e5cc5db0bec",
++          "output_digest": "sha256:10969a3ec3a7b25a993f255b315ebe00d97b17418aba13971011b6d8a7f46d9a"
++        }
++      ],
++      "observed_calls": [
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 0.13108299999976225
++        }
++      ]
++    },
++    {
++      "stage": "prepare:EXECUTOR",
++      "duration_ms": 363.60391700000037,
++      "exit_code": 0,
++      "preparation": [
++        {
++          "node": "project",
++          "status": "resolved",
++          "duration_ms": 0.0017079999997804407,
++          "fingerprint": "sha256:1cdae52b98c00e9edd4eb2ac809419273b2affafed8b8011ed566f6fc1ee4eb5",
++          "output_digest": "sha256:74319e8b18f67072a72e2c9c32568d0c03ef8f2f0419d50794d4701255f19029"
++        },
++        {
++          "node": "config",
++          "status": "resolved",
++          "duration_ms": 0.04387499999984357,
++          "fingerprint": "sha256:494e4c00bdaf51ff10fa3bdbeb328ed33185b11ca71cb4a14381204c33da453a",
++          "output_digest": "sha256:c88525b7917b582cabc285e3c15f3119f59d812032c25ae2f64bd9141690f85c"
++        },
++        {
++          "node": "command_context",
++          "status": "resolved",
++          "duration_ms": 0.35970799999995506,
++          "fingerprint": "sha256:91c35fb7eb619c22ddb16631561b51c01fd3221350994ef394362e5cc5db0bec",
++          "output_digest": "sha256:10969a3ec3a7b25a993f255b315ebe00d97b17418aba13971011b6d8a7f46d9a"
++        },
++        {
++          "node": "command_context",
++          "status": "reused",
++          "duration_ms": 0,
++          "fingerprint": "sha256:91c35fb7eb619c22ddb16631561b51c01fd3221350994ef394362e5cc5db0bec",
++          "output_digest": "sha256:10969a3ec3a7b25a993f255b315ebe00d97b17418aba13971011b6d8a7f46d9a"
++        },
++        {
++          "node": "command_context",
++          "status": "reused",
++          "duration_ms": 0,
++          "fingerprint": "sha256:91c35fb7eb619c22ddb16631561b51c01fd3221350994ef394362e5cc5db0bec",
++          "output_digest": "sha256:10969a3ec3a7b25a993f255b315ebe00d97b17418aba13971011b6d8a7f46d9a"
++        }
++      ],
++      "observed_calls": [
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 0.13804099999970276
++        },
++        {
++          "operation": "buildTaskRouteDecision",
++          "duration_ms": 52.56758300000001
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 1.7340829999998277
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 1.7320830000003298
++        },
++        {
++          "operation": "buildTaskRouteDecision",
++          "duration_ms": 58.47724999999991
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 1.6784170000000813
++        },
++        {
++          "operation": "prepareAgentWorkOrder",
++          "duration_ms": 18.20937499999991
++        }
++      ]
++    },
++    {
++      "stage": "admit:EXECUTOR",
++      "duration_ms": 1461.9937500000005,
++      "exit_code": 0,
++      "preparation": [
++        {
++          "node": "project",
++          "status": "resolved",
++          "duration_ms": 0.0032079999996312836,
++          "fingerprint": "sha256:1cdae52b98c00e9edd4eb2ac809419273b2affafed8b8011ed566f6fc1ee4eb5",
++          "output_digest": "sha256:74319e8b18f67072a72e2c9c32568d0c03ef8f2f0419d50794d4701255f19029"
++        },
++        {
++          "node": "config",
++          "status": "resolved",
++          "duration_ms": 0.05675000000019281,
++          "fingerprint": "sha256:494e4c00bdaf51ff10fa3bdbeb328ed33185b11ca71cb4a14381204c33da453a",
++          "output_digest": "sha256:c88525b7917b582cabc285e3c15f3119f59d812032c25ae2f64bd9141690f85c"
++        },
++        {
++          "node": "command_context",
++          "status": "resolved",
++          "duration_ms": 0.4772080000002461,
++          "fingerprint": "sha256:91c35fb7eb619c22ddb16631561b51c01fd3221350994ef394362e5cc5db0bec",
++          "output_digest": "sha256:10969a3ec3a7b25a993f255b315ebe00d97b17418aba13971011b6d8a7f46d9a"
++        },
++        {
++          "node": "command_context",
++          "status": "reused",
++          "duration_ms": 0,
++          "fingerprint": "sha256:91c35fb7eb619c22ddb16631561b51c01fd3221350994ef394362e5cc5db0bec",
++          "output_digest": "sha256:10969a3ec3a7b25a993f255b315ebe00d97b17418aba13971011b6d8a7f46d9a"
++        },
++        {
++          "node": "command_context",
++          "status": "reused",
++          "duration_ms": 0,
++          "fingerprint": "sha256:91c35fb7eb619c22ddb16631561b51c01fd3221350994ef394362e5cc5db0bec",
++          "output_digest": "sha256:10969a3ec3a7b25a993f255b315ebe00d97b17418aba13971011b6d8a7f46d9a"
++        }
++      ],
++      "observed_calls": [
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 0.24933400000008987
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 1.5945419999998194
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 1.5798750000003565
++        },
++        {
++          "operation": "buildTaskRouteDecision",
++          "duration_ms": 57.72724999999991
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 1.649583000000348
++        },
++        {
++          "operation": "buildTaskRouteDecision",
++          "duration_ms": 57.19120800000019
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 2.3684999999995853
++        },
++        {
++          "operation": "buildTaskRouteDecision",
++          "duration_ms": 58.66600000000017
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 1.5947500000002037
++        },
++        {
++          "operation": "buildTaskRouteDecision",
++          "duration_ms": 58.93045799999982
++        },
++        {
++          "operation": "buildTaskRouteDecision",
++          "duration_ms": 59.06908300000032
++        },
++        {
++          "operation": "buildTaskRouteDecision",
++          "duration_ms": 54.90112499999941
++        },
++        {
++          "operation": "buildTaskRouteDecision",
++          "duration_ms": 58.057332999999744
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 1.9723330000006172
++        },
++        {
++          "operation": "prepareAgentWorkOrder",
++          "duration_ms": 19.465500000000247
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 1.594875000000684
++        },
++        {
++          "operation": "buildTaskRouteDecision",
++          "duration_ms": 56.997167000000445
++        }
++      ]
++    },
++    {
++      "stage": "admit:EVALUATOR",
++      "duration_ms": 828.0356660000007,
++      "exit_code": 0,
++      "preparation": [
++        {
++          "node": "project",
++          "status": "resolved",
++          "duration_ms": 0.0017080000006899354,
++          "fingerprint": "sha256:1cdae52b98c00e9edd4eb2ac809419273b2affafed8b8011ed566f6fc1ee4eb5",
++          "output_digest": "sha256:74319e8b18f67072a72e2c9c32568d0c03ef8f2f0419d50794d4701255f19029"
++        },
++        {
++          "node": "config",
++          "status": "resolved",
++          "duration_ms": 0.05462499999975989,
++          "fingerprint": "sha256:494e4c00bdaf51ff10fa3bdbeb328ed33185b11ca71cb4a14381204c33da453a",
++          "output_digest": "sha256:c88525b7917b582cabc285e3c15f3119f59d812032c25ae2f64bd9141690f85c"
++        },
++        {
++          "node": "command_context",
++          "status": "resolved",
++          "duration_ms": 0.39145900000039546,
++          "fingerprint": "sha256:91c35fb7eb619c22ddb16631561b51c01fd3221350994ef394362e5cc5db0bec",
++          "output_digest": "sha256:10969a3ec3a7b25a993f255b315ebe00d97b17418aba13971011b6d8a7f46d9a"
++        },
++        {
++          "node": "command_context",
++          "status": "reused",
++          "duration_ms": 0,
++          "fingerprint": "sha256:91c35fb7eb619c22ddb16631561b51c01fd3221350994ef394362e5cc5db0bec",
++          "output_digest": "sha256:10969a3ec3a7b25a993f255b315ebe00d97b17418aba13971011b6d8a7f46d9a"
++        },
++        {
++          "node": "command_context",
++          "status": "reused",
++          "duration_ms": 0,
++          "fingerprint": "sha256:91c35fb7eb619c22ddb16631561b51c01fd3221350994ef394362e5cc5db0bec",
++          "output_digest": "sha256:10969a3ec3a7b25a993f255b315ebe00d97b17418aba13971011b6d8a7f46d9a"
++        }
++      ],
++      "observed_calls": [
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 0.12529199999971752
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 1.4204579999995985
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 1.5724580000005517
++        },
++        {
++          "operation": "buildTaskRouteDecision",
++          "duration_ms": 57.34362499999952
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 1.7205840000005992
++        },
++        {
++          "operation": "buildTaskRouteDecision",
++          "duration_ms": 59.857207999999446
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 1.609124999999949
++        },
++        {
++          "operation": "buildTaskRouteDecision",
++          "duration_ms": 59.90366699999959
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 1.674250000000029
++        },
++        {
++          "operation": "buildTaskRouteDecision",
++          "duration_ms": 57.37245900000016
++        },
++        {
++          "operation": "buildTaskRouteDecision",
++          "duration_ms": 65.11133300000074
++        },
++        {
++          "operation": "loadCommandContext",
++          "duration_ms": 1.614875000000211
++        },
++        {
++          "operation": "prepareAgentWorkOrder",
++          "duration_ms": 19.685333999999784
++        }
++      ]
++    }
++  ],
++  "totals": {
++    "semantic_exchanges": 3,
++    "result_retries": 0,
++    "required_schema_bytes": 44683,
++    "agent_result_bytes": 2746,
++    "cli_protocol_ms": 3666.2032490000015
++  },
++  "model": {
++    "elapsed_ms": null,
++    "input_tokens": null,
++    "output_tokens": null,
++    "cached_tokens": null
++  },
++  "user_wait_ms": null,
++  "limitations": [
++    "Scripted semantic results, not a model run.",
++    "CLI admission includes native transitions and checks, and can prepare the next episode.",
++    "Schema bytes count each complete reference closure per exchange; they are not token counts.",
++    "WorkOrder and manifest sizes exclude referenced source contents and provider transport."
++  ]
++}
+diff --git a/scripts/baselines/protocol-cost-SRM6JM-recovery-baseline.json b/scripts/baselines/protocol-cost-SRM6JM-recovery-baseline.json
+new file mode 100644
+index 000000000..ecdee82e7
+--- /dev/null
++++ b/scripts/baselines/protocol-cost-SRM6JM-recovery-baseline.json
+@@ -0,0 +1,29 @@
++{
++  "schema_version": 1,
++  "baseline_revision": "33e106d611fe92603cb836bdcd500a1c624d206b",
++  "test": "runCli task advance branch worktree > recovers an implementation interrupted before verification through a fresh episode",
++  "baseline_result": "failed",
++  "current_result": "failed",
++  "assertion_line": 585,
++  "observed_difference": {
++    "expected": "Original implementation claims, uncertainty and WorkOrder identity.",
++    "actual": "Replacement claims and fresh WorkOrder identity."
++  },
++  "baseline_method": "Isolated git-archive source tree with source aliases; installed dependencies and CLI hook bundles shared with the current checkout.",
++  "command": "node_modules/.bin/vitest run --config vitest.workspace.ts packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts -t \"recovers an implementation interrupted before verification\" --maxWorkers=1",
++  "unchanged_source_files": [
++    {
++      "path": "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
++      "sha256": "cca7361d879b6362c3e3fba47049091f2bc59f405cb32549a6bea3054ee58dc8"
++    },
++    {
++      "path": "packages/agentplane/src/commands/task/task-centric-external-result.ts",
++      "sha256": "a294ab5e5f51c0eef60c828b569535f0665479d4886357087ee947758c40c811"
++    },
++    {
++      "path": "packages/agentplane/src/cli/run-cli.core.task-advance.branch-worktree.test.ts",
++      "sha256": "f86efde7a8786e998fc34a989173d7bc4716235568be0a0f5fd4a2f146a7ce0d"
++    }
++  ],
++  "assessment": "The original-claim recovery test conflicts with the existing current-WorkOrder binding requirement. This predates the compact exchange and needs a separate recovery-semantics decision; neither the binding guard nor test expectation was weakened."
++}
+diff --git a/scripts/baselines/protocol-cost-SRM6JM-summary.json b/scripts/baselines/protocol-cost-SRM6JM-summary.json
+new file mode 100644
+index 000000000..e5b002482
+--- /dev/null
++++ b/scripts/baselines/protocol-cost-SRM6JM-summary.json
+@@ -0,0 +1,76 @@
++{
++  "schema_version": 1,
++  "task_id": "202609081134-SRM6JM",
++  "measurement": "Three matched scripted one-condition CLI cycles per revision; no model/provider calls.",
++  "groups": {
++    "before": {
++      "reports": [
++        "protocol-cost-SRM6JM-before-01.json",
++        "protocol-cost-SRM6JM-before-02.json",
++        "protocol-cost-SRM6JM-before-03.json"
++      ],
++      "fixture_digest": "sha256:9f1476e9220a98897879e24eae4bd409b9d56287d2b1bbb3cbb4f4a819aed747",
++      "schema_bytes": [452556, 452556, 452556],
++      "result_bytes": [6244, 6244, 6244],
++      "cli_protocol_ms": [3738.1554189999983, 3574.8632909999997, 3889.957999999999],
++      "median_cli_protocol_ms": 3738.1554189999983
++    },
++    "after": {
++      "reports": [
++        "protocol-cost-SRM6JM-after-01.json",
++        "protocol-cost-SRM6JM-after-02.json",
++        "protocol-cost-SRM6JM-after-03.json"
++      ],
++      "fixture_digest": "sha256:9f1476e9220a98897879e24eae4bd409b9d56287d2b1bbb3cbb4f4a819aed747",
++      "schema_bytes": [44683, 44683, 44683],
++      "result_bytes": [2746, 2746, 2746],
++      "cli_protocol_ms": [3523.1057079999996, 3485.028834000002, 3339.530167],
++      "median_cli_protocol_ms": 3485.028834000002
++    }
++  },
++  "reductions_percent": {
++    "required_schema_bytes": 90.12652577802525,
++    "agent_result_bytes": 56.02178090967329,
++    "median_cli_protocol_ms": 6.771430200933448
++  },
++  "profiling": {
++    "before": "protocol-cost-SRM6JM-profile-before-03.json",
++    "after": "protocol-cost-SRM6JM-profile-after.json",
++    "route_calls_before": 19,
++    "route_calls_after": 16,
++    "note": "Profiling uses wrappers that call the real implementation and is separate from uninstrumented timings. The change reuses the just-observed direct route; native mutations still force fresh observations."
++  },
++  "validation": {
++    "passed": [
++      "Targeted ESLint",
++      "TypeScript build",
++      "Schema artifact parity",
++      "Hotspot and oversized-test limits",
++      "112 contract, canonical transport and blocker-backend tests",
++      "100 of 101 expanded task-advance, rework, interruption and recovery tests",
++      "Three final threshold-enforcing CLI cycles with three semantic roles and no retries",
++      "Knip CLI unused-code budget: 0/0 after removing five unused internal exports; core compatibility budget remains 21/21",
++      "Candidate staging cleanup regression: 13 tests passed after removal of disposable test Bun caches"
++    ],
++    "failed": [
++      {
++        "evidence": "protocol-cost-SRM6JM-recovery-baseline.json",
++        "description": "One recovery assertion fails identically on the original source revision and current implementation. Current-WorkOrder binding conflicts with preservation of the original semantic report."
++      }
++    ],
++    "environment_recovery": {
++      "failure": "The required candidate checkout failed with No space left on device.",
++      "cleanup": "USER-authorized removal of Bun caches from isolated AgentPlane critical-test HOME directories.",
++      "removed_logical_bytes": 744240700,
++      "available_disk_gib_after": 1.3,
++      "failed_suite_rerun": "13 tests passed; full verification still required."
++    }
++  },
++  "limitations": [
++    "Byte measurements are not provider token counts.",
++    "No paid provider run or end-to-end model timing was performed.",
++    "Timing has three samples per version on one machine and includes native CLI checks; it is not a production latency guarantee.",
++    "Baseline failure remains unresolved; safety/qualification is not fully green.",
++    "Active reliability task 202609080727-BAWTEE covers the related admission and recovery work."
++  ]
++}

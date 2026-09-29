@@ -71,8 +71,8 @@ export function bindPreparedEvaluatorState(opts: {
     Object.keys(before.components).some(
       (key) =>
         key !== "authority" &&
-        before.components[key as keyof typeof before.components].digest !==
-          after.components[key as keyof typeof after.components].digest,
+        before.components[key as keyof typeof before.components]?.digest !==
+          after.components[key as keyof typeof after.components]?.digest,
     ) ||
     JSON.stringify(opts.before.batchOwnership) !== JSON.stringify(opts.after.batchOwnership) ||
     JSON.stringify(blockers(opts.before)) !== JSON.stringify(blockers(opts.after))
@@ -128,8 +128,13 @@ export async function isRecoverableAppliedEvaluatorResult(opts: {
   if (!(await isExternalEvaluatorResultApplied(opts))) return false;
   if (!exchange.baseline.head || !exchange.evaluator_work_order_ref) return false;
   const current = opts.decision.workflowStep.preconditionFingerprint;
+  if (current.schema_version !== 2 || order.state_fingerprint.schema_version !== 2) return false;
   // The next operation changes route authority. The exact plan and grant stay in the task comparison.
-  for (const key of ["policy", "blueprint", "knowledge", "provider"] as const) {
+  for (const key of ["policy", "knowledge", "provider"] as const) {
+    if (current.components[key].digest !== order.state_fingerprint.components[key].digest)
+      return false;
+  }
+  for (const key of ["plan", "capability"] as const) {
     if (current.components[key].digest !== order.state_fingerprint.components[key].digest)
       return false;
   }

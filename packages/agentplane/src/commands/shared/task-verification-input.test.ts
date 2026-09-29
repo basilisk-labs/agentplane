@@ -1,11 +1,13 @@
 import { execFile } from "node:child_process";
-import { mkdir, unlink, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, rm, symlink, unlink, writeFile } from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
 
 import { mkGitRepoRootWithBranch } from "@agentplane/testkit";
 import { describe, expect, it } from "vitest";
 import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
+import type { NativeTaskIdentity } from "./native-task-identity.js";
 
 import {
   resolveLegacyVerificationInputIdentity,
@@ -22,6 +24,9 @@ const ENVIRONMENT: VerificationEnvironment = {
   node_major: "24",
   bun_major: "1",
 };
+
+const fixtureDigest = (value: string) =>
+  `sha256:${value.repeat(64).slice(0, 64)}` as `sha256:${string}`;
 
 async function commitPath(
   root: string,
@@ -249,6 +254,98 @@ describe("task verification input identity", () => {
     );
   });
 
+  it("separates native v5 plan drift from checked command drift", async () => {
+    const { root, implementationSha } = await makeTaskBranch();
+    const execution = {
+      schema_version: 1,
+      primary_task_id: TASK_ID,
+      task_ids: [TASK_ID],
+      repository_mode: "direct",
+      selected_mode: "branch_pr",
+      requested_mode: "auto",
+      route_source: "execution_contract",
+      reason_codes: [],
+      base_ref: "main",
+      base_sha: implementationSha,
+      authoritative_task_source: "task_worktree",
+    } satisfies TaskExecutionContext;
+    const nativeIdentity: NativeTaskIdentity = {
+      schema_version: 1,
+      kind: "agentplane.native_task_identity",
+      task_id: TASK_ID,
+      plan: {
+        revision: 1,
+        digest: fixtureDigest("a"),
+        approval_state: "approved",
+        approved_digest: fixtureDigest("a"),
+      },
+      policy: { digest: fixtureDigest("b") },
+      capability: { digest: fixtureDigest("c") },
+      checks: {
+        digest: fixtureDigest("d"),
+        verification_contract_digest: fixtureDigest("e"),
+        required_check_ids: ["unit"],
+      },
+      digest: fixtureDigest("f"),
+    };
+    const resolve = (
+      identity: NativeTaskIdentity,
+      details: string,
+      executionOverride: TaskExecutionContext = execution,
+    ) =>
+      resolveVerificationInputIdentity({
+        gitRoot: root,
+        workflowDir: ".agentplane/tasks",
+        taskIds: [TASK_ID],
+        targetSha: implementationSha,
+        verifySteps: "Run tests.",
+        verificationContractDigest: fixtureDigest("e"),
+        environment: ENVIRONMENT,
+        execution: executionOverride,
+        nativeIdentity: identity,
+        requiredCheckIds: ["unit"],
+        verificationDetails: details,
+      });
+    const before = await resolve(
+      nativeIdentity,
+      "Check: unit\nCommand: bun test\nResult: pass\nEvidence: package.json\nScope: unit",
+    );
+    const planChanged = await resolve(
+      {
+        ...nativeIdentity,
+        digest: fixtureDigest("2"),
+        plan: {
+          ...nativeIdentity.plan,
+          revision: 2,
+          digest: fixtureDigest("1"),
+          approved_digest: fixtureDigest("1"),
+        },
+      },
+      "Check: unit\nCommand: bun test\nResult: pass\nEvidence: package.json\nScope: unit",
+    );
+    const commandChanged = await resolve(
+      nativeIdentity,
+      "Check: unit\nCommand: bun test --run\nResult: pass\nEvidence: package.json\nScope: unit",
+    );
+    const observationSourceChanged = await resolve(
+      nativeIdentity,
+      "Check: unit\nCommand: bun test\nResult: pass\nEvidence: package.json\nScope: unit",
+      { ...execution, authoritative_task_source: "base_checkout" },
+    );
+    if (!before || !planChanged || !commandChanged || !observationSourceChanged) {
+      throw new Error("expected v5 identities");
+    }
+
+    expect(before.schema_version).toBe(5);
+    expect(verificationInputInvalidationReason({ recorded: before, current: planChanged })).toBe(
+      "verification_plan_changed",
+    );
+    expect(verificationInputInvalidationReason({ recorded: before, current: commandChanged })).toBe(
+      "verification_commands_changed",
+    );
+    expect(observationSourceChanged.digest).toBe(before.digest);
+  });
+
   it("invalidates the receipt when implementation-significant whitespace changes", async () => {
     const { root } = await makeTaskBranch();
     const indentedSha = await commitPath(
@@ -309,6 +406,32 @@ describe("task verification input identity", () => {
     expect(verificationInputInvalidationReason({ recorded: before, current: after })).toBe(
       "verification_evidence_changed",
     );
+  });
+
+  it("does not read evidence through an intermediate symlink outside the repository", async () => {
+    const { root, implementationSha } = await makeTaskBranch();
+    const outsideRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-evidence-outside-"));
+    try {
+      await writeFile(path.join(outsideRoot, "runtime.json"), '{"secret":"outside"}\n', "utf8");
+      const linkPath = path.join(root, ".agentplane", "cache", "external");
+      await mkdir(path.dirname(linkPath), { recursive: true });
+      await symlink(outsideRoot, linkPath, process.platform === "win32" ? "junction" : "dir");
+      const evidencePath = ".agentplane/cache/external/runtime.json";
+      const details = [
+        "Command: bun test",
+        "Result: pass",
+        `Evidence: ${evidencePath}#summary`,
+        "Scope: verification input identity",
+      ].join("\n");
+
+      const value = await identity(root, implementationSha, "Run tests.", details);
+
+      expect(value.evidence.references).toEqual([
+        expect.objectContaining({ path: evidencePath, fragment: "summary", source: "missing" }),
+      ]);
+    } finally {
+      await rm(outsideRoot, { recursive: true, force: true });
+    }
   });
 
   it("preserves evidence identity when the same committed artifact is read from Git", async () => {

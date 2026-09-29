@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202609082225-ZYASFT",
+  "bun": "1.4.2",
+  "source_base": "edbb9f694c30db1fd678e5f642ffdaa14df6dc3b",
+  "platform": "darwin-arm64",
+  "results": [
+    {
+      "configuration": "baseline",
+      "checks": ["--version", "quickstart", "init", "evaluator list", "task list", "role CODER"],
+      "binary_bytes": 71879056,
+      "binary_sha256": "e06dffd46e80f18243584f924942f7219f892b1257835a6a6422075a3c2c95e4"
+    },
+    {
+      "configuration": "minified",
+      "checks": ["--version", "quickstart", "init", "evaluator list", "task list", "role CODER"],
+      "binary_bytes": 70483696,
+      "binary_sha256": "faa3128d73c77c2cee5dd7517222c1659a2192bb9062fd8fc7655398adab1152"
+    }
+  ],
+  "decision": "Remove the identifier-minification workaround. Standard minification passes the compiled CLI smoke on pinned Bun 1.4.2. Historical Bun 1.3.6 failure evidence remains unchanged.",
+  "limitation": "Native execution was qualified on macOS ARM64. Other binary targets were not executed locally.",
+  "final_code_smoke": {
+    "configuration": "minified",
+    "checks": ["--version", "quickstart", "init", "evaluator list", "task list", "role CODER"],
+    "version": "0.7.9-beta.1",
+    "binary_bytes": 70483696,
+    "binary_sha256": "fdcc323f0e5f798c9d96816a31c9f2aef92c70f77c81d53a4457ccd4bb0a47f0"
+  }
+}

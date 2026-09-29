@@ -2,6 +2,7 @@ import {
   createRepositorySnapshot,
   ensureDocSections,
   isGitObjectId,
+  incompleteRequiredWorkItems,
   normalizeTaskStatus,
   taskCentricAggregateFromExtensions,
 } from "@agentplaneorg/core/tasks";
@@ -121,9 +122,7 @@ function assertTaskCanFinish(opts: {
 
   ensureVerificationSatisfiedIfRequired(opts.task, opts.config);
   const canonical = taskCentricAggregateFromExtensions(opts.task.extensions);
-  const incomplete = canonical?.current_plan?.proposal.work_items.work_items.filter(
-    (item) => !item.optional && canonical.work_items[item.id]?.state !== "COMPLETED",
-  );
+  const incomplete = incompleteRequiredWorkItems(canonical);
   if (incomplete?.length) {
     throw new CliError({
       code: "E_VALIDATION",
@@ -249,6 +248,7 @@ export async function writeFinishedTasks(opts: {
   breaking: boolean;
   taskCommitInfo: ResolvedCommitInfo | null;
   implementationCommitInfo?: ResolvedCommitInfo | null;
+  allowCanonicalProjection?: boolean;
 }): Promise<void> {
   const taskCount = opts.loadedTasks.length;
 
@@ -328,6 +328,7 @@ export async function writeFinishedTasks(opts: {
       taskId,
       policyAction: "task_status_transition",
       phase: "finish",
+      allowCanonicalProjection: opts.allowCanonicalProjection,
       build: async (currentTask) => {
         const execution = await applyTransition(currentTask);
         const currentCanonical = taskCentricAggregateFromExtensions(currentTask.extensions);

@@ -24,6 +24,7 @@ function usage() {
     "  --manifest <path>       release-distribution.json path",
     "  --out <dir>             Output directory (default: .agentplane/.release/publish/ghcr)",
     "  --status <status>       Override evidence status after publication",
+    "  --promote-stable <bool> Include the mutable latest tag (default: true)",
     "  --check                 Generate into a temporary directory and validate outputs",
     "  --json                  Emit module evidence JSON to stdout",
     "  --help, -h              Show this help text",
@@ -32,13 +33,14 @@ function usage() {
 
 function parseArgs(argv, repoRoot) {
   const { flags } = parseScriptArgs(argv, {
-    valueFlags: ["manifest", "out", "status"],
+    valueFlags: ["manifest", "out", "status", "promote-stable"],
     booleanFlags: ["check", "json", "help"],
   });
   return {
     manifestPath: path.resolve(repoRoot, flags.manifest ?? DEFAULT_MANIFEST_PATH),
     outDir: path.resolve(repoRoot, flags.out ?? DEFAULT_OUT_DIR),
     status: typeof flags.status === "string" ? flags.status.trim() : "",
+    promoteStable: optionalBoolean(flags["promote-stable"], "--promote-stable", true),
     check: Boolean(flags.check),
     json: Boolean(flags.json),
     help: Boolean(flags.help),
@@ -53,6 +55,13 @@ function requireString(value, label) {
   const text = typeof value === "string" ? value.trim() : "";
   if (!text) throw new Error(`Missing ${label}`);
   return text;
+}
+
+function optionalBoolean(value, label, fallback) {
+  if (value === undefined) return fallback;
+  if (value === "true") return true;
+  if (value === "false") return false;
+  throw new Error(`${label} must be true or false`);
 }
 
 function shellQuote(value) {
@@ -105,7 +114,7 @@ function findDistributionTarball(manifestPath, version) {
   return existsSync(tarballPath) ? tarballPath : null;
 }
 
-function buildImageMetadata(manifest) {
+function buildImageMetadata(manifest, promoteStable) {
   const version = requireString(manifest.version, "release version");
   const tag = requireString(manifest.tag, "release tag");
   const repository = requireString(manifest.repository, "release repository").toLowerCase();
@@ -118,7 +127,7 @@ function buildImageMetadata(manifest) {
     tag,
     sha: manifest.sha ?? null,
     image,
-    tags: [`${image}:${version}`, `${image}:${tag}`, `${image}:latest`],
+    tags: [`${image}:${version}`, `${image}:${tag}`, ...(promoteStable ? [`${image}:latest`] : [])],
     tarballUrl,
     tarballSha256,
   };
@@ -131,7 +140,7 @@ async function renderGhcr(repoRoot, args) {
     ? runDistributionGenerator(repoRoot, path.join(tempRoot, "distribution"))
     : args.manifestPath;
   const manifest = await readJson(manifestPath);
-  const metadata = buildImageMetadata(manifest);
+  const metadata = buildImageMetadata(manifest, args.promoteStable);
   const dockerfile = path.join(repoRoot, DOCKERFILE_PATH);
   const channel = manifest.channels?.ghcr ?? {};
   const status = args.status || channel.status || "unknown";
@@ -156,7 +165,7 @@ async function renderGhcr(repoRoot, args) {
     ["GHCR_IMAGE", metadata.image],
     ["GHCR_VERSION_TAG", metadata.tags[0]],
     ["GHCR_RELEASE_TAG", metadata.tags[1]],
-    ["GHCR_LATEST_TAG", metadata.tags[2]],
+    ...(metadata.tags[2] ? [["GHCR_LATEST_TAG", metadata.tags[2]]] : []),
   ].map(([key, value]) => `${key}=${shellQuote(value)}`);
   await writeFile(path.join(outDir, "docker-build-args.env"), `${envLines.join("\n")}\n`, "utf8");
   await writeFile(path.join(outDir, "docker-tags.txt"), `${metadata.tags.join("\n")}\n`, "utf8");

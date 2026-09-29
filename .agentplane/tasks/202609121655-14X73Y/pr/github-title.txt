@@ -1,0 +1,1 @@
+✅ 14X73Y task: Fix exact WorkItem-only scope extension when the global contract is already satisfied [202609121655-14X73Y]

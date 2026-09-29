@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609141440-VFA9C1-5cc747198fb90b502e5c7e4d",
+  "prepared_at": "2026-09-14T16:02:24.812Z",
+  "task": {
+    "id": "202609141440-VFA9C1",
+    "revision": 9,
+    "objective": "Repair managed usage observation and branch-pr finish guard regressions\n\nRepair two reproducible qualified-main regressions blocking the AgentPlane 0.7.9 prepublish gate. Managed custom runner episodes must durably record an unavailable provider-usage observation when token telemetry is not exposed, without weakening fail-closed accounting. Branch-pr finish from a task branch must reach the intended E_GIT base-checkout guard instead of an earlier E_VALIDATION failure. Add focused regression coverage, run the implicated release-ci-base chunk and complete local CI, integrate through hosted CI, then unblock release task 202609121424-49XXT3. Preserve unrelated user work and never commit agentplane-roadmap-r2.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "bunx vitest run packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts",
+      "- In scope: Repair two reproducible qualified-main regressions blocking the AgentPlane 0.7.9 prepublish gate. Managed custom runner episodes must durably record an unavailable provider-usage observation when token telemetry is not exposed, without weakening fail-closed accounting. Branch-pr finish from a task branch must reach the intended E_GIT base-checkout guard instead of an earlier E_VALIDATION failure. Add focused regression coverage, run the implicated release-ci-base chunk and complete local CI, integrate through hosted CI, then unblock release task 202609121424-49XXT3. Preserve unrelated user work and never commit agentplane-roadmap-r2.\n- Out of scope: unrelated refactors not required for \"Repair managed usage observation and branch-pr finish guard regressions\".",
+      "Prepared a bounded repair plan for both release-blocking regressions.",
+      "1. Run `bunx vitest run packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts`. Expected: managed custom and Hermes results each persist exactly one state-bound `unavailable` provider-usage observation, and branch-pr finish from a task branch returns the intended `E_GIT` checkout guard before reconciliation validation.\n2. Run `bun run ci:local:full`. Expected: the complete local CI suite passes on the exact repair commit.\n3. Review `git diff --check`, the final diff, and `git status --short --untracked-files=all`. Expected: changes remain limited to the five approved source and test paths, with no unrelated tracked changes.\n4. Complete hosted integration through the AgentPlane route. Expected: required hosted checks pass on the exact repair commit and the repair reaches qualified `main` before release task `202609121424-49XXT3` resumes."
+    ]
+  },
+  "evaluated_sha": "bb5980e80f1b95e3162905ed7304d5da54de66f2",
+  "diff_base_sha": "ed89f946b3058cf290df7a76bec23ab4dcc1fa92",
+  "blueprint_digest": "a5e2f89fe35a9cb6618947168657d5dbe23402eb8c0915a320f44b2b151c0d57",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609141440-VFA9C1/quality/20260914-160224812-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:4809a3a63191e2cdba3a3b9f1d504191472a5e4d14941c022b9983eb743b0772",
+    "prompt_path": ".agentplane/tasks/202609141440-VFA9C1/quality/objects/sha256/47f9474fcf8c5d5814c1af4a39772e72c1faf55d5454ec0a4d60db43846d03c1.md",
+    "result_schema_path": ".agentplane/tasks/202609141440-VFA9C1/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609141440-VFA9C1/README.md",
+      "sha256": "sha256:8d04c19814c9d3d88ad26d87c6bfdc17b4a7690a3e383485088c0904df37094d",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609141440-VFA9C1/quality/objects/sha256/80c915ee57425f981428bc138f9cd23ec3135d75056b6ac8ae6f26c4eb512ea1.patch",
+      "sha256": "sha256:80c915ee57425f981428bc138f9cd23ec3135d75056b6ac8ae6f26c4eb512ea1",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609141440-VFA9C1/quality/objects/sha256/b1cbbdf35481f6e235ce22df666443bbfb64ea7b8884fd1ed48a26a903b69cc4.json",
+      "sha256": "sha256:b1cbbdf35481f6e235ce22df666443bbfb64ea7b8884fd1ed48a26a903b69cc4",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609141440-VFA9C1/verification/20260914160215087-a8392fd8995b0aa6.json",
+      "sha256": "sha256:b4faea5aa4cd67b80caa13bc0b372284887c799275a0ba7c14ace774f0c96fb5",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609141440-VFA9C1/quality/objects/sha256/63de350557411146ca66ec72e3d95a0d7a3abb88af2dc9bc3dfd445880b7ed03.json",
+      "sha256": "sha256:63de350557411146ca66ec72e3d95a0d7a3abb88af2dc9bc3dfd445880b7ed03",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

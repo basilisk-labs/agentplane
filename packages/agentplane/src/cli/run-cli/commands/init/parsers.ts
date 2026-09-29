@@ -26,15 +26,6 @@ export function parseRecipesSelectionForInit(value: string): string[] {
     .filter(Boolean);
 }
 
-export function parseBlueprintsSelectionForInit(value: string): string[] {
-  const normalized = value.trim().toLowerCase();
-  if (normalized === "none" || normalized === "") return [];
-  return value
-    .split(",")
-    .map((item) => item.trim())
-    .filter(Boolean);
-}
-
 export function parseDirectCloseDirtyPolicyForInit<T>(
   spec: CommandSpec<T>,
   flag: string,

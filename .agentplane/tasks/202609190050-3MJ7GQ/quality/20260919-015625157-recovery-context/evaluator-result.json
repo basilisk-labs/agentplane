@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "No actionable defect found: the product diff remains limited to native identity validation and its focused tests; later commits only persist AgentPlane task and PR lifecycle artifacts.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609190050-3MJ7GQ/quality/objects/sha256/16eb63ad7febec61761a050de82b54f98bbcb0a13e92e3215bfbadc7ebcbed8d.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

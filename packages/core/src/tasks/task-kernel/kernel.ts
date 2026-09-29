@@ -1,4 +1,11 @@
-import { authorityDigest, continuationAdmissionIssues } from "./authority-lineage.js";
+import {
+  authorityDeltaApprovalEvidence,
+  authorityDigest,
+  canonicalAuthorityIssues,
+  continuationAdmissionIssues,
+  isAdditivePlanScopeExpansion,
+  planScopeExpansionApprovalDigest,
+} from "./authority-lineage.js";
 import { kernelDigest } from "./digest.js";
 export { kernelDigest } from "./digest.js";
 
@@ -139,6 +146,7 @@ const EVENT_KIND: Readonly<Record<TaskCommand["kind"], DomainEvent["kind"]>> = {
   reject_plan: "plan_rejected",
   approve_plan: "plan_approved",
   continue_authority: "authority_continued",
+  approve_authority_delta: "authority_continued",
   materialize_work_items: "work_items_materialized",
   transition_work_item: "work_item_transitioned",
   accept_work_item_result: "work_item_result_accepted",
@@ -176,6 +184,19 @@ function planMatches(
   return plan !== null && plan.revision === revision && plan.digest === digest;
 }
 
+function isApprovedBlockedPlanRejection(input: KernelInput): boolean {
+  return (
+    input.command.kind === "reject_plan" &&
+    input.aggregate.current_plan?.state === "APPROVED" &&
+    input.aggregate.state === "ACTIVE" &&
+    Object.values(input.aggregate.work_items).some((item) => item.state === "BLOCKED") &&
+    input.actor.kind === "USER" &&
+    input.actor.transport === "manual" &&
+    input.command.rejection_evidence_digest !== undefined &&
+    isSha256Digest(input.command.rejection_evidence_digest)
+  );
+}
+
 function requiredAuthority(input: KernelInput, workItemId: string | null): KernelResult | null {
   const authority = input.authority;
   if (!authority) return rejected("AUTHORITY_MISSING", [input.command.kind], "request_authority");
@@ -188,10 +209,17 @@ function requiredAuthority(input: KernelInput, workItemId: string | null): Kerne
     return rejected("AUTHORITY_SCOPE_EXCEEDED", ["authority_expired_or_invalid_time"]);
   }
   const persisted = input.aggregate.authority_lineage?.at(-1)?.authority;
+  const rejectedPlanReplanning =
+    input.command.kind === "propose_plan" &&
+    input.aggregate.state === "PLANNING" &&
+    input.aggregate.current_plan?.state === "REJECTED";
+  const approvedBlockedPlanRejection = isApprovedBlockedPlanRejection(input);
   if (persisted && input.command.kind !== "approve_plan") {
     if (authority.digest !== authorityDigest(authority))
       return rejected("AUTHORITY_SCOPE_EXCEEDED", ["authority_digest"]);
     if (
+      !rejectedPlanReplanning &&
+      !approvedBlockedPlanRejection &&
       kernelDigest(authority) !== kernelDigest(persisted) &&
       !compareExecutionAuthority(persisted, authority).ok
     )
@@ -423,6 +451,83 @@ function preconditions(input: KernelInput): KernelResult | null {
     const issues = continuationAdmissionIssues(input, input.command.record);
     return issues.length > 0 ? rejected("AUTHORITY_SCOPE_EXCEEDED", issues) : null;
   }
+  if (input.command.kind === "approve_authority_delta") {
+    const command = input.command;
+    const parent = input.aggregate.authority_lineage?.at(-1)?.authority;
+    const record = command.record;
+    const observation = record.observation;
+    const child = record.authority;
+    const immutable = parent
+      ? {
+          ...child,
+          digest: parent.digest,
+          repository_fingerprint: parent.repository_fingerprint,
+          scope_roots: parent.scope_roots,
+          repository_effects: parent.repository_effects,
+          provenance: parent.provenance,
+        }
+      : null;
+    const issues =
+      !parent ||
+      input.actor.kind !== "USER" ||
+      input.actor.transport !== "manual" ||
+      input.authority !== null ||
+      command.parent_authority_digest !== parent.digest ||
+      record.approval_mode !== "manual_operator" ||
+      observation?.kind !== "authority_delta" ||
+      observation.request_digest !== command.request_digest ||
+      observation.request_task_revision !== input.aggregate.revision ||
+      observation.repository_evidence_digest === undefined ||
+      observation.previous_fingerprint !== parent.repository_fingerprint ||
+      child.repository_fingerprint !== input.repository_fingerprint ||
+      child.provenance.kind !== "USER" ||
+      child.provenance.actor_id !== input.actor.id ||
+      child.provenance.parent_authority_digest !== parent.digest ||
+      child.provenance.evidence_digest !== parent.provenance.evidence_digest ||
+      observation.evidence_digest !==
+        authorityDeltaApprovalEvidence({
+          task_id: input.aggregate.id,
+          request_digest: command.request_digest,
+          actor_id: input.actor.id,
+        }) ||
+      child.digest !== authorityDigest(child) ||
+      !immutable ||
+      kernelDigest(immutable) !== kernelDigest(parent) ||
+      JSON.stringify(child.scope_roots) !==
+        JSON.stringify(
+          [
+            ...new Set([...parent.scope_roots, ...(observation.added_scope_roots ?? [])]),
+          ].toSorted(),
+        ) ||
+      JSON.stringify(child.repository_effects) !==
+        JSON.stringify(
+          [
+            ...new Set([
+              ...parent.repository_effects,
+              ...(observation.added_repository_effects ?? []),
+            ]),
+          ].toSorted(),
+        ) ||
+      kernelDigest({
+        task_id: input.aggregate.id,
+        task_revision: input.aggregate.revision,
+        plan_revision: parent.plan_revision,
+        plan_digest: parent.plan_digest,
+        parent_authority_digest: parent.digest,
+        repository_identity: parent.repository_identity,
+        previous_fingerprint: parent.repository_fingerprint,
+        repository_fingerprint: input.repository_fingerprint,
+        repository_evidence_digest: observation.repository_evidence_digest,
+        changed_paths: observation.changed_paths,
+        added_scope_roots: observation.added_scope_roots ?? [],
+        added_repository_effects: observation.added_repository_effects ?? [],
+      }) !== command.request_digest ||
+      canonicalAuthorityIssues({
+        ...input.aggregate,
+        authority_lineage: [...(input.aggregate.authority_lineage ?? []), record],
+      }).length > 0;
+    return issues ? rejected("AUTHORITY_SCOPE_EXCEEDED", ["authority_delta_binding"]) : null;
+  }
   const workItemId = authorityWorkItem(input.command);
   if (workItemId !== null) {
     if (input.aggregate.state !== "ACTIVE") {
@@ -459,13 +564,6 @@ function amendPlan(
   if (aggregate.state !== "ACTIVE" && aggregate.state !== "FINAL_VALIDATION") {
     return rejected("ILLEGAL_TASK_TRANSITION", [aggregate.state, command.kind]);
   }
-  if (command.authority_delta_digest) {
-    return rejected(
-      "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
-      [command.authority_delta_digest],
-      "request_authority_delta",
-    );
-  }
   const proposed = command.amended_plan;
   if (proposed.revision !== current.revision + 1) {
     return rejected("PLAN_REVISION_MISMATCH", [String(proposed.revision)]);
@@ -480,7 +578,32 @@ function amendPlan(
   const issues = validateWorkItemDefinitions(proposed.work_items);
   if (issues.length > 0) return rejected("WORK_ITEM_DEPENDENCY_INCOMPLETE", issues);
   const originals = new Map(current.work_items.map((item) => [item.id, item]));
+  const scopeExpansions = proposed.work_items.filter((item) => {
+    const original = originals.get(item.id);
+    return (
+      original?.execution_requirements !== undefined &&
+      item.execution_requirements !== undefined &&
+      !executionRequirementsAreSubset(original.execution_requirements, item.execution_requirements)
+    );
+  });
+  const scopeExpansionApprovalDigest = planScopeExpansionApprovalDigest({
+    task_id: aggregate.id,
+    current_plan_digest: current.digest,
+    amended_plan_digest: proposed.digest,
+    actor_id: input.actor.id,
+  });
+  const scopeExpansionApproved =
+    scopeExpansions.length > 0 &&
+    input.actor.kind === "USER" &&
+    command.authority_delta_digest === scopeExpansionApprovalDigest &&
+    input.authority !== null &&
+    isAdditivePlanScopeExpansion({
+      current,
+      amended: proposed,
+      authority: input.authority,
+    });
   if (
+    (command.authority_delta_digest !== null && !scopeExpansionApproved) ||
     proposed.work_items.length !== current.work_items.length ||
     proposed.work_items.some((item) => {
       const original = originals.get(item.id);
@@ -493,12 +616,14 @@ function amendPlan(
         !original.depends_on.every((id) => item.depends_on.includes(id)) ||
         !item.execution_requirements ||
         !original.execution_requirements ||
-        !executionRequirementsAreSubset(
+        (!executionRequirementsAreSubset(
           original.execution_requirements,
           item.execution_requirements,
-        ) ||
-        !input.authority ||
-        !executionRequirementsAreSubset(input.authority, item.execution_requirements)
+        ) &&
+          !scopeExpansionApproved) ||
+        input.authority?.work_item_id !== null ||
+        (!scopeExpansionApproved &&
+          !executionRequirementsAreSubset(input.authority, item.execution_requirements))
       );
     })
   ) {
@@ -550,7 +675,16 @@ function amendPlan(
     ...aggregate,
     revision: aggregate.revision + 1,
     state: "ACTIVE",
-    current_plan: { ...current, ...proposed },
+    current_plan: {
+      ...current,
+      ...proposed,
+      ...(scopeExpansionApproved
+        ? {
+            approval_actor_id: input.actor.id,
+            approval_evidence_digest: scopeExpansionApprovalDigest,
+          }
+        : {}),
+    },
     plan_history: [...aggregate.plan_history, { ...current, state: "SUPERSEDED" }],
     work_items: refreshReadyItems(workItems),
     final_validation: null,
@@ -634,7 +768,8 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
       if (!planMatches(aggregate.current_plan, command.plan_revision, command.plan_digest)) {
         return rejected("PLAN_DIGEST_MISMATCH", [command.plan_digest]);
       }
-      if (aggregate.current_plan.state !== "PROPOSED") {
+      const approvedBlockedReplan = isApprovedBlockedPlanRejection(input);
+      if (aggregate.current_plan.state !== "PROPOSED" && !approvedBlockedReplan) {
         return rejected("ILLEGAL_TASK_TRANSITION", [aggregate.current_plan.state, "REJECTED"]);
       }
       next = {
@@ -647,9 +782,16 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
     }
     case "approve_plan": {
       const provenance = input.authority?.provenance;
+      const policyApproval =
+        command.authority_mode === "repository_policy" &&
+        input.actor.kind === "SYSTEM" &&
+        provenance?.kind === "SYSTEM";
+      const userApproval =
+        command.authority_mode !== "repository_policy" &&
+        input.actor.kind === "USER" &&
+        provenance?.kind === "USER";
       if (
-        input.actor.kind !== "USER" ||
-        provenance?.kind !== "USER" ||
+        (!policyApproval && !userApproval) ||
         provenance.parent_authority_digest !== null ||
         provenance.actor_id !== input.actor.id ||
         provenance.evidence_digest !== command.approval_evidence_digest
@@ -701,6 +843,14 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
       break;
     }
     case "continue_authority": {
+      next = {
+        ...aggregate,
+        revision: aggregate.revision + 1,
+        authority_lineage: [...(aggregate.authority_lineage ?? []), command.record],
+      };
+      break;
+    }
+    case "approve_authority_delta": {
       next = {
         ...aggregate,
         revision: aggregate.revision + 1,

@@ -21,6 +21,7 @@ import { getHumanInputState } from "../task/human-input.js";
 import type { TaskResumeContext } from "../task/handoff.shared.js";
 import { cmdTaskAdd, cmdTaskPlanSet } from "../workflow.js";
 import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
+import { materializeLegacyDrainIdentityFixture } from "../shared/native-task-identity-fixture.js";
 
 import { applyEvaluatorSgrReview } from "./evaluator-review-apply.js";
 import {
@@ -77,6 +78,7 @@ async function prepare(
   task: Awaited<ReturnType<typeof loadTaskFromContext>>;
   prepared: PreparedEvaluatorReview;
 }> {
+  await materializeLegacyDrainIdentityFixture({ root, task_id: taskId });
   const command = await loadCommandContext({ cwd: root, rootOverride: root });
   const task = await loadTaskFromContext({ ctx: command, taskId });
   const catalog = await loadEvaluatorCatalog({ projectRoot: root, includeBuiltin: true });
@@ -546,7 +548,7 @@ describe("evaluator episode calibration", () => {
     expect(stored.frontmatter.quality_review).toBeUndefined();
   });
 
-  it("rejects a typed episode result after the task revision changes", async () => {
+  it("accepts a typed episode result after a non-identity task revision changes", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     const taskId = "202607270000-EC04";
@@ -567,14 +569,13 @@ describe("evaluator episode calibration", () => {
     });
     const staleTask = await loadTaskFromContext({ ctx: command, taskId });
 
-    await expect(
-      applyEvaluatorSgrReview({
-        ctx: command,
-        task: staleTask,
-        workOrderPath: prepared.work_order_path,
-        result: episode.result,
-      }),
-    ).rejects.toThrow("task revision changed");
+    const applied = await applyEvaluatorSgrReview({
+      ctx: command,
+      task: staleTask,
+      workOrderPath: prepared.work_order_path,
+      result: episode.result,
+    });
+    expect(applied.work_order.review_identity).toEqual(prepared.work_order.review_identity);
     expect(task.revision).toBe(prepared.work_order.task.revision);
   });
 

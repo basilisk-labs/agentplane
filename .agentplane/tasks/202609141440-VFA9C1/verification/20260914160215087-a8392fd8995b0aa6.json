@@ -1,0 +1,119 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bunx vitest run packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609141440-VFA9C1 Verification Contract check affected_unit_integration (1/2)\n\nCheck: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609141440-VFA9C1 Verification Contract check affected_unit_integration (2/2)\n\nCheck: critical_paths\nCommand: bunx vitest run packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609141440-VFA9C1 Verification Contract check critical_paths (1/2)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609141440-VFA9C1 Verification Contract check critical_paths (2/2)\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609141440-VFA9C1 Verification Contract check full_regression\n\nCheck: real_e2e\nCommand: bunx vitest run packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609141440-VFA9C1 Verification Contract check real_e2e (1/2)\n\nCheck: real_e2e\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609141440-VFA9C1 Verification Contract check real_e2e (2/2)\n\nCheck: task_outcome\nCommand: bunx vitest run packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609141440-VFA9C1 Verification Contract check task_outcome (1/2)\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609141440-VFA9C1 Verification Contract check task_outcome (2/2)",
+  "digest": "sha256:a8392fd8995b0aa618eebd232c81304f27eef5bab2ed030de01b8fe368568b11",
+  "implementation_sha": "bb5980e80f1b95e3162905ed7304d5da54de66f2",
+  "input": {
+    "context": {
+      "digest": "sha256:be2cd4a1822669e850198c66e1dff5858d19f4644abe13560d0a8d2504db633b",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package-lock.json",
+        "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:4936780e8c5568e5ec5478164f19ad2586c226c3360b31936e8cc357ab55098c",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:deeab53984c3bcc672181ac4e4b642f39cf9ea73c76cd77ff23114710811119e",
+      "digest": "sha256:0ad9a3c33978c598e7dde4f4d0533ab59818c159665a863b9a034a1f6336cd44",
+      "references": [
+        {
+          "digest": "sha256:db0bc070a5753415e9187ac97c0dc7f897c8954cfc60393f7255dc85abf64870",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:db0bc070a5753415e9187ac97c0dc7f897c8954cfc60393f7255dc85abf64870",
+          "fragment": "check-2",
+          "path": ".agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609141440-VFA9C1/supervision/declared-checks.json#check-2",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "ed89f946b3058cf290df7a76bec23ab4dcc1fa92",
+      "digest": "sha256:283c06a75a4c525478374ca152bf9a71e4b9e277cd414dc8f43f116f9710c689",
+      "primary_task_id": "202609141440-VFA9C1",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor",
+        "reversibility_recovery_required"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609141440-VFA9C1"
+      ]
+    },
+    "implementation": {
+      "base_sha": "ed89f946b3058cf290df7a76bec23ab4dcc1fa92",
+      "digest": "sha256:bcf37f3ea29f6fdd66960e3fbedd09addeded03e7cfc54547d45e1d19bf92245",
+      "strategy": "branch_diff",
+      "target_sha": "bb5980e80f1b95e3162905ed7304d5da54de66f2"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:38ff679b1c599ea56286bedf7db69171c42e2c662fe714401b14401327794321",
+    "verify_steps_digest": "sha256:ca04894aa14c0c4974612016bba8e14e6106b3f62f38b10f95e02c4c85e11683"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.",
+  "recorded_at": "2026-09-14T16:02:15.087Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Run `bunx vitest run packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts`. Expected: managed custom and Hermes results each persist exactly one state-bound `unavailable` provider-usage observation, and branch-pr finish from a task branch returns the intended `E_GIT` checkout guard before reconciliation validation.\n2. Run `bun run ci:local:full`. Expected: the complete local CI suite passes on the exact repair commit.\n3. Review `git diff --check`, the final diff, and `git status --short --untracked-files=all`. Expected: changes remain limited to the five approved source and test paths, with no unrelated tracked changes.\n4. Complete hosted integration through the AgentPlane route. Expected: required hosted checks pass on the exact repair commit and the repair reaches qualified `main` before release task `202609121424-49XXT3` resumes.",
+  "scope_digest": "sha256:ca04894aa14c0c4974612016bba8e14e6106b3f62f38b10f95e02c4c85e11683",
+  "task_id": "202609141440-VFA9C1",
+  "verification_command": "agentplane verify 202609141440-VFA9C1 --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

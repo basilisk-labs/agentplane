@@ -1,0 +1,123 @@
+{
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609231207-R59HKK-1a03c8996e0a5759144d5509",
+  "prepared_at": "2026-09-23T14:53:21.863Z",
+  "task": {
+    "id": "202609231207-R59HKK",
+    "revision": 19,
+    "objective": "Make canonical supervisor transitions recoverable across branch lifecycle boundaries\n\nRepair evaluator diff-base selection after provider branch updates, forward replacement intent into evaluator episodes, persist supervisor-generated task artifacts without false task_worktree_resolution, dispatch pre-merge closure through the supported local lifecycle path, and admit worktree.prepare before dirty-base worktree resolution.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "bun run typecheck",
+      "bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-verification-contract.test.ts packages/agentplane/src/commands/task/branch-task-supervisor.test.ts packages/agentplane/src/commands/task/external-agent-supervisor.test.ts",
+      "- In scope: Repair evaluator diff-base selection after provider branch updates, forward replacement intent into evaluator episodes, persist supervisor-generated task artifacts without false task_worktree_resolution, dispatch pre-merge closure through the supported local lifecycle path, and admit worktree.prepare before dirty-base worktree resolution.\n- Out of scope: unrelated refactors not required for \"Make canonical supervisor transitions recoverable across branch lifecycle boundaries\".",
+      "1. Execute approved WorkItem supervisor-transition-recovery.",
+      "PLANNER fallback scaffold for \"Make canonical supervisor transitions recoverable across branch lifecycle boundaries\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Make canonical supervisor transitions recoverable across branch lifecycle boundaries\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "1663b3c247eb098033997ad12a007220dd39601e",
+  "diff_base_sha": "303a1cd05145999282d7494bf329205e56b5b9b3",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609231207-R59HKK/quality/20260923-145321863-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:9874784da89b682f409bd71f4b6fbbc28457f5592663e492096e9f582fe57265",
+    "prompt_path": ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/4b6731a5c57300dafdfc09ebb523cc5559af5937d055fb34abcd5c57c1ee0fd8.md",
+    "result_schema_path": ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "schema_version": 2,
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202609231207-R59HKK",
+    "plan_digest": "sha256:c7e4e13963ee3e176d46d80eff725163587d243761643fc175af5d05a235650d",
+    "policy_digest": "sha256:a5ab5000ca9215caf2e1a7dbd093cadfe6347f6c8f0c1f4a6af1a7e6f7770ffb",
+    "capability_digest": "sha256:44668150af015035b4f9295eeb1e83a605e3c89b183ce28b4421a381c9bdb75f",
+    "checks_digest": "sha256:6b883bac0c56e99384b87f8343fc9c2b7824338fd108c0f47b68339806833a58",
+    "verification_input_digest": "sha256:268be08ede32876e60614518646d98be57859da4972104529e40b34ad143d3d3",
+    "acceptance_digest": "sha256:27c333689cb1f3e027e220b3728dee9c1cf266228687123518847a062f1eb6f4",
+    "implementation_sha": "1663b3c247eb098033997ad12a007220dd39601e",
+    "digest": "sha256:c88cdc580f353ac8adedd2dc69d2d76aa945e00a56c7a117ce2c0d5a3062971f"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609231207-R59HKK/README.md",
+      "sha256": "sha256:1ebd9d9633bb6c1db873447de9eafcd99fefa30c6ed5e648840493664aef294f",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/b62f2aa81cf989ed4066eed7a13bdfafe0a259b324469b0fcf7cae04b1fc5872.patch",
+      "sha256": "sha256:b62f2aa81cf989ed4066eed7a13bdfafe0a259b324469b0fcf7cae04b1fc5872",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/e1483435cf1fb395403f7cfbe40e6f18bdd3bc5bdd7f9be05af554e838364d7b.json",
+      "sha256": "sha256:e1483435cf1fb395403f7cfbe40e6f18bdd3bc5bdd7f9be05af554e838364d7b",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609231207-R59HKK/verification/20260923144846870-4a1e16580868d4ae.json",
+      "sha256": "sha256:426c2d6bd8160ad1f995e0ab5a21b0b7a0ea74a5b8337b97151df19a7694e2ca",
+      "required": true
+    },
+    {
+      "id": "native-identity",
+      "kind": "plan",
+      "path": ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/9bfbe82d2e857611eb04b1407e7dca21d72de2e2a8167fa0864a8883642181a1.json",
+      "sha256": "sha256:9bfbe82d2e857611eb04b1407e7dca21d72de2e2a8167fa0864a8883642181a1",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

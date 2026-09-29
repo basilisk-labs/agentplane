@@ -1,0 +1,121 @@
+{
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609202207-HY96FB-01a411ece998c64e27e5c12f",
+  "prepared_at": "2026-09-20T23:08:39.368Z",
+  "task": {
+    "id": "202609202207-HY96FB",
+    "revision": 20,
+    "objective": "Fix canonical verification projection metadata so Kernel final-validation records remain current through operational projection and pre-merge closure\n\nThe 0.7.10 Kernel final-validation writer records note 'Verified: canonical Task Kernel final checks passed.' but kernel-operational-projection overwrites task.verification.note with 'Canonical validation <digest>'. recordMetadataMatches then rejects the otherwise valid signed record as verification_metadata_changed, blocking PR closure. Preserve the exact verification metadata owned by the accepted record/projection, add regression coverage, and keep fail-closed verification identity checks intact.",
+    "acceptance_criteria": [
+      "bun test packages/agentplane/src/commands/task/kernel-operational-projection.test.ts",
+      "- In scope: The 0.7.10 Kernel final-validation writer records note 'Verified: canonical Task Kernel final checks passed.' but kernel-operational-projection overwrites task.verification.note with 'Canonical validation <digest>'. recordMetadataMatches then rejects the otherwise valid signed record as verification_metadata_changed, blocking PR closure. Preserve the exact verification metadata owned by the accepted record/projection, add regression coverage, and keep fail-closed verification identity checks intact.\n- Out of scope: unrelated refactors not required for \"Fix canonical verification projection metadata so Kernel final-validation records remain current through operational projection and pre-merge closure\".",
+      "PLANNER semantic plan required. Replace this placeholder with a task-specific implementation plan before approval.",
+      "PLANNER fallback scaffold for \"Fix canonical verification projection metadata so Kernel final-validation records remain current through operational projection and pre-merge closure\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Fix canonical verification projection metadata so Kernel final-validation records remain current through operational projection and pre-merge closure\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "a945357dcc9453c25521e439396afc2a5c4a99eb",
+  "diff_base_sha": "4470b04c34da735ffb46914ea6e6398a54eb39ac",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609202207-HY96FB/quality/20260920-230839368-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:531f59b9b9086eabd7452c7664fb34c964b9535cbb8d9774e228da0ddd850361",
+    "prompt_path": ".agentplane/tasks/202609202207-HY96FB/quality/objects/sha256/96a7d0c00121553a0e96be92db4910af966445dc1cf7f4081addbd9f024f4f3a.md",
+    "result_schema_path": ".agentplane/tasks/202609202207-HY96FB/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "schema_version": 2,
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202609202207-HY96FB",
+    "plan_digest": "sha256:7f889b8e6f5971665cd7c5888eae74353c178a6f8e9b2db9d651c1b357d2ae3e",
+    "policy_digest": "sha256:9b668d089af056af9741759543ed685caaa27c913a3aa16d382cfde5faf1adc7",
+    "capability_digest": "sha256:c7773401c9187b30d35df078ee87d7ccbc0bacb24096a0983e571daa25cb3928",
+    "checks_digest": "sha256:4fa5f69ba17031c371df0cf1b32a872d000be57a02f21ea9d69ceb99ff736fdc",
+    "verification_input_digest": "sha256:7aa95d055cedfe82f1d1178d65ad6451a37c40a8207911a6a779bed1e12ac648",
+    "acceptance_digest": "sha256:bfca2e999c5722e97039bcf186989076114426429da843582fa497a71d608087",
+    "implementation_sha": "a945357dcc9453c25521e439396afc2a5c4a99eb",
+    "digest": "sha256:e9755ab0b2445d0555b698dd7982155996a6e23355968878a4259a94d1fec016"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609202207-HY96FB/README.md",
+      "sha256": "sha256:48a83c2d43ebd95c6a437e70aaff95f6ab752f3308bdd42540bf63456b6deb4a",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609202207-HY96FB/quality/objects/sha256/3396eebf8c760c6fd194aff1ad249a366bc90c9f95283bfa490000b38303c74d.patch",
+      "sha256": "sha256:3396eebf8c760c6fd194aff1ad249a366bc90c9f95283bfa490000b38303c74d",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609202207-HY96FB/quality/objects/sha256/9753f8ba024f204a02620931983936ff0168809886140d52fc5c603571cd3298.json",
+      "sha256": "sha256:9753f8ba024f204a02620931983936ff0168809886140d52fc5c603571cd3298",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609202207-HY96FB/verification/20260920230807061-fc6e320d2d7d162e.json",
+      "sha256": "sha256:b56fedb635f1219cee8584d439bc2b5777c828db18738d17595f38003dc015b8",
+      "required": true
+    },
+    {
+      "id": "native-identity",
+      "kind": "plan",
+      "path": ".agentplane/tasks/202609202207-HY96FB/quality/objects/sha256/c4f7c496d3568b0a0fda3524bd0fcebe5e05f015d0d7573c109e01c0f7df546f.json",
+      "sha256": "sha256:c4f7c496d3568b0a0fda3524bd0fcebe5e05f015d0d7573c109e01c0f7df546f",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

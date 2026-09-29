@@ -1,0 +1,132 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run release:check\nResult: pass\nEvidence: .agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609121424-49XXT3 Verification Contract check affected_unit_integration (1/3)\n\nCheck: affected_unit_integration\nCommand: bun run release:prepublish\nResult: pass\nEvidence: .agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609121424-49XXT3 Verification Contract check affected_unit_integration (2/3)\n\nCheck: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json#check-3\nScope: branch_pr task 202609121424-49XXT3 Verification Contract check affected_unit_integration (3/3)\n\nCheck: critical_paths\nCommand: bun run release:check\nResult: pass\nEvidence: .agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609121424-49XXT3 Verification Contract check critical_paths (1/3)\n\nCheck: critical_paths\nCommand: bun run release:prepublish\nResult: pass\nEvidence: .agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609121424-49XXT3 Verification Contract check critical_paths (2/3)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json#check-3\nScope: branch_pr task 202609121424-49XXT3 Verification Contract check critical_paths (3/3)\n\nCheck: docs_contract\nCommand: bun run release:check\nResult: pass\nEvidence: .agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609121424-49XXT3 Verification Contract check docs_contract (1/3)\n\nCheck: docs_contract\nCommand: bun run release:prepublish\nResult: pass\nEvidence: .agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609121424-49XXT3 Verification Contract check docs_contract (2/3)\n\nCheck: docs_contract\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json#check-3\nScope: branch_pr task 202609121424-49XXT3 Verification Contract check docs_contract (3/3)\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json#check-3\nScope: branch_pr task 202609121424-49XXT3 Verification Contract check full_regression\n\nCheck: real_e2e\nCommand: bun run release:check\nResult: pass\nEvidence: .agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609121424-49XXT3 Verification Contract check real_e2e (1/3)\n\nCheck: real_e2e\nCommand: bun run release:prepublish\nResult: pass\nEvidence: .agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609121424-49XXT3 Verification Contract check real_e2e (2/3)\n\nCheck: real_e2e\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json#check-3\nScope: branch_pr task 202609121424-49XXT3 Verification Contract check real_e2e (3/3)\n\nCheck: task_outcome\nCommand: bun run release:check\nResult: pass\nEvidence: .agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609121424-49XXT3 Verification Contract check task_outcome (1/3)\n\nCheck: task_outcome\nCommand: bun run release:prepublish\nResult: pass\nEvidence: .agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609121424-49XXT3 Verification Contract check task_outcome (2/3)\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json#check-3\nScope: branch_pr task 202609121424-49XXT3 Verification Contract check task_outcome (3/3)",
+  "digest": "sha256:de98762f65da07cc9b8fff4657107664e306f402aad25e48fa27c82f8575af32",
+  "implementation_sha": "026c97813bc53dabe636fd957e4e6961278b45a3",
+  "input": {
+    "context": {
+      "digest": "sha256:d19bf6040a89171eed2159a6ca6ea21b4258fa7c5841c0554ce9f8daa499b406",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package-lock.json",
+        "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:6c337943a17b00e935f07c5839e0b4be575a170197b81f6386ce5f5f307f4bc2",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:8deaeef4719d12282bee985c1fe8a29517568f13a3a5a1702f3a4d499e0fd227",
+      "digest": "sha256:9227b08b87230ddd45fc4a1602ded7d0665e3106ffdfb5a3f27f10a3555d51be",
+      "references": [
+        {
+          "digest": "sha256:8fd7ed054190b1cc33d4291954dcf46002ddbda239ade0706a7e18f114c5ff14",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:8fd7ed054190b1cc33d4291954dcf46002ddbda239ade0706a7e18f114c5ff14",
+          "fragment": "check-2",
+          "path": ".agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json#check-2",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:8fd7ed054190b1cc33d4291954dcf46002ddbda239ade0706a7e18f114c5ff14",
+          "fragment": "check-3",
+          "path": ".agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609121424-49XXT3/supervision/declared-checks.json#check-3",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "f3c1991ddd92943775b6b4b4688009afc3d523bc",
+      "digest": "sha256:43ddfd99e689936ced90a272330840f99187878d31213c0ace1c4089daa56a13",
+      "primary_task_id": "202609121424-49XXT3",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "effect_credentials",
+        "effect_dependencies",
+        "effect_external_write",
+        "effect_public_api",
+        "effect_publish",
+        "effect_release_metadata",
+        "repository_branch_pr_floor",
+        "reversibility_recovery_required"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609121424-49XXT3"
+      ]
+    },
+    "implementation": {
+      "base_sha": "f3c1991ddd92943775b6b4b4688009afc3d523bc",
+      "digest": "sha256:57f55a8fa2395066ea008a5ffef0e7b9904214084ae5ba6e7d07d625446a0bfd",
+      "strategy": "branch_diff",
+      "target_sha": "026c97813bc53dabe636fd957e4e6961278b45a3"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:62bc80d53aa3d45e4ffdf0f2173172e889d4f46faece51e8e4739ffeb6a8e06e",
+    "verify_steps_digest": "sha256:9cf5b2e4d0913444dd22e75559fae1e7ad1d16f13ca446af014dcf764ee33e73"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned checks passed before independent EVALUATOR review.",
+  "recorded_at": "2026-09-16T20:19:06.057Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Run `bun run release:check`. Expected: version parity, generated release surfaces, package manifests, and release policy checks pass for 0.7.9.\n2. Run `bun run release:prepublish`. Expected: the complete prepublish gate passes for the exact release candidate without skipped mandatory checks.\n3. Review `git diff --check`, the exact task diff, and `git status --short --untracked-files=all`. Expected: only approved release metadata, documentation, package version surfaces, baseline evidence, and AgentPlane task artifacts changed; `agentplane-roadmap-r2` and unrelated user work are not committed.\n4. Complete AgentPlane verification and hosted branch protection for the release-ready candidate. Expected: the accepted release commit is integrated into `main`, hosted checks are successful, and `origin/main` resolves to the exact qualified publish SHA.\n5. Publish v0.7.9 only through the AgentPlane release route after an exact fresh publish-authority grant. Expected: `.agentplane/.release/publish/publish-result.json` records `success=true`, an empty `failures` array, version 0.7.9, and the exact qualified main SHA.\n6. Independently read back the GitHub v0.7.9 tag and release. Expected: the tag resolves to the qualified publish SHA and every required release asset and checksum is present.\n7. Independently read back all npm package versions and install the published packages in clean temporary directories. Expected: every public AgentPlane package reports 0.7.9 and both `agentplane` and `ap` entrypoints execute successfully.\n8. Independently verify `setup-agentplane`, Homebrew, and Scoop distribution surfaces and perform their documented clean install smoke checks when the release route provides them. Expected: every required surface resolves to 0.7.9 and its expected checksum; any unavailable anonymous GHCR read is recorded separately without being misreported as success.\n9. Re-fetch the default branch and provider state after publication. Expected: `origin/main`, the canonical release evidence, the tag, registries, and distribution surfaces agree on the same released SHA and version.\n10. Complete the required post-publish evidence follow-up and start the next patch beta only through fresh AgentPlane-managed tasks and authority packets. Expected: no lifecycle or external action is inferred from prose, and any genuine provider or evidence boundary is reported explicitly.",
+  "scope_digest": "sha256:9cf5b2e4d0913444dd22e75559fae1e7ad1d16f13ca446af014dcf764ee33e73",
+  "task_id": "202609121424-49XXT3",
+  "verification_command": "agentplane verify 202609121424-49XXT3 --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, rm, stat, symlink, utimes, writeFile } from "node:fs/promises";
+import { readFile, mkdir, mkdtemp, rm, stat, symlink, utimes, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
@@ -19,6 +19,8 @@ import {
   resolvePolicyGatewayPromptSource,
   runnerPromptBlocksToModuleGraph,
 } from "./base-prompts.js";
+
+import { AGENT_INSTRUCTION_LANGUAGE } from "./semantic-prompt-projection.js";
 
 const tempDirs = new Set<string>();
 
@@ -873,4 +875,23 @@ describe("collectRunnerBasePrompts", () => {
       "overlay.viewer.task-run",
     );
   });
+});
+
+it("keeps the runtime language contract aligned with the bundled gateway", async () => {
+  const gateway = await readFile(
+    path.join(process.cwd(), "packages/agentplane/assets/AGENTS.md"),
+    "utf8",
+  );
+  const language = gateway
+    .split("### Agent instruction language\n")[1]!
+    .split("<!-- /ap:fragment -->")[0]!
+    .trim()
+    .split("\n")
+    .filter(Boolean)
+    .map((line) => line.replace(/^- /u, ""))
+    .join("\n");
+  expect(AGENT_INSTRUCTION_LANGUAGE).toBe(language);
+  expect(() =>
+    assertSemanticProviderPromptHasNoProcessChoreography({ prompt: AGENT_INSTRUCTION_LANGUAGE }),
+  ).not.toThrow();
 });

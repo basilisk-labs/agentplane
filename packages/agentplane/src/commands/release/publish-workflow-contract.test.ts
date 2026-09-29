@@ -309,15 +309,18 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("name: Publish release");
   });
 
-  it("runs the stable-version guard before publishing packages with npm tag latest", async () => {
+  it("runs the stable-version guard before publishing packages with the admitted npm tag", async () => {
     const workflow = await readFile(PUBLISH_WORKFLOW_PATH, "utf8");
+    const publishCommand =
+      'npm publish --provenance --access public --tag "${{ needs.detect.outputs.npm_tag }}"';
 
     expect(workflow).toContain(
       'node scripts/check-release-version.mjs --tag "${{ needs.detect.outputs.tag }}" --stable-only',
     );
-    expect(workflow).toContain("npm publish --provenance --access public --tag latest");
+    expect(workflow).toContain("node scripts/release/stable-channel-policy.mjs");
+    expect(workflow).toContain(publishCommand);
     expect(workflow.indexOf("node scripts/check-release-version.mjs")).toBeLessThan(
-      workflow.indexOf("npm publish --provenance --access public --tag latest"),
+      workflow.indexOf(publishCommand),
     );
   });
 
@@ -407,7 +410,8 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("docker login ghcr.io");
     expect(workflow).toContain("docker build \\");
     expect(workflow).toContain('--build-arg "AGENTPLANE_TARBALL_FILE=${AGENTPLANE_TARBALL_FILE}"');
-    expect(workflow).toContain('docker push "${GHCR_VERSION_TAG}"');
+    expect(workflow).toContain("mapfile -t GHCR_TAGS");
+    expect(workflow).toContain('for tag in "${GHCR_TAGS[@]}"; do docker push "$tag"; done');
     expect(workflow).toContain(
       ".agentplane/.release/publish/distribution/release-distribution.json",
     );
@@ -463,9 +467,15 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("node scripts/release/open-next-development-version.mjs");
     expect(workflow).toContain('--published-version "${PUBLISHED_VERSION}"');
     expect(workflow).toContain("next-development-version.json");
+    expect(workflow).toContain(".agentplane/config.json");
+    expect(workflow).toContain("scripts/baselines/v0.7-compatibility-candidate.json");
     expect(workflow).toContain("release evidence follow-up branch is dirty before mutation");
     expect(workflow).toContain("next development version mutation left unstaged tracked files");
     expect(workflow).toContain("record publish evidence and open");
+    expect(workflow).toContain("Validate release evidence branch contract");
+    expect(workflow).toContain("bun run format:check");
+    expect(workflow).toContain("bun run bench:compatibility:candidate:check");
+    expect(workflow).toContain("release evidence branch contract checks mutated tracked files");
     expect(workflow).toContain("Open or recover release evidence PR");
     expect(workflow).toContain("Verify and merge exact release evidence SHA");
     expect(workflow).toContain("node scripts/workflow/verify-release-evidence-pr.mjs");
@@ -478,6 +488,7 @@ describe("publish workflow contract", () => {
     for (const stepName of [
       "Check for existing release evidence PR",
       "Apply release task evidence on a follow-up branch",
+      "Validate release evidence branch contract",
       "Push release evidence branch",
       "Open or recover release evidence PR",
       "Verify and merge exact release evidence SHA",
@@ -500,14 +511,20 @@ describe("publish workflow contract", () => {
         expect(stepBlock).toContain("GH_TOKEN: ${{ github.token }}");
       }
     }
+    expect(workflow.indexOf("Validate release evidence branch contract")).toBeLessThan(
+      workflow.indexOf("Push release evidence branch"),
+    );
+    expect(workflow.indexOf("Validate release evidence branch contract")).toBeLessThan(
+      workflow.indexOf("Open or recover release evidence PR"),
+    );
   });
 
-  it("checks out base revision and initializes required submodules for publish", async () => {
+  it("checks out the exact base revision and builds the publish payload", async () => {
     const workflow = await readFile(PUBLISH_WORKFLOW_PATH, "utf8");
 
     expect(workflow).toContain("fetch-depth: 0");
-    expect(workflow).toContain("submodules: false");
-    expect(workflow).toContain("Initialize required publish-relevant submodules");
+    expect(workflow).not.toContain("submodules:");
+    expect(workflow).not.toContain("Initialize required publish-relevant submodules");
     expect(workflow).toContain("NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN || '' }}");
     expect(workflow).toContain("NPM_TOKEN: ${{ secrets.NPM_TOKEN || '' }}");
     expect(workflow).toContain("packages: write");
@@ -601,7 +618,7 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain('echo "stable release detection skipped for prerelease $VERSION"');
   });
 
-  it("validates the exact evidence SHA and publishes the required PR check before merge", async () => {
+  it("validates the exact evidence SHA through native pull_request checks before merge", async () => {
     const workflow = await readFile(PUBLISH_WORKFLOW_PATH, "utf8");
 
     expect(workflow).toContain("source.err");
@@ -613,6 +630,8 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain('--pr-url "$pr_url"');
     expect(workflow).toContain('--repo "$REPO"');
     expect(workflow).toContain("release-evidence-closeout.json");
+    expect(workflow).not.toContain("name=PR verification");
+    expect(workflow).not.toContain("admin");
     expect(workflow.indexOf("Open or recover release evidence PR")).toBeLessThan(
       workflow.indexOf("Verify and merge exact release evidence SHA"),
     );

@@ -1,3 +1,9 @@
+import { buildAgentWorkOrderV2ValidFixture } from "@agentplaneorg/core/schemas";
+import {
+  buildWorkOrderContextManifest,
+  resolveWorkOrderContextBlocks,
+  workOrderContextBoundaryDigest,
+} from "./work-order-context.js";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import {
@@ -416,4 +422,116 @@ describe("assembleRunnerTaskContext", () => {
     expect(verificationSection?.text).toContain("Formal lifecycle record");
     expect(assembled.task.compaction.sections.truncated).toBe(true);
   });
+});
+
+describe("lossless WorkOrder context selection", () => {
+  it("keeps oversized discovery manifests complete and optional history out of required loading", () => {
+    const order = buildAgentWorkOrderV2ValidFixture("context-selection");
+    order.required_inputs = Array.from({ length: 500 }, (_, index) => ({
+      id: `history-${index}`,
+      kind: "source_artifact",
+      description: "Optional full historical log",
+      path: `logs/${index}.txt`,
+      required: index === 499,
+    }));
+    const manifest = buildWorkOrderContextManifest(order, "/run/work-order.json");
+    expect(Buffer.byteLength(JSON.stringify(manifest))).toBeGreaterThan(8192);
+    expect(manifest.blocks.filter((block) => block.id.startsWith("input:"))).toHaveLength(500);
+    const selected = resolveWorkOrderContextBlocks({ order, manifest });
+    expect(selected.some((block) => block.id === "input:history-499")).toBe(true);
+    expect(selected.some((block) => block.id === "input:history-0")).toBe(false);
+    expect(
+      resolveWorkOrderContextBlocks({ order, manifest, optional_ids: ["input:history-0"] }).some(
+        (block) => block.id === "input:history-0",
+      ),
+    ).toBe(true);
+    expect(() =>
+      resolveWorkOrderContextBlocks({
+        order,
+        manifest: { ...manifest, blocks: manifest.blocks.slice(0, -1) },
+      }),
+    ).toThrow(/incomplete or stale/u);
+    expect(() =>
+      resolveWorkOrderContextBlocks({
+        order: { ...order, task: { ...order.task, objective: "Changed" } },
+        manifest,
+      }),
+    ).toThrow(/incomplete or stale/u);
+  });
+
+  it("reloads all required blocks after context loss and binds reuse to source and role", () => {
+    const order = buildAgentWorkOrderV2ValidFixture("context-restart");
+    const manifest = buildWorkOrderContextManifest(order, "/run/work-order.json");
+    const initial = resolveWorkOrderContextBlocks({ order, manifest });
+    const retained = {
+      session_id: "live-1",
+      boundary_digest: workOrderContextBoundaryDigest(order),
+      blocks: new Map(initial.map((block) => [block.id, block.digest])),
+    };
+    expect(
+      resolveWorkOrderContextBlocks({ order, manifest, session_id: "live-1", retained }),
+    ).toEqual([]);
+    expect(resolveWorkOrderContextBlocks({ order, manifest })).toEqual(initial);
+    const evaluator = {
+      ...order,
+      role: "EVALUATOR" as const,
+      prepared_evidence: order.prepared_evidence.map((evidence) => ({
+        ...evidence,
+        role: "EVALUATOR" as const,
+      })),
+    };
+    const evaluationManifest = buildWorkOrderContextManifest(evaluator, "/run/work-order.json");
+    expect(evaluationManifest.source_digest).not.toBe(manifest.source_digest);
+    expect(
+      resolveWorkOrderContextBlocks({
+        order: evaluator,
+        manifest: evaluationManifest,
+        session_id: "live-1",
+        retained,
+      }).length,
+    ).toBeGreaterThan(0);
+  });
+});
+
+it("delivers only changed acknowledged blocks in the same session and reloads at boundaries", () => {
+  const order = buildAgentWorkOrderV2ValidFixture("context-delta");
+  const manifest = buildWorkOrderContextManifest(order, "/run/work-order.json");
+  const blocks = resolveWorkOrderContextBlocks({ order, manifest });
+  const retained = {
+    session_id: "live-1",
+    boundary_digest: workOrderContextBoundaryDigest(order),
+    blocks: new Map(blocks.map((block) => [block.id, block.digest])),
+  };
+  const changed = { ...order, task: { ...order.task, objective: "Changed objective" } };
+  const next = buildWorkOrderContextManifest(changed, "/run/next.json");
+  const delta = resolveWorkOrderContextBlocks({
+    order: changed,
+    manifest: next,
+    session_id: "live-1",
+    retained,
+  });
+  expect(delta.map((block) => block.id)).toEqual(["objective"]);
+  expect(Buffer.byteLength(JSON.stringify(delta))).toBeLessThan(
+    Buffer.byteLength(JSON.stringify(blocks)),
+  );
+  expect(
+    resolveWorkOrderContextBlocks({
+      order: changed,
+      manifest: next,
+      session_id: "live-2",
+      retained,
+    }).length,
+  ).toBe(blocks.length);
+  const altered = {
+    ...changed,
+    authority: { ...changed.authority, writable_roots: ["different"] },
+  };
+  expect(
+    resolveWorkOrderContextBlocks({
+      order: altered,
+      manifest: buildWorkOrderContextManifest(altered, "/run/next.json"),
+      session_id: "live-1",
+      retained,
+    }).length,
+  ).toBe(blocks.length);
 });

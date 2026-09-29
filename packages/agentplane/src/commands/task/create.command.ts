@@ -1,4 +1,7 @@
+import path from "node:path";
 import type { CommandCtx, CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
+import { readStableRegularTextNoFollow } from "../../shared/stable-file.js";
+import { parseSuppliedPlanInput } from "./create-plan-input.js";
 import { usageError } from "../../cli/spec/errors.js";
 import { createCliEmitter } from "../../cli/output.js";
 import { makeExecutionContext } from "../../runtime/execution-context.js";
@@ -6,6 +9,10 @@ import { gitRevParse } from "@agentplaneorg/core/git";
 import {
   createTaskExecutionBaseIdentity,
   TASK_EXECUTION_CONTEXT_EXTENSION_KEY,
+  type TaskExecutionContract,
+  type TaskExecutionDeclaration,
+  type TaskExternalEffect,
+  type TaskRepositoryEffect,
 } from "@agentplaneorg/core/tasks";
 import {
   resolveTaskExecutionContract,
@@ -31,17 +38,19 @@ export type TaskCreateParsed = {
   taskKind?: TaskNewParsed["taskKind"];
   mutationScope?: TaskNewParsed["mutationScope"];
   riskFlags: NonNullable<TaskNewParsed["riskFlags"]>;
-  blueprintRequest?: TaskNewParsed["blueprintRequest"];
   verify: string[];
+  scopeRoots: string[];
+  repositoryEffects: TaskRepositoryEffect[];
+  externalEffects: TaskExternalEffect[];
+  capabilities: string[];
+  resources: string[];
   base?: string;
+  planFile?: string;
   allowDuplicate: boolean;
   json: boolean;
 };
 
-export type UserTaskIntent = Pick<
-  TaskNewParsed,
-  "taskKind" | "mutationScope" | "blueprintRequest" | "tags"
-> & {
+export type UserTaskIntent = Pick<TaskNewParsed, "taskKind" | "mutationScope" | "tags"> & {
   riskFlags: NonNullable<TaskNewParsed["riskFlags"]>;
   source: "explicit" | "pending_planner";
   code: "explicit_structured_intent" | "semantic_intake_pending";
@@ -53,14 +62,12 @@ export function resolveUserTaskIntent(parsed: TaskCreateParsed): UserTaskIntent 
     parsed.taskKind !== undefined ||
     parsed.mutationScope !== undefined ||
     parsed.riskFlags.length > 0 ||
-    parsed.blueprintRequest !== undefined ||
     parsed.tags.length > 0;
   if (hasStructuredIntent) {
     return {
       taskKind: parsed.taskKind,
       mutationScope: parsed.mutationScope,
       riskFlags: parsed.riskFlags,
-      blueprintRequest: parsed.blueprintRequest,
       tags: parsed.tags.length > 0 ? parsed.tags : ["intake"],
       source: "explicit",
       code: "explicit_structured_intent",
@@ -77,6 +84,67 @@ export function resolveUserTaskIntent(parsed: TaskCreateParsed): UserTaskIntent 
   };
 }
 
+function unique<T extends string>(values: readonly T[]): T[] {
+  return [...new Set(values)].toSorted();
+}
+
+export function resolveExplicitExecutionContract(opts: {
+  parsed: TaskCreateParsed;
+  config: Parameters<typeof resolveTaskExecutionContract>[0]["config"];
+  intent: UserTaskIntent;
+}): TaskExecutionContract {
+  const repositoryEffects: TaskRepositoryEffect[] = [...opts.parsed.repositoryEffects];
+  if (opts.intent.mutationScope && opts.intent.mutationScope !== "none")
+    repositoryEffects.push("repository_write");
+  if (opts.intent.mutationScope === "docs") repositoryEffects.push("documentation");
+  if (opts.intent.mutationScope === "code") repositoryEffects.push("source_code");
+  if (opts.intent.mutationScope === "release") repositoryEffects.push("release_metadata");
+  if (opts.parsed.verify.length > 0) repositoryEffects.push("tests");
+  const externalEffects: TaskExternalEffect[] = [...opts.parsed.externalEffects];
+  for (const risk of opts.intent.riskFlags) {
+    if (risk === "network") externalEffects.push("network_read");
+    if (risk === "credentials") externalEffects.push("credentials");
+    if (risk === "deploy") externalEffects.push("deploy");
+    if (risk === "publish") externalEffects.push("publish");
+    if (risk === "external_system") externalEffects.push("external_write");
+    if (risk === "security") repositoryEffects.push("security_boundary");
+    if (risk === "merge") repositoryEffects.push("release_metadata");
+  }
+  const hasRecoveryRisk =
+    externalEffects.some((effect) => effect !== "network_read") ||
+    repositoryEffects.includes("release_metadata");
+  const declaration: TaskExecutionDeclaration = {
+    schema_version: 2,
+    preferred_mode: opts.parsed.route === "branch_pr" ? "branch_pr" : "direct",
+    scope_roots:
+      repositoryEffects.length > 0
+        ? unique(opts.parsed.scopeRoots.length > 0 ? opts.parsed.scopeRoots : ["."])
+        : [],
+    repository_effects: unique(repositoryEffects),
+    external_effects: unique(externalEffects),
+    requirements_uncertainty: opts.intent.mutationScope === "unknown" ? "material" : "bounded",
+    implementation_uncertainty: "bounded",
+    reversibility: hasRecoveryRisk ? "recovery_required" : "reversible",
+    rationale: ["explicit structured task intake"],
+  };
+  const contract = resolveTaskExecutionContract({
+    config: opts.config,
+    requestedMode: opts.parsed.route,
+    task: {
+      task_kind: opts.intent.taskKind,
+      mutation_scope: opts.intent.mutationScope,
+      risk_flags: opts.intent.riskFlags,
+    },
+    declaration,
+  });
+  contract.authority.allowed_capabilities = unique([
+    ...opts.parsed.capabilities,
+    ...(repositoryEffects.length > 0 ? ["repository_write"] : []),
+  ]);
+  contract.authority.allowed_resources = unique(opts.parsed.resources);
+  return contract;
+}
+
 export const taskCreateSpec: CommandSpec<TaskCreateParsed> = {
   id: ["task", "create"],
   group: "Task",
@@ -85,6 +153,13 @@ export const taskCreateSpec: CommandSpec<TaskCreateParsed> = {
     "Validates caller-supplied structured intent. Without it, creates a neutral PLANNER intake boundary without classifying title words.",
   args: [{ name: "outcome", required: true, valueHint: "<outcome>" }],
   options: [
+    {
+      kind: "string",
+      name: "plan-file",
+      valueHint: "<path>",
+      description:
+        "Read an existing compact v2 or full v1 Plan proposal. This input never grants approval.",
+    },
     {
       kind: "string",
       name: "description",
@@ -146,26 +221,6 @@ export const taskCreateSpec: CommandSpec<TaskCreateParsed> = {
     },
     {
       kind: "string",
-      name: "blueprint-request",
-      valueHint: "<id>",
-      choices: [
-        "analysis.light",
-        "content.light",
-        "docs.change",
-        "code.direct",
-        "code.branch_pr",
-        "performance.benchmark",
-        "quality.regression",
-        "context.assimilation",
-        "context.maximum_assimilation",
-        "post_run.improvement_review",
-        "release.strict",
-        "ops.approval",
-      ],
-      description: "Explicit blueprint request supplied by the semantic caller.",
-    },
-    {
-      kind: "string",
       name: "tag",
       valueHint: "<tag>",
       repeatable: true,
@@ -177,6 +232,61 @@ export const taskCreateSpec: CommandSpec<TaskCreateParsed> = {
       valueHint: "<command>",
       repeatable: true,
       description: "Repeatable. Seed an explicit verification command.",
+    },
+    {
+      kind: "string",
+      name: "scope-root",
+      valueHint: "<repository-relative-path>",
+      repeatable: true,
+      description: "Repeatable writable root admitted by the execution contract.",
+    },
+    {
+      kind: "string",
+      name: "repository-effect",
+      valueHint: "<effect>",
+      choices: [
+        "repository_write",
+        "documentation",
+        "source_code",
+        "tests",
+        "public_api",
+        "schema",
+        "dependencies",
+        "ci",
+        "release_metadata",
+        "security_boundary",
+      ],
+      repeatable: true,
+      description: "Repeatable repository effect admitted by the execution contract.",
+    },
+    {
+      kind: "string",
+      name: "external-effect",
+      valueHint: "<effect>",
+      choices: [
+        "network_read",
+        "external_write",
+        "credentials",
+        "publish",
+        "deploy",
+        "destructive_git",
+      ],
+      repeatable: true,
+      description: "Repeatable external effect declared at intake.",
+    },
+    {
+      kind: "string",
+      name: "capability",
+      valueHint: "<capability>",
+      repeatable: true,
+      description: "Repeatable semantic capability admitted by the execution contract.",
+    },
+    {
+      kind: "string",
+      name: "resource",
+      valueHint: "<resource>",
+      repeatable: true,
+      description: "Repeatable resource claim admitted by the execution contract.",
     },
     {
       kind: "string",
@@ -195,7 +305,7 @@ export const taskCreateSpec: CommandSpec<TaskCreateParsed> = {
   ],
   examples: [
     {
-      cmd: 'agentplane task create "Fix the parser edge case" --task-kind code --mutation-scope code --blueprint-request code.direct --tag code',
+      cmd: 'agentplane task create "Fix the parser edge case" --task-kind code --mutation-scope code --tag code',
       why: "Create a task with explicit structured semantic intent.",
     },
     {
@@ -215,12 +325,18 @@ export const taskCreateSpec: CommandSpec<TaskCreateParsed> = {
     if (typeof raw.opts.base === "string" && !raw.opts.base.trim()) {
       throw usageError({ spec: taskCreateSpec, message: "Invalid value for --base: empty." });
     }
+    if (typeof raw.opts["plan-file"] === "string" && !raw.opts["plan-file"].trim())
+      throw usageError({ spec: taskCreateSpec, message: "Invalid value for --plan-file: empty." });
     const hasAnyStructuredIntent = [
       raw.opts["task-kind"],
       raw.opts["mutation-scope"],
       raw.opts.risk,
-      raw.opts["blueprint-request"],
       raw.opts.tag,
+      raw.opts["scope-root"],
+      raw.opts["repository-effect"],
+      raw.opts["external-effect"],
+      raw.opts.capability,
+      raw.opts.resource,
     ].some((value) => value !== undefined && (!Array.isArray(value) || value.length > 0));
     if (
       hasAnyStructuredIntent &&
@@ -252,12 +368,18 @@ export const taskCreateSpec: CommandSpec<TaskCreateParsed> = {
     riskFlags: Array.isArray(raw.opts.risk)
       ? (raw.opts.risk as NonNullable<TaskNewParsed["riskFlags"]>)
       : [],
-    blueprintRequest:
-      typeof raw.opts["blueprint-request"] === "string"
-        ? (raw.opts["blueprint-request"] as TaskNewParsed["blueprintRequest"])
-        : undefined,
     verify: Array.isArray(raw.opts.verify) ? (raw.opts.verify as string[]) : [],
+    scopeRoots: Array.isArray(raw.opts["scope-root"]) ? (raw.opts["scope-root"] as string[]) : [],
+    repositoryEffects: Array.isArray(raw.opts["repository-effect"])
+      ? (raw.opts["repository-effect"] as TaskRepositoryEffect[])
+      : [],
+    externalEffects: Array.isArray(raw.opts["external-effect"])
+      ? (raw.opts["external-effect"] as TaskExternalEffect[])
+      : [],
+    capabilities: Array.isArray(raw.opts.capability) ? (raw.opts.capability as string[]) : [],
+    resources: Array.isArray(raw.opts.resource) ? (raw.opts.resource as string[]) : [],
     base: typeof raw.opts.base === "string" ? raw.opts.base.trim() : undefined,
+    planFile: typeof raw.opts["plan-file"] === "string" ? raw.opts["plan-file"].trim() : undefined,
     allowDuplicate: raw.opts["allow-duplicate"] === true,
     json: raw.opts.json === true,
   }),
@@ -267,6 +389,16 @@ export function makeRunTaskCreateHandler(
   getCtx: (commandForErrorContext: string) => Promise<CommandContext>,
 ): CommandHandler<TaskCreateParsed> {
   return async (ctx: CommandCtx, parsed: TaskCreateParsed): Promise<number> => {
+    const suppliedPlan = parsed.planFile
+      ? parseSuppliedPlanInput(
+          JSON.parse(
+            await readStableRegularTextNoFollow(
+              path.resolve(ctx.cwd, parsed.planFile),
+              "supplied Plan",
+            ),
+          ),
+        )
+      : undefined;
     const command = await getCtx("task create");
     const execution = await makeExecutionContext(command);
     throwIfPolicyDecisionDenied(
@@ -283,6 +415,11 @@ export function makeRunTaskCreateHandler(
     const descriptionOverride = parsed.description?.trim();
     const description = descriptionOverride?.length ? descriptionOverride : outcome;
     const intent = resolveUserTaskIntent(parsed);
+    const executionContract = resolveExplicitExecutionContract({
+      parsed,
+      config: execution.config,
+      intent,
+    });
     const route = resolveTaskExecutionRoute({
       config: execution.config,
       requestedMode: parsed.route,
@@ -290,18 +427,8 @@ export function makeRunTaskCreateHandler(
         task_kind: intent.taskKind,
         mutation_scope: intent.mutationScope,
         risk_flags: intent.riskFlags,
-        blueprint_request: intent.blueprintRequest,
       },
-    });
-    const executionContract = resolveTaskExecutionContract({
-      config: execution.config,
-      requestedMode: parsed.route,
-      task: {
-        task_kind: intent.taskKind,
-        mutation_scope: intent.mutationScope,
-        risk_flags: intent.riskFlags,
-        blueprint_request: intent.blueprintRequest,
-      },
+      declaration: executionContract.declaration,
     });
     const explicitBaseRef = parsed.base?.trim();
     const repositoryIdentity = await resolveLogicalRepositoryIdentity({
@@ -332,8 +459,9 @@ export function makeRunTaskCreateHandler(
         taskKind: intent.taskKind,
         mutationScope: intent.mutationScope,
         riskFlags: intent.riskFlags,
-        blueprintRequest: intent.blueprintRequest,
         route: parsed.route,
+        executionContract,
+        ...(suppliedPlan ? { suppliedPlan } : {}),
         ...(explicitBase
           ? {
               extensions: {
@@ -343,7 +471,6 @@ export function makeRunTaskCreateHandler(
           : {}),
         dependsOn: [],
         verify: parsed.verify,
-        showBlueprint: false,
         allowDuplicate: parsed.allowDuplicate,
       },
     });
@@ -354,19 +481,18 @@ export function makeRunTaskCreateHandler(
       task_kind: intent.taskKind ?? null,
       mutation_scope: intent.mutationScope,
       risk_flags: intent.riskFlags,
-      blueprint_request: intent.blueprintRequest ?? null,
       tags: intent.tags,
       confirmation_required: intent.confirmation_required,
     };
     const payload = {
       task_id: created.task_id,
-      status: "semantic_input_required" as const,
+      status: suppliedPlan ? ("advance_required" as const) : ("semantic_input_required" as const),
       semantic_intent: semanticIntent,
       /** @deprecated Compatibility alias for pre-0.7.6 JSON consumers. */
       inferred_intent: semanticIntent,
       execution_route: route,
       execution_contract: executionContract,
-      required_role: "PLANNER" as const,
+      required_role: suppliedPlan ? null : ("PLANNER" as const),
       next_command: nextCommand,
     };
 
@@ -394,7 +520,7 @@ export function makeRunTaskCreateHandler(
               `repository=${route.repository_mode}`,
           },
           { label: "route_reasons", value: route.reason_codes.join(", ") },
-          { label: "required_role", value: payload.required_role },
+          { label: "required_role", value: payload.required_role ?? "pending_advance" },
           { label: "next", value: nextCommand },
         ],
         { header: "task create" },

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "recovery-invariants-preserved",
+      "severity": "low",
+      "summary": "Planning reuse retains approval, independent evaluation, provenance, and stale-result rejection. Concurrent verification now uses one task snapshot. Explicit stale-state recovery preserves completed operations and rejects effect-in-doubt recovery. Positive and negative regressions cover these repairs, and current SHA-bound checks passed. The supplied Git observation resolves the workspace-evidence gap. M04 remains NOT ESTABLISHED; hosted integration and publication retain separate gates.",
+      "broken_invariant": "None identified within the approved scope and declared trust model.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609261720-KKE9ZN/quality/objects/sha256/83a1ce27512cc48b57285cc16545b78d53cb1f94e7a992e907c47f898a6ffb6f.patch",
+          "sha256": "sha256:83a1ce27512cc48b57285cc16545b78d53cb1f94e7a992e907c47f898a6ffb6f"
+        },
+        {
+          "path": ".agentplane/tasks/202609261720-KKE9ZN/verification/20260928193632778-bdab509bdaa54c39.json",
+          "sha256": "sha256:a2df07a7c3d4de8398da11c33c1cd61586280ccb9c8ee766cc6d67c7a7bf4f9b"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202609071219-QV0SX9",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-07T15:01:48.113Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "b847aa915f64886905be06ccfb30e37544f35d25",
+  "blueprint_digest": "2611f865d57b5165360ba834a74dff796a879976579f0787903f49c675260909",
+  "findings": [
+    "The reviewed prompt implementation is unchanged after both main synchronizations. It supplies identical language rules to both execution routes, retains literal and authority contracts, synchronizes PLANNER profiles, and preserves all four schema-valid result statuses. Fresh full local CI and exact-head hosted CI passed."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609071219-QV0SX9/quality/objects/sha256/d8752100a6ada7403d1b10161862ce3ba242dd24901753f9f47f3ce7b83d7124.patch",
+    ".agentplane/tasks/202609071219-QV0SX9/verification/20260907150035746-f471327741e244b6.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

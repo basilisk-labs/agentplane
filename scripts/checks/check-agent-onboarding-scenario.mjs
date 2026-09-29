@@ -94,7 +94,7 @@ const onboardingScenarios = [
       ["lifecycle", "## First complete workflow"],
       ["workflow", "## First managed workflow"],
       ["workflow", "agentplane task advance <task-id> --agent-json"],
-      ["workflow", "`semantic_input_required`"],
+      ["workflow", "`task create --plan-file <path>`"],
       ["workflow", "agentplane task run <task-id>"],
     ],
   },
@@ -213,9 +213,18 @@ const main = defineScript({
       ["llmsFull", "LLM documentation corpus"],
     ]) {
       const contents = fileContents[fileKey];
-      assertIncludes(contents, "semantic_input_required", label);
-      if (contents.includes("`task run` resolves the same planning episode")) {
-        throw new Error(`${label} contains the stale managed-planning claim`);
+      for (const required of ["--plan-file", "read-only", "EVALUATOR", "require_planner"]) {
+        assertIncludes(contents, required, label);
+      }
+      for (const stale of [
+        "Before a task-specific plan exists, `task run` returns",
+        "Before the PLANNER result exists, `task run` returns",
+        "A newly created task still needs its initial PLANNER result through",
+      ]) {
+        if (contents.includes(stale))
+          throw new Error(
+            `${label} contains an obsolete unconditional external-planning requirement`,
+          );
       }
     }
 
@@ -250,9 +259,9 @@ const main = defineScript({
         [
           "## First managed workflow",
           'agentplane task create "Fix the reported defect"',
-          "agentplane task advance <task-id> --agent-json",
           "agentplane task run <task-id>",
-          "semantic_input_required",
+          "read-only planning and typed-output requirements",
+          "Do not treat adapter failure as a waiver",
         ],
         `${label} planning boundary`,
       );

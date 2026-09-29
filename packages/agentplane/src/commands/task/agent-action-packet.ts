@@ -1,9 +1,20 @@
+import path from "node:path";
+import {
+  buildWorkOrderContextManifest,
+  workOrderContextManifestDigest,
+  WORK_ORDER_CONTEXT_FILENAME,
+} from "../../runner/context/work-order-context.js";
 import { createHash } from "node:crypto";
 
 import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
-import { createHumanDecisionTicket, type HumanDecisionTicket } from "@agentplaneorg/core/tasks";
+import {
+  createHumanDecisionTicket,
+  HOST_USER_DECISION_REQUIRED_FIELDS,
+  type HumanDecisionTicket,
+} from "@agentplaneorg/core/tasks";
 
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
+import { AGENT_INSTRUCTION_LANGUAGE } from "../../runner/context/semantic-prompt-projection.js";
 import { userApprovalReceiptRequestForStep } from "./user-approval-receipt.js";
 
 // The packet stays compact, but must fit a normal exchange envelope plus a typed
@@ -41,6 +52,7 @@ export type AgentActionPacket = {
     reference: string | null;
   };
   context_refs: AgentContextRef[];
+  context_manifest?: { ref: string; digest: string; blocks: number; required: number };
   human_decision_ticket?: HumanDecisionTicket;
   operator_action?: {
     kind: "approve_plan" | "grant_side_effect_authority" | "approve_provider_merge";
@@ -72,10 +84,12 @@ export type AgentActionPacket = {
         plan_digest: string;
         state_fingerprint: string;
         decision: "approved";
+        required_fields: typeof HOST_USER_DECISION_REQUIRED_FIELDS;
       };
     };
   };
   exchange?: {
+    result_format?: "semantic_payload_v1";
     directory: string;
     work_order_ref: string;
     result_schema_ref: string;
@@ -87,7 +101,6 @@ export type AgentActionPacket = {
   recovery?: {
     reason:
       | "effect_in_doubt"
-      | "budget_exhausted"
       | "concurrent_execution"
       | "completed_operation"
       | "stale_state"
@@ -117,22 +130,22 @@ function semanticInstruction(
 ): string {
   switch (purpose) {
     case "planning": {
-      return "Prepare a task-specific structured TaskPlanProposal in result.task_plan_proposal. Copy work_order.planning_context.repository_snapshot exactly into planning_baseline. Decompose the one user Task into internal WorkItems with dependencies, typed outputs, scope, acceptance, validation, context, risk, capabilities, and resource claims; do not create top-level tasks. Use the supported validation capability from the work order and bind deterministic checks to the declared Task checks. Keep material questions unresolved rather than guessing. Also, when intent is unknown, return result.task_intent with result.task_intent.execution. Select direct or branch_pr semantically and declare scope roots, repository effects, external effects, requirements uncertainty, implementation uncertainty, reversibility, and rationale; do not infer them from title keywords.";
+      return "Prepare a task-specific structured TaskPlanProposal in result.task_plan_proposal. Copy work_order.planning_context.repository_snapshot exactly into planning_baseline. Decompose the one user Task into internal WorkItems with dependencies, typed outputs, scope, acceptance, validation, context, risk, capabilities, and resource claims. Do not create top-level tasks. Use the supported validation capability from the work order. Bind deterministic checks to the declared Task checks. Keep material questions unresolved rather than guessing. If intent is unknown, return result.task_intent with result.task_intent.execution. Select direct or branch_pr semantically. Declare scope roots, repository effects, external effects, requirements uncertainty, implementation uncertainty, reversibility, and rationale. Do not infer these values from title keywords.";
     }
     case "implementation": {
-      return "Perform the scoped implementation from the prepared context and report a semantic outcome. If the approved plan needs refinement, return result.plan_refinement with the exact scope, output, acceptance, risk, effect, dependency, architecture, and local-operation deltas.";
+      return "Perform the scoped implementation from the prepared context. Report a semantic outcome. If the approved plan needs refinement, return result.plan_refinement with the exact scope, output, acceptance, risk, effect, dependency, architecture, and local-operation deltas.";
     }
     case "implementation_rework": {
-      return "Address the scoped evaluator findings from the prepared context and report a semantic outcome. If the approved plan needs refinement, return result.plan_refinement with the exact deltas.";
+      return "Address the scoped evaluator findings from the prepared context. Report a semantic outcome. If the approved plan needs refinement, return result.plan_refinement with the exact deltas.";
     }
     case "quality_review": {
-      return "Assess the scoped result against the prepared acceptance evidence and report a verdict.";
+      return "Assess the scoped result against the prepared acceptance evidence. Report a verdict.";
     }
     case "task_worktree_resolution": {
-      return "Resolve the scoped task workspace conflict described by the prepared context and report the outcome.";
+      return "Resolve the scoped task workspace conflict described by the prepared context. Report the outcome.";
     }
     case "verification": {
-      return "Assess the scoped result against the prepared checks and report an evidence-backed outcome.";
+      return "Assess the scoped result against the prepared checks. Report an evidence-backed outcome.";
     }
   }
 }
@@ -188,6 +201,7 @@ function operatorActionFor(opts: {
             plan_digest: planDigest,
             state_fingerprint: step.preconditionFingerprint.digest,
             decision: "approved",
+            required_fields: HOST_USER_DECISION_REQUIRED_FIELDS,
           },
         },
       };
@@ -255,7 +269,10 @@ function actionFor(decision: TaskRouteDecision): Pick<AgentActionPacket, "action
   const step = decision.workflowStep;
   if (step.kind === "agent_episode") {
     return {
-      action: { kind: "agent_episode", instruction: semanticInstruction(step.episode.purpose) },
+      action: {
+        kind: "agent_episode",
+        instruction: `${semanticInstruction(step.episode.purpose)}\n${AGENT_INSTRUCTION_LANGUAGE}`,
+      },
       stop: { reason: "semantic_boundary", resume: "request_fresh_packet" },
     };
   }
@@ -267,8 +284,7 @@ function actionFor(decision: TaskRouteDecision): Pick<AgentActionPacket, "action
     return {
       action: {
         kind: "agent_episode",
-        instruction:
-          "Perform the scoped semantic task from the prepared context and report the outcome.",
+        instruction: `Perform the scoped semantic task from the prepared context. Report the outcome.\n${AGENT_INSTRUCTION_LANGUAGE}`,
       },
       stop: { reason: "semantic_boundary", resume: "request_fresh_packet" },
     };
@@ -441,6 +457,29 @@ export function buildAgentActionPacket(opts: {
     ...(opts.recovery ? { recovery: opts.recovery } : {}),
   };
 
+  if (packet.exchange?.result_format === "semantic_payload_v1") {
+    packet.action.instruction =
+      packet.action.instruction
+        .replaceAll(/\bresult\./gu, "")
+        .replace(
+          "Copy work_order.planning_context.repository_snapshot exactly into planning_baseline.",
+          "Use the issued result schema for the plan representation. Keep summary short; do not repeat the plan.",
+        ) +
+      "\nReturn only the semantic payload described by result_schema_ref. Copy work_order_id from the issued WorkOrder.";
+  }
+  if (packet.exchange) {
+    const manifest = buildWorkOrderContextManifest(
+      opts.work_order,
+      path.resolve(packet.exchange.directory, packet.exchange.work_order_ref),
+    );
+    packet.context_manifest = {
+      ref: path.join(packet.exchange.directory, WORK_ORDER_CONTEXT_FILENAME),
+      digest: workOrderContextManifestDigest(manifest),
+      blocks: manifest.blocks.length,
+      required: manifest.blocks.filter((block) => block.required).length,
+    };
+  }
+  // context_refs is only a preview. The complete manifest remains discoverable at every size.
   while (packet.context_refs.length > 0 && packetBytes(packet) > MAX_AGENT_ACTION_PACKET_BYTES) {
     packet.context_refs.pop();
   }

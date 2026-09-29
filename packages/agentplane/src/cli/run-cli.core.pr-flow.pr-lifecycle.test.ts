@@ -1,63 +1,27 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe } from "vitest";
 
 import {
   PR_FLOW_INTEGRATION_TIMEOUT_MS,
   PR_FLOW_LONG_TIMEOUT_MS,
-  approveTaskPlan,
   branchPrArtifactFixture,
   captureStdIO,
-  chmod,
-  cleanGitEnv,
-  commitAll,
-  commitPathsIfChanged,
   configureGitUser,
-  configurePushableOrigin,
-  createUpgradeBundle,
   defaultConfig,
   execFile,
   expect,
   extractTaskSuffix,
-  filterAgentsByWorkflow,
-  getAgentplaneHome,
-  gitBranchExists,
   it,
-  loadAgentTemplates,
-  loadAgentsTemplate,
-  mkdir,
-  mkGitRepoRoot,
   mkGitRepoRootWithBranch,
-  mkTempDir,
-  mkdtemp,
-  os,
   path,
   pathExists,
   promisify,
-  prompts,
   readFile,
-  readFileSync,
-  readTask,
-  realpath,
-  readdir,
-  recordVerificationOk,
-  renderTaskReadme,
-  resolveUpdateCheckCachePath,
-  rm,
   runCli,
   runCliSilent,
-  setConcreteVerifySteps,
-  stageGitignoreIfPresent,
-  stubTaskBackend,
-  validateCommitSubject,
-  vi,
   writeConfig,
-  writeDefaultConfig,
   writeFile,
-  installFakeGhPrApi,
-  installFakeGhPrApiRequiringPublishedPacketHead,
-  installFakeGhPrLookup,
-  type ResolvedProject,
 } from "@agentplane/testkit/cli-core-pr-flow";
+import { materializeLegacyDrainIdentityFixture } from "../commands/shared/native-task-identity-fixture.js";
 
 describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEOUT_MS }, () => {
   it("task start-ready auto-creates PR artifacts in branch_pr mode", async () => {
@@ -96,6 +60,13 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
     } finally {
       ioTask.restore();
     }
+
+    await materializeLegacyDrainIdentityFixture({
+      root,
+      task_id: taskId,
+      adopt_canonical_as_legacy: true,
+      ownership_only: true,
+    });
 
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     await execFileAsync("git", ["checkout", "-b", `task/${taskId}/start-ready-auto`], {
@@ -175,6 +146,13 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
     } finally {
       ioTask.restore();
     }
+
+    await materializeLegacyDrainIdentityFixture({
+      root,
+      task_id: taskId,
+      adopt_canonical_as_legacy: true,
+      ownership_only: true,
+    });
 
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     await execFileAsync("git", ["checkout", "-b", `task/${taskId}/status-sync`], { cwd: root });
@@ -381,6 +359,12 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
       ioTask.restore();
     }
 
+    await materializeLegacyDrainIdentityFixture({
+      root,
+      task_id: taskId,
+      adopt_canonical_as_legacy: true,
+      ownership_only: true,
+    });
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     await execFileAsync("git", ["checkout", "-b", `task/${taskId}/task-artifacts-only`], {
       cwd: root,
@@ -401,7 +385,8 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
     const before = JSON.parse(await readFile(metaPath, "utf8")) as { head_sha?: string | null };
     expect(before.head_sha).toBeUndefined();
 
-    await runCliSilent([
+    const findingsIo = captureStdIO();
+    const findingsCode = await runCli([
       "task",
       "doc",
       "set",
@@ -409,10 +394,12 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
       "--section",
       "Findings",
       "--text",
-      "- Command: manual task artifact commit\n- Result: pending\n- Evidence: task-local note only\n- Scope: task README and task registry only",
+      "- Command: manual task artifact commit\\n- Result: pending\\n- Evidence: task-local note only\\n- Scope: task README and task registry only",
       "--root",
       root,
     ]);
+    findingsIo.restore();
+    expect(findingsCode, findingsIo.stderr).toBe(0);
 
     const io = captureStdIO();
     try {

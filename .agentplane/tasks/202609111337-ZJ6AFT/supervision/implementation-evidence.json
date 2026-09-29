@@ -1,0 +1,57 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 384ac7659f34815ab51745eb9f2b9435ff3ae9ac..0f58c0913c0991f6a4a23d0bcd8b791d285efa27",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 384ac7659f34815ab51745eb9f2b9435ff3ae9ac..0f58c0913c0991f6a4a23d0bcd8b791d285efa27",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202609111337-ZJ6AFT/README.md",
+        "M\t.agentplane/tasks/202609111337-ZJ6AFT/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202609111337-ZJ6AFT/pr/github-body.md",
+        "M\t.agentplane/tasks/202609111337-ZJ6AFT/pr/meta.json",
+        "M\t.agentplane/tasks/202609111337-ZJ6AFT/pr/review.md",
+        "M\tpackages/agentplane/src/commands/task/run-render.test.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "384ac7659f34815ab51745eb9f2b9435ff3ae9ac",
+  "implementation_commit": "0f58c0913c0991f6a4a23d0bcd8b791d285efa27",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      " M .agentplane/tasks/202609111337-ZJ6AFT/README.md"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202609111337-ZJ6AFT/README.md"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M .agentplane/tasks/202609111337-ZJ6AFT/README.md"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609111337-ZJ6AFT"
+}

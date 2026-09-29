@@ -5,6 +5,7 @@ import { promisify } from "node:util";
 
 import { loadEvaluatorCatalog } from "../../evaluators/catalog.js";
 import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
+import { materializeLegacyDrainIdentityFixture } from "../shared/native-task-identity-fixture.js";
 import { applyTaskMutation } from "../shared/task-mutation.js";
 import { setTaskFieldsIntent } from "../shared/task-store.js";
 import { cmdTaskAdd, cmdTaskDocSet } from "../workflow.js";
@@ -40,6 +41,7 @@ export async function addTask(root: string, taskId: string): Promise<void> {
     updatedBy: "TEST",
     fullDoc: false,
   });
+  await materializeLegacyDrainIdentityFixture({ root, task_id: taskId });
 }
 
 export async function commitPath(

@@ -1,0 +1,33 @@
+{
+  "observed_at": "2026-09-28T19:39:17.833Z",
+  "authoritative_checkout": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202609261720-KKE9ZN-implement-and-qualify-agentplane-0-7-12-planning",
+  "implementation_sha": "6b5310b1550f3628c3081103e10bccdf498068d9",
+  "head": "a882e8317cf9a5ea6861ff13354e8215919c18cd",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "status",
+        "--short",
+        "--untracked-files=all"
+      ],
+      "exit_code": 0,
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--stat",
+        "6b5310b1550f3628c3081103e10bccdf498068d9",
+        "HEAD",
+        "--",
+        ".",
+        ":(exclude).agentplane/tasks/202609261720-KKE9ZN/**"
+      ],
+      "exit_code": 0,
+      "stdout": ""
+    }
+  ],
+  "classification": "The operator committed native review and verification artifacts before this observation. This review invocation does not write to the authoritative checkout. The recorded Git commands describe this task checkout only."
+}

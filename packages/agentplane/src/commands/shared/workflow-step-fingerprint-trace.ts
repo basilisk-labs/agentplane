@@ -35,7 +35,7 @@ export async function traceWorkflowFingerprintComponents(opts: {
       recorder: opts.recorder,
       node: "policy_evaluation",
       scope: opts.scope,
-      dependencies: ["policy_scope", "blueprint_resolution"],
+      dependencies: ["policy_scope", "native_task_obligations"],
       cacheability: "exact",
       cachePolicyReason:
         "Selected policy modules, configuration, and change scope are fingerprinted.",

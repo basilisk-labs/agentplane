@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "Sparse checkout omits historical task directories while preserving the current task; canonical reads reject missing or unsafe storage and historical writes.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609232231-BYSVV6/quality/objects/sha256/a2da3cb9de380ee4441474d347f4e6ffc2777d55c1d4b997659c04b26db82d1b.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "The push audit reads task identity from the committed Git tree and excludes commits already present on origin/main while auditing new branch commits.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609232231-BYSVV6/quality/objects/sha256/a2da3cb9de380ee4441474d347f4e6ffc2777d55c1d4b997659c04b26db82d1b.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

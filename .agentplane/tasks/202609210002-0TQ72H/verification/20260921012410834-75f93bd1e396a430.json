@@ -1,0 +1,290 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-single-mutation-gateway.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609210002-0TQ72H Verification Contract check affected_unit_integration (1/6)\n\nCheck: affected_unit_integration\nCommand: bun run test:project core --maxWorkers=1 packages/core/src/tasks/task-kernel\nResult: pass\nEvidence: .agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609210002-0TQ72H Verification Contract check affected_unit_integration (2/6)\n\nCheck: affected_unit_integration\nCommand: node scripts/checks/lifecycle-owner-map.test.mjs\nResult: pass\nEvidence: .agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json#check-3\nScope: branch_pr task 202609210002-0TQ72H Verification Contract check affected_unit_integration (3/6)\n\nCheck: affected_unit_integration\nCommand: bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json#check-4\nScope: branch_pr task 202609210002-0TQ72H Verification Contract check affected_unit_integration (4/6)\n\nCheck: affected_unit_integration\nCommand: bun run lint\nResult: pass\nEvidence: .agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json#check-5\nScope: branch_pr task 202609210002-0TQ72H Verification Contract check affected_unit_integration (5/6)\n\nCheck: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json#check-6\nScope: branch_pr task 202609210002-0TQ72H Verification Contract check affected_unit_integration (6/6)\n\nCheck: critical_paths\nCommand: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-single-mutation-gateway.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609210002-0TQ72H Verification Contract check critical_paths (1/6)\n\nCheck: critical_paths\nCommand: bun run test:project core --maxWorkers=1 packages/core/src/tasks/task-kernel\nResult: pass\nEvidence: .agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609210002-0TQ72H Verification Contract check critical_paths (2/6)\n\nCheck: critical_paths\nCommand: node scripts/checks/lifecycle-owner-map.test.mjs\nResult: pass\nEvidence: .agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json#check-3\nScope: branch_pr task 202609210002-0TQ72H Verification Contract check critical_paths (3/6)\n\nCheck: critical_paths\nCommand: bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json#check-4\nScope: branch_pr task 202609210002-0TQ72H Verification Contract check critical_paths (4/6)\n\nCheck: critical_paths\nCommand: bun run lint\nResult: pass\nEvidence: .agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json#check-5\nScope: branch_pr task 202609210002-0TQ72H Verification Contract check critical_paths (5/6)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json#check-6\nScope: branch_pr task 202609210002-0TQ72H Verification Contract check critical_paths (6/6)\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json#check-6\nScope: branch_pr task 202609210002-0TQ72H Verification Contract check full_regression\n\nCheck: requirements_resolution\nCommand: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-single-mutation-gateway.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609210002-0TQ72H Verification Contract check requirements_resolution (1/6)\n\nCheck: requirements_resolution\nCommand: bun run test:project core --maxWorkers=1 packages/core/src/tasks/task-kernel\nResult: pass\nEvidence: .agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609210002-0TQ72H Verification Contract check requirements_resolution (2/6)\n\nCheck: requirements_resolution\nCommand: node scripts/checks/lifecycle-owner-map.test.mjs\nResult: pass\nEvidence: .agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json#check-3\nScope: branch_pr task 202609210002-0TQ72H Verification Contract check requirements_resolution (3/6)\n\nCheck: requirements_resolution\nCommand: bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json#check-4\nScope: branch_pr task 202609210002-0TQ72H Verification Contract check requirements_resolution (4/6)\n\nCheck: requirements_resolution\nCommand: bun run lint\nResult: pass\nEvidence: .agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json#check-5\nScope: branch_pr task 202609210002-0TQ72H Verification Contract check requirements_resolution (5/6)\n\nCheck: requirements_resolution\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json#check-6\nScope: branch_pr task 202609210002-0TQ72H Verification Contract check requirements_resolution (6/6)\n\nCheck: task_outcome\nCommand: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-single-mutation-gateway.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609210002-0TQ72H Verification Contract check task_outcome (1/6)\n\nCheck: task_outcome\nCommand: bun run test:project core --maxWorkers=1 packages/core/src/tasks/task-kernel\nResult: pass\nEvidence: .agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609210002-0TQ72H Verification Contract check task_outcome (2/6)\n\nCheck: task_outcome\nCommand: node scripts/checks/lifecycle-owner-map.test.mjs\nResult: pass\nEvidence: .agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json#check-3\nScope: branch_pr task 202609210002-0TQ72H Verification Contract check task_outcome (3/6)\n\nCheck: task_outcome\nCommand: bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json#check-4\nScope: branch_pr task 202609210002-0TQ72H Verification Contract check task_outcome (4/6)\n\nCheck: task_outcome\nCommand: bun run lint\nResult: pass\nEvidence: .agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json#check-5\nScope: branch_pr task 202609210002-0TQ72H Verification Contract check task_outcome (5/6)\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json#check-6\nScope: branch_pr task 202609210002-0TQ72H Verification Contract check task_outcome (6/6)",
+  "digest": "sha256:75f93bd1e396a43046f1337aa33edca3e6702b663ebc27ab8db68a679c9e0805",
+  "implementation_sha": "f0be471aa0ac62f0595feadb2e19d8620fa1a4d5",
+  "input": {
+    "checked_input": {
+      "commands": {
+        "digest": "sha256:079a01441fbd7c816e45645c024ba71ce9099d36047983c87dcdf83aa30054fd",
+        "entries": [
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run lint"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-single-mutation-gateway.test.ts"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run test:project core --maxWorkers=1 packages/core/src/tasks/task-kernel"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run typecheck"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "node scripts/checks/lifecycle-owner-map.test.mjs"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run lint"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-single-mutation-gateway.test.ts"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run test:project core --maxWorkers=1 packages/core/src/tasks/task-kernel"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run typecheck"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "node scripts/checks/lifecycle-owner-map.test.mjs"
+          },
+          {
+            "check_id": "full_regression",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "requirements_resolution",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "requirements_resolution",
+            "command": "bun run lint"
+          },
+          {
+            "check_id": "requirements_resolution",
+            "command": "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-single-mutation-gateway.test.ts"
+          },
+          {
+            "check_id": "requirements_resolution",
+            "command": "bun run test:project core --maxWorkers=1 packages/core/src/tasks/task-kernel"
+          },
+          {
+            "check_id": "requirements_resolution",
+            "command": "bun run typecheck"
+          },
+          {
+            "check_id": "requirements_resolution",
+            "command": "node scripts/checks/lifecycle-owner-map.test.mjs"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run lint"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/roadmap-single-mutation-gateway.test.ts"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run test:project core --maxWorkers=1 packages/core/src/tasks/task-kernel"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run typecheck"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "node scripts/checks/lifecycle-owner-map.test.mjs"
+          }
+        ]
+      },
+      "context": {
+        "digest": "sha256:df46a9661c38179944b532a73f34aa6b9721a47ddabac94a0196a1afd8b1dcf0",
+        "paths": [
+          ".agentplane/WORKFLOW.md",
+          ".github/ISSUE_TEMPLATE/config.yml",
+          "bun.lock",
+          "depcruise.config.cjs",
+          "eslint.config.cjs",
+          "knip.json",
+          "package.json",
+          "packages/agentplane/package.json",
+          "packages/agentplane/src/cli/run-cli/commands/config.ts",
+          "packages/agentplane/src/runner/config.test.ts",
+          "packages/agentplane/src/runner/config.ts",
+          "packages/agentplane/tsconfig.json",
+          "packages/agentplane/tsup.config.ts",
+          "packages/core/package.json",
+          "packages/core/schemas/config.schema.json",
+          "packages/core/src/config/config.test.ts",
+          "packages/core/src/config/config.ts",
+          "packages/core/tsconfig.json",
+          "packages/core/tsup.config.ts",
+          "packages/recipes/package.json",
+          "packages/recipes/tsconfig.json",
+          "packages/recipes/tsup.config.ts",
+          "packages/spec/examples/config.json",
+          "packages/spec/package.json",
+          "packages/spec/schemas/config.schema.json",
+          "packages/testkit/package.json",
+          "packages/testkit/tsconfig.json",
+          "schemas/config.schema.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package-lock.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package.json",
+          "tsconfig.json",
+          "turbo.json",
+          "vitest.config.ts",
+          "vitest.workspace.ts",
+          "website/bun.lock",
+          "website/docusaurus.config.ts",
+          "website/package.json",
+          "website/tsconfig.json"
+        ]
+      },
+      "digest": "sha256:10f7ce4df2e20e4b044bb85efd0ac83df891fc1f7f40d462b46ad8d35a59dbc5",
+      "environment": {
+        "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+        "runtime": {
+          "architecture": "arm64",
+          "bun_major": null,
+          "node_major": "24",
+          "platform": "darwin"
+        }
+      },
+      "evidence": {
+        "details_digest": "sha256:3cdea5ca1553ede55d7e705ce14c8a3ca03e8446d4a9fad57c09170268484bd6",
+        "digest": "sha256:c5b9b18b6a07558f38988f2377d5f9fb607c048d34faa3c3dc5bc33cd612c8bf",
+        "references": [
+          {
+            "digest": "sha256:809b30c7ee08ed98275a9e211a13c299a8e286e0e2e3f5439e8e87a656871f4c",
+            "fragment": "check-1",
+            "path": ".agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json#check-1",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:809b30c7ee08ed98275a9e211a13c299a8e286e0e2e3f5439e8e87a656871f4c",
+            "fragment": "check-2",
+            "path": ".agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json#check-2",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:809b30c7ee08ed98275a9e211a13c299a8e286e0e2e3f5439e8e87a656871f4c",
+            "fragment": "check-3",
+            "path": ".agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json#check-3",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:809b30c7ee08ed98275a9e211a13c299a8e286e0e2e3f5439e8e87a656871f4c",
+            "fragment": "check-4",
+            "path": ".agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json#check-4",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:809b30c7ee08ed98275a9e211a13c299a8e286e0e2e3f5439e8e87a656871f4c",
+            "fragment": "check-5",
+            "path": ".agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json#check-5",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:809b30c7ee08ed98275a9e211a13c299a8e286e0e2e3f5439e8e87a656871f4c",
+            "fragment": "check-6",
+            "path": ".agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202609210002-0TQ72H/supervision/declared-checks.json#check-6",
+            "source": "filesystem"
+          }
+        ]
+      },
+      "implementation": {
+        "base_sha": "11cfc37a0dc0fc1b262e10990ec33ddef68da2d6",
+        "digest": "sha256:6ccf6e0ef6c1aed1c26c7778f863dc837b7341f3b1eed047898099344ee8c83f",
+        "strategy": "branch_diff",
+        "target_sha": "f0be471aa0ac62f0595feadb2e19d8620fa1a4d5"
+      }
+    },
+    "concurrency": {
+      "digest": "sha256:8cb136e207f711be7c090bfb7d720d1d233b0fc3b38ed34fef46cd0dc9d1af87",
+      "execution": {
+        "authoritative_task_source": "task_worktree",
+        "base_ref": "main",
+        "base_sha": "11cfc37a0dc0fc1b262e10990ec33ddef68da2d6",
+        "digest": "sha256:740a4f3f77d74e99d7a9764f9b71e70d5ad6a3d49319ce7409c2d3a0c9272ba5",
+        "primary_task_id": "202609210002-0TQ72H",
+        "reason_codes": [
+          "material_requirements_uncertainty",
+          "repository_branch_pr_floor"
+        ],
+        "repository_mode": "branch_pr",
+        "requested_mode": "auto",
+        "route_source": "execution_contract",
+        "selected_mode": "branch_pr",
+        "task_ids": [
+          "202609210002-0TQ72H"
+        ]
+      },
+      "task": {
+        "capability": {
+          "digest": "sha256:fcb911ac3a0c617a7c93391d07b16316ed0c47a3b5a4ec0fbfd80936758a8859"
+        },
+        "checks": {
+          "digest": "sha256:1d5d1adf4b9b3651a8318ba0f04c195df4dd3ff0edd92ada1ad3f9114dfba351",
+          "required_check_ids": [
+            "affected_unit_integration",
+            "critical_paths",
+            "full_regression",
+            "requirements_resolution",
+            "task_outcome"
+          ],
+          "verification_contract_digest": "sha256:91fa558f99eb82e34710c2ee2d7ee5ac84e034c4083d169f77fdf608af29639e"
+        },
+        "digest": "sha256:8b564a346bf054f39cebe857a9d528766efff9780d94bbd917fe8e4e8b5db0e4",
+        "kind": "agentplane.native_task_identity",
+        "plan": {
+          "approval_state": "approved",
+          "approved_digest": "sha256:28ea15a5eb86f1d5152f8bcd042efcebd9f2d5ae052f4a699d8530832841c659",
+          "digest": "sha256:28ea15a5eb86f1d5152f8bcd042efcebd9f2d5ae052f4a699d8530832841c659",
+          "revision": 1
+        },
+        "policy": {
+          "digest": "sha256:87d09196184c21e62b2c8c073848fa5e8e3dce39f17021ee2fe9a064c8580605"
+        },
+        "schema_version": 1,
+        "task_id": "202609210002-0TQ72H"
+      }
+    },
+    "digest": "sha256:6704243b207a93baf2e0fedcc2dee7c4976028616b174025a33eac29712fa768",
+    "kind": "task_verification_input",
+    "obligations": {
+      "digest": "sha256:49d900adaac7e680c7d5ae4812031ae4dc59d0e3671c7dc4989e8bfaaf7c5b8a",
+      "required_check_ids": [],
+      "verification_contract_digest": "sha256:91fa558f99eb82e34710c2ee2d7ee5ac84e034c4083d169f77fdf608af29639e",
+      "verify_steps_digest": "sha256:173a355916dea65a486014f19fdde924696bf3d09ccb3b39b9872b0ebb397daf"
+    },
+    "schema_version": 5
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: canonical Task Kernel final checks passed.",
+  "recorded_at": "2026-09-21T01:24:10.834Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"LC-02: route all supported Plan and WorkItem lifecycle writes through the backend transaction and Task Kernel command/event gateway; keep compatibility status and README state as read-only Kernel projections; remove the unused parallel LifecycleEngine; diagnose projection conflicts; preserve legacy historical evidence; verify CAS, read-only rendering, one accepted mutation, and conflict rejection.\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"LC-02: route all supported Plan and WorkItem lifecycle writes through the backend transaction and Task Kernel command/event gateway; keep compatibility status and README state as read-only Kernel projections; remove the unused parallel LifecycleEngine; diagnose projection conflicts; preserve legacy historical evidence; verify CAS, read-only rendering, one accepted mutation, and conflict rejection.\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:173a355916dea65a486014f19fdde924696bf3d09ccb3b39b9872b0ebb397daf",
+  "task_id": "202609210002-0TQ72H",
+  "verification_command": "agentplane verify 202609210002-0TQ72H --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

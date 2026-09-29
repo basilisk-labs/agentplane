@@ -5,8 +5,8 @@
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "docusaurus start",
-    "build": "bun run check-content && bun run generate-social-images && docusaurus build",
-    "build:check": "bun run check-content && bun run check-social-images && docusaurus build",
+    "build": "bun run check-content && docusaurus build",
+    "build:check": "bun run check-content && docusaurus build",
     "check-content": "node scripts/check-site-content.mjs",
     "check-links": "node scripts/check-links.mjs",
     "smoke:site": "node scripts/site-smoke.mjs",
@@ -15,8 +15,6 @@
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",
     "serve": "docusaurus serve",
-    "generate-social-images": "node scripts/generate-social-images.mjs",
-    "check-social-images": "node scripts/generate-social-images.mjs --check",
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids",
     "typecheck": "node ../scripts/checks/run-typescript-build.mjs -p tsconfig.json --noEmit"

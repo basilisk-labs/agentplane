@@ -1,6 +1,7 @@
 import { blockSpec } from "../../../commands/block.spec.js";
 import { commitSpec } from "../../../commands/commit.spec.js";
 import { cleanupMergedSpec, cleanupSpec } from "../../../commands/cleanup/merged.command.js";
+import { cleanupInspectSpec } from "../../../commands/cleanup/inspect.command.js";
 import { docsCliSpec } from "../../../commands/docs/cli.command.js";
 import { finishSpec } from "../../../commands/finish.spec.js";
 import { guardCleanSpec } from "../../../commands/guard/clean.command.js";
@@ -36,6 +37,7 @@ import {
   fromHooksUninstallSpec,
   loadCleanupSpec,
   loadCleanupMergedSpec,
+  loadCleanupInspectSpec,
   fromGuardSuggestAllowSpec,
   loadGuardCommitSpec,
 } from "../command-loaders/lifecycle.js";
@@ -88,6 +90,10 @@ export const LIFECYCLE_COMMANDS = [
   declareSessionCommand(cleanupSpec, {
     load: loadCleanupSpec,
     requirements: NO_CONTEXT_REQUIREMENTS,
+  }),
+  declareSessionCommand(cleanupInspectSpec, {
+    load: loadCleanupInspectSpec,
+    requirements: TASK_READ_REQUIREMENTS,
   }),
   declareSessionCommand(cleanupMergedSpec, {
     load: loadCleanupMergedSpec,

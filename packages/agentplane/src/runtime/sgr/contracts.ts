@@ -29,15 +29,11 @@ import {
   validateTopologyDecisionPayload,
 } from "./context-extraction-payloads.js";
 import { validateReasoningStep, validateSourceRef } from "./contract-shared-validation.js";
-export {
-  validateBlueprintRouteDecisionSgrResult,
-  validateEvaluatorSgrResult,
-} from "./contract-evaluator-routing.js";
+export { validateEvaluatorSgrResult } from "./contract-evaluator-routing.js";
 
 export {
   CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION,
   SGR_CONTRACT_SCHEMA_VERSION,
-  type BlueprintRouteDecisionSgrResult,
   type ContextExtractionItem,
   type ContextExtractionSgrResult,
   type EvaluatorSgrResult,

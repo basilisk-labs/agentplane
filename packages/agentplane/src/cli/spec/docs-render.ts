@@ -20,7 +20,6 @@ const DOCS_GROUP_ORDER = new Map<string, number>([
   ["Quality", 100],
   ["Diagnostics", 110],
   ["Recipes", 120],
-  ["Blueprints", 130],
   ["ACR", 140],
   ["Guard", 150],
   ["Hooks", 160],

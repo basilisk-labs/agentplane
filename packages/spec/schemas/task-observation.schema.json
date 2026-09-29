@@ -44,7 +44,7 @@
         "incident_candidate",
         "context_candidate",
         "agent_improvement_candidate",
-        "blueprint_improvement_candidate"
+        "workflow_improvement_candidate"
       ]
     },
     "severity": {
@@ -103,7 +103,7 @@
             "incident",
             "context",
             "skill",
-            "blueprint_change",
+            "workflow_change",
             "agent_prompt_change",
             "test_gap"
           ]

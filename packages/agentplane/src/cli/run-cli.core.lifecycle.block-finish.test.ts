@@ -5,7 +5,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { defaultConfig } from "@agentplaneorg/core/config";
-import { readTask } from "@agentplaneorg/core/tasks";
+import { createTask, readTask } from "@agentplaneorg/core/tasks";
 
 import { runCli } from "./run-cli.js";
 import {
@@ -40,30 +40,17 @@ describe("runCli", () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
 
-    const ioNew = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Block task",
-        "--description",
-        "Block command updates status",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioNew.stdout.trim();
-    } finally {
-      ioNew.restore();
-    }
+    const { id: taskId } = await createTask({
+      cwd: root,
+      rootOverride: root,
+      title: "Block task",
+      description: "Block command updates status",
+      priority: "med",
+      owner: "CODER",
+      tags: ["nodejs"],
+      dependsOn: [],
+      verify: [],
+    });
 
     const io = captureStdIO();
     try {
@@ -92,30 +79,17 @@ describe("runCli", () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
 
-    const ioNew = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Quiet block task",
-        "--description",
-        "Block command with quiet flag",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioNew.stdout.trim();
-    } finally {
-      ioNew.restore();
-    }
+    const { id: taskId } = await createTask({
+      cwd: root,
+      rootOverride: root,
+      title: "Quiet block task",
+      description: "Block command with quiet flag",
+      priority: "med",
+      owner: "CODER",
+      tags: ["nodejs"],
+      dependsOn: [],
+      verify: [],
+    });
 
     const io = captureStdIO();
     try {

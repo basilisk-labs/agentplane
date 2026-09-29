@@ -1,5 +1,6 @@
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import type { TaskData } from "../../backends/task-backend.js";
+import { decideIndependentReviewApplication } from "@agentplaneorg/core/tasks";
 import { CliError } from "../../shared/errors.js";
 
 export function hasAcceptedQualityReviewProvenance(review: TaskData["quality_review"]): boolean {
@@ -12,7 +13,7 @@ export function hasAcceptedQualityReviewProvenance(review: TaskData["quality_rev
 export function assertEvaluatorQualityReviewPassed(opts: {
   task: TaskData;
   expectedSha?: string | null;
-  expectedBlueprintDigest?: string | null;
+  expectedReviewIdentityDigest?: string | null;
   command: "finish" | "integrate";
 }): void {
   const review = opts.task.quality_review;
@@ -35,7 +36,15 @@ export function assertEvaluatorQualityReviewPassed(opts: {
     });
   }
 
-  if (review.state !== "pass" || !hasAcceptedQualityReviewProvenance(review)) {
+  const reviewDecision =
+    review.state === "pending"
+      ? null
+      : decideIndependentReviewApplication({
+          verdict: review.state,
+          provenance_accepted: hasAcceptedQualityReviewProvenance(review),
+          evidence_current: true,
+        });
+  if (reviewDecision?.action !== "complete") {
     throw new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),
       code: "E_VALIDATION",
@@ -64,15 +73,18 @@ export function assertEvaluatorQualityReviewPassed(opts: {
     });
   }
 
-  if (opts.expectedBlueprintDigest && review.blueprint_digest !== opts.expectedBlueprintDigest) {
+  if (
+    opts.expectedReviewIdentityDigest &&
+    review.review_identity_digest !== opts.expectedReviewIdentityDigest
+  ) {
     throw new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),
       code: "E_VALIDATION",
       message: [
-        `${opts.command} requires EVALUATOR quality review against the current blueprint snapshot.`,
+        `${opts.command} requires EVALUATOR quality review against the current native review identity.`,
         `task=${opts.task.id}`,
-        `quality_review.blueprint_digest=${review.blueprint_digest}`,
-        `expected_blueprint_digest=${opts.expectedBlueprintDigest}`,
+        `quality_review.review_identity_digest=${review.review_identity_digest}`,
+        `expected_review_identity_digest=${opts.expectedReviewIdentityDigest}`,
         `Human record: ${fix}`,
       ].join("\n"),
     });

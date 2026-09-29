@@ -2,8 +2,15 @@ import { defaultConfig } from "@agentplaneorg/core/config";
 import type { ResolvedProject } from "@agentplaneorg/core/project";
 import { describe, expect, it, vi } from "vitest";
 
-import type { CommandContext } from "./task-backend.js";
+import type * as TaskBackend from "./task-backend.js";
 import { ensureReconciledBeforeMutation } from "./reconcile-check.js";
+
+type CommandContext = TaskBackend.CommandContext;
+
+vi.mock("./task-backend.js", async (importOriginal) => ({
+  ...(await importOriginal<typeof TaskBackend>()),
+  loadTaskFromBranchSnapshot: vi.fn().mockResolvedValue(null),
+}));
 
 function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
   const resolved = {
@@ -27,7 +34,7 @@ function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
     git: {
       statusChangedPaths: vi.fn().mockResolvedValue([]),
     } as unknown as CommandContext["git"],
-    memo: {},
+    memo: { taskWorktreeInventory: Promise.resolve([]) },
   };
   return { ...ctx, ...overrides };
 }
@@ -137,30 +144,57 @@ describe("commands/shared/reconcile-check", () => {
     });
   });
 
-  it("accepts a task-scoped read warning only when an exact stable reread succeeds", async () => {
-    const getTask = vi.fn().mockResolvedValue({ id: "T-ACTIVE" });
+  it.each(["skip:", "history:skip:"])(
+    "accepts %s only when an exact stable reread succeeds",
+    async (prefix) => {
+      const getTask = vi.fn().mockResolvedValue({ id: "T-ACTIVE" });
+      const ctx = mkCtx({
+        taskBackend: {
+          id: "mock",
+          capabilities: {
+            canonical_source: "local",
+            writes_task_readmes: true,
+          },
+          listTasks: vi.fn().mockResolvedValue([]),
+          getTask,
+          writeTask: vi.fn().mockResolvedValue(),
+          getLastListWarnings: vi.fn().mockReturnValue([`${prefix}T-ACTIVE: unreadable_readme`]),
+        } as unknown as CommandContext["taskBackend"],
+      });
+
+      await expect(
+        ensureReconciledBeforeMutation({
+          ctx,
+          command: "verify",
+          taskIds: ["T-ACTIVE"],
+        }),
+      ).resolves.toBeUndefined();
+      expect(getTask).toHaveBeenCalledExactlyOnceWith("T-ACTIVE");
+    },
+  );
+
+  it.each([
+    ["history:skip:T-ACTIVE: missing_or_unreadable_readme", null],
+    ["history:skip:T-ACTIVE: unreadable_readme", { id: "T-WRONG" }],
+    ["history:skip:T-ACTIVE: invalid_readme_frontmatter", { id: "T-ACTIVE" }],
+    ["unknown:skip:T-ACTIVE: unreadable_readme", { id: "T-ACTIVE" }],
+  ])("keeps unresolved or corrupt warnings blocking: %s", async (warning, task) => {
     const ctx = mkCtx({
       taskBackend: {
         id: "mock",
-        capabilities: {
-          canonical_source: "local",
-          writes_task_readmes: true,
-        },
+        capabilities: { canonical_source: "local", writes_task_readmes: true },
         listTasks: vi.fn().mockResolvedValue([]),
-        getTask,
-        writeTask: vi.fn().mockResolvedValue(),
-        getLastListWarnings: vi.fn().mockReturnValue(["skip:T-ACTIVE: unreadable_readme"]),
+        getTask: vi.fn().mockResolvedValue(task),
+        writeTask: vi.fn(),
+        getLastListWarnings: vi.fn().mockReturnValue([warning]),
       } as unknown as CommandContext["taskBackend"],
     });
-
     await expect(
-      ensureReconciledBeforeMutation({
-        ctx,
-        command: "verify",
-        taskIds: ["T-ACTIVE"],
-      }),
-    ).resolves.toBeUndefined();
-    expect(getTask).toHaveBeenCalledExactlyOnceWith("T-ACTIVE");
+      ensureReconciledBeforeMutation({ ctx, command: "commit", taskIds: ["T-ACTIVE"] }),
+    ).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      context: { reason_code: "reconcile_task_scan_incomplete" },
+    });
   });
 
   it("keeps unrelated invalid frontmatter warnings even for task-scoped mutations", async () => {

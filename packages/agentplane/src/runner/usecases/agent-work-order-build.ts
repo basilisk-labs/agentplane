@@ -12,7 +12,6 @@ import {
   type StateFingerprintPolicy,
 } from "@agentplaneorg/core/schemas";
 
-import type { BlueprintPlanArtifact } from "../../blueprints/index.js";
 import {
   createRepositorySnapshot,
   taskCentricAggregateFromExtensions,
@@ -21,24 +20,23 @@ import {
   type WorkItem,
 } from "@agentplaneorg/core/tasks";
 import { readTaskRouteGitSnapshot } from "../../commands/shared/route-decision.js";
-import { checkTaskBlueprintSnapshotDrift } from "../../commands/blueprint/snapshot-artifact.js";
 import type { TaskRouteDecision } from "../../commands/shared/route-decision-types.js";
 import { conflictReworkRequiredInputs } from "../../commands/pr/conflict-rework-semantic-input.js";
-import type { CommandContext } from "../../commands/shared/task-backend.js";
-import type { TaskBlueprintLifecycleSummary } from "../../commands/task/blueprint-summary.js";
 import type { ReadOnlyExecutionContext } from "../../runtime/execution-context.js";
 import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
+import {
+  resolveNativeSemanticToolClasses,
+  type NativeTaskObligations,
+} from "../../runtime/task-obligations/index.js";
 import type { RunnerPromptBlock } from "../types.js";
 import type { RunnerTaskContextEnvelope } from "../context/task-context.js";
 
-import type {
-  AgentWorkOrderLegacyBriefProjection,
-  AgentWorkOrderSourceManifest,
-} from "./agent-work-order-projection.js";
+import type { AgentWorkOrderSourceManifest } from "./agent-work-order-projection.js";
 import type { TaskKnowledgeRetrieval } from "./task-knowledge-retrieval.js";
+import { semanticRole } from "./semantic-role.js";
 
 /**
- * A work order carries the resolved prompt, policy, and blueprint manifests as
+ * A work order carries the resolved prompt, policy, and native obligation manifests as
  * prepared inputs. Their route observations may legitimately be unavailable in
  * a minimal project, but a later change still produces a stale fingerprint.
  * The durable invocation gate therefore requires only live identity and
@@ -46,6 +44,23 @@ import type { TaskKnowledgeRetrieval } from "./task-knowledge-retrieval.js";
  */
 const AGENT_WORK_ORDER_STATE_FINGERPRINT_POLICY = {
   required_components: ["task", "git", "backend_projection", "authority"],
+  provider: {
+    required: false,
+    unavailable: "allow_if_unchanged",
+  },
+} as const satisfies StateFingerprintPolicy;
+
+const AGENT_WORK_ORDER_STATE_FINGERPRINT_V2_POLICY = {
+  fingerprint_schema_version: 2,
+  required_components: [
+    "task",
+    "git",
+    "backend_projection",
+    "plan",
+    "policy",
+    "capability",
+    "authority",
+  ],
   provider: {
     required: false,
     unavailable: "allow_if_unchanged",
@@ -97,80 +112,18 @@ function episodeSectionText(opts: {
   );
 }
 
-function workOrderRole(owner: string): AgentWorkOrderRole {
-  const normalized = owner.trim().toUpperCase();
-  if (normalized === "PLANNER" || normalized === "CURATOR" || normalized === "EVALUATOR") {
-    return normalized;
-  }
-  return "EXECUTOR";
-}
-
-function legacyBlueprintSummary(opts: {
-  task_id: string;
-  blueprint: BlueprintPlanArtifact;
-}): TaskBlueprintLifecycleSummary {
-  const workflowGit = opts.blueprint.workflowGitCapabilities;
-  return {
-    blueprint_id: opts.blueprint.blueprintId,
-    blueprint_version: opts.blueprint.blueprintVersion,
-    ...(opts.blueprint.workflowMode ? { workflow_mode: opts.blueprint.workflowMode } : {}),
-    ...(workflowGit
-      ? {
-          workflow_git: [
-            `implementation_commit_location=${workflowGit.implementationCommitLocation}`,
-            `finish_commit_source=${workflowGit.finishCommitSource}`,
-            `close_tail_required=${workflowGit.closeTailRequired ? "yes" : "no"}`,
-            `finish_commit_from_comment=${workflowGit.finishCommitFromComment ? "yes" : "no"}`,
-          ].join(" "),
-        }
-      : {}),
-    route: opts.blueprint.states.map((state) => state.kind),
-    selection_reasons: [...opts.blueprint.whySelected],
-    policy_modules: [...opts.blueprint.policyModules],
-    required_evidence: opts.blueprint.requiredEvidence.map((item) => item.id),
-    stop_reasons: opts.blueprint.stopReasons.map((reason) => reason.id),
-    explain_command: `agentplane blueprint explain ${opts.task_id}`,
-    snapshot_command: `agentplane blueprint snapshot ${opts.task_id}`,
-  };
-}
-
-export async function buildAgentWorkOrderLegacyBriefProjection(opts: {
-  command_ctx: CommandContext;
-  task_envelope: RunnerTaskContextEnvelope;
-  blueprint: BlueprintPlanArtifact;
-}): Promise<AgentWorkOrderLegacyBriefProjection> {
-  const snapshot = await checkTaskBlueprintSnapshotDrift({
-    ctx: opts.command_ctx,
-    task: opts.task_envelope.source_task,
-  });
-  return {
-    blueprint: legacyBlueprintSummary({
-      task_id: opts.task_envelope.task.metadata.task_id,
-      blueprint: opts.blueprint,
-    }),
-    snapshot: {
-      state: snapshot.state,
-      path: snapshot.path,
-      digest: snapshot.previous.digest,
-      current_digest: snapshot.current.digest,
-      route_changed: snapshot.routeChanged,
-      safe_command: snapshot.safeCommand,
-    },
-  };
-}
-
 export function buildAgentWorkOrderSourceManifest(opts: {
   prepared: {
     task_envelope: RunnerTaskContextEnvelope;
     base_prompts: RunnerPromptBlock[];
-    blueprint: BlueprintPlanArtifact;
+    task_obligations: NativeTaskObligations;
     execution_context: ReadOnlyExecutionContext;
   };
 }): AgentWorkOrderSourceManifest {
   const {
     task_envelope: taskEnvelope,
     base_prompts: basePrompts,
-    blueprint,
+    task_obligations: taskObligations,
     execution_context,
   } = opts.prepared;
   const promptModules = basePrompts
@@ -178,13 +131,6 @@ export function buildAgentWorkOrderSourceManifest(opts: {
       id: prompt.id,
       source: stableSourcePath(prompt.source, execution_context.repo.git_root),
       content_digest: sha256(prompt.content),
-    }))
-    .toSorted((left, right) => left.id.localeCompare(right.id));
-  const blueprintContext = blueprint.contextManifest
-    .map((entry) => ({
-      id: entry.id,
-      kind: entry.kind,
-      source: stableSourcePath(entry.source, execution_context.repo.git_root),
     }))
     .toSorted((left, right) => left.id.localeCompare(right.id));
   const verifySteps = verifyStepLines(
@@ -197,13 +143,11 @@ export function buildAgentWorkOrderSourceManifest(opts: {
     schema_version: 1,
     source_paths: uniqueSorted([
       taskReadme ?? "",
-      ...blueprint.policyModules,
+      ...taskObligations.policy_modules,
       ...promptModules.flatMap((prompt) => (prompt.source ? [prompt.source] : [])),
-      ...blueprintContext.flatMap((entry) => (entry.source ? [entry.source] : [])),
     ]),
-    policy_modules: uniqueSorted(blueprint.policyModules),
+    policy_modules: uniqueSorted(taskObligations.policy_modules),
     prompt_modules: promptModules,
-    blueprint_context: blueprintContext,
     verification_context: {
       task_verify: uniqueSorted(taskEnvelope.task.verification.commands),
       verify_steps: verifySteps,
@@ -242,6 +186,7 @@ function acceptanceCriteria(opts: {
 function verificationIntent(opts: {
   source_manifest: AgentWorkOrderSourceManifest;
   execution_contract?: RunnerTaskContextEnvelope["task"]["metadata"]["execution_contract"];
+  task_obligations: NativeTaskObligations;
   work_item?: WorkItem | null;
 }): AgentWorkOrderV2["verification_intent"] {
   if (opts.work_item) {
@@ -260,6 +205,28 @@ function verificationIntent(opts: {
     ...opts.source_manifest.verification_context.verify_steps,
     ...(opts.execution_contract?.verification.required_evidence ?? []),
   ]);
+  const nativeRequirements = opts.task_obligations.evidence_requirements.map((requirement) => ({
+    id: requirement.id,
+    description: compactText(requirement.description, requirement.id),
+    required: requirement.required,
+    observed_by: "agentplane" as const,
+  }));
+  if (nativeRequirements.length > 0) {
+    return {
+      requirements: [
+        ...nativeRequirements,
+        ...candidates
+          .filter((candidate) => !nativeRequirements.some((item) => item.id === candidate))
+          .map((description, index) => ({
+            id: `verification-${index + 1}`,
+            description: compactText(description, "Record verification evidence."),
+            required: true,
+            observed_by: "agentplane" as const,
+          })),
+      ].slice(0, 64),
+      require_execution_receipt: true,
+    };
+  }
   const descriptions =
     candidates.length > 0
       ? candidates
@@ -325,7 +292,7 @@ function requiredInputs(opts: {
     inputs.push({
       id: `policy-module-${index + 1}`,
       kind: "policy_module",
-      description: "Policy module selected by the resolved blueprint context.",
+      description: "Policy module required by the native task execution obligations.",
       path: modulePath,
       required: true,
     });
@@ -360,6 +327,7 @@ export function buildCanonicalAgentWorkOrder(opts: {
     route_decision: TaskRouteDecision;
     semantic_role?: AgentWorkOrderRole;
     task_execution?: TaskExecutionContext;
+    task_obligations: NativeTaskObligations;
   };
   source_manifest: AgentWorkOrderSourceManifest;
   knowledge_retrieval: TaskKnowledgeRetrieval;
@@ -372,7 +340,8 @@ export function buildCanonicalAgentWorkOrder(opts: {
   const task = taskEnvelope.task;
   const role =
     opts.prepared.semantic_role ??
-    workOrderRole(decision.executionPacket.recommendedRole ?? task.metadata.owner ?? "");
+    semanticRole(decision.executionPacket.recommendedRole ?? task.metadata.owner ?? "") ??
+    "EXECUTOR";
   const stateFingerprint = structuredClone(decision.workflowStep.preconditionFingerprint);
   const routeGit = readTaskRouteGitSnapshot(decision);
   const repositorySnapshot = createRepositorySnapshot({
@@ -397,7 +366,9 @@ export function buildCanonicalAgentWorkOrder(opts: {
         ? (stateFingerprint.components.knowledge.digest as `sha256:${string}`)
         : null,
     task_history_cursor:
-      task.metadata.revision === null ? null : `task-revision:${String(task.metadata.revision)}`,
+      stateFingerprint.task_revision === null
+        ? null
+        : `task-revision:${String(stateFingerprint.task_revision)}`,
     captured_at: routeGit?.captured_at ?? new Date().toISOString(),
   });
   const planningRetrievals: NonNullable<AgentWorkOrderV2["planning_context"]>["retrievals"] = [
@@ -467,33 +438,26 @@ export function buildCanonicalAgentWorkOrder(opts: {
       return resolved;
     });
   })();
-  const allowedToolClasses: AgentWorkOrderV2["authority"]["allowed_tool_classes"] = canMutate
-    ? [
-        "repository_read",
-        "git_read",
-        "run_checks",
-        "report_result",
-        "report_blocker",
-        "workspace_write",
-      ]
-    : ["repository_read", "git_read", "run_checks", "report_result", "report_blocker"];
-  if (opts.knowledge_retrieval.knowledge_refs.length > 0) {
-    allowedToolClasses.push("knowledge_read");
-  }
-  if (role === "EXECUTOR" || role === "EVALUATOR") {
-    allowedToolClasses.push("knowledge_request");
-  }
+  const allowedToolClasses = resolveNativeSemanticToolClasses({
+    can_mutate: canMutate,
+    role,
+    has_knowledge: opts.knowledge_retrieval.knowledge_refs.length > 0,
+  });
   const summary =
     episodeSectionText({ task_envelope: taskEnvelope, section: "Summary" }) ||
     task.narrative.description;
   const verification = verificationIntent({
     source_manifest: opts.source_manifest,
     execution_contract: task.metadata.execution_contract,
+    task_obligations: opts.prepared.task_obligations,
     work_item: selectedWorkItem,
   });
   const stopRules = uniqueSorted([
     ...decision.executionPacket.mustNot,
     decision.executionPacket.returnControlWhen,
+    ...opts.prepared.task_obligations.stop_rules.map(
+      (rule) => `${rule.severity}: ${rule.reason} (${rule.id})`,
+    ),
     "Stop and return a blocked semantic result when the prepared state is stale or required context is missing.",
   ]);
   const allowedExternalEffects = executionContract?.authority.allowed_external_effects ?? [];
@@ -515,7 +479,7 @@ export function buildCanonicalAgentWorkOrder(opts: {
     role,
     task: {
       id: task.metadata.task_id,
-      revision: task.metadata.revision,
+      revision: stateFingerprint.task_revision,
       objective: compactText(
         conflictEpisode && decision.workflowStep.kind === "agent_episode"
           ? decision.workflowStep.episode.objective
@@ -531,7 +495,10 @@ export function buildCanonicalAgentWorkOrder(opts: {
       work_item_id: selectedWorkItem?.id ?? null,
     },
     state_fingerprint: stateFingerprint,
-    state_fingerprint_policy: AGENT_WORK_ORDER_STATE_FINGERPRINT_POLICY,
+    state_fingerprint_policy:
+      stateFingerprint.schema_version === 2
+        ? AGENT_WORK_ORDER_STATE_FINGERPRINT_V2_POLICY
+        : AGENT_WORK_ORDER_STATE_FINGERPRINT_POLICY,
     authority: {
       mutation_scope: task.metadata.mutation_scope ?? "unknown",
       writable_roots: declaredWritableRoots,

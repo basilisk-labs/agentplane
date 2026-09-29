@@ -10,6 +10,7 @@ import {
 import { prepareConflictReworkPacket, type ConflictReworkPreparation } from "./conflict-rework.js";
 import { recoverDivergedConflictHead } from "./conflict-rework-recovery.js";
 import { resolvePrFlowStatus } from "./flow-status.js";
+import { filterTaskWorktreeBlockingPaths } from "../shared/route-decision-worktree-cleanliness.js";
 
 function packetFailure(
   taskId: string,
@@ -121,11 +122,30 @@ export async function cmdPrConflictRework(opts: {
       );
       return 0;
     }
+    const conflictWorktree: TaskWorktreeCleanliness =
+      taskWorktree.state === "dirty"
+        ? (() => {
+            const changedPaths = filterTaskWorktreeBlockingPaths({
+              changedPaths: taskWorktree.changedPaths,
+              workflowDir: ctx.config.paths.workflow_dir,
+              tasksPath: ctx.config.paths.tasks_path,
+              taskId: opts.taskId,
+            });
+            return changedPaths.length === 0
+              ? {
+                  state: "clean",
+                  branch: taskWorktree.branch,
+                  worktreePath: taskWorktree.worktreePath,
+                  changedPaths: [],
+                }
+              : { ...taskWorktree, changedPaths };
+          })()
+        : taskWorktree;
     const preparation = await prepareConflictReworkPacket({
       gitRoot: ctx.resolvedProject.gitRoot,
       taskId: opts.taskId,
       report,
-      taskWorktree,
+      taskWorktree: conflictWorktree,
     });
     if (preparation.state !== "ready") throw packetFailure(opts.taskId, preparation);
     if (

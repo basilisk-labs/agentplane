@@ -1,19 +1,20 @@
-import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
 import { hasUninitializedTaskBaseline } from "./workflow-step-policy-scope.js";
 import type { WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
-import type { RouteBlocker } from "./route-oracle.js";
 import { conflictReworkRouteStep } from "./workflow-step-conflict-rework.js";
 import {
   branchHeadRepairStep,
   blockedTaskStep,
+  hasRouteBlocker,
   missingPrRemoteRefreshStep,
   preMergeCommit,
   primaryIncludeTaskIds,
+  unavailableWorktreeBlocker,
 } from "./workflow-step-branch-state.js";
 import { supersededProviderConflictStep } from "./workflow-step-provider-conflict-superseded.js";
 import { needsQualityEvidenceRefresh } from "./workflow-step-quality.js";
 import { integrationQueueStep } from "./workflow-step-integration-queue.js";
 import { providerUpdateBranchStep } from "./workflow-step-provider-update-branch.js";
+import { branchBaseSyncStep } from "./workflow-step-branch-base-sync.js";
 import {
   approvalStep,
   branchImplementationStep,
@@ -24,18 +25,18 @@ import {
   includedBatchStep,
   qualityEvidenceRefreshStep,
   qualityReviewStep,
+  readyWorkItemWorktreeStep,
+  requiredWorkItemRoute,
   routeBlockerFor,
   routeBlockerSnapshot,
   taskWorktreeBlocker,
   terminalStep,
   verificationStep,
   verifiedIncludedClosureCandidate,
+  workItemReadinessWaitStep,
   workSlug,
   worktreeResolutionStep,
 } from "./workflow-step-factory.js";
-function hasRouteBlocker(state: WorkflowRouteState, code: RouteBlocker["code"]): boolean {
-  return state.blockers.some((blocker) => blocker.code === code);
-}
 function primaryBatchVerificationStep(state: WorkflowRouteState): WorkflowStep | null {
   if (state.batchOwnership.role !== "primary") return null;
   const ownership = state.batchOwnership;
@@ -137,19 +138,6 @@ function runnerWaitStep(state: WorkflowRouteState): WorkflowStep {
       role: "CODER",
       mustNot: ["do not reclaim or force progress without explicit parent approval"],
     }),
-  };
-}
-function unavailableWorktreeBlocker(state: WorkflowRouteState): RouteBlocker {
-  const probe = state.taskWorktree;
-  if (probe?.state === "unavailable") {
-    return {
-      code: "task_worktree_state_unavailable",
-      summary: `task worktree state could not be inspected: ${probe.reason}`,
-    };
-  }
-  return {
-    code: "task_worktree_state_unavailable",
-    summary: "task worktree state could not be inspected",
   };
 }
 export function doneBranchStep(state: WorkflowRouteState): WorkflowStep {
@@ -280,6 +268,28 @@ export function doneBranchStep(state: WorkflowRouteState): WorkflowStep {
     });
   }
   if (state.cleanupProbe.state === "blocked") {
+    const merge = state.prFlow?.pr.state === "MERGED" ? state.prFlow.pr.mergeCommit : null;
+    const base = state.resume.base_branch ?? "main";
+    const onlyMissingBase =
+      merge &&
+      /^[a-f0-9]{40}(?:[a-f0-9]{24})?$/u.test(merge) &&
+      state.cleanupProbe.reasons.length > 0 &&
+      state.cleanupProbe.reasons.every(
+        (reason) =>
+          reason.endsWith(`provider merge commit object is unavailable locally: ${merge}`) ||
+          reason.endsWith(`provider merge commit is not on ${base}: ${merge}`),
+      );
+    if (onlyMissingBase) {
+      // Finalization fast-forwards base and repeats the complete deletion proof.
+      return cliOperationStep({
+        state,
+        operationId: "task.worktree.cleanup",
+        params: { taskId: id, base },
+        code: "cleanup",
+        summary: "synchronize base, revalidate cleanup proof, and remove the task worktree",
+        selectedBlocker: null,
+      });
+    }
     return terminalStep({
       state,
       id: "terminal.cleanup_blocked",
@@ -338,6 +348,7 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
   const id = state.task.id;
   const supersededStep = supersededProviderConflictStep(state);
   if (supersededStep) return supersededStep;
+  const workItemRoute = requiredWorkItemRoute(state.task);
   const worktreeBlocker = taskWorktreeBlocker(state);
   const status = String(state.task.status).toUpperCase();
   if (status === "TODO" || (status === "DOING" && hasUninitializedTaskBaseline(state.task))) {
@@ -373,6 +384,10 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
     });
   }
   if (status === "BLOCKED") return blockedTaskStep(state);
+  const conflictStep = conflictReworkRouteStep(state);
+  if (conflictStep) return conflictStep;
+  const readyWorktreeStep = readyWorkItemWorktreeStep(state);
+  if (readyWorktreeStep) return readyWorktreeStep;
   if (state.batchOwnership.role === "included") return includedBatchStep(state);
   if (!state.prFlow?.branch.name && verifiedIncludedClosureCandidate(state.task)) {
     return cliOperationStep({
@@ -410,7 +425,9 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
       worktreeResolutionStep(state, worktreeBlocker)
     );
   }
-  const recoveryStep = conflictReworkRouteStep(state) ?? providerUpdateBranchStep(state);
+  const baseSyncStep = branchBaseSyncStep(state);
+  if (baseSyncStep) return baseSyncStep;
+  const recoveryStep = providerUpdateBranchStep(state);
   if (recoveryStep) return recoveryStep;
   if (state.taskWorktree?.state === "not_present" && hasRouteBlocker(state, "pr_meta_stale")) {
     const slug = workSlug(state.task);
@@ -474,28 +491,12 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
       selectedBlocker: routeBlockerFor(state, "on_base_checkout"),
     });
   }
-  const taskCentric = taskCentricAggregateFromExtensions(state.task.extensions);
-  // A freshly materialized graph is not evidence that compatibility-driven
-  // implementation has entered canonical WorkItem execution. Once a claim or
-  // attempt exists, the canonical graph becomes authoritative for routing.
-  const canonicalWorkItemExecutionStarted = Object.values(taskCentric?.work_items ?? {}).some(
-    (item) => item.attempt > 0 || item.claim_id !== null,
-  );
-  const requiredWorkItemIncomplete =
-    canonicalWorkItemExecutionStarted &&
-    taskCentric?.current_plan?.proposal.work_items.work_items.some(
-      (item) => !item.optional && taskCentric.work_items[item.id]?.state !== "COMPLETED",
-    );
+  if (workItemRoute.state === "ready") return branchImplementationStep(state);
+  if (workItemRoute.state === "blocked") {
+    return workItemReadinessWaitStep(state, "task_worktree");
+  }
   const implementationCommit = state.task.commit?.hash?.trim() ?? "";
-  const implementationValidated =
-    Boolean(implementationCommit) &&
-    state.task.verification?.state === "ok" &&
-    state.task.quality_review?.state === "pass" &&
-    state.task.quality_review.evaluated_sha === implementationCommit;
-  if (
-    !implementationCommit &&
-    (requiredWorkItemIncomplete || state.task.verification?.state !== "ok")
-  )
+  if (!implementationCommit && state.task.verification?.state !== "ok")
     return branchImplementationStep(state);
   if (state.prFlow?.pr.state === "not_found") {
     return cliOperationStep({
@@ -511,8 +512,6 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
       selectedBlocker: routeBlockerFor(state, "remote_pr_missing"),
     });
   }
-  if (requiredWorkItemIncomplete && !implementationValidated)
-    return branchImplementationStep(state);
   if (hasRouteBlocker(state, "verification_required")) {
     return verificationStep(state);
   }

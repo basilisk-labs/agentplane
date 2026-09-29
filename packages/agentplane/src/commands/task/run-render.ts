@@ -1,9 +1,12 @@
 import { createCliEmitter, infoMessage } from "../../cli/output.js";
 import type {
   LoadedTaskRunnerInspection,
+  TaskRunnerActivityHealth,
   TaskRunnerControlInspection,
   TaskRunnerDiagnosticInspection,
+  TaskRunnerProcessLiveness,
 } from "../../runner/usecases/task-run-inspect.js";
+import { inspectTaskRunnerActivity } from "../../runner/usecases/task-run-inspect.js";
 import type { TaskRunnerActiveClaimCleanupDiagnostic } from "../../runner/usecases/task-run-active-claim-runtime.js";
 import type { TaskRunnerLifecycleResult } from "../../runner/usecases/task-run-lifecycle-result.js";
 import type { RunnerLifecycleStatus } from "../../runner/types.js";
@@ -103,11 +106,9 @@ export function tailText(text: string, lineCount: number): string {
   return trailingEmpty.slice(-lineCount).join("\n");
 }
 
-export type RunnerProcessLiveness = boolean | "unverified" | "mismatch" | null;
-
 async function runnerProcessAlive(
   inspection: LoadedTaskRunnerInspection,
-): Promise<RunnerProcessLiveness> {
+): Promise<TaskRunnerProcessLiveness> {
   const pid = inspection.state.supervision?.pid;
   if (typeof pid !== "number") return null;
   const expected = inspection.state.supervision?.process_identity;
@@ -158,6 +159,7 @@ type TaskRunnerNextSafeAction =
 
 function taskRunnerNextSafeAction(
   inspection: TaskRunnerControlInspection,
+  activityHealth?: TaskRunnerActivityHealth,
 ): TaskRunnerNextSafeAction {
   if (!inspection.active_claim) return "none";
   const recoveryLease = inspection.recovery_lease;
@@ -184,6 +186,12 @@ function taskRunnerNextSafeAction(
     return "inspect_process_cleanup";
   }
   if (
+    inspection.claimed_run_authority === "running_child_unverified" &&
+    activityHealth === "active"
+  ) {
+    return "wait_for_active_run";
+  }
+  if (
     inspection.claimed_run_authority === "running_child_dead" ||
     inspection.claimed_run_authority === "running_child_mismatch"
   ) {
@@ -201,7 +209,10 @@ function taskRunnerNextSafeAction(
   return "inspect_run_state";
 }
 
-function renderTaskRunnerControlPayload(inspection: TaskRunnerControlInspection) {
+function renderTaskRunnerControlPayload(
+  inspection: TaskRunnerControlInspection,
+  activityHealth?: TaskRunnerActivityHealth,
+) {
   const activeClaim = inspection.active_claim ?? null;
   return {
     active_claim_present: activeClaim !== null,
@@ -217,18 +228,27 @@ function renderTaskRunnerControlPayload(inspection: TaskRunnerControlInspection)
     claimed_run_authority: inspection.claimed_run_authority,
     recovery_lease: inspection.recovery_lease,
     execution_blocked: activeClaim !== null,
-    next_safe_action: taskRunnerNextSafeAction(inspection),
+    next_safe_action: taskRunnerNextSafeAction(inspection, activityHealth),
   };
 }
 
-export async function renderRunnerStatusPayload(inspection: LoadedTaskRunnerInspection) {
+export async function renderRunnerStatusPayload(
+  inspection: LoadedTaskRunnerInspection,
+  nowMs?: number,
+) {
   const state = inspection.state;
   const supervision = state.supervision ?? null;
   const executionReceipt = state.result?.execution_receipt ?? null;
   const activeClaim = inspection.active_claim ?? null;
   const selectedRunOwnsActiveClaim = activeClaim?.run_id === inspection.run_id;
   const reconcileRequired = selectedRunOwnsActiveClaim && isTerminalRunnerStatus(state.status);
-  const control = renderTaskRunnerControlPayload(inspection);
+  const pidAlive = await runnerProcessAlive(inspection);
+  const activity = await inspectTaskRunnerActivity({
+    inspection,
+    process_liveness: pidAlive,
+    ...(nowMs === undefined ? {} : { now_ms: nowMs }),
+  });
+  const control = renderTaskRunnerControlPayload(inspection, activity.health);
   return {
     task_id: inspection.task_id,
     run_id: inspection.run_id,
@@ -242,9 +262,10 @@ export async function renderRunnerStatusPayload(inspection: LoadedTaskRunnerInsp
     updated_at: state.updated_at,
     started_at: supervision?.started_at ?? null,
     heartbeat_at: supervision?.heartbeat_at ?? null,
+    ...activity,
     ended_at: state.result?.ended_at ?? null,
     pid: supervision?.pid ?? null,
-    pid_alive: await runnerProcessAlive(inspection),
+    pid_alive: pidAlive,
     ...control,
     active_claim_retained: reconcileRequired,
     active_claim_selected_run: selectedRunOwnsActiveClaim,
@@ -289,6 +310,10 @@ export async function renderRunnerDiagnosticStatusPayload(
     updated_at: null,
     started_at: null,
     heartbeat_at: null,
+    last_trace_at: null,
+    last_trace_seq: null,
+    seconds_since_activity: null,
+    health: "unknown" as const,
     ended_at: null,
     pid: null,
     pid_alive: null,
@@ -318,6 +343,10 @@ function renderRunnerStatusReportEntries(
     { label: "adapter", value: payload.adapter_id },
     { label: "updated_at", value: payload.updated_at },
     { label: "heartbeat_at", value: payload.heartbeat_at },
+    { label: "last_trace_at", value: payload.last_trace_at },
+    { label: "last_trace_seq", value: payload.last_trace_seq },
+    { label: "seconds_since_activity", value: payload.seconds_since_activity },
+    { label: "health", value: payload.health },
     { label: "pid", value: payload.pid },
     { label: "pid_alive", value: payload.pid_alive },
     { label: "active_claim_present", value: payload.active_claim_present },
@@ -452,50 +481,6 @@ function taskRunIdentityRows(
         ]
       : []),
   ];
-}
-
-export function reportPreparedTaskRun(payload: TaskRunRendererPayload, taskId: string): void {
-  const preview = "execution_preview" in payload ? payload.execution_preview : null;
-  createCliEmitter().report(
-    [
-      ...taskRunIdentityRows(payload, { includeEffectResolution: false }),
-      ...(preview
-        ? [
-            {
-              label: "route",
-              value:
-                `requested=${preview.route.requested_mode} ` +
-                `selected=${preview.route.selected_mode}`,
-            },
-            { label: "route_reasons", value: preview.route.reason_codes.join(", ") },
-            { label: "blueprint", value: preview.context.blueprint_id },
-            {
-              label: "context",
-              value:
-                `task_bytes=${preview.context.task_context_bytes} ` +
-                `sections=${preview.context.task_sections} ` +
-                `prompt_blocks=${preview.context.prompt_blocks} ` +
-                `policy_modules=${preview.context.policy_modules} ` +
-                `knowledge_refs=${preview.context.knowledge_refs}`,
-            },
-            {
-              label: "approvals",
-              value:
-                `plan=${String(preview.approvals.plan)} ` +
-                `verify=${String(preview.approvals.verify)} ` +
-                `network=${String(preview.approvals.network)} ` +
-                `force=${String(preview.approvals.force)}`,
-            },
-            { label: "checks", value: preview.checks.join("; ") || "none" },
-            { label: "token_budget", value: preview.budgets.token.state },
-          ]
-        : []),
-      { label: "bundle", value: payload.bundle_path },
-      { label: "bootstrap", value: payload.bootstrap_path },
-      { label: "result", value: payload.result_path },
-    ],
-    { header: infoMessage(`task run prepared: ${taskId}`) },
-  );
 }
 
 export function reportExecutedTaskRun(payload: TaskRunRendererPayload, taskId: string): void {

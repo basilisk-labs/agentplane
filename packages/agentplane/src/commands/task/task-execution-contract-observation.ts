@@ -77,17 +77,11 @@ export function projectObservedTaskExecutionContract(opts: ObservedTaskExecution
     reconciled !== null && JSON.stringify(reconciled.contract) !== JSON.stringify(current);
   if (!contractChanged && !implementationCommitChanged)
     return { nextTask: null, escalated, episodeAuthorityViolations };
-  const blueprintRequest =
-    reconciled?.escalated && currentTask.blueprint_request === "code.direct"
-      ? "code.branch_pr"
-      : currentTask.blueprint_request;
-
   return {
     escalated,
     episodeAuthorityViolations,
     nextTask: {
       ...currentTask,
-      blueprint_request: blueprintRequest,
       ...(implementationCommitChanged
         ? {
             extensions: {

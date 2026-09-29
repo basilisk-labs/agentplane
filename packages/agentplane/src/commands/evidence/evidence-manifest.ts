@@ -11,7 +11,6 @@ import type { CommandContext } from "../shared/task-backend.js";
 type EvidenceFileRole =
   | "task_readme"
   | "acr"
-  | "blueprint_snapshot"
   | "verification_log"
   | "pr_artifact"
   | "task_artifact";
@@ -248,7 +247,6 @@ async function walkFiles(dir: string): Promise<string[]> {
 function inferEvidenceRole(relativeToTask: string): EvidenceFileRole {
   if (relativeToTask === "README.md") return "task_readme";
   if (relativeToTask === "acr.json") return "acr";
-  if (relativeToTask === "blueprint/resolved-snapshot.json") return "blueprint_snapshot";
   if (relativeToTask.includes("verify")) return "verification_log";
   if (relativeToTask.startsWith("pr/")) return "pr_artifact";
   return "task_artifact";

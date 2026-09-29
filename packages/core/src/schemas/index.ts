@@ -153,7 +153,6 @@ export {
   SUPERVISOR_EPISODE_STOP_REASON_VALUES,
   advanceSupervisorExecutionEpisodeState,
   completeSupervisorExecutionEpisode,
-  continueSupervisorExecutionEpisodeAfterEpisodeBudget,
   createSupervisorExecutionEpisodeJournal,
   digestSupervisorEpisodeValue,
   prepareReplacementSupervisorExecutionEpisodeAfterFailure,
@@ -161,6 +160,8 @@ export {
   recoverSupervisorExecutionEpisodeJournal,
   reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
   reopenSupervisorExecutionEpisodeAfterEffectEvidence,
+  resumeSupervisorExecutionEpisodeAfterInternalAnomaly,
+  resumeSupervisorExecutionEpisodeAfterLegacyBudgetStop,
   retireSupervisorExecutionEpisodeIntentAfterStateDrift,
   retryFailedSupervisorExecutionEpisode,
   stopSupervisorExecutionEpisode,
@@ -174,6 +175,7 @@ export {
   type SupervisorExecutionBudget,
   type SupervisorExecutionEpisodeJournal,
   type SupervisorExecutionUsage,
+  type SupervisorInternalAnomalyDiagnostic,
 } from "../runner/supervisor-execution-episode.js";
 
 export {

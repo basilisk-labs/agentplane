@@ -1,0 +1,35 @@
+{
+  "arm": "candidate",
+  "kind": "agentplane.m01_product_artifact",
+  "runtime": {
+    "binary": {
+      "path": "/Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-4BC7B3-qualify-and-document-the-0-7-9-stabilization-can/packages/agentplane/bin/agentplane.js",
+      "sha256": "sha256:f7ce2b43b8fe9bc2cfd044a0ed3e2cec9df68bf42c479de509a9d78e3a86fcab"
+    },
+    "closure": [
+      {
+        "path": "/Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-4BC7B3-qualify-and-document-the-0-7-9-stabilization-can/packages/agentplane/package.json",
+        "sha256": "sha256:9bd88155b55641989e8337d6ef87e991070678f7537077fcd4aca3b017767b68"
+      },
+      {
+        "path": "/Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-4BC7B3-qualify-and-document-the-0-7-9-stabilization-can/packages/agentplane/dist/.build-manifest.json",
+        "sha256": "sha256:b8ca0fed03e8124090273fed3261f4ada60e4a5de6ef6e3fa8d61ced1f9f1e09"
+      },
+      {
+        "path": "/Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-4BC7B3-qualify-and-document-the-0-7-9-stabilization-can/packages/agentplane/dist/cli.js",
+        "sha256": "sha256:7e5350bed65d2b6025ebea6505a9e7d5e0ad7f74a2452ca68241d27925cb7377"
+      },
+      {
+        "path": "/Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-4BC7B3-qualify-and-document-the-0-7-9-stabilization-can/packages/agentplane/dist/deferred-runtime.js",
+        "sha256": "sha256:bfcad14720fe648fb5fadd8c0c2f83b666269a5f6824529938b2615d8fb7856e"
+      },
+      {
+        "path": "/Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-4BC7B3-qualify-and-document-the-0-7-9-stabilization-can/packages/agentplane/dist/command-catalog.js",
+        "sha256": "sha256:61ef9dc0811d265b8b0c772993edc0711b8e4b6dcde6b1b4ab4013340ee1f502"
+      }
+    ],
+    "type": "agentplane_cli"
+  },
+  "schema_version": 1,
+  "source_sha": "d6d10521f776881c94de92ae293a4c7ca2012562"
+}

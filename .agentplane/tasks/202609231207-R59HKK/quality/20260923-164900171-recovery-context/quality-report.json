@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202609231207-R59HKK",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-23T16:50:29.523Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "human_review",
+  "summary": "EVALUATOR returned human_review with 1 typed finding(s).",
+  "evaluated_sha": "5c015bc1bf457c164f058e655a08ae166e65c53b",
+  "review_identity_digest": "sha256:3f04ce586c2a4792ecca2ee3e1df4f49763cb9861d48e979539290ffd8dbea2e",
+  "findings": [
+    "The frozen diff includes a canonical authority-boundary exception for blocked-plan rejection and bun.lock workspace version changes to 0.7.12-beta.1. The supplied approved scope does not authorize these changes; the previous lockfile finding remains unresolved. All evidence digests match, and the current verification record reports all three declared commands passed."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/3dc4e9b0d5ea5b9504874a43b4c97e5898c3418bbeffd93a5fa6f388a089256c.patch",
+    ".agentplane/tasks/202609231207-R59HKK/README.md",
+    ".agentplane/policy/security.must.md",
+    ".agentplane/policy/dod.core.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The blocked-plan authority exception and lockfile version changes are approved additions to the five explicitly scoped supervisor repairs."
+  ],
+  "residual_risks": [
+    "Do you approve expanding this task’s scope to include the blocked-plan rejection authority exception and the bun.lock workspace version changes to 0.7.12-beta.1?"
+  ]
+}

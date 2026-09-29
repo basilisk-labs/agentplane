@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The current source tree has no provider accounting or Bun preflight changes. scripts/lib/bun-runtime.mjs and both new measurement artifacts are absent. The recorded full CI therefore validates recovery baseline only.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609082225-ZYASFT/quality/objects/sha256/0d44750fd58007fc35b643cb5f18e96bf872e7bdd45aad6e3de96f707d7ab9a5.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Restore the 10 tracked and 4 new files from /tmp/agentplane-ZYASFT-source-backup after verifying manifest.json SHA-256 hashes. Apply /tmp/agentplane-ZYASFT-evaluator-usage.patch to the now-approved evaluator test path. Rebuild and verify the actual implementation before passing review.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609082225-ZYASFT/quality/objects/sha256/0d44750fd58007fc35b643cb5f18e96bf872e7bdd45aad6e3de96f707d7ab9a5.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Full local CI on the restored final implementation with the evaluator fixture correction."
+  ],
+  "hidden_assumptions": [
+    "Recovery baseline verification cannot establish completion of the original implementation scope."
+  ],
+  "recovery_context": "Rework is required because recovery completed without restoring the preserved implementation."
+}

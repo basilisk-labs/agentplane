@@ -9,7 +9,7 @@ export type TaskListParsed = { filters: TaskListFilters };
 export const taskListSpec: CommandSpec<TaskListParsed> = {
   id: ["task", "list"],
   group: "Task",
-  summary: "List active tasks with compact resolved blueprint route hints.",
+  summary: "List active tasks with compact workflow route hints.",
   options: [
     {
       kind: "boolean",

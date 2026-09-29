@@ -13,6 +13,7 @@ import {
   makeRunAcrSchemaHandler,
 } from "./acr.command.js";
 import { buildAcrContextExtension } from "./generate-extensions.js";
+import { summarizeAcr } from "./summary.js";
 import { CliError } from "../../shared/errors.js";
 import { getVersion } from "../../meta/version.js";
 import { readDiagnosticContext } from "../shared/diagnostics.js";
@@ -237,12 +238,33 @@ describe("acr command specs", () => {
     expect(record.agent.toolchain).toContainEqual({ name: "agentplane", version: getVersion() });
   });
 
+  it("summarizes schema-valid and legacy native identity extension keys", () => {
+    const nativeIdentity = {
+      identity: {
+        digest: "sha256:native",
+        plan: { revision: 2, digest: "sha256:plan" },
+      },
+      review_identity: { digest: "sha256:review" },
+    };
+    const current = mergeReadyRecord();
+    current.extensions = { "agentplane.native-identity": nativeIdentity };
+    const legacy = mergeReadyRecord();
+    legacy.extensions = { "agentplane.native_identity": nativeIdentity };
+
+    expect(summarizeAcr(current).native_identity).toEqual({
+      digest: "sha256:native",
+      plan_revision: 2,
+      plan_digest: "sha256:plan",
+      review_digest: "sha256:review",
+    });
+    expect(summarizeAcr(legacy).native_identity).toEqual(summarizeAcr(current).native_identity);
+  });
+
   it("adds the context ACR extension schema version while preserving context evidence", () => {
     const extension = buildAcrContextExtension({
       id: "T-CTX",
       task_kind: "context",
       mutation_scope: "context",
-      blueprint_request: "context.maximum_assimilation",
       extensions: {
         "agentplane.context": {
           mode: "maximum_assimilation",
@@ -256,7 +278,6 @@ describe("acr command specs", () => {
       task_id: "T-CTX",
       task_kind: "context",
       mutation_scope: "context",
-      blueprint_request: "context.maximum_assimilation",
       source_set: { files: [{ path: "context/raw/source.md", sha256: "sha256:abc" }] },
     });
   });

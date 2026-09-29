@@ -1,0 +1,219 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "components": [
+        "packages/agentplane/src/adapters/task-backend",
+        "packages/agentplane/src/backends",
+        "packages/agentplane/src/cli",
+        "packages/agentplane/src/commands",
+        "packages/agentplane/src/runner/usecases",
+        "packages/agentplane/src/runtime/task-routing",
+        "packages/core/src/runner",
+        "packages/core/src/tasks"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "reversible"
+      },
+      "evidence_requirements": [
+        "hosted_integration",
+        "repository_effect:repository_write",
+        "repository_effect:source_code",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        "packages/agentplane",
+        "packages/core"
+      ],
+      "changed_files": [
+        "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts",
+        "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts",
+        "packages/agentplane/src/cli/route-decision.testkit.ts",
+        "packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.task-advance.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.task-advance.testkit.ts",
+        "packages/agentplane/src/cli/run-cli.core.tasks.update-scrub.test.ts",
+        "packages/agentplane/src/commands/shared/reconcile-check.test.ts",
+        "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts",
+        "packages/agentplane/src/commands/shared/task-backend.test.ts",
+        "packages/agentplane/src/commands/shared/task-backend.ts",
+        "packages/agentplane/src/commands/shared/task-mutation.test.ts",
+        "packages/agentplane/src/commands/shared/workflow-step-branch.ts",
+        "packages/agentplane/src/commands/shared/workflow-step-common.ts",
+        "packages/agentplane/src/commands/shared/workflow-step-factory.ts",
+        "packages/agentplane/src/commands/shared/workflow-step-quality.test.ts",
+        "packages/agentplane/src/commands/shared/workflow-step-reducer.ts",
+        "packages/agentplane/src/commands/task/active.command.unit.test.ts",
+        "packages/agentplane/src/commands/task/evidence-only-rework-commit.ts",
+        "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
+        "packages/agentplane/src/commands/task/external-agent-implementation-finalization.ts",
+        "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts",
+        "packages/agentplane/src/commands/task/finish-shared.ts",
+        "packages/agentplane/src/commands/task/plan-shared.ts",
+        "packages/agentplane/src/commands/task/plan.ts",
+        "packages/agentplane/src/commands/task/shared/dependencies.ts",
+        "packages/agentplane/src/commands/task/task-centric-external-result.test.ts",
+        "packages/agentplane/src/commands/task/task-centric-external-result.ts",
+        "packages/agentplane/src/runner/usecases/kernel-authority.test.ts",
+        "packages/core/src/tasks/task-centric/compatibility.ts",
+        "packages/core/src/tasks/task-centric/index.ts",
+        "packages/core/src/tasks/task-centric/lifecycle.ts"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "full_regression",
+      "hosted_integration",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "central_component:packages/core/src/runner",
+      "central_component:packages/core/src/tasks",
+      "central_path:packages/agentplane/src/cli/route-decision.testkit.ts",
+      "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts",
+      "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.test.ts",
+      "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.testkit.ts",
+      "central_path:packages/agentplane/src/cli/run-cli.core.tasks.update-scrub.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/reconcile-check.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts",
+      "central_path:packages/agentplane/src/commands/shared/task-backend.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/task-backend.ts",
+      "central_path:packages/agentplane/src/commands/shared/task-mutation.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/workflow-step-branch.ts",
+      "central_path:packages/agentplane/src/commands/shared/workflow-step-common.ts",
+      "central_path:packages/agentplane/src/commands/shared/workflow-step-factory.ts",
+      "central_path:packages/agentplane/src/commands/shared/workflow-step-quality.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/workflow-step-reducer.ts",
+      "central_path:packages/core/src/tasks/task-centric/compatibility.ts",
+      "central_path:packages/core/src/tasks/task-centric/index.ts",
+      "central_path:packages/core/src/tasks/task-centric/lifecycle.ts"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": false,
+    "digest": "sha256:994f54c9833f92baf0115deccf6e22ca7a015dff07bd78d7688078504f04bd88"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-09-07T13:11:25.505Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202609071111-Y0Z0VQ/verification/20260907131125505-23deea5512fcdc2e.json",
+      "sha256": "sha256:1a3b31360005ee08fa7dbcce4dbf7efe84ec504b382461e5a703fa7fb8163fd6"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check a8c9ec9658011e552904f55cd21b3095d8c95896..bf53cac8d9761abf11af4926c6044460902cf3a5",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB a8c9ec9658011e552904f55cd21b3095d8c95896..bf53cac8d9761abf11af4926c6044460902cf3a5",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\t.agentplane/tasks/202609071111-Y0Z0VQ/pr/diffstat.txt",
+          "M\t.agentplane/tasks/202609071111-Y0Z0VQ/pr/github-body.md",
+          "M\t.agentplane/tasks/202609071111-Y0Z0VQ/pr/meta.json",
+          "M\t.agentplane/tasks/202609071111-Y0Z0VQ/pr/review.md",
+          "M\tpackages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts",
+          "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts",
+          "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.test.ts",
+          "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.testkit.ts",
+          "M\tpackages/agentplane/src/cli/run-cli.core.tasks.update-scrub.test.ts",
+          "M\tpackages/agentplane/src/commands/shared/reconcile-check.test.ts",
+          "M\tpackages/agentplane/src/commands/shared/task-mutation.test.ts",
+          "M\tpackages/agentplane/src/commands/shared/workflow-step-common.ts",
+          "M\tpackages/agentplane/src/commands/shared/workflow-step-factory.ts",
+          "M\tpackages/agentplane/src/commands/task/evidence-only-rework-commit.ts",
+          "M\tpackages/agentplane/src/commands/task/external-agent-implementation-recovery.ts",
+          "M\tpackages/agentplane/src/commands/task/plan-shared.ts",
+          "M\tpackages/agentplane/src/commands/task/plan.ts",
+          "M\tpackages/agentplane/src/runner/usecases/kernel-authority.test.ts"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "a8c9ec9658011e552904f55cd21b3095d8c95896",
+    "implementation_commit": "bf53cac8d9761abf11af4926c6044460902cf3a5",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [],
+      "classification": [],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202609071111-Y0Z0VQ",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202609071111-Y0Z0VQ/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202609231207-R59HKK",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-23T17:22:54.264Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "94c257a156d1356d43eaecac7a621b9e696a1d9c",
+  "review_identity_digest": "sha256:97b649444d5d6b07180598269c2bea0cc20645b0fd417b0ac06661aae73788ab",
+  "findings": [
+    "The frozen change covers the requested recovery paths. All nine evidence digests match; current persisted verification records all three required commands as passing. The previous lockfile drift is absent."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/188fb08e3857277cc5a3cf4cae71268f896fe1372e9d7b67449db7972ab279c6.patch",
+    ".agentplane/tasks/202609231207-R59HKK/verification/20260923172059611-9615ca6b14d682e8.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

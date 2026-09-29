@@ -32,14 +32,14 @@ export type TaskRunReconcileParsed = {
 export const taskRunSpec: CommandSpec<TaskRunParsed> = {
   id: ["task", "run"],
   group: "Task",
-  summary: "Supervise a direct or branch_pr task through its typed lifecycle.",
+  summary: "Execute one eligible Task Kernel semantic episode with the managed runner.",
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
   options: [
     {
       kind: "boolean",
       name: "dry-run",
       default: false,
-      description: "Prepare runner artifacts and invocation without executing the adapter.",
+      description: "Inspect the canonical next action without executing the adapter.",
     },
     {
       kind: "boolean",
@@ -74,9 +74,9 @@ export const taskRunSpec: CommandSpec<TaskRunParsed> = {
     },
   ],
   notes: [
-    "A task with only the generated planning placeholder stops at the typed PLANNER boundary without starting an implementation provider; use task advance --agent-json to hand that semantic episode to an external agent.",
-    "In direct workflow mode, this command starts an approved task, runs the EXECUTOR, records the observed receipt, and invokes the independent EVALUATOR. It stops with a typed result for approval, missing context, rework, or human review.",
-    "In branch_pr workflow mode, this command owns safe worktree/start operations, one role-scoped semantic episode, deterministic verification, EVALUATOR review, PR synchronization, integration enqueue, hosted-close, and cleanup. Provider waits and authority requests remain explicit stops.",
+    "The command consumes the same Task Kernel WorkOrder as task advance and runs at most one semantic adapter episode per invocation.",
+    "Approval, authority, provider wait, and effect-in-doubt boundaries remain explicit typed stops and never launch an adapter.",
+    "Run the command again to consume the next eligible WorkOrder after the current result has been admitted.",
     "With the default Codex adapter, the runner prompt starts with `/goal ...` and then includes the AgentPlane bundle contract.",
   ],
   parse: (raw) => ({

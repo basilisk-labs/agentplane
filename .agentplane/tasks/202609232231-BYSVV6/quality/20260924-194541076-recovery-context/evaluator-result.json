@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "human_review",
+  "findings": [
+    {
+      "id": "scope-approval-conflict",
+      "severity": "high",
+      "summary": "The frozen diff changes three scripts outside the declared writable roots: scripts/baselines/v0.7-compatibility-candidate.json, scripts/checks/check-compatibility-contract-baseline.mjs, and scripts/checks/run-pre-push-hook.mjs. The task explicitly records these authority violations. Passing verification and the general task.scope.extend capability do not establish approval of these specific changes.",
+      "broken_invariant": "Changes outside approved scope require explicit re-approval; the frozen authority permits only docs/user and packages/agentplane/src.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609232231-BYSVV6/README.md",
+          "sha256": "sha256:f074428067db936c40e085a25544fd586941c5624be5c60ea4e892f607aa0be7",
+          "line": 80,
+          "section": "execution_contract"
+        },
+        {
+          "path": ".agentplane/tasks/202609232231-BYSVV6/quality/objects/sha256/83b68085b1abe9f6bbe2f0d29f5dcd4917c2e743e564bfe2c5ed3c97cb6c5daf.patch",
+          "sha256": "sha256:83b68085b1abe9f6bbe2f0d29f5dcd4917c2e743e564bfe2c5ed3c97cb6c5daf",
+          "line": 1640
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "Material drift criteria"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The implementation treats required compatibility and pre-push script changes as implicitly authorized despite the frozen writable-root restrictions."
+  ],
+  "recovery_context": "Do you approve expanding this task’s scope to include the three scripts identified in scope-approval-conflict, including the pre-push change that excludes commits already reachable from the default base when pushing a task branch?"
+}

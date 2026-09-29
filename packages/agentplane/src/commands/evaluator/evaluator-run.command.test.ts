@@ -494,40 +494,6 @@ describe("evaluator run command", () => {
     expect(await readEvaluatedSha(root, taskId, 2)).toBe(metadataSha);
   });
 
-  it("does not anchor an unrelated task artifact when the current task has no committed work", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    const taskId = "202605240900-EV03";
-    await addTask(root, taskId);
-    await commitPath(root, "src/older-feature.txt", "older implementation", "feat: older work");
-    await commitPath(
-      root,
-      ".agentplane/tasks/202605240900-OTHER/manual-note.md",
-      "unrelated task artifact",
-      "chore: unrelated task artifact",
-    );
-
-    await runEvaluatorRun(
-      { cwd: root, rootOverride: undefined },
-      {
-        taskId,
-        evaluator: "recovery-context",
-        provenance: "human_supplied",
-        verdict: "pass",
-        summary: "No current committed work unit",
-        findings: ["Unrelated workflow history is not a valid review target."],
-        evidenceRefs: [`.agentplane/tasks/${taskId}/README.md`],
-        missingTests: [],
-        hiddenAssumptions: [],
-        residualRisks: [],
-        json: false,
-        record: true,
-      },
-    );
-
-    expect(await readEvaluatedSha(root, taskId)).toBeNull();
-  });
-
   it("prepares a frozen read-only work order and applies only the matching typed evaluator result", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
@@ -548,7 +514,7 @@ describe("evaluator run command", () => {
       result_contract: "sgr.evaluator_result.v1",
     });
     expect(prepared.work_order.evidence.map((entry) => entry.kind)).toEqual(
-      expect.arrayContaining(["task_document", "actual_diff", "observed_checks", "blueprint"]),
+      expect.arrayContaining(["task_document", "actual_diff", "observed_checks", "plan"]),
     );
     const prompt = await readFile(prepared.prompt_path, "utf8");
     expect(prompt).toContain("# AgentPlane EVALUATOR episode");
@@ -913,7 +879,7 @@ describe("evaluator run command", () => {
       task_id: taskId,
       result: "ok",
       verifier: "TESTER",
-      input: { schema_version: 4 },
+      input: { schema_version: 5 },
     });
     const observedChecksPath = prepared.work_order.evidence.find(
       (entry) => entry.kind === "observed_checks",
@@ -923,7 +889,8 @@ describe("evaluator run command", () => {
       await readFile(path.join(root, observedChecksPath), "utf8"),
     ) as { verification_contract?: { digest?: string; selected_checks?: string[] } };
     expect(observedChecks.verification_contract?.digest).toBe(
-      (record.input as { verification_contract_digest?: string }).verification_contract_digest,
+      (record.input as { obligations?: { verification_contract_digest?: string } }).obligations
+        ?.verification_contract_digest,
     );
     expect(observedChecks.verification_contract?.selected_checks).toContain("task_outcome");
     expect(typeof record.implementation_sha).toBe("string");

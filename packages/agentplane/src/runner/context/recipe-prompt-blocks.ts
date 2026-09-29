@@ -3,7 +3,12 @@ import path from "node:path";
 
 import { fileExists } from "../../cli/fs-utils.js";
 import { resolveBehavior, type BehaviorCandidate } from "../../runtime/behavior/index.js";
-import type { RunnerPromptBlock, RunnerPromptRole, RunnerRecipeContext } from "../types.js";
+import type {
+  RunnerPromptBlock,
+  RunnerPromptRole,
+  RunnerRecipeContext,
+  RunnerTaskContext,
+} from "../types.js";
 import {
   BASE_PROMPT_PRIORITIES,
   isRecord,
@@ -89,6 +94,8 @@ async function loadRecipePromptTextBlock(opts: {
 export async function collectRecipePromptBlocks(opts: {
   git_root: string;
   recipe: RunnerRecipeContext;
+  task?: RunnerTaskContext;
+  command?: string;
 }): Promise<RunnerPromptBlock[]> {
   const recipeDir = opts.recipe.recipe_dir?.trim();
   if (!recipeDir) return [];

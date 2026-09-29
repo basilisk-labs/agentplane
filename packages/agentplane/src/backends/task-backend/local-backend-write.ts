@@ -49,6 +49,7 @@ const TASK_README_MAX_BYTES = 256 * 1024 * 1024;
 export async function generateLocalTaskId(
   context: Pick<LocalBackendContext, "root">,
   opts: { length: number; attempts: number },
+  historyRoot: string | null = null,
 ): Promise<string> {
   const length = opts.length;
   if (length < 4) throw new Error(invalidLengthMessage(length, 4));
@@ -57,15 +58,17 @@ export async function generateLocalTaskId(
     length,
     attempts,
     isAvailable: async (taskId) => {
-      const readmePath = taskReadmePath(context.root, taskId);
-      try {
-        await readFile(readmePath, "utf8");
-        return false;
-      } catch (err) {
-        const code = (err as { code?: string } | null)?.code;
-        if (code === "ENOENT") return true;
-        throw err;
+      for (const root of [context.root, historyRoot].filter((entry): entry is string => !!entry)) {
+        const readmePath = taskReadmePath(root, taskId);
+        try {
+          await readFile(readmePath, "utf8");
+          return false;
+        } catch (err) {
+          const code = (err as { code?: string } | null)?.code;
+          if (code !== "ENOENT") throw err;
+        }
       }
+      return true;
     },
   });
 }

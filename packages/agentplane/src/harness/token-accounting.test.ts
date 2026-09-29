@@ -28,6 +28,30 @@ describe("harness/token-accounting", () => {
     expect(second.state.global.totalTokens).toBe(15);
   });
 
+  it("keeps absolute cache accounting idempotent across restart and partial duplicates", () => {
+    const event = (cachedInputTokens?: number, totalTokens = 15) => ({
+      threadId: "t1",
+      payload: {
+        tokenUsage: {
+          total: {
+            inputTokens: 10,
+            outputTokens: totalTokens - 10,
+            totalTokens,
+            ...(cachedInputTokens === undefined ? {} : { cachedInputTokens }),
+          },
+        },
+      },
+    });
+    const first = applyTokenUsageEvent(createTokenAccumulator(), event(7));
+    const serialized = JSON.stringify(first.state);
+    const restored = JSON.parse(serialized) as typeof first.state;
+    const duplicate = applyTokenUsageEvent(restored, event());
+    expect(duplicate.state.global).toMatchObject({ totalTokens: 15, cachedInputTokens: 7 });
+    const advancedWithoutCache = applyTokenUsageEvent(duplicate.state, event(undefined, 16));
+    expect(advancedWithoutCache.state.global.cachedInputTokens).toBeNull();
+    expect(applyTokenUsageEvent(duplicate.state, event(11)).accepted).toBe(false);
+  });
+
   it("supports codex info.total_token_usage payload", () => {
     const state = createTokenAccumulator();
     const next = applyTokenUsageEvent(state, {

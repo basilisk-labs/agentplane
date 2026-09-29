@@ -22,12 +22,7 @@ import {
 } from "./normalize.js";
 import { toStringArray } from "./strings.js";
 import type { TaskData } from "./types.js";
-import {
-  BLUEPRINT_REQUEST_VALUES,
-  MUTATION_SCOPE_VALUES,
-  RISK_FLAG_VALUES,
-  TASK_KIND_VALUES,
-} from "./domain-values.js";
+import { MUTATION_SCOPE_VALUES, RISK_FLAG_VALUES, TASK_KIND_VALUES } from "./domain-values.js";
 
 function normalizeRevision(value: unknown): number | undefined {
   return Number.isInteger(value) && Number(value) > 0 ? Number(value) : undefined;
@@ -195,6 +190,8 @@ function normalizeExecutionContract(value: unknown): TaskData["execution_contrac
       (effect) => effect !== "network_read" || !allowedExternalEffects?.includes(effect),
     ),
   );
+  const allowedCapabilities = normalizeStringList(authority.allowed_capabilities ?? []) ?? [];
+  const allowedResources = normalizeStringList(authority.allowed_resources ?? []) ?? [];
   const approvalEffects = normalizeStringList(value.safety.approval_effects);
   const requiredEvidence = normalizeStringList(value.verification.required_evidence);
   const rawVerificationContract = value.verification.contract;
@@ -300,6 +297,8 @@ function normalizeExecutionContract(value: unknown): TaskData["execution_contrac
       forbidden_external_effects: forbiddenExternalEffects as NonNullable<
         TaskData["execution_contract"]
       >["authority"]["forbidden_external_effects"],
+      allowed_capabilities: allowedCapabilities,
+      allowed_resources: allowedResources,
     },
     safety: {
       requires_worktree: value.safety.requires_worktree,
@@ -400,10 +399,6 @@ export function taskRecordToData(record: TaskRecord): TaskData {
     risk_flags: stringEnumArray<NonNullable<TaskData["risk_flags"]>[number]>(
       fm.risk_flags,
       RISK_FLAG_VALUES,
-    ),
-    blueprint_request: stringEnumValue<TaskData["blueprint_request"] & string>(
-      fm.blueprint_request,
-      BLUEPRINT_REQUEST_VALUES,
     ),
     verify: toStringArray(fm.verify),
     plan_approval: planApproval ?? undefined,

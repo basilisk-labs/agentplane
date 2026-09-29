@@ -1,19 +1,31 @@
+import {
+  buildWorkOrderContextManifest,
+  WORK_ORDER_CONTEXT_FILENAME,
+} from "../../runner/context/work-order-context.js";
 import { createHash } from "node:crypto";
 import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
 import {
   renderAgentSemanticResultSchemaJson,
-  validateAgentSemanticResultForWorkOrder,
   validateAgentWorkOrderV2,
   type AgentSemanticResult,
   type AgentWorkOrderRole,
   type AgentWorkOrderV2,
+  type SupervisorExecutionEpisodeJournal,
+  type SupervisorExecutionUsage,
 } from "@agentplaneorg/core/schemas";
 import { atomicWriteFile } from "@agentplaneorg/core/fs";
 import { gitRevParse } from "@agentplaneorg/core/git";
 
+import {
+  putEvaluatorEvidenceObject,
+  readEvaluatorEvidenceObject,
+} from "../evaluator/evaluator-evidence-store.js";
+import { readStableRegularTextNoFollow } from "../../shared/stable-file.js";
+
 import { CliError } from "../../shared/errors.js";
+import { admitSemanticResult } from "../shared/semantic-result-admission.js";
 
 export type ExternalAgentResultEnvelope = {
   schema_version: 1;
@@ -25,6 +37,28 @@ export type ExternalAgentResultEnvelope = {
   result: AgentSemanticResult;
 };
 
+type ExternalAgentObservedUsage = Partial<
+  Pick<
+    SupervisorExecutionUsage,
+    | "input_tokens"
+    | "output_tokens"
+    | "total_tokens"
+    | "visible_output_tokens"
+    | "reasoning_tokens"
+    | "cached_input_tokens"
+    | "prepared_context_bytes"
+  >
+>;
+
+type ExternalAgentHostUsageObservation = {
+  schema_version: 1;
+  observed_by: "host_transport";
+  state: "observed" | "partial" | "unavailable" | "unallocatable";
+  reason: string | null;
+  provider_usage: SupervisorExecutionEpisodeJournal["operations"][number]["provider_usage"] | null;
+  usage: ExternalAgentObservedUsage | null;
+};
+
 import type { ExternalImplementationVerificationCheckpoint } from "./external-agent-implementation-checkpoint.js";
 
 export type ExternalAgentExchange = {
@@ -32,6 +66,7 @@ export type ExternalAgentExchange = {
   kind: "external_agent_exchange";
   status: "prepared" | "issued" | "result_received" | "accepted" | "consumed" | "retired";
   issue_digest_version?: 2;
+  result_format?: "semantic_payload_v1";
   task_id: string;
   transition_id: string;
   state_fingerprint: string;
@@ -41,6 +76,7 @@ export type ExternalAgentExchange = {
   work_order_id: string;
   work_order_ref: string;
   result_schema_ref: string;
+  result_schema_object?: Awaited<ReturnType<typeof putEvaluatorEvidenceObject>>;
   result_ref: string;
   evaluator_work_order_ref: string | null;
   baseline: {
@@ -52,9 +88,90 @@ export type ExternalAgentExchange = {
   result: ExternalAgentResultEnvelope | null;
   postcondition_fingerprint: string | null;
   verification_checkpoint?: ExternalImplementationVerificationCheckpoint;
+  host_usage?: ExternalAgentHostUsageObservation;
   created_at: string;
   updated_at: string;
 };
+
+const EXTERNAL_USAGE_FIELDS = [
+  "input_tokens",
+  "output_tokens",
+  "total_tokens",
+  "visible_output_tokens",
+  "reasoning_tokens",
+  "cached_input_tokens",
+  "prepared_context_bytes",
+] as const;
+
+function validOptionalIdentity(value: unknown): value is string | null {
+  return value === null || (typeof value === "string" && value.trim().length > 0);
+}
+
+export function externalAgentUsageAccounting(opts: { exchange: ExternalAgentExchange }): {
+  usage: ExternalAgentObservedUsage;
+  provider_usage?: SupervisorExecutionEpisodeJournal["operations"][number]["provider_usage"];
+  usage_attribution: NonNullable<
+    SupervisorExecutionEpisodeJournal["operations"][number]["usage_attribution"]
+  >;
+} {
+  const observation = opts.exchange.host_usage;
+  if (!observation) {
+    return {
+      usage: {},
+      usage_attribution: {
+        state: "unavailable",
+        reason: "legacy_external_host_usage_unavailable",
+      },
+    };
+  }
+  const provider = observation.provider_usage;
+  const usage = observation.usage;
+  const validProvider =
+    provider === null ||
+    (typeof provider?.provider === "string" &&
+      provider.provider.trim().length > 0 &&
+      typeof provider.run_id === "string" &&
+      provider.run_id.trim().length > 0 &&
+      provider.work_order_id === opts.exchange.work_order_id &&
+      validOptionalIdentity(provider.thread_id) &&
+      validOptionalIdentity(provider.turn_id));
+  const validUsage =
+    usage === null ||
+    (Object.keys(usage).every((key) =>
+      EXTERNAL_USAGE_FIELDS.includes(key as (typeof EXTERNAL_USAGE_FIELDS)[number]),
+    ) &&
+      Object.values(usage).every((value) => Number.isSafeInteger(value) && Number(value) >= 0));
+  const observedTrio =
+    usage !== null &&
+    Number.isSafeInteger(usage.input_tokens) &&
+    Number.isSafeInteger(usage.output_tokens) &&
+    Number.isSafeInteger(usage.total_tokens);
+  const hasUsage = usage !== null && Object.keys(usage).length > 0;
+  const validState =
+    (observation.state === "observed" && provider !== null && observedTrio) ||
+    (observation.state === "partial" && provider !== null && hasUsage && !observedTrio) ||
+    ((observation.state === "unavailable" || observation.state === "unallocatable") &&
+      usage === null);
+  if (
+    observation.schema_version !== 1 ||
+    observation.observed_by !== "host_transport" ||
+    !validProvider ||
+    !validUsage ||
+    !validState ||
+    (observation.reason !== null &&
+      (typeof observation.reason !== "string" || observation.reason.trim().length === 0))
+  ) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: "External-agent host usage observation is invalid or does not match the exchange.",
+    });
+  }
+  return {
+    usage: usage ?? {},
+    ...(provider ? { provider_usage: provider } : {}),
+    usage_attribution: { state: observation.state, reason: observation.reason },
+  };
+}
 
 export type ExternalAgentExchangePaths = {
   directory: string;
@@ -65,7 +182,7 @@ export type ExternalAgentExchangePaths = {
   result: string;
 };
 
-function sha256(value: string): string {
+export function externalAgentExchangeDigest(value: string): string {
   return `sha256:${createHash("sha256").update(value, "utf8").digest("hex")}`;
 }
 
@@ -128,12 +245,40 @@ export async function resolveExternalAgentExchangePaths(opts: {
 export async function readExternalAgentExchange(
   filePath: string,
 ): Promise<ExternalAgentExchange | null> {
+  let exchange: ExternalAgentExchange;
   try {
-    return JSON.parse(await readFile(filePath, "utf8")) as ExternalAgentExchange;
+    exchange = JSON.parse(
+      await readStableRegularTextNoFollow(filePath, "external exchange"),
+    ) as ExternalAgentExchange;
   } catch (error) {
     if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return null;
     throw error;
   }
+  if (exchange.result_schema_object)
+    await validateExternalSchemaObject(path.dirname(filePath), exchange);
+  return exchange;
+}
+
+function externalSchemaRoot(directory: string): string {
+  return path.resolve(directory, "../../..");
+}
+
+async function validateExternalSchemaObject(
+  directory: string,
+  exchange: ExternalAgentExchange,
+): Promise<void> {
+  const root = externalSchemaRoot(directory);
+  const { artifact } = await readEvaluatorEvidenceObject({
+    gitRoot: root,
+    objectRoot: "schemas/objects",
+    artifact: exchange.result_schema_object,
+  });
+  if (
+    artifact.kind !== "result_schema" ||
+    artifact.logical_name !== "external-result-schema" ||
+    path.resolve(exchange.result_schema_ref) !== path.join(root, artifact.path)
+  )
+    throw new Error("External result schema object does not match the exchange identity.");
 }
 
 export async function writeExternalAgentExchange(
@@ -183,26 +328,61 @@ export async function persistExternalAgentExchangeArtifacts(opts: {
   paths: ExternalAgentExchangePaths;
   work_order: AgentWorkOrderV2;
   exchange: ExternalAgentExchange;
-}): Promise<void> {
+}): Promise<ExternalAgentExchange> {
   await mkdir(opts.paths.directory, { recursive: true, mode: 0o700 });
-  await Promise.all([
-    atomicWriteFile(
-      opts.paths.work_order,
-      `${JSON.stringify(validateAgentWorkOrderV2(opts.work_order), null, 2)}\n`,
-      "utf8",
-    ),
-    atomicWriteFile(
+  await atomicWriteFile(
+    opts.paths.work_order,
+    `${JSON.stringify(validateAgentWorkOrderV2(opts.work_order), null, 2)}\n`,
+    "utf8",
+  );
+  await atomicWriteFile(
+    path.join(opts.paths.directory, WORK_ORDER_CONTEXT_FILENAME),
+    `${JSON.stringify(buildWorkOrderContextManifest(opts.work_order, opts.paths.work_order), null, 2)}\n`,
+    "utf8",
+  );
+  let exchange = opts.exchange;
+  let historical = false;
+  try {
+    await readStableRegularTextNoFollow(
+      opts.paths.result_schema,
+      "historical external result schema",
+    );
+    historical = true;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+  }
+  if (!historical && exchange.result_format === "semantic_payload_v1") {
+    const root = externalSchemaRoot(opts.paths.directory);
+    const artifact = await putEvaluatorEvidenceObject({
+      gitRoot: root,
+      taskQualityRoot: path.join(root, "schemas"),
+      logicalName: "external-result-schema",
+      kind: "result_schema",
+      extension: ".json",
+      mediaType: "application/schema+json",
+      contents: renderAgentSemanticResultSchemaJson({ role: opts.work_order.role }),
+    });
+    exchange = {
+      ...exchange,
+      result_schema_ref: path.join(root, artifact.path),
+      result_schema_object: artifact,
+    };
+    await validateExternalSchemaObject(opts.paths.directory, exchange);
+  } else if (!historical) {
+    await atomicWriteFile(
       opts.paths.result_schema,
       `${JSON.stringify(resultEnvelopeSchema(), null, 2)}\n`,
       "utf8",
-    ),
-    atomicWriteFile(
+    );
+    await atomicWriteFile(
       opts.paths.semantic_result_schema,
       renderAgentSemanticResultSchemaJson(),
       "utf8",
-    ),
-  ]);
-  await writeExternalAgentExchange(opts.paths.exchange, opts.exchange);
+    );
+  }
+  // Publish the exchange only after the immutable schema object is readable.
+  await writeExternalAgentExchange(opts.paths.exchange, exchange);
+  return exchange;
 }
 
 function exactKeys(value: Record<string, unknown>, expected: readonly string[]): boolean {
@@ -222,8 +402,10 @@ export function validateExternalAgentResultEnvelope(opts: {
     });
   }
   const raw = opts.raw as Record<string, unknown>;
+  const compact = opts.exchange.result_format === "semantic_payload_v1" && raw.kind === undefined;
   if (
-    !exactKeys(raw, [
+    !compact &&
+    (!exactKeys(raw, [
       "kind",
       "result",
       "role",
@@ -232,8 +414,8 @@ export function validateExternalAgentResultEnvelope(opts: {
       "task_id",
       "transition_id",
     ]) ||
-    raw.schema_version !== 1 ||
-    raw.kind !== "agent_action_result"
+      raw.schema_version !== 1 ||
+      raw.kind !== "agent_action_result")
   ) {
     throw new CliError({
       code: "E_VALIDATION",
@@ -246,7 +428,7 @@ export function validateExternalAgentResultEnvelope(opts: {
     ["state_fingerprint", opts.exchange.state_fingerprint],
     ["role", opts.exchange.role],
   ] as const) {
-    if (raw[field] !== expected) {
+    if (!compact && raw[field] !== expected) {
       throw new CliError({
         code: "E_VALIDATION",
         message: `External-agent result ${field} does not match the issued exchange.`,
@@ -255,10 +437,16 @@ export function validateExternalAgentResultEnvelope(opts: {
   }
   let result: AgentSemanticResult;
   try {
-    result = validateAgentSemanticResultForWorkOrder({
+    result = admitSemanticResult({
+      owner: {
+        task_id: opts.exchange.task_id,
+        work_order_id: opts.exchange.work_order_id,
+        role: opts.exchange.role,
+      },
       work_order: opts.work_order,
-      semantic_result: raw.result,
-    });
+      result: compact ? raw : raw.result,
+      ...(compact ? { format: "semantic_payload_v1" } : {}),
+    }).result;
   } catch (error) {
     throw new CliError({
       code: "E_VALIDATION",
@@ -279,7 +467,7 @@ export function validateExternalAgentResultEnvelope(opts: {
 }
 
 export function externalAgentResultDigest(result: ExternalAgentResultEnvelope): string {
-  return sha256(JSON.stringify(result));
+  return externalAgentExchangeDigest(JSON.stringify(result));
 }
 
 export function externalAgentIssueDigest(opts: {
@@ -299,12 +487,16 @@ export function externalAgentIssueDigest(opts: {
     work_order_id: exchange.work_order_id,
     work_order_ref: exchange.work_order_ref,
     result_schema_ref: exchange.result_schema_ref,
+    ...(exchange.result_schema_object
+      ? { result_schema_object: exchange.result_schema_object }
+      : {}),
     result_ref: exchange.result_ref,
     evaluator_work_order_ref: exchange.evaluator_work_order_ref,
     baseline: exchange.baseline,
     work_order: validateAgentWorkOrderV2(opts.work_order),
+    ...(exchange.result_format ? { result_format: exchange.result_format } : {}),
   };
-  return sha256(
+  return externalAgentExchangeDigest(
     JSON.stringify(
       exchange.issue_digest_version === 2
         ? { ...identity, issue_digest_version: 2 }

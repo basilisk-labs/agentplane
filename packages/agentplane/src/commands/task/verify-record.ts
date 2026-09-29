@@ -139,6 +139,7 @@ export async function cmdVerifyParsed(opts: {
   quiet: boolean;
   verificationSnapshot?: VerificationSnapshot;
   beforePersist?: PreparedTaskMutationObserver;
+  allowCanonicalProjection?: boolean;
 }): Promise<number> {
   return await executeVerifyRecordCommand({
     ...opts,

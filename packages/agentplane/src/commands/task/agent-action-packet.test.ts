@@ -1,3 +1,4 @@
+import { buildAgentWorkOrderV2ValidFixture } from "@agentplaneorg/core/schemas";
 import { describe, expect, it } from "vitest";
 
 import { computePlanDigest } from "@agentplaneorg/core/tasks";
@@ -54,9 +55,11 @@ function decision(workflowStep: WorkflowStep): TaskRouteDecision {
 }
 
 function workOrder() {
+  const fixture = buildAgentWorkOrderV2ValidFixture("packet");
   return {
+    ...fixture,
     role: "EXECUTOR",
-    authority: { sandbox: "workspace-write", network: "deny" },
+    authority: { ...fixture.authority, sandbox: "workspace-write", network: "deny" },
     required_inputs: [
       {
         id: "task-document",
@@ -205,6 +208,7 @@ describe("compact agent action packet", () => {
             plan_digest: computePlanDigest("Approved plan"),
             state_fingerprint: FINGERPRINT,
             decision: "approved",
+            required_fields: ["host_id", "conversation_id", "message_id", "decided_at"],
           },
         },
       });
@@ -453,4 +457,56 @@ describe("compact agent action packet", () => {
       "Agent action packet leaked formal lifecycle choreography.",
     );
   });
+});
+
+it.each([
+  "planning",
+  "implementation",
+  "implementation_rework",
+  "quality_review",
+  "verification",
+  "task_worktree_resolution",
+] as const)("delivers the language contract for the external %s episode", (purpose) => {
+  const packet = buildAgentActionPacket({
+    decision: decision(
+      step({
+        kind: "agent_episode",
+        episode: {
+          purpose,
+          role: "CODER",
+          taskId: TASK_ID,
+          objective: "Preserve Пример --flag=exact.",
+        },
+      }),
+    ),
+    work_order: workOrder(),
+  });
+  expect(packet.action.instruction).toContain("simple technical English");
+  expect(packet.action.instruction).toContain(
+    "Write one action, condition, or constraint in each sentence.",
+  );
+  expect(packet.action.instruction).toContain(
+    "Preserve commands, paths, identifiers, enum values, quoted text, user input, logs, and source evidence exactly.",
+  );
+  expect(packet.authority.network).toBe("deny");
+  expect(packet.stop.reason).toBe("semantic_boundary");
+});
+
+it("preserves the language contract on the managed-runner continuation route", () => {
+  const packet = buildAgentActionPacket({
+    decision: decision(
+      step({
+        kind: "cli_operation",
+        operation: { id: "runner.follow", params: { mode: "run" } },
+      }),
+    ),
+    work_order: workOrder(),
+  });
+  expect(packet.action.kind).toBe("agent_episode");
+  expect(packet.action.instruction).toContain("simple technical English");
+  expect(packet.action.instruction).toContain(
+    "Preserve commands, paths, identifiers, enum values, quoted text, user input, logs, and source evidence exactly.",
+  );
+  expect(packet.authority.network).toBe("deny");
+  expect(packet.stop).toEqual({ reason: "semantic_boundary", resume: "request_fresh_packet" });
 });

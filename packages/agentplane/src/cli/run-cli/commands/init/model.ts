@@ -40,7 +40,6 @@ export type InitFlags = {
   strictUnsafeConfirm?: boolean;
   compatibilityWarnings?: string[];
   recipes?: string[];
-  blueprints?: string[];
   force?: boolean;
   backup?: boolean;
   dryRun?: boolean;
@@ -65,7 +64,6 @@ export type InitDefaults = {
   executionProfile: ExecutionProfile;
   evaluatorSkepticism: EvaluatorSkepticismLevel;
   strictUnsafeConfirm: boolean;
-  blueprints: string[];
   runnerProfile: InitRunnerProfile;
 };
 
@@ -79,8 +77,7 @@ type InitEffectKind =
   | "git_commit"
   | "install_hooks"
   | "sync_ide"
-  | "vendor_recipe"
-  | "install_blueprint";
+  | "vendor_recipe";
 
 type InitEffectRisk = "none" | "low" | "medium" | "high";
 
@@ -116,7 +113,6 @@ export type InitPlan = {
     evaluatorSkepticism: EvaluatorSkepticismLevel;
     strictUnsafeConfirm: boolean;
     recipes: string[];
-    blueprints: string[];
     runnerProfile: InitRunnerProfile;
   };
   context: {

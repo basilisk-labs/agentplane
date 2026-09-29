@@ -1,0 +1,212 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bunx --no-install vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts packages/agentplane/src/commands/task/agent-action-packet.test.ts packages/agentplane/src/agents/agents-template.test.ts --maxWorkers=2",
+    "bun run typecheck"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "components": [
+        ".agentplane/agents/PLANNER.json",
+        "packages/agentplane/assets/agents/PLANNER.json",
+        "packages/agentplane/src/agents/agents-template.test.ts",
+        "packages/agentplane/src/commands/task/agent-action-packet.test.ts",
+        "packages/agentplane/src/commands/task/agent-action-packet.ts",
+        "packages/agentplane/src/runner/context/base-prompts.test.ts",
+        "packages/agentplane/src/runner/context/semantic-prompt-projection.ts",
+        "packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts",
+        "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "reversible"
+      },
+      "evidence_requirements": [
+        "hosted_integration",
+        "repository_effect:repository_write",
+        "repository_effect:source_code",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        ".agentplane",
+        "packages/agentplane"
+      ],
+      "changed_files": [
+        ".agentplane/agents/PLANNER.json",
+        "packages/agentplane/assets/agents/PLANNER.json",
+        "packages/agentplane/src/agents/agents-template.test.ts",
+        "packages/agentplane/src/commands/task/agent-action-packet.test.ts",
+        "packages/agentplane/src/commands/task/agent-action-packet.ts",
+        "packages/agentplane/src/runner/context/base-prompts.test.ts",
+        "packages/agentplane/src/runner/context/semantic-prompt-projection.ts",
+        "packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts",
+        "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "full_regression",
+      "hosted_integration",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "unknown_path:.agentplane/agents/PLANNER.json",
+      "unknown_path:packages/agentplane/assets/agents/PLANNER.json"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": false,
+    "digest": "sha256:a7c05d44e9eb8ff3926a934360639469a1512b87ad71679ed6a2e20a2b8bfc34"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-09-07T14:03:52.599Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202609071219-QV0SX9/verification/20260907140352599-f941cbc14f16da04.json",
+      "sha256": "sha256:adad5f940f78688fe97a9dc40af332e01ae5095c08e7932b539124cae7699f4f"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check b010b904ce131e171ea19346f91334b32d5de8a0..b847aa915f64886905be06ccfb30e37544f35d25",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB b010b904ce131e171ea19346f91334b32d5de8a0..b847aa915f64886905be06ccfb30e37544f35d25",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\t.agentplane/tasks/202609071219-QV0SX9/README.md",
+          "M\t.agentplane/tasks/202609071219-QV0SX9/pr/diffstat.txt",
+          "M\t.agentplane/tasks/202609071219-QV0SX9/pr/github-body.md",
+          "M\t.agentplane/tasks/202609071219-QV0SX9/pr/meta.json",
+          "M\t.agentplane/tasks/202609071219-QV0SX9/pr/review.md",
+          "M\t.agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json",
+          "A\t.agentplane/tasks/202609071219-QV0SX9/verification/20260907135348547-06f98b2879c9fc5e.json",
+          "M\tpackages/agentplane/src/runner/usecases/task-run-bootstrap.ts"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "b010b904ce131e171ea19346f91334b32d5de8a0",
+    "implementation_commit": "b847aa915f64886905be06ccfb30e37544f35d25",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [
+        " M .agentplane/tasks/202609071219-QV0SX9/README.md",
+        " M .agentplane/tasks/202609071219-QV0SX9/pr/github-body.md",
+        " M .agentplane/tasks/202609071219-QV0SX9/pr/meta.json",
+        " M .agentplane/tasks/202609071219-QV0SX9/pr/review.md",
+        " M .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json",
+        "?? .agentplane/tasks/202609071219-QV0SX9/verification/20260907135348547-06f98b2879c9fc5e.json"
+      ],
+      "classification": [
+        {
+          "classification": "removed_during_execution",
+          "line": " M .agentplane/tasks/202609071219-QV0SX9/README.md"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M .agentplane/tasks/202609071219-QV0SX9/pr/github-body.md"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M .agentplane/tasks/202609071219-QV0SX9/pr/meta.json"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M .agentplane/tasks/202609071219-QV0SX9/pr/review.md"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202609071219-QV0SX9/verification/20260907135348547-06f98b2879c9fc5e.json"
+        }
+      ],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [
+        " M .agentplane/tasks/202609071219-QV0SX9/README.md",
+        " M .agentplane/tasks/202609071219-QV0SX9/pr/github-body.md",
+        " M .agentplane/tasks/202609071219-QV0SX9/pr/meta.json",
+        " M .agentplane/tasks/202609071219-QV0SX9/pr/review.md",
+        " M .agentplane/tasks/202609071219-QV0SX9/supervision/declared-checks.json",
+        "?? .agentplane/tasks/202609071219-QV0SX9/verification/20260907135348547-06f98b2879c9fc5e.json"
+      ],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202609071219-QV0SX9",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202609071219-QV0SX9/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

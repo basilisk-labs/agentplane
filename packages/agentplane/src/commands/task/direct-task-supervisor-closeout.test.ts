@@ -2,16 +2,14 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type * as DirectTaskVerificationModule from "./direct-task-verification.js";
 
 const mocks = vi.hoisted(() => ({
-  finish: vi.fn(),
+  finalizeOperation: vi.fn(),
   formalOperation: vi.fn(),
-  resolveCommit: vi.fn(),
   runChecks: vi.fn(),
   verify: vi.fn(),
 }));
 
 vi.mock("./direct-task-finalization.js", () => ({
-  finishDirectTask: mocks.finish,
-  resolveDirectImplementationCommit: mocks.resolveCommit,
+  runDirectTaskFinalizationOperation: mocks.finalizeOperation,
 }));
 vi.mock("./direct-task-supervisor-formal-operation.js", () => ({
   recordDirectTaskFormalOperation: mocks.formalOperation,
@@ -207,7 +205,7 @@ describe("direct task supervisor closeout", () => {
     expect(verifyArgs.details).toEqual(expect.stringContaining("Command: bun run test:critical"));
   });
 
-  it("stops after verification and before finish when committed EXECUTOR paths exceed work-order authority", async () => {
+  it("finishes with the implementation identity frozen before verification", async () => {
     mocks.runChecks.mockResolvedValue({
       status: "passed",
       checks: [{ command: "bun run test:critical", exit_code: 0 }],
@@ -218,10 +216,13 @@ describe("direct task supervisor closeout", () => {
       journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
       decision: completion,
     });
-    mocks.resolveCommit.mockResolvedValue({
-      status: "scope_violation",
-      paths: ["README.md"],
-      reason: "The EXECUTOR committed paths outside its approved scope: README.md.",
+    mocks.finalizeOperation.mockResolvedValue({
+      journal,
+      journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
+      decision: {
+        task: { status: "DONE" },
+        workflowStep: { id: "task.done" },
+      },
     });
 
     const result = await closeDirectTask({
@@ -239,19 +240,13 @@ describe("direct task supervisor closeout", () => {
         receipt_path: `.agentplane/tasks/${TASK_ID}/quality/receipt.json`,
       },
       decision: vi.fn().mockResolvedValueOnce(verificationRoute).mockResolvedValue(completion),
-      execution_base_commit: "abc123",
-      allowed_paths: ["packages/agentplane/src/commands/task"],
-      observed_changed_paths: ["packages/agentplane/src/commands/task/direct-task-supervisor.ts"],
+      implementation_commit: "def456",
       journal: { journal, journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json" },
     });
 
-    expect(result).toMatchObject({
-      status: "stopped",
-      stop: { code: "implementation_scope_violation" },
-    });
-    expect(mocks.resolveCommit).toHaveBeenCalledWith(
-      expect.objectContaining({ allowed_paths: ["packages/agentplane/src/commands/task"] }),
+    expect(result).toMatchObject({ status: "finalized" });
+    expect(mocks.finalizeOperation).toHaveBeenCalledWith(
+      expect.objectContaining({ implementation_commit: "def456" }),
     );
-    expect(mocks.finish).not.toHaveBeenCalled();
   });
 });

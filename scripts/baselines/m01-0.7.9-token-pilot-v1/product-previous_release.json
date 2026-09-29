@@ -1,0 +1,22 @@
+{
+  "arm": "previous_release",
+  "kind": "agentplane.m01_product_artifact",
+  "runtime": {
+    "package_archive": {
+      "path": "/Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-4BC7B3-qualify-and-document-the-0-7-9-stabilization-can/scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/agentplane.tgz",
+      "sha256": "sha256:112c35fa9c1eff22c0ce6166b08134be564f867d86d1ecdd4fc7fc2615bfd5cb"
+    },
+    "package_json": {
+      "path": "/Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-4BC7B3-qualify-and-document-the-0-7-9-stabilization-can/scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package.json",
+      "sha256": "sha256:68f95638fa1ee8657db5575f7ba07794653db9652e76e0e3f427765500024701"
+    },
+    "package_lock": {
+      "path": "/Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121424-4BC7B3-qualify-and-document-the-0-7-9-stabilization-can/scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package-lock.json",
+      "sha256": "sha256:9159b59e440ead03038286d70f31955f1fe36920d2c1c95e17612236ea1bb20b"
+    },
+    "type": "npm_package",
+    "version": "0.7.8"
+  },
+  "schema_version": 1,
+  "source_sha": "81b3fe507426d82ea903d7a63fd6335b583d81b5"
+}

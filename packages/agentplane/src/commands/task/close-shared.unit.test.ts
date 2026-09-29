@@ -96,6 +96,8 @@ describe("task close-shared helper (unit)", () => {
           schema_version: 1,
           state: "unavailable",
           input_tokens: null,
+          cached_input_tokens: null,
+          cached_input_observed_agent_runs: 0,
           output_tokens: null,
           reasoning_tokens: null,
           total_tokens: null,

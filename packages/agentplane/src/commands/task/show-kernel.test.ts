@@ -10,18 +10,22 @@ import {
   makeKernelRecord,
   TASK_KERNEL_EXTENSION,
 } from "../../adapters/task-backend/kernel-record.js";
-import { cmdTaskShow } from "./show.js";
+import { cmdTaskShow, projectKernelExecutionContract } from "./show.js";
 import { makeRunTaskStatusHandler } from "./status.command.js";
 import { makeRunTaskBriefHandler } from "./brief.command.js";
 import { makeRunTaskNextActionHandler } from "./next-action.command.js";
 import { cmdReady } from "./ready.js";
 import { readTaskKernel, projectTaskKernelRead } from "./kernel-read.js";
 import { CliError } from "../../shared/errors.js";
+import { KERNEL_OPERATIONAL_PROJECTION } from "./kernel-operational-projection.js";
 
 const mocks = vi.hoisted(() => ({ load: vi.fn(), identity: vi.fn() }));
 vi.mock("../shared/task-backend.js", () => ({ loadTaskFromContext: mocks.load }));
 vi.mock("./execution-authority-context.js", () => ({
   resolveLogicalRepositoryIdentity: mocks.identity,
+}));
+vi.mock("./kernel-planning-view.js", () => ({
+  projectKernelPlanning: () => Promise.resolve({ requirement: "required", outcome: "missing" }),
 }));
 afterEach(() => vi.restoreAllMocks());
 
@@ -43,13 +47,123 @@ function capturedTask() {
     migration_receipts: [],
   };
   return makeTaskFixture({
-    status: "DONE",
+    status: "TODO",
     depends_on: ["LEGACY-MISSING"],
     extensions: { [TASK_KERNEL_EXTENSION]: makeKernelRecord(identity, aggregate, []) },
   });
 }
 
 describe("task show canonical projection", () => {
+  it("projects execution effects from the approved canonical plan", () => {
+    const contract = projectKernelExecutionContract(
+      {
+        execution_contract: {
+          declaration: {
+            scope_roots: [],
+            repository_effects: [],
+            external_effects: ["legacy-effect"],
+          },
+        },
+      } as never,
+      {
+        current_plan: {
+          work_items: [
+            {
+              execution_requirements: {
+                scope_roots: ["src", "test"],
+                repository_effects: ["source_code", "tests"],
+                external_effects: [],
+              },
+            },
+            {
+              execution_requirements: {
+                scope_roots: ["docs", "src"],
+                repository_effects: ["documentation", "source_code"],
+                external_effects: [],
+              },
+            },
+          ],
+        },
+      } as never,
+    );
+
+    expect(contract?.declaration).toMatchObject({
+      scope_roots: ["docs", "src", "test"],
+      repository_effects: ["documentation", "source_code", "tests"],
+      external_effects: [],
+    });
+  });
+
+  it("exposes validated operational evidence without replacing canonical state", async () => {
+    const task = capturedTask();
+    const projectionContents = {
+      schema_version: 1 as const,
+      source: "task_kernel" as const,
+      work_order_id: taskKernel.kernelDigest("order"),
+      implementation_commit: "a".repeat(40),
+      implementation_tree: "b".repeat(40),
+      verification_evidence_digest: taskKernel.kernelDigest("verification"),
+      review_identity_digest: taskKernel.kernelDigest("review"),
+      evidence_refs: ["quality-report.json"],
+      findings: ["Reviewed"],
+      projected_at: "2026-09-18T00:00:00.000Z",
+    };
+    task.commit = {
+      hash: projectionContents.implementation_commit,
+      message: "Canonical implementation",
+    };
+    task.verification = { state: "ok", attempts: 1 };
+    task.quality_review = {
+      state: "pass",
+      provenance: "evaluator_supplied",
+      evaluated_sha: projectionContents.implementation_commit,
+    };
+    task.execution_route = { selected_mode: "direct" } as never;
+    task.execution_contract = {
+      declaration: {
+        repository_effects: ["source_code", "tests", "documentation"],
+        external_effects: [],
+      },
+    } as never;
+    task.extensions = {
+      ...task.extensions,
+      [KERNEL_OPERATIONAL_PROJECTION]: {
+        ...projectionContents,
+        digest: taskKernel.kernelDigest(projectionContents),
+      },
+    };
+    mocks.identity.mockResolvedValue(identity);
+    mocks.load.mockResolvedValue(task);
+    const stdout = vi.spyOn(process.stdout, "write").mockReturnValue(true);
+
+    expect(
+      await cmdTaskShow({
+        ctx: makeTaskCommandContext({
+          taskBackend: makeTaskBackendDouble({ getTask: () => Promise.resolve(task) }),
+        }),
+        cwd: "/repo",
+        taskId: "T-1",
+      }),
+    ).toBe(0);
+    const shown: unknown = JSON.parse(stdout.mock.calls.map(([value]) => String(value)).join(""));
+
+    expect(shown).toMatchObject({
+      source: "task_kernel",
+      state: "PLANNING",
+      commit: { hash: projectionContents.implementation_commit },
+      verification: { state: "ok" },
+      quality_review: { state: "pass" },
+      execution_route: { selected_mode: "direct" },
+      execution_contract: {
+        declaration: {
+          repository_effects: ["source_code", "tests", "documentation"],
+          external_effects: [],
+        },
+      },
+      operational_evidence: { implementation_commit: projectionContents.implementation_commit },
+    });
+  });
+
   it("uses the same read projection for status, brief, next-action and readiness", async () => {
     const task = capturedTask();
     mocks.identity.mockResolvedValue(identity);
@@ -141,7 +255,7 @@ describe("task show canonical projection", () => {
     mocks.load.mockRejectedValue(new Error("backend inaccessible"));
     await expect(readTaskKernel(ctx, "T-1")).rejects.toThrow("backend inaccessible");
   });
-  it("ignores a contradictory legacy status and rejects corrupted canonical records", async () => {
+  it("rejects contradictory outer status and corrupted canonical records", async () => {
     const identity = taskKernel.kernelDigest("repository");
     const aggregate: taskKernel.TaskAggregate = {
       schema_version: 1,
@@ -170,12 +284,7 @@ describe("task show canonical projection", () => {
     const stdout = vi.spyOn(process.stdout, "write").mockReturnValue(true);
     await expect(
       cmdTaskShow({ ctx, cwd: ctx.resolvedProject.gitRoot, taskId: "T-1" }),
-    ).resolves.toBe(0);
-    expect(JSON.parse(String(stdout.mock.calls[0]?.[0]))).toMatchObject({
-      source: "task_kernel",
-      state: "PLANNING",
-      status: "TODO",
-    });
+    ).rejects.toMatchObject({ code: "E_VALIDATION" });
     mocks.load.mockResolvedValue({
       ...fixture,
       extensions: {
@@ -185,6 +294,6 @@ describe("task show canonical projection", () => {
     await expect(
       cmdTaskShow({ ctx, cwd: ctx.resolvedProject.gitRoot, taskId: "T-1" }),
     ).rejects.toMatchObject({ code: "E_VALIDATION" });
-    expect(stdout).toHaveBeenCalledTimes(1);
+    expect(stdout).not.toHaveBeenCalled();
   });
 });

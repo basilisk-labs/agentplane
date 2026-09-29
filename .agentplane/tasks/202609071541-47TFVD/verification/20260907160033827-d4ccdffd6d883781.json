@@ -1,0 +1,117 @@
+{
+  "details": "Command: bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609071541-47TFVD declared verification\n\nCommand: bun run ci:local:full\nResult: fail\nEvidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609071541-47TFVD declared verification",
+  "digest": "sha256:d4ccdffd6d88378174a00bcb35759ee4c368acf10480f3c0f49a78467ba2e24f",
+  "implementation_sha": "9c36ce1c6ca523ce06c4c13771cac41f5e2e5b41",
+  "input": {
+    "context": {
+      "digest": "sha256:c59f15672b9a3b8d43130b18b274b5e3c58c5b4b87fe53a644febc8ff3e09663",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:9624a0006bdee1df74617fbcf82e73e9c574f5b1c17262eb423c49910baecc80",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:84b2649e85515f085c5dc697f4f82a4f0da669a3fd4f428234fbba7e6a3bc004",
+      "digest": "sha256:ad7326f43cc974700210eb5012cb2e0352bf3a6fb1afa36259d1557f20cdf35c",
+      "references": [
+        {
+          "digest": "sha256:86d2032cdbe6a9194de817c80f885b01f073397e997d229ad9caf5b829087b8d",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:86d2032cdbe6a9194de817c80f885b01f073397e997d229ad9caf5b829087b8d",
+          "fragment": "check-2",
+          "path": ".agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-2",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "92efd467a7b045e7e784597168ac21bd41a975a1",
+      "digest": "sha256:19e5cc07b9aad88bd1a57ef6d557d7e2863afbaf370f9bd5db2f52c8abd68455",
+      "primary_task_id": "202609071541-47TFVD",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "effect_security_boundary",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "auto",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609071541-47TFVD"
+      ]
+    },
+    "implementation": {
+      "base_sha": "92efd467a7b045e7e784597168ac21bd41a975a1",
+      "digest": "sha256:08e20b8997d2dfc4792710e1b77f6b933f1757160de9b10408bec91aeb0ff114",
+      "strategy": "branch_diff",
+      "target_sha": "9c36ce1c6ca523ce06c4c13771cac41f5e2e5b41"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:969f43c02b99032aac9c49eeb0b3b3ac4520b706773317fbb3f6117f0d0567ff",
+    "verify_steps_digest": "sha256:0a82ecb89dd2e7a7be989bfecded0cdb23b3f3830de95d17fa119985d909c620"
+  },
+  "kind": "task_verification_record",
+  "note": "Rework: Declared check failed: bun run ci:local:full",
+  "recorded_at": "2026-09-07T16:00:33.827Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "Run bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts. Expect approved CI scope to pass and unapproved CI scope to fail. Run git diff --check. Review that other protected path permissions remain denied.",
+  "scope_digest": "sha256:0a82ecb89dd2e7a7be989bfecded0cdb23b3f3830de95d17fa119985d909c620",
+  "task_id": "202609071541-47TFVD",
+  "verification_command": "agentplane verify 202609071541-47TFVD --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

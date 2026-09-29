@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202609071444-7MNJXE/repair-codeql-configuration-consistency-and-tria",
+  "created_at": "2026-09-07T14:56:49.833Z",
+  "diffstat_sha256": "sha256:060b90a8a4417245205a0ead89b6980012c6c546e7135358d5ea38f53bee2ddf",
+  "last_verified_at": "2026-09-07T17:49:31.879Z",
+  "last_verified_diffstat_sha256": "sha256:060b90a8a4417245205a0ead89b6980012c6c546e7135358d5ea38f53bee2ddf",
+  "pr_number": 5918,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5918",
+  "pre_merge_closure": {
+    "basis_commit": "2726656f8f1e5fe3adeeddb7c44e1b3a7db3c696",
+    "branch": "task/202609071444-7MNJXE/repair-codeql-configuration-consistency-and-tria",
+    "pr_number": 5918,
+    "recorded_at": "2026-09-07T17:51:30.698Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202609071444-7MNJXE",
+  "updated_at": "2026-09-07T17:26:17.479Z",
+  "verify": {
+    "status": "pass"
+  }
+}

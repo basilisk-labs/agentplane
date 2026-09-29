@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202609082225-ZYASFT/measure-provider-token-usage-and-align-bun-runti",
+  "created_at": "2026-09-08T22:29:07.319Z",
+  "diffstat_sha256": "sha256:44ddf6c0d099337cb9c9dd183357765dce12b444894b25cb905a9ef1d2eb88da",
+  "last_verified_at": "2026-09-09T05:52:40.659Z",
+  "last_verified_diffstat_sha256": "sha256:44ddf6c0d099337cb9c9dd183357765dce12b444894b25cb905a9ef1d2eb88da",
+  "pr_number": 5925,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5925",
+  "pre_merge_closure": {
+    "basis_commit": "2402e69c0b3f48c6796001de8d82c4ca17fc727f",
+    "branch": "task/202609082225-ZYASFT/measure-provider-token-usage-and-align-bun-runti",
+    "pr_number": 5925,
+    "recorded_at": "2026-09-09T05:54:25.858Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202609082225-ZYASFT",
+  "updated_at": "2026-09-08T23:36:23.845Z",
+  "verify": {
+    "status": "pass"
+  }
+}

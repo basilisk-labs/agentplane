@@ -11,8 +11,6 @@ const mockLoadCommandContext =
   vi.fn<(opts: { cwd: string; rootOverride?: string | null }) => Promise<CommandContext>>();
 const mockBackendIsLocalFileBackend = vi.fn<(ctx: CommandContext) => boolean>();
 const mockGetTaskStore = vi.fn();
-const mockWriteTaskBlueprintResolvedSnapshot =
-  vi.fn<(opts: { ctx: CommandContext; task: TaskData }) => Promise<unknown>>();
 const describeCompatible = typeof process.versions.bun === "string" ? describe.skip : describe;
 const TASK_EXECUTION: TaskExecutionContext = {
   schema_version: 1,
@@ -45,18 +43,6 @@ vi.mock("../shared/task-store.js", async (importOriginal?: () => Promise<unknown
     getTaskStore: mockGetTaskStore,
   };
 });
-vi.mock("../blueprint/snapshot-artifact.js", async (importOriginal?: () => Promise<unknown>) => {
-  const actualUnknown: unknown = typeof importOriginal === "function" ? await importOriginal() : {};
-  const actual =
-    actualUnknown && typeof actualUnknown === "object"
-      ? (actualUnknown as Record<string, unknown>)
-      : {};
-  return {
-    ...actual,
-    writeTaskBlueprintResolvedSnapshot: mockWriteTaskBlueprintResolvedSnapshot,
-  };
-});
-
 function mkTask(overrides: Partial<TaskData>): TaskData {
   return makeTaskFixture(overrides);
 }
@@ -88,12 +74,7 @@ describeCompatible("task start command (unit)", () => {
     mockLoadCommandContext.mockReset();
     mockBackendIsLocalFileBackend.mockReset();
     mockGetTaskStore.mockReset();
-    mockWriteTaskBlueprintResolvedSnapshot.mockReset();
     mockBackendIsLocalFileBackend.mockReturnValue(false);
-    mockWriteTaskBlueprintResolvedSnapshot.mockResolvedValue({
-      path: "/repo/.agentplane/tasks/T-1/blueprint/resolved-snapshot.json",
-      snapshot: { digest: { value: "abc" } },
-    });
   });
 
   it("cmdStart evaluates README requirements from the current local task state", async () => {
@@ -154,10 +135,5 @@ describeCompatible("task start command (unit)", () => {
         body: "Start: this comment is long enough to satisfy the min_chars requirement.",
       },
     ]);
-    expect(mockWriteTaskBlueprintResolvedSnapshot).toHaveBeenCalledTimes(1);
-    const snapshotCall = mockWriteTaskBlueprintResolvedSnapshot.mock.calls[0]?.[0];
-    expect(snapshotCall?.ctx).toBe(ctx);
-    expect(snapshotCall?.task.id).toBe(currentTask.id);
-    expect(snapshotCall?.task.status).toBe("DOING");
   });
 });

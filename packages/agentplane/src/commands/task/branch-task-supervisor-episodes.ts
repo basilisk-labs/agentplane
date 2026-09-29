@@ -1,3 +1,8 @@
+import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-finalization.js";
+import {
+  isInfrastructureVerification,
+  prepareInfrastructureVerificationForCheckout,
+} from "./verification-infrastructure.js";
 import {
   stoppedEpisode,
   applyBranchImplementationResult,
@@ -6,8 +11,9 @@ import {
 import {
   advanceSupervisorExecutionEpisodeState,
   completeSupervisorExecutionEpisode,
+  recoverSupervisorExecutionEpisodeJournal,
+  reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
   startSupervisorExecutionEpisode,
-  type SupervisorExecutionEpisodeJournal,
 } from "@agentplaneorg/core/schemas";
 
 import {
@@ -29,8 +35,6 @@ import type {
   BranchEpisodeOutcome,
   BranchTaskSupervisorOptions,
 } from "./branch-task-supervisor.js";
-import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-finalization.js";
-import { runAndApplyDirectTaskEvaluator } from "./direct-task-supervisor-evaluator.js";
 import { recordDirectTaskFormalOperation } from "./direct-task-supervisor-formal-operation.js";
 
 import { journalProjection } from "./direct-task-supervisor-result.js";
@@ -43,10 +47,11 @@ import {
 import { cmdVerifyParsed } from "./verify-record.js";
 import { resolveImplementationVerificationTask } from "./external-agent-implementation-recovery.js";
 import {
+  canCoalesceVerificationArtifacts,
   branchSupervisorArtifactCommitMessage,
   commitBranchSupervisorTaskArtifacts,
 } from "./branch-task-supervisor-artifact-commit.js";
-import { branchSupervisorUsageFromLifecycle } from "./branch-task-supervisor-usage.js";
+import { branchSupervisorAccountingFromLifecycle } from "./branch-task-supervisor-usage.js";
 
 import path from "node:path";
 import { readFile } from "node:fs/promises";
@@ -60,6 +65,8 @@ import {
 
 import { conflictApplicationAuthority } from "../pr/conflict-rework-authority.js";
 import { workflowTaskFingerprintComponent } from "../shared/workflow-step-fingerprint.js";
+import { buildSingleStageLifecycleTiming } from "../shared/lifecycle-stage-timing.js";
+import { executeBranchEvaluatorEpisode } from "./branch-task-supervisor-evaluator-episode.js";
 
 async function executeBranchImplementationEpisode(opts: {
   input: BranchTaskSupervisorOptions;
@@ -95,6 +102,40 @@ async function executeBranchImplementationEpisode(opts: {
   }
   try {
     let journal = opened.journal;
+    if (
+      journal.operations.at(-1)?.status === "completed" &&
+      ((journal.status === "stopped" && journal.stop?.reason === "stale_state") ||
+        (journal.status === "running" &&
+          journal.cursor.phase === "ready" &&
+          journal.state_fingerprint_digest !==
+            opts.decision.workflowStep.preconditionFingerprint.digest))
+    ) {
+      const refreshed = reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
+        journal: recoverSupervisorExecutionEpisodeJournal({
+          journal,
+          state_fingerprint_digest: opts.decision.workflowStep.preconditionFingerprint.digest,
+        }),
+        state_fingerprint_digest: opts.decision.workflowStep.preconditionFingerprint.digest,
+      });
+      if (!(await opened.store.compareAndSwap(journal.digest, refreshed))) {
+        throw new Error("Branch supervisor journal changed before completed-state refresh.");
+      }
+      journal = refreshed;
+    }
+    if (journal.status === "running" && journal.cursor.phase === "completed") {
+      const advanced = advanceSupervisorExecutionEpisodeState({
+        journal,
+        state_fingerprint_digest: opts.decision.workflowStep.preconditionFingerprint.digest,
+        route_observation: {
+          step_id: opts.decision.workflowStep.id,
+          transport: "managed",
+        },
+      });
+      if (!(await opened.store.compareAndSwap(journal.digest, advanced))) {
+        throw new Error("Branch supervisor journal changed before route advancement.");
+      }
+      journal = advanced;
+    }
     if (journal.status !== "running" || journal.cursor.phase !== "ready") {
       return stoppedEpisode({
         decision: opts.decision,
@@ -168,6 +209,16 @@ async function executeBranchImplementationEpisode(opts: {
     ]);
     const eventsBefore = task.events?.length ?? 0;
     let executed: Awaited<ReturnType<typeof executeTaskRunnerExecution>>;
+    const dispatchStartedAt = performance.now();
+    const timing = (endedAt: number, firstMutation: boolean) =>
+      buildSingleStageLifecycleTiming({
+        root_span_id: started.operation_key,
+        stage: "semantic_dispatch",
+        category: "external_wait",
+        started_ms: dispatchStartedAt,
+        ended_ms: endedAt,
+        first_scoped_mutation: firstMutation,
+      });
     try {
       executed = await executeTaskRunnerExecution({
         ctx: command,
@@ -185,6 +236,7 @@ async function executeBranchImplementationEpisode(opts: {
         journal,
         operation_key: started.operation_key,
         result: { error: error instanceof Error ? error.name : "unknown_error" },
+        lifecycle_timing: timing(performance.now(), false),
         failed: true,
       });
       await opened.store.write(journal);
@@ -255,6 +307,8 @@ async function executeBranchImplementationEpisode(opts: {
         }
       }
     }
+    const accounting = branchSupervisorAccountingFromLifecycle(lifecycle);
+    const dispatchEndedAt = performance.now();
     journal = completeSupervisorExecutionEpisode({
       journal,
       operation_key: started.operation_key,
@@ -264,7 +318,9 @@ async function executeBranchImplementationEpisode(opts: {
         receipt: lifecycle.result?.execution_receipt ?? null,
         semantic_status: lifecycle.result?.semantic_result?.value.status ?? null,
       },
-      usage: branchSupervisorUsageFromLifecycle(lifecycle),
+      usage: accounting.usage,
+      provider_usage: accounting.provider_usage,
+      lifecycle_timing: timing(dispatchEndedAt, (accounting.usage.changed_files ?? 0) > 0),
       progress: acceptedRoute
         ? {
             authority: conflictApplicationAuthority(acceptedRoute),
@@ -327,6 +383,7 @@ async function executeBranchVerificationEpisode(opts: {
       git_root: command.resolvedProject.gitRoot,
       task_id: opts.input.task_id,
       id: "task_verify",
+      replacement: opts.input.replace_failed_operation === true,
       decision: opts.decide,
       run: async () => {
         const verification = await resolveImplementationVerificationTask({
@@ -338,8 +395,21 @@ async function executeBranchVerificationEpisode(opts: {
         const validation = taskCentricAggregateFromExtensions(task.extensions)?.current_plan
           ?.proposal.top_level_validation;
         const additionalCommands = validation ? blockingWorkItemCommands(validation) : [];
+        const retainInfrastructureFailure = await prepareInfrastructureVerificationForCheckout({
+          command,
+          checkout,
+          task_id: opts.input.task_id,
+          implementation_commit: verification.snapshot.evaluated_sha ?? "",
+          identity: {
+            snapshot: verification.snapshot,
+            commands: verification.task.verify ?? [],
+            validation: validation ?? null,
+            policy: command.config,
+          },
+        });
         const checks = await runDirectTaskVerification({
           command,
+          retain_infrastructure_failure: retainInfrastructureFailure,
           task: verification.task,
           task_id: opts.input.task_id,
           cwd: checkout,
@@ -351,6 +421,12 @@ async function executeBranchVerificationEpisode(opts: {
               }
             : {}),
         });
+        if (isInfrastructureVerification(checks)) {
+          throw new Error(
+            `Verification infrastructure failed; evidence: ${checks.artifact_path}. ` +
+              `Repair the environment, then run agentplane task advance ${opts.input.task_id} --replacement --agent-json.`,
+          );
+        }
         passed = checks.status === "passed";
         failureReason = checks.reason ?? failureReason;
         const exitCode = await cmdVerifyParsed({
@@ -369,6 +445,7 @@ async function executeBranchVerificationEpisode(opts: {
             result: checks,
           }),
           verificationSnapshot: verification.snapshot,
+          allowCanonicalProjection: true,
           localOnly: false,
           repoFixable: !passed,
           incidentTags: [],
@@ -376,15 +453,24 @@ async function executeBranchVerificationEpisode(opts: {
           quiet: true,
         });
         if (exitCode !== 0) throw new Error(`Verification record exited with ${exitCode}.`);
-        await commitBranchSupervisorTaskArtifacts({
-          command,
-          cwd: checkout,
-          task_id: opts.input.task_id,
-          message: branchSupervisorArtifactCommitMessage(
-            opts.input.task_id,
-            passed ? "verification_pass" : "verification_rework",
-          ),
-        });
+        const coalesce =
+          passed &&
+          (await canCoalesceVerificationArtifacts({
+            command,
+            cwd: checkout,
+            task_id: opts.input.task_id,
+            next: await opts.decide(),
+          }));
+        if (!coalesce)
+          await commitBranchSupervisorTaskArtifacts({
+            command,
+            cwd: checkout,
+            task_id: opts.input.task_id,
+            message: branchSupervisorArtifactCommitMessage(
+              opts.input.task_id,
+              passed ? "verification_pass" : "verification_rework",
+            ),
+          });
         return {
           verification: passed ? "ok" : "needs_rework",
           declared_checks: checks.artifact_path,
@@ -417,101 +503,6 @@ async function executeBranchVerificationEpisode(opts: {
         `(${error instanceof Error ? `${error.name}: ${error.message}` : "unknown_error"}).`,
     });
   }
-}
-
-async function executeBranchEvaluatorEpisode(opts: {
-  input: BranchTaskSupervisorOptions;
-  decision: TaskRouteDecision;
-  decide: () => Promise<TaskRouteDecision>;
-}): Promise<BranchEpisodeOutcome> {
-  const checkout = opts.decision.executionPacket.mustRunFrom;
-  if (!checkout) {
-    return stoppedEpisode({
-      decision: opts.decision,
-      code: "route_refresh_failed",
-      reason: "The EVALUATOR episode has no authoritative task worktree.",
-    });
-  }
-  const command = await loadCommandContext({ cwd: checkout, rootOverride: null });
-  const task = await loadTaskFromContext({ ctx: command, taskId: opts.input.task_id });
-  let episode: Awaited<ReturnType<typeof runAndApplyDirectTaskEvaluator>>;
-  try {
-    episode = await runAndApplyDirectTaskEvaluator({
-      ctx: { cwd: checkout },
-      command,
-      task,
-      task_id: opts.input.task_id,
-      evaluator_id: "recovery-context",
-    });
-    await commitBranchSupervisorTaskArtifacts({
-      command,
-      cwd: checkout,
-      task_id: opts.input.task_id,
-      message: branchSupervisorArtifactCommitMessage(opts.input.task_id, "evaluator_verdict"),
-    });
-  } catch (error) {
-    return stoppedEpisode({
-      decision: opts.decision,
-      code: "evaluator_adapter_crash",
-      reason:
-        "The independent EVALUATOR did not produce and commit a typed verdict " +
-        `(${error instanceof Error ? error.name : "unknown_error"}).`,
-      provider_episodes: 1,
-    });
-  }
-  const refreshed = await opts.decide();
-  let journal: SupervisorExecutionEpisodeJournal = episode.execution.journal;
-  if (journal.status === "running" && journal.cursor.phase === "completed") {
-    journal = advanceSupervisorExecutionEpisodeState({
-      journal,
-      state_fingerprint_digest: refreshed.workflowStep.preconditionFingerprint.digest,
-      route_observation: { step_id: refreshed.workflowStep.id },
-    });
-    await episode.execution.store.write(journal);
-  }
-  const evaluator = episode.result;
-  const journalRef = journalProjection(journal, episode.execution.store.path);
-  if (evaluator.verdict === "rework") {
-    return {
-      status: "completed",
-      decision: refreshed,
-      evaluator,
-      journal: journalRef,
-      provider_episodes: 1,
-      lifecycle_calls: 1,
-    };
-  }
-  if (evaluator.verdict !== "pass") {
-    return stoppedEpisode({
-      decision: refreshed,
-      code: evaluator.verdict === "human_review" ? "evaluator_human_review" : "evaluator_blocked",
-      reason: `EVALUATOR returned ${evaluator.verdict}; no PR side effect was attempted.`,
-      evaluator,
-      journal: journalRef,
-      provider_episodes: 1,
-      lifecycle_calls: 1,
-    });
-  }
-  if (journal.status !== "running") {
-    return stoppedEpisode({
-      decision: refreshed,
-      code: "evaluator_human_review",
-      reason:
-        "EVALUATOR produced a verdict, but the supervisor journal stopped before route advancement.",
-      evaluator,
-      journal: journalRef,
-      provider_episodes: 1,
-      lifecycle_calls: 1,
-    });
-  }
-  return {
-    status: "completed",
-    decision: refreshed,
-    evaluator,
-    journal: journalRef,
-    provider_episodes: 1,
-    lifecycle_calls: 1,
-  };
 }
 
 export async function executeProductionBranchEpisode(opts: {

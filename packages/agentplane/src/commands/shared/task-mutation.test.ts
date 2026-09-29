@@ -6,9 +6,14 @@ import { TaskStore } from "./task-store.js";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   createLegacyTaskAggregate,
+  taskKernel as k,
   taskCentricAggregateFromExtensions,
   withTaskCentricAggregate,
 } from "@agentplaneorg/core/tasks";
+import {
+  makeKernelRecord,
+  TASK_KERNEL_EXTENSION,
+} from "../../adapters/task-backend/kernel-record.js";
 
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
 import {
@@ -148,6 +153,110 @@ describe("applyTaskMutation", () => {
     expect(writeTask).not.toHaveBeenCalled();
   });
 
+  it("allows an explicit compatibility projection only when the Task Kernel record is preserved", async () => {
+    let currentTask = mkTask({ extensions: { task_kernel: { digest: "kernel-record" } } });
+    const store = {
+      update: vi.fn(async (_taskId: string, updater: (task: TaskData) => Promise<TaskData>) => {
+        currentTask = cloneTask(await updater(cloneTask(currentTask)));
+        return { changed: true, task: cloneTask(currentTask) };
+      }),
+    };
+    const ctx = mkCtx(mkBackend());
+
+    vi.doMock("./task-backend.js", async () => {
+      const actual = await vi.importActual("./task-backend.js");
+      return { ...actual, backendUsesLocalTaskStore: () => true };
+    });
+    vi.doMock("./task-store.js", async () => {
+      const actual = await vi.importActual("./task-store.js");
+      return { ...actual, getTaskStore: () => store };
+    });
+
+    const { applyTaskMutation } = await import("./task-mutation.js");
+    const { setTaskFieldsIntent } = await import("./task-store.js");
+    await expect(
+      applyTaskMutation({
+        ctx,
+        taskId: "T-1",
+        allowCanonicalProjection: true,
+        build: () => ({ intents: setTaskFieldsIntent({ status: "DONE" }) }),
+      }),
+    ).resolves.toMatchObject({ task: { status: "DONE" } });
+    expect(currentTask.extensions?.task_kernel).toEqual({ digest: "kernel-record" });
+
+    await expect(
+      applyTaskMutation({
+        ctx,
+        taskId: "T-1",
+        allowCanonicalProjection: true,
+        build: (current) => ({
+          nextTask: { ...current, extensions: { ...current.extensions, task_kernel: {} } },
+        }),
+      }),
+    ).rejects.toThrow("changed the Task Kernel record");
+  });
+
+  it("keeps the Kernel lifecycle status while recording canonical compatibility metadata", async () => {
+    const aggregate: k.TaskAggregate = {
+      schema_version: 1,
+      id: "T-1",
+      revision: 4,
+      state: "COMPLETED",
+      intent_digest: k.kernelDigest("intent"),
+      current_plan: null,
+      plan_history: [],
+      work_items: {},
+      final_validation: null,
+      effects: [],
+      mutation_receipts: {},
+      controller_transfer: null,
+      migration_receipts: [],
+    };
+    let currentTask = mkTask({
+      id: "T-1",
+      status: "DONE",
+      extensions: {
+        [TASK_KERNEL_EXTENSION]: makeKernelRecord(k.kernelDigest("repository"), aggregate, []),
+      },
+    });
+    const store = {
+      update: vi.fn(async (_taskId: string, updater: (task: TaskData) => Promise<TaskData>) => {
+        currentTask = cloneTask(await updater(cloneTask(currentTask)));
+        return { changed: true, task: cloneTask(currentTask) };
+      }),
+    };
+    const ctx = mkCtx(mkBackend());
+
+    vi.doMock("./task-backend.js", async () => {
+      const actual = await vi.importActual("./task-backend.js");
+      return { ...actual, backendUsesLocalTaskStore: () => true };
+    });
+    vi.doMock("./task-store.js", async () => {
+      const actual = await vi.importActual("./task-store.js");
+      return { ...actual, getTaskStore: () => store };
+    });
+
+    const { applyTaskMutation } = await import("./task-mutation.js");
+    const { setTaskFieldsIntent } = await import("./task-store.js");
+    const result = await applyTaskMutation({
+      ctx,
+      taskId: "T-1",
+      allowCanonicalProjection: true,
+      build: () => ({
+        intents: setTaskFieldsIntent({
+          status: "DOING",
+          verification: { state: "needs_rework", attempts: 1 },
+        }),
+      }),
+    });
+
+    expect(result.task.status).toBe("DONE");
+    expect(result.task.verification).toMatchObject({ state: "needs_rework", attempts: 1 });
+    expect(result.task.extensions?.[TASK_KERNEL_EXTENSION]).toEqual(
+      currentTask.extensions?.[TASK_KERNEL_EXTENSION],
+    );
+  });
+
   it("uses store updates on the local backend path when the builder returns a next task", async () => {
     let currentTask = mkTask();
     const store = {
@@ -253,6 +362,50 @@ describe("applyTaskMutation", () => {
     expect(Object.keys(replayRuntime.mutation_receipts)).toEqual(receiptIds);
   });
 
+  it("refuses a damaged 10/7 revision snapshot without rewriting its evidence", async () => {
+    const aggregate = createLegacyTaskAggregate({
+      id: "T-1",
+      revision: 7,
+      title: "Task",
+      description: "Damaged revision snapshot",
+      status: "DOING",
+      acceptance_criteria: ["done"],
+      captured_at: "2026-03-31T00:00:00.000Z",
+      updated_at: "2026-03-31T00:00:00.000Z",
+    });
+    const original = mkTask({
+      id: "T-1",
+      revision: 10,
+      status: "DOING",
+      verification: { state: "ok", attempts: 1 },
+      extensions: withTaskCentricAggregate({}, aggregate),
+    });
+    let saved = cloneTask(original);
+    const store = {
+      update: vi.fn(async (_id: string, updater: (task: TaskData) => Promise<TaskData>) => {
+        saved = cloneTask(await updater(cloneTask(saved)));
+        return { changed: true, task: cloneTask(saved) };
+      }),
+    };
+    vi.doMock("./task-store.js", async () => ({
+      ...(await vi.importActual("./task-store.js")),
+      getTaskStore: () => store,
+    }));
+    vi.doMock("./task-backend.js", async () => ({
+      ...(await vi.importActual("./task-backend.js")),
+      backendUsesLocalTaskStore: () => true,
+    }));
+    const { applyTaskMutation } = await import("./task-mutation.js");
+    await expect(
+      applyTaskMutation({
+        ctx: mkCtx(mkBackend()),
+        taskId: "T-1",
+        build: (current) => ({ nextTask: { ...current, verify: ["bun run test"] } }),
+      }),
+    ).rejects.toThrow(/revision mismatch/iu);
+    expect(saved).toEqual(original);
+  });
+
   it("atomically reopens a completed task-centric projection for verification rework", async () => {
     const aggregate = createLegacyTaskAggregate({
       id: "T-1",
@@ -333,6 +486,82 @@ describe("applyTaskMutation", () => {
         ).mutation_receipts,
       ),
     ).toHaveLength(1);
+  });
+
+  it("atomically blocks the task-centric projection when verification rework is exhausted", async () => {
+    const aggregate = createLegacyTaskAggregate({
+      id: "T-1",
+      revision: 4,
+      title: "Task",
+      description: "Exhausted verification rework",
+      status: "DOING",
+      acceptance_criteria: ["done"],
+      captured_at: "2026-03-31T00:00:00.000Z",
+      updated_at: "2026-03-31T00:00:00.000Z",
+    });
+    let currentTask = mkTask({
+      id: "T-1",
+      revision: 4,
+      status: "DOING",
+      verification: { state: "needs_rework", attempts: 3 },
+      extensions: withTaskCentricAggregate({}, aggregate),
+    });
+    const store = {
+      update: vi.fn((_taskId: string, updater: (task: TaskData) => Promise<TaskData> | TaskData) =>
+        Promise.resolve(updater(cloneTask(currentTask))).then((nextTask) => {
+          const changed = JSON.stringify(currentTask) !== JSON.stringify(nextTask);
+          currentTask = cloneTask(nextTask);
+          return { changed, task: cloneTask(currentTask) };
+        }),
+      ),
+    };
+    const ctx = mkCtx(mkBackend());
+    vi.doMock("./task-store.js", async () => ({
+      ...(await vi.importActual("./task-store.js")),
+      getTaskStore: () => store,
+    }));
+    vi.doMock("./task-backend.js", async () => ({
+      ...(await vi.importActual("./task-backend.js")),
+      backendUsesLocalTaskStore: () => true,
+    }));
+
+    const { applyTaskMutation } = await import("./task-mutation.js");
+    const result = await applyTaskMutation({
+      ctx,
+      taskId: "T-1",
+      build: (current) => ({
+        nextTask: {
+          ...current,
+          status: "BLOCKED",
+          commit: null,
+          verification: { state: "blocked_external", attempts: 4 },
+        },
+      }),
+    });
+    const projected = taskCentricAggregateFromExtensions(result.task.extensions)!;
+    const runtime = result.task.extensions?.["agentplane.task_centric_runtime"] as {
+      mutation_receipts: Record<string, { next_revision: number }>;
+    };
+
+    expect(result.task).toMatchObject({
+      revision: 5,
+      status: "BLOCKED",
+      commit: null,
+      verification: { state: "blocked_external", attempts: 4 },
+    });
+    expect(projected).toMatchObject({
+      revision: 5,
+      lifecycle: "BLOCKED",
+      final_validation: null,
+    });
+    expect(taskCentricAggregateFromExtensions(currentTask.extensions)).toMatchObject({
+      revision: 5,
+      lifecycle: "BLOCKED",
+      final_validation: null,
+    });
+    expect(Object.values(runtime.mutation_receipts)).toEqual([
+      expect.objectContaining({ next_revision: 5 }),
+    ]);
   });
 
   it("exposes no partial rework projection when persistence fails", async () => {

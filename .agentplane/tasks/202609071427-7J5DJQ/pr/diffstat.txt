@@ -1,0 +1,13 @@
+ .github/workflows/ci.yml                           |  20 ++--
+ .github/workflows/docs-ci.yml                      |   2 +-
+ .github/workflows/pages-deploy.yml                 |   2 +-
+ .github/workflows/prepublish.yml                   |   2 +-
+ .github/workflows/publish-distribution-module.yml  |   2 +-
+ .github/workflows/publish.yml                      |   4 +-
+ .github/workflows/task-hosted-close.yml            |   2 +-
+ .github/workflows/workflows-lint.yml               |   2 +-
+ package.json                                       |   2 +-
+ ...n-cli.core.task-advance.branch-worktree.test.ts | 105 ++++++++++++++++-----
+ .../agentplane/src/shared/sqlite-driver.test.ts    | 103 ++++++++++++++++++++
+ packages/agentplane/src/shared/sqlite-driver.ts    |   2 +-
+ 12 files changed, 206 insertions(+), 42 deletions(-)

@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609071541-47TFVD-b48b634df3dd7c91e6e59f64",
+  "prepared_at": "2026-09-07T16:48:23.111Z",
+  "task": {
+    "id": "202609071541-47TFVD",
+    "revision": 15,
+    "objective": "Propagate approved CI scope to external implementation commit guards\n\nUser approved this bounded recovery on 2026-09-07: repair the allowCI false defect blocking task 202609071444-7MNJXE and continue that task. Change external-agent-implementation-authority.ts and extend external-agent-implementation-recovery.test.ts. Permit CI commit guard access only after current WorkOrder scope validation and when the approved task execution contract allows the ci effect. Preserve rejection of unapproved protected paths. No external writes. This separate recovery task is needed because the original task is trapped in worktree resolution after commit rejection.",
+    "acceptance_criteria": [
+      "bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts",
+      "- In scope: User approved this bounded recovery on 2026-09-07: repair the allowCI false defect blocking task 202609071444-7MNJXE and continue that task. Change external-agent-implementation-authority.ts and extend external-agent-implementation-recovery.test.ts. Permit CI commit guard access only after current WorkOrder scope validation and when the approved task execution contract allows the ci effect. Preserve rejection of unapproved protected paths. No external writes. This separate recovery task is needed because the original task is trapped in worktree resolution after commit rejection.\n- Out of scope: unrelated refactors not required for \"Propagate approved CI scope to external implementation commit guards\".",
+      "Prepare the exact two-file CI permission repair approved by the user. Validate positive and negative authorization behavior.",
+      "Run bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts. Expect approved CI scope to pass and unapproved CI scope to fail. Run git diff --check. Review that other protected path permissions remain denied."
+    ]
+  },
+  "evaluated_sha": "22d93c4efedbb342e900fa6c6999e2c343307cda",
+  "diff_base_sha": "92efd467a7b045e7e784597168ac21bd41a975a1",
+  "blueprint_digest": "04e3994f842e00e1c2edaa1fbe61e96b57f1e875075a0a2d016d2501eaf000ae",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:9e04aab298f18a189494fa2b5d1a239abb3e36655e10f1d684bdf86ebcd43044",
+    "prompt_path": ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/0230b6fa678d2169a3176241c901f324ec0ada6c68f1fd56ed1111c00e8a285d.md",
+    "result_schema_path": ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609071541-47TFVD/README.md",
+      "sha256": "sha256:f031ef0fbb7f080595fa29a40846f9e89b8539ef15f7ed97f55054bb75ebb619",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/68b75038d730a2d93ca5ed20770f237a9feadca97c15132ae6caf4682e93efbc.patch",
+      "sha256": "sha256:68b75038d730a2d93ca5ed20770f237a9feadca97c15132ae6caf4682e93efbc",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/89a1dd66b4816d38f6cf65514c2bac4ba4caa08a3d60d83565050ebed12a2943.json",
+      "sha256": "sha256:89a1dd66b4816d38f6cf65514c2bac4ba4caa08a3d60d83565050ebed12a2943",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609071541-47TFVD/verification/20260907164815916-b6132adfaa57f00e.json",
+      "sha256": "sha256:41b4762fbe98b0ad168c2f6849b433106fbe08bb51764f1eec73b11171b18a1e",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/c45e4cce01c124ba8f0dcf00de8fa97ccae6aab1c79559f2e7fd60222d465d06.json",
+      "sha256": "sha256:c45e4cce01c124ba8f0dcf00de8fa97ccae6aab1c79559f2e7fd60222d465d06",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    }
+  ]
+}

@@ -99,5 +99,7 @@ describe("installed migration matrix", () => {
 
     expect(source).toContain("runInstalledMigrationMatrix");
     expect(source).toContain("installed migration matrix OK");
+    expect(source).toContain("V0_6_26_ASSIMILATION_COMMIT");
+    expect(source).toContain("the pinned 0.6.26 source assimilation identity changed");
   });
 });

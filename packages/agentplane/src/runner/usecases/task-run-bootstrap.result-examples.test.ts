@@ -206,11 +206,13 @@ describe("runner bootstrap result examples", () => {
         id: "semantic-check",
         description: "Confirm the semantic projection preserves the user objective.",
         required: true,
+        observed_by: "agentplane",
       },
       {
         id: "supervisor-check",
         description: "Run agentplane task brief TASK-1 --json.",
         required: true,
+        observed_by: "agentplane",
       },
     ];
     bundle.work_order = workOrder;
@@ -263,4 +265,51 @@ describe("runner bootstrap result examples", () => {
       parseRunnerResultManifestText('{"schema_version":2', "malformed/result.json"),
     ).toThrow(InvalidRunnerResultManifestError);
   });
+});
+
+it("preserves semantic prompt inputs and result examples", () => {
+  for (const role of ["EXECUTOR", "EVALUATOR"] as const) {
+    const bundle = makeRunnerContextBundle({ runId: "prompt-size" });
+    bundle.work_order = buildAgentWorkOrderV2ValidFixture("prompt-size");
+    bundle.work_order.role = role;
+    bundle.work_order.prepared_evidence = bundle.work_order.prepared_evidence.map((evidence) => ({
+      ...evidence,
+      role,
+    }));
+    const bootstrap = renderTaskRunnerBootstrap(bundle);
+    expect(bootstrap).toContain("simple technical English");
+    expect(bootstrap).toContain(
+      "Preserve commands, paths, identifiers, enum values, quoted text, user input, logs, and source evidence exactly.",
+    );
+    expect(bootstrap).toContain(
+      "Stop before exceeding the granted authority, writable roots, network policy, or protected paths.",
+    );
+    expect(bootstrap).toContain(
+      "Stop and return a blocked semantic result when required context is missing or stale.",
+    );
+    for (const raw of extractResultExamples(bootstrap).values()) {
+      expect(() => parseRunnerResultManifestText(raw, "example.json")).not.toThrow();
+      expect(raw).not.toMatch(/legacy claims|release image|schemas:check/u);
+    }
+    const literal = "Preserve Пример --flag=exact and `scope/path.ts` exactly.";
+    bundle.work_order.task.objective = literal;
+    expect(renderTaskRunnerBootstrap(bundle)).toContain(literal);
+  }
+});
+
+it("keeps optional full logs discoverable without copying them into the initial prompt", () => {
+  const bundle = makeRunnerContextBundle({ runId: "optional-context" });
+  const order = buildAgentWorkOrderV2ValidFixture("optional-context");
+  bundle.work_order = order;
+  order.required_inputs.push({
+    id: "successful-history",
+    kind: "source_artifact",
+    description: "full-successful-log".repeat(200),
+    path: "logs/success.json",
+    required: false,
+  });
+  const bootstrap = renderTaskRunnerBootstrap(bundle);
+  expect(bootstrap).not.toContain("full-successful-log");
+  expect(bootstrap).toContain("manifest_ref");
+  expect(bootstrap).toContain("Reload after restart or context loss");
 });

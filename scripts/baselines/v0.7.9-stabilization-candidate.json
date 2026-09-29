@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "kind": "agentplane.stabilization_candidate_qualification",
+  "task_id": "202609121424-4BC7B3",
+  "candidate": {
+    "version": "0.7.9-beta.1",
+    "commit": "ad57d58af002174e7855046b5df1e80bc7c75e50",
+    "tree": "95a9b850f56086539e38491dad3604fb9d6975c2",
+    "package_manifest_sha256": {
+      "package.json": "sha256:3920ef992ebab6349db4ee8be8ea60925d73e6e4f2171cfa651a594119df8b9c",
+      "bun.lock": "sha256:baf5c76fe3a94989e22b6be03f2ddcba427aeb8dc41de6f93cd8aa45261ce377",
+      "packages/core/package.json": "sha256:4e1ea0e9c1ba533da101b544d90a6b7ec9f9dd36eb143cbbef9eb17e7f4ce3c1",
+      "packages/recipes/package.json": "sha256:8e2e59fc2b4971b725ec4964bf2168aa9f5f1f7e46cfeed08f18f9545941f9d5",
+      "packages/agentplane/package.json": "sha256:9bd88155b55641989e8337d6ef87e991070678f7537077fcd4aca3b017767b68"
+    },
+    "development_build_manifest_sha256": {
+      "@agentplaneorg/core": "sha256:0bba0dc96883438ea8a25dac0a0b1edb207ac5fee2a92481ac0158257aba498e",
+      "@agentplaneorg/recipes": "sha256:0e0c61cf2f5f5f1a8e506de55c82d5d0ad282ef949fe2f6fc51c8bf44ac9120c",
+      "agentplane": "sha256:a1266023917136c3fd957fba14558476872571b632ee5e8f7d1bba92d66fc929"
+    }
+  },
+  "runtime": {
+    "node": "v24.18.0",
+    "bun": "1.4.2",
+    "npm": "11.17.0"
+  },
+  "qualification": {
+    "package_tarball": {
+      "command": "bun run package:tarball:check",
+      "result": "pass",
+      "package_file_counts": {
+        "@agentplaneorg/core": 127,
+        "@agentplaneorg/recipes": 21,
+        "agentplane": 59
+      }
+    },
+    "installed_smoke": {
+      "command": "bun run package:install-smoke",
+      "result": "pass",
+      "migration_scenarios": 8,
+      "smoke_task_id": "202609132139-EPZG0P"
+    },
+    "release_critical": {
+      "command": "bun run test:release:critical",
+      "result": "pass",
+      "test_files": 4,
+      "tests": 16
+    }
+  },
+  "claims": {
+    "installed_candidate_qualified": true,
+    "efficiency_claim": "not_established",
+    "m01_evidence_digest": "sha256:c5eca198dfb687fe76fc58eacaf1425092f2c885466f2f98bec4faba5563e3db",
+    "m01_report_digest": "sha256:97ef34e441b2b58666555b5f56ac072ab88fda7cb75b10f0f536446ee0702e88",
+    "measurement_debt_accepted": true,
+    "publication_authorized_by_this_artifact": false
+  }
+}

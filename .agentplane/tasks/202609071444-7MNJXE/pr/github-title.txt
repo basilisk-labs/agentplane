@@ -1,0 +1,1 @@
+✅ 7MNJXE task: Repair CodeQL configuration consistency and triage current GitHub security findings [202609071444-7MNJXE]

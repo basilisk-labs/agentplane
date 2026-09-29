@@ -1,9 +1,18 @@
 import {
+  buildWorkOrderContextManifest,
+  resolveWorkOrderContextBlocks,
+  workOrderContextManifestDigest,
+} from "../context/work-order-context.js";
+import {
   AGENT_SEMANTIC_RESULT_STATUS_VALUES,
-  buildAgentSemanticResultV2ValidFixtures,
+  type AgentSemanticResult,
 } from "@agentplaneorg/core/schemas";
 
-import { semanticTextHasProcessChoreography } from "../context/semantic-prompt-projection.js";
+import {
+  AGENT_INSTRUCTION_LANGUAGE,
+  hasExplicitProcessMechanismRepairAuthority,
+  semanticTextHasProcessChoreography,
+} from "../context/semantic-prompt-projection.js";
 import type { RunnerContextBundle, RunnerInvocation } from "../types.js";
 
 type EvaluatorSkepticismLevel = NonNullable<
@@ -52,7 +61,7 @@ function renderEvaluatorSkepticismLines(level: EvaluatorSkepticismLevel): string
   if (level === "strict") {
     return [
       ...common,
-      "- Strict review: actively search for counterexamples, happy-path-only tests, stale task/blueprint evidence, and category mismatches between requested behavior and implementation.",
+      "- Strict review: actively search for counterexamples, happy-path-only tests, stale task evidence, and category mismatches between requested behavior and implementation.",
       "- Use rework when correctness depends on an assumption the implementation did not prove.",
     ];
   }
@@ -64,9 +73,45 @@ function renderEvaluatorSkepticismLines(level: EvaluatorSkepticismLevel): string
 }
 
 function renderRunnerResultManifestExampleLines(workOrderId: string): string[] {
-  const fixtures = buildAgentSemanticResultV2ValidFixtures(workOrderId);
+  const base = {
+    schema_version: 2 as const,
+    kind: "agent_semantic_result" as const,
+    work_order_id: workOrderId,
+    findings: [],
+    uncertainty: [],
+  };
+  const examples: Record<
+    (typeof AGENT_SEMANTIC_RESULT_STATUS_VALUES)[number],
+    AgentSemanticResult
+  > = {
+    completed: { ...base, status: "completed", summary: "Describe the completed outcome." },
+    blocked: {
+      ...base,
+      status: "blocked",
+      summary: "Describe the blocker.",
+      blocker: {
+        summary: "State the unmet requirement.",
+        recommended_action: "State the required action.",
+      },
+    },
+    needs_context: {
+      ...base,
+      status: "needs_context",
+      summary: "State the context gap.",
+      knowledge_request: {
+        schema_version: 1,
+        kind: "knowledge_request",
+        scope: "task_context",
+        query: "Name the missing context.",
+        reason: "Explain why it is required.",
+        desired_kind: "any",
+        blocking: true,
+      },
+    },
+    failed: { ...base, status: "failed", summary: "Describe the failed attempt." },
+  };
   return AGENT_SEMANTIC_RESULT_STATUS_VALUES.map(
-    (status) => `- ${status}: ${JSON.stringify(fixtures[status])}`,
+    (status) => `- ${status}: ${JSON.stringify(examples[status])}`,
   );
 }
 
@@ -114,15 +159,44 @@ function renderSemanticPromptProjectionLines(bundle: RunnerContextBundle): strin
 }
 
 function semanticWorkOrderProjection(bundle: RunnerContextBundle): Record<string, unknown> | null {
-  const workOrder = bundle.work_order;
-  if (!workOrder) return null;
+  const sourceOrder = bundle.work_order;
+  if (!sourceOrder) return null;
+  const manifest =
+    bundle.semantic_context ??
+    buildWorkOrderContextManifest(
+      sourceOrder,
+      `${bundle.execution.artifact_paths.bundle_path}#/work_order`,
+    );
+  const blocks = resolveWorkOrderContextBlocks({ order: sourceOrder, manifest });
+  const selected = new Set(blocks.map((block) => block.pointer));
+  const workOrder = {
+    ...sourceOrder,
+    required_inputs: sourceOrder.required_inputs.filter((_, index) =>
+      selected.has(`/required_inputs/${index}`),
+    ),
+    knowledge_refs: sourceOrder.knowledge_refs.filter((_, index) =>
+      selected.has(`/knowledge_refs/${index}`),
+    ),
+    prepared_evidence: sourceOrder.prepared_evidence.filter((_, index) =>
+      selected.has(`/prepared_evidence/${index}`),
+    ),
+  };
+  const preserveProcessRepairRequirements = hasExplicitProcessMechanismRepairAuthority(bundle.task);
   const semanticAcceptanceCriteria = workOrder.task.acceptance_criteria.filter(
-    (criterion) => !semanticTextHasProcessChoreography(criterion.description),
+    (criterion) =>
+      preserveProcessRepairRequirements ||
+      !semanticTextHasProcessChoreography(criterion.description),
   );
   const semanticVerificationRequirements = workOrder.verification_intent.requirements.filter(
-    (requirement) => !semanticTextHasProcessChoreography(requirement.description),
+    (requirement) =>
+      preserveProcessRepairRequirements ||
+      !semanticTextHasProcessChoreography(requirement.description),
+  );
+  const semanticStopRules = workOrder.stop_rules.filter(
+    (rule) => preserveProcessRepairRequirements || !semanticTextHasProcessChoreography(rule),
   );
   const requiredInputs = workOrder.required_inputs.filter((input) => {
+    if (!input.required) return false;
     if (input.kind === "task_document" || input.kind === "policy_module") return false;
     if (input.kind !== "source_artifact") return true;
     const source = input.path ?? "";
@@ -142,9 +216,16 @@ function semanticWorkOrderProjection(bundle: RunnerContextBundle): Record<string
     (toolClass) => toolClass !== "workspace_write" || effectiveWritableRoots.length > 0,
   );
   return {
+    context_discovery: {
+      manifest_ref: `${bundle.execution.artifact_paths.bundle_path}#/semantic_context`,
+      manifest_digest: workOrderContextManifestDigest(manifest),
+      required_loading:
+        "Required semantic context is included in this input. Consult the manifest for complete source blocks. Read optional blocks from the complete manifest only on demand. Reload after restart or context loss.",
+    },
     work_order_id: workOrder.work_order_id,
     ...(workOrder.canonical_binding ? { canonical_binding: workOrder.canonical_binding } : {}),
     role: workOrder.role,
+    ...(workOrder.planning_context ? { planning_context: workOrder.planning_context } : {}),
     task: {
       ...workOrder.task,
       acceptance_criteria: semanticAcceptanceCriteria,
@@ -160,8 +241,12 @@ function semanticWorkOrderProjection(bundle: RunnerContextBundle): Record<string
       required_knowledge_ref_digests: workOrder.context_intent.required_knowledge_ref_digests,
       require_prepared_evidence: workOrder.context_intent.require_prepared_evidence,
     },
-    knowledge_refs: workOrder.knowledge_refs,
-    prepared_evidence: workOrder.prepared_evidence,
+    knowledge_refs: workOrder.knowledge_refs.filter((ref) =>
+      workOrder.context_intent.required_knowledge_ref_digests.includes(ref.digest),
+    ),
+    prepared_evidence: workOrder.prepared_evidence.filter(
+      (evidence) => evidence.role === workOrder.role,
+    ),
     required_inputs: requiredInputs,
     required_outputs: workOrder.required_outputs,
     semantic_checks: semanticVerificationRequirements.map((requirement) => ({
@@ -171,6 +256,7 @@ function semanticWorkOrderProjection(bundle: RunnerContextBundle): Record<string
     })),
     semantic_result_schema: workOrder.semantic_result_schema,
     stop_rules: [
+      ...semanticStopRules,
       "Stop and return a blocked semantic result when required context is missing or stale.",
       "Stop before exceeding the granted authority, writable roots, network policy, or protected paths.",
       "Return one typed semantic result when the objective is satisfied or blocked.",
@@ -193,7 +279,7 @@ export function renderTaskRunnerBootstrap(
       ? `task ${bundle.target.task_id}`
       : `recipe scenario ${bundle.target.recipe_id}:${bundle.target.scenario_id}`;
   const codexGoalLine = renderCodexGoalLine(bundle, targetLabel);
-  const stopRules = bundle.blueprint?.stopReasons ?? [];
+  const stopRules = bundle.task_obligations?.stop_rules ?? [];
   const verifierChecks = bundle.playbook?.final_verifier.checks ?? [];
   const evaluatorSkepticismLevel =
     bundle.execution.evaluator_skepticism_level ?? ("standard" satisfies EvaluatorSkepticismLevel);
@@ -208,11 +294,9 @@ export function renderTaskRunnerBootstrap(
     ...(codexGoalLine ? [codexGoalLine, ""] : []),
     "# agentplane runner bootstrap",
     "",
-    "Work only on the semantic objective and authority projected below.",
     "- Use only the supplied context, writable roots, and declared tools.",
-    "- Do not inspect internal orchestration artifacts or invoke undeclared interfaces.",
+    "- Read only declared context references and source artifacts. Do not invoke undeclared interfaces.",
     "- Assume sibling runners may be executing concurrently. Keep writes inside the task scope, avoid broad refactors or shared policy edits, and report possible write conflicts in the typed result instead of resolving them speculatively.",
-    "- Execute the projected work directly and stop when the requested semantic outcome is satisfied.",
     "",
     `- target: ${targetLabel}`,
     `- work_order_id: ${bundle.work_order?.work_order_id ?? invocation?.work_order_id ?? bundle.execution.run_id}`,
@@ -220,9 +304,11 @@ export function renderTaskRunnerBootstrap(
     `- writable_roots: ${JSON.stringify(writeScope?.writable_roots ?? [])}`,
     `- protected_paths: ${JSON.stringify(writeScope?.protected_paths ?? [])}`,
     "",
-    "The content below is the complete provider-facing projection for this episode.",
+    "The projection below starts this episode. The complete context manifest preserves all required constraints and input references. References do not grant authority.",
     "For file-edit tools that do not accept cwd/workdir, use absolute paths under writable_roots; stop before writing when no writable root is granted.",
     "Treat protected_paths as forbidden even when the native sandbox permits them.",
+    "",
+    AGENT_INSTRUCTION_LANGUAGE,
     "",
     "## Semantic policy and role context",
     "",
@@ -242,7 +328,7 @@ export function renderTaskRunnerBootstrap(
     ...(stopRules.length > 0
       ? [
           "",
-          "Blueprint stop rules:",
+          "Native stop rules:",
           ...stopRules.map((rule) => `- ${rule.severity}: ${rule.reason} (${rule.id})`),
         ]
       : []),
@@ -254,7 +340,7 @@ export function renderTaskRunnerBootstrap(
         ]
       : []),
     "Return one AgentSemanticResult v2 object through the configured result channel.",
-    "Select the example matching the semantic outcome, keep work_order_id unchanged, and edit only semantic fields:",
+    "Select the example matching the semantic outcome. Keep work_order_id unchanged. Replace placeholder text with observed facts. Include claimed_checks when checks were attempted.",
     ...renderRunnerResultManifestExampleLines(invocation?.work_order_id ?? bundle.execution.run_id),
   ].join("\n");
 }

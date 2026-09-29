@@ -9,6 +9,7 @@ import {
   completeSupervisorExecutionEpisode,
   createSupervisorExecutionEpisodeJournal,
   startSupervisorExecutionEpisode,
+  stopSupervisorExecutionEpisode,
   validateSupervisorExecutionEpisodeJournal,
 } from "@agentplaneorg/core/schemas";
 import { renderTaskReadme } from "@agentplaneorg/core/tasks";
@@ -29,6 +30,17 @@ import {
 } from "./supervisor-execution-episode.js";
 
 const taskId = "202607280001-EPISODE";
+const UNMETERED_TOKEN_BUDGET = {
+  max_episodes: 50,
+  max_agent_runs: 50,
+  max_input_tokens: null,
+  max_output_tokens: null,
+  max_total_tokens: null,
+  max_wall_time_ms: 4 * 60 * 60 * 1000,
+  max_changed_files: 2000,
+  max_diff_lines: null,
+  max_no_progress_episodes: 3,
+} as const;
 
 function fixtureDecision(
   root: string,
@@ -97,7 +109,7 @@ function executedLifecycle(opts: {
   metrics?: {
     duration_ms?: number;
   };
-  provider_usage?: { input_tokens: number; output_tokens: number; total_tokens: number };
+  provider_usage?: Parameters<typeof recordCodexProviderUsageForResult>[1];
   files_changed_count?: number;
 }): TaskRunnerLifecycleResult {
   const lifecycle: TaskRunnerLifecycleResult = {
@@ -233,7 +245,7 @@ describe("persisted supervisor execution episodes", () => {
     expect(outcome.journal.operations[0]?.recovery).toEqual(persisted.operations[0]?.recovery);
   });
 
-  it("extends an episode-only budget stop through explicit replacement recovery", async () => {
+  it("cold-migrates an episode-only budget stop without renewing a limit", async () => {
     const root = await mkGitRepoRoot();
     const decision = fixtureDecision(root, 1);
     const created = createSupervisorExecutionEpisodeJournal({
@@ -263,10 +275,15 @@ describe("persisted supervisor execution episodes", () => {
       effect_ref: "review",
     });
     if (started.status !== "started") throw new Error("expected started fixture episode");
-    const stopped = completeSupervisorExecutionEpisode({
+    const completed = completeSupervisorExecutionEpisode({
       journal: started.journal,
       operation_key: started.operation_key,
       result: { verdict: "pass" },
+    });
+    const stopped = stopSupervisorExecutionEpisode({
+      journal: completed,
+      reason: "budget_exhausted",
+      exhausted_dimensions: ["episodes"],
     });
     const journalPath = await resolveSupervisorExecutionEpisodePath({
       git_root: root,
@@ -280,17 +297,81 @@ describe("persisted supervisor execution episodes", () => {
         task_id: taskId,
         state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
       }),
-    ).resolves.toBe("budget_extended");
+    ).resolves.toBe("not_failed");
     expect(await createSupervisorEpisodeStore(journalPath).read()).toMatchObject({
       status: "running",
       stop: null,
-      budget: { max_episodes: 51 },
+      budget: { max_episodes: 1 },
       usage: { episodes: 1 },
       cursor: { episode: 1, phase: "ready", operation_key: null },
     });
   });
 
-  it("extends an agent-run budget only when an active grant authorizes autonomy", async () => {
+  it("recovers a persisted telemetry-only stop without changing budget or history", async () => {
+    const root = await mkGitRepoRoot();
+    const decision = fixtureDecision(root, 1);
+    const created = createSupervisorExecutionEpisodeJournal({
+      task_id: taskId,
+      task_revision: 1,
+      state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+      budget: {
+        ...UNMETERED_TOKEN_BUDGET,
+        max_input_tokens: 100,
+        max_output_tokens: 100,
+        max_total_tokens: 200,
+      },
+    });
+    const started = startSupervisorExecutionEpisode({
+      journal: created,
+      role: "EXECUTOR",
+      kind: "agent_episode",
+      operation_identity: { id: "legacy-unattributed-run" },
+      precondition_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+    });
+    if (started.status !== "started") throw new Error("expected started fixture episode");
+    const completed = completeSupervisorExecutionEpisode({
+      journal: started.journal,
+      operation_key: started.operation_key,
+      result: { status: "success" },
+    });
+    const ready = advanceSupervisorExecutionEpisodeState({
+      journal: completed,
+      state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+    });
+    const stopped = stopSupervisorExecutionEpisode({
+      journal: ready,
+      reason: "budget_exhausted",
+      exhausted_dimensions: [
+        "input_tokens_telemetry",
+        "output_tokens_telemetry",
+        "total_tokens_telemetry",
+      ],
+    });
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: root,
+      task_id: taskId,
+    });
+    await createSupervisorEpisodeStore(journalPath).write(stopped);
+
+    await expect(
+      preparePersistedSupervisorReplacementAfterFailure({
+        git_root: root,
+        task_id: taskId,
+        state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+      }),
+    ).resolves.toBe("not_failed");
+    expect(await createSupervisorEpisodeStore(journalPath).read()).toMatchObject({
+      status: "running",
+      stop: null,
+      budget: stopped.budget,
+      usage: stopped.usage,
+      operations: stopped.operations,
+      cursor: { episode: 1, phase: "ready", operation_key: null },
+      previous_digest: stopped.digest,
+    });
+  });
+
+  it("records agent-run usage without stopping at a legacy agent-run limit", async () => {
     const root = await mkGitRepoRoot();
     const decision = fixtureDecision(root, 1);
     let current = createSupervisorExecutionEpisodeJournal({
@@ -328,7 +409,7 @@ describe("persisted supervisor execution episodes", () => {
       journal: current,
       state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
     });
-    const exhausted = startSupervisorExecutionEpisode({
+    const continued = startSupervisorExecutionEpisode({
       journal: current,
       role: "EXECUTOR",
       kind: "agent_episode",
@@ -337,36 +418,11 @@ describe("persisted supervisor execution episodes", () => {
       authority_ref: "authority",
       authority_digest: decision.workflowStep.preconditionFingerprint.digest,
     });
-    if (exhausted.status !== "stopped") throw new Error("expected stopped fixture episode");
-    const journalPath = await resolveSupervisorExecutionEpisodePath({
-      git_root: root,
-      task_id: taskId,
-    });
-    await createSupervisorEpisodeStore(journalPath).write(exhausted.journal);
-
-    await expect(
-      preparePersistedSupervisorReplacementAfterFailure({
-        git_root: root,
-        task_id: taskId,
-        state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
-        budget_only: true,
-      }),
-    ).resolves.toBe("not_failed");
-    await expect(
-      preparePersistedSupervisorReplacementAfterFailure({
-        git_root: root,
-        task_id: taskId,
-        state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
-        allow_agent_run_budget_extension: true,
-        budget_only: true,
-      }),
-    ).resolves.toBe("budget_extended");
-    expect(await createSupervisorEpisodeStore(journalPath).read()).toMatchObject({
+    expect(continued.status).toBe("started");
+    expect(continued.journal).toMatchObject({
       status: "running",
       stop: null,
-      budget: { max_episodes: 53, max_agent_runs: 51 },
-      usage: { episodes: 1, agent_runs: 1 },
-      cursor: { phase: "ready", operation_key: null },
+      usage: { episodes: 2, agent_runs: 2 },
     });
   });
   it("does not steal an old lease from a live long-running supervisor", async () => {
@@ -530,6 +586,8 @@ describe("persisted supervisor execution episodes", () => {
     });
 
     expect(executions).toBe(0);
+    expect(outcome.execution.result).toBeNull();
+    expect(outcome.execution.refreshed_decision).toBe(refreshed);
     expect(outcome.journal).toMatchObject({
       status: "running",
       cursor: { phase: "ready", operation_key: null },
@@ -590,6 +648,7 @@ describe("persisted supervisor execution episodes", () => {
       task_revision: 1,
       execute: successfulOperationResult,
       refresh: () => Promise.resolve(firstDecision),
+      budget: UNMETERED_TOKEN_BUDGET,
     });
     expect(first.execution.executable).toBe(true);
 
@@ -603,6 +662,7 @@ describe("persisted supervisor execution episodes", () => {
         return successfulOperationResult();
       },
       refresh: () => Promise.resolve(finalDecision),
+      budget: UNMETERED_TOKEN_BUDGET,
     });
 
     expect(secondExecutions).toBe(1);
@@ -628,54 +688,80 @@ describe("persisted supervisor execution episodes", () => {
     });
   });
 
-  it("projects supervisor-observed provider and execution usage into the journal", async () => {
-    const root = await mkGitRepoRoot();
-    const decision = fixtureDecision(root, 1);
-    const outcome = await supervisePersistedWorkflowEpisode({
-      decision,
-      git_root: root,
-      task_revision: 1,
-      execute: () =>
-        Promise.resolve({
-          status: "succeeded" as const,
-          observed_postconditions: ["runner_state_observed"],
-          detail: "fixture runner completed",
-          exit_code: 0,
-          operation_result: {
-            kind: "runner_lifecycle" as const,
-            value: executedLifecycle({
-              decision,
-              metrics: { duration_ms: 17 },
-              provider_usage: { input_tokens: 3, output_tokens: 5, total_tokens: 8 },
-              files_changed_count: 2,
-            }),
-          },
-        }),
-      refresh: () => Promise.resolve(fixtureDecision(root, 2)),
-      budget: {
-        max_episodes: 2,
-        max_agent_runs: 2,
-        max_input_tokens: 10,
-        max_output_tokens: 10,
-        max_total_tokens: 20,
-        max_wall_time_ms: 1000,
-        max_changed_files: 10,
-        max_diff_lines: null,
-        max_no_progress_episodes: 2,
-      },
-    });
+  it.each(["succeeded", "failed"] as const)(
+    "projects provider usage for a %s attempt into the journal",
+    async (status) => {
+      const root = await mkGitRepoRoot();
+      const decision = fixtureDecision(root, 1);
+      const outcome = await supervisePersistedWorkflowEpisode({
+        decision,
+        git_root: root,
+        task_revision: 1,
+        execute: () =>
+          Promise.resolve({
+            status,
+            observed_postconditions: ["runner_state_observed"],
+            detail: "fixture runner completed",
+            exit_code: 0,
+            operation_result: {
+              kind: "runner_lifecycle" as const,
+              value: executedLifecycle({
+                decision,
+                metrics: { duration_ms: 17 },
+                provider_usage: {
+                  input_tokens: 3,
+                  output_tokens: 5,
+                  total_tokens: 8,
+                  visible_output_tokens: 2,
+                  reasoning_tokens: 3,
+                  cached_input_tokens: 0,
+                  prepared_context_bytes: 42,
+                  thread_id: "thread-1",
+                  turn_id: "turn-1",
+                },
+                files_changed_count: 2,
+              }),
+            },
+          }),
+        refresh: () => Promise.resolve(fixtureDecision(root, 2)),
+        budget: {
+          max_episodes: 2,
+          max_agent_runs: 2,
+          max_input_tokens: 10,
+          max_output_tokens: 10,
+          max_total_tokens: 20,
+          max_wall_time_ms: 1000,
+          max_changed_files: 10,
+          max_diff_lines: null,
+          max_no_progress_episodes: 2,
+        },
+      });
 
-    expect(outcome.journal.usage).toMatchObject({
-      episodes: 1,
-      agent_runs: 1,
-      input_tokens: 3,
-      output_tokens: 5,
-      total_tokens: 8,
-      wall_time_ms: 17,
-      changed_files: 2,
-    });
-    expect(outcome.journal.status).toBe("running");
-  });
+      expect(outcome.journal.usage).toMatchObject({
+        episodes: 1,
+        agent_runs: 1,
+        input_tokens: 3,
+        output_tokens: 5,
+        total_tokens: 8,
+        cached_input_tokens: 0,
+        cached_input_observed_agent_runs: 1,
+        prepared_context_bytes: 42,
+        prepared_context_observed_agent_runs: 1,
+        wall_time_ms: 17,
+        changed_files: 2,
+      });
+      expect(outcome.journal.operations.at(-1)).toMatchObject({
+        status: status === "succeeded" ? "completed" : "failed",
+        provider_usage: {
+          provider: "codex",
+          run_id: "run-supervisor-episode",
+          work_order_id: "work-order-supervisor-episode",
+          thread_id: "thread-1",
+          turn_id: "turn-1",
+        },
+      });
+    },
+  );
 
   it("charges observed wall time when a runner executor throws", async () => {
     const root = await mkGitRepoRoot();
@@ -842,7 +928,7 @@ describe("persisted supervisor execution episodes", () => {
     );
   });
 
-  it("still stops for review when active non-token budgets lack trusted telemetry", async () => {
+  it("keeps missing non-token telemetry informational", async () => {
     const root = await mkGitRepoRoot();
     const decision = fixtureDecision(root, 1);
     const outcome = await supervisePersistedWorkflowEpisode({
@@ -878,11 +964,8 @@ describe("persisted supervisor execution episodes", () => {
     });
 
     expect(outcome.journal).toMatchObject({
-      status: "stopped",
-      stop: {
-        reason: "human_review",
-        exhausted_dimensions: ["changed_files_telemetry", "wall_time_ms_telemetry"],
-      },
+      status: "running",
+      stop: null,
     });
   });
 });

@@ -22,8 +22,9 @@ import {
   withBootstrapWorkflowFingerprint,
   type WorkflowRouteStateInput,
 } from "./workflow-step-fingerprint.js";
+import { withNativeIdentity } from "./workflow-step.testkit.js";
 
-const task = {
+const task = withNativeIdentity({
   id: "202607250200-PROJ1",
   title: "Workflow step projection fixture",
   description: "Exercise execution packet projections.",
@@ -40,7 +41,7 @@ const task = {
     approved_at: "2026-07-25T00:00:00.000Z",
   },
   verification: { state: "pending" },
-} satisfies TaskData;
+} satisfies TaskData);
 
 const taskWorktreePath = `/repo/.agentplane/worktrees/${task.id}`;
 const taskBranch = `task/${task.id}/workflow-step-projection-fixture`;
@@ -480,10 +481,13 @@ describe("WorkflowStep conflict rework projections", () => {
 
   it("restores local verification before conflict rework that is only route-ineligible", () => {
     const state = routeState({
-      task: {
-        ...task,
-        commit: { hash: resume.head_sha, message: "feat: committed implementation" },
-      },
+      task: withNativeIdentity(
+        {
+          ...task,
+          commit: { hash: resume.head_sha, message: "feat: committed implementation" },
+        },
+        "COMPLETED",
+      ),
       blockers: [
         {
           code: "provider_conflict_context_invalid",
@@ -569,14 +573,17 @@ describe("WorkflowStep conflict rework projections", () => {
       nextAction: "wait hosted checks",
     } satisfies PrFlowStatusReport;
     const state = routeState({
-      task: {
-        ...task,
-        verification: { state: "ok" },
-        commit: {
-          hash: "2222222222222222222222222222222222222222",
-          message: "feat: implementation",
+      task: withNativeIdentity(
+        {
+          ...task,
+          verification: { state: "ok" },
+          commit: {
+            hash: "2222222222222222222222222222222222222222",
+            message: "feat: implementation",
+          },
         },
-      },
+        "COMPLETED",
+      ),
       prFlow: openPrFlow,
       conflictRework: null,
     });

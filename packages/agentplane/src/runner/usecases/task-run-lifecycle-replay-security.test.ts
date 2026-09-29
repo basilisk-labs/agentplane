@@ -17,6 +17,10 @@ import type { TaskRunnerOutcomeStatus, TaskRunnerTarget } from "../../backends/t
 import { runCli } from "../../cli/run-cli.js";
 import { loadCommandContext } from "../../commands/shared/task-backend.js";
 import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
+import {
+  allocateTaskWorkspace,
+  releaseWorkspaceLease,
+} from "../../runtime/workspace-allocation/index.js";
 
 import { resumeTaskRunnerExecution, retryTaskRunnerExecution } from "./task-run-lifecycle.js";
 import {
@@ -162,6 +166,7 @@ async function prepareAnchoredSource(opts: {
     task_id: opts.taskId,
     mode: "execute",
     run_id: opts.runId,
+    task_execution: taskCommand.execution,
   });
   await recordExternalSource({
     ctx,
@@ -294,6 +299,12 @@ describe("task-run fresh replay security", () => {
     await configureCustomRunner(root);
     const taskId = await createDoingTask(root, "Fresh replay current authority");
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const taskCommand = await authoritativeContext(ctx, taskId);
+    const allocation = await allocateTaskWorkspace({
+      ctx: taskCommand.command,
+      execution: taskCommand.execution,
+    });
+    await releaseWorkspaceLease(allocation.lease);
     const source = await prepareAnchoredSource({
       ctx,
       root,

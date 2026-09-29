@@ -44,7 +44,6 @@ function buildEvidence(
     tags: normalizeTags(task.tags),
     task_kind: typeof task.task_kind === "string" ? task.task_kind : null,
     mutation_scope: typeof task.mutation_scope === "string" ? task.mutation_scope : null,
-    blueprint_request: typeof task.blueprint_request === "string" ? task.blueprint_request : null,
     commit: task.commit && isRecord(task.commit) ? task.commit : null,
     source_refs: sourceTextLines.map((_, index) => sourceLineRef(task.id, index + 1)),
     provenance_refs: [...new Set(provenanceRefs)].toSorted(),

@@ -156,7 +156,6 @@ describe("policy/evaluatePolicy", () => {
         taskId,
         git: {
           stagedPaths: [
-            `.agentplane/tasks/${taskId}/blueprint/resolved-snapshot.json`,
             `.agentplane/tasks/${taskId}/quality/20260101-recovery-context/quality-report.json`,
           ],
         },

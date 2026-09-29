@@ -14,6 +14,7 @@ import {
   makeTaskFixture,
 } from "@agentplane/testkit/task";
 import type { CommandContext } from "../shared/task-backend.js";
+import { withLegacyDrainIdentityFixture } from "../shared/native-task-identity-fixture.js";
 
 type BackendMode = "local" | "remote";
 
@@ -508,10 +509,14 @@ async function runVerifyRecordScenario(mode: BackendMode) {
     "## Findings",
     "n/a",
   ].join("\n");
-  let currentTask = mkTask({
-    status: "DONE",
-    doc: mode === "local" ? baseDoc : "",
-    doc_updated_at: "2026-02-08T00:00:00.000Z",
+  let currentTask = withLegacyDrainIdentityFixture({
+    task: mkTask({
+      status: "DONE",
+      doc: mode === "local" ? baseDoc : "",
+      doc_updated_at: "2026-02-08T00:00:00.000Z",
+    }),
+    config: mkConfig(),
+    work_items_completed: true,
   });
   const writeTask = vi.fn((task: TaskData) => {
     currentTask = cloneTask(task);

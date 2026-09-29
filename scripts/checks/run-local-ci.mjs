@@ -3,6 +3,7 @@ import { existsSync } from "node:fs";
 
 import { buildLocalCiExecutionPlan, parseChangedFilesEnv } from "../lib/local-ci-selection.mjs";
 import { withFrameworkBuildLock } from "../lib/framework-build-lock.mjs";
+import { assertPinnedBunRuntime } from "../lib/bun-runtime.mjs";
 import {
   runVerificationGroups,
   writeVerificationGroupResults,
@@ -332,6 +333,8 @@ const executionPlan = buildLocalCiExecutionPlan({ mode, changedFiles });
 const fastPlan = executionPlan.selector;
 const runCliDocsCheck = executionPlan.verification_contract.selector.run_cli_docs_check;
 const shouldExecuteChecks = !parsedArgs.explain;
+
+if (shouldExecuteChecks) assertPinnedBunRuntime(process.cwd(), baseEnv);
 
 if (parsedArgs.explain) {
   if (parsedArgs.json) {

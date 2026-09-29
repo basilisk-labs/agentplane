@@ -71,11 +71,15 @@ async function preparePhaseToolRun(
   });
   if (!grant) throw new Error("Expected a phase-tool grant.");
   bundle.execution.phase_tools = grant.manifest;
-  opts.mutate_after_grant?.(bundle);
   await writePreparedRunnerArtifacts({
     bundle,
     created_at: ISSUED_AT.toISOString(),
   });
+  if (opts.mutate_after_grant) {
+    // Simulate persisted artifact tampering after the validated preparation boundary.
+    opts.mutate_after_grant(bundle);
+    await writeFile(bundle.execution.artifact_paths.bundle_path, JSON.stringify(bundle));
+  }
   return { root, run_dir: runDir, bundle, grant };
 }
 

@@ -12,6 +12,61 @@ import type {
   TaskAggregate,
 } from "./model.js";
 
+export type PlanningObligationFacts = Readonly<{
+  policy: Readonly<{ allow_supplied_plan: boolean; require_planner: boolean }>;
+  plan: Readonly<{
+    origin: "supplied" | "planner";
+    semantic_resolution: "resolved" | "unresolved";
+    freshness: "current" | "stale";
+  }> | null;
+  attempt: Readonly<{
+    outcome: "not_attempted" | "pending" | "passed" | "failed";
+    freshness: "missing" | "current" | "stale";
+  }>;
+}>;
+
+export type PlanningObligation = Readonly<{
+  requirement: "required" | "not_required";
+  status: "pending" | "satisfied" | "not_required";
+  reason_code:
+    | "planning_policy_required"
+    | "planning_input_missing"
+    | "planning_input_stale"
+    | "planning_semantics_unresolved"
+    | "planning_evidence_required"
+    | "planning_evidence_current"
+    | "supplied_plan_accepted";
+  attempt: PlanningObligationFacts["attempt"];
+}>;
+
+/** Facts come from trusted policy and accepted evidence, never from proposal authority fields. */
+export function resolvePlanningObligation(facts: PlanningObligationFacts): PlanningObligation {
+  const attempt = Object.freeze({ ...facts.attempt });
+  const result = (
+    reason_code: PlanningObligation["reason_code"],
+    status: PlanningObligation["status"] = "pending",
+  ): PlanningObligation =>
+    Object.freeze({
+      requirement: status === "not_required" ? "not_required" : "required",
+      status,
+      reason_code,
+      attempt,
+    });
+  if (!facts.plan) return result("planning_input_missing");
+  if (facts.plan.freshness !== "current") return result("planning_input_stale");
+  if (facts.plan.semantic_resolution !== "resolved") return result("planning_semantics_unresolved");
+  if (
+    facts.plan.origin === "planner" &&
+    attempt.outcome === "passed" &&
+    attempt.freshness === "current"
+  )
+    return result("planning_evidence_current", "satisfied");
+  if (facts.policy.require_planner || !facts.policy.allow_supplied_plan)
+    return result("planning_policy_required");
+  if (facts.plan.origin === "supplied") return result("supplied_plan_accepted", "not_required");
+  return result("planning_evidence_required");
+}
+
 export type SupervisionOutcome =
   | "completed"
   | "failed"

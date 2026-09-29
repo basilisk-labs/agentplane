@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202609201952-ZW7H9X",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-20T22:01:50.072Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "42024102a9915e00bb1e15d4d692258d715a4624",
+  "review_identity_digest": "sha256:0a009193b9766a473fcb6fe827e69452dd3f63546dbd9a2fe3283514ecd4faaf",
+  "findings": [
+    "No blocking defect found: the map distinguishes observed current owners from the target coordinator and explicitly records mapped_not_converged instead of claiming completed convergence."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609201952-ZW7H9X/quality/objects/sha256/9d8182b4bd71fc5bbd9b212bb9fec8fd379a093aa683c917d5939bb20083f359.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

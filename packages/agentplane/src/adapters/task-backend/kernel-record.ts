@@ -1,5 +1,6 @@
 import { kernelAuthorityRecordSchema } from "./kernel-authority-schema.js";
 import { kernelRecordIssues } from "./kernel-record-invariants.js";
+import { projectKernelTask } from "./kernel-projector.js";
 import {
   kernelDocumentIssues,
   kernelDocumentsSchema,
@@ -251,6 +252,13 @@ export function readKernelRecord(
     };
   }
   const aggregate = contents.aggregate;
+  if (task.status !== projectKernelTask(aggregate).status) {
+    return {
+      kind: "malformed",
+      reason: "canonical_projection_mismatch",
+      fields: ["status"],
+    };
+  }
   const persistedIssues = [
     ...kernelRecordIssues(aggregate, contents.events),
     ...kernelDocumentIssues(aggregate, contents.documents),

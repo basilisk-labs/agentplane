@@ -8,6 +8,7 @@ import {
   setMarkdownSection,
   taskCentricAggregateFromExtensions,
   isGitObjectId,
+  type TaskRepositoryEffect,
 } from "@agentplaneorg/core/tasks";
 import type { AgentSemanticResult, AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 
@@ -31,8 +32,7 @@ import {
 } from "../shared/quality-review-target.js";
 import { normalizeBranchPrBatchTaskIds } from "../pr/internal/sync-batch-ownership.js";
 import {
-  resolveObservedVerificationChangedPaths,
-  resolveInheritedVerificationPaths,
+  resolveObservedVerificationChangeSet,
   reconcileVerificationExecutionContract,
 } from "./verify-record-observed-changes.js";
 import { isQualificationTask } from "./qualification-packet.js";
@@ -45,6 +45,7 @@ import {
   type ExternalAgentExchange,
 } from "./external-agent-exchange.js";
 import {
+  exactChangedPaths,
   completedWorkItemRecoveryReadme,
   resolveEvidenceOnlyReworkCommit,
   selectRecordedImplementationRecoveryCommit,
@@ -88,7 +89,7 @@ export async function resolveVerifiedEvidenceOnlyReworkCommit(opts: {
     (await gitIsAncestor(opts.exchange.checkout, recordedCommit, opts.head))
   ) {
     const prefix = `${opts.command.config.paths.workflow_dir}/${opts.exchange.task_id}/`;
-    const managed = ["pr/", "quality/", "blueprint/", "verification/", "evidence/", "supervision/"];
+    const managed = ["pr/", "quality/", "verification/", "evidence/", "supervision/"];
     const changed = await gitDiffNames(opts.exchange.checkout, recordedCommit, opts.head);
     headIsManagedDescendant = changed.every(
       (name) =>
@@ -290,31 +291,6 @@ export function taskReadmesPreserveRecoveryContract(
   );
 }
 
-async function exactChangedPaths(
-  root: string,
-  base: string,
-  head: string,
-): Promise<string[] | null> {
-  const diff = await runProcess({
-    command: "git",
-    args: [
-      "diff",
-      "--no-ext-diff",
-      "--no-textconv",
-      "--no-renames",
-      "--name-only",
-      "-z",
-      base,
-      head,
-      "--",
-    ],
-    cwd: root,
-    env: gitProofEnv(),
-    reject: false,
-  });
-  return diff.exitCode === 0 ? diff.stdout.split("\0").filter(Boolean) : null;
-}
-
 export async function resolveImplementationVerificationTask(opts: {
   command: CommandContext;
   checkout: string;
@@ -327,6 +303,7 @@ export async function resolveImplementationVerificationTask(opts: {
     evaluated_sha: string | null;
     changed_paths: string[];
     inherited_paths: string[];
+    repository_effects: TaskRepositoryEffect[];
   };
 }> {
   const execution = await resolveTaskExecutionContext({
@@ -351,20 +328,12 @@ export async function resolveImplementationVerificationTask(opts: {
     previousEvaluatedSha: recordedTaskImplementationCommitSha(opts.task),
     workflowMode: opts.workflow,
   });
-  const changedPaths = await resolveObservedVerificationChangedPaths({
+  const observedChanges = await resolveObservedVerificationChangeSet({
     ctx: opts.command,
     evaluatedSha,
-    taskId: opts.task.id,
+    task: opts.task,
     artifactTaskIds: taskIds,
     execution,
-  });
-  const inheritedPaths = await resolveInheritedVerificationPaths({
-    ctx: opts.command,
-    evaluatedSha,
-    taskId: opts.task.id,
-    artifactTaskIds: taskIds,
-    execution,
-    changed_paths: changedPaths,
   });
   const verificationTask = {
     ...opts.task,
@@ -376,8 +345,9 @@ export async function resolveImplementationVerificationTask(opts: {
           task: opts.task,
           requestedMode: opts.workflow,
         }),
-      changed_paths: changedPaths,
-      inherited_paths: inheritedPaths,
+      changed_paths: observedChanges.changed_paths,
+      inherited_paths: observedChanges.inherited_paths,
+      observed_repository_effects: observedChanges.repository_effects,
     }),
   };
   return {
@@ -385,8 +355,9 @@ export async function resolveImplementationVerificationTask(opts: {
     snapshot: {
       execution_contract: verificationTask.execution_contract!,
       evaluated_sha: evaluatedSha,
-      changed_paths: changedPaths,
-      inherited_paths: inheritedPaths,
+      changed_paths: observedChanges.changed_paths,
+      inherited_paths: observedChanges.inherited_paths,
+      repository_effects: observedChanges.repository_effects,
     },
   };
 }
@@ -403,6 +374,13 @@ async function directories(directory: string): Promise<string[]> {
   }
 }
 
+export function requiresExactScopeRecoveryReadme(opts: {
+  scope_recovery: boolean;
+  work_item_state: string | null | undefined;
+}): boolean {
+  return opts.scope_recovery && opts.work_item_state !== "REWORK_READY";
+}
+
 /** Recover only recorded implementation effects. Checks are executed again by the caller. */
 export async function resolveRecordedImplementationRecovery(opts: {
   command: CommandContext;
@@ -411,6 +389,7 @@ export async function resolveRecordedImplementationRecovery(opts: {
   head: string | null;
   recorded_commit: string | null;
   purpose?: ExternalAgentExchange["purpose"];
+  reassess_current_plan?: boolean;
 }): Promise<{
   commit: string;
   execution_base: string;
@@ -485,7 +464,7 @@ export async function resolveRecordedImplementationRecovery(opts: {
   }
   if (!(await gitIsAncestor(root, commit, opts.head))) return null;
   const subsequentPaths = await exactChangedPaths(root, commit, opts.head);
-  const managed = ["pr/", "quality/", "blueprint/", "verification/", "evidence/", "supervision/"];
+  const managed = ["pr/", "quality/", "verification/", "evidence/", "supervision/"];
   if (
     !subsequentPaths ||
     subsequentPaths.some(
@@ -498,28 +477,43 @@ export async function resolveRecordedImplementationRecovery(opts: {
     return null;
   const committedReadme = await gitShowFile(root, commit, `${taskPrefix}README.md`);
   if (!committedReadme) return null;
-  const currentReadmes = await Promise.all([
-    gitShowFile(root, opts.head, `${taskPrefix}README.md`),
-    readFile(path.join(root, taskPrefix, "README.md"), "utf8"),
-  ]);
-  if (
-    currentReadmes.some(
-      (readme) =>
-        readme !== committedReadme &&
-        (scopeRecovery ||
-          !taskReadmesPreserveRecoveryContract(
-            taskLevelRework ? completedWorkItemRecoveryReadme(committedReadme) : committedReadme,
-            taskLevelRework ? completedWorkItemRecoveryReadme(readme) : readme,
-            commit,
-          )),
-    )
-  )
-    return null;
   const frontmatter = parseTaskReadme(committedReadme).frontmatter;
   const recordedPlan = taskCentricAggregateFromExtensions(
     isRecord(frontmatter.extensions) ? frontmatter.extensions : undefined,
   )?.current_plan;
-  if (recordedPlan?.digest !== plan.digest || recordedPlan.revision !== plan.revision) return null;
+  const samePlan = recordedPlan?.digest === plan.digest && recordedPlan.revision === plan.revision;
+  const reassessment =
+    !samePlan &&
+    opts.reassess_current_plan === true &&
+    workItemId !== null &&
+    recordedPlan != null &&
+    recordedPlan.revision < plan.revision &&
+    opts.work_order.task.revision === opts.task.revision &&
+    opts.work_order.state_fingerprint.git_head === opts.head;
+  if (!samePlan && !reassessment) return null;
+  if (!reassessment) {
+    const exactScopeRecoveryReadme = requiresExactScopeRecoveryReadme({
+      scope_recovery: scopeRecovery,
+      work_item_state: workItemId ? aggregate.work_items[workItemId]?.state : null,
+    });
+    const currentReadmes = await Promise.all([
+      gitShowFile(root, opts.head, `${taskPrefix}README.md`),
+      readFile(path.join(root, taskPrefix, "README.md"), "utf8"),
+    ]);
+    if (
+      currentReadmes.some(
+        (readme) =>
+          readme !== committedReadme &&
+          (exactScopeRecoveryReadme ||
+            !taskReadmesPreserveRecoveryContract(
+              taskLevelRework ? completedWorkItemRecoveryReadme(committedReadme) : committedReadme,
+              taskLevelRework ? completedWorkItemRecoveryReadme(readme) : readme,
+              commit,
+            )),
+      )
+    )
+      return null;
+  }
 
   const base = evidence.execution_base_commit;
   if (!(await gitIsAncestor(root, base, commit)) || base === commit) return null;
@@ -581,7 +575,7 @@ export async function resolveRecordedImplementationRecovery(opts: {
       return {
         commit,
         execution_base: base,
-        semantic: taskLevelRework ? null : original.result,
+        semantic: taskLevelRework || reassessment ? null : original.result,
         exchange,
       };
     }

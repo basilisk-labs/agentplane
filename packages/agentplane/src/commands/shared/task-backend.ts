@@ -1,4 +1,5 @@
 import type { ResolvedProject } from "@agentplaneorg/core/project";
+import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
 import path from "node:path";
 import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 import { resolveTaskDocUpdatedBy, taskDocToSectionMap } from "@agentplaneorg/core/tasks";
@@ -22,6 +23,7 @@ import { GitContext, listWorktrees } from "@agentplaneorg/core/git";
 import { resolveCommonGitDirectory } from "../../shared/env.js";
 import {
   loadTaskFromBranchSnapshot,
+  supplementTaskProjectionFromWorktrees,
   resolveAuthoritativeTaskWorktree,
   resolveTaskBranchFromContext,
   taskBranchHasLocalRef,
@@ -29,12 +31,10 @@ import {
 
 export {
   loadTaskFromBranchSnapshot,
-  resolveAuthoritativeTaskWorktree,
   resolveTaskBranchFromContext,
-  taskBranchHasLocalRef,
 } from "./task-backend-branch-snapshot.js";
 
-export type CommandMemo = {
+type CommandMemo = {
   tasks?: Promise<TaskData[]>;
   taskProjection?: Promise<TaskSummary[]>;
   taskBranchInventory?: Promise<{
@@ -117,7 +117,6 @@ export function taskDataToFrontmatter(task: TaskData): Record<string, unknown> {
     task_kind: task.task_kind,
     mutation_scope: task.mutation_scope,
     risk_flags: task.risk_flags,
-    blueprint_request: task.blueprint_request,
     verify: task.verify ?? [],
     plan_approval: planApproval,
     verification,
@@ -161,11 +160,11 @@ export function getTaskBackendCapabilities(ctx: CommandContext) {
   } satisfies TaskBackendCapabilities;
 }
 
-export function backendHasLocalCanonicalSource(ctx: CommandContext): boolean {
+function backendHasLocalCanonicalSource(ctx: CommandContext): boolean {
   return getTaskBackendCapabilities(ctx).canonical_source === "local";
 }
 
-export function backendWritesTaskReadmes(ctx: CommandContext): boolean {
+function backendWritesTaskReadmes(ctx: CommandContext): boolean {
   return getTaskBackendCapabilities(ctx).writes_task_readmes === true;
 }
 
@@ -237,6 +236,11 @@ export async function resolveTaskOwnerCommandContext(opts: {
   ctx: CommandContext;
   taskId: string;
 }): Promise<CommandContext> {
+  const localTask = await opts.ctx.taskBackend.getTask(opts.taskId);
+  // Canonical tasks bind observations and WorkOrders to the invocation checkout.
+  // They have no legacy task branch; their kernel validates state and authority.
+  if (localTask?.extensions && Object.hasOwn(localTask.extensions, TASK_KERNEL_EXTENSION))
+    return opts.ctx;
   const taskBranch = await resolveTaskBranchFromContext({ ctx: opts.ctx, taskId: opts.taskId });
   if (taskBranch) {
     const owner = await resolveAuthoritativeTaskWorktree({
@@ -413,8 +417,11 @@ export async function listTaskSummariesMemo(
       });
     }
     const projected = await ctx.taskBackend.listProjectionTasks({ status: opts.projectionStatus });
-    if (projected.length > 0 || opts.fallbackToCanonicalOnEmpty !== true) return projected;
-    return filterByProjectionStatus(await canonicalSummaries());
+    const tasks =
+      projected.length > 0 || opts.fallbackToCanonicalOnEmpty !== true
+        ? projected
+        : await canonicalSummaries();
+    return filterByProjectionStatus(await supplementTaskProjectionFromWorktrees({ ctx, tasks }));
   }
   ctx.memo.taskProjection ??= (async () => {
     if (ctx.taskBackend.capabilities?.projection_read_mode === "native") {
@@ -425,9 +432,12 @@ export async function listTaskSummariesMemo(
           message: `Backend ${ctx.taskBackend.id} advertises native projection reads but does not implement listProjectionTasks()`,
         });
       }
-      return await ctx.taskBackend.listProjectionTasks();
+      return await supplementTaskProjectionFromWorktrees({
+        ctx,
+        tasks: await ctx.taskBackend.listProjectionTasks(),
+      });
     }
-    return await canonicalSummaries();
+    return await supplementTaskProjectionFromWorktrees({ ctx, tasks: await canonicalSummaries() });
   })();
   return filterByProjectionStatus(await ctx.memo.taskProjection);
 }

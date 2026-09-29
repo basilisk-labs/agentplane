@@ -1,12 +1,10 @@
 import { gitRevParse, taskCloseBranchName } from "@agentplaneorg/core/git";
 
-import { createCliEmitter } from "../../cli/output.js";
-import { mapBackendError } from "../../cli/error-map.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";
+import { isRecord } from "../../shared/guards.js";
 import {
   loadBackendTask,
-  loadCommandContext,
   resolveTaskBranchFromContext,
   type CommandContext,
 } from "../shared/task-backend.js";
@@ -28,7 +26,6 @@ import {
 } from "../pr/integrate/queue-state.js";
 import { checkGithubUnresolvedReviewThreads } from "./internal/github-review-threads.js";
 import { resolveHostedChecksStatus, type HostedChecksSummary } from "./hosted-checks.js";
-import { renderPrFlowStatusRows } from "./flow-status.render.js";
 import {
   resolvePrHeadPublicationStatus,
   type PrHeadPublicationStatus,
@@ -73,6 +70,7 @@ export type PrFlowStatusReport = {
     id: string;
     status: string;
     verification: string | null;
+    canonicalProviderReady?: boolean;
   };
   branch: {
     name: string | null;
@@ -93,6 +91,25 @@ export type PrFlowStatusReport = {
 type ReviewThreadsStatus =
   | { checked: true; unresolved: number }
   | { checked: false; reason: string };
+
+function canonicalProviderReady(
+  task: Awaited<ReturnType<typeof loadBackendTask>>["task"],
+): boolean {
+  const record = task.extensions?.task_kernel;
+  if (!isRecord(record) || !isRecord(record.aggregate)) return false;
+  const aggregate = record.aggregate;
+  if (
+    aggregate.state !== "FINAL_VALIDATION" ||
+    !isRecord(aggregate.final_validation) ||
+    aggregate.final_validation.status !== "PASSED" ||
+    !isRecord(aggregate.work_items)
+  ) {
+    return false;
+  }
+  return Object.values(aggregate.work_items).every(
+    (item) => isRecord(item) && item.state === "COMPLETED",
+  );
+}
 
 type QueueStatus =
   | { present: false }
@@ -534,6 +551,7 @@ export async function resolvePrFlowStatus(opts: {
       id: task.id,
       status: task.status,
       verification: task.verification?.state ?? null,
+      canonicalProviderReady: canonicalProviderReady(task),
     },
     branch: {
       name: branch,
@@ -567,29 +585,4 @@ export async function resolvePrFlowStatus(opts: {
   };
   report.nextAction = deriveNextAction(report);
   return report;
-}
-
-export async function cmdPrFlowStatus(opts: {
-  ctx?: CommandContext;
-  cwd: string;
-  rootOverride?: string;
-  taskId: string;
-  json: boolean;
-}): Promise<number> {
-  try {
-    const ctx =
-      opts.ctx ??
-      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-    const report = await resolvePrFlowStatus({ ...opts, ctx });
-    const output = createCliEmitter();
-    if (opts.json) {
-      output.json(report);
-      return 0;
-    }
-    output.report(renderPrFlowStatusRows(report), { header: "PR flow status" });
-    return 0;
-  } catch (err) {
-    if (err instanceof CliError) throw err;
-    throw mapBackendError(err, { command: "pr flow status", root: opts.rootOverride ?? null });
-  }
 }

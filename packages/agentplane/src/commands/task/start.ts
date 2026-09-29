@@ -6,7 +6,6 @@ import type { TaskData } from "../../backends/task-backend.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { ensurePrArtifactsSynced } from "../pr/internal/sync.js";
-import { writeTaskBlueprintResolvedSnapshot } from "../blueprint/snapshot-artifact.js";
 import { withWorkflowRouteBaseline } from "../shared/workflow-step-policy-scope.js";
 import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
 
@@ -135,11 +134,6 @@ export async function cmdStart(opts: TaskTransitionCommentCommandOptions): Promi
           },
         };
       },
-    });
-
-    await writeTaskBlueprintResolvedSnapshot({
-      ctx,
-      task: transition.execution.nextTask,
     });
 
     const commitInfo = await runOptionalTaskTransitionCommentCommit({

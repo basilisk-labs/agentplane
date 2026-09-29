@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 
-import { validateBlueprintRouteDecisionSgrResult } from "../../blueprints/sgr-decision.js";
 import { validateContextExtractionSgrResult } from "../../context/sgr-extraction.js";
 import { validateEvaluatorSgrResult } from "../../evaluators/sgr-result.js";
 import {
@@ -564,69 +563,4 @@ describe("SGR reliability contracts", () => {
       ).toThrow("non-empty array for every evaluator verdict");
     },
   );
-
-  it("validates structured blueprint route decisions", () => {
-    const result = validateBlueprintRouteDecisionSgrResult({
-      schema_version: SGR_CONTRACT_SCHEMA_VERSION,
-      kind: "blueprint_route_decision",
-      facts: [
-        {
-          label: "mutation-scope",
-          summary: "The task mutates TypeScript source files.",
-          evidence_refs: [sourceRef],
-        },
-      ],
-      inferences: [
-        {
-          label: "task-kind",
-          summary: "The task is code work in branch_pr mode.",
-        },
-      ],
-      rejected_routes: [
-        {
-          blueprint_id: "analysis.light",
-          reason: "Read-only analysis route cannot cover code mutation.",
-        },
-      ],
-      selected_route: {
-        blueprint_id: "code.branch_pr",
-        task_kind: "code",
-        rationale: "Code mutation in branch_pr requires task worktree and PR evidence.",
-      },
-      required_evidence: [
-        {
-          id: "checks.focused",
-          kind: "check_result",
-          description: "Focused schema tests pass.",
-        },
-      ],
-      stop_rules: [
-        {
-          id: "scope-drift",
-          severity: "approval_required",
-          reason: "Runtime execution changes are outside this contract-only task.",
-        },
-      ],
-      weak_links: ["The schema is not yet wired into evaluator execution."],
-    });
-
-    expect(result.selected_route.blueprint_id).toBe("code.branch_pr");
-    expect(result.schema_version).toBe(SGR_CONTRACT_SCHEMA_VERSION);
-    expect(result.rejected_routes[0]?.blueprint_id).toBe("analysis.light");
-  });
-
-  it("rejects blueprint decisions without a selected route", () => {
-    expect(() =>
-      validateBlueprintRouteDecisionSgrResult({
-        schema_version: SGR_CONTRACT_SCHEMA_VERSION,
-        kind: "blueprint_route_decision",
-        facts: [{ label: "intent", summary: "Analyze only." }],
-        inferences: [{ label: "task-kind", summary: "analysis" }],
-        rejected_routes: [],
-        required_evidence: [],
-        stop_rules: [],
-        weak_links: [],
-      }),
-    ).toThrow("selected_route");
-  });
 });

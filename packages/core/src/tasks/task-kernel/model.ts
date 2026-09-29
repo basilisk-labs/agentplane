@@ -121,13 +121,19 @@ export type ExecutionAuthority = Readonly<{
 export type CanonicalApprovalMode =
   | "manual_operator"
   | "signed_user_receipt"
-  | "host_user_decision";
+  | "host_user_decision"
+  | "repository_policy";
 
 export type AuthorityObservation = Readonly<{
-  kind: "plan_amendment" | "repository_implementation";
+  kind: "plan_amendment" | "repository_implementation" | "authority_delta";
   evidence_digest: Sha256Digest;
   previous_fingerprint: Sha256Digest;
   changed_paths: readonly string[];
+  request_digest?: Sha256Digest;
+  added_scope_roots?: readonly string[];
+  added_repository_effects?: readonly string[];
+  request_task_revision?: number;
+  repository_evidence_digest?: Sha256Digest;
 }>;
 
 /** Ordered authority lineage inside the same atomic aggregate as lifecycle state. */
@@ -265,7 +271,14 @@ export type TaskCommand =
   | CommandEnvelope<"capture_intent", { intent_digest: Sha256Digest }>
   | CommandEnvelope<"transition_task", { action: "request_human" | "block" | "resume" | "cancel" }>
   | CommandEnvelope<"propose_plan", { plan: PlanRecord }>
-  | CommandEnvelope<"reject_plan", { plan_revision: number; plan_digest: Sha256Digest }>
+  | CommandEnvelope<
+      "reject_plan",
+      {
+        plan_revision: number;
+        plan_digest: Sha256Digest;
+        rejection_evidence_digest?: Sha256Digest;
+      }
+    >
   | CommandEnvelope<
       "approve_plan",
       {
@@ -276,6 +289,14 @@ export type TaskCommand =
       }
     >
   | CommandEnvelope<"continue_authority", { record: CanonicalAuthorityRecord }>
+  | CommandEnvelope<
+      "approve_authority_delta",
+      {
+        parent_authority_digest: Sha256Digest;
+        request_digest: Sha256Digest;
+        record: CanonicalAuthorityRecord;
+      }
+    >
   | CommandEnvelope<"materialize_work_items", { plan_revision: number; plan_digest: Sha256Digest }>
   | CommandEnvelope<
       "transition_work_item",

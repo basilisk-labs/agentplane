@@ -30,6 +30,20 @@ type GithubPullLookupRecord = {
   mergeable_state?: string | null;
 };
 
+function githubBaseBranch(base: string | null | undefined, remote = "origin"): string {
+  const value = base?.trim() ?? "";
+  for (const prefix of [
+    "refs/heads/",
+    `refs/remotes/${remote}/`,
+    `${remote}/`,
+    "refs/remotes/origin/",
+    "origin/",
+  ]) {
+    if (value.startsWith(prefix)) return value.slice(prefix.length);
+  }
+  return value;
+}
+
 export type GithubPrMergeability = {
   state: "conflicting" | "not_conflicting" | "pending" | "unknown";
   mergeable: boolean | null;
@@ -228,7 +242,7 @@ async function observeGithubPrByNumberInRepo(opts: {
       return { state: "unavailable", reason: "GitHub PR lookup omitted the head branch" };
     }
     if (expectedBranch && observedBranch !== expectedBranch) return { state: "not_found" };
-    const expectedBase = opts.baseBranch?.trim() ?? "";
+    const expectedBase = githubBaseBranch(opts.baseBranch);
     const observedBase = record.base?.ref?.trim() ?? "";
     if (expectedBase && !observedBase) {
       return { state: "unavailable", reason: "GitHub PR lookup omitted the base branch" };
@@ -260,7 +274,7 @@ export async function observeExistingGithubPrByBranch(opts: {
   }
 
   const query = new URLSearchParams({ state: "all", head: `${owner}:${opts.branch}` });
-  const baseBranch = opts.baseBranch?.trim() ?? "";
+  const baseBranch = githubBaseBranch(opts.baseBranch, opts.identity?.remote);
   if (baseBranch) query.set("base", baseBranch);
   const endpoint = `repos/${repo}/pulls?${query.toString()}`;
 
@@ -325,7 +339,11 @@ export async function observeExistingGithubPrByNumber(opts: {
       reason: "origin is unavailable or is not a GitHub repository",
     };
   }
-  return await observeGithubPrByNumberInRepo({ ...opts, repo });
+  return await observeGithubPrByNumberInRepo({
+    ...opts,
+    repo,
+    baseBranch: githubBaseBranch(opts.baseBranch, opts.identity?.remote),
+  });
 }
 
 export async function tryLookupExistingGithubPrByNumber(opts: {
@@ -348,7 +366,7 @@ export async function tryLookupExistingGithubPrByBranchPrefix(opts: {
   const repo = opts.identity?.targetProject ?? (await resolveGithubRepoFromOrigin(opts.gitRoot));
   if (!repo) return null;
   const query = new URLSearchParams({ state: "all", per_page: "100" });
-  const baseBranch = opts.baseBranch?.trim() ?? "";
+  const baseBranch = githubBaseBranch(opts.baseBranch, opts.identity?.remote);
   if (baseBranch) query.set("base", baseBranch);
   const endpoint = `repos/${repo}/pulls?${query.toString()}`;
   const branchPrefix = opts.branchPrefix.trim();
@@ -439,7 +457,7 @@ export async function tryCreateGithubPr(opts: {
       artifactState: "remote_staged",
     };
   }
-  const baseBranch = opts.baseBranch?.trim() ?? "";
+  const baseBranch = githubBaseBranch(opts.baseBranch, opts.identity?.remote);
   if (!baseBranch) {
     return {
       observed: null,

@@ -43,7 +43,6 @@ export type ContextExecutionReceiptRef = {
 export type VerificationInput = {
   task_kind?: string;
   mutation_scope?: string;
-  blueprint_request?: string;
   id: string;
   owner?: string;
   status?: string;
@@ -177,8 +176,5 @@ export function isMaximumAssimilationTask(
   task: VerificationInput,
   context: ContextExtension,
 ): boolean {
-  return (
-    task.blueprint_request === "context.maximum_assimilation" ||
-    context.mode === "maximum_assimilation"
-  );
+  return context.mode === "maximum_assimilation";
 }

@@ -1,4 +1,4 @@
-import { mkdir, readFile, realpath, writeFile } from "node:fs/promises";
+import { mkdir, readFile, realpath } from "node:fs/promises";
 import path from "node:path";
 
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -6,15 +6,12 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { defaultConfig } from "@agentplaneorg/core/config";
 import { execFileAsync } from "@agentplaneorg/core/process";
 import {
-  captureStdIO,
   installRunCliIntegrationHarness,
   mkGitRepoRootWithCommit,
-  runCliSilent,
   writeConfig,
 } from "@agentplane/testkit";
 import { makeRunnerContextBundle, writeRunnerExecutable } from "@agentplane/testkit/runner";
 
-import { runCli } from "../../cli/run-cli.js";
 import { loadCommandContext } from "../../commands/shared/task-backend.js";
 import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
 import { CliError } from "../../shared/errors.js";
@@ -37,8 +34,7 @@ import { runnerReplayDangerAuthoritySource } from "./task-run-lifecycle-shared.j
 import { executeTaskRunnerExecution, prepareTaskRunnerExecution } from "./task-run.js";
 import {
   INITIAL_DANGER_AUTHORITY,
-  initializeRunnerPolicyFixture,
-  materializeRunnerTaskWorkItemFixture,
+  createDoingRunnerTask,
   recordFailedExternalRunnerAnchor,
   replayDangerAuthority,
   sha256,
@@ -57,67 +53,12 @@ async function createDoingTask(
   title: string,
   structuredWorkItem = true,
 ): Promise<string> {
-  await initializeRunnerPolicyFixture(root);
-  let taskId = "";
-  {
-    const io = captureStdIO();
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        title,
-        "--description",
-        title,
-        "--owner",
-        "CODER",
-        "--tag",
-        "docs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = io.stdout.trim();
-    } finally {
-      io.restore();
-    }
-  }
-  await runCliSilent([
-    "task",
-    "plan",
-    "set",
-    taskId,
-    "--text",
-    `Execute lifecycle test task: ${title}.`,
-    "--updated-by",
-    "ORCHESTRATOR",
-    "--root",
+  return await createDoingRunnerTask({
     root,
-  ]);
-  await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
-  const commandCtx = await loadCommandContext({ cwd: root, rootOverride: root });
-  const task = await commandCtx.taskBackend.getTask(taskId);
-  expect(task).toBeTruthy();
-  await commandCtx.taskBackend.writeTask({
-    ...task,
-    id: taskId,
     title,
-    description: title,
-    priority: task?.priority ?? "med",
-    owner: task?.owner ?? "CODER",
-    depends_on: task?.depends_on ?? [],
-    tags: task?.tags ?? ["docs"],
-    verify: task?.verify ?? [],
-    status: "DOING",
+    plan_text: `Execute lifecycle test task: ${title}.`,
+    structured_work_item: structuredWorkItem,
   });
-  if (structuredWorkItem) {
-    await materializeRunnerTaskWorkItemFixture({
-      root,
-      task_id: taskId,
-      objective: `Execute lifecycle test task: ${title}.`,
-    });
-  }
-  return taskId;
 }
 
 async function configureCustomRunner(root: string, scriptLines: string[]): Promise<void> {
@@ -142,7 +83,7 @@ describe("task-run lifecycle usecases", () => {
       "cat >/dev/null",
       "exit 0",
     ]);
-    const taskId = await createDoingTask(root, "Blocked manifest guidance", false);
+    const taskId = await createDoingTask(root, "Blocked manifest guidance");
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
     const runId = "run-blocked-guidance";
 
@@ -235,7 +176,7 @@ describe("task-run lifecycle usecases", () => {
   it("cancel marks a prepared execute-mode run as cancelled and appends an event", async () => {
     const root = await mkGitRepoRootWithCommit();
     await configureCustomRunner(root, ["#!/bin/sh", "cat >/dev/null", "exit 0"]);
-    const taskId = await createDoingTask(root, "Cancel run", false);
+    const taskId = await createDoingTask(root, "Cancel run");
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
     const prepared = await prepareTaskRunnerExecution({
       ctx,
@@ -315,37 +256,6 @@ describe("task-run lifecycle usecases", () => {
     expect(cancelled.state.status).toBe("cancelled");
     expect(cancelled.repository.paths.run_dir).toBe(legacyPaths.run_dir);
     expect(await readFile(legacyPaths.events_path, "utf8")).toContain("runner_cancelled");
-  });
-
-  it("refuses runner preparation when project-local blueprint trust is invalid", async () => {
-    const root = await mkGitRepoRootWithCommit();
-    await configureCustomRunner(root, ["#!/bin/sh", "exit 0"]);
-    const configPath = path.join(root, ".agentplane", "blueprints", "config.json");
-    await mkdir(path.dirname(configPath), { recursive: true });
-    await writeFile(
-      configPath,
-      JSON.stringify({
-        schema_version: 1,
-        trust_model: "explicit_allowlist",
-        enabled: true,
-        allowed_ids: ["missing.local"],
-        selection: "explicit_only",
-      }),
-      "utf8",
-    );
-    const taskId = await createDoingTask(root, "Invalid local blueprint trust", false);
-    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
-
-    await expect(
-      prepareTaskRunnerExecution({
-        ctx,
-        cwd: root,
-        rootOverride: root,
-        task_id: taskId,
-        mode: "dry_run",
-        run_id: "run-invalid-blueprint-trust",
-      }),
-    ).rejects.toThrow("Invalid project-local blueprint trust registry");
   });
 
   it("persists a typed refusal when a danger recipe lacks explicit operator authority", async () => {
@@ -646,7 +556,9 @@ describe("task-run lifecycle usecases", () => {
     await writeConfig(root, config);
     const taskId = await createDoingTask(root, "Route-authoritative runner checkout");
     await execFileAsync("git", ["add", "--", `.agentplane/tasks/${taskId}`], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "seed route-authority task"], { cwd: root });
+    await execFileAsync("git", ["commit", "--allow-empty", "-m", "seed route-authority task"], {
+      cwd: root,
+    });
     const branch = `task/${taskId}/route-authority`;
     const worktreePath = path.join(root, ".agentplane", "worktrees", `${taskId}-route-authority`);
     await mkdir(path.dirname(worktreePath), { recursive: true });

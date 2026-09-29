@@ -9,6 +9,10 @@ import {
 } from "../../adapters/authority/user-approval-receipt.js";
 import { KernelBackendAdapter } from "../../adapters/task-backend/kernel-backend-adapter.js";
 import {
+  makeKernelRecord,
+  TASK_KERNEL_EXTENSION,
+} from "../../adapters/task-backend/kernel-record.js";
+import {
   kernelReplayJourney,
   replayRepositoryIdentity,
 } from "../../adapters/task-backend/kernel-replay-journey.test-fixtures.js";
@@ -23,7 +27,10 @@ const keys = generateKeyPairSync("ed25519");
 const now = "2026-08-31T10:00:00.000Z";
 const expiry = "2026-08-31T10:10:00.000Z";
 
-async function fixture(mode: k.CanonicalApprovalMode = "manual_operator") {
+async function fixture(
+  mode: k.CanonicalApprovalMode = "manual_operator",
+  requirements: Partial<k.ExecutionRequirements> = {},
+) {
   const journey = kernelReplayJourney("direct");
   const seed = journey.steps[0]!.input;
   let saved: TaskData | null = null;
@@ -47,7 +54,11 @@ async function fixture(mode: k.CanonicalApprovalMode = "manual_operator") {
   if (proposal.command.kind !== "propose_plan") throw new Error("plan fixture missing");
   const definitions = proposal.command.plan.work_items.map((item) => ({
     ...item,
-    execution_requirements: { ...item.execution_requirements, scope_roots: ["src"] },
+    execution_requirements: {
+      ...item.execution_requirements,
+      scope_roots: ["src"],
+      ...requirements,
+    },
   }));
   const plan = {
     ...proposal.command.plan,
@@ -127,32 +138,34 @@ async function fixture(mode: k.CanonicalApprovalMode = "manual_operator") {
     return Buffer.from(JSON.stringify(receipt)).toString("base64url");
   }
   let approval: NativeApprovalObservation | null =
-    mode === "manual_operator"
-      ? { kind: mode, actor_id: "USER", invocation_id: "operator-invocation-1" }
-      : mode === "signed_user_receipt"
-        ? { kind: mode, encoded: signed() }
-        : {
-            kind: mode,
-            repository_identity: replayRepositoryIdentity,
-            host_id: "host-1",
-            conversation_id: "conversation-1",
-            message_id: "message-1",
-            encoded: Buffer.from(
-              JSON.stringify({
-                schema_version: 1,
-                kind: "agentplane.host_user_decision",
-                origin: "user",
-                host_id: "host-1",
-                conversation_id: "conversation-1",
-                message_id: "message-1",
-                task_id: journey.task.id,
-                plan_digest: plan.digest,
-                state_fingerprint: values.repository_fingerprint,
-                decision: "approved",
-                decided_at: now,
-              }),
-            ).toString("base64url"),
-          };
+    mode === "repository_policy"
+      ? null
+      : mode === "manual_operator"
+        ? { kind: mode, actor_id: "USER", invocation_id: "operator-invocation-1" }
+        : mode === "signed_user_receipt"
+          ? { kind: mode, encoded: signed() }
+          : {
+              kind: mode,
+              repository_identity: replayRepositoryIdentity,
+              host_id: "host-1",
+              conversation_id: "conversation-1",
+              message_id: "message-1",
+              encoded: Buffer.from(
+                JSON.stringify({
+                  schema_version: 1,
+                  kind: "agentplane.host_user_decision",
+                  origin: "user",
+                  host_id: "host-1",
+                  conversation_id: "conversation-1",
+                  message_id: "message-1",
+                  task_id: journey.task.id,
+                  plan_digest: plan.digest,
+                  state_fingerprint: values.repository_fingerprint,
+                  decision: "approved",
+                  decided_at: now,
+                }),
+              ).toString("base64url"),
+            };
   let observation: k.AuthorityObservation | null = null;
   const port: KernelAuthorityPort = {
     readContext: async () => {
@@ -182,32 +195,97 @@ async function fixture(mode: k.CanonicalApprovalMode = "manual_operator") {
     setObservation: (next: k.AuthorityObservation) => {
       observation = next;
     },
+    replaceAggregate: (aggregate: k.TaskAggregate) => {
+      if (!saved) throw new Error("task fixture missing");
+      const current = saved.extensions?.[TASK_KERNEL_EXTENSION];
+      if (!current || typeof current !== "object") throw new Error("kernel record missing");
+      const record = current as { events?: readonly k.DomainEvent[] };
+      saved = {
+        ...saved,
+        extensions: {
+          ...saved.extensions,
+          [TASK_KERNEL_EXTENSION]: makeKernelRecord(
+            replayRepositoryIdentity,
+            aggregate,
+            record.events ?? [],
+          ),
+        },
+      };
+    },
   };
 }
 
+const effects = (path: string) => (path.startsWith("schemas/") ? ["schema"] : ["source_code"]);
+
 describe("canonical native authority", () => {
-  it.each(["manual_operator", "signed_user_receipt", "host_user_decision"] as const)(
-    "persists exact %s approval and delegates without USER provenance",
-    async (mode) => {
-      const f = await fixture(mode);
-      expect(await f.resolver.approve(f.taskId)).toMatchObject({ kind: "committed" });
-      const read = await f.adapter.read(f.taskId);
-      expect(read).toMatchObject({
-        kind: "canonical",
-        record: { aggregate: { authority_lineage: [{ approval_mode: mode }] } },
-      });
-      const { authority: root } = await f.resolver.resolve(f.taskId);
-      const { authority: child } = await f.resolver.resolve(f.taskId, "build");
-      expect(root.provenance.kind).toBe("USER");
-      expect(child.provenance).toMatchObject({
-        kind: "DELEGATED",
-        parent_authority_digest: root.digest,
-      });
-      expect(child.provenance.actor_id).not.toBe("USER");
-      expect(k.compareExecutionAuthority(root, child)).toEqual({ ok: true });
-      expect(child.plan_digest).toBe(f.plan.digest);
-    },
-  );
+  it.each([
+    "manual_operator",
+    "signed_user_receipt",
+    "host_user_decision",
+    "repository_policy",
+  ] as const)("persists exact %s approval and delegates without USER provenance", async (mode) => {
+    const f = await fixture(mode);
+    expect(
+      mode === "repository_policy"
+        ? await f.resolver.approveByRepositoryPolicy(f.taskId)
+        : await f.resolver.approve(f.taskId),
+    ).toMatchObject({ kind: "committed" });
+    const read = await f.adapter.read(f.taskId);
+    expect(read).toMatchObject({
+      kind: "canonical",
+      record: { aggregate: { authority_lineage: [{ approval_mode: mode }] } },
+    });
+    const { authority: root } = await f.resolver.resolve(f.taskId);
+    const { authority: child } = await f.resolver.resolve(f.taskId, "build");
+    expect(root.provenance.kind).toBe(mode === "repository_policy" ? "SYSTEM" : "USER");
+    if (read.kind !== "canonical") throw new Error(read.kind);
+    expect(read.record.aggregate.current_plan?.approval_actor_id).toBe(
+      mode === "repository_policy" ? "native-controller" : root.provenance.actor_id,
+    );
+    expect(child.provenance).toMatchObject({
+      kind: "DELEGATED",
+      parent_authority_digest: root.digest,
+    });
+    expect(child.provenance.actor_id).not.toBe("USER");
+    expect(k.compareExecutionAuthority(root, child)).toEqual({ ok: true });
+    expect(child.plan_digest).toBe(f.plan.digest);
+  });
+
+  it("delegates approved semantic work with its exact resource scope", async () => {
+    const requirements = {
+      resources: ["environment:disposable/qualification"],
+    };
+    const f = await fixture("manual_operator", requirements);
+    f.values.ceiling = { ...f.values.ceiling, ...requirements };
+    expect(await f.resolver.approve(f.taskId)).toMatchObject({ kind: "committed" });
+    const { authority } = await f.resolver.resolve(f.taskId, "build");
+    expect(authority).toMatchObject({
+      ...requirements,
+      task_id: f.taskId,
+      plan_revision: f.plan.revision,
+      plan_digest: f.plan.digest,
+      work_item_id: "build",
+    });
+    f.values.ceiling = { ...f.values.ceiling, resources: ["environment:production"] };
+    await expect(f.resolver.resolve(f.taskId, "build")).rejects.toThrow("native_policy_changed");
+  });
+
+  it("refuses a production resource under a disposable-only native approval", async () => {
+    const requirements = {
+      resources: ["environment:production"],
+    };
+    const f = await fixture("manual_operator", requirements);
+    f.values.ceiling = {
+      ...f.values.ceiling,
+      ...requirements,
+      resources: ["environment:disposable/qualification"],
+    };
+    const before = await f.adapter.read(f.taskId);
+    await expect(f.resolver.approve(f.taskId)).rejects.toThrow(
+      "plan_exceeds_native_approval_scope",
+    );
+    expect(await f.adapter.read(f.taskId)).toEqual(before);
+  });
 
   it.each(["issuer", "signature", "plan", "fingerprint", "expired"] as const)(
     "rejects a signed receipt with invalid %s without persisting approval",
@@ -317,6 +395,94 @@ describe("canonical native authority", () => {
     expect(read.record.aggregate.authority_lineage).toHaveLength(2);
   });
 
+  it("admits only an exact native USER-approved authority delta", async () => {
+    const f = await fixture();
+    await f.resolver.approve(f.taskId);
+    const afterPlanApproval = await f.adapter.read(f.taskId);
+    if (afterPlanApproval.kind !== "canonical") throw new Error(afterPlanApproval.kind);
+    const approvedPlan = afterPlanApproval.record.aggregate.current_plan;
+    const { authority: parent } = await f.resolver.resolve(f.taskId);
+    f.values.repository_fingerprint = k.kernelDigest("schema-sync");
+    f.setObservation({
+      kind: "repository_implementation",
+      previous_fingerprint: parent.repository_fingerprint,
+      evidence_digest: k.kernelDigest("schema-observation"),
+      changed_paths: ["schemas/generated.json", "src/implementation.ts"],
+    });
+    const prepared = await f.resolver.prepareDelta(f.taskId, effects);
+    expect(prepared.request).toMatchObject({
+      parent_authority_digest: parent.digest,
+      added_scope_roots: ["schemas/generated.json"],
+      added_repository_effects: ["schema"],
+    });
+    f.setApproval({
+      kind: "manual_operator",
+      actor_id: "USER",
+      invocation_id: prepared.request_digest,
+    });
+    await expect(
+      f.resolver.approveDelta({
+        task_id: f.taskId,
+        scope_roots: ["schemas"],
+        repository_effects: ["schema"],
+        request_digest: prepared.request_digest,
+        repositoryEffects: effects,
+      }),
+    ).rejects.toThrow("authority_delta_request_mismatch");
+    await expect(
+      f.resolver.approveDelta({
+        task_id: f.taskId,
+        scope_roots: prepared.request.added_scope_roots,
+        repository_effects: prepared.request.added_repository_effects,
+        request_digest: k.kernelDigest("stale"),
+        repositoryEffects: effects,
+      }),
+    ).rejects.toThrow("authority_delta_request_mismatch");
+    expect(
+      await f.resolver.approveDelta({
+        task_id: f.taskId,
+        scope_roots: prepared.request.added_scope_roots,
+        repository_effects: prepared.request.added_repository_effects,
+        request_digest: prepared.request_digest,
+        repositoryEffects: effects,
+      }),
+    ).toMatchObject({ kind: "committed" });
+    const read = await f.adapter.read(f.taskId);
+    if (read.kind !== "canonical") throw new Error(read.kind);
+    expect(k.canonicalAuthorityIssues(read.record.aggregate)).toEqual([]);
+    expect(read.record.aggregate.current_plan).toEqual(approvedPlan);
+    expect(read.record.aggregate.work_items).toEqual({});
+    await expect(f.resolver.resolve(f.taskId)).resolves.toMatchObject({
+      authority: { repository_fingerprint: f.values.repository_fingerprint },
+    });
+    expect(read.record.aggregate.authority_lineage?.at(-1)).toMatchObject({
+      approval_mode: "manual_operator",
+      observation: {
+        kind: "authority_delta",
+        request_digest: prepared.request_digest,
+        added_scope_roots: ["schemas/generated.json"],
+      },
+      authority: {
+        scope_roots: ["schemas/generated.json", "src"],
+        repository_effects: ["repository_write", "schema"],
+        provenance: {
+          kind: "USER",
+          parent_authority_digest: parent.digest,
+          evidence_digest: parent.provenance.evidence_digest,
+        },
+      },
+    });
+    await expect(
+      f.resolver.approveDelta({
+        task_id: f.taskId,
+        scope_roots: prepared.request.added_scope_roots,
+        repository_effects: prepared.request.added_repository_effects,
+        request_digest: prepared.request_digest,
+        repositoryEffects: effects,
+      }),
+    ).rejects.toThrow();
+  });
+
   it("requires a new native decision for material expansion and rejects changed policy or expiry", async () => {
     const f = await fixture();
     f.values.ceiling = { ...f.values.ceiling, scope_roots: ["different"] };
@@ -329,6 +495,32 @@ describe("canonical native authority", () => {
     await expect(f.resolver.resolve(f.taskId)).rejects.toThrow("native_policy_changed");
     f.values.occurred_at = "2026-08-31T10:11:00.000Z";
     await expect(f.resolver.resolve(f.taskId)).rejects.toThrow("authority_expired");
+  });
+
+  it("validates the latest approved authority against the current native ceiling", async () => {
+    const f = await fixture();
+    await f.resolver.approve(f.taskId);
+    const read = await f.adapter.read(f.taskId);
+    if (read.kind !== "canonical") throw new Error(read.kind);
+    const first = read.record.aggregate.authority_lineage?.[0]?.authority;
+    if (!first) throw new Error("approved authority missing");
+    const policyDigests = [k.kernelDigest("replacement-policy")];
+    const latestContents = { ...first, policy_digests: policyDigests };
+    const latest = { ...latestContents, digest: k.authorityDigest(latestContents) };
+    const aggregate: k.TaskAggregate = {
+      ...read.record.aggregate,
+      authority_lineage: [
+        ...(read.record.aggregate.authority_lineage ?? []),
+        { authority: latest, approval_mode: "manual_operator", observation: null },
+      ],
+    };
+    expect(k.canonicalAuthorityIssues(aggregate)).toEqual([]);
+    f.replaceAggregate(aggregate);
+    f.values.ceiling = { ...f.values.ceiling, policy_digests: policyDigests };
+
+    await expect(f.resolver.resolve(f.taskId)).resolves.toMatchObject({
+      authority: { digest: latest.digest, policy_digests: policyDigests },
+    });
   });
 
   it("binds an unsigned host decision to the native channel instead of trusting its JSON identity", async () => {

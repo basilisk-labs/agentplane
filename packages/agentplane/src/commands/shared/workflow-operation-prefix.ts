@@ -17,6 +17,7 @@ export const WORKFLOW_OPERATION_ARGV_PREFIX = {
   "route.remote.refresh": ["agentplane", "task", "next-action"],
   "runner.follow": ["agentplane", "task"],
   "task.artifacts.commit": ["agentplane", "commit"],
+  "task.branch.sync_base": ["agentplane", "task", "run"],
   "task.branch.start": ["agentplane", "task", "start-ready"],
   "task.scope.extend": ["agentplane", "task", "scope", "extend"],
   "task.hosted_close.open": ["agentplane", "task", "hosted-close-pr"],

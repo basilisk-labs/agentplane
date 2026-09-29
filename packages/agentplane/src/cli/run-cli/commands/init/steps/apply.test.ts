@@ -128,7 +128,6 @@ describe("init apply wrapper", () => {
       "hooks",
       "ide",
       "recipes",
-      "blueprints",
       "commit",
     ]);
     expect(result.installPaths).toEqual([
@@ -138,7 +137,6 @@ describe("init apply wrapper", () => {
       ".gitignore",
       ".agentplane/bin/agentplane",
       ".cursor/rules/agentplane.mdc",
-      ".agentplane/blueprints/analysis.external.json",
     ]);
     expect(installCommit).toHaveBeenCalledWith(result.installPaths);
   });

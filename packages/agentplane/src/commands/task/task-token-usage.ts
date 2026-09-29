@@ -17,6 +17,8 @@ function unavailableTaskTokenUsage(opts: {
   return {
     schema_version: 1,
     state: "unavailable",
+    cached_input_tokens: null,
+    cached_input_observed_agent_runs: 0,
     input_tokens: null,
     output_tokens: null,
     reasoning_tokens: null,
@@ -37,6 +39,9 @@ export function projectTaskTokenUsage(opts: {
 }): TaskTokenUsage {
   const journal = validateSupervisorExecutionEpisodeJournal(opts.journal);
   const usage = journal.usage;
+  const hasUnallocatableRun = journal.operations.some(
+    (operation) => operation.usage_attribution?.state === "unallocatable",
+  );
   const updatedAt = opts.updated_at ?? new Date().toISOString();
   if (usage.agent_runs === 0) {
     return unavailableTaskTokenUsage({
@@ -51,7 +56,9 @@ export function projectTaskTokenUsage(opts: {
     (usage.input_tokens > 0 || usage.output_tokens > 0 || usage.total_tokens > 0 ? 1 : 0);
   if (observedAgentRuns === 0) {
     return unavailableTaskTokenUsage({
-      reason: "provider_token_telemetry_unavailable",
+      reason: hasUnallocatableRun
+        ? "external_host_turn_unallocatable"
+        : "provider_token_telemetry_unavailable",
       updated_at: updatedAt,
       journal,
     });
@@ -66,6 +73,11 @@ export function projectTaskTokenUsage(opts: {
   return {
     schema_version: 1,
     state: fullyObserved ? "observed" : "partial",
+    cached_input_tokens:
+      (usage.cached_input_observed_agent_runs ?? 0) > 0
+        ? (usage.cached_input_tokens ?? null)
+        : null,
+    cached_input_observed_agent_runs: usage.cached_input_observed_agent_runs ?? 0,
     input_tokens: usage.input_tokens,
     output_tokens: hasCompleteBreakdown ? (usage.visible_output_tokens ?? null) : null,
     reasoning_tokens: hasCompleteBreakdown ? (usage.reasoning_tokens ?? null) : null,
@@ -81,7 +93,9 @@ export function projectTaskTokenUsage(opts: {
         ? usage.output_breakdown_observed_agent_runs === undefined
           ? "legacy_journal_lacks_output_reasoning_breakdown_provenance"
           : "some_agent_runs_lack_output_reasoning_breakdown"
-        : "some_agent_runs_lack_provider_token_telemetry",
+        : hasUnallocatableRun
+          ? "some_agent_runs_unallocatable"
+          : "some_agent_runs_lack_provider_token_telemetry",
     updated_at: updatedAt,
   };
 }

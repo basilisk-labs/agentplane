@@ -42,23 +42,20 @@ async function makeFakeGh() {
       "const save = () => fs.writeFileSync(statePath, `${JSON.stringify(state, null, 2)}\\n`);",
       `const sha = ${JSON.stringify(SHA)};`,
       `const ref = ${JSON.stringify(REF)};`,
-      "const oldExact = { databaseId: 101, createdAt: '2026-08-05T19:00:00Z', event: 'workflow_dispatch', headBranch: ref, headSha: sha, status: 'completed', url: 'https://github.com/basilisk-labs/agentplane/actions/runs/101' };",
+      "const syntheticExact = { conclusion: 'success', databaseId: 101, createdAt: '2026-08-05T19:00:00Z', event: 'workflow_dispatch', headBranch: ref, headSha: sha, status: 'completed', url: 'https://github.com/basilisk-labs/agentplane/actions/runs/101' };",
       "if (args[0] === 'run' && args[1] === 'list') {",
       "  state.runListCalls += 1;",
-      "  let runs = [oldExact];",
-      "  if (process.env.FAKE_GH_MODE !== 'stale' && state.runListCalls >= 3) {",
+      "  let runs = [syntheticExact];",
+      "  if (process.env.FAKE_GH_MODE !== 'empty-run' && state.runListCalls >= 3) {",
       "    runs = [",
-      "      oldExact,",
-      "      { databaseId: 200, createdAt: '2026-08-05T20:00:00Z', event: 'workflow_dispatch', headBranch: ref, headSha: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', status: 'queued', url: 'https://github.com/basilisk-labs/agentplane/actions/runs/200' },",
-      "      { databaseId: 202, createdAt: '2026-08-05T20:00:02Z', event: 'workflow_dispatch', headBranch: ref, headSha: sha, status: 'queued', url: 'https://github.com/basilisk-labs/agentplane/actions/runs/202' },",
-      "      { databaseId: 201, createdAt: '2026-08-05T20:00:01Z', event: 'workflow_dispatch', headBranch: ref, headSha: sha, status: 'queued', url: 'https://github.com/basilisk-labs/agentplane/actions/runs/201' },",
+      "      syntheticExact,",
+      "      { conclusion: '', databaseId: 200, createdAt: '2026-08-05T20:00:00Z', event: 'pull_request', headBranch: ref, headSha: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', status: 'queued', url: 'https://github.com/basilisk-labs/agentplane/actions/runs/200' },",
+      "      { conclusion: 'success', databaseId: 201, createdAt: '2026-08-05T20:00:01Z', event: 'pull_request', headBranch: ref, headSha: sha, status: 'completed', url: 'https://github.com/basilisk-labs/agentplane/actions/runs/201' },",
       "    ];",
       "  }",
       "  save(); console.log(JSON.stringify(runs)); process.exit(0);",
       "}",
-      "if (args[0] === 'workflow' && args[1] === 'run') { save(); process.exit(0); }",
       "if (args[0] === 'run' && args[1] === 'watch') { save(); process.exit(0); }",
-      "if (args[0] === 'api') { save(); console.log(JSON.stringify({ id: 301 })); process.exit(0); }",
       "if (args[0] === 'pr' && args[1] === 'checks') { save(); process.exit(0); }",
       "if (args[0] === 'pr' && args[1] === 'merge') {",
       "  save();",
@@ -66,6 +63,11 @@ async function makeFakeGh() {
       "  process.stderr.write('merge queue required\\n'); process.exit(1);",
       "}",
       "if (args[0] === 'pr' && args[1] === 'view') {",
+      "  if (args.includes('headRefOid,statusCheckRollup')) {",
+      "    save();",
+      "    const statusCheckRollup = process.env.FAKE_GH_MODE === 'empty-rollup' ? [] : [{ name: 'Core CI', conclusion: process.env.FAKE_GH_MODE === 'action-required' ? 'ACTION_REQUIRED' : 'SUCCESS' }];",
+      "    console.log(JSON.stringify({ headRefOid: sha, statusCheckRollup })); process.exit(0);",
+      "  }",
       "  state.prViewCalls += 1; save();",
       "  if (state.prViewCalls === 1) { console.log(JSON.stringify({ state: 'OPEN', mergedAt: null, mergeCommit: null })); process.exit(0); }",
       "  console.log(JSON.stringify({ state: 'MERGED', mergedAt: '2026-08-05T20:02:00Z', mergeCommit: { oid: 'feedface' } })); process.exit(0);",
@@ -132,7 +134,7 @@ afterEach(async () => {
 });
 
 describe("verify release-evidence PR script", () => {
-  it("correlates a new exact-SHA run, publishes its check, and completes auto-merge", async () => {
+  it("waits for the native exact-SHA pull_request run and completes auto-merge", async () => {
     const fake = await makeFakeGh();
     const result = await runScript(fake);
 
@@ -162,45 +164,53 @@ describe("verify release-evidence PR script", () => {
       expect(args).toContain(REF);
       expect(args).toContain("--commit");
       expect(args).toContain(SHA);
-      expect(args).toContain("workflow_dispatch");
+      expect(args).toContain("pull_request");
     }
 
-    const workflowIndex = state.calls.findIndex(
-      (args) => args[0] === "workflow" && args[1] === "run",
-    );
     const watchIndex = state.calls.findIndex((args) => args[0] === "run" && args[1] === "watch");
-    const checkIndex = state.calls.findIndex((args) => args[0] === "api");
     const prChecksIndex = state.calls.findIndex((args) => args[0] === "pr" && args[1] === "checks");
+    const rollupIndex = state.calls.findIndex(
+      (args) =>
+        args[0] === "pr" && args[1] === "view" && args.includes("headRefOid,statusCheckRollup"),
+    );
     const mergeIndexes = state.calls
       .map((args, index) => ({ args, index }))
       .filter(({ args }) => args[0] === "pr" && args[1] === "merge");
-    expect(workflowIndex).toBeGreaterThanOrEqual(0);
-    expect(watchIndex).toBeGreaterThan(workflowIndex);
-    expect(checkIndex).toBeGreaterThan(watchIndex);
-    expect(prChecksIndex).toBeGreaterThan(checkIndex);
+    expect(watchIndex).toBeGreaterThanOrEqual(0);
+    expect(prChecksIndex).toBeGreaterThan(watchIndex);
+    expect(rollupIndex).toBeGreaterThan(prChecksIndex);
     expect(mergeIndexes).toHaveLength(2);
-    expect(mergeIndexes[0]?.index).toBeGreaterThan(prChecksIndex);
+    expect(mergeIndexes[0]?.index).toBeGreaterThan(rollupIndex);
     expect(mergeIndexes[1]?.args).toContain("--auto");
+    expect(state.calls.some((args) => args[0] === "workflow" && args[1] === "run")).toBe(false);
+    expect(state.calls.some((args) => args[0] === "api")).toBe(false);
 
     const watchCall = state.calls[watchIndex] ?? [];
     expect(watchCall).toContain("201");
     expect(watchCall).not.toContain("101");
-    const checkCall = state.calls[checkIndex] ?? [];
-    expect(checkCall).toContain(`head_sha=${SHA}`);
-    expect(checkCall).toContain(
-      "details_url=https://github.com/basilisk-labs/agentplane/actions/runs/201",
-    );
   });
 
-  it("fails instead of reusing a pre-existing run for the same SHA", async () => {
+  it("fails instead of accepting a synthetic workflow_dispatch run for the same SHA", async () => {
     const fake = await makeFakeGh();
-    const result = await runScript(fake, { FAKE_GH_MODE: "stale" });
+    const result = await runScript(fake, { FAKE_GH_MODE: "empty-run" });
 
     expect(result.exitCode).toBe(1);
-    expect(result.stderr).toContain("No new ci.yml workflow_dispatch run appeared");
+    expect(result.stderr).toContain("No native ci.yml pull_request run appeared");
     const state = JSON.parse(await readFile(fake.statePath, "utf8")) as { calls: string[][] };
     expect(state.calls).not.toContainEqual(expect.arrayContaining(["watch", "101"]));
-    expect(state.calls.some((args) => args[0] === "api")).toBe(false);
+    expect(state.calls.some((args) => args[0] === "pr" && args[1] === "merge")).toBe(false);
+  });
+
+  it.each([
+    ["action_required", "action-required", "Core CI=ACTION_REQUIRED"],
+    ["empty", "empty-rollup", "empty native check rollup"],
+  ])("fails closed for an %s native pull request rollup", async (_label, mode, message) => {
+    const fake = await makeFakeGh();
+    const result = await runScript(fake, { FAKE_GH_MODE: mode });
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stderr).toContain(message);
+    const state = JSON.parse(await readFile(fake.statePath, "utf8")) as { calls: string[][] };
     expect(state.calls.some((args) => args[0] === "pr" && args[1] === "merge")).toBe(false);
   });
 });

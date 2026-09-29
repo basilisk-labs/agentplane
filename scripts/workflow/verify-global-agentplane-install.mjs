@@ -56,6 +56,11 @@ function getRepoHead(repoRoot, expectedHead) {
   return execFileSync("git", ["rev-parse", "HEAD"], { cwd: repoRoot, encoding: "utf8" }).trim();
 }
 
+function isPathInside(parent, child) {
+  const relative = path.relative(path.resolve(parent), path.resolve(child));
+  return relative === "" || (!relative.startsWith(`..${path.sep}`) && relative !== "..");
+}
+
 function verifyLocalBuildManifest({ packageName, installDir, expectedPackageDir, expectedHead }) {
   const manifestPath = path.join(installDir, "dist", ".build-manifest.json");
   if (!existsSync(manifestPath)) {
@@ -92,9 +97,9 @@ function main() {
       [
         "Usage: node scripts/verify-global-agentplane-install.mjs [options]",
         "",
-        "Verifies that the global agentplane install resolves both agentplane and",
-        "@agentplaneorg/core from the current repository checkout rather than",
-        "from published registry artifacts.",
+        "Verifies that the global agentplane install contains the expected build",
+        "of agentplane and @agentplaneorg/core without resolving either package",
+        "from the mutable source checkout.",
         "",
         "Options:",
         "  --repo-root <path>       Repository root (default: cwd)",
@@ -106,11 +111,13 @@ function main() {
   }
 
   const repoRoot = path.resolve(args.repoRoot);
+  const realRepoRoot = realpathSync(repoRoot);
   const npmRoot = getNpmRoot(repoRoot, args.npmRoot);
   const repoHead = getRepoHead(repoRoot, args.expectedHead);
 
   const localAgentplaneDir = path.join(repoRoot, "packages", "agentplane");
   const localCoreDir = path.join(repoRoot, "packages", "core");
+  const localRecipesDir = path.join(repoRoot, "packages", "recipes");
   const globalAgentplaneDir = path.join(npmRoot, "agentplane");
   const globalAgentplanePkgPath = path.join(globalAgentplaneDir, "package.json");
 
@@ -118,9 +125,27 @@ function main() {
     fail(`global agentplane install not found at ${globalAgentplanePkgPath}`);
   }
 
+  const realAgentplaneDir = realpathSync(globalAgentplaneDir);
+  if (isPathInside(realRepoRoot, realAgentplaneDir)) {
+    fail(`global agentplane install resolves into the mutable checkout: ${realAgentplaneDir}`);
+  }
+
   const requireFromAgentplane = createRequire(globalAgentplanePkgPath);
   const resolvedCorePkgPath = requireFromAgentplane.resolve("@agentplaneorg/core/package.json");
   const resolvedCoreDir = path.dirname(resolvedCorePkgPath);
+  const realCoreDir = realpathSync(resolvedCoreDir);
+  const resolvedRecipesPkgPath = requireFromAgentplane.resolve(
+    "@agentplaneorg/recipes/package.json",
+  );
+  const resolvedRecipesDir = path.dirname(resolvedRecipesPkgPath);
+  const realRecipesDir = realpathSync(resolvedRecipesDir);
+
+  if (isPathInside(realRepoRoot, realCoreDir)) {
+    fail(`global @agentplaneorg/core resolves into the mutable checkout: ${realCoreDir}`);
+  }
+  if (isPathInside(realRepoRoot, realRecipesDir)) {
+    fail(`global @agentplaneorg/recipes resolves into the mutable checkout: ${realRecipesDir}`);
+  }
 
   verifyLocalBuildManifest({
     packageName: "agentplane",
@@ -134,11 +159,19 @@ function main() {
     expectedPackageDir: localCoreDir,
     expectedHead: repoHead,
   });
+  verifyLocalBuildManifest({
+    packageName: "@agentplaneorg/recipes",
+    installDir: resolvedRecipesDir,
+    expectedPackageDir: localRecipesDir,
+    expectedHead: repoHead,
+  });
 
   const agentplanePkg = readJson(globalAgentplanePkgPath);
   const resolvedCorePkg = readJson(resolvedCorePkgPath);
+  const resolvedRecipesPkg = readJson(resolvedRecipesPkgPath);
   const localAgentplanePkg = readJson(path.join(localAgentplaneDir, "package.json"));
   const localCorePkg = readJson(path.join(localCoreDir, "package.json"));
+  const localRecipesPkg = readJson(path.join(localRecipesDir, "package.json"));
 
   if (agentplanePkg.version !== localAgentplanePkg.version) {
     fail(
@@ -150,15 +183,22 @@ function main() {
       `resolved @agentplaneorg/core version mismatch: expected ${localCorePkg.version}, got ${resolvedCorePkg.version}`,
     );
   }
+  if (resolvedRecipesPkg.version !== localRecipesPkg.version) {
+    fail(
+      `resolved @agentplaneorg/recipes version mismatch: expected ${localRecipesPkg.version}, got ${resolvedRecipesPkg.version}`,
+    );
+  }
 
   process.stdout.write(
     [
       "verified global framework install",
       `repo_head: ${repoHead}`,
-      `agentplane_install_dir: ${realpathSync(globalAgentplaneDir)}`,
-      `core_runtime_dir: ${realpathSync(resolvedCoreDir)}`,
+      `agentplane_install_dir: ${realAgentplaneDir}`,
+      `core_runtime_dir: ${realCoreDir}`,
+      `recipes_runtime_dir: ${realRecipesDir}`,
       `agentplane_source: ${localAgentplaneDir}`,
       `core_source: ${localCoreDir}`,
+      `recipes_source: ${localRecipesDir}`,
     ].join("\n") + "\n",
   );
 }

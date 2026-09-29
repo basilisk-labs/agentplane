@@ -1,0 +1,109 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609071111-Y0Z0VQ/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609071111-Y0Z0VQ Verification Contract check affected_unit_integration\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609071111-Y0Z0VQ/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609071111-Y0Z0VQ Verification Contract check critical_paths\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609071111-Y0Z0VQ/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609071111-Y0Z0VQ Verification Contract check full_regression\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609071111-Y0Z0VQ/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609071111-Y0Z0VQ Verification Contract check task_outcome",
+  "digest": "sha256:23deea5512fcdc2e223937cb672aadd89a7dc04f2465ff44747ca0b42a397983",
+  "implementation_sha": "e0ae49d29fd69c88c8ad00e69b06b144700109d7",
+  "input": {
+    "context": {
+      "digest": "sha256:c59f15672b9a3b8d43130b18b274b5e3c58c5b4b87fe53a644febc8ff3e09663",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:ba3c37f149fdee6f52589df0e1309d9463f98b63fe3d8b6858aa3dd1d1245885",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:33ed55ad1e3a7e7f9e57c41fe37d91f69def425eae9d4f0752f3df603d9a2d9e",
+      "digest": "sha256:e23339c6968fd6f9ec5158ec6a0ff0fbe393f17f6a215998880b99f6d81d086d",
+      "references": [
+        {
+          "digest": "sha256:4d706b90a13ad494832339176cacd8dddde43d42b00c1917d480b07c62117cf7",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202609071111-Y0Z0VQ/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609071111-Y0Z0VQ/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "ca07204eed841a1aa245e3bb8d14832d7ea3ac30",
+      "digest": "sha256:0ae5bd0b993f38832c5cfac2e2940206bfa0b3fbe6bdb1a69b2ddbf885f8c739",
+      "primary_task_id": "202609071111-Y0Z0VQ",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "auto",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609071111-Y0Z0VQ"
+      ]
+    },
+    "implementation": {
+      "base_sha": "ca07204eed841a1aa245e3bb8d14832d7ea3ac30",
+      "digest": "sha256:837b64b0ff0712b5543debc846731022a870b7b3a7e9771d1ae637863f52bd6f",
+      "strategy": "branch_diff",
+      "target_sha": "e0ae49d29fd69c88c8ad00e69b06b144700109d7"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:994f54c9833f92baf0115deccf6e22ca7a015dff07bd78d7688078504f04bd88",
+    "verify_steps_digest": "sha256:319caeb8dd66736e54135024572a0b94fa9334263bb413bb35d3851bc302dff4"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.",
+  "recorded_at": "2026-09-07T13:11:25.505Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. For each WorkItem, reproduce its defect in the nearest existing behavioral test before implementation. Run bunx --no-install vitest --config vitest.workspace.ts run with project agentplane for command/backend tests, core for core tests, and cli-core for run-cli.core tests. Expected: the regression fails before the correction and passes afterwards.\n2. Run bun run typecheck, targeted ESLint and Prettier checks on changed files, and git diff --check. Expected: all pass.\n3. After all implementation WorkItems, run bun run ci:local:full. Expected: all required checks pass.\n4. Verify stale result rejection, exact replay, unchanged implementation acceptance, canonical plan routing, missing projection discovery, revision integrity, and scoped authority using isolated fixtures. Do not execute actual external deployment.\n5. Review the final diff and git status --short --untracked-files=all. Report non-reproduced historical claims and unverified Factory runtime behavior explicitly.",
+  "scope_digest": "sha256:319caeb8dd66736e54135024572a0b94fa9334263bb413bb35d3851bc302dff4",
+  "task_id": "202609071111-Y0Z0VQ",
+  "verification_command": "agentplane verify 202609071111-Y0Z0VQ --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

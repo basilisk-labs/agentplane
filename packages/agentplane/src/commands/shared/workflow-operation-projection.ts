@@ -112,6 +112,9 @@ function operationArgv(operation: WorkflowOperation): string[] {
     case "task.artifacts.commit": {
       return ["agentplane", "commit", operation.params.taskId, "--close", "--unstage-others"];
     }
+    case "task.branch.sync_base": {
+      return ["agentplane", "task", "run", operation.params.taskId, "--json"];
+    }
     case "task.hosted_close.open": {
       return ["agentplane", "task", "hosted-close-pr", operation.params.taskId];
     }

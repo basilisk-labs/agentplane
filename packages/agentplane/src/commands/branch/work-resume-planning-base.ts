@@ -7,8 +7,10 @@ import {
   taskCentricAggregateFromExtensions,
   taskCentricDigest,
   taskExecutionBaseFromExtensions,
+  withTaskCentricAggregate,
 } from "@agentplaneorg/core/tasks";
 import { loadTaskRunnerDiagnosticInspection } from "../../runner/usecases/task-run-inspect.js";
+import { projectTaskCentricCompatibilityMutation } from "../../adapters/task-backend/task-centric-backend-projection.js";
 import { runtimeFrom } from "../../adapters/task-backend/task-centric-backend-runtime.js";
 import { LocalBackend } from "../../backends/task-backend.js";
 import {
@@ -31,6 +33,11 @@ function refuse(reason: string): never {
 async function git(root: string, args: string[]): Promise<string> {
   const result = await execFileAsync("git", args, { cwd: root, env: gitEnv() });
   return result.stdout.trim();
+}
+
+async function gitPaths(root: string, args: string[]): Promise<string[]> {
+  const result = await execFileAsync("git", args, { cwd: root, env: gitEnv() });
+  return result.stdout.split("\0").filter(Boolean);
 }
 
 /** Explicit recovery only. Normal workspace preparation retains its frozen base. */
@@ -191,6 +198,37 @@ export async function recoverWorkPlanningBase(opts: {
     const unexpected = changed.filter((file) => !untrackedPaths.has(file) || !allowed.has(file));
     if (unexpected.length > 0)
       refuse(`tracked or unrelated untracked changes exist: ${unexpected.slice(0, 8).join(", ")}`);
+    if (head !== target) {
+      const [ignored, incoming] = await Promise.all([
+        gitPaths(root, [
+          "ls-files",
+          "--others",
+          "--ignored",
+          "--exclude-standard",
+          "--directory",
+          "-z",
+        ]),
+        gitPaths(root, [
+          "diff",
+          "--name-only",
+          "--no-renames",
+          "--diff-filter=ACMRT",
+          "-z",
+          head,
+          target,
+        ]),
+      ]);
+      const collisions = ignored.filter((entry) => {
+        const local = entry.endsWith("/") ? entry.slice(0, -1) : entry;
+        return incoming.some(
+          (file) => file === local || file.startsWith(`${local}/`) || local.startsWith(`${file}/`),
+        );
+      });
+      if (collisions.length > 0)
+        refuse(
+          `ignored local paths overlap the target snapshot: ${collisions.slice(0, 8).join(", ")}`,
+        );
+    }
     // Git must not replace the transported Task document during the fast-forward.
     if ((await git(root, ["ls-tree", "--name-only", target, "--", path.dirname(readme)])) !== "")
       refuse("target snapshot contains Task-owned paths");
@@ -208,19 +246,27 @@ export async function recoverWorkPlanningBase(opts: {
       (previous as Record<string, unknown>).target_sha !== target
     )
       refuse("no planning base advancement is required");
-    return { ...identity, token, status: "already_applied" };
+    if (aggregate.revision === task.revision)
+      return { ...identity, token, status: "already_applied" };
   }
   if (!opts.apply)
     return { ...identity, token, status: head === target ? "ready_to_reconcile" : "ready" };
   if (opts.expectedToken !== token) refuse("stale or missing recovery token; inspect again");
-  const next = {
-    ...task,
-    extensions: {
-      ...task.extensions,
-      task_execution_context: { ...base, base_sha: target },
-      task_planning_base_recovery: { ...identity, token, state: "applied" },
+  const normalizedExtensions = withTaskCentricAggregate(task.extensions, {
+    ...aggregate,
+    revision: task.revision!,
+  });
+  const next = projectTaskCentricCompatibilityMutation({
+    current: task,
+    next: {
+      ...task,
+      extensions: {
+        ...normalizedExtensions,
+        task_execution_context: { ...base, base_sha: target },
+        task_planning_base_recovery: { ...identity, token, state: "applied" },
+      },
     },
-  };
+  });
   // Existing native persistence holds the Task lock and verifies its revision before Git.
   // If Git lands but publication is interrupted, the original Task and approved plan still
   // bind both SHAs. A fresh inspection can reconcile HEAD=target without another Git effect.

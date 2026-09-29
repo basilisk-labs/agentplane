@@ -127,6 +127,7 @@ describe("provider update local continuity", () => {
       const head = await git(f.root, "rev-parse", "HEAD");
       expect(head).toBe(f.newHead);
       expect(await git(f.root, "rev-parse", "@{upstream}")).toBe(f.newHead);
+      expect(await git(f.root, "rev-parse", "refs/remotes/origin/main")).toBe(f.baseHead);
       expect(await readFile(path.join(f.root, "base.txt"), "utf8")).toBe("advanced base\n");
       expect(
         await resolvePrHeadPublicationStatus({
@@ -201,6 +202,7 @@ describe("provider update local continuity", () => {
       const head = await git(f.root, "rev-parse", "HEAD");
       expect(head).toBe(f.newHead);
       expect(await git(f.root, "rev-parse", "@{upstream}")).toBe(head);
+      expect(await git(f.root, "rev-parse", "refs/remotes/origin/main")).toBe(f.baseHead);
       const aligned = await resolvePrHeadPublicationStatus({
         gitRoot: f.root,
         branch: f.branch,

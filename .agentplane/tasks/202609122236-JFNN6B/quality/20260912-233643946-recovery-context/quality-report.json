@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202609122236-JFNN6B",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-12T23:38:35.751Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "3dde6bc3b2297caa1615cc9e7d476fe17ebc4656",
+  "blueprint_digest": "ca972e9d6960b8448cbddbc38dfa12ba169f4bacda7ac2e4c57410397cf1c585",
+  "findings": [
+    "No blocking findings. The frozen diff removes only the approved model-specific diagnostics and duplicate coverage guard, preserves model-neutral prompt assertions, keeps all nine safety-critical CLI files, and isolates all five agent-efficiency files in the qualification route.",
+    "Residual risk: Hosted CI and integration remain pending until the separately authorized PR lifecycle begins."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609122236-JFNN6B/quality/objects/sha256/6c4d9ed6da3b65274d128a9ea9f367ad9618428f7c95c0b50e80051155a40777.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

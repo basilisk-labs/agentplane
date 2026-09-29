@@ -1,0 +1,118 @@
+{
+  "details": "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609140050-8QDRVN declared verification\n\nCommand: bun run ci:local:full\nResult: fail\nEvidence: .agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609140050-8QDRVN declared verification",
+  "digest": "sha256:7444e50e4bb0ea0d3e8092338584dfd0f2782974e5da1b6d3c5fb3fe3d838d96",
+  "implementation_sha": "b4792b0bfad088dedeca07904a813fe2b7c53f9d",
+  "input": {
+    "context": {
+      "digest": "sha256:be2cd4a1822669e850198c66e1dff5858d19f4644abe13560d0a8d2504db633b",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package-lock.json",
+        "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:16f08d4e2b301d98fd7c05b2eac3614512ae9a27b0d0a3cc838c23649f8fbd31",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:c06cf127c50ecb2dd2c5d2ffba31c9de7e4ebb9663faf7b64286b10d01af5091",
+      "digest": "sha256:225a03bcdd1c7f92b5f53774a9bc5b84ae5942a8c29a9e8fddc40a3f43945f8f",
+      "references": [
+        {
+          "digest": "sha256:cb573284901baa0c33f9755df9bf25a840a652643d5fb0e50b036700bc7b3eb6",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:cb573284901baa0c33f9755df9bf25a840a652643d5fb0e50b036700bc7b3eb6",
+          "fragment": "check-2",
+          "path": ".agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-2",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "9792878934b2c4d068e98056cef3c2c691451a90",
+      "digest": "sha256:9f24eb12d140790f70f249d9bf26520a31bd00f0f5daf3abe617df0a9d34e328",
+      "primary_task_id": "202609140050-8QDRVN",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609140050-8QDRVN"
+      ]
+    },
+    "implementation": {
+      "base_sha": "9792878934b2c4d068e98056cef3c2c691451a90",
+      "digest": "sha256:a4618e23b70db96d6d3afabd635e322a9a13b4818abbf7ea5cda4d454f527a46",
+      "strategy": "branch_diff",
+      "target_sha": "b4792b0bfad088dedeca07904a813fe2b7c53f9d"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:6887e0a4c65a3315a4230271a03a98fcda1dbdd2460c294ce5a56d79e91e23b7",
+    "verify_steps_digest": "sha256:05eab6b62620509c625d909f09ebfb96b67576ef0e857e4aff2df272b855d255"
+  },
+  "kind": "task_verification_record",
+  "note": "Rework: Declared check failed: bun run ci:local:full",
+  "recorded_at": "2026-09-14T01:18:24.089Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "1. Run `bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts`. Expected: all focused recovery tests pass, including the Git-history rejection regression.\n2. Confirm the rejected exchange is retired, the owning journal operation is failed, and a plain advance requires the existing exact-key `--replacement` route.\n3. Confirm existing accepted-result replay and effect-in-doubt recovery cases still pass.",
+  "scope_digest": "sha256:05eab6b62620509c625d909f09ebfb96b67576ef0e857e4aff2df272b855d255",
+  "task_id": "202609140050-8QDRVN",
+  "verification_command": "agentplane verify 202609140050-8QDRVN --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609132330-RP315R-029adc22e5e9def0e959c0a7",
+  "prepared_at": "2026-09-14T00:03:05.834Z",
+  "task": {
+    "id": "202609132330-RP315R",
+    "revision": 15,
+    "objective": "Repair task-state validation for immutable quality-object directories without task README artifacts so the stable 0.7.9 release gate passes without weakening validation for real task records\n\nRepair task-state validation for immutable quality-object directories without task README artifacts so the stable 0.7.9 release gate passes without weakening validation for real task records",
+    "acceptance_criteria": [
+      "- In scope: Repair task-state validation for immutable quality-object directories without task README artifacts so the stable 0.7.9 release gate passes without weakening validation for real task records.\n- Out of scope: unrelated refactors not required for \"Repair task-state validation for immutable quality-object directories without task README artifacts so the stable 0.7.9 release gate passes without weakening validation for real task records\".",
+      "Plan a narrow task-state invariant repair for content-addressed quality-object storage.",
+      "1. Run `bun run test:project -- agentplane packages/agentplane/src/commands/release/task-state-script.test.ts --maxWorkers=4`. Expected: the focused task-state suite passes, including valid object-only storage and fail-closed malformed-directory cases.\n2. Run `bun run task-state:check`. Expected: repository task-state validation passes while preserving the VN1FN4 immutable quality object.\n3. Run `bun run release:check`. Expected: the scoped release gate passes.\n4. Run `bunx prettier scripts/checks/check-task-state.mjs packages/agentplane/src/commands/release/task-state-script.test.ts --check`, `bunx eslint scripts/checks/check-task-state.mjs packages/agentplane/src/commands/release/task-state-script.test.ts`, and `git diff --check`. Expected: formatting, lint, and diff hygiene pass."
+    ]
+  },
+  "evaluated_sha": "d511f8b8fa9caa06b86a715e8e3f09500cf6086e",
+  "diff_base_sha": "ecfccc5ad0230fc1876a319be0af5cdb530c339f",
+  "blueprint_digest": "dd6c228e2c24bd4f6d2b65056f9691f84324a0867b1c6171979423d9d93afd1d",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609132330-RP315R/quality/20260914-000305834-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:eed192175fa505acb6e44574896e4392b14ad861fc0200effc2db826956ddab1",
+    "prompt_path": ".agentplane/tasks/202609132330-RP315R/quality/objects/sha256/0606a566f1e8ece92c4b4ff8b5c3149fde96a6691096cf4353bb5565b62371ac.md",
+    "result_schema_path": ".agentplane/tasks/202609132330-RP315R/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609132330-RP315R/README.md",
+      "sha256": "sha256:9f385dca6fea0d5b500dc3eeb6e4793afa00436979f5f21a0e2acddd6c715a11",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609132330-RP315R/quality/objects/sha256/8c87ef14fe9c10fb7cc3dd0ab299a5488f57c3a9213ab528e58cae727cd21ce6.patch",
+      "sha256": "sha256:8c87ef14fe9c10fb7cc3dd0ab299a5488f57c3a9213ab528e58cae727cd21ce6",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609132330-RP315R/quality/objects/sha256/8f95b5e66dc32f47938a55f425309917860f5af654088dbb61b52b3046bff56b.json",
+      "sha256": "sha256:8f95b5e66dc32f47938a55f425309917860f5af654088dbb61b52b3046bff56b",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609132330-RP315R/verification/20260914000256951-fbce6a369f29b1cd.json",
+      "sha256": "sha256:dbbf5dbc2d3a14c07bf09038f275d3cebb3e681837cf68c2782911c920acdff6",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609132330-RP315R/quality/objects/sha256/fed6cce54d60d18e2430e7cdd9b708ad947f99bb9955a1e4353348622e31047f.json",
+      "sha256": "sha256:fed6cce54d60d18e2430e7cdd9b708ad947f99bb9955a1e4353348622e31047f",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

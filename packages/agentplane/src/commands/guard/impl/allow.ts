@@ -76,7 +76,7 @@ function isGeneratedSameTaskArtifact(opts: {
   sameTaskPrefix: string | null;
 }): boolean {
   if (opts.sameTaskPrefix === null) return false;
-  return ["blueprint", "quality"].some((dir) =>
+  return ["quality"].some((dir) =>
     gitPathIsUnderPrefix(opts.filePath, `${opts.sameTaskPrefix}/${dir}`),
   );
 }

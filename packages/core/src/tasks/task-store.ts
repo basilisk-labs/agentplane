@@ -54,7 +54,7 @@ export type QualityReviewResult = {
   updated_by: string | null;
   note: string | null;
   evaluated_sha: string | null;
-  blueprint_digest: string | null;
+  review_identity_digest: string | null;
   evidence_refs: string[];
   findings: string[];
   recovery_reason?: QualityReviewRecoveryReason;
@@ -155,6 +155,8 @@ export type TaskTokenUsageState = "observed" | "partial" | "unavailable";
 export type TaskTokenUsage = {
   schema_version: 1;
   state: TaskTokenUsageState;
+  cached_input_tokens?: number | null;
+  cached_input_observed_agent_runs?: number;
   input_tokens: number | null;
   output_tokens: number | null;
   reasoning_tokens: number | null;
@@ -320,6 +322,10 @@ export type TaskExecutionContract = {
     forbidden_repository_effects: TaskRepositoryEffect[];
     allowed_external_effects: TaskExternalEffect[];
     forbidden_external_effects: TaskExternalEffect[];
+    /** Explicit semantic capabilities admitted by the trusted intake boundary. */
+    allowed_capabilities?: string[];
+    /** Explicit resource claims admitted by the trusted intake boundary. */
+    allowed_resources?: string[];
   };
   safety: {
     requires_worktree: boolean;

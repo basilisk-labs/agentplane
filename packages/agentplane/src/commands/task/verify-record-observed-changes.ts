@@ -5,14 +5,17 @@ import {
 import { isRecord } from "../../shared/guards.js";
 import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import type { CommandContext } from "../shared/task-backend.js";
-import { gitIsAncestor } from "@agentplaneorg/core/git";
+import { gitIsAncestor, gitShowFile } from "@agentplaneorg/core/git";
 import {
   componentForVerificationPath,
+  repositoryEffectsForChange,
   repositoryEffectsForPath,
   type TaskExecutionContract,
+  type TaskRepositoryEffect,
   type TaskVerificationObservation,
 } from "@agentplaneorg/core/tasks";
 import { reconcileTaskExecutionContract } from "../../runtime/task-routing/index.js";
+import type { TaskData } from "../../backends/task-backend.js";
 
 function hasFrozenDirectExecutionBase(extensions: unknown, executionBaseSha: string): boolean {
   if (!isRecord(extensions)) return false;
@@ -28,19 +31,15 @@ function hasFrozenDirectExecutionBase(extensions: unknown, executionBaseSha: str
 export async function resolveObservedVerificationChangedPaths(opts: {
   ctx: CommandContext;
   evaluatedSha: string | null;
-  taskId: string;
+  task: TaskData;
   artifactTaskIds: readonly string[];
   execution: TaskExecutionContext;
 }): Promise<string[]> {
   if (!opts.evaluatedSha) return [];
   const { config, resolvedProject } = opts.ctx;
-  const task =
-    opts.execution.selected_mode === "direct"
-      ? await opts.ctx.taskBackend.getTask(opts.taskId)
-      : null;
   const baseRef =
     opts.execution.selected_mode === "branch_pr" ||
-    hasFrozenDirectExecutionBase(task?.extensions, opts.execution.base_sha)
+    hasFrozenDirectExecutionBase(opts.task.extensions, opts.execution.base_sha)
       ? opts.execution.base_sha
       : null;
   // Use a frozen execution boundary when it is persisted; legacy direct tasks retain parent fallback.
@@ -61,6 +60,49 @@ export async function resolveObservedVerificationChangedPaths(opts: {
   return exactChangedPaths.filter(
     (changedPath) => !taskArtifactPrefixes.some((prefix) => changedPath.startsWith(prefix)),
   );
+}
+
+export async function resolveObservedVerificationRepositoryEffects(
+  opts: Parameters<typeof resolveObservedVerificationChangedPaths>[0] & {
+    changed_paths: readonly string[];
+    inherited_paths: readonly string[];
+  },
+): Promise<TaskRepositoryEffect[]> {
+  if (!opts.evaluatedSha) return [];
+  const evaluatedSha = opts.evaluatedSha;
+  const baseRef =
+    opts.execution.selected_mode === "branch_pr" ||
+    hasFrozenDirectExecutionBase(opts.task.extensions, opts.execution.base_sha)
+      ? opts.execution.base_sha
+      : null;
+  const diffBaseSha = await resolveEvaluatorDiffBase({
+    gitRoot: opts.ctx.resolvedProject.gitRoot,
+    evaluatedSha,
+    baseRef,
+    allowSingleCommitFallback: true,
+  });
+  const inherited = new Set(opts.inherited_paths);
+  const effectGroups = await Promise.all(
+    opts.changed_paths
+      .filter((changedPath) => !inherited.has(changedPath))
+      .map(async (changedPath) => {
+        if (!/(^|\/)package\.json$/u.test(changedPath)) {
+          return repositoryEffectsForPath(changedPath);
+        }
+        const [beforeContent, afterContent] = await Promise.all([
+          diffBaseSha
+            ? gitShowFile(opts.ctx.resolvedProject.gitRoot, diffBaseSha, changedPath).catch(
+                () => null,
+              )
+            : Promise.resolve(null),
+          gitShowFile(opts.ctx.resolvedProject.gitRoot, evaluatedSha, changedPath).catch(
+            () => null,
+          ),
+        ]);
+        return repositoryEffectsForChange(changedPath, beforeContent, afterContent);
+      }),
+  );
+  return [...new Set(effectGroups.flat())].toSorted();
 }
 
 /** Keep the full frozen verification range, but do not attribute inherited base content to the task. */
@@ -91,11 +133,42 @@ export async function resolveInheritedVerificationPaths(
   return opts.changed_paths.filter((file) => !owned.has(file));
 }
 
+/** Observe paths and effects against the same task snapshot used by the guarded mutation. */
+export async function resolveObservedVerificationChangeSet(
+  opts: Parameters<typeof resolveObservedVerificationChangedPaths>[0] & {
+    snapshot?: {
+      changed_paths: readonly string[];
+      inherited_paths?: readonly string[];
+      repository_effects?: readonly TaskRepositoryEffect[];
+    };
+  },
+): Promise<{
+  changed_paths: string[];
+  inherited_paths: string[];
+  repository_effects: TaskRepositoryEffect[];
+}> {
+  const changed_paths = opts.snapshot
+    ? [...opts.snapshot.changed_paths]
+    : await resolveObservedVerificationChangedPaths(opts);
+  const inherited_paths = opts.snapshot?.inherited_paths
+    ? [...opts.snapshot.inherited_paths]
+    : await resolveInheritedVerificationPaths({ ...opts, changed_paths });
+  const repository_effects = opts.snapshot?.repository_effects
+    ? [...opts.snapshot.repository_effects]
+    : await resolveObservedVerificationRepositoryEffects({
+        ...opts,
+        changed_paths,
+        inherited_paths,
+      });
+  return { changed_paths, inherited_paths, repository_effects };
+}
+
 /** Verification coverage may include inherited files; semantic write observations must not. */
 export function reconcileVerificationExecutionContract(opts: {
   contract: TaskExecutionContract;
   changed_paths: readonly string[];
   inherited_paths: readonly string[];
+  observed_repository_effects?: readonly TaskRepositoryEffect[];
   verification_results?: readonly TaskVerificationObservation[];
 }): TaskExecutionContract {
   const inherited = new Set(opts.inherited_paths);
@@ -135,11 +208,13 @@ export function reconcileVerificationExecutionContract(opts: {
       },
     },
     changed_paths: paths,
+    observed_repository_effects: opts.observed_repository_effects,
     verification_results: opts.verification_results,
   }).contract;
   const coverage = reconcileTaskExecutionContract({
     contract: scoped,
     changed_paths: opts.changed_paths,
+    observed_repository_effects: opts.observed_repository_effects,
   }).contract;
   return { ...scoped, verification: coverage.verification };
 }

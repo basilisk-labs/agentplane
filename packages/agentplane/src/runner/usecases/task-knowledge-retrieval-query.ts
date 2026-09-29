@@ -2,7 +2,6 @@ import path from "node:path";
 
 import type { KnowledgeRef, PreparedKnowledgeExcerpt } from "@agentplaneorg/core/schemas";
 
-import type { BlueprintPlanArtifact } from "../../blueprints/index.js";
 import type { RunnerTaskContextEnvelope } from "../context/task-context.js";
 import type { SemanticRetrievalEscalationReceipt } from "./task-knowledge-semantic-escalation.js";
 
@@ -23,7 +22,6 @@ export type RetrievalSignal =
   | "acceptance"
   | "path"
   | "symbol"
-  | "blueprint"
   | "tag"
   | "dependency"
   | "finding";
@@ -197,7 +195,6 @@ export function querySignalRank(query: Pick<QueryTerm, "signals">): number {
     tag: 2,
     task_intent: 2,
     acceptance: 3,
-    blueprint: 5,
     dependency: 3,
     finding: 3,
   };
@@ -206,7 +203,6 @@ export function querySignalRank(query: Pick<QueryTerm, "signals">): number {
 
 export function taskQueryPlan(opts: {
   task_envelope: RunnerTaskContextEnvelope;
-  blueprint: BlueprintPlanArtifact;
   dependencies: { title: string; result_summary?: string; description: string }[];
 }): { queries: QueryTerm[]; omitted_count: number; collection_saturated: boolean } {
   const queries = new Map<string, QueryTerm>();
@@ -219,7 +215,6 @@ export function taskQueryPlan(opts: {
     addQuery(queries, value, "symbol", 0);
   }
   for (const tag of task.tags ?? []) addQuery(queries, tag, "tag", 0);
-  addQuery(queries, opts.blueprint.blueprintId, "blueprint");
   for (const dependency of opts.dependencies) {
     for (const value of stringsFromText(
       `${dependency.title}\n${dependency.result_summary ?? ""}\n${dependency.description}`,
@@ -260,7 +255,6 @@ export function taskQueryPlan(opts: {
     ["dependency", 3],
     ["finding", 3],
     ["acceptance", 3],
-    ["blueprint", 1],
   ];
   const selected: QueryTerm[] = [];
   const selectedKeys = new Set<string>();

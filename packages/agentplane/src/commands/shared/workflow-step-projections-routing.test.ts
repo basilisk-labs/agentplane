@@ -12,8 +12,9 @@ import {
   withBootstrapWorkflowFingerprint,
   type WorkflowRouteStateInput,
 } from "./workflow-step-fingerprint.js";
+import { withNativeIdentity } from "./workflow-step.testkit.js";
 
-const task = {
+const task = withNativeIdentity({
   id: "202607250200-PROJ1",
   title: "Workflow step projection routing fixture",
   description: "Exercise routing execution packet projections.",
@@ -30,7 +31,7 @@ const task = {
     approved_at: "2026-07-25T00:00:00.000Z",
   },
   verification: { state: "pending" },
-} satisfies TaskData;
+} satisfies TaskData);
 
 const taskWorktreePath = `/repo/.agentplane/worktrees/${task.id}`;
 const taskBranch = `task/${task.id}/workflow-step-projection-fixture`;
@@ -189,5 +190,62 @@ describe("WorkflowStep routing projections", () => {
       mutationPathHint: taskWorktreePath,
       exactArgv: null,
     });
+  });
+
+  it("synchronizes an exact plan-bound base before the implementation episode", () => {
+    const expectedBaseSha = "2222222222222222222222222222222222222222";
+    const { step, packet } = executionPacket(
+      routeState({
+        branchBaseSync: {
+          state: "ready",
+          workItemId: "sync-base",
+          branch: taskBranch,
+          baseBranch: "main",
+          expectedHeadSha: resume.head_sha,
+          expectedBaseSha,
+        },
+      }),
+    );
+
+    expect(step).toMatchObject({
+      kind: "cli_operation",
+      id: "task.branch.sync_base",
+      authoritativeCheckout: "task_worktree",
+      operation: {
+        params: {
+          taskId: task.id,
+          branch: taskBranch,
+          baseBranch: "main",
+          expectedHeadSha: resume.head_sha,
+          expectedBaseSha,
+        },
+        triggersGitHooks: true,
+      },
+    });
+    expect(packet).toMatchObject({
+      actionKind: "local_command",
+      safeToMutate: true,
+      mutationPathHint: taskWorktreePath,
+      exactArgv: ["agentplane", "task", "run", task.id, "--json"],
+    });
+  });
+
+  it("fails closed when a ready WorkItem has an invalid base synchronization request", () => {
+    const { step, packet } = executionPacket(
+      routeState({
+        branchBaseSync: {
+          state: "invalid",
+          workItemId: "sync-base",
+          reason: "requested base SHA no longer matches main",
+        },
+      }),
+    );
+
+    expect(step).toMatchObject({
+      kind: "terminal",
+      id: "terminal.task_branch_base_sync",
+      outcome: { type: "repair_required" },
+    });
+    expect(packet).toMatchObject({ safeToMutate: false, exactArgv: null });
   });
 });

@@ -1,0 +1,1933 @@
+diff --git a/docs/user/branching-and-pr-artifacts.mdx b/docs/user/branching-and-pr-artifacts.mdx
+index 92585616c..eebfdbcbc 100644
+--- a/docs/user/branching-and-pr-artifacts.mdx
++++ b/docs/user/branching-and-pr-artifacts.mdx
+@@ -138,6 +138,16 @@ manual PR link on the merged task PR instead of failing silently.
+ 
+ See the [generated CLI reference](cli-reference.generated) for the public command surface.
+ 
++To inspect disk use before cleanup, run `agentplane cleanup inspect` or
++`agentplane cleanup inspect --json`. The report lists allocated size, task branch ownership,
++dirty state, and cleanup classification for registered worktrees. It also lists separate Git
++repositories directly under `.agentplane` and its worktrees directory. Sizes are filesystem block
++allocations; shared APFS data can make their sum differ from reclaimable space. A
++`proof_required` entry is only a prompt to inspect `agentplane cleanup merged`. That command
++still requires task closure and provider proof before deletion. Dirty or active worktrees and
++separate repositories remain retained; inspect them individually rather than deleting them based
++on size.
++
+ Typical branch_pr flow:
+ 
+ ```bash
+diff --git a/docs/user/cli-reference.generated.mdx b/docs/user/cli-reference.generated.mdx
+index a173abb0f..5e1036d37 100644
+--- a/docs/user/cli-reference.generated.mdx
++++ b/docs/user/cli-reference.generated.mdx
+@@ -114,6 +114,7 @@ Field names and casing are exact. Optional fields are omitted when no value is a
+   - [branch base set](#branch-base-set)
+   - [branch remove](#branch-remove)
+   - [branch status](#branch-status)
++  - [cleanup inspect](#cleanup-inspect)
+   - [cleanup merged](#cleanup-merged)
+ - Backend
+   - [backend connect](#backend-connect)
+@@ -1840,6 +1841,34 @@ agentplane branch status --base main
+ 
+ - Check against an explicit base.
+ 
++### cleanup inspect
++
++Inspect local disk use and worktree cleanup eligibility without deleting files.
++
++Usage:
++
++```text
++agentplane cleanup inspect [options]
++```
++
++Options:
++
++- `--json`: Print machine-readable inventory. (default=false)
++
++Examples:
++
++```sh
++agentplane cleanup inspect
++```
++
++- List worktree and nested repository sizes.
++
++```sh
++agentplane cleanup inspect --json
++```
++
++- Export a read-only inventory.
++
+ ### cleanup merged
+ 
+ Delete merged task branches/worktrees (branch_pr workflow).
+diff --git a/packages/agentplane/src/backends/task-backend/load.ts b/packages/agentplane/src/backends/task-backend/load.ts
+index f2d311f05..17688fbfa 100644
+--- a/packages/agentplane/src/backends/task-backend/load.ts
++++ b/packages/agentplane/src/backends/task-backend/load.ts
+@@ -1,8 +1,11 @@
+ import type { AgentplaneConfig } from "@agentplaneorg/core/config";
+ import { resolveProject, type ResolvedProject } from "@agentplaneorg/core/project";
+ import path from "node:path";
++import { lstat, realpath } from "node:fs/promises";
+ 
+ import { loadConfig } from "@agentplaneorg/core/config";
++import { gitEnv, listWorktrees } from "@agentplaneorg/core/git";
++import { execFileAsync } from "@agentplaneorg/core/process";
+ 
+ import { readContainedStableTextNoFollow } from "../../shared/contained-stable-file.js";
+ import { isRecord } from "../../shared/guards.js";
+@@ -63,16 +66,71 @@ async function loadBackendConfig(
+   }
+ }
+ 
+-function loadLocalTaskBackend(ctx: TaskBackendLoaderContext): TaskBackendLoaderResult {
++async function loadLocalTaskBackend(
++  ctx: TaskBackendLoaderContext,
++): Promise<TaskBackendLoaderResult> {
+   const localDir =
+     resolveMaybeRelative(ctx.resolved.gitRoot, ctx.settings.dir) ??
+     path.join(ctx.resolved.gitRoot, ctx.config.paths.workflow_dir);
++  const historyDir = await compactTaskHistoryRoot(ctx.resolved.gitRoot, localDir);
+   return {
+-    backend: new LocalBackend({ dir: localDir }),
++    backend: new LocalBackend({ dir: localDir, historyDir: historyDir ?? undefined }),
+     backendId: "local",
+   };
+ }
+ 
++async function compactTaskHistoryRoot(repoRoot: string, localDir: string): Promise<string | null> {
++  const marker = await execFileAsync(
++    "git",
++    ["config", "--worktree", "--get", "agentplane.compactTaskHistory"],
++    { cwd: repoRoot, env: gitEnv() },
++  )
++    .then(({ stdout }) => stdout.trim())
++    .catch(() => null);
++  if (marker === null) return null;
++  if (marker !== "true")
++    throw new BackendError("Invalid compact task history marker.", "E_BACKEND");
++
++  const worktrees = await listWorktrees(repoRoot);
++  const primary = worktrees[0];
++  if (!primary) throw new BackendError("Canonical task worktree is unavailable.", "E_BACKEND");
++  const [currentRoot, primaryRoot] = await Promise.all([
++    realpath(repoRoot),
++    realpath(primary.path),
++  ]);
++  if (currentRoot === primaryRoot) {
++    throw new BackendError(
++      "Compact task history marker is invalid on the primary worktree.",
++      "E_BACKEND",
++    );
++  }
++  const relativeDir = path.relative(repoRoot, localDir);
++  if (relativeDir !== path.join(".agentplane", "tasks")) {
++    throw new BackendError(
++      "Compact task history requires the standard local task store.",
++      "E_BACKEND",
++    );
++  }
++  const localStats = await lstat(localDir).catch(() => null);
++  if (
++    !localStats?.isDirectory() ||
++    localStats.isSymbolicLink() ||
++    (await realpath(localDir)) !== path.join(currentRoot, relativeDir)
++  ) {
++    throw new BackendError("Current worktree task store is unavailable or unsafe.", "E_BACKEND");
++  }
++  const historyDir = path.join(primaryRoot, relativeDir);
++  const stats = await lstat(historyDir).catch(() => null);
++  if (
++    !stats?.isDirectory() ||
++    stats.isSymbolicLink() ||
++    (await realpath(historyDir)) !== historyDir
++  ) {
++    throw new BackendError("Canonical task store is unavailable or unsafe.", "E_BACKEND");
++  }
++  return historyDir;
++}
++
+ async function loadCloudTaskBackend(
+   ctx: TaskBackendLoaderContext,
+ ): Promise<TaskBackendLoaderResult> {
+diff --git a/packages/agentplane/src/backends/task-backend/local-backend-read.ts b/packages/agentplane/src/backends/task-backend/local-backend-read.ts
+index 9b2961ce6..82b36198c 100644
+--- a/packages/agentplane/src/backends/task-backend/local-backend-read.ts
++++ b/packages/agentplane/src/backends/task-backend/local-backend-read.ts
+@@ -215,12 +215,18 @@ async function isIgnorableMissingReadmeTaskDir(root: string, dirName: string): P
+ export async function listLocalTasks(
+   context: LocalBackendContext,
+   mode: "full" | "projection",
+-  opts: { writeIndex?: boolean; status?: readonly string[] } = {},
++  opts: {
++    writeIndex?: boolean;
++    writeProjection?: boolean;
++    readProjectionCache?: boolean;
++    strictRoot?: boolean;
++    status?: readonly string[];
++  } = {},
+ ): Promise<TaskData[] | TaskSummary[]> {
+   const projectionOnly = mode === "projection";
+   const writeIndex = opts.writeIndex ?? true;
+   const projectionStatuses = normalizeProjectionStatusFilter(opts.status);
+-  if (projectionOnly) {
++  if (projectionOnly && opts.readProjectionCache !== false) {
+     const sqliteProjection = await readFreshSqliteTaskProjection({
+       tasksDir: context.root,
+       status: opts.status,
+@@ -233,7 +239,9 @@ export async function listLocalTasks(
+ 
+   const tasks: (TaskData | TaskSummary)[] = [];
+   const warnings: string[] = [];
+-  const entries = await readdir(context.root, { withFileTypes: true }).catch(() => []);
++  const entries = opts.strictRoot
++    ? await readdir(context.root, { withFileTypes: true })
++    : await readdir(context.root, { withFileTypes: true }).catch(() => []);
+   const dirs = entries
+     .filter((entry) => entry.isDirectory() && entry.name !== ".cache")
+     .map((entry) => entry.name)
+@@ -276,7 +284,7 @@ export async function listLocalTasks(
+       statuses: projectionStatuses,
+     });
+     if (cachedProjection) {
+-      if (!projectionStatuses) {
++      if (!projectionStatuses && opts.writeProjection !== false) {
+         await writeSqliteTaskProjection({
+           tasksDir: context.root,
+           tasks: cachedProjection,
+@@ -411,7 +419,7 @@ export async function listLocalTasks(
+     }
+   }
+ 
+-  if (warnings.length === 0) {
++  if (warnings.length === 0 && opts.writeProjection !== false) {
+     await writeSqliteTaskProjection({
+       tasksDir: context.root,
+       tasks: Object.values(nextById).map((entry) => entry.task),
+@@ -447,13 +455,6 @@ export async function getLocalTask(
+   });
+ }
+ 
+-export async function getLocalTasks(
+-  context: LocalBackendContext,
+-  taskIds: string[],
+-): Promise<(TaskData | null)[]> {
+-  return await mapLimit(taskIds, 8, async (taskId) => await getLocalTask(context, taskId));
+-}
+-
+ export async function getLocalTaskDoc(
+   context: LocalBackendContext,
+   taskId: string,
+diff --git a/packages/agentplane/src/backends/task-backend/local-backend-write.ts b/packages/agentplane/src/backends/task-backend/local-backend-write.ts
+index 0e2799bef..a9f4b56d6 100644
+--- a/packages/agentplane/src/backends/task-backend/local-backend-write.ts
++++ b/packages/agentplane/src/backends/task-backend/local-backend-write.ts
+@@ -49,6 +49,7 @@ const TASK_README_MAX_BYTES = 256 * 1024 * 1024;
+ export async function generateLocalTaskId(
+   context: Pick<LocalBackendContext, "root">,
+   opts: { length: number; attempts: number },
++  historyRoot: string | null = null,
+ ): Promise<string> {
+   const length = opts.length;
+   if (length < 4) throw new Error(invalidLengthMessage(length, 4));
+@@ -57,15 +58,17 @@ export async function generateLocalTaskId(
+     length,
+     attempts,
+     isAvailable: async (taskId) => {
+-      const readmePath = taskReadmePath(context.root, taskId);
+-      try {
+-        await readFile(readmePath, "utf8");
+-        return false;
+-      } catch (err) {
+-        const code = (err as { code?: string } | null)?.code;
+-        if (code === "ENOENT") return true;
+-        throw err;
++      for (const root of [context.root, historyRoot].filter((entry): entry is string => !!entry)) {
++        const readmePath = taskReadmePath(root, taskId);
++        try {
++          await readFile(readmePath, "utf8");
++          return false;
++        } catch (err) {
++          const code = (err as { code?: string } | null)?.code;
++          if (code !== "ENOENT") throw err;
++        }
+       }
++      return true;
+     },
+   });
+ }
+diff --git a/packages/agentplane/src/backends/task-backend/local-backend.ts b/packages/agentplane/src/backends/task-backend/local-backend.ts
+index 02e5ddda8..346a4b419 100644
+--- a/packages/agentplane/src/backends/task-backend/local-backend.ts
++++ b/packages/agentplane/src/backends/task-backend/local-backend.ts
+@@ -1,5 +1,5 @@
+ import path from "node:path";
+-import { rm } from "node:fs/promises";
++import { lstat, rm } from "node:fs/promises";
+ import {
+   parseTaskReadme,
+   taskReadmePath,
+@@ -14,6 +14,7 @@ import {
+ } from "../../shared/contained-stable-file.js";
+ import {
+   DEFAULT_DOC_UPDATED_BY,
++  mapLimit,
+   type TaskBackend,
+   type TaskData,
+   type TaskSummary,
+@@ -21,12 +22,7 @@ import {
+   type TaskWriteOptions,
+ } from "./shared.js";
+ import { setLocalTaskDoc, touchLocalTaskDocMetadata } from "./local-backend-doc.js";
+-import {
+-  getLocalTask,
+-  getLocalTaskDoc,
+-  getLocalTasks,
+-  listLocalTasks,
+-} from "./local-backend-read.js";
++import { getLocalTask, getLocalTaskDoc, listLocalTasks } from "./local-backend-read.js";
+ import {
+   generateLocalTaskId,
+   normalizeLocalTasks,
+@@ -88,16 +84,19 @@ export class LocalBackend implements TaskBackend {
+     supports_snapshot_export: false,
+   } as const;
+   root: string;
++  readonly historyRoot: string | null;
+   updatedBy: string;
+   private lastListWarnings: string[] = [];
+ 
+-  constructor(settings?: { dir?: string; updatedBy?: string }) {
++  constructor(settings?: { dir?: string; historyDir?: string; updatedBy?: string }) {
+     this.root = path.resolve(settings?.dir ?? ".agentplane/tasks");
++    this.historyRoot = settings?.historyDir ? path.resolve(settings.historyDir) : null;
+     this.updatedBy = settings?.updatedBy ?? DEFAULT_DOC_UPDATED_BY;
+   }
+ 
+   async generateTaskId(opts: { length: number; attempts: number }): Promise<string> {
+-    return await generateLocalTaskId(this.backendContext(), opts);
++    const history = await this.historyContext();
++    return await generateLocalTaskId(this.backendContext(), opts, history?.root ?? null);
+   }
+ 
+   private backendContext() {
+@@ -110,6 +109,23 @@ export class LocalBackend implements TaskBackend {
+     };
+   }
+ 
++  private async historyContext() {
++    if (!this.historyRoot) return null;
++    const stats = await lstat(this.historyRoot);
++    if (!stats.isDirectory() || stats.isSymbolicLink()) {
++      throw new Error(`Canonical task store is not a directory: ${this.historyRoot}`);
++    }
++    return { root: this.historyRoot, updatedBy: this.updatedBy };
++  }
++
++  private async assertLocalWrite(taskId: string): Promise<void> {
++    const history = await this.historyContext();
++    if (!history || (await getLocalTask(this.backendContext(), taskId))) return;
++    if (await getLocalTask(history, taskId)) {
++      throw new Error(`Refusing to write historical task ${taskId} from a compact worktree.`);
++    }
++  }
++
+   async listTasks(): Promise<TaskData[]> {
+     const result = await this.listTasksWithWarnings();
+     return result.tasks;
+@@ -127,15 +143,59 @@ export class LocalBackend implements TaskBackend {
+         this.lastListWarnings = [...warnings];
+       },
+     };
+-    const tasks = (await listLocalTasks(context, "full", opts)) as TaskData[];
+-    return { tasks, warnings: requestWarnings };
++    const local = (await listLocalTasks(context, "full", opts)) as TaskData[];
++    const history = await this.historyContext();
++    if (!history) return { tasks: local, warnings: requestWarnings };
++    let historyWarnings: string[] = [];
++    const historical = (await listLocalTasks(
++      {
++        ...history,
++        setLastListWarnings: (warnings) => {
++          historyWarnings = warnings;
++        },
++      },
++      "full",
++      { writeIndex: false, writeProjection: false, strictRoot: true },
++    )) as TaskData[];
++    const tasks = [
++      ...new Map([...historical, ...local].map((task) => [task.id, task])).values(),
++    ].toSorted((a, b) => a.id.localeCompare(b.id));
++    const warnings = [
++      ...requestWarnings,
++      ...historyWarnings.map((warning) => `history:${warning}`),
++    ];
++    this.lastListWarnings = warnings;
++    return { tasks, warnings };
+   }
+ 
+   async listProjectionTasks(opts?: { status?: readonly string[] }): Promise<TaskSummary[]> {
+-    return (await listLocalTasks(this.backendContext(), "projection", {
++    const local = (await listLocalTasks(this.backendContext(), "projection", {
+       writeIndex: false,
+-      status: opts?.status,
+     })) as TaskSummary[];
++    const history = await this.historyContext();
++    let historyWarnings: string[] = [];
++    const historical = history
++      ? ((await listLocalTasks(
++          {
++            ...history,
++            setLastListWarnings: (warnings) => {
++              historyWarnings = warnings;
++            },
++          },
++          "projection",
++          {
++            writeIndex: false,
++            writeProjection: false,
++            readProjectionCache: false,
++            strictRoot: true,
++          },
++        )) as TaskSummary[])
++      : [];
++    this.lastListWarnings.push(...historyWarnings.map((warning) => `history:${warning}`));
++    const statuses = new Set(opts?.status?.map((status) => status.trim().toUpperCase()));
++    return [...new Map([...historical, ...local].map((task) => [task.id, task])).values()]
++      .filter((task) => statuses.size === 0 || statuses.has(task.status.trim().toUpperCase()))
++      .toSorted((a, b) => a.id.localeCompare(b.id));
+   }
+ 
+   getLastListWarnings(): string[] {
+@@ -143,15 +203,21 @@ export class LocalBackend implements TaskBackend {
+   }
+ 
+   async getTask(taskId: string): Promise<TaskData | null> {
+-    return await getLocalTask(this.backendContext(), taskId);
++    const local = await getLocalTask(this.backendContext(), taskId);
++    if (local) return local;
++    const history = await this.historyContext();
++    return history ? await getLocalTask(history, taskId) : null;
+   }
+ 
+   async getTasks(taskIds: string[]): Promise<(TaskData | null)[]> {
+-    return await getLocalTasks(this.backendContext(), taskIds);
++    return await mapLimit(taskIds, 8, async (taskId) => await this.getTask(taskId));
+   }
+ 
+   async getTaskDoc(taskId: string): Promise<string> {
+-    return await getLocalTaskDoc(this.backendContext(), taskId);
++    const local = await getLocalTask(this.backendContext(), taskId);
++    if (local) return await getLocalTaskDoc(this.backendContext(), taskId);
++    const history = await this.historyContext();
++    return await getLocalTaskDoc(history ?? this.backendContext(), taskId);
+   }
+ 
+   async writeTask(task: TaskData, opts?: TaskWriteOptions): Promise<void> {
+@@ -159,6 +225,7 @@ export class LocalBackend implements TaskBackend {
+   }
+ 
+   async writeTaskWithResult(task: TaskData, opts?: TaskWriteOptions): Promise<TaskWriteResult> {
++    await this.assertLocalWrite(task.id);
+     const receipt = await writeLocalTaskWithReceipt(this.backendContext(), task, opts);
+     return {
+       ...receipt,
+@@ -171,6 +238,7 @@ export class LocalBackend implements TaskBackend {
+     opts: TaskWriteOptions | undefined,
+     beforePublication: () => Promise<void>,
+   ): Promise<LocalTaskWriteReceipt> {
++    await this.assertLocalWrite(task.id);
+     return await writeLocalTaskWithReceipt(this.backendContext(), task, opts, beforePublication);
+   }
+ 
+@@ -180,6 +248,7 @@ export class LocalBackend implements TaskBackend {
+     updatedBy?: string,
+     opts?: TaskWriteOptions,
+   ): Promise<void> {
++    await this.assertLocalWrite(taskId);
+     await setLocalTaskDoc(this.backendContext(), taskId, doc, updatedBy, opts);
+   }
+ 
+@@ -188,10 +257,12 @@ export class LocalBackend implements TaskBackend {
+     updatedBy?: string,
+     opts?: TaskWriteOptions,
+   ): Promise<void> {
++    await this.assertLocalWrite(taskId);
+     await touchLocalTaskDocMetadata(this.backendContext(), taskId, updatedBy, opts);
+   }
+ 
+   async writeTasks(tasks: TaskData[], opts?: TaskWriteOptions): Promise<void> {
++    for (const task of tasks) await this.assertLocalWrite(task.id);
+     await writeLocalTasks(this.backendContext(), tasks, opts);
+   }
+ 
+@@ -207,6 +278,7 @@ export class LocalBackend implements TaskBackend {
+     opts?: Pick<TaskWriteOptions, "expectedRevision">,
+     beforeDeletion?: () => Promise<void>,
+   ): Promise<void> {
++    await this.assertLocalWrite(taskId);
+     const readmePath = taskReadmePath(this.root, taskId);
+     await withTaskReadmeTransaction(readmePath, async () => {
+       const label = `task README ${taskId}`;
+diff --git a/packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts b/packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts
+index 9b648d8e8..c3d90b123 100644
+--- a/packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts
+@@ -1,4 +1,5 @@
+ import { execFile, execFileSync } from "node:child_process";
++import { existsSync } from "node:fs";
+ import { mkdir, writeFile } from "node:fs/promises";
+ import path from "node:path";
+ import { fileURLToPath } from "node:url";
+@@ -51,6 +52,7 @@ function runPrePush(
+   root: string,
+   baseSha: string,
+   headSha: string,
++  remoteRef = "refs/heads/main",
+ ): {
+   failure: (Error & { stderr?: string | Buffer; stdout?: string | Buffer }) | null;
+   stdout: string;
+@@ -59,7 +61,7 @@ function runPrePush(
+     const stdout = execFileSync("node", [PRE_PUSH_HOOK_SCRIPT], {
+       cwd: root,
+       encoding: "utf8",
+-      input: `refs/heads/main ${headSha} refs/heads/main ${baseSha}\n`,
++      input: `${remoteRef} ${headSha} ${remoteRef} ${baseSha}\n`,
+       stdio: ["pipe", "pipe", "pipe"],
+     });
+     return { failure: null, stdout };
+@@ -169,6 +171,63 @@ describe("pre-push task binding audit", () => {
+     expect(String(result.failure?.stderr ?? "")).toContain("src/app.ts");
+   });
+ 
++  it("accepts a task bound commit when sparse checkout omits task history", async () => {
++    const root = await mkGitRepoRootWithBranch("main");
++    await configureGitUser(root);
++    await writeDefaultConfig(root);
++    await writeFastHookPackage(root);
++    await commitAll(root, "chore: base");
++    const baseSha = head(root);
++
++    const taskPath = path.join(root, ".agentplane", "tasks", "202601010101-ABCDEF");
++    await mkdir(taskPath, { recursive: true });
++    await writeFile(path.join(taskPath, "README.md"), "task\n", "utf8");
++    await mkdir(path.join(root, "src"), { recursive: true });
++    await writeFile(path.join(root, "src", "app.ts"), "export const value = 1;\n", "utf8");
++    await commitAll(root, "✨ ABCDEF code: add app");
++
++    execFileSync("git", ["sparse-checkout", "set", "--no-cone", "/*", "!/.agentplane/tasks/"], {
++      cwd: root,
++    });
++    expect(existsSync(taskPath)).toBe(false);
++    expectTaskBindingAcceptedBeforeBoundedHook(runPrePush(root, baseSha, head(root)));
++  });
++
++  it("does not re-audit merged main commits when pushing a task branch", async () => {
++    const root = await mkGitRepoRootWithBranch("main");
++    await configureGitUser(root);
++    await writeDefaultConfig(root);
++    await writeFastHookPackage(root);
++    await commitAll(root, "chore: base");
++    const baseSha = head(root);
++    const taskRef = "refs/heads/task/202601010101-ABCDEF/example";
++
++    execFileSync("git", ["checkout", "-b", taskRef.slice("refs/heads/".length)], { cwd: root });
++    const taskPath = path.join(root, ".agentplane", "tasks", "202601010101-ABCDEF");
++    await mkdir(taskPath, { recursive: true });
++    await writeFile(path.join(taskPath, "README.md"), "task\n", "utf8");
++    await mkdir(path.join(root, "src"), { recursive: true });
++    await writeFile(path.join(root, "src", "app.ts"), "export const app = 1;\n", "utf8");
++    await commitAll(root, "✨ ABCDEF code: add app");
++
++    execFileSync("git", ["checkout", "main"], { cwd: root });
++    await mkdir(path.join(root, "src"), { recursive: true });
++    await writeFile(path.join(root, "src", "base.ts"), "export const base = 1;\n", "utf8");
++    await commitAll(root, "✨ code: already merged on main");
++    execFileSync("git", ["update-ref", "refs/remotes/origin/main", head(root)], { cwd: root });
++    execFileSync("git", ["checkout", taskRef.slice("refs/heads/".length)], { cwd: root });
++    execFileSync("git", ["merge", "--no-ff", "main", "-m", "🔀 ABCDEF code: sync base"], {
++      cwd: root,
++    });
++
++    expectTaskBindingAcceptedBeforeBoundedHook(runPrePush(root, baseSha, head(root), taskRef));
++    await writeFile(path.join(root, "src", "unbound.ts"), "export const unbound = 1;\n", "utf8");
++    await commitAll(root, "✨ code: unbound branch change");
++    expect(String(runPrePush(root, baseSha, head(root), taskRef).failure?.stderr ?? "")).toContain(
++      "pre-push blocked: mutating commits require a valid task id",
++    );
++  });
++
+   it("passes pre-upgrade historical commits through task binding before the bounded-hook gate", async () => {
+     const root = await mkGitRepoRootWithBranch("main");
+     await configureGitUser(root);
+diff --git a/packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts b/packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts
+index 10519fe39..90c47c39d 100644
+--- a/packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts
+@@ -163,7 +163,7 @@ describe("runCli", () => {
+       const code = await runCli(["cleanup", "nope", "--root", root]);
+       expect(code).toBe(2);
+       expect(io.stderr).toContain("Usage:");
+-      expect(io.stderr).toContain("agentplane cleanup <merged>");
++      expect(io.stderr).toContain("agentplane cleanup <inspect|merged>");
+     } finally {
+       io.restore();
+     }
+diff --git a/packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts b/packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts
+index 3b8fd31b9..aa1d79757 100644
+--- a/packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts
+@@ -50,6 +50,7 @@ import {
+   recordVerificationOk,
+ } from "@agentplane/testkit";
+ import { resolveUpdateCheckCachePath } from "./update-check.js";
++import { loadTaskBackend } from "../backends/task-backend.js";
+ import * as prompts from "./prompts.js";
+ 
+ installRunCliIntegrationHarness();
+@@ -186,6 +187,8 @@ describe(
+         );
+         await approveTaskPlan(root, taskId);
+         await approveTaskPlan(root, siblingTaskId);
++        await execFileAsync("git", ["add", `.agentplane/tasks/${siblingTaskId}`], { cwd: root });
++        await execFileAsync("git", ["commit", "-m", "archive sibling task"], { cwd: root });
+         const worktreeIo = captureStdIO();
+         const worktreePath = path.join(root, ".agentplane", "worktrees", `${taskId}-seed-readmes`);
+         try {
+@@ -216,6 +219,9 @@ describe(
+         );
+         expect(await pathExists(taskReadmePath)).toBe(true);
+         expect(await pathExists(siblingReadmePath)).toBe(false);
++        const worktreeBackend = await loadTaskBackend({ cwd: worktreePath, config });
++        const historicalTask = await worktreeBackend.backend.getTask(siblingTaskId);
++        expect(historicalTask?.id).toBe(siblingTaskId);
+         expect(await pathExists(path.join(root, ".agentplane", "tasks", taskId, "README.md"))).toBe(
+           false,
+         );
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/lifecycle.ts b/packages/agentplane/src/cli/run-cli/command-catalog/lifecycle.ts
+index 322555311..1a7d4ba78 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/lifecycle.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/lifecycle.ts
+@@ -1,6 +1,7 @@
+ import { blockSpec } from "../../../commands/block.spec.js";
+ import { commitSpec } from "../../../commands/commit.spec.js";
+ import { cleanupMergedSpec, cleanupSpec } from "../../../commands/cleanup/merged.command.js";
++import { cleanupInspectSpec } from "../../../commands/cleanup/inspect.command.js";
+ import { docsCliSpec } from "../../../commands/docs/cli.command.js";
+ import { finishSpec } from "../../../commands/finish.spec.js";
+ import { guardCleanSpec } from "../../../commands/guard/clean.command.js";
+@@ -36,6 +37,7 @@ import {
+   fromHooksUninstallSpec,
+   loadCleanupSpec,
+   loadCleanupMergedSpec,
++  loadCleanupInspectSpec,
+   fromGuardSuggestAllowSpec,
+   loadGuardCommitSpec,
+ } from "../command-loaders/lifecycle.js";
+@@ -89,6 +91,10 @@ export const LIFECYCLE_COMMANDS = [
+     load: loadCleanupSpec,
+     requirements: NO_CONTEXT_REQUIREMENTS,
+   }),
++  declareSessionCommand(cleanupInspectSpec, {
++    load: loadCleanupInspectSpec,
++    requirements: TASK_READ_REQUIREMENTS,
++  }),
+   declareSessionCommand(cleanupMergedSpec, {
+     load: loadCleanupMergedSpec,
+     requirements: PROVIDER_WRITE_REQUIREMENTS,
+diff --git a/packages/agentplane/src/cli/run-cli/command-loaders/lifecycle.ts b/packages/agentplane/src/cli/run-cli/command-loaders/lifecycle.ts
+index 863a6c00b..eb8f89cdb 100644
+--- a/packages/agentplane/src/cli/run-cli/command-loaders/lifecycle.ts
++++ b/packages/agentplane/src/cli/run-cli/command-loaders/lifecycle.ts
+@@ -66,6 +66,10 @@ export const fromHooksUninstallSpec = commandModule(
+ );
+ export const loadCleanupSpec = (_session: NoContextSession) =>
+   import("../../../commands/cleanup/merged.command.js").then((m) => m.runCleanup);
++export const loadCleanupInspectSpec = (session: TaskReadSession) =>
++  import("../../../commands/cleanup/inspect.command.js").then((m) =>
++    m.makeRunCleanupInspectHandler(getTaskReadContext(session)),
++  );
+ export const loadCleanupMergedSpec = (session: ProviderWriteSession) =>
+   import("../../../commands/cleanup/merged.command.js").then((m) =>
+     m.makeRunCleanupMergedHandler(async (command) => {
+diff --git a/packages/agentplane/src/commands/branch/work-start.compact-tasks.test.ts b/packages/agentplane/src/commands/branch/work-start.compact-tasks.test.ts
+new file mode 100644
+index 000000000..6906c75a3
+--- /dev/null
++++ b/packages/agentplane/src/commands/branch/work-start.compact-tasks.test.ts
+@@ -0,0 +1,233 @@
++import { execFileSync } from "node:child_process";
++import { randomBytes } from "node:crypto";
++import { existsSync } from "node:fs";
++import { mkdtemp, mkdir, readFile, realpath, rm, writeFile } from "node:fs/promises";
++import { tmpdir } from "node:os";
++import path from "node:path";
++import { afterEach, describe, expect, it } from "vitest";
++
++import { defaultConfig } from "@agentplaneorg/core/config";
++import { LocalBackend, loadTaskBackend, type TaskData } from "../../backends/task-backend.js";
++import { canCompactTaskHistory, checkoutCompactTaskHistory } from "./work-start.compact-tasks.js";
++import { materializeLocalBackendReadmesForWorktree } from "./work-start.materialize.js";
++
++const roots: string[] = [];
++
++function git(cwd: string, ...args: string[]): string {
++  return execFileSync("git", args, { cwd, encoding: "utf8" }).trim();
++}
++
++afterEach(async () => {
++  for (const root of roots.splice(0)) await rm(root, { recursive: true, force: true });
++});
++
++describe("compact task worktree checkout", () => {
++  it("reads historical tasks from the canonical store while keeping current writes local", async () => {
++    const root = await mkdtemp(path.join(tmpdir(), "agentplane-compact-store-"));
++    roots.push(root);
++    const historyDir = path.join(root, "canonical");
++    const localDir = path.join(root, "worktree");
++    const canonical = new LocalBackend({ dir: historyDir });
++    const history: TaskData = {
++      id: "202601300001-ABCD",
++      title: "Historical task",
++      description: "Archived result",
++      status: "DONE",
++      priority: "med",
++      owner: "tester",
++      depends_on: [],
++      tags: [],
++      verify: [],
++      doc: "## Summary\n\nHistorical bytes",
++    };
++    const current: TaskData = {
++      ...history,
++      id: "202601300002-EFGH",
++      title: "Current task",
++      status: "DOING",
++      doc: "## Summary\n\nCurrent bytes",
++    };
++    await canonical.writeTask(history);
++    const original = await readFile(path.join(historyDir, history.id, "README.md"));
++    const backend = new LocalBackend({ dir: localDir, historyDir });
++    await backend.writeTask(current);
++
++    const loadedHistory = await backend.getTask(history.id);
++    expect(loadedHistory?.title).toBe(history.title);
++    expect(await backend.getTaskDoc(history.id)).toContain("Historical bytes");
++    const tasks = await backend.listTasks();
++    const projection = await backend.listProjectionTasks();
++    expect(tasks.map((task) => task.id)).toEqual([history.id, current.id]);
++    expect(projection.map((task) => task.id)).toEqual([history.id, current.id]);
++    expect(await readFile(path.join(historyDir, history.id, "README.md"))).toEqual(original);
++    expect(await backend.getTask(current.id)).toMatchObject({ title: current.title });
++    await expect(backend.writeTask({ ...history, title: "Changed" })).rejects.toThrow(
++      "Refusing to write historical task",
++    );
++    expect(await readFile(path.join(historyDir, history.id, "README.md"))).toEqual(original);
++
++    await canonical.writeTask({ ...current, title: "Stale current task", status: "DONE" });
++    const completed = await backend.listProjectionTasks({ status: ["DONE"] });
++    expect(completed.map((task) => task.id)).toEqual([history.id]);
++
++    await rm(historyDir, { recursive: true });
++    await expect(backend.listTasks()).rejects.toThrow();
++  });
++
++  it("keeps a tracked current task README in the primary checkout", async () => {
++    const root = await mkdtemp(path.join(tmpdir(), "agentplane-compact-tracked-"));
++    roots.push(root);
++    const repo = path.join(root, "repo");
++    const worktree = path.join(root, "worktree");
++    const taskId = "202601300003-ABCD";
++    await mkdir(repo, { recursive: true });
++    git(repo, "init", "-b", "main");
++    const backend = new LocalBackend({ dir: path.join(repo, ".agentplane", "tasks") });
++    await backend.writeTask({
++      id: taskId,
++      title: "Tracked task",
++      description: "Existing task",
++      status: "DOING",
++      priority: "med",
++      owner: "tester",
++      depends_on: [],
++      tags: [],
++      verify: [],
++      doc: "## Summary\n\nTracked",
++    });
++    git(repo, "add", ".");
++    git(
++      repo,
++      "-c",
++      "user.name=Test",
++      "-c",
++      "user.email=test@example.com",
++      "commit",
++      "-qm",
++      "fixture",
++    );
++    git(repo, "worktree", "add", "--no-checkout", "-b", `task/${taskId}/compact`, worktree, "HEAD");
++
++    await checkoutCompactTaskHistory({ worktreePath: worktree, taskId });
++    await materializeLocalBackendReadmesForWorktree({
++      backend,
++      repoRoot: repo,
++      worktreePath: worktree,
++      taskId,
++      workflowDir: ".agentplane/tasks",
++    });
++
++    expect(existsSync(path.join(repo, ".agentplane", "tasks", taskId, "README.md"))).toBe(true);
++    expect(existsSync(path.join(worktree, ".agentplane", "tasks", taskId, "README.md"))).toBe(true);
++    expect(git(repo, "status", "--porcelain")).toBe("");
++    expect(git(worktree, "status", "--porcelain")).toBe("");
++  });
++
++  it("checks out the current task and ordinary source without materializing old tasks", async () => {
++    const root = await mkdtemp(path.join(tmpdir(), "agentplane-compact-tasks-"));
++    roots.push(root);
++    const repo = path.join(root, "repo");
++    const worktree = path.join(root, "worktree");
++    const fullWorktree = path.join(root, "full-worktree");
++    const activeId = "202601300001-ABCD";
++    const oldId = "202601300002-EFGH";
++    await mkdir(path.join(repo, "src"), { recursive: true });
++    const canonical = new LocalBackend({ dir: path.join(repo, ".agentplane", "tasks") });
++    const task: TaskData = {
++      id: activeId,
++      title: "Active task",
++      description: "Current work",
++      status: "DOING",
++      priority: "med",
++      owner: "tester",
++      depends_on: [],
++      tags: [],
++      verify: [],
++      doc: "## Summary\n\nActive",
++    };
++    await canonical.writeTask({ ...task, id: oldId, title: "Old task", status: "DONE" });
++    await writeFile(
++      path.join(repo, ".agentplane", "tasks", oldId, "artifact.bin"),
++      randomBytes(1024 * 1024),
++    );
++    await writeFile(path.join(repo, "src", "app.ts"), "export const value = 1;\n");
++    git(repo, "init", "-b", "main");
++    git(repo, "add", ".");
++    git(
++      repo,
++      "-c",
++      "user.name=Test",
++      "-c",
++      "user.email=test@example.com",
++      "commit",
++      "-qm",
++      "fixture",
++    );
++    await canonical.writeTask(task);
++    const compactOptions = {
++      backend: canonical,
++      repoRoot: repo,
++      workflowDir: ".agentplane/tasks",
++    };
++    await expect(canCompactTaskHistory(compactOptions)).resolves.toBe(true);
++    git(repo, "config", "core.sparseCheckout", "true");
++    await expect(canCompactTaskHistory(compactOptions)).rejects.toThrow(
++      "Cannot use a sparse primary checkout",
++    );
++    git(repo, "config", "--unset", "core.sparseCheckout");
++    git(repo, "worktree", "add", "-b", "comparison/full", fullWorktree, "HEAD");
++    git(
++      repo,
++      "worktree",
++      "add",
++      "--no-checkout",
++      "-b",
++      `task/${activeId}/compact`,
++      worktree,
++      "HEAD",
++    );
++
++    await checkoutCompactTaskHistory({ worktreePath: worktree, taskId: activeId });
++    expect(git(worktree, "status", "--porcelain")).toBe("");
++    await materializeLocalBackendReadmesForWorktree({
++      backend: canonical,
++      repoRoot: repo,
++      worktreePath: worktree,
++      taskId: activeId,
++      workflowDir: ".agentplane/tasks",
++    });
++
++    expect(existsSync(path.join(worktree, ".agentplane", "tasks", activeId, "README.md"))).toBe(
++      true,
++    );
++    expect(existsSync(path.join(worktree, ".agentplane", "tasks", oldId))).toBe(false);
++    expect(existsSync(path.join(worktree, "src", "app.ts"))).toBe(true);
++    expect(git(worktree, "status", "--porcelain")).toContain(activeId);
++    expect(git(worktree, "config", "--worktree", "--get", "agentplane.compactTaskHistory")).toBe(
++      "true",
++    );
++    expect(existsSync(path.join(repo, ".agentplane", "tasks", oldId, "README.md"))).toBe(true);
++    if (process.platform !== "win32") {
++      const duKb = (target: string): number =>
++        Number(execFileSync("du", ["-sk", target], { encoding: "utf8" }).split("\t")[0]);
++      const fullKb = duKb(path.join(fullWorktree, ".agentplane", "tasks"));
++      const compactKb = duKb(path.join(worktree, ".agentplane", "tasks"));
++      expect(fullKb - compactKb).toBeGreaterThan(900);
++    }
++
++    const loaded = await loadTaskBackend({ cwd: worktree, config: defaultConfig() });
++    expect(loaded.backend).toBeInstanceOf(LocalBackend);
++    expect((loaded.backend as LocalBackend).historyRoot).toBe(
++      path.join(await realpath(repo), ".agentplane", "tasks"),
++    );
++    const oldTask = await loaded.backend.getTask(oldId);
++    const tasks = await loaded.backend.listTasks();
++    expect(oldTask?.title).toBe("Old task");
++    expect(tasks.map((entry) => entry.id)).toEqual([activeId, oldId]);
++
++    await rm(path.join(repo, ".agentplane", "tasks"), { recursive: true });
++    await expect(loadTaskBackend({ cwd: worktree, config: defaultConfig() })).rejects.toThrow(
++      "Canonical task store is unavailable or unsafe",
++    );
++  });
++});
+diff --git a/packages/agentplane/src/commands/branch/work-start.compact-tasks.ts b/packages/agentplane/src/commands/branch/work-start.compact-tasks.ts
+new file mode 100644
+index 000000000..9e09d9cf1
+--- /dev/null
++++ b/packages/agentplane/src/commands/branch/work-start.compact-tasks.ts
+@@ -0,0 +1,58 @@
++import { lstat } from "node:fs/promises";
++import path from "node:path";
++
++import { execFileAsync, runProcess } from "@agentplaneorg/core/process";
++import { gitEnv } from "@agentplaneorg/core/git";
++
++import { LocalBackend } from "../../backends/task-backend.js";
++import { validateTaskId } from "../../backends/task-backend/shared.js";
++import type { CommandContext } from "../shared/task-backend.js";
++
++export async function canCompactTaskHistory(opts: {
++  backend: CommandContext["taskBackend"];
++  repoRoot: string;
++  workflowDir: string;
++}): Promise<boolean> {
++  if (!(opts.backend instanceof LocalBackend)) return false;
++  const canonicalRoot = path.resolve(opts.repoRoot, ".agentplane", "tasks");
++  if (path.resolve(opts.backend.root) !== canonicalRoot) return false;
++  if (path.resolve(opts.repoRoot, opts.workflowDir) !== canonicalRoot) return false;
++  const canonical = await lstat(canonicalRoot);
++  if (!canonical.isDirectory() || canonical.isSymbolicLink()) {
++    throw new Error(`Canonical task store is not a directory: ${canonicalRoot}`);
++  }
++  const sparse = await runProcess({
++    command: "git",
++    args: ["config", "--bool", "--get", "core.sparseCheckout"],
++    cwd: opts.repoRoot,
++    env: gitEnv(),
++    reject: false,
++  });
++  if (sparse.exitCode !== 0 && sparse.exitCode !== 1) {
++    throw new Error("Could not inspect primary sparse checkout state.");
++  }
++  if (sparse.stdout.trim() === "true") {
++    throw new Error("Cannot use a sparse primary checkout as the canonical task store.");
++  }
++  return true;
++}
++
++export async function checkoutCompactTaskHistory(opts: {
++  worktreePath: string;
++  taskId: string;
++}): Promise<void> {
++  validateTaskId(opts.taskId);
++  const patterns = ["/*", "!/.agentplane/tasks/*", `/.agentplane/tasks/${opts.taskId}/`];
++  await execFileAsync("git", ["sparse-checkout", "set", "--no-cone", ...patterns], {
++    cwd: opts.worktreePath,
++    env: gitEnv(),
++  });
++  await execFileAsync("git", ["config", "--worktree", "agentplane.compactTaskHistory", "true"], {
++    cwd: opts.worktreePath,
++    env: gitEnv(),
++  });
++  await execFileAsync("git", ["read-tree", "-mu", "HEAD"], {
++    cwd: opts.worktreePath,
++    env: gitEnv(),
++  });
++}
+diff --git a/packages/agentplane/src/commands/branch/work-start.hook-shim.test.ts b/packages/agentplane/src/commands/branch/work-start.hook-shim.test.ts
+index 5a9b30579..0b57e40e3 100644
+--- a/packages/agentplane/src/commands/branch/work-start.hook-shim.test.ts
++++ b/packages/agentplane/src/commands/branch/work-start.hook-shim.test.ts
+@@ -185,6 +185,7 @@ describe("worktree task artifact materialization", () => {
+ 
+   it("does not materialize foreign local task READMEs into the task worktree", async () => {
+     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-worktree-local-task-"));
++    await execFileNodeAsync("git", ["init", "-q"], { cwd: root });
+     const worktreePath = path.join(root, "worktree");
+     const activeTaskId = "202607260101-ABCD";
+     const foreignTaskId = "202607260102-BCDE";
+diff --git a/packages/agentplane/src/commands/branch/work-start.materialize.ts b/packages/agentplane/src/commands/branch/work-start.materialize.ts
+index f85a37c47..78f5be203 100644
+--- a/packages/agentplane/src/commands/branch/work-start.materialize.ts
++++ b/packages/agentplane/src/commands/branch/work-start.materialize.ts
+@@ -11,6 +11,8 @@ import {
+   symlink,
+ } from "node:fs/promises";
+ import path from "node:path";
++import { gitEnv } from "@agentplaneorg/core/git";
++import { runProcess } from "@agentplaneorg/core/process";
+ 
+ import { LocalBackend } from "../../backends/task-backend.js";
+ import { fileExists } from "../../cli/fs-utils.js";
+@@ -97,9 +99,19 @@ export async function materializeLocalBackendReadmesForWorktree(opts: {
+   await mkdir(path.dirname(targetReadme), { recursive: true });
+   await copyFile(sourceReadme, targetReadme);
+ 
+-  // Hand off ownership of the active task README to the task worktree so
+-  // later merges cannot collide with a stale untracked copy on the base checkout.
+-  await rm(sourceReadme, { force: true });
++  // An untracked README must leave the base checkout so a later merge can add it.
++  // A tracked README belongs to the base commit and must stay present there.
++  const tracked = await runProcess({
++    command: "git",
++    args: ["ls-files", "--error-unmatch", "--", path.relative(opts.repoRoot, sourceReadme)],
++    cwd: opts.repoRoot,
++    env: gitEnv(),
++    reject: false,
++  });
++  if (tracked.exitCode !== 0 && tracked.exitCode !== 1) {
++    throw new Error(`Could not classify task README in Git: ${sourceReadme}`);
++  }
++  if (tracked.exitCode === 1) await rm(sourceReadme, { force: true });
+   const remainingEntries = await readdir(sourceTaskRoot).catch(() => []);
+   if (remainingEntries.length === 0) {
+     await rm(sourceTaskRoot, { recursive: true, force: true });
+diff --git a/packages/agentplane/src/commands/branch/work-start.ts b/packages/agentplane/src/commands/branch/work-start.ts
+index bbfe79279..aaba849be 100644
+--- a/packages/agentplane/src/commands/branch/work-start.ts
++++ b/packages/agentplane/src/commands/branch/work-start.ts
+@@ -41,6 +41,7 @@ import {
+ } from "./work-start.direct.js";
+ import { ensureCurrentBaseBranch } from "./work-start.git.js";
+ import { materializeHookShimForWorktree } from "./work-start.hook-shim.js";
++import { canCompactTaskHistory, checkoutCompactTaskHistory } from "./work-start.compact-tasks.js";
+ import {
+   materializeLocalBackendReadmesForWorktree,
+   materializeRepoLocalDistForWorktree,
+@@ -225,10 +226,32 @@ export async function cmdWorkStart(opts: {
+       }
+       await mkdir(worktreesDir, { recursive: true });
+ 
++      const compactTaskHistory = await canCompactTaskHistory({
++        backend: ctx.taskBackend,
++        repoRoot: resolved.gitRoot,
++        workflowDir: config.paths.workflow_dir,
++      });
+       const worktreeArgs = branchExists
+-        ? ["worktree", "add", worktreePath, branchName]
+-        : ["worktree", "add", "-b", branchName, worktreePath, baseRef];
++        ? [
++            "worktree",
++            "add",
++            ...(compactTaskHistory ? ["--no-checkout"] : []),
++            worktreePath,
++            branchName,
++          ]
++        : [
++            "worktree",
++            "add",
++            ...(compactTaskHistory ? ["--no-checkout"] : []),
++            "-b",
++            branchName,
++            worktreePath,
++            baseRef,
++          ];
+       await execFileAsync("git", worktreeArgs, { cwd: resolved.gitRoot, env: gitEnv() });
++      if (compactTaskHistory) {
++        await checkoutCompactTaskHistory({ worktreePath, taskId: opts.taskId });
++      }
+       await materializeLocalBackendReadmesForWorktree({
+         backend: ctx.taskBackend,
+         repoRoot: resolved.gitRoot,
+diff --git a/packages/agentplane/src/commands/cleanup/inspect.command.ts b/packages/agentplane/src/commands/cleanup/inspect.command.ts
+new file mode 100644
+index 000000000..aef49fe0d
+--- /dev/null
++++ b/packages/agentplane/src/commands/cleanup/inspect.command.ts
+@@ -0,0 +1,59 @@
++import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
++import type { CommandContext } from "../shared/task-backend.js";
++import { inspectWorkspaceDisk } from "./inspect.js";
++
++type CleanupInspectParsed = { json: boolean };
++
++export const cleanupInspectSpec: CommandSpec<CleanupInspectParsed> = {
++  id: ["cleanup", "inspect"],
++  group: "Branch",
++  summary: "Inspect local disk use and worktree cleanup eligibility without deleting files.",
++  options: [
++    {
++      kind: "boolean",
++      name: "json",
++      default: false,
++      description: "Print machine-readable inventory.",
++    },
++  ],
++  examples: [
++    { cmd: "agentplane cleanup inspect", why: "List worktree and nested repository sizes." },
++    { cmd: "agentplane cleanup inspect --json", why: "Export a read-only inventory." },
++  ],
++  parse: (raw) => ({ json: raw.opts.json === true }),
++};
++
++function formatBytes(bytes: number | null): string {
++  return bytes === null ? "unknown" : `${(bytes / 1024 ** 3).toFixed(2)} GiB`;
++}
++
++export function makeRunCleanupInspectHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
++  return async (_ctx: CommandCtx, p: CleanupInspectParsed): Promise<number> => {
++    const ctx = await getCtx("cleanup inspect");
++    const inventory = await inspectWorkspaceDisk({
++      gitRoot: ctx.resolvedProject.gitRoot,
++      worktreesDir: ctx.config.paths.worktrees_dir,
++      taskPrefix: ctx.config.branch.task_prefix,
++      taskStatus: async (taskId) => {
++        const task = await ctx.taskBackend.getTask(taskId);
++        return task?.status ?? null;
++      },
++    });
++    if (p.json) {
++      process.stdout.write(`${JSON.stringify(inventory, null, 2)}\n`);
++      return 0;
++    }
++    process.stdout.write(
++      `.agentplane allocated: ${formatBytes(inventory.agentplane_allocated_bytes)}\n`,
++    );
++    for (const entry of inventory.entries) {
++      process.stdout.write(
++        `${formatBytes(entry.allocated_bytes)}  ${entry.kind}  ${entry.cleanup}  ${entry.reason}  ${entry.path}\n`,
++      );
++    }
++    process.stdout.write(
++      "proof_required means inspect with `agentplane cleanup merged`; it is not deletion approval.\n",
++    );
++    return 0;
++  };
++}
+diff --git a/packages/agentplane/src/commands/cleanup/inspect.test.ts b/packages/agentplane/src/commands/cleanup/inspect.test.ts
+new file mode 100644
+index 000000000..e8f99bd8a
+--- /dev/null
++++ b/packages/agentplane/src/commands/cleanup/inspect.test.ts
+@@ -0,0 +1,88 @@
++import { execFile } from "node:child_process";
++import { mkdir, realpath, writeFile } from "node:fs/promises";
++import path from "node:path";
++import { promisify } from "node:util";
++import { describe, expect, it } from "vitest";
++import {
++  captureStdIO,
++  cleanGitEnv,
++  commitAll,
++  configureGitUser,
++  installRunCliIntegrationHarness,
++  mkGitRepoRootWithBranch,
++  pathExists,
++  writeDefaultConfig,
++} from "@agentplane/testkit";
++
++import { runCli } from "../../cli/run-cli.js";
++import { inspectWorkspaceDisk } from "./inspect.js";
++
++installRunCliIntegrationHarness();
++const execFileAsync = promisify(execFile);
++const doneId = "202609231200-AAAAAA";
++const activeId = "202609231201-BBBBBB";
++
++async function git(cwd: string, ...args: string[]): Promise<void> {
++  await execFileAsync("git", args, { cwd, env: cleanGitEnv() });
++}
++
++describe("cleanup disk inventory", () => {
++  it("reports sizes and retains dirty, active, and separate repositories", async () => {
++    const root = await mkGitRepoRootWithBranch("main");
++    await configureGitUser(root);
++    await writeFile(path.join(root, ".gitignore"), ".agentplane/\n", "utf8");
++    await commitAll(root, "initial");
++
++    const worktreesDir = path.join(root, ".agentplane", "worktrees");
++    await mkdir(worktreesDir, { recursive: true });
++    const donePath = path.join(worktreesDir, "done");
++    const activePath = path.join(worktreesDir, "active");
++    await git(root, "worktree", "add", "-b", `task/${doneId}/done`, donePath);
++    await git(root, "worktree", "add", "-b", `task/${activeId}/active`, activePath);
++    await writeFile(path.join(activePath, "uncommitted.txt"), "preserve\n", "utf8");
++
++    const nested = path.join(root, ".agentplane", "release-base");
++    await mkdir(nested, { recursive: true });
++    await git(nested, "init", "-b", "main");
++    await writeFile(path.join(nested, "unique-task.txt"), "preserve\n", "utf8");
++
++    const inventory = await inspectWorkspaceDisk({
++      gitRoot: root,
++      worktreesDir: ".agentplane/worktrees",
++      taskPrefix: "task",
++      taskStatus: (id) => Promise.resolve(id === doneId ? "DONE" : "DOING"),
++    });
++    const entries = new Map(inventory.entries.map((entry) => [entry.path, entry]));
++    expect(inventory.agentplane_allocated_bytes).toBeGreaterThan(0);
++    expect(entries.get(await realpath(donePath))).toMatchObject({
++      task_id: doneId,
++      dirty: false,
++      cleanup: "proof_required",
++      reason: "requires_cleanup_merged_proof",
++    });
++    expect(entries.get(await realpath(activePath))).toMatchObject({
++      task_id: activeId,
++      dirty: true,
++      cleanup: "retain",
++      reason: "dirty_worktree",
++    });
++    expect(entries.get(await realpath(nested))).toMatchObject({
++      kind: "nested_repository",
++      cleanup: "retain",
++      reason: "separate_repository_requires_manual_review",
++    });
++    expect(entries.get(await realpath(nested))?.allocated_bytes).toBeGreaterThan(0);
++    expect(await pathExists(path.join(activePath, "uncommitted.txt"))).toBe(true);
++    expect(await pathExists(path.join(nested, "unique-task.txt"))).toBe(true);
++
++    await writeDefaultConfig(root);
++    const io = captureStdIO();
++    try {
++      expect(await runCli(["cleanup", "inspect", "--json", "--root", root])).toBe(0);
++      const cliInventory = JSON.parse(io.stdout) as { entries: { path: string }[] };
++      expect(cliInventory.entries.map((entry) => entry.path)).toContain(await realpath(nested));
++    } finally {
++      io.restore();
++    }
++  });
++});
+diff --git a/packages/agentplane/src/commands/cleanup/inspect.ts b/packages/agentplane/src/commands/cleanup/inspect.ts
+new file mode 100644
+index 000000000..ea4f8640a
+--- /dev/null
++++ b/packages/agentplane/src/commands/cleanup/inspect.ts
+@@ -0,0 +1,141 @@
++import { lstat, readdir, realpath } from "node:fs/promises";
++import path from "node:path";
++
++import { gitEnv, listWorktrees, parseTaskIdFromBranch } from "@agentplaneorg/core/git";
++import { runProcess } from "@agentplaneorg/core/process";
++
++import { isPathWithin } from "../shared/path.js";
++
++type DiskInventoryEntry = {
++  path: string;
++  kind: "registered_worktree" | "nested_repository";
++  branch: string | null;
++  task_id: string | null;
++  allocated_bytes: number | null;
++  dirty: boolean | null;
++  cleanup: "retain" | "proof_required";
++  reason: string;
++};
++
++export type DiskInventory = {
++  repository_root: string;
++  agentplane_allocated_bytes: number | null;
++  entries: DiskInventoryEntry[];
++};
++
++async function allocatedBytes(root: string): Promise<number> {
++  const pending = [root];
++  let total = 0;
++  while (pending.length > 0) {
++    const current = pending.pop()!;
++    const stat = await lstat(current, { bigint: true });
++    total += Number(stat.blocks * 512n);
++    if (!stat.isDirectory() || stat.isSymbolicLink()) continue;
++    const children = await readdir(current);
++    for (const child of children) pending.push(path.join(current, child));
++  }
++  return total;
++}
++
++async function containedDirectory(root: string, candidate: string): Promise<string | null> {
++  if (!isPathWithin(root, candidate)) return null;
++  const stat = await lstat(candidate).catch(() => null);
++  if (!stat?.isDirectory() || stat.isSymbolicLink()) return null;
++  const resolved = await realpath(candidate).catch(() => null);
++  return resolved && isPathWithin(root, resolved) ? resolved : null;
++}
++
++async function dirtyState(directory: string): Promise<boolean | null> {
++  const status = await runProcess({
++    command: "git",
++    args: ["status", "--porcelain", "--untracked-files=all"],
++    cwd: directory,
++    env: gitEnv(),
++    reject: false,
++  }).catch(() => null);
++  return status?.exitCode === 0 ? status.stdout.trim().length > 0 : null;
++}
++
++async function nestedRepositories(root: string, worktreesDir: string): Promise<string[]> {
++  const candidates = new Set<string>();
++  for (const parent of [path.join(root, ".agentplane"), worktreesDir]) {
++    const safeParent = await containedDirectory(root, parent);
++    if (!safeParent) continue;
++    for (const child of await readdir(safeParent, { withFileTypes: true })) {
++      if (!child.isDirectory() || child.isSymbolicLink()) continue;
++      const candidate = path.join(safeParent, child.name);
++      const gitMarker = await lstat(path.join(candidate, ".git")).catch(() => null);
++      if (gitMarker && !gitMarker.isSymbolicLink()) candidates.add(candidate);
++    }
++  }
++  return [...candidates].toSorted();
++}
++
++/** Read-only inventory. Only cleanup merged may turn a proof into a deletion. */
++export async function inspectWorkspaceDisk(opts: {
++  gitRoot: string;
++  worktreesDir: string;
++  taskPrefix: string;
++  taskStatus: (taskId: string) => Promise<string | null>;
++}): Promise<DiskInventory> {
++  const worktrees = await listWorktrees(opts.gitRoot);
++  const primary = worktrees[0];
++  if (!primary) throw new Error("Primary Git worktree is unavailable.");
++  const root = await realpath(primary.path);
++  const worktreesDir = path.resolve(root, opts.worktreesDir);
++  const registered = new Set(
++    await Promise.all(
++      worktrees.map(
++        async (entry) => await realpath(entry.path).catch(() => path.resolve(entry.path)),
++      ),
++    ),
++  );
++  const entries: DiskInventoryEntry[] = [];
++  for (const worktree of worktrees.slice(1)) {
++    const candidate = await realpath(worktree.path).catch(() => path.resolve(worktree.path));
++    const safe = await containedDirectory(root, candidate);
++    const taskId = worktree.branch ? parseTaskIdFromBranch(opts.taskPrefix, worktree.branch) : null;
++    const dirty = safe ? await dirtyState(safe) : null;
++    const status = taskId ? await opts.taskStatus(taskId).catch(() => null) : null;
++    let reason: string;
++    if (safe === null) reason = "outside_repository_or_unavailable";
++    else if (dirty === null) reason = "git_status_unavailable";
++    else if (dirty) reason = "dirty_worktree";
++    else if (taskId === null) reason = "task_owner_unproven";
++    else if (status === null) reason = "task_state_unavailable";
++    else if (status === "DONE") reason = "requires_cleanup_merged_proof";
++    else reason = "task_not_done";
++    entries.push({
++      path: candidate,
++      kind: "registered_worktree",
++      branch: worktree.branch,
++      task_id: taskId,
++      allocated_bytes: safe ? await allocatedBytes(safe).catch(() => null) : null,
++      dirty,
++      cleanup: reason === "requires_cleanup_merged_proof" ? "proof_required" : "retain",
++      reason,
++    });
++  }
++  for (const candidate of await nestedRepositories(root, worktreesDir)) {
++    if (registered.has(candidate)) continue;
++    const safe = await containedDirectory(root, candidate);
++    entries.push({
++      path: candidate,
++      kind: "nested_repository",
++      branch: null,
++      task_id: null,
++      allocated_bytes: safe ? await allocatedBytes(safe).catch(() => null) : null,
++      dirty: safe ? await dirtyState(safe) : null,
++      cleanup: "retain",
++      reason: "separate_repository_requires_manual_review",
++    });
++  }
++  const agentplaneDir = await containedDirectory(root, path.join(root, ".agentplane"));
++  return {
++    repository_root: root,
++    agentplane_allocated_bytes: agentplaneDir
++      ? await allocatedBytes(agentplaneDir).catch(() => null)
++      : null,
++    entries: entries.toSorted((a, b) => a.path.localeCompare(b.path)),
++  };
++}
+diff --git a/packages/agentplane/src/commands/cleanup/merged.command.ts b/packages/agentplane/src/commands/cleanup/merged.command.ts
+index eaee8a6ce..9bd60cae3 100644
+--- a/packages/agentplane/src/commands/cleanup/merged.command.ts
++++ b/packages/agentplane/src/commands/cleanup/merged.command.ts
+@@ -16,9 +16,13 @@ export const cleanupSpec: CommandSpec<CleanupGroupParsed> = {
+   id: ["cleanup"],
+   group: "Branch",
+   summary: "Clean up local branches/worktrees.",
+-  synopsis: ["agentplane cleanup <merged> [options]"],
++  synopsis: ["agentplane cleanup <inspect|merged> [options]"],
+   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<cmd>" }],
+   examples: [
++    {
++      cmd: "agentplane cleanup inspect",
++      why: "Inspect local disk use and cleanup classification.",
++    },
+     { cmd: "agentplane cleanup merged --yes", why: "Delete merged task branches/worktrees." },
+   ],
+   parse: (raw) => parseGroupCommand(raw),
+diff --git a/packages/agentplane/src/commands/hooks/pre-push-task-binding.ts b/packages/agentplane/src/commands/hooks/pre-push-task-binding.ts
+index 5ab3e2a0f..3b5ac1833 100644
+--- a/packages/agentplane/src/commands/hooks/pre-push-task-binding.ts
++++ b/packages/agentplane/src/commands/hooks/pre-push-task-binding.ts
+@@ -47,17 +47,22 @@ function taskIdFromSubject(gitRoot: string, subject: string): string {
+   if (full) return full;
+   const suffix = TASK_SUBJECT_RE.exec(subject)?.[1] ?? "";
+   if (!suffix) return "";
++  const matches = new Set(
++    readGitText(gitRoot, ["ls-tree", "-d", "--name-only", "HEAD:.agentplane/tasks"])
++      .split("\n")
++      .filter((name) => name.toLowerCase().endsWith(`-${suffix.toLowerCase()}`)),
++  );
+   try {
+     const taskRoot = path.join(gitRoot, ".agentplane", "tasks");
+-    const matches = fs
+-      .readdirSync(taskRoot, { withFileTypes: true })
+-      .filter((entry) => entry.isDirectory())
+-      .map((entry) => entry.name)
+-      .filter((name) => name.toLowerCase().endsWith(`-${suffix.toLowerCase()}`));
+-    return matches.length === 1 ? (matches[0] ?? "") : "";
++    for (const entry of fs.readdirSync(taskRoot, { withFileTypes: true })) {
++      if (entry.isDirectory() && entry.name.toLowerCase().endsWith(`-${suffix.toLowerCase()}`)) {
++        matches.add(entry.name);
++      }
++    }
+   } catch {
+-    return "";
++    // Sparse worktrees can omit all local task directories.
+   }
++  return matches.size === 1 ? ([...matches][0] ?? "") : "";
+ }
+ 
+ function hasEmergencyBackfillEvidence(body: string): boolean {
+@@ -137,9 +142,14 @@ function hasManagedContextBootstrapEvidence(
+   );
+ }
+ 
+-function readCommitList(gitRoot: string, range: CommitRange): string[] {
++function readCommitList(gitRoot: string, range: CommitRange, excludeRef?: string | null): string[] {
+   if (!range) return [];
+-  return readGitText(gitRoot, ["log", "--format=%H", `${range.from}..${range.to}`])
++  return readGitText(gitRoot, [
++    "log",
++    "--format=%H",
++    `${range.from}..${range.to}`,
++    ...(excludeRef ? ["--not", excludeRef] : []),
++  ])
+     .split("\n")
+     .map((line) => line.trim())
+     .filter(Boolean);
+@@ -194,8 +204,12 @@ function readCommitBody(gitRoot: string, commit: string): string {
+   return readGitText(gitRoot, ["show", "--format=%B", "--no-patch", commit]);
+ }
+ 
+-export function findTaskBoundOutgoingCommitFailures(gitRoot: string, range: CommitRange): string[] {
+-  const commits = readCommitList(gitRoot, range);
++export function findTaskBoundOutgoingCommitFailures(
++  gitRoot: string,
++  range: CommitRange,
++  excludeRef?: string | null,
++): string[] {
++  const commits = readCommitList(gitRoot, range, excludeRef);
+   const commitBodies = new Map<string, string>();
+   const commitBodyFor = (commit: string): string => {
+     const cached = commitBodies.get(commit);
+diff --git a/packages/agentplane/src/commands/hooks/run.pre-push.helpers.ts b/packages/agentplane/src/commands/hooks/run.pre-push.helpers.ts
+index c0eb079b6..45e15533f 100644
+--- a/packages/agentplane/src/commands/hooks/run.pre-push.helpers.ts
++++ b/packages/agentplane/src/commands/hooks/run.pre-push.helpers.ts
+@@ -173,8 +173,9 @@ export function failIfPollutedReleaseGitConfig(gitRoot: string): void {
+ export function enforceTaskBoundOutgoingCommits(
+   gitRoot: string,
+   range: { from: string; to: string } | null,
++  excludeRef?: string | null,
+ ): void {
+-  const failures = findTaskBoundOutgoingCommitFailures(gitRoot, range);
++  const failures = findTaskBoundOutgoingCommitFailures(gitRoot, range, excludeRef);
+   if (failures.length === 0) return;
+   fail(
+     "pre-push blocked: mutating commits require a valid task id or emergency backfill evidence.",
+diff --git a/packages/agentplane/src/commands/hooks/run.pre-push.ts b/packages/agentplane/src/commands/hooks/run.pre-push.ts
+index 508cb0544..35164b45b 100644
+--- a/packages/agentplane/src/commands/hooks/run.pre-push.ts
++++ b/packages/agentplane/src/commands/hooks/run.pre-push.ts
+@@ -65,11 +65,14 @@ function runInternalPrePushHook(gitRoot: string, stdin: string): number {
+     if (isReleasePush) failIfPollutedReleaseGitConfig(gitRoot);
+     const ciScript = envFull ? "ci:local:full" : "ci:local:fast";
+     const scripts = readPackageScripts(gitRoot);
++    const defaultBaseRef = resolveDefaultBaseRef(gitRoot);
+     const diffRange = selectBranchDiffRange(updates, {
+-      newBranchFallbackRef: resolveDefaultBaseRef(gitRoot),
++      newBranchFallbackRef: defaultBaseRef,
+     });
+     const changedFiles = readChangedFilesForRange(gitRoot, diffRange);
+-    enforceTaskBoundOutgoingCommits(gitRoot, diffRange);
++    const baseBranch = defaultBaseRef?.replace(/^origin\//u, "");
++    const pushesBase = updates.some((update) => update.remoteRef === `refs/heads/${baseBranch}`);
++    enforceTaskBoundOutgoingCommits(gitRoot, diffRange, pushesBase ? null : defaultBaseRef);
+     const ciEnv =
+       changedFiles.length > 0
+         ? sanitizeCiEnv({ ...process.env, AGENTPLANE_FAST_CHANGED_FILES: changedFiles.join("\n") })
+diff --git a/packages/agentplane/src/commands/pr/internal/sync-github.test.ts b/packages/agentplane/src/commands/pr/internal/sync-github.test.ts
+index a5599c7a1..e958e94c8 100644
+--- a/packages/agentplane/src/commands/pr/internal/sync-github.test.ts
++++ b/packages/agentplane/src/commands/pr/internal/sync-github.test.ts
+@@ -1,4 +1,5 @@
+ import { beforeEach, describe, expect, it, vi } from "vitest";
++import { readFile } from "node:fs/promises";
+ 
+ const mocks = vi.hoisted(() => ({
+   execFileAsync: vi.fn(),
+@@ -32,6 +33,7 @@ import {
+   observeExistingGithubPrByBranch,
+   observeExistingGithubPrByNumber,
+   shouldPersistObservedGithubPrIdentity,
++  tryCreateGithubPr,
+   tryLookupExistingGithubPrByBranchPrefix,
+ } from "./sync-github.js";
+ 
+@@ -171,6 +173,76 @@ describe("sync-github", () => {
+     );
+   });
+ 
++  it("uses the hosted branch name when a task records an origin tracking ref", async () => {
++    mocks.execFileAsync
++      .mockResolvedValueOnce({ stdout: "https://github.com/example/repo.git\n" })
++      .mockResolvedValueOnce({
++        stdout: JSON.stringify([
++          {
++            number: 123,
++            state: "open",
++            head: { ref: "task/T-1/work", sha: "head" },
++            base: { ref: "main" },
++          },
++        ]),
++      })
++      .mockResolvedValueOnce({
++        stdout: JSON.stringify({
++          number: 123,
++          html_url: "https://github.com/example/repo/pull/123",
++          state: "open",
++          head: { ref: "task/T-1/work", sha: "head" },
++          base: { ref: "main", sha: "base" },
++        }),
++      });
++    await expect(
++      observeExistingGithubPrByBranch({
++        gitRoot: "/repo",
++        branch: "task/T-1/work",
++        baseBranch: "origin/main",
++      }),
++    ).resolves.toMatchObject({ state: "found", pr: { base: "main" } });
++    expect(mocks.withGhTransportRetry).toHaveBeenNthCalledWith(1, expect.any(Function), {
++      label:
++        "running gh api repos/example/repo/pulls?state=all&head=example%3Atask%2FT-1%2Fwork&base=main",
++    });
++  });
++
++  it("creates a GitHub PR against the hosted branch name", async () => {
++    mocks.execFileAsync.mockImplementationOnce(async (_command, args: string[]) => {
++      const input = args[args.indexOf("--input") + 1];
++      const payload = JSON.parse(await readFile(input, "utf8")) as { base: string };
++      expect(payload.base).toBe("main");
++      return {
++        stdout: JSON.stringify({
++          number: 123,
++          html_url: "https://github.com/example/repo/pull/123",
++          state: "open",
++          head: { ref: "task/T-1/work", sha: "head" },
++          base: { ref: "main", sha: "base" },
++        }),
++      };
++    });
++    await expect(
++      tryCreateGithubPr({
++        gitRoot: "/repo",
++        branch: "task/T-1/work",
++        baseBranch: "origin/main",
++        title: "Test",
++        body: "Test",
++        identity: {
++          provider: "github",
++          hostname: "github.com",
++          remote: "origin",
++          sourceProject: "example/repo",
++          targetProject: "example/repo",
++          sourceUrl: "https://github.com/example/repo.git",
++          targetUrl: "https://github.com/example/repo.git",
++        },
++      }),
++    ).resolves.toMatchObject({ observed: { prNumber: 123, base: "main" } });
++  });
++
+   it.each([
+     ["omitted mergeability fields", {}, { state: "unknown", mergeable: null, providerState: null }],
+     [
+diff --git a/packages/agentplane/src/commands/pr/internal/sync-github.ts b/packages/agentplane/src/commands/pr/internal/sync-github.ts
+index ca15b491d..19b3b202b 100644
+--- a/packages/agentplane/src/commands/pr/internal/sync-github.ts
++++ b/packages/agentplane/src/commands/pr/internal/sync-github.ts
+@@ -30,6 +30,20 @@ type GithubPullLookupRecord = {
+   mergeable_state?: string | null;
+ };
+ 
++function githubBaseBranch(base: string | null | undefined, remote = "origin"): string {
++  const value = base?.trim() ?? "";
++  for (const prefix of [
++    "refs/heads/",
++    `refs/remotes/${remote}/`,
++    `${remote}/`,
++    "refs/remotes/origin/",
++    "origin/",
++  ]) {
++    if (value.startsWith(prefix)) return value.slice(prefix.length);
++  }
++  return value;
++}
++
+ export type GithubPrMergeability = {
+   state: "conflicting" | "not_conflicting" | "pending" | "unknown";
+   mergeable: boolean | null;
+@@ -228,7 +242,7 @@ async function observeGithubPrByNumberInRepo(opts: {
+       return { state: "unavailable", reason: "GitHub PR lookup omitted the head branch" };
+     }
+     if (expectedBranch && observedBranch !== expectedBranch) return { state: "not_found" };
+-    const expectedBase = opts.baseBranch?.trim() ?? "";
++    const expectedBase = githubBaseBranch(opts.baseBranch);
+     const observedBase = record.base?.ref?.trim() ?? "";
+     if (expectedBase && !observedBase) {
+       return { state: "unavailable", reason: "GitHub PR lookup omitted the base branch" };
+@@ -260,7 +274,7 @@ export async function observeExistingGithubPrByBranch(opts: {
+   }
+ 
+   const query = new URLSearchParams({ state: "all", head: `${owner}:${opts.branch}` });
+-  const baseBranch = opts.baseBranch?.trim() ?? "";
++  const baseBranch = githubBaseBranch(opts.baseBranch, opts.identity?.remote);
+   if (baseBranch) query.set("base", baseBranch);
+   const endpoint = `repos/${repo}/pulls?${query.toString()}`;
+ 
+@@ -325,7 +339,11 @@ export async function observeExistingGithubPrByNumber(opts: {
+       reason: "origin is unavailable or is not a GitHub repository",
+     };
+   }
+-  return await observeGithubPrByNumberInRepo({ ...opts, repo });
++  return await observeGithubPrByNumberInRepo({
++    ...opts,
++    repo,
++    baseBranch: githubBaseBranch(opts.baseBranch, opts.identity?.remote),
++  });
+ }
+ 
+ export async function tryLookupExistingGithubPrByNumber(opts: {
+@@ -348,7 +366,7 @@ export async function tryLookupExistingGithubPrByBranchPrefix(opts: {
+   const repo = opts.identity?.targetProject ?? (await resolveGithubRepoFromOrigin(opts.gitRoot));
+   if (!repo) return null;
+   const query = new URLSearchParams({ state: "all", per_page: "100" });
+-  const baseBranch = opts.baseBranch?.trim() ?? "";
++  const baseBranch = githubBaseBranch(opts.baseBranch, opts.identity?.remote);
+   if (baseBranch) query.set("base", baseBranch);
+   const endpoint = `repos/${repo}/pulls?${query.toString()}`;
+   const branchPrefix = opts.branchPrefix.trim();
+@@ -439,7 +457,7 @@ export async function tryCreateGithubPr(opts: {
+       artifactState: "remote_staged",
+     };
+   }
+-  const baseBranch = opts.baseBranch?.trim() ?? "";
++  const baseBranch = githubBaseBranch(opts.baseBranch, opts.identity?.remote);
+   if (!baseBranch) {
+     return {
+       observed: null,
+diff --git a/scripts/baselines/v0.7-compatibility-candidate.json b/scripts/baselines/v0.7-compatibility-candidate.json
+index d3e8cc000..418df0191 100644
+--- a/scripts/baselines/v0.7-compatibility-candidate.json
++++ b/scripts/baselines/v0.7-compatibility-candidate.json
+@@ -8,14 +8,14 @@
+   "candidate": {
+     "section_digests": {
+       "agent_facing_context_contracts": "7710a5217ea614a3da8b4e99fe61e16fb738179797eba64c75c9537bc33f7785",
+-      "cli_topology": "4fd5c401aa48df8955d51c58bf70dbd501a953f250cd14665344022d0749040d",
++      "cli_topology": "5ce3605acc5bb9705ea9f2f1652db201a9e5bfb44233b889cc064db8e8aa1ee5",
+       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
+       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+       "package_manifests": "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
+       "tarball_policy": "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd",
+       "workflow_schema": "dc851f68ff13c52fec5dbe522fa96cc1084771ce7e09ed0178c44f15d7c46452"
+     },
+-    "surface_sha256": "389e9c0c3464b9317f1b28e13fea0e8ae187d239920db2fb0af46904ebe1383a"
++    "surface_sha256": "6183ef8027abc3b6b84a41229e3b0a62a85afb70be42ce668bc8c3733cebd1ef"
+   },
+   "candidate_id": "agentplane.compatibility.v0.7.cumulative",
+   "contract_artifacts": {
+@@ -323,6 +323,13 @@
+       "classification": "intentional_breaking_retirement",
+       "evidence": {
+         "added_command_descriptors": [
++          {
++            "args": [],
++            "group": "Branch",
++            "id": ["cleanup", "inspect"],
++            "options": [{ "default": false, "kind": "boolean", "name": "json", "valueHint": null }],
++            "visibility": "user"
++          },
+           {
+             "args": [
+               { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+@@ -836,6 +843,7 @@
+           }
+         ],
+         "added_commands": [
++          "cleanup inspect",
+           "context supervise-task",
+           "doctor legacy",
+           "evaluator apply",
+@@ -875,6 +883,13 @@
+             "name": "bootstrap-projection",
+             "valueHint": null
+           },
++          {
++            "command": "cleanup inspect",
++            "default": false,
++            "kind": "boolean",
++            "name": "json",
++            "valueHint": null
++          },
+           {
+             "command": "cleanup merged",
+             "kind": "string",
+@@ -1660,6 +1675,7 @@
+           }
+         ],
+         "addition_sources": [
++          { "command": "cleanup inspect", "kind": "command", "source_task": "202609232231-BYSVV6" },
+           {
+             "command": "context supervise-task",
+             "kind": "command",
+@@ -1745,6 +1761,12 @@
+             "name": "bootstrap-projection",
+             "source_task": "202607221848-0ZAB1F"
+           },
++          {
++            "command": "cleanup inspect",
++            "kind": "option",
++            "name": "json",
++            "source_task": "202609232231-BYSVV6"
++          },
+           {
+             "command": "cleanup merged",
+             "kind": "option",
+@@ -2416,7 +2438,7 @@
+             "source_task": "202609060720-NZXQ0E"
+           }
+         ],
+-        "command_count": { "from": 243, "to": 251 },
++        "command_count": { "from": 243, "to": 252 },
+         "mutated_command_shells": [
+           {
+             "after": {
+@@ -2613,7 +2635,7 @@
+             "identity": "task plan approve --by"
+           }
+         ],
+-        "option_count": { "from": 767, "to": 843 },
++        "option_count": { "from": 767, "to": 844 },
+         "positional_count": { "from": 165, "to": 173 },
+         "removed_command_descriptors": [
+           {
+@@ -3085,6 +3107,7 @@
+       "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
+       "section": "cli_topology",
+       "source_tasks": [
++        "202609232231-BYSVV6",
+         "202607221846-4VB97J",
+         "202607221846-YGWMA2",
+         "202607230554-YFYT83",
+@@ -3128,7 +3151,7 @@
+         "202609241429-4WN4VX"
+       ],
+       "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with caller-supplied structured semantic intent and neutral planner intake, including bounded scope, effect, capability, and resource declarations, explainable per-task workflow routing, signed dialogue approval receipts, compatibility retirement diagnostics, safe local evidence statistics, compaction, garbage collection, and a state-bound USER-approved blocked-task scope extension; promotes the managed task runner; moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces; canonicalizes setup and execution profile selection to standard while retaining legacy init aliases; and makes auto the task route default while retiring repository as a user-facing route. Adds exact-intent operator reconciliation for interrupted integration workflow effects. Retires the active supervisor budget-epoch command after spend limits became telemetry-only. Retires the active Blueprint command surface after Task Kernel replacement proof while preserving cold compatibility readers.",
+-      "to_sha256": "4fd5c401aa48df8955d51c58bf70dbd501a953f250cd14665344022d0749040d"
++      "to_sha256": "5ce3605acc5bb9705ea9f2f1652db201a9e5bfb44233b889cc064db8e8aa1ee5"
+     },
+     {
+       "classification": "intentional_breaking_retirement",
+@@ -3342,7 +3365,7 @@
+     "from_version": "0.6.24",
+     "section": "package_manifests",
+     "source_task": "202608082119-P6SHBN",
+-    "surface_sha256": "ea6e1c4f0501fbce328daed8b70bd8bf05e6aab9dae3da5c3b656e8275d36459",
++    "surface_sha256": "8573d058fb9249998b7f73de945e1b9445214aabeed76920bc81a639c33e3782",
+     "to_sha256": "e27e7737e65c939d493dd608b245362757bd5a84f2df553fe93696286062829b",
+     "to_version": "0.7.12-beta.1"
+   },
+@@ -3358,6 +3381,7 @@
+   },
+   "schema_version": 3,
+   "source_tasks": [
++    "202609232231-BYSVV6",
+     "202607221846-4VB97J",
+     "202607221846-YGWMA2",
+     "202607230554-YFYT83",
+diff --git a/scripts/checks/check-compatibility-contract-baseline.mjs b/scripts/checks/check-compatibility-contract-baseline.mjs
+index dfa83f732..a82a2d4d1 100644
+--- a/scripts/checks/check-compatibility-contract-baseline.mjs
++++ b/scripts/checks/check-compatibility-contract-baseline.mjs
+@@ -318,6 +318,7 @@ function validateReviewedCandidate({
+     "compatibility candidate id drift",
+   );
+   const cliSourceTasks = [
++    "202609232231-BYSVV6",
+     "202607221846-4VB97J",
+     "202607221846-YGWMA2",
+     "202607230554-YFYT83",
+@@ -361,6 +362,7 @@ function validateReviewedCandidate({
+     "202609241429-4WN4VX",
+   ];
+   const expectedSourceTasks = [
++    "202609232231-BYSVV6",
+     "202607221846-4VB97J",
+     "202607221846-YGWMA2",
+     "202607230554-YFYT83",
+@@ -1304,6 +1306,13 @@ function validateReviewedCandidate({
+     })),
+   ];
+   const expectedAddedCommandDescriptors = [
++    {
++      id: ["cleanup", "inspect"],
++      visibility: "user",
++      group: "Branch",
++      args: [],
++      options: [{ name: "json", kind: "boolean", valueHint: null, default: false }],
++    },
+     {
+       id: ["context", "supervise-task"],
+       visibility: "user",
+@@ -1804,6 +1813,13 @@ function validateReviewedCandidate({
+       valueHint: null,
+       default: false,
+     },
++    {
++      command: "cleanup inspect",
++      name: "json",
++      kind: "boolean",
++      valueHint: null,
++      default: false,
++    },
+     {
+       command: "cleanup merged",
+       name: "task-id",
+@@ -2544,6 +2560,7 @@ function validateReviewedCandidate({
+     },
+   ];
+   const expectedAdditionSources = [
++    { kind: "command", command: "cleanup inspect", source_task: "202609232231-BYSVV6" },
+     { kind: "command", command: "context supervise-task", source_task: "202607221850-8HBF4J" },
+     { kind: "command", command: "doctor legacy", source_task: "202608021535-CNQKXP" },
+     { kind: "command", command: "evaluator apply", source_task: "202607221849-TBTX8X" },
+@@ -2617,6 +2634,12 @@ function validateReviewedCandidate({
+       name: "bootstrap-projection",
+       source_task: "202607221848-0ZAB1F",
+     },
++    {
++      kind: "option",
++      command: "cleanup inspect",
++      name: "json",
++      source_task: "202609232231-BYSVV6",
++    },
+     {
+       kind: "option",
+       command: "cleanup merged",
+@@ -3268,6 +3291,7 @@ function validateReviewedCandidate({
+   assert(
+     hashJson(addedCommands) ===
+       hashJson([
++        "cleanup inspect",
+         "context supervise-task",
+         "doctor legacy",
+         "evaluator apply",
+diff --git a/scripts/checks/run-pre-push-hook.mjs b/scripts/checks/run-pre-push-hook.mjs
+index 262a91d29..0104880bc 100644
+--- a/scripts/checks/run-pre-push-hook.mjs
++++ b/scripts/checks/run-pre-push-hook.mjs
+@@ -299,7 +299,12 @@ function taskIdFromSubject(subject) {
+   if (full) return full;
+   const suffix = TASK_SUBJECT_RE.exec(subject)?.[1] ?? "";
+   if (!suffix) return "";
+-  const found = readQuiet("find", [
++  const found = new Set(
++    readQuiet("git", ["ls-tree", "-d", "--name-only", "HEAD:.agentplane/tasks"])
++      .split("\n")
++      .filter((name) => name.toLowerCase().endsWith(`-${suffix.toLowerCase()}`)),
++  );
++  for (const taskId of readQuiet("find", [
+     ".agentplane/tasks",
+     "-maxdepth",
+     "1",
+@@ -310,8 +315,9 @@ function taskIdFromSubject(subject) {
+   ])
+     .split("\n")
+     .map((line) => line.trim().split("/").at(-1) ?? "")
+-    .filter(Boolean);
+-  return found.length === 1 ? found[0] : "";
++    .filter(Boolean))
++    found.add(taskId);
++  return found.size === 1 ? [...found][0] : "";
+ }
+ 
+ function hasEmergencyBackfillEvidence(body) {
+@@ -388,9 +394,14 @@ function hasManagedContextBootstrapEvidence(body, mutatingPaths) {
+   );
+ }
+ 
+-function readCommitList(range) {
++function readCommitList(range, excludeRef) {
+   if (!range) return [];
+-  return readQuiet("git", ["log", "--format=%H", `${range.from}..${range.to}`])
++  return readQuiet("git", [
++    "log",
++    "--format=%H",
++    `${range.from}..${range.to}`,
++    ...(excludeRef ? ["--not", excludeRef] : []),
++  ])
+     .split("\n")
+     .map((line) => line.trim())
+     .filter(Boolean);
+@@ -439,8 +450,8 @@ function readCommitBody(commit) {
+   return readQuiet("git", ["show", "--format=%B", "--no-patch", commit]);
+ }
+ 
+-function enforceTaskBoundOutgoingCommits(range) {
+-  const commits = readCommitList(range);
++function enforceTaskBoundOutgoingCommits(range, excludeRef) {
++  const commits = readCommitList(range, excludeRef);
+   const commitBodies = new Map();
+   const commitBodyFor = (commit) => {
+     if (commitBodies.has(commit)) return commitBodies.get(commit);
+@@ -527,10 +538,13 @@ function main() {
+     }),
+   );
+   const scripts = readPackageScripts();
++  const defaultBaseRef = resolveDefaultBaseRef();
+   const diffRange = selectBranchDiffRange(updates, {
+-    newBranchFallbackRef: resolveDefaultBaseRef(),
++    newBranchFallbackRef: defaultBaseRef,
+   });
+-  enforceTaskBoundOutgoingCommits(diffRange);
++  const baseBranch = defaultBaseRef?.replace(/^origin\//u, "");
++  const pushesBase = updates.some((update) => update.remoteRef === `refs/heads/${baseBranch}`);
++  enforceTaskBoundOutgoingCommits(diffRange, pushesBase ? null : defaultBaseRef);
+   const key = proofKey({ updates, mode, ciScript, changedFiles });
+   if (!isReleasePush && !trackedChangesShort()) {
+     const localReceipt = readReusableLocalVerificationReceipt({

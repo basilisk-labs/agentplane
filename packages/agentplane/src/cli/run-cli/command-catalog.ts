@@ -14,6 +14,7 @@ import { CORE_COMMANDS } from "./command-catalog/core.js";
 import { LIFECYCLE_COMMANDS } from "./command-catalog/lifecycle.js";
 import { PROJECT_COMMANDS } from "./command-catalog/project.js";
 import { TASK_COMMANDS } from "./command-catalog/task.js";
+import { TASK_SUPERVISOR_COMMANDS } from "./command-catalog/task-supervisor.js";
 
 export type { CommandEntry } from "./command-catalog/kernel.js";
 export type { CatalogMatch, HelpSurfaceMode } from "./command-catalog-helpers.js";
@@ -22,6 +23,7 @@ export { isCommandVisibleInHelp, makeHelpSpecForEntry } from "./command-catalog-
 export const COMMANDS = [
   ...CORE_COMMANDS,
   ...TASK_COMMANDS,
+  ...TASK_SUPERVISOR_COMMANDS,
   ...PROJECT_COMMANDS,
   ...LIFECYCLE_COMMANDS,
 ] as const satisfies readonly CommandEntry[];

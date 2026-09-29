@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The recovery path is limited to E_VALIDATION from a durable result_received exchange with implementation authority, and it refuses recovery when Git HEAD, repository status, or the route fingerprint changed during application.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609140050-8QDRVN/quality/objects/sha256/390511960cf208eb237e7d06bd52162fefa52783dbc1038b48e6f1f1988f08df.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The failed-operation CAS is recorded before exchange retirement, so a rejected result cannot be silently reused as a successful semantic effect.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609140050-8QDRVN/quality/objects/sha256/390511960cf208eb237e7d06bd52162fefa52783dbc1038b48e6f1f1988f08df.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The focused regression verifies the original Git-history validation error, retired exchange state, operation_failed journal state, plain advance refusal, and a replacement operation linked to the failed operation key.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609140050-8QDRVN/quality/objects/sha256/390511960cf208eb237e7d06bd52162fefa52783dbc1038b48e6f1f1988f08df.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Supervisor evidence is bound to implementation 0aa277dd97640bbc2afba29d72adb91fae64021f and records both 44 focused recovery tests and bun run ci:local:full as passing.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609140050-8QDRVN/quality/objects/sha256/390511960cf208eb237e7d06bd52162fefa52783dbc1038b48e6f1f1988f08df.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: A filesystem failure after the failed-operation CAS but before exchange retirement may leave an unretired artifact, but the journal remains fail-closed and requires the existing replacement recovery path.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609140050-8QDRVN/quality/objects/sha256/390511960cf208eb237e7d06bd52162fefa52783dbc1038b48e6f1f1988f08df.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted integration must still validate the published exact head before merge.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609140050-8QDRVN/quality/objects/sha256/390511960cf208eb237e7d06bd52162fefa52783dbc1038b48e6f1f1988f08df.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

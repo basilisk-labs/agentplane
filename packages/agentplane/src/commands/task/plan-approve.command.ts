@@ -1,5 +1,6 @@
 import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
 import { createKernelRuntime, requireKernelCommit } from "./kernel-runtime-context.js";
+import { projectCanonicalPlanApproval } from "./kernel-plan-authority.js";
 import { createCliEmitter } from "../../cli/output.js";
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { usageError } from "../../cli/spec/errors.js";
@@ -122,6 +123,7 @@ export function makeRunTaskPlanApproveHandler(getCtx: (cmd: string) => Promise<C
       });
       await runtime.checkpoint(await runtime.observe());
       const result = requireKernelCommit(await runtime.authority.approve(p.taskId));
+      await projectCanonicalPlanApproval(commandCtx, p.taskId, result.record, p.note);
       createCliEmitter().json({
         task_id: p.taskId,
         canonical_revision: result.record.aggregate.revision,

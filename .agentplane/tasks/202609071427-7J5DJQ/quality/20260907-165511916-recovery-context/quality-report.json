@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202609071427-7J5DJQ",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-07T17:05:54.857Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 8 typed finding(s).",
+  "evaluated_sha": "c621332896711f01ef67df757eb934fadc6f5787",
+  "blueprint_digest": "8f2130e288a16077cfae674e1c7bc0ec440f14e4d7e7d51288958d5ff54ee911",
+  "findings": [
+    "All frozen evidence object digests match their content. The source diff updates the package manager and workflow Bun pins without changing Node engines, default Node Vitest, tsup, dependency resolutions, or distribution behavior.",
+    "The CI commit permission is derived from the approved ci repository effect and observed paths after semantic authority validation. Other protected-path permissions remain false. Three focused integration cases exercise the real commit and reject missing CI effect or an unauthorized workflow path before committing.",
+    "Five SQLite contract tests cover persistence and bindings, transaction arguments and commit, rollback and connection reuse, readonly write rejection, and missing readonly databases. The qualification evidence records all five passing under Node and Bun 1.4.2.",
+    "The supervisor recorded the full CI pass for the current implementation. I additionally ran the full existing CI contract with the task-local Bun 1.4.2 first on PATH on the unchanged source. It exited 0. Runtime, docs-schema, core, all 14 critical CLI chunks, site pipeline, workflow lint, 98 platform-critical tests, 101 guard tests, and the 17-target coverage contract passed.",
+    "The qualification report uses repeated startup measurements with output parity and explicitly limits the performance inference. Its earlier blocker-status sections are historical and superseded by the current verification; they are not evidence of present integration.",
+    "Residual risk: Broader Bun-hosted Vitest import failures remain documented, so Node remains the test default.",
+    "Residual risk: The standalone website lockfile mismatch reproduces with both Bun versions; normal workspace frozen installation and site checks pass without dependency-resolution changes.",
+    "Residual risk: Cross-platform execution remains a separate qualification boundary."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609071427-7J5DJQ/quality/objects/sha256/fa7a8e298e5a43bdb9075050b45118aef89060422148b12ceece0381dedcee79.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

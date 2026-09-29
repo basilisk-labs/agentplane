@@ -1,37 +1,43 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  aggregateValidation,
-  applyPlanRefinement,
   approveTaskPlan,
-  assertAutonomousRepositoryCapabilities,
-  assertTaskTransition,
-  assertWorkItemTransition,
-  belongsInLiveTaskIndex,
-  classifyPlanChange,
   computeReadyWorkItems,
-  consumeRetryBudget,
-  createHumanDecisionTicket,
-  createLegacyTaskAggregate,
-  createRepositorySnapshot,
   createTaskPlanRevision,
-  decideConfirmation,
-  dispositionForOutcome,
-  evaluateTaskCompletion,
   materializeApprovedWorkItems,
-  parseTaskPlanProposal,
   reconcileReplacementPlanWorkItems,
-  recoveryDecisionForFailure,
   requiredOutputManifestsPresent,
   requiredOutputsSatisfied,
   resourceClaimsConflict,
-  taskCentricAggregateFromExtensions,
-  taskCentricDigest,
-  validateHumanDecisionAnswer,
   validateTaskPlanProposal,
   validateWorkItemGraph,
-  withTaskCentricAggregate,
   WorkItemScheduler,
+} from "./graph.js";
+import {
+  aggregateValidation,
+  assertTaskTransition,
+  assertWorkItemTransition,
+  evaluateTaskCompletion,
+} from "./lifecycle.js";
+import {
+  belongsInLiveTaskIndex,
+  createLegacyTaskAggregate,
+  taskCentricAggregateFromExtensions,
+  withTaskCentricAggregate,
+} from "./compatibility.js";
+import { createRepositorySnapshot, taskCentricDigest } from "./digest.js";
+import {
+  applyPlanRefinement,
+  classifyPlanChange,
+  consumeRetryBudget,
+  createHumanDecisionTicket,
+  decideConfirmation,
+  dispositionForOutcome,
+  recoveryDecisionForFailure,
+  validateHumanDecisionAnswer,
+} from "./policy.js";
+import { normalizeCompactTaskPlanProposal, parseTaskPlanProposal } from "./schema.js";
+import {
   type OutputManifest,
   type RepositorySnapshot,
   type TaskAggregate,
@@ -39,7 +45,7 @@ import {
   type ValidationPlan,
   type WorkItem,
   type WorkItemState,
-} from "./index.js";
+} from "./model.js";
 
 const NOW = "2026-08-22T00:00:00.000Z";
 
@@ -630,6 +636,58 @@ describe("task-centric domain", () => {
     expect(() => parseTaskPlanProposal({ ...parsed, task_id: "" })).toThrow();
   });
 
+  it("requires explicit multi-WorkItem coverage and preserves unresolved questions", () => {
+    const items = [
+      item({ id: "a" }),
+      item({ id: "b", depends_on: ["a"], required_inputs: ["out-a"] }),
+    ];
+    const input = {
+      schema_version: 2,
+      criteria: items.flatMap((item) => item.acceptance_criteria),
+      checks: items.flatMap((item) => item.validation.checks),
+      work_items: items.map(({ acceptance_criteria, validation, ...definition }) => ({
+        ...definition,
+        criterion_ids: acceptance_criteria.map((criterion) => criterion.id),
+        check_ids: validation.checks.map((check) => check.id),
+      })),
+      top_level_validation: { criterion_ids: ["criterion-b"], check_ids: ["check-b"] },
+      unresolved_questions: ["Material scope choice"],
+    };
+    const baseline = snapshot();
+    const normalize = (value: unknown) =>
+      normalizeCompactTaskPlanProposal(value, { task_id: "task-1", planning_baseline: baseline });
+    const normalized = normalize(input);
+    expect(normalized.work_items.work_items[1]!.depends_on).toEqual(["a"]);
+    expect(normalized.top_level_validation.criteria).toEqual(items[1]!.acceptance_criteria);
+    expect(
+      validateTaskPlanProposal({
+        proposal: normalized,
+        expected_task_id: "task-1",
+        current_repository_digest: baseline.digest,
+      }).map((issue) => issue.code),
+    ).toContain("material_question");
+    for (const invalid of [
+      { ...input, top_level_validation: undefined },
+      {
+        ...input,
+        work_items: input.work_items.map((item) => ({ ...item, criterion_ids: undefined })),
+      },
+      {
+        ...input,
+        top_level_validation: { criterion_ids: ["criterion-b"], check_ids: ["check-a"] },
+      },
+      { ...input, criteria: [...input.criteria, { ...input.criteria[0], id: "unused" }] },
+      {
+        ...input,
+        work_items: input.work_items.map((item) => ({
+          ...item,
+          depends_on: [item.id === "a" ? "b" : "a"],
+        })),
+      },
+    ])
+      expect(() => normalize(invalid)).toThrow();
+  });
+
   it("computes readiness and deterministic resource-aware scheduling", () => {
     const a = item({
       id: "a",
@@ -914,26 +972,5 @@ describe("task-centric domain", () => {
         "2026-01-01T00:00:00.000Z",
       ),
     ).toBe(false);
-  });
-
-  it("fails closed when repository capabilities cannot support autonomous execution", () => {
-    expect(() =>
-      assertAutonomousRepositoryCapabilities({
-        compare_and_swap: true,
-        atomic_transition_event: true,
-        atomic_plan_materialization: true,
-        idempotency_keys: true,
-        serialized: false,
-      }),
-    ).not.toThrow();
-    expect(() =>
-      assertAutonomousRepositoryCapabilities({
-        compare_and_swap: false,
-        atomic_transition_event: true,
-        atomic_plan_materialization: true,
-        idempotency_keys: true,
-        serialized: false,
-      }),
-    ).toThrow(/requires CAS/u);
   });
 });

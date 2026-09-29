@@ -1,0 +1,419 @@
+{
+  "campaign_id": "M01-0.7.9-token-pilot-v1",
+  "coverage": {
+    "attempts": 15,
+    "incomplete_token_attempt_ids": [
+      "pair-01-candidate",
+      "pair-01-previous_release",
+      "pair-01-minimal_agent",
+      "pair-02-minimal_agent",
+      "pair-02-candidate",
+      "pair-02-previous_release",
+      "pair-03-previous_release",
+      "pair-03-minimal_agent",
+      "pair-03-candidate",
+      "pair-04-candidate",
+      "pair-04-minimal_agent",
+      "pair-04-previous_release",
+      "pair-05-previous_release",
+      "pair-05-candidate",
+      "pair-05-minimal_agent"
+    ],
+    "token_usage_observed": 0,
+    "token_usage_partial": 0,
+    "token_usage_unavailable": 15,
+    "transports": {
+      "external": 15
+    }
+  },
+  "digest": "sha256:aa5f516f6127563c2101eb468a0ca70e4bd59f3f05f3e10333ea041f63121024",
+  "evidence_digest": "sha256:804cc51f855da09a83ca7fff483aa6a373cd690c7c0a9fa955af2b6ba0cc28a6",
+  "gates": {
+    "activation": {
+      "reasons": [
+        "independent_activation_evidence_missing"
+      ],
+      "verdict": "not_established"
+    },
+    "efficiency": {
+      "reasons": [
+        "safety_gate_failed"
+      ],
+      "strata": {},
+      "verdict": "fail"
+    },
+    "safety": {
+      "verdict": "fail",
+      "violations": [
+        {
+          "attempt_id": "pair-01-candidate",
+          "violation": "codex_turn_completed_count"
+        },
+        {
+          "attempt_id": "pair-01-candidate",
+          "violation": "codex_final_status_not_done"
+        },
+        {
+          "attempt_id": "pair-01-candidate",
+          "violation": "codex_process_exit_1"
+        },
+        {
+          "attempt_id": "pair-01-previous_release",
+          "violation": "codex_turn_completed_count"
+        },
+        {
+          "attempt_id": "pair-01-previous_release",
+          "violation": "codex_final_status_not_done"
+        },
+        {
+          "attempt_id": "pair-01-previous_release",
+          "violation": "codex_process_exit_1"
+        },
+        {
+          "attempt_id": "pair-01-minimal_agent",
+          "violation": "codex_turn_completed_count"
+        },
+        {
+          "attempt_id": "pair-01-minimal_agent",
+          "violation": "codex_final_status_not_done"
+        },
+        {
+          "attempt_id": "pair-01-minimal_agent",
+          "violation": "codex_process_exit_1"
+        },
+        {
+          "attempt_id": "pair-02-minimal_agent",
+          "violation": "codex_turn_completed_count"
+        },
+        {
+          "attempt_id": "pair-02-minimal_agent",
+          "violation": "codex_final_status_not_done"
+        },
+        {
+          "attempt_id": "pair-02-minimal_agent",
+          "violation": "codex_process_exit_1"
+        },
+        {
+          "attempt_id": "pair-02-candidate",
+          "violation": "codex_turn_completed_count"
+        },
+        {
+          "attempt_id": "pair-02-candidate",
+          "violation": "codex_final_status_not_done"
+        },
+        {
+          "attempt_id": "pair-02-candidate",
+          "violation": "codex_process_exit_1"
+        },
+        {
+          "attempt_id": "pair-02-previous_release",
+          "violation": "codex_turn_completed_count"
+        },
+        {
+          "attempt_id": "pair-02-previous_release",
+          "violation": "codex_final_status_not_done"
+        },
+        {
+          "attempt_id": "pair-02-previous_release",
+          "violation": "codex_process_exit_1"
+        },
+        {
+          "attempt_id": "pair-03-previous_release",
+          "violation": "codex_turn_completed_count"
+        },
+        {
+          "attempt_id": "pair-03-previous_release",
+          "violation": "codex_final_status_not_done"
+        },
+        {
+          "attempt_id": "pair-03-previous_release",
+          "violation": "codex_process_exit_1"
+        },
+        {
+          "attempt_id": "pair-03-minimal_agent",
+          "violation": "codex_turn_completed_count"
+        },
+        {
+          "attempt_id": "pair-03-minimal_agent",
+          "violation": "codex_final_status_not_done"
+        },
+        {
+          "attempt_id": "pair-03-minimal_agent",
+          "violation": "codex_process_exit_1"
+        },
+        {
+          "attempt_id": "pair-03-candidate",
+          "violation": "codex_turn_completed_count"
+        },
+        {
+          "attempt_id": "pair-03-candidate",
+          "violation": "codex_final_status_not_done"
+        },
+        {
+          "attempt_id": "pair-03-candidate",
+          "violation": "codex_process_exit_1"
+        },
+        {
+          "attempt_id": "pair-04-candidate",
+          "violation": "codex_turn_completed_count"
+        },
+        {
+          "attempt_id": "pair-04-candidate",
+          "violation": "codex_final_status_not_done"
+        },
+        {
+          "attempt_id": "pair-04-candidate",
+          "violation": "codex_process_exit_1"
+        },
+        {
+          "attempt_id": "pair-04-minimal_agent",
+          "violation": "codex_turn_completed_count"
+        },
+        {
+          "attempt_id": "pair-04-minimal_agent",
+          "violation": "codex_final_status_not_done"
+        },
+        {
+          "attempt_id": "pair-04-minimal_agent",
+          "violation": "codex_process_exit_1"
+        },
+        {
+          "attempt_id": "pair-04-previous_release",
+          "violation": "codex_turn_completed_count"
+        },
+        {
+          "attempt_id": "pair-04-previous_release",
+          "violation": "codex_final_status_not_done"
+        },
+        {
+          "attempt_id": "pair-04-previous_release",
+          "violation": "codex_process_exit_1"
+        },
+        {
+          "attempt_id": "pair-05-previous_release",
+          "violation": "codex_turn_completed_count"
+        },
+        {
+          "attempt_id": "pair-05-previous_release",
+          "violation": "codex_final_status_not_done"
+        },
+        {
+          "attempt_id": "pair-05-previous_release",
+          "violation": "codex_process_exit_1"
+        },
+        {
+          "attempt_id": "pair-05-candidate",
+          "violation": "codex_turn_completed_count"
+        },
+        {
+          "attempt_id": "pair-05-candidate",
+          "violation": "codex_final_status_not_done"
+        },
+        {
+          "attempt_id": "pair-05-candidate",
+          "violation": "codex_process_exit_1"
+        },
+        {
+          "attempt_id": "pair-05-minimal_agent",
+          "violation": "codex_turn_completed_count"
+        },
+        {
+          "attempt_id": "pair-05-minimal_agent",
+          "violation": "codex_final_status_not_done"
+        },
+        {
+          "attempt_id": "pair-05-minimal_agent",
+          "violation": "codex_process_exit_1"
+        }
+      ]
+    }
+  },
+  "kind": "agentplane.paired_tokens_per_verified_result_report",
+  "numeric_token_claim_complete": false,
+  "schema_version": 1,
+  "strata": {
+    "external": {
+      "arms": {
+        "candidate": {
+          "attempts": 5,
+          "failures": 5,
+          "stages": {
+            "product_preparation": {
+              "max_ms": 3121.7340419999964,
+              "mean_ms": 3101.875241599997,
+              "min_ms": 3080.405417,
+              "observations": 5
+            },
+            "provider": {
+              "max_ms": 3598.3675839999996,
+              "mean_ms": 3284.7194832,
+              "min_ms": 3063.967208000002,
+              "observations": 5
+            }
+          },
+          "success_rate": 0,
+          "success_rate_wilson_95": {
+            "lower": 0,
+            "upper": 0.43449149475208104
+          },
+          "token_usage": {
+            "complete": false,
+            "observed_attempts": 0,
+            "observed_totals": {
+              "cached_input_tokens": 0,
+              "input_tokens": 0,
+              "output_tokens": 0,
+              "reasoning_tokens": 0,
+              "total_tokens": 0
+            },
+            "partial_attempts": 0,
+            "subset_semantics": {
+              "cached_input_tokens": "subset_of_input_tokens",
+              "reasoning_tokens": "subset_of_output_tokens"
+            },
+            "tokens_per_verified_success": null,
+            "total_tokens": null,
+            "unavailable_attempts": 5
+          },
+          "verified_successes": 0,
+          "violation_attempts": 5,
+          "violation_rate": 1,
+          "violation_rate_wilson_95": {
+            "lower": 0.5655085052479191,
+            "upper": 1
+          }
+        },
+        "minimal_agent": {
+          "attempts": 5,
+          "failures": 5,
+          "stages": {
+            "product_preparation": {
+              "max_ms": 27.166667000004963,
+              "mean_ms": 24.23140020000028,
+              "min_ms": 21.606958000000304,
+              "observations": 5
+            },
+            "provider": {
+              "max_ms": 3869.175707999999,
+              "mean_ms": 3497.1928584,
+              "min_ms": 3200.039875000002,
+              "observations": 5
+            }
+          },
+          "success_rate": 0,
+          "success_rate_wilson_95": {
+            "lower": 0,
+            "upper": 0.43449149475208104
+          },
+          "token_usage": {
+            "complete": false,
+            "observed_attempts": 0,
+            "observed_totals": {
+              "cached_input_tokens": 0,
+              "input_tokens": 0,
+              "output_tokens": 0,
+              "reasoning_tokens": 0,
+              "total_tokens": 0
+            },
+            "partial_attempts": 0,
+            "subset_semantics": {
+              "cached_input_tokens": "subset_of_input_tokens",
+              "reasoning_tokens": "subset_of_output_tokens"
+            },
+            "tokens_per_verified_success": null,
+            "total_tokens": null,
+            "unavailable_attempts": 5
+          },
+          "verified_successes": 0,
+          "violation_attempts": 5,
+          "violation_rate": 1,
+          "violation_rate_wilson_95": {
+            "lower": 0.5655085052479191,
+            "upper": 1
+          }
+        },
+        "previous_release": {
+          "attempts": 5,
+          "failures": 5,
+          "stages": {
+            "product_preparation": {
+              "max_ms": 3247.438958999992,
+              "mean_ms": 2907.8336083999975,
+              "min_ms": 2692.6112080000003,
+              "observations": 5
+            },
+            "provider": {
+              "max_ms": 3977.574333999997,
+              "mean_ms": 3418.4228836000025,
+              "min_ms": 3052.5527920000095,
+              "observations": 5
+            }
+          },
+          "success_rate": 0,
+          "success_rate_wilson_95": {
+            "lower": 0,
+            "upper": 0.43449149475208104
+          },
+          "token_usage": {
+            "complete": false,
+            "observed_attempts": 0,
+            "observed_totals": {
+              "cached_input_tokens": 0,
+              "input_tokens": 0,
+              "output_tokens": 0,
+              "reasoning_tokens": 0,
+              "total_tokens": 0
+            },
+            "partial_attempts": 0,
+            "subset_semantics": {
+              "cached_input_tokens": "subset_of_input_tokens",
+              "reasoning_tokens": "subset_of_output_tokens"
+            },
+            "tokens_per_verified_success": null,
+            "total_tokens": null,
+            "unavailable_attempts": 5
+          },
+          "verified_successes": 0,
+          "violation_attempts": 5,
+          "violation_rate": 1,
+          "violation_rate_wilson_95": {
+            "lower": 0.5655085052479191,
+            "upper": 1
+          }
+        }
+      },
+      "attempts": 15,
+      "paired_outcomes": {
+        "accepted": [],
+        "rejected": [
+          {
+            "pair_id": "pair-01",
+            "reason": "not_all_arms_verified"
+          },
+          {
+            "pair_id": "pair-02",
+            "reason": "not_all_arms_verified"
+          },
+          {
+            "pair_id": "pair-03",
+            "reason": "not_all_arms_verified"
+          },
+          {
+            "pair_id": "pair-04",
+            "reason": "not_all_arms_verified"
+          },
+          {
+            "pair_id": "pair-05",
+            "reason": "not_all_arms_verified"
+          }
+        ]
+      }
+    }
+  },
+  "uncertainty": {
+    "paired_population": "Only pairs where every arm independently passes the same oracle outcome are included.",
+    "rate_interval": "Wilson score interval, 95%",
+    "subset_accounting": "total_tokens is the primary cost. cached_input_tokens and reasoning_tokens are reported as subsets and are not added again.",
+    "token_usage": "Partial or unavailable provider token usage prevents a complete numeric token claim."
+  }
+}

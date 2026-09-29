@@ -2,6 +2,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import type { TaskData } from "../../backends/task-backend.js";
+import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
 import { projectEvaluatorQualityReportToContext } from "../../context/evaluator-projection.js";
 import type { EvaluatorSgrResult } from "../../evaluators/sgr-result.js";
 import { CliError } from "../../shared/errors.js";
@@ -27,6 +28,13 @@ import {
   type HumanEvaluatorReviewInput,
 } from "./evaluator-review-usecase.js";
 import { reportPaths, resolveEvaluatorPromptPath } from "./evaluator-review-support.js";
+import { evaluatorWorkOrderReviewDigest } from "./evaluator-work-order.js";
+
+export function evaluatorReviewAllowsCanonicalProjection(
+  task: Pick<TaskData, "extensions">,
+): boolean {
+  return Object.hasOwn(task.extensions ?? {}, TASK_KERNEL_EXTENSION);
+}
 
 async function persistReview(opts: {
   ctx: CommandContext;
@@ -41,6 +49,14 @@ async function persistReview(opts: {
   opinion_path: string;
   result_path: string | null;
 }> {
+  if (opts.report.verdict === "pass" && !opts.report.evaluated_sha) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message:
+        "A passing evaluator review requires a committed review target. Record the task implementation commit through the supported task workflow, then prepare and run evaluator again.",
+      context: { task_id: opts.task.id, reason_code: "evaluated_sha_missing" },
+    });
+  }
   const gitRoot = opts.ctx.resolvedProject.gitRoot;
   const reviewDir = path.dirname(opts.workOrderPath);
   const paths = reportPaths(reviewDir);
@@ -105,6 +121,7 @@ async function persistReview(opts: {
     taskId: opts.task.id,
     policyAction: "task_verify",
     phase: "verify",
+    allowCanonicalProjection: evaluatorReviewAllowsCanonicalProjection(opts.task),
     build: () => ({
       intents: setTaskFieldsIntent({
         quality_review: {
@@ -114,7 +131,7 @@ async function persistReview(opts: {
           updated_by: opts.report.provenance === "human_supplied" ? "HUMAN" : "EVALUATOR",
           note: opts.report.summary,
           evaluated_sha: opts.report.evaluated_sha,
-          blueprint_digest: opts.report.blueprint_digest,
+          review_identity_digest: opts.report.review_identity_digest,
           evidence_refs: evidenceRefs,
           findings: opts.report.findings,
           ...(opts.resultPayload?.recovery_reason
@@ -206,7 +223,7 @@ export async function applyEvaluatorSgrReview(opts: {
     verdict: result.verdict,
     summary: `EVALUATOR returned ${result.verdict} with ${result.findings.length} typed finding(s).`,
     evaluated_sha: workOrder.evaluated_sha,
-    blueprint_digest: workOrder.blueprint_digest,
+    review_identity_digest: evaluatorWorkOrderReviewDigest(workOrder),
     findings: result.findings.map((finding) => finding.summary),
     evidence_refs: uniqueStrings(
       result.findings.flatMap((finding) => finding.evidence_refs.map((entry) => entry.path)),
@@ -257,7 +274,7 @@ export async function applyHumanEvaluatorReview(opts: {
     verdict: opts.input.verdict,
     summary: opts.input.summary,
     evaluated_sha: workOrder.evaluated_sha,
-    blueprint_digest: workOrder.blueprint_digest,
+    review_identity_digest: evaluatorWorkOrderReviewDigest(workOrder),
     findings: opts.input.findings,
     evidence_refs: opts.input.evidence_refs,
     missing_tests: opts.input.missing_tests,

@@ -1,10 +1,3 @@
-import type {
-  BlueprintId,
-  EvidenceKind,
-  StopRuleSeverity,
-  TaskKind,
-} from "../../blueprints/model.js";
-
 export const SGR_CONTRACT_SCHEMA_VERSION = 1 as const;
 export const CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION = 2 as const;
 
@@ -226,39 +219,4 @@ export type EvaluatorSgrResult = {
   hidden_assumptions: string[];
   recovery_context?: string;
   recovery_reason?: "deterministic_evidence_gap";
-};
-
-export type BlueprintRejectedRoute = {
-  blueprint_id: BlueprintId;
-  reason: string;
-};
-
-export type BlueprintSelectedRoute = {
-  blueprint_id: BlueprintId;
-  task_kind: TaskKind;
-  rationale: string;
-};
-
-export type BlueprintDecisionEvidenceRequirement = {
-  id: string;
-  kind: EvidenceKind;
-  description: string;
-};
-
-export type BlueprintDecisionStopRule = {
-  id: string;
-  severity: StopRuleSeverity;
-  reason: string;
-};
-
-export type BlueprintRouteDecisionSgrResult = {
-  schema_version: typeof SGR_CONTRACT_SCHEMA_VERSION;
-  kind: "blueprint_route_decision";
-  facts: SgrReasoningStep[];
-  inferences: SgrReasoningStep[];
-  rejected_routes: BlueprintRejectedRoute[];
-  selected_route: BlueprintSelectedRoute;
-  required_evidence: BlueprintDecisionEvidenceRequirement[];
-  stop_rules: BlueprintDecisionStopRule[];
-  weak_links: string[];
 };

@@ -19,9 +19,6 @@ import type {
 export const RUNNER_ARTIFACT_PATH_KEYS = [
   "run_dir",
   "bundle_path",
-  "blueprint_plan_path",
-  "blueprint_execution_plan_path",
-  "blueprint_execution_state_path",
   "context_manifest_path",
   "bootstrap_path",
   "state_path",
@@ -37,9 +34,6 @@ type RunnerRecordContract = {
 };
 
 const LEGACY_OPTIONAL_BUNDLE_PATHS = new Set<(typeof RUNNER_ARTIFACT_PATH_KEYS)[number]>([
-  "blueprint_plan_path",
-  "blueprint_execution_plan_path",
-  "blueprint_execution_state_path",
   "context_manifest_path",
   "receipt_path",
   "trace_path",
@@ -69,10 +63,14 @@ function matchesPreparedOrReplayAdvance(
   ) {
     return false;
   }
+  if (prepared.schema_version !== 2 || effective.schema_version !== 2) return false;
+  const identityMatches =
+    isDeepStrictEqual(effective.components.plan, prepared.components.plan) &&
+    isDeepStrictEqual(effective.components.capability, prepared.components.capability);
   return (
+    identityMatches &&
     isDeepStrictEqual(effective.components.git, prepared.components.git) &&
     isDeepStrictEqual(effective.components.policy, prepared.components.policy) &&
-    isDeepStrictEqual(effective.components.blueprint, prepared.components.blueprint) &&
     isDeepStrictEqual(effective.components.knowledge, prepared.components.knowledge) &&
     isDeepStrictEqual(effective.components.provider, prepared.components.provider) &&
     isDeepStrictEqual(effective.components.authority, prepared.components.authority)

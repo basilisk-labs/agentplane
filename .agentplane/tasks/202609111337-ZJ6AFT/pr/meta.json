@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202609111337-ZJ6AFT/report-trace-backed-runner-activity-and-safe-liv",
+  "created_at": "2026-09-11T14:09:55.511Z",
+  "diffstat_sha256": "sha256:4b689d4b2a338c3a4a14046b2b9e1681cb30e1321d88fcc961b223a0b2ec5eef",
+  "last_verified_at": "2026-09-11T14:55:56.971Z",
+  "last_verified_diffstat_sha256": "sha256:4b689d4b2a338c3a4a14046b2b9e1681cb30e1321d88fcc961b223a0b2ec5eef",
+  "pr_number": 5928,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5928",
+  "pre_merge_closure": {
+    "basis_commit": "91111c8674b2f56c54efb06dd56dd4c675821539",
+    "branch": "task/202609111337-ZJ6AFT/report-trace-backed-runner-activity-and-safe-liv",
+    "pr_number": 5928,
+    "recorded_at": "2026-09-11T14:58:24.986Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202609111337-ZJ6AFT",
+  "updated_at": "2026-09-11T14:42:47.871Z",
+  "verify": {
+    "status": "pass"
+  }
+}

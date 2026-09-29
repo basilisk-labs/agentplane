@@ -1,5 +1,4 @@
 import { captureExternalTaskArtifacts } from "./external-agent-task-artifact-baseline.js";
-import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -24,11 +23,12 @@ import {
   resolveCommandGitCommonDir,
   type CommandContext,
 } from "../shared/task-backend.js";
-
 import { agentTransitionId } from "./agent-action-packet.js";
 import {
   externalAgentIssueDigest,
+  externalAgentExchangeDigest,
   externalAgentResultDigest,
+  externalAgentUsageAccounting,
   persistExternalAgentExchangeArtifacts,
   readExternalAgentExchange,
   readExternalAgentResult,
@@ -44,17 +44,15 @@ import {
   assertExternalAgentSupervisorIntent,
   finalizeCompletedExternalAgentExchange,
 } from "./external-agent-exchange-authority.js";
-import { usesExternalImplementationAuthority } from "./external-agent-purpose.js";
+import { semanticPurpose, usesExternalImplementationAuthority } from "./external-agent-purpose.js";
 import {
   bindPreparedEvaluatorState,
   evaluatorReturnFingerprint,
   isRecoverableAppliedEvaluatorResult,
 } from "./external-agent-evaluator-recovery.js";
-import {
-  applyAcceptedExternalAgentResult,
-  isExternalAgentResultAlreadyApplied,
-} from "./external-agent-result-application.js";
+import { isExternalAgentResultAlreadyApplied } from "./external-agent-result-application.js";
 import { superviseExternalAgentIssuance } from "./external-agent-supervisor-recovery.js";
+import { applyExternalAgentResultWithRejectedResultRecovery } from "./external-agent-result-rejection-recovery.js";
 import { recordIssuedExternalAgentEpisode } from "./external-agent-supervisor-episode.js";
 import { assertExternalPlanningResultApplicable } from "./external-agent-planning-authority.js";
 import {
@@ -63,29 +61,11 @@ import {
 } from "./external-agent-result-routing.js";
 import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-finalization.js";
 import { resolveConflictReworkSemanticInput } from "../pr/conflict-rework-semantic-input.js";
-
 export type IssuedExternalAgentExchange = {
   exchange: ExternalAgentExchange;
   paths: ExternalAgentExchangePaths;
   work_order: AgentWorkOrderV2;
 };
-
-function semanticPurpose(decision: TaskRouteDecision): ExternalAgentExchange["purpose"] | null {
-  const step = decision.workflowStep;
-  if (step.kind === "agent_episode") return step.episode.purpose;
-  if (
-    step.kind === "cli_operation" &&
-    step.operation.id === "runner.follow" &&
-    step.operation.params.mode === "run"
-  ) {
-    return "implementation";
-  }
-  return null;
-}
-
-function digestText(value: string): string {
-  return `sha256:${createHash("sha256").update(value, "utf8").digest("hex")}`;
-}
 
 async function commandContextForCheckout(opts: {
   command: CommandContext;
@@ -138,7 +118,7 @@ async function prepareEvaluatorInput(opts: {
       work_order: opts.work_order,
       git_root: packet.git_root,
       work_order_path: prepared.work_order_path,
-      digest: digestText(serialized),
+      digest: externalAgentExchangeDigest(serialized),
     }),
     evaluator_work_order_ref: prepared.work_order_path,
   };
@@ -233,10 +213,11 @@ async function issueExternalAgentExchangeUnlocked(opts: {
     readDirectRepositoryStatus(checkout),
   ]);
   const at = new Date().toISOString();
-  const preparedExchange: ExternalAgentExchange = {
+  let preparedExchange: ExternalAgentExchange = {
     schema_version: 1,
     kind: "external_agent_exchange",
     issue_digest_version: 2,
+    result_format: "semantic_payload_v1",
     status: "prepared",
     task_id: opts.decision.task.id,
     transition_id: transitionId,
@@ -259,10 +240,18 @@ async function issueExternalAgentExchangeUnlocked(opts: {
     result_digest: null,
     result: null,
     postcondition_fingerprint: null,
+    host_usage: {
+      schema_version: 1,
+      observed_by: "host_transport",
+      state: "unallocatable",
+      reason: "external_host_turn_not_task_attributable",
+      provider_usage: null,
+      usage: null,
+    },
     created_at: at,
     updated_at: at,
   };
-  await persistExternalAgentExchangeArtifacts({
+  preparedExchange = await persistExternalAgentExchangeArtifacts({
     paths,
     work_order: workOrder,
     exchange: preparedExchange,
@@ -330,7 +319,9 @@ async function assertReadOnlyReturnFresh(opts: {
     );
     if (
       !opts.exchange.evaluator_work_order_ref ||
-      digestText(await readFile(opts.exchange.evaluator_work_order_ref, "utf8")) !== frozen?.digest
+      externalAgentExchangeDigest(
+        await readFile(opts.exchange.evaluator_work_order_ref, "utf8"),
+      ) !== frozen?.digest
     ) {
       throw new CliError({
         code: "E_VALIDATION",
@@ -347,15 +338,20 @@ export async function acceptExternalAgentResult(opts: {
   result_path: string;
   include_remote: boolean;
 }): Promise<TaskRouteDecision> {
-  const raw = await readExternalAgentResult(path.resolve(opts.ctx.cwd, opts.result_path));
-  const identity = externalAgentResultIdentity(raw);
+  const resultPath = path.resolve(opts.ctx.cwd, opts.result_path);
+  const raw = await readExternalAgentResult(resultPath);
+  const commonGitDir = await resolveCommandGitCommonDir(opts.command);
+  const identity = externalAgentResultIdentity(raw, {
+    task_id: opts.task_id,
+    exchange_root: path.join(commonGitDir, "agentplane", "external-agent"),
+    result_path: resultPath,
+  });
   if (identity.task_id !== opts.task_id) {
     throw new CliError({
       code: "E_VALIDATION",
       message: "Result task_id does not match command task id.",
     });
   }
-  const commonGitDir = await resolveCommandGitCommonDir(opts.command);
   const paths = await resolveExternalAgentExchangePaths({
     git_root: opts.command.resolvedProject.gitRoot,
     common_git_dir: commonGitDir,
@@ -534,20 +530,22 @@ export async function acceptExternalAgentResult(opts: {
     ) {
       await assertReadOnlyReturnFresh({ exchange, work_order: workOrder, decision: current });
     }
-    if (!acceptedApplication && !(alreadyApplied && exchange.purpose === "planning")) {
-      await applyAcceptedExternalAgentResult({
-        command: checkoutCommand,
-        decision: current,
-        exchange,
-        work_order: workOrder,
-        envelope,
-      });
-    }
+    await applyExternalAgentResultWithRejectedResultRecovery({
+      command: checkoutCommand,
+      decision: current,
+      exchange,
+      work_order: workOrder,
+      envelope,
+      supervisor: { store, journal: issuedJournal, operation, paths },
+      include_remote: includeRemote,
+      skip_application: acceptedApplication || (alreadyApplied && exchange.purpose === "planning"),
+    });
     const after = await refreshExternalAgentRoute({
       cwd: exchange.checkout,
       task_id: opts.task_id,
       include_remote: includeRemote,
     });
+    const accounting = externalAgentUsageAccounting({ exchange });
     let journal = completeSupervisorExecutionEpisode({
       journal: issuedJournal,
       operation_key: operation.operation_key,
@@ -556,6 +554,9 @@ export async function acceptExternalAgentResult(opts: {
         semantic_status: envelope.result.status,
         result_digest: resultDigest,
       },
+      usage: accounting.usage,
+      provider_usage: accounting.provider_usage,
+      usage_attribution: accounting.usage_attribution,
       progress: after.workflowStep.preconditionFingerprint,
     });
     if (!(await store.compareAndSwap(issuedJournal.digest, journal))) {
@@ -564,12 +565,7 @@ export async function acceptExternalAgentResult(opts: {
         message: "External-agent supervisor changed while completing the semantic operation.",
       });
     }
-    if (
-      (journal.status === "running" && journal.cursor.phase === "completed") ||
-      (journal.status === "stopped" &&
-        journal.stop?.reason === "budget_exhausted" &&
-        journal.cursor.phase === "stopped")
-    ) {
+    if (journal.status === "running" && journal.cursor.phase === "completed") {
       const completedDigest = journal.digest;
       journal = advanceSupervisorExecutionEpisodeState({
         journal,

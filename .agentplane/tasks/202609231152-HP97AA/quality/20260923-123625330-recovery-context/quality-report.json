@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202609231152-HP97AA",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-23T12:39:38.644Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "106b90ee0acbc3db8d0646a8824392caf9fc8701",
+  "review_identity_digest": "sha256:fbdfecd15b4c7a149ab339ffe3031853fa1fedbbb070865b30d3eeb2f95253db",
+  "findings": [
+    "No contract violation found: only reject_plan bypasses the authority-lineage replacement guard, while capture_intent and propose_plan remain blocked until the plan is explicitly rejected and the task enters replanning."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609231152-HP97AA/quality/objects/sha256/367ab027b2648ca0c4957873b269f302eb9d0822109731abe79144c7889ab5cd.patch",
+    ".agentplane/tasks/202609231152-HP97AA/verification/20260923120633958-28469bf4760981f8.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

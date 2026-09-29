@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
@@ -7,6 +7,47 @@ import { describe, expect, it } from "vitest";
 
 import * as localCiSelectionModule from "../../../../scripts/lib/local-ci-selection.mjs";
 import * as prePushScopeModule from "../../../../scripts/lib/pre-push-scope.mjs";
+import * as bunRuntimeModule from "../../../../scripts/lib/bun-runtime.mjs";
+
+const { assertPinnedBunRuntime } = bunRuntimeModule as {
+  assertPinnedBunRuntime: (repoRoot: string, env: NodeJS.ProcessEnv) => string;
+};
+
+describe.skipIf(process.platform === "win32")("local CI Bun runtime", () => {
+  it.each(["1.3.6", "1.4.2"])(
+    "checks the actual PATH binary (%s) against packageManager",
+    (actual) => {
+      const root = mkdtempSync(path.join(os.tmpdir(), "agentplane-bun-preflight-"));
+      try {
+        writeFileSync(
+          path.join(root, "package.json"),
+          JSON.stringify({ packageManager: "bun@1.4.2" }),
+        );
+        const binary = path.join(root, "bun");
+        writeFileSync(binary, `#!/bin/sh\nprintf '%s\\n' '${actual}'\n`);
+        chmodSync(binary, 0o755);
+        const env = { ...process.env, PATH: root };
+        if (actual === "1.4.2") {
+          expect(assertPinnedBunRuntime(root, env)).toBe(actual);
+        } else {
+          expect(() => assertPinnedBunRuntime(root, env)).toThrow(
+            /requires 1.4.2; PATH resolves 1.3.6/u,
+          );
+          const script = path.resolve("scripts/checks/run-local-ci.mjs");
+          expect(() =>
+            execFileSync(process.execPath, [script, "--mode", "full"], {
+              cwd: root,
+              env,
+              stdio: "pipe",
+            }),
+          ).toThrow(/Bun runtime mismatch/u);
+        }
+      } finally {
+        rmSync(root, { recursive: true, force: true });
+      }
+    },
+  );
+});
 
 type FastCiPlan =
   | { kind: "full-fast"; reason: string; files?: string[] }
@@ -260,7 +301,7 @@ describe("local CI fast selection", () => {
     expect(plan.bucket).toBe("route-oracle");
     expect(plan.reason).toBe("route_oracle_paths_only");
     expect(plan.testFiles).toContain(
-      "packages/agentplane/src/cli/run-cli.core.route-decision.test.ts",
+      "packages/agentplane/src/commands/task/agent-action-packet.test.ts",
     );
   });
 
@@ -366,7 +407,9 @@ describe("local CI fast selection", () => {
     expect(plan.testFiles).toContain(
       "packages/agentplane/src/commands/context/release-readiness.test.ts",
     );
-    expect(plan.testFiles).toContain("packages/agentplane/src/blueprints/validate.test.ts");
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/commands/context/harvest-tasks.test.ts",
+    );
   });
 
   it("routes isolated hook and CI routing paths to the hooks bucket", () => {
@@ -623,7 +666,7 @@ describe("local CI fast selection", () => {
       "packages/agentplane/src/cli/run-cli.core.tasks.query-listing.test.ts",
     );
     expect(plan.testFiles).toContain(
-      "packages/agentplane/src/cli/run-cli.core.tasks.doc-write.test.ts",
+      "packages/agentplane/src/cli/run-cli.core.tasks.doc-write.validation.test.ts",
     );
     expect(plan.testFiles).toContain(
       "packages/agentplane/src/cli/run-cli.core.tasks.scaffold-derive.test.ts",

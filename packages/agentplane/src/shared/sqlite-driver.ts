@@ -181,7 +181,7 @@ async function loadSqliteUncached(): Promise<SqliteModule | null> {
     (globalThis as GlobalWithSqlite).__agentplaneSqlite = loaded;
     return loaded;
   } catch {
-    // Bun's test/runtime does not expose node:sqlite; use its compatible SQLite driver.
+    // Older Bun versions lack node:sqlite; fall back to their compatible SQLite driver.
   }
   try {
     const sqlite = (await import(BUN_SQLITE_SPECIFIER)) as BunSqliteModule;

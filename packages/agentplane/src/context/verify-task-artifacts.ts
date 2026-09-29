@@ -357,7 +357,7 @@ export async function validateContextArtifacts(opts: {
     }
   }
   if (
-    opts.task.blueprint_request === "context.maximum_assimilation" &&
+    isMaximumAssimilationTask(opts.task, opts.context) &&
     !isProfileSwitchContextTask(opts.context)
   ) {
     await validateMaximumAssimilationGlossary(opts.root, errors);

@@ -118,16 +118,6 @@ function initWriteEffects(opts: { paths: ResolvedInitPaths; answers: InitAnswers
       risk: "low",
     });
   }
-  for (const blueprint of opts.answers.blueprints) {
-    effects.push({
-      kind: "install_blueprint",
-      summary: `Install cached blueprint catalog entry ${blueprint}`,
-      destructive: false,
-      reversible: true,
-      requiresNetwork: false,
-      risk: "low",
-    });
-  }
   return effects;
 }
 
@@ -207,7 +197,6 @@ export function buildInitPlan(opts: {
       evaluatorSkepticism: opts.answers.evaluatorSkepticism,
       strictUnsafeConfirm: opts.answers.strictUnsafeConfirm,
       recipes: [...opts.answers.recipes],
-      blueprints: [...opts.answers.blueprints],
       runnerProfile: opts.answers.runnerProfile,
     },
     context: {

@@ -1,0 +1,3440 @@
+diff --git a/.agentplane/tasks/202609071541-47TFVD/README.md b/.agentplane/tasks/202609071541-47TFVD/README.md
+new file mode 100644
+index 000000000..30dc622b3
+--- /dev/null
++++ b/.agentplane/tasks/202609071541-47TFVD/README.md
+@@ -0,0 +1,1309 @@
++---
++id: "202609071541-47TFVD"
++title: "Propagate approved CI scope to external implementation commit guards"
++result_summary: "pre-merge closure"
++status: "DONE"
++priority: "high"
++owner: "CODER"
++revision: 17
++origin:
++  system: "manual"
++depends_on: []
++tags:
++  - "intake"
++task_kind: "code"
++mutation_scope: "code"
++risk_flags:
++  - "security"
++verify:
++  - "bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
++plan_approval:
++  state: "approved"
++  updated_at: "2026-09-07T15:43:03.727Z"
++  updated_by: "HOST:local:USER"
++  note: "host_user_decision=sha256:ef146c577485a6b22d161a24a52252ce05f3ec35aca5c11cc4a798c82bc49ce9"
++verification:
++  state: "ok"
++  updated_at: "2026-09-07T16:48:15.916Z"
++  updated_by: "SUPERVISOR"
++  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
++  attempts: 0
++quality_review:
++  state: "pass"
++  provenance: "evaluator_supplied"
++  updated_at: "2026-09-07T16:49:51.041Z"
++  updated_by: "EVALUATOR"
++  note: "EVALUATOR returned pass with 3 typed finding(s)."
++  evaluated_sha: "22d93c4efedbb342e900fa6c6999e2c343307cda"
++  blueprint_digest: "04e3994f842e00e1c2edaa1fbe61e96b57f1e875075a0a2d016d2501eaf000ae"
++  evidence_refs:
++    - ".agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/evaluator-work-order.json"
++    - ".agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/quality-report.json"
++    - ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/0230b6fa678d2169a3176241c901f324ec0ada6c68f1fd56ed1111c00e8a285d.md"
++    - ".agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/evaluator-opinion.md"
++    - ".agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/evaluator-result.json"
++    - ".agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/evaluator-evidence-manifest.json"
++    - ".agentplane/tasks/202609071541-47TFVD/README.md"
++    - ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/68b75038d730a2d93ca5ed20770f237a9feadca97c15132ae6caf4682e93efbc.patch"
++    - ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/89a1dd66b4816d38f6cf65514c2bac4ba4caa08a3d60d83565050ebed12a2943.json"
++    - ".agentplane/tasks/202609071541-47TFVD/verification/20260907164815916-b6132adfaa57f00e.json"
++    - ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/c45e4cce01c124ba8f0dcf00de8fa97ccae6aab1c79559f2e7fd60222d465d06.json"
++    - ".agentplane/policy/dod.core.md"
++    - ".agentplane/policy/security.must.md"
++  findings:
++    - "Frozen diff changes only the two approved implementation/test paths. CI flag derives from current task authority after WorkOrder path validation. All workspace CI paths must belong to the validated delta; preexisting unrelated CI changes remain denied. Other protected-family flags remain false."
++    - "Regression cases cover approved workflow/action paths, missing ci permission, absent contract, similarly named non-CI paths, preexisting unrelated CI changes, and rejection before commit permission derivation."
++    - "Supervisor observed focused tests and bun run ci:local:full both exit zero; recorded verification state ok at 2026-09-07T16:48:15.916Z. Frozen implementation and checks identity matches evaluated SHA."
++token_usage:
++  agent_runs: 6
++  input_tokens: null
++  journal_digest: "sha256:ab630a7a23cc14471f8a68ca11c2551c9990da2ae9a25eaa477f75b6feb980c2"
++  observed_agent_runs: 0
++  observed_by: "agentplane"
++  output_tokens: null
++  reasoning_tokens: null
++  schema_version: 1
++  source: "supervisor_journal"
++  state: "unavailable"
++  total_tokens: null
++  unavailable_reason: "provider_token_telemetry_unavailable"
++  updated_at: "2026-09-07T16:50:41.773Z"
++execution_route:
++  frozen: true
++  reason_codes:
++    - "agent_preferred_branch_pr"
++    - "effect_security_boundary"
++    - "repository_branch_pr_floor"
++  repository_mode: "branch_pr"
++  requested_mode: "auto"
++  schema_version: 1
++  selected_mode: "branch_pr"
++execution_contract:
++  authority:
++    allowed_external_effects: []
++    allowed_repository_effects:
++      - "repository_write"
++      - "security_boundary"
++      - "source_code"
++      - "tests"
++    forbidden_external_effects:
++      - "network_read"
++      - "external_write"
++      - "credentials"
++      - "publish"
++      - "deploy"
++      - "destructive_git"
++    forbidden_repository_effects:
++      - "documentation"
++      - "public_api"
++      - "schema"
++      - "dependencies"
++      - "ci"
++      - "release_metadata"
++    writable_roots:
++      - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
++      - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
++  declaration:
++    external_effects: []
++    implementation_uncertainty: "bounded"
++    preferred_mode: "branch_pr"
++    rationale:
++      - "Repair only CI permission propagation and its regression tests. Preserve all unrelated work."
++    repository_effects:
++      - "repository_write"
++      - "security_boundary"
++      - "source_code"
++      - "tests"
++    requirements_uncertainty: "bounded"
++    reversibility: "reversible"
++    schema_version: 2
++    scope_roots:
++      - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
++      - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
++  observed:
++    authority_violations: []
++    changed_components:
++      - "packages/agentplane"
++    changed_paths:
++      - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
++      - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
++    external_effects: []
++    repository_effects:
++      - "repository_write"
++      - "source_code"
++      - "tests"
++    verification_results:
++      -
++        id: "recorded-check-1"
++        result: "pass"
++      -
++        id: "recorded-check-2"
++        result: "pass"
++      -
++        id: "recorded-check-3"
++        result: "pass"
++      -
++        id: "recorded-check-4"
++        result: "pass"
++      -
++        id: "recorded-check-5"
++        result: "pass"
++      -
++        id: "recorded-check-6"
++        result: "pass"
++      -
++        id: "recorded-check-7"
++        result: "pass"
++      -
++        id: "verification-record"
++        result: "pass"
++  reason_codes:
++    - "agent_preferred_branch_pr"
++    - "effect_security_boundary"
++    - "repository_branch_pr_floor"
++  repository_mode: "branch_pr"
++  safety:
++    approval_effects: []
++    requires_user_approval: false
++    requires_worktree: true
++  schema_version: 1
++  selected_mode: "branch_pr"
++  source: "agent_declared"
++  verification:
++    contract:
++      declared:
++        components:
++          - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
++          - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
++        evidence_requirements:
++          - "hosted_integration"
++          - "repository_effect:repository_write"
++          - "repository_effect:security_boundary"
++          - "repository_effect:source_code"
++          - "repository_effect:tests"
++          - "task_outcome"
++        external_effects: []
++        repository_effects:
++          - "repository_write"
++          - "security_boundary"
++          - "source_code"
++          - "tests"
++        risk:
++          implementation_uncertainty: "bounded"
++          requirements_uncertainty: "bounded"
++          reversibility: "reversible"
++      digest: "sha256:969f43c02b99032aac9c49eeb0b3b3ac4520b706773317fbb3f6117f0d0567ff"
++      escalation_reasons:
++        - "effect_security_boundary"
++      execution_groups:
++        - "docs-schema"
++        - "core"
++        - "runtime"
++        - "cli"
++      observed:
++        changed_components:
++          - "packages/agentplane"
++        changed_files:
++          - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
++          - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
++        external_effects: []
++        repository_effects:
++          - "repository_write"
++          - "source_code"
++          - "tests"
++      phase: "task"
++      policy_floor:
++        monotonic_strengthening: true
++        pr_full_regression: true
++        unknown_or_central_full_regression: true
++      requires_full_regression: true
++      requires_real_e2e: false
++      schema_version: 2
++      selected_checks:
++        - "affected_unit_integration"
++        - "critical_paths"
++        - "full_regression"
++        - "hosted_integration"
++        - "task_outcome"
++      selector:
++        bucket: null
++        buckets: []
++        execution_mode: "semantic"
++        kind: "semantic"
++        lint_targets: []
++        reason: "execution_declaration"
++        run_cli_docs_check: false
++        selected_test_files: []
++        vitest_pool: "forks"
++      source: "execution_contract"
++    required_evidence:
++      - "hosted_integration"
++      - "repository_effect:repository_write"
++      - "repository_effect:security_boundary"
++      - "repository_effect:source_code"
++      - "repository_effect:tests"
++      - "task_outcome"
++commit:
++  hash: "ff1a43f687156efc22d181624dd32a8968bb114a"
++  message: "🚧 47TFVD task: record external evaluator result"
++comments:
++  -
++    author: "CODER"
++    body: "Start: continue branch_pr task in the dedicated task worktree."
++  -
++    author: "SUPERVISOR"
++    body: "Implementation committed: 3b38084aeb5d. CLI accepted one state-bound external-agent semantic result."
++  -
++    author: "SUPERVISOR"
++    body: "Implementation committed: 9c36ce1c6ca5. CLI accepted one state-bound external-agent semantic result."
++  -
++    author: "SUPERVISOR"
++    body: "Implementation committed: 22d93c4efedb. CLI accepted one state-bound external-agent semantic result."
++  -
++    author: "CODER"
++    body: "Verified: pre-merge closure packet is ready for the task PR."
++events:
++  -
++    type: "status"
++    at: "2026-09-07T15:46:17.888Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DOING"
++    note: "Start: continue branch_pr task in the dedicated task worktree."
++  -
++    type: "status"
++    at: "2026-09-07T15:48:46.372Z"
++    author: "SUPERVISOR"
++    from: "DOING"
++    to: "DOING"
++    note: "Implementation committed: 3b38084aeb5d. CLI accepted one state-bound external-agent semantic result."
++    commit: "3b38084aeb5d993b1e064ecba25c3a6e0dc277ab"
++  -
++    type: "verify"
++    at: "2026-09-07T15:50:50.733Z"
++    author: "SUPERVISOR"
++    state: "needs_rework"
++    note: "Rework: Declared check failed: bun run ci:local:full"
++  -
++    type: "status"
++    at: "2026-09-07T15:58:28.384Z"
++    author: "SUPERVISOR"
++    from: "DOING"
++    to: "DOING"
++    note: "Implementation committed: 9c36ce1c6ca5. CLI accepted one state-bound external-agent semantic result."
++    commit: "9c36ce1c6ca523ce06c4c13771cac41f5e2e5b41"
++  -
++    type: "verify"
++    at: "2026-09-07T16:00:33.827Z"
++    author: "SUPERVISOR"
++    state: "needs_rework"
++    note: "Rework: Declared check failed: bun run ci:local:full"
++  -
++    type: "status"
++    at: "2026-09-07T16:39:35.105Z"
++    author: "SUPERVISOR"
++    from: "DOING"
++    to: "DOING"
++    note: "Implementation committed: 22d93c4efedb. CLI accepted one state-bound external-agent semantic result."
++    commit: "22d93c4efedbb342e900fa6c6999e2c343307cda"
++  -
++    type: "verify"
++    at: "2026-09-07T16:48:15.916Z"
++    author: "SUPERVISOR"
++    state: "ok"
++    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
++  -
++    type: "status"
++    at: "2026-09-07T16:50:41.773Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DONE"
++    note: "Verified: pre-merge closure packet is ready for the task PR."
++    commit: "ff1a43f687156efc22d181624dd32a8968bb114a"
++doc_version: 3
++doc_updated_at: "2026-09-07T16:50:41.773Z"
++doc_updated_by: "CODER"
++description: "User approved this bounded recovery on 2026-09-07: repair the allowCI false defect blocking task 202609071444-7MNJXE and continue that task. Change external-agent-implementation-authority.ts and extend external-agent-implementation-recovery.test.ts. Permit CI commit guard access only after current WorkOrder scope validation and when the approved task execution contract allows the ci effect. Preserve rejection of unapproved protected paths. No external writes. This separate recovery task is needed because the original task is trapped in worktree resolution after commit rejection."
++sections:
++  Summary: |-
++    Propagate approved CI scope to external implementation commit guards
++
++    User approved this bounded recovery on 2026-09-07: repair the allowCI false defect blocking task 202609071444-7MNJXE and continue that task. Change external-agent-implementation-authority.ts and extend external-agent-implementation-recovery.test.ts. Permit CI commit guard access only after current WorkOrder scope validation and when the approved task execution contract allows the ci effect. Preserve rejection of unapproved protected paths. No external writes. This separate recovery task is needed because the original task is trapped in worktree resolution after commit rejection.
++  Scope: |-
++    - In scope: User approved this bounded recovery on 2026-09-07: repair the allowCI false defect blocking task 202609071444-7MNJXE and continue that task. Change external-agent-implementation-authority.ts and extend external-agent-implementation-recovery.test.ts. Permit CI commit guard access only after current WorkOrder scope validation and when the approved task execution contract allows the ci effect. Preserve rejection of unapproved protected paths. No external writes. This separate recovery task is needed because the original task is trapped in worktree resolution after commit rejection.
++    - Out of scope: unrelated refactors not required for "Propagate approved CI scope to external implementation commit guards".
++  Plan: "Prepare the exact two-file CI permission repair approved by the user. Validate positive and negative authorization behavior."
++  Verify Steps: "Run bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts. Expect approved CI scope to pass and unapproved CI scope to fail. Run git diff --check. Review that other protected path permissions remain denied."
++  Verification: |-
++    <!-- BEGIN VERIFICATION RESULTS -->
++    ### 2026-09-07T15:50:50.733Z — VERIFY — needs_rework
++
++    By: SUPERVISOR
++
++    Note: Rework: Declared check failed: bun run ci:local:full
++    Attempts: 1
++
++    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0a82ecb89dd2e7a7be989bfecded0cdb23b3f3830de95d17fa119985d909c620, input_digest=sha256:eb521f08f3ac93f0fed4ac196de976aa73cfc495b5a2ebe73cc9c7625179904a
++
++    Details:
++
++    Command: bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts
++    Result: pass
++    Evidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-1
++    Scope: branch_pr task 202609071541-47TFVD declared verification
++
++    Command: bun run ci:local:full
++    Result: fail
++    Evidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-2
++    Scope: branch_pr task 202609071541-47TFVD declared verification
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071541-47TFVD-propagate-approved-ci-scope-to-external-implemen/.agentplane/tasks/202609071541-47TFVD/blueprint/resolved-snapshot.json
++    - old_digest: 04e3994f842e00e1c2edaa1fbe61e96b57f1e875075a0a2d016d2501eaf000ae
++    - current_digest: 04e3994f842e00e1c2edaa1fbe61e96b57f1e875075a0a2d016d2501eaf000ae
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202609071541-47TFVD
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: agentplane task verify-show 202609071541-47TFVD
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    ### 2026-09-07T16:00:33.827Z — VERIFY — needs_rework
++
++    By: SUPERVISOR
++
++    Note: Rework: Declared check failed: bun run ci:local:full
++    Attempts: 2
++
++    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0a82ecb89dd2e7a7be989bfecded0cdb23b3f3830de95d17fa119985d909c620, input_digest=sha256:9624a0006bdee1df74617fbcf82e73e9c574f5b1c17262eb423c49910baecc80
++
++    Details:
++
++    Command: bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts
++    Result: pass
++    Evidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-1
++    Scope: branch_pr task 202609071541-47TFVD declared verification
++
++    Command: bun run ci:local:full
++    Result: fail
++    Evidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-2
++    Scope: branch_pr task 202609071541-47TFVD declared verification
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071541-47TFVD-propagate-approved-ci-scope-to-external-implemen/.agentplane/tasks/202609071541-47TFVD/blueprint/resolved-snapshot.json
++    - old_digest: 04e3994f842e00e1c2edaa1fbe61e96b57f1e875075a0a2d016d2501eaf000ae
++    - current_digest: 04e3994f842e00e1c2edaa1fbe61e96b57f1e875075a0a2d016d2501eaf000ae
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202609071541-47TFVD
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: agentplane task verify-show 202609071541-47TFVD
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    ### 2026-09-07T16:48:15.916Z — VERIFY — ok
++
++    By: SUPERVISOR
++
++    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0a82ecb89dd2e7a7be989bfecded0cdb23b3f3830de95d17fa119985d909c620, input_digest=sha256:19258b0bcda21ceec51b23428aab821e70bd01ce39d5d165e612eabd2868dbe5
++
++    Details:
++
++    Check: affected_unit_integration
++    Command: bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts
++    Result: pass
++    Evidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-1
++    Scope: branch_pr task 202609071541-47TFVD Verification Contract check affected_unit_integration (1/2)
++
++    Check: affected_unit_integration
++    Command: bun run ci:local:full
++    Result: pass
++    Evidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-2
++    Scope: branch_pr task 202609071541-47TFVD Verification Contract check affected_unit_integration (2/2)
++
++    Check: critical_paths
++    Command: bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts
++    Result: pass
++    Evidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-1
++    Scope: branch_pr task 202609071541-47TFVD Verification Contract check critical_paths (1/2)
++
++    Check: critical_paths
++    Command: bun run ci:local:full
++    Result: pass
++    Evidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-2
++    Scope: branch_pr task 202609071541-47TFVD Verification Contract check critical_paths (2/2)
++
++    Check: full_regression
++    Command: bun run ci:local:full
++    Result: pass
++    Evidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-2
++    Scope: branch_pr task 202609071541-47TFVD Verification Contract check full_regression
++
++    Check: task_outcome
++    Command: bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts
++    Result: pass
++    Evidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-1
++    Scope: branch_pr task 202609071541-47TFVD Verification Contract check task_outcome (1/2)
++
++    Check: task_outcome
++    Command: bun run ci:local:full
++    Result: pass
++    Evidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-2
++    Scope: branch_pr task 202609071541-47TFVD Verification Contract check task_outcome (2/2)
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071541-47TFVD-propagate-approved-ci-scope-to-external-implemen/.agentplane/tasks/202609071541-47TFVD/blueprint/resolved-snapshot.json
++    - old_digest: 04e3994f842e00e1c2edaa1fbe61e96b57f1e875075a0a2d016d2501eaf000ae
++    - current_digest: 04e3994f842e00e1c2edaa1fbe61e96b57f1e875075a0a2d016d2501eaf000ae
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202609071541-47TFVD
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: agentplane task verify-show 202609071541-47TFVD
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    <!-- END VERIFICATION RESULTS -->
++  Rollback Plan: |-
++    - Revert task-related commit(s).
++    - Re-run required checks to confirm rollback safety.
++  Findings: ""
++extensions:
++  agentplane.execution_grant:
++    actor: "HOST:local:USER"
++    approval_evidence_digest: "sha256:ef146c577485a6b22d161a24a52252ce05f3ec35aca5c11cc4a798c82bc49ce9"
++    approval_kind: "host_user_decision"
++    capabilities:
++      - "provider.merge"
++      - "provider.pr"
++      - "repository.integrate"
++      - "repository.write"
++      - "task.lifecycle"
++      - "task.scope.extend"
++    completion_contract_digest: "sha256:b49c73542b465edfd3cb72709d563fafe83e03f8b95d9a8c238c29d3d5b93b8b"
++    digest: "sha256:114c10796438b054c834ad924ee68f35984cbda87491330bd5a293a751b2480c"
++    grant_id: "8cb72146-9207-41c0-8527-d50a60341034"
++    issued_at: "2026-09-07T15:43:03.727Z"
++    kind: "agentplane.execution_grant"
++    plan_digest: "sha256:403ebbcbf401ece1b648eae5788c7f46a311b8eb2ff4c685f1f6dc27dbe80eb0"
++    plan_revision: 3
++    repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
++    schema_version: 1
++    scope_digest: "sha256:53cd419f76eeae5209638c0cd0a685b24aea25d380c4d56eca7d81b2e1d82415"
++    status: "active"
++    task_id: "202609071541-47TFVD"
++  agentplane.task_centric:
++    current_plan:
++      approval:
++        approved_at: "2026-09-07T15:43:03.727Z"
++        approved_by: "HOST:local:USER"
++        approved_digest: "sha256:5af17c4fe2ba8c0ae67a128bf88ff04bef68fa10d54fd06e764ddfd38bbcdb48"
++        policy_facts:
++          - "host_user_decision"
++        state: "approved"
++      created_at: "2026-09-07T15:42:10.884Z"
++      digest: "sha256:5af17c4fe2ba8c0ae67a128bf88ff04bef68fa10d54fd06e764ddfd38bbcdb48"
++      proposal:
++        assumptions:
++          - "The task is the bounded repair already approved by the user. Do not publish or merge."
++        planning_baseline:
++          captured_at: "2026-09-07T15:41:36.076Z"
++          config_digest: null
++          context_digest: "sha256:890b5e5c75bdf159d4314db2bb015c07f8837e3eddfa3dd65a6b41186d162086"
++          digest: "sha256:8ac28c165a831686ac360e675eb5b6fd5c7c6129fed61773a6ce3820c65d29e2"
++          dirty_paths:
++            - ".agentplane/tasks/202609071412-9Q9KQN/README.md"
++            - ".agentplane/tasks/202609071432-QCBB76/README.md"
++            - ".agentplane/tasks/202609071501-VN1FN4/README.md"
++            - ".agentplane/tasks/202609071541-47TFVD/README.md"
++            - "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts"
++            - "packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
++          git:
++            kind: "commit"
++            ref: null
++            sha: "92efd467a7b045e7e784597168ac21bd41a975a1"
++          policy_digest: null
++          schema_version: 1
++          task_history_cursor: "task-revision:1"
++        schema_version: 1
++        task_id: "202609071541-47TFVD"
++        top_level_validation:
++          checks:
++            -
++              capability: "task.verify"
++              command: "bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
++              id: "regression"
++              kind: "deterministic"
++              required: true
++          criteria:
++            -
++              check_ids:
++                - "regression"
++              description: "An approved CI implementation can pass commit protection after current WorkOrder path validation. An unapproved CI effect or path remains rejected. Other protected families remain denied."
++              id: "approved-ci-only"
++              required: true
++          evidence_fingerprint: "sha256:1c343fcc1eb5feb497f1e15f0b448c66f54816219d1603dfc89f87a717aa7451"
++          schema_version: 1
++        unresolved_questions: []
++        work_items:
++          schema_version: 1
++          work_items:
++            -
++              acceptance_criteria:
++                -
++                  check_ids:
++                    - "regression"
++                  description: "An approved CI implementation can pass commit protection after current WorkOrder path validation. An unapproved CI effect or path remains rejected. Other protected families remain denied."
++                  id: "approved-ci-only"
++                  required: true
++              capabilities:
++                - "task.verify"
++              context:
++                max_bytes: 100000
++                optional_sources: []
++                required_sources:
++                  - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
++                  - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
++                symbol_hints:
++                  - "applyExternalImplementationResult"
++                  - "assertExternalImplementationReturnState"
++              depends_on: []
++              expected_outputs:
++                - "ci-permission-regression-evidence"
++              id: "ci-permission"
++              objective: "Derive the implementation commit CI permission from the approved execution contract and validated WorkOrder paths. Keep other protected path permissions false. Extend the existing recovery test suite to cover allowed CI and denied out-of-scope CI. Run the declared regression command."
++              optional: false
++              priority: 1
++              required_inputs: []
++              resource_claims:
++                -
++                  kind: "path"
++                  mode: "write"
++                  resource: "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
++                -
++                  kind: "path"
++                  mode: "write"
++                  resource: "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
++              risk: "high"
++              scope_roots:
++                - "packages/agentplane/src/commands/task/external-agent-implementation-authority.ts"
++                - "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
++              validation:
++                checks:
++                  -
++                    capability: "task.verify"
++                    command: "bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
++                    id: "regression"
++                    kind: "deterministic"
++                    required: true
++                criteria:
++                  -
++                    check_ids:
++                      - "regression"
++                    description: "An approved CI implementation can pass commit protection after current WorkOrder path validation. An unapproved CI effect or path remains rejected. Other protected families remain denied."
++                    id: "approved-ci-only"
++                    required: true
++                evidence_fingerprint: "sha256:1c343fcc1eb5feb497f1e15f0b448c66f54816219d1603dfc89f87a717aa7451"
++                schema_version: 1
++      revision: 1
++      schema_version: 1
++      task_id: "202609071541-47TFVD"
++    event_cursor: 13
++    final_validation:
++      evidence:
++        -
++          artifact_refs:
++            - "task-verification:202609071541-47TFVD"
++            - "git:22d93c4efedbb342e900fa6c6999e2c343307cda"
++          check_id: "regression"
++          command_identity: "bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
++          detail: "Verified: CLI-owned checks passed before independent EVALUATOR review."
++          exit_code: 0
++          observed_at: "2026-09-07T16:48:15.916Z"
++          repository_snapshot_digest: "sha256:341cd9ab3ece6540e4896b2dbd9ecfbaa2ece0612d71bc40c26d2549fc69c27c"
++          status: "passed"
++      schema_version: 1
++      stale_evidence: []
++      status: "passed"
++      unsatisfied_criteria: []
++    id: "202609071541-47TFVD"
++    intent:
++      acceptance_criteria:
++        -
++          check_ids: []
++          description: "bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
++          id: "legacy-1"
++          required: true
++      captured_at: "2026-09-07T15:41:25.338Z"
++      constraints: []
++      request: |-
++        Propagate approved CI scope to external implementation commit guards
++
++        User approved this bounded recovery on 2026-09-07: repair the allowCI false defect blocking task 202609071444-7MNJXE and continue that task. Change external-agent-implementation-authority.ts and extend external-agent-implementation-recovery.test.ts. Permit CI commit guard access only after current WorkOrder scope validation and when the approved task execution contract allows the ci effect. Preserve rejection of unapproved protected paths. No external writes. This separate recovery task is needed because the original task is trapped in worktree resolution after commit rejection.
++      task_id: "202609071541-47TFVD"
++    lifecycle: "COMPLETED"
++    plan_amendments: []
++    plan_history: []
++    revision: 17
++    schema_version: 1
++    updated_at: "2026-09-07T16:50:41.773Z"
++    work_items:
++      ci-permission:
++        attempt: 1
++        claim_id: null
++        id: "ci-permission"
++        last_failure: null
++        output_manifests:
++          -
++            digest: "sha256:800f9031e8502214fd860933a446c82dd4d528ec77b5a73a1c51f9b54821b0cc"
++            id: "ci-permission-regression-evidence"
++            kind: "semantic_output"
++            producer:
++              attempt: 1
++              plan_revision: 1
++              task_id: "202609071541-47TFVD"
++              work_item_id: "ci-permission"
++            provenance:
++              - "sha256:5f3a7d1e21cb0f203c32af164ca008a3ce805171efda8aee95ac50895372ebc8"
++              - ".agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json"
++            repository_snapshot_digest: "sha256:e9e3ae8a8bcd82361ee8b0cacd93c8f0d9be80a476d7dc13ff88a853467ba340"
++            schema: "agentplane.semantic-output.v1"
++            schema_version: 1
++        revision: 2
++        state: "COMPLETED"
++        validation_result:
++          evidence:
++            -
++              artifact_refs:
++                - ".agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json"
++              check_id: "regression"
++              command_identity: "bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
++              detail: "Observed by bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts."
++              exit_code: 0
++              observed_at: "2026-09-07T15:48:48.638Z"
++              repository_snapshot_digest: "sha256:e9e3ae8a8bcd82361ee8b0cacd93c8f0d9be80a476d7dc13ff88a853467ba340"
++              status: "passed"
++          schema_version: 1
++          stale_evidence: []
++          status: "passed"
++          unsatisfied_criteria: []
++  agentplane.task_centric_runtime:
++    checkpoints: []
++    events:
++      -
++        at: "2026-09-07T15:48:48.642Z"
++        from: "READY"
++        to: "COMPLETED"
++        actor_id: "agentplane"
++        cause_refs:
++          - "semantic-result:sha256:36932dc2a5d5a03cb04f96fb9dce786a6a8e3da5e49e8d9bba5a8d5e2966091c"
++        entity: "work_item"
++        id: "event_2b1dca21d4b1ec5a59e14481"
++        mutation_id: "external-result:work-order-202609071541-47TFVD-executor-2446e4479e38569572915aa4"
++        plan_digest: "sha256:5af17c4fe2ba8c0ae67a128bf88ff04bef68fa10d54fd06e764ddfd38bbcdb48"
++        plan_revision: 1
++        repository_fingerprint: null
++        schema_version: 1
++        task_id: "202609071541-47TFVD"
++        task_revision: 7
++        work_item_id: "ci-permission"
++    leases: []
++    mutation_receipts:
++      compatibility:sha256:303f0c890c8e9ee3fcefa63b55424e5f148b92b45c5d2474db39bade027828cc:
++        aggregate_digest: "sha256:e5beb6cecf303819b163b8a3c30691b03f47200c59f4badd6aa00497b4620f88"
++        event:
++          actor_id: "agentplane"
++          at: "2026-09-07T16:39:35.105Z"
++          cause_refs:
++            - "compatibility_projection_mutation"
++          entity: "task"
++          from: "ACTIVE"
++          id: "event_b6cfff6442a8ecf23ae2c9c3"
++          mutation_id: "compatibility:sha256:303f0c890c8e9ee3fcefa63b55424e5f148b92b45c5d2474db39bade027828cc"
++          plan_digest: "sha256:5af17c4fe2ba8c0ae67a128bf88ff04bef68fa10d54fd06e764ddfd38bbcdb48"
++          plan_revision: 1
++          repository_fingerprint: null
++          schema_version: 1
++          task_id: "202609071541-47TFVD"
++          task_revision: 13
++          to: "ACTIVE"
++          work_item_id: null
++        mutation_id: "compatibility:sha256:303f0c890c8e9ee3fcefa63b55424e5f148b92b45c5d2474db39bade027828cc"
++        next_revision: 14
++        previous_revision: 13
++        schema_version: 1
++        task_id: "202609071541-47TFVD"
++      compatibility:sha256:5a4801d4f6154937e2bd98e25ad46f83c0c0e02c57a5f488f008160eb9706f51:
++        aggregate_digest: "sha256:e49d4c8bbdc4283cfee4bca77c9d3f5448468bf814942cc47750e267ad001695"
++        event:
++          actor_id: "agentplane"
++          at: "2026-09-07T16:39:35.105Z"
++          cause_refs:
++            - "compatibility_projection_mutation"
++          entity: "task"
++          from: "ACTIVE"
++          id: "event_19b98bc68f94641809e35497"
++          mutation_id: "compatibility:sha256:5a4801d4f6154937e2bd98e25ad46f83c0c0e02c57a5f488f008160eb9706f51"
++          plan_digest: "sha256:5af17c4fe2ba8c0ae67a128bf88ff04bef68fa10d54fd06e764ddfd38bbcdb48"
++          plan_revision: 1
++          repository_fingerprint: null
++          schema_version: 1
++          task_id: "202609071541-47TFVD"
++          task_revision: 12
++          to: "ACTIVE"
++          work_item_id: null
++        mutation_id: "compatibility:sha256:5a4801d4f6154937e2bd98e25ad46f83c0c0e02c57a5f488f008160eb9706f51"
++        next_revision: 13
++        previous_revision: 12
++        schema_version: 1
++        task_id: "202609071541-47TFVD"
++      compatibility:sha256:872176d1dc8c5ad0e1bb1a30e0c0cc84537af4c1aacbc2a89b1d50270867a521:
++        aggregate_digest: "sha256:cfaa9260484d5f69ccac9c09498f1efc272733f1bd93067eca4729ca9e09095b"
++        event:
++          actor_id: "agentplane"
++          at: "2026-09-07T15:50:51.018Z"
++          cause_refs:
++            - "compatibility_projection_mutation"
++          entity: "task"
++          from: "ACTIVE"
++          id: "event_1c02b00c58f3764e92641fa0"
++          mutation_id: "compatibility:sha256:872176d1dc8c5ad0e1bb1a30e0c0cc84537af4c1aacbc2a89b1d50270867a521"
++          plan_digest: "sha256:5af17c4fe2ba8c0ae67a128bf88ff04bef68fa10d54fd06e764ddfd38bbcdb48"
++          plan_revision: 1
++          repository_fingerprint: null
++          schema_version: 1
++          task_id: "202609071541-47TFVD"
++          task_revision: 8
++          to: "ACTIVE"
++          work_item_id: null
++        mutation_id: "compatibility:sha256:872176d1dc8c5ad0e1bb1a30e0c0cc84537af4c1aacbc2a89b1d50270867a521"
++        next_revision: 9
++        previous_revision: 8
++        schema_version: 1
++        task_id: "202609071541-47TFVD"
++      compatibility:sha256:8750a8c8577c9c2c468a38f34a7bad2b009ad7710000dcf1069697a3144e19b9:
++        aggregate_digest: "sha256:c7fb0aa21ee077851a7fcabf6909ed5cada92abe08a69a23d9b84f8728d909d2"
++        event:
++          actor_id: "agentplane"
++          at: "2026-09-07T16:48:16.865Z"
++          cause_refs:
++            - "compatibility_projection_mutation"
++          entity: "task"
++          from: "ACTIVE"
++          id: "event_0e74ca6cf2c0bbacd102ccf1"
++          mutation_id: "compatibility:sha256:8750a8c8577c9c2c468a38f34a7bad2b009ad7710000dcf1069697a3144e19b9"
++          plan_digest: "sha256:5af17c4fe2ba8c0ae67a128bf88ff04bef68fa10d54fd06e764ddfd38bbcdb48"
++          plan_revision: 1
++          repository_fingerprint: null
++          schema_version: 1
++          task_id: "202609071541-47TFVD"
++          task_revision: 14
++          to: "ACTIVE"
++          work_item_id: null
++        mutation_id: "compatibility:sha256:8750a8c8577c9c2c468a38f34a7bad2b009ad7710000dcf1069697a3144e19b9"
++        next_revision: 15
++        previous_revision: 14
++        schema_version: 1
++        task_id: "202609071541-47TFVD"
++      compatibility:sha256:91325a790beb8ac4da1c7c921b1dbb5de9595063dfe8e237c80f2e76c1a3e922:
++        aggregate_digest: "sha256:1ee0ed7d1bfcf49249663bad5c3965753efaed9ede6c97fe8fa69406e91fd8b4"
++        event:
++          actor_id: "agentplane"
++          at: "2026-09-07T15:42:47.077Z"
++          cause_refs:
++            - "compatibility_projection_mutation"
++          entity: "task"
++          from: "AWAITING_PLAN_APPROVAL"
++          id: "event_a2ee5cdbe4715087bc8f2b65"
++          mutation_id: "compatibility:sha256:91325a790beb8ac4da1c7c921b1dbb5de9595063dfe8e237c80f2e76c1a3e922"
++          plan_digest: "sha256:5af17c4fe2ba8c0ae67a128bf88ff04bef68fa10d54fd06e764ddfd38bbcdb48"
++          plan_revision: 1
++          repository_fingerprint: null
++          schema_version: 1
++          task_id: "202609071541-47TFVD"
++          task_revision: 2
++          to: "AWAITING_PLAN_APPROVAL"
++          work_item_id: null
++        mutation_id: "compatibility:sha256:91325a790beb8ac4da1c7c921b1dbb5de9595063dfe8e237c80f2e76c1a3e922"
++        next_revision: 3
++        previous_revision: 2
++        schema_version: 1
++        task_id: "202609071541-47TFVD"
++      compatibility:sha256:a2449b9ee7109d4b7accba37de3a0812228c58c9c6a0438a37ecb644cb60444f:
++        aggregate_digest: "sha256:72a521eb3996ae30b19b880151060dbfaca0276d659d1a22077f9b627229932e"
++        event:
++          actor_id: "agentplane"
++          at: "2026-09-07T15:48:46.372Z"
++          cause_refs:
++            - "compatibility_projection_mutation"
++          entity: "task"
++          from: "ACTIVE"
++          id: "event_7cac79218d26ba2acb5995fe"
++          mutation_id: "compatibility:sha256:a2449b9ee7109d4b7accba37de3a0812228c58c9c6a0438a37ecb644cb60444f"
++          plan_digest: "sha256:5af17c4fe2ba8c0ae67a128bf88ff04bef68fa10d54fd06e764ddfd38bbcdb48"
++          plan_revision: 1
++          repository_fingerprint: null
++          schema_version: 1
++          task_id: "202609071541-47TFVD"
++          task_revision: 5
++          to: "ACTIVE"
++          work_item_id: null
++        mutation_id: "compatibility:sha256:a2449b9ee7109d4b7accba37de3a0812228c58c9c6a0438a37ecb644cb60444f"
++        next_revision: 6
++        previous_revision: 5
++        schema_version: 1
++        task_id: "202609071541-47TFVD"
++      compatibility:sha256:a499d54dd48fe4ff53cdca71a75ea0ab508463de7f7c8046617fa53fe5b6cc32:
++        aggregate_digest: "sha256:9f8c8ed725513fa98e2c5f88aabd9f23c6e83304ee49c3216e4cfbd69b7ee68f"
++        event:
++          actor_id: "agentplane"
++          at: "2026-09-07T15:46:17.888Z"
++          cause_refs:
++            - "compatibility_projection_mutation"
++          entity: "task"
++          from: "ACTIVE"
++          id: "event_937c27a5d698e3491531f44c"
++          mutation_id: "compatibility:sha256:a499d54dd48fe4ff53cdca71a75ea0ab508463de7f7c8046617fa53fe5b6cc32"
++          plan_digest: "sha256:5af17c4fe2ba8c0ae67a128bf88ff04bef68fa10d54fd06e764ddfd38bbcdb48"
++          plan_revision: 1
++          repository_fingerprint: null
++          schema_version: 1
++          task_id: "202609071541-47TFVD"
++          task_revision: 4
++          to: "ACTIVE"
++          work_item_id: null
++        mutation_id: "compatibility:sha256:a499d54dd48fe4ff53cdca71a75ea0ab508463de7f7c8046617fa53fe5b6cc32"
++        next_revision: 5
++        previous_revision: 4
++        schema_version: 1
++        task_id: "202609071541-47TFVD"
++      compatibility:sha256:a5822c60a1619309653099b293d205f8245cabce7b80597f93f04cf4af17ad23:
++        aggregate_digest: "sha256:f4d493c8a11a57145f97d280ad6a59a11786f92b677be8e5ba4d21327e7540cd"
++        event:
++          actor_id: "agentplane"
++          at: "2026-09-07T15:58:28.384Z"
++          cause_refs:
++            - "compatibility_projection_mutation"
++          entity: "task"
++          from: "ACTIVE"
++          id: "event_7502a6e9543b56901f1cf64e"
++          mutation_id: "compatibility:sha256:a5822c60a1619309653099b293d205f8245cabce7b80597f93f04cf4af17ad23"
++          plan_digest: "sha256:5af17c4fe2ba8c0ae67a128bf88ff04bef68fa10d54fd06e764ddfd38bbcdb48"
++          plan_revision: 1
++          repository_fingerprint: null
++          schema_version: 1
++          task_id: "202609071541-47TFVD"
++          task_revision: 9
++          to: "ACTIVE"
++          work_item_id: null
++        mutation_id: "compatibility:sha256:a5822c60a1619309653099b293d205f8245cabce7b80597f93f04cf4af17ad23"
++        next_revision: 10
++        previous_revision: 9
++        schema_version: 1
++        task_id: "202609071541-47TFVD"
++      compatibility:sha256:aa6ed093b3d021693d9131194f0ed948c8d664f8ebdf7220ab97f7165b6f89d4:
++        aggregate_digest: "sha256:fb8864edb91e439b5f2d7bd4d402066491aa093e9352edbb76e6cf2111f5f88d"
++        event:
++          actor_id: "agentplane"
++          at: "2026-09-07T16:48:16.866Z"
++          cause_refs:
++            - "compatibility_projection_mutation"
++          entity: "task"
++          from: "ACTIVE"
++          id: "event_256879f1e145d3a5efcf2031"
++          mutation_id: "compatibility:sha256:aa6ed093b3d021693d9131194f0ed948c8d664f8ebdf7220ab97f7165b6f89d4"
++          plan_digest: "sha256:5af17c4fe2ba8c0ae67a128bf88ff04bef68fa10d54fd06e764ddfd38bbcdb48"
++          plan_revision: 1
++          repository_fingerprint: null
++          schema_version: 1
++          task_id: "202609071541-47TFVD"
++          task_revision: 15
++          to: "ACTIVE"
++          work_item_id: null
++        mutation_id: "compatibility:sha256:aa6ed093b3d021693d9131194f0ed948c8d664f8ebdf7220ab97f7165b6f89d4"
++        next_revision: 16
++        previous_revision: 15
++        schema_version: 1
++        task_id: "202609071541-47TFVD"
++      compatibility:sha256:c1550250bafec9260855fbd50e764b6883b6be15f6ff6949d578c295d9327d94:
++        aggregate_digest: "sha256:f49ea17dd0b1e94303afc56fac1b4c3e5205e9271724c581d4eb7a24b9903602"
++        event:
++          actor_id: "agentplane"
++          at: "2026-09-07T16:00:34.659Z"
++          cause_refs:
++            - "compatibility_projection_mutation"
++          entity: "task"
++          from: "ACTIVE"
++          id: "event_0b0252e2e94161992405465b"
++          mutation_id: "compatibility:sha256:c1550250bafec9260855fbd50e764b6883b6be15f6ff6949d578c295d9327d94"
++          plan_digest: "sha256:5af17c4fe2ba8c0ae67a128bf88ff04bef68fa10d54fd06e764ddfd38bbcdb48"
++          plan_revision: 1
++          repository_fingerprint: null
++          schema_version: 1
++          task_id: "202609071541-47TFVD"
++          task_revision: 11
++          to: "ACTIVE"
++          work_item_id: null
++        mutation_id: "compatibility:sha256:c1550250bafec9260855fbd50e764b6883b6be15f6ff6949d578c295d9327d94"
++        next_revision: 12
++        previous_revision: 11
++        schema_version: 1
++        task_id: "202609071541-47TFVD"
++      compatibility:sha256:cb8ddb40bf5b9345b3ed8b5fd210cb44b77a4db1aa6f52427c42e59a9daeaf22:
++        aggregate_digest: "sha256:69233f680caffb03d510597acc2f4eda3210f2bd4d20f6c38d3bbce79cc9b5c1"
++        event:
++          actor_id: "agentplane"
++          at: "2026-09-07T15:58:28.384Z"
++          cause_refs:
++            - "compatibility_projection_mutation"
++          entity: "task"
++          from: "ACTIVE"
++          id: "event_e79bba07de8347a14407ee47"
++          mutation_id: "compatibility:sha256:cb8ddb40bf5b9345b3ed8b5fd210cb44b77a4db1aa6f52427c42e59a9daeaf22"
++          plan_digest: "sha256:5af17c4fe2ba8c0ae67a128bf88ff04bef68fa10d54fd06e764ddfd38bbcdb48"
++          plan_revision: 1
++          repository_fingerprint: null
++          schema_version: 1
++          task_id: "202609071541-47TFVD"
++          task_revision: 10
++          to: "ACTIVE"
++          work_item_id: null
++        mutation_id: "compatibility:sha256:cb8ddb40bf5b9345b3ed8b5fd210cb44b77a4db1aa6f52427c42e59a9daeaf22"
++        next_revision: 11
++        previous_revision: 10
++        schema_version: 1
++        task_id: "202609071541-47TFVD"
++      compatibility:sha256:d6844a0a7ebd58cb61c9d098b8fe52aee12ce7b9418c637a6067a1c0193d98c1:
++        aggregate_digest: "sha256:ea466e41c3028bea077365c3e781de2ecb7209806d8594898887452f44a3f696"
++        event:
++          actor_id: "agentplane"
++          at: "2026-09-07T15:48:46.372Z"
++          cause_refs:
++            - "compatibility_projection_mutation"
++          entity: "task"
++          from: "ACTIVE"
++          id: "event_416b278001cd0e06f46c7e08"
++          mutation_id: "compatibility:sha256:d6844a0a7ebd58cb61c9d098b8fe52aee12ce7b9418c637a6067a1c0193d98c1"
++          plan_digest: "sha256:5af17c4fe2ba8c0ae67a128bf88ff04bef68fa10d54fd06e764ddfd38bbcdb48"
++          plan_revision: 1
++          repository_fingerprint: null
++          schema_version: 1
++          task_id: "202609071541-47TFVD"
++          task_revision: 6
++          to: "ACTIVE"
++          work_item_id: null
++        mutation_id: "compatibility:sha256:d6844a0a7ebd58cb61c9d098b8fe52aee12ce7b9418c637a6067a1c0193d98c1"
++        next_revision: 7
++        previous_revision: 6
++        schema_version: 1
++        task_id: "202609071541-47TFVD"
++      compatibility:sha256:e91392eeabee066b3c3a63732827cc2caf85d5b85f9cef93d5a43d1b879c83de:
++        aggregate_digest: "sha256:4d9ef45a5f0a9454fe704cc6d32382e29703b5772649d34be20f7b5b3c89d399"
++        event:
++          actor_id: "agentplane"
++          at: "2026-09-07T15:42:47.078Z"
++          cause_refs:
++            - "compatibility_projection_mutation"
++          entity: "task"
++          from: "AWAITING_PLAN_APPROVAL"
++          id: "event_fead217bce4b48afd876421a"
++          mutation_id: "compatibility:sha256:e91392eeabee066b3c3a63732827cc2caf85d5b85f9cef93d5a43d1b879c83de"
++          plan_digest: "sha256:5af17c4fe2ba8c0ae67a128bf88ff04bef68fa10d54fd06e764ddfd38bbcdb48"
++          plan_revision: 1
++          repository_fingerprint: null
++          schema_version: 1
++          task_id: "202609071541-47TFVD"
++          task_revision: 3
++          to: "ACTIVE"
++          work_item_id: null
++        mutation_id: "compatibility:sha256:e91392eeabee066b3c3a63732827cc2caf85d5b85f9cef93d5a43d1b879c83de"
++        next_revision: 4
++        previous_revision: 3
++        schema_version: 1
++        task_id: "202609071541-47TFVD"
++      external-result:work-order-202609071541-47TFVD-executor-2446e4479e38569572915aa4:
++        aggregate_digest: "sha256:bf79f2eaa72a7f2dcce82297b155dfc652c4b8bc9f699e71b8bd42db9b3cfe33"
++        event:
++          actor_id: "agentplane"
++          at: "2026-09-07T15:48:48.642Z"
++          cause_refs:
++            - "semantic-result:sha256:36932dc2a5d5a03cb04f96fb9dce786a6a8e3da5e49e8d9bba5a8d5e2966091c"
++          entity: "work_item"
++          from: "READY"
++          id: "event_2b1dca21d4b1ec5a59e14481"
++          mutation_id: "external-result:work-order-202609071541-47TFVD-executor-2446e4479e38569572915aa4"
++          plan_digest: "sha256:5af17c4fe2ba8c0ae67a128bf88ff04bef68fa10d54fd06e764ddfd38bbcdb48"
++          plan_revision: 1
++          repository_fingerprint: null
++          schema_version: 1
++          task_id: "202609071541-47TFVD"
++          task_revision: 7
++          to: "COMPLETED"
++          work_item_id: "ci-permission"
++        mutation_id: "external-result:work-order-202609071541-47TFVD-executor-2446e4479e38569572915aa4"
++        next_revision: 8
++        previous_revision: 7
++        schema_version: 1
++        task_id: "202609071541-47TFVD"
++      legacy-finish:202609071541-47TFVD:2026-09-07T16:48:15.916Z:22d93c4efedbb342e900fa6c6999e2c343307cda:
++        aggregate_digest: "sha256:b844c2254013b28fc6573f21d95f3b557e1c6e613e1955d468745ad01a72ebb3"
++        event:
++          actor_id: "CODER"
++          at: "2026-09-07T16:50:41.773Z"
++          cause_refs:
++            - "task-verification:202609071541-47TFVD"
++            - "git:22d93c4efedbb342e900fa6c6999e2c343307cda"
++          entity: "task"
++          from: "ACTIVE"
++          id: "event_4ae4afe1925ce2e20e074b82"
++          mutation_id: "legacy-finish:202609071541-47TFVD:2026-09-07T16:48:15.916Z:22d93c4efedbb342e900fa6c6999e2c343307cda"
++          plan_digest: "sha256:5af17c4fe2ba8c0ae67a128bf88ff04bef68fa10d54fd06e764ddfd38bbcdb48"
++          plan_revision: 1
++          repository_fingerprint: "sha256:341cd9ab3ece6540e4896b2dbd9ecfbaa2ece0612d71bc40c26d2549fc69c27c"
++          schema_version: 1
++          task_id: "202609071541-47TFVD"
++          task_revision: 16
++          to: "COMPLETED"
++          work_item_id: null
++        mutation_id: "legacy-finish:202609071541-47TFVD:2026-09-07T16:48:15.916Z:22d93c4efedbb342e900fa6c6999e2c343307cda"
++        next_revision: 17
++        previous_revision: 16
++        schema_version: 1
++        task_id: "202609071541-47TFVD"
++    pending_effects: []
++    retry_budgets: []
++    schema_version: 1
++  implementation_commit:
++    hash: "22d93c4efedbb342e900fa6c6999e2c343307cda"
++    message: "🚧 47TFVD task: apply external agent result"
++  task_execution_context:
++    base_ref: "main"
++    base_sha: "92efd467a7b045e7e784597168ac21bd41a975a1"
++    repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
++    schema_version: 1
++    source: "creation_checkout"
++  workflow_route_baseline:
++    start_head_sha: "92efd467a7b045e7e784597168ac21bd41a975a1"
++    version: 1
++id_source: "generated"
++---
++## Summary
++
++Propagate approved CI scope to external implementation commit guards
++
++User approved this bounded recovery on 2026-09-07: repair the allowCI false defect blocking task 202609071444-7MNJXE and continue that task. Change external-agent-implementation-authority.ts and extend external-agent-implementation-recovery.test.ts. Permit CI commit guard access only after current WorkOrder scope validation and when the approved task execution contract allows the ci effect. Preserve rejection of unapproved protected paths. No external writes. This separate recovery task is needed because the original task is trapped in worktree resolution after commit rejection.
++
++## Scope
++
++- In scope: User approved this bounded recovery on 2026-09-07: repair the allowCI false defect blocking task 202609071444-7MNJXE and continue that task. Change external-agent-implementation-authority.ts and extend external-agent-implementation-recovery.test.ts. Permit CI commit guard access only after current WorkOrder scope validation and when the approved task execution contract allows the ci effect. Preserve rejection of unapproved protected paths. No external writes. This separate recovery task is needed because the original task is trapped in worktree resolution after commit rejection.
++- Out of scope: unrelated refactors not required for "Propagate approved CI scope to external implementation commit guards".
++
++## Plan
++
++Prepare the exact two-file CI permission repair approved by the user. Validate positive and negative authorization behavior.
++
++## Verify Steps
++
++Run bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts. Expect approved CI scope to pass and unapproved CI scope to fail. Run git diff --check. Review that other protected path permissions remain denied.
++
++## Verification
++
++<!-- BEGIN VERIFICATION RESULTS -->
++### 2026-09-07T15:50:50.733Z — VERIFY — needs_rework
++
++By: SUPERVISOR
++
++Note: Rework: Declared check failed: bun run ci:local:full
++Attempts: 1
++
++VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0a82ecb89dd2e7a7be989bfecded0cdb23b3f3830de95d17fa119985d909c620, input_digest=sha256:eb521f08f3ac93f0fed4ac196de976aa73cfc495b5a2ebe73cc9c7625179904a
++
++Details:
++
++Command: bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts
++Result: pass
++Evidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-1
++Scope: branch_pr task 202609071541-47TFVD declared verification
++
++Command: bun run ci:local:full
++Result: fail
++Evidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-2
++Scope: branch_pr task 202609071541-47TFVD declared verification
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071541-47TFVD-propagate-approved-ci-scope-to-external-implemen/.agentplane/tasks/202609071541-47TFVD/blueprint/resolved-snapshot.json
++- old_digest: 04e3994f842e00e1c2edaa1fbe61e96b57f1e875075a0a2d016d2501eaf000ae
++- current_digest: 04e3994f842e00e1c2edaa1fbe61e96b57f1e875075a0a2d016d2501eaf000ae
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202609071541-47TFVD
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: agentplane task verify-show 202609071541-47TFVD
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++### 2026-09-07T16:00:33.827Z — VERIFY — needs_rework
++
++By: SUPERVISOR
++
++Note: Rework: Declared check failed: bun run ci:local:full
++Attempts: 2
++
++VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0a82ecb89dd2e7a7be989bfecded0cdb23b3f3830de95d17fa119985d909c620, input_digest=sha256:9624a0006bdee1df74617fbcf82e73e9c574f5b1c17262eb423c49910baecc80
++
++Details:
++
++Command: bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts
++Result: pass
++Evidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-1
++Scope: branch_pr task 202609071541-47TFVD declared verification
++
++Command: bun run ci:local:full
++Result: fail
++Evidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-2
++Scope: branch_pr task 202609071541-47TFVD declared verification
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071541-47TFVD-propagate-approved-ci-scope-to-external-implemen/.agentplane/tasks/202609071541-47TFVD/blueprint/resolved-snapshot.json
++- old_digest: 04e3994f842e00e1c2edaa1fbe61e96b57f1e875075a0a2d016d2501eaf000ae
++- current_digest: 04e3994f842e00e1c2edaa1fbe61e96b57f1e875075a0a2d016d2501eaf000ae
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202609071541-47TFVD
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: agentplane task verify-show 202609071541-47TFVD
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++### 2026-09-07T16:48:15.916Z — VERIFY — ok
++
++By: SUPERVISOR
++
++Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, excerpt_hash=sha256:0a82ecb89dd2e7a7be989bfecded0cdb23b3f3830de95d17fa119985d909c620, input_digest=sha256:19258b0bcda21ceec51b23428aab821e70bd01ce39d5d165e612eabd2868dbe5
++
++Details:
++
++Check: affected_unit_integration
++Command: bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts
++Result: pass
++Evidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-1
++Scope: branch_pr task 202609071541-47TFVD Verification Contract check affected_unit_integration (1/2)
++
++Check: affected_unit_integration
++Command: bun run ci:local:full
++Result: pass
++Evidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-2
++Scope: branch_pr task 202609071541-47TFVD Verification Contract check affected_unit_integration (2/2)
++
++Check: critical_paths
++Command: bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts
++Result: pass
++Evidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-1
++Scope: branch_pr task 202609071541-47TFVD Verification Contract check critical_paths (1/2)
++
++Check: critical_paths
++Command: bun run ci:local:full
++Result: pass
++Evidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-2
++Scope: branch_pr task 202609071541-47TFVD Verification Contract check critical_paths (2/2)
++
++Check: full_regression
++Command: bun run ci:local:full
++Result: pass
++Evidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-2
++Scope: branch_pr task 202609071541-47TFVD Verification Contract check full_regression
++
++Check: task_outcome
++Command: bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts
++Result: pass
++Evidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-1
++Scope: branch_pr task 202609071541-47TFVD Verification Contract check task_outcome (1/2)
++
++Check: task_outcome
++Command: bun run ci:local:full
++Result: pass
++Evidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-2
++Scope: branch_pr task 202609071541-47TFVD Verification Contract check task_outcome (2/2)
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071541-47TFVD-propagate-approved-ci-scope-to-external-implemen/.agentplane/tasks/202609071541-47TFVD/blueprint/resolved-snapshot.json
++- old_digest: 04e3994f842e00e1c2edaa1fbe61e96b57f1e875075a0a2d016d2501eaf000ae
++- current_digest: 04e3994f842e00e1c2edaa1fbe61e96b57f1e875075a0a2d016d2501eaf000ae
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202609071541-47TFVD
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: agentplane task verify-show 202609071541-47TFVD
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++<!-- END VERIFICATION RESULTS -->
++
++## Rollback Plan
++
++- Revert task-related commit(s).
++- Re-run required checks to confirm rollback safety.
++
++## Findings
++
++## Token Usage
++
++- State: `unavailable`
++- Completeness: `0/6` agent runs
++- Input tokens: `unavailable`
++- Output tokens: `unavailable`
++- Reasoning tokens: `unavailable`
++- Total tokens: `unavailable`
++- Provenance: `supervisor_journal/agentplane`
++- Journal digest: `sha256:ab630a7a23cc14471f8a68ca11c2551c9990da2ae9a25eaa477f75b6feb980c2`
++- Unavailable reason: `provider_token_telemetry_unavailable`
++- Updated at: `2026-09-07T16:50:41.773Z`
+diff --git a/.agentplane/tasks/202609071541-47TFVD/blueprint/resolved-snapshot.json b/.agentplane/tasks/202609071541-47TFVD/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..2139b68f9
+--- /dev/null
++++ b/.agentplane/tasks/202609071541-47TFVD/blueprint/resolved-snapshot.json
+@@ -0,0 +1,438 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202609071541-47TFVD",
++    "title": "Propagate approved CI scope to external implementation commit guards",
++    "description": "User approved this bounded recovery on 2026-09-07: repair the allowCI false defect blocking task 202609071444-7MNJXE and continue that task. Change external-agent-implementation-authority.ts and extend external-agent-implementation-recovery.test.ts. Permit CI commit guard access only after current WorkOrder scope validation and when the approved task execution contract allows the ci effect. Preserve rejection of unapproved protected paths. No external writes. This separate recovery task is needed because the original task is trapped in worktree resolution after commit rejection.",
++    "tags": [
++      "intake"
++    ],
++    "owner": "CODER",
++    "taskKind": "code",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "mutationScope": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [
++      "security"
++    ]
++  },
++  "selectedBlueprint": {
++    "id": "ops.approval",
++    "version": 1,
++    "title": "Approval-gated operations",
++    "taskKinds": [
++      "ops"
++    ],
++    "workflowModes": []
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "ops.approval",
++    "blueprintVersion": 1,
++    "title": "Approval-gated operations",
++    "taskId": "202609071541-47TFVD",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "code",
++      "mutationScope": "code",
++      "riskFlags": [
++        "security"
++      ]
++    },
++    "whySelected": [
++      "risk flags require ops.approval: security",
++      "task intent kind: code",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions",
++          "rollback"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "rollback"
++        ]
++      },
++      {
++        "id": "deterministic_check",
++        "kind": "deterministic_check",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "artifact_write",
++        "kind": "artifact_write",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "final_output"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "ops.approval",
++        "kind": "approval",
++        "producedBy": "approval_gate",
++        "required": true,
++        "description": "Operational approval."
++      },
++      {
++        "id": "ops.rollback",
++        "kind": "rollback",
++        "producedBy": "scope",
++        "required": true,
++        "description": "Rollback or recovery path."
++      },
++      {
++        "id": "ops.action",
++        "kind": "artifact",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Action log or operational artifact."
++      },
++      {
++        "id": "ops.check",
++        "kind": "check_result",
++        "producedBy": "deterministic_check",
++        "required": true,
++        "description": "Post-action check."
++      },
++      {
++        "id": "ops.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md"
++    ],
++    "allowedCommands": [
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "approved operational command"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 2,
++      "maxPromptBlocks": 12,
++      "rationale": "Ops work needs security and rollback context before any external action."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions",
++        "rollback"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "rollback"
++      ]
++    },
++    {
++      "id": "deterministic_check",
++      "kind": "deterministic_check",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "artifact_write",
++      "kind": "artifact_write",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "final_output"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "ops.approval",
++      "kind": "approval",
++      "producedBy": "approval_gate",
++      "required": true,
++      "description": "Operational approval."
++    },
++    {
++      "id": "ops.rollback",
++      "kind": "rollback",
++      "producedBy": "scope",
++      "required": true,
++      "description": "Rollback or recovery path."
++    },
++    {
++      "id": "ops.action",
++      "kind": "artifact",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Action log or operational artifact."
++    },
++    {
++      "id": "ops.check",
++      "kind": "check_result",
++      "producedBy": "deterministic_check",
++      "required": true,
++      "description": "Post-action check."
++    },
++    {
++      "id": "ops.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md"
++  ],
++  "allowedCommands": [
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "approved operational command"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 2,
++    "maxPromptBlocks": 12,
++    "rationale": "Ops work needs security and rollback context before any external action."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "risk flags require ops.approval: security",
++    "task intent kind: code",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "04e3994f842e00e1c2edaa1fbe61e96b57f1e875075a0a2d016d2501eaf000ae"
++  }
++}
+diff --git a/.agentplane/tasks/202609071541-47TFVD/pr/diffstat.txt b/.agentplane/tasks/202609071541-47TFVD/pr/diffstat.txt
+new file mode 100644
+index 000000000..f3d4a070e
+--- /dev/null
++++ b/.agentplane/tasks/202609071541-47TFVD/pr/diffstat.txt
+@@ -0,0 +1,3 @@
++ .../external-agent-implementation-authority.ts     | 25 +++++--
++ .../external-agent-implementation-recovery.test.ts | 84 ++++++++++++++++++++++
++ 2 files changed, 105 insertions(+), 4 deletions(-)
+diff --git a/.agentplane/tasks/202609071541-47TFVD/pr/github-body.md b/.agentplane/tasks/202609071541-47TFVD/pr/github-body.md
+new file mode 100644
+index 000000000..0b4d524af
+--- /dev/null
++++ b/.agentplane/tasks/202609071541-47TFVD/pr/github-body.md
+@@ -0,0 +1,35 @@
++Task: `202609071541-47TFVD`
++Title: Propagate approved CI scope to external implementation commit guards
++Canonical task record: `.agentplane/tasks/202609071541-47TFVD/README.md`
++
++## Summary
++
++Propagate approved CI scope to external implementation commit guards
++
++User approved this bounded recovery on 2026-09-07: repair the allowCI false defect blocking task 202609071444-7MNJXE and continue that task. Change external-agent-implementation-authority.ts and extend external-agent-implementation-recovery.test.ts. Permit CI commit guard access only after current WorkOrder scope validation and when the approved task execution contract allows the ci effect. Preserve rejection of unapproved protected paths. No external writes. This separate recovery task is needed because the original task is trapped in worktree resolution after commit rejection.
++
++## Scope
++
++- In scope: User approved this bounded recovery on 2026-09-07: repair the allowCI false defect blocking task 202609071444-7MNJXE and continue that task. Change external-agent-implementation-authority.ts and extend external-agent-implementation-recovery.test.ts. Permit CI commit guard access only after current WorkOrder scope validation and when the approved task execution contract allows the ci effect. Preserve rejection of unapproved protected paths. No external writes. This separate recovery task is needed because the original task is trapped in worktree resolution after commit rejection.
++- Out of scope: unrelated refactors not required for "Propagate approved CI scope to external implementation commit guards".
++
++## Verification
++
++- State: ok
++- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-09-07T15:48:53.177Z
++- Branch: task/202609071541-47TFVD/propagate-approved-ci-scope-to-external-implemen
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../external-agent-implementation-authority.ts     | 25 +++++--
++ .../external-agent-implementation-recovery.test.ts | 84 ++++++++++++++++++++++
++ 2 files changed, 105 insertions(+), 4 deletions(-)
++```
++
++</details>
+diff --git a/.agentplane/tasks/202609071541-47TFVD/pr/github-title.txt b/.agentplane/tasks/202609071541-47TFVD/pr/github-title.txt
+new file mode 100644
+index 000000000..7765a24ed
+--- /dev/null
++++ b/.agentplane/tasks/202609071541-47TFVD/pr/github-title.txt
+@@ -0,0 +1 @@
++✅ 47TFVD task: Propagate approved CI scope to external implementation commit guards [202609071541-47TFVD]
+diff --git a/.agentplane/tasks/202609071541-47TFVD/pr/meta.json b/.agentplane/tasks/202609071541-47TFVD/pr/meta.json
+new file mode 100644
+index 000000000..6d8ae3aa9
+--- /dev/null
++++ b/.agentplane/tasks/202609071541-47TFVD/pr/meta.json
+@@ -0,0 +1,32 @@
++{
++  "base": "main",
++  "branch": "task/202609071541-47TFVD/propagate-approved-ci-scope-to-external-implemen",
++  "created_at": "2026-09-07T15:46:17.994Z",
++  "diffstat_sha256": "sha256:657a7b6bdc45bc3e80d225f936e89188792f3fe4274486fb7808265087e71fea",
++  "last_verified_at": "2026-09-07T16:48:15.916Z",
++  "last_verified_diffstat_sha256": "sha256:657a7b6bdc45bc3e80d225f936e89188792f3fe4274486fb7808265087e71fea",
++  "pr_number": 5916,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5916",
++  "pre_merge_closure": {
++    "basis_commit": "ff1a43f687156efc22d181624dd32a8968bb114a",
++    "branch": "task/202609071541-47TFVD/propagate-approved-ci-scope-to-external-implemen",
++    "pr_number": 5916,
++    "recorded_at": "2026-09-07T16:50:41.927Z",
++    "state": "closed_before_merge"
++  },
++  "provider": {
++    "hostname": "github.com",
++    "kind": "github",
++    "remote": "origin",
++    "schema_version": 1,
++    "source_project": "basilisk-labs/agentplane",
++    "target_project": "basilisk-labs/agentplane"
++  },
++  "schema_version": 1,
++  "status": "OPEN",
++  "task_id": "202609071541-47TFVD",
++  "updated_at": "2026-09-07T15:48:53.177Z",
++  "verify": {
++    "status": "pass"
++  }
++}
+diff --git a/.agentplane/tasks/202609071541-47TFVD/pr/review.md b/.agentplane/tasks/202609071541-47TFVD/pr/review.md
+new file mode 100644
+index 000000000..89e6587b5
+--- /dev/null
++++ b/.agentplane/tasks/202609071541-47TFVD/pr/review.md
+@@ -0,0 +1,38 @@
++# PR Review
++
++Created: 2026-09-07T15:46:17.994Z
++
++## Task
++
++- Task: `202609071541-47TFVD`
++- Title: Propagate approved CI scope to external implementation commit guards
++- Status: DONE
++- Branch: `task/202609071541-47TFVD/propagate-approved-ci-scope-to-external-implemen`
++- Canonical task record: `.agentplane/tasks/202609071541-47TFVD/README.md`
++
++## Verification
++
++- State: ok
++- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-09-07T15:48:53.177Z
++- Branch: task/202609071541-47TFVD/propagate-approved-ci-scope-to-external-implemen
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../external-agent-implementation-authority.ts     | 25 +++++--
++ .../external-agent-implementation-recovery.test.ts | 84 ++++++++++++++++++++++
++ 2 files changed, 105 insertions(+), 4 deletions(-)
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/.agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/evaluator-evidence-manifest.json b/.agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/evaluator-evidence-manifest.json
+new file mode 100644
+index 000000000..3d0c97a26
+--- /dev/null
++++ b/.agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/evaluator-evidence-manifest.json
+@@ -0,0 +1,55 @@
++{
++  "artifacts": [
++    {
++      "kind": "blueprint",
++      "logical_name": "evaluator-blueprint",
++      "media_type": "application/json",
++      "path": ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/c45e4cce01c124ba8f0dcf00de8fa97ccae6aab1c79559f2e7fd60222d465d06.json",
++      "sha256": "sha256:c45e4cce01c124ba8f0dcf00de8fa97ccae6aab1c79559f2e7fd60222d465d06",
++      "size_bytes": 11412
++    },
++    {
++      "kind": "actual_diff",
++      "logical_name": "evaluator-diff",
++      "media_type": "text/x-diff",
++      "path": ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/68b75038d730a2d93ca5ed20770f237a9feadca97c15132ae6caf4682e93efbc.patch",
++      "sha256": "sha256:68b75038d730a2d93ca5ed20770f237a9feadca97c15132ae6caf4682e93efbc",
++      "size_bytes": 7042
++    },
++    {
++      "kind": "observed_checks",
++      "logical_name": "evaluator-observed-checks",
++      "media_type": "application/json",
++      "path": ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/89a1dd66b4816d38f6cf65514c2bac4ba4caa08a3d60d83565050ebed12a2943.json",
++      "sha256": "sha256:89a1dd66b4816d38f6cf65514c2bac4ba4caa08a3d60d83565050ebed12a2943",
++      "size_bytes": 6662
++    },
++    {
++      "kind": "prompt",
++      "logical_name": "evaluator-prompt",
++      "media_type": "text/markdown",
++      "path": ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/0230b6fa678d2169a3176241c901f324ec0ada6c68f1fd56ed1111c00e8a285d.md",
++      "sha256": "sha256:0230b6fa678d2169a3176241c901f324ec0ada6c68f1fd56ed1111c00e8a285d",
++      "size_bytes": 5030
++    },
++    {
++      "kind": "result_schema",
++      "logical_name": "evaluator-result-schema",
++      "media_type": "application/schema+json",
++      "path": ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json",
++      "sha256": "sha256:9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a",
++      "size_bytes": 3478
++    }
++  ],
++  "created_at": "2026-09-07T16:48:23.111Z",
++  "integrity": {
++    "canonicalization": "agentplane-canonical-json-v1",
++    "digest_algorithm": "sha256",
++    "manifest_digest": "sha256:576f03f4d4051e3320e3f6ea346dfd3e0b2e019c699b1983e97a46e868156c10"
++  },
++  "kind": "evaluator_evidence_packet",
++  "object_root": ".agentplane/tasks/202609071541-47TFVD/quality/objects",
++  "schema_version": 1,
++  "task_id": "202609071541-47TFVD",
++  "work_order_id": "evaluator-work-order-202609071541-47TFVD-b48b634df3dd7c91e6e59f64"
++}
+diff --git a/.agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/evaluator-opinion.md b/.agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/evaluator-opinion.md
+new file mode 100644
+index 000000000..68572cccd
+--- /dev/null
++++ b/.agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/evaluator-opinion.md
+@@ -0,0 +1,22 @@
++# Semantic quality review: pass
++
++Provenance: evaluator_supplied
++
++EVALUATOR returned pass with 3 typed finding(s).
++
++## Findings
++- Frozen diff changes only the two approved implementation/test paths. CI flag derives from current task authority after WorkOrder path validation. All workspace CI paths must belong to the validated delta; preexisting unrelated CI changes remain denied. Other protected-family flags remain false.
++- Regression cases cover approved workflow/action paths, missing ci permission, absent contract, similarly named non-CI paths, preexisting unrelated CI changes, and rejection before commit permission derivation.
++- Supervisor observed focused tests and bun run ci:local:full both exit zero; recorded verification state ok at 2026-09-07T16:48:15.916Z. Frozen implementation and checks identity matches evaluated SHA.
++
++## Evidence
++- .agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/68b75038d730a2d93ca5ed20770f237a9feadca97c15132ae6caf4682e93efbc.patch
++
++## Missing Tests
++- none recorded
++
++## Hidden Assumptions
++- none recorded
++
++## Residual Risks
++- none recorded
+diff --git a/.agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/evaluator-result.json b/.agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/evaluator-result.json
+new file mode 100644
+index 000000000..16159bf4c
+--- /dev/null
++++ b/.agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/evaluator-result.json
+@@ -0,0 +1,43 @@
++{
++  "schema_version": 1,
++  "kind": "evaluator_result",
++  "evaluator_id": "recovery-context",
++  "verdict": "pass",
++  "findings": [
++    {
++      "id": "external-agent-finding-1",
++      "severity": "medium",
++      "summary": "Frozen diff changes only the two approved implementation/test paths. CI flag derives from current task authority after WorkOrder path validation. All workspace CI paths must belong to the validated delta; preexisting unrelated CI changes remain denied. Other protected-family flags remain false.",
++      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
++      "evidence_refs": [
++        {
++          "path": ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/68b75038d730a2d93ca5ed20770f237a9feadca97c15132ae6caf4682e93efbc.patch"
++        }
++      ]
++    },
++    {
++      "id": "external-agent-finding-2",
++      "severity": "medium",
++      "summary": "Regression cases cover approved workflow/action paths, missing ci permission, absent contract, similarly named non-CI paths, preexisting unrelated CI changes, and rejection before commit permission derivation.",
++      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
++      "evidence_refs": [
++        {
++          "path": ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/68b75038d730a2d93ca5ed20770f237a9feadca97c15132ae6caf4682e93efbc.patch"
++        }
++      ]
++    },
++    {
++      "id": "external-agent-finding-3",
++      "severity": "medium",
++      "summary": "Supervisor observed focused tests and bun run ci:local:full both exit zero; recorded verification state ok at 2026-09-07T16:48:15.916Z. Frozen implementation and checks identity matches evaluated SHA.",
++      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
++      "evidence_refs": [
++        {
++          "path": ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/68b75038d730a2d93ca5ed20770f237a9feadca97c15132ae6caf4682e93efbc.patch"
++        }
++      ]
++    }
++  ],
++  "missing_tests": [],
++  "hidden_assumptions": []
++}
+diff --git a/.agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/evaluator-work-order.json b/.agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/evaluator-work-order.json
+new file mode 100644
+index 000000000..850e4f880
+--- /dev/null
++++ b/.agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/evaluator-work-order.json
+@@ -0,0 +1,95 @@
++{
++  "schema_version": 1,
++  "kind": "evaluator_work_order",
++  "work_order_id": "evaluator-work-order-202609071541-47TFVD-b48b634df3dd7c91e6e59f64",
++  "prepared_at": "2026-09-07T16:48:23.111Z",
++  "task": {
++    "id": "202609071541-47TFVD",
++    "revision": 15,
++    "objective": "Propagate approved CI scope to external implementation commit guards\n\nUser approved this bounded recovery on 2026-09-07: repair the allowCI false defect blocking task 202609071444-7MNJXE and continue that task. Change external-agent-implementation-authority.ts and extend external-agent-implementation-recovery.test.ts. Permit CI commit guard access only after current WorkOrder scope validation and when the approved task execution contract allows the ci effect. Preserve rejection of unapproved protected paths. No external writes. This separate recovery task is needed because the original task is trapped in worktree resolution after commit rejection.",
++    "acceptance_criteria": [
++      "bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts",
++      "- In scope: User approved this bounded recovery on 2026-09-07: repair the allowCI false defect blocking task 202609071444-7MNJXE and continue that task. Change external-agent-implementation-authority.ts and extend external-agent-implementation-recovery.test.ts. Permit CI commit guard access only after current WorkOrder scope validation and when the approved task execution contract allows the ci effect. Preserve rejection of unapproved protected paths. No external writes. This separate recovery task is needed because the original task is trapped in worktree resolution after commit rejection.\n- Out of scope: unrelated refactors not required for \"Propagate approved CI scope to external implementation commit guards\".",
++      "Prepare the exact two-file CI permission repair approved by the user. Validate positive and negative authorization behavior.",
++      "Run bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts. Expect approved CI scope to pass and unapproved CI scope to fail. Run git diff --check. Review that other protected path permissions remain denied."
++    ]
++  },
++  "evaluated_sha": "22d93c4efedbb342e900fa6c6999e2c343307cda",
++  "diff_base_sha": "92efd467a7b045e7e784597168ac21bd41a975a1",
++  "blueprint_digest": "04e3994f842e00e1c2edaa1fbe61e96b57f1e875075a0a2d016d2501eaf000ae",
++  "evaluator": {
++    "id": "recovery-context",
++    "profile": "EVALUATOR",
++    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
++  },
++  "authority": {
++    "sandbox": "read-only",
++    "writable_roots": [],
++    "allowed_tool_classes": [
++      "repository_read",
++      "git_read",
++      "run_checks",
++      "knowledge_request",
++      "report_result"
++    ],
++    "external_side_effects": []
++  },
++  "result_contract": "sgr.evaluator_result.v1",
++  "packet": {
++    "manifest_path": ".agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/evaluator-evidence-manifest.json",
++    "manifest_sha256": "sha256:9e04aab298f18a189494fa2b5d1a239abb3e36655e10f1d684bdf86ebcd43044",
++    "prompt_path": ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/0230b6fa678d2169a3176241c901f324ec0ada6c68f1fd56ed1111c00e8a285d.md",
++    "result_schema_path": ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
++  },
++  "evidence": [
++    {
++      "id": "task-document",
++      "kind": "task_document",
++      "path": ".agentplane/tasks/202609071541-47TFVD/README.md",
++      "sha256": "sha256:f031ef0fbb7f080595fa29a40846f9e89b8539ef15f7ed97f55054bb75ebb619",
++      "required": true
++    },
++    {
++      "id": "actual-diff",
++      "kind": "actual_diff",
++      "path": ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/68b75038d730a2d93ca5ed20770f237a9feadca97c15132ae6caf4682e93efbc.patch",
++      "sha256": "sha256:68b75038d730a2d93ca5ed20770f237a9feadca97c15132ae6caf4682e93efbc",
++      "required": true
++    },
++    {
++      "id": "observed-checks",
++      "kind": "observed_checks",
++      "path": ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/89a1dd66b4816d38f6cf65514c2bac4ba4caa08a3d60d83565050ebed12a2943.json",
++      "sha256": "sha256:89a1dd66b4816d38f6cf65514c2bac4ba4caa08a3d60d83565050ebed12a2943",
++      "required": true
++    },
++    {
++      "id": "verification-record-1",
++      "kind": "verification_log",
++      "path": ".agentplane/tasks/202609071541-47TFVD/verification/20260907164815916-b6132adfaa57f00e.json",
++      "sha256": "sha256:41b4762fbe98b0ad168c2f6849b433106fbe08bb51764f1eec73b11171b18a1e",
++      "required": true
++    },
++    {
++      "id": "blueprint",
++      "kind": "blueprint",
++      "path": ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/c45e4cce01c124ba8f0dcf00de8fa97ccae6aab1c79559f2e7fd60222d465d06.json",
++      "sha256": "sha256:c45e4cce01c124ba8f0dcf00de8fa97ccae6aab1c79559f2e7fd60222d465d06",
++      "required": true
++    },
++    {
++      "id": "policy-1",
++      "kind": "policy_module",
++      "path": ".agentplane/policy/dod.core.md",
++      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
++      "required": true
++    },
++    {
++      "id": "policy-2",
++      "kind": "policy_module",
++      "path": ".agentplane/policy/security.must.md",
++      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
++      "required": true
++    }
++  ]
++}
+diff --git a/.agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/quality-report.json b/.agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/quality-report.json
+new file mode 100644
+index 000000000..f23169b55
+--- /dev/null
++++ b/.agentplane/tasks/202609071541-47TFVD/quality/20260907-164823111-recovery-context/quality-report.json
+@@ -0,0 +1,23 @@
++{
++  "schema_version": 1,
++  "task_id": "202609071541-47TFVD",
++  "evaluator_id": "recovery-context",
++  "evaluator_profile": "EVALUATOR",
++  "generated_at": "2026-09-07T16:49:51.041Z",
++  "provenance": "evaluator_supplied",
++  "verdict": "pass",
++  "summary": "EVALUATOR returned pass with 3 typed finding(s).",
++  "evaluated_sha": "22d93c4efedbb342e900fa6c6999e2c343307cda",
++  "blueprint_digest": "04e3994f842e00e1c2edaa1fbe61e96b57f1e875075a0a2d016d2501eaf000ae",
++  "findings": [
++    "Frozen diff changes only the two approved implementation/test paths. CI flag derives from current task authority after WorkOrder path validation. All workspace CI paths must belong to the validated delta; preexisting unrelated CI changes remain denied. Other protected-family flags remain false.",
++    "Regression cases cover approved workflow/action paths, missing ci permission, absent contract, similarly named non-CI paths, preexisting unrelated CI changes, and rejection before commit permission derivation.",
++    "Supervisor observed focused tests and bun run ci:local:full both exit zero; recorded verification state ok at 2026-09-07T16:48:15.916Z. Frozen implementation and checks identity matches evaluated SHA."
++  ],
++  "evidence_refs": [
++    ".agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/68b75038d730a2d93ca5ed20770f237a9feadca97c15132ae6caf4682e93efbc.patch"
++  ],
++  "missing_tests": [],
++  "hidden_assumptions": [],
++  "residual_risks": []
++}
+diff --git a/.agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/0230b6fa678d2169a3176241c901f324ec0ada6c68f1fd56ed1111c00e8a285d.md b/.agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/0230b6fa678d2169a3176241c901f324ec0ada6c68f1fd56ed1111c00e8a285d.md
+new file mode 100644
+index 000000000..a9d4c8837
+Binary files /dev/null and b/.agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/0230b6fa678d2169a3176241c901f324ec0ada6c68f1fd56ed1111c00e8a285d.md differ
+diff --git a/.agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/68b75038d730a2d93ca5ed20770f237a9feadca97c15132ae6caf4682e93efbc.patch b/.agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/68b75038d730a2d93ca5ed20770f237a9feadca97c15132ae6caf4682e93efbc.patch
+new file mode 100644
+index 000000000..a8cb23fcb
+Binary files /dev/null and b/.agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/68b75038d730a2d93ca5ed20770f237a9feadca97c15132ae6caf4682e93efbc.patch differ
+diff --git a/.agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/89a1dd66b4816d38f6cf65514c2bac4ba4caa08a3d60d83565050ebed12a2943.json b/.agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/89a1dd66b4816d38f6cf65514c2bac4ba4caa08a3d60d83565050ebed12a2943.json
+new file mode 100644
+index 000000000..dbaa03303
+Binary files /dev/null and b/.agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/89a1dd66b4816d38f6cf65514c2bac4ba4caa08a3d60d83565050ebed12a2943.json differ
+diff --git a/.agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json b/.agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json
+new file mode 100644
+index 000000000..511b1a42c
+Binary files /dev/null and b/.agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json differ
+diff --git a/.agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/c45e4cce01c124ba8f0dcf00de8fa97ccae6aab1c79559f2e7fd60222d465d06.json b/.agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/c45e4cce01c124ba8f0dcf00de8fa97ccae6aab1c79559f2e7fd60222d465d06.json
+new file mode 100644
+index 000000000..2139b68f9
+Binary files /dev/null and b/.agentplane/tasks/202609071541-47TFVD/quality/objects/sha256/c45e4cce01c124ba8f0dcf00de8fa97ccae6aab1c79559f2e7fd60222d465d06.json differ
+diff --git a/.agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json b/.agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json
+new file mode 100644
+index 000000000..2d44ba3a7
+--- /dev/null
++++ b/.agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json
+@@ -0,0 +1,51 @@
++{
++  "checks": [
++    {
++      "check_ids": [
++        "regression",
++        "affected_unit_integration",
++        "critical_paths",
++        "task_outcome"
++      ],
++      "command": "bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts",
++      "duration_ms": 2622,
++      "exit_code": 0,
++      "runtime": {
++        "environment_digest": "sha256:8dedf3eb23c09bea3d1b648c9c0ded11bc3b291798197b57eeca24247dc2ffd8",
++        "executable_digest": "sha256:afb43ad4efc9c7ddf503ff2dd8cd80d6e2485e336d388eb2b64d74e95d69a55c",
++        "kind": "local_runtime_resolution",
++        "status": "resolved",
++        "toolchain_digest": "sha256:82018ffffbb2a3df77787f7fc10dcaec1d97a0a6ba1efd84402da61dde0d655e"
++      },
++      "script": null,
++      "stderr_tail": "",
++      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071541-47TFVD-propagate-approved-ci-scope-to-external-implemen\n\n\n Test Files  1 passed (1)\n      Tests  45 passed (45)\n   Start at  19:39:36\n   Duration  2.09s (transform 1.44s, setup 0ms, import 1.89s, tests 123ms, environment 0ms)\n\n"
++    },
++    {
++      "check_ids": [
++        "affected_unit_integration",
++        "critical_paths",
++        "full_regression",
++        "task_outcome"
++      ],
++      "command": "bun run ci:local:full",
++      "duration_ms": 517080,
++      "exit_code": 0,
++      "runtime": {
++        "environment_digest": "sha256:8dedf3eb23c09bea3d1b648c9c0ded11bc3b291798197b57eeca24247dc2ffd8",
++        "executable_digest": "sha256:afb43ad4efc9c7ddf503ff2dd8cd80d6e2485e336d388eb2b64d74e95d69a55c",
++        "kind": "local_runtime_resolution",
++        "status": "resolved",
++        "toolchain_digest": "sha256:82018ffffbb2a3df77787f7fc10dcaec1d97a0a6ba1efd84402da61dde0d655e"
++      },
++      "script": "ci:local:full",
++      "stderr_tail": "workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-2ixsl0/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-2ixsl0/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-07T16:45:21.606Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-2ixsl0/.agentplane/WORKFLOW.md\",\"from\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-2ixsl0/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-07T16:45:21.641Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-qnUzXs/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-workflow-qnUzXs/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-07T16:45:21.645Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_failed\",\"code\":\"WF_UNSUPPORTED_VERSION\",\"details\":{\"reason\":\"Unsupported WORKFLOW version 3; supported versions: 1, 2.\"}}\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\n{\"ts\":\"2026-09-07T16:45:31.027Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-07T16:45:31.039Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_completed\",\"details\":{\"diagnostics\":0}}\n{\"ts\":\"2026-09-07T16:45:31.047Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-cli-test-aL83wL/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/var/folders/3h/lrcwc30s12x23hsjj9gg1s980000gn/T/agentplane-cli-test-aL83wL/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-07T16:45:32.064Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-07T16:45:32.080Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":1}}\n{\"ts\":\"2026-09-07T16:45:32.080Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-07T16:45:32.082Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":2}}\n{\"ts\":\"2026-09-07T16:45:32.082Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-07T16:45:32.084Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_completed\",\"details\":{\"diagnostics\":0}}\n$ node scripts/checks/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 3 --fixture local-basic --timeout-ms 10000\n$ node scripts/checks/run-vitest-suite.mjs critical-cli\n$ bun run docs:ia:check && bun run docs:site:generate:check && bun run docs:site:typecheck && bun run docs:site:build:check && bun run docs:site:check:design\n$ node scripts/checks/check-docs-ia.mjs\n$ node scripts/generate/generate-website-docs.mjs --check && node scripts/generate/generate-llms-full.mjs --check\n$ bun run --cwd website typecheck\n$ node ../scripts/checks/run-typescript-build.mjs -p tsconfig.json --noEmit\n$ bun run --cwd website build:check\n$ bun run check-content && bun run check-social-images && docusaurus build\n$ node scripts/check-site-content.mjs\n$ node scripts/generate-social-images.mjs --check\n$ node scripts/checks/check-design-language.mjs\n$ node scripts/workflow/run-workflows-lint.mjs && node scripts/checks/check-workflow-command-contract.mjs && bun scripts/checks/check-lifecycle-parity.ts && node scripts/checks/check-critical-test-route.mjs\n$ node scripts/checks/run-vitest-suite.mjs platform-critical\n$ node scripts/checks/check-significant-coverage.mjs\n",
++      "stdout_tail": "onment 0ms))\nVitest suite critical-cli: chunk 12/14 (1 files): packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts\nVitest suite critical-cli: chunk 12/14 passed in 19566ms (Test Files  1 passed (1); Tests  1 passed (1); Duration  19.38s (transform 2.59s, setup 0ms, import 1.71s, tests 17.61s, environment 0ms))\nVitest suite critical-cli: chunk 13/14 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet-regressions.test.ts\nVitest suite critical-cli: chunk 13/14 passed in 2269ms (Test Files  1 passed (1); Tests  5 passed (5); Duration  2.07s (transform 1.42s, setup 0ms, import 1.74s, tests 249ms, environment 0ms))\nVitest suite critical-cli: chunk 14/14 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts\nVitest suite critical-cli: chunk 14/14 passed in 5458ms (Test Files  1 passed (1); Tests  12 passed (12); Duration  5.28s (transform 1.35s, setup 0ms, import 1.63s, tests 3.59s, environment 0ms))\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":true,\"groups\":[{\"id\":\"runtime\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":27899},{\"id\":\"docs-schema\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":19887},{\"id\":\"core\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":328260},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":90240}]}\n{\"schema_version\":1,\"kind\":\"verification_metrics\",\"route\":\"full-fast\",\"wall_clock_ms\":472093,\"selected_groups\":5,\"executed_groups\":5,\"parallel_group_concurrency\":1,\"build_invocations\":1,\"ok\":true}\n\n== Docs site pipeline (generate + typecheck + build + design) ==\nok: docs IA, sidebar coverage, and current path references are aligned\nok: docs/reference/generated-reference.mdx is fresh\nok: website/static/llms-full.txt is fresh\n[site-content] ok\nchecked 234 docs social images\n\n ------------------------------------------------------------------------------                                                                                                         Update available 3.10.1 → 3.10.2                                                                                                                To upgrade Docusaurus packages with the latest version, run the                                       following command:                                           `npm i @docusaurus/core@latest @docusaurus/faster@latest                    @docusaurus/preset-classic@latest @docusaurus/theme-common@latest            @docusaurus/theme-mermaid@latest @docusaurus/module-type-aliases@latest                  @docusaurus/tsconfig@latest @docusaurus/types@latest`                                                                                               ------------------------------------------------------------------------------ \n\n[INFO] [en] Creating an optimized production build...\n[navigation-check] ok: checked 6 docs targets from website/build\n[SUCCESS] Generated static files in \"build\".\n[INFO] Use `npm run serve` command to test your build locally.\nDESIGN.md compliance check passed\n\n== Workflows lint (actionlint) ==\nworkflow and command guidance contract OK\nworkflow lifecycle parity OK\ncritical Vitest route OK\n\n== Windows platform-critical tests ==\n\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071541-47TFVD-propagate-approved-ci-scope-to-external-implemen\n\n\n Test Files  7 passed (7)\n      Tests  98 passed (98)\n   Start at  19:47:44\n   Duration  26.98s (transform 12.83s, setup 0ms, import 11.16s, tests 78.56s, environment 0ms)\n\n\n== Significant file coverage (guard) ==\n\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609071541-47TFVD-propagate-approved-ci-scope-to-external-implemen\n      Coverage enabled with v8\n\n\n Test Files  8 passed (8)\n      Tests  101 passed (101)\n   Start at  19:48:11\n   Duration  3.79s (transform 4.54s, setup 0ms, import 5.25s, tests 3.49s, environment 0ms)\n\n\n== Coverage threshold (significant) ==\nSignificant suite contract OK (17 source targets).\n"
++    }
++  ],
++  "kind": "direct_task_declared_checks",
++  "reason": null,
++  "schema_version": 1,
++  "status": "passed",
++  "task_id": "202609071541-47TFVD"
++}
+diff --git a/.agentplane/tasks/202609071541-47TFVD/supervision/implementation-evidence.json b/.agentplane/tasks/202609071541-47TFVD/supervision/implementation-evidence.json
+new file mode 100644
+index 000000000..57ca23755
+--- /dev/null
++++ b/.agentplane/tasks/202609071541-47TFVD/supervision/implementation-evidence.json
+@@ -0,0 +1,78 @@
++{
++  "checks": [
++    {
++      "command": "git diff --check 3e70669c1e9f1579d22b13ab58a78e183db2291a..22d93c4efedbb342e900fa6c6999e2c343307cda",
++      "id": "committed-diff-check",
++      "result": "pass",
++      "stdout": []
++    },
++    {
++      "command": "git diff --cached --check",
++      "id": "staged-diff-check",
++      "result": "pass",
++      "stdout": []
++    },
++    {
++      "command": "git diff --name-status --diff-filter=ACDMRTUXB 3e70669c1e9f1579d22b13ab58a78e183db2291a..22d93c4efedbb342e900fa6c6999e2c343307cda",
++      "id": "commit-paths",
++      "result": "pass",
++      "stdout": [
++        "M\t.agentplane/tasks/202609071541-47TFVD/README.md",
++        "M\t.agentplane/tasks/202609071541-47TFVD/pr/diffstat.txt",
++        "M\t.agentplane/tasks/202609071541-47TFVD/pr/github-body.md",
++        "M\t.agentplane/tasks/202609071541-47TFVD/pr/meta.json",
++        "M\t.agentplane/tasks/202609071541-47TFVD/pr/review.md",
++        "M\t.agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json",
++        "A\t.agentplane/tasks/202609071541-47TFVD/verification/20260907160033827-d4ccdffd6d883781.json",
++        "M\tpackages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
++        "M\tpackages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts"
++      ]
++    },
++    {
++      "command": "git status --short --untracked-files=all",
++      "id": "final-repository-status",
++      "result": "pass",
++      "stdout": []
++    }
++  ],
++  "execution_base_commit": "3e70669c1e9f1579d22b13ab58a78e183db2291a",
++  "implementation_commit": "22d93c4efedbb342e900fa6c6999e2c343307cda",
++  "kind": "direct_task_implementation_evidence",
++  "repository_status": {
++    "baseline": [
++      " M .agentplane/tasks/202609071541-47TFVD/README.md",
++      " M .agentplane/tasks/202609071541-47TFVD/pr/meta.json",
++      " M .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json",
++      "?? .agentplane/tasks/202609071541-47TFVD/verification/20260907160033827-d4ccdffd6d883781.json"
++    ],
++    "classification": [
++      {
++        "classification": "removed_during_execution",
++        "line": " M .agentplane/tasks/202609071541-47TFVD/README.md"
++      },
++      {
++        "classification": "removed_during_execution",
++        "line": " M .agentplane/tasks/202609071541-47TFVD/pr/meta.json"
++      },
++      {
++        "classification": "removed_during_execution",
++        "line": " M .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json"
++      },
++      {
++        "classification": "removed_during_execution",
++        "line": "?? .agentplane/tasks/202609071541-47TFVD/verification/20260907160033827-d4ccdffd6d883781.json"
++      }
++    ],
++    "final": [],
++    "introduced_after_execution_baseline": [],
++    "removed_after_execution_baseline": [
++      " M .agentplane/tasks/202609071541-47TFVD/README.md",
++      " M .agentplane/tasks/202609071541-47TFVD/pr/meta.json",
++      " M .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json",
++      "?? .agentplane/tasks/202609071541-47TFVD/verification/20260907160033827-d4ccdffd6d883781.json"
++    ],
++    "unchanged_from_execution_baseline": []
++  },
++  "schema_version": 1,
++  "task_id": "202609071541-47TFVD"
++}
+diff --git a/.agentplane/tasks/202609071541-47TFVD/verification/20260907155050733-0d5511f40975be31.json b/.agentplane/tasks/202609071541-47TFVD/verification/20260907155050733-0d5511f40975be31.json
+new file mode 100644
+index 000000000..8935c53d9
+--- /dev/null
++++ b/.agentplane/tasks/202609071541-47TFVD/verification/20260907155050733-0d5511f40975be31.json
+@@ -0,0 +1,117 @@
++{
++  "details": "Command: bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609071541-47TFVD declared verification\n\nCommand: bun run ci:local:full\nResult: fail\nEvidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609071541-47TFVD declared verification",
++  "digest": "sha256:0d5511f40975be3132a553de9ea3340a94d8afa814108836621e4176d3e9a186",
++  "implementation_sha": "3b38084aeb5d993b1e064ecba25c3a6e0dc277ab",
++  "input": {
++    "context": {
++      "digest": "sha256:c59f15672b9a3b8d43130b18b274b5e3c58c5b4b87fe53a644febc8ff3e09663",
++      "paths": [
++        ".agentplane/WORKFLOW.md",
++        ".github/ISSUE_TEMPLATE/config.yml",
++        "bun.lock",
++        "depcruise.config.cjs",
++        "eslint.config.cjs",
++        "knip.json",
++        "package.json",
++        "packages/agentplane/package.json",
++        "packages/agentplane/src/cli/run-cli/commands/config.ts",
++        "packages/agentplane/src/runner/config.test.ts",
++        "packages/agentplane/src/runner/config.ts",
++        "packages/agentplane/tsconfig.json",
++        "packages/agentplane/tsup.config.ts",
++        "packages/core/package.json",
++        "packages/core/schemas/config.schema.json",
++        "packages/core/src/config/config.test.ts",
++        "packages/core/src/config/config.ts",
++        "packages/core/tsconfig.json",
++        "packages/core/tsup.config.ts",
++        "packages/recipes/package.json",
++        "packages/recipes/tsconfig.json",
++        "packages/recipes/tsup.config.ts",
++        "packages/spec/examples/config.json",
++        "packages/spec/package.json",
++        "packages/spec/schemas/config.schema.json",
++        "packages/testkit/package.json",
++        "packages/testkit/tsconfig.json",
++        "schemas/config.schema.json",
++        "tsconfig.json",
++        "turbo.json",
++        "vitest.config.ts",
++        "vitest.workspace.ts",
++        "website/bun.lock",
++        "website/docusaurus.config.ts",
++        "website/package.json",
++        "website/tsconfig.json"
++      ]
++    },
++    "digest": "sha256:eb521f08f3ac93f0fed4ac196de976aa73cfc495b5a2ebe73cc9c7625179904a",
++    "environment": {
++      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
++      "runtime": {
++        "architecture": "arm64",
++        "bun_major": null,
++        "node_major": "24",
++        "platform": "darwin"
++      }
++    },
++    "evidence": {
++      "details_digest": "sha256:84b2649e85515f085c5dc697f4f82a4f0da669a3fd4f428234fbba7e6a3bc004",
++      "digest": "sha256:d4d158c205e605ee9b38c1de5816882a7251324ca9b56bcb967d722f3888a287",
++      "references": [
++        {
++          "digest": "sha256:f45773891556f326098c73300a0fb7c1071ca67698b4c3f0a23a20fe721adac0",
++          "fragment": "check-1",
++          "path": ".agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json",
++          "reference": ".agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-1",
++          "source": "filesystem"
++        },
++        {
++          "digest": "sha256:f45773891556f326098c73300a0fb7c1071ca67698b4c3f0a23a20fe721adac0",
++          "fragment": "check-2",
++          "path": ".agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json",
++          "reference": ".agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-2",
++          "source": "filesystem"
++        }
++      ]
++    },
++    "execution": {
++      "authoritative_task_source": "task_worktree",
++      "base_ref": "main",
++      "base_sha": "92efd467a7b045e7e784597168ac21bd41a975a1",
++      "digest": "sha256:19e5cc07b9aad88bd1a57ef6d557d7e2863afbaf370f9bd5db2f52c8abd68455",
++      "primary_task_id": "202609071541-47TFVD",
++      "reason_codes": [
++        "agent_preferred_branch_pr",
++        "effect_security_boundary",
++        "repository_branch_pr_floor"
++      ],
++      "repository_mode": "branch_pr",
++      "requested_mode": "auto",
++      "route_source": "execution_contract",
++      "selected_mode": "branch_pr",
++      "task_ids": [
++        "202609071541-47TFVD"
++      ]
++    },
++    "implementation": {
++      "base_sha": "92efd467a7b045e7e784597168ac21bd41a975a1",
++      "digest": "sha256:35edac74390dff16444f3cc281952214065a177e3ef3d981b6163f2854ef71ed",
++      "strategy": "branch_diff",
++      "target_sha": "3b38084aeb5d993b1e064ecba25c3a6e0dc277ab"
++    },
++    "kind": "task_verification_input",
++    "schema_version": 4,
++    "verification_contract_digest": "sha256:969f43c02b99032aac9c49eeb0b3b3ac4520b706773317fbb3f6117f0d0567ff",
++    "verify_steps_digest": "sha256:0a82ecb89dd2e7a7be989bfecded0cdb23b3f3830de95d17fa119985d909c620"
++  },
++  "kind": "task_verification_record",
++  "note": "Rework: Declared check failed: bun run ci:local:full",
++  "recorded_at": "2026-09-07T15:50:50.733Z",
++  "result": "needs_rework",
++  "schema_version": 2,
++  "scope": "Run bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts. Expect approved CI scope to pass and unapproved CI scope to fail. Run git diff --check. Review that other protected path permissions remain denied.",
++  "scope_digest": "sha256:0a82ecb89dd2e7a7be989bfecded0cdb23b3f3830de95d17fa119985d909c620",
++  "task_id": "202609071541-47TFVD",
++  "verification_command": "agentplane verify 202609071541-47TFVD --rework --by SUPERVISOR",
++  "verifier": "SUPERVISOR"
++}
+diff --git a/.agentplane/tasks/202609071541-47TFVD/verification/20260907160033827-d4ccdffd6d883781.json b/.agentplane/tasks/202609071541-47TFVD/verification/20260907160033827-d4ccdffd6d883781.json
+new file mode 100644
+index 000000000..4836e29dc
+--- /dev/null
++++ b/.agentplane/tasks/202609071541-47TFVD/verification/20260907160033827-d4ccdffd6d883781.json
+@@ -0,0 +1,117 @@
++{
++  "details": "Command: bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609071541-47TFVD declared verification\n\nCommand: bun run ci:local:full\nResult: fail\nEvidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609071541-47TFVD declared verification",
++  "digest": "sha256:d4ccdffd6d88378174a00bcb35759ee4c368acf10480f3c0f49a78467ba2e24f",
++  "implementation_sha": "9c36ce1c6ca523ce06c4c13771cac41f5e2e5b41",
++  "input": {
++    "context": {
++      "digest": "sha256:c59f15672b9a3b8d43130b18b274b5e3c58c5b4b87fe53a644febc8ff3e09663",
++      "paths": [
++        ".agentplane/WORKFLOW.md",
++        ".github/ISSUE_TEMPLATE/config.yml",
++        "bun.lock",
++        "depcruise.config.cjs",
++        "eslint.config.cjs",
++        "knip.json",
++        "package.json",
++        "packages/agentplane/package.json",
++        "packages/agentplane/src/cli/run-cli/commands/config.ts",
++        "packages/agentplane/src/runner/config.test.ts",
++        "packages/agentplane/src/runner/config.ts",
++        "packages/agentplane/tsconfig.json",
++        "packages/agentplane/tsup.config.ts",
++        "packages/core/package.json",
++        "packages/core/schemas/config.schema.json",
++        "packages/core/src/config/config.test.ts",
++        "packages/core/src/config/config.ts",
++        "packages/core/tsconfig.json",
++        "packages/core/tsup.config.ts",
++        "packages/recipes/package.json",
++        "packages/recipes/tsconfig.json",
++        "packages/recipes/tsup.config.ts",
++        "packages/spec/examples/config.json",
++        "packages/spec/package.json",
++        "packages/spec/schemas/config.schema.json",
++        "packages/testkit/package.json",
++        "packages/testkit/tsconfig.json",
++        "schemas/config.schema.json",
++        "tsconfig.json",
++        "turbo.json",
++        "vitest.config.ts",
++        "vitest.workspace.ts",
++        "website/bun.lock",
++        "website/docusaurus.config.ts",
++        "website/package.json",
++        "website/tsconfig.json"
++      ]
++    },
++    "digest": "sha256:9624a0006bdee1df74617fbcf82e73e9c574f5b1c17262eb423c49910baecc80",
++    "environment": {
++      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
++      "runtime": {
++        "architecture": "arm64",
++        "bun_major": null,
++        "node_major": "24",
++        "platform": "darwin"
++      }
++    },
++    "evidence": {
++      "details_digest": "sha256:84b2649e85515f085c5dc697f4f82a4f0da669a3fd4f428234fbba7e6a3bc004",
++      "digest": "sha256:ad7326f43cc974700210eb5012cb2e0352bf3a6fb1afa36259d1557f20cdf35c",
++      "references": [
++        {
++          "digest": "sha256:86d2032cdbe6a9194de817c80f885b01f073397e997d229ad9caf5b829087b8d",
++          "fragment": "check-1",
++          "path": ".agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json",
++          "reference": ".agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-1",
++          "source": "filesystem"
++        },
++        {
++          "digest": "sha256:86d2032cdbe6a9194de817c80f885b01f073397e997d229ad9caf5b829087b8d",
++          "fragment": "check-2",
++          "path": ".agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json",
++          "reference": ".agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-2",
++          "source": "filesystem"
++        }
++      ]
++    },
++    "execution": {
++      "authoritative_task_source": "task_worktree",
++      "base_ref": "main",
++      "base_sha": "92efd467a7b045e7e784597168ac21bd41a975a1",
++      "digest": "sha256:19e5cc07b9aad88bd1a57ef6d557d7e2863afbaf370f9bd5db2f52c8abd68455",
++      "primary_task_id": "202609071541-47TFVD",
++      "reason_codes": [
++        "agent_preferred_branch_pr",
++        "effect_security_boundary",
++        "repository_branch_pr_floor"
++      ],
++      "repository_mode": "branch_pr",
++      "requested_mode": "auto",
++      "route_source": "execution_contract",
++      "selected_mode": "branch_pr",
++      "task_ids": [
++        "202609071541-47TFVD"
++      ]
++    },
++    "implementation": {
++      "base_sha": "92efd467a7b045e7e784597168ac21bd41a975a1",
++      "digest": "sha256:08e20b8997d2dfc4792710e1b77f6b933f1757160de9b10408bec91aeb0ff114",
++      "strategy": "branch_diff",
++      "target_sha": "9c36ce1c6ca523ce06c4c13771cac41f5e2e5b41"
++    },
++    "kind": "task_verification_input",
++    "schema_version": 4,
++    "verification_contract_digest": "sha256:969f43c02b99032aac9c49eeb0b3b3ac4520b706773317fbb3f6117f0d0567ff",
++    "verify_steps_digest": "sha256:0a82ecb89dd2e7a7be989bfecded0cdb23b3f3830de95d17fa119985d909c620"
++  },
++  "kind": "task_verification_record",
++  "note": "Rework: Declared check failed: bun run ci:local:full",
++  "recorded_at": "2026-09-07T16:00:33.827Z",
++  "result": "needs_rework",
++  "schema_version": 2,
++  "scope": "Run bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts. Expect approved CI scope to pass and unapproved CI scope to fail. Run git diff --check. Review that other protected path permissions remain denied.",
++  "scope_digest": "sha256:0a82ecb89dd2e7a7be989bfecded0cdb23b3f3830de95d17fa119985d909c620",
++  "task_id": "202609071541-47TFVD",
++  "verification_command": "agentplane verify 202609071541-47TFVD --rework --by SUPERVISOR",
++  "verifier": "SUPERVISOR"
++}
+diff --git a/.agentplane/tasks/202609071541-47TFVD/verification/20260907164815916-b6132adfaa57f00e.json b/.agentplane/tasks/202609071541-47TFVD/verification/20260907164815916-b6132adfaa57f00e.json
+new file mode 100644
+index 000000000..d0c6fba18
+--- /dev/null
++++ b/.agentplane/tasks/202609071541-47TFVD/verification/20260907164815916-b6132adfaa57f00e.json
+@@ -0,0 +1,117 @@
++{
++  "details": "Check: affected_unit_integration\nCommand: bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609071541-47TFVD Verification Contract check affected_unit_integration (1/2)\n\nCheck: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609071541-47TFVD Verification Contract check affected_unit_integration (2/2)\n\nCheck: critical_paths\nCommand: bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609071541-47TFVD Verification Contract check critical_paths (1/2)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609071541-47TFVD Verification Contract check critical_paths (2/2)\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609071541-47TFVD Verification Contract check full_regression\n\nCheck: task_outcome\nCommand: bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609071541-47TFVD Verification Contract check task_outcome (1/2)\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609071541-47TFVD Verification Contract check task_outcome (2/2)",
++  "digest": "sha256:b6132adfaa57f00e50f74e7748d2b49b57b4f15ebb116fc81323e0180b4bf1c1",
++  "implementation_sha": "22d93c4efedbb342e900fa6c6999e2c343307cda",
++  "input": {
++    "context": {
++      "digest": "sha256:c59f15672b9a3b8d43130b18b274b5e3c58c5b4b87fe53a644febc8ff3e09663",
++      "paths": [
++        ".agentplane/WORKFLOW.md",
++        ".github/ISSUE_TEMPLATE/config.yml",
++        "bun.lock",
++        "depcruise.config.cjs",
++        "eslint.config.cjs",
++        "knip.json",
++        "package.json",
++        "packages/agentplane/package.json",
++        "packages/agentplane/src/cli/run-cli/commands/config.ts",
++        "packages/agentplane/src/runner/config.test.ts",
++        "packages/agentplane/src/runner/config.ts",
++        "packages/agentplane/tsconfig.json",
++        "packages/agentplane/tsup.config.ts",
++        "packages/core/package.json",
++        "packages/core/schemas/config.schema.json",
++        "packages/core/src/config/config.test.ts",
++        "packages/core/src/config/config.ts",
++        "packages/core/tsconfig.json",
++        "packages/core/tsup.config.ts",
++        "packages/recipes/package.json",
++        "packages/recipes/tsconfig.json",
++        "packages/recipes/tsup.config.ts",
++        "packages/spec/examples/config.json",
++        "packages/spec/package.json",
++        "packages/spec/schemas/config.schema.json",
++        "packages/testkit/package.json",
++        "packages/testkit/tsconfig.json",
++        "schemas/config.schema.json",
++        "tsconfig.json",
++        "turbo.json",
++        "vitest.config.ts",
++        "vitest.workspace.ts",
++        "website/bun.lock",
++        "website/docusaurus.config.ts",
++        "website/package.json",
++        "website/tsconfig.json"
++      ]
++    },
++    "digest": "sha256:19258b0bcda21ceec51b23428aab821e70bd01ce39d5d165e612eabd2868dbe5",
++    "environment": {
++      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
++      "runtime": {
++        "architecture": "arm64",
++        "bun_major": null,
++        "node_major": "24",
++        "platform": "darwin"
++      }
++    },
++    "evidence": {
++      "details_digest": "sha256:ecfcab72c3c0df81ccf5a8d57c40b31d61ea68620e514cd67db9d1c51033fe0e",
++      "digest": "sha256:95e475f6a1b96903d2f4324465b1a538fdc15268b3c17f937e041d28a1a1b84c",
++      "references": [
++        {
++          "digest": "sha256:10b2103409117947e2e11e225e48d8072b5c63eaffe0ecd61f73548c7ab850ed",
++          "fragment": "check-1",
++          "path": ".agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json",
++          "reference": ".agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-1",
++          "source": "filesystem"
++        },
++        {
++          "digest": "sha256:10b2103409117947e2e11e225e48d8072b5c63eaffe0ecd61f73548c7ab850ed",
++          "fragment": "check-2",
++          "path": ".agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json",
++          "reference": ".agentplane/tasks/202609071541-47TFVD/supervision/declared-checks.json#check-2",
++          "source": "filesystem"
++        }
++      ]
++    },
++    "execution": {
++      "authoritative_task_source": "task_worktree",
++      "base_ref": "main",
++      "base_sha": "92efd467a7b045e7e784597168ac21bd41a975a1",
++      "digest": "sha256:19e5cc07b9aad88bd1a57ef6d557d7e2863afbaf370f9bd5db2f52c8abd68455",
++      "primary_task_id": "202609071541-47TFVD",
++      "reason_codes": [
++        "agent_preferred_branch_pr",
++        "effect_security_boundary",
++        "repository_branch_pr_floor"
++      ],
++      "repository_mode": "branch_pr",
++      "requested_mode": "auto",
++      "route_source": "execution_contract",
++      "selected_mode": "branch_pr",
++      "task_ids": [
++        "202609071541-47TFVD"
++      ]
++    },
++    "implementation": {
++      "base_sha": "92efd467a7b045e7e784597168ac21bd41a975a1",
++      "digest": "sha256:13a8bea086bdb396fe3dee983ef35d8aad69b5779bb840886d87d79255c746f9",
++      "strategy": "branch_diff",
++      "target_sha": "22d93c4efedbb342e900fa6c6999e2c343307cda"
++    },
++    "kind": "task_verification_input",
++    "schema_version": 4,
++    "verification_contract_digest": "sha256:969f43c02b99032aac9c49eeb0b3b3ac4520b706773317fbb3f6117f0d0567ff",
++    "verify_steps_digest": "sha256:0a82ecb89dd2e7a7be989bfecded0cdb23b3f3830de95d17fa119985d909c620"
++  },
++  "kind": "task_verification_record",
++  "note": "Verified: CLI-owned checks passed before independent EVALUATOR review.",
++  "recorded_at": "2026-09-07T16:48:15.916Z",
++  "result": "ok",
++  "schema_version": 2,
++  "scope": "Run bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts. Expect approved CI scope to pass and unapproved CI scope to fail. Run git diff --check. Review that other protected path permissions remain denied.",
++  "scope_digest": "sha256:0a82ecb89dd2e7a7be989bfecded0cdb23b3f3830de95d17fa119985d909c620",
++  "task_id": "202609071541-47TFVD",
++  "verification_command": "agentplane verify 202609071541-47TFVD --ok --by SUPERVISOR",
++  "verifier": "SUPERVISOR"
++}
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts b/packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts
+index 17c356671..3464e34ff 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts
+@@ -741,7 +741,9 @@ describe("pure external plan refinement", { timeout: 180_000 }, () => {
+   );
+   it("retains ordinary completed-no-diff rejection", async () => {
+     const f = await implementationFixture();
+-    await report(f.implementation, "No implementation and no refinement.");
++    await report(f.implementation, "No implementation and no refinement.", {
++      findings: ["A report does not satisfy the approved source implementation."],
++    });
+     const result = await invoke(f.checkout, f.implementation.exchange.resume_argv.slice(1));
+     expect(result.code).not.toBe(0);
+     expect(result.stderr).toContain("no supervisor-observed workspace change");
+diff --git a/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts b/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts
+index 44250c125..229bbeb54 100644
+--- a/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts
++++ b/packages/agentplane/src/commands/task/external-agent-implementation-authority.ts
+@@ -1,3 +1,7 @@
++import {
++  externalReportResultPath,
++  materializeExternalReportResult,
++} from "./external-agent-report-result.js";
+ import {
+   pathFromStatusLine,
+   hasChangedTaskArtifacts,
+@@ -9,23 +13,16 @@ import {
+   recoverExternalConflictEvidence,
+   applyExternalConflictResolution,
+ } from "./external-agent-conflict-application.js";
+-
+ import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
+ import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
+-
+ import { CliError } from "../../shared/errors.js";
++import { CI_PATH_PREFIXES } from "../../shared/protected-paths.js";
+ import { cmdCommit } from "../guard/impl/commit.js";
+ import { commitBranchSupervisorTaskArtifacts } from "./branch-task-supervisor-artifact-commit.js";
+ import { resolveConflictReworkSemanticInput } from "../pr/conflict-rework-semantic-input.js";
+ import { commitConflictResolutionSnapshot } from "../pr/conflict-rework-merge.js";
+-
+ import type { TaskRouteDecision } from "../shared/route-decision-types.js";
+-import type { CommandContext } from "../shared/task-backend.js";
+-
+-import type {
+-  ExternalAgentExchange,
+-  ExternalAgentResultEnvelope,
+-} from "./external-agent-exchange.js";
++import type * as ExternalAgent from "./external-agent-exchange.js";
+ import {
+   isExternalBlockedResultRecorded,
+   recordExternalBlockedResult,
+@@ -45,16 +42,15 @@ import {
+ } from "./external-agent-implementation-recovery.js";
+ import { recordedTaskImplementationCommitSha } from "../shared/quality-review-target.js";
+ import { requiresImplementationReworkReopen } from "../shared/task-scope-extension-request.js";
+-import { loadTaskFromContext } from "../shared/task-backend.js";
++import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
+ import {
+   prepareExternalVerificationCheckpoint,
+   completeExternalVerificationCheckpoint,
+   recoverExternalVerificationCheckpoint,
+ } from "./external-agent-implementation-checkpoint.js";
+ import { resolveTaskExecutionContext } from "../../runtime/task-execution-context/index.js";
+-
+-function assertExternalImplementationReturnState(opts: {
+-  exchange: ExternalAgentExchange;
++export function assertExternalImplementationReturnState(opts: {
++  exchange: ExternalAgent.ExternalAgentExchange;
+   work_order: AgentWorkOrderV2;
+   current: TaskRouteDecision;
+   current_head: string | null;
+@@ -107,9 +103,9 @@ function assertExternalImplementationReturnState(opts: {
+   const taskPrefix = `.agentplane/tasks/${opts.exchange.task_id}/`;
+   const forbidden = changed.filter((entry) => {
+     const taskArtifact = entry.startsWith(taskPrefix);
+-    const baselineTaskArtifact = taskArtifact && resolvesDirtyWorktree && baselinePaths.has(entry);
+-    if (baselineTaskArtifact) return false;
+-    return taskArtifact || !pathAllowed(entry, allowed);
++    if (taskArtifact && resolvesDirtyWorktree && baselinePaths.has(entry)) return false;
++    if (taskArtifact) return entry !== externalReportResultPath(opts);
++    return !pathAllowed(entry, allowed);
+   });
+   if (forbidden.length > 0) {
+     throw new CliError({
+@@ -128,8 +124,8 @@ function assertExternalImplementationReturnState(opts: {
+ 
+ export async function applyExternalReadOnlyWorktreeObservation(opts: {
+   command: CommandContext;
+-  exchange: ExternalAgentExchange;
+-  envelope: ExternalAgentResultEnvelope;
++  exchange: ExternalAgent.ExternalAgentExchange;
++  envelope: ExternalAgent.ExternalAgentResultEnvelope;
+ }): Promise<void> {
+   await cmdTaskComment({
+     ctx: opts.command,
+@@ -165,12 +161,11 @@ export async function applyExternalReadOnlyWorktreeObservation(opts: {
+   if (exitCode !== 0) throw new Error(`External worktree observation commit exited ${exitCode}.`);
+ }
+ 
+-export function blockingImplementationAuthorityViolations(violations: readonly string[]): string[] {
+-  return violations.filter((violation) => !violation.startsWith("verification:"));
+-}
++export const blockingImplementationAuthorityViolations = (items: readonly string[]): string[] =>
++  items.filter((violation) => !violation.startsWith("verification:"));
+ 
+ function assertScopeExtensionBlockerPreservedBaseline(opts: {
+-  exchange: ExternalAgentExchange;
++  exchange: ExternalAgent.ExternalAgentExchange;
+   current_head: string | null;
+   current_status_lines: readonly string[];
+ }): void {
+@@ -190,12 +185,25 @@ function assertScopeExtensionBlockerPreservedBaseline(opts: {
+   }
+ }
+ 
++export function implementationCommitAllowsCi(
++  contract: TaskRouteDecision["task"]["execution_contract"],
++  validatedPaths: readonly string[],
++  workspacePaths: readonly string[],
++): boolean {
++  const ciPaths = workspacePaths.filter((entry) => pathAllowed(entry, CI_PATH_PREFIXES));
++  return (
++    contract?.authority.allowed_repository_effects.includes("ci") === true &&
++    ciPaths.length > 0 &&
++    ciPaths.every((entry) => validatedPaths.includes(entry))
++  );
++}
++
+ export async function applyExternalImplementationResult(opts: {
+   command: CommandContext;
+   decision: TaskRouteDecision;
+-  exchange: ExternalAgentExchange;
++  exchange: ExternalAgent.ExternalAgentExchange;
+   work_order: AgentWorkOrderV2;
+-  envelope: ExternalAgentResultEnvelope;
++  envelope: ExternalAgent.ExternalAgentResultEnvelope;
+ }): Promise<void> {
+   let semantic = opts.envelope.result;
+   if (semantic.status !== "completed") {
+@@ -389,6 +397,10 @@ export async function applyExternalImplementationResult(opts: {
+         task_id: opts.exchange.task_id,
+       });
+     } else {
++      observedChangedPaths = await materializeExternalReportResult({
++        ...opts,
++        changed_paths: observedChangedPaths,
++      });
+       if (observedChangedPaths.length === 0) {
+         throw new CliError({
+           code: "E_VALIDATION",
+@@ -418,7 +430,11 @@ export async function applyExternalImplementationResult(opts: {
+           allowPolicy: false,
+           allowConfig: false,
+           allowHooks: false,
+-          allowCI: false,
++          allowCI: implementationCommitAllowsCi(
++            taskAtReturn.execution_contract,
++            observedChangedPaths,
++            status?.lines.map(pathFromStatusLine) ?? [],
++          ),
+           requireClean: false,
+           quiet: true,
+           closeUnstageOthers: false,
+diff --git a/packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts b/packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts
+index 641b0874a..dc2b69ea6 100644
+--- a/packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts
++++ b/packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts
+@@ -13,6 +13,16 @@ import {
+ } from "./evidence-only-rework-commit.js";
+ import { taskReadmesPreserveRecoveryContract } from "./external-agent-implementation-recovery.js";
+ 
++import {
++  assertExternalImplementationReturnState,
++  implementationCommitAllowsCi,
++} from "./external-agent-implementation-authority.js";
++
++const contract = (effects: string[]) =>
++  ({ authority: { allowed_repository_effects: effects } }) as NonNullable<
++    TaskData["execution_contract"]
++  >;
++
+ const COMMIT = "a".repeat(40);
+ const BASE_CONTEXT = {
+   schema_version: 1,
+@@ -388,3 +398,77 @@ describe("recorded implementation recovery contract", () => {
+     },
+   );
+ });
++
++describe("external implementation CI commit authority", () => {
++  const workflow = ".github/workflows/ci.yml";
++
++  it("passes approved CI changes to the commit guard", () => {
++    expect(implementationCommitAllowsCi(contract(["ci"]), [workflow], [workflow])).toBe(true);
++    expect(
++      implementationCommitAllowsCi(
++        contract(["ci"]),
++        [".github/actions/check/action.yml"],
++        [".github/actions/check/action.yml"],
++      ),
++    ).toBe(true);
++  });
++
++  it("keeps missing CI permission and unrelated protected paths denied", () => {
++    expect(implementationCommitAllowsCi(undefined, [workflow], [workflow])).toBe(false);
++    expect(implementationCommitAllowsCi(contract(["source_code"]), [workflow], [workflow])).toBe(
++      false,
++    );
++    for (const file of [
++      "AGENTS.md",
++      ".agentplane/config.json",
++      "lefthook.yml",
++      ".github/workflows-other/ci.yml",
++    ])
++      expect(implementationCommitAllowsCi(contract(["ci"]), [file], [file])).toBe(false);
++  });
++
++  it("does not admit preexisting CI changes through the family-wide guard flag", () => {
++    expect(
++      implementationCommitAllowsCi(
++        contract(["ci"]),
++        [workflow],
++        [workflow, ".github/workflows/preexisting.yml"],
++      ),
++    ).toBe(false);
++  });
++
++  it("rejects unapproved CI paths before deriving commit permission", () => {
++    const fingerprint = {
++      task_id: "T-1",
++      task_revision: 1,
++      worktree: "/repo",
++      components: {
++        task: { digest: "task" },
++        backend_projection: { digest: "backend" },
++        provider: { digest: "provider" },
++      },
++    };
++    const input = {
++      exchange: {
++        checkout: "/repo",
++        task_id: "T-1",
++        purpose: "implementation",
++        baseline: { head: COMMIT, changed_paths: [] },
++      },
++      work_order: {
++        state_fingerprint: fingerprint,
++        authority: { writable_roots: ["/repo/.github/workflows/ci.yml"] },
++      },
++      current: { workflowStep: { preconditionFingerprint: fingerprint } },
++      current_head: COMMIT,
++      current_status_lines: [" M .github/workflows/unapproved.yml"],
++      require_changes: true,
++    } as unknown as Parameters<typeof assertExternalImplementationReturnState>[0];
++    expect(() => assertExternalImplementationReturnState(input)).toThrow(
++      "escaped semantic authority",
++    );
++    input.current_status_lines = [" M .github/workflows/ci.yml"];
++    const validated = assertExternalImplementationReturnState(input);
++    expect(implementationCommitAllowsCi(contract(["ci"]), validated, validated)).toBe(true);
++  });
++});
+diff --git a/packages/agentplane/src/commands/task/external-agent-report-result.test.ts b/packages/agentplane/src/commands/task/external-agent-report-result.test.ts
+new file mode 100644
+index 000000000..48cc090e0
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/external-agent-report-result.test.ts
+@@ -0,0 +1,380 @@
++import {
++  cp,
++  readdir,
++  mkdir,
++  mkdtemp,
++  readFile,
++  rm,
++  stat,
++  symlink,
++  writeFile,
++} from "node:fs/promises";
++import os from "node:os";
++import path from "node:path";
++import { afterEach, describe, expect, it, vi } from "vitest";
++import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
++import {
++  externalAgentResultDigest,
++  type ExternalAgentExchange,
++  type ExternalAgentResultEnvelope,
++} from "./external-agent-exchange.js";
++import {
++  externalReportResultPath,
++  materializeExternalReportResult,
++} from "./external-agent-report-result.js";
++
++const roots: string[] = [];
++afterEach(async () => {
++  await Promise.all(roots.splice(0).map((root) => rm(root, { recursive: true, force: true })));
++});
++
++function fixture(checkout = "/repo") {
++  const taskId = "202609070000-REPORT";
++  const result: ExternalAgentResultEnvelope = {
++    schema_version: 1,
++    kind: "agent_action_result",
++    task_id: taskId,
++    transition_id: `tr_${"a".repeat(32)}`,
++    state_fingerprint: `sha256:${"b".repeat(64)}`,
++    role: "EXECUTOR",
++    result: {
++      schema_version: 2,
++      kind: "agent_semantic_result",
++      work_order_id: "report-order",
++      status: "completed",
++      summary: "Investigated the findings.",
++      findings: ["One finding remains unresolved."],
++      uncertainty: ["No security-clean claim."],
++    },
++  };
++  const exchange = {
++    purpose: "implementation",
++    task_id: taskId,
++    work_order_id: "report-order",
++    checkout,
++    result,
++    result_digest: externalAgentResultDigest(result),
++  } as ExternalAgentExchange;
++  const work_order = {
++    work_order_id: "report-order",
++    task: { id: taskId, work_item_id: "report" },
++    authority: { writable_roots: [path.join(checkout, ".agentplane/tasks", taskId)] },
++    required_outputs: [
++      { id: "semantic-result", kind: "semantic_result", required: true },
++      { id: "report", kind: "report", required: true },
++    ],
++  } as AgentWorkOrderV2;
++  return { exchange, work_order, changed_paths: [] as string[] };
++}
++
++async function temporaryFixture() {
++  const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-semantic-report-"));
++  roots.push(root);
++  const f = fixture(root);
++  await mkdir(f.work_order.authority.writable_roots[0]!, { recursive: true });
++  return f;
++}
++
++describe("report-only semantic results", () => {
++  it("requires a current task-owned report scope and the accepted result digest", () => {
++    const f = fixture();
++    expect(externalReportResultPath(f)).toMatch(/semantic-report-[a-f0-9]{64}\.json$/u);
++    for (const scopes of [
++      [],
++      ["."],
++      ["src"],
++      [".agentplane/tasks/another"],
++      ["../outside"],
++      [...f.work_order.authority.writable_roots, "src"],
++    ]) {
++      expect(
++        externalReportResultPath({
++          ...f,
++          work_order: {
++            ...f.work_order,
++            authority: { ...f.work_order.authority, writable_roots: scopes },
++          },
++        }),
++      ).toBeNull();
++    }
++    f.exchange.result!.result.summary = "Changed after acceptance.";
++    expect(externalReportResultPath(f)).toBeNull();
++  });
++
++  it("rejects task-level, non-report, missing-output, and mismatched work-order results", () => {
++    for (const change of ["task", "output", "missing", "order"] as const) {
++      const f = fixture();
++      if (change === "task") delete f.work_order.task.work_item_id;
++      if (change === "output") f.work_order.required_outputs[1]!.kind = "artifact";
++      if (change === "missing") f.work_order.required_outputs = [];
++      if (change === "order") f.work_order.work_order_id = "other-order";
++      expect(externalReportResultPath(f)).toBeNull();
++    }
++  });
++
++  it("persists the exact envelope and preserves its file on identical replay", async () => {
++    const f = await temporaryFixture();
++    const [relative] = await materializeExternalReportResult(f);
++    const target = path.join(f.exchange.checkout, relative!);
++    expect(JSON.parse(await readFile(target, "utf8"))).toEqual(f.exchange.result);
++    const before = await stat(target);
++    expect(await materializeExternalReportResult({ ...f, changed_paths: [relative!] })).toEqual([
++      relative,
++    ]);
++    const after = await stat(target);
++    expect(after.mtimeMs).toBe(before.mtimeMs);
++    await writeFile(target, "unrelated contents\n");
++    await expect(materializeExternalReportResult(f)).rejects.toThrow(
++      "differs from the accepted result",
++    );
++    expect(await readFile(target, "utf8")).toBe("unrelated contents\n");
++  });
++
++  it("preserves rejection of unrelated writes and ordinary no-diff implementations", async () => {
++    const f = await temporaryFixture();
++    await expect(
++      materializeExternalReportResult({ ...f, changed_paths: ["src/other.ts"] }),
++    ).rejects.toThrow("unrelated paths");
++    f.work_order.authority.writable_roots = ["src"];
++    expect(await materializeExternalReportResult(f)).toEqual([]);
++  });
++
++  it("refuses a symlinked report target", async () => {
++    const f = await temporaryFixture();
++    const target = path.join(f.exchange.checkout, externalReportResultPath(f)!);
++    const victim = path.join(f.exchange.checkout, "victim.txt");
++    await writeFile(victim, "preserve\n");
++    await symlink(victim, target);
++    await expect(materializeExternalReportResult(f)).rejects.toThrow("symlink");
++    expect(await readFile(victim, "utf8")).toBe("preserve\n");
++  });
++});
++
++import { execFile } from "node:child_process";
++import { promisify } from "node:util";
++import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
++import {
++  installRunCliIntegrationHarness,
++  mkGitRepoRootWithBranch,
++  runCliSilent,
++  writeConfig,
++} from "@agentplane/testkit";
++import {
++  readRecoveryWorkOrder as order,
++  writeRecoveryReport as report,
++  type RecoveryPacket as Packet,
++} from "../../cli/run-cli.core.task-advance.testkit.js";
++import {
++  captureRecoveryCli,
++  recoveryPlanningProposal,
++} from "../../cli/task-advance-effect-recovery.testkit.js";
++import { defaultConfig } from "../../cli/core-imports.js";
++import { loadCommandContext } from "../shared/task-backend.js";
++import { ensureRuntimeGitignore } from "../../runtime/shared/runtime-gitignore.js";
++import * as reportResults from "./external-agent-report-result.js";
++
++installRunCliIntegrationHarness();
++const git = promisify(execFile);
++function invoke(root: string, args: string[]) {
++  return captureRecoveryCli([...args, "--root", root]);
++}
++
++async function packet(root: string, taskId: string) {
++  const result = await invoke(root, ["task", "advance", taskId, "--agent-json"]);
++  expect(result.code, result.stderr).toBe(0);
++  return JSON.parse(result.stdout) as Packet;
++}
++async function resume(root: string, p: Packet) {
++  const result = await invoke(root, p.exchange.resume_argv.slice(1));
++  expect(result.code, result.stderr).toBe(0);
++  return JSON.parse(result.stdout) as Packet;
++}
++async function commitFixture(root: string, message: string) {
++  await git("git", ["add", ".agentplane", "package.json", ".gitignore"], { cwd: root });
++  await git("git", ["commit", "-m", message], { cwd: root });
++}
++
++async function implementationFixture() {
++  const root = await mkGitRepoRootWithBranch("main");
++  const config = defaultConfig();
++  config.workflow_mode = "branch_pr";
++  await writeConfig(root, config);
++  expect(await runCliSilent(["branch", "base", "set", "main", "--root", root])).toBe(0);
++  await cp(
++    path.join(process.cwd(), "packages/agentplane/assets/policy"),
++    path.join(root, ".agentplane/policy"),
++    { recursive: true },
++  );
++  await writeFile(
++    path.join(root, ".gitignore"),
++    ".agentplane/bin/\n.agentplane/cache.sqlite*\nagentplane-recipes\nnode_modules\npackages/\nwebsite/\n",
++  );
++  await writeFile(
++    path.join(root, "package.json"),
++    JSON.stringify({
++      scripts: { "test:critical": "node -e \"console.log('1 passed')\"" },
++    }),
++  );
++  {
++    await ensureRuntimeGitignore({ gitRoot: root });
++    await commitFixture(root, "test: seed evidence rework repository");
++  }
++  const created = await invoke(root, [
++    "task",
++    "new",
++    "--title",
++    "Report-only WorkItem result",
++    "--description",
++    "Persist an analysis report after a source WorkItem.",
++    "--priority",
++    "med",
++    "--owner",
++    "CODER",
++    "--tag",
++    "code",
++    "--verify",
++    "bun run test:critical",
++  ]);
++  expect(created.code, created.stderr).toBe(0);
++  const taskId = created.stdout.trim();
++  const planning = await packet(root, taskId);
++  const planOrder = await order(planning);
++  const scope = ["source.ts", `.agentplane/tasks/${taskId}`];
++  let proposal = recoveryPlanningProposal(planOrder, "Recover the approved source.");
++  {
++    const source = {
++      ...proposal.work_items.work_items[0]!,
++      scope_roots: ["source.ts"],
++      resource_claims: [{ kind: "path" as const, resource: "source.ts", mode: "write" as const }],
++    };
++    const reportItem = {
++      ...source,
++      id: "report-only",
++      objective: "Review the source and report remaining uncertainty.",
++      depends_on: [source.id],
++      required_inputs: [...source.expected_outputs],
++      expected_outputs: ["analysis-report"],
++      scope_roots: [scope[1]!],
++      resource_claims: [{ kind: "path" as const, resource: scope[1]!, mode: "write" as const }],
++    };
++    proposal = {
++      ...proposal,
++      work_items: { ...proposal.work_items, work_items: [source, reportItem] },
++    };
++  }
++  await report(planning, "Recover only the exact approved implementation.", {
++    task_intent: {
++      task_kind: "code",
++      mutation_scope: "code",
++      risk_flags: [],
++      tags: ["code"],
++      execution: {
++        schema_version: 2,
++        preferred_mode: "branch_pr",
++        scope_roots: scope,
++        repository_effects: ["repository_write", "source_code"],
++        external_effects: [],
++        requirements_uncertainty: "bounded",
++        implementation_uncertainty: "bounded",
++        reversibility: "reversible",
++        rationale: ["The fixture authorizes local source changes."],
++      },
++    },
++    task_plan_proposal: proposal,
++  });
++  const approval = await resume(root, planning);
++  expect(approval.action.kind).toBe("approval_required");
++  expect(
++    await runCliSilent([
++      "task",
++      "doc",
++      "set",
++      taskId,
++      "--section",
++      "Verify Steps",
++      "--text",
++      "1. Run bun run test:critical. Expected: the focused recovery contract passes.",
++      "--updated-by",
++      "PLANNER",
++      "--root",
++      root,
++    ]),
++  ).toBe(0);
++  expect(
++    await runCliSilent(["task", "plan", "approve", taskId, "--by", "USER", "--root", root]),
++  ).toBe(0);
++  let implementation = await packet(root, taskId);
++  let implementationOrder = await order(implementation);
++  const checkout = implementationOrder.state_fingerprint.worktree;
++  {
++    const metaPath = path.join(checkout, ".agentplane/tasks", taskId, "pr/meta.json");
++    const meta = JSON.parse(await readFile(metaPath, "utf8")) as Record<string, unknown>;
++    await writeFile(metaPath, JSON.stringify({ ...meta, status: "OPEN", pr_number: 123 }));
++    const stale = await invoke(checkout, ["task", "advance", taskId, "--agent-json"]);
++    expect(stale.code).not.toBe(0);
++    const replacement = await invoke(checkout, [
++      "task",
++      "advance",
++      taskId,
++      "--replacement",
++      "--agent-json",
++    ]);
++    expect(replacement.code, replacement.stderr).toBe(0);
++    implementation = JSON.parse(replacement.stdout) as Packet;
++    await writeFile(path.join(checkout, "source.ts"), "export const observed = true;\n");
++    await report(implementation, "Implemented source before report-only review.");
++    implementation = await resume(checkout, implementation);
++    implementationOrder = await order(implementation);
++    expect(implementationOrder.task.work_item_id).toBe("report-only");
++  }
++  return { taskId, implementation, checkout };
++}
++
++describe("report-only WorkItem application", { timeout: 180_000 }, () => {
++  it.each([false, true])(
++    "persists report-only WorkItem output and replays once (interrupt=%s)",
++    async (interrupt) => {
++      const f = await implementationFixture();
++      await report(f.implementation, "Reviewed all alerts; unresolved risks remain.", {
++        findings: ["The report is the approved output."],
++        uncertainty: ["No alerts were dismissed."],
++      });
++      const envelope: unknown = JSON.parse(
++        await readFile(f.implementation.exchange.result_path, "utf8"),
++      );
++      if (interrupt) {
++        const materialize = reportResults.materializeExternalReportResult;
++        const spy = vi
++          .spyOn(reportResults, "materializeExternalReportResult")
++          .mockImplementationOnce(async (opts) => {
++            await materialize(opts);
++            throw new Error("lost report response");
++          });
++        const failed = await invoke(f.checkout, f.implementation.exchange.resume_argv.slice(1));
++        expect(failed.code).not.toBe(0);
++        expect(failed.stderr).toContain("lost report response");
++        spy.mockRestore();
++      }
++      await resume(f.checkout, f.implementation);
++      const ctx = await loadCommandContext({ cwd: f.checkout, rootOverride: f.checkout });
++      const completed = await ctx.taskBackend.getTask(f.taskId);
++      expect(completed?.verification?.state).toBe("ok");
++      expect(
++        taskCentricAggregateFromExtensions(completed?.extensions)?.work_items["report-only"]?.state,
++      ).toBe("COMPLETED");
++      const taskDir = path.join(f.checkout, ".agentplane/tasks", f.taskId);
++      const entries = await readdir(taskDir);
++      const reports = entries.filter((name) => name.startsWith("semantic-report-"));
++      expect(reports).toHaveLength(1);
++      expect(JSON.parse(await readFile(path.join(taskDir, reports[0]!), "utf8"))).toEqual(envelope);
++      const head = await git("git", ["rev-parse", "HEAD"], { cwd: f.checkout });
++      await resume(f.checkout, f.implementation);
++      const replayHead = await git("git", ["rev-parse", "HEAD"], { cwd: f.checkout });
++      expect(replayHead.stdout).toBe(head.stdout);
++      await report(f.implementation, "A different report cannot replace the accepted result.");
++      const rejected = await invoke(f.checkout, f.implementation.exchange.resume_argv.slice(1));
++      expect(rejected.code).not.toBe(0);
++      expect(rejected.stderr).toContain("different result is already recorded");
++    },
++  );
++});
+diff --git a/packages/agentplane/src/commands/task/external-agent-report-result.ts b/packages/agentplane/src/commands/task/external-agent-report-result.ts
+new file mode 100644
+index 000000000..5ea889c36
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/external-agent-report-result.ts
+@@ -0,0 +1,88 @@
++import path from "node:path";
++import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
++import { canonicalizeJson } from "@agentplaneorg/core/tasks";
++import { CliError } from "../../shared/errors.js";
++import { readContainedStableTextNoFollow } from "../../shared/contained-stable-file.js";
++import { writeTextIfChanged } from "../../shared/write-if-changed.js";
++import { authorityPath, pathAllowed } from "./external-agent-conflict-application.js";
++import {
++  externalAgentResultDigest,
++  type ExternalAgentExchange,
++} from "./external-agent-exchange.js";
++
++type ReportResultContext = {
++  exchange: ExternalAgentExchange;
++  work_order: AgentWorkOrderV2;
++};
++
++export function externalReportResultPath(opts: ReportResultContext): string | null {
++  const { exchange, work_order: order } = opts;
++  const result = exchange.result;
++  if (
++    !["implementation", "implementation_rework"].includes(exchange.purpose) ||
++    !order.task.work_item_id ||
++    result?.result.status !== "completed" ||
++    result.result.plan_refinement ||
++    result.result.work_order_id !== order.work_order_id ||
++    exchange.work_order_id !== order.work_order_id ||
++    exchange.task_id !== order.task.id ||
++    !/^sha256:[a-f0-9]{64}$/u.test(exchange.result_digest ?? "") ||
++    externalAgentResultDigest(result) !== exchange.result_digest
++  )
++    return null;
++  const taskRoot = `.agentplane/tasks/${exchange.task_id}`;
++  const roots = order.authority.writable_roots.map((root) =>
++    authorityPath(root, exchange.checkout),
++  );
++  const outputs = order.required_outputs.filter((output) => output.kind !== "semantic_result");
++  if (
++    !roots.includes(taskRoot) ||
++    !roots.every((root) => root !== null && pathAllowed(root, [taskRoot])) ||
++    !outputs.some((output) => output.required && output.kind === "report") ||
++    outputs.some((output) => output.kind !== "report")
++  )
++    return null;
++  return `${taskRoot}/semantic-report-${exchange.result_digest!.slice(7)}.json`;
++}
++
++export async function materializeExternalReportResult(
++  opts: ReportResultContext & { changed_paths: readonly string[] },
++): Promise<string[]> {
++  const relative = externalReportResultPath(opts);
++  if (!relative) return [...opts.changed_paths];
++  if (opts.changed_paths.some((entry) => entry !== relative)) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Report-only result changed unrelated paths.",
++    });
++  }
++  const target = path.join(opts.exchange.checkout, relative);
++  const content = `${JSON.stringify(canonicalizeJson(opts.exchange.result), null, 2)}\n`;
++  const assertReportIdentity = async () => {
++    let existing: string;
++    try {
++      existing = await readContainedStableTextNoFollow({
++        repository_root: opts.exchange.checkout,
++        file_path: target,
++        label: "semantic report",
++        max_bytes: 256 * 1024 * 1024,
++      });
++    } catch (error) {
++      if ((error as NodeJS.ErrnoException).code === "ENOENT") return;
++      throw error;
++    }
++    if (existing !== content) {
++      throw new CliError({
++        code: "E_VALIDATION",
++        message: "Semantic report differs from the accepted result.",
++      });
++    }
++  };
++  await assertReportIdentity();
++  await writeTextIfChanged(target, content, {
++    containedRoot: opts.exchange.checkout,
++    label: "semantic report",
++    beforePublication: assertReportIdentity,
++  });
++  return [relative];
++}

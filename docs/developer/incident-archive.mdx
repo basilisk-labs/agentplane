@@ -4,6 +4,16 @@ Historical registry for workflow incidents that are no longer active.
 
 Active incidents live in `.agentplane/policy/incidents.md`. Move entries here once the repo has a durable mitigation, a shipped repo fix, or an external constraint has been reduced to a documented fallback instead of an active blocker.
 
+## 2026-09-28 0.7.12 Release Incident Review
+
+- Review owner: task `202609261720-KKE9ZN`, as part of the user-authorized 0.7.12 release preparation.
+- Reviewed source: `6315b2ddb08c4d5ff0ef27575ebd3f6d89031c02`. The active registry contained only its field-definition header and no incident entries.
+- Verification: `bun run release:incidents:check` exited 0 and reported `Release incident gate passed: incidents.md has no active entries.`
+- Disposition: no active advice required application, promotion, or removal. Existing historical entries remain unchanged. No new incident is declared resolved or shipped by this empty-registry audit.
+- Administrative exception: the user's explicit release-process override permits recording this review in the existing release implementation task instead of creating a separate incident-only task. The actual registry inspection, release gate, and archive evidence are retained.
+- Outstanding release qualification and newly encountered failures remain in the task evidence and `docs/releases/planning-0.7.12-integrated-qualification.md`. This audit does not certify full CI, M04, containment, or publication.
+- Before the final release plan, rerun the incident gate against the integrated release checkout. Any new active entry must be resolved and archived before planning proceeds.
+
 ## 2026-09-06 WorkItem input planning
 
 - id: INC-20260829-01 | date: 2026-08-29 | scope: task-centric planning | tags: work-item-inputs, task-centric, review-blocker | match: required_work_item_incomplete, work-item-inputs, task-centric, review-blocker, task, centric, planning, allow, state, bound, workitem, implementation, results, reopen, done, tasks | failure: The required WorkItem remains READY but WorkItemScheduler reports no schedulable item because every required_inputs label is absent from output manifests. | advice: Refine the current plan so the independent WorkItem has no produced-output dependencies; retain its required evidence as context and acceptance criteria. | rule: Analogous task-centric planning work MUST review and apply the recorded external incident advice before retrying. | evidence: task 202608290844-7JCQPF; commit 94b57b253f6a | enforcement: manual | fixability: repo-fixable | state: archived | archived_by: task `202609061636-BW11J6` | archive_reason: canonical planning admission now rejects invalid required input producers before persisting the plan; independent evidence belongs in context and acceptance criteria, not in produced-output dependencies.

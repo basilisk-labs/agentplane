@@ -3,24 +3,18 @@ import path from "node:path";
 
 import { defaultConfig } from "@agentplaneorg/core/config";
 import {
-  captureStdIO,
   installRunCliIntegrationHarness,
   mkGitRepoRootWithCommit,
-  runCliSilent,
   writeConfig,
 } from "@agentplane/testkit";
 import { writeRunnerExecutable } from "@agentplane/testkit/runner";
 import { afterEach, describe, expect, it } from "vitest";
 
 import type { TaskData } from "../../backends/task-backend.js";
-import { runCli } from "../../cli/run-cli.js";
 import { hashRecipeTree } from "../../commands/recipes/impl/project-recipe-state.js";
 import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
 import { assembleRunnerRecipeContext } from "../context/recipe-context.js";
-import {
-  initializeRunnerPolicyFixture,
-  materializeRunnerTaskWorkItemFixture,
-} from "./task-run-lifecycle.testkit.js";
+import { createDoingRunnerTask } from "./task-run-lifecycle.testkit.js";
 import { executeTaskRunnerExecution, prepareTaskRunnerExecution } from "./task-run.js";
 import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
 
@@ -33,43 +27,11 @@ afterEach(() => {
 });
 
 async function createDoingCodeTask(root: string, title: string): Promise<string> {
-  await initializeRunnerPolicyFixture(root);
-  const io = captureStdIO();
-  let taskId = "";
-  try {
-    const code = await runCli([
-      "task",
-      "new",
-      "--title",
-      title,
-      "--description",
-      title,
-      "--owner",
-      "CODER",
-      "--tag",
-      "code",
-      "--root",
-      root,
-    ]);
-    expect(code).toBe(0);
-    taskId = io.stdout.trim();
-  } finally {
-    io.restore();
-  }
-
-  await runCliSilent([
-    "task",
-    "plan",
-    "set",
-    taskId,
-    "--text",
-    `Exercise recipe write scope: ${title}.`,
-    "--updated-by",
-    "ORCHESTRATOR",
-    "--root",
+  const taskId = await createDoingRunnerTask({
     root,
-  ]);
-  await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    title,
+    plan_text: `Exercise recipe write scope: ${title}.`,
+  });
 
   const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
   const task = await ctx.taskBackend.getTask(taskId);
@@ -87,12 +49,6 @@ async function createDoingCodeTask(root: string, title: string): Promise<string>
     verify: task?.verify ?? [],
     task_kind: "code" satisfies NonNullable<TaskData["task_kind"]>,
     mutation_scope: "code" satisfies NonNullable<TaskData["mutation_scope"]>,
-    blueprint_request: "code.direct" satisfies NonNullable<TaskData["blueprint_request"]>,
-  });
-  await materializeRunnerTaskWorkItemFixture({
-    root,
-    task_id: taskId,
-    objective: `Exercise recipe write scope: ${title}.`,
   });
   return taskId;
 }

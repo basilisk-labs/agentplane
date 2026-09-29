@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "human_review",
+  "findings": [
+    {
+      "id": "unapproved-lockfile-drift",
+      "severity": "medium",
+      "summary": "The frozen patch still changes three bun.lock workspace versions from 0.7.11 to 0.7.12-beta.1. The supplied scope covers supervisor recovery, and the frozen execution contract explicitly forbids dependencies and release metadata changes. No approval for this remaining drift is recorded.",
+      "broken_invariant": "Material changes outside approved scope require explicit re-approval under dod.core.md.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/70e6995465910c8353ef1bbf2b986daaa46b4ddc358d39e9ddafa8e78a0c53f6.patch",
+          "sha256": "sha256:70e6995465910c8353ef1bbf2b986daaa46b4ddc358d39e9ddafa8e78a0c53f6",
+          "line": 1,
+          "lines": "1-31"
+        },
+        {
+          "path": ".agentplane/tasks/202609231207-R59HKK/README.md",
+          "sha256": "sha256:69e77b4494839cb2753fdb933b364363b7de742f64c92ec24a4f1257bde05d9d",
+          "section": "execution_contract.authority"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "line": 49,
+          "lines": "49-54",
+          "section": "Material drift criteria"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Synchronizing workspace versions in bun.lock is implicitly authorized by the supervisor-recovery scope."
+  ],
+  "recovery_context": "Do you approve retaining the three bun.lock workspace-version updates to 0.7.12-beta.1 within this task's scope?"
+}

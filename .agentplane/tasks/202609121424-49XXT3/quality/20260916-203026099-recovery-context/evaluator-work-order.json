@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609121424-49XXT3-beab1a977895c45a882aa48b",
+  "prepared_at": "2026-09-16T20:30:26.099Z",
+  "task": {
+    "id": "202609121424-49XXT3",
+    "revision": 95,
+    "objective": "Publish and independently verify AgentPlane 0.7.9 from the exact qualified main SHA\n\nRelease operator task after all 0.7.9 stabilization dependencies are integrated. Prepare exact 0.7.9 version parity and release notes, run the complete release prepublish and incident gates, produce and integrate the release-ready candidate through repository policy, publish v0.7.9 from the exact qualified main SHA, and independently verify the canonical .agentplane/.release/publish/publish-result.json has success=true with an empty failures array for that SHA. Verify GitHub release assets and checksums, package registries, setup-agentplane tag and install, Homebrew and Scoop distribution, both agentplane and ap entrypoints, and default-branch state. Record any unavailable anonymous GHCR check separately. Complete the required post-publish evidence follow-up and next patch beta only through AgentPlane-managed lifecycle. Never commit agentplane-roadmap-r2. Stop only at a genuine provider or evidence boundary; the user explicitly authorized publish, merge, network, credentials, and external-system actions for v0.7.9.",
+    "acceptance_criteria": [
+      "bun run release:check",
+      "bun run release:prepublish",
+      "- In scope: Release operator task after all 0.7.9 stabilization dependencies are integrated. Prepare exact 0.7.9 version parity and release notes, run the complete release prepublish and incident gates, produce and integrate the release-ready candidate through repository policy, publish v0.7.9 from the exact qualified main SHA, and independently verify the canonical .agentplane/.release/publish/publish-result.json has success=true with an empty failures array for that SHA. Verify GitHub release assets and checksums, package registries, setup-agentplane tag and install, Homebrew and Scoop distribution, both agentplane and ap entrypoints, and default-branch state. Record any unavailable anonymous GHCR check separately. Complete the required post-publish evidence follow-up and next patch beta only through AgentPlane-managed lifecycle. Never commit agentplane-roadmap-r2. Stop only at a genuine provider or evidence boundary; the user explicitly authorized publish, merge, network, credentials, and external-system actions for v0.7.9.\n- Out of scope: unrelated refactors not required for \"Publish and independently verify AgentPlane 0.7.9 from the exact qualified main SHA\".",
+      "Preserve the two completed candidate WorkItems and end the semantic graph so AgentPlane can begin protected evaluation and integration.",
+      "1. Run `bun run release:check`. Expected: version parity, generated release surfaces, package manifests, and release policy checks pass for 0.7.9.\n2. Run `bun run release:prepublish`. Expected: the complete prepublish gate passes for the exact release candidate without skipped mandatory checks.\n3. Review `git diff --check`, the exact task diff, and `git status --short --untracked-files=all`. Expected: only approved release metadata, documentation, package version surfaces, baseline evidence, and AgentPlane task artifacts changed; `agentplane-roadmap-r2` and unrelated user work are not committed.\n4. Complete AgentPlane verification and hosted branch protection for the release-ready candidate. Expected: the accepted release commit is integrated into `main`, hosted checks are successful, and `origin/main` resolves to the exact qualified publish SHA.\n5. Publish v0.7.9 only through the AgentPlane release route after an exact fresh publish-authority grant. Expected: `.agentplane/.release/publish/publish-result.json` records `success=true`, an empty `failures` array, version 0.7.9, and the exact qualified main SHA.\n6. Independently read back the GitHub v0.7.9 tag and release. Expected: the tag resolves to the qualified publish SHA and every required release asset and checksum is present.\n7. Independently read back all npm package versions and install the published packages in clean temporary directories. Expected: every public AgentPlane package reports 0.7.9 and both `agentplane` and `ap` entrypoints execute successfully.\n8. Independently verify `setup-agentplane`, Homebrew, and Scoop distribution surfaces and perform their documented clean install smoke checks when the release route provides them. Expected: every required surface resolves to 0.7.9 and its expected checksum; any unavailable anonymous GHCR read is recorded separately without being misreported as success.\n9. Re-fetch the default branch and provider state after publication. Expected: `origin/main`, the canonical release evidence, the tag, registries, and distribution surfaces agree on the same released SHA and version.\n10. Complete the required post-publish evidence follow-up and start the next patch beta only through fresh AgentPlane-managed tasks and authority packets. Expected: no lifecycle or external action is inferred from prose, and any genuine provider or evidence boundary is reported explicitly."
+    ]
+  },
+  "evaluated_sha": "026c97813bc53dabe636fd957e4e6961278b45a3",
+  "diff_base_sha": "f3c1991ddd92943775b6b4b4688009afc3d523bc",
+  "blueprint_digest": "b868d5c39ecfa4e9a069b687877b066b738e575f2bfcceb04210173b98273663",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609121424-49XXT3/quality/20260916-203026099-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:2861dea73c64778d17c5ef50250125a71a0d37f24416654a4f780141209f671f",
+    "prompt_path": ".agentplane/tasks/202609121424-49XXT3/quality/objects/sha256/cd79972a67ce308407026ddaf3ce3453a8c5e7c1ea9a24f061ee68aa5bc190ed.md",
+    "result_schema_path": ".agentplane/tasks/202609121424-49XXT3/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609121424-49XXT3/README.md",
+      "sha256": "sha256:283c482abb0acaad0d7a5bbae138e6174757a7aaceb778cd4355f00cd17a1d43",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609121424-49XXT3/quality/objects/sha256/b8d0862a586d68e56a22420d42d97896bb9568629e8a3ebee4f144236e631268.patch",
+      "sha256": "sha256:b8d0862a586d68e56a22420d42d97896bb9568629e8a3ebee4f144236e631268",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609121424-49XXT3/quality/objects/sha256/0b92cc0adf31148aef3481d01d6f954dadcb3f82372a0989e65fe3c780a92ca0.json",
+      "sha256": "sha256:0b92cc0adf31148aef3481d01d6f954dadcb3f82372a0989e65fe3c780a92ca0",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609121424-49XXT3/verification/20260916201906057-de98762f65da07cc.json",
+      "sha256": "sha256:5f08cc53eaf9be468aea7ee9c2fafaa10104587dc4d306b51ccc721e8a6703ea",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609121424-49XXT3/quality/objects/sha256/ae9a85c6edc7a94cea7dbb713864d6087dd669b4dc65703052c08129089b90ad.json",
+      "sha256": "sha256:ae9a85c6edc7a94cea7dbb713864d6087dd669b4dc65703052c08129089b90ad",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.release.md",
+      "sha256": "sha256:47ab8b04f9d747491398390dac415b34aa6d3df0cf0fb61e9924fd3e4851ec48",
+      "required": true
+    }
+  ]
+}

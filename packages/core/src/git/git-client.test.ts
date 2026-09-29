@@ -27,6 +27,22 @@ async function mkRepo(): Promise<string> {
 }
 
 describe("git-client", () => {
+  it("writes commit subjects and bodies through standard input", async () => {
+    const root = await mkRepo();
+    await writeFile(path.join(root, "tracked.txt"), "changed\n", "utf8");
+    const git = new GitContext({ gitRoot: root });
+    await git.stage(["tracked.txt"]);
+    await git.commit({
+      message: "subject with shell metacharacters ; $(ignored)",
+      body: "body with `literal` text",
+    });
+
+    const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%B"], { cwd: root });
+    expect(stdout).toBe(
+      "subject with shell metacharacters ; $(ignored)\n\nbody with `literal` text\n\n",
+    );
+  });
+
   it("reports changed and untracked paths from real porcelain status", async () => {
     const root = await mkRepo();
     await writeFile(path.join(root, "tracked.txt"), "changed\n", "utf8");

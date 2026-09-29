@@ -1,19 +1,6 @@
-import { taskCentricDigest } from "./digest.js";
-import {
-  computeReadyWorkItems,
-  requiredOutputManifestsPresent,
-  WorkItemScheduler,
-} from "./graph.js";
-import { decideConfirmation, recoveryDecisionForFailure } from "./policy.js";
+import { requiredOutputManifestsPresent } from "./graph.js";
 import type {
-  ActorIdentity,
-  ContextBundle,
-  DomainEvent,
-  ExecutionAuthority,
-  LifecycleCommand,
-  LifecycleInput,
   ReconciliationSnapshot,
-  SemanticWorkRequest,
   Sha256Digest,
   TaskAggregate,
   TaskLifecycleState,
@@ -74,6 +61,76 @@ export type CompletionEvaluation = Readonly<{
   reason_codes: readonly string[];
 }>;
 
+export type IndependentReviewApplication = Readonly<{
+  action: "complete" | "rework" | "attention" | "reject";
+  completion_satisfied: boolean;
+  semantic_work_required: boolean;
+  reason_code:
+    | "review_passed"
+    | "review_rework_required"
+    | "review_attention_required"
+    | "review_provenance_rejected"
+    | "review_evidence_stale";
+}>;
+
+/** Pure review policy shared by canonical completion and compatibility gates. */
+export function decideIndependentReviewApplication(opts: {
+  verdict: "pass" | "rework" | "blocked" | "human_review";
+  provenance_accepted: boolean;
+  evidence_current: boolean;
+}): IndependentReviewApplication {
+  if (!opts.provenance_accepted) {
+    return {
+      action: "reject",
+      completion_satisfied: false,
+      semantic_work_required: false,
+      reason_code: "review_provenance_rejected",
+    };
+  }
+  if (!opts.evidence_current) {
+    return {
+      action: "reject",
+      completion_satisfied: false,
+      semantic_work_required: false,
+      reason_code: "review_evidence_stale",
+    };
+  }
+  if (opts.verdict === "pass") {
+    return {
+      action: "complete",
+      completion_satisfied: true,
+      semantic_work_required: false,
+      reason_code: "review_passed",
+    };
+  }
+  if (opts.verdict === "rework") {
+    return {
+      action: "rework",
+      completion_satisfied: false,
+      semantic_work_required: true,
+      reason_code: "review_rework_required",
+    };
+  }
+  return {
+    action: "attention",
+    completion_satisfied: false,
+    semantic_work_required: false,
+    reason_code: "review_attention_required",
+  };
+}
+
+export function incompleteRequiredWorkItems(task: TaskAggregate | null): readonly WorkItem[] {
+  return (
+    task?.current_plan?.proposal.work_items.work_items.filter(
+      (item) => !item.optional && task.work_items[item.id]?.state !== "COMPLETED",
+    ) ?? []
+  );
+}
+
+export function requiredWorkItemsComplete(task: TaskAggregate | null): boolean {
+  return task !== null && incompleteRequiredWorkItems(task).length === 0;
+}
+
 export function evaluateTaskCompletion(opts: {
   task: TaskAggregate;
   repository_digest: Sha256Digest;
@@ -85,12 +142,14 @@ export function evaluateTaskCompletion(opts: {
   else if (plan.approval.state !== "approved" || plan.approval.approved_digest !== plan.digest) {
     reasons.push("current_plan_not_approved");
   }
+  reasons.push(
+    ...incompleteRequiredWorkItems(opts.task).map(
+      (item) => `required_work_item_incomplete:${item.id}`,
+    ),
+  );
   if (plan) {
     for (const item of plan.proposal.work_items.work_items) {
       const runtime = opts.task.work_items[item.id];
-      if (!item.optional && runtime?.state !== "COMPLETED") {
-        reasons.push(`required_work_item_incomplete:${item.id}`);
-      }
       if (
         runtime?.state === "COMPLETED" &&
         !requiredOutputManifestsPresent(item, runtime.output_manifests)
@@ -105,224 +164,6 @@ export function evaluateTaskCompletion(opts: {
     reasons.push("pending_or_uncertain_effect");
   }
   return Object.freeze({ eligible: reasons.length === 0, reason_codes: reasons });
-}
-
-function event(opts: {
-  snapshot: ReconciliationSnapshot;
-  entity: DomainEvent["entity"];
-  work_item_id: string | null;
-  from: string | null;
-  to: string;
-  actor_id: string;
-  cause_refs?: readonly string[];
-}): DomainEvent {
-  const plan = opts.snapshot.task.current_plan;
-  const identity = {
-    task_id: opts.snapshot.task.id,
-    task_revision: opts.snapshot.task.revision,
-    plan_revision: plan?.revision ?? null,
-    plan_digest: plan?.digest ?? null,
-    work_item_id: opts.work_item_id,
-    entity: opts.entity,
-    from: opts.from,
-    to: opts.to,
-    cause_refs: opts.cause_refs ?? [],
-    actor_id: opts.actor_id,
-    repository_fingerprint: opts.snapshot.repository.digest,
-  };
-  const digest = taskCentricDigest(identity);
-  return Object.freeze({
-    schema_version: 1,
-    id: `event_${digest.slice(7, 31)}`,
-    mutation_id: `mutation_${digest.slice(31, 55)}`,
-    ...identity,
-    at: opts.snapshot.repository.captured_at,
-  });
-}
-
-function requestFor(opts: {
-  snapshot: ReconciliationSnapshot;
-  item: WorkItem;
-  actor: ActorIdentity;
-  context: ContextBundle;
-  kind: SemanticWorkRequest["kind"];
-}): SemanticWorkRequest {
-  const plan = opts.snapshot.task.current_plan;
-  if (!plan) throw new Error("Cannot request semantic work without a current plan.");
-  const authority: ExecutionAuthority = {
-    task_id: opts.snapshot.task.id,
-    plan_revision: plan.revision,
-    plan_digest: plan.digest,
-    work_item_id: opts.item.id,
-    repository_snapshot_digest: opts.snapshot.repository.digest,
-    workspace: opts.context.authority.workspace,
-    writable_roots: opts.item.scope_roots,
-    allowed_operations: opts.context.authority.allowed_operations,
-    expires_at: opts.context.authority.expires_at,
-  };
-  return Object.freeze({
-    schema_version: 1,
-    kind: opts.kind,
-    task_id: opts.snapshot.task.id,
-    plan_revision: plan.revision,
-    plan_digest: plan.digest,
-    work_item: opts.item,
-    context: opts.context,
-    authority,
-    required_outputs: opts.item.expected_outputs,
-    stop_rules: [
-      "Do not mutate lifecycle, approval, Git integration, or validation truth.",
-      "Return only semantic claims, questions, and artifact references.",
-    ],
-  });
-}
-
-export class LifecycleEngine {
-  readonly scheduler: WorkItemScheduler;
-
-  constructor(scheduler = new WorkItemScheduler(1)) {
-    this.scheduler = scheduler;
-  }
-
-  decide(input: LifecycleInput & { context?: ContextBundle }): readonly LifecycleCommand[] {
-    const { snapshot } = input;
-    const task = snapshot.task;
-    const plan = task.current_plan;
-    if (task.lifecycle === "COMPLETED" || task.lifecycle === "CANCELLED") {
-      return [{ kind: "complete" }];
-    }
-    if (snapshot.pending_effects.some((effect) => effect.state === "effect_in_doubt")) {
-      return [
-        {
-          kind: "decision",
-          decision: { action: "wait", rule: "effect_in_doubt_reconciliation", evidence: [] },
-        },
-      ];
-    }
-    if (plan?.approval.state !== "approved" || plan.approval.approved_digest !== plan.digest) {
-      return [
-        {
-          kind: "decision",
-          decision: decideConfirmation({
-            plan_approved: false,
-            plan_digest_matches: false,
-            safe_local_effect: false,
-            external_effect: false,
-            destructive_effect: false,
-            credentials_required: false,
-            policy_allows_external_effect: false,
-            effect_state: "none",
-          }),
-        },
-      ];
-    }
-    if (input.failure) {
-      const recovery = recoveryDecisionForFailure(input.failure);
-      return [
-        {
-          kind: "decision",
-          decision: {
-            action:
-              recovery.action === "require_human"
-                ? "require_human"
-                : recovery.action === "reconcile_effect"
-                  ? "wait"
-                  : recovery.action === "block"
-                    ? "deny"
-                    : "proceed",
-            rule: recovery.reason_code,
-            evidence: recovery.failure.cause_refs,
-          },
-        },
-      ];
-    }
-    if (input.semantic_result) {
-      const result = input.semantic_result;
-      if (
-        result.task_id !== task.id ||
-        result.plan_revision !== plan.revision ||
-        result.plan_digest !== plan.digest ||
-        result.context_digest !== input.context?.digest
-      ) {
-        return [
-          {
-            kind: "decision",
-            decision: { action: "deny", rule: "stale_semantic_result", evidence: [] },
-          },
-        ];
-      }
-    }
-    if (input.validation_result) {
-      const workItemId = input.semantic_result?.work_item_id ?? null;
-      if (input.validation_result.status === "passed") {
-        return [
-          {
-            kind: "transition",
-            event: event({
-              snapshot,
-              entity: workItemId ? "work_item" : "task",
-              work_item_id: workItemId,
-              from: workItemId ? (task.work_items[workItemId]?.state ?? null) : task.lifecycle,
-              to: workItemId ? "COMPLETED" : "COMPLETED",
-              actor_id: input.actor?.id ?? "agentplane",
-              cause_refs: input.validation_result.evidence.map((evidence) => evidence.check_id),
-            }),
-          },
-        ];
-      }
-      return [
-        {
-          kind: "transition",
-          event: event({
-            snapshot,
-            entity: "work_item",
-            work_item_id: workItemId,
-            from: workItemId ? (task.work_items[workItemId]?.state ?? null) : null,
-            to: "REWORK_READY",
-            actor_id: input.actor?.id ?? "agentplane",
-            cause_refs: input.validation_result.unsatisfied_criteria,
-          }),
-        },
-      ];
-    }
-
-    const selected = this.scheduler.select({
-      graph: plan.proposal.work_items,
-      runtime: task.work_items,
-      active_leases: snapshot.active_leases,
-    });
-    if (selected.length > 0 && input.actor && input.context) {
-      const item = selected[0]!;
-      const runtime = task.work_items[item.id];
-      const kind = runtime?.state === "REWORK_READY" ? "repair" : "execute";
-      return [
-        {
-          kind: "request_semantic_work",
-          request: requestFor({ snapshot, item, actor: input.actor, context: input.context, kind }),
-        },
-      ];
-    }
-    const readiness = computeReadyWorkItems({
-      graph: plan.proposal.work_items,
-      runtime: task.work_items,
-      active_leases: snapshot.active_leases,
-    });
-    if (readiness.every((item) => task.work_items[item.work_item_id]?.state === "COMPLETED")) {
-      return [
-        { kind: "run_validation", plan: plan.proposal.top_level_validation, work_item_id: null },
-      ];
-    }
-    return [
-      {
-        kind: "decision",
-        decision: {
-          action: "wait",
-          rule: "no_ready_work_item",
-          evidence: readiness.flatMap((item) => item.reason_codes),
-        },
-      },
-    ];
-  }
 }
 
 export function aggregateValidation(

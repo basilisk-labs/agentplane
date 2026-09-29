@@ -1,13 +1,13 @@
-import type { TaskData } from "../../backends/task-backend.js";
 import { hasUninitializedTaskBaseline } from "./workflow-step-policy-scope.js";
-import { isRecord } from "../../shared/guards.js";
 import type { RouteBlocker } from "./route-oracle.js";
 import {
   qualityReviewRequiresImplementationRework,
   qualityReworkHasNewVerification,
+  verificationReworkHasNewImplementation,
 } from "./route-decision-verification.js";
 import { cliOperationStep } from "./workflow-step-authority.js";
 import {
+  runnerParams,
   authorityRef,
   commonExecution,
   routeBlockerFor,
@@ -16,18 +16,57 @@ import {
 } from "./workflow-step-common.js";
 import {
   type WorkflowCheckout,
-  type WorkflowOperationParams,
   type WorkflowRole,
   type WorkflowRouteState,
   type WorkflowStep,
 } from "./workflow-step.js";
+import { requiredWorkItemRoute } from "./workflow-step-factory-branch.js";
 export { cliOperationStep } from "./workflow-step-authority.js";
+export {
+  foreignTaskReadmeReplicaRepairStep,
+  readyWorkItemWorktreeStep,
+  requiredWorkItemRoute,
+  taskWorktreeBlocker,
+  verifiedIncludedClosureCandidate,
+} from "./workflow-step-factory-branch.js";
 export {
   commonExecution,
   routeBlockerFor,
   routeBlockerSnapshot,
   workSlug,
 } from "./workflow-step-common.js";
+
+export function workItemReadinessWaitStep(
+  state: WorkflowRouteState,
+  checkout: WorkflowCheckout,
+): WorkflowStep {
+  const summary = "wait until required WorkItem dependencies, outputs, and resources are ready";
+  return {
+    schemaVersion: 1,
+    id: "wait.work_item_readiness",
+    kind: "wait",
+    phase: "work_item_dependencies_wait",
+    authoritativeCheckout: checkout,
+    summary,
+    blockers: routeBlockerSnapshot(state),
+    selectedBlocker: null,
+    compatibility: {
+      code: "wait_work_item_dependencies",
+      command: null,
+      summary,
+      requiresApproval: false,
+    },
+    preconditionFingerprint: state.preconditionFingerprint,
+    condition: { type: "dependencies_ready", taskId: state.task.id },
+    execution: commonExecution({
+      actionKind: "wait",
+      role: "CODER",
+      mustNot: [
+        "do not dispatch semantic work until the pure scheduler reports a ready required WorkItem",
+      ],
+    }),
+  };
+}
 
 export function agentEpisodeStep(opts: {
   state: WorkflowRouteState;
@@ -164,57 +203,73 @@ export function approvalStep(opts: {
   };
 }
 
-function runnerParams(state: WorkflowRouteState): WorkflowOperationParams["runner.follow"] {
-  const id = state.task.id;
-  const action = state.resume.runner.next_action;
-  if (action === "cancel_then_resume") {
-    return {
-      mode: "reclaim",
-      taskId: id,
-      author: state.task.owner,
-      reason: "stale runner pid is no longer alive",
-    };
-  }
-  if (action === "wait") {
-    return { mode: "status", taskId: id, runId: state.resume.runner.run_id ?? null };
-  }
-  return { mode: "run", taskId: id };
-}
-
 export function directStep(state: WorkflowRouteState): WorkflowStep {
   const id = state.task.id;
+  const taskIsDoing = String(state.task.status).toUpperCase() === "DOING";
+  const workItemRoute = requiredWorkItemRoute(state.task);
   if (
+    taskIsDoing &&
     state.task.verification?.state === "ok" &&
-    String(state.task.status).toUpperCase() === "DOING"
+    !hasUninitializedTaskBaseline(state.task) &&
+    workItemRoute.state === "ready"
   ) {
-    const reviewIsStale = state.blockers.some((blocker) => blocker.code === "quality_review_stale");
-    if (
-      !reviewIsStale &&
-      qualityReviewRequiresImplementationRework(state.task) &&
-      !qualityReworkHasNewVerification(state.task)
-    ) {
-      return agentEpisodeStep({
-        state,
-        id: "agent.direct_implementation_rework",
-        code: "implementation_rework_required",
-        phase: "implementation_rework_required",
-        checkout: "current_checkout",
-        role: "CODER",
-        purpose: "implementation_rework",
-        summary: "apply the repository-fixable EVALUATOR findings before reverification",
-        objective:
-          "Implement the bounded evaluator recovery context, then return control for fresh deterministic verification.",
-        semanticMutationAllowed: true,
-        mustNot: [
-          "do not rerun the unchanged quality-review episode before implementation changes",
-          "do not preserve stale verification as evidence for the revised implementation",
-        ],
-        returnControlWhen:
-          "after CODER records the revised implementation; then recompute the route for TESTER verification",
-        evidenceMissing: ["verified_implementation_rework"],
-        selectedBlocker: routeBlockerFor(state, "implementation_rework_required"),
-      });
-    }
+    return agentEpisodeStep({
+      state,
+      id: "agent.direct_implementation",
+      code: "continue_direct_implementation",
+      phase: "direct_implementation",
+      checkout: "current_checkout",
+      role: "CODER",
+      purpose: "implementation",
+      summary: "complete the required WorkItem before direct verification and closeout",
+      objective:
+        "Complete the issued WorkItem and return its semantic result for supervisor verification.",
+      semanticMutationAllowed: true,
+      returnControlWhen: "after returning the WorkItem result; request a fresh action packet",
+      selectedBlocker: null,
+    });
+  }
+  if (
+    taskIsDoing &&
+    state.task.verification?.state === "ok" &&
+    !hasUninitializedTaskBaseline(state.task) &&
+    workItemRoute.state === "blocked"
+  ) {
+    return workItemReadinessWaitStep(state, "current_checkout");
+  }
+  const reviewIsStale = state.blockers.some((blocker) => blocker.code === "quality_review_stale");
+  const verificationRequiresRework =
+    state.task.verification?.state === "needs_rework" &&
+    !verificationReworkHasNewImplementation(state.task);
+  const qualityReviewRequiresRework =
+    state.task.verification?.state === "ok" &&
+    !reviewIsStale &&
+    qualityReviewRequiresImplementationRework(state.task) &&
+    !qualityReworkHasNewVerification(state.task);
+  if (taskIsDoing && (verificationRequiresRework || qualityReviewRequiresRework)) {
+    return agentEpisodeStep({
+      state,
+      id: "agent.direct_implementation_rework",
+      code: "implementation_rework_required",
+      phase: "implementation_rework_required",
+      checkout: "current_checkout",
+      role: "CODER",
+      purpose: "implementation_rework",
+      summary: "apply the repository-fixable findings before reverification",
+      objective:
+        "Implement the bounded recovery context or return a plan refinement for an approved task-contract correction, then return control for fresh deterministic verification.",
+      semanticMutationAllowed: true,
+      mustNot: [
+        "do not rerun unchanged verification or quality-review work before implementation or approved task-contract changes",
+        "do not preserve stale verification as evidence for the revised implementation or task contract",
+      ],
+      returnControlWhen:
+        "after CODER records the revised implementation or approved task-contract correction; then recompute the route for TESTER verification",
+      evidenceMissing: ["verified_implementation_rework"],
+      selectedBlocker: routeBlockerFor(state, "implementation_rework_required"),
+    });
+  }
+  if (state.task.verification?.state === "ok" && taskIsDoing) {
     if (reviewIsStale || state.task.quality_review?.state !== "pass") {
       return agentEpisodeStep({
         state,
@@ -282,7 +337,8 @@ export function directStep(state: WorkflowRouteState): WorkflowStep {
       });
     }
   }
-  const externalImplementationRecorded = Boolean(state.task.commit?.hash);
+  const externalImplementationRecorded =
+    Boolean(state.task.commit?.hash) || verificationReworkHasNewImplementation(state.task);
   if (externalImplementationRecorded || state.resume.runner.run_id || state.resume.runner.status) {
     if (externalImplementationRecorded || state.resume.runner.next_action === "none") {
       return agentEpisodeStep({
@@ -342,51 +398,6 @@ export function directStep(state: WorkflowRouteState): WorkflowStep {
     summary:
       "launch the prepared direct-mode EXECUTOR episode through the configured runner adapter",
     selectedBlocker: null,
-  });
-}
-
-export function verifiedIncludedClosureCandidate(task: TaskData): boolean {
-  if (task.verification?.state !== "ok") return false;
-  if (String(task.status).toUpperCase() !== "DOING") return false;
-  if (task.commit?.hash) return false;
-  const batch = isRecord(task.extensions?.branch_pr_batch) ? task.extensions.branch_pr_batch : null;
-  if (batch?.role !== "included") return false;
-  const primaryTaskId =
-    typeof batch.primary_task_id === "string" ? batch.primary_task_id.trim() : "";
-  const branch = typeof batch.branch === "string" ? batch.branch.trim() : "";
-  const base = typeof batch.base === "string" ? batch.base.trim() : "";
-  return Boolean(primaryTaskId && branch && base);
-}
-
-export function taskWorktreeBlocker(state: WorkflowRouteState): RouteBlocker | null {
-  if (state.workflowMode !== "branch_pr") return null;
-  return (
-    state.blockers.find(
-      (blocker) =>
-        blocker.code === "task_worktree_dirty" ||
-        blocker.code === "task_worktree_state_unavailable",
-    ) ?? null
-  );
-}
-
-export function foreignTaskReadmeReplicaRepairStep(
-  state: WorkflowRouteState,
-  blocker: RouteBlocker,
-): WorkflowStep | null {
-  if (
-    blocker.code !== "task_worktree_dirty" ||
-    state.foreignTaskReadmeReplicaRepair?.state !== "eligible"
-  ) {
-    return null;
-  }
-  return cliOperationStep({
-    state,
-    operationId: "flow.repair.foreign_task_readme",
-    params: { taskId: state.task.id },
-    code: "repair_foreign_task_readme_replica",
-    summary:
-      "remove the single proven foreign task README replica through the guarded flow repair command",
-    selectedBlocker: blocker,
   });
 }
 

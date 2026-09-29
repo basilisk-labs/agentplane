@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202609071444-7MNJXE",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-07T17:51:23.664Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 6 typed finding(s).",
+  "evaluated_sha": "5cb6963362b19c8e38123b375c7993dec3f7ca7b",
+  "blueprint_digest": "57265ce304e264f678753c7b8906d4d98eb0f7038e655dbb2bf58d1b2e1d3a7e",
+  "findings": [
+    "All frozen evidence digests match. The complete approved diff contains stable two-language CodeQL planning, an explicit analysis category, private per-process temporary asset materialization, exit cleanup, and focused regressions. Existing CI checks remain.",
+    "The persisted verification record is ok and references bun run ci:local:full with exit 0. The separately observed focused run passed all 31 CodeQL planning and asset tests. The final ESLint rework is included in the evaluated SHA.",
+    "The saved report contains exactly 72 unique alert IDs, matching the 72-alert source snapshot with no missing or unexpected entries. It identifies the temporary-path risk addressed by this change and retains explicit unresolved dispositions for the other alerts.",
+    "The report is an immutable historical result. Its old disk-space and pending-lint caveats have been superseded by the later successful full verification record.",
+    "Residual risk: The remaining alerts require separately scoped investigation and remediation. This result is not a security-clean assessment.",
+    "Residual risk: A new hosted CodeQL analysis of the integrated changes is needed to confirm configuration warning and alert resolution. No dismissal, merge, or hosted configuration change is authorized by this review."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609071444-7MNJXE/quality/objects/sha256/116563f095b9bd0882ff4c2919a536f355fce836a33c325784218d1cc4a68a15.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

@@ -1,15 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import { requireBlueprint } from "../blueprints/registry.js";
-import { CODE_WORKFLOW_LIFECYCLE_CONTRACTS, lifecycleBlueprintNodeKinds } from "./contract.js";
+import { CODE_WORKFLOW_LIFECYCLE_CONTRACTS, lifecycleStageKinds } from "./contract.js";
 
 describe("workflow lifecycle contract", () => {
-  it("keeps direct and branch_pr blueprint routes sourced from the lifecycle contract", () => {
+  it("keeps direct and branch_pr stages sourced from the lifecycle contract", () => {
     for (const mode of ["direct", "branch_pr"] as const) {
       const contract = CODE_WORKFLOW_LIFECYCLE_CONTRACTS[mode];
-      const blueprint = requireBlueprint(contract.blueprintId);
-
-      expect(blueprint.nodes.map((node) => node.kind)).toEqual(lifecycleBlueprintNodeKinds(mode));
+      expect(contract.stages.map((stage) => stage.kind)).toEqual(lifecycleStageKinds(mode));
     }
   });
 

@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202609121019-8K70MT",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-12T13:42:10.368Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "9bd82d62ce901f7962c650aa3e64577968b953c9",
+  "blueprint_digest": "64d8ed4597711fd2487eaf045d531db4d83fa7be2833be34da0bf5b386c33cda",
+  "findings": [
+    "The required local full regression gate passed all runtime, docs-schema, core, and cli groups without a product failure.",
+    "Residual risk: Hosted checks and integration have not yet completed."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609121019-8K70MT/quality/objects/sha256/52f3f6fdc8fd66f9054878d5d0e11605311b04b2a355fa62fe78c077f4ef1a1a.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

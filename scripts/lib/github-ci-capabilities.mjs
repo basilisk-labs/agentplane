@@ -53,11 +53,7 @@ const JAVASCRIPT_SOURCE_PATTERNS = [
   /^website\//u,
 ];
 const CORE_RUNTIME_PATTERNS = [/^packages\/core\//u, /^packages\/core\/package\.json$/u];
-const RECIPES_RUNTIME_PATTERNS = [
-  /^packages\/recipes\//u,
-  /^packages\/recipes\/package\.json$/u,
-  /^agentplane-recipes$/u,
-];
+const RECIPES_RUNTIME_PATTERNS = [/^packages\/recipes\//u, /^packages\/recipes\/package\.json$/u];
 const SHARED_RUNTIME_PATTERNS = [/^package\.json$/u, /^bun\.lock$/u];
 const RELEASE_PACKAGE_MANIFESTS = new Set([
   "packages/agentplane/package.json",
@@ -95,7 +91,6 @@ const KNOWN_PATH_PATTERNS = [
   ...WORKFLOW_PATTERNS,
   /^\.agentplane\//u,
   /^\.github\//u,
-  /^agentplane-recipes$/u,
   /^packages\//u,
   /^schemas\//u,
   /^scripts\//u,
@@ -272,6 +267,12 @@ export function buildGithubCiCapabilityPlan({
 
   if (exactShaRecovery) {
     for (const key of Object.keys(capabilities)) capabilities[key] = false;
+  }
+
+  // Keep language coverage stable within the existing CodeQL analysis category.
+  if (capabilities.codeql_javascript || capabilities.codeql_actions) {
+    capabilities.codeql_javascript = true;
+    capabilities.codeql_actions = true;
   }
 
   const codeqlLanguages = [

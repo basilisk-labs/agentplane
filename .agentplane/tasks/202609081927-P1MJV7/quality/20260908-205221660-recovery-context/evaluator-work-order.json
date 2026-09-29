@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609081927-P1MJV7-c678bfa14a5f54a2e212dd91",
+  "prepared_at": "2026-09-08T20:52:21.660Z",
+  "task": {
+    "id": "202609081927-P1MJV7",
+    "revision": 17,
+    "objective": "Reduce redundant recovery episodes and exchange data\n\nImplement the three USER-approved follow-up optimizations: classify confirmed verification infrastructure failures and resume CLI-owned checks without a new implementation episode or artificial file change; deliver only required or changed context blocks when retention is explicitly confirmed in the same live session, with full context after restart or loss; reuse the existing verified content-addressed evidence store for external result schemas while preserving historical exchanges. Preserve authority, state freshness, independent review, and negative failure behavior. Add focused regression and measurement coverage and run required local verification. Preserve unrelated tasks and do not push, publish, or merge without separate approval.",
+    "acceptance_criteria": [
+      "- In scope: Implement the three USER-approved follow-up optimizations: classify confirmed verification infrastructure failures and resume CLI-owned checks without a new implementation episode or artificial file change; deliver only required or changed context blocks when retention is explicitly confirmed in the same live session, with full context after restart or loss; reuse the existing verified content-addressed evidence store for external result schemas while preserving historical exchanges. Preserve authority, state freshness, independent review, and negative failure behavior. Add focused regression and measurement coverage and run required local verification. Preserve unrelated tasks and do not push, publish, or merge without separate approval.\n- Out of scope: unrelated refactors not required for \"Reduce redundant recovery episodes and exchange data\".",
+      "Implement the approved three optimizations as one qualified protocol change.",
+      "1. Run focused regression tests for infrastructure verification retry, stale or changed source rejection, unknown and code failure routing, and bounded attempts. Require no extra implementation episode or artificial file edits after confirmed environment repair.\n2. Run context tests for required and optional selection, acknowledged retention, same-session changes, restart, context loss, role and authority changes. Measure delivered bytes separately from provider tokens.\n3. Run schema object tests for deduplication, historic exchanges, missing or altered objects, symlinks, and interrupted publication. Measure unique objects and bytes.\n4. Run bun run typecheck, affected ESLint and Prettier checks, schema parity, and bun run ci:local:full. Require passing results and preserve failure evidence.\n5. Review the final diff and git status. Preserve unrelated task work and historical artifacts. Stop before external publication or merge."
+    ]
+  },
+  "evaluated_sha": "08c3612fc4637a7a2ba881fca2779616d977b662",
+  "diff_base_sha": "33e106d611fe92603cb836bdcd500a1c624d206b",
+  "blueprint_digest": "2685ce5c3b9197d79ef1f176c49d52d697ba87d2f82279e6cc49c20b10e957fc",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609081927-P1MJV7/quality/20260908-205221660-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:134ce023dbc2292d1c1d18fe35a4b87e216a1ebe29e993fff24d2c74a5be710c",
+    "prompt_path": ".agentplane/tasks/202609081927-P1MJV7/quality/objects/sha256/775b50dce2180e05b30236662ae4112a2da3484980a94224e22e171dfd98582f.md",
+    "result_schema_path": ".agentplane/tasks/202609081927-P1MJV7/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609081927-P1MJV7/README.md",
+      "sha256": "sha256:53886732142c0257d3bfaec88da24213eeba222f113f421cbeaadecd8c160d4c",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609081927-P1MJV7/quality/objects/sha256/fcd00b08c0b4cf1c47f17bd7226ca020feb8f79ca5caf99afc6280cbb05c5338.patch",
+      "sha256": "sha256:fcd00b08c0b4cf1c47f17bd7226ca020feb8f79ca5caf99afc6280cbb05c5338",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609081927-P1MJV7/quality/objects/sha256/94d390a6a90740239a55578e6437ab7820eecbf1f92f3d62796cfcd9669673b5.json",
+      "sha256": "sha256:94d390a6a90740239a55578e6437ab7820eecbf1f92f3d62796cfcd9669673b5",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609081927-P1MJV7/verification/20260908205211965-22103f4d4b03bc26.json",
+      "sha256": "sha256:4af193de8db33a14221445bb00620c3c83906b87310044e889e8e2915170f10d",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609081927-P1MJV7/quality/objects/sha256/19d943594f6be086a90dd44bc23aaabf9fa4218050b199e01eeefe455d8a9a77.json",
+      "sha256": "sha256:19d943594f6be086a90dd44bc23aaabf9fa4218050b199e01eeefe455d8a9a77",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    }
+  ]
+}

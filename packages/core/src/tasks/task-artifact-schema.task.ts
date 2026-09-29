@@ -44,21 +44,6 @@ const TASK_RISK_FLAG_VALUES = [
   "security",
   "external_system",
 ] as const;
-const TASK_BLUEPRINT_REQUEST_VALUES = [
-  "analysis.light",
-  "content.light",
-  "docs.change",
-  "code.direct",
-  "code.branch_pr",
-  "performance.benchmark",
-  "quality.regression",
-  "context.assimilation",
-  "context.maximum_assimilation",
-  "runner.execution",
-  "post_run.improvement_review",
-  "release.strict",
-  "ops.approval",
-] as const;
 const RUNNER_OUTCOME_STATUS_VALUES = [
   "prepared",
   "running",
@@ -99,7 +84,6 @@ const TASK_RISK_LEVEL_SCHEMA = z.enum(TASK_RISK_LEVEL_VALUES);
 const TASK_KIND_SCHEMA = z.enum(TASK_KIND_VALUES);
 const TASK_MUTATION_SCOPE_SCHEMA = z.enum(TASK_MUTATION_SCOPE_VALUES);
 const TASK_RISK_FLAGS_SCHEMA = z.array(z.enum(TASK_RISK_FLAG_VALUES));
-const TASK_BLUEPRINT_REQUEST_SCHEMA = z.enum(TASK_BLUEPRINT_REQUEST_VALUES);
 const TASK_EXECUTION_ROUTE_SCHEMA = z
   .object({
     schema_version: z.literal(1),
@@ -246,6 +230,8 @@ const TASK_EXECUTION_CONTRACT_SCHEMA = z
         forbidden_repository_effects: z.array(TASK_REPOSITORY_EFFECT_SCHEMA),
         allowed_external_effects: z.array(TASK_EXTERNAL_EFFECT_SCHEMA),
         forbidden_external_effects: z.array(TASK_EXTERNAL_EFFECT_SCHEMA),
+        allowed_capabilities: z.array(NON_EMPTY_STRING).optional(),
+        allowed_resources: z.array(NON_EMPTY_STRING).optional(),
       })
       .strict(),
     safety: z
@@ -377,6 +363,8 @@ const TASK_TOKEN_USAGE_SCHEMA = z
   .object({
     schema_version: z.literal(1),
     state: z.enum(["observed", "partial", "unavailable"]),
+    cached_input_tokens: z.number().int().min(0).nullable().optional(),
+    cached_input_observed_agent_runs: z.number().int().min(0).optional(),
     input_tokens: z.number().int().min(0).nullable(),
     output_tokens: z.number().int().min(0).nullable(),
     reasoning_tokens: z.number().int().min(0).nullable(),
@@ -394,6 +382,18 @@ const TASK_TOKEN_USAGE_SCHEMA = z
   })
   .strict()
   .superRefine((usage, ctx) => {
+    if (
+      (usage.cached_input_observed_agent_runs ?? 0) > usage.observed_agent_runs ||
+      ((usage.cached_input_observed_agent_runs ?? 0) > 0 && usage.cached_input_tokens == null) ||
+      (usage.cached_input_tokens != null && (usage.cached_input_observed_agent_runs ?? 0) === 0) ||
+      (usage.cached_input_tokens != null &&
+        (usage.input_tokens == null || usage.cached_input_tokens > usage.input_tokens))
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Cached input requires consistent supervisor-observed coverage and input totals.",
+      });
+    }
     if (usage.observed_agent_runs > usage.agent_runs) {
       ctx.addIssue({
         code: "custom",
@@ -522,7 +522,6 @@ export const TASK_README_FRONTMATTER_ZOD_SCHEMA = z
     task_kind: TASK_KIND_SCHEMA.optional(),
     mutation_scope: TASK_MUTATION_SCOPE_SCHEMA.optional(),
     risk_flags: TASK_RISK_FLAGS_SCHEMA.optional(),
-    blueprint_request: TASK_BLUEPRINT_REQUEST_SCHEMA.optional(),
     verify: z.array(NON_EMPTY_STRING),
     plan_approval: TASK_PLAN_APPROVAL_SCHEMA,
     verification: TASK_VERIFICATION_SCHEMA,
@@ -567,7 +566,6 @@ const TASKS_EXPORT_TASK_SCHEMA = z
     task_kind: TASK_KIND_SCHEMA.optional(),
     mutation_scope: TASK_MUTATION_SCOPE_SCHEMA.optional(),
     risk_flags: TASK_RISK_FLAGS_SCHEMA.optional(),
-    blueprint_request: TASK_BLUEPRINT_REQUEST_SCHEMA.optional(),
     verify: z.array(NON_EMPTY_STRING),
     plan_approval: TASK_PLAN_APPROVAL_SCHEMA,
     verification: TASK_VERIFICATION_SCHEMA,
@@ -681,6 +679,12 @@ function legacyExecutionContractDefaults(value: unknown): unknown {
         )
       : TASK_EXTERNAL_EFFECT_SCHEMA.options
     ).filter((effect) => effect !== "network_read" || !allowedExternalEffects.includes(effect)),
+    allowed_capabilities: Array.isArray(authoritySource.allowed_capabilities)
+      ? authoritySource.allowed_capabilities
+      : [],
+    allowed_resources: Array.isArray(authoritySource.allowed_resources)
+      ? authoritySource.allowed_resources
+      : [],
   };
   return {
     ...value,
@@ -711,6 +715,16 @@ function legacyExecutionContractDefaults(value: unknown): unknown {
 export function withTaskReadmeFrontmatterDefaults(
   value: Record<string, unknown>,
 ): Record<string, unknown> {
+  const normalized = { ...value };
+  Reflect.deleteProperty(normalized, "blueprint_request");
+  if (isRecord(normalized.quality_review)) {
+    const qualityReview = { ...normalized.quality_review };
+    if (!Object.hasOwn(qualityReview, "review_identity_digest")) {
+      qualityReview.review_identity_digest = qualityReview.blueprint_digest ?? null;
+    }
+    Reflect.deleteProperty(qualityReview, "blueprint_digest");
+    normalized.quality_review = qualityReview;
+  }
   const verificationSource = isRecord(value.verification) ? value.verification : {};
   const verification = normalizeApprovalRecord(verificationSource, [
     "pending",
@@ -726,7 +740,7 @@ export function withTaskReadmeFrontmatterDefaults(
       ? verificationAttemptsSource
       : 0;
   return {
-    ...value,
+    ...normalized,
     priority: normalizeLegacyTaskPriority(value.priority),
     depends_on: Array.isArray(value.depends_on) ? value.depends_on : [],
     tags: Array.isArray(value.tags) ? value.tags : [],

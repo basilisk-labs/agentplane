@@ -130,7 +130,7 @@ describe("context release readiness guards", () => {
     expect(readme).toContain("line-addressed source refs as provenance pointers");
     expect(readme).toContain("wiki/fact/graph artifacts stay self-contained");
     expect(readme).toContain("context/wiki/glossary.md");
-    expect(wikiAgents).toContain("Use the `context.maximum_assimilation` blueprint");
+    expect(wikiAgents).toContain("maximum-assimilation");
     expect(wikiAgents).toContain("canonical entities, glossary aliases, relation candidates");
     expect(wikiAgents).toContain("Glossary output: create or update `context/wiki/glossary.md`");
     expect(wikiAgents).toContain("choose wiki structure from source content");
@@ -790,7 +790,8 @@ describe("context release readiness guards", () => {
             prompt_module_ref?: string;
             prompt_modules?: { content?: string }[];
             wiki?: { layout_strategy?: string; frontmatter_required?: boolean };
-            blueprint?: { id?: string; required_gates?: string[]; stop_rules?: string[] };
+            required_gates?: string[];
+            stop_rules?: string[];
           };
         };
       };
@@ -801,7 +802,7 @@ describe("context release readiness guards", () => {
     );
     const prompt =
       createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content ?? "";
-    expect(prompt).toContain("context.maximum_assimilation");
+    expect(prompt).toContain("maximum context assimilation");
     expect(prompt).toContain(
       "Reconcile semantically: inspect the source-driven candidate evidence",
     );
@@ -815,9 +816,8 @@ describe("context release readiness guards", () => {
       layout_strategy: "adaptive",
       frontmatter_required: true,
     });
-    const blueprint = createdArgs.parsed?.extensions?.["agentplane.context"]?.blueprint;
-    expect(blueprint?.id).toBe("context.maximum_assimilation");
-    expect(blueprint?.required_gates).toEqual(
+    const context = createdArgs.parsed?.extensions?.["agentplane.context"];
+    expect(context?.required_gates).toEqual(
       expect.arrayContaining([
         "source_set_locked",
         "semantic_entity_reconciliation_recorded",
@@ -825,7 +825,7 @@ describe("context release readiness guards", () => {
         "reindex_after_writes",
       ]),
     );
-    expect(blueprint?.stop_rules).toEqual(
+    expect(context?.stop_rules).toEqual(
       expect.arrayContaining([
         "pipeline_order_skipped",
         "semantic_merge_without_comparative_evidence",
@@ -838,7 +838,7 @@ describe("context release readiness guards", () => {
     );
   });
 
-  it("uses maximum assimilation blueprint when the context workspace requests it", async () => {
+  it("uses maximum assimilation obligations when the context workspace requests it", async () => {
     const root = await tempRoot();
     await write(
       root,
@@ -882,7 +882,6 @@ describe("context release readiness guards", () => {
 
     const createdArgs = createTask.mock.calls[0]?.[0] as {
       parsed?: {
-        blueprintRequest?: string;
         description?: string;
         extensions?: {
           "agentplane.context"?: {
@@ -895,13 +894,13 @@ describe("context release readiness guards", () => {
               canonical_glossary_required?: boolean;
               canonical_glossary_path?: string;
             };
-            blueprint?: { id?: string; required_gates?: string[]; stop_rules?: string[] };
+            required_gates?: string[];
+            stop_rules?: string[];
           };
         };
       };
     };
 
-    expect(createdArgs.parsed?.blueprintRequest).toBe("context.maximum_assimilation");
     expect(createdArgs.parsed?.description).toContain("extraction-contract.json");
     const prompt =
       createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content ?? "";
@@ -912,12 +911,7 @@ describe("context release readiness guards", () => {
     expect(createdArgs.parsed?.extensions?.["agentplane.context"]?.mode).toBe(
       "maximum_assimilation",
     );
-    expect(createdArgs.parsed?.extensions?.["agentplane.context"]?.blueprint?.id).toBe(
-      "context.maximum_assimilation",
-    );
-    expect(
-      createdArgs.parsed?.extensions?.["agentplane.context"]?.blueprint?.required_gates,
-    ).toEqual(
+    expect(createdArgs.parsed?.extensions?.["agentplane.context"]?.required_gates).toEqual(
       expect.arrayContaining([
         "source_shaped_wiki_topology_recorded",
         "topology_page_family_evidence_recorded",
@@ -929,7 +923,7 @@ describe("context release readiness guards", () => {
         "evaluator_quality_review",
       ]),
     );
-    expect(createdArgs.parsed?.extensions?.["agentplane.context"]?.blueprint?.stop_rules).toEqual(
+    expect(createdArgs.parsed?.extensions?.["agentplane.context"]?.stop_rules).toEqual(
       expect.arrayContaining([
         "missing_source_shaped_topology_decision",
         "page_family_without_source_evidence",

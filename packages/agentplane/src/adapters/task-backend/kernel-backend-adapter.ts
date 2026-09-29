@@ -123,7 +123,9 @@ export class KernelBackendAdapter {
           !kernelDocumentsSchema.safeParse(documents).success ||
           Object.keys(documents.contracts).length > 0 ||
           taskKernel.kernelDigest(documents.intent) !==
-            taskKernel.kernelDigest(existing.record.documents.intent))
+            taskKernel.kernelDigest(existing.record.documents.intent) ||
+          taskKernel.kernelDigest(documents.plan_inputs ?? {}) !==
+            taskKernel.kernelDigest(existing.record.documents.plan_inputs ?? {}))
       )
         return this.unavailable("malformed", "creation_documents_changed");
       return this.execute(input);
@@ -179,6 +181,12 @@ export class KernelBackendAdapter {
             !Object.hasOwn(documents.contracts, digest) ||
             taskKernel.kernelDigest(documents.contracts[digest]) !==
               taskKernel.kernelDigest(contract),
+        ) ||
+        Object.entries(current.record.documents.plan_inputs ?? {}).some(
+          ([digest, proposal]) =>
+            !Object.hasOwn(documents.plan_inputs ?? {}, digest) ||
+            taskKernel.kernelDigest(documents.plan_inputs?.[digest]) !==
+              taskKernel.kernelDigest(proposal),
         ))
     )
       return this.unavailable("malformed", "immutable_documents_changed");

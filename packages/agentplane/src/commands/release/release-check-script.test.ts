@@ -9,7 +9,7 @@ describe("release-check script", () => {
     expect(script).toContain("./check-package-tarball.mjs");
   });
 
-  it("includes the v0.5 blueprint integration release gate", async () => {
+  it("includes the Blueprint retirement release gate", async () => {
     const script = await readFile(path.resolve(process.cwd(), "scripts/release-check.mjs"), "utf8");
     const gateWrapper = await readFile(
       path.resolve(process.cwd(), "scripts/check-blueprint-release-gate.mjs"),
@@ -22,10 +22,7 @@ describe("release-check script", () => {
 
     expect(script).toContain("./check-blueprint-release-gate.mjs");
     expect(gateWrapper).toContain("./checks/check-blueprint-release-gate.mjs");
-    expect(gate).toContain("blueprint report");
-    expect(gate).toContain("Project blueprint compatibility");
-    expect(gate).toContain("blueprint-execution-plan.json");
-    expect(gate).toContain("BlueprintSnapshotRef");
-    expect(gate).toContain("agentplane.blueprint");
+    expect(gate).toContain("no-blueprint-engine.test.mjs");
+    expect(gate).toContain("no-blueprint-cursor.test.mjs");
   });
 });

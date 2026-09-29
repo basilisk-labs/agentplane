@@ -1,6 +1,9 @@
 import type { CommandCtx } from "../../cli/spec/spec.js";
 import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
-import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
+import {
+  loadTaskCommandContext,
+  resolveTaskExecutionContext,
+} from "../../runtime/task-execution-context/index.js";
 import {
   allocateTaskWorkspace,
   releaseWorkspaceLease,
@@ -9,16 +12,24 @@ import { executeTaskRunnerExecution } from "../../runner/usecases/task-run.js";
 import {
   projectExecutedTaskRunnerLifecycleResult,
   taskRunnerLifecycleExitCode,
+  type TaskRunnerLifecycleResult,
 } from "../../runner/usecases/task-run-lifecycle-result.js";
-import type { WorkflowSupervisorOperationResult } from "../shared/workflow-supervisor.js";
 import type { CommandContext } from "../shared/task-backend.js";
+import { loadTaskFromContext } from "../shared/task-backend.js";
+import type { supervisePersistedWorkflowEpisode } from "../shared/supervisor-execution-episode.js";
+import type { WorkflowSupervisorOperationResult } from "../shared/workflow-supervisor.js";
 import {
   readDirectRepositoryStatus,
   readDirectTaskHead,
+  type DirectImplementationEvidence,
   type DirectRepositoryStatus,
 } from "./direct-task-finalization.js";
+import { prepareDirectImplementationEvidence } from "./direct-task-supervisor-implementation.js";
 import { cmdTaskStartReady } from "./start-ready.js";
-import type { supervisePersistedWorkflowEpisode } from "../shared/supervisor-execution-episode.js";
+import {
+  observedExternalEffectsFromRunnerResult,
+  recordObservedTaskExecutionContract,
+} from "./task-execution-contract-observation.js";
 
 type DirectOperationInput = {
   ctx: CommandCtx;
@@ -41,6 +52,111 @@ export type RetainedDirectWorkspace = Readonly<{
   executor_events_before: number;
   release: () => Promise<void>;
 }>;
+
+export type DirectImplementationOperationResult =
+  | {
+      status: "ready";
+      task: Awaited<ReturnType<typeof loadTaskFromContext>>;
+      evidence: DirectImplementationEvidence;
+      executor_lifecycle_event_delta: number;
+    }
+  | {
+      status: "stopped";
+      code:
+        | "executor_lifecycle_mutation"
+        | "implementation_scope_violation"
+        | "implementation_commit_missing"
+        | "execution_contract_escalated";
+      reason: string;
+      executor_lifecycle_event_delta: number;
+    };
+
+/**
+ * Applies the common post-run repository operation: observe the immutable
+ * implementation range, enforce its authority, freeze its evidence, and
+ * reconcile the execution contract before verification can advance.
+ */
+export async function applyDirectImplementationOperation(opts: {
+  command: CommandContext;
+  cwd: string;
+  task_id: string;
+  task_execution?: TaskExecutionContext;
+  lifecycle: TaskRunnerLifecycleResult;
+  execution_base_commit: string | null;
+  execution_baseline_status: DirectRepositoryStatus | null;
+  executor_events_before: number | null;
+}): Promise<DirectImplementationOperationResult> {
+  const task = await loadTaskFromContext({ ctx: opts.command, taskId: opts.task_id });
+  const eventCount = task.events?.length ?? 0;
+  const eventDelta = eventCount - (opts.executor_events_before ?? eventCount);
+  if (eventDelta !== 0) {
+    return {
+      status: "stopped",
+      code: "executor_lifecycle_mutation",
+      reason:
+        "The EXECUTOR changed persisted task lifecycle events; direct lifecycle ownership belongs to the CLI.",
+      executor_lifecycle_event_delta: eventDelta,
+    };
+  }
+
+  const implementation = await prepareDirectImplementationEvidence({
+    command: opts.command,
+    cwd: opts.cwd,
+    task_id: opts.task_id,
+    execution_base_commit: opts.execution_base_commit,
+    execution_baseline_status: opts.execution_baseline_status,
+    allowed_paths: opts.lifecycle.lifecycle.work_order_authority?.writable_roots ?? [],
+    observed_changed_paths:
+      opts.lifecycle.result?.evidence?.provenance === "supervisor_observed"
+        ? (opts.lifecycle.result.evidence.changed_paths ?? [])
+        : null,
+  });
+  if (implementation.status !== "ready") {
+    return {
+      status: "stopped",
+      code:
+        implementation.status === "scope_violation"
+          ? "implementation_scope_violation"
+          : "implementation_commit_missing",
+      reason: implementation.reason,
+      executor_lifecycle_event_delta: eventDelta,
+    };
+  }
+
+  const execution =
+    opts.task_execution ??
+    (await resolveTaskExecutionContext({
+      ctx: opts.command,
+      tasks: [task],
+      primaryTaskId: task.id,
+    }));
+  const reconciliation = await recordObservedTaskExecutionContract({
+    command: opts.command,
+    execution,
+    task,
+    changed_paths: implementation.evidence.changed_paths,
+    observed_external_effects: observedExternalEffectsFromRunnerResult(opts.lifecycle.result),
+    preserved_commit: implementation.evidence.implementation_commit,
+  });
+  if (
+    reconciliation.escalated ||
+    reconciliation.task.execution_contract?.observed.authority_violations.length
+  ) {
+    return {
+      status: "stopped",
+      code: "execution_contract_escalated",
+      reason:
+        "Supervisor-observed effects exceed the execution contract authority and require branch_pr plus explicit side-effect authority. The execution contract preserved the implementation commit and changed paths; recompute task next-action for the single deterministic handoff.",
+      executor_lifecycle_event_delta: eventDelta,
+    };
+  }
+  return {
+    status: "ready",
+    task: reconciliation.task,
+    evidence: implementation.evidence,
+    executor_lifecycle_event_delta: eventDelta,
+  };
+}
 
 export async function executeDirectOperation(opts: {
   input: DirectOperationInput;

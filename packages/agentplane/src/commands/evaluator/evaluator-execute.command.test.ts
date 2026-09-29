@@ -1,7 +1,5 @@
-import { execFile } from "node:child_process";
-import { chmod, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { promisify } from "node:util";
 
 import {
   completeSupervisorExecutionEpisode,
@@ -10,6 +8,7 @@ import {
   prepareReplacementSupervisorExecutionEpisodeAfterFailure,
   recoverSupervisorExecutionEpisodeJournal,
   startSupervisorExecutionEpisode,
+  stopSupervisorExecutionEpisode,
   validateSupervisorExecutionEpisodeJournal,
 } from "@agentplaneorg/core/schemas";
 import { readTask } from "@agentplaneorg/core/tasks";
@@ -19,222 +18,82 @@ import { describe, expect, it } from "vitest";
 import { runCli } from "../../cli/run-cli.js";
 import {
   createSupervisorEpisodeStore,
+  openSupervisorExecutionEpisode,
   resolveSupervisorExecutionEpisodePath,
 } from "../shared/supervisor-execution-episode.js";
 import { buildTaskRouteDecision } from "../shared/route-decision.js";
-import { cmdTaskAdd } from "../workflow.js";
-
-const execFileAsync = promisify(execFile);
-
-async function addTask(root: string, taskId: string): Promise<void> {
-  await cmdTaskAdd({
-    cwd: root,
-    taskIds: [taskId],
-    title: "Evaluator supervisor integration",
-    description: "Exercise one persisted EVALUATOR episode.",
-    status: "TODO",
-    priority: "med",
-    owner: "CODER",
-    tags: ["nodejs"],
-    dependsOn: [],
-    verify: [],
-    commentAuthor: null,
-    commentBody: null,
-  });
-}
-
-async function commitTarget(root: string): Promise<void> {
-  await mkdir(path.join(root, "src"), { recursive: true });
-  await writeFile(
-    path.join(root, "src", "evaluated.ts"),
-    "export const reviewed = true;\n",
-    "utf8",
-  );
-  await execFileAsync("git", ["add", "--", "src/evaluated.ts"], { cwd: root });
-  await execFileAsync("git", ["commit", "-m", "feat: evaluator execute fixture"], { cwd: root });
-}
-
-async function writeVerificationRecord(root: string, taskId: string): Promise<string> {
-  const io = captureStdIO();
-  let code: number;
-  try {
-    code = await runCli([
-      "task",
-      "doc",
-      "set",
-      taskId,
-      "--section",
-      "Verify Steps",
-      "--text",
-      "Run evaluator execute verification. Expected: the fixture record is durable.",
-      "--root",
-      root,
-    ]);
-    if (code === 0) {
-      code = await runCli([
-        "verify",
-        taskId,
-        "--ok",
-        "--by",
-        "QA",
-        "--note",
-        "Evaluator execute fixture verified.",
-        "--details",
-        [
-          "Command: bunx vitest run evaluator-execute.command.test.ts",
-          "Result: pass",
-          "Evidence: fixture test run",
-          "Scope: evaluator execute fixture",
-        ].join("\n"),
-        "--quiet",
-        "--root",
-        root,
-      ]);
-    }
-  } finally {
-    io.restore();
-  }
-  if (code !== 0) throw new Error(`failed to create verification record: ${io.stderr}`);
-
-  const verificationDir = path.join(root, ".agentplane", "tasks", taskId, "verification");
-  const entries = await readdir(verificationDir);
-  const files = entries.filter((file) => file.endsWith(".json"));
-  expect(files).toHaveLength(1);
-  return path.join(verificationDir, files[0]!);
-}
-
-async function installFakeCodex(root: string): Promise<string> {
-  const bin = path.join(root, "fake-bin");
-  await mkdir(bin, { recursive: true });
-  const source = [
-    "#!/usr/bin/env node",
-    "const fs = require('node:fs');",
-    "let prompt = '';",
-    "process.stdin.setEncoding('utf8');",
-    "process.stdin.on('data', (chunk) => { prompt += chunk; });",
-    "process.stdin.on('end', () => {",
-    "  const workOrderMatch = prompt.match(/^- work_order: (.+)$/m);",
-    "  if (!workOrderMatch) process.exit(1);",
-    "  const workOrder = JSON.parse(fs.readFileSync(workOrderMatch[1], 'utf8'));",
-    "  const evidence = workOrder.evidence.find((entry) => entry.kind === 'actual_diff');",
-    "  if (!evidence) process.exit(1);",
-    "  const invocationLog = process.env.AGENTPLANE_FAKE_CODEX_INVOCATIONS;",
-    "  if (invocationLog) fs.appendFileSync(invocationLog, 'provider-started\\n');",
-    "  const result = { schema_version: 1, kind: 'evaluator_result', evaluator_id: 'recovery-context', verdict: 'pass', findings: [{ id: 'fixture-pass', severity: 'low', summary: 'Fixture verifies the persisted EVALUATOR result path.', broken_invariant: 'Pass reviews require one evidence-backed finding.', evidence_refs: [{ path: evidence.path }] }], missing_tests: [], hidden_assumptions: [] };",
-    "  const complete = () => {",
-    "    process.stdout.write(JSON.stringify({ type: 'session.started' }) + '\\n');",
-    "    process.stdout.write(JSON.stringify({ type: 'item.completed', item: { type: 'agent_message', text: JSON.stringify(result) } }) + '\\n');",
-    "    process.stdout.write(JSON.stringify({ type: 'turn.completed', usage: { input_tokens: 100, output_tokens: 30, reasoning_output_tokens: 20 } }) + '\\n');",
-    "  };",
-    "  const delayMs = Number(process.env.AGENTPLANE_FAKE_CODEX_DELAY_MS ?? '0');",
-    "  if (Number.isFinite(delayMs) && delayMs > 0) setTimeout(complete, delayMs);",
-    "  else complete();",
-    "});",
-    "",
-  ].join("\n");
-  const command = path.join(bin, "codex");
-  await writeFile(command, source, "utf8");
-  await chmod(command, 0o755);
-  return bin;
-}
-
-async function replaceCodexWithFailure(fakeBin: string, delayMs = 0): Promise<void> {
-  const source = [
-    "#!/usr/bin/env node",
-    "const fs = require('node:fs');",
-    "const invocationLog = process.env.AGENTPLANE_FAKE_CODEX_INVOCATIONS;",
-    "if (invocationLog) fs.appendFileSync(invocationLog, 'provider-started\\n');",
-    `setTimeout(() => process.exit(99), ${delayMs});`,
-    "",
-  ].join("\n");
-  await writeFile(path.join(fakeBin, "codex"), source, "utf8");
-  await chmod(path.join(fakeBin, "codex"), 0o755);
-}
-
-async function runWithFakeCodex(
-  root: string,
-  taskId: string,
-  fakeBin: string,
-  executeArgs: string[] = [],
-) {
-  const previous = process.env.PATH;
-  process.env.PATH = `${fakeBin}${path.delimiter}${previous ?? ""}`;
-  try {
-    const io = captureStdIO();
-    try {
-      const code = await runCli([
-        "evaluator",
-        "execute",
-        taskId,
-        ...executeArgs,
-        "--json",
-        "--root",
-        root,
-      ]);
-      return { code, stdout: io.stdout, stderr: io.stderr };
-    } finally {
-      io.restore();
-    }
-  } finally {
-    if (previous === undefined) delete process.env.PATH;
-    else process.env.PATH = previous;
-  }
-}
-
-async function runCliInSeparateProcess(opts: {
-  root: string;
-  taskId: string;
-  fakeBin: string;
-  executeArgs?: string[];
-  env?: Record<string, string>;
-}): Promise<{ code: number; stdout: string; stderr: string }> {
-  const cli = path.resolve(process.cwd(), "packages/agentplane/src/cli.ts");
-  const args = [
-    "--bun",
-    cli,
-    "evaluator",
-    "execute",
-    opts.taskId,
-    ...(opts.executeArgs ?? []),
-    "--json",
-    "--root",
-    opts.root,
-  ];
-  return await new Promise((resolve, reject) => {
-    execFile(
-      "bun",
-      args,
-      {
-        cwd: process.cwd(),
-        env: {
-          ...process.env,
-          PATH: `${opts.fakeBin}${path.delimiter}${process.env.PATH ?? ""}`,
-          ...opts.env,
-        },
-        maxBuffer: 1024 * 1024,
-      },
-      (error, stdout, stderr) => {
-        if (error && typeof error.code !== "number") {
-          reject(error instanceof Error ? error : new Error("subprocess execution failed"));
-          return;
-        }
-        resolve({ code: typeof error?.code === "number" ? error.code : 0, stdout, stderr });
-      },
-    );
-  });
-}
-
-async function waitForFileText(filePath: string, expected: string): Promise<void> {
-  const deadline = Date.now() + 30_000;
-  while (Date.now() < deadline) {
-    const text = await readFile(filePath, "utf8").catch(() => "");
-    if (text.includes(expected)) return;
-    await new Promise<void>((resolve) => setTimeout(resolve, 20));
-  }
-  throw new Error(`Timed out waiting for ${JSON.stringify(expected)} in ${filePath}`);
-}
+import {
+  addTask,
+  commitTarget,
+  installFakeCodex,
+  replaceCodexWithFailure,
+  runEvaluatorCliInSeparateProcess,
+  runWithFakeCodex,
+  waitForFileText,
+  writeVerificationRecord,
+} from "./evaluator-execute-subprocess.testkit.js";
 
 describe("evaluator execute supervisor episode", () => {
+  it.each([false, true])(
+    "handles a completed lifecycle operation with human stop %s",
+    async (stopped) => {
+      const root = await mkGitRepoRoot();
+      await writeDefaultConfig(root);
+      const taskId = "202609280000-EE18";
+      await addTask(root, taskId);
+      await commitTarget(root);
+      const fakeBin = await installFakeCodex(root);
+      const fingerprint = digestSupervisorEpisodeValue({ stage: "worktree.prepare" });
+      const opened = await openSupervisorExecutionEpisode({
+        git_root: root,
+        task_id: taskId,
+        task_revision: null,
+        state_fingerprint_digest: fingerprint,
+      });
+      const started = startSupervisorExecutionEpisode({
+        journal: opened.journal,
+        role: "EXECUTOR",
+        kind: "cli_operation",
+        operation_identity: { id: "worktree.prepare" },
+        precondition_fingerprint_digest: fingerprint,
+        authority_ref: "workflow-operation:worktree.prepare",
+        authority_digest: fingerprint,
+      });
+      if (started.status !== "started") throw new Error("expected lifecycle fixture intent");
+      const completed = completeSupervisorExecutionEpisode({
+        journal: started.journal,
+        operation_key: started.operation_key,
+        result: { worktree_prepared: true },
+        usage: {},
+      });
+      const saved = stopped
+        ? stopSupervisorExecutionEpisode({ journal: completed, reason: "human_review" })
+        : completed;
+      await opened.store.write(saved);
+
+      const execution = await runWithFakeCodex(root, taskId, fakeBin);
+
+      if (stopped) {
+        expect(execution.code).toBe(8);
+        expect(validateSupervisorExecutionEpisodeJournal(await opened.store.read())).toEqual(saved);
+        return;
+      }
+      expect(execution.code, execution.stderr).toBe(0);
+      const journal = validateSupervisorExecutionEpisodeJournal(await opened.store.read());
+      expect(journal).toMatchObject({
+        status: "running",
+        cursor: { phase: "ready" },
+        usage: { episodes: 2, agent_runs: 1 },
+        operations: [
+          { role: "EXECUTOR", kind: "cli_operation", status: "completed" },
+          { role: "EVALUATOR", kind: "evaluator_episode", status: "completed" },
+        ],
+      });
+      expect(journal.operations[0]?.operation_key).toBe(started.operation_key);
+      expect(journal.operations[0]?.result_digest).toBe(completed.operations[0]?.result_digest);
+    },
+  );
+
   it("persists one bounded EVALUATOR episode and applies its durable result", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
@@ -246,7 +105,7 @@ describe("evaluator execute supervisor episode", () => {
 
     const execution = await runWithFakeCodex(root, taskId, fakeBin);
 
-    expect(execution.code).toBe(0);
+    expect(execution.code, execution.stderr).toBe(0);
     expect(execution.stderr).toBe("");
     const payload = JSON.parse(execution.stdout) as {
       verdict: string;
@@ -303,7 +162,53 @@ describe("evaluator execute supervisor episode", () => {
     expect(verificationEvidence?.sha256).toMatch(/^sha256:[a-f0-9]{64}$/u);
   });
 
-  it("applies a completed EVALUATOR result before preserving its terminal budget stop", async () => {
+  it("applies human_review and preserves its terminal supervisor stop", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202607280000-EE13";
+    await addTask(root, taskId);
+    await commitTarget(root);
+    const fakeBin = await installFakeCodex(root);
+    const previousVerdict = process.env.AGENTPLANE_FAKE_CODEX_VERDICT;
+    process.env.AGENTPLANE_FAKE_CODEX_VERDICT = "human_review";
+    let execution;
+    try {
+      execution = await runWithFakeCodex(root, taskId, fakeBin);
+    } finally {
+      if (previousVerdict === undefined) delete process.env.AGENTPLANE_FAKE_CODEX_VERDICT;
+      else process.env.AGENTPLANE_FAKE_CODEX_VERDICT = previousVerdict;
+    }
+
+    expect(execution.code, execution.stderr).toBe(0);
+    expect(JSON.parse(execution.stdout)).toMatchObject({
+      verdict: "human_review",
+      supervisor_episode: {
+        status: "stopped",
+        cursor: { phase: "stopped" },
+        stop: { reason: "human_review" },
+      },
+    });
+    const stored = await readTask({ cwd: root, rootOverride: root, taskId });
+    expect(stored.frontmatter.quality_review).toMatchObject({
+      state: "human_review",
+      updated_by: "EVALUATOR",
+    });
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: root,
+      task_id: taskId,
+    });
+    const persisted = validateSupervisorExecutionEpisodeJournal(
+      await createSupervisorEpisodeStore(journalPath).read(),
+    );
+    expect(persisted).toMatchObject({
+      status: "stopped",
+      cursor: { phase: "stopped" },
+      stop: { reason: "human_review" },
+      operations: [{ status: "completed" }],
+    });
+  });
+
+  it("applies a completed EVALUATOR result while keeping token usage informational", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     const taskId = "202607280000-EE11";
@@ -347,9 +252,9 @@ describe("evaluator execute supervisor episode", () => {
     expect(JSON.parse(execution.stdout)).toMatchObject({
       verdict: "pass",
       supervisor_episode: {
-        status: "stopped",
-        cursor: { phase: "stopped" },
-        stop: { reason: "budget_exhausted", exhausted_dimensions: ["input_tokens"] },
+        status: "running",
+        cursor: { phase: "ready" },
+        stop: null,
       },
     });
     const stored = await readTask({ cwd: root, rootOverride: root, taskId });
@@ -359,9 +264,9 @@ describe("evaluator execute supervisor episode", () => {
     });
     const persisted = validateSupervisorExecutionEpisodeJournal(await store.read());
     expect(persisted).toMatchObject({
-      status: "stopped",
-      cursor: { phase: "stopped" },
-      stop: { reason: "budget_exhausted" },
+      status: "running",
+      cursor: { phase: "ready" },
+      stop: null,
       operations: [{ status: "completed" }],
     });
     expect(persisted.operations.at(-1)?.postcondition_fingerprint_digest).toMatch(
@@ -627,9 +532,23 @@ describe("evaluator execute supervisor episode", () => {
       status: "stopped",
       stop: { reason: "operation_failed" },
       cursor: { phase: "stopped" },
-      usage: { episodes: 1, agent_runs: 1 },
-      operations: [{ role: "EVALUATOR", kind: "evaluator_episode", status: "failed" }],
+      usage: { episodes: 1, agent_runs: 1, token_observed_agent_runs: 1 },
+      operations: [
+        {
+          role: "EVALUATOR",
+          kind: "evaluator_episode",
+          status: "failed",
+          provider_usage: {
+            provider: "codex",
+            thread_id: "failed-thread",
+            turn_id: "failed-turn",
+          },
+        },
+      ],
     });
+    expect(recorded.operations[0]?.provider_usage?.work_order_id).toMatch(
+      /^evaluator-work-order-/u,
+    );
     expect(recorded.usage.wall_time_ms).toBeGreaterThan(0);
     expect(JSON.stringify(recorded)).not.toContain("provider diagnostics");
 
@@ -713,8 +632,7 @@ describe("evaluator execute supervisor episode", () => {
       }),
     );
     const exhaustedReplacement = await runWithFakeCodex(root, taskId, fakeBin, ["--replacement"]);
-    expect(exhaustedReplacement.code).toBe(2);
-    expect(exhaustedReplacement.stderr).toContain("requires a terminal operation_failed journal");
+    expect(exhaustedReplacement.code, exhaustedReplacement.stderr).toBe(0);
   });
 
   it("allows one replacement after external waiting following a real provider failure", async () => {
@@ -764,7 +682,7 @@ describe("evaluator execute supervisor episode", () => {
     expect(recorded.usage.wall_time_ms).toBeGreaterThanOrEqual(recordedFailure.usage.wall_time_ms);
   });
 
-  it("does not launch a replacement when a real provider failure exhausts observed wall time", async () => {
+  it("allows failure replacement regardless of observed wall time", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     const taskId = "202607280000-EE10";
@@ -815,9 +733,8 @@ describe("evaluator execute supervisor episode", () => {
 
       const replacement = await runWithFakeCodex(root, taskId, fakeBin, ["--replacement"]);
 
-      expect(replacement.code).toBe(2);
-      expect(replacement.stderr).toContain("requires a terminal operation_failed journal");
-      expect(await readFile(invocationLog, "utf8")).toBe("provider-started\n");
+      expect(replacement.code, replacement.stderr).toBe(0);
+      expect(await readFile(invocationLog, "utf8")).toBe("provider-started\nprovider-started\n");
     } finally {
       if (previousLog === undefined) delete process.env.AGENTPLANE_FAKE_CODEX_INVOCATIONS;
       else process.env.AGENTPLANE_FAKE_CODEX_INVOCATIONS = previousLog;
@@ -956,7 +873,7 @@ describe("evaluator execute supervisor episode", () => {
       AGENTPLANE_FAKE_CODEX_INVOCATIONS: invocationLog,
       AGENTPLANE_FAKE_CODEX_DELAY_MS: "2000",
     };
-    const winner = runCliInSeparateProcess({
+    const winner = runEvaluatorCliInSeparateProcess({
       root,
       taskId,
       fakeBin,
@@ -964,7 +881,7 @@ describe("evaluator execute supervisor episode", () => {
       env: childEnv,
     });
     await waitForFileText(invocationLog, "provider-started\n");
-    const loser = runCliInSeparateProcess({
+    const loser = runEvaluatorCliInSeparateProcess({
       root,
       taskId,
       fakeBin,
@@ -973,10 +890,7 @@ describe("evaluator execute supervisor episode", () => {
     });
     const executions = await Promise.all([winner, loser]);
 
-    expect(
-      executions.map((execution) => execution.code).toSorted(),
-      JSON.stringify(executions),
-    ).toEqual([0, 2]);
+    expect(executions.map((execution) => execution.code).toSorted()).toEqual([0, 2]);
     const invocationContents = await readFile(invocationLog, "utf8");
     const invocationLines = invocationContents.trim().split("\n");
     expect(invocationLines).toEqual(["provider-started"]);

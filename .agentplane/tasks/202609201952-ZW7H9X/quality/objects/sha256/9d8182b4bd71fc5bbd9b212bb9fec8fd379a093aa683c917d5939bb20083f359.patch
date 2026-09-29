@@ -1,0 +1,553 @@
+diff --git a/scripts/checks/lifecycle-owner-map.json b/scripts/checks/lifecycle-owner-map.json
+new file mode 100644
+index 000000000..8526832f5
+--- /dev/null
++++ b/scripts/checks/lifecycle-owner-map.json
+@@ -0,0 +1,330 @@
++{
++  "schema_version": 1,
++  "baseline": "v0.7.10",
++  "inventory": {
++    "roots": [
++      "packages/core/src/tasks",
++      "packages/agentplane/src/commands/task",
++      "packages/agentplane/src/commands/shared",
++      "packages/agentplane/src/adapters/task-backend"
++    ],
++    "excluded_suffixes": [".test.ts", ".testkit.ts"]
++  },
++  "canonical_owners": [
++    {
++      "id": "task-kernel-domain-reducer",
++      "role": "domain_reducer",
++      "ownership_state": "observed_current",
++      "path": "packages/core/src/tasks/task-kernel/kernel.ts",
++      "symbol": "reduceTaskCommand"
++    },
++    {
++      "id": "kernel-backend-state-writer",
++      "role": "state_writer",
++      "ownership_state": "observed_current",
++      "path": "packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts",
++      "symbol": "KernelBackendAdapter.persist"
++    },
++    {
++      "id": "task-application-coordinator",
++      "role": "application_coordinator",
++      "ownership_state": "target_after_convergence",
++      "path": "packages/agentplane/src/commands/shared/workflow-supervisor.ts",
++      "symbol": "superviseWorkflowStep"
++    }
++  ],
++  "convergence_state": {
++    "status": "mapped_not_converged",
++    "target_application_coordinator": "packages/agentplane/src/commands/shared/workflow-supervisor.ts#superviseWorkflowStep",
++    "current_parallel_owners": [
++      "packages/core/src/tasks/task-centric/lifecycle.ts#LifecycleEngine",
++      "packages/core/src/tasks/task-centric/orchestrator.ts#TaskCentricOrchestrator",
++      "packages/agentplane/src/commands/task/kernel-advance.ts#advanceCanonicalTask",
++      "packages/agentplane/src/commands/task/kernel-run.ts#runCanonicalTask",
++      "packages/agentplane/src/commands/task/kernel-effect-coordinator.ts#coordinateKernelEffect"
++    ]
++  },
++  "responsibilities": [
++    {
++      "id": "command_event_reduction",
++      "owner_id": "task-kernel-domain-reducer",
++      "operation_path": "packages/core/src/tasks/task-kernel/kernel.ts",
++      "operation_symbol": "reduceTaskCommand"
++    },
++    {
++      "id": "authority_admission",
++      "owner_id": "task-kernel-domain-reducer",
++      "operation_path": "packages/core/src/tasks/task-kernel/kernel.ts",
++      "operation_symbol": "requiredAuthority"
++    },
++    {
++      "id": "transition_admission",
++      "owner_id": "task-kernel-domain-reducer",
++      "operation_path": "packages/core/src/tasks/task-kernel/kernel.ts",
++      "operation_symbol": "preconditions"
++    },
++    {
++      "id": "scheduling_readiness",
++      "owner_id": "task-kernel-domain-reducer",
++      "operation_path": "packages/core/src/tasks/task-kernel/kernel.ts",
++      "operation_symbol": "refreshReadyItems"
++    },
++    {
++      "id": "completion_eligibility",
++      "owner_id": "task-kernel-domain-reducer",
++      "operation_path": "packages/core/src/tasks/task-kernel/kernel.ts",
++      "operation_symbol": "isTaskCompletionEligible"
++    },
++    {
++      "id": "canonical_state_persistence",
++      "owner_id": "kernel-backend-state-writer",
++      "operation_path": "packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts",
++      "operation_symbol": "KernelBackendAdapter.persist"
++    },
++    {
++      "id": "effect_operation_admission",
++      "owner_id": "task-application-coordinator",
++      "operation_path": "packages/agentplane/src/commands/shared/workflow-supervisor.ts",
++      "operation_symbol": "stopReason"
++    },
++    {
++      "id": "effect_dispatch",
++      "owner_id": "task-application-coordinator",
++      "operation_path": "packages/agentplane/src/commands/shared/workflow-supervisor.ts",
++      "operation_symbol": "superviseWorkflowStep"
++    },
++    {
++      "id": "effect_observation",
++      "owner_id": "task-application-coordinator",
++      "operation_path": "packages/agentplane/src/commands/shared/workflow-supervisor.ts",
++      "operation_symbol": "refreshAfterOperation"
++    },
++    {
++      "id": "effect_reconciliation",
++      "owner_id": "task-application-coordinator",
++      "operation_path": "packages/agentplane/src/commands/shared/route-decision.ts",
++      "operation_symbol": "buildTaskRouteDecision"
++    },
++    {
++      "id": "hosted_state_observation",
++      "owner_id": "task-application-coordinator",
++      "operation_path": "packages/agentplane/src/commands/shared/route-decision.ts",
++      "operation_symbol": "buildTaskRouteDecision"
++    },
++    {
++      "id": "recovery_routing",
++      "owner_id": "task-application-coordinator",
++      "operation_path": "packages/agentplane/src/commands/shared/route-decision.ts",
++      "operation_symbol": "buildTaskRouteDecision"
++    },
++    {
++      "id": "semantic_context_projection",
++      "owner_id": "task-application-coordinator",
++      "operation_path": "packages/agentplane/src/runner/usecases/agent-work-order.ts",
++      "operation_symbol": "prepareAgentWorkOrder"
++    },
++    {
++      "id": "final_validation_execution",
++      "owner_id": "task-application-coordinator",
++      "operation_path": "packages/agentplane/src/commands/task/kernel-final-validation.ts",
++      "operation_symbol": "runKernelFinalValidation"
++    }
++  ],
++  "production_entrypoints": [
++    {
++      "path": "packages/agentplane/src/commands/task/advance.command.ts",
++      "symbol": "makeRunTaskAdvanceHandler",
++      "mode": "mutating"
++    },
++    {
++      "path": "packages/agentplane/src/commands/task/run.command.ts",
++      "symbol": "makeRunTaskRunHandler",
++      "mode": "mutating"
++    },
++    {
++      "path": "packages/agentplane/src/commands/task/run.command.ts",
++      "symbol": "makeRunTaskRunStatusHandler",
++      "mode": "read_only"
++    },
++    {
++      "path": "packages/agentplane/src/commands/task/run.command.ts",
++      "symbol": "makeRunTaskRunInspectHandler",
++      "mode": "read_only"
++    },
++    {
++      "path": "packages/agentplane/src/commands/task/run.command.ts",
++      "symbol": "makeRunTaskRunReconcileHandler",
++      "mode": "mutating"
++    },
++    {
++      "path": "packages/agentplane/src/commands/task/run.command.ts",
++      "symbol": "makeRunTaskRunLogsHandler",
++      "mode": "read_only"
++    }
++  ],
++  "symbol_classifications": [
++    {
++      "path": "packages/core/src/tasks/task-centric/lifecycle.ts",
++      "symbol": "LifecycleEngine",
++      "classification": "later_deletion_candidate",
++      "reason": "Competing lifecycle decision engine; Task Kernel owns domain transitions."
++    },
++    {
++      "path": "packages/core/src/tasks/task-centric/orchestrator.ts",
++      "symbol": "TaskCentricOrchestrator",
++      "classification": "later_deletion_candidate",
++      "reason": "Competing task outer loop; the application coordinator must replace it."
++    },
++    {
++      "path": "packages/agentplane/src/commands/task/kernel-advance.ts",
++      "symbol": "advanceCanonicalTask",
++      "classification": "later_deletion_candidate",
++      "reason": "Kernel-specific outer loop must converge into the application coordinator."
++    },
++    {
++      "path": "packages/agentplane/src/commands/task/kernel-run.ts",
++      "symbol": "runCanonicalTask",
++      "classification": "later_deletion_candidate",
++      "reason": "Kernel-specific managed loop must converge into the application coordinator."
++    },
++    {
++      "path": "packages/agentplane/src/commands/task/kernel-effect-coordinator.ts",
++      "symbol": "coordinateKernelEffect",
++      "classification": "later_deletion_candidate",
++      "reason": "Effect coordination must use the single application coordinator boundary."
++    },
++    {
++      "path": "packages/agentplane/src/adapters/task-backend/kernel-effect-dispatch.ts",
++      "symbol": "dispatchKernelEffect",
++      "classification": "later_deletion_candidate",
++      "reason": "The staged dispatch boundary must not become a second application coordinator."
++    },
++    {
++      "path": "packages/agentplane/src/commands/shared/task-mutation.ts",
++      "symbol": "applyTaskMutation",
++      "classification": "compatibility_only",
++      "reason": "Legacy task records remain readable and mutable only until their explicit migration boundary."
++    },
++    {
++      "path": "packages/agentplane/src/commands/shared/task-mutation.ts",
++      "symbol": "writeTaskMutation",
++      "classification": "compatibility_only",
++      "reason": "Legacy persistence is not a canonical Kernel writer."
++    },
++    {
++      "path": "packages/agentplane/src/commands/shared/task-mutation.ts",
++      "symbol": "applyTaskCollectionMutation",
++      "classification": "compatibility_only",
++      "reason": "Legacy collection persistence is not a canonical Kernel writer."
++    },
++    {
++      "path": "packages/core/src/tasks/task-centric/graph.ts",
++      "symbol": "WorkItemScheduler",
++      "classification": "retained_pure_helper",
++      "reason": "Deterministic selection has no lifecycle or persistence authority."
++    },
++    {
++      "path": "packages/core/src/tasks/task-centric/lifecycle.ts",
++      "symbol": "incompleteRequiredWorkItems",
++      "classification": "retained_pure_helper",
++      "reason": "Pure completion query may remain while it has no mutation authority."
++    },
++    {
++      "path": "packages/core/src/tasks/task-centric/lifecycle.ts",
++      "symbol": "evaluateTaskCompletion",
++      "classification": "retained_pure_helper",
++      "reason": "Pure completion evaluation may remain while Kernel owns the transition."
++    },
++    {
++      "path": "packages/core/src/tasks/task-centric/lifecycle.ts",
++      "symbol": "aggregateValidation",
++      "classification": "retained_pure_helper",
++      "reason": "Pure validation aggregation may remain without becoming a second reducer."
++    },
++    {
++      "path": "packages/agentplane/src/commands/shared/route-decision.ts",
++      "symbol": "buildTaskRouteDecision",
++      "classification": "coordinator_capability",
++      "reason": "Supplies hosted, recovery, and route observation to the application coordinator."
++    },
++    {
++      "path": "packages/agentplane/src/runner/usecases/agent-work-order.ts",
++      "symbol": "prepareAgentWorkOrder",
++      "classification": "coordinator_capability",
++      "reason": "Supplies bounded semantic context without lifecycle ownership."
++    },
++    {
++      "path": "packages/agentplane/src/commands/task/kernel-final-validation.ts",
++      "symbol": "runKernelFinalValidation",
++      "classification": "coordinator_capability",
++      "reason": "Executes validation while Kernel retains completion authority."
++    }
++  ],
++  "boundary_inventory": [
++    {
++      "path": "packages/core/src/tasks/task-kernel/kernel.ts",
++      "symbol": "reduceTaskCommand",
++      "classification": "canonical_owner"
++    },
++    {
++      "path": "packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts",
++      "symbol": "KernelBackendAdapter",
++      "classification": "canonical_owner"
++    },
++    {
++      "path": "packages/agentplane/src/commands/shared/workflow-supervisor.ts",
++      "symbol": "superviseWorkflowStep",
++      "classification": "canonical_owner"
++    },
++    {
++      "path": "packages/core/src/tasks/task-centric/lifecycle.ts",
++      "symbol": "LifecycleEngine",
++      "classification": "later_deletion_candidate"
++    },
++    {
++      "path": "packages/core/src/tasks/task-centric/orchestrator.ts",
++      "symbol": "TaskCentricOrchestrator",
++      "classification": "later_deletion_candidate"
++    },
++    {
++      "path": "packages/core/src/tasks/task-centric/graph.ts",
++      "symbol": "WorkItemScheduler",
++      "classification": "retained_pure_helper"
++    },
++    {
++      "path": "packages/agentplane/src/commands/task/kernel-advance.ts",
++      "symbol": "advanceCanonicalTask",
++      "classification": "later_deletion_candidate"
++    },
++    {
++      "path": "packages/agentplane/src/commands/task/kernel-run.ts",
++      "symbol": "runCanonicalTask",
++      "classification": "later_deletion_candidate"
++    },
++    {
++      "path": "packages/agentplane/src/commands/task/kernel-effect-coordinator.ts",
++      "symbol": "coordinateKernelEffect",
++      "classification": "later_deletion_candidate"
++    },
++    {
++      "path": "packages/agentplane/src/adapters/task-backend/kernel-effect-dispatch.ts",
++      "symbol": "dispatchKernelEffect",
++      "classification": "later_deletion_candidate"
++    },
++    {
++      "path": "packages/agentplane/src/commands/shared/task-mutation.ts",
++      "symbol": "writeTaskMutation",
++      "classification": "compatibility_only"
++    },
++    {
++      "path": "packages/agentplane/src/commands/shared/task-mutation.ts",
++      "symbol": "applyTaskMutation",
++      "classification": "compatibility_only"
++    },
++    {
++      "path": "packages/agentplane/src/commands/shared/task-mutation.ts",
++      "symbol": "applyTaskCollectionMutation",
++      "classification": "compatibility_only"
++    }
++  ]
++}
+diff --git a/scripts/checks/lifecycle-owner-map.test.mjs b/scripts/checks/lifecycle-owner-map.test.mjs
+new file mode 100644
+index 000000000..93247ad54
+--- /dev/null
++++ b/scripts/checks/lifecycle-owner-map.test.mjs
+@@ -0,0 +1,211 @@
++import assert from "node:assert/strict";
++import { existsSync, readFileSync, readdirSync } from "node:fs";
++import path from "node:path";
++import { test } from "node:test";
++
++const ROOT = process.cwd();
++const map = JSON.parse(
++  readFileSync(path.join(ROOT, "scripts/checks/lifecycle-owner-map.json"), "utf8"),
++);
++
++const expectedOwnerRoles = ["application_coordinator", "domain_reducer", "state_writer"];
++const expectedResponsibilities = [
++  "authority_admission",
++  "canonical_state_persistence",
++  "command_event_reduction",
++  "completion_eligibility",
++  "effect_dispatch",
++  "effect_observation",
++  "effect_operation_admission",
++  "effect_reconciliation",
++  "final_validation_execution",
++  "hosted_state_observation",
++  "recovery_routing",
++  "scheduling_readiness",
++  "semantic_context_projection",
++  "transition_admission",
++];
++const allowedClassifications = new Set([
++  "canonical_owner",
++  "compatibility_only",
++  "coordinator_capability",
++  "later_deletion_candidate",
++  "retained_pure_helper",
++]);
++
++function escapeRegex(value) {
++  return value.replaceAll(/[.*+?^${}()|[\]\\]/gu, "\\$&");
++}
++
++function sourceFor(relativePath) {
++  const absolute = path.join(ROOT, relativePath);
++  assert.ok(existsSync(absolute), `missing mapped source: ${relativePath}`);
++  return readFileSync(absolute, "utf8");
++}
++
++function assertSymbolExists(relativePath, qualifiedSymbol) {
++  const symbol = qualifiedSymbol.split(".").at(-1);
++  const source = sourceFor(relativePath);
++  const declaration = new RegExp(
++    `\\b(?:function|class|const)\\s+${escapeRegex(symbol)}\\b|\\b${escapeRegex(symbol)}\\s*\\(`,
++    "u",
++  );
++  assert.match(source, declaration, `${relativePath}: missing mapped symbol ${qualifiedSymbol}`);
++}
++
++function key(row) {
++  return `${row.path}#${row.symbol}`;
++}
++
++function captures(relativePath, pattern) {
++  const values = [];
++  for (const match of sourceFor(relativePath).matchAll(pattern)) values.push(match[1]);
++  return values.map((symbol) => `${relativePath}#${symbol}`);
++}
++
++function walkTypeScriptFiles(relativeRoot) {
++  const files = [];
++  const absoluteRoot = path.join(ROOT, relativeRoot);
++  for (const entry of readdirSync(absoluteRoot, { withFileTypes: true })) {
++    const relativePath = path.join(relativeRoot, entry.name);
++    if (entry.isDirectory()) files.push(...walkTypeScriptFiles(relativePath));
++    if (
++      entry.isFile() &&
++      entry.name.endsWith(".ts") &&
++      !map.inventory.excluded_suffixes.some((suffix) => entry.name.endsWith(suffix))
++    ) {
++      files.push(relativePath);
++    }
++  }
++  return files;
++}
++
++function ownershipCandidates() {
++  const declarationPattern =
++    /export\s+(?:async\s+)?(?:class\s+(KernelBackendAdapter|[A-Za-z0-9]*(?:Engine|Orchestrator|Scheduler|Coordinator))|function\s+((?:reduce[A-Za-z0-9]*Command|(?:advance|run)[A-Za-z0-9]*Task|(?:coordinate|dispatch)[A-Za-z0-9]*Effect|supervise[A-Za-z0-9]*Step|(?:apply|write)[A-Za-z0-9]*Mutation)))\b/gu;
++  return map.inventory.roots
++    .flatMap((root) => walkTypeScriptFiles(root))
++    .flatMap((relativePath) => {
++      const symbols = [];
++      for (const match of sourceFor(relativePath).matchAll(declarationPattern)) {
++        symbols.push(`${relativePath}#${match[1] ?? match[2]}`);
++      }
++      return symbols;
++    })
++    .toSorted();
++}
++
++test("pins one reducer, writer, and application coordinator", () => {
++  assert.deepEqual(map.canonical_owners.map(({ role }) => role).toSorted(), expectedOwnerRoles);
++  assert.equal(new Set(map.canonical_owners.map(({ id }) => id)).size, 3);
++  for (const owner of map.canonical_owners) assertSymbolExists(owner.path, owner.symbol);
++  assert.deepEqual(
++    map.canonical_owners
++      .filter(({ ownership_state }) => ownership_state === "observed_current")
++      .map(({ role }) => role)
++      .toSorted(),
++    ["domain_reducer", "state_writer"],
++  );
++  assert.equal(
++    map.canonical_owners.find(({ role }) => role === "application_coordinator")?.ownership_state,
++    "target_after_convergence",
++  );
++  assert.equal(map.convergence_state.status, "mapped_not_converged");
++  assert.equal(
++    map.convergence_state.target_application_coordinator,
++    "packages/agentplane/src/commands/shared/workflow-supervisor.ts#superviseWorkflowStep",
++  );
++});
++
++test("maps every lifecycle responsibility to exactly one canonical owner", () => {
++  assert.deepEqual(map.responsibilities.map(({ id }) => id).toSorted(), expectedResponsibilities);
++  assert.equal(
++    new Set(map.responsibilities.map(({ id }) => id)).size,
++    expectedResponsibilities.length,
++  );
++  const ownerIds = new Set(map.canonical_owners.map(({ id }) => id));
++  for (const responsibility of map.responsibilities) {
++    assert.ok(ownerIds.has(responsibility.owner_id), `${responsibility.id}: unknown owner`);
++    assertSymbolExists(responsibility.operation_path, responsibility.operation_symbol);
++  }
++});
++
++test("maps every production task advance and run entrypoint", () => {
++  const entrypointPattern = /export function (makeRunTask(?:Advance|Run)[A-Za-z0-9]*Handler)\b/gu;
++  const discovered = [
++    ...captures("packages/agentplane/src/commands/task/advance.command.ts", entrypointPattern),
++    ...captures("packages/agentplane/src/commands/task/run.command.ts", entrypointPattern),
++  ].toSorted();
++  const mapped = map.production_entrypoints.map((row) => key(row)).toSorted();
++  assert.deepEqual(mapped, discovered);
++  for (const entrypoint of map.production_entrypoints) {
++    assert.ok(entrypoint.mode === "mutating" || entrypoint.mode === "read_only");
++    assertSymbolExists(entrypoint.path, entrypoint.symbol);
++  }
++});
++
++test("classifies competing owners and every retained helper individually", () => {
++  const keys = map.symbol_classifications.map((row) => key(row));
++  assert.equal(new Set(keys).size, keys.length, "a symbol has more than one classification");
++  for (const row of map.symbol_classifications) {
++    assert.ok(
++      allowedClassifications.has(row.classification),
++      `${key(row)}: unknown classification`,
++    );
++    assert.ok(row.reason, `${key(row)}: missing classification reason`);
++    assertSymbolExists(row.path, row.symbol);
++  }
++  for (const symbol of [
++    "LifecycleEngine",
++    "TaskCentricOrchestrator",
++    "advanceCanonicalTask",
++    "runCanonicalTask",
++    "coordinateKernelEffect",
++  ]) {
++    const row = map.symbol_classifications.find((candidate) => candidate.symbol === symbol);
++    assert.equal(
++      row?.classification,
++      "later_deletion_candidate",
++      `${symbol}: competing owner retained`,
++    );
++  }
++  for (const symbol of [
++    "WorkItemScheduler",
++    "incompleteRequiredWorkItems",
++    "evaluateTaskCompletion",
++    "aggregateValidation",
++  ]) {
++    const row = map.symbol_classifications.find((candidate) => candidate.symbol === symbol);
++    assert.equal(
++      row?.classification,
++      "retained_pure_helper",
++      `${symbol}: pure helper not retained`,
++    );
++  }
++});
++
++test("rejects an unmapped reducer, outer loop, scheduler, or coordinator", () => {
++  const discovered = ownershipCandidates();
++  const mapped = map.boundary_inventory.map((row) => key(row)).toSorted();
++  assert.deepEqual(mapped, discovered);
++  assert.equal(
++    map.boundary_inventory.filter(({ classification }) => classification === "canonical_owner")
++      .length,
++    3,
++  );
++  for (const row of map.boundary_inventory) {
++    assert.ok(
++      allowedClassifications.has(row.classification),
++      `${key(row)}: unknown classification`,
++    );
++    assertSymbolExists(row.path, row.symbol);
++  }
++  const deletionCandidates = new Set(
++    map.symbol_classifications
++      .filter(({ classification }) => classification === "later_deletion_candidate")
++      .map((row) => key(row)),
++  );
++  for (const currentOwner of map.convergence_state.current_parallel_owners) {
++    assert.ok(deletionCandidates.has(currentOwner), `${currentOwner}: parallel owner not retired`);
++  }
++});

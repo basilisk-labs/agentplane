@@ -1,14 +1,15 @@
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
-import path from "node:path";
-
 import type { AgentChangeRecord } from "@agentplaneorg/core/schemas";
 
-import { explainResolvedBlueprint, resolveBlueprint } from "../../blueprints/index.js";
 import { isRecord } from "../../shared/guards.js";
-import { blueprintResolveInputFromTask } from "../blueprint/task-input.js";
-import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.js";
-import type { CommandContext, loadTaskFromContext } from "../shared/task-backend.js";
+import type { loadTaskFromContext } from "../shared/task-backend.js";
+import {
+  buildNativeQualityReviewIdentity,
+  latestVerificationInputDigest,
+  resolveNativeTaskIdentity,
+} from "../shared/native-task-identity.js";
+import { evaluatorAcceptanceCriteria } from "../evaluator/evaluator-review-shared.js";
 
 type AcrTask = Awaited<ReturnType<typeof loadTaskFromContext>>;
 
@@ -24,94 +25,26 @@ export function buildAcrContextExtension(task: AcrTask): Record<string, unknown>
       task_id: task.id,
       task_kind: task.task_kind,
       mutation_scope: task.mutation_scope ?? null,
-      blueprint_request: task.blueprint_request ?? null,
     },
   };
 }
 
-export async function buildAcrBlueprintExtension(opts: { task: AcrTask; ctx: CommandContext }) {
-  const input = blueprintResolveInputFromTask({ task: opts.task, config: opts.ctx.config });
-  const resolved = resolveBlueprint({ input });
-  const explained = explainResolvedBlueprint({ resolved, workflowMode: input.workflowMode });
-  const snapshot = await buildAcrBlueprintSnapshotProjection({
-    task: opts.task,
-    ctx: opts.ctx,
+export function buildAcrNativeIdentityExtension(task: AcrTask, implementationSha: string | null) {
+  const identity = resolveNativeTaskIdentity(task);
+  if (!identity) return null;
+  const review = buildNativeQualityReviewIdentity({
+    task,
+    native_identity: identity,
+    verification_input_digest: latestVerificationInputDigest(task),
+    acceptance_criteria: evaluatorAcceptanceCriteria(task),
+    implementation_sha: implementationSha,
   });
   return {
-    blueprint_id: explained.blueprintId,
-    blueprint_version: explained.blueprintVersion,
-    workflow_mode: explained.workflowMode ?? null,
-    route: explained.route.map((node) => node.kind),
-    required_evidence: explained.requiredEvidence.map((item) => ({
-      id: item.id,
-      kind: item.kind,
-      produced_by: item.producedBy,
-      required: item.required,
-    })),
-    accepted_recipe_extensions: explained.acceptedRecipeExtensions.map((item) => ({
-      recipe_id: item.recipeId,
-      recipe_version: item.recipeVersion ?? null,
-      extension_id: item.extensionId ?? null,
-      kind: item.kind,
-      node_kind: item.nodeKind,
-      summary: item.summary ?? null,
-    })),
-    rejected_recipe_extensions: explained.rejectedRecipeExtensions.map((item) => ({
-      recipe_id: item.recipeId,
-      recipe_version: item.recipeVersion ?? null,
-      extension_id: item.extensionId ?? null,
-      kind: item.kind,
-      node_kind: item.nodeKind ?? null,
-      summary: item.summary ?? null,
-      reason: item.reason,
-    })),
-    stop_reasons: explained.stopReasons.map((item) => ({
-      id: item.id,
-      severity: item.severity,
-      reason: item.reason,
-    })),
-    snapshot,
+    schema_version: 1,
+    task_id: task.id,
+    identity,
+    review_identity: review,
   };
-}
-
-async function buildAcrBlueprintSnapshotProjection(opts: {
-  task: AcrTask;
-  ctx: CommandContext;
-}): Promise<{
-  state: "current" | "missing" | "invalid" | "stale" | "unavailable";
-  path: string | null;
-  digest: string | null;
-  current_digest: string | null;
-  route_changed: boolean | null;
-  artifact_sha256: string | null;
-  safe_command: string;
-}> {
-  const safeCommand = `agentplane blueprint snapshot ${opts.task.id}`;
-  try {
-    const snapshot = await checkTaskBlueprintSnapshotDrift({ ctx: opts.ctx, task: opts.task });
-    const relativePath = path.relative(opts.ctx.resolvedProject.gitRoot, snapshot.path);
-    const artifactSha256 =
-      snapshot.state === "current" ? await hashFile(snapshot.path).catch(() => null) : null;
-    return {
-      state: snapshot.state,
-      path: relativePath,
-      digest: snapshot.previous.digest,
-      current_digest: snapshot.current.digest,
-      route_changed: snapshot.routeChanged,
-      artifact_sha256: artifactSha256,
-      safe_command: snapshot.safeCommand,
-    };
-  } catch {
-    return {
-      state: "unavailable",
-      path: null,
-      digest: null,
-      current_digest: null,
-      route_changed: null,
-      artifact_sha256: null,
-      safe_command: safeCommand,
-    };
-  }
 }
 
 export function inferCheckType(

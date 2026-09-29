@@ -214,6 +214,41 @@ function event(
 }
 
 describe("TaskCentricBackendAdapter", () => {
+  it("retains the winning revision when concurrent writers share a snapshot", async () => {
+    const initial = taskData(approvedAggregate());
+    const backend = memoryBackend(initial);
+    const adapter = new TaskCentricBackendAdapter({
+      backend,
+      observeRepository: () => Promise.resolve(repository()),
+    });
+    const snapshot = (await adapter.readTask(TASK_ID))!;
+    const outcomes = await Promise.allSettled(
+      ["writer-a", "writer-b"].map((mutationId) =>
+        adapter.compareAndSwap({
+          task_id: TASK_ID,
+          expected_revision: snapshot.revision,
+          next: { ...snapshot, lifecycle: "ACTIVE" },
+          mutation_id: mutationId,
+          event: event(snapshot, mutationId, "ACTIVE"),
+        }),
+      ),
+    );
+    expect(outcomes.filter((result) => result.status === "fulfilled")).toHaveLength(1);
+    expect(outcomes.filter((result) => result.status === "rejected")).toHaveLength(1);
+    const stored = backend.current();
+    const aggregate = taskCentricAggregateFromExtensions(stored.extensions)!;
+    expect(stored.revision).toBe(snapshot.revision + 1);
+    expect(aggregate.revision).toBe(stored.revision);
+    expect(aggregate.current_plan).toEqual(snapshot.current_plan);
+    expect(aggregate.work_items).toEqual(snapshot.work_items);
+    const runtime = stored.extensions?.[TASK_CENTRIC_RUNTIME_EXTENSION_KEY] as {
+      events: DomainEvent[];
+      mutation_receipts: Record<string, unknown>;
+    };
+    expect(runtime.events).toHaveLength(1);
+    expect(Object.keys(runtime.mutation_receipts)).toHaveLength(1);
+  });
+
   it("atomically projects an accepted verification clarification and replays idempotently", async () => {
     const fallback = "PLANNER fallback scaffold. Replace with task-specific acceptance checks.";
     const aggregate = approvedAggregate();

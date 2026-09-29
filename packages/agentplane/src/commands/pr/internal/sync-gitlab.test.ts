@@ -1,3 +1,5 @@
+import { readFile } from "node:fs/promises";
+
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({ runGlabApiJson: vi.fn() }));
@@ -25,7 +27,12 @@ const identity = {
   targetUrl: "https://gitlab.example.test/group/sub/project.git",
 };
 
-type GlabCall = { hostname?: string; endpoint?: string; method?: string };
+type GlabCall = { hostname?: string; endpoint?: string; method?: string; inputPath?: string };
+
+async function payloadFrom(call: GlabCall): Promise<Record<string, unknown>> {
+  if (!call.inputPath) throw new Error("expected GitLab API input path");
+  return JSON.parse(await readFile(call.inputPath, "utf8")) as Record<string, unknown>;
+}
 
 function mr(overrides: Record<string, unknown> = {}) {
   return {
@@ -157,6 +164,75 @@ describe("sync-gitlab", () => {
     ).toHaveLength(1);
   });
 
+  it("requests source-branch removal when creating fork and same-project MRs", async () => {
+    const forkPayloads: Record<string, unknown>[] = [];
+    mocks.runGlabApiJson
+      .mockResolvedValueOnce({ id: 7 })
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce({ id: 9 })
+      .mockImplementationOnce(async (call: GlabCall) => {
+        forkPayloads.push(await payloadFrom(call));
+        return mr();
+      });
+
+    await expect(
+      tryCreateGitLabMr({
+        gitRoot: "/repo",
+        identity,
+        branch: "task/T-1/work",
+        baseBranch: "main",
+        title: "Title",
+        body: "Body",
+      }),
+    ).resolves.toMatchObject({ observed: { prNumber: 42 } });
+    expect(forkPayloads).toEqual([
+      {
+        source_branch: "task/T-1/work",
+        target_branch: "main",
+        title: "Title",
+        description: "Body",
+        remove_source_branch: true,
+        target_project_id: 9,
+      },
+    ]);
+
+    const sameProjectIdentity = {
+      ...identity,
+      remote: "origin",
+      sourceProject: identity.targetProject,
+      sourceUrl: identity.targetUrl,
+    };
+    const sameProjectPayloads: Record<string, unknown>[] = [];
+    mocks.runGlabApiJson
+      .mockResolvedValueOnce({ id: 9 })
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce({ id: 9 })
+      .mockImplementationOnce(async (call: GlabCall) => {
+        sameProjectPayloads.push(await payloadFrom(call));
+        return mr({ source_project_id: 9 });
+      });
+
+    await expect(
+      tryCreateGitLabMr({
+        gitRoot: "/repo",
+        identity: sameProjectIdentity,
+        branch: "task/T-1/work",
+        baseBranch: "main",
+        title: "Title",
+        body: "Body",
+      }),
+    ).resolves.toMatchObject({ observed: { prNumber: 42 } });
+    expect(sameProjectPayloads).toEqual([
+      {
+        source_branch: "task/T-1/work",
+        target_branch: "main",
+        title: "Title",
+        description: "Body",
+        remove_source_branch: true,
+      },
+    ]);
+  });
+
   it("fails closed when an IID lookup omits the authoritative source project", async () => {
     mocks.runGlabApiJson
       .mockResolvedValueOnce({ id: 7 })
@@ -177,7 +253,11 @@ describe("sync-gitlab", () => {
   });
 
   it("updates the linked MR through the target project and explicit host", async () => {
-    mocks.runGlabApiJson.mockResolvedValueOnce(mr());
+    const updatePayloads: Record<string, unknown>[] = [];
+    mocks.runGlabApiJson.mockImplementationOnce(async (call: GlabCall) => {
+      updatePayloads.push(await payloadFrom(call));
+      return mr();
+    });
 
     await expect(
       tryUpdateGitLabMr({
@@ -207,5 +287,12 @@ describe("sync-gitlab", () => {
         method: "PUT",
       }),
     );
+    expect(updatePayloads).toEqual([
+      {
+        title: "Updated title",
+        description: "Updated body",
+        remove_source_branch: true,
+      },
+    ]);
   });
 });

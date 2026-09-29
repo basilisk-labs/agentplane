@@ -5,30 +5,34 @@ import type { TaskResumeContext } from "../task/handoff.shared.js";
 import type { RouteCleanupProbe } from "./route-decision-types.js";
 import { withBootstrapWorkflowFingerprint } from "./workflow-step-fingerprint.js";
 import { reduceRouteState } from "./workflow-step-reducer.js";
+import { withNativeIdentity } from "./workflow-step.testkit.js";
 
 const taskId = "202608031426-0BY4B4";
 const branch = `task/${taskId}/hosted-close`;
 const headSha = "2222222222222222222222222222222222222222";
 
-const task = {
-  id: taskId,
-  title: "Converge hosted close",
-  description: "Exercise terminal route convergence.",
-  status: "DONE",
-  priority: "high",
-  owner: "CODER",
-  revision: 1,
-  depends_on: [],
-  tags: ["code"],
-  verify: ["bun test"],
-  plan_approval: {
-    state: "approved",
-    approved_by: "ORCHESTRATOR",
-    approved_at: "2026-08-03T00:00:00.000Z",
-  },
-  verification: { state: "ok" },
-  commit: { hash: headSha, message: "feat: implementation" },
-} satisfies TaskData;
+const task = withNativeIdentity(
+  {
+    id: taskId,
+    title: "Converge hosted close",
+    description: "Exercise terminal route convergence.",
+    status: "DONE",
+    priority: "high",
+    owner: "CODER",
+    revision: 1,
+    depends_on: [],
+    tags: ["code"],
+    verify: ["bun test"],
+    plan_approval: {
+      state: "approved",
+      approved_by: "ORCHESTRATOR",
+      approved_at: "2026-08-03T00:00:00.000Z",
+    },
+    verification: { state: "ok" },
+    commit: { hash: headSha, message: "feat: implementation" },
+  } satisfies TaskData,
+  "COMPLETED",
+);
 
 const resume = {
   task_id: taskId,
@@ -116,5 +120,28 @@ describe("hosted-close route convergence", () => {
       operation: { id: "task.hosted_close.finalize" },
       compatibility: { code: "sync_hosted_close" },
     });
+  });
+});
+
+it.each([
+  `provider merge commit object is unavailable locally: ${prFlow.pr.mergeCommit}`,
+  `provider merge commit is not on main: ${prFlow.pr.mergeCommit}`,
+])("synchronizes main before proving cleanup when %s", (reason) => {
+  expect(route({ state: "blocked", reasons: [`branch=${branch}: ${reason}`] })).toMatchObject({
+    kind: "cli_operation",
+    operation: { id: "task.worktree.cleanup", params: { taskId, base: "main" } },
+  });
+});
+
+it.each(
+  [
+    ["exact pre-merge closure marker is unavailable"],
+    [`provider merge commit is not on main: ${"f".repeat(40)}`],
+    [`provider merge commit is not on main: ${prFlow.pr.mergeCommit}`, "dirty worktree"],
+  ].map((reasons) => ({ reasons })),
+)("retains unsafe cleanup blockers %j", ({ reasons }) => {
+  expect(route({ state: "blocked", reasons })).toMatchObject({
+    kind: "terminal",
+    id: "terminal.cleanup_blocked",
   });
 });

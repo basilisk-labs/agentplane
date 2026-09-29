@@ -1,3 +1,5 @@
+import { runKernelFinalValidation } from "../../commands/task/kernel-final-validation.js";
+import * as finalChecks from "../../commands/task/direct-task-verification.js";
 import { mkdtemp, readFile, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -181,6 +183,45 @@ async function fixture(kind: "local" | "cloud" = "local") {
 }
 
 describe("canonical lifecycle application service", () => {
+  it("retries one transient task README replacement collision", async () => {
+    const taskId = "202609201929-RETRY1";
+    const read = vi
+      .fn()
+      .mockRejectedValueOnce(
+        new Error(`task README ${taskId} path changed while it was being read: /repo/README.md`),
+      )
+      .mockResolvedValueOnce({ kind: "missing" });
+    const adapter = {
+      read,
+    } as unknown as KernelBackendAdapter;
+
+    await expect(new KernelTaskLifecycle(adapter).read(taskId, null)).resolves.toMatchObject({
+      read: { kind: "missing" },
+    });
+    expect(read).toHaveBeenCalledTimes(2);
+  });
+
+  it("fails closed after a persistent task README replacement collision", async () => {
+    const taskId = "202609201929-RETRY2";
+    const collision = new Error(
+      `task README ${taskId} changed while it was being read: /repo/README.md`,
+    );
+    const read = vi.fn().mockRejectedValue(collision);
+    const adapter = { read } as unknown as KernelBackendAdapter;
+
+    await expect(new KernelTaskLifecycle(adapter).read(taskId, null)).rejects.toBe(collision);
+    expect(read).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not retry an unrelated task read failure", async () => {
+    const error = new Error("task README is invalid");
+    const read = vi.fn().mockRejectedValue(error);
+    const adapter = { read } as unknown as KernelBackendAdapter;
+
+    await expect(new KernelTaskLifecycle(adapter).read("T-1", null)).rejects.toBe(error);
+    expect(read).toHaveBeenCalledTimes(1);
+  });
+
   it.each(["local", "cloud"] as const)(
     "runs creation, plan, claim and receipt on %s without legacy authority",
     async (kind) => {
@@ -472,3 +513,67 @@ describe("canonical lifecycle application service", () => {
     expect(await f.read()).toEqual(before);
   });
 });
+
+it.each(["source", "task", "failed-check"])(
+  "does not persist final success after %s changes",
+  async (scenario) => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-kernel-final-checks-"));
+    roots.push(root);
+    const fingerprint = k.kernelDigest("source");
+    const record = {
+      digest: k.kernelDigest("record"),
+      aggregate: {
+        id: "FINAL",
+        revision: 1,
+        current_plan: { state: "APPROVED", digest: k.kernelDigest("plan"), work_items: [] },
+        work_items: {},
+      },
+      documents: { contracts: {} },
+    };
+    const apply = vi.fn();
+    const runtime = {
+      native: { readContext: () => Promise.resolve({ repository_fingerprint: fingerprint }) },
+      authority: {
+        resolve: () =>
+          Promise.resolve({
+            authority: { repository_fingerprint: fingerprint, digest: k.kernelDigest("authority") },
+          }),
+      },
+      adapter: {
+        read: () =>
+          Promise.resolve({
+            kind: "canonical",
+            record: scenario === "task" ? { ...record, digest: k.kernelDigest("changed") } : record,
+          }),
+      },
+      observe: () =>
+        Promise.resolve({
+          fingerprint: scenario === "source" ? k.kernelDigest("changed source") : fingerprint,
+        }),
+      lifecycle: { apply },
+      input: vi.fn(),
+    };
+    vi.spyOn(finalChecks, "runDirectTaskVerification").mockResolvedValue({
+      status: scenario === "failed-check" ? "failed" : "passed",
+      checks: [],
+      artifact_path: "checks.json",
+      reason: scenario === "failed-check" ? "failed check" : null,
+    });
+    const invocation = runKernelFinalValidation(
+      {
+        resolvedProject: { gitRoot: root },
+        memo: { gitCommonDir: Promise.resolve(path.join(root, ".git")) },
+        taskBackend: { getTask: () => Promise.resolve({ id: "FINAL" }) },
+      } as never,
+      runtime as never,
+      record as never,
+    );
+    if (scenario === "failed-check")
+      await expect(invocation).resolves.toMatchObject({
+        stop: { kind: "human_required", reason: "canonical_final_checks_failed" },
+      });
+    else await expect(invocation).rejects.toThrow("inputs changed during checks");
+    expect(apply).not.toHaveBeenCalled();
+    expect(runtime.input).not.toHaveBeenCalled();
+  },
+);

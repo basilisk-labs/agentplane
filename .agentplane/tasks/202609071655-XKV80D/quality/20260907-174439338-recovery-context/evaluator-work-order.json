@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609071655-XKV80D-022c2aa028dc0e134b30ee91",
+  "prepared_at": "2026-09-07T17:44:39.338Z",
+  "task": {
+    "id": "202609071655-XKV80D",
+    "revision": 9,
+    "objective": "Accept report-only WorkItem results without requiring source-code changes\n\nUser approved this recovery on 2026-09-07 to unblock CodeQL task 202609071444-7MNJXE. Materialize report-only semantic output through the supervisor as a task-owned evidence artifact. Preserve no-change rejection for code WorkItems, scope validation, exact result identity, and replay safety. Modify external-agent-implementation-authority.ts and add bounded report-result support with focused unit and existing CLI regression tests. Do not approve or dismiss GitHub alerts. No external writes. Continue the existing CodeQL task after this recovery and repair its pending test lint within its emitted authority.",
+    "acceptance_criteria": [
+      "bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-report-result.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts",
+      "- In scope: User approved this recovery on 2026-09-07 to unblock CodeQL task 202609071444-7MNJXE. Materialize report-only semantic output through the supervisor as a task-owned evidence artifact. Preserve no-change rejection for code WorkItems, scope validation, exact result identity, and replay safety. Modify external-agent-implementation-authority.ts and add bounded report-result support with focused unit and existing CLI regression tests. Do not approve or dismiss GitHub alerts. No external writes. Continue the existing CodeQL task after this recovery and repair its pending test lint within its emitted authority.\n- Out of scope: unrelated refactors not required for \"Accept report-only WorkItem results without requiring source-code changes\".",
+      "Prepare the user-approved report-only result recovery with supervisor-owned evidence persistence and unchanged code-work authority checks.",
+      "Run bunx --no-install vitest run packages/agentplane/src/commands/task/external-agent-report-result.test.ts packages/agentplane/src/cli/run-cli.core.task-advance.evidence-rework.test.ts. Expect report-only completion and exact replay to pass. Expect no-change code results, escaped paths, stale identity, and changed result replay to fail. Run git diff --check and focused ESLint. Preserve the required full CI verification floor."
+    ]
+  },
+  "evaluated_sha": "693879a426881d13a1f40f2eb4ab15fd233e25ce",
+  "diff_base_sha": "92efd467a7b045e7e784597168ac21bd41a975a1",
+  "blueprint_digest": "6f4b44d017f76a7aef5aa96de1e2d1b6b552ae43a774606be516a6e6e1abce2f",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609071655-XKV80D/quality/20260907-174439338-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:4579ad45ed66305f3771b1b641a2c0dc6acd414ed74eb29a72a50b72b2b9aafe",
+    "prompt_path": ".agentplane/tasks/202609071655-XKV80D/quality/objects/sha256/ffad5bae93c68b59e95e60fd11e219e469aa1bf5c33e3c34b030060f191aca5f.md",
+    "result_schema_path": ".agentplane/tasks/202609071655-XKV80D/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609071655-XKV80D/README.md",
+      "sha256": "sha256:a279702a23f48be9f14db1c15e26e1f72dd4f4fb7351f137f194597399f4b731",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609071655-XKV80D/quality/objects/sha256/9c26d8c7a3d9f678a60b8027e01e2173e6b8d4658c9465a5d81e5e7924fbd627.patch",
+      "sha256": "sha256:9c26d8c7a3d9f678a60b8027e01e2173e6b8d4658c9465a5d81e5e7924fbd627",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609071655-XKV80D/quality/objects/sha256/cd58f4627d10ad397fce3e1ce167128ae48ab25dd1d0074fa5b1989e952952df.json",
+      "sha256": "sha256:cd58f4627d10ad397fce3e1ce167128ae48ab25dd1d0074fa5b1989e952952df",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609071655-XKV80D/verification/20260907174430848-1ad06bd68526bf8c.json",
+      "sha256": "sha256:db78f1293ec7e62f9dffef1223990d26f84b912e5a712c81943d8eec1688de0c",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609071655-XKV80D/quality/objects/sha256/3bda60532dd146a07df8eb8c779f6c49255b6f356f6ccfe3af5598c489034b02.json",
+      "sha256": "sha256:3bda60532dd146a07df8eb8c779f6c49255b6f356f6ccfe3af5598c489034b02",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    }
+  ]
+}

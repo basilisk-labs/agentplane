@@ -1,0 +1,204 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts",
+    "bun run test:project cli-core --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts",
+    "bun run typecheck",
+    "bun run test:critical",
+    "bun run ci:local:full"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "repository_write",
+        "schema",
+        "security_boundary",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "components": [
+        "packages/agentplane/src/cli",
+        "packages/agentplane/src/commands/shared",
+        "packages/agentplane/src/commands/task",
+        "packages/core/src/runner/supervisor-execution-episode.ts",
+        "packages/core/src/schemas/index.ts",
+        "scripts/baselines/v0.7-compatibility-candidate.json",
+        "scripts/checks/check-compatibility-contract-baseline.mjs",
+        "scripts/lib/test-route-registry.mjs"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "reversible"
+      },
+      "evidence_requirements": [
+        "hosted_integration",
+        "repository_effect:repository_write",
+        "repository_effect:schema",
+        "repository_effect:security_boundary",
+        "repository_effect:source_code",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "repository_write",
+        "schema",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        "packages/agentplane",
+        "packages/core",
+        "scripts"
+      ],
+      "changed_files": [
+        "packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts",
+        "packages/agentplane/src/cli/run-cli/command-catalog.ts",
+        "packages/agentplane/src/cli/run-cli/command-catalog/task-supervisor.ts",
+        "packages/agentplane/src/cli/run-cli/command-loaders/task.ts",
+        "packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts",
+        "packages/agentplane/src/commands/shared/supervisor-execution-default-budget.test.ts",
+        "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
+        "packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts",
+        "packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts",
+        "packages/agentplane/src/commands/task/scope-extend-legacy-compat.test.ts",
+        "packages/agentplane/src/commands/task/scope-extend.ts",
+        "packages/agentplane/src/commands/task/supervisor-budget-epoch.command.ts",
+        "packages/core/src/runner/supervisor-execution-episode.ts",
+        "packages/core/src/schemas/index.ts",
+        "scripts/baselines/v0.7-compatibility-candidate.json",
+        "scripts/checks/check-compatibility-contract-baseline.mjs",
+        "scripts/lib/test-route-registry.mjs"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "full_regression",
+      "hosted_integration",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "central_component:packages/core/src/runner/supervisor-execution-episode.ts",
+      "central_component:packages/core/src/schemas/index.ts",
+      "central_component:scripts/checks/check-compatibility-contract-baseline.mjs",
+      "central_component:scripts/lib/test-route-registry.mjs",
+      "central_path:packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts",
+      "central_path:packages/agentplane/src/cli/run-cli/command-catalog.ts",
+      "central_path:packages/agentplane/src/cli/run-cli/command-catalog/task-supervisor.ts",
+      "central_path:packages/agentplane/src/cli/run-cli/command-loaders/task.ts",
+      "central_path:packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/supervisor-execution-default-budget.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
+      "central_path:packages/core/src/runner/supervisor-execution-episode.ts",
+      "central_path:packages/core/src/schemas/index.ts",
+      "central_path:scripts/checks/check-compatibility-contract-baseline.mjs",
+      "central_path:scripts/lib/test-route-registry.mjs",
+      "effect_schema",
+      "effect_security_boundary",
+      "unknown_path:scripts/baselines/v0.7-compatibility-candidate.json"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": false,
+    "digest": "sha256:184ecc7ed4eccd967ee98cc1a64a068abbc031ef3eec83686096b401708180ea"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-09-13T15:01:54.090Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202609130858-RMHWQ5/verification/20260913150154090-d4d3fab0dda1aa18.json",
+      "sha256": "sha256:644ce71d7bba26e6b9cdcf53bb247892657a626004a287c059bd8361b4c7c32e"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check 13e325f646713a679ca0c207ca76429ffdf7a464..37ad5b999eed8154a0aa28027c58cdb94690756b",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB 13e325f646713a679ca0c207ca76429ffdf7a464..37ad5b999eed8154a0aa28027c58cdb94690756b",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\t.agentplane/tasks/202609130858-RMHWQ5/pr/diffstat.txt",
+          "M\t.agentplane/tasks/202609130858-RMHWQ5/pr/github-body.md",
+          "M\t.agentplane/tasks/202609130858-RMHWQ5/pr/github-title.txt",
+          "M\t.agentplane/tasks/202609130858-RMHWQ5/pr/meta.json",
+          "M\t.agentplane/tasks/202609130858-RMHWQ5/pr/review.md",
+          "M\tscripts/baselines/v0.7-compatibility-candidate.json",
+          "M\tscripts/checks/check-compatibility-contract-baseline.mjs"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "13e325f646713a679ca0c207ca76429ffdf7a464",
+    "implementation_commit": "37ad5b999eed8154a0aa28027c58cdb94690756b",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [],
+      "classification": [],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202609130858-RMHWQ5",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202609130858-RMHWQ5/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

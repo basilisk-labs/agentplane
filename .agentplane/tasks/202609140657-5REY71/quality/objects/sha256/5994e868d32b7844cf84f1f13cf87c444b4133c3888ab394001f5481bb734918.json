@@ -1,0 +1,264 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bun run test:unit -- packages/agentplane/src/commands/task"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "public_api",
+        "release_metadata",
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "components": [
+        ".agentplane/tasks/202609140657-5REY71",
+        "packages/agentplane/src/cli",
+        "packages/agentplane/src/commands/branch",
+        "packages/agentplane/src/commands/shared",
+        "packages/agentplane/src/commands/task"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "recovery_required"
+      },
+      "evidence_requirements": [
+        "hosted_integration",
+        "repository_effect:public_api",
+        "repository_effect:release_metadata",
+        "repository_effect:repository_write",
+        "repository_effect:source_code",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        "packages/agentplane"
+      ],
+      "changed_files": [
+        "packages/agentplane/src/commands/branch/sync-task-base.test.ts",
+        "packages/agentplane/src/commands/branch/sync-task-base.ts",
+        "packages/agentplane/src/commands/shared/branch-base-sync-route.test.ts",
+        "packages/agentplane/src/commands/shared/branch-base-sync-route.ts",
+        "packages/agentplane/src/commands/shared/route-decision.ts",
+        "packages/agentplane/src/commands/shared/side-effect-authority.ts",
+        "packages/agentplane/src/commands/shared/workflow-operation-effects.ts",
+        "packages/agentplane/src/commands/shared/workflow-operation-prefix.ts",
+        "packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts",
+        "packages/agentplane/src/commands/shared/workflow-operation-projection.ts",
+        "packages/agentplane/src/commands/shared/workflow-postconditions.ts",
+        "packages/agentplane/src/commands/shared/workflow-step-branch-base-sync-spec.ts",
+        "packages/agentplane/src/commands/shared/workflow-step-branch-base-sync.ts",
+        "packages/agentplane/src/commands/shared/workflow-step-branch-state.ts",
+        "packages/agentplane/src/commands/shared/workflow-step-branch.ts",
+        "packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts",
+        "packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts",
+        "packages/agentplane/src/commands/shared/workflow-step.ts",
+        "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts",
+        "packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "full_regression",
+      "hosted_integration",
+      "real_e2e",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "central_path:packages/agentplane/src/commands/shared/branch-base-sync-route.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/branch-base-sync-route.ts",
+      "central_path:packages/agentplane/src/commands/shared/route-decision.ts",
+      "central_path:packages/agentplane/src/commands/shared/side-effect-authority.ts",
+      "central_path:packages/agentplane/src/commands/shared/workflow-operation-effects.ts",
+      "central_path:packages/agentplane/src/commands/shared/workflow-operation-prefix.ts",
+      "central_path:packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/workflow-operation-projection.ts",
+      "central_path:packages/agentplane/src/commands/shared/workflow-postconditions.ts",
+      "central_path:packages/agentplane/src/commands/shared/workflow-step-branch-base-sync-spec.ts",
+      "central_path:packages/agentplane/src/commands/shared/workflow-step-branch-base-sync.ts",
+      "central_path:packages/agentplane/src/commands/shared/workflow-step-branch-state.ts",
+      "central_path:packages/agentplane/src/commands/shared/workflow-step-branch.ts",
+      "central_path:packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts",
+      "central_path:packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/workflow-step.ts",
+      "effect_public_api",
+      "effect_release_metadata",
+      "external_effect_requires_real_e2e",
+      "reversibility_recovery_required"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": true,
+    "digest": "sha256:e9f82c348008a463f482cfbdd8079d74dd2112de7d07731aa217a128eca37ee8"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-09-14T08:46:06.234Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202609140657-5REY71/verification/20260914084606234-271e10519bfe0f6d.json",
+      "sha256": "sha256:e24ad673b6ef0d96af28b61e6f246b2de9b0aa91abb07f654b3d9e58b6a38277"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check 40368f0ae58774c8cdd80fddb22cb6daacbae8f4..4be3447ccff551b8f67611538d8d784495a35893",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB 40368f0ae58774c8cdd80fddb22cb6daacbae8f4..4be3447ccff551b8f67611538d8d784495a35893",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "A\t.agentplane/tasks/202609140657-5REY71/README.md",
+          "A\t.agentplane/tasks/202609140657-5REY71/blueprint/resolved-snapshot.json",
+          "A\t.agentplane/tasks/202609140657-5REY71/pr/diffstat.txt",
+          "A\t.agentplane/tasks/202609140657-5REY71/pr/github-body.md",
+          "A\t.agentplane/tasks/202609140657-5REY71/pr/github-title.txt",
+          "A\t.agentplane/tasks/202609140657-5REY71/pr/meta.json",
+          "A\t.agentplane/tasks/202609140657-5REY71/pr/review.md",
+          "A\tpackages/agentplane/src/commands/branch/sync-task-base.test.ts",
+          "A\tpackages/agentplane/src/commands/branch/sync-task-base.ts",
+          "A\tpackages/agentplane/src/commands/shared/branch-base-sync-route.test.ts",
+          "A\tpackages/agentplane/src/commands/shared/branch-base-sync-route.ts",
+          "M\tpackages/agentplane/src/commands/shared/route-decision.ts",
+          "M\tpackages/agentplane/src/commands/shared/side-effect-authority.ts",
+          "M\tpackages/agentplane/src/commands/shared/workflow-operation-effects.ts",
+          "M\tpackages/agentplane/src/commands/shared/workflow-operation-prefix.ts",
+          "M\tpackages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts",
+          "M\tpackages/agentplane/src/commands/shared/workflow-operation-projection.ts",
+          "M\tpackages/agentplane/src/commands/shared/workflow-postconditions.ts",
+          "A\tpackages/agentplane/src/commands/shared/workflow-step-branch-base-sync.ts",
+          "M\tpackages/agentplane/src/commands/shared/workflow-step-branch-state.ts",
+          "M\tpackages/agentplane/src/commands/shared/workflow-step-branch.ts",
+          "M\tpackages/agentplane/src/commands/shared/workflow-step-fingerprint.ts",
+          "M\tpackages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts",
+          "M\tpackages/agentplane/src/commands/shared/workflow-step.ts",
+          "M\tpackages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts",
+          "M\tpackages/agentplane/src/commands/task/branch-task-supervisor-operations.ts"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "40368f0ae58774c8cdd80fddb22cb6daacbae8f4",
+    "implementation_commit": "4be3447ccff551b8f67611538d8d784495a35893",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [
+        "?? .agentplane/tasks/202609140657-5REY71/README.md",
+        "?? .agentplane/tasks/202609140657-5REY71/blueprint/resolved-snapshot.json",
+        "?? .agentplane/tasks/202609140657-5REY71/pr/diffstat.txt",
+        "?? .agentplane/tasks/202609140657-5REY71/pr/github-body.md",
+        "?? .agentplane/tasks/202609140657-5REY71/pr/github-title.txt",
+        "?? .agentplane/tasks/202609140657-5REY71/pr/meta.json",
+        "?? .agentplane/tasks/202609140657-5REY71/pr/review.md"
+      ],
+      "classification": [
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202609140657-5REY71/README.md"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202609140657-5REY71/blueprint/resolved-snapshot.json"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202609140657-5REY71/pr/diffstat.txt"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202609140657-5REY71/pr/github-body.md"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202609140657-5REY71/pr/github-title.txt"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202609140657-5REY71/pr/meta.json"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202609140657-5REY71/pr/review.md"
+        }
+      ],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [
+        "?? .agentplane/tasks/202609140657-5REY71/README.md",
+        "?? .agentplane/tasks/202609140657-5REY71/blueprint/resolved-snapshot.json",
+        "?? .agentplane/tasks/202609140657-5REY71/pr/diffstat.txt",
+        "?? .agentplane/tasks/202609140657-5REY71/pr/github-body.md",
+        "?? .agentplane/tasks/202609140657-5REY71/pr/github-title.txt",
+        "?? .agentplane/tasks/202609140657-5REY71/pr/meta.json",
+        "?? .agentplane/tasks/202609140657-5REY71/pr/review.md"
+      ],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202609140657-5REY71",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202609140657-5REY71/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

@@ -5,8 +5,13 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { defaultConfig } from "@agentplaneorg/core/config";
-import { readTask } from "@agentplaneorg/core/tasks";
+import {
+  createTask as createLegacyTask,
+  readTask,
+  setTaskDocSection,
+} from "@agentplaneorg/core/tasks";
 
+import { materializeLegacyDrainIdentityFixture } from "../commands/shared/native-task-identity-fixture.js";
 import { runCli } from "./run-cli.js";
 import {
   captureStdIO,
@@ -40,6 +45,46 @@ afterEach(() => {
 
 const recordEvaluatorPass = recordQualityReviewPass;
 
+async function createLegacyFinishTask(opts: {
+  root: string;
+  title: string;
+  description: string;
+}): Promise<string> {
+  const task = await createLegacyTask({
+    cwd: opts.root,
+    rootOverride: opts.root,
+    title: opts.title,
+    description: opts.description,
+    priority: "med",
+    owner: "CODER",
+    tags: ["docs"],
+    dependsOn: [],
+    verify: [],
+  });
+  for (const [section, text] of [
+    ["Summary", `${opts.title}\n\n${opts.description}`],
+    ["Scope", "- In scope: legacy branch_pr close compatibility behavior."],
+    ["Plan", "1. Exercise the branch_pr close flow.\n2. Verify close artifacts and state."],
+    ["Rollback Plan", "- Revert the deterministic close commit."],
+  ] as const) {
+    await setTaskDocSection({
+      cwd: opts.root,
+      rootOverride: opts.root,
+      taskId: task.id,
+      section,
+      text,
+      updatedBy: "CODER",
+    });
+  }
+  await setTaskVerifySteps(opts.root, task.id);
+  await materializeLegacyDrainIdentityFixture({
+    root: opts.root,
+    task_id: task.id,
+    work_items_completed: true,
+  });
+  return task.id;
+}
+
 describe("runCli", () => {
   const BLOCK_FINISH_TIMEOUT_MS = 60_000;
   const BLOCK_FINISH_LONG_TIMEOUT_MS = 180_000;
@@ -58,31 +103,12 @@ describe("runCli", () => {
     await execFileAsync("git", ["commit", "-m", "feat: seed commit"], { cwd: root });
     const { stdout: implHash } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
 
-    const ioNew = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Finish branch_pr close commit",
-        "--description",
+    const taskId = await createLegacyFinishTask({
+      root,
+      title: "Finish branch_pr close commit",
+      description:
         "Finish should create deterministic close commit on base branch in branch_pr mode",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "docs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioNew.stdout.trim();
-      await setTaskVerifySteps(root, taskId);
-    } finally {
-      ioNew.restore();
-    }
+    });
 
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     await runCliSilent([
@@ -98,7 +124,6 @@ describe("runCli", () => {
       root,
     ]);
     await recordEvaluatorPass(root, taskId);
-    await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
 
     const io = captureStdIO();
     try {
@@ -117,7 +142,7 @@ describe("runCli", () => {
         "--root",
         root,
       ]);
-      expect(code).toBe(0);
+      expect(code, io.stderr).toBe(0);
       expect(io.stdout).toContain("creating deterministic close commit");
       expect(io.stdout).toMatch(/\nfinished\n/);
     } finally {
@@ -160,31 +185,11 @@ describe("runCli", () => {
       await execFileAsync("git", ["commit", "-m", "feat: seed commit"], { cwd: root });
       const { stdout: implHash } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
 
-      const ioNew = captureStdIO();
-      let taskId = "";
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Finish branch_pr close commit records task artifacts",
-          "--description",
-          "Finish should not leave close task artifacts dirty after the close commit.",
-          "--priority",
-          "med",
-          "--owner",
-          "CODER",
-          "--tag",
-          "docs",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskId = ioNew.stdout.trim();
-        await setTaskVerifySteps(root, taskId);
-      } finally {
-        ioNew.restore();
-      }
+      const taskId = await createLegacyFinishTask({
+        root,
+        title: "Finish branch_pr close commit records task artifacts",
+        description: "Finish should not leave close task artifacts dirty after the close commit.",
+      });
 
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
       await runCliSilent([
@@ -211,7 +216,6 @@ describe("runCli", () => {
         root,
       ]);
       await recordEvaluatorPass(root, taskId);
-      await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
 
       const io = captureStdIO();
       try {
@@ -230,7 +234,7 @@ describe("runCli", () => {
           "--root",
           root,
         ]);
-        expect(code).toBe(0);
+        expect(code, io.stderr).toBe(0);
         expect(io.stdout).toContain("creating deterministic close commit");
         expect(io.stdout).toMatch(/\nfinished\n/);
       } finally {
@@ -298,31 +302,12 @@ describe("runCli", () => {
       );
       const { stdout: implHash } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
 
-      const ioNew = captureStdIO();
-      let taskId = "";
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Finish branch_pr close commit without pinned base",
-          "--description",
+      const taskId = await createLegacyFinishTask({
+        root,
+        title: "Finish branch_pr close commit without pinned base",
+        description:
           "Finish should allow the default branch fallback when branch_pr base pin is absent",
-          "--priority",
-          "med",
-          "--owner",
-          "CODER",
-          "--tag",
-          "docs",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskId = ioNew.stdout.trim();
-        await setTaskVerifySteps(root, taskId);
-      } finally {
-        ioNew.restore();
-      }
+      });
 
       await runCliSilent([
         "verify",
@@ -337,7 +322,6 @@ describe("runCli", () => {
         root,
       ]);
       await recordEvaluatorPass(root, taskId);
-      await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
 
       const io = captureStdIO();
       try {
@@ -356,7 +340,7 @@ describe("runCli", () => {
           "--root",
           root,
         ]);
-        expect(code).toBe(0);
+        expect(code, io.stderr).toBe(0);
         expect(io.stdout).toContain("creating deterministic close commit");
         expect(io.stdout).toMatch(/\nfinished\n/);
       } finally {
@@ -394,31 +378,11 @@ describe("runCli", () => {
       await execFileAsync("git", ["commit", "-m", "feat: seed commit"], { cwd: root });
       const { stdout: implHash } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
 
-      const ioNew = captureStdIO();
-      let taskId = "";
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Finish branch_pr explicit base override",
-          "--description",
-          "Finish should honor --base when no branch_pr base is pinned",
-          "--priority",
-          "med",
-          "--owner",
-          "CODER",
-          "--tag",
-          "docs",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskId = ioNew.stdout.trim();
-        await setTaskVerifySteps(root, taskId);
-      } finally {
-        ioNew.restore();
-      }
+      const taskId = await createLegacyFinishTask({
+        root,
+        title: "Finish branch_pr explicit base override",
+        description: "Finish should honor --base when no branch_pr base is pinned",
+      });
 
       await runCliSilent([
         "verify",
@@ -434,7 +398,6 @@ describe("runCli", () => {
       ]);
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
       await recordEvaluatorPass(root, taskId);
-      await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
       await runCliSilent(["branch", "base", "clear", "--root", root]);
 
       const io = captureStdIO();
@@ -456,7 +419,7 @@ describe("runCli", () => {
           "--root",
           root,
         ]);
-        expect(code).toBe(0);
+        expect(code, io.stderr).toBe(0);
         expect(io.stdout).toContain("creating deterministic close commit");
         expect(io.stdout).toMatch(/\nfinished\n/);
       } finally {
@@ -491,31 +454,11 @@ describe("runCli", () => {
     await execFileAsync("git", ["commit", "-m", "feat: seed commit"], { cwd: root });
     const { stdout: implHash } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
 
-    const ioNew = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Reject branch_pr finish from task branch",
-        "--description",
-        "Finish must reject non-base branches in branch_pr mode",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "docs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioNew.stdout.trim();
-      await setTaskVerifySteps(root, taskId);
-    } finally {
-      ioNew.restore();
-    }
+    const taskId = await createLegacyFinishTask({
+      root,
+      title: "Reject branch_pr finish from task branch",
+      description: "Finish must reject non-base branches in branch_pr mode",
+    });
 
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     await runCliSilent([
@@ -530,7 +473,6 @@ describe("runCli", () => {
       "--root",
       root,
     ]);
-    await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
     await execFileAsync("git", ["checkout", "-b", "task/demo-finish-branch"], { cwd: root });
 
     const io = captureStdIO();
@@ -558,7 +500,7 @@ describe("runCli", () => {
     }
 
     const task = await readTask({ cwd: root, rootOverride: root, taskId });
-    expect(task.frontmatter.status).toBe("TODO");
+    expect(task.frontmatter.status).toBe("DOING");
   });
 
   it("finish rejects blank --base values", async () => {

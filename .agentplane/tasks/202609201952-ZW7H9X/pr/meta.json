@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202609201952-ZW7H9X/canonical-zw7h9x",
+  "created_at": "2026-09-20T21:27:13.605Z",
+  "diffstat_sha256": "sha256:f6b465e8c2f106dc69c82ae515afaeac8a9a3880c0fd2095bf092950a8431a9d",
+  "last_verified_at": "2026-09-20T23:38:12.676Z",
+  "last_verified_diffstat_sha256": "sha256:f6b465e8c2f106dc69c82ae515afaeac8a9a3880c0fd2095bf092950a8431a9d",
+  "pr_number": 5988,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5988",
+  "pre_merge_closure": {
+    "basis_commit": "e64ffb69d76efa1a3bd02672e6a2d86235d78ac4",
+    "branch": "task/202609201952-ZW7H9X/canonical-zw7h9x",
+    "pr_number": 5988,
+    "recorded_at": "2026-09-20T23:38:50.000Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202609201952-ZW7H9X",
+  "updated_at": "2026-09-20T21:56:05.757Z",
+  "verify": {
+    "status": "pass"
+  }
+}

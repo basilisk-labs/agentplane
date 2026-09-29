@@ -16,11 +16,13 @@ import {
 } from "../../runner/observation/git-snapshot.js";
 import { observeBackendProjection } from "../../runner/state-fingerprint-backend-projection.js";
 import { observeKnowledgeProjection } from "../../runner/state-fingerprint-knowledge.js";
+import { resolveExecutionProfileRuntime } from "../../runtime/execution-profile/index.js";
+import { resolveNativeTaskObligations } from "../../runtime/task-obligations/index.js";
 import { readContainedStableTextNoFollow } from "../../shared/contained-stable-file.js";
 import { measurePreparationNode } from "../../shared/preparation-trace.js";
 import type { CommandContext } from "./task-backend.js";
 import { SIDE_EFFECT_AUTHORITY_EXTENSION_KEY } from "./side-effect-authority.js";
-import { observeWorkflowBlueprint } from "./workflow-step-fingerprint-blueprint.js";
+import { resolveNativeTaskIdentity } from "./native-task-identity.js";
 import { workflowFingerprintPolicyPaths } from "./workflow-step-fingerprint-policy-paths.js";
 import { traceWorkflowFingerprintComponents } from "./workflow-step-fingerprint-trace.js";
 import {
@@ -36,13 +38,15 @@ import {
 
 export type WorkflowRouteStateInput = Omit<WorkflowRouteState, "preconditionFingerprint">;
 
-export const WORKFLOW_STATE_FINGERPRINT_POLICY = {
+export const WORKFLOW_STATE_FINGERPRINT_V2_POLICY = {
+  fingerprint_schema_version: 2,
   required_components: [
     "task",
     "git",
     "backend_projection",
+    "plan",
     "policy",
-    "blueprint",
+    "capability",
     "knowledge",
     "authority",
   ],
@@ -95,6 +99,7 @@ function routeProjection(state: WorkflowRouteStateInput): Record<string, unknown
     batch: state.batchOwnership,
     taskWorktree: state.taskWorktree ?? null,
     foreignTaskReadmeReplicaRepair: state.foreignTaskReadmeReplicaRepair ?? null,
+    branchBaseSync: state.branchBaseSync ?? null,
     workflowMode: state.workflowMode,
   };
 }
@@ -176,7 +181,7 @@ function checkoutPath(checkout: WorkflowCheckout, paths: WorkflowFingerprintPath
  * A side-effect approval persists a record in the task worktree, but must bind
  * that record to the checkout where the approved operation will actually run.
  */
-export function workflowStepFingerprintCheckout(step: WorkflowStep): WorkflowCheckout {
+function workflowStepFingerprintCheckout(step: WorkflowStep): WorkflowCheckout {
   if (step.kind === "approval" && step.request.type === "side_effect") {
     return WORKFLOW_OPERATION_REGISTRY[step.request.operationId].checkout;
   }
@@ -371,33 +376,34 @@ function workflowAuthority(step: WorkflowStep): Record<string, unknown> {
 function bootstrapFingerprint(state: WorkflowRouteStateInput): StateFingerprint {
   const projection = routeProjection(state);
   const worktree = state.resume.workspace_root.trim() || "workflow-route:bootstrap";
-  return buildStateFingerprint({
-    task_id: state.task.id,
-    task_revision:
-      typeof state.task.revision === "number" && state.task.revision > 0
-        ? state.task.revision
-        : null,
-    git_head: state.resume.head_sha,
-    worktree,
-    components: {
-      task: workflowTaskFingerprintComponent(state.task),
-      git: presentComponent("workflow_route_bootstrap", projection.workspace),
-      backend_projection: presentComponent("workflow_route_bootstrap", {
-        sync: state.task.sync ?? null,
-      }),
-      policy: presentComponent("workflow_route_bootstrap", {
-        workflowMode: state.workflowMode,
-      }),
-      blueprint: presentComponent("workflow_route_bootstrap", {
-        state: "not_observed",
-      }),
-      knowledge: presentComponent("workflow_route_bootstrap", {
-        state: "not_observed",
-      }),
-      provider: providerComponent(state),
-      authority: presentComponent("workflow_route_bootstrap", projection),
-    },
-  });
+  const nativeIdentity = resolveNativeTaskIdentity(state.task);
+  if (nativeIdentity) {
+    return buildStateFingerprint({
+      task_id: state.task.id,
+      task_revision:
+        typeof state.task.revision === "number" && state.task.revision > 0
+          ? state.task.revision
+          : null,
+      git_head: state.resume.head_sha,
+      worktree,
+      components: {
+        task: workflowTaskFingerprintComponent(state.task),
+        git: presentComponent("workflow_route_bootstrap", projection.workspace),
+        backend_projection: presentComponent("workflow_route_bootstrap", {
+          sync: state.task.sync ?? null,
+        }),
+        plan: presentComponent("native_plan", nativeIdentity.plan),
+        policy: presentComponent("native_policy", nativeIdentity.policy),
+        capability: presentComponent("native_capability", nativeIdentity.capability),
+        knowledge: presentComponent("workflow_route_bootstrap", { state: "not_observed" }),
+        provider: providerComponent(state),
+        authority: presentComponent("workflow_route_bootstrap", projection),
+      },
+    });
+  }
+  throw new Error(
+    `Task ${state.task.id} has no canonical execution identity; run the explicit kernel migration before route evaluation.`,
+  );
 }
 
 export function withBootstrapWorkflowFingerprint(
@@ -420,52 +426,35 @@ export async function captureWorkflowStepFingerprint(opts: {
     : null;
   const fallbackWorktree = `unavailable:${fingerprintCheckout}`;
   const repositoryRoot = authoritativePath;
-  const blueprintPath = path.join(
-    opts.ctx.config.paths.workflow_dir,
-    opts.state.task.id,
-    "blueprint",
-    "resolved-snapshot.json",
-  );
+  const nativeIdentity = resolveNativeTaskIdentity(opts.state.task);
+  if (!nativeIdentity) {
+    throw new Error(
+      `Task ${opts.state.task.id} has no canonical execution identity; run the explicit kernel migration before route evaluation.`,
+    );
+  }
+  const nativeObligations = resolveNativeTaskObligations({
+    task_kind: opts.state.task.task_kind,
+    mutation_scope: opts.state.task.mutation_scope,
+    risk_flags: opts.state.task.risk_flags,
+    execution_contract: opts.state.task.execution_contract,
+    selected_mode:
+      opts.state.task.execution_contract?.selected_mode ?? opts.ctx.config.workflow_mode,
+    route_reason_codes:
+      opts.state.task.execution_contract?.reason_codes ??
+      opts.state.task.execution_route?.reason_codes,
+    execution_profile: resolveExecutionProfileRuntime(opts.ctx.config),
+  });
   const traceScope = `task:${opts.state.task.id}:route_fingerprint`;
-  const blueprintObservation = repositoryRoot
-    ? await measurePreparationNode({
-        recorder: opts.ctx.preparationTrace,
-        node: "blueprint_resolution",
-        scope: traceScope,
-        dependencies: ["task_backend_read"],
-        cacheability: "exact",
-        cachePolicyReason:
-          "Blueprint source, task state, workflow mode, and resolved projection are fingerprinted.",
-        operation: async () =>
-          await observeWorkflowBlueprint({
-            ctx: opts.ctx,
-            repositoryRoot,
-            task: opts.state.task,
-            step: opts.step,
-            workflowMode: opts.state.workflowMode,
-            relativePath: blueprintPath,
-          }),
-        fingerprintInputs: (observation) => ({
-          task: workflowTaskFingerprintComponent(opts.state.task),
-          workflow_mode: opts.state.workflowMode,
-          step: workflowAuthority(opts.step),
-          blueprint_observation: observation,
-        }),
-        output: (observation) => observation,
-      })
-    : {
-        component: unavailableComponent(
-          "workflow_route_blueprint",
-          "authoritative_checkout_unavailable",
-        ),
-        policyModules: [],
-      };
+  const planObservation = {
+    component: presentComponent("native_plan", nativeIdentity.plan),
+    policyModules: nativeObligations.policy_modules,
+  };
   const rawGit = repositoryRoot
     ? await measurePreparationNode({
         recorder: opts.ctx.preparationTrace,
         node: "git_snapshot",
         scope: traceScope,
-        dependencies: ["task_backend_read", "blueprint_resolution"],
+        dependencies: ["task_backend_read", "native_plan"],
         cacheability: "exact",
         cachePolicyReason:
           "HEAD, index, dirty paths, path digests, and exclusions are fingerprinted.",
@@ -512,7 +501,7 @@ export async function captureWorkflowStepFingerprint(opts: {
       };
   const selectedPolicyPaths = workflowFingerprintPolicyPaths(
     opts.ctx.config.workflow_mode,
-    blueprintObservation.policyModules,
+    planObservation.policyModules,
     policyScope.state === "present" ? policyScope.changedPaths : [],
   );
   const [knowledge, policy, backendProjection] = repositoryRoot
@@ -569,7 +558,23 @@ export async function captureWorkflowStepFingerprint(opts: {
           path: authoritativePath,
           errors: git?.errors ?? [],
         });
-  return buildStateFingerprint({
+  const common = {
+    task: workflowTaskFingerprintComponent(opts.state.task),
+    git: gitComponent,
+    backend_projection: backendProjection,
+    policy,
+    knowledge,
+    provider: providerComponent(opts.state),
+    authority: presentComponent("workflow_route_authority", {
+      planApproval: opts.state.task.plan_approval ?? null,
+      owner: opts.state.task.owner,
+      blockers: opts.state.blockers,
+      batch: opts.state.batchOwnership,
+      workflowMode: opts.state.workflowMode,
+      step: workflowAuthority(opts.step),
+    }),
+  };
+  const base = {
     task_id: opts.state.task.id,
     task_revision:
       typeof opts.state.task.revision === "number" && opts.state.task.revision > 0
@@ -577,21 +582,15 @@ export async function captureWorkflowStepFingerprint(opts: {
         : null,
     git_head: git?.head_commit ?? null,
     worktree: authoritativePath ?? fallbackWorktree,
+  };
+  return buildStateFingerprint({
+    ...base,
     components: {
-      task: workflowTaskFingerprintComponent(opts.state.task),
-      git: gitComponent,
-      backend_projection: backendProjection,
-      policy,
-      blueprint: blueprintObservation.component,
-      knowledge,
-      provider: providerComponent(opts.state),
-      authority: presentComponent("workflow_route_authority", {
-        planApproval: opts.state.task.plan_approval ?? null,
-        owner: opts.state.task.owner,
-        blockers: opts.state.blockers,
-        batch: opts.state.batchOwnership,
-        workflowMode: opts.state.workflowMode,
-        step: workflowAuthority(opts.step),
+      ...common,
+      plan: planObservation.component,
+      capability: presentComponent("native_capability", {
+        identity: nativeIdentity.capability,
+        obligations: nativeObligations,
       }),
     },
   });

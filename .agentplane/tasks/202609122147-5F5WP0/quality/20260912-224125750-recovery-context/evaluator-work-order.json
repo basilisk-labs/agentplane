@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609122147-5F5WP0-7176fd3a94f29607c20a7de3",
+  "prepared_at": "2026-09-12T22:41:25.750Z",
+  "task": {
+    "id": "202609122147-5F5WP0",
+    "revision": 9,
+    "objective": "Make AgentPlane-managed GitLab MRs remove source branches\n\nMake AgentPlane-managed GitLab MRs remove source branches",
+    "acceptance_criteria": [
+      "- In scope: Make AgentPlane-managed GitLab MRs remove source branches.\n- Out of scope: unrelated refactors not required for \"Make AgentPlane-managed GitLab MRs remove source branches\".",
+      "Plan a bounded GitLab MR synchronization fix so AgentPlane requests source-branch deletion on create and reconciles existing open MRs on update, with focused tests and full hosted integration.",
+      "1. Run `bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/pr/internal/sync-gitlab.test.ts packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.test.ts`. Expected: both files pass and all 9 tests pass.\n2. Run `bun run typecheck`. Expected: exit code 0.\n3. Run `bun run ci:local`. Expected: every selected full-fast group passes.\n4. Confirm GitLab MR create payloads for fork and same-project repositories include `remove_source_branch: true`, update payloads include the same field, hosted checks pass, and the exact PR SHA is merged."
+    ]
+  },
+  "evaluated_sha": "13160b3a8f6a7dd6817a65cdf476b7386583aca7",
+  "diff_base_sha": "58048a4e1ff97030d3fa86447c739397f0e0936b",
+  "blueprint_digest": "589b09ef6a76514e31771d220bbde1554836eb10ce2a9b11d11952f6f4c15c70",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609122147-5F5WP0/quality/20260912-224125750-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:5de756a2d695cba888e5ff0630991fbcbd629b0646f46b8d9c1f3772959d529c",
+    "prompt_path": ".agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/292d74c32671b11f5c4555210e0568e7fbf542259c5105b67c5562fb5095ed3a.md",
+    "result_schema_path": ".agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609122147-5F5WP0/README.md",
+      "sha256": "sha256:a0fbf32c9b1f85a40e2aaf29ffa3cb0059a9bc0b6f52008b48997717ca1d26c2",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/69581e7536d57b062574d7441147b5ba42f0234176e61f693b59e29a7d87387b.patch",
+      "sha256": "sha256:69581e7536d57b062574d7441147b5ba42f0234176e61f693b59e29a7d87387b",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/e314657ba02eb940c087044dc705c0d9b65b1022d3ced6a27626e6b0104ded71.json",
+      "sha256": "sha256:e314657ba02eb940c087044dc705c0d9b65b1022d3ced6a27626e6b0104ded71",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609122147-5F5WP0/verification/20260912224058659-fd36fb3df31fb67b.json",
+      "sha256": "sha256:df4722015972bc3590fab74000bb6b4f25e740434014ed3190669706f5ff9cd2",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609122147-5F5WP0/quality/objects/sha256/e12ac41bcaa355159b9344982ae8526f379ef82290301b30a895f00788ce013a.json",
+      "sha256": "sha256:e12ac41bcaa355159b9344982ae8526f379ef82290301b30a895f00788ce013a",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

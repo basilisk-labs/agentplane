@@ -1,5 +1,13 @@
+import { readKernelOrderResult } from "../commands/task/kernel-exchange.js";
+import { KernelTaskLifecycle } from "../runner/usecases/kernel-task-lifecycle.js";
+import { execFileSync } from "node:child_process";
+import * as finalChecks from "../commands/task/direct-task-verification.js";
+import {
+  acceptKernelInspection,
+  resumeKernelInspection,
+} from "../commands/task/kernel-inspection.js";
 import { AGENT_WORK_ORDER_V2_ZOD_SCHEMA } from "@agentplaneorg/core/schemas";
-import { readFile, writeFile, rm } from "node:fs/promises";
+import { mkdir, readFile, writeFile, rm } from "node:fs/promises";
 import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { TASK_CENTRIC_EXTENSION_KEY, taskKernel as k } from "@agentplaneorg/core/tasks";
@@ -13,39 +21,41 @@ import {
 import { defaultConfig } from "./core-imports.js";
 import { runCli } from "./run-cli.js";
 import { runJson } from "./task-create-planner-intent.testkit.js";
-import { loadCommandContext } from "../commands/shared/task-backend.js";
 import {
-  requireKernelCommit,
-  createKernelRuntime,
-} from "../commands/task/kernel-runtime-context.js";
+  loadCommandContext,
+  resolveTaskOwnerCommandContext,
+} from "../commands/shared/task-backend.js";
+import { createKernelRuntime } from "../commands/task/kernel-runtime-context.js";
 
 import { makeTaskBackendDouble } from "@agentplane/testkit/task";
 import * as taskBackend from "../backends/task-backend.js";
 import { observeKernelTestRunner } from "../commands/task/kernel-run.testkit.js";
+import { readKernelOperationalProjection } from "../commands/task/kernel-operational-projection.js";
 
 async function createTask(root: string): Promise<string> {
-  const io = captureStdIO();
-  try {
-    const code = await runCli([
-      "task",
-      "new",
-      "--canonical",
-      "--title",
-      "Canonical creation",
-      "--description",
-      "Persist immutable intent with the canonical aggregate",
-      "--owner",
-      "CODER",
-      "--tag",
-      "code",
-      "--root",
-      root,
-    ]);
-    expect(code, io.stderr).toBe(0);
-    return io.stdout.trim();
-  } finally {
-    io.restore();
-  }
+  const created = await runJson(root, [
+    "task",
+    "create",
+    "Canonical creation",
+    "--description",
+    "Persist immutable intent with the canonical aggregate",
+    "--task-kind",
+    "code",
+    "--mutation-scope",
+    "code",
+    "--scope-root",
+    "result.txt",
+    "--scope-root",
+    "more",
+    "--repository-effect",
+    "source_code",
+    "--capability",
+    "repository_write",
+    "--verify",
+    "node --version",
+    "--json",
+  ]);
+  return String(created.task_id);
 }
 
 async function refused(root: string, argv: string[], message: string) {
@@ -90,7 +100,45 @@ async function installCloudBackend(root: string) {
 installRunCliIntegrationHarness();
 afterEach(() => vi.restoreAllMocks());
 describe("canonical CLI transport", { timeout: 60_000 }, () => {
-  it.each(["local", "cloud"] as const)(
+  it("keeps canonical observation and WorkOrder roots in the invocation worktree", async () => {
+    const root = await mkGitRepoRootWithCommit();
+    await writeConfig(root, defaultConfig());
+    const taskId = await createTask(root);
+    const git = (args: string[]) =>
+      execFileSync("git", ["-c", "core.hooksPath=/dev/null", ...args], { cwd: root });
+    git(["add", "."]);
+    git(["commit", "-m", "canonical worktree fixture"]);
+    const primaryPacket = await runJson(root, ["task", "advance", taskId, "--agent-json"]);
+    const primaryExchange = primaryPacket.exchange as { directory: string };
+    const primaryOrder = AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse(
+      JSON.parse(await readFile(path.join(primaryExchange.directory, "work-order.json"), "utf8")),
+    );
+    const linked = path.join(root, ".agentplane/worktrees/canonical-context");
+    git(["worktree", "add", "-b", "canonical-context", linked]);
+    const initial = await loadCommandContext({ cwd: linked });
+    const command = await resolveTaskOwnerCommandContext({ ctx: initial, taskId });
+    expect(command.resolvedProject.gitRoot).toBe(initial.resolvedProject.gitRoot);
+    const runtime = await createKernelRuntime({
+      command,
+      task_id: taskId,
+      transport: "host",
+      operation_id: "worktree-fixture",
+    });
+    const before = await runtime.observe();
+    await writeFile(path.join(root, "unrelated-primary.txt"), "primary change");
+    expect(await runtime.observe()).toMatchObject({ fingerprint: before.fingerprint });
+    const packet = await runJson(linked, ["task", "advance", taskId, "--agent-json"]);
+    const exchange = packet.exchange as { directory: string };
+    const order = AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse(
+      JSON.parse(await readFile(path.join(exchange.directory, "work-order.json"), "utf8")),
+    );
+    expect(order.work_order_id).not.toBe(primaryOrder.work_order_id);
+    expect(order.state_fingerprint.worktree).toBe(initial.resolvedProject.gitRoot);
+    expect(order.canonical_binding?.repository_fingerprint).toBe(before.fingerprint);
+    await writeFile(path.join(linked, "local-change.txt"), "local change");
+    expect(await runtime.observe()).not.toMatchObject({ fingerprint: before.fingerprint });
+  });
+  it.each(["local", "cloud", "compact"] as const)(
     "canonical first-write and host lifecycle on %s storage",
     async (backendKind) => {
       const root = await mkGitRepoRootWithCommit();
@@ -163,7 +211,17 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
           scope_roots: ["more"],
         },
       });
-      await writeFile(planningExchange.result_path, JSON.stringify(semantic));
+      const wireResult = (value: Record<string, unknown>) => {
+        if (backendKind !== "compact") return JSON.stringify(value);
+        const {
+          schema_version: _version,
+          kind: _kind,
+          canonical_binding: _binding,
+          ...payload
+        } = value;
+        return JSON.stringify(payload);
+      };
+      await writeFile(planningExchange.result_path, wireResult(semantic));
       const approval = await runJson(root, [
         "task",
         "advance",
@@ -201,10 +259,10 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
         plan_revision: 1,
       });
       const waiting = await runJson(root, ["task", "advance", taskId, "--agent-json"]);
-      expect(waiting.action).toMatchObject({
-        kind: "external_wait",
-        reason: "kernel_work_item_result_required",
-      });
+      expect(waiting.action).toMatchObject({ kind: "agent_episode" });
+      expect((waiting.exchange as { result_path: string }).result_path).toBe(
+        implementationExchange.result_path,
+      );
       await writeFile(path.join(root, "result.txt"), "implementation");
       const result = {
         schema_version: 2,
@@ -220,9 +278,15 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
         ],
       };
       const beforeInvalid = await runtime.adapter.read(taskId);
-      for (const invalid of [
-        { ...result, canonical_binding: { ...result.canonical_binding, claim_id: "foreign" } },
-        { ...result, canonical_outputs: [] },
+      for (const { invalid, message } of [
+        {
+          invalid: {
+            ...result,
+            canonical_binding: { ...result.canonical_binding, claim_id: "foreign" },
+          },
+          message: "canonical_binding",
+        },
+        { invalid: { ...result, canonical_outputs: [] }, message: "Canonical output claims" },
       ]) {
         await writeFile(implementationExchange.result_path, JSON.stringify(invalid));
         await refused(
@@ -235,12 +299,12 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
             implementationExchange.result_path,
             "--agent-json",
           ],
-          "Canonical",
+          message,
         );
         expect(await runtime.adapter.read(taskId)).toEqual(beforeInvalid);
       }
       await writeFile(path.join(root, "outside.txt"), "not authorized");
-      await writeFile(implementationExchange.result_path, JSON.stringify(result));
+      await writeFile(implementationExchange.result_path, wireResult(result));
       await refused(
         root,
         ["task", "advance", taskId, "--result", implementationExchange.result_path, "--agent-json"],
@@ -254,7 +318,7 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
         "legacy mutation is refused",
       );
       expect(await runtime.adapter.read(taskId)).toEqual(beforeInvalid);
-      await writeFile(implementationExchange.result_path, JSON.stringify(result));
+      await writeFile(implementationExchange.result_path, wireResult(result));
       const accepted = await runJson(root, [
         "task",
         "advance",
@@ -263,53 +327,149 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
         implementationExchange.result_path,
         "--agent-json",
       ]);
-      expect(accepted.action).toMatchObject({ reason: "kernel_work_item_inspection_required" });
+      expect(accepted.action).toMatchObject({ kind: "agent_episode" });
       const finalRead = await runtime.adapter.read(taskId);
       expect(finalRead.kind).toBe("canonical");
       if (finalRead.kind !== "canonical") throw new Error("Canonical result readback missing");
       expect(finalRead.record.aggregate.work_items.build).toMatchObject({
-        state: "RESULT_RECEIVED",
+        state: "INSPECTING",
         attempt: 1,
       });
       expect(finalRead.task.extensions?.[TASK_CENTRIC_EXTENSION_KEY]).toBeUndefined();
       expect(finalRead.record.aggregate.authority_lineage?.at(-1)?.observation?.kind).toBe(
         "repository_implementation",
       );
-      const item = finalRead.record.aggregate.work_items.build!;
-      // Fixture-only native validation. This is not production artifact qualification.
-      for (const payload of [
-        {
-          kind: "transition_work_item",
-          action: "inspect",
-          work_item_id: "build",
-          claim_id: item.claim_id,
-        },
-        {
-          kind: "record_work_item_validation",
-          work_item_id: "build",
-          validation: {
-            status: "PASSED",
-            identity: {
-              implementation_identity: item.result_digest!,
-              check_id: "fixture",
-              command_digest: k.kernelDigest("test"),
-              toolchain_digest: k.kernelDigest("toolchain"),
-              environment_digest: k.kernelDigest("env"),
-            },
-            evidence_digests: [k.kernelDigest("fixture-log")],
-            observed_at: new Date().toISOString(),
+      await mkdir(path.join(root, "packages/core/schemas"), { recursive: true });
+      await writeFile(path.join(root, "packages/core/schemas/generated.json"), "{}");
+      const delta = await runJson(root, ["task", "advance", taskId, "--agent-json"]);
+      expect(delta.action).toMatchObject({
+        kind: "human_required",
+        reason: "canonical_authority_delta_requires_user",
+        authority_delta: {
+          request: {
+            added_scope_roots: ["packages/core/schemas/generated.json"],
+            added_repository_effects: ["repository_write", "schema"],
           },
         },
-        {
-          kind: "transition_work_item",
-          action: "complete",
-          work_item_id: "build",
-          claim_id: item.claim_id,
+      });
+      const operatorArgv = (delta.action as { operator_action: { argv: string[] } }).operator_action
+        .argv;
+      await runCliSilent([...operatorArgv.slice(1), "--root", root]);
+      const afterDelta = await runtime.adapter.read(taskId);
+      if (afterDelta.kind !== "canonical") throw new Error("Authority delta fixture missing");
+      expect(afterDelta.record.aggregate.current_plan).toEqual(
+        finalRead.record.aggregate.current_plan,
+      );
+      expect(afterDelta.record.aggregate.work_items).toEqual(finalRead.record.aggregate.work_items);
+      expect(afterDelta.record.aggregate.authority_lineage?.at(-1)).toMatchObject({
+        approval_mode: "manual_operator",
+        observation: {
+          kind: "authority_delta",
+          added_scope_roots: ["packages/core/schemas/generated.json"],
         },
-      ] as const)
-        requireKernelCommit(
-          await runtime.lifecycle.apply(await runtime.input(payload, k.kernelDigest(payload))),
+      });
+      const resumed = await runJson(root, ["task", "advance", taskId, "--agent-json"]);
+      expect(resumed.action).toMatchObject({ kind: "agent_episode" });
+      const item = finalRead.record.aggregate.work_items.build!;
+      const inspectionExchange = resumed.exchange as { directory: string; result_path: string };
+      const inspection = AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse(
+        JSON.parse(
+          await readFile(path.join(inspectionExchange.directory, "work-order.json"), "utf8"),
+        ),
+      );
+      expect(inspection).toMatchObject({
+        role: "EVALUATOR",
+        authority: { mutation_scope: "none", writable_roots: [] },
+      });
+      expect(inspection.canonical_binding).toMatchObject({
+        phase: "inspection",
+        result_digest: item.result_digest,
+      });
+      const repeatedInspection = await runJson(root, ["task", "advance", taskId, "--agent-json"]);
+      expect(repeatedInspection.exchange).toEqual(resumed.exchange);
+      const review = {
+        schema_version: 2 as const,
+        kind: "agent_semantic_result" as const,
+        work_order_id: inspection.work_order_id,
+        canonical_binding: inspection.canonical_binding,
+        status: "completed" as const,
+        summary: "Independent inspection passed",
+        findings: ["Implementation satisfies the declared contract."],
+        uncertainty: [],
+        review: {
+          verdict: "pass" as const,
+          missing_tests: [],
+          hidden_assumptions: [],
+          residual_risks: [],
+        },
+      };
+      if (backendKind === "compact") {
+        await writeFile(inspectionExchange.result_path, wireResult(review));
+        const compactReview = await readKernelOrderResult(
+          command,
+          taskId,
+          inspectionExchange.result_path,
         );
+        expect(compactReview.semantic).toEqual(review);
+        const ownerPath = path.join(inspectionExchange.directory, "transport-owner.json");
+        const ownerText = await readFile(ownerPath, "utf8");
+        const { result_format: _format, ...historicalOwner } = JSON.parse(ownerText) as Record<
+          string,
+          unknown
+        >;
+        await writeFile(ownerPath, JSON.stringify(historicalOwner));
+        await expect(
+          readKernelOrderResult(command, taskId, inspectionExchange.result_path),
+        ).rejects.toThrow("does not accept compact");
+        await writeFile(inspectionExchange.result_path, JSON.stringify(review));
+        const historicalReview = await readKernelOrderResult(
+          command,
+          taskId,
+          inspectionExchange.result_path,
+        );
+        expect(historicalReview.semantic).toEqual(review);
+        await writeFile(ownerPath, ownerText);
+      }
+      await writeFile(path.join(root, "result.txt"), "changed after inspection");
+      await expect(
+        acceptKernelInspection(command, runtime, inspectionExchange.directory, review, inspection),
+      ).rejects.toThrow("stale");
+      await writeFile(path.join(root, "result.txt"), "implementation");
+      const apply = runtime.lifecycle.apply.bind(runtime.lifecycle);
+      const crash = vi.spyOn(runtime.lifecycle, "apply").mockImplementation(async (...args) => {
+        const result = await apply(...args);
+        if (args[0].command.kind === "record_work_item_validation")
+          throw new Error("crash after durable validation");
+        return result;
+      });
+      await expect(
+        acceptKernelInspection(command, runtime, inspectionExchange.directory, review, inspection),
+      ).rejects.toThrow("crash after durable validation");
+      crash.mockRestore();
+      const interrupted = await runtime.adapter.read(taskId);
+      if (interrupted.kind !== "canonical") throw new Error("Native validation missing");
+      expect(interrupted.record.aggregate.work_items.build!.state).toBe("VALIDATING");
+      await resumeKernelInspection(command, runtime, interrupted.record, "build");
+
+      const evidence = JSON.parse(
+        await readFile(path.join(inspectionExchange.directory, "validation.json"), "utf8"),
+      ) as { checks: unknown };
+      expect(evidence.checks).toMatchObject({
+        status: "passed",
+        checks: [{ command: "node --version", exit_code: 0 }],
+      });
+      await acceptKernelInspection(
+        command,
+        runtime,
+        inspectionExchange.directory,
+        review,
+        inspection,
+      );
+      expect(
+        JSON.parse(
+          await readFile(path.join(inspectionExchange.directory, "validation.json"), "utf8"),
+        ),
+      ).toEqual(evidence);
       const completed = await runtime.adapter.read(taskId);
       if (completed.kind !== "canonical") throw new Error("Completed fixture missing");
       const refined = structuredClone(semantic.canonical_plan);
@@ -344,13 +504,58 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
         root,
       ]);
       expect(await runtime.adapter.read(taskId)).toEqual(amended);
-      refined.work_items[1]!.execution_requirements.scope_roots = ["."];
+      refined.work_items[1]!.execution_requirements.scope_roots = [
+        "more/result.txt",
+        "more/extra.txt",
+      ];
       await refused(
         root,
         ["task", "plan", "set", taskId, "--text", JSON.stringify(refined)],
         "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
       );
-      expect(await runtime.adapter.read(taskId)).toEqual(amended);
+      expect(
+        await runCliSilent([
+          "task",
+          "plan",
+          "set",
+          taskId,
+          "--text",
+          JSON.stringify(refined),
+          "--scope-expansion-approved-by",
+          "USER",
+          "--root",
+          root,
+        ]),
+      ).toBe(0);
+      const expanded = await runtime.adapter.read(taskId);
+      if (expanded.kind !== "canonical") throw new Error("Approved amendment missing");
+      expect(expanded.record.aggregate.current_plan).toMatchObject({
+        revision: 3,
+        approval_actor_id: "USER",
+      });
+      expect(expanded.record.aggregate.current_plan?.approval_evidence_digest).not.toBe(
+        amended.record.aggregate.current_plan?.approval_evidence_digest,
+      );
+      refined.work_items[1]!.execution_requirements.scope_roots = [
+        "more/result.txt",
+        "more/extra.txt",
+        "docs/user/cli-reference.generated.mdx",
+      ];
+      await refused(
+        root,
+        [
+          "task",
+          "plan",
+          "set",
+          taskId,
+          "--text",
+          JSON.stringify(refined),
+          "--scope-expansion-approved-by",
+          "USER",
+        ],
+        "Canonical Plan exceeds the trusted execution contract: scope_roots",
+      );
+      expect(await runtime.adapter.read(taskId)).toEqual(expanded);
     },
   );
   it.each([
@@ -382,8 +587,26 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
         result.canonical_plan = { work_items: [{ id: 'build', depends_on: [], required_inputs: [], expected_outputs: ['source'], optional: false,
           execution_requirements: { scope_roots: ['result.txt'], repository_effects: ['source_code'], external_effects: [], capabilities: ['repository_write'], resources: [] },
           contract: { role: 'EXECUTOR', objective: 'Write result.txt', acceptance_criteria: ['Result exists'], verification_commands: ['node --version'] } }] };
+      } else if (order.role === 'EVALUATOR') {
+        assert.equal(order.authority.mutation_scope, 'none');
+        result.findings = ['The implementation was inspected against the issued contract.'];
+        if (order.canonical_binding.attempt > 1) {
+          const repositoryEvidence = order.required_inputs.find(input => input.id === 'repository-evidence');
+          assert(repositoryEvidence && repositoryEvidence.required && repositoryEvidence.path);
+          const evidence = JSON.parse(fs.readFileSync(repositoryEvidence.path, 'utf8'));
+          assert.equal(evidence.task_id, order.task.id);
+          assert.equal(evidence.work_item_id, order.task.work_item_id);
+          assert.equal(evidence.evaluator_target, evidence.implementation_commit);
+        }
+        result.review = { verdict: ${backendKind === "cloud" ? "order.canonical_binding.attempt === 1 ? 'rework' : 'pass'" : "'pass'"}, missing_tests: [], hidden_assumptions: [], residual_risks: [] };
       } else {
         assert(order.required_outputs.some(output => output.id === 'output:source'));
+        if (order.canonical_binding.attempt > 1) {
+          const review = order.required_inputs.find(input => input.id.startsWith('review:'));
+          assert(review && review.required);
+          assert.equal(JSON.parse(fs.readFileSync(review.path, 'utf8')).review.verdict, 'rework');
+          assert(order.required_inputs.some(input => input.id.startsWith('checks:') && input.required));
+        }
         fs.writeFileSync('result.txt', 'managed implementation');
         result.canonical_outputs = [{ id: 'source', kind: 'source', digest: 'sha256:' + require('node:crypto').createHash('sha256').update('managed implementation').digest('hex') }];
       }
@@ -399,12 +622,8 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
       const preview = await runJson(root, ["task", "run", taskId, "--dry-run", "--json"]);
       expect(preview.action).toMatchObject({ kind: "read_only" });
       expect(execute).not.toHaveBeenCalled();
-      const planned = await runJson(root, ["task", "run", taskId, "--json"]);
       if (mode === "real-custom") {
-        expect(planned.action).toMatchObject({
-          kind: "human_required",
-          reason: "canonical_runner_receipt_not_successful",
-        });
+        await refused(root, ["task", "run", taskId, "--json"], "required read-only planning");
         const command = await loadCommandContext({ cwd: root });
         const runtime = await createKernelRuntime({
           command,
@@ -414,18 +633,116 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
         });
         const state = await runtime.adapter.read(taskId);
         expect(state.kind === "canonical" && state.record.aggregate.current_plan).toBeNull();
-        expect(execute).toHaveBeenCalledTimes(1);
+        expect(execute).not.toHaveBeenCalled();
         return;
       }
+      const planned = await runJson(root, ["task", "run", taskId, "--json"]);
       expect(planned.action).toMatchObject({ kind: "approval_required" });
       await runCliSilent(["task", "plan", "approve", taskId, "--by", "USER", "--root", root]);
+      const command = await loadCommandContext({ cwd: root });
+      const runtime = await createKernelRuntime({
+        command,
+        task_id: taskId,
+        transport: "managed",
+        operation_id: "inspect-completion",
+      });
+      if (backendKind === "local") {
+        const unchanged = await runtime.adapter.read(taskId);
+        if (unchanged.kind !== "canonical") throw new Error("Missing canonical plan");
+        const noProgress = vi.spyOn(KernelTaskLifecycle.prototype, "apply").mockResolvedValue({
+          kind: "committed",
+          record: unchanged.record,
+          receipts: [],
+          replayed: true,
+        } as never);
+        try {
+          const stopped = await runJson(root, ["task", "run", taskId, "--json"]);
+          expect(stopped.action).toMatchObject({
+            kind: "human_required",
+            reason: "internal_anomaly",
+            diagnostic: {
+              code: "orchestrator_tight_loop",
+              repetition_count: 4,
+              exhausted_recovery_strategies: ["route_refresh", "repository_checkpoint"],
+              resume_hint: "Inspect the route and repository checkpoint, then rerun task advance.",
+            },
+          });
+          expect(execute).toHaveBeenCalledTimes(1);
+        } finally {
+          noProgress.mockRestore();
+        }
+        const verify = finalChecks.runDirectTaskVerification;
+        let calls = 0;
+        const drift = vi
+          .spyOn(finalChecks, "runDirectTaskVerification")
+          .mockImplementation(async (options) => {
+            const result = await verify(options);
+            if (++calls === 2)
+              await writeFile(path.join(root, "result.txt"), "changed during final validation");
+            return result;
+          });
+        try {
+          const evaluator = await runJson(root, ["task", "run", taskId, "--json"]);
+          expect(evaluator.authority).toMatchObject({ role: "EVALUATOR" });
+          await refused(root, ["task", "run", taskId, "--json"], "inputs changed during checks");
+        } finally {
+          drift.mockRestore();
+        }
+        await writeFile(path.join(root, "result.txt"), "managed implementation");
+      } else {
+        // The captured method is invoked with its original receiver through apply below.
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        const apply = KernelTaskLifecycle.prototype.apply;
+        const crash = vi
+          .spyOn(KernelTaskLifecycle.prototype, "apply")
+          .mockImplementation(async function (...args) {
+            const result = await apply.apply(this, args);
+            if (args[0].command.kind === "record_final_validation")
+              throw new Error("crash after final validation");
+            return result;
+          });
+        try {
+          const firstEvaluator = await runJson(root, ["task", "run", taskId, "--json"]);
+          expect(firstEvaluator.authority).toMatchObject({ role: "EVALUATOR" });
+          const rework = await runJson(root, ["task", "run", taskId, "--json"]);
+          expect(rework.authority).toMatchObject({ role: "EXECUTOR" });
+          const secondEvaluator = await runJson(root, ["task", "run", taskId, "--json"]);
+          expect(secondEvaluator.authority).toMatchObject({ role: "EVALUATOR" });
+          await refused(root, ["task", "run", taskId, "--json"], "crash after final validation");
+        } finally {
+          crash.mockRestore();
+        }
+        const interrupted = await runtime.adapter.read(taskId);
+        expect(interrupted.kind === "canonical" && interrupted.record.aggregate.state).toBe(
+          "FINAL_VALIDATION",
+        );
+      }
       const implemented = await runJson(root, ["task", "run", taskId, "--json"]);
-      expect(implemented.action).toMatchObject({ reason: "kernel_work_item_inspection_required" });
+      expect(implemented.action).toMatchObject({
+        kind: "terminal",
+        reason: "kernel_task_completed",
+      });
+      const completed = await runtime.adapter.read(taskId);
+      if (completed.kind !== "canonical") throw new Error("Missing completed task");
+      expect(completed.record.aggregate.final_validation?.status).toBe("PASSED");
+      if (backendKind === "cloud") {
+        const task = await command.taskBackend.getTask(taskId);
+        expect(readKernelOperationalProjection(task?.extensions)).toMatchObject({
+          source: "task_kernel",
+        });
+      }
+      // Recovery reuses the persisted validation instead of recording a second mutation.
+      if (backendKind === "cloud")
+        expect(
+          Object.keys(completed.record.aggregate.mutation_receipts).filter((id) =>
+            id.startsWith("final-validation:"),
+          ),
+        ).toHaveLength(1);
       expect(await readFile(path.join(root, "result.txt"), "utf8")).toBe("managed implementation");
-      expect(execute).toHaveBeenCalledTimes(2);
+      expect(execute).toHaveBeenCalledTimes(backendKind === "cloud" ? 5 : 3);
       const again = await runJson(root, ["task", "run", taskId, "--json"]);
-      expect(again.action).toMatchObject({ reason: "kernel_work_item_inspection_required" });
-      expect(execute).toHaveBeenCalledTimes(2);
+      expect(again.action).toMatchObject({ kind: "terminal", reason: "kernel_task_completed" });
+      expect(execute).toHaveBeenCalledTimes(backendKind === "cloud" ? 5 : 3);
     },
   );
 });
