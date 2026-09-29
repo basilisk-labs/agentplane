@@ -1,5 +1,7 @@
 import path from "node:path";
 
+import { taskExecutionBaseFromExtensions } from "@agentplaneorg/core/tasks";
+
 import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { writeJsonStableIfChanged, writeTextIfChanged } from "../../../shared/write-if-changed.js";
 import { CliError } from "../../../shared/errors.js";
@@ -28,6 +30,7 @@ import {
 import { toRecordedGitHostIdentity, type GitHostIdentity } from "./git-host-identity.js";
 import { digestPrDiffstatText } from "./freshness.js";
 import type { PrOpenOutcome, PrRemoteMode, PrSyncCommonState } from "./sync-model.js";
+import { resolveProviderBaseBranch } from "./provider-base.js";
 
 export async function runPrOpenSync(
   common: PrSyncCommonState,
@@ -66,6 +69,15 @@ export async function runPrOpenSync(
   } catch (error) {
     identityFailure = error instanceof Error ? error.message : String(error);
   }
+  const providerBase =
+    identity && opts.remoteMode !== "sync-only"
+      ? await resolveProviderBaseBranch({
+          gitRoot: common.resolved.gitRoot,
+          baseRef: common.baseBranch,
+          baseSha: taskExecutionBaseFromExtensions(common.task.extensions)?.base_sha ?? null,
+          identity,
+        })
+      : common.baseBranch;
   const linkedExistingOutcome =
     typeof nextMeta.pr_number === "number" && nextMeta.pr_number > 0
       ? {
@@ -96,7 +108,7 @@ export async function runPrOpenSync(
     ? await observeExistingChangeRequestByBranch({
         gitRoot: common.resolved.gitRoot,
         branch: common.branch,
-        baseBranch: common.baseBranch,
+        baseBranch: providerBase,
         identity,
       }).then((result) => (result.state === "found" ? result.pr : null))
     : null;
@@ -127,7 +139,7 @@ export async function runPrOpenSync(
       ? await tryCreateChangeRequest({
           gitRoot: common.resolved.gitRoot,
           branch: common.branch,
-          baseBranch: common.baseBranch,
+          baseBranch: providerBase,
           title: githubTitle,
           body: githubBody,
           identity,
