@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:eec26c484ab9a262a1ee8ff11e76bcf0846b3d54d4f3a0fc042b7c344dc4e532",
   "pr_number": 6036,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6036",
+  "pre_merge_closure": {
+    "basis_commit": "5d233958f9f5065d8fafdcb547a10860ca595015",
+    "branch": "task/202609291223-N4B1DN/complete-issue-5991-verify-test-fixture-cleanup",
+    "pr_number": 6036,
+    "recorded_at": "2026-09-29T23:10:27.032Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",

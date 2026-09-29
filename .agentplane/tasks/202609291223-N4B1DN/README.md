@@ -1,10 +1,11 @@
 ---
 id: "202609291223-N4B1DN"
 title: "Complete issue 5991: verify test fixture cleanup and interrupted-run recovery"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -41,6 +42,22 @@ quality_review:
     - "The measurement runner isolates TMPDIR/TMP/TEMP, recursively measures entries/directories/bytes without traversing symlinks, retains a failing child status and removes only its own parent."
     - "Verified canonical digests for implementation, repository and native checks. The accepted commit is 50233a80974e9ef6d1785cffed2cbdd40476442c, with exactly the two authorized testkit files changed. Source output digest matches the accepted result."
     - "Native evidence records all 25 assigned tests passing, both measurement repetitions passing with zero entries/directories/bytes, and successful scoped ESLint and typecheck."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:89d5f389b04c191c56d1846f0a8c703f542015098819d0758f686c7346b618e8"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-09-29T23:10:25.691Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -231,9 +248,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "50233a80974e9ef6d1785cffed2cbdd40476442c"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "5d233958f9f5065d8fafdcb547a10860ca595015"
+  message: "✅ N4B1DN task: persist canonical completion"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -241,9 +261,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-09-29T23:10:25.691Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "5d233958f9f5065d8fafdcb547a10860ca595015"
 doc_version: 3
-doc_updated_at: "2026-09-29T23:01:28.811Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-29T23:10:25.691Z"
+doc_updated_by: "CODER"
 description: "Current main has owned Vitest temp roots and bounded stale-root recovery. Four cleanup unit tests pass, but issue #5991 also requires ordinary test failure, subprocess failure and concurrent-run regression coverage plus repeated focused and full local CI residue measurements. Audit direct temporary fixture users, add missing lifecycle coverage, repair any reproduced leaks, and measure owned residual count and bytes in an isolated parent. Never delete unrelated directories, active worktrees or another live worker's roots. Close the issue only when its acceptance criteria are demonstrated."
 sections:
   Summary: |-
@@ -387,6 +415,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:d651066b7ca083e018a3a4f4dd850807d2de1f2925c8277a50f14908748e16c7"
     work_order_id: "sha256:3cd21f9f4213aae50128e8c4166941ad2b0bdac4b52788e61aad22fed8057939"
+  implementation_commit:
+    hash: "50233a80974e9ef6d1785cffed2cbdd40476442c"
+    message: "🚧 N4B1DN task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "4119c4342407fa28a7283521e2b0f87bbea5f243"
@@ -1062,3 +1093,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:89d5f389b04c191c56d1846f0a8c703f542015098819d0758f686c7346b618e8`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-09-29T23:10:25.691Z`
