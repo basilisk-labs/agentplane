@@ -6,14 +6,14 @@ Created: 2026-09-29T19:37:33.025Z
 
 - Task: `202609291221-3DMW1P`
 - Title: Fix issue 6020: task new must admit bounded source and test plans
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609291221-3DMW1P/fix-issue-6020-task-new-must-admit-bounded-sourc`
 - Canonical task record: `.agentplane/tasks/202609291221-3DMW1P/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

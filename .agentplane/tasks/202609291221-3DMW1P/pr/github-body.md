@@ -15,8 +15,8 @@ Issue #6020 is still applicable on main 4119c434. task new uses a legacy-derived
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>

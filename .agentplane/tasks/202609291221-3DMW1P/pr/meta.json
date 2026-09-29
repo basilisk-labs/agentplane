@@ -3,7 +3,8 @@
   "branch": "task/202609291221-3DMW1P/fix-issue-6020-task-new-must-admit-bounded-sourc",
   "created_at": "2026-09-29T19:37:33.025Z",
   "diffstat_sha256": "sha256:2dbe7ec38eba57d6dfc062582510f2be96ef3bb4c190f961e45cc431f047281c",
-  "last_verified_at": null,
+  "last_verified_at": "2026-09-29T19:42:30.572Z",
+  "last_verified_diffstat_sha256": "sha256:2dbe7ec38eba57d6dfc062582510f2be96ef3bb4c190f961e45cc431f047281c",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202609291221-3DMW1P",
   "updated_at": "2026-09-29T19:37:33.025Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

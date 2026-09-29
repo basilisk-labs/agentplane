@@ -1,1 +1,1 @@
-🚧 3DMW1P task: Fix issue 6020: task new must admit bounded source and test plans [202609291221-3DMW1P]
+✅ 3DMW1P task: Fix issue 6020: task new must admit bounded source and test plans [202609291221-3DMW1P]

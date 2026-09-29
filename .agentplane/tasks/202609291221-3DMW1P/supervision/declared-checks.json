@@ -1,0 +1,114 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "task_outcome"
+      ],
+      "command": "bun x vitest run --config vitest.config.ts --maxWorkers=2 packages/agentplane/src/commands/task/new-execution-contract.test.ts packages/agentplane/src/commands/task/kernel-plan-authority.test.ts packages/agentplane/src/commands/task/new.primary-checkout.test.ts",
+      "duration_ms": 33305,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:57d287a513206088c6ce326cc0b0c7ae5fc1f1bb41c574de58d11c606bd39db0",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v4.1.11 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202609291221-3DMW1P-fix-issue-6020-task-new-must-admit-bounded-sourc\n\n\n Test Files  3 passed (3)\n      Tests  17 passed (17)\n   Start at  22:41:08\n   Duration  29.26s (transform 25.16s, setup 506ms, import 28.78s, tests 23.20s, environment 1ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "task_outcome"
+      ],
+      "command": "bun run typecheck",
+      "duration_ms": 2513,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:57d287a513206088c6ce326cc0b0c7ae5fc1f1bb41c574de58d11c606bd39db0",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "task_outcome"
+      ],
+      "command": "bun run docs:cli:check",
+      "duration_ms": 4744,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:57d287a513206088c6ce326cc0b0c7ae5fc1f1bb41c574de58d11c606bd39db0",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "docs:cli:check",
+      "stderr_tail": "$ node scripts/checks/check-cli-reference-fresh.mjs\n",
+      "stdout_tail": "/tmp/agentplane-cli-docs-6nxhKV/cli-reference.generated.mdx\n../../../../../../../tmp/agentplane-cli-docs-6nxhKV/cli-reference.generated.mdx 1476ms (unchanged)\nok: docs/user/cli-reference.generated.mdx is up to date\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "task_outcome"
+      ],
+      "command": "node .agentplane/policy/check-routing.mjs",
+      "duration_ms": 1299,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:57d287a513206088c6ce326cc0b0c7ae5fc1f1bb41c574de58d11c606bd39db0",
+        "executable_digest": "sha256:7fde7b8afa198da66257f42ee2001d874c7355631e6d1579a5fb5ef1f246df4c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "policy routing OK\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "task_outcome"
+      ],
+      "command": "agentplane doctor",
+      "duration_ms": 36549,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:57d287a513206088c6ce326cc0b0c7ae5fc1f1bb41c574de58d11c606bd39db0",
+        "executable_digest": "sha256:7fde7b8afa198da66257f42ee2001d874c7355631e6d1579a5fb5ef1f246df4c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "info: detected framework checkout; delegating to repo-local binary: /home/agentplane/workspace/agentplane/.agentplane/worktrees/202609291221-3DMW1P-fix-issue-6020-task-new-must-admit-bounded-sourc/packages/agentplane/bin/agentplane.js\nℹ️ doctor: checking workflow contract\n{\"ts\":\"2026-09-29T19:41:53.345Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_doctor_check\",\"details\":{\"ok\":true,\"findings\":0}}\nℹ️ doctor: checking workspace\nℹ️ doctor: checking branch_pr drift\nℹ️ doctor: checking runtime source\nℹ️ doctor: checking prompt graph\nℹ️ doctor: checking recent task archive\n⚠️ doctor findings: errors=0 warnings=1 info=10\n- [INFO] State: local plan approval requires a host-originated user decision\nLikely cause: no trusted signed-receipt issuer is configured\nNext action: ap task advance <task-id> --agent-json (present the emitted host_user_decision request in Codex; use task plan approve --by USER only as explicit manual compatibility)\nDetails: Reason code: host_user_decision_required\n  - AgentPlane will not emit an unavailable signed_user_receipt transport.\n  - A managed runner cannot synthesize the user decision and stops at the plan boundary.\n- [INFO] Runtime mode: repo-local-handoff (repo-local binary reached via handoff from a global install)\n- [INFO] Active binary: /home/agentplane/workspace/agentplane/.agentplane/worktrees/202609291221-3DMW1P-fix-issue-6020-task-new-must-admit-bounded-sourc/packages/agentplane/bin/agentplane.js\n- [INFO] Handoff source binary: /home/agentplane/workspace/agentplane/.agentplane/worktrees/202609291255-PGF2EM-recognize-empty-schema-object-staging-directorie/packages/agentplane/bin/agentplane.js\n- [INFO] Resolved agentplane: 0.7.12 @ /home/agentplane/workspace/agentplane/.agentplane/worktrees/202609291221-3DMW1P-fix-issue-6020-task-new-must-admit-bounded-sourc/packages/agentplane\n- [INFO] Resolved @agentplaneorg/core: 0.7.12 @ /home/agentplane/workspace/agentplane/.agentplane/worktrees/202609291221-3DMW1P-fix-issue-6020-task-new-must-admit-bounded-sourc/packages/core\n- [INFO] Framework repo root: /home/agentplane/workspace/agentplane/.agentplane/worktrees/202609291221-3DMW1P-fix-issue-6020-task-new-must-admit-bounded-sourc\n- [INFO] Framework agentplane root: /home/agentplane/workspace/agentplane/.agentplane/worktrees/202609291221-3DMW1P-fix-issue-6020-task-new-must-admit-bounded-sourc/packages/agentplane\n- [INFO] Framework core root: /home/agentplane/workspace/agentplane/.agentplane/worktrees/202609291221-3DMW1P-fix-issue-6020-task-new-must-admit-bounded-sourc/packages/core\n- [INFO] Historical task archive contains 155 DONE tasks with unknown implementation commit hashes across 155 distinct commit hashes. Examples: 042f68391d3b51915e07f648cc6f02bf54579bd6 (1 task: 202608271544-1TDVPJ); 08be56971aec26c3366d50e67b4043b47e142377 (1 task: 202609190050-3MJ7GQ); 08c437b3d19e21c6e85de277fc47ef9e269651ec (1 task: 202609111339-NGDG6V); +152 more hash groups\n- [WARN] DONE task implementation commit points to a close commit: 202609071219-QV0SX9 -> 3c45166b31d0a9960f52aa11c3259afd472dd691 (🚧 QV0SX9 task: pre-merge closure)\n",
+      "stdout_tail": "✅ doctor (OK)\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202609291221-3DMW1P"
+}
