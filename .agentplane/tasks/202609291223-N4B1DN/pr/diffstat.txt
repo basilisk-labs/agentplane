@@ -1,0 +1,3 @@
+ .../temp-root-cleanup.integration.test.ts          | 143 +++++++++++++++++++++
+ .../src/cli-harness/temp-root-cleanup.measure.mjs  |  69 ++++++++++
+ 2 files changed, 212 insertions(+)
