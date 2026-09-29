@@ -67,7 +67,7 @@ export type InteractiveInitAnswers = {
 };
 
 export function assertConfirmed(clack: InitClackPrompts, value: boolean | symbol): boolean {
-  if (clack.isCancel(value)) {
+  if (clack.isCancel(value) || typeof value !== "boolean") {
     clack.cancel("Init cancelled before apply.");
     throw new InitAborted("Init cancelled before apply.");
   }
