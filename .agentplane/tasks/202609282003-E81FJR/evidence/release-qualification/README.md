@@ -38,3 +38,9 @@ The operator will publish the candidate through a normal GitHub PR and retain al
 - Public package and distribution readback, published-install smoke, and post-publication audit.
 
 M04 efficiency remains NOT ESTABLISHED. Live-provider containment is not certified by this release evidence.
+
+## Post-Qualification Dependency Repair
+
+The first candidate push exposed Dependabot alert 2 (GHSA-82fw-gwwq-j7x9). The advisory affects the development test toolchain's mock redirect file-serving boundary. Vitest 4.1.11 is the first patched release. The operator updated the exact Vitest and coverage-provider pins from 4.1.9 to 4.1.11 under the user's explicit release-defect repair authorization. The product version remains 0.7.12.
+
+The native evidence above applies to implementation commit `c39a66a100f7c8ee2b68492b4eba4a14e608a8be` before this dependency repair. Qualification of the repaired dependency graph must be recorded separately. The earlier pass must not be represented as a pass of the changed lockfile.
