@@ -49,7 +49,7 @@ describe("publish workflow contract", () => {
       const publish = workflow.jobs.publish;
       const checkout = step(publish, "Checkout current setup publication runtime");
       expect(checkout).toMatchObject({
-        uses: "actions/checkout@v6",
+        uses: "actions/checkout@v7",
         with: {
           ref: "${{ github.workflow_sha }}",
           path: ".agentplane/.release/runtime",
