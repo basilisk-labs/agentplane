@@ -20,7 +20,7 @@ jobs:
     outputs:
       core: ${{ steps.filter.outputs.core }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - uses: dorny/paths-filter@v4
@@ -56,18 +56,18 @@ jobs:
           else
             echo "ref=${{ github.ref }}" >> "$GITHUB_OUTPUT"
           fi
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ steps.target.outputs.ref }}
           fetch-depth: 0
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: "1.4.2"
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: "24"
       - name: Cache Bun artifacts
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.bun/install/cache
