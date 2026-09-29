@@ -1,0 +1,1 @@
+🚧 MGB383 task: Harden the post-release evidence close-tail under branch protection for GitHub issue #4848 [202609111340-MGB383]
