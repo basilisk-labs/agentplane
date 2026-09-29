@@ -22,7 +22,7 @@ Current main has owned Vitest temp roots and bounded stale-root recovery. Four c
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-29T22:42:38.299Z
+- Updated: 2026-09-29T23:07:36.402Z
 - Branch: task/202609291223-N4B1DN/complete-issue-5991-verify-test-fixture-cleanup
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
