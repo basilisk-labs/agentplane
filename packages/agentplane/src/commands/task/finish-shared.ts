@@ -248,6 +248,7 @@ export async function writeFinishedTasks(opts: {
   breaking: boolean;
   taskCommitInfo: ResolvedCommitInfo | null;
   implementationCommitInfo?: ResolvedCommitInfo | null;
+  allowCanonicalProjection?: boolean;
 }): Promise<void> {
   const taskCount = opts.loadedTasks.length;
 
@@ -327,6 +328,7 @@ export async function writeFinishedTasks(opts: {
       taskId,
       policyAction: "task_status_transition",
       phase: "finish",
+      allowCanonicalProjection: opts.allowCanonicalProjection,
       build: async (currentTask) => {
         const execution = await applyTransition(currentTask);
         const currentCanonical = taskCentricAggregateFromExtensions(currentTask.extensions);

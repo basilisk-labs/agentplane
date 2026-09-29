@@ -54,19 +54,6 @@ export type TaskData = {
     | "security"
     | "external_system"
   )[];
-  blueprint_request?:
-    | "analysis.light"
-    | "content.light"
-    | "docs.change"
-    | "code.direct"
-    | "code.branch_pr"
-    | "performance.benchmark"
-    | "quality.regression"
-    | "context.assimilation"
-    | "context.maximum_assimilation"
-    | "post_run.improvement_review"
-    | "release.strict"
-    | "ops.approval";
   verify: string[];
   plan_approval?: PlanApproval;
   verification?: VerificationResult;

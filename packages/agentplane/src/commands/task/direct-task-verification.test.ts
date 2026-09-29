@@ -40,6 +40,23 @@ function command(root: string) {
   } as never;
 }
 
+type VerificationOptions = Parameters<typeof runDirectTaskVerification>[0];
+
+function runVerification(
+  cwd: string,
+  task: VerificationOptions["task"],
+  overrides: Partial<VerificationOptions> = {},
+) {
+  return runDirectTaskVerification({
+    command: command(cwd),
+    task,
+    task_id: TASK_ID,
+    cwd,
+    run_process: mocks.runProcess,
+    ...overrides,
+  });
+}
+
 function executionContract(
   repositoryEffects: NonNullable<
     TaskData["execution_contract"]
@@ -115,13 +132,10 @@ describe("direct task verification", () => {
       mocks.runProcess.mockRejectedValueOnce(
         Object.assign(new Error(`spawn bun ${code}`), { code }),
       );
-      const result = await runDirectTaskVerification({
-        command: command(cwd),
-        task: { id: TASK_ID, verify: ["bun test"] } as TaskData,
-        task_id: TASK_ID,
-        cwd,
-        run_process: mocks.runProcess,
-      });
+      const result = await runVerification(cwd, {
+        id: TASK_ID,
+        verify: ["bun test"],
+      } as TaskData);
       expect(result.status).toBe("unsupported");
       expect(result.checks[0]).toMatchObject({
         exit_code: null,
@@ -167,8 +181,12 @@ describe("direct task verification", () => {
       .spyOn(reviewTarget, "resolveQualityReviewTargetSha")
       .mockResolvedValue("frozen-head");
     const observed = vi
-      .spyOn(observedChanges, "resolveObservedVerificationChangedPaths")
-      .mockResolvedValue(["docs/contract.md"]);
+      .spyOn(observedChanges, "resolveObservedVerificationChangeSet")
+      .mockResolvedValue({
+        changed_paths: ["docs/contract.md"],
+        inherited_paths: [],
+        repository_effects: ["documentation", "repository_write"],
+      });
     const retain = vi
       .spyOn(infrastructureVerification, "prepareInfrastructureVerificationForCheckout")
       .mockResolvedValue(() => Promise.resolve("infra.json"));
@@ -268,17 +286,11 @@ describe("direct task verification", () => {
     );
     mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "1 pass", stderr: "" });
 
-    const result = await runDirectTaskVerification({
-      command: command(repo),
-      task: {
-        verify: ["bun run check", "bun run typecheck"],
-        task_kind: "code",
-        mutation_scope: "code",
-        sections: { "Verify Steps": "PLANNER fallback scaffold. Replace this." },
-      },
-      task_id: TASK_ID,
-      cwd: repo,
-      run_process: mocks.runProcess,
+    const result = await runVerification(repo, {
+      verify: ["bun run check", "bun run typecheck"],
+      task_kind: "code",
+      mutation_scope: "code",
+      sections: { "Verify Steps": "PLANNER fallback scaffold. Replace this." },
     });
 
     expect(result.status).toBe("passed");
@@ -349,14 +361,12 @@ describe("direct task verification", () => {
     mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "16 pass", stderr: "" });
     process.env.AGENTPLANE_AGENT_MODE = "1";
     process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN = "/maintenance/agentplane.js";
-    const check = "bun test packages/agentplane/src/cli/run-cli.core.task-advance.test.ts";
+    const check = "bun test packages/agentplane/src/commands/task/agent-action-packet.test.ts";
 
-    const result = await runDirectTaskVerification({
-      command: command(cwd),
-      task: { verify: [check], task_kind: "code", mutation_scope: "code" },
-      task_id: TASK_ID,
-      cwd,
-      run_process: mocks.runProcess,
+    const result = await runVerification(cwd, {
+      verify: [check],
+      task_kind: "code",
+      mutation_scope: "code",
     });
 
     expect(result).toMatchObject({
@@ -375,7 +385,7 @@ describe("direct task verification", () => {
       | undefined;
     expect(invocation).toMatchObject({
       command: "bun",
-      args: ["test", "packages/agentplane/src/cli/run-cli.core.task-advance.test.ts"],
+      args: ["test", "packages/agentplane/src/commands/task/agent-action-packet.test.ts"],
       cwd,
       timeoutMs: 30 * 60_000,
     });
@@ -395,12 +405,10 @@ describe("direct task verification", () => {
       mocks.runProcess.mockResolvedValueOnce({ exitCode: 0, ...output });
       const check = "bun test missing-filter";
 
-      const result = await runDirectTaskVerification({
-        command: command(cwd),
-        task: { verify: [check], task_kind: "code", mutation_scope: "code" },
-        task_id: TASK_ID,
-        cwd,
-        run_process: mocks.runProcess,
+      const result = await runVerification(cwd, {
+        verify: [check],
+        task_kind: "code",
+        mutation_scope: "code",
       });
 
       expect(result).toMatchObject({
@@ -422,12 +430,10 @@ describe("direct task verification", () => {
       stdout: "1 pass\n(pass) preserves a captured no tests found diagnostic",
       stderr: "",
     });
-    const valid = await runDirectTaskVerification({
-      command: command(cwd),
-      task: { verify: ["bun test real-filter"], task_kind: "code", mutation_scope: "code" },
-      task_id: TASK_ID,
-      cwd,
-      run_process: mocks.runProcess,
+    const valid = await runVerification(cwd, {
+      verify: ["bun test real-filter"],
+      task_kind: "code",
+      mutation_scope: "code",
     });
     expect(valid).toMatchObject({ status: "passed", reason: null });
   });
@@ -438,12 +444,8 @@ describe("direct task verification", () => {
       .mockResolvedValueOnce({ exitCode: 0, stdout: "first ok", stderr: "" })
       .mockResolvedValueOnce({ exitCode: 0, stdout: "second ok", stderr: "" });
 
-    const result = await runDirectTaskVerification({
-      command: command(cwd),
-      task: { verify: ["bun run test:critical", "bun run lifecycle:invariants"] },
-      task_id: TASK_ID,
-      cwd,
-      run_process: mocks.runProcess,
+    const result = await runVerification(cwd, {
+      verify: ["bun run test:critical", "bun run lifecycle:invariants"],
     });
 
     expect(result).toMatchObject({ status: "passed", reason: null });
@@ -738,7 +740,15 @@ describe("direct task verification", () => {
     expect(result.status).toBe("passed");
     expect(mocks.runProcess).toHaveBeenNthCalledWith(
       2,
-      expect.objectContaining({ command: "bun", args: ["run", "ci:local:full"] }),
+      expect.objectContaining({
+        command: "bun",
+        args: ["run", "ci:local:full"],
+        timeoutMs: 90 * 60_000,
+      }),
+    );
+    expect(mocks.runProcess).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({ timeoutMs: 30 * 60_000 }),
     );
     expect(result.checks).toEqual(
       expect.arrayContaining([
@@ -784,12 +794,9 @@ describe("direct task verification", () => {
     const contract = executionContract(["repository_write", "source_code"]);
     contract.verification.contract = { selected_checks: ["full_regression", "task_outcome"] };
 
-    const result = await runDirectTaskVerification({
-      command: command(cwd),
-      task: { verify: ["npm run test:fast"], execution_contract: contract },
-      task_id: TASK_ID,
-      cwd,
-      run_process: mocks.runProcess,
+    const result = await runVerification(cwd, {
+      verify: ["npm run test:fast"],
+      execution_contract: contract,
     });
 
     expect(result.status).toBe("passed");
@@ -800,6 +807,33 @@ describe("direct task verification", () => {
     );
     expect(result.checks[1]).toMatchObject({
       command: "npm run ci:local:full",
+      check_ids: ["full_regression", "task_outcome"],
+    });
+  });
+
+  it("uses the repository test script when no AgentPlane-specific full script exists", async () => {
+    const cwd = await root();
+    await writeFile(
+      path.join(cwd, "package.json"),
+      JSON.stringify({ packageManager: "bun@1.3.6", scripts: { test: "vitest run" } }),
+      "utf8",
+    );
+    mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "42 passed", stderr: "" });
+    const contract = executionContract(["repository_write", "source_code"]);
+    contract.verification.contract = { selected_checks: ["full_regression", "task_outcome"] };
+
+    const result = await runVerification(cwd, {
+      verify: ["git diff --check"],
+      execution_contract: contract,
+    });
+
+    expect(result.status).toBe("passed");
+    expect(mocks.runProcess).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({ command: "bun", args: ["run", "test"] }),
+    );
+    expect(result.checks[1]).toMatchObject({
+      command: "bun run test",
       check_ids: ["full_regression", "task_outcome"],
     });
   });
@@ -817,12 +851,9 @@ describe("direct task verification", () => {
       environment_digest: "sha256:" + "3".repeat(64),
     });
 
-    const result = await runDirectTaskVerification({
-      command: command(cwd),
-      task: { verify: ["python -m pytest"], execution_contract: contract },
-      task_id: TASK_ID,
-      cwd,
-      run_process: mocks.runProcess,
+    const result = await runVerification(cwd, {
+      verify: ["python -m pytest"],
+      execution_contract: contract,
     }).finally(() => observation.mockRestore());
 
     expect(result).toMatchObject({
@@ -844,21 +875,15 @@ describe("direct task verification", () => {
     const contract = executionContract(["repository_write", "source_code"]);
     contract.verification.contract = { selected_checks: ["full_regression", "task_outcome"] };
 
-    const result = await runDirectTaskVerification({
-      command: command(cwd),
-      task: {
-        verify: ["bun test focused.test.ts"],
-        execution_contract: contract,
-      },
-      task_id: TASK_ID,
-      cwd,
-      run_process: mocks.runProcess,
+    const result = await runVerification(cwd, {
+      verify: ["bun test focused.test.ts"],
+      execution_contract: contract,
     });
 
     expect(result).toMatchObject({
       status: "unsupported",
       reason:
-        "Verification Contract requires full_regression, but package.json does not define ci:local:full.",
+        "Verification Contract requires full_regression, but package.json defines neither ci:local:full nor test.",
       checks: [
         {
           command: "bun test focused.test.ts",
@@ -879,28 +904,6 @@ describe("direct task verification", () => {
     expect(mocks.runProcess).toHaveBeenCalledOnce();
   });
 
-  it("gives the canonical provider qualification its bounded release window", async () => {
-    const cwd = await root();
-    mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "provider gate ok", stderr: "" });
-
-    const result = await runDirectTaskVerification({
-      command: command(cwd),
-      task: { verify: ["bun run e2e:v0.7.1:gate"] },
-      task_id: TASK_ID,
-      cwd,
-      run_process: mocks.runProcess,
-    });
-
-    expect(result).toMatchObject({ status: "passed" });
-    expect(mocks.runProcess).toHaveBeenCalledWith(
-      expect.objectContaining({
-        command: "bun",
-        args: ["run", "e2e:v0.7.1:gate"],
-        timeoutMs: 150 * 60_000,
-      }),
-    );
-  });
-
   it.each([
     { task_kind: "docs", mutation_scope: "docs" },
     {
@@ -914,13 +917,7 @@ describe("direct task verification", () => {
       .mockResolvedValueOnce({ exitCode: 0, stdout: "routing ok", stderr: "" })
       .mockResolvedValueOnce({ exitCode: 0, stdout: "doctor ok", stderr: "" });
 
-    const result = await runDirectTaskVerification({
-      command: command(cwd),
-      task: { verify: [], ...task },
-      task_id: TASK_ID,
-      cwd,
-      run_process: mocks.runProcess,
-    });
+    const result = await runVerification(cwd, { verify: [], ...task });
 
     expect(result).toMatchObject({ status: "passed" });
     expect(mocks.runProcess).toHaveBeenCalledTimes(2);

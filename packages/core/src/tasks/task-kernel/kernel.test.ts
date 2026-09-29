@@ -11,6 +11,7 @@ import {
   TASK_TRANSITION_TABLE,
   WORK_ITEM_TRANSITION_TABLE,
 } from "./kernel.js";
+import { planScopeExpansionApprovalDigest } from "./authority-lineage.js";
 import type { TaskCommand, TaskState, WorkItemRuntime, WorkItemState } from "./model.js";
 import {
   fingerprint,
@@ -27,6 +28,10 @@ import {
   validation,
   amendmentCommand,
 } from "./kernel.test-fixtures.js";
+
+function expectRejection(invocation: Parameters<typeof reduceTaskCommand>[0], code: string): void {
+  expect(reduceTaskCommand(invocation)).toMatchObject({ kind: "rejected", code });
+}
 
 describe("canonical task kernel reducer", () => {
   it.each(["CLAIMED", "EXECUTING", "BLOCKED", "VALIDATING"] as const)(
@@ -57,26 +62,20 @@ describe("canonical task kernel reducer", () => {
         expected_state_fingerprint: fingerprint,
         validation: validation(fingerprint),
       };
-      expect(reduceTaskCommand(input(state, command))).toMatchObject({
-        kind: "rejected",
-        code: "TASK_COMPLETION_INELIGIBLE",
-      });
+      expectRejection(input(state, command), "TASK_COMPLETION_INELIGIBLE");
       const final = {
         ...state,
         state: "FINAL_VALIDATION" as const,
         final_validation: validation(fingerprint),
       };
       expect(isTaskCompletionEligible(final, fingerprint)).toBe(false);
-      expect(
-        reduceTaskCommand(
-          input(final, {
-            kind: "complete_task",
-            task_id: state.id,
-            expected_task_revision: state.revision,
-            expected_state_fingerprint: fingerprint,
-          }),
-        ),
-      ).toMatchObject({ kind: "rejected", code: "TASK_COMPLETION_INELIGIBLE" });
+      const complete: TaskCommand = {
+        kind: "complete_task",
+        task_id: state.id,
+        expected_task_revision: state.revision,
+        expected_state_fingerprint: fingerprint,
+      };
+      expectRejection(input(final, complete), "TASK_COMPLETION_INELIGIBLE");
     },
   );
 
@@ -100,11 +99,9 @@ describe("canonical task kernel reducer", () => {
         },
       });
       const before = JSON.stringify(state);
-      expect(reduceTaskCommand(input(state, transitionCommand(state, "claim")))).toMatchObject({
-        kind: "rejected",
-        code: "WORK_ITEM_RESOURCE_CONFLICT",
-        facts: ["other:kernel-work"],
-      });
+      const rejected = reduceTaskCommand(input(state, transitionCommand(state, "claim")));
+      expect(rejected).toMatchObject({ kind: "rejected", code: "WORK_ITEM_RESOURCE_CONFLICT" });
+      expect(rejected).toMatchObject({ facts: ["other:kernel-work"] });
       expect(JSON.stringify(state)).toBe(before);
     },
   );
@@ -180,33 +177,98 @@ describe("canonical task kernel reducer", () => {
       ...definition,
       execution_requirements: { ...requirements, scope_roots: ["outside"] },
     };
-    expect(reduceTaskCommand(input(state, amendmentCommand(state, [widened])))).toMatchObject({
-      kind: "rejected",
-      code: "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
-    });
+    expectRejection(
+      input(state, amendmentCommand(state, [widened])),
+      "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
+    );
     const cyclic = { ...definition, depends_on: [definition.id] };
-    expect(reduceTaskCommand(input(state, amendmentCommand(state, [cyclic])))).toMatchObject({
-      kind: "rejected",
-      code: "WORK_ITEM_DEPENDENCY_INCOMPLETE",
-    });
+    expectRejection(
+      input(state, amendmentCommand(state, [cyclic])),
+      "WORK_ITEM_DEPENDENCY_INCOMPLETE",
+    );
     const command = amendmentCommand(state, [definition]);
     for (const weakened of [
       { ...definition, optional: true },
       { ...definition, expected_outputs: [] },
     ]) {
-      expect(reduceTaskCommand(input(state, amendmentCommand(state, [weakened])))).toMatchObject({
-        kind: "rejected",
-        code: "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
-      });
+      expectRejection(
+        input(state, amendmentCommand(state, [weakened])),
+        "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
+      );
     }
-    expect(
-      reduceTaskCommand(input(state, { ...command, amendment_digest: kernelDigest("wrong") })),
-    ).toMatchObject({ kind: "rejected", code: "PLAN_DIGEST_MISMATCH" });
-    expect(
-      reduceTaskCommand(
-        input(state, { ...command, authority_delta_digest: kernelDigest("delta") }),
-      ),
-    ).toMatchObject({ kind: "rejected", code: "PLAN_SCOPE_EXPANSION_REQUIRES_USER" });
+    expectRejection(
+      input(state, { ...command, amendment_digest: kernelDigest("wrong") }),
+      "PLAN_DIGEST_MISMATCH",
+    );
+    expectRejection(
+      input(state, { ...command, authority_delta_digest: kernelDigest("delta") }),
+      "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
+    );
+  });
+
+  it("applies only an exact USER-approved additive WorkItem scope expansion", () => {
+    const state = aggregate({ work_items: { kernel: runtime("BLOCKED") } });
+    const addedRoot = "packages/agentplane/src/commands/shared";
+    const widened = {
+      ...plan.work_items[0]!,
+      execution_requirements: {
+        ...requirements,
+        scope_roots: [...requirements.scope_roots, addedRoot],
+      },
+    };
+    const command = amendmentCommand(state, [widened]);
+    const actor = { id: "USER", kind: "USER" as const, transport: "manual" as const };
+    const expandedAuthority = { ...authority, scope_roots: [...authority.scope_roots, addedRoot] };
+    const approvalDigest = planScopeExpansionApprovalDigest({
+      task_id: state.id,
+      current_plan_digest: state.current_plan!.digest,
+      amended_plan_digest: command.amended_plan.digest,
+      actor_id: actor.id,
+    });
+    const approved = reduceTaskCommand({
+      ...input(state, { ...command, authority_delta_digest: approvalDigest }),
+      actor,
+      authority,
+    });
+    expect(approved).toMatchObject({
+      kind: "accepted",
+      aggregate: {
+        current_plan: {
+          approval_actor_id: "USER",
+          approval_evidence_digest: approvalDigest,
+        },
+        work_items: { kernel: { state: "READY", definition: widened } },
+      },
+    });
+    expectRejection(
+      {
+        ...input(state, { ...command, authority_delta_digest: approvalDigest }),
+        authority: expandedAuthority,
+      },
+      "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
+    );
+    const expandedEffects = {
+      ...widened,
+      execution_requirements: {
+        ...widened.execution_requirements,
+        repository_effects: [...widened.execution_requirements.repository_effects, "tests"],
+      },
+    };
+    const effectsCommand = amendmentCommand(state, [expandedEffects]);
+    const effectsDigest = planScopeExpansionApprovalDigest({
+      task_id: state.id,
+      current_plan_digest: state.current_plan!.digest,
+      amended_plan_digest: effectsCommand.amended_plan.digest,
+      actor_id: actor.id,
+    });
+    expectRejection(
+      {
+        ...input(state, { ...effectsCommand, authority_delta_digest: effectsDigest }),
+        actor,
+        authority: { ...expandedAuthority, repository_effects: ["source_code", "tests"] },
+      },
+      "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
+    );
   });
 
   it.each([
@@ -219,10 +281,10 @@ describe("canonical task kernel reducer", () => {
   ] as const)("does not replace %s work with an amendment", (workState) => {
     const state = aggregate({ work_items: { kernel: runtime(workState) } });
     const changed = { ...plan.work_items[0]!, expected_outputs: ["kernel-source", "new-output"] };
-    expect(reduceTaskCommand(input(state, amendmentCommand(state, [changed])))).toMatchObject({
-      kind: "rejected",
-      code: "ILLEGAL_WORK_ITEM_TRANSITION",
-    });
+    expectRejection(
+      input(state, amendmentCommand(state, [changed])),
+      "ILLEGAL_WORK_ITEM_TRANSITION",
+    );
   });
 
   it("requires exact USER identity and root decision evidence for plan approval", () => {
@@ -278,24 +340,23 @@ describe("canonical task kernel reducer", () => {
       },
       { ...correct, command: { ...command, approval_evidence_digest: kernelDigest("invented") } },
     ])
-      expect(reduceTaskCommand(invocation)).toMatchObject({
-        kind: "rejected",
-        code: "AUTHORITY_PROVENANCE_ESCALATION",
-      });
+      expectRejection(invocation, "AUTHORITY_PROVENANCE_ESCALATION");
   });
 
   it("enforces WorkItem execution requirements and actor capabilities", () => {
     const state = aggregate();
     for (const key of ["scope_roots", "repository_effects", "capabilities", "resources"] as const) {
       const invocation = input(state, transitionCommand(state, "claim"));
-      expect(
-        reduceTaskCommand({ ...invocation, authority: { ...authority, [key]: [] } }),
-      ).toMatchObject({ kind: "rejected", code: "AUTHORITY_SCOPE_EXCEEDED" });
+      expectRejection(
+        { ...invocation, authority: { ...authority, [key]: [] } },
+        "AUTHORITY_SCOPE_EXCEEDED",
+      );
     }
     const invocation = input(state, transitionCommand(state, "claim"));
-    expect(
-      reduceTaskCommand({ ...invocation, actor: { ...invocation.actor, capabilities: [] } }),
-    ).toMatchObject({ kind: "rejected", code: "AUTHORITY_SCOPE_EXCEEDED" });
+    expectRejection(
+      { ...invocation, actor: { ...invocation.actor, capabilities: [] } },
+      "AUTHORITY_SCOPE_EXCEEDED",
+    );
   });
 
   it("requires complete work and full validation identity before final validation", () => {
@@ -307,10 +368,7 @@ describe("canonical task kernel reducer", () => {
       expected_state_fingerprint: fingerprint,
       validation: validation(fingerprint),
     };
-    expect(reduceTaskCommand(input(state, command))).toMatchObject({
-      kind: "rejected",
-      code: "TASK_COMPLETION_INELIGIBLE",
-    });
+    expectRejection(input(state, command), "TASK_COMPLETION_INELIGIBLE");
     const completed = aggregate({
       work_items: {
         kernel: {
@@ -325,14 +383,13 @@ describe("canonical task kernel reducer", () => {
       kind: "accepted",
       aggregate: { state: "FINAL_VALIDATION" },
     });
-    expect(
-      reduceTaskCommand(
-        input(completed, {
-          ...command,
-          validation: { ...command.validation, evidence_digests: [] },
-        }),
-      ),
-    ).toMatchObject({ kind: "rejected", code: "VALIDATION_IDENTITY_MISMATCH" });
+    expectRejection(
+      input(completed, {
+        ...command,
+        validation: { ...command.validation, evidence_digests: [] },
+      }),
+      "VALIDATION_IDENTITY_MISMATCH",
+    );
     for (const key of [
       "check_id",
       "command_digest",
@@ -346,10 +403,7 @@ describe("canonical task kernel reducer", () => {
           identity: { ...command.validation.identity, [key]: "" },
         },
       };
-      expect(reduceTaskCommand(input(completed, malformed))).toMatchObject({
-        kind: "rejected",
-        code: "VALIDATION_IDENTITY_MISMATCH",
-      });
+      expectRejection(input(completed, malformed), "VALIDATION_IDENTITY_MISMATCH");
     }
   });
   it.each(["2026-08-29T19:00:00.000Z", "2026-08-29T20:00:00.000Z", "not-a-date"])(
@@ -357,9 +411,10 @@ describe("canonical task kernel reducer", () => {
     (expires_at) => {
       const state = aggregate();
       const invocation = input(state, transitionCommand(state, "claim"));
-      expect(
-        reduceTaskCommand({ ...invocation, authority: { ...authority, expires_at } }),
-      ).toMatchObject({ kind: "rejected", code: "AUTHORITY_SCOPE_EXCEEDED" });
+      expectRejection(
+        { ...invocation, authority: { ...authority, expires_at } },
+        "AUTHORITY_SCOPE_EXCEEDED",
+      );
       expect(state.work_items.kernel?.state).toBe("READY");
     },
   );
@@ -373,10 +428,7 @@ describe("canonical task kernel reducer", () => {
         authority: { ...authority, expires_at: "2026-08-29T23:01:00.000+03:00" },
       }).kind,
     ).toBe("accepted");
-    expect(reduceTaskCommand({ ...invocation, occurred_at: "not-a-date" })).toMatchObject({
-      kind: "rejected",
-      code: "AUTHORITY_SCOPE_EXCEEDED",
-    });
+    expectRejection({ ...invocation, occurred_at: "not-a-date" }, "AUTHORITY_SCOPE_EXCEEDED");
   });
 
   it("publishes closed task and WorkItem transition policies", () => {
@@ -562,10 +614,7 @@ describe("canonical task kernel reducer", () => {
     const state = aggregate();
     const command = { ...transitionCommand(state, "claim"), expected_task_revision: 6 };
 
-    expect(reduceTaskCommand(input(state, command))).toMatchObject({
-      kind: "rejected",
-      code: "STALE_TASK_REVISION",
-    });
+    expectRejection(input(state, command), "STALE_TASK_REVISION");
     expect(state.work_items.kernel?.state).toBe("READY");
   });
 
@@ -573,10 +622,7 @@ describe("canonical task kernel reducer", () => {
     "rejects WorkItem execution while the Task is %s",
     (taskState) => {
       const state = aggregate({ state: taskState });
-      expect(reduceTaskCommand(input(state, transitionCommand(state, "claim")))).toMatchObject({
-        kind: "rejected",
-        code: "ILLEGAL_TASK_TRANSITION",
-      });
+      expectRejection(input(state, transitionCommand(state, "claim")), "ILLEGAL_TASK_TRANSITION");
     },
   );
 
@@ -623,10 +669,10 @@ describe("canonical task kernel reducer", () => {
         },
       },
     });
-    expect(reduceTaskCommand(input(state, transitionCommand(state, "claim")))).toMatchObject({
-      kind: "rejected",
-      code: "WORK_ITEM_DEPENDENCY_INCOMPLETE",
-    });
+    expectRejection(
+      input(state, transitionCommand(state, "claim")),
+      "WORK_ITEM_DEPENDENCY_INCOMPLETE",
+    );
     const producer = {
       ...runtime("COMPLETED"),
       definition: { ...plan.work_items[0]!, id: "producer", expected_outputs: ["upstream"] },
@@ -664,9 +710,10 @@ describe("canonical task kernel reducer", () => {
       aggregate: { work_items: { kernel: { state: "READY" } } },
     });
     const mismatched = aggregate({ work_items: { kernel: consumer } });
-    expect(
-      reduceTaskCommand(input(mismatched, transitionCommand(mismatched, "claim"))),
-    ).toMatchObject({ kind: "rejected", code: "PLAN_DIGEST_MISMATCH" });
+    expectRejection(
+      input(mismatched, transitionCommand(mismatched, "claim")),
+      "PLAN_DIGEST_MISMATCH",
+    );
   });
 
   it("returns the original receipt for an exact mutation replay", () => {
@@ -703,12 +750,10 @@ describe("canonical task kernel reducer", () => {
       effect: effect("merge", "PREPARED"),
     };
     for (const external_effects of [[], ["publish"]]) {
-      expect(
-        reduceTaskCommand({
-          ...input(state, command),
-          authority: { ...authority, external_effects },
-        }),
-      ).toMatchObject({ kind: "rejected", code: "AUTHORITY_SCOPE_EXCEEDED" });
+      expectRejection(
+        { ...input(state, command), authority: { ...authority, external_effects } },
+        "AUTHORITY_SCOPE_EXCEEDED",
+      );
     }
     const granted = {
       ...authority,
@@ -717,9 +762,10 @@ describe("canonical task kernel reducer", () => {
       resources: ["pull:1"],
     };
     for (const key of ["capabilities", "resources"] as const) {
-      expect(
-        reduceTaskCommand({ ...input(state, command), authority: { ...granted, [key]: [] } }),
-      ).toMatchObject({ kind: "rejected", code: "AUTHORITY_SCOPE_EXCEEDED" });
+      expectRejection(
+        { ...input(state, command), authority: { ...granted, [key]: [] } },
+        "AUTHORITY_SCOPE_EXCEEDED",
+      );
     }
     for (const active of ["ACTIVE", "FINAL_VALIDATION"] as const) {
       expect(
@@ -736,9 +782,10 @@ describe("canonical task kernel reducer", () => {
       "COMPLETED",
       "CANCELLED",
     ] as const) {
-      expect(
-        reduceTaskCommand({ ...input({ ...state, state: inactive }, command), authority: granted }),
-      ).toMatchObject({ kind: "rejected", code: "ILLEGAL_TASK_TRANSITION" });
+      expectRejection(
+        { ...input({ ...state, state: inactive }, command), authority: granted },
+        "ILLEGAL_TASK_TRANSITION",
+      );
     }
   });
 
@@ -755,10 +802,7 @@ describe("canonical task kernel reducer", () => {
         observed_state: "IN_DOUBT",
         observation_digest: kernelDigest("timeout"),
       };
-      expect(reduceTaskCommand(input(task, command))).toMatchObject({
-        kind: "rejected",
-        code: "ILLEGAL_TASK_TRANSITION",
-      });
+      expectRejection(input(task, command), "ILLEGAL_TASK_TRANSITION");
     },
   );
 
@@ -838,10 +882,7 @@ describe("canonical task kernel reducer", () => {
     if (first.kind !== "accepted") return;
 
     const changed = { ...command, claim_id: "different-claim" };
-    expect(reduceTaskCommand(input(first.aggregate, changed))).toMatchObject({
-      kind: "rejected",
-      code: "MUTATION_ID_CONFLICT",
-    });
+    expectRejection(input(first.aggregate, changed), "MUTATION_ID_CONFLICT");
   });
 
   it("binds accepted results and validation to the active WorkItem attempt", () => {
@@ -857,10 +898,7 @@ describe("canonical task kernel reducer", () => {
       result_digest: resultDigest,
       output_manifests: [],
     };
-    expect(reduceTaskCommand(input(state, missingOutput))).toMatchObject({
-      kind: "rejected",
-      code: "WORK_ITEM_OUTPUT_MISSING",
-    });
+    expectRejection(input(state, missingOutput), "WORK_ITEM_OUTPUT_MISSING");
 
     const accepted = reduceTaskCommand(
       input(state, { ...missingOutput, output_manifests: [manifest()] }),
@@ -942,10 +980,7 @@ describe("canonical task kernel reducer", () => {
         work_items: { kernel: { ...validRuntime, validation: missing } },
       };
       expect(isTaskCompletionEligible(invalid, fingerprint)).toBe(false);
-      expect(reduceTaskCommand(input(invalid, complete))).toMatchObject({
-        kind: "rejected",
-        code: "TASK_COMPLETION_INELIGIBLE",
-      });
+      expectRejection(input(invalid, complete), "TASK_COMPLETION_INELIGIBLE");
     }
     expect(reduceTaskCommand(input(eligible, complete))).toMatchObject({
       kind: "accepted",

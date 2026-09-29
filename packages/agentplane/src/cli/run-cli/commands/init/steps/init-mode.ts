@@ -14,7 +14,7 @@ const initModeOptions: { value: InteractiveInitMode; label: string; hint: string
   {
     value: "advanced",
     label: "Advanced",
-    hint: "Review policy, storage, approvals, execution, recipes, and blueprints individually.",
+    hint: "Review policy, storage, approvals, execution, and recipes individually.",
   },
 ];
 

@@ -233,7 +233,12 @@ describe("verification contract", () => {
     const result = await runVerificationGroups(
       [
         { id: "stalled", command: process.execPath, args: ["-e", "setInterval(() => {}, 1000)"] },
-        { id: "failed", command: process.execPath, args: ["-e", "process.exit(7)"] },
+        {
+          id: "failed",
+          command: process.execPath,
+          args: ["-e", "process.exit(7)"],
+          timeoutMs: 5000,
+        },
       ],
       { concurrency: 2, timeoutMs: 200, killGraceMs: 25 },
     );

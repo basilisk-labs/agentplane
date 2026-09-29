@@ -25,25 +25,29 @@ import {
   withBootstrapWorkflowFingerprint,
   type WorkflowRouteStateInput,
 } from "./workflow-step-fingerprint.js";
+import { withNativeIdentity } from "./workflow-step.testkit.js";
 
-const task = {
-  id: "202607250201-PROJ2",
-  title: "Workflow integration projection fixture",
-  description: "Exercise integration execution projections.",
-  status: "DOING",
-  priority: "high",
-  owner: "CODER",
-  revision: 3,
-  depends_on: [],
-  tags: ["code"],
-  verify: ["bun test"],
-  plan_approval: {
-    state: "approved",
-    approved_by: "ORCHESTRATOR",
-    approved_at: "2026-07-25T00:00:00.000Z",
-  },
-  verification: { state: "pending" },
-} satisfies TaskData;
+const task = withNativeIdentity(
+  {
+    id: "202607250201-PROJ2",
+    title: "Workflow integration projection fixture",
+    description: "Exercise integration execution projections.",
+    status: "DOING",
+    priority: "high",
+    owner: "CODER",
+    revision: 3,
+    depends_on: [],
+    tags: ["code"],
+    verify: ["bun test"],
+    plan_approval: {
+      state: "approved",
+      approved_by: "ORCHESTRATOR",
+      approved_at: "2026-07-25T00:00:00.000Z",
+    },
+    verification: { state: "pending" },
+  } satisfies TaskData,
+  "COMPLETED",
+);
 
 const taskWorktreePath = `/repo/.agentplane/worktrees/${task.id}`;
 const taskBranch = `task/${task.id}/workflow-step-integration-projection-fixture`;

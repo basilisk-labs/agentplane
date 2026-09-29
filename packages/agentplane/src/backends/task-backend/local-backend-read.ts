@@ -215,12 +215,18 @@ async function isIgnorableMissingReadmeTaskDir(root: string, dirName: string): P
 export async function listLocalTasks(
   context: LocalBackendContext,
   mode: "full" | "projection",
-  opts: { writeIndex?: boolean; status?: readonly string[] } = {},
+  opts: {
+    writeIndex?: boolean;
+    writeProjection?: boolean;
+    readProjectionCache?: boolean;
+    strictRoot?: boolean;
+    status?: readonly string[];
+  } = {},
 ): Promise<TaskData[] | TaskSummary[]> {
   const projectionOnly = mode === "projection";
   const writeIndex = opts.writeIndex ?? true;
   const projectionStatuses = normalizeProjectionStatusFilter(opts.status);
-  if (projectionOnly) {
+  if (projectionOnly && opts.readProjectionCache !== false) {
     const sqliteProjection = await readFreshSqliteTaskProjection({
       tasksDir: context.root,
       status: opts.status,
@@ -233,7 +239,9 @@ export async function listLocalTasks(
 
   const tasks: (TaskData | TaskSummary)[] = [];
   const warnings: string[] = [];
-  const entries = await readdir(context.root, { withFileTypes: true }).catch(() => []);
+  const entries = opts.strictRoot
+    ? await readdir(context.root, { withFileTypes: true })
+    : await readdir(context.root, { withFileTypes: true }).catch(() => []);
   const dirs = entries
     .filter((entry) => entry.isDirectory() && entry.name !== ".cache")
     .map((entry) => entry.name)
@@ -276,7 +284,7 @@ export async function listLocalTasks(
       statuses: projectionStatuses,
     });
     if (cachedProjection) {
-      if (!projectionStatuses) {
+      if (!projectionStatuses && opts.writeProjection !== false) {
         await writeSqliteTaskProjection({
           tasksDir: context.root,
           tasks: cachedProjection,
@@ -411,7 +419,7 @@ export async function listLocalTasks(
     }
   }
 
-  if (warnings.length === 0) {
+  if (warnings.length === 0 && opts.writeProjection !== false) {
     await writeSqliteTaskProjection({
       tasksDir: context.root,
       tasks: Object.values(nextById).map((entry) => entry.task),
@@ -445,13 +453,6 @@ export async function getLocalTask(
     frontmatter: parsed.frontmatter,
     body: parsed.body,
   });
-}
-
-export async function getLocalTasks(
-  context: LocalBackendContext,
-  taskIds: string[],
-): Promise<(TaskData | null)[]> {
-  return await mapLimit(taskIds, 8, async (taskId) => await getLocalTask(context, taskId));
 }
 
 export async function getLocalTaskDoc(

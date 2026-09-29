@@ -10,6 +10,7 @@ import {
 
 import {
   AGENT_INSTRUCTION_LANGUAGE,
+  hasExplicitProcessMechanismRepairAuthority,
   semanticTextHasProcessChoreography,
 } from "../context/semantic-prompt-projection.js";
 import type { RunnerContextBundle, RunnerInvocation } from "../types.js";
@@ -60,7 +61,7 @@ function renderEvaluatorSkepticismLines(level: EvaluatorSkepticismLevel): string
   if (level === "strict") {
     return [
       ...common,
-      "- Strict review: actively search for counterexamples, happy-path-only tests, stale task/blueprint evidence, and category mismatches between requested behavior and implementation.",
+      "- Strict review: actively search for counterexamples, happy-path-only tests, stale task evidence, and category mismatches between requested behavior and implementation.",
       "- Use rework when correctness depends on an assumption the implementation did not prove.",
     ];
   }
@@ -180,11 +181,19 @@ function semanticWorkOrderProjection(bundle: RunnerContextBundle): Record<string
       selected.has(`/prepared_evidence/${index}`),
     ),
   };
+  const preserveProcessRepairRequirements = hasExplicitProcessMechanismRepairAuthority(bundle.task);
   const semanticAcceptanceCriteria = workOrder.task.acceptance_criteria.filter(
-    (criterion) => !semanticTextHasProcessChoreography(criterion.description),
+    (criterion) =>
+      preserveProcessRepairRequirements ||
+      !semanticTextHasProcessChoreography(criterion.description),
   );
   const semanticVerificationRequirements = workOrder.verification_intent.requirements.filter(
-    (requirement) => !semanticTextHasProcessChoreography(requirement.description),
+    (requirement) =>
+      preserveProcessRepairRequirements ||
+      !semanticTextHasProcessChoreography(requirement.description),
+  );
+  const semanticStopRules = workOrder.stop_rules.filter(
+    (rule) => preserveProcessRepairRequirements || !semanticTextHasProcessChoreography(rule),
   );
   const requiredInputs = workOrder.required_inputs.filter((input) => {
     if (!input.required) return false;
@@ -247,6 +256,7 @@ function semanticWorkOrderProjection(bundle: RunnerContextBundle): Record<string
     })),
     semantic_result_schema: workOrder.semantic_result_schema,
     stop_rules: [
+      ...semanticStopRules,
       "Stop and return a blocked semantic result when required context is missing or stale.",
       "Stop before exceeding the granted authority, writable roots, network policy, or protected paths.",
       "Return one typed semantic result when the objective is satisfied or blocked.",
@@ -269,7 +279,7 @@ export function renderTaskRunnerBootstrap(
       ? `task ${bundle.target.task_id}`
       : `recipe scenario ${bundle.target.recipe_id}:${bundle.target.scenario_id}`;
   const codexGoalLine = renderCodexGoalLine(bundle, targetLabel);
-  const stopRules = bundle.blueprint?.stopReasons ?? [];
+  const stopRules = bundle.task_obligations?.stop_rules ?? [];
   const verifierChecks = bundle.playbook?.final_verifier.checks ?? [];
   const evaluatorSkepticismLevel =
     bundle.execution.evaluator_skepticism_level ?? ("standard" satisfies EvaluatorSkepticismLevel);
@@ -318,7 +328,7 @@ export function renderTaskRunnerBootstrap(
     ...(stopRules.length > 0
       ? [
           "",
-          "Blueprint stop rules:",
+          "Native stop rules:",
           ...stopRules.map((rule) => `- ${rule.severity}: ${rule.reason} (${rule.id})`),
         ]
       : []),

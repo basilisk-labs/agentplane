@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202609121424-3YAX44",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-13T15:39:53.839Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 6 typed finding(s).",
+  "evaluated_sha": "9e32b1b8a9c75d1b20541637d2cdb3c9d7ec3b0a",
+  "blueprint_digest": "fa5bda7326628d77818e5607d9c82965c639b2adaac875c2abf479a7f619d50f",
+  "findings": [
+    "Marginal task cost separates checkout bytes, deduplicated Git storage, commit classes, and observed operation counters while rejecting preexisting target tasks.",
+    "The paired driver pins all comparison identities, executes offline with network denied, preserves managed and external strata, and requires trusted authority before live execution.",
+    "The report charges every attempt, pairs only independently verified equivalent outcomes, exposes rates, intervals, stage distributions, coverage, and uncertainty, and keeps safety, activation, and efficiency gates separate.",
+    "Unknown or inconsistent raw cost and zero-success arms fail closed without a finite efficiency claim.",
+    "The final diff contains only task artifacts and scoped benchmark code and tests; it does not contain agentplane-roadmap-r2 or historical baseline rewrites.",
+    "Residual risk: No paid provider run was performed, so this task establishes the measurement harness and claim rules rather than a new live cost result."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609121424-3YAX44/quality/objects/sha256/c8c9581c5ea3d219a0c86f8815b9d9c96eaf76401ba233fc877b0f22675d6ec2.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

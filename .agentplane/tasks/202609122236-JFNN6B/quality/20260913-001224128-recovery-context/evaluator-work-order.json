@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609122236-JFNN6B-4bf96c0acb85d16fcdebaf48",
+  "prepared_at": "2026-09-13T00:12:24.128Z",
+  "task": {
+    "id": "202609122236-JFNN6B",
+    "revision": 33,
+    "objective": "Simplify the test suite without weakening safety-critical coverage\n\nRemove unused GPT-5.5/GPT-5.6 prompt diagnostic implementations and self-tests, retain the prompt module compiler and model-neutral behavioral contracts, remove the historical fixed-byte assertion while retaining semantic prompt assertions, remove the duplicate coverage-threshold configuration guard, and route agent-efficiency benchmark tests to a separate qualification suite instead of the normal critical CLI gate. Preserve exit-code, scope, symlink, protected-path, trust-boundary, task-centric, and context critical tests. Reduce critical suite process overhead only if the resulting suite passes repeatedly. Avoid files currently modified by tasks 202609080727-BAWTEE and 202609121424-T83XJA. Do not modify benchmark fixtures or semantic gateway implementation.",
+    "acceptance_criteria": [
+      "bun run test:agent-efficiency:qualification",
+      "bun run test:critical",
+      "bun run test:project agentplane packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts packages/agentplane/src/commands/release/release-ci-contract.test.ts --maxWorkers=2",
+      "bun run vitest:projects:check",
+      "- In scope: Remove unused GPT-5.5/GPT-5.6 prompt diagnostic implementations and self-tests, retain the prompt module compiler and model-neutral behavioral contracts, remove the historical fixed-byte assertion while retaining semantic prompt assertions, remove the duplicate coverage-threshold configuration guard, and route agent-efficiency benchmark tests to a separate qualification suite instead of the normal critical CLI gate. Preserve exit-code, scope, symlink, protected-path, trust-boundary, task-centric, and context critical tests. Reduce critical suite process overhead only if the resulting suite passes repeatedly. Avoid files currently modified by tasks 202609080727-BAWTEE and 202609121424-T83XJA. Do not modify benchmark fixtures or semantic gateway implementation.\n- Out of scope: unrelated refactors not required for \"Simplify the test suite without weakening safety-critical coverage\".",
+      "Aligned the cleanup WorkItem with the approved implementation scope and retained report-only validation.",
+      "1. Run `bun run vitest:projects:check`. Expected: the suite registry remains valid.\n2. Run `bun run test:critical` twice. Expected: the safety-critical route passes repeatedly without benchmark qualification files.\n3. Run `bun run test:agent-efficiency:qualification`. Expected: all five agent-efficiency benchmark contract files pass in the dedicated qualification route.\n4. Run `bun run test:project agentplane packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts packages/agentplane/src/commands/release/release-ci-contract.test.ts --maxWorkers=2`. Expected: semantic prompt assertions and release CI route contracts pass.\n5. Review the final diff and repository status. Expected: no benchmark fixture, semantic gateway implementation, active refactor file, or unrelated user change is modified."
+    ]
+  },
+  "evaluated_sha": "eb6e3c0b6b971928f83e5d84ae8db31ef13ab7a1",
+  "diff_base_sha": "58048a4e1ff97030d3fa86447c739397f0e0936b",
+  "blueprint_digest": "ca972e9d6960b8448cbddbc38dfa12ba169f4bacda7ac2e4c57410397cf1c585",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609122236-JFNN6B/quality/20260913-001224128-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:d4dd632d98429a22bbfa2aaa33154c56fe25f89f640c31b8a111cc66da3912e4",
+    "prompt_path": ".agentplane/tasks/202609122236-JFNN6B/quality/objects/sha256/f04f628a684122a3026a9dc5dc2fdcb8029d03bad56f9173fc159702e2400a6e.md",
+    "result_schema_path": ".agentplane/tasks/202609122236-JFNN6B/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609122236-JFNN6B/README.md",
+      "sha256": "sha256:3b319506a2039217c17ba4ddad95f01d18e0fc9f1f0a55bd847a1351fe8445fc",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609122236-JFNN6B/quality/objects/sha256/60139576ecdbc1b4e0cb4c8a10b1829fb93e6ab00d3d2406bb7bbaa5ab9925cd.patch",
+      "sha256": "sha256:60139576ecdbc1b4e0cb4c8a10b1829fb93e6ab00d3d2406bb7bbaa5ab9925cd",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609122236-JFNN6B/quality/objects/sha256/48733dfb6d54ec4b14bf700c9d28004337f7d0c5a531e0ad49ffce33dbb03c2c.json",
+      "sha256": "sha256:48733dfb6d54ec4b14bf700c9d28004337f7d0c5a531e0ad49ffce33dbb03c2c",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609122236-JFNN6B/verification/20260913000745222-ee6c7884cd80e39b.json",
+      "sha256": "sha256:6b12b68bc18b63471ff7e86c5f19aa5bce9a8810b7ecddbda396211d437f20b8",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609122236-JFNN6B/quality/objects/sha256/ee9a3c8d5db971958ba65fbed4becea7dfb79c3922ae194785f386526462fa32.json",
+      "sha256": "sha256:ee9a3c8d5db971958ba65fbed4becea7dfb79c3922ae194785f386526462fa32",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

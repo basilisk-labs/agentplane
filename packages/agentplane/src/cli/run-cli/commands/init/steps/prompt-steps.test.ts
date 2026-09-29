@@ -5,7 +5,6 @@ import { InitAborted } from "../prompts.js";
 
 import { promptAdvancedSettingsStep } from "./advanced-settings.js";
 import { promptBackendStep } from "./backend.js";
-import { promptBlueprintSelectionStep } from "./blueprint-selection.js";
 import { promptIdeStep } from "./ide.js";
 import { promptInitModeStep } from "./init-mode.js";
 import { promptPolicyGatewayStep } from "./policy-gateway.js";
@@ -78,13 +77,6 @@ describe("init prompt steps", () => {
       setupProfileMode: setup.setupProfileMode,
       cachedRecipes: ["recipe-a", "recipe-b"],
     });
-    const blueprints = await promptBlueprintSelectionStep({
-      clack: prompt,
-      flags: {},
-      setupProfilePreset: setup.setupProfilePreset,
-      setupProfileMode: setup.setupProfileMode,
-      cachedBlueprints: ["blueprint:analysis-external", "pack:enterprise-baseline"],
-    });
 
     expect(setup).toEqual({ setupProfilePreset: "standard", setupProfileMode: "compact" });
     expect(policy).toEqual({ policyGateway: "claude" });
@@ -106,7 +98,6 @@ describe("init prompt steps", () => {
       strictUnsafeConfirm: false,
     });
     expect(recipes).toEqual({ recipes: [] });
-    expect(blueprints).toEqual({ blueprints: [] });
     expect(mocks.selectMock).toHaveBeenCalledTimes(3);
     expect(mocks.confirmMock).not.toHaveBeenCalled();
     expect(mocks.textMock).not.toHaveBeenCalled();
@@ -192,16 +183,6 @@ describe("init prompt steps", () => {
         cachedRecipes: ["recipe-a"],
       }),
     ).resolves.toEqual({ recipes: [] });
-    await expect(
-      promptBlueprintSelectionStep({
-        clack: prompt,
-        flags: {},
-        setupProfilePreset: "standard",
-        setupProfileMode: "compact",
-        cachedBlueprints: ["pack:baseline"],
-      }),
-    ).resolves.toEqual({ blueprints: [] });
-
     expect(mocks.selectMock).not.toHaveBeenCalled();
     expect(mocks.confirmMock).not.toHaveBeenCalled();
     expect(mocks.textMock).not.toHaveBeenCalled();
@@ -232,21 +213,6 @@ describe("init prompt steps", () => {
         cachedRecipes: [],
       }),
     ).resolves.toEqual({ recipes: [] });
-    expect(mocks.textMock).not.toHaveBeenCalled();
-  });
-
-  it("skips blueprint prompt when full setup has no cached blueprint catalog entries", async () => {
-    resetPromptMocks();
-
-    await expect(
-      promptBlueprintSelectionStep({
-        clack: clackMock(),
-        flags: {},
-        setupProfilePreset: "standard",
-        setupProfileMode: "full",
-        cachedBlueprints: [],
-      }),
-    ).resolves.toEqual({ blueprints: [] });
     expect(mocks.textMock).not.toHaveBeenCalled();
   });
 

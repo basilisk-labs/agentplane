@@ -5,11 +5,16 @@ import { promisify } from "node:util";
 
 import { mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit";
 import { defaultConfig } from "@agentplaneorg/core/config";
+import {
+  taskCentricAggregateFromExtensions,
+  withTaskCentricAggregate,
+} from "@agentplaneorg/core/tasks";
 import { describe, expect, it } from "vitest";
 
 import { isRecord } from "../../shared/guards.js";
 import { loadEvaluatorCatalog } from "../../evaluators/catalog.js";
 import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
+import { materializeLegacyDrainIdentityFixture } from "../shared/native-task-identity-fixture.js";
 import { applyTaskMutation } from "../shared/task-mutation.js";
 import { setTaskFieldsIntent } from "../shared/task-store.js";
 import { cmdVerifyParsed } from "../task/verify-record.js";
@@ -47,6 +52,7 @@ async function addTask(root: string, taskId: string): Promise<void> {
     updatedBy: "TEST",
     fullDoc: false,
   });
+  await materializeLegacyDrainIdentityFixture({ root, task_id: taskId });
 }
 
 async function commitPath(
@@ -584,27 +590,36 @@ describe("evaluator runtime evidence", () => {
     await applyTaskMutation({
       ctx: command,
       taskId,
-      build: () => ({
-        intents: setTaskFieldsIntent({
-          status: "DONE",
-          result_summary: "pre-merge closure",
-          commit: {
-            hash: sourceSha,
-            message: "feat: target",
-          },
-          quality_review: {
-            state: "pass",
-            provenance: "evaluator_supplied",
-            updated_at: "2026-05-24T09:10:00.000Z",
-            updated_by: "EVALUATOR",
-            note: "Complete pre-merge closure passed.",
-            evaluated_sha: sourceSha,
-            blueprint_digest: "fixture-blueprint",
-            evidence_refs: [qualityReportPath, evaluatorResultPath],
-            findings: ["Lifecycle closure preserved the semantic target."],
-          },
-        }),
-      }),
+      build: (current) => {
+        const aggregate = taskCentricAggregateFromExtensions(current.extensions);
+        if (!aggregate) throw new Error("Missing native task fixture.");
+        return {
+          intents: setTaskFieldsIntent({
+            status: "DONE",
+            result_summary: "pre-merge closure",
+            commit: {
+              hash: sourceSha,
+              message: "feat: target",
+            },
+            quality_review: {
+              state: "pass",
+              provenance: "evaluator_supplied",
+              updated_at: "2026-05-24T09:10:00.000Z",
+              updated_by: "EVALUATOR",
+              note: "Complete pre-merge closure passed.",
+              evaluated_sha: sourceSha,
+              blueprint_digest: "fixture-blueprint",
+              evidence_refs: [qualityReportPath, evaluatorResultPath],
+              findings: ["Lifecycle closure preserved the semantic target."],
+            },
+            extensions: withTaskCentricAggregate(current.extensions, {
+              ...aggregate,
+              revision: (current.revision ?? aggregate.revision) + 1,
+              lifecycle: "COMPLETED",
+            }),
+          }),
+        };
+      },
     });
     await mkdir(path.join(root, path.dirname(qualityReportPath)), { recursive: true });
     await writeFile(
@@ -615,13 +630,6 @@ describe("evaluator runtime evidence", () => {
     await writeFile(
       path.join(root, evaluatorResultPath),
       `${JSON.stringify({ kind: "sgr.evaluator_result.v1", verdict: "pass" })}\n`,
-      "utf8",
-    );
-    const blueprintPath = `.agentplane/tasks/${taskId}/blueprint/resolved-snapshot.json`;
-    await mkdir(path.join(root, path.dirname(blueprintPath)), { recursive: true });
-    await writeFile(
-      path.join(root, blueprintPath),
-      `${JSON.stringify({ digest: "fixture-blueprint" })}\n`,
       "utf8",
     );
     const prMetaPath = `.agentplane/tasks/${taskId}/pr/meta.json`;

@@ -7,8 +7,12 @@ import {
   KNOWLEDGE_REQUEST_KIND,
   KNOWLEDGE_REQUEST_SCHEMA_VERSION,
   KNOWLEDGE_REQUEST_SCOPE_VALUES,
+  renderAgentSemanticResultSchemaJson,
   validateAgentSemanticResult,
+  validateAgentSemanticResultForWorkOrder,
+  validateAgentWorkOrderV2,
   type AgentSemanticResult,
+  type AgentWorkOrderV2,
 } from "@agentplaneorg/core/schemas";
 import { atomicWriteFile } from "@agentplaneorg/core/fs";
 import path from "node:path";
@@ -218,7 +222,32 @@ export function resolveCodexResultTransportPaths(runDir: string): {
   };
 }
 
-export function renderCodexResultOutputSchemaJson(): string {
+export function renderCodexResultOutputSchemaJson(workOrder?: AgentWorkOrderV2): string {
+  if (workOrder) {
+    const issued = validateAgentWorkOrderV2(workOrder);
+    const schema = JSON.parse(
+      renderAgentSemanticResultSchemaJson({
+        role: issued.role,
+        ...(issued.canonical_binding ? { phase: issued.canonical_binding.phase } : {}),
+      }),
+    ) as Record<string, unknown>;
+    if (isRecord(schema.properties)) delete schema.properties.work_order_id;
+    if (Array.isArray(schema.required)) {
+      schema.required = schema.required.filter((field) => field !== "work_order_id");
+    }
+    schema.description =
+      "Role-specific semantic payload. The AgentPlane supervisor supplies the issued WorkOrder identity and service fields.";
+    if (Array.isArray(schema.examples)) {
+      schema.examples = schema.examples.map((example: unknown) => {
+        if (!isRecord(example)) return example;
+        const { work_order_id: _workOrderId, ...rest } = example;
+        return rest;
+      });
+    }
+    return `${JSON.stringify(schema, null, 2)}\n`;
+  }
+  // Work-order-free recipe runs retain the legacy transport until they have a
+  // supervisor-issued role contract of their own.
   return `${JSON.stringify(CODEX_RESULT_OUTPUT_SCHEMA, null, 2)}\n`;
 }
 
@@ -236,6 +265,7 @@ export type CodexResultEventCollector = {
   observeStdoutLine(rawLine: string): void;
   readLastAgentMessage(): string | null;
   readUsage(): CodexProviderUsage | null;
+  readUsageObservation(): CodexProviderUsageObservation;
 };
 
 export type CodexProviderUsage = {
@@ -251,9 +281,16 @@ export type CodexProviderUsage = {
   turn_id?: string;
 };
 
-// Provider usage is process-local supervisor evidence. It deliberately stays
-// outside RunnerResult, receipts, and task projections so existing machine
-// contracts do not start retaining a provider-specific telemetry field.
+export type CodexProviderUsageObservation = {
+  status: "observed" | "partial" | "unavailable";
+  usage: CodexProviderUsage | null;
+  thread_id: string | null;
+  turn_id: string | null;
+};
+
+// This process-local association remains a compatibility convenience. Durable
+// accounting uses the supervisor-owned usage observation event written by the
+// Codex adapter before semantic materialization.
 const CODEX_PROVIDER_USAGE_BY_RESULT = new WeakMap<object, CodexProviderUsage>();
 
 export function recordCodexProviderUsageForResult(result: object, usage: CodexProviderUsage): void {
@@ -314,7 +351,11 @@ function readCodexProviderUsage(providerEvent: Record<string, unknown>): CodexPr
  * trace redaction or retention. The collector intentionally retains only the
  * latest agent message and protocol state, never the full provider stream.
  */
-export function createCodexResultEventCollector(): CodexResultEventCollector {
+export function createCodexResultEventCollector(
+  opts: {
+    onUsageObserved?: (observation: CodexProviderUsageObservation) => void;
+  } = {},
+): CodexResultEventCollector {
   let lastMessage: string | null = null;
   let usage: CodexProviderUsage | null = null;
   let turnCompleted = false;
@@ -322,6 +363,19 @@ export function createCodexResultEventCollector(): CodexResultEventCollector {
   let usageError: Error | null = null;
   let threadId: string | undefined;
   let turnId: string | undefined;
+  let completionObserved = false;
+  let usageObservationEmitted = false;
+  const usageObservation = (): CodexProviderUsageObservation => ({
+    status:
+      usage && threadId && turnId
+        ? "observed"
+        : usage || completionObserved || threadId || turnId
+          ? "partial"
+          : "unavailable",
+    usage,
+    thread_id: threadId ?? null,
+    turn_id: turnId ?? null,
+  });
   return {
     observeStdoutLine(rawLine) {
       const trimmed = rawLine.trim();
@@ -346,6 +400,7 @@ export function createCodexResultEventCollector(): CodexResultEventCollector {
         return;
       }
       if (parsed.type === "turn.completed") {
+        completionObserved = true;
         try {
           const observed = readCodexProviderUsage(parsed);
           const completedTurn =
@@ -353,6 +408,7 @@ export function createCodexResultEventCollector(): CodexResultEventCollector {
           if (turnId && completedTurn !== turnId) {
             throw new Error("Codex turn completion changed provider turn identity.");
           }
+          if (!turnId && completedTurn) turnId = completedTurn;
           const next =
             observed === null
               ? null
@@ -372,6 +428,10 @@ export function createCodexResultEventCollector(): CodexResultEventCollector {
           }
           usage = next;
           turnCompleted = true;
+          if (usage && !usageObservationEmitted) {
+            usageObservationEmitted = true;
+            opts.onUsageObserved?.(usageObservation());
+          }
         } catch (error) {
           usageError = error instanceof Error ? error : new Error(String(error));
           protocolError = usageError;
@@ -408,6 +468,9 @@ export function createCodexResultEventCollector(): CodexResultEventCollector {
       }
       return usage;
     },
+    readUsageObservation() {
+      return usageObservation();
+    },
   };
 }
 
@@ -415,6 +478,7 @@ export async function materializeCodexResultTransport(opts: {
   raw_text: string | null;
   result_path: string;
   work_order_id: string;
+  work_order?: AgentWorkOrderV2;
 }): Promise<AgentSemanticResult> {
   if (opts.raw_text === null) {
     throw new Error("Codex JSONL event stream did not contain a structured agent message.");
@@ -422,6 +486,20 @@ export async function materializeCodexResultTransport(opts: {
   const raw = JSON.parse(opts.raw_text) as unknown;
   if (!isRecord(raw)) {
     throw new Error("Codex structured semantic output must contain a JSON object.");
+  }
+  if (opts.work_order) {
+    const normalized = validateAgentSemanticResultForWorkOrder({
+      work_order: opts.work_order,
+      semantic_result: raw,
+      format: "semantic_payload_v1",
+    });
+    if (normalized.work_order_id !== opts.work_order_id) {
+      throw new Error(
+        `Codex structured semantic output work_order_id mismatch (${JSON.stringify(normalized.work_order_id)} != ${JSON.stringify(opts.work_order_id)}).`,
+      );
+    }
+    await atomicWriteFile(opts.result_path, `${JSON.stringify(normalized, null, 2)}\n`, "utf8");
+    return normalized;
   }
   assertExactKeys(raw, CODEX_RESULT_TRANSPORT_KEYS, "root");
   const blocker = nullableRecord(raw.blocker, "blocker", CODEX_BLOCKER_TRANSPORT_KEYS);

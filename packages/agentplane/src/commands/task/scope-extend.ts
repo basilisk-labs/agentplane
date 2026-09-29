@@ -2,7 +2,9 @@ import {
   computeLogicalCompletionContractDigest,
   EXECUTION_GRANT_EXTENSION_KEY,
   executionGrantForContextFromExtensions,
+  isExecutionGrantActive,
   rebaseExecutionGrantScope,
+  taskCentricAggregateFromExtensions,
   type TaskRepositoryEffect,
   repositoryEffectsForPath,
 } from "@agentplaneorg/core/tasks";
@@ -35,6 +37,66 @@ const output = createCliEmitter();
 
 function uniqueSorted<T extends string>(values: readonly T[]): T[] {
   return [...new Set(values)].toSorted();
+}
+
+function hasExactSchedulableWorkItemScopeDelta(opts: {
+  task: TaskData;
+  work_item_id: string | null;
+  scope_roots: readonly string[];
+}): boolean {
+  if (!opts.work_item_id || opts.scope_roots.length === 0) return false;
+  const aggregate = taskCentricAggregateFromExtensions(opts.task.extensions);
+  const plan = aggregate?.current_plan;
+  const runtime = aggregate?.work_items[opts.work_item_id];
+  const workItem = plan?.proposal.work_items.work_items.find(
+    (item) => item.id === opts.work_item_id,
+  );
+  const allRequiredCompleted = plan?.proposal.work_items.work_items
+    .filter((item) => !item.optional)
+    .every((item) => aggregate?.work_items[item.id]?.state === "COMPLETED");
+  if (
+    !runtime ||
+    !workItem ||
+    allRequiredCompleted !== false ||
+    !["PLANNED", "READY", "REWORK_READY"].includes(runtime.state)
+  )
+    return false;
+  return opts.scope_roots.some((root) => !workItem.scope_roots.includes(root));
+}
+
+function approvedWorkItemScopeRoots(task: TaskData, workItemId: string | null): string[] {
+  if (!workItemId) return [];
+  const plan = taskCentricAggregateFromExtensions(task.extensions)?.current_plan;
+  if (plan?.approval.state !== "approved" || plan.approval.approved_digest !== plan.digest)
+    return [];
+  const workItem = plan.proposal.work_items.work_items.find((item) => item.id === workItemId);
+  return uniqueSorted((workItem?.scope_roots ?? []).map((root) => normalizeTaskScopeRoot(root)));
+}
+
+function hasPreviouslyApprovedExactScopeExtension(opts: {
+  task: TaskData;
+  scope_roots: readonly string[];
+  repository_effects: readonly TaskRepositoryEffect[];
+}): boolean {
+  const roots = uniqueSorted(opts.scope_roots.map((root) => normalizeTaskScopeRoot(root)));
+  const effects = uniqueSorted(opts.repository_effects);
+  const summary = [
+    roots.length > 0 ? `roots=${roots.join(",")}` : null,
+    effects.length > 0 ? `repository_effects=${effects.join(",")}` : null,
+  ]
+    .filter((value): value is string => value !== null)
+    .join("; ");
+  const approval =
+    `Approved state-bound execution scope extension: ${roots.join(", ")}; ` +
+    `repository effects: ${effects.join(", ") || "unchanged"}.`;
+  return (
+    opts.task.execution_contract?.declaration.rationale.includes(
+      `USER-approved blocked-result scope extension: ${summary}`,
+    ) === true &&
+    (opts.task.comments ?? []).some(
+      (comment) => comment.author === "USER" && comment.body === approval,
+    )
+  );
 }
 
 export function extendBlockedTaskExecutionContract(opts: {
@@ -102,14 +164,34 @@ export function extendBlockedTaskExecutionContract(opts: {
       message: "Task execution scope extension must exactly match the pending structured request.",
     });
   }
-  const scopeRoots = uniqueSorted([...current.declaration.scope_roots, ...addedRoots]);
+  const inheritedApprovedRoots =
+    current.declaration.scope_roots.length === 0
+      ? approvedWorkItemScopeRoots(opts.task, pending.work_item_id)
+      : [];
+  const scopeRoots = uniqueSorted([
+    ...current.declaration.scope_roots,
+    ...inheritedApprovedRoots,
+    ...addedRoots,
+  ]);
   const repositoryEffects = uniqueSorted([
     ...current.declaration.repository_effects,
     ...opts.repository_effects,
   ]);
-  if (
+  const executionContractIsUnchanged =
     scopeRoots.length === current.declaration.scope_roots.length &&
-    repositoryEffects.length === current.declaration.repository_effects.length
+    repositoryEffects.length === current.declaration.repository_effects.length;
+  if (
+    executionContractIsUnchanged &&
+    !hasExactSchedulableWorkItemScopeDelta({
+      task: opts.task,
+      work_item_id: pending.work_item_id,
+      scope_roots: addedRoots,
+    }) &&
+    !hasPreviouslyApprovedExactScopeExtension({
+      task: opts.task,
+      scope_roots: addedRoots,
+      repository_effects: addedEffects,
+    })
   ) {
     throw new CliError({
       code: "E_VALIDATION",
@@ -128,6 +210,9 @@ export function extendBlockedTaskExecutionContract(opts: {
     repository_effects: repositoryEffects,
     rationale: uniqueSorted([
       ...current.declaration.rationale,
+      ...(inheritedApprovedRoots.length > 0
+        ? ["Migrated approved WorkItem scope for a legacy rootless execution contract."]
+        : []),
       `USER-approved blocked-result scope extension: ${extensionSummary}`,
     ]),
   };
@@ -155,6 +240,19 @@ export function taskWithRebasedExecutionGrant(opts: {
     execution_contract: opts.task.execution_contract,
   });
   if (!executionGrant) return opts.task;
+  if (
+    !isExecutionGrantActive({
+      grant: executionGrant,
+      task_id: opts.task.id,
+      plan: opts.task.sections?.Plan ?? "",
+      execution_contract: opts.task.execution_contract,
+      repository_identity: opts.repository_identity,
+    })
+  ) {
+    const extensions = { ...(opts.task.extensions ?? {}) };
+    delete extensions[EXECUTION_GRANT_EXTENSION_KEY];
+    return { ...opts.task, extensions };
+  }
   if (
     computeLogicalCompletionContractDigest(opts.task.execution_contract) !==
     computeLogicalCompletionContractDigest(opts.execution_contract)

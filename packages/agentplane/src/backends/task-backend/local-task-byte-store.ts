@@ -15,7 +15,9 @@ import {
 import { readStableRegularFileNoFollow } from "../../shared/stable-file.js";
 import { writeTextIfChanged } from "../../shared/write-if-changed.js";
 import { validateTaskId } from "./shared.js";
-import type { LocalBackend } from "./local-backend.js";
+type LocalTaskByteStoreBackend = {
+  readonly root: string;
+};
 
 export function taskBytesDigest(text: string | Buffer): taskKernel.Sha256Digest {
   return `sha256:${createHash("sha256").update(text).digest("hex")}`;
@@ -23,7 +25,7 @@ export function taskBytesDigest(text: string | Buffer): taskKernel.Sha256Digest 
 
 export class LocalTaskByteStore implements TaskByteStore {
   readonly backend_identity = "local-task-readme-v1";
-  constructor(readonly backend: LocalBackend) {}
+  constructor(readonly backend: LocalTaskByteStoreBackend) {}
 
   private async readBytes(file: string): Promise<Buffer> {
     const chain = await captureContainedPathChainIdentity({

@@ -7,11 +7,16 @@ import {
   type StateFingerprintPreconditionDiagnostic,
 } from "@agentplaneorg/core/schemas";
 
-import type { BlueprintPlanArtifact } from "../../blueprints/index.js";
 import { buildTaskRouteDecision } from "../../commands/shared/route-decision.js";
 import type { TaskRouteDecision } from "../../commands/shared/route-decision-types.js";
 import type { CommandContext } from "../../commands/shared/task-backend.js";
 import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
+import { resolveEffectiveTaskWorkflowMode } from "../../runtime/task-routing/index.js";
+import {
+  nativeTaskContextBudgetProblems,
+  resolveNativeTaskObligations,
+  type NativeTaskObligations,
+} from "../../runtime/task-obligations/index.js";
 import {
   makeReadOnlyExecutionContext,
   type ReadOnlyExecutionContext,
@@ -35,26 +40,20 @@ import {
 import type { RunnerPromptBlock, RunnerRecipeContext } from "../types.js";
 
 import {
-  buildAgentWorkOrderLegacyBriefProjection,
   buildAgentWorkOrderSourceManifest,
   buildCanonicalAgentWorkOrder,
 } from "./agent-work-order-build.js";
 import {
   buildAgentWorkOrderRemotePolicy,
   projectAgentWorkOrderRoute,
-  type AgentWorkOrderLegacyBriefProjection,
   type AgentWorkOrderPreparationView,
 } from "./agent-work-order-projection.js";
-import { resolveRunnerBlueprintPlan } from "./task-run-blueprint-plan.js";
 import {
   prepareTaskKnowledgeRetrieval,
   type SemanticRetrievalSelector,
 } from "./task-knowledge-retrieval.js";
 
-export {
-  type AgentWorkOrderLegacyBriefProjection,
-  type AgentWorkOrderPreparationView,
-} from "./agent-work-order-projection.js";
+export { type AgentWorkOrderPreparationView } from "./agent-work-order-projection.js";
 
 export type PreparedAgentWorkOrder = {
   work_order: AgentWorkOrderV2;
@@ -66,10 +65,9 @@ export type PreparedAgentWorkOrder = {
   base_prompts: RunnerPromptBlock[];
   /** Bounded projection serialized into the provider-facing runner bundle. */
   provider_prompts: RunnerPromptBlock[];
-  blueprint: BlueprintPlanArtifact;
-  brief_projection: AgentWorkOrderLegacyBriefProjection;
   execution_context: ReadOnlyExecutionContext;
   execution_profile: ResolvedExecutionProfileRuntime;
+  task_obligations: NativeTaskObligations;
   route_inputs: {
     include_remote: boolean;
     include_runner_state?: boolean;
@@ -205,94 +203,51 @@ export async function prepareAgentWorkOrder(opts: {
       }),
       output: (prompts) => prompts,
     });
-    const blueprint = await measurePreparationNode({
-      recorder: executionContext.command.preparationTrace,
-      node: "blueprint_resolution",
-      scope: traceScope,
-      dependencies: ["task_context_assembly", "prompt_compilation"],
-      cacheability: "exact",
-      cachePolicyReason: "Blueprint inputs and the resolved plan are fingerprinted.",
-      operation: async () =>
-        await resolveRunnerBlueprintPlan({
-          taskEnvelope,
-          config: executionContext.config,
-          projectRoot: executionContext.repo.git_root,
-          recipe: opts.recipe,
-          basePrompts,
-        }),
-      fingerprintInputs: (resolved) => ({
-        task: taskEnvelope.task,
-        config: executionContext.config,
-        recipe: opts.recipe ?? null,
-        prompts: basePrompts,
-        resolved_blueprint: resolved,
-      }),
-      output: (resolved) => resolved,
+    const taskObligations = resolveNativeTaskObligations({
+      task_kind: taskEnvelope.source_task.task_kind,
+      mutation_scope: taskEnvelope.source_task.mutation_scope,
+      risk_flags: taskEnvelope.source_task.risk_flags,
+      execution_contract: taskEnvelope.source_task.execution_contract,
+      selected_mode:
+        opts.task_execution?.selected_mode ??
+        resolveEffectiveTaskWorkflowMode(taskEnvelope.source_task, executionContext.config),
+      route_reason_codes:
+        opts.task_execution?.reason_codes ??
+        taskEnvelope.source_task.execution_contract?.reason_codes ??
+        taskEnvelope.source_task.execution_route?.reason_codes,
+      execution_profile: executionProfile,
     });
-    if (!blueprint) {
-      return {
-        status: "rejected",
-        rejection: {
-          code: "work_order_invalid",
-          message: "AgentWorkOrder preparation could not resolve a blueprint context.",
-        },
-      };
-    }
     const sourceManifest = buildAgentWorkOrderSourceManifest({
       prepared: {
         task_envelope: taskEnvelope,
         base_prompts: basePrompts,
-        blueprint,
+        task_obligations: taskObligations,
         execution_context: executionContext,
       },
     });
-    const [knowledgeRetrieval, briefProjection] = await Promise.all([
-      measurePreparationNode({
-        recorder: executionContext.command.preparationTrace,
-        node: "knowledge_retrieval",
-        scope: traceScope,
-        dependencies: ["task_context_assembly", "blueprint_resolution"],
-        cacheability: "exact",
-        cachePolicyReason:
-          "Knowledge references are digest-bound to the task, blueprint, and manifest inputs.",
-        operation: async () =>
-          await prepareTaskKnowledgeRetrieval({
-            command_ctx: executionContext.command,
-            task_envelope: taskEnvelope,
-            blueprint,
-            repository_root: executionContext.repo.git_root,
-            semantic_selector: opts.semantic_selector,
-          }),
-        fingerprintInputs: (retrieval) => ({
-          task: taskEnvelope.task,
-          blueprint,
-          retrieval_receipt: retrieval.receipt,
-          knowledge_refs: retrieval.knowledge_refs,
+    const knowledgeRetrieval = await measurePreparationNode({
+      recorder: executionContext.command.preparationTrace,
+      node: "knowledge_retrieval",
+      scope: traceScope,
+      dependencies: ["task_context_assembly", "prompt_compilation"],
+      cacheability: "exact",
+      cachePolicyReason:
+        "Knowledge references are digest-bound to the task and native semantic manifest inputs.",
+      operation: async () =>
+        await prepareTaskKnowledgeRetrieval({
+          command_ctx: executionContext.command,
+          task_envelope: taskEnvelope,
+          repository_root: executionContext.repo.git_root,
+          semantic_selector: opts.semantic_selector,
         }),
-        output: (retrieval) => retrieval,
+      fingerprintInputs: (retrieval) => ({
+        task: taskEnvelope.task,
+        task_obligations: taskObligations,
+        retrieval_receipt: retrieval.receipt,
+        knowledge_refs: retrieval.knowledge_refs,
       }),
-      measurePreparationNode({
-        recorder: executionContext.command.preparationTrace,
-        node: "rendering",
-        scope: traceScope,
-        dependencies: ["task_context_assembly", "blueprint_resolution"],
-        cacheability: "exact",
-        cachePolicyReason:
-          "The compatibility projection is a deterministic rendering of typed inputs.",
-        operation: async () =>
-          await buildAgentWorkOrderLegacyBriefProjection({
-            command_ctx: executionContext.command,
-            task_envelope: taskEnvelope,
-            blueprint,
-          }),
-        fingerprintInputs: (projection) => ({
-          task: taskEnvelope.task,
-          blueprint,
-          rendered_projection: projection,
-        }),
-        output: (projection) => projection,
-      }),
-    ]);
+      output: (retrieval) => retrieval,
+    });
     const routeDecision =
       opts.prepared_route_decision ??
       (await buildTaskRouteDecision({
@@ -317,6 +272,7 @@ export async function prepareAgentWorkOrder(opts: {
         route_decision: routeDecision,
         ...(opts.semantic_role ? { semantic_role: opts.semantic_role } : {}),
         ...(opts.task_execution ? { task_execution: opts.task_execution } : {}),
+        task_obligations: taskObligations,
       },
       source_manifest: sourceManifest,
       knowledge_retrieval: knowledgeRetrieval,
@@ -328,9 +284,27 @@ export async function prepareAgentWorkOrder(opts: {
       }),
       ...(await collectSemanticPolicyModulePrompts({
         git_root: executionContext.repo.git_root,
-        policy_modules: blueprint.policyModules,
+        policy_modules: taskObligations.policy_modules,
       })),
     ].toSorted((left, right) => left.priority - right.priority || left.id.localeCompare(right.id));
+    const nativeBudgetProblems = nativeTaskContextBudgetProblems(
+      taskObligations,
+      semanticBasePrompts.length,
+    );
+    if (nativeBudgetProblems.length > 0) {
+      return {
+        status: "rejected",
+        rejection: {
+          code: "work_order_invalid",
+          message: [
+            "AgentWorkOrder native semantic context budget exceeded.",
+            `profile=${taskObligations.profile}`,
+            ...nativeBudgetProblems,
+            "Fix: reduce optional context or use an execution profile that preserves every required policy module.",
+          ].join("\n"),
+        },
+      };
+    }
     const preparation: AgentWorkOrderPreparationView = {
       schema_version: 2,
       kind: "agent_work_order_preparation",
@@ -354,10 +328,9 @@ export async function prepareAgentWorkOrder(opts: {
         task_envelope: taskEnvelope,
         base_prompts: basePrompts,
         provider_prompts: semanticBasePrompts,
-        blueprint,
-        brief_projection: briefProjection,
         execution_context: executionContext,
         execution_profile: executionProfile,
+        task_obligations: taskObligations,
         route_inputs: {
           include_remote: remotePreparation.include_remote,
           include_runner_state: includeRunnerState,
@@ -397,7 +370,7 @@ export async function prepareAgentWorkOrder(opts: {
 
 /**
  * Recompute exactly the route fingerprint inputs used during preparation.
- * Prompt/blueprint context remains bundle-bound; invocation is refused before
+ * Prompt and native obligation context remain bundle-bound; invocation is refused before
  * adapter preparation if lifecycle, task, Git, policy, or route state changed.
  */
 export async function evaluatePreparedAgentWorkOrderReadiness(opts: {

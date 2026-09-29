@@ -208,6 +208,7 @@ describe("compact agent action packet", () => {
             plan_digest: computePlanDigest("Approved plan"),
             state_fingerprint: FINGERPRINT,
             decision: "approved",
+            required_fields: ["host_id", "conversation_id", "message_id", "decided_at"],
           },
         },
       });

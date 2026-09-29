@@ -9,6 +9,10 @@ import {
 } from "../../adapters/authority/user-approval-receipt.js";
 import { KernelBackendAdapter } from "../../adapters/task-backend/kernel-backend-adapter.js";
 import {
+  makeKernelRecord,
+  TASK_KERNEL_EXTENSION,
+} from "../../adapters/task-backend/kernel-record.js";
+import {
   kernelReplayJourney,
   replayRepositoryIdentity,
 } from "../../adapters/task-backend/kernel-replay-journey.test-fixtures.js";
@@ -134,32 +138,34 @@ async function fixture(
     return Buffer.from(JSON.stringify(receipt)).toString("base64url");
   }
   let approval: NativeApprovalObservation | null =
-    mode === "manual_operator"
-      ? { kind: mode, actor_id: "USER", invocation_id: "operator-invocation-1" }
-      : mode === "signed_user_receipt"
-        ? { kind: mode, encoded: signed() }
-        : {
-            kind: mode,
-            repository_identity: replayRepositoryIdentity,
-            host_id: "host-1",
-            conversation_id: "conversation-1",
-            message_id: "message-1",
-            encoded: Buffer.from(
-              JSON.stringify({
-                schema_version: 1,
-                kind: "agentplane.host_user_decision",
-                origin: "user",
-                host_id: "host-1",
-                conversation_id: "conversation-1",
-                message_id: "message-1",
-                task_id: journey.task.id,
-                plan_digest: plan.digest,
-                state_fingerprint: values.repository_fingerprint,
-                decision: "approved",
-                decided_at: now,
-              }),
-            ).toString("base64url"),
-          };
+    mode === "repository_policy"
+      ? null
+      : mode === "manual_operator"
+        ? { kind: mode, actor_id: "USER", invocation_id: "operator-invocation-1" }
+        : mode === "signed_user_receipt"
+          ? { kind: mode, encoded: signed() }
+          : {
+              kind: mode,
+              repository_identity: replayRepositoryIdentity,
+              host_id: "host-1",
+              conversation_id: "conversation-1",
+              message_id: "message-1",
+              encoded: Buffer.from(
+                JSON.stringify({
+                  schema_version: 1,
+                  kind: "agentplane.host_user_decision",
+                  origin: "user",
+                  host_id: "host-1",
+                  conversation_id: "conversation-1",
+                  message_id: "message-1",
+                  task_id: journey.task.id,
+                  plan_digest: plan.digest,
+                  state_fingerprint: values.repository_fingerprint,
+                  decision: "approved",
+                  decided_at: now,
+                }),
+              ).toString("base64url"),
+            };
   let observation: k.AuthorityObservation | null = null;
   const port: KernelAuthorityPort = {
     readContext: async () => {
@@ -189,39 +195,64 @@ async function fixture(
     setObservation: (next: k.AuthorityObservation) => {
       observation = next;
     },
+    replaceAggregate: (aggregate: k.TaskAggregate) => {
+      if (!saved) throw new Error("task fixture missing");
+      const current = saved.extensions?.[TASK_KERNEL_EXTENSION];
+      if (!current || typeof current !== "object") throw new Error("kernel record missing");
+      const record = current as { events?: readonly k.DomainEvent[] };
+      saved = {
+        ...saved,
+        extensions: {
+          ...saved.extensions,
+          [TASK_KERNEL_EXTENSION]: makeKernelRecord(
+            replayRepositoryIdentity,
+            aggregate,
+            record.events ?? [],
+          ),
+        },
+      };
+    },
   };
 }
 
 const effects = (path: string) => (path.startsWith("schemas/") ? ["schema"] : ["source_code"]);
 
 describe("canonical native authority", () => {
-  it.each(["manual_operator", "signed_user_receipt", "host_user_decision"] as const)(
-    "persists exact %s approval and delegates without USER provenance",
-    async (mode) => {
-      const f = await fixture(mode);
-      expect(await f.resolver.approve(f.taskId)).toMatchObject({ kind: "committed" });
-      const read = await f.adapter.read(f.taskId);
-      expect(read).toMatchObject({
-        kind: "canonical",
-        record: { aggregate: { authority_lineage: [{ approval_mode: mode }] } },
-      });
-      const { authority: root } = await f.resolver.resolve(f.taskId);
-      const { authority: child } = await f.resolver.resolve(f.taskId, "build");
-      expect(root.provenance.kind).toBe("USER");
-      expect(child.provenance).toMatchObject({
-        kind: "DELEGATED",
-        parent_authority_digest: root.digest,
-      });
-      expect(child.provenance.actor_id).not.toBe("USER");
-      expect(k.compareExecutionAuthority(root, child)).toEqual({ ok: true });
-      expect(child.plan_digest).toBe(f.plan.digest);
-    },
-  );
+  it.each([
+    "manual_operator",
+    "signed_user_receipt",
+    "host_user_decision",
+    "repository_policy",
+  ] as const)("persists exact %s approval and delegates without USER provenance", async (mode) => {
+    const f = await fixture(mode);
+    expect(
+      mode === "repository_policy"
+        ? await f.resolver.approveByRepositoryPolicy(f.taskId)
+        : await f.resolver.approve(f.taskId),
+    ).toMatchObject({ kind: "committed" });
+    const read = await f.adapter.read(f.taskId);
+    expect(read).toMatchObject({
+      kind: "canonical",
+      record: { aggregate: { authority_lineage: [{ approval_mode: mode }] } },
+    });
+    const { authority: root } = await f.resolver.resolve(f.taskId);
+    const { authority: child } = await f.resolver.resolve(f.taskId, "build");
+    expect(root.provenance.kind).toBe(mode === "repository_policy" ? "SYSTEM" : "USER");
+    if (read.kind !== "canonical") throw new Error(read.kind);
+    expect(read.record.aggregate.current_plan?.approval_actor_id).toBe(
+      mode === "repository_policy" ? "native-controller" : root.provenance.actor_id,
+    );
+    expect(child.provenance).toMatchObject({
+      kind: "DELEGATED",
+      parent_authority_digest: root.digest,
+    });
+    expect(child.provenance.actor_id).not.toBe("USER");
+    expect(k.compareExecutionAuthority(root, child)).toEqual({ ok: true });
+    expect(child.plan_digest).toBe(f.plan.digest);
+  });
 
-  it("delegates an approved disposable deploy with its exact resource scope", async () => {
+  it("delegates approved semantic work with its exact resource scope", async () => {
     const requirements = {
-      external_effects: ["deploy"],
-      capabilities: ["deploy"],
       resources: ["environment:disposable/qualification"],
     };
     const f = await fixture("manual_operator", requirements);
@@ -239,10 +270,8 @@ describe("canonical native authority", () => {
     await expect(f.resolver.resolve(f.taskId, "build")).rejects.toThrow("native_policy_changed");
   });
 
-  it("refuses a production deploy under a disposable-only native approval", async () => {
+  it("refuses a production resource under a disposable-only native approval", async () => {
     const requirements = {
-      external_effects: ["deploy"],
-      capabilities: ["deploy"],
       resources: ["environment:production"],
     };
     const f = await fixture("manual_operator", requirements);
@@ -466,6 +495,32 @@ describe("canonical native authority", () => {
     await expect(f.resolver.resolve(f.taskId)).rejects.toThrow("native_policy_changed");
     f.values.occurred_at = "2026-08-31T10:11:00.000Z";
     await expect(f.resolver.resolve(f.taskId)).rejects.toThrow("authority_expired");
+  });
+
+  it("validates the latest approved authority against the current native ceiling", async () => {
+    const f = await fixture();
+    await f.resolver.approve(f.taskId);
+    const read = await f.adapter.read(f.taskId);
+    if (read.kind !== "canonical") throw new Error(read.kind);
+    const first = read.record.aggregate.authority_lineage?.[0]?.authority;
+    if (!first) throw new Error("approved authority missing");
+    const policyDigests = [k.kernelDigest("replacement-policy")];
+    const latestContents = { ...first, policy_digests: policyDigests };
+    const latest = { ...latestContents, digest: k.authorityDigest(latestContents) };
+    const aggregate: k.TaskAggregate = {
+      ...read.record.aggregate,
+      authority_lineage: [
+        ...(read.record.aggregate.authority_lineage ?? []),
+        { authority: latest, approval_mode: "manual_operator", observation: null },
+      ],
+    };
+    expect(k.canonicalAuthorityIssues(aggregate)).toEqual([]);
+    f.replaceAggregate(aggregate);
+    f.values.ceiling = { ...f.values.ceiling, policy_digests: policyDigests };
+
+    await expect(f.resolver.resolve(f.taskId)).resolves.toMatchObject({
+      authority: { digest: latest.digest, policy_digests: policyDigests },
+    });
   });
 
   it("binds an unsigned host decision to the native channel instead of trusting its JSON identity", async () => {

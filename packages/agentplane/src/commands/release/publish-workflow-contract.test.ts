@@ -309,15 +309,18 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("name: Publish release");
   });
 
-  it("runs the stable-version guard before publishing packages with npm tag latest", async () => {
+  it("runs the stable-version guard before publishing packages with the admitted npm tag", async () => {
     const workflow = await readFile(PUBLISH_WORKFLOW_PATH, "utf8");
+    const publishCommand =
+      'npm publish --provenance --access public --tag "${{ needs.detect.outputs.npm_tag }}"';
 
     expect(workflow).toContain(
       'node scripts/check-release-version.mjs --tag "${{ needs.detect.outputs.tag }}" --stable-only',
     );
-    expect(workflow).toContain("npm publish --provenance --access public --tag latest");
+    expect(workflow).toContain("node scripts/release/stable-channel-policy.mjs");
+    expect(workflow).toContain(publishCommand);
     expect(workflow.indexOf("node scripts/check-release-version.mjs")).toBeLessThan(
-      workflow.indexOf("npm publish --provenance --access public --tag latest"),
+      workflow.indexOf(publishCommand),
     );
   });
 
@@ -407,7 +410,8 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("docker login ghcr.io");
     expect(workflow).toContain("docker build \\");
     expect(workflow).toContain('--build-arg "AGENTPLANE_TARBALL_FILE=${AGENTPLANE_TARBALL_FILE}"');
-    expect(workflow).toContain('docker push "${GHCR_VERSION_TAG}"');
+    expect(workflow).toContain("mapfile -t GHCR_TAGS");
+    expect(workflow).toContain('for tag in "${GHCR_TAGS[@]}"; do docker push "$tag"; done');
     expect(workflow).toContain(
       ".agentplane/.release/publish/distribution/release-distribution.json",
     );
@@ -515,12 +519,12 @@ describe("publish workflow contract", () => {
     );
   });
 
-  it("checks out base revision and initializes required submodules for publish", async () => {
+  it("checks out the exact base revision and builds the publish payload", async () => {
     const workflow = await readFile(PUBLISH_WORKFLOW_PATH, "utf8");
 
     expect(workflow).toContain("fetch-depth: 0");
-    expect(workflow).toContain("submodules: false");
-    expect(workflow).toContain("Initialize required publish-relevant submodules");
+    expect(workflow).not.toContain("submodules:");
+    expect(workflow).not.toContain("Initialize required publish-relevant submodules");
     expect(workflow).toContain("NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN || '' }}");
     expect(workflow).toContain("NPM_TOKEN: ${{ secrets.NPM_TOKEN || '' }}");
     expect(workflow).toContain("packages: write");

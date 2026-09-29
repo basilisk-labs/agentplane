@@ -6,19 +6,6 @@ export type CommitPolicyResult = {
 export type CommitTaskIntent = {
   taskKind?: "analysis" | "content" | "docs" | "code" | "release" | "ops" | "context";
   mutationScope?: "none" | "docs" | "code" | "release" | "ops" | "context" | "unknown";
-  blueprintRequest?:
-    | "analysis.light"
-    | "content.light"
-    | "docs.change"
-    | "code.direct"
-    | "code.branch_pr"
-    | "performance.benchmark"
-    | "quality.regression"
-    | "context.assimilation"
-    | "runner.execution"
-    | "post_run.improvement_review"
-    | "release.strict"
-    | "ops.approval";
   tags?: string[];
 };
 
@@ -107,7 +94,6 @@ export function commitScopesForTaskIntent(intent: CommitTaskIntent): string[] {
     scopes.add(intent.mutationScope);
   }
   if (intent.taskKind) scopes.add(intent.taskKind);
-  if (intent.blueprintRequest) scopes.add(intent.blueprintRequest.split(".")[0] ?? "");
   for (const tag of intent.tags ?? []) {
     const normalized = rootScope(tag);
     if (normalized && isCommitScope(normalized)) scopes.add(normalized);

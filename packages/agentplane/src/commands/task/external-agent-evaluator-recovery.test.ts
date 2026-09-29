@@ -87,7 +87,9 @@ describe("evaluator post-preparation state binding", () => {
     "provider",
   ] as const)("rejects %s drift during preparation", (key) => {
     const { before, after, order } = fixture();
-    after.workflowStep.preconditionFingerprint.components[key].digest = currentFingerprint;
+    const fingerprint = after.workflowStep.preconditionFingerprint;
+    if (fingerprint.schema_version !== 1) throw new Error("expected legacy fixture");
+    fingerprint.components[key].digest = currentFingerprint;
     expect(() => bindPreparedEvaluatorState({ before, after, work_order: order })).toThrow(
       "inputs changed",
     );

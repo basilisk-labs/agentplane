@@ -128,53 +128,107 @@ describe("direct task supervisor formal operation", () => {
     });
   });
 
-  it("refuses a retry when the prior formal effect is unknown", async () => {
-    const initial = createSupervisorExecutionEpisodeJournal({
-      task_id: TASK_ID,
-      task_revision: null,
-      state_fingerprint_digest: FIRST_FINGERPRINT,
-      budget: {
-        max_episodes: 50,
-        max_agent_runs: 50,
-        max_input_tokens: 3_000_000,
-        max_output_tokens: 1_000_000,
-        max_total_tokens: 4_000_000,
-        max_wall_time_ms: 14_400_000,
-        max_changed_files: 2000,
-        max_diff_lines: null,
-        max_no_progress_episodes: 3,
-      },
-    });
-    const started = startSupervisorExecutionEpisode({
-      journal: initial,
-      role: "EXECUTOR",
-      kind: "cli_operation",
-      operation_identity: { direct_task_operation: "task_verify" },
-      precondition_fingerprint_digest: FIRST_FINGERPRINT,
-    });
-    if (started.status !== "started") throw new Error("expected formal operation fixture");
-    const effectInDoubt = recoverSupervisorExecutionEpisodeJournal({
-      journal: started.journal,
-      state_fingerprint_digest: FIRST_FINGERPRINT,
-    });
-    const run = vi.fn();
-    mocks.open.mockResolvedValue({
-      journal: effectInDoubt,
-      journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
-      store: { write: vi.fn() },
-    });
-
-    await expect(
-      recordDirectTaskFormalOperation({
+  it.each([false, true])(
+    "reopens a persisted stale completed journal only with explicit replacement: %s",
+    async (replacement) => {
+      const previous = completedRunnerJournal();
+      const stale = recoverSupervisorExecutionEpisodeJournal({
+        journal: previous,
+        state_fingerprint_digest: NEXT_FINGERPRINT,
+      });
+      expect(stale.stop?.reason).toBe("stale_state");
+      const write = vi.fn().mockResolvedValue(undefined);
+      mocks.open.mockResolvedValue({
+        journal: stale,
+        journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
+        store: { write },
+      });
+      const run = vi.fn().mockResolvedValue({ verification: "ok" });
+      const operation = recordDirectTaskFormalOperation({
         git_root: "/repo",
         task_id: TASK_ID,
         id: "task_verify",
+        replacement,
         decision: vi.fn().mockResolvedValue(decision(NEXT_FINGERPRINT)),
         run,
-      }),
-    ).rejects.toThrow("journal is stopped (effect_in_doubt)");
-    expect(run).not.toHaveBeenCalled();
-  });
+      });
+      if (!replacement) {
+        await expect(operation).rejects.toThrow("journal is stopped (stale_state)");
+        expect(run).not.toHaveBeenCalled();
+        expect(write).not.toHaveBeenCalled();
+        return;
+      }
+      const result = await operation;
+      expect(run).toHaveBeenCalledOnce();
+      expect(result.journal.operations.slice(0, -1)).toEqual(previous.operations);
+      expect(result.journal.operations).toHaveLength(2);
+      expect(result.journal.operations.at(-1)).toMatchObject({
+        kind: "cli_operation",
+        status: "completed",
+        precondition_fingerprint_digest: NEXT_FINGERPRINT,
+      });
+      expect(result.journal.cursor).toMatchObject({ phase: "ready", operation_key: null });
+      expect(write.mock.calls[0]?.[0]).toMatchObject({
+        previous_digest: stale.digest,
+        status: "running",
+        stop: null,
+        operations: previous.operations,
+      });
+      expect(mocks.release).toHaveBeenCalledOnce();
+    },
+  );
+
+  it.each([false, true])(
+    "refuses a retry when the prior formal effect is unknown, replacement: %s",
+    async (replacement) => {
+      const initial = createSupervisorExecutionEpisodeJournal({
+        task_id: TASK_ID,
+        task_revision: null,
+        state_fingerprint_digest: FIRST_FINGERPRINT,
+        budget: {
+          max_episodes: 50,
+          max_agent_runs: 50,
+          max_input_tokens: 3_000_000,
+          max_output_tokens: 1_000_000,
+          max_total_tokens: 4_000_000,
+          max_wall_time_ms: 14_400_000,
+          max_changed_files: 2000,
+          max_diff_lines: null,
+          max_no_progress_episodes: 3,
+        },
+      });
+      const started = startSupervisorExecutionEpisode({
+        journal: initial,
+        role: "EXECUTOR",
+        kind: "cli_operation",
+        operation_identity: { direct_task_operation: "task_verify" },
+        precondition_fingerprint_digest: FIRST_FINGERPRINT,
+      });
+      if (started.status !== "started") throw new Error("expected formal operation fixture");
+      const effectInDoubt = recoverSupervisorExecutionEpisodeJournal({
+        journal: started.journal,
+        state_fingerprint_digest: FIRST_FINGERPRINT,
+      });
+      const run = vi.fn();
+      mocks.open.mockResolvedValue({
+        journal: effectInDoubt,
+        journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
+        store: { write: vi.fn() },
+      });
+
+      await expect(
+        recordDirectTaskFormalOperation({
+          git_root: "/repo",
+          task_id: TASK_ID,
+          id: "task_verify",
+          decision: vi.fn().mockResolvedValue(decision(NEXT_FINGERPRINT)),
+          replacement,
+          run,
+        }),
+      ).rejects.toThrow("journal is stopped (effect_in_doubt)");
+      expect(run).not.toHaveBeenCalled();
+    },
+  );
 
   it("resumes the exact formal operation intent after process loss", async () => {
     const initial = createSupervisorExecutionEpisodeJournal({

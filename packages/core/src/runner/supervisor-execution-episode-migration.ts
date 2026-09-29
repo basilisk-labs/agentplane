@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import {
   createSupervisorExecutionEpisodeJournal,
+  resumeSupervisorExecutionEpisodeAfterLegacyBudgetStop,
   validateSupervisorExecutionEpisodeJournal,
   type SupervisorExecutionBudget,
   type SupervisorExecutionEpisodeJournal,
@@ -25,7 +26,11 @@ const LEGACY_EMPTY_JOURNAL_ZOD_SCHEMA = z
   })
   .strict();
 
-export type SupervisorExecutionEpisodeMigrationSource = "absent" | "legacy_v0" | "current";
+export type SupervisorExecutionEpisodeMigrationSource =
+  | "absent"
+  | "legacy_v0"
+  | "legacy_budget_v1"
+  | "current";
 
 export type SupervisorExecutionEpisodeMigrationResult = {
   journal: SupervisorExecutionEpisodeJournal;
@@ -62,8 +67,16 @@ export function migrateSupervisorExecutionEpisodeJournal(opts: {
   }
   const version = (opts.input as { schema_version?: unknown }).schema_version;
   if (version === 1) {
+    const journal = validateSupervisorExecutionEpisodeJournal(opts.input);
+    if (journal.stop?.reason === "budget_exhausted") {
+      return {
+        journal: resumeSupervisorExecutionEpisodeAfterLegacyBudgetStop({ journal }),
+        source: "legacy_budget_v1",
+        migrated: true,
+      };
+    }
     return {
-      journal: validateSupervisorExecutionEpisodeJournal(opts.input),
+      journal,
       source: "current",
       migrated: false,
     };

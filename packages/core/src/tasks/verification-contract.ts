@@ -39,6 +39,14 @@ export function repositoryEffectsForPath(pathValue: string): TaskRepositoryEffec
   return kernel.repositoryEffectsForPath(pathValue);
 }
 
+export function repositoryEffectsForChange(
+  pathValue: string,
+  beforeContent: string | null,
+  afterContent: string | null,
+): TaskRepositoryEffect[] {
+  return kernel.repositoryEffectsForChange(pathValue, beforeContent, afterContent);
+}
+
 export function componentForVerificationPath(pathValue: string): string {
   return kernel.componentForVerificationPath(pathValue);
 }

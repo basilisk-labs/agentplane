@@ -7,6 +7,7 @@ import { CliError } from "../../shared/errors.js";
 import type { resolveConflictReworkSemanticInput } from "../pr/conflict-rework-semantic-input.js";
 import {
   applyConflictResolution,
+  assertConflictResolutionCommit,
   prepareConflictResolutionTree,
   resolveConflictResolutionSnapshot,
 } from "../pr/conflict-rework-merge.js";
@@ -181,6 +182,62 @@ export async function applyExternalConflictResolution(
   const allowed = opts.work_order.authority.writable_roots
     .map((root) => authorityPath(root, opts.exchange.checkout))
     .filter((root): root is string => root !== null);
+  if (currentHead !== baseline) {
+    const parents = await runProcess({
+      command: "git",
+      args: ["show", "-s", "--format=%P", currentHead],
+      cwd: opts.exchange.checkout,
+    });
+    if (parents.stdout.trim().split(/\s+/u).length === 2) {
+      const branch = await runProcess({
+        command: "git",
+        args: ["symbolic-ref", "--short", "HEAD"],
+        cwd: opts.exchange.checkout,
+      });
+      const base = await runProcess({
+        command: "git",
+        args: ["rev-parse", "--verify", "--end-of-options", conflictContext.provider.base],
+        cwd: opts.exchange.checkout,
+      });
+      const status = await runProcess({
+        command: "git",
+        args: ["status", "--porcelain", "-z", "--untracked-files=all"],
+        cwd: opts.exchange.checkout,
+      });
+      const taskPrefix = `.agentplane/tasks/${opts.exchange.task_id}/`;
+      if (
+        branch.stdout.trim() !== conflictContext.task_worktree.branch ||
+        base.stdout.trim() !== conflictContext.local.base_head_sha ||
+        status.stdout
+          .split("\0")
+          .filter(Boolean)
+          .some((entry) => !entry.slice(3).startsWith(taskPrefix))
+      ) {
+        throw new CliError({
+          code: "E_VALIDATION",
+          message: "Applied conflict resolution postcondition changed.",
+        });
+      }
+      const prepared = await prepareConflictResolutionTree({
+        cwd: opts.exchange.checkout,
+        task_head: baseline,
+        resolution_snapshot: snapshot,
+        base: conflictContext.local.base_head_sha,
+        merge_base: conflictContext.local.merge_base_sha,
+        allowed_path: (file) => pathAllowed(file, allowed) || file.startsWith(taskPrefix),
+      });
+      await assertConflictResolutionCommit({
+        cwd: opts.exchange.checkout,
+        task_id: opts.exchange.task_id,
+        head: currentHead,
+        resolution_snapshot: snapshot,
+        base: conflictContext.local.base_head_sha,
+        tree: prepared.tree,
+        semantic_result_digest: opts.exchange.result_digest,
+      });
+      return currentHead;
+    }
+  }
   return await applyConflictResolution({
     cwd: opts.exchange.checkout,
     task_id: opts.exchange.task_id,

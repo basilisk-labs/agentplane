@@ -845,6 +845,20 @@
                         "destructive_git"
                       ]
                     }
+                  },
+                  "allowed_capabilities": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "allowed_resources": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    }
                   }
                 },
                 "required": [
@@ -1571,24 +1585,6 @@
               ]
             }
           },
-          "blueprint_request": {
-            "type": "string",
-            "enum": [
-              "analysis.light",
-              "content.light",
-              "docs.change",
-              "code.direct",
-              "code.branch_pr",
-              "performance.benchmark",
-              "quality.regression",
-              "context.assimilation",
-              "context.maximum_assimilation",
-              "runner.execution",
-              "post_run.improvement_review",
-              "release.strict",
-              "ops.approval"
-            ]
-          },
           "verify": {
             "type": "array",
             "items": {
@@ -1740,7 +1736,7 @@
                   }
                 ]
               },
-              "blueprint_digest": {
+              "review_identity_digest": {
                 "anyOf": [
                   {
                     "type": "string"
@@ -1771,7 +1767,7 @@
               "updated_by",
               "note",
               "evaluated_sha",
-              "blueprint_digest"
+              "review_identity_digest"
             ],
             "additionalProperties": {}
           },

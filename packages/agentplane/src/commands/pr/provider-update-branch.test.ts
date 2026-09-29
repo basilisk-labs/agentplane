@@ -107,7 +107,7 @@ describe("provider update-branch effect", () => {
       `expected_head_sha=${oldHead}`,
     ]);
     expect(mocks.validateLocal).toHaveBeenCalledWith(request(), [oldHead, oldHead]);
-    expect(mocks.reconcileLocal).toHaveBeenCalledWith(request(), newHead);
+    expect(mocks.reconcileLocal).toHaveBeenCalledWith(request(), newHead, baseHead);
   });
 
   it("reconciles an already-updated head without repeating the mutation", async () => {

@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609121424-4BC7B3-b3e5fa22593764800d1413f3",
+  "prepared_at": "2026-09-13T22:32:37.193Z",
+  "task": {
+    "id": "202609121424-4BC7B3",
+    "revision": 39,
+    "objective": "Qualify and document the 0.7.9 stabilization candidate for ST-18 through ST-20\n\nSource contract: agentplane-roadmap-r2 cards ST-18, ST-19, and ST-20. Build the exact clean installed candidate and run the frozen direct, branch, recovery, old-record, required PLANNER, and required EVALUATOR corpus. Then, under the user-approved spend and sandbox authority, execute the preregistered M01 paired pilot with complete all-attempt raw evidence and expand only by its fixed uncertainty rule; report NOT ESTABLISHED when coverage is insufficient. Record exact product and target SHAs separately. Finally document only observed 0.7.9 behavior and measurements and the 0.7.10 through 0.7.14 boundary. Do not weaken golden outcomes, disable Blueprint writers, omit required stages, rerun until green, or claim unsupported efficiency. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: package tarball check, local install smoke, release critical suite, benchmark check and replay check, documentation bootstrap and onboarding checks, plus exact evidence review.",
+    "acceptance_criteria": [
+      "bun run bench:agent-efficiency:check",
+      "bun run bench:agent-efficiency:replay:check",
+      "bun run docs:bootstrap:check",
+      "bun run docs:onboarding:check",
+      "bun run package:install-smoke",
+      "bun run package:tarball:check",
+      "bun run test:release:critical",
+      "- In scope: Source contract: agentplane-roadmap-r2 cards ST-18, ST-19, and ST-20. Build the exact clean installed candidate and run the frozen direct, branch, recovery, old-record, required PLANNER, and required EVALUATOR corpus. Then, under the user-approved spend and sandbox authority, execute the preregistered M01 paired pilot with complete all-attempt raw evidence and expand only by its fixed uncertainty rule; report NOT ESTABLISHED when coverage is insufficient. Record exact product and target SHAs separately. Finally document only observed 0.7.9 behavior and measurements and the 0.7.10 through 0.7.14 boundary. Do not weaken golden outcomes, disable Blueprint writers, omit required stages, rerun until green, or claim unsupported efficiency. Preserve I01-I12 and C01-C08. The roadmap directory is source-only and must never be committed. Required checks: package tarball check, local install smoke, release critical suite, benchmark check and replay check, documentation bootstrap and onboarding checks, plus exact evidence review.\n- Out of scope: unrelated refactors not required for \"Qualify and document the 0.7.9 stabilization candidate for ST-18 through ST-20\".",
+      "Prepared a revised 0.7.9 plan that treats provider token usage as account-independent informational telemetry, keeps token caps disabled by default, replaces M01 monetary-spend requirements with observed token evidence, and retains the release gates.",
+      "1. Run `bun run package:tarball:check`. Expected: the exact clean candidate tarball and package inventory pass with recorded package/source/runtime identities.\n2. Run `bun run package:install-smoke`. Expected: installed direct, branch, recovery, old-record, required-PLANNER, and required-EVALUATOR entrypoints retain frozen behavior.\n3. Run `bun run test:release:critical`. Expected: the complete release-critical corpus passes without weakened golden outcomes or disabled Blueprint writers.\n4. Run `bun run bench:agent-efficiency:check` and `bun run bench:agent-efficiency:replay:check`. Expected: committed baseline and replay evidence remain internally consistent.\n5. Review the M01 manifest, all-attempt raw evidence, paired report, fixed expansion decision, usage coverage, and separate product/target identities. Expected: no rerun-until-green or unsupported efficiency claim; insufficient coverage is reported as NOT ESTABLISHED.\n6. Run `bun run docs:bootstrap:check` and `bun run docs:onboarding:check`. Expected: observed-only 0.7.9 documentation and the 0.7.10-0.7.14 boundary are coherent and all deferred work names exact task IDs.\n7. Review `git diff --check`, the exact task diff, final status, and hosted integration for the accepted head. Expected: I01-I12 and C01-C08 remain conserved, publication is absent, and `agentplane-roadmap-r2` is not committed."
+    ]
+  },
+  "evaluated_sha": "b0f5f5dc961455109b187b605b7d753e9b3266e2",
+  "diff_base_sha": "58dbda0d5f88c8a83802c5aee3a9380d001dd4b2",
+  "blueprint_digest": "0ed189bbde8e28a6717a705c84b96f4f99c526db0386072d4b664c8114696afd",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609121424-4BC7B3/quality/20260913-223237193-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:ed39c5d164fb0ceb5b272965d1d05c9cca19f12bf11d7905a4a6da4ae01d5c6e",
+    "prompt_path": ".agentplane/tasks/202609121424-4BC7B3/quality/objects/sha256/8c817dee3cddba59fb8dc1b1dd3b8bd1f3379f0f8c7db7c14a9130365246ff36.md",
+    "result_schema_path": ".agentplane/tasks/202609121424-4BC7B3/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609121424-4BC7B3/README.md",
+      "sha256": "sha256:3233d20f593ff68dead7eab7b932084a7f52a91aa0da77b20b4bf6c8841a8a61",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609121424-4BC7B3/quality/objects/sha256/2072024e66e6094a60e57ea0984da6f9dd2235f59d0bdcbd08e5fadfa48650d3.patch",
+      "sha256": "sha256:2072024e66e6094a60e57ea0984da6f9dd2235f59d0bdcbd08e5fadfa48650d3",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609121424-4BC7B3/quality/objects/sha256/d6715c311400d3f9b7409fa270cd5b70055f2c2bf9416d1a523d534c7bbdc515.json",
+      "sha256": "sha256:d6715c311400d3f9b7409fa270cd5b70055f2c2bf9416d1a523d534c7bbdc515",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609121424-4BC7B3/verification/20260913223225951-b368eaf4bc2dcacc.json",
+      "sha256": "sha256:6b4132d17b09a5bb4129cbcb5c723f817bbfcadd7ec02193fa905493ca3d18e3",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609121424-4BC7B3/quality/objects/sha256/5796c240fc3e94c0807be30fa446b71f8f882f5f600ba056700f49dc5f5060fd.json",
+      "sha256": "sha256:5796c240fc3e94c0807be30fa446b71f8f882f5f600ba056700f49dc5f5060fd",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.release.md",
+      "sha256": "sha256:47ab8b04f9d747491398390dac415b34aa6d3df0cf0fb61e9924fd3e4851ec48",
+      "required": true
+    }
+  ]
+}

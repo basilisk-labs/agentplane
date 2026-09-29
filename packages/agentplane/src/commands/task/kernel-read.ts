@@ -11,6 +11,7 @@ import { createCliEmitter } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
+import { projectKernelPlanning } from "./kernel-planning-view.js";
 
 /** Inspect canonical bytes once. Legacy inspection never becomes an implicit migration. */
 export async function readTaskKernel(
@@ -57,6 +58,9 @@ export function projectTaskKernelRead(read: CanonicalTaskRead, taskId: string) {
             ...projectKernelTask(read.record.aggregate),
             title: read.task.title,
             owner: read.task.owner,
+            task_kind: read.task.task_kind,
+            mutation_scope: read.task.mutation_scope,
+            risk_flags: read.task.risk_flags,
           }
         : { id: taskId, ...(read.kind === "archived" ? { title: read.task.title } : {}) },
     ready,
@@ -67,12 +71,17 @@ export function projectTaskKernelRead(read: CanonicalTaskRead, taskId: string) {
   };
 }
 
-export function reportTaskKernelRead(
+export async function reportTaskKernelRead(
   read: CanonicalTaskRead,
   taskId: string,
   json: boolean,
-): number {
-  const view = projectTaskKernelRead(read, taskId);
+  ctx?: CommandContext,
+): Promise<number> {
+  const planning =
+    ctx && read.kind === "canonical"
+      ? await projectKernelPlanning(ctx, read.task, read.record)
+      : undefined;
+  const view = { ...projectTaskKernelRead(read, taskId), ...(planning ? { planning } : {}) };
   const output = createCliEmitter();
   if (json) output.json(view);
   else
@@ -81,11 +90,27 @@ export function reportTaskKernelRead(
       { label: "source", value: view.source },
       { label: "record", value: read.kind },
       ...(read.kind === "canonical"
-        ? [{ label: "state", value: read.record.aggregate.state }]
+        ? [
+            { label: "state", value: read.record.aggregate.state },
+            { label: "task_kind", value: read.task.task_kind ?? "unset" },
+            { label: "mutation_scope", value: read.task.mutation_scope ?? "unset" },
+            {
+              label: "risk_flags",
+              value: read.task.risk_flags?.length ? read.task.risk_flags.join(", ") : "none",
+            },
+          ]
         : []),
       { label: "ready", value: view.ready },
       { label: "next", value: view.next_action.reason_code },
       { label: "authority", value: "read_only" },
+      ...(planning
+        ? [
+            { label: "planning_requirement", value: planning.requirement },
+            { label: "planning_outcome", value: planning.outcome },
+            { label: "plan_origin", value: planning.plan_origin },
+            { label: "managed_planner_attempts", value: planning.managed_attempts ?? "unknown" },
+          ]
+        : []),
     ]);
   return read.kind === "missing" ? 4 : read.kind === "malformed" ? 3 : 0;
 }

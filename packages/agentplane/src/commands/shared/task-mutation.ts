@@ -1,4 +1,8 @@
-import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
+import {
+  TASK_KERNEL_EXTENSION,
+  type KernelRecord,
+} from "../../adapters/task-backend/kernel-record.js";
+import { projectKernelTask } from "../../adapters/task-backend/kernel-projector.js";
 import { projectTaskCentricCompatibilityMutation } from "../../adapters/task-backend/task-centric-backend-adapter.js";
 import {
   projectTaskLifecycleToLegacyStatus,
@@ -30,6 +34,38 @@ export function assertLegacyMutation(task: TaskData): void {
     throw new Error(
       "Canonical Task mutations require the kernel lifecycle; legacy mutation is refused",
     );
+}
+
+function assertCanonicalProjectionPreserved(opts: { current: TaskData; next: TaskData }): void {
+  const current = opts.current.extensions?.[TASK_KERNEL_EXTENSION];
+  const next = opts.next.extensions?.[TASK_KERNEL_EXTENSION];
+  if (current === undefined || JSON.stringify(current) !== JSON.stringify(next)) {
+    throw new Error("Canonical compatibility projection changed the Task Kernel record");
+  }
+  const aggregate = (current as Partial<KernelRecord>).aggregate;
+  if (!aggregate) return;
+  const expectedStatus = projectKernelTask(aggregate).status;
+  if (opts.current.status !== expectedStatus || opts.next.status !== expectedStatus) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message:
+        `Canonical compatibility projection conflicts with accepted Kernel state for ${opts.current.id}: ` +
+        `expected status ${expectedStatus}, observed ${opts.current.status} -> ${opts.next.status}.`,
+      context: {
+        reason_code: "canonical_projection_mismatch",
+        task_id: opts.current.id,
+        expected_status: expectedStatus,
+        current_status: opts.current.status,
+        next_status: opts.next.status,
+      },
+    });
+  }
+}
+
+function preserveCanonicalProjectionStatus(opts: { current: TaskData; next: TaskData }): TaskData {
+  const aggregate = (opts.current.extensions?.[TASK_KERNEL_EXTENSION] as Partial<KernelRecord>)
+    ?.aggregate;
+  return aggregate ? { ...opts.next, status: projectKernelTask(aggregate).status } : opts.next;
 }
 
 function assertTaskCentricProjection(opts: { current: TaskData; next: TaskData }): void {
@@ -209,6 +245,7 @@ export async function applyTaskMutation(opts: {
   ) => Promise<TaskMutationPlan | null | undefined> | TaskMutationPlan | null | undefined;
   writeOptions?: TaskWriteOptions;
   beforePersist?: PreparedTaskMutationObserver;
+  allowCanonicalProjection?: boolean;
 }): Promise<{ changed: boolean; task: TaskData; mode: "local-store" | "backend" }> {
   const policyAction = opts.policyAction ?? "task_mutation";
 
@@ -217,7 +254,7 @@ export async function applyTaskMutation(opts: {
     const result = await store.update(
       opts.taskId,
       async (current) => {
-        assertLegacyMutation(current);
+        if (!opts.allowCanonicalProjection) assertLegacyMutation(current);
         assertTaskMutationPolicy({
           ctx: opts.ctx,
           taskId: opts.taskId,
@@ -230,16 +267,23 @@ export async function applyTaskMutation(opts: {
         if (plan.nextTask !== undefined) {
           const next = projectTaskCentricCompatibilityMutation({
             current,
-            next: plan.nextTask,
+            next: opts.allowCanonicalProjection
+              ? preserveCanonicalProjectionStatus({ current, next: plan.nextTask })
+              : plan.nextTask,
           });
+          if (opts.allowCanonicalProjection) assertCanonicalProjectionPreserved({ current, next });
           assertTaskCentricProjection({ current, next });
           return next;
         }
         if (plan.intents !== undefined) {
+          const intended = applyTaskStoreIntentsToTask(current, plan.intents);
           const next = projectTaskCentricCompatibilityMutation({
             current,
-            next: applyTaskStoreIntentsToTask(current, plan.intents),
+            next: opts.allowCanonicalProjection
+              ? preserveCanonicalProjectionStatus({ current, next: intended })
+              : intended,
           });
+          if (opts.allowCanonicalProjection) assertCanonicalProjectionPreserved({ current, next });
           assertTaskCentricProjection({ current, next });
           return next;
         }
@@ -251,6 +295,10 @@ export async function applyTaskMutation(opts: {
       },
     );
     return { ...result, mode: "local-store" };
+  }
+
+  if (opts.allowCanonicalProjection) {
+    throw new Error("Canonical compatibility projection requires the native local task store");
   }
 
   const current = await loadTaskFromContext({ ctx: opts.ctx, taskId: opts.taskId });

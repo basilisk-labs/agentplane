@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The production change uses a task-attributed policy-valid subject and --signoff without disabling or bypassing Git hooks.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609140925-AWJQMB/quality/objects/sha256/3610cac068019e3e1b200bec4d30bfc9c14f68655b5affb994bedef16811b961.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The integration fixture proves Git invoked commit-msg with the generated subject and DCO trailer, validates the subject through the repository policy function, and preserves exact parent-order and ancestry assertions.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609140925-AWJQMB/quality/objects/sha256/3610cac068019e3e1b200bec4d30bfc9c14f68655b5affb994bedef16811b961.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Conflict, stale-base, and dirty-worktree refusal paths remain unchanged and covered.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609140925-AWJQMB/quality/objects/sha256/3610cac068019e3e1b200bec4d30bfc9c14f68655b5affb994bedef16811b961.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Supervisor evidence records the focused Bun suite and full local regression as passing against evaluated SHA b6dae19a727f6516137d85dbdb25f4d6961c05e7.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609140925-AWJQMB/quality/objects/sha256/3610cac068019e3e1b200bec4d30bfc9c14f68655b5affb994bedef16811b961.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted CI and provider readback must still pass before merge.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609140925-AWJQMB/quality/objects/sha256/3610cac068019e3e1b200bec4d30bfc9c14f68655b5affb994bedef16811b961.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

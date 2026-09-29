@@ -1,0 +1,6 @@
+ ...i.core.task-advance.worktree-resolution.test.ts | 780 ++++++++-------------
+ .../src/commands/task/advance-task-step.ts         |   4 +-
+ .../commands/task/roadmap-terminal-noop.test.ts    | 130 ++++
+ .../baselines/v0.7-compatibility-candidate.json    |  37 +-
+ .../check-compatibility-contract-baseline.mjs      |  25 +-
+ 5 files changed, 476 insertions(+), 500 deletions(-)

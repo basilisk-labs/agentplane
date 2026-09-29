@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "kind": "agentplane.m01_live_authority",
+  "status": "approved",
+  "user_message_id": "680572585",
+  "conversation_id": "01a095fd-4a1b-7e91-9912-926a2f02d0ec",
+  "authentication": "chatgpt_subscription",
+  "provider_attempts": 15,
+  "retry_limit": 0,
+  "sandbox": "workspace-write",
+  "network": "deny",
+  "token_caps": {
+    "max_input_tokens": null,
+    "max_output_tokens": null,
+    "max_total_tokens": null
+  },
+  "constraints": [
+    "Use the existing ChatGPT subscription.",
+    "Do not use an API key.",
+    "Do not purchase credits.",
+    "Retain every assigned attempt.",
+    "Do not retry an attempt."
+  ]
+}

@@ -720,7 +720,7 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
     ).toThrow("does not link");
   });
 
-  it("accepts only the frozen TypeScript 7 additive anchor lock delta", async () => {
+  it("accepts only the frozen toolchain and coherent workspace release lock deltas", async () => {
     const replay = await importModule<{
       REPLAY_ANCHOR_COMMIT: string;
     }>("scripts/lib/agent-efficiency-replay.mjs");
@@ -745,6 +745,22 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
         ),
     );
     expect(() => anchorRuntime.assertAnchorLockCompatible(subjectLock, tampered)).toThrow(
+      "ANCHOR_LOCK_MISMATCH",
+    );
+
+    const { parseReplayJsonc } = await importModule<{
+      parseReplayJsonc: (input: string) => {
+        workspaces: Record<string, { version: string; dependencies: Record<string, string> }>;
+      };
+    }>("scripts/bench/internal/agent-efficiency-dependency-manifest.mjs");
+    const incoherentLock = parseReplayJsonc(driverLock.toString("utf8"));
+    const dependencies = incoherentLock.workspaces["packages/agentplane"].dependencies;
+    expect(dependencies["@agentplaneorg/core"]).toBe(
+      incoherentLock.workspaces["packages/core"].version,
+    );
+    dependencies["@agentplaneorg/core"] = "0.0.0-incoherent";
+    const incoherentRelease = Buffer.from(JSON.stringify(incoherentLock));
+    expect(() => anchorRuntime.assertAnchorLockCompatible(subjectLock, incoherentRelease)).toThrow(
       "ANCHOR_LOCK_MISMATCH",
     );
   });

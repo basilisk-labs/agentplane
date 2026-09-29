@@ -56,7 +56,6 @@ export async function maybeConfirmInteractiveApply(opts: {
     { label: "Anonymous feedback fallback", value: opts.answers.feedbackAnonymousCloud },
     { label: "IDE", value: opts.answers.ide },
     { label: "Recipes", value: opts.answers.recipes.join(", ") || "none" },
-    { label: "Blueprints", value: opts.answers.blueprints.join(", ") || "none" },
     { label: "Git init", value: !opts.paths.gitRootExisted },
     { label: "Conflicts", value: opts.plan.conflicts.join(", ") || "none" },
     ...(opts.plan.context.githubCliInstalled === false
@@ -226,15 +225,6 @@ export async function applyInitPlan(opts: {
         return await import("./recipes.js").then((m) =>
           m.maybeAddCachedRecipes({
             recipes: opts.answers.recipes,
-            cwd: paths.gitRoot,
-            rootOverride: paths.gitRoot,
-          }),
-        );
-      },
-      blueprints: async () => {
-        return await import("./blueprints.js").then((m) =>
-          m.maybeInstallCachedBlueprints({
-            blueprints: opts.answers.blueprints,
             cwd: paths.gitRoot,
             rootOverride: paths.gitRoot,
           }),

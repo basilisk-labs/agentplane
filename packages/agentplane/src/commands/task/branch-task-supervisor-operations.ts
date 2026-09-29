@@ -1,3 +1,5 @@
+import path from "node:path";
+
 import type { CommandCtx } from "../../cli/spec/spec.js";
 import { CliError } from "../../shared/errors.js";
 import { cmdWorkStart } from "../branch/work-start.js";
@@ -17,12 +19,14 @@ import { workflowAuthorityStateScopeDigest } from "../shared/side-effect-authori
 import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
 import type { WorkflowSupervisorOperationResult } from "../shared/workflow-supervisor.js";
 import type { WorkflowOperation } from "../shared/workflow-step.js";
+import { supervisePersistedWorkflowEpisode } from "../shared/supervisor-execution-episode.js";
 import { applyForeignTaskReadmeReplicaRepair } from "../shared/task-worktree-foreign-artifact-repair.js";
 import { cmdFinish } from "./finish-command.js";
 import { makeRunTaskHostedClosePrHandler } from "./hosted-close-pr.command.js";
 import { cmdTaskStartReady } from "./start-ready.js";
 import { cmdTaskScopeExtend } from "./scope-extend.js";
 import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
+import { synchronizeTaskBranchBase } from "../branch/sync-task-base.js";
 
 function observedPostconditions(operation: WorkflowOperation): string[] {
   return operation.expectedPostconditions
@@ -51,6 +55,43 @@ function checkoutFor(decision: TaskRouteDecision): string {
     );
   }
   return checkout;
+}
+
+/** External authority is repository-owned and must never be read from the task worktree. */
+export function branchAuthorityCheckout(decision: TaskRouteDecision): string {
+  const checkout = decision.workspace.baseCheckoutPath?.trim() ?? "";
+  const taskWorktree = decision.workspace.taskWorktreePath?.trim() ?? "";
+  if (!checkout || (taskWorktree && path.resolve(checkout) === path.resolve(taskWorktree))) {
+    throw new CliError({
+      code: "E_RUNTIME",
+      message:
+        "Branch side-effect authority requires the authoritative base checkout; task-worktree configuration cannot authorize provider publication.",
+    });
+  }
+  return checkout;
+}
+
+/**
+ * Runs one branch operation through the shared operation-key admission and
+ * durable replay boundary. Actual Git/provider use cases stay in the typed
+ * operation executor below.
+ */
+export async function executeAdmittedBranchWorkflowOperation(opts: {
+  decision: TaskRouteDecision;
+  git_root: string;
+  refresh: () => Promise<TaskRouteDecision>;
+  execute?: (operation: WorkflowOperation) => Promise<WorkflowSupervisorOperationResult>;
+}) {
+  return await supervisePersistedWorkflowEpisode({
+    decision: opts.decision,
+    git_root: opts.git_root,
+    task_revision: null,
+    execute: async ({ operation }) =>
+      await (opts.execute
+        ? opts.execute(operation)
+        : executeBranchWorkflowOperation({ decision: opts.decision, operation })),
+    refresh: opts.refresh,
+  });
 }
 
 function isCompletedProtectedBaseWorkerCycle(error: unknown): boolean {
@@ -82,6 +123,25 @@ export async function executeBranchWorkflowOperation(opts: {
   let exitCode: number;
 
   switch (operation.id) {
+    case "task.branch.sync_base": {
+      const result = await synchronizeTaskBranchBase({
+        gitRoot: command.resolvedProject.gitRoot,
+        worktreePath: cwd,
+        workflowDir: command.config.paths.workflow_dir,
+        tasksPath: command.config.paths.tasks_path,
+        taskId: operation.params.taskId,
+        branch: operation.params.branch,
+        baseBranch: operation.params.baseBranch,
+        expectedHeadSha: operation.params.expectedHeadSha,
+        expectedBaseSha: operation.params.expectedBaseSha,
+      });
+      return succeeded(
+        operation,
+        result.state === "updated"
+          ? `merged exact base ${operation.params.expectedBaseSha} into ${operation.params.branch}; readback proved new head ${result.headSha} contains the previous task head and base`
+          : `task branch ${operation.params.branch} already contains exact base ${operation.params.expectedBaseSha}`,
+      );
+    }
     case "worktree.prepare": {
       exitCode = await cmdWorkStart({
         ctx: command,

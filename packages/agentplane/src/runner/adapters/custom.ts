@@ -26,6 +26,7 @@ import {
   type SupervisedRunnerArtifactInput,
 } from "./execute-supervised.js";
 import { readValidatedPreparedRunnerStdin } from "./prepared-input.js";
+import { appendRunnerProviderUsageObservation } from "../artifacts.js";
 
 function customAdapterLabel(adapterId: CustomRunnerAdapterId): string {
   return adapterId === "hermes" ? "Hermes" : "Custom";
@@ -75,8 +76,8 @@ export class CustomRunnerAdapter implements RunnerAdapter {
     );
   }
 
-  execute(invocation: RunnerInvocation): Promise<RunnerResult> {
-    return executeSupervisedRunnerAdapter({
+  async execute(invocation: RunnerInvocation): Promise<RunnerResult> {
+    const result = await executeSupervisedRunnerAdapter({
       invocation,
       assertInvocation: (input) =>
         assertAdapterInvocation({
@@ -167,5 +168,22 @@ export class CustomRunnerAdapter implements RunnerAdapter {
         };
       },
     });
+    await appendRunnerProviderUsageObservation({
+      events_path: invocation.events_path,
+      observation: {
+        schema_version: 1,
+        kind: "runner_provider_usage_observation",
+        provider: this.id,
+        status: "unavailable",
+        dispatch_id: `dispatch:${invocation.work_order_id}`,
+        run_id: invocation.run_id,
+        work_order_id: invocation.work_order_id,
+        thread_id: null,
+        turn_id: null,
+        usage: null,
+        observed_at: new Date().toISOString(),
+      },
+    });
+    return result;
   }
 }

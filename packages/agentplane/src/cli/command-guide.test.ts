@@ -140,6 +140,11 @@ describe("command-guide", () => {
     expect(text).toContain("exchange.resume_argv");
     expect(text).toContain("exchange.return_invocation` remains compatibility-only");
     expect(text).toContain("semantic_input_required");
+    expect(text).toContain("advance_required");
+    expect(text).toContain("read-only sandbox and supervised typed results");
+    expect(text).toContain("An unverified runtime receipt cannot admit a planning result");
+    expect(text).toContain("Independent EVALUATOR review remains required");
+    expect(text).not.toContain("Before a task-specific plan exists");
     expect(text).toContain("Agentplane owns verification records and terminal state");
     expect(text).toContain("expanded diagnostic evidence");
     expect(text).not.toContain("agentplane verify");

@@ -1,0 +1,109 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: node --test scripts/bench/task-marginal-cost.test.mjs scripts/bench/paired-production-driver.test.mjs scripts/bench/paired-result-report.test.mjs\nResult: pass\nEvidence: 13 focused tests passed on committed HEAD 0cc76b3c323da62a9c18eb946438e49e5d6c204a.\nScope: ST-14 marginal cost, ST-15 paired driver, and ST-16 fail-closed report contracts.\n\nCheck: critical_paths\nCommand: bun run bench:agent-efficiency:replay:check && bun run test:agent-efficiency:qualification && bun run bench:agent-efficiency:check && bun run typecheck\nResult: pass\nEvidence: RF-04 replay 50 runs and 70 outcomes passed; qualification 61 tests passed; baseline 10 scenarios passed; TypeScript build passed.\nScope: immutable benchmark, qualification, historical baseline, and type contracts.\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: full local CI passed on 0cc76b3c323d, including core, runtime, CLI, docs/schema, docs site, workflow lint, Windows-critical 98 tests, and significant coverage 101 tests.\nScope: repository full local regression selected by the persisted verification contract.\n\nCheck: task_outcome\nCommand: git show --name-status 0cc76b3c323d^..0cc76b3c323d && git status --short\nResult: pass\nEvidence: task worktree is clean; the two task commits contain only the canonical 3YAX44 task artifacts and scoped scripts; agentplane-roadmap-r2 is absent; no paid provider call was executed.\nScope: approved task outcome and source-only roadmap exclusion.",
+  "digest": "sha256:e62d92a89e8fb45a7b7e747a9ef819e0b079ba2f1049517e3a7e65afc61cf875",
+  "implementation_sha": "0cc76b3c323da62a9c18eb946438e49e5d6c204a",
+  "input": {
+    "context": {
+      "digest": "sha256:45ee344941f379a9d4696a9ccbbe7e795ad57ce6e2dfde08c2a623e9e2528cb7",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:a5f0583db996c2964a542bca9f7470e2bdab80266bd2dd9d761ccea8a8388633",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:dfd17b60248c6b282274b4c9dc63130dab6e4017e67ecac0e3ffb2824859c079",
+      "digest": "sha256:67c3f988899310f0f7c156da4a46698d853bd9ca72b2b77f901169782fb3533a",
+      "references": [
+        {
+          "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+          "fragment": null,
+          "path": "docs/schema",
+          "reference": "docs/schema",
+          "source": "missing"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "d03a5e786db57136bf7f6c4661b148bcf97cfaf1",
+      "digest": "sha256:b33b2aa26b1dd7d45af21060a9d75eb3bcb135fd9f1b4b1de830a470e2971d10",
+      "primary_task_id": "202609121424-3YAX44",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609121424-3YAX44"
+      ]
+    },
+    "implementation": {
+      "base_sha": "d03a5e786db57136bf7f6c4661b148bcf97cfaf1",
+      "digest": "sha256:ed39b1d901fffc795efa82eddc7009d7ae03b4efc376ece0652f72adc2d30f75",
+      "strategy": "branch_diff",
+      "target_sha": "0cc76b3c323da62a9c18eb946438e49e5d6c204a"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:bcc0ae60806f9caa539f1726df48e27cb68e727ec6761fcfcdd9ded65b45c2e0",
+    "verify_steps_digest": "sha256:93df6d7884039c4c5baee54698f9ffe9df351e6c3477958323f36c6d3dd52777"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified committed implementation 0cc76b3c323d; all selected local checks passed and no paid provider call was executed.",
+  "recorded_at": "2026-09-13T08:39:05.585Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Run `node --test scripts/bench/task-marginal-cost.test.mjs`. Expected: marginal task-path, Git-object, commit, write, tool, and control-plane metrics are reproducible and duplicate blobs are counted once.\n2. Run `node --test scripts/bench/paired-production-driver.test.mjs`. Expected: the offline three-arm driver uses production entrypoints and rejects mismatched target, product, runtime, authority, verifier, retry, or cost identity.\n3. Run `node --test scripts/bench/paired-result-report.test.mjs`. Expected: all-attempt cost, paired outcomes, coverage, uncertainty, and separate gates fail closed for unknown charge or all-failed arms.\n4. Run `bun run bench:agent-efficiency:replay:check`. Expected: existing immutable replay evidence remains valid.\n5. Run `bun run test:agent-efficiency:qualification`. Expected: the established qualification suite passes with nonzero discovery.\n6. Run `bun run bench:agent-efficiency:check`. Expected: historical baseline validation remains unchanged.\n7. Run `bun run typecheck`. Expected: repository TypeScript contracts remain valid.\n8. Compare the final diff with ST-14, ST-15, and ST-16. Expected: no paid provider call, historical-baseline rewrite, or committed agentplane-roadmap-r2 path.",
+  "scope_digest": "sha256:93df6d7884039c4c5baee54698f9ffe9df351e6c3477958323f36c6d3dd52777",
+  "task_id": "202609121424-3YAX44",
+  "verification_command": "agentplane task verify ok 202609121424-3YAX44 --ok --by CODER",
+  "verifier": "CODER"
+}

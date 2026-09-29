@@ -11,7 +11,10 @@ import {
   resolveEvidenceOnlyReworkCommit,
   selectRecordedImplementationRecoveryCommit,
 } from "./evidence-only-rework-commit.js";
-import { taskReadmesPreserveRecoveryContract } from "./external-agent-implementation-recovery.js";
+import {
+  requiresExactScopeRecoveryReadme,
+  taskReadmesPreserveRecoveryContract,
+} from "./external-agent-implementation-recovery.js";
 
 import {
   assertExternalImplementationReturnState,
@@ -152,6 +155,24 @@ describe("recorded implementation recovery contract", () => {
         evidence_commit: "current-implementation-sha",
       }),
     ).toBe("work-item-sha");
+  });
+
+  it("allows lifecycle drift after scope recovery reaches WorkItem verification rework", () => {
+    expect(
+      requiresExactScopeRecoveryReadme({ scope_recovery: true, work_item_state: "READY" }),
+    ).toBe(true);
+    expect(
+      requiresExactScopeRecoveryReadme({
+        scope_recovery: true,
+        work_item_state: "REWORK_READY",
+      }),
+    ).toBe(false);
+    expect(
+      requiresExactScopeRecoveryReadme({
+        scope_recovery: false,
+        work_item_state: "REWORK_READY",
+      }),
+    ).toBe(false);
   });
 
   it("rebinds a verified implementation through managed evidence-only commits", () => {

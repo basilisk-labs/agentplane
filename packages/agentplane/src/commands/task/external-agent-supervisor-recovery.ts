@@ -18,6 +18,7 @@ import {
   createSupervisorEpisodeStore,
   resolveSupervisorExecutionEpisodePath,
   tryAcquireSupervisorExecutionLease,
+  type SupervisorEpisodeStore,
 } from "../shared/supervisor-execution-episode.js";
 import { resolveCommandGitCommonDir, type CommandContext } from "../shared/task-backend.js";
 
@@ -36,6 +37,60 @@ export type RecoverableExternalAgentExchange = {
   paths: ExternalAgentExchangePaths;
   work_order: AgentWorkOrderV2;
 };
+
+export async function failRejectedExternalAgentResult(opts: {
+  store: SupervisorEpisodeStore;
+  journal: ReturnType<typeof validateSupervisorExecutionEpisodeJournal>;
+  operation_key: string;
+  exchange: ExternalAgentExchange;
+  paths: ExternalAgentExchangePaths;
+  state_fingerprint_digest: string;
+  error: CliError;
+}): Promise<never> {
+  const failed = completeSupervisorExecutionEpisode({
+    journal: opts.journal,
+    operation_key: opts.operation_key,
+    result: {
+      classification: "external_agent_result_application_rejected",
+      transition_id: opts.exchange.transition_id,
+      result_digest: opts.exchange.result_digest,
+      error_code: opts.error.code,
+      error_message: opts.error.message,
+    },
+    failed: true,
+  });
+  if (!(await opts.store.compareAndSwap(opts.journal.digest, failed))) {
+    throw new CliError({
+      code: "E_RUNTIME",
+      message: "External-agent supervisor changed while failing the rejected result.",
+    });
+  }
+  await writeExternalAgentExchange(opts.paths.exchange, {
+    ...opts.exchange,
+    status: "retired",
+    postcondition_fingerprint: opts.state_fingerprint_digest,
+    updated_at: new Date().toISOString(),
+  });
+  throw new CliError({
+    code: "E_RUNTIME",
+    message:
+      `${opts.error.message} AgentPlane retired the rejected result; run: ` +
+      `agentplane task advance ${opts.exchange.task_id} --replacement --agent-json`,
+    context: {
+      task_id: opts.exchange.task_id,
+      transition_id: opts.exchange.transition_id,
+      rejected_error: opts.error.code,
+      exact_argv: [
+        "agentplane",
+        "task",
+        "advance",
+        opts.exchange.task_id,
+        "--replacement",
+        "--agent-json",
+      ],
+    },
+  });
+}
 
 export function requiresPlanningRecoveryReplacement(opts: {
   decision: TaskRouteDecision;

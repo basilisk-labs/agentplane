@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The current task head contains the same approved inventory and characterization implementation, the worktree is clean, and all recorded checks passed after the provider branch update.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609121423-9WPTCW/quality/objects/sha256/7a595e9ff963714408d9c40f81c48a252feaa1bc80526240f789b52e21f8ecec.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Residual risk: Hosted CI must pass for the final published task head before merge.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609121423-9WPTCW/quality/objects/sha256/7a595e9ff963714408d9c40f81c48a252feaa1bc80526240f789b52e21f8ecec.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Residual risk: Local fake coverage does not establish live remote-provider qualification.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609121423-9WPTCW/quality/objects/sha256/7a595e9ff963714408d9c40f81c48a252feaa1bc80526240f789b52e21f8ecec.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

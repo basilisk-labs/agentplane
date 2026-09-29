@@ -180,22 +180,6 @@ const AGENT_SEMANTIC_RESULT_TASK_INTENT_ZOD_SCHEMA = z
       ]),
     ),
     tags: z.array(NON_EMPTY_STRING).min(1),
-    blueprint_request: z
-      .enum([
-        "analysis.light",
-        "content.light",
-        "docs.change",
-        "code.direct",
-        "code.branch_pr",
-        "performance.benchmark",
-        "quality.regression",
-        "context.assimilation",
-        "context.maximum_assimilation",
-        "post_run.improvement_review",
-        "release.strict",
-        "ops.approval",
-      ])
-      .optional(),
     execution: AGENT_SEMANTIC_RESULT_EXECUTION_DECLARATION_ZOD_SCHEMA.optional(),
   })
   .strict();
@@ -473,7 +457,8 @@ export function buildAgentSemanticPayloadSchema(context: SemanticPayloadContext)
       .optional();
   } else if (!context.phase && context.role === "EXECUTOR")
     fields.plan_refinement = AGENT_SEMANTIC_RESULT_BASE_SHAPE.plan_refinement;
-  if (context.role === "EVALUATOR") fields.review = AGENT_SEMANTIC_RESULT_REVIEW_ZOD_SCHEMA;
+  if (context.role === "EVALUATOR")
+    fields.review = AGENT_SEMANTIC_RESULT_REVIEW_ZOD_SCHEMA.optional();
   return z.strictObject(fields);
 }
 
@@ -504,6 +489,10 @@ export function renderAgentSemanticResultSchemaJson(context?: SemanticPayloadCon
     },
     ...(context.role === "EVALUATOR"
       ? [
+          {
+            if: { properties: { status: { const: "completed" } } },
+            then: { required: ["review"] },
+          },
           {
             if: {
               properties: { review: { properties: { verdict: { enum: ["pass", "rework"] } } } },

@@ -436,6 +436,7 @@ export async function prepareIntegrate(opts: {
     branch,
     prNumber: hostedPr.prNumber,
     branchHeadSha,
+    workflowDir: loadedConfig.paths.workflow_dir,
   });
   if (!closureFreshness.fresh) {
     throw new CliError({

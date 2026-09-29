@@ -9,6 +9,7 @@ import {
   validateStateFingerprintPolicy,
   type StateFingerprintComponentName,
   type StateFingerprintInput,
+  type LegacyStateFingerprintInput,
   type StateFingerprintPolicy,
 } from "./state-fingerprint.js";
 
@@ -16,8 +17,9 @@ const REQUIRED_COMPONENTS = [
   "task",
   "git",
   "backend_projection",
+  "plan",
   "policy",
-  "blueprint",
+  "capability",
   "authority",
 ] as const satisfies readonly StateFingerprintComponentName[];
 
@@ -63,10 +65,15 @@ function input(): StateFingerprintInput {
         source: "policy_runtime",
         value: { modules: ["security.must.md"] },
       },
-      blueprint: {
+      plan: {
         state: "present",
-        source: "blueprint_resolver",
-        value: { id: "code.branch_pr", version: 1 },
+        source: "task_plan",
+        value: { revision: 1, digest: "sha256:plan" },
+      },
+      capability: {
+        state: "present",
+        source: "task_execution_contract",
+        value: { selected_mode: "branch_pr" },
       },
       knowledge: {
         state: "missing",
@@ -88,6 +95,19 @@ function input(): StateFingerprintInput {
 }
 
 describe("StateFingerprint", () => {
+  it("preserves the legacy v1 Blueprint fingerprint decoder", () => {
+    const current = input();
+    const { plan, capability: _capability, ...common } = current.components;
+    const legacy: LegacyStateFingerprintInput = {
+      ...current,
+      components: { ...common, blueprint: plan },
+    };
+
+    const fingerprint = buildStateFingerprint(legacy);
+    expect(fingerprint.schema_version).toBe(1);
+    expect(fingerprint.components.blueprint.source).toBe("task_plan");
+  });
+
   it("is stable for semantically identical canonical state", () => {
     const first = buildStateFingerprint(input());
     const reordered = input();
@@ -355,10 +375,10 @@ describe("StateFingerprint", () => {
 
   it("fails closed when a required component is explicitly missing", () => {
     const missingInput = input();
-    missingInput.components.blueprint = {
+    missingInput.components.plan = {
       state: "missing",
-      source: "blueprint_resolver",
-      reason_code: "blueprint_not_resolved",
+      source: "task_plan",
+      reason_code: "accepted_plan_not_resolved",
     };
     const fingerprint = buildStateFingerprint(missingInput);
 

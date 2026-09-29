@@ -36,15 +36,6 @@ export function setRunnerBundleRunDir(bundle: RunnerContextBundle, runDir: strin
   bundle.execution.run_id = path.basename(runDir);
   bundle.execution.artifact_paths.run_dir = runDir;
   bundle.execution.artifact_paths.bundle_path = path.join(runDir, "bundle.json");
-  bundle.execution.artifact_paths.blueprint_plan_path = path.join(runDir, "blueprint-plan.json");
-  bundle.execution.artifact_paths.blueprint_execution_plan_path = path.join(
-    runDir,
-    "blueprint-execution-plan.json",
-  );
-  bundle.execution.artifact_paths.blueprint_execution_state_path = path.join(
-    runDir,
-    "blueprint-execution-state.json",
-  );
   bundle.execution.artifact_paths.context_manifest_path = path.join(
     runDir,
     "context-manifest.json",
@@ -116,9 +107,6 @@ export function makeRunnerContextBundle(
     artifact_paths: {
       run_dir: runDir,
       bundle_path: path.join(runDir, "bundle.json"),
-      blueprint_plan_path: path.join(runDir, "blueprint-plan.json"),
-      blueprint_execution_plan_path: path.join(runDir, "blueprint-execution-plan.json"),
-      blueprint_execution_state_path: path.join(runDir, "blueprint-execution-state.json"),
       context_manifest_path: path.join(runDir, "context-manifest.json"),
       bootstrap_path: path.join(runDir, "bootstrap.md"),
       state_path: path.join(runDir, "run-state.json"),
@@ -157,7 +145,6 @@ export function makeRunnerContextBundle(
         tags: opts.tags ?? ["code"],
         task_kind: null,
         mutation_scope: null,
-        blueprint_request: null,
       },
       narrative: {
         title,

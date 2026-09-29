@@ -35,8 +35,6 @@ const CORE_ROOTS = new Set([
 const PROJECT_ROOTS = new Set([
   "acr",
   "backend",
-  "blueprint",
-  "blueprints",
   "branch",
   "context",
   "evaluator",

@@ -9,8 +9,48 @@ import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js"
 import type { KernelWorkOrder } from "../../runner/usecases/kernel-task-lifecycle.js";
 import type { NativeAuthorityContext } from "../../ports/kernel-authority.js";
 import type { CommandContext } from "../shared/task-backend.js";
+import { readDirectTaskHead } from "./direct-task-finalization.js";
 
-export function buildKernelStateFingerprint(opts: {
+export function resumeKernelWorkOrder(opts: {
+  record: KernelRecord;
+  work_item_id: string;
+  authority: k.ExecutionAuthority;
+  repository_fingerprint: k.Sha256Digest;
+}): KernelWorkOrder | null {
+  const aggregate = opts.record.aggregate;
+  const plan = aggregate.current_plan;
+  const item = aggregate.work_items[opts.work_item_id];
+  const contractDigest = item?.definition.contract_digest;
+  const contract = opts.record.documents?.contracts[String(contractDigest ?? "")];
+  if (!plan || item?.state !== "EXECUTING" || !item.claim_id || !contractDigest || !contract)
+    return null;
+  const binding = {
+    task_id: aggregate.id,
+    plan_revision: plan.revision,
+    plan_digest: plan.digest,
+    work_item_id: opts.work_item_id,
+    contract_digest: contractDigest,
+    attempt: item.attempt,
+    claim_id: item.claim_id,
+    repository_fingerprint: opts.repository_fingerprint,
+  };
+  const inputs = Object.values(aggregate.work_items)
+    .filter((source) => source.state === "COMPLETED")
+    .flatMap((source) => source.output_manifests)
+    .filter((manifest) => item.definition.required_inputs.includes(manifest.id));
+  const contents = {
+    schema_version: 1 as const,
+    kind: "kernel_work_order" as const,
+    binding,
+    contract,
+    inputs,
+    expected_outputs: item.definition.expected_outputs,
+    authority: opts.authority,
+  };
+  return { ...contents, id: k.kernelDigest(contents) };
+}
+
+export async function buildKernelStateFingerprint(opts: {
   command: CommandContext;
   record: KernelRecord;
   context: NativeAuthorityContext;
@@ -26,21 +66,34 @@ export function buildKernelStateFingerprint(opts: {
     source: "canonical_episode",
     reason_code: "not_required_for_semantic_episode",
   };
+  const plan = opts.record.aggregate.current_plan;
   return buildStateFingerprint({
     task_id: opts.record.aggregate.id,
     task_revision: opts.record.aggregate.revision,
-    git_head: null,
+    git_head: await readDirectTaskHead(opts.command.resolvedProject.gitRoot),
     worktree: opts.command.resolvedProject.gitRoot,
     components: {
       task: present("canonical_task", opts.record.digest),
       git: present("native_repository_content", opts.context.repository_fingerprint),
       backend_projection: present("canonical_backend", opts.command.backendId),
+      plan: plan
+        ? present("canonical_plan", {
+            revision: plan.revision,
+            digest: plan.digest,
+            state: plan.state,
+          })
+        : absent,
       policy: present("native_policy", opts.context.ceiling.policy_digests),
+      capability: present("canonical_capability", {
+        authority_digest: opts.authority_digest,
+        capabilities: opts.context.ceiling.capabilities,
+        repository_effects: opts.context.ceiling.repository_effects,
+        external_effects: opts.context.ceiling.external_effects,
+      }),
       authority: present("canonical_authority", {
         issued: opts.authority_digest,
         lineage: opts.record.aggregate.authority_lineage?.at(-1)?.authority.digest ?? null,
       }),
-      blueprint: absent,
       knowledge: absent,
       provider: absent,
     },
@@ -48,12 +101,12 @@ export function buildKernelStateFingerprint(opts: {
 }
 
 /** Project one semantic episode. This object never selects or executes a lifecycle transition. */
-export function buildKernelAgentWorkOrder(opts: {
+export async function buildKernelAgentWorkOrder(opts: {
   command: CommandContext;
   record: KernelRecord;
   context: NativeAuthorityContext;
   implementation?: KernelWorkOrder;
-}): AgentWorkOrderV2 {
+}): Promise<AgentWorkOrderV2> {
   const { record, context, implementation } = opts;
   const aggregate = record.aggregate;
   if (!record.documents) throw new Error("Canonical documents require explicit migration");
@@ -75,24 +128,43 @@ export function buildKernelAgentWorkOrder(opts: {
       };
   const authority = implementation?.authority;
   const policy = {
-    required_components: ["task", "git", "backend_projection", "policy", "authority"] as const,
+    fingerprint_schema_version: 2 as const,
+    required_components: [
+      "task",
+      "git",
+      "backend_projection",
+      ...(implementation ? (["plan"] as const) : []),
+      "policy",
+      "capability",
+      "authority",
+    ] as const,
     provider: { required: false, unavailable: "allow_if_unchanged" as const },
   };
-  const fingerprint = buildKernelStateFingerprint({
+  const fingerprint = await buildKernelStateFingerprint({
     command: opts.command,
     record,
     context,
     authority_digest: authority?.digest ?? null,
   });
   const objective = implementation?.contract.objective ?? record.documents.intent.objective;
+  const role = implementation?.contract.role ?? "PLANNER";
+  const planInputDigest = implementation
+    ? implementation.contract.plan_input_digest
+    : record.documents.intent.plan_input_digest;
+  const planInput = planInputDigest ? record.documents.plan_inputs?.[planInputDigest] : undefined;
   const criteria = implementation?.contract.acceptance_criteria ?? [
     "Return a bounded canonical plan with contracts, dependencies, output IDs, scope and verification commands.",
   ];
   return AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse({
     schema_version: 2,
     kind: "agent_work_order",
-    work_order_id: k.kernelDigest({ binding, revision: aggregate.revision, record: record.digest }),
-    role: implementation?.contract.role ?? "PLANNER",
+    work_order_id: k.kernelDigest({
+      binding,
+      revision: aggregate.revision,
+      record: record.digest,
+      state_fingerprint: fingerprint.digest,
+    }),
+    role,
     task: {
       id: aggregate.id,
       revision: aggregate.revision,
@@ -102,14 +174,18 @@ export function buildKernelAgentWorkOrder(opts: {
         description,
         required: true,
       })),
-      unresolved_questions: [],
+      unresolved_questions: (planInput?.unresolved_questions ?? []).map((question, index) => ({
+        id: `supplied-plan-question-${index + 1}`,
+        question,
+        blocking: true,
+      })),
       ...(implementation ? { work_item_id: implementation.binding.work_item_id } : {}),
     },
     canonical_binding: binding,
     state_fingerprint: fingerprint,
     state_fingerprint_policy: policy,
     authority: {
-      mutation_scope: authority ? "code" : "none",
+      mutation_scope: role === "CURATOR" ? "context" : authority ? "code" : "none",
       writable_roots:
         authority?.scope_roots.map((root) =>
           path.resolve(opts.command.resolvedProject.gitRoot, root),
@@ -134,7 +210,9 @@ export function buildKernelAgentWorkOrder(opts: {
       expires_at: authority?.expires_at ?? null,
     },
     context_intent: {
-      purpose: record.documents.intent.context,
+      purpose: planInput
+        ? `${record.documents.intent.context}\n\nCaller-supplied Plan input (not approval):\n${JSON.stringify(planInput)}`
+        : record.documents.intent.context,
       required_knowledge_ref_digests: [],
       require_prepared_evidence: false,
     },

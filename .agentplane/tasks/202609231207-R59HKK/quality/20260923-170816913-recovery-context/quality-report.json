@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202609231207-R59HKK",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-23T17:09:50.573Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "human_review",
+  "summary": "EVALUATOR returned human_review with 1 typed finding(s).",
+  "evaluated_sha": "5c015bc1bf457c164f058e655a08ae166e65c53b",
+  "review_identity_digest": "sha256:3f04ce586c2a4792ecca2ee3e1df4f49763cb9861d48e979539290ffd8dbea2e",
+  "findings": [
+    "The frozen patch still changes three bun.lock workspace versions from 0.7.11 to 0.7.12-beta.1. The supplied scope covers supervisor recovery, and the frozen execution contract explicitly forbids dependencies and release metadata changes. No approval for this remaining drift is recorded."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/70e6995465910c8353ef1bbf2b986daaa46b4ddc358d39e9ddafa8e78a0c53f6.patch",
+    ".agentplane/tasks/202609231207-R59HKK/README.md",
+    ".agentplane/policy/dod.core.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Synchronizing workspace versions in bun.lock is implicitly authorized by the supervisor-recovery scope."
+  ],
+  "residual_risks": [
+    "Do you approve retaining the three bun.lock workspace-version updates to 0.7.12-beta.1 within this task's scope?"
+  ]
+}

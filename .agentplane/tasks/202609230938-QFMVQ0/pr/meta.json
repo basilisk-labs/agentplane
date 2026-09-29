@@ -1,0 +1,21 @@
+{
+  "base": "origin/main",
+  "branch": "task/202609230938-QFMVQ0/recover-the-same-agentplane-task-after-a-planner",
+  "created_at": "2026-09-23T10:27:16.458Z",
+  "diffstat_sha256": "sha256:7b5ca79d5b98c64bc5b77a3187874b2f2c535d6bf937c0ef3430ffbc251d2a15",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202609230938-QFMVQ0",
+  "updated_at": "2026-09-23T10:27:16.458Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

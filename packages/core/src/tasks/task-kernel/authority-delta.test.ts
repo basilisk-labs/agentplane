@@ -1,10 +1,102 @@
 import { describe, expect, it } from "vitest";
-import { authorityDeltaApprovalEvidence } from "./authority-lineage.js";
+import {
+  authorityDeltaApprovalEvidence,
+  authorityDigest,
+  canonicalAuthorityIssues,
+  planScopeExpansionApprovalDigest,
+} from "./authority-lineage.js";
 import { kernelDigest, reduceTaskCommand } from "./kernel.js";
 import type { TaskCommand } from "./model.js";
 import { authority, plan, aggregate, input } from "./kernel.test-fixtures.js";
 
 describe("canonical authority delta", () => {
+  it("retains approved plan-amendment authority across repository continuations", () => {
+    const amendedDefinition = {
+      ...plan.work_items[0]!,
+      execution_requirements: {
+        ...plan.work_items[0]!.execution_requirements,
+        scope_roots: [...plan.work_items[0]!.execution_requirements.scope_roots, "schemas"],
+      },
+    };
+    const amendedPlan = {
+      revision: plan.revision + 1,
+      digest: kernelDigest({
+        revision: plan.revision + 1,
+        work_items: [amendedDefinition],
+      }),
+      state: "APPROVED" as const,
+      approval_actor_id: "USER",
+      approval_evidence_digest: "",
+      work_items: [amendedDefinition],
+    };
+    amendedPlan.approval_evidence_digest = planScopeExpansionApprovalDigest({
+      task_id: aggregate().id,
+      current_plan_digest: plan.digest,
+      amended_plan_digest: amendedPlan.digest,
+      actor_id: "USER",
+    });
+    const parent = { ...authority, digest: authorityDigest(authority) };
+    const amendedContents = {
+      ...parent,
+      plan_revision: amendedPlan.revision,
+      plan_digest: amendedPlan.digest,
+      scope_roots: [...parent.scope_roots, "schemas"].toSorted(),
+      provenance: {
+        ...parent.provenance,
+        kind: "SYSTEM" as const,
+        actor_id: "kernel",
+        parent_authority_digest: parent.digest,
+      },
+    };
+    const amendedAuthority = {
+      ...amendedContents,
+      digest: authorityDigest(amendedContents),
+    };
+    const nextFingerprint = kernelDigest("continued-implementation");
+    const continuedContents = {
+      ...amendedAuthority,
+      repository_fingerprint: nextFingerprint,
+      provenance: {
+        ...amendedAuthority.provenance,
+        parent_authority_digest: amendedAuthority.digest,
+      },
+    };
+    const continuedAuthority = {
+      ...continuedContents,
+      digest: authorityDigest(continuedContents),
+    };
+    const state = aggregate({
+      current_plan: amendedPlan,
+      plan_history: [plan],
+      authority_lineage: [
+        { authority: parent, approval_mode: "manual_operator", observation: null },
+        {
+          authority: amendedAuthority,
+          approval_mode: null,
+          observation: {
+            kind: "plan_amendment",
+            evidence_digest: kernelDigest("plan-amendment"),
+            previous_fingerprint: parent.repository_fingerprint,
+            changed_paths: [],
+            added_scope_roots: ["schemas"],
+          },
+        },
+        {
+          authority: continuedAuthority,
+          approval_mode: null,
+          observation: {
+            kind: "repository_implementation",
+            evidence_digest: kernelDigest("repository-implementation"),
+            previous_fingerprint: amendedAuthority.repository_fingerprint,
+            changed_paths: ["schemas/generated.json"],
+          },
+        },
+      ],
+    });
+
+    expect(canonicalAuthorityIssues(state)).toEqual([]);
+  });
+
   it("applies an exact USER authority delta without changing the approved plan", () => {
     const { digest: _fixtureDigest, ...parentContents } = authority;
     const parent = { ...parentContents, digest: kernelDigest(parentContents) };

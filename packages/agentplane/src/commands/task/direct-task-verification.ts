@@ -1,14 +1,12 @@
 import { runProcess } from "@agentplaneorg/core/process";
-import { mkdir, readFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, symlink } from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
-import {
-  parseDeclaredTaskCheck,
-  parseDeclaredTaskCheckSequence,
-} from "../shared/declared-check.js";
-import { localRuntimeEvidence, type LocalRuntimeEvidence } from "../../shared/runtime-env.js";
+import { parseDeclaredTaskCheckSequence } from "../shared/declared-check.js";
+import { localRuntimeEvidence } from "../../shared/runtime-env.js";
 import { verificationChildEnv } from "../shared/pr-meta/verify-log.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
@@ -16,9 +14,27 @@ import {
   isInfrastructureVerification,
   isVerificationInfrastructureError,
 } from "./verification-infrastructure.js";
+import {
+  parseDirectTaskCheck,
+  type DirectTaskCheck,
+  type DirectTaskVerificationResult,
+  type ParsedDirectTaskCheck,
+} from "./direct-task-verification-checks.js";
+
+export {
+  directTaskVerificationInputIdentity,
+  parseDirectTaskCheck,
+  renderDirectTaskVerificationDetails,
+  type DirectTaskVerificationInputIdentity,
+  type DirectTaskVerificationResult,
+} from "./direct-task-verification-checks.js";
 
 const DEFAULT_CHECK_TIMEOUT_MS = 30 * 60_000;
 const CHECK_TIMEOUT_MS_BY_SCRIPT: Readonly<Record<string, number>> = Object.freeze({
+  // Full CI includes four bounded verification waves and a prerequisite build.
+  "ci:local:full": 90 * 60_000,
+  // Prepublish also runs release-wide suites, coverage, and installed-package smoke checks.
+  "release:prepublish": 150 * 60_000,
   "e2e:v0.7.1:gate": 150 * 60_000,
 });
 const CHECK_OUTPUT_LIMIT = 4000;
@@ -28,31 +44,76 @@ const BUN_ZERO_TEST_PATTERNS = [
   /\bran 0 tests?\b/iu,
 ] as const;
 
-type DirectTaskCheck = {
-  runtime?: LocalRuntimeEvidence;
-  failure_kind?: "infrastructure";
-  command: string;
-  declared_command?: string;
-  script: string | null;
-  check_ids: string[];
-  exit_code: number | null;
-  duration_ms: number;
-  stdout_tail: string;
-  stderr_tail: string;
-};
+function requiresIsolatedQualificationCheckout(
+  command: string,
+  parsedSequence: readonly ParsedDirectTaskCheck[],
+): boolean {
+  const invokesQualificationRunner =
+    /(?:^|\s)scripts\/qualification\/run-v[^/\s]+-release-qualification\.mjs(?:\s|$)/u.test(
+      command,
+    );
+  const invokesQualificationScript = parsedSequence.some(
+    ({ script }) =>
+      script === "qualification:gate" ||
+      (script !== null && /^e2e:v\d+\.\d+\.\d+(?:-[^:]+)?:gate$/u.test(script)),
+  );
+  return invokesQualificationRunner || invokesQualificationScript;
+}
 
-type ParsedDirectTaskCheck = {
-  executable: string;
-  args: string[];
-  script: string | null;
-};
-
-export type DirectTaskVerificationResult = {
-  status: "passed" | "failed" | "unsupported";
-  artifact_path: string;
-  checks: DirectTaskCheck[];
-  reason: string | null;
-};
+async function verificationCheckout(
+  cwd: string,
+  command: string,
+  parsedSequence: readonly ParsedDirectTaskCheck[],
+  env: NodeJS.ProcessEnv,
+) {
+  if (!requiresIsolatedQualificationCheckout(command, parsedSequence)) {
+    return { cwd, cleanup: () => Promise.resolve() };
+  }
+  const checkout = await mkdtemp(path.join(os.tmpdir(), "agentplane-verification-"));
+  const added = await runProcess({
+    command: "git",
+    args: ["worktree", "add", "--detach", checkout, "HEAD"],
+    cwd,
+    env,
+    timeoutMs: 60_000,
+    maxBuffer: 1024 * 1024,
+    reject: false,
+  });
+  if (added.exitCode !== 0) {
+    await rm(checkout, { recursive: true, force: true });
+    throw new Error(`Unable to create clean verification checkout: ${added.stderr}`);
+  }
+  const cleanup = async () => {
+    await runProcess({
+      command: "git",
+      args: ["worktree", "remove", "--force", checkout],
+      cwd,
+      env,
+      timeoutMs: 60_000,
+      maxBuffer: 1024 * 1024,
+      reject: false,
+    });
+    await rm(checkout, { recursive: true, force: true });
+  };
+  try {
+    const dependencyRoots = [
+      "node_modules",
+      "packages/agentplane/node_modules",
+      "packages/core/node_modules",
+      "packages/testkit/node_modules",
+    ];
+    for (const relative of dependencyRoots) {
+      const target = path.join(cwd, relative);
+      const link = path.join(checkout, relative);
+      await mkdir(path.dirname(link), { recursive: true });
+      await symlink(target, link, "dir");
+    }
+    return { cwd: checkout, cleanup };
+  } catch (error) {
+    await cleanup();
+    throw error;
+  }
+}
 
 type AdditionalDirectTaskCommand = Readonly<{
   command: string;
@@ -99,59 +160,12 @@ export function isTaskLevelVerificationReworkState(opts: {
   );
 }
 
-export function renderDirectTaskVerificationDetails(opts: {
-  task: Pick<TaskData, "execution_contract">;
-  taskId: string;
-  workflow: "direct" | "branch_pr";
-  result: DirectTaskVerificationResult;
-}): string {
-  const checks = opts.result.checks;
-  const selectedChecks = (
-    opts.task.execution_contract?.verification.contract?.selected_checks ?? []
-  ).filter((checkId) => checkId !== "hosted_integration");
-  if (opts.result.status === "passed" && selectedChecks.length > 0) {
-    const contractDetails = selectedChecks
-      .map((checkId) => {
-        const matching = checks.filter((check) => check.check_ids.includes(checkId));
-        if (matching.length === 0) return null;
-        return matching
-          .map((check, index) =>
-            [
-              `Check: ${checkId}`,
-              `Command: ${check.command}`,
-              "Result: pass",
-              `Evidence: ${opts.result.artifact_path}#check-${String(checks.indexOf(check) + 1)}`,
-              `Scope: ${opts.workflow} task ${opts.taskId} Verification Contract check ${checkId}${matching.length > 1 ? ` (${String(index + 1)}/${String(matching.length)})` : ""}`,
-            ].join("\n"),
-          )
-          .join("\n\n");
-      })
-      .filter((details): details is string => details !== null)
-      .join("\n\n");
-    if (contractDetails) return contractDetails;
-  }
-  return checks
-    .map((check, index) =>
-      [
-        `Command: ${check.command}`,
-        `Result: ${check.exit_code === 0 ? "pass" : "fail"}`,
-        `Evidence: ${opts.result.artifact_path}#check-${String(index + 1)}`,
-        `Scope: ${opts.workflow} task ${opts.taskId} declared verification`,
-      ].join("\n"),
-    )
-    .join("\n\n");
-}
-
 function tail(value: string): string {
   return value.length <= CHECK_OUTPUT_LIMIT ? value : value.slice(-CHECK_OUTPUT_LIMIT);
 }
 
 function mergedOutput(values: readonly string[]): string {
   return tail(values.filter(Boolean).join("\n"));
-}
-
-export function parseDirectTaskCheck(command: string): ParsedDirectTaskCheck | null {
-  return parseDeclaredTaskCheck(command);
 }
 
 function directTaskCheckTimeoutMs(script: string | null): number {
@@ -205,6 +219,14 @@ function isFullRegressionCheck(parsed: ParsedDirectTaskCheck): boolean {
   if (
     ["npm", "pnpm", "yarn"].includes(parsed.executable) &&
     (parsed.args.length === 1 || parsed.args[0] === "run") &&
+    parsed.script === "test"
+  ) {
+    return true;
+  }
+  if (
+    parsed.executable === "bun" &&
+    parsed.args.length === 2 &&
+    parsed.args[0] === "run" &&
     parsed.script === "test"
   ) {
     return true;
@@ -374,9 +396,11 @@ export async function runDirectTaskVerification(opts: {
   if (requiresFullRegression && !hasFullRegressionCommand) {
     if (rootPackage?.scripts.has("ci:local:full")) {
       commands.push(`${rootPackage.runner} run ci:local:full`);
+    } else if (rootPackage?.scripts.has("test")) {
+      commands.push(`${rootPackage.runner} run test`);
     } else {
       missingRequiredCheckReason =
-        "Verification Contract requires full_regression, but package.json does not define ci:local:full.";
+        "Verification Contract requires full_regression, but package.json defines neither ci:local:full nor test.";
     }
   }
   if (commands.length === 0) {
@@ -419,6 +443,7 @@ export async function runDirectTaskVerification(opts: {
     let exitCode: number | null = 0;
     let zeroTests = false;
     let infrastructureFailure = false;
+    let isolatedCheckout: Awaited<ReturnType<typeof verificationCheckout>> | null = null;
     const completedCheck = (error?: unknown): DirectTaskCheck => ({
       runtime,
       ...(infrastructureFailure || (error && isVerificationInfrastructureError(error))
@@ -442,6 +467,7 @@ export async function runDirectTaskVerification(opts: {
       ]),
     });
     try {
+      isolatedCheckout = await verificationCheckout(opts.cwd, command, parsedSequence, env);
       for (const parsed of parsedSequence) {
         const remainingTimeoutMs = parsedSequence.length === 1 ? timeoutBudgetMs : deadline - now();
         if (remainingTimeoutMs <= 0) {
@@ -453,7 +479,7 @@ export async function runDirectTaskVerification(opts: {
         const executed = await (opts.run_process ?? runProcess)({
           command: parsed.executable,
           args: parsed.args,
-          cwd: opts.cwd,
+          cwd: isolatedCheckout.cwd,
           env,
           timeoutMs: remainingTimeoutMs,
           maxBuffer: 1024 * 1024,
@@ -495,6 +521,8 @@ export async function runDirectTaskVerification(opts: {
         reason: `Declared check could not run: ${command}`,
       };
       return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };
+    } finally {
+      await isolatedCheckout?.cleanup();
     }
   }
   if (missingRequiredCheckReason) {

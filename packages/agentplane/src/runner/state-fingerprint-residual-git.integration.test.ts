@@ -12,12 +12,6 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { CloudBackend, LocalBackend, type TaskData } from "../backends/task-backend.js";
 import { cloudProjectionIdentitySha256 } from "../backends/task-backend/cloud-projection-identity.js";
-import {
-  projectBlueprintsConfigPath,
-  scaffoldProjectBlueprint,
-  type Blueprint,
-  type BlueprintId,
-} from "../blueprints/index.js";
 import { loadCommandContext, type CommandContext } from "../commands/shared/task-backend.js";
 import {
   capturePreparedRunnerStateFingerprint,
@@ -81,54 +75,6 @@ async function prepareLocalCase(
   return { root, taskId, ctx, prepared };
 }
 
-function preferredBlueprintRecipe(blueprintId: string): RunnerRecipeContext {
-  return {
-    recipe_id: `fingerprint-${blueprintId}`,
-    scenario_id: "STATE_FINGERPRINT",
-    manifest: {
-      id: `fingerprint-${blueprintId}`,
-      version: "1.0.0",
-      name: "State fingerprint fixture",
-      blueprint_extensions: [
-        {
-          id: "preferred-blueprint",
-          kind: "preferred_blueprint",
-          summary: "Select the trusted project-local blueprint.",
-          blueprint_id: blueprintId,
-        },
-      ],
-    },
-  };
-}
-
-async function writeTrustedProjectBlueprint(opts: {
-  root: string;
-  id: string;
-  from?: BlueprintId;
-  mutate?: (blueprint: Blueprint) => void;
-}): Promise<string> {
-  const scaffold = await scaffoldProjectBlueprint({
-    projectRoot: opts.root,
-    id: opts.id,
-    from: opts.from,
-  });
-  const blueprint = structuredClone(scaffold.blueprint);
-  opts.mutate?.(blueprint);
-  await writeFile(scaffold.path, `${JSON.stringify(blueprint, null, 2)}\n`, "utf8");
-  await writeFile(
-    projectBlueprintsConfigPath(opts.root),
-    `${JSON.stringify({
-      schema_version: 1,
-      trust_model: "explicit_allowlist",
-      enabled: true,
-      allowed_ids: [opts.id],
-      selection: "explicit_only",
-    })}\n`,
-    "utf8",
-  );
-  return scaffold.path;
-}
-
 function successfulResult() {
   return Promise.resolve({
     status: "success" as const,
@@ -143,7 +89,8 @@ type ResidualFingerprintComponent =
   | "git"
   | "backend_projection"
   | "policy"
-  | "blueprint"
+  | "plan"
+  | "capability"
   | "knowledge"
   | "provider"
   | "authority";
@@ -283,33 +230,6 @@ describe("runner residual Git fingerprint", () => {
     });
   });
 
-  it("assigns a resolved project blueprint mutation to git and blueprint", async () => {
-    const blueprintId = "docs.residual-blueprint";
-    let blueprintPath = "";
-    const fixture = await prepareLocalCase(
-      "Residual blueprint",
-      async ({ root }) => {
-        blueprintPath = await writeTrustedProjectBlueprint({
-          root,
-          id: blueprintId,
-          from: "docs.change",
-        });
-      },
-      preferredBlueprintRecipe(blueprintId),
-    );
-    expect(fixture.prepared.bundle.blueprint?.blueprintId).toBe(blueprintId);
-    const blueprint = JSON.parse(await readFile(blueprintPath, "utf8")) as Blueprint;
-    blueprint.allowedCommands = ["residual blueprint command"];
-    await writeFile(blueprintPath, `${JSON.stringify(blueprint, null, 2)}\n`, "utf8");
-
-    await expectExactlyChanged({
-      ctx: fixture.ctx,
-      prepared: fixture.prepared,
-      component: "blueprint",
-      expected_components: ["git", "blueprint"],
-    });
-  });
-
   it("assigns an approval configuration mutation exactly to authority", async () => {
     const fixture = await prepareLocalCase("Residual authority");
     const config = structuredClone(fixture.ctx.config);
@@ -354,7 +274,7 @@ describe("runner residual Git fingerprint", () => {
     });
   });
 
-  it("assigns a workflow route mutation exactly to blueprint and authority", async () => {
+  it("assigns a workflow route mutation exactly to authority", async () => {
     const fixture = await prepareLocalCase("Residual workflow authority");
     const config = structuredClone(fixture.ctx.config);
     config.workflow_mode = config.workflow_mode === "branch_pr" ? "direct" : "branch_pr";
@@ -363,8 +283,8 @@ describe("runner residual Git fingerprint", () => {
     await expectExactlyChanged({
       ctx: fixture.ctx,
       prepared: fixture.prepared,
-      component: "blueprint",
-      expected_components: ["git", "blueprint", "authority"],
+      component: "authority",
+      expected_components: ["git", "authority"],
     });
   });
 
@@ -439,45 +359,6 @@ describe("runner residual Git fingerprint", () => {
       prepared: fixture.prepared,
       component: "policy",
       expected_components: ["git", "policy"],
-    });
-  });
-
-  it("catches a same-content policy-module selection switch in residual git", async () => {
-    const blueprintId = "docs.residual-policy";
-    const policyA = ".agentplane/policy/residual-a.md";
-    const policyB = ".agentplane/policy/residual-b.md";
-    let blueprintPath = "";
-    const fixture = await prepareLocalCase(
-      "Residual policy selection",
-      async ({ root }) => {
-        await mkdir(path.join(root, ".agentplane", "policy"), { recursive: true });
-        await Promise.all([
-          writeFile(path.join(root, policyA), "# Residual policy A\n", "utf8"),
-          writeFile(path.join(root, policyB), "# Residual policy B\n", "utf8"),
-        ]);
-        blueprintPath = await writeTrustedProjectBlueprint({
-          root,
-          id: blueprintId,
-          from: "docs.change",
-          mutate: (blueprint) => {
-            blueprint.policyModules = [policyA];
-            blueprint.contextBudget.maxPolicyModules = 4;
-          },
-        });
-      },
-      preferredBlueprintRecipe(blueprintId),
-    );
-    expect(fixture.prepared.bundle.blueprint?.policyModules).toContain(policyA);
-    expect(fixture.prepared.bundle.blueprint?.policyModules).not.toContain(policyB);
-    const blueprint = JSON.parse(await readFile(blueprintPath, "utf8")) as Blueprint;
-    blueprint.policyModules = [policyB];
-    await writeFile(blueprintPath, `${JSON.stringify(blueprint, null, 2)}\n`, "utf8");
-
-    await expectExactlyChanged({
-      ctx: fixture.ctx,
-      prepared: fixture.prepared,
-      component: "policy",
-      expected_components: ["git"],
     });
   });
 
@@ -670,9 +551,12 @@ describe("runner residual Git fingerprint", () => {
     const modulePath = path.join(fixture.root, ".agentplane", "policy", "residual-policy.md");
     await mkdir(path.dirname(modulePath), { recursive: true });
     await writeFile(modulePath, "# Residual policy module\n", "utf8");
-    const blueprint = fixture.prepared.bundle.blueprint;
-    if (!blueprint) throw new Error("Prepared blueprint is missing.");
-    blueprint.policyModules = [...blueprint.policyModules, ".agentplane/policy/residual-policy.md"];
+    const obligations = fixture.prepared.bundle.task_obligations;
+    if (!obligations) throw new Error("Prepared task obligations are missing.");
+    obligations.policy_modules = [
+      ...obligations.policy_modules,
+      ".agentplane/policy/residual-policy.md",
+    ];
     const preparationGit = await captureRunnerPreparationGitSnapshot({ ctx: fixture.ctx });
     const preparedFingerprint = await capturePreparedRunnerStateFingerprint({
       ctx: fixture.ctx,

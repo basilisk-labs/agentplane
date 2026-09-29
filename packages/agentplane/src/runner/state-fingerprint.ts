@@ -31,13 +31,15 @@ import {
 } from "./state-fingerprint-observation.js";
 import type { RunnerContextBundle, RunnerPromptBlock } from "./types.js";
 
-export const RUNNER_STATE_FINGERPRINT_POLICY = {
+const RUNNER_STATE_FINGERPRINT_V2_POLICY = {
+  fingerprint_schema_version: 2,
   required_components: [
     "task",
     "git",
     "backend_projection",
+    "plan",
     "policy",
-    "blueprint",
+    "capability",
     "knowledge",
     "authority",
   ],
@@ -48,11 +50,14 @@ export const RUNNER_STATE_FINGERPRINT_POLICY = {
   },
 } as const satisfies StateFingerprintPolicy;
 
+export const RUNNER_STATE_FINGERPRINT_POLICY = RUNNER_STATE_FINGERPRINT_V2_POLICY;
+
 export function resolveRunnerStateFingerprintPolicy(ctx: CommandContext): StateFingerprintPolicy {
+  const base = RUNNER_STATE_FINGERPRINT_V2_POLICY;
   return {
-    ...RUNNER_STATE_FINGERPRINT_POLICY,
+    ...base,
     provider: {
-      ...RUNNER_STATE_FINGERPRINT_POLICY.provider,
+      ...base.provider,
       required: getTaskBackendCapabilities(ctx).canonical_source === "remote",
     },
   };
@@ -75,6 +80,17 @@ function unavailableComponent(source: string, reason_code: string): StateFingerp
     state: "unavailable",
     source,
     reason_code,
+  };
+}
+
+function boundRouteComponent(
+  name: "plan" | "capability",
+  component: StateFingerprint["components"]["task"],
+): StateFingerprintComponentInput {
+  return {
+    state: "present",
+    source: `work_order_${name}_identity`,
+    value: component,
   };
 }
 
@@ -145,14 +161,26 @@ function buildRunnerStateFingerprint(opts: {
     bundle: opts.bundle,
     components: opts.components,
   });
-  return buildStateFingerprint({
+  const nativeFingerprint =
+    opts.bundle.work_order?.state_fingerprint.schema_version === 2
+      ? opts.bundle.work_order.state_fingerprint
+      : null;
+  const base = {
     task_id: runnerTaskId(opts.bundle),
     task_revision: taskRevision,
     git_head: opts.git.head_commit,
     worktree: opts.git.repository_root,
+  };
+  if (!nativeFingerprint) {
+    throw new Error("Runner state fingerprint requires a canonical v2 work order.");
+  }
+  return buildStateFingerprint({
+    ...base,
     components: {
       ...components,
       git: gitComponent(opts.git, semanticProjectionPaths),
+      plan: boundRouteComponent("plan", nativeFingerprint.components.plan),
+      capability: boundRouteComponent("capability", nativeFingerprint.components.capability),
     },
   });
 }
@@ -258,6 +286,15 @@ function runnerSemanticProjectionPaths(opts: {
   const repositoryRoot = opts.ctx.resolvedProject.gitRoot;
   const paths = new Set<string>();
 
+  for (const runtimePath of [
+    ".agentplane/cache.sqlite",
+    ".agentplane/cache.sqlite-wal",
+    ".agentplane/cache.sqlite-shm",
+    ".agentplane/workspaces",
+  ]) {
+    addRepositoryPath(paths, repositoryRoot, runtimePath);
+  }
+
   addRepositoryPath(
     paths,
     repositoryRoot,
@@ -282,7 +319,7 @@ function runnerSemanticProjectionPaths(opts: {
     paths,
     repositoryRoot,
     prompts: opts.bundle.base_prompts,
-    modules: opts.bundle.blueprint?.policyModules.map((modulePath) => ({
+    modules: opts.bundle.task_obligations?.policy_modules.map((modulePath) => ({
       path: modulePath,
       state: "present",
     })),

@@ -1,0 +1,120 @@
+{
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609232231-BYSVV6-702b82fa919599552c2b3e35",
+  "prepared_at": "2026-09-24T19:45:13.145Z",
+  "task": {
+    "id": "202609232231-BYSVV6",
+    "revision": 20,
+    "objective": "Reduce AgentPlane workspace disk usage while preserving canonical task history\n\nAvoid materializing completed .agentplane/tasks history in each new task worktree; keep authoritative access through the canonical task store. Add a size inventory and safe cleanup route for retained task worktrees and nested base repositories. Preserve dirty work, Git/provider/task evidence, and current task behavior. Verify focused tests and measured disk behavior.",
+    "acceptance_criteria": [
+      "- In scope: Avoid materializing completed .agentplane/tasks history in each new task worktree; keep authoritative access through the canonical task store. Add a size inventory and safe cleanup route for retained task worktrees and nested base repositories. Preserve dirty work, Git/provider/task evidence, and current task behavior. Verify focused tests and measured disk behavior.\n- Out of scope: unrelated refactors not required for \"Reduce AgentPlane workspace disk usage while preserving canonical task history\".",
+      "Prepared a two-item plan for compact task worktrees and safe disk diagnostics.",
+      "1. In a fixture repository with completed and active task records, create a new task worktree. Confirm that completed task directories are absent from the new checkout, the current task remains writable there, and historical task reads match canonical bytes.\n2. Confirm that Git status and execution observation still detect tracked changes and reject out-of-scope writes. Confirm missing or unsafe canonical storage fails closed.\n3. Inspect retained worktrees and nested repositories with the disk report. Confirm dirty, active, and provider-unproven entries are reported but not deleted.\n4. Measure fixture worktree disk use before and after the change with du. Record actual bytes and the scope of the measurement.\n5. Run focused history and cleanup tests, bun run typecheck, and bun run ci:local:fast. Review the final diff and report any skipped checks."
+    ]
+  },
+  "evaluated_sha": "d6f82fa61c7719c09cb08e8edffeabb7c2fa7b3c",
+  "diff_base_sha": "9a9ccf33a80c42e7a2643caaaf2f490e588384d0",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609232231-BYSVV6/quality/20260924-194513145-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:de34fe1074ee768ca3b3927591b4d16afdcabc061db5b06d1c6f180cb5a1d316",
+    "prompt_path": ".agentplane/tasks/202609232231-BYSVV6/quality/objects/sha256/4e90dd5dafd0c98e1bff3bf2f64d181624060c46f7b759f38d70e7abc58a49eb.md",
+    "result_schema_path": ".agentplane/tasks/202609232231-BYSVV6/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "schema_version": 2,
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202609232231-BYSVV6",
+    "plan_digest": "sha256:f2ee045128dd9d0d747a2ad56be4dfda3ce812c46b7376071567ca825b7221db",
+    "policy_digest": "sha256:c795bcd50defcbce5901e2cda7a0ee3e414bfc8bd91adf510a24c12d74a10ff7",
+    "capability_digest": "sha256:c4c6ab442898895169487f2938efe8bec8f521c7340e626f2a9e44bb8ba936e1",
+    "checks_digest": "sha256:b01d636360297bef1f909e4e48105900452ab7969ab4118ba6a46fd6ae3101de",
+    "verification_input_digest": "sha256:b199416c55c4ee7d03c0f34084ed5b04257a109399689deee073547d60253447",
+    "acceptance_digest": "sha256:f1f15ade3d4614249f2e5dd9ff4111d479b14904143d25f78338a74d11491f54",
+    "implementation_sha": "d6f82fa61c7719c09cb08e8edffeabb7c2fa7b3c",
+    "digest": "sha256:66ca309e4a77873b114896bd66f7a6922557d879887c79be201f4911c1a28e2b"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609232231-BYSVV6/README.md",
+      "sha256": "sha256:f074428067db936c40e085a25544fd586941c5624be5c60ea4e892f607aa0be7",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609232231-BYSVV6/quality/objects/sha256/83b68085b1abe9f6bbe2f0d29f5dcd4917c2e743e564bfe2c5ed3c97cb6c5daf.patch",
+      "sha256": "sha256:83b68085b1abe9f6bbe2f0d29f5dcd4917c2e743e564bfe2c5ed3c97cb6c5daf",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609232231-BYSVV6/quality/objects/sha256/30375b5e03047e8ad1dd0ea7d12df365ef9e94e222a4cfa828d51391e75b3d59.json",
+      "sha256": "sha256:30375b5e03047e8ad1dd0ea7d12df365ef9e94e222a4cfa828d51391e75b3d59",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609232231-BYSVV6/verification/20260924194300473-0fe205171c249ad0.json",
+      "sha256": "sha256:e4d211b58ef85a188ad67591244179674630ac9f871e2f3e45b243ebddfeab52",
+      "required": true
+    },
+    {
+      "id": "native-identity",
+      "kind": "plan",
+      "path": ".agentplane/tasks/202609232231-BYSVV6/quality/objects/sha256/3ed925c9d11aa098331fc41a3f2a92fe504ce6d4685d034ab5986388cf4b2719.json",
+      "sha256": "sha256:3ed925c9d11aa098331fc41a3f2a92fe504ce6d4685d034ab5986388cf4b2719",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

@@ -1,20 +1,169 @@
-import { readFile } from "node:fs/promises";
+import { spawnSync } from "node:child_process";
+import { mkdtemp, readFile, rm } from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
 import * as vitestSuiteModule from "../../../../../scripts/run-vitest-suite.mjs";
 
-const { SUITES, VITEST_CHUNK_TIMEOUT_MS } = vitestSuiteModule as {
+const { SUITES, VITEST_CHUNK_TIMEOUT_MS, resolveVitestChunkTimeoutMs } = vitestSuiteModule as {
   SUITES: Record<string, { chunkSize?: number; files: string[]; isolatedPatterns?: RegExp[] }>;
   VITEST_CHUNK_TIMEOUT_MS: number;
+  resolveVitestChunkTimeoutMs: (raw?: string) => number;
 };
+
+it("bounds the optional slow-host chunk timeout without changing the default", () => {
+  expect(resolveVitestChunkTimeoutMs()).toBe(600_000);
+  expect(resolveVitestChunkTimeoutMs("")).toBe(600_000);
+  expect(resolveVitestChunkTimeoutMs("1800000")).toBe(1_800_000);
+  expect(resolveVitestChunkTimeoutMs("3600000")).toBe(3_600_000);
+  for (const raw of ["0", "-1", "599999", "3600001", "600000.5", "Infinity", "oops"]) {
+    expect(() => resolveVitestChunkTimeoutMs(raw)).toThrow("AGENTPLANE_VITEST_CHUNK_TIMEOUT_MS");
+  }
+});
 
 async function readRootText(relativePath: string): Promise<string> {
   return readFile(path.join(process.cwd(), relativePath), "utf8");
 }
 
+async function runCandidatePrepare(args: string[], planOutput?: string) {
+  const root = await mkdtemp(path.join(os.tmpdir(), "candidate-prepare-contract-"));
+  const script = path.join(process.cwd(), "scripts/release/candidate-prepare.mjs");
+  const plan =
+    planOutput ??
+    JSON.stringify({
+      prevVersion: "0.7.12-beta.1",
+      nextVersion: "0.7.12",
+      nextTag: "v0.7.12",
+      bump: "patch",
+    });
+  try {
+    const result = spawnSync(
+      process.execPath,
+      [
+        "--input-type=module",
+        "--eval",
+        `
+      import cp from "node:child_process";
+      import fs from "node:fs";
+      import path from "node:path";
+      import { syncBuiltinESMExports } from "node:module";
+      import { pathToFileURL } from "node:url";
+      const calls = [];
+      let version = "0.7.12-beta.1";
+      cp.execFileSync = (cmd, argv) => {
+        calls.push([cmd, argv]);
+        if (cmd === "ap" && argv[1] === "plan") {
+          const dir = path.join(process.cwd(), ".agentplane/.release/plan/2026-09-28-test");
+          fs.mkdirSync(dir, { recursive: true });
+          fs.writeFileSync(path.join(dir, "version.json"), ${JSON.stringify(plan)});
+        }
+        if (argv.includes("release:version:bump")) version = "0.7.12";
+        if (cmd === "ap" && argv[1] === "candidate" && version !== "0.7.12-beta.1") {
+          throw new Error("Current version does not match the release-plan baseline");
+        }
+        return "";
+      };
+      syncBuiltinESMExports();
+      process.argv = [process.execPath, ${JSON.stringify(script)}, ...${JSON.stringify(args)}];
+      try { await import(pathToFileURL(${JSON.stringify(script)}).href); }
+      finally { fs.writeFileSync("calls.json", JSON.stringify(calls)); }
+    `,
+      ],
+      { cwd: root, encoding: "utf8", timeout: 20_000 },
+    );
+    return {
+      ...result,
+      calls: JSON.parse(await readFile(path.join(root, "calls.json"), "utf8")) as [
+        string,
+        string[],
+      ][],
+    };
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+}
+
 describe("release CI contract", () => {
+  it("preserves the original version baseline until native candidate preparation", async () => {
+    const result = await runCandidatePrepare(["--write", "--version", "0.7.12"]);
+    expect(result.stderr).toBe("");
+    expect(result.status).toBe(0);
+    expect(result.calls.map(([cmd, args]) => [cmd, ...args.slice(0, 2)])).toEqual([
+      ["bun", "run", "release:state"],
+      ["bun", "run", "release:tasks:check"],
+      ["bun", "run", "release:incidents:check"],
+      ["ap", "release", "plan"],
+      ["bun", "run", "release:check:registry"],
+      ["bun", "run", "release:prepublish:fast"],
+      ["ap", "release", "candidate"],
+    ]);
+    expect(result.calls[4]?.[1]).toEqual([
+      "run",
+      "release:check:registry",
+      "--",
+      "--version",
+      "0.7.12",
+    ]);
+    expect(result.calls.at(-1)?.[1]).toEqual([
+      "release",
+      "candidate",
+      "--plan",
+      path.join(".agentplane", ".release", "plan", "2026-09-28-test"),
+    ]);
+  });
+
+  it("checks the planned version in the registry when no explicit version is supplied", async () => {
+    const result = await runCandidatePrepare(["--write", "--push", "--yes"]);
+    expect(result.status).toBe(0);
+    expect(result.calls[4]?.[1]).toContain("0.7.12");
+    expect(result.calls.at(-1)?.[1]).toEqual(expect.arrayContaining(["--push", "--yes"]));
+  });
+
+  it("rejects a requested version that differs from the native plan before candidate mutation", async () => {
+    const result = await runCandidatePrepare(["--write", "--version", "0.7.13"]);
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain("does not match planned version");
+    expect(result.calls.some(([, args]) => args.includes("candidate"))).toBe(false);
+  });
+
+  it.each([
+    "not json",
+    "null",
+    JSON.stringify({ nextVersion: 12 }),
+    JSON.stringify({
+      prevVersion: "0.7.12-beta.1",
+      nextVersion: "0.7.12",
+      nextTag: "v0.7.13",
+      bump: "patch",
+    }),
+  ])("rejects malformed native planning evidence: %s", async (plan) => {
+    const result = await runCandidatePrepare(["--write"], plan);
+    expect(result.status).toBe(1);
+    expect(result.calls.some(([, args]) => args.includes("candidate"))).toBe(false);
+  });
+
+  it.each([
+    ["--write", "--push"],
+    ["--write", "--bump", "invalid"],
+    ["--write", "--bump", "minor"],
+  ])("rejects invalid or unapproved invocation %j before running any command", async (...args) => {
+    const result = await runCandidatePrepare(args);
+    expect(result.status).toBe(1);
+    expect(result.calls).toEqual([]);
+  });
+
+  it.each([[], ["--json"], ["--write", "--json"]])(
+    "keeps inspection read-only %j",
+    async (...args) => {
+      const result = await runCandidatePrepare(args);
+      expect(result.status).toBe(0);
+      expect(result.calls).toEqual([]);
+      expect(result.stdout).not.toContain("release:version:bump");
+    },
+  );
+
   it("keeps release:ci-check aligned with release-relevant coverage guards", async () => {
     const packageJsonText = await readRootText("package.json");
     const packageJson = JSON.parse(packageJsonText) as {
@@ -33,6 +182,9 @@ describe("release CI contract", () => {
       "node scripts/checks/run-local-ci.mjs --mode smoke --explain",
     );
     expect(scripts["test:critical"]).toBe("node scripts/checks/run-vitest-suite.mjs critical-cli");
+    expect(scripts["test:agent-efficiency:qualification"]).toBe(
+      "node scripts/checks/run-vitest-suite.mjs agent-efficiency-qualification",
+    );
     expect(scripts["bench:cli:cold:check"]).toContain("--attempts 3");
     expect(releaseCiCheck).toBe("bun run ci:contract && bun run ci:release-extras");
     expect(releaseCheck).toContain("bun run release:incidents:check");
@@ -56,9 +208,24 @@ describe("release CI contract", () => {
     );
 
     expect(SUITES["release-ci-base"]?.chunkSize).toBe(10);
-    expect(SUITES["critical-cli"]?.chunkSize).toBe(1);
+    expect(SUITES["critical-cli"]?.chunkSize).toBe(2);
     expect(SUITES["critical-cli"]?.files).toContain(
       "packages/agentplane/src/cli/run-cli.critical.exit-codes.test.ts",
+    );
+    expect(SUITES["critical-cli"]?.files).not.toContainEqual(
+      expect.stringContaining("run-cli.critical.agent-efficiency"),
+    );
+    expect(SUITES["agent-efficiency-qualification"]?.chunkSize).toBe(1);
+    expect(SUITES["agent-efficiency-qualification"]?.files).toHaveLength(6);
+    expect(SUITES["agent-efficiency-qualification"]?.files).toEqual(
+      expect.arrayContaining([
+        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-anchor-lock.test.ts",
+        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
+        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts",
+        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts",
+        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts",
+        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay.test.ts",
+      ]),
     );
     expect(
       SUITES["release-ci-base"]?.isolatedPatterns?.some((pattern) =>
@@ -145,8 +312,14 @@ describe("release CI contract", () => {
 
     expect(wrapper).toContain("workflow/reinstall-global-agentplane.sh");
     expect(reinstall).toContain("bun run --filter=@agentplaneorg/core build");
+    expect(reinstall).toContain("bun run --filter=@agentplaneorg/recipes build");
     expect(reinstall).toContain("bun run --filter=agentplane build:bundle");
-    expect(reinstall).toContain("npm link");
+    expect(reinstall).toContain("npm pack ./packages/core");
+    expect(reinstall).toContain("npm pack ./packages/recipes");
+    expect(reinstall).toContain("npm pack ./packages/agentplane");
+    expect(reinstall).toContain("npm install --global");
+    expect(reinstall).toContain("AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane --version");
+    expect(reinstall).not.toContain("npm link");
     expect(reinstall).not.toContain("bun run --filter=@agentplane/testkit build");
     expect(reinstall).not.toContain("npm install -g ./packages");
   });

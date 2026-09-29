@@ -1,5 +1,3 @@
-import { createHash } from "node:crypto";
-import { lstat, readFile, readdir, readlink, realpath } from "node:fs/promises";
 import path from "node:path";
 
 import { gitEnv, gitRevParse, gitShowFile, resolveBaseBranch } from "@agentplaneorg/core/git";
@@ -9,15 +7,40 @@ import { canonicalizeJson } from "@agentplaneorg/core/tasks";
 import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import { parseVerificationCheckDetails } from "./verification-details.js";
 import type {
+  HistoricalVerificationInputIdentity,
+  VerificationContextIdentity,
+  VerificationEnvironmentIdentity,
+  VerificationEnvironment,
+  VerificationEvidenceIdentity,
+  VerificationEvidenceReference,
+  VerificationExecutionIdentity,
+  VerificationImplementationIdentity,
+  VerificationInputIdentity,
+  VerificationInputIdentityV5,
+} from "./task-verification-input-types.js";
+import type { NativeTaskIdentity } from "./native-task-identity.js";
+import {
+  currentVerificationEnvironment,
+  verificationCommandIdentity,
+  verificationInputDigest,
+  verificationInputSha256 as sha256,
+  verificationInputV5Digest,
+} from "./task-verification-input-digests.js";
+import {
+  hashVerificationEvidenceFilesystemEntry,
+  isPathWithinRoot,
+} from "./task-verification-evidence-filesystem.js";
+export {
+  verificationInputDigest,
+  verificationInputInvalidationReason,
+  verificationInputV5Digest,
+} from "./task-verification-input-digests.js";
+export type {
   VerificationEnvironment,
   VerificationEvidenceReference,
   VerificationExecutionIdentity,
   VerificationInputIdentity,
-} from "./task-verification-input-types.js";
-export type {
-  VerificationEnvironment,
-  VerificationEvidenceReference,
-  VerificationInputIdentity,
+  VerificationInputIdentityV5,
 } from "./task-verification-input-types.js";
 
 const VERIFICATION_CONTEXT_BASENAMES = new Set([
@@ -72,10 +95,6 @@ const VERIFICATION_TOOL_CONTEXT_BASENAMES = new Set([
 const CONFIG_FILE_PATTERN = /(?:^|\.)(?:config|rc)(?:\.|$)/u;
 const EVIDENCE_PATH_PATTERN =
   /(?:^|[\s("'`])((?:\.{1,2}\/|\.?[A-Za-z0-9_@+-]+\/)[^\s|,;)\]}'"`]+)/gu;
-
-function sha256(value: string | Buffer): `sha256:${string}` {
-  return `sha256:${createHash("sha256").update(value).digest("hex")}`;
-}
 
 function normalizeWorkflowDir(value: string): string {
   return value.replaceAll("\\", "/").replaceAll(/\/+$/gu, "");
@@ -137,68 +156,21 @@ function verificationEvidencePaths(details: string): {
   );
 }
 
-function isWithinRoot(root: string, candidate: string): boolean {
-  const relative = path.relative(path.resolve(root), path.resolve(candidate));
-  return relative === "" || (!relative.startsWith("..") && !path.isAbsolute(relative));
-}
-
-async function hashFilesystemEntry(opts: {
-  gitRoot: string;
-  absolutePath: string;
-  ancestors?: ReadonlySet<string>;
-}): Promise<`sha256:${string}` | null> {
-  const entryKey = path.resolve(opts.absolutePath);
-  if (opts.ancestors?.has(entryKey)) return sha256(`cycle\0${entryKey}`);
-  const ancestors = new Set(opts.ancestors);
-  ancestors.add(entryKey);
-  const stat = await lstat(opts.absolutePath).catch(() => null);
-  if (!stat) return null;
-  if (stat.isSymbolicLink()) {
-    const [link, resolved] = await Promise.all([
-      readlink(opts.absolutePath),
-      realpath(opts.absolutePath).catch(() => null),
-    ]);
-    if (!resolved || !isWithinRoot(opts.gitRoot, resolved)) return null;
-    const targetDigest = await hashFilesystemEntry({
-      gitRoot: opts.gitRoot,
-      absolutePath: resolved,
-      ancestors,
-    });
-    return targetDigest ? sha256(`symlink\0${link}\0${targetDigest}`) : null;
-  }
-  if (stat.isFile()) return sha256(await readFile(opts.absolutePath));
-  if (!stat.isDirectory()) return sha256(`unsupported\0${String(stat.mode)}`);
-  const entries = await readdir(opts.absolutePath, { withFileTypes: true });
-  const identities = await Promise.all(
-    entries
-      .toSorted((left, right) => left.name.localeCompare(right.name))
-      .map(async (entry) => ({
-        name: entry.name,
-        digest: await hashFilesystemEntry({
-          gitRoot: opts.gitRoot,
-          absolutePath: path.join(opts.absolutePath, entry.name),
-          ancestors,
-        }),
-      })),
-  );
-  return sha256(JSON.stringify(canonicalizeJson(identities)));
-}
-
 async function verificationEvidence(opts: {
   gitRoot: string;
   targetSha: string;
   evidenceRef?: string | null;
   details?: string | null;
-}): Promise<VerificationInputIdentity["evidence"]> {
+}): Promise<VerificationEvidenceIdentity> {
   const details = opts.details?.trim() ?? "";
   const references = await Promise.all(
     verificationEvidencePaths(details).map(
       async (reference): Promise<VerificationEvidenceReference> => {
         const absolutePath = path.resolve(opts.gitRoot, reference.path);
-        if (!isWithinRoot(opts.gitRoot, absolutePath)) {
+        if (!isPathWithinRoot(opts.gitRoot, absolutePath)) {
           return { ...reference, source: "unsafe", digest: sha256("unsafe") };
         }
-        const filesystemDigest = await hashFilesystemEntry({
+        const filesystemDigest = await hashVerificationEvidenceFilesystemEntry({
           gitRoot: opts.gitRoot,
           absolutePath,
         });
@@ -274,7 +246,7 @@ function isWorkflowArtifact(opts: { path: string; workflowDir: string }): boolea
 async function verificationContext(opts: {
   gitRoot: string;
   targetSha: string;
-}): Promise<VerificationInputIdentity["context"]> {
+}): Promise<VerificationContextIdentity> {
   const treeEntries = await trackedTreeEntries(opts);
   const entries = treeEntries.filter((entry) => contextPath(entry.path));
   return {
@@ -291,7 +263,7 @@ async function implementationIdentity(opts: {
   workflowMode: "direct" | "branch_pr";
   baseRef?: string | null;
   baseSha?: string | null;
-}): Promise<VerificationInputIdentity["implementation"]> {
+}): Promise<VerificationImplementationIdentity> {
   if (opts.workflowMode === "branch_pr") {
     const base =
       opts.baseRef ??
@@ -366,41 +338,6 @@ async function implementationIdentity(opts: {
   };
 }
 
-function currentVerificationEnvironment(): VerificationEnvironment {
-  return {
-    platform: process.platform,
-    architecture: process.arch,
-    node_major: process.versions.node.split(".")[0] ?? process.versions.node,
-    bun_major: process.versions.bun?.split(".")[0] ?? null,
-  };
-}
-
-export function verificationInputDigest(opts: {
-  executionDigest?: string | null;
-  implementationDigest: string;
-  verifyStepsDigest: string;
-  verificationContractDigest?: string | null;
-  contextDigest: string;
-  environmentDigest: string;
-  evidenceDigest: string;
-}): `sha256:${string}` {
-  return sha256(
-    JSON.stringify(
-      canonicalizeJson({
-        ...(opts.executionDigest ? { execution_digest: opts.executionDigest } : {}),
-        implementation_digest: opts.implementationDigest,
-        verify_steps_digest: opts.verifyStepsDigest,
-        ...(opts.verificationContractDigest
-          ? { verification_contract_digest: opts.verificationContractDigest }
-          : {}),
-        context_digest: opts.contextDigest,
-        environment_digest: opts.environmentDigest,
-        evidence_digest: opts.evidenceDigest,
-      }),
-    ),
-  );
-}
-
 function verificationExecutionIdentity(
   execution: TaskExecutionContext,
 ): VerificationExecutionIdentity {
@@ -435,6 +372,8 @@ type VerificationInputIdentityBaseOptions = {
   environment?: VerificationEnvironment;
   verificationDetails?: string | null;
   evidenceRef?: string | null;
+  nativeIdentity?: NativeTaskIdentity | null;
+  requiredCheckIds?: readonly string[];
 };
 
 async function resolveVerificationInputIdentityInternal(
@@ -471,12 +410,86 @@ async function resolveVerificationInputIdentityInternal(
     }),
   ]);
   const runtime = opts.environment ?? currentVerificationEnvironment();
-  const environment = {
+  const environment: VerificationEnvironmentIdentity = {
     digest: sha256(JSON.stringify(canonicalizeJson(runtime))),
     runtime,
   };
   const verifyStepsDigest = sha256(opts.verifySteps.trim());
   const verificationContractDigest = opts.verificationContractDigest?.trim() ?? null;
+  if (
+    execution &&
+    opts.nativeIdentity &&
+    verificationContractDigest &&
+    /^sha256:[a-f0-9]{64}$/u.test(verificationContractDigest)
+  ) {
+    if (opts.nativeIdentity.task_id !== execution.primary_task_id) {
+      throw new Error("Native verification identity task must match execution.primary_task_id.");
+    }
+    const commands = verificationCommandIdentity(opts.verificationDetails);
+    const concurrencyIdentity = {
+      execution,
+      task: opts.nativeIdentity,
+    };
+    const concurrency = {
+      digest: sha256(
+        JSON.stringify(
+          canonicalizeJson({
+            execution_digest: execution.digest,
+            task_digest: opts.nativeIdentity.digest,
+          }),
+        ),
+      ),
+      ...concurrencyIdentity,
+    };
+    const checkedInputIdentity = {
+      implementation,
+      commands,
+      context,
+      environment,
+      evidence,
+    };
+    const checked_input = {
+      digest: sha256(
+        JSON.stringify(
+          canonicalizeJson({
+            implementation_digest: implementation.digest,
+            commands_digest: commands.digest,
+            context_digest: context.digest,
+            environment_digest: environment.digest,
+            evidence_digest: evidence.digest,
+          }),
+        ),
+      ),
+      ...checkedInputIdentity,
+    };
+    const requiredCheckIds = [
+      ...new Set(opts.requiredCheckIds ?? opts.nativeIdentity.checks.required_check_ids),
+    ].toSorted();
+    const obligationIdentity = {
+      verify_steps_digest: verifyStepsDigest,
+      verification_contract_digest: verificationContractDigest as `sha256:${string}`,
+      required_check_ids: requiredCheckIds,
+    };
+    const obligations = {
+      digest: sha256(JSON.stringify(canonicalizeJson(obligationIdentity))),
+      ...obligationIdentity,
+    };
+    const current: Omit<VerificationInputIdentityV5, "digest"> = {
+      schema_version: 5,
+      kind: "task_verification_input",
+      concurrency,
+      checked_input,
+      obligations,
+    };
+    return {
+      ...current,
+      digest: verificationInputV5Digest({
+        concurrencyDigest: concurrency.digest,
+        checkedInputDigest: checked_input.digest,
+        obligationsDigest: obligations.digest,
+      }),
+    };
+  }
   const digest = verificationInputDigest({
     executionDigest: execution?.digest,
     implementationDigest: implementation.digest,
@@ -486,7 +499,7 @@ async function resolveVerificationInputIdentityInternal(
     environmentDigest: environment.digest,
     evidenceDigest: evidence.digest,
   });
-  return {
+  const historical: HistoricalVerificationInputIdentity = {
     schema_version: execution ? 4 : verificationContractDigest ? 3 : 2,
     kind: "task_verification_input",
     ...(execution ? { execution } : {}),
@@ -500,6 +513,7 @@ async function resolveVerificationInputIdentityInternal(
     evidence,
     digest,
   };
+  return historical;
 }
 
 export function resolveVerificationInputIdentity(
@@ -511,50 +525,25 @@ export function resolveVerificationInputIdentity(
   });
 }
 
+/** Read-only compatibility for recomputing a historical v4 input under v4 semantics. */
+export function resolveHistoricalVerificationInputV4Identity(
+  opts: VerificationInputIdentityBaseOptions & { execution: TaskExecutionContext },
+): Promise<HistoricalVerificationInputIdentity | null> {
+  return resolveVerificationInputIdentityInternal({
+    ...opts,
+    nativeIdentity: null,
+    workflowMode: opts.execution.selected_mode,
+  }) as Promise<HistoricalVerificationInputIdentity | null>;
+}
+
 /** Read-only compatibility for auditing pre-v4 records. New lifecycle code must use execution. */
 export function resolveLegacyVerificationInputIdentity(
   opts: VerificationInputIdentityBaseOptions & {
     workflowMode: "direct" | "branch_pr";
     baseRef?: string | null;
   },
-): Promise<VerificationInputIdentity | null> {
-  return resolveVerificationInputIdentityInternal(opts);
-}
-
-export function verificationInputInvalidationReason(opts: {
-  recorded: VerificationInputIdentity;
-  current: VerificationInputIdentity;
-}):
-  | "verification_current"
-  | "verification_route_context_changed"
-  | "verification_implementation_changed"
-  | "verification_steps_changed"
-  | "verification_contract_changed"
-  | "verification_context_changed"
-  | "verification_environment_changed"
-  | "verification_evidence_changed"
-  | "verification_input_changed" {
-  if (opts.recorded.digest === opts.current.digest) return "verification_current";
-  if (opts.recorded.execution?.digest !== opts.current.execution?.digest) {
-    return "verification_route_context_changed";
-  }
-  if (opts.recorded.implementation.digest !== opts.current.implementation.digest) {
-    return "verification_implementation_changed";
-  }
-  if (opts.recorded.verify_steps_digest !== opts.current.verify_steps_digest) {
-    return "verification_steps_changed";
-  }
-  if (opts.recorded.verification_contract_digest !== opts.current.verification_contract_digest) {
-    return "verification_contract_changed";
-  }
-  if (opts.recorded.context.digest !== opts.current.context.digest) {
-    return "verification_context_changed";
-  }
-  if (opts.recorded.environment.digest !== opts.current.environment.digest) {
-    return "verification_environment_changed";
-  }
-  if (opts.recorded.evidence.digest !== opts.current.evidence.digest) {
-    return "verification_evidence_changed";
-  }
-  return "verification_input_changed";
+): Promise<HistoricalVerificationInputIdentity | null> {
+  return resolveVerificationInputIdentityInternal(
+    opts,
+  ) as Promise<HistoricalVerificationInputIdentity | null>;
 }

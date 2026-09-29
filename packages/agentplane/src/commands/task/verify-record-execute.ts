@@ -1,9 +1,14 @@
 import { createHash } from "node:crypto";
-import { mkdir, readFile, rm } from "node:fs/promises";
+import { mkdir, rm } from "node:fs/promises";
 import path from "node:path";
 import { gitRevParse } from "@agentplaneorg/core/git";
 
-import { canonicalizeJson, taskExecutionBaseFromExtensions } from "@agentplaneorg/core/tasks";
+import {
+  canonicalizeJson,
+  taskCentricAggregateFromExtensions,
+  taskExecutionBaseFromExtensions,
+  withTaskCentricAggregate,
+} from "@agentplaneorg/core/tasks";
 
 import { mapBackendError } from "../../cli/error-map.js";
 import { backendNotSupportedMessage, infoMessage, successMessage } from "../../cli/output.js";
@@ -14,10 +19,6 @@ import {
   inspectTaskIncidents,
   renderIncidentCollectionPlanOutcome,
 } from "../incidents/shared.js";
-import { ensurePrArtifactsSynced } from "../pr/internal/sync.js";
-import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.js";
-import { buildVerifiedPrMeta, parsePrMeta } from "../shared/pr-meta.js";
-import { resolvePrPaths } from "../pr/internal/pr-paths.js";
 import { normalizeBranchPrBatchTaskIds } from "../pr/internal/sync-batch-ownership.js";
 import {
   recordedTaskImplementationCommitSha,
@@ -33,6 +34,11 @@ import {
 import { applyTaskMutation } from "../shared/task-mutation.js";
 import { setTaskFieldsIntent } from "../shared/task-store.js";
 import { resolveVerificationInputIdentity } from "../shared/task-verification-input.js";
+import {
+  buildNativeQualityReviewIdentity,
+  resolveNativeTaskIdentity,
+} from "../shared/native-task-identity.js";
+import { evaluatorAcceptanceCriteria } from "../evaluator/evaluator-review-shared.js";
 import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
 import {
   loadTaskCommandContext,
@@ -48,8 +54,7 @@ import {
 } from "./shared.js";
 import { resolveVerifyRecordInput } from "./verify-record-input.js";
 import {
-  resolveObservedVerificationChangedPaths,
-  resolveInheritedVerificationPaths,
+  resolveObservedVerificationChangeSet,
   reconcileVerificationExecutionContract,
 } from "./verify-record-observed-changes.js";
 import { isQualificationTask, writeQualificationPacket } from "./qualification-packet.js";
@@ -62,9 +67,12 @@ import type {
   VerifyStructuredFindingInput,
 } from "./verify-record.types.js";
 import {
-  appendBlueprintSnapshotReference,
+  appendNativeTaskIdentityReference,
   appendDecisionContextReference,
 } from "./verify-record-references.js";
+import { syncRecordedVerificationArtifacts } from "./verify-record-pr-artifacts.js";
+
+export { syncRecordedVerificationArtifacts } from "./verify-record-pr-artifacts.js";
 
 function verificationStateToQualityReviewState(state: string): "pass" | "rework" | "blocked" {
   if (state === "ok") return "pass";
@@ -106,6 +114,7 @@ async function recordVerificationResult(opts: {
   command: ExecuteVerifyRecordCommandOptions["command"];
   verificationSnapshot?: ExecuteVerifyRecordCommandOptions["verificationSnapshot"];
   beforePersist?: ExecuteVerifyRecordCommandOptions["beforePersist"];
+  allowCanonicalProjection?: ExecuteVerifyRecordCommandOptions["allowCanonicalProjection"];
 }): Promise<void> {
   const initialCtx =
     opts.ctx ??
@@ -138,6 +147,7 @@ async function recordVerificationResult(opts: {
       policyAction: "task_verify",
       phase: "verify",
       beforePersist: opts.beforePersist,
+      allowCanonicalProjection: opts.allowCanonicalProjection,
       build: async (current) => {
         const baseExecutionContract =
           opts.verificationSnapshot?.execution_contract ??
@@ -153,12 +163,14 @@ async function recordVerificationResult(opts: {
         const doc =
           (typeof current.doc === "string" ? current.doc : "") ||
           (await backend.getTaskDoc!(current.id));
-        assertVerifyStepsFilled({
-          taskId: current.id,
-          sectionText: extractDocSection(doc, "Verify Steps"),
-          action: "record verification",
-          guidance: "fill it before running `agentplane verify ...`",
-        });
+        if (!opts.allowCanonicalProjection) {
+          assertVerifyStepsFilled({
+            taskId: current.id,
+            sectionText: extractDocSection(doc, "Verify Steps"),
+            action: "record verification",
+            guidance: "fill it before running `agentplane verify ...`",
+          });
+        }
         const verificationScope = extractDocSection(doc, "Verify Steps")?.trim() ?? "";
         const batchTaskIds = normalizeBranchPrBatchTaskIds(current, current.id);
         const qualificationDependencies = isQualificationTask(current)
@@ -187,29 +199,21 @@ async function recordVerificationResult(opts: {
               current.quality_review?.evaluated_sha ?? recordedTaskImplementationCommitSha(current),
             workflowMode,
           }));
-        const observedChangedPaths =
-          opts.verificationSnapshot?.changed_paths ??
-          (await resolveObservedVerificationChangedPaths({
-            ctx,
-            evaluatedSha,
-            taskId: current.id,
-            artifactTaskIds: qualityReviewTaskIds,
-            execution: taskCommand.execution,
-          }));
-        const inheritedPaths =
-          opts.verificationSnapshot?.inherited_paths ??
-          (await resolveInheritedVerificationPaths({
-            ctx,
-            evaluatedSha,
-            taskId: current.id,
-            artifactTaskIds: qualityReviewTaskIds,
-            execution: taskCommand.execution,
-            changed_paths: observedChangedPaths,
-          }));
+        const observedChanges = await resolveObservedVerificationChangeSet({
+          ctx,
+          evaluatedSha,
+          task: current,
+          artifactTaskIds: qualityReviewTaskIds,
+          execution: taskCommand.execution,
+          snapshot: opts.verificationSnapshot,
+        });
+        const observedChangedPaths = observedChanges.changed_paths;
+        const inheritedPaths = observedChanges.inherited_paths;
         const observedExecutionContract = reconcileVerificationExecutionContract({
           contract: baseExecutionContract,
           changed_paths: observedChangedPaths,
           inherited_paths: inheritedPaths,
+          observed_repository_effects: observedChanges.repository_effects,
         });
         const contractTask = { ...current, execution_contract: observedExecutionContract };
         const parsedDetails = parseVerificationCheckDetails(opts.details);
@@ -285,6 +289,8 @@ async function recordVerificationResult(opts: {
           verifySteps: verificationScope,
           verificationContractDigest:
             observedExecutionContract.verification.contract?.digest ?? null,
+          nativeIdentity: resolveNativeTaskIdentity(contractTask),
+          requiredCheckIds: contractCoverage.requiredChecks,
           execution: verificationExecutionContext,
           verificationDetails: opts.details,
         });
@@ -365,7 +371,7 @@ async function recordVerificationResult(opts: {
           note: opts.note,
           state: opts.state,
           details: await appendDecisionContextReference(
-            await appendBlueprintSnapshotReference(opts.details, { ctx, task: current }),
+            appendNativeTaskIdentityReference(opts.details, { task: current }),
             {
               ctx,
               cwd: opts.cwd,
@@ -394,7 +400,7 @@ async function recordVerificationResult(opts: {
           previousExecutionBase.base_ref === verificationExecutionContext.base_ref &&
           previousExecutionBase.base_sha === verificationExecutionContext.base_sha &&
           previousExecutionBase.source !== "legacy";
-        const nextExtensions = {
+        let nextExtensions: Record<string, unknown> = {
           ...current.extensions,
           task_execution_context: {
             schema_version: 1,
@@ -407,6 +413,13 @@ async function recordVerificationResult(opts: {
         };
         if (opts.state !== "ok") {
           Reflect.deleteProperty(nextExtensions, "implementation_commit");
+          const aggregate = taskCentricAggregateFromExtensions(nextExtensions);
+          if (aggregate?.lifecycle === "COMPLETED") {
+            nextExtensions = withTaskCentricAggregate(nextExtensions, {
+              ...aggregate,
+              lifecycle: "ACTIVE",
+            });
+          }
         }
         const reconciledContract = reconcileVerificationExecutionContract({
           contract: {
@@ -421,6 +434,7 @@ async function recordVerificationResult(opts: {
           },
           changed_paths: observedChangedPaths,
           inherited_paths: inheritedPaths,
+          observed_repository_effects: observedChanges.repository_effects,
           verification_results: verificationResults,
         });
         intents.unshift(
@@ -430,9 +444,23 @@ async function recordVerificationResult(opts: {
           }),
         );
         if (opts.by === "EVALUATOR") {
-          const snapshot = await checkTaskBlueprintSnapshotDrift({ ctx, task: current }).catch(
-            () => null,
-          );
+          const nativeIdentity = resolveNativeTaskIdentity({
+            ...current,
+            execution_contract: reconciledContract,
+          });
+          if (!nativeIdentity) {
+            throw new CliError({
+              code: "E_VALIDATION",
+              message: `EVALUATOR verification requires a canonical Task Kernel identity for task ${current.id}.`,
+            });
+          }
+          const reviewIdentity = buildNativeQualityReviewIdentity({
+            task: { ...current, execution_contract: reconciledContract },
+            native_identity: nativeIdentity,
+            verification_input_digest: verificationInput?.digest ?? null,
+            acceptance_criteria: evaluatorAcceptanceCriteria(current),
+            implementation_sha: evaluatedSha,
+          });
           const readmePath = path.join(
             resolved.gitRoot,
             config.paths.workflow_dir,
@@ -449,11 +477,8 @@ async function recordVerificationResult(opts: {
                 updated_by: opts.by,
                 note: opts.note,
                 evaluated_sha: evaluatedSha,
-                blueprint_digest: snapshot?.current.digest ?? null,
-                evidence_refs: [
-                  path.relative(resolved.gitRoot, readmePath),
-                  ...(snapshot?.path ? [snapshot.path] : []),
-                ],
+                review_identity_digest: reviewIdentity?.digest ?? null,
+                evidence_refs: [path.relative(resolved.gitRoot, readmePath)],
                 findings: opts.details ? [opts.details] : [],
               },
             }),
@@ -525,29 +550,6 @@ async function recordVerificationResult(opts: {
   }
 }
 
-export async function syncRecordedVerificationArtifacts(opts: {
-  ctx: CommandContext;
-  cwd: string;
-  rootOverride?: string;
-  taskId: string;
-  by: string;
-  at: string;
-  state: VerifyState;
-}): Promise<void> {
-  const syncResult = await ensurePrArtifactsSynced({
-    ...opts,
-    author: opts.by,
-    workflowMode: "branch_pr",
-  });
-  if (!syncResult) return;
-  const { metaPath } = await resolvePrPaths(opts);
-  const meta = parsePrMeta(await readFile(metaPath, "utf8"), opts.taskId);
-  await writeJsonStableIfChanged(
-    metaPath,
-    buildVerifiedPrMeta({ meta, at: opts.at, state: opts.state === "ok" ? "pass" : "fail" }),
-  );
-}
-
 export async function executeVerifyRecordCommand(
   opts: ExecuteVerifyRecordCommandOptions,
 ): Promise<number> {
@@ -574,6 +576,7 @@ export async function executeVerifyRecordCommand(
       command: opts.command,
       verificationSnapshot: opts.verificationSnapshot,
       beforePersist: opts.beforePersist,
+      allowCanonicalProjection: opts.allowCanonicalProjection,
     });
     return 0;
   } catch (err) {

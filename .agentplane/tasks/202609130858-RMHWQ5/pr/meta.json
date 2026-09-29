@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202609130858-RMHWQ5/add-an-explicit-user-approved-supervisor-budget",
+  "created_at": "2026-09-13T09:03:04.106Z",
+  "diffstat_sha256": "sha256:6aa85c73664b415aa1d90ed197d7d8e9374db228f9d9ed5ead2c6e2823494a3e",
+  "last_verified_at": "2026-09-13T15:01:54.090Z",
+  "last_verified_diffstat_sha256": "sha256:6aa85c73664b415aa1d90ed197d7d8e9374db228f9d9ed5ead2c6e2823494a3e",
+  "pr_number": 5945,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/5945",
+  "pre_merge_closure": {
+    "basis_commit": "5875b3496e376862aa5f667c576956f640db4107",
+    "branch": "task/202609130858-RMHWQ5/add-an-explicit-user-approved-supervisor-budget",
+    "pr_number": 5945,
+    "recorded_at": "2026-09-13T15:04:28.170Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202609130858-RMHWQ5",
+  "updated_at": "2026-09-13T14:18:44.390Z",
+  "verify": {
+    "status": "pass"
+  }
+}

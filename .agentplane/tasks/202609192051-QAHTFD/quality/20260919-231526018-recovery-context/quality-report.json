@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202609192051-QAHTFD",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-19T23:15:26.347Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "Full test audit passed after removing redundant route coverage, restoring fail-closed workflow precedence, isolating qualification tests, and passing the complete local CI contract.",
+  "evaluated_sha": "acce882d4fcd1ee370bfb70945730f1a6db3e57d",
+  "review_identity_digest": "sha256:7c83e2b95a11529f70ab35867d8ad1a7fe50ac79be23bcb78da46b709d9d065a",
+  "findings": [
+    "No blocking correctness or coverage gap remains in the changed controller paths; the broad worktree route that masked five safety expectations was removed."
+  ],
+  "evidence_refs": [
+    "bun run ci:local:full passed on committed exact implementation tree 5f15085e11fc0cfdcef92821a3eb67564c09aa14",
+    "Focused controller suite: 120/120 passed",
+    "Route regression suite: 65/65 passed"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Hosted checks must still complete on the exact PR head before merge."
+  ]
+}

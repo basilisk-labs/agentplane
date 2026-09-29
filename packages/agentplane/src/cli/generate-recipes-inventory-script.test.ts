@@ -4,24 +4,17 @@ import path from "node:path";
 
 import { afterEach, describe, expect, it } from "vitest";
 
-type GitResolver = (cwd: string, args: string[]) => string;
 type ScriptModule = {
-  resolveCommonRepoRoot: (cwd?: string, resolveGit?: GitResolver) => string;
-  resolveRecipesSourceRoot: (cwd?: string, options?: { resolveGit?: GitResolver }) => string;
+  resolveRecipesSourceRoot: (
+    cwd?: string,
+    options?: { recipesSource?: string; env?: Record<string, string | undefined> },
+  ) => string;
 };
 
 const tempRoots: string[] = [];
 
 async function loadScriptModule(): Promise<ScriptModule> {
   return (await import("../../../../scripts/generate-recipes-inventory.mjs")) as ScriptModule;
-}
-
-function fakeGitResolver(repoRoot: string, commonDir = path.join(repoRoot, ".git")): GitResolver {
-  return (_cwd, args) => {
-    if (args[0] === "--show-toplevel") return repoRoot;
-    if (args[0] === "--git-common-dir") return commonDir;
-    throw new Error(`unexpected git rev-parse args: ${args.join(" ")}`);
-  };
 }
 
 async function makeTempRoot(prefix: string) {
@@ -39,39 +32,49 @@ afterEach(async () => {
 });
 
 describe("generate-recipes-inventory script", () => {
-  it("falls back to the common repo root when the task worktree lacks the recipes checkout", async () => {
+  it("uses an explicit external recipes checkout", async () => {
     const { resolveRecipesSourceRoot } = await loadScriptModule();
-    const repoRoot = await makeTempRoot("agentplane-recipes-source-");
     const worktreeRoot = await makeTempRoot("agentplane-recipes-worktree-");
-    await mkdir(path.join(repoRoot, "agentplane-recipes"), { recursive: true });
-    await writeFile(path.join(repoRoot, "agentplane-recipes", "index.json"), "{}\n", "utf8");
+    const recipesRoot = await makeTempRoot("agentplane-recipes-source-");
+    await mkdir(path.join(recipesRoot, "recipes"));
+    await writeFile(path.join(recipesRoot, "index.json"), "{}\n", "utf8");
 
-    expect(resolveRecipesSourceRoot(worktreeRoot, { resolveGit: fakeGitResolver(repoRoot) })).toBe(
-      repoRoot,
+    expect(resolveRecipesSourceRoot(worktreeRoot, { recipesSource: recipesRoot })).toBe(
+      recipesRoot,
     );
   });
 
-  it("prefers the current worktree when the recipes checkout exists locally", async () => {
+  it("resolves a relative source from the current worktree", async () => {
     const { resolveRecipesSourceRoot } = await loadScriptModule();
-    const repoRoot = await makeTempRoot("agentplane-recipes-source-");
     const worktreeRoot = await makeTempRoot("agentplane-recipes-worktree-");
-    await mkdir(path.join(repoRoot, "agentplane-recipes"), { recursive: true });
-    await writeFile(path.join(repoRoot, "agentplane-recipes", "index.json"), "{}\n", "utf8");
-    await mkdir(path.join(worktreeRoot, "agentplane-recipes"), { recursive: true });
-    await writeFile(path.join(worktreeRoot, "agentplane-recipes", "index.json"), "{}\n", "utf8");
+    const relativeSource = "external/recipes";
+    const recipesRoot = path.join(worktreeRoot, relativeSource);
+    await mkdir(path.join(recipesRoot, "recipes"), { recursive: true });
+    await writeFile(path.join(recipesRoot, "index.json"), "{}\n", "utf8");
 
-    expect(resolveRecipesSourceRoot(worktreeRoot, { resolveGit: fakeGitResolver(repoRoot) })).toBe(
-      worktreeRoot,
+    expect(
+      resolveRecipesSourceRoot(worktreeRoot, {
+        env: { AGENTPLANE_RECIPES_SOURCE: relativeSource },
+      }),
+    ).toBe(recipesRoot);
+  });
+
+  it("requires an explicit recipes source", async () => {
+    const { resolveRecipesSourceRoot } = await loadScriptModule();
+    const worktreeRoot = await makeTempRoot("agentplane-recipes-worktree-");
+
+    expect(() => resolveRecipesSourceRoot(worktreeRoot, { env: {} })).toThrow(
+      /recipes source is required/,
     );
   });
 
-  it("surfaces a precise error when neither the worktree nor the common repo root has recipes", async () => {
+  it("surfaces a precise error for an invalid external checkout", async () => {
     const { resolveRecipesSourceRoot } = await loadScriptModule();
-    const repoRoot = await makeTempRoot("agentplane-recipes-source-");
     const worktreeRoot = await makeTempRoot("agentplane-recipes-worktree-");
+    const recipesRoot = await makeTempRoot("agentplane-recipes-source-");
 
-    expect(() =>
-      resolveRecipesSourceRoot(worktreeRoot, { resolveGit: fakeGitResolver(repoRoot) }),
-    ).toThrow(/agentplane-recipes\/index\.json not found/);
+    expect(() => resolveRecipesSourceRoot(worktreeRoot, { recipesSource: recipesRoot })).toThrow(
+      /invalid recipes source.*missing index\.json, recipes/,
+    );
   });
 });

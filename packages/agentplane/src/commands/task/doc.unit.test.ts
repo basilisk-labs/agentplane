@@ -62,6 +62,17 @@ function mkCtxWithOptionalVerifySteps(overrides?: Partial<CommandContext>): Comm
 }
 
 describe("task doc commands (unit)", () => {
+  it("requires command-bearing document text to use --file", async () => {
+    const { taskDocSetSpec } = await import("./doc-set.command.js");
+    expect(() =>
+      taskDocSetSpec.validateRaw?.({
+        args: { "task-id": "T-1" },
+        opts: { section: "Verify Steps", text: "Run `node test.js`" },
+        extra: [],
+      }),
+    ).toThrow(/use --file for task document content/u);
+  });
+
   beforeEach(() => {
     mocks.loadCommandContext.mockReset();
     mocks.loadTaskFromContext.mockReset();

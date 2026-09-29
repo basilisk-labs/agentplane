@@ -9,6 +9,7 @@ import { describe, expect, it } from "vitest";
 
 import { defaultConfig } from "@agentplaneorg/core/config";
 import { loadTaskBackend } from "../backends/task-backend.js";
+import { materializeLegacyDrainIdentityFixture } from "../commands/shared/native-task-identity-fixture.js";
 import { createIncidentRegistrySkeleton } from "../runtime/incidents/index.js";
 
 import { runCli } from "./run-cli.js";
@@ -165,6 +166,8 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
           ].join("\n"),
         ],
       ] as const) {
+        const sectionFile = path.join(root, ".git", "hosted-close-section.md");
+        await writeFile(sectionFile, text, "utf8");
         const code = await runCliSilent([
           "task",
           "doc",
@@ -172,8 +175,8 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
           taskId,
           "--section",
           section,
-          "--text",
-          text,
+          "--file",
+          sectionFile,
           "--root",
           root,
         ]);
@@ -194,6 +197,11 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
       ]);
       expect(startCode).toBe(0);
       await recordVerificationOk(root, taskId);
+      await materializeLegacyDrainIdentityFixture({
+        root,
+        task_id: taskId,
+        work_items_completed: true,
+      });
 
       const prOpenCode = await runCliSilent([
         "pr",
@@ -318,6 +326,8 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
       const acr = JSON.parse(acrRaw) as { extensions?: Record<string, unknown> };
       expect(acr.extensions?.["agentplane.token-usage"]).toBeDefined();
       expect(acr.extensions?.["agentplane.token_usage"]).toBeUndefined();
+      expect(acr.extensions?.["agentplane.native-identity"]).toBeDefined();
+      expect(acr.extensions?.["agentplane.native_identity"]).toBeUndefined();
       const { stdout: trackedAcrStdout } = await execFileAsync(
         "git",
         ["ls-files", "--", path.relative(root, acrPath)],
@@ -430,6 +440,11 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
         ]);
         expect(startCode).toBe(0);
         await recordVerificationOk(root, taskId);
+        await materializeLegacyDrainIdentityFixture({
+          root,
+          task_id: taskId,
+          work_items_completed: true,
+        });
       }
 
       const branch = `task/${primaryTaskId}/hosted-close-batch`;
@@ -593,6 +608,11 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
       ]),
     ).toBe(0);
     await recordVerificationOk(root, taskId);
+    await materializeLegacyDrainIdentityFixture({
+      root,
+      task_id: taskId,
+      work_items_completed: true,
+    });
 
     expect(
       await runCliSilent([
@@ -774,6 +794,11 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
       ]),
     ).toBe(0);
     await recordVerificationOk(root, taskId);
+    await materializeLegacyDrainIdentityFixture({
+      root,
+      task_id: taskId,
+      work_items_completed: true,
+    });
 
     expect(
       await runCliSilent([

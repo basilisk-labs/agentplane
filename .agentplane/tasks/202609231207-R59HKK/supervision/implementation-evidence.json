@@ -1,0 +1,84 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 940209a800dedc5b27c382a2642dff316b30a8fc..3243d26a28119f73b05e2e6e5036d8a74a97cb54",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 940209a800dedc5b27c382a2642dff316b30a8fc..3243d26a28119f73b05e2e6e5036d8a74a97cb54",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202609231207-R59HKK/README.md",
+        "A\t.agentplane/tasks/202609231207-R59HKK/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202609231207-R59HKK/pr/github-body.md",
+        "A\t.agentplane/tasks/202609231207-R59HKK/pr/github-title.txt",
+        "A\t.agentplane/tasks/202609231207-R59HKK/pr/meta.json",
+        "A\t.agentplane/tasks/202609231207-R59HKK/pr/review.md",
+        "A\t.agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/4340c69a72ea01faa72dcf87e07dfff35ea84123952ef257b9037259c0405a62.json",
+        "A\t.agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+        "M\tpackages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts",
+        "M\tpackages/agentplane/src/commands/evaluator/evaluator-verification-contract.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/workflow-step-branch.ts",
+        "M\tpackages/agentplane/src/commands/shared/workflow-step-factory-branch.ts",
+        "M\tpackages/agentplane/src/commands/shared/workflow-step-factory.ts",
+        "A\tpackages/agentplane/src/commands/shared/workflow-step-worktree-priority.test.ts",
+        "M\tpackages/agentplane/src/commands/task/advance-task-step.ts",
+        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor-evaluator-episode.ts",
+        "M\tpackages/agentplane/src/commands/task/branch-task-supervisor.ts",
+        "A\tpackages/agentplane/src/commands/task/direct-task-supervisor-evaluator.test.ts",
+        "M\tpackages/agentplane/src/commands/task/direct-task-supervisor-evaluator.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-provider-effect-coordinator.ts",
+        "M\tpackages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "940209a800dedc5b27c382a2642dff316b30a8fc",
+  "implementation_commit": "3243d26a28119f73b05e2e6e5036d8a74a97cb54",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      "?? .agentplane/tasks/202609231207-R59HKK/README.md",
+      "?? .agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/4340c69a72ea01faa72dcf87e07dfff35ea84123952ef257b9037259c0405a62.json",
+      "?? .agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609231207-R59HKK/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/4340c69a72ea01faa72dcf87e07dfff35ea84123952ef257b9037259c0405a62.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      "?? .agentplane/tasks/202609231207-R59HKK/README.md",
+      "?? .agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/4340c69a72ea01faa72dcf87e07dfff35ea84123952ef257b9037259c0405a62.json",
+      "?? .agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609231207-R59HKK"
+}

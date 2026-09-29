@@ -101,6 +101,7 @@ export default defineConfig({
   test: {
     include: ["packages/**/src/**/*.test.ts"],
     environment: "node",
+    setupFiles: [path.join(__dirname, "packages/testkit/src/vitest-temp-root.setup.ts")],
     // Many integration-style tests interact with git and the filesystem. Coverage adds
     // non-trivial overhead, so keep a higher default timeout to avoid CI flakiness.
     testTimeout: 30_000,

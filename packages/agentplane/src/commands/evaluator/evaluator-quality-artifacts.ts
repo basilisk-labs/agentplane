@@ -16,7 +16,7 @@ export type EvaluatorQualityReport = {
   verdict: EvaluatorRunParsed["verdict"];
   summary: string;
   evaluated_sha: string | null;
-  blueprint_digest: string | null;
+  review_identity_digest: string;
   findings: string[];
   evidence_refs: string[];
   missing_tests: string[];
@@ -74,7 +74,7 @@ export function renderEvaluatorPrompt(opts: {
     "- recovery_reason: null unless blocked solely because current deterministic verification evidence is absent; use deterministic_evidence_gap only for that case",
     "",
     "Every findings[].evidence_refs[].path must be an exact path from work_order.evidence. Do not add fields, commands, patches, lifecycle transitions, or a verdict outside this JSON result.",
-    "The CLI validates the schema, frozen evidence digests, task revision, evaluated SHA, and blueprint before it records quality state.",
+    "The CLI validates the schema, frozen evidence digests, evaluated SHA, and the work order identity before it records quality state.",
     "",
     "## Evaluator module",
     "",

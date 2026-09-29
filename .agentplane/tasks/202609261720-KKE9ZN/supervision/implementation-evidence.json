@@ -1,0 +1,117 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 78914ea0f89749a7b2e94de5a0b74ed50de94b01..679f2a797368bbed591abdaa183ac469fe485d01",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 78914ea0f89749a7b2e94de5a0b74ed50de94b01..679f2a797368bbed591abdaa183ac469fe485d01",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202609261720-KKE9ZN/README.md",
+        "M\t.agentplane/tasks/202609261720-KKE9ZN/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202609261720-KKE9ZN/pr/github-body.md",
+        "M\t.agentplane/tasks/202609261720-KKE9ZN/pr/meta.json",
+        "M\t.agentplane/tasks/202609261720-KKE9ZN/pr/review.md",
+        "M\t.agentplane/tasks/202609261720-KKE9ZN/supervision/declared-checks.json",
+        "M\t.agentplane/tasks/202609261720-KKE9ZN/supervision/implementation-evidence.json",
+        "A\tdocs/releases/planning-0.7.12-handoff.md",
+        "M\tdocs/user/agent-bootstrap.generated.mdx",
+        "M\tdocs/user/cli-reference.generated.mdx",
+        "M\tdocs/user/task-lifecycle.mdx",
+        "M\tdocs/user/workflow.mdx",
+        "M\tpackages/agentplane/src/cli/bootstrap-guide.ts",
+        "M\tpackages/agentplane/src/cli/command-guide.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.task-advance.roadmap-supplied-plan.test.ts",
+        "M\tpackages/agentplane/src/cli/supplied-plan.testkit.ts",
+        "M\tpackages/agentplane/src/commands/task/create.command.ts",
+        "M\tscripts/checks/check-agent-onboarding-scenario.mjs"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "78914ea0f89749a7b2e94de5a0b74ed50de94b01",
+  "implementation_commit": "679f2a797368bbed591abdaa183ac469fe485d01",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      " M .agentplane/tasks/202609261720-KKE9ZN/README.md",
+      " M .agentplane/tasks/202609261720-KKE9ZN/supervision/declared-checks.json",
+      " M .agentplane/tasks/202609261720-KKE9ZN/supervision/implementation-evidence.json",
+      " M docs/user/cli-reference.generated.mdx",
+      " M docs/user/task-lifecycle.mdx",
+      " M docs/user/workflow.mdx",
+      " M packages/agentplane/src/cli/run-cli.core.task-advance.roadmap-supplied-plan.test.ts",
+      " M packages/agentplane/src/cli/supplied-plan.testkit.ts",
+      " M packages/agentplane/src/commands/task/create.command.ts"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202609261720-KKE9ZN/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202609261720-KKE9ZN/supervision/declared-checks.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202609261720-KKE9ZN/supervision/implementation-evidence.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M docs/user/cli-reference.generated.mdx"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M docs/user/task-lifecycle.mdx"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M docs/user/workflow.mdx"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/cli/run-cli.core.task-advance.roadmap-supplied-plan.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/cli/supplied-plan.testkit.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/create.command.ts"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M .agentplane/tasks/202609261720-KKE9ZN/README.md",
+      " M .agentplane/tasks/202609261720-KKE9ZN/supervision/declared-checks.json",
+      " M .agentplane/tasks/202609261720-KKE9ZN/supervision/implementation-evidence.json",
+      " M docs/user/cli-reference.generated.mdx",
+      " M docs/user/task-lifecycle.mdx",
+      " M docs/user/workflow.mdx",
+      " M packages/agentplane/src/cli/run-cli.core.task-advance.roadmap-supplied-plan.test.ts",
+      " M packages/agentplane/src/cli/supplied-plan.testkit.ts",
+      " M packages/agentplane/src/commands/task/create.command.ts"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609261720-KKE9ZN"
+}

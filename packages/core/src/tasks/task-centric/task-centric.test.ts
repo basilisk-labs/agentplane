@@ -1,38 +1,43 @@
-import { normalizeCompactTaskPlanProposal } from "./schema.js";
 import { describe, expect, it } from "vitest";
 
 import {
-  aggregateValidation,
-  applyPlanRefinement,
   approveTaskPlan,
-  assertAutonomousRepositoryCapabilities,
-  assertTaskTransition,
-  assertWorkItemTransition,
-  belongsInLiveTaskIndex,
-  classifyPlanChange,
   computeReadyWorkItems,
-  consumeRetryBudget,
-  createHumanDecisionTicket,
-  createLegacyTaskAggregate,
-  createRepositorySnapshot,
   createTaskPlanRevision,
-  decideConfirmation,
-  dispositionForOutcome,
-  evaluateTaskCompletion,
   materializeApprovedWorkItems,
-  parseTaskPlanProposal,
   reconcileReplacementPlanWorkItems,
-  recoveryDecisionForFailure,
   requiredOutputManifestsPresent,
   requiredOutputsSatisfied,
   resourceClaimsConflict,
-  taskCentricAggregateFromExtensions,
-  taskCentricDigest,
-  validateHumanDecisionAnswer,
   validateTaskPlanProposal,
   validateWorkItemGraph,
-  withTaskCentricAggregate,
   WorkItemScheduler,
+} from "./graph.js";
+import {
+  aggregateValidation,
+  assertTaskTransition,
+  assertWorkItemTransition,
+  evaluateTaskCompletion,
+} from "./lifecycle.js";
+import {
+  belongsInLiveTaskIndex,
+  createLegacyTaskAggregate,
+  taskCentricAggregateFromExtensions,
+  withTaskCentricAggregate,
+} from "./compatibility.js";
+import { createRepositorySnapshot, taskCentricDigest } from "./digest.js";
+import {
+  applyPlanRefinement,
+  classifyPlanChange,
+  consumeRetryBudget,
+  createHumanDecisionTicket,
+  decideConfirmation,
+  dispositionForOutcome,
+  recoveryDecisionForFailure,
+  validateHumanDecisionAnswer,
+} from "./policy.js";
+import { normalizeCompactTaskPlanProposal, parseTaskPlanProposal } from "./schema.js";
+import {
   type OutputManifest,
   type RepositorySnapshot,
   type TaskAggregate,
@@ -40,7 +45,7 @@ import {
   type ValidationPlan,
   type WorkItem,
   type WorkItemState,
-} from "./index.js";
+} from "./model.js";
 
 const NOW = "2026-08-22T00:00:00.000Z";
 
@@ -967,26 +972,5 @@ describe("task-centric domain", () => {
         "2026-01-01T00:00:00.000Z",
       ),
     ).toBe(false);
-  });
-
-  it("fails closed when repository capabilities cannot support autonomous execution", () => {
-    expect(() =>
-      assertAutonomousRepositoryCapabilities({
-        compare_and_swap: true,
-        atomic_transition_event: true,
-        atomic_plan_materialization: true,
-        idempotency_keys: true,
-        serialized: false,
-      }),
-    ).not.toThrow();
-    expect(() =>
-      assertAutonomousRepositoryCapabilities({
-        compare_and_swap: false,
-        atomic_transition_event: true,
-        atomic_plan_materialization: true,
-        idempotency_keys: true,
-        serialized: false,
-      }),
-    ).toThrow(/requires CAS/u);
   });
 });

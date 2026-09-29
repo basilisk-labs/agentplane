@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202609121424-T83XJA",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-13T02:24:49.031Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "0bf6c6336db55f3494d6cc05cbb261482a59da3b",
+  "blueprint_digest": "a0606595992db659882c934dc9224bb4e23891d77af067972ab0b021db13f8c1",
+  "findings": [
+    "No remaining code-quality blocker was found: unknown telemetry blocks further paid dispatch, managed recovery reads durable runner events, failed evaluator receipts recover their recorded charge, and affected fixtures now provide explicit accounting context."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/03e4d0deb5d600ca2d915d1462d553280d6152b484d5907d8ef28c8839a14371.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

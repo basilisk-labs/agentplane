@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202609121424-4BC7B3",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-13T22:33:35.444Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 4 typed finding(s).",
+  "evaluated_sha": "b0f5f5dc961455109b187b605b7d753e9b3266e2",
+  "blueprint_digest": "0ed189bbde8e28a6717a705c84b96f4f99c526db0386072d4b664c8114696afd",
+  "findings": [
+    "PASS: implementation commit b0f5f5dc961455109b187b605b7d753e9b3266e2 fixes the path parser defect, adds the focused regression, resolves lint, preserves immutable M01 evidence, and synchronizes generated documentation.",
+    "Supervisor evidence records all 11 declared checks as passed, including bun run ci:local:full, package checks, release-critical tests, efficiency checks, documentation checks, and git diff --check.",
+    "The implementation evidence records a clean repository after commit and no agentplane-roadmap-r2 path in the implementation commit.",
+    "Residual risk: A future M01 campaign needs a new preregistered identity because the launcher and oracle bytes changed after the immutable v1 and v2 campaigns."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609121424-4BC7B3/quality/objects/sha256/2072024e66e6094a60e57ea0984da6f9dd2235f59d0bdcbd08e5fadfa48650d3.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

@@ -10,10 +10,15 @@ const mocks = vi.hoisted(() => ({
   releaseLease: vi.fn(),
   startReady: vi.fn(),
   lifecycleExitCode: vi.fn(),
+  loadTask: vi.fn(),
+  prepareImplementation: vi.fn(),
+  recordExecutionContract: vi.fn(),
+  resolveExecutionContext: vi.fn(),
 }));
 
 vi.mock("../../runtime/task-execution-context/index.js", () => ({
   loadTaskCommandContext: mocks.loadTaskCommandContext,
+  resolveTaskExecutionContext: mocks.resolveExecutionContext,
 }));
 vi.mock("../../runtime/workspace-allocation/index.js", () => ({
   allocateTaskWorkspace: mocks.allocateWorkspace,
@@ -29,6 +34,14 @@ vi.mock("../../runner/usecases/task-run-lifecycle-result.js", () => ({
 vi.mock("./direct-task-finalization.js", () => ({
   readDirectRepositoryStatus: mocks.readStatus,
   readDirectTaskHead: mocks.readHead,
+}));
+vi.mock("../shared/task-backend.js", () => ({ loadTaskFromContext: mocks.loadTask }));
+vi.mock("./direct-task-supervisor-implementation.js", () => ({
+  prepareDirectImplementationEvidence: mocks.prepareImplementation,
+}));
+vi.mock("./task-execution-contract-observation.js", () => ({
+  observedExternalEffectsFromRunnerResult: () => [],
+  recordObservedTaskExecutionContract: mocks.recordExecutionContract,
 }));
 vi.mock("./start-ready.js", () => ({ cmdTaskStartReady: mocks.startReady }));
 

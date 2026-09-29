@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202609231207-R59HKK",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-23T16:34:45.974Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "human_review",
+  "summary": "EVALUATOR returned human_review with 1 typed finding(s).",
+  "evaluated_sha": "1dcaddc9c0d3b76fa4a724b7262a6ab32678dc77",
+  "review_identity_digest": "sha256:012676464dd990b05cbfb77279c46e30cbfd5c19e7af5610186d8e61b7cb6521",
+  "findings": [
+    "The frozen diff updates bun.lock workspace versions to 0.7.12-beta.1, outside the approved WorkItem scope. No approval for this expansion appears in the supplied evidence."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/96c42aaff1d9618c7f1893e1e504ab2d6d73cccf5a5fef605d2c0853ed931571.patch",
+    ".agentplane/tasks/202609231207-R59HKK/README.md",
+    ".agentplane/policy/dod.core.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Lockfile synchronization after the provider branch update is assumed to be authorized despite the frozen scope restriction."
+  ],
+  "residual_risks": [
+    "Do you approve the bun.lock synchronization to 0.7.12-beta.1 as an explicit scope expansion for this task?"
+  ]
+}

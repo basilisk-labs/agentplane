@@ -16,15 +16,15 @@ import {
   PREPARED_KNOWLEDGE_EXCERPT_ZOD_SCHEMA,
 } from "./knowledge-ref.js";
 import {
-  STATE_FINGERPRINT_POLICY_ZOD_SCHEMA,
-  STATE_FINGERPRINT_ZOD_SCHEMA,
+  STATE_FINGERPRINT_V2_POLICY_ZOD_SCHEMA,
+  STATE_FINGERPRINT_V2_ZOD_SCHEMA,
   evaluateStateFingerprintPrecondition,
   validateStateFingerprint,
   type StateFingerprint,
   type StateFingerprintPreconditionDiagnostic,
 } from "./state-fingerprint.js";
 import {
-  normalizeCompactTaskPlanProposal,
+  normalizeTaskPlanProposal,
   REPOSITORY_SNAPSHOT_ZOD_SCHEMA,
 } from "../tasks/task-centric/schema.js";
 import { taskCentricDigest } from "../tasks/task-centric/digest.js";
@@ -224,8 +224,8 @@ export const AGENT_WORK_ORDER_V2_ZOD_SCHEMA = z
     work_order_id: IDENTIFIER_SCHEMA,
     role: z.enum(AGENT_WORK_ORDER_ROLE_VALUES),
     task: AGENT_WORK_ORDER_TASK_ZOD_SCHEMA,
-    state_fingerprint: STATE_FINGERPRINT_ZOD_SCHEMA,
-    state_fingerprint_policy: STATE_FINGERPRINT_POLICY_ZOD_SCHEMA,
+    state_fingerprint: STATE_FINGERPRINT_V2_ZOD_SCHEMA,
+    state_fingerprint_policy: STATE_FINGERPRINT_V2_POLICY_ZOD_SCHEMA,
     authority: AGENT_WORK_ORDER_AUTHORITY_ZOD_SCHEMA,
     context_intent: AGENT_WORK_ORDER_CONTEXT_INTENT_ZOD_SCHEMA,
     planning_context: AGENT_WORK_ORDER_PLANNING_CONTEXT_ZOD_SCHEMA.optional(),
@@ -499,13 +499,28 @@ export function validateAgentSemanticResultForWorkOrder(opts: {
   format?: "semantic_payload_v1";
 }): AgentSemanticResult {
   const workOrder = validateAgentWorkOrderV2(opts.work_order);
+  const compactResult =
+    opts.format === "semantic_payload_v1" &&
+    opts.semantic_result !== null &&
+    typeof opts.semantic_result === "object" &&
+    !Array.isArray(opts.semantic_result)
+      ? {
+          ...(opts.semantic_result as Record<string, unknown>),
+          work_order_id:
+            (opts.semantic_result as Record<string, unknown>).work_order_id ??
+            workOrder.work_order_id,
+        }
+      : opts.semantic_result;
   const payload =
     opts.format === "semantic_payload_v1"
       ? buildAgentSemanticPayloadSchema({
           role: workOrder.role,
           phase: workOrder.canonical_binding?.phase,
-        }).parse(opts.semantic_result)
+        }).parse(compactResult)
       : null;
+  if (payload?.work_order_id && payload.work_order_id !== workOrder.work_order_id) {
+    throw new Error("Agent semantic result work_order_id must match the prepared AgentWorkOrder.");
+  }
   const proposal = payload?.task_plan_proposal;
   if (
     proposal &&
@@ -515,7 +530,7 @@ export function validateAgentSemanticResultForWorkOrder(opts: {
   ) {
     if (!workOrder.planning_context)
       throw new Error("Compact planning requires an issued repository baseline");
-    payload.task_plan_proposal = normalizeCompactTaskPlanProposal(proposal, {
+    payload.task_plan_proposal = normalizeTaskPlanProposal(proposal, {
       task_id: workOrder.task.id,
       planning_baseline: workOrder.planning_context.repository_snapshot,
     });
@@ -543,17 +558,18 @@ export function validateAgentSemanticResultForWorkOrder(opts: {
       "Agent semantic result canonical_binding must match the prepared AgentWorkOrder.",
     );
   if (workOrder.role === "EVALUATOR") {
-    if (!semanticResult.review) {
+    if (semanticResult.status === "completed" && !semanticResult.review) {
       throw new Error("EVALUATOR semantic results require a typed review verdict.");
     }
     if (
+      semanticResult.review &&
       (semanticResult.review.verdict === "pass" || semanticResult.review.verdict === "rework") &&
       semanticResult.findings.length === 0
     ) {
       throw new Error(`EVALUATOR ${semanticResult.review.verdict} requires at least one finding.`);
     }
     if (
-      semanticResult.review.verdict === "human_review" &&
+      semanticResult.review?.verdict === "human_review" &&
       !semanticResult.review.recovery_context
     ) {
       throw new Error("EVALUATOR human_review requires a bounded recovery_context question.");

@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609140925-AWJQMB-b4a68b9d576946da6f176134",
+  "prepared_at": "2026-09-14T13:38:09.574Z",
+  "task": {
+    "id": "202609140925-AWJQMB",
+    "revision": 44,
+    "objective": "Make supervisor-owned task branch base synchronization generate a commit subject accepted by AgentPlane commit-msg policy\n\nThe release task 202609121424-49XXT3 requested exact branch-base synchronization onto main 1a93a9a43da2b714854174491f9672c52bf33e9f. synchronizeTaskBranchBase generated subject 'Merge branch main into task/...' and git hook run commit-msg rejected it because the repository requires '<emoji> <task-suffix> <scope>: <summary>'. Update the supervisor-owned synchronization implementation to create a policy-compliant task-attributed merge subject without weakening or bypassing hooks. Preserve the exact two-parent no-ff merge and ancestry postconditions. Add focused regression coverage for the real hook-compatible subject. Do not touch release candidate content or agentplane-roadmap-r2.",
+    "acceptance_criteria": [
+      "bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts",
+      "- In scope: The release task 202609121424-49XXT3 requested exact branch-base synchronization onto main 1a93a9a43da2b714854174491f9672c52bf33e9f. synchronizeTaskBranchBase generated subject 'Merge branch main into task/...' and git hook run commit-msg rejected it because the repository requires '<emoji> <task-suffix> <scope>: <summary>'. Update the supervisor-owned synchronization implementation to create a policy-compliant task-attributed merge subject without weakening or bypassing hooks. Preserve the exact two-parent no-ff merge and ancestry postconditions. Add focused regression coverage for the real hook-compatible subject. Do not touch release candidate content or agentplane-roadmap-r2.\n- Out of scope: unrelated refactors not required for \"Make supervisor-owned task branch base synchronization generate a commit subject accepted by AgentPlane commit-msg policy\".",
+      "The executable plan now contains only the new evaluator timeout fixture hardening; prior fixes are baseline evidence.",
+      "1. Run `bun test packages/agentplane/src/commands/branch/sync-task-base.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts`. Expected: focused synchronization and supervisor-operation tests pass.\n2. Inspect the focused fixture merge commit subject, body, and parents. Expected: the subject matches the task-attributed AgentPlane format, the body contains a valid Signed-off-by trailer, and the parents are the exact prior task head followed by the exact plan-bound base SHA.\n3. Run `git diff --check` and review the exact diff and status. Expected: only the approved synchronization implementation, focused regression tests, and this task artifact changed; hook enforcement, conflict refusal, stale-identity refusal, dirty-worktree refusal, and unrelated user work remain intact."
+    ]
+  },
+  "evaluated_sha": "6e5882531c8521a5f4c6a2cf82581172e67011c8",
+  "diff_base_sha": "1a93a9a43da2b714854174491f9672c52bf33e9f",
+  "blueprint_digest": "a6e5b2fab41b3002672a798cbdc5183879cab8758bc252220e9ddbb9e8ce8cc5",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609140925-AWJQMB/quality/20260914-133809574-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:b51d3b82081678f914a03f95d8fcfbc8cdecb76869f630d0a138a71840cf75fa",
+    "prompt_path": ".agentplane/tasks/202609140925-AWJQMB/quality/objects/sha256/a3750eedfe336fff02e87f992ddd15c923944fdb343d988c49348617b5cd31d0.md",
+    "result_schema_path": ".agentplane/tasks/202609140925-AWJQMB/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609140925-AWJQMB/README.md",
+      "sha256": "sha256:150137735d354cd75390981d78f04ddd5a4b062f80fd71ecda8a0271c42b66f6",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609140925-AWJQMB/quality/objects/sha256/031cee6a949d3037f956dd6eced48cf0e4bd03180884db849dfc7212d5a5df37.patch",
+      "sha256": "sha256:031cee6a949d3037f956dd6eced48cf0e4bd03180884db849dfc7212d5a5df37",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609140925-AWJQMB/quality/objects/sha256/79925d1c562283b4bce30fdcf4fd98f2d193c231af92aa5f11441792a52d0fb3.json",
+      "sha256": "sha256:79925d1c562283b4bce30fdcf4fd98f2d193c231af92aa5f11441792a52d0fb3",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609140925-AWJQMB/verification/20260914133759896-ab019b58d9b41d4c.json",
+      "sha256": "sha256:bdea91df9d25695e6ac2a753dc0fca2420a20617ac0e22fbf41adc9484c3cff9",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609140925-AWJQMB/quality/objects/sha256/a300db90dc4e6981d570d6b6e7d686aba6fe384030746744e5c89130b19af35d.json",
+      "sha256": "sha256:a300db90dc4e6981d570d6b6e7d686aba6fe384030746744e5c89130b19af35d",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

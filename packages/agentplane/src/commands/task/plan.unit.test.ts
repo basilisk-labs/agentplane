@@ -89,6 +89,17 @@ function applyStorePatch(current: TaskData, patch: TaskStorePatch | null | undef
 }
 
 describe("task plan commands (unit)", () => {
+  it("requires command-bearing plan text to use --file", async () => {
+    const { taskPlanSetSpec } = await import("./plan-set.command.js");
+    expect(() =>
+      taskPlanSetSpec.validateRaw?.({
+        args: { "task-id": "T-1" },
+        opts: { text: "Run `node test.js` and $(npm test)" },
+        extra: [],
+      }),
+    ).toThrow(/use --file for plan text/u);
+  });
+
   it.each([false, true])(
     "approves canonical status and revision in one write (local=%s)",
     async (local) => {

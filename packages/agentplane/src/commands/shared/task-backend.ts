@@ -117,7 +117,6 @@ export function taskDataToFrontmatter(task: TaskData): Record<string, unknown> {
     task_kind: task.task_kind,
     mutation_scope: task.mutation_scope,
     risk_flags: task.risk_flags,
-    blueprint_request: task.blueprint_request,
     verify: task.verify ?? [],
     plan_approval: planApproval,
     verification,

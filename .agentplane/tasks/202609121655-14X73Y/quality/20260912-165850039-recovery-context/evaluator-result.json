@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "hasExactSchedulableWorkItemScopeDelta returns true for a missing root on an optional READY WorkItem even when every required WorkItem is COMPLETED.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609121655-14X73Y/quality/objects/sha256/d0ff8a97b08f736b32fba490a592611aa232e2f17b277e1441ce63f491e1c830.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "extendTaskCentricWorkItemScope returns the aggregate unchanged when every required WorkItem is completed, so the accepted request would change only rationale and mark the extension applied without extending the target WorkItem.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609121655-14X73Y/quality/objects/sha256/d0ff8a97b08f736b32fba490a592611aa232e2f17b277e1441ce63f491e1c830.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "The narrow repair is to make the guard mirror the shared all-required-completed rule and add a regression test for that exact state.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609121655-14X73Y/quality/objects/sha256/d0ff8a97b08f736b32fba490a592611aa232e2f17b277e1441ce63f491e1c830.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Reject a global-contract no-op when all required WorkItems are completed and an optional exact target is READY but missing the requested root."
+  ],
+  "hidden_assumptions": [
+    "A READY optional target does not imply that the shared extension function will mutate it after all required WorkItems are completed."
+  ],
+  "recovery_context": "Rework is required because the new guard can accept a true no-op when every required WorkItem is already completed and the exact target is an optional schedulable WorkItem."
+}

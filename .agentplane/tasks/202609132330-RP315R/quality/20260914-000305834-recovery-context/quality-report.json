@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "202609132330-RP315R",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-14T00:04:25.466Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 5 typed finding(s).",
+  "evaluated_sha": "d511f8b8fa9caa06b86a715e8e3f09500cf6086e",
+  "blueprint_digest": "dd6c228e2c24bd4f6d2b65056f9691f84324a0867b1c6171979423d9d93afd1d",
+  "findings": [
+    "`hasOnlyValidQualityObjects` correctly validates the exact directory hierarchy, regular-file requirement, filename shape, non-empty object set, and content digest.",
+    "The main loop adds every directory name to `seen` before the README-less object-only case continues.",
+    "A later task whose `depends_on` references the object-only directory ID can therefore pass dependency validation even though the directory was classified as non-task storage.",
+    "The recorded verification is otherwise strong: all four declared commands passed, including `bun run ci:local:full`, and the implementation identity is d511f8b8fa9caa06b86a715e8e3f09500cf6086e.",
+    "Residual risk: Without rework, immutable object storage can mask a missing task dependency and weaken task graph integrity."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609132330-RP315R/quality/objects/sha256/8c87ef14fe9c10fb7cc3dd0ab299a5488f57c3a9213ab528e58cae727cd21ce6.patch"
+  ],
+  "missing_tests": [
+    "Add a task whose `depends_on` references a valid object-only directory ID and assert that validation reports the dependency as missing."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumes skipping README validation is equivalent to excluding the directory from the task registry, but `seen` preserves its task identity."
+  ],
+  "residual_risks": [
+    "Filter valid quality-object-only directories out before task IDs are added to `seen`, or otherwise ensure they cannot satisfy dependency lookup. Preserve all existing fail-closed cases and add the dependency regression."
+  ]
+}

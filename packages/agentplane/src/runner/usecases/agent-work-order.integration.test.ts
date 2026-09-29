@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { access, mkdir, readFile, writeFile } from "node:fs/promises";
+import { access, mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 
@@ -54,41 +54,9 @@ type WorkOrderView = {
     source_manifest: unknown;
     knowledge_retrieval: unknown;
   };
-  execution?: {
-    sandbox_policy?: {
-      requested?: unknown;
-      source?: unknown;
-    };
-    write_scope?: {
-      writable_roots?: unknown;
-    };
-  };
 };
 
 type WorkOrderPreparationView = NonNullable<WorkOrderView["work_order_preparation"]>;
-
-async function captureRunnerWorkOrder(opts: {
-  taskId: string;
-  root: string;
-  remote?: boolean;
-}): Promise<WorkOrderView> {
-  const prepared = (await captureJsonRun([
-    "task",
-    "run",
-    opts.taskId,
-    "--dry-run",
-    "--json",
-    ...(opts.remote ? ["--remote"] : []),
-    "--root",
-    opts.root,
-  ])) as { bundle_path: string };
-  const bundle = JSON.parse(await readFile(prepared.bundle_path, "utf8")) as WorkOrderView;
-  return {
-    work_order: bundle.work_order,
-    work_order_preparation: bundle.work_order_preparation,
-    execution: bundle.execution,
-  };
-}
 
 async function captureJsonRun(argv: string[]): Promise<unknown> {
   const io = captureStdIO();
@@ -137,9 +105,13 @@ async function createPreparedTask(
 
 async function createBranchPrTaskWorktree(root: string, taskId: string): Promise<string> {
   await execFileAsync("git", ["add", "-A"], { cwd: root });
-  await execFileAsync("git", ["commit", "-m", "test: seed canonical work order task"], {
-    cwd: root,
-  });
+  await execFileAsync(
+    "git",
+    ["commit", "--allow-empty", "-m", "test: seed canonical work order task"],
+    {
+      cwd: root,
+    },
+  );
   const worktree = path.join(root, ".agentplane", "worktrees", `${taskId}-canonical-work-order`);
   await mkdir(path.dirname(worktree), { recursive: true });
   await execFileAsync(
@@ -224,84 +196,6 @@ function duplicatePromptOverlayBundle(): Record<string, unknown> {
 }
 
 describe("AgentWorkOrder v2 surface integration", () => {
-  it("keeps legacy execution-contract scope read-only until a structured WorkItem owns authority", async () => {
-    const root = await mkGitRepoRootWithCommit();
-    const taskId = await createPreparedTask(root);
-    const command = await loadCommandContext({ cwd: root, rootOverride: root });
-    const task = await loadTaskFromContext({ ctx: command, taskId });
-    const executionContract = resolveTaskExecutionContract({
-      config: command.config,
-      task,
-      declaration: {
-        schema_version: 1,
-        preferred_mode: "direct",
-        scope_roots: ["packages/app/src", "packages/app/test"],
-        repository_effects: ["repository_write", "source_code", "tests"],
-        external_effects: [],
-        uncertainty: "bounded",
-        reversibility: "reversible",
-        rationale: ["localized implementation with targeted tests"],
-      },
-    });
-    await command.taskBackend.writeTask(
-      { ...task, execution_contract: executionContract },
-      task.revision ? { expectedRevision: task.revision } : undefined,
-    );
-
-    const view = await captureRunnerWorkOrder({ taskId, root });
-    expect(view.work_order.authority).toMatchObject({
-      writable_roots: [],
-      external_side_effects: [],
-      sandbox: "read-only",
-    });
-    const verificationIntent = view.work_order.verification_intent as {
-      requirements: { description: string }[];
-    };
-    expect(verificationIntent.requirements.map((requirement) => requirement.description)).toEqual(
-      expect.arrayContaining(["repository_effect:source_code", "repository_effect:tests"]),
-    );
-    expect(executionContract.authority).toMatchObject({
-      writable_roots: ["packages/app/src", "packages/app/test"],
-      allowed_repository_effects: ["repository_write", "source_code", "tests"],
-      allowed_external_effects: [],
-    });
-    expect(executionContract.authority.forbidden_external_effects).toEqual(
-      expect.arrayContaining(["deploy", "external_write"]),
-    );
-  });
-
-  it("keeps an explicitly empty declared scope read-only", async () => {
-    const root = await mkGitRepoRootWithCommit();
-    const taskId = await createPreparedTask(root);
-    const command = await loadCommandContext({ cwd: root, rootOverride: root });
-    const task = await loadTaskFromContext({ ctx: command, taskId });
-    const executionContract = resolveTaskExecutionContract({
-      config: command.config,
-      task,
-      declaration: {
-        schema_version: 1,
-        preferred_mode: "direct",
-        scope_roots: [],
-        repository_effects: [],
-        external_effects: [],
-        uncertainty: "bounded",
-        reversibility: "reversible",
-        rationale: ["analysis requires no repository writes"],
-      },
-    });
-    await command.taskBackend.writeTask(
-      { ...task, execution_contract: executionContract },
-      task.revision ? { expectedRevision: task.revision } : undefined,
-    );
-
-    const view = await captureRunnerWorkOrder({ taskId, root });
-    expect(view.work_order.authority).toMatchObject({
-      writable_roots: [],
-      sandbox: "read-only",
-    });
-    expect(view.work_order.authority.allowed_tool_classes).not.toContain("workspace_write");
-  });
-
   it("projects policy-permitted network reads without external write authority", async () => {
     const root = await mkGitRepoRootWithCommit();
     const taskId = await createPreparedTask(root);
@@ -521,7 +415,7 @@ describe("AgentWorkOrder v2 surface integration", () => {
     );
   });
 
-  it("renders one canonical work order through real brief, next-action, runner, and Hermes surfaces", async () => {
+  it("renders one canonical work order through real brief, next-action, and Hermes surfaces", async () => {
     for (const workflowMode of ["direct", "branch_pr"] as const) {
       const root = await mkGitRepoRootWithCommit();
       const taskId = await createPreparedTask(root, workflowMode);
@@ -551,25 +445,12 @@ describe("AgentWorkOrder v2 surface integration", () => {
         "--root",
         worktree,
       ])) as WorkOrderView;
-      const runnerView = await captureRunnerWorkOrder({
-        taskId,
-        root: worktree,
-      });
-
       const expected = canonicalWorkOrderSignature(brief);
       const expectedPreparation = canonicalPreparationSignature(brief);
       expect(canonicalWorkOrderSignature(nextAction)).toEqual(expected);
       expect(canonicalWorkOrderSignature(hermes)).toEqual(expected);
-      expect(canonicalWorkOrderSignature(runnerView)).toEqual(expected);
       expect(canonicalPreparationSignature(nextAction)).toEqual(expectedPreparation);
       expect(canonicalPreparationSignature(hermes)).toEqual(expectedPreparation);
-      expect(runnerView.work_order_preparation).toBeUndefined();
-      if (workflowMode === "branch_pr") {
-        expect(runnerView.execution).toMatchObject({
-          sandbox_policy: { requested: "read-only", source: "route_authority" },
-          write_scope: { writable_roots: [] },
-        });
-      }
       for (const view of [brief, nextAction, hermes]) {
         expect(canonicalPreparationSignature(view).remote_policy).toMatchObject({
           mode: "local",
@@ -584,7 +465,6 @@ describe("AgentWorkOrder v2 surface integration", () => {
         expectSnakeCaseOnly(view.work_order);
         expectSnakeCaseOnly(view.work_order_preparation);
       }
-      expectSnakeCaseOnly(runnerView.work_order);
     }
   });
 
@@ -663,16 +543,12 @@ describe("AgentWorkOrder v2 surface integration", () => {
       "--root",
       worktree,
     ])) as WorkOrderView;
-    const runner = await captureRunnerWorkOrder({ taskId, root: worktree, remote: true });
-
     const expected = canonicalWorkOrderSignature(brief);
     const expectedPreparation = canonicalPreparationSignature(brief);
     expect(canonicalWorkOrderSignature(nextAction)).toEqual(expected);
     expect(canonicalWorkOrderSignature(hermes)).toEqual(expected);
-    expect(canonicalWorkOrderSignature(runner)).toEqual(expected);
     expect(canonicalPreparationSignature(nextAction)).toEqual(expectedPreparation);
     expect(canonicalPreparationSignature(hermes)).toEqual(expectedPreparation);
-    expect(runner.work_order_preparation).toBeUndefined();
     for (const view of [brief, nextAction, hermes]) {
       expect(canonicalPreparationSignature(view).remote_policy).toMatchObject({
         mode: "remote",
@@ -681,7 +557,7 @@ describe("AgentWorkOrder v2 surface integration", () => {
     }
   });
 
-  it("keeps a legacy plan mutation on the fresh task-centric planning route", async () => {
+  it("rejects a legacy plan mutation that invalidates task-centric identity", async () => {
     const root = await mkGitRepoRootWithCommit();
     const taskId = await createPreparedTask(root);
     const commandCtx = await loadCommandContext({ cwd: root, rootOverride: root });
@@ -713,7 +589,7 @@ describe("AgentWorkOrder v2 surface integration", () => {
       prepared,
     });
 
-    expect(readiness).toMatchObject({ status: "ready" });
+    expect(readiness).toMatchObject({ status: "rejected" });
   });
 
   it("refuses every launch surface before execution when the prompt compiler reports an error", async () => {

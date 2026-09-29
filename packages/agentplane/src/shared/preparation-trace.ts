@@ -243,11 +243,6 @@ export function createPreparationTraceRecorder(): PreparationTraceRecorder | nul
   return isTraceEnabled() ? new PreparationTraceRecorder({ emit: emitPreparationTrace }) : null;
 }
 
-export async function runWithPreparationTrace<T>(operation: () => Promise<T>): Promise<T> {
-  if (!isTraceEnabled()) return await operation();
-  return await preparationTraceStorage.run(createPreparationTraceRecorder()!, operation);
-}
-
 export async function measurePreparationNode<T>(opts: {
   recorder?: PreparationTraceRecorder | null | undefined;
   command?: string | null;

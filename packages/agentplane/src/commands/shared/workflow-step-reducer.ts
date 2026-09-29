@@ -5,6 +5,7 @@ import {
   taskCentricAggregateFromExtensions,
   taskCentricReplanRequiredFromExtensions,
 } from "@agentplaneorg/core/tasks";
+import { hasCanonicalPreMergeEvidence } from "./canonical-pre-merge-evidence.js";
 import { branchStep, doneBranchStep } from "./workflow-step-branch.js";
 import {
   approvalStep,
@@ -51,8 +52,10 @@ export function reduceRouteState(state: WorkflowRouteState): WorkflowStep {
       selectedBlocker: null,
     });
   }
+  const canonicalPreMergeReady =
+    state.workflowMode === "branch_pr" && hasCanonicalPreMergeEvidence(state.task);
   if (
-    state.task.status === "DONE" &&
+    (state.task.status === "DONE" || canonicalPreMergeReady) &&
     state.workflowMode === "branch_pr" &&
     state.batchOwnership.role !== "included"
   ) {

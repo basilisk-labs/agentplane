@@ -30,14 +30,14 @@
     "compare_contract": "current metrics must not exceed baseline clones, duplicatedLines, or duplicatedTokens"
   },
   "metrics": {
-    "sources": 1468,
-    "lines": 281117,
-    "tokens": 1605630,
-    "clones": 91,
-    "duplicatedLines": 1436,
-    "duplicatedTokens": 10001,
-    "percentage": 0.5108193385672157,
-    "percentageTokens": 0.622870773465867
+    "sources": 1593,
+    "lines": 313584,
+    "tokens": 1811930,
+    "clones": 95,
+    "duplicatedLines": 1482,
+    "duplicatedTokens": 10417,
+    "percentage": 0.47260064288994336,
+    "percentageTokens": 0.5749118343423864
   },
   "top_duplicates": [
     {
@@ -78,8 +78,8 @@
       },
       "secondFile": {
         "path": "packages/core/src/tasks/index.ts",
-        "start": 147,
-        "end": 178
+        "start": 149,
+        "end": 180
       }
     },
     {
@@ -112,20 +112,6 @@
     },
     {
       "lines": 25,
-      "tokens": 140,
-      "firstFile": {
-        "path": "packages/agentplane/src/cli/spec/docs-render.ts",
-        "start": 10,
-        "end": 34
-      },
-      "secondFile": {
-        "path": "packages/agentplane/src/cli/spec/help-render.ts",
-        "start": 35,
-        "end": 59
-      }
-    },
-    {
-      "lines": 25,
       "tokens": 143,
       "firstFile": {
         "path": "scripts/checks/check-cli-cold-baseline.mjs",
@@ -148,8 +134,22 @@
       },
       "secondFile": {
         "path": "packages/testkit/src/cli-harness.ts",
-        "start": 715,
-        "end": 733
+        "start": 762,
+        "end": 780
+      }
+    },
+    {
+      "lines": 24,
+      "tokens": 134,
+      "firstFile": {
+        "path": "packages/agentplane/src/cli/spec/docs-render.ts",
+        "start": 10,
+        "end": 33
+      },
+      "secondFile": {
+        "path": "packages/agentplane/src/cli/spec/help-render.ts",
+        "start": 35,
+        "end": 58
       }
     },
     {
@@ -164,6 +164,20 @@
         "path": "packages/agentplane/src/commands/task/shared/direct-work-lock.ts",
         "start": 12,
         "end": 34
+      }
+    },
+    {
+      "lines": 24,
+      "tokens": 105,
+      "firstFile": {
+        "path": "scripts/bench/paired-production-driver.mjs",
+        "start": 20,
+        "end": 43
+      },
+      "secondFile": {
+        "path": "scripts/bench/paired-result-report.mjs",
+        "start": 7,
+        "end": 31
       }
     },
     {
@@ -196,20 +210,6 @@
     },
     {
       "lines": 23,
-      "tokens": 113,
-      "firstFile": {
-        "path": "packages/agentplane/src/commands/task/verify-record.ts",
-        "start": 84,
-        "end": 106
-      },
-      "secondFile": {
-        "path": "packages/agentplane/src/commands/task/verify-record.ts",
-        "start": 118,
-        "end": 140
-      }
-    },
-    {
-      "lines": 23,
       "tokens": 166,
       "firstFile": {
         "path": "scripts/bench/cli-benchmark-runner.mjs",
@@ -220,6 +220,20 @@
         "path": "scripts/bench/measure-cli-walltime.mjs",
         "start": 62,
         "end": 83
+      }
+    },
+    {
+      "lines": 22,
+      "tokens": 126,
+      "firstFile": {
+        "path": "packages/agentplane/src/commands/task/branch-task-supervisor-implementation.ts",
+        "start": 336,
+        "end": 357
+      },
+      "secondFile": {
+        "path": "packages/agentplane/src/commands/task/branch-task-supervisor-implementation.ts",
+        "start": 440,
+        "end": 461
       }
     },
     {
@@ -330,8 +344,8 @@
       },
       "secondFile": {
         "path": "packages/agentplane/src/runner/usecases/agent-work-order-projection.ts",
-        "start": 36,
-        "end": 55
+        "start": 35,
+        "end": 54
       }
     },
     {
@@ -350,16 +364,16 @@
     },
     {
       "lines": 20,
-      "tokens": 81,
+      "tokens": 97,
       "firstFile": {
-        "path": "packages/agentplane/src/runner/context/base-prompt-sources.ts",
-        "start": 191,
-        "end": 210
+        "path": "packages/agentplane/src/commands/task/verify-record.ts",
+        "start": 84,
+        "end": 103
       },
       "secondFile": {
-        "path": "packages/agentplane/src/runtime/prompt-modules/registry.ts",
-        "start": 145,
-        "end": 164
+        "path": "packages/agentplane/src/commands/task/verify-record.ts",
+        "start": 120,
+        "end": 139
       }
     },
     {
@@ -400,8 +414,8 @@
       },
       "secondFile": {
         "path": "packages/agentplane/src/backends/task-backend/shared/types.ts",
-        "start": 190,
-        "end": 208
+        "start": 179,
+        "end": 197
       }
     },
     {
@@ -479,13 +493,13 @@
       "tokens": 96,
       "firstFile": {
         "path": "packages/agentplane/src/commands/task/plan.ts",
-        "start": 237,
-        "end": 255
+        "start": 252,
+        "end": 270
       },
       "secondFile": {
         "path": "packages/agentplane/src/commands/task/plan.ts",
-        "start": 442,
-        "end": 460
+        "start": 450,
+        "end": 468
       }
     },
     {
@@ -616,25 +630,11 @@
     },
     {
       "lines": 17,
-      "tokens": 85,
-      "firstFile": {
-        "path": "packages/testkit/src/release.ts",
-        "start": 133,
-        "end": 149
-      },
-      "secondFile": {
-        "path": "packages/testkit/src/release.ts",
-        "start": 196,
-        "end": 212
-      }
-    },
-    {
-      "lines": 17,
       "tokens": 86,
       "firstFile": {
         "path": "scripts/checks/run-local-ci.mjs",
-        "start": 14,
-        "end": 30
+        "start": 18,
+        "end": 34
       },
       "secondFile": {
         "path": "scripts/checks/run-pre-push-hook.mjs",
@@ -728,16 +728,16 @@
     },
     {
       "lines": 15,
-      "tokens": 83,
+      "tokens": 85,
       "firstFile": {
-        "path": "scripts/bench/cli-benchmark-runner.mjs",
-        "start": 232,
-        "end": 246
+        "path": "packages/agentplane/src/commands/task/advance.command.ts",
+        "start": 72,
+        "end": 86
       },
       "secondFile": {
-        "path": "scripts/bench/measure-cli-walltime.mjs",
-        "start": 183,
-        "end": 197
+        "path": "packages/agentplane/src/commands/task/run.command.ts",
+        "start": 146,
+        "end": 160
       }
     }
   ]

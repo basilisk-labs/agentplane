@@ -3,6 +3,7 @@ import { findWorktreeForBranch, resolveBaseBranch } from "@agentplaneorg/core/gi
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { workflowModeMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
+import { isSameBranchIdentity } from "./branch-identity.js";
 import { withDiagnosticContext } from "./diagnostics.js";
 import { gitCurrentBranch } from "./git-ops.js";
 import type { CommandContext } from "./task-backend.js";
@@ -60,7 +61,7 @@ export async function ensureBranchPrBaseCheckout(opts: {
 }): Promise<void> {
   const { baseBranch, currentBranch } = opts.context;
   const taskBranch = opts.taskBranch?.trim() ?? "";
-  if (currentBranch === baseBranch) return;
+  if (isSameBranchIdentity(currentBranch, baseBranch)) return;
 
   if (taskBranch && currentBranch === taskBranch) {
     const baseWorktreePath = await findWorktreeForBranch(opts.gitRoot, baseBranch);

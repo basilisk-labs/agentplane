@@ -6,6 +6,10 @@ import type { CommandContext } from "../shared/task-backend.js";
 import type { WorkflowOperation } from "../shared/workflow-step.js";
 import { executeBranchWorkflowOperation } from "./branch-task-supervisor-operations.js";
 
+if (typeof vi.hoisted !== "function") {
+  Object.defineProperty(vi, "hoisted", { value: <T>(factory: () => T): T => factory() });
+}
+
 const mocks = vi.hoisted(() => ({
   cmdFinish: vi.fn(),
   runNext: vi.fn(),
@@ -16,6 +20,7 @@ const mocks = vi.hoisted(() => ({
   enqueue: vi.fn(),
   cmdCleanupMerged: vi.fn(),
   updateProviderBranch: vi.fn(),
+  synchronizeTaskBranchBase: vi.fn(),
 }));
 
 vi.mock("../shared/task-backend.js", () => ({
@@ -41,6 +46,10 @@ vi.mock("../branch/cleanup-merged.js", () => ({
 
 vi.mock("../pr/provider-update-branch.js", () => ({
   updateProviderBranch: mocks.updateProviderBranch,
+}));
+
+vi.mock("../branch/sync-task-base.js", () => ({
+  synchronizeTaskBranchBase: mocks.synchronizeTaskBranchBase,
 }));
 
 vi.mock("../integrate-queue.command.js", () => ({
@@ -168,11 +177,36 @@ function updateBranchOperation(): Extract<WorkflowOperation, { id: "provider.pr.
   };
 }
 
+function syncBaseOperation(): Extract<WorkflowOperation, { id: "task.branch.sync_base" }> {
+  return {
+    id: "task.branch.sync_base",
+    type: "task_branch_base_sync",
+    params: {
+      taskId: "202607221852-71SCSW",
+      branch: "task/202607221852-71SCSW/frozen-base",
+      baseBranch: "main",
+      expectedHeadSha: "b".repeat(40),
+      expectedBaseSha: "a".repeat(40),
+    },
+    preconditionFingerprint: preMergeCloseOperation().preconditionFingerprint,
+    authorityRef: "route:test",
+    idempotencyKey: "task.branch.sync_base:test",
+    expectedPostconditions: [
+      { id: "task_branch_contains_base", subject: "task", expected: "contains base" },
+      { id: "route_state_recomputed", subject: "route", expected: "recomputed" },
+    ],
+    triggersGitHooks: true,
+  };
+}
+
 describe("branch task supervisor operations", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.loadCommandContext.mockResolvedValue({
-      config: { workflow_mode: "branch_pr" },
+      config: {
+        workflow_mode: "branch_pr",
+        paths: { workflow_dir: ".agentplane/tasks", tasks_path: ".agentplane/tasks.json" },
+      },
       resolvedProject: { gitRoot: "/repo" },
     } as CommandContext);
     mocks.loadTaskFromContext.mockResolvedValue({
@@ -198,6 +232,34 @@ describe("branch task supervisor operations", () => {
       evidence: {
         observedHeadSha: "c".repeat(40),
       },
+    });
+    mocks.synchronizeTaskBranchBase.mockResolvedValue({
+      state: "updated",
+      headSha: "c".repeat(40),
+    });
+  });
+
+  it("executes exact supervisor-owned task branch base synchronization", async () => {
+    const operation = syncBaseOperation();
+    const result = await executeBranchWorkflowOperation({
+      decision: routeDecision(operation),
+      operation,
+    });
+
+    expect(result).toMatchObject({
+      status: "succeeded",
+      observed_postconditions: ["task_branch_contains_base"],
+    });
+    expect(mocks.synchronizeTaskBranchBase).toHaveBeenCalledWith({
+      gitRoot: "/repo",
+      worktreePath: "/repo/task",
+      workflowDir: ".agentplane/tasks",
+      tasksPath: ".agentplane/tasks.json",
+      taskId: operation.params.taskId,
+      branch: operation.params.branch,
+      baseBranch: operation.params.baseBranch,
+      expectedHeadSha: operation.params.expectedHeadSha,
+      expectedBaseSha: operation.params.expectedBaseSha,
     });
   });
 

@@ -11,13 +11,17 @@ import { resolveConflictReworkSemanticInput } from "./conflict-rework-semantic-i
 
 export function conflictApplicationAuthority(decision: TaskRouteDecision) {
   const fingerprint = decision.workflowStep.preconditionFingerprint;
+  if (fingerprint.schema_version !== 2) {
+    throw new Error("Conflict recovery requires a canonical v2 state fingerprint.");
+  }
   return {
     task_id: fingerprint.task_id,
     task_revision: fingerprint.task_revision,
     task: fingerprint.components.task,
     backend_projection: fingerprint.components.backend_projection,
     policy: fingerprint.components.policy,
-    blueprint: fingerprint.components.blueprint,
+    plan: fingerprint.components.plan,
+    capability: fingerprint.components.capability,
     knowledge: fingerprint.components.knowledge,
     provider: decision.prFlow?.providerObservation ?? null,
   };

@@ -81,8 +81,14 @@ authority:
 
 Policy mode does not bypass the authority protocol. AgentPlane still binds every grant to the exact
 operation digest, route fingerprint, and state-scope digest, writes the append-only audit entry, and
-recomputes the route before executing the effect. Primary plan approval and provider merge approval
-remain operator-owned.
+recomputes the route before executing the effect. Provider merge approval remains operator-owned.
+
+Primary Plan approval uses a separate rule. When `agents.approvals.require_plan` is false, a Plan
+that is an exact subset of an explicit, bounded, repository-only execution contract may be approved
+as `repository_policy` with SYSTEM provenance. Plans with undeclared scope, capabilities, resources,
+effects, material uncertainty, or external authority still stop for an authenticated host decision,
+a signed user receipt, or manual operator bootstrap. This Plan rule does not enable external effects
+from `authority.mode`.
 
 Example: allow routine PR publication while retaining explicit authority for integration:
 

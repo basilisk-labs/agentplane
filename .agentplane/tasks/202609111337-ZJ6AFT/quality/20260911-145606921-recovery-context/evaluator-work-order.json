@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609111337-ZJ6AFT-a90d960e4becfe6c0ddfd026",
+  "prepared_at": "2026-09-11T14:56:06.921Z",
+  "task": {
+    "id": "202609111337-ZJ6AFT",
+    "revision": 17,
+    "objective": "Report trace-backed runner activity and safe liveness in task run status for GitHub issue #5887\n\nGitHub issue #5887 remains present on current main: task run status exposes heartbeat_at and pid_alive but no trace/stderr activity timestamp, sequence, seconds_since_activity, or health classification. Add a single activity model derived from runner-owned trace and stderr evidence; report last_trace_at, last_trace_seq, seconds_since_activity, and a typed health value; ensure reclaim/cancel guidance does not treat a stale process heartbeat as inactivity while trace or stderr is advancing. Add focused status and safety regressions for active, idle, exited, and unavailable signals. Issue: https://github.com/basilisk-labs/agentplane/issues/5887",
+    "acceptance_criteria": [
+      "bunx --no-install vitest run packages/agentplane/src/commands/task/run-render.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts --maxWorkers=1",
+      "- In scope: GitHub issue #5887 remains present on current main: task run status exposes heartbeat_at and pid_alive but no trace/stderr activity timestamp, sequence, seconds_since_activity, or health classification. Add a single activity model derived from runner-owned trace and stderr evidence; report last_trace_at, last_trace_seq, seconds_since_activity, and a typed health value; ensure reclaim/cancel guidance does not treat a stale process heartbeat as inactivity while trace or stderr is advancing. Add focused status and safety regressions for active, idle, exited, and unavailable signals. Issue: https://github.com/basilisk-labs/agentplane/issues/5887.\n- Out of scope: unrelated refactors not required for \"Report trace-backed runner activity and safe liveness in task run status for GitHub issue #5887\".",
+      "Keep the runner activity implementation and bind verification to its changed status surface.",
+      "1. Run `bunx --no-install vitest run packages/agentplane/src/commands/task/run-render.test.ts --maxWorkers=1`. Expected: active, idle, exited, unknown, recent trace, recent stderr, JSON status, and human status output regressions pass.\n2. Run `bun run typecheck`. Expected: the runner activity model and status output type-check.\n3. Review the final diff against GitHub issue #5887. Expected: status exposes last_trace_at, last_trace_seq, seconds_since_activity, and typed health, and recent activity prevents reclaim guidance for an unverified child."
+    ]
+  },
+  "evaluated_sha": "0f58c0913c0991f6a4a23d0bcd8b791d285efa27",
+  "diff_base_sha": "f774282d4a6ef8ce7da5bc08c8e2fd9abb99303d",
+  "blueprint_digest": "22874c04244bbe39abe6fd2da68f332130f0f71b6394de93e2ca1bcdae63dd2e",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609111337-ZJ6AFT/quality/20260911-145606921-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:1a31d49ee386d5ed5ed2fd2e0e9bba2575468dd19c21380ddf42a0f9d5936d24",
+    "prompt_path": ".agentplane/tasks/202609111337-ZJ6AFT/quality/objects/sha256/d25d41e9011f18aac64fb0081bd916b59f6966a4fd6c59030ae1c747e7b03751.md",
+    "result_schema_path": ".agentplane/tasks/202609111337-ZJ6AFT/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609111337-ZJ6AFT/README.md",
+      "sha256": "sha256:517b00f40cdcb4c2d6b634f775c56675db821ed195d2dc07856307eb13aea5f6",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609111337-ZJ6AFT/quality/objects/sha256/07bbbd1fa94d3be16f2e7c428663b9266b1fa40441452b1cc05543ace5f989ff.patch",
+      "sha256": "sha256:07bbbd1fa94d3be16f2e7c428663b9266b1fa40441452b1cc05543ace5f989ff",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609111337-ZJ6AFT/quality/objects/sha256/b32c3eed719757fd04e00f9629d1621bd27d8e12945a46275007ea3eba0d8b8f.json",
+      "sha256": "sha256:b32c3eed719757fd04e00f9629d1621bd27d8e12945a46275007ea3eba0d8b8f",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609111337-ZJ6AFT/verification/20260911145556971-340ee853386ceffd.json",
+      "sha256": "sha256:236aa9e0b8f5d2c71ad51595c1636bb897d0d85f750addb4468cf14431c7bf78",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202609111337-ZJ6AFT/quality/objects/sha256/4ce22a38a6b84782774730adff16ae3b520ef24932e63436cfaa336ef687da4a.json",
+      "sha256": "sha256:4ce22a38a6b84782774730adff16ae3b520ef24932e63436cfaa336ef687da4a",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

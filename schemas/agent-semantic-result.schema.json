@@ -69,23 +69,6 @@
                 "minLength": 1
               }
             },
-            "blueprint_request": {
-              "type": "string",
-              "enum": [
-                "analysis.light",
-                "content.light",
-                "docs.change",
-                "code.direct",
-                "code.branch_pr",
-                "performance.benchmark",
-                "quality.regression",
-                "context.assimilation",
-                "context.maximum_assimilation",
-                "post_run.improvement_review",
-                "release.strict",
-                "ops.approval"
-              ]
-            },
             "execution": {
               "anyOf": [
                 {
@@ -1049,7 +1032,11 @@
                       },
                       "role": {
                         "type": "string",
-                        "enum": ["PLANNER", "EXECUTOR", "EVALUATOR"]
+                        "enum": ["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"]
+                      },
+                      "plan_input_digest": {
+                        "type": "string",
+                        "pattern": "^sha256:[a-f0-9]{64}$"
                       }
                     },
                     "required": [
@@ -1440,23 +1427,6 @@
                 "minLength": 1
               }
             },
-            "blueprint_request": {
-              "type": "string",
-              "enum": [
-                "analysis.light",
-                "content.light",
-                "docs.change",
-                "code.direct",
-                "code.branch_pr",
-                "performance.benchmark",
-                "quality.regression",
-                "context.assimilation",
-                "context.maximum_assimilation",
-                "post_run.improvement_review",
-                "release.strict",
-                "ops.approval"
-              ]
-            },
             "execution": {
               "anyOf": [
                 {
@@ -2420,7 +2390,11 @@
                       },
                       "role": {
                         "type": "string",
-                        "enum": ["PLANNER", "EXECUTOR", "EVALUATOR"]
+                        "enum": ["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"]
+                      },
+                      "plan_input_digest": {
+                        "type": "string",
+                        "pattern": "^sha256:[a-f0-9]{64}$"
                       }
                     },
                     "required": [
@@ -2811,23 +2785,6 @@
                 "minLength": 1
               }
             },
-            "blueprint_request": {
-              "type": "string",
-              "enum": [
-                "analysis.light",
-                "content.light",
-                "docs.change",
-                "code.direct",
-                "code.branch_pr",
-                "performance.benchmark",
-                "quality.regression",
-                "context.assimilation",
-                "context.maximum_assimilation",
-                "post_run.improvement_review",
-                "release.strict",
-                "ops.approval"
-              ]
-            },
             "execution": {
               "anyOf": [
                 {
@@ -3791,7 +3748,11 @@
                       },
                       "role": {
                         "type": "string",
-                        "enum": ["PLANNER", "EXECUTOR", "EVALUATOR"]
+                        "enum": ["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"]
+                      },
+                      "plan_input_digest": {
+                        "type": "string",
+                        "pattern": "^sha256:[a-f0-9]{64}$"
                       }
                     },
                     "required": [

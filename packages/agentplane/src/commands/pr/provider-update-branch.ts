@@ -251,7 +251,11 @@ async function reconcileUpdatedHead(opts: {
         observed: opts.observed,
       };
     }
-    const localFailure = await reconcileProviderUpdateLocalHead(opts.request, observedHeadSha);
+    const localFailure = await reconcileProviderUpdateLocalHead(
+      opts.request,
+      observedHeadSha,
+      observedBase,
+    );
     if (localFailure) {
       return {
         state: "effect_in_doubt",

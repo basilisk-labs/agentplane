@@ -143,9 +143,9 @@ export function normalizeQualityReviewResult(value: unknown): QualityReviewResul
     value.evaluated_sha === null || typeof value.evaluated_sha === "string"
       ? value.evaluated_sha
       : null;
-  const blueprintDigest =
-    value.blueprint_digest === null || typeof value.blueprint_digest === "string"
-      ? value.blueprint_digest
+  const reviewIdentityDigest =
+    value.review_identity_digest === null || typeof value.review_identity_digest === "string"
+      ? value.review_identity_digest
       : null;
   const recoveryReason =
     value.recovery_reason === "deterministic_evidence_gap"
@@ -158,7 +158,7 @@ export function normalizeQualityReviewResult(value: unknown): QualityReviewResul
     updated_by: updatedBy,
     note,
     evaluated_sha: evaluatedSha,
-    blueprint_digest: blueprintDigest,
+    review_identity_digest: reviewIdentityDigest,
     evidence_refs: normalizeStringArray(value.evidence_refs) ?? [],
     findings: normalizeStringArray(value.findings) ?? [],
     ...(recoveryReason ? { recovery_reason: recoveryReason } : {}),

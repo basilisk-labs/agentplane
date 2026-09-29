@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "review-verification",
+      "severity": "low",
+      "summary": "Frozen evidence digests match. Recorded verification passes all three required commands for the evaluated SHA. Observed workspace drift consists only of this review’s generated evidence artifacts.",
+      "broken_invariant": "None.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609231207-R59HKK/verification/20260923154402112-3f5ee60dd679ac16.json",
+          "sha256": "sha256:5ae0f9be3cd6c95fb949170cb13385fff9174474fcb10d1f171457edb018fd64"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

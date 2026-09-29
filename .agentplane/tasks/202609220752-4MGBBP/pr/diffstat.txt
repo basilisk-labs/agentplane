@@ -1,0 +1,6 @@
+ .../src/commands/guard/impl/close-message.test.ts  |  15 +-
+ .../src/cli-harness/temp-root-cleanup.test.ts      | 129 ++++++++++++++++-
+ .../testkit/src/cli-harness/temp-root-cleanup.ts   | 161 ++++++++++++++++++++-
+ packages/testkit/src/vitest-temp-root.setup.ts     |   7 +
+ vitest.config.ts                                   |   1 +
+ 5 files changed, 301 insertions(+), 12 deletions(-)

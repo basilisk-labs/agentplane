@@ -1,7 +1,6 @@
 export const FRAMEWORK_DEV_BOOTSTRAP_COMMAND = "bun run framework:dev:bootstrap";
 export const FRAMEWORK_DEV_MANUAL_REPAIR_COMMANDS = [
   "bun install",
-  "git submodule update --init --recursive agentplane-recipes",
   "bun run --filter=@agentplaneorg/core build",
   "bun run --filter=agentplane build",
   "bun run --filter=@agentplane/testkit build",

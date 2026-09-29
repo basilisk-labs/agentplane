@@ -41,6 +41,7 @@ import {
 } from "./work-start.direct.js";
 import { ensureCurrentBaseBranch } from "./work-start.git.js";
 import { materializeHookShimForWorktree } from "./work-start.hook-shim.js";
+import { canCompactTaskHistory, checkoutCompactTaskHistory } from "./work-start.compact-tasks.js";
 import {
   materializeLocalBackendReadmesForWorktree,
   materializeRepoLocalDistForWorktree,
@@ -225,10 +226,32 @@ export async function cmdWorkStart(opts: {
       }
       await mkdir(worktreesDir, { recursive: true });
 
+      const compactTaskHistory = await canCompactTaskHistory({
+        backend: ctx.taskBackend,
+        repoRoot: resolved.gitRoot,
+        workflowDir: config.paths.workflow_dir,
+      });
       const worktreeArgs = branchExists
-        ? ["worktree", "add", worktreePath, branchName]
-        : ["worktree", "add", "-b", branchName, worktreePath, baseRef];
+        ? [
+            "worktree",
+            "add",
+            ...(compactTaskHistory ? ["--no-checkout"] : []),
+            worktreePath,
+            branchName,
+          ]
+        : [
+            "worktree",
+            "add",
+            ...(compactTaskHistory ? ["--no-checkout"] : []),
+            "-b",
+            branchName,
+            worktreePath,
+            baseRef,
+          ];
       await execFileAsync("git", worktreeArgs, { cwd: resolved.gitRoot, env: gitEnv() });
+      if (compactTaskHistory) {
+        await checkoutCompactTaskHistory({ worktreePath, taskId: opts.taskId });
+      }
       await materializeLocalBackendReadmesForWorktree({
         backend: ctx.taskBackend,
         repoRoot: resolved.gitRoot,

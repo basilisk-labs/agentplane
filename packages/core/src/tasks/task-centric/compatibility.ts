@@ -1,8 +1,14 @@
-import { isSha256Digest } from "./digest.js";
+import { isSha256Digest, taskCentricDigest } from "./digest.js";
 import type {
+  ExecutionLease,
+  PendingEffect,
+  RetryBudget,
   SemanticWorkKind,
+  Sha256Digest,
   TaskAggregate,
+  TaskCheckpoint,
   TaskLifecycleState,
+  TransitionReceipt,
   WorkItemState,
   WorkItemRuntime,
 } from "./model.js";
@@ -255,6 +261,362 @@ export function createLegacyTaskAggregate(opts: {
     final_validation: null,
     event_cursor: 0,
     updated_at: opts.updated_at,
+  });
+}
+
+export const TASK_KERNEL_LIFECYCLE_MIGRATION_VERSION = "task-kernel-lifecycle-owner-v1";
+
+export type TaskCentricMigrationRuntime = Readonly<{
+  events: readonly unknown[];
+  leases: readonly ExecutionLease[];
+  pending_effects: readonly PendingEffect[];
+  checkpoints: readonly TaskCheckpoint[];
+  retry_budgets: readonly RetryBudget[];
+  mutation_receipts: Readonly<Record<string, TransitionReceipt>>;
+}>;
+
+export type TaskCentricMigrationFieldMapping = Readonly<{
+  source_path: string;
+  disposition: "kernel_owner" | "retained_evidence" | "formal_blocker" | "semantic_assessment";
+  target: string;
+  reason_code: string | null;
+}>;
+
+export type TaskCentricKernelMigrationMapping = Readonly<{
+  mapping_version: typeof TASK_KERNEL_LIFECYCLE_MIGRATION_VERSION;
+  source_task_digest: Sha256Digest;
+  source_runtime_digest: Sha256Digest;
+  field_mappings: readonly TaskCentricMigrationFieldMapping[];
+  blockers: readonly Readonly<{ source_path: string; reason_code: string }>[];
+  semantic_assessment_fields: readonly Readonly<{
+    source_path: string;
+    target: string;
+    reason_code: string;
+  }>[];
+  pending: Readonly<{
+    work_item_ids: readonly string[];
+    lease_ids: readonly string[];
+    effect_operation_ids: readonly string[];
+    checkpoint_revisions: readonly number[];
+    checkpoint_refs: readonly string[];
+  }>;
+  retained: Readonly<{
+    plan_digest: Sha256Digest | null;
+    output_manifest_digests: readonly Sha256Digest[];
+    validation_digests: readonly Sha256Digest[];
+    mutation_receipt_digests: readonly Sha256Digest[];
+    authority_lease_digests: readonly Sha256Digest[];
+  }>;
+}>;
+
+function leafPaths(value: unknown, prefix: string): string[] {
+  if (value === null || typeof value !== "object") return [prefix];
+  const entries = Array.isArray(value)
+    ? value.map((entry, index) => [String(index), entry] as const)
+    : Object.entries(value);
+  if (entries.length === 0) return [prefix];
+  return entries.flatMap(([key, entry]) => leafPaths(entry, `${prefix}.${key}`));
+}
+
+function compareText(left: string, right: string): number {
+  return left < right ? -1 : left > right ? 1 : 0;
+}
+
+function fieldMapping(path: string): TaskCentricMigrationFieldMapping {
+  const relative = path.replace(/^task\./u, "").replace(/^runtime\./u, "");
+  const root = relative.split(".")[0] ?? relative;
+  if (path.startsWith("source.frontmatter.")) {
+    const name = path.slice("source.frontmatter.".length).split(".")[0];
+    const targets: Readonly<Record<string, string>> = {
+      id: "task.id",
+      revision: "task.revision",
+      status: "task.state",
+      title: "documents.intent",
+      description: "documents.intent",
+      verify: "documents.intent.acceptance_criteria",
+    };
+    return targets[name ?? ""]
+      ? {
+          source_path: path,
+          disposition: "kernel_owner",
+          target: targets[name ?? ""]!,
+          reason_code: null,
+        }
+      : {
+          source_path: path,
+          disposition: "retained_evidence",
+          target: "migration.source_evidence",
+          reason_code: null,
+        };
+  }
+  if (path === "source.body")
+    return {
+      source_path: path,
+      disposition: "retained_evidence",
+      target: "migration.source_evidence",
+      reason_code: null,
+    };
+  if (path.startsWith("runtime.leases.")) {
+    return {
+      source_path: path,
+      disposition: "formal_blocker",
+      target: "task.authority_lineage",
+      reason_code: "active_legacy_execution_lease",
+    };
+  }
+  if (path.startsWith("runtime.pending_effects.")) {
+    return {
+      source_path: path,
+      disposition: "retained_evidence",
+      target: "migration.source_evidence",
+      reason_code: null,
+    };
+  }
+  if (path.startsWith("task.current_plan.") || path.startsWith("task.plan_history.")) {
+    const semantic = [
+      ".objective",
+      ".scope_roots",
+      ".capabilities",
+      ".resource_claims",
+      ".risk",
+      ".priority",
+      ".validation",
+      ".acceptance_criteria",
+      ".context",
+      ".top_level_validation",
+      ".assumptions",
+      ".unresolved_questions",
+    ].some((name) => path.includes(name));
+    if (semantic)
+      return {
+        source_path: path,
+        disposition: "semantic_assessment",
+        target: "task.current_plan.work_items + documents.contracts + authority",
+        reason_code: "legacy_plan_semantics_require_explicit_kernel_contract",
+      };
+    const retained = [
+      ".planning_baseline",
+      ".created_at",
+      ".approved_at",
+      ".approved_digest",
+      ".policy_facts",
+      ".schema_version",
+      ".proposal.task_id",
+    ].some((name) => path.includes(name));
+    if (retained)
+      return {
+        source_path: path,
+        disposition: "retained_evidence",
+        target: "migration.source_evidence",
+        reason_code: null,
+      };
+    const target = path
+      .replace(/\.approval\.state$/u, ".state")
+      .replace(/\.approval\.approved_by$/u, ".approval_actor_id")
+      .replace(/\.proposal\.work_items\.work_items\./u, ".work_items.")
+      .replace(/\.proposal\.work_items\.schema_version$/u, ".work_items")
+      .replace(/\.proposal\.schema_version$/u, ".work_items");
+    return {
+      source_path: path,
+      disposition: "kernel_owner",
+      target: target.replace(/^task\./u, "task."),
+      reason_code: null,
+    };
+  }
+  if (path.startsWith("task.work_items.")) {
+    const semantic = path.endsWith(".validation_result") || path.includes(".validation_result.");
+    return semantic
+      ? {
+          source_path: path,
+          disposition: "semantic_assessment",
+          target: "task.work_items[].validation",
+          reason_code: "legacy_validation_identity_requires_explicit_binding",
+        }
+      : path.includes(".last_failure") ||
+          (path.includes(".output_manifests.") &&
+            [".schema_version", ".schema", ".provenance"].some((name) => path.includes(name)))
+        ? {
+            source_path: path,
+            disposition: "retained_evidence",
+            target: "migration.source_evidence",
+            reason_code: null,
+          }
+        : {
+            source_path: path,
+            disposition: "kernel_owner",
+            target: path
+              .replace(/(task\.work_items\.[^.]+)\.id$/u, "$1.definition.id")
+              .replace(/^task\.work_items\./u, "task.work_items.")
+              .replace(/\.output_manifests\./u, ".output_manifests.")
+              .replace(/\.producer\./u, ".")
+              .replace(/\.repository_snapshot_digest$/u, ".repository_fingerprint"),
+            reason_code: null,
+          };
+  }
+  if (path === "task.final_validation" || path.startsWith("task.final_validation."))
+    return {
+      source_path: path,
+      disposition: "semantic_assessment",
+      target: "task.final_validation",
+      reason_code: "legacy_validation_identity_requires_explicit_binding",
+    };
+  const retainedRoots = new Set([
+    "event_cursor",
+    "updated_at",
+    "plan_amendments",
+    "events",
+    "checkpoints",
+    "retry_budgets",
+  ]);
+  if (retainedRoots.has(root) || path.startsWith("runtime.mutation_receipts.")) {
+    return {
+      source_path: path,
+      disposition: "retained_evidence",
+      target: "migration.source_evidence",
+      reason_code: null,
+    };
+  }
+  const targets: Readonly<Record<string, string>> = {
+    schema_version: "task.schema_version",
+    id: "task.id",
+    revision: "task.revision",
+    intent: "documents.intent + task.intent_digest",
+    lifecycle: "task.state",
+    current_plan: "task.current_plan",
+    plan_history: "task.plan_history",
+    work_items: "task.work_items",
+    final_validation: "task.final_validation",
+    mutation_receipts: "task.mutation_receipts",
+  };
+  const target = targets[root];
+  return target
+    ? {
+        source_path: path,
+        disposition: "kernel_owner",
+        target,
+        reason_code: null,
+      }
+    : {
+        source_path: path,
+        disposition: "retained_evidence",
+        target: "migration.source_evidence",
+        reason_code: null,
+      };
+}
+
+/**
+ * Pure mapping ledger for the one-way lifecycle-owner migration. It never dispatches semantic
+ * work: genuine meaning gaps are returned as one bounded assessment input for the caller.
+ */
+export function mapTaskCentricKernelMigration(opts: {
+  task: TaskAggregate;
+  runtime: TaskCentricMigrationRuntime;
+  source_task_id: string;
+  source_revision: number;
+  source_record?: unknown;
+  terminal_archive?: boolean;
+}): TaskCentricKernelMigrationMapping {
+  const blockers: { source_path: string; reason_code: string }[] = [];
+  if (opts.task.id !== opts.source_task_id)
+    blockers.push({ source_path: "task.id", reason_code: "source_identity_mismatch" });
+  if (opts.task.revision !== opts.source_revision)
+    blockers.push({ source_path: "task.revision", reason_code: "source_revision_mismatch" });
+  for (const lease of opts.runtime.leases)
+    blockers.push({
+      source_path: `runtime.leases.${lease.id}`,
+      reason_code: "active_legacy_execution_lease",
+    });
+  for (const effect of opts.runtime.pending_effects) {
+    if (effect.state === "intent" || effect.state === "effect_in_doubt")
+      blockers.push({
+        source_path: `runtime.pending_effects.${effect.operation_id}`,
+        reason_code:
+          effect.state === "effect_in_doubt"
+            ? "unresolved_legacy_effect"
+            : "legacy_effect_intent_pending",
+      });
+  }
+  const fieldMappings = [
+    ...(opts.source_record === undefined ? [] : leafPaths(opts.source_record, "source")),
+    ...leafPaths(opts.task, "task"),
+    ...leafPaths(opts.runtime, "runtime"),
+  ]
+    .map((sourcePath) =>
+      opts.terminal_archive
+        ? {
+            source_path: sourcePath,
+            disposition: "retained_evidence" as const,
+            target: "read_only_archive.source_bytes",
+            reason_code: null,
+          }
+        : sourcePath === "task.final_validation" && opts.task.final_validation === null
+          ? {
+              source_path: sourcePath,
+              disposition: "kernel_owner" as const,
+              target: "task.final_validation",
+              reason_code: null,
+            }
+          : fieldMapping(sourcePath),
+    )
+    .toSorted((left, right) => compareText(left.source_path, right.source_path));
+  const semantic = fieldMappings
+    .filter((entry) => entry.disposition === "semantic_assessment")
+    .map((entry) => ({
+      source_path: entry.source_path,
+      target: entry.target,
+      reason_code: entry.reason_code!,
+    }));
+  const outputDigests = Object.values(opts.task.work_items)
+    .flatMap((item) => item.output_manifests.map((manifest) => manifest.digest))
+    .toSorted();
+  const validationDigests = [
+    ...Object.values(opts.task.work_items)
+      .map((item) => item.validation_result)
+      .filter((value) => value !== null)
+      .map((value) => taskCentricDigest(value)),
+    ...(opts.task.final_validation ? [taskCentricDigest(opts.task.final_validation)] : []),
+  ].toSorted();
+  return Object.freeze({
+    mapping_version: TASK_KERNEL_LIFECYCLE_MIGRATION_VERSION,
+    source_task_digest: taskCentricDigest(opts.task),
+    source_runtime_digest: taskCentricDigest(opts.runtime),
+    field_mappings: fieldMappings,
+    blockers: blockers.toSorted((left, right) => compareText(left.source_path, right.source_path)),
+    semantic_assessment_fields: semantic,
+    pending: {
+      work_item_ids: Object.values(opts.task.work_items)
+        .filter((item) => !["COMPLETED", "CANCELLED"].includes(item.state))
+        .map((item) => item.id)
+        .toSorted(),
+      lease_ids: opts.runtime.leases.map((lease) => lease.id).toSorted(),
+      effect_operation_ids: opts.runtime.pending_effects
+        .filter((effect) => effect.state !== "applied" && effect.state !== "reconciled")
+        .map((effect) => effect.operation_id)
+        .toSorted(),
+      checkpoint_revisions: opts.runtime.checkpoints
+        .map((checkpoint) => checkpoint.task_revision)
+        .toSorted((left, right) => left - right),
+      checkpoint_refs: [
+        ...new Set(
+          opts.runtime.checkpoints.flatMap((checkpoint) => [
+            ...checkpoint.context_refs,
+            ...checkpoint.validation_refs,
+            ...checkpoint.artifact_refs,
+          ]),
+        ),
+      ].toSorted(),
+    },
+    retained: {
+      plan_digest: opts.task.current_plan?.digest ?? null,
+      output_manifest_digests: outputDigests,
+      validation_digests: validationDigests,
+      mutation_receipt_digests: Object.values(opts.runtime.mutation_receipts)
+        .map((receipt) => taskCentricDigest(receipt))
+        .toSorted(),
+      authority_lease_digests: opts.runtime.leases
+        .map((lease) => taskCentricDigest(lease))
+        .toSorted(),
+    },
   });
 }
 

@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { readFile } from "node:fs/promises";
 
 const mocks = vi.hoisted(() => ({
   execFileAsync: vi.fn(),
@@ -32,6 +33,7 @@ import {
   observeExistingGithubPrByBranch,
   observeExistingGithubPrByNumber,
   shouldPersistObservedGithubPrIdentity,
+  tryCreateGithubPr,
   tryLookupExistingGithubPrByBranchPrefix,
 } from "./sync-github.js";
 
@@ -169,6 +171,76 @@ describe("sync-github", () => {
         maxBuffer: 10 * 1024 * 1024,
       },
     );
+  });
+
+  it("uses the hosted branch name when a task records an origin tracking ref", async () => {
+    mocks.execFileAsync
+      .mockResolvedValueOnce({ stdout: "https://github.com/example/repo.git\n" })
+      .mockResolvedValueOnce({
+        stdout: JSON.stringify([
+          {
+            number: 123,
+            state: "open",
+            head: { ref: "task/T-1/work", sha: "head" },
+            base: { ref: "main" },
+          },
+        ]),
+      })
+      .mockResolvedValueOnce({
+        stdout: JSON.stringify({
+          number: 123,
+          html_url: "https://github.com/example/repo/pull/123",
+          state: "open",
+          head: { ref: "task/T-1/work", sha: "head" },
+          base: { ref: "main", sha: "base" },
+        }),
+      });
+    await expect(
+      observeExistingGithubPrByBranch({
+        gitRoot: "/repo",
+        branch: "task/T-1/work",
+        baseBranch: "origin/main",
+      }),
+    ).resolves.toMatchObject({ state: "found", pr: { base: "main" } });
+    expect(mocks.withGhTransportRetry).toHaveBeenNthCalledWith(1, expect.any(Function), {
+      label:
+        "running gh api repos/example/repo/pulls?state=all&head=example%3Atask%2FT-1%2Fwork&base=main",
+    });
+  });
+
+  it("creates a GitHub PR against the hosted branch name", async () => {
+    mocks.execFileAsync.mockImplementationOnce(async (_command, args: string[]) => {
+      const input = args[args.indexOf("--input") + 1];
+      const payload = JSON.parse(await readFile(input, "utf8")) as { base: string };
+      expect(payload.base).toBe("main");
+      return {
+        stdout: JSON.stringify({
+          number: 123,
+          html_url: "https://github.com/example/repo/pull/123",
+          state: "open",
+          head: { ref: "task/T-1/work", sha: "head" },
+          base: { ref: "main", sha: "base" },
+        }),
+      };
+    });
+    await expect(
+      tryCreateGithubPr({
+        gitRoot: "/repo",
+        branch: "task/T-1/work",
+        baseBranch: "origin/main",
+        title: "Test",
+        body: "Test",
+        identity: {
+          provider: "github",
+          hostname: "github.com",
+          remote: "origin",
+          sourceProject: "example/repo",
+          targetProject: "example/repo",
+          sourceUrl: "https://github.com/example/repo.git",
+          targetUrl: "https://github.com/example/repo.git",
+        },
+      }),
+    ).resolves.toMatchObject({ observed: { prNumber: 123, base: "main" } });
   });
 
   it.each([

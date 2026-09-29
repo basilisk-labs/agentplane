@@ -1,6 +1,4 @@
-import type { BlueprintId } from "../../blueprints/model.js";
-
-export type RunnerExecutionBlueprintStateId =
+export type RunnerExecutionStateId =
   | "capture_artifact_exists"
   | "distill_card_exists"
   | "retrieval_index_updated"
@@ -14,7 +12,7 @@ type RunnerPlaybookStepId =
   | "write_card"
   | "update_retrieval_index"
   | "retire_source"
-  | "verify_blueprint"
+  | "verify_result"
   | "classify_blocker";
 
 export type RunnerRuntimeCapabilityId =
@@ -35,10 +33,9 @@ type RunnerOutcomeName =
   | "OUTCOME_NONE_UNSUPPORTED"
   | "OUTCOME_ERR_INTERNAL";
 
-type RunnerExecutionBlueprintContract = {
+type RunnerExecutionOutcomeContract = {
   id: string;
-  source_blueprint_id?: BlueprintId;
-  required_state: readonly RunnerExecutionBlueprintStateId[];
+  required_state: readonly RunnerExecutionStateId[];
   success_outcome: "OUTCOME_OK";
 };
 
@@ -48,7 +45,7 @@ export type RunnerRuntimeCapabilityContract = {
 };
 
 export type RunnerFinalVerifierCheck = {
-  id: RunnerExecutionBlueprintStateId;
+  id: RunnerExecutionStateId;
   required: boolean;
   description: string;
 };
@@ -63,7 +60,7 @@ export type RunnerTaskPlaybookContract = {
   id: string;
   version: 1;
   title: string;
-  applies_to_blueprint: string;
+  applies_to_outcome: string;
   match_signals: readonly string[];
   required_steps: readonly RunnerPlaybookStepId[];
   required_capabilities: readonly RunnerRuntimeCapabilityId[];
@@ -74,16 +71,16 @@ export type RunnerExecutionPlaybookContract = {
   schema_version: 1;
   artifact_kind: "agentplane.runner.execution_playbook_contract";
   selected_playbook?: RunnerTaskPlaybookContract;
-  execution_blueprint: RunnerExecutionBlueprintContract;
+  execution_outcome: RunnerExecutionOutcomeContract;
   runtime_capabilities: RunnerRuntimeCapabilityContract;
   final_verifier: RunnerFinalVerifierContract;
   match_reasons: readonly string[];
 };
 
-export type RunnerFinalVerifierState = Partial<Record<RunnerExecutionBlueprintStateId, boolean>>;
+export type RunnerFinalVerifierState = Partial<Record<RunnerExecutionStateId, boolean>>;
 
 export type RunnerFinalVerifierResult = {
   ok: boolean;
-  missing: readonly RunnerExecutionBlueprintStateId[];
-  checked: readonly RunnerExecutionBlueprintStateId[];
+  missing: readonly RunnerExecutionStateId[];
+  checked: readonly RunnerExecutionStateId[];
 };

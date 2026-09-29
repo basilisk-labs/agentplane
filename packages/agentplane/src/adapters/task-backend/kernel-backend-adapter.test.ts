@@ -15,6 +15,7 @@ import { LocalBackend, type TaskData } from "../../backends/task-backend.js";
 import { KernelBackendAdapter, type KernelCommandInput } from "./kernel-backend-adapter.js";
 import { makeKernelRecord, readKernelRecord, TASK_KERNEL_EXTENSION } from "./kernel-record.js";
 import { projectKernelTask } from "./kernel-projector.js";
+import { kernelRecordIssues } from "./kernel-record-invariants.js";
 
 const taskId = "202608300000-KRN001";
 const identity = taskKernel.kernelDigest("fixture-repository");
@@ -90,6 +91,81 @@ async function fixture() {
 }
 
 describe("canonical kernel persistence boundary", () => {
+  it("retains accepted outputs when USER rejection reopens an approved plan", () => {
+    const resultDigest = taskKernel.kernelDigest("accepted-result");
+    const definition = {
+      id: "done",
+      depends_on: [],
+      required_inputs: [],
+      expected_outputs: ["accepted-output"],
+      execution_requirements: {
+        scope_roots: ["packages/agentplane/src"],
+        repository_effects: ["tests"],
+        external_effects: [],
+        capabilities: ["task.verify"],
+        resources: [],
+      },
+      optional: false,
+    };
+    const aggregate = {
+      schema_version: 1,
+      id: taskId,
+      revision: 8,
+      state: "PLANNING",
+      intent_digest: taskKernel.kernelDigest("intent"),
+      current_plan: {
+        revision: 2,
+        digest: taskKernel.kernelDigest({ revision: 2, work_items: [definition] }),
+        state: "REJECTED",
+        approval_actor_id: "USER",
+        approval_evidence_digest: taskKernel.kernelDigest("approval"),
+        work_items: [definition],
+      },
+      plan_history: [],
+      work_items: {
+        done: {
+          definition,
+          state: "COMPLETED",
+          revision: 7,
+          attempt: 1,
+          claim_id: taskKernel.kernelDigest("claim"),
+          result_digest: resultDigest,
+          output_manifests: [
+            {
+              id: "accepted-output",
+              kind: "report",
+              digest: taskKernel.kernelDigest("output"),
+              task_id: taskId,
+              plan_revision: 2,
+              work_item_id: "done",
+              attempt: 1,
+              repository_fingerprint: fingerprint,
+            },
+          ],
+          validation: {
+            status: "PASSED",
+            identity: {
+              implementation_identity: resultDigest,
+              check_id: "focused",
+              command_digest: taskKernel.kernelDigest("command"),
+              toolchain_digest: taskKernel.kernelDigest("toolchain"),
+              environment_digest: taskKernel.kernelDigest("environment"),
+            },
+            evidence_digests: [taskKernel.kernelDigest("evidence")],
+            observed_at: "2026-09-21T00:00:00.000Z",
+          },
+        },
+      },
+      final_validation: null,
+      effects: [],
+      mutation_receipts: {},
+      controller_transfer: null,
+      migration_receipts: [],
+    } satisfies taskKernel.TaskAggregate;
+
+    expect(kernelRecordIssues(aggregate, [])).toEqual([]);
+  });
+
   it("creates through the kernel and independently reads atomic aggregate, events and receipts", async () => {
     const { root, adapter } = await fixture();
     const result = await adapter.create(task(), input());

@@ -1,0 +1,128 @@
+{
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609162254-YE48GC-393514f487ae82e3b8c618ba",
+  "prepared_at": "2026-09-17T16:01:39.137Z",
+  "task": {
+    "id": "202609162254-YE48GC",
+    "revision": 53,
+    "objective": "Implement and qualify AgentPlane 0.7.10 Blueprint retirement\n\nImplement the approved 0.7.10 scope from BP-01 through BP-31 except external publication: first add the SemVer-aware stable-channel promotion prerequisite, then remove Blueprint from active execution and model-visible context while preserving current lifecycle, authority, approval, review, verification, provenance, freshness, recovery, Recipe V1, and historical audit obligations. Add migrations, cutover, cold decoders, installed-package qualification, honest M02 disposition, compatibility documentation, and release-ready version metadata. Do not omit PLANNER or EVALUATOR, introduce Scenario V2, or converge lifecycle ownership scheduled for later releases. Do not publish in this task.",
+    "acceptance_criteria": [
+      "bun run arch:check",
+      "bun run bench:agent-efficiency:check",
+      "bun run bench:agent-efficiency:replay:check",
+      "bun run ci:local:full",
+      "bun run docs:bootstrap:check",
+      "bun run docs:onboarding:check",
+      "bun run package:install-smoke",
+      "bun run test:release:critical",
+      "- In scope: Implement the approved 0.7.10 scope from BP-01 through BP-31 except external publication: first add the SemVer-aware stable-channel promotion prerequisite, then remove Blueprint from active execution and model-visible context while preserving current lifecycle, authority, approval, review, verification, provenance, freshness, recovery, Recipe V1, and historical audit obligations. Add migrations, cutover, cold decoders, installed-package qualification, honest M02 disposition, compatibility documentation, and release-ready version metadata. Do not omit PLANNER or EVALUATOR, introduce Scenario V2, or converge lifecycle ownership scheduled for later releases. Do not publish in this task.\n- Out of scope: unrelated refactors not required for \"Implement and qualify AgentPlane 0.7.10 Blueprint retirement\".",
+      "Implement the approved 0.7.10 Blueprint retirement as seven dependency-ordered internal WorkItems, preserving lifecycle and safety obligations, then qualify the installed artifact and prepare release metadata without publishing from this implementation task.",
+      "1. Run `node --test scripts/release/*.test.mjs` and `node --test scripts/checks/blueprint-retirement-map.test.mjs`. Expected: SemVer-stable channel promotion and the complete field/consumer/writer owner map pass.\n2. Run the focused AgentPlane and Recipes tests added or updated for BP-02 through BP-28. Expected: native route, policy, authority, context, Recipe V1, verification identity, migration, cutover, and historical-audit parity and negative cases pass with nonzero executed tests.\n3. Run `node --test scripts/checks/no-blueprint-engine.test.mjs` and `node --test scripts/checks/no-blueprint-cursor.test.mjs`. Expected: active imports, writers, prompt projections, mutation CLI, graph engine, and cursor are absent; only the explicit cold-decoder allowlist remains.\n4. Run `bun run schemas:check`, `bun run agents:check`, `bun run docs:bootstrap:check`, and `bun run docs:onboarding:check`. Expected: generated assets, help/schema exports, policy routing, and compatibility documentation agree with the implemented 0.7.10 boundary.\n5. Run `bun run package:install-smoke`, `bun run test:release:critical`, and `bun run arch:check`. Expected: the packed install passes direct, branch, context, recovery, Recipe V1, migration, historical-audit, stable-channel, release-critical, and architecture qualification.\n6. Run `bun run bench:agent-efficiency:check` and `bun run bench:agent-efficiency:replay:check`. Expected: the benchmark corpus and replay are valid; M02 is marked `ESTABLISHED` only with matched paid 0.7.9/0.7.10 evidence, otherwise explicitly `NOT ESTABLISHED`.\n7. Run `bun run ci:local:full`. Expected: full local CI succeeds after focused checks.\n8. Perform independent semantic review. Expected: lifecycle, authority, approval, review, verification, provenance, freshness, recovery, Recipe V1, and historical audit obligations remain equal or stronger; custom non-exact graphs are never guessed.\n9. Inspect `git status --short --untracked-files=all` and the final diff. Expected: only approved task files and AgentPlane-owned task artifacts changed, with no secrets, generated drift, or unrelated modifications.\n10. Require hosted CI/integration evidence before merge. Expected: all required provider checks pass against the exact PR head and `origin/main` contains the integrated commit before the implementation task is considered complete."
+    ]
+  },
+  "evaluated_sha": "d949071048f769e0728af190eafa7b74ddfbe9fa",
+  "diff_base_sha": "19ff39fd292c30f0958131c35200a6268b7a285d",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609162254-YE48GC/quality/20260917-160139137-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:5cab08baa037c7217d3b191d1530562dbeaab1acef93be0eab639b8cea3d5467",
+    "prompt_path": ".agentplane/tasks/202609162254-YE48GC/quality/objects/sha256/bcd0ba941f41efbe4b45978c49234c4de8de8c3b4529e1f1694381745e824720.md",
+    "result_schema_path": ".agentplane/tasks/202609162254-YE48GC/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "schema_version": 2,
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202609162254-YE48GC",
+    "plan_digest": "sha256:e17ec6eda7c7926e5e1379d0e7caaea02c6311d301fca98a8969264e33af9949",
+    "policy_digest": "sha256:3190c8fe14390b259766cff27cbd886e2e4656b8a439a8bf997a4aed099ffed6",
+    "capability_digest": "sha256:095839e7c8ad04c8ede890b2cb808422cf26a9901830fd92d9830b51b15207d6",
+    "checks_digest": "sha256:193169d9d4b9f3db52098cdb742dccb36984dd584c4d84e1a8ab428de9fe2155",
+    "verification_input_digest": "sha256:d19e55a4119791761c8ac9b92c9c7fc66d25422d5378a35fbc97e3bdb42472d7",
+    "acceptance_digest": "sha256:4780f2468f39ae89fffce0463e36e71158ae07d8e00354e33b648886357dea67",
+    "implementation_sha": "d949071048f769e0728af190eafa7b74ddfbe9fa",
+    "digest": "sha256:0a5eceb935a6e44b4a67e46dfd59b91a7e418cf9477911043566e0e8f7ba738e"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609162254-YE48GC/README.md",
+      "sha256": "sha256:b50bb0a5740ea288124ce98e7cbbf1384d5c41ba73de2394c3bc840ffe27a87b",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609162254-YE48GC/quality/objects/sha256/6df9e23889b1ab1d2a39d33ce1add5309cc66f905bdecd0d58260036e097149b.patch",
+      "sha256": "sha256:6df9e23889b1ab1d2a39d33ce1add5309cc66f905bdecd0d58260036e097149b",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609162254-YE48GC/quality/objects/sha256/3012431090acbbeb9b810ced22e70732d073bf9f036918a4ce6644cacb01225d.json",
+      "sha256": "sha256:3012431090acbbeb9b810ced22e70732d073bf9f036918a4ce6644cacb01225d",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609162254-YE48GC/verification/20260917160129546-384ce20acdde5e5e.json",
+      "sha256": "sha256:1f94578164c0c253c75b3d8c7336ae49771a258156be7309ff2fd6ec51ccd93a",
+      "required": true
+    },
+    {
+      "id": "native-identity",
+      "kind": "plan",
+      "path": ".agentplane/tasks/202609162254-YE48GC/quality/objects/sha256/be4ea03df5fba9891979ac9c62cc0e2ef40a06bdcf2ff5218bab0a9a3849f33a.json",
+      "sha256": "sha256:be4ea03df5fba9891979ac9c62cc0e2ef40a06bdcf2ff5218bab0a9a3849f33a",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

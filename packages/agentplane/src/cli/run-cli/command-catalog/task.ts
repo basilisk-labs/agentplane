@@ -72,7 +72,6 @@ import { taskStartReadySpec } from "../../../commands/task/start-ready.command.j
 import { taskNextActionSpec } from "../../../commands/task/next-action.command.js";
 import { taskAdvanceSpec } from "../../../commands/task/advance.spec.js";
 import { taskStatusSpec } from "../../../commands/task/status.command.js";
-import { taskScopeExtendSpec } from "../../../commands/task/scope-extend.command.js";
 import { taskUpdateSpec } from "../../../commands/task/update.command.js";
 import { taskVerifyOkSpec } from "../../../commands/task/verify-ok.command.js";
 import { taskVerifyReworkSpec } from "../../../commands/task/verify-rework.command.js";
@@ -98,6 +97,7 @@ import {
   TASK_WRITE_REQUIREMENTS,
 } from "./task-capability-profiles.js";
 import { PROVIDER_WRITE_REQUIREMENTS } from "./provider-ops-capability-profiles.js";
+import { TASK_RECOVERY_COMMANDS } from "./task-recovery.js";
 import {
   RUNNER_EXECUTION_REQUIREMENTS,
   RUNNER_PREPARATION_REQUIREMENTS,
@@ -150,7 +150,6 @@ import {
   loadTaskStartReadySpec,
   loadTaskCloseNoopSpec,
   loadTaskAddSpec,
-  loadTaskScopeExtendSpec,
   loadTaskUpdateSpec,
   loadTaskCommentSpec,
   loadTaskSetStatusSpec,
@@ -392,12 +391,7 @@ export const TASK_COMMANDS = [
     surface: "advanced",
     helpGroup: "Advanced",
   }),
-  declareSessionCommand(taskScopeExtendSpec, {
-    load: loadTaskScopeExtendSpec,
-    requirements: TASK_LIFECYCLE_REQUIREMENTS,
-    surface: "advanced",
-    helpGroup: "Advanced",
-  }),
+  ...TASK_RECOVERY_COMMANDS,
   declareSessionCommand(taskCommentSpec, {
     load: loadTaskCommentSpec,
     requirements: TASK_WRITE_REQUIREMENTS,

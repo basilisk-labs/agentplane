@@ -4,7 +4,6 @@ import path from "node:path";
 
 import { type KnowledgeRef } from "@agentplaneorg/core/schemas";
 
-import type { BlueprintPlanArtifact } from "../../blueprints/index.js";
 import type { CommandContext } from "../../commands/shared/task-backend.js";
 import { materializeKnowledgeRef, prepareKnowledgeExcerpt } from "../../context/knowledge-ref.js";
 import { readContextProjection, searchContextProjection } from "../../context/reindex.js";
@@ -392,7 +391,6 @@ async function dependencyContext(opts: {
 export async function prepareTaskKnowledgeRetrieval(opts: {
   command_ctx: CommandContext;
   task_envelope: RunnerTaskContextEnvelope;
-  blueprint: BlueprintPlanArtifact;
   repository_root: string;
   semantic_selector?: SemanticRetrievalSelector;
 }): Promise<TaskKnowledgeRetrieval> {
@@ -403,7 +401,6 @@ export async function prepareTaskKnowledgeRetrieval(opts: {
   ]);
   const queryPlan = taskQueryPlan({
     task_envelope: opts.task_envelope,
-    blueprint: opts.blueprint,
     dependencies: dependencyResult.dependencies,
   });
   const queries = queryPlan.queries;

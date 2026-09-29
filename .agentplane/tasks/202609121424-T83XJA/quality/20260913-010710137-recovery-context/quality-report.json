@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202609121424-T83XJA",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-13T01:08:55.478Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 5 typed finding(s).",
+  "evaluated_sha": "44118fcf0d32825e963dc7db0504901753c4e9d5",
+  "blueprint_digest": "a0606595992db659882c934dc9224bb4e23891d77af067972ab0b021db13f8c1",
+  "findings": [
+    "The canonical lifecycle timing validator now enforces root identity and coverage, rooted acyclic containment, order-independent sibling non-overlap, and category partition reconciliation from deepest active spans.",
+    "Direct boundary reproductions accept valid gapped, nested, and root-last-adjacent timing while rejecting contradictory category totals.",
+    "AgentPlane recorded all 12 required focused, schema, artifact, critical, type, and full local CI checks as passed for the evaluated implementation SHA.",
+    "The frozen branch diff contains no source roadmap path or raw provider result payload.",
+    "Residual risk: Hosted CI and provider integration must still pass against the published PR head before merge."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609121424-T83XJA/quality/objects/sha256/acb5e13f22c5dfbd9ff3ef3ce69937520740933a85fb9a42a2af768300cd1951.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

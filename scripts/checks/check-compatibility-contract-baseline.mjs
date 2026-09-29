@@ -318,6 +318,8 @@ function validateReviewedCandidate({
     "compatibility candidate id drift",
   );
   const cliSourceTasks = [
+    "202609271356-4SANDJ",
+    "202609232231-BYSVV6",
     "202607221846-4VB97J",
     "202607221846-YGWMA2",
     "202607230554-YFYT83",
@@ -355,8 +357,15 @@ function validateReviewedCandidate({
     "202608301851-5W3XW6",
     "202609030849-925NNG",
     "202609060720-NZXQ0E",
+    "202609130858-RMHWQ5",
+    "202609162254-YE48GC",
+    "202609230942-E6D0V4",
+    "202609241429-4WN4VX",
+    "202609261720-KKE9ZN",
   ];
   const expectedSourceTasks = [
+    "202609271356-4SANDJ",
+    "202609232231-BYSVV6",
     "202607221846-4VB97J",
     "202607221846-YGWMA2",
     "202607230554-YFYT83",
@@ -403,6 +412,12 @@ function validateReviewedCandidate({
     "202609030849-925NNG",
     "202609060720-NZXQ0E",
     "202609071501-VN1FN4",
+    "202609130858-RMHWQ5",
+    "202609162254-YE48GC",
+    "202609211330-5A54M1",
+    "202609230942-E6D0V4",
+    "202609241429-4WN4VX",
+    "202609261720-KKE9ZN",
   ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
@@ -450,7 +465,12 @@ function validateReviewedCandidate({
   assert(
     hashJson(preReleasePackageDelta) ===
       hashJson({
-        source_tasks: ["202608021231-SHYJGK", "202608112259-T3ZDDM", "202608171853-X3FD5M"],
+        source_tasks: [
+          "202608021231-SHYJGK",
+          "202608112259-T3ZDDM",
+          "202608171853-X3FD5M",
+          "202609211330-5A54M1",
+        ],
         classification: "additive",
         section: "package_manifests",
         from_sha256: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
@@ -750,7 +770,7 @@ function validateReviewedCandidate({
     "AgentWorkOrder contract artifact comparison drift",
   );
   assert(
-    agentWorkOrderArtifact.source_task === "202609071501-VN1FN4",
+    agentWorkOrderArtifact.source_task === "202609162254-YE48GC",
     "AgentWorkOrder contract artifact source task drift",
   );
   const agentWorkOrderSchema = JSON.parse(
@@ -876,6 +896,7 @@ function validateReviewedCandidate({
       "202607291449-FTHNAR",
       "202607221852-YP9QCH",
       "202608212244-6XZAYD",
+      "202609162254-YE48GC",
     ],
     cli_topology: cliSourceTasks,
     machine_output_contract: ["202607221848-ABG7SD", "202608212244-6XZAYD"],
@@ -989,7 +1010,7 @@ function validateReviewedCandidate({
           normalized_sha256: afterEvaluatorContract.normalized_sha256,
         },
         change:
-          "adds evaluator human_review escalation and the deterministic_evidence_gap recovery classification",
+          "adds evaluator human_review and deterministic_evidence_gap recovery while retiring Blueprint route-decision contracts",
       },
       {
         path: afterContextSource.path,
@@ -1028,8 +1049,8 @@ function validateReviewedCandidate({
     },
   };
   assert(
-    contextDelta.classification === "additive",
-    "task-creation receipt candidate classification drift",
+    contextDelta.classification === "intentional_breaking_retirement",
+    "agent-facing context retirement classification drift",
   );
   assert(
     hashJson(contextDelta.evidence) === hashJson(expectedContextReceiptEvidence),
@@ -1290,6 +1311,13 @@ function validateReviewedCandidate({
   ];
   const expectedAddedCommandDescriptors = [
     {
+      id: ["cleanup", "inspect"],
+      visibility: "user",
+      group: "Branch",
+      args: [],
+      options: [{ name: "json", kind: "boolean", valueHint: null, default: false }],
+    },
+    {
       id: ["context", "supervise-task"],
       visibility: "user",
       group: "Context",
@@ -1465,6 +1493,7 @@ function validateReviewedCandidate({
       group: "Task",
       args: [{ name: "outcome", required: true, variadic: false, valueHint: "<outcome>" }],
       options: [
+        { name: "plan-file", kind: "string", valueHint: "<path>" },
         { name: "description", kind: "string", valueHint: "<text>" },
         { name: "owner", kind: "string", valueHint: "<id>", default: "CODER" },
         {
@@ -1529,6 +1558,56 @@ function validateReviewedCandidate({
         },
         { name: "tag", kind: "string", valueHint: "<tag>", repeatable: true },
         { name: "verify", kind: "string", valueHint: "<command>", repeatable: true },
+        {
+          name: "scope-root",
+          kind: "string",
+          valueHint: "<repository-relative-path>",
+          repeatable: true,
+        },
+        {
+          name: "repository-effect",
+          kind: "string",
+          valueHint: "<effect>",
+          repeatable: true,
+          choices: [
+            "repository_write",
+            "documentation",
+            "source_code",
+            "tests",
+            "public_api",
+            "schema",
+            "dependencies",
+            "ci",
+            "release_metadata",
+            "security_boundary",
+          ],
+        },
+        {
+          name: "external-effect",
+          kind: "string",
+          valueHint: "<effect>",
+          repeatable: true,
+          choices: [
+            "network_read",
+            "external_write",
+            "credentials",
+            "publish",
+            "deploy",
+            "destructive_git",
+          ],
+        },
+        {
+          name: "capability",
+          kind: "string",
+          valueHint: "<capability>",
+          repeatable: true,
+        },
+        {
+          name: "resource",
+          kind: "string",
+          valueHint: "<resource>",
+          repeatable: true,
+        },
         { name: "base", kind: "string", valueHint: "<branch-or-ref>" },
         { name: "allow-duplicate", kind: "boolean", valueHint: null, default: false },
         { name: "json", kind: "boolean", valueHint: null, default: false },
@@ -1561,6 +1640,11 @@ function validateReviewedCandidate({
           kind: "string",
           name: "rollback",
           valueHint: "<proof.json>",
+        },
+        {
+          kind: "string",
+          name: "assessment",
+          valueHint: "<migration-assessment.json>",
         },
         {
           default: false,
@@ -1668,6 +1752,59 @@ function validateReviewedCandidate({
       ],
     },
     {
+      id: ["task", "supervisor", "budget-epoch"],
+      visibility: "advanced",
+      group: "Task",
+      args: [{ name: "task-id", required: true, variadic: false, valueHint: "<task-id>" }],
+      options: [
+        {
+          name: "expected-journal-digest",
+          kind: "string",
+          valueHint: "<sha256>",
+          required: true,
+        },
+        {
+          name: "state-fingerprint",
+          kind: "string",
+          valueHint: "<sha256>",
+          required: true,
+        },
+        {
+          name: "max-input-tokens",
+          kind: "string",
+          valueHint: "<positive-integer>",
+          required: false,
+        },
+        { name: "disable-token-limits", kind: "boolean", valueHint: null, default: false },
+        {
+          name: "max-output-tokens",
+          kind: "string",
+          valueHint: "<positive-integer>",
+          required: false,
+        },
+        {
+          name: "max-total-tokens",
+          kind: "string",
+          valueHint: "<positive-integer>",
+          required: false,
+        },
+        { name: "by", kind: "string", valueHint: "<USER>", required: true },
+        { name: "json", kind: "boolean", valueHint: null, default: false },
+      ],
+    },
+    {
+      id: ["task", "work-item", "resume"],
+      visibility: "advanced",
+      group: "Task",
+      args: [{ name: "task-id", required: true, variadic: false, valueHint: "<task-id>" }],
+      options: [
+        { name: "work-item", kind: "string", valueHint: "<id>", required: true },
+        { name: "state-digest", kind: "string", valueHint: "<sha256:...>", required: true },
+        { name: "by", kind: "string", valueHint: "<role>", required: true, choices: ["USER"] },
+        { name: "note", kind: "string", valueHint: "<text>", required: true },
+      ],
+    },
+    {
       id: ["workflow", "migrate"],
       visibility: "user",
       group: "Workflow",
@@ -1689,6 +1826,13 @@ function validateReviewedCandidate({
     {
       command: "backend sync",
       name: "bootstrap-projection",
+      kind: "boolean",
+      valueHint: null,
+      default: false,
+    },
+    {
+      command: "cleanup inspect",
+      name: "json",
       kind: "boolean",
       valueHint: null,
       default: false,
@@ -2018,6 +2162,13 @@ function validateReviewedCandidate({
     },
     {
       command: "task create",
+      name: "capability",
+      kind: "string",
+      valueHint: "<capability>",
+      repeatable: true,
+    },
+    {
+      command: "task create",
       name: "blueprint-request",
       kind: "string",
       valueHint: "<id>",
@@ -2037,6 +2188,21 @@ function validateReviewedCandidate({
       ],
     },
     { command: "task create", name: "description", kind: "string", valueHint: "<text>" },
+    {
+      command: "task create",
+      name: "external-effect",
+      kind: "string",
+      valueHint: "<effect>",
+      choices: [
+        "network_read",
+        "external_write",
+        "credentials",
+        "publish",
+        "deploy",
+        "destructive_git",
+      ],
+      repeatable: true,
+    },
     {
       command: "task create",
       name: "json",
@@ -2060,11 +2226,43 @@ function validateReviewedCandidate({
     },
     {
       command: "task create",
+      name: "plan-file",
+      kind: "string",
+      valueHint: "<path>",
+    },
+    {
+      command: "task create",
       name: "priority",
       kind: "string",
       valueHint: "<low|normal|med|high>",
       default: "med",
       choices: ["low", "normal", "med", "high"],
+    },
+    {
+      command: "task create",
+      name: "repository-effect",
+      kind: "string",
+      valueHint: "<effect>",
+      choices: [
+        "repository_write",
+        "documentation",
+        "source_code",
+        "tests",
+        "public_api",
+        "schema",
+        "dependencies",
+        "ci",
+        "release_metadata",
+        "security_boundary",
+      ],
+      repeatable: true,
+    },
+    {
+      command: "task create",
+      name: "resource",
+      kind: "string",
+      valueHint: "<resource>",
+      repeatable: true,
     },
     {
       command: "task create",
@@ -2090,6 +2288,13 @@ function validateReviewedCandidate({
       default: "auto",
       choices: ["auto", "direct", "branch_pr"],
     },
+    {
+      command: "task create",
+      name: "scope-root",
+      kind: "string",
+      valueHint: "<repository-relative-path>",
+      repeatable: true,
+    },
     { command: "task create", name: "tag", kind: "string", valueHint: "<tag>", repeatable: true },
     {
       command: "task create",
@@ -2111,6 +2316,12 @@ function validateReviewedCandidate({
       kind: "boolean",
       name: "apply",
       valueHint: null,
+    },
+    {
+      command: "task kernel-migrate",
+      kind: "string",
+      name: "assessment",
+      valueHint: "<migration-assessment.json>",
     },
     {
       command: "task kernel-migrate",
@@ -2195,6 +2406,12 @@ function validateReviewedCandidate({
       required: true,
     },
     {
+      command: "task plan set",
+      name: "scope-expansion-approved-by",
+      kind: "string",
+      valueHint: "<role>",
+    },
+    {
       command: "task run",
       name: "allow-danger-full-access",
       kind: "boolean",
@@ -2276,6 +2493,91 @@ function validateReviewedCandidate({
       valueHint: "<sha256:...>",
     },
     {
+      command: "task supervisor budget-epoch",
+      name: "by",
+      kind: "string",
+      valueHint: "<USER>",
+      required: true,
+    },
+    {
+      command: "task supervisor budget-epoch",
+      name: "disable-token-limits",
+      kind: "boolean",
+      valueHint: null,
+      default: false,
+    },
+    {
+      command: "task supervisor budget-epoch",
+      name: "expected-journal-digest",
+      kind: "string",
+      valueHint: "<sha256>",
+      required: true,
+    },
+    {
+      command: "task supervisor budget-epoch",
+      name: "json",
+      kind: "boolean",
+      valueHint: null,
+      default: false,
+    },
+    {
+      command: "task supervisor budget-epoch",
+      name: "max-input-tokens",
+      kind: "string",
+      valueHint: "<positive-integer>",
+      required: false,
+    },
+    {
+      command: "task supervisor budget-epoch",
+      name: "max-output-tokens",
+      kind: "string",
+      valueHint: "<positive-integer>",
+      required: false,
+    },
+    {
+      command: "task supervisor budget-epoch",
+      name: "max-total-tokens",
+      kind: "string",
+      valueHint: "<positive-integer>",
+      required: false,
+    },
+    {
+      command: "task supervisor budget-epoch",
+      name: "state-fingerprint",
+      kind: "string",
+      valueHint: "<sha256>",
+      required: true,
+    },
+    {
+      command: "task work-item resume",
+      name: "by",
+      kind: "string",
+      valueHint: "<role>",
+      required: true,
+      choices: ["USER"],
+    },
+    {
+      command: "task work-item resume",
+      name: "note",
+      kind: "string",
+      valueHint: "<text>",
+      required: true,
+    },
+    {
+      command: "task work-item resume",
+      name: "state-digest",
+      kind: "string",
+      valueHint: "<sha256:...>",
+      required: true,
+    },
+    {
+      command: "task work-item resume",
+      name: "work-item",
+      kind: "string",
+      valueHint: "<id>",
+      required: true,
+    },
+    {
       command: "work resume",
       name: "apply",
       kind: "boolean",
@@ -2310,6 +2612,7 @@ function validateReviewedCandidate({
     },
   ];
   const expectedAdditionSources = [
+    { kind: "command", command: "cleanup inspect", source_task: "202609232231-BYSVV6" },
     { kind: "command", command: "context supervise-task", source_task: "202607221850-8HBF4J" },
     { kind: "command", command: "doctor legacy", source_task: "202608021535-CNQKXP" },
     { kind: "command", command: "evaluator apply", source_task: "202607221849-TBTX8X" },
@@ -2365,6 +2668,12 @@ function validateReviewedCandidate({
       command: "task scope extend",
       source_task: "202608181404-CR1F9W",
     },
+    {
+      kind: "command",
+      command: "task supervisor budget-epoch",
+      source_task: "202609130858-RMHWQ5",
+    },
+    { kind: "command", command: "task work-item resume", source_task: "202609271356-4SANDJ" },
     { kind: "command", command: "workflow migrate", source_task: "202607221846-4VB97J" },
     {
       kind: "option",
@@ -2377,6 +2686,12 @@ function validateReviewedCandidate({
       command: "backend sync",
       name: "bootstrap-projection",
       source_task: "202607221848-0ZAB1F",
+    },
+    {
+      kind: "option",
+      command: "cleanup inspect",
+      name: "json",
+      source_task: "202609232231-BYSVV6",
     },
     {
       kind: "option",
@@ -2662,6 +2977,12 @@ function validateReviewedCandidate({
     },
     {
       kind: "option",
+      command: "task plan set",
+      name: "scope-expansion-approved-by",
+      source_task: "202609162254-YE48GC",
+    },
+    {
+      kind: "option",
       command: "task complete",
       name: "accept-unobserved",
       source_task: "202608021534-YN84E1",
@@ -2681,6 +3002,12 @@ function validateReviewedCandidate({
     {
       kind: "option",
       command: "task create",
+      name: "capability",
+      source_task: "202609230942-E6D0V4",
+    },
+    {
+      kind: "option",
+      command: "task create",
       name: "blueprint-request",
       source_task: "202608110235-WCJJRD",
     },
@@ -2689,6 +3016,12 @@ function validateReviewedCandidate({
       command: "task create",
       name: "description",
       source_task: "202608061646-30TKV4",
+    },
+    {
+      kind: "option",
+      command: "task create",
+      name: "external-effect",
+      source_task: "202609230942-E6D0V4",
     },
     {
       kind: "option",
@@ -2711,8 +3044,26 @@ function validateReviewedCandidate({
     {
       kind: "option",
       command: "task create",
+      name: "plan-file",
+      source_task: "202609261720-KKE9ZN",
+    },
+    {
+      kind: "option",
+      command: "task create",
       name: "priority",
       source_task: "202608061646-30TKV4",
+    },
+    {
+      kind: "option",
+      command: "task create",
+      name: "repository-effect",
+      source_task: "202609230942-E6D0V4",
+    },
+    {
+      kind: "option",
+      command: "task create",
+      name: "resource",
+      source_task: "202609230942-E6D0V4",
     },
     {
       kind: "option",
@@ -2725,6 +3076,12 @@ function validateReviewedCandidate({
       command: "task create",
       name: "route",
       source_task: "202608061646-30TKV4",
+    },
+    {
+      kind: "option",
+      command: "task create",
+      name: "scope-root",
+      source_task: "202609230942-E6D0V4",
     },
     {
       kind: "option",
@@ -2789,6 +3146,33 @@ function validateReviewedCandidate({
       name: "state-scope-digest",
       source_task: "202608211020-FGAPJC",
     },
+    ...[
+      "by",
+      "disable-token-limits",
+      "expected-journal-digest",
+      "json",
+      "max-input-tokens",
+      "max-output-tokens",
+      "max-total-tokens",
+      "state-fingerprint",
+    ].map((name) => ({
+      kind: "option",
+      command: "task supervisor budget-epoch",
+      name,
+      source_task: "202609130858-RMHWQ5",
+    })),
+    {
+      kind: "option",
+      command: "task work-item resume",
+      name: "by",
+      source_task: "202609271356-4SANDJ",
+    },
+    ...["note", "state-digest", "work-item"].map((name) => ({
+      kind: "option",
+      command: "task work-item resume",
+      name,
+      source_task: "202609271356-4SANDJ",
+    })),
     {
       kind: "option",
       command: "workflow migrate",
@@ -2807,6 +3191,12 @@ function validateReviewedCandidate({
       command: "task kernel-migrate",
       name: "apply",
       source_task: "202608291006-2A6BJC",
+    },
+    {
+      kind: "option",
+      command: "task kernel-migrate",
+      name: "assessment",
+      source_task: "202609210324-CC13V3",
     },
     {
       kind: "option",
@@ -2919,9 +3309,28 @@ function validateReviewedCandidate({
       ],
     },
   };
+  const activeExpectedAdditionSources = expectedAdditionSources.filter(
+    (source) =>
+      source.command !== "task supervisor budget-epoch" &&
+      !(
+        source.kind === "option" &&
+        ((source.command === "task create" && source.name === "blueprint-request") ||
+          (source.command === "task new" && source.name === "canonical"))
+      ),
+  );
+  const activeExpectedAddedCommandDescriptors = expectedAddedCommandDescriptors
+    .filter((command) => command.id.join(" ") !== "task supervisor budget-epoch")
+    .map((command) =>
+      command.id.join(" ") === "task create"
+        ? {
+            ...command,
+            options: command.options.filter((option) => option.name !== "blueprint-request"),
+          }
+        : command,
+    );
   assert(
-    cliDelta?.classification === "compatible_with_visibility_and_profile_simplification",
-    "CLI candidate delta must preserve compatibility while simplifying visibility and profiles",
+    cliDelta?.classification === "intentional_breaking_retirement",
+    "CLI candidate delta must record the reviewed Blueprint command retirement",
   );
   assert(
     hashJson(cliDelta.evidence) ===
@@ -2946,13 +3355,14 @@ function validateReviewedCandidate({
         added_options: cliTopologyDelta.added_options,
         removed_options: cliTopologyDelta.removed_options,
         mutated_options: cliTopologyDelta.mutated_options,
-        addition_sources: expectedAdditionSources,
+        addition_sources: activeExpectedAdditionSources,
       }),
     "CLI candidate evidence drift",
   );
   assert(
     hashJson(addedCommands) ===
       hashJson([
+        "cleanup inspect",
         "context supervise-task",
         "doctor legacy",
         "evaluator apply",
@@ -2975,34 +3385,100 @@ function validateReviewedCandidate({
         "task run resume-effect",
         "task run tool",
         "task scope extend",
+        "task work-item resume",
         "workflow migrate",
       ]),
     "unexpected CLI addition",
   );
   assert(
     hashJson(cliTopologyDelta.added_command_descriptors) ===
-      hashJson(expectedAddedCommandDescriptors),
+      hashJson(activeExpectedAddedCommandDescriptors),
     "new CLI command descriptor is not in the approved delta",
   );
+  const activeExpectedAddedOptions = expectedAddedOptions.filter(
+    (option) =>
+      option.command !== "task supervisor budget-epoch" &&
+      !(option.command === "task create" && option.name === "blueprint-request") &&
+      !(option.command === "task new" && option.name === "canonical"),
+  );
   assert(
-    hashJson(cliTopologyDelta.added_options) === hashJson(expectedAddedOptions),
+    hashJson(cliTopologyDelta.added_options) === hashJson(activeExpectedAddedOptions),
     "CLI option addition is not in the approved delta",
   );
   assert(
-    hashJson(cliDelta.evidence.addition_sources) === hashJson(expectedAdditionSources),
+    hashJson(cliDelta.evidence.addition_sources) === hashJson(activeExpectedAdditionSources),
     "CLI addition source-task provenance drift",
   );
-  assert(removedCommands.length === 0, "candidate removes an existing CLI command");
+  const expectedRetiredCommands = [
+    "blueprint",
+    "blueprint drift",
+    "blueprint examples",
+    "blueprint explain",
+    "blueprint list",
+    "blueprint report",
+    "blueprint scaffold",
+    "blueprint snapshot",
+    "blueprint validate",
+    "blueprints",
+    "blueprints catalog",
+    "blueprints catalog info",
+    "blueprints catalog list",
+    "blueprints catalog refresh",
+    "blueprints install",
+  ];
   assert(
-    cliTopologyDelta.removed_command_descriptors.length === 0,
-    "candidate removes an existing CLI command descriptor",
+    hashJson(removedCommands) === hashJson(expectedRetiredCommands),
+    "candidate command removal is not the reviewed Blueprint retirement",
   );
   assert(
     hashJson(cliTopologyDelta.mutated_command_shells) ===
       hashJson([canonicalProfileCommandMutation, ...expectedVisibilityMutations]),
     "candidate command-shell mutation is not an approved simplification",
   );
-  assert(cliTopologyDelta.removed_options.length === 0, "candidate removes an existing CLI option");
+  const expectedRetiredOptions = [
+    "blueprint drift:json",
+    "blueprint examples:json",
+    "blueprint explain:blueprint",
+    "blueprint explain:description",
+    "blueprint explain:json",
+    "blueprint explain:kind",
+    "blueprint explain:mutation",
+    "blueprint explain:risk",
+    "blueprint explain:tag",
+    "blueprint explain:title",
+    "blueprint explain:workflow-mode",
+    "blueprint list:json",
+    "blueprint list:project",
+    "blueprint list:trusted",
+    "blueprint report:json",
+    "blueprint scaffold:force",
+    "blueprint scaffold:from",
+    "blueprint scaffold:json",
+    "blueprint scaffold:out",
+    "blueprint snapshot:json",
+    "blueprint validate:json",
+    "blueprint validate:project",
+    "blueprints catalog info:json",
+    "blueprints catalog info:kind",
+    "blueprints catalog list:json",
+    "blueprints catalog refresh:index",
+    "blueprints catalog refresh:json",
+    "blueprints install:activate",
+    "blueprints install:index",
+    "blueprints install:json",
+    "blueprints install:kind",
+    "blueprints install:refresh",
+    "init:blueprints",
+    "task begin:blueprint-request",
+    "task new:blueprint-request",
+    "task new:show-blueprint",
+  ];
+  assert(
+    hashJson(
+      cliTopologyDelta.removed_options.map((option) => `${option.command}:${option.name}`),
+    ) === hashJson(expectedRetiredOptions),
+    "candidate option removal is not the reviewed Blueprint retirement",
+  );
   const supersededQueueReleaseStatusMutation = {
     identity: "integrate queue release --status",
     before: {

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "hosted-verification-pending",
+      "severity": "low",
+      "summary": "Local verification passes for the evaluated SHA: 2 conservation tests, 10 output-parity tests, 183 related tests, typecheck, schema/template checks, and full local CI. Hosted CI remains an integration prerequisite.",
+      "broken_invariant": "None in the reviewed semantic implementation; local verification does not establish hosted integration readiness.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609121424-ZEJ656/verification/20260913175610563-5ac26e94d52e7e95.json",
+          "sha256": "sha256:356114e5f6840995540e1f70377bc68b13e23250bb8b5d6053d97a0e067c0b18",
+          "section": "details"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

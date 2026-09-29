@@ -22,7 +22,7 @@ describe("runner execution playbooks", () => {
     expect(resolved.match_reasons.length).toBeGreaterThanOrEqual(3);
   });
 
-  it("keeps execution blueprint state separate from playbook steps", () => {
+  it("keeps execution outcome state separate from playbook steps", () => {
     const bundle = makeRunnerContextBundle({
       title: "Capture inbox source into knowledge base",
       description: "Create capture, distill card, thread update, and retire the source.",
@@ -30,9 +30,9 @@ describe("runner execution playbooks", () => {
 
     const contract = buildRunnerExecutionPlaybookContract(bundle);
 
-    expect(contract.execution_blueprint.id).toBe("knowledge_capture_result");
+    expect(contract.execution_outcome.id).toBe("knowledge_capture_result");
     expect(contract.selected_playbook?.required_steps).toContain("write_card");
-    expect(contract.execution_blueprint.required_state).toEqual([
+    expect(contract.execution_outcome.required_state).toEqual([
       "capture_artifact_exists",
       "distill_card_exists",
       "retrieval_index_updated",

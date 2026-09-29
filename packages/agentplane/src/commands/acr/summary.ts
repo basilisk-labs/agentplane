@@ -1,8 +1,12 @@
 import type { AgentChangeRecord } from "@agentplaneorg/core/schemas";
 
 export function summarizeAcr(record: AgentChangeRecord) {
-  const blueprint = record.extensions?.["agentplane.blueprint"] as
-    | { blueprint_id?: unknown; route?: unknown }
+  const nativeIdentity = (record.extensions?.["agentplane.native-identity"] ??
+    record.extensions?.["agentplane.native_identity"]) as
+    | {
+        identity?: { plan?: { revision?: unknown; digest?: unknown }; digest?: unknown };
+        review_identity?: { digest?: unknown } | null;
+      }
     | undefined;
   return {
     task_id: record.task.task_id,
@@ -19,13 +23,22 @@ export function summarizeAcr(record: AgentChangeRecord) {
     },
     verification: record.verification.status,
     merge_ready: record.result.merge_ready,
-    blueprint:
-      typeof blueprint?.blueprint_id === "string"
+    native_identity:
+      typeof nativeIdentity?.identity?.digest === "string"
         ? {
-            id: blueprint.blueprint_id,
-            route: Array.isArray(blueprint.route)
-              ? blueprint.route.filter((item): item is string => typeof item === "string")
-              : [],
+            digest: nativeIdentity.identity.digest,
+            plan_revision:
+              typeof nativeIdentity.identity.plan?.revision === "number"
+                ? nativeIdentity.identity.plan.revision
+                : null,
+            plan_digest:
+              typeof nativeIdentity.identity.plan?.digest === "string"
+                ? nativeIdentity.identity.plan.digest
+                : null,
+            review_digest:
+              typeof nativeIdentity.review_identity?.digest === "string"
+                ? nativeIdentity.review_identity.digest
+                : null,
           }
         : null,
     record_digest: record.integrity.record_digest,
@@ -43,10 +56,11 @@ export function renderAcrSummary(summary: ReturnType<typeof summarizeAcr>): stri
     `Policy: ${summary.policy.pass} pass, ${summary.policy.fail} fail, ${summary.policy.warning} warning, ${summary.policy.manual_override} manual override`,
     `Verification: ${summary.verification}`,
     `Merge ready: ${summary.merge_ready ? "yes" : "no"}`,
-    ...(summary.blueprint
+    ...(summary.native_identity
       ? [
-          `Blueprint: ${summary.blueprint.id}`,
-          `Blueprint route: ${summary.blueprint.route.join(" -> ")}`,
+          `Native identity: ${summary.native_identity.digest}`,
+          `Plan: revision ${summary.native_identity.plan_revision ?? "unknown"}, ${summary.native_identity.plan_digest ?? "missing"}`,
+          `Review identity: ${summary.native_identity.review_digest ?? "missing"}`,
         ]
       : []),
     `Digest: ${summary.record_digest}`,

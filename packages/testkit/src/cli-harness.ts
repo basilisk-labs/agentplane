@@ -9,7 +9,7 @@ import { defaultConfig, loadConfig, saveConfig } from "@agentplaneorg/core/confi
 import { resolveBaseBranch } from "@agentplaneorg/core/git";
 import { readTask } from "@agentplaneorg/core/tasks";
 
-import { runCli } from "./agentplane-internal.js";
+import { materializeLegacyDrainIdentityFixture, runCli } from "./agentplane-internal.js";
 import { resetRecipeArchiveCache } from "./cli-harness/recipe-archives.js";
 import { captureStdIO, runCliSilent, silenceStdIO } from "./cli-harness/stdio.js";
 import { removeTempRoot } from "./cli-harness/temp-root-cleanup.js";
@@ -42,13 +42,16 @@ async function ensureEvaluatorPolicyFixture(root: string): Promise<string[]> {
   const createdPaths = await Promise.all(
     EVALUATOR_FIXTURE_POLICY_PATHS.map(async (relativePath) => {
       const filePath = path.join(root, relativePath);
+      await mkdir(path.dirname(filePath), { recursive: true });
       try {
-        await access(filePath);
-        return null;
-      } catch {
-        await mkdir(path.dirname(filePath), { recursive: true });
-        await writeFile(filePath, `# Test evaluator policy fixture: ${relativePath}\n`, "utf8");
+        await writeFile(filePath, `# Test evaluator policy fixture: ${relativePath}\n`, {
+          encoding: "utf8",
+          flag: "wx",
+        });
         return filePath;
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === "EEXIST") return null;
+        throw error;
       }
     }),
   );
@@ -258,7 +261,37 @@ export async function writeAndConfigureRoot(): Promise<string> {
 }
 
 export async function approveTaskPlan(root: string, taskId: string): Promise<void> {
+  await materializeLegacyDrainIdentityFixture({
+    root,
+    task_id: taskId,
+    adopt_canonical_as_legacy: true,
+    ownership_only: true,
+  });
   await setTaskVerifySteps(root, taskId);
+  const canonicalPlan = {
+    work_items: [
+      {
+        id: "do-the-work",
+        depends_on: [],
+        required_inputs: [],
+        expected_outputs: ["work-complete"],
+        execution_requirements: {
+          scope_roots: [],
+          repository_effects: [],
+          external_effects: [],
+          capabilities: [],
+          resources: [],
+        },
+        optional: false,
+        contract: {
+          objective: "Do the work described by the task.",
+          acceptance_criteria: ["The task work is complete."],
+          verification_commands: [],
+          role: "EXECUTOR",
+        },
+      },
+    ],
+  };
   expect(
     await runCliSilent([
       "task",
@@ -266,15 +299,16 @@ export async function approveTaskPlan(root: string, taskId: string): Promise<voi
       "set",
       taskId,
       "--text",
-      "1) Do the work\n2) Verify the work",
+      JSON.stringify(canonicalPlan),
       "--updated-by",
       "ORCHESTRATOR",
       "--root",
       root,
     ]),
   ).toBe(0);
-  expect(
-    await runCliSilent([
+  const approvalIo = captureStdIO();
+  try {
+    const code = await runCli([
       "task",
       "plan",
       "approve",
@@ -285,13 +319,23 @@ export async function approveTaskPlan(root: string, taskId: string): Promise<voi
       "OK",
       "--root",
       root,
-    ]),
-  ).toBe(0);
+    ]);
+    expect(code, approvalIo.stderr).toBe(0);
+  } finally {
+    approvalIo.restore();
+  }
 }
 
 export async function setTaskVerifySteps(root: string, taskId: string): Promise<void> {
-  expect(
-    await runCliSilent([
+  await materializeLegacyDrainIdentityFixture({
+    root,
+    task_id: taskId,
+    adopt_canonical_as_legacy: true,
+    ownership_only: true,
+  });
+  const io = captureStdIO();
+  try {
+    const code = await runCli([
       "task",
       "doc",
       "set",
@@ -302,14 +346,24 @@ export async function setTaskVerifySteps(root: string, taskId: string): Promise<
       "Run verify for this task. Expected: verification records successfully.",
       "--root",
       root,
-    ]),
-  ).toBe(0);
+    ]);
+    expect(code, io.stderr).toBe(0);
+  } finally {
+    io.restore();
+  }
 }
 
 export async function recordVerificationOk(root: string, taskId: string): Promise<void> {
   await setTaskVerifySteps(root, taskId);
-  expect(
-    await runCliSilent([
+  await materializeLegacyDrainIdentityFixture({
+    root,
+    task_id: taskId,
+    work_items_completed: true,
+  });
+  const io = captureStdIO();
+  let code: number;
+  try {
+    code = await runCli([
       "verify",
       taskId,
       "--ok",
@@ -327,8 +381,11 @@ export async function recordVerificationOk(root: string, taskId: string): Promis
       "--quiet",
       "--root",
       root,
-    ]),
-  ).toBe(0);
+    ]);
+  } finally {
+    io.restore();
+  }
+  expect(code!, io.stderr).toBe(0);
   await recordQualityReviewPass(root, taskId);
 }
 
@@ -501,13 +558,6 @@ export async function prepareHostedIntegrateFixture(opts: {
     [`.agentplane/tasks/${opts.taskId}`],
     `${opts.taskId} link hosted PR fixture`,
   );
-  await runFixtureStep("Blueprint snapshot", [
-    "blueprint",
-    "snapshot",
-    opts.taskId,
-    "--root",
-    opts.root,
-  ]);
   await recordVerificationOk(opts.root, opts.taskId);
   await commitPathsIfChanged(
     opts.root,
@@ -547,13 +597,6 @@ export async function prepareHostedIntegrateFixture(opts: {
     opts.root,
   ];
   await runFixtureStep("Pre-merge closure", closureArgs(await reviewedSha()));
-  await runFixtureStep("Post-closure blueprint snapshot", [
-    "blueprint",
-    "snapshot",
-    opts.taskId,
-    "--root",
-    opts.root,
-  ]);
   await recordVerificationOk(opts.root, opts.taskId);
   const postClosurePaths = [`.agentplane/tasks/${opts.taskId}`];
   if (await pathExists(path.join(opts.root, ".agentplane", "policy", "incidents.md"))) {

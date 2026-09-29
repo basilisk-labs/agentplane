@@ -28,6 +28,11 @@ async function mkGitRepoRoot(): Promise<string> {
 }
 
 describe("base-branch", () => {
+  it("returns null when the pinned branch key is absent", async () => {
+    const root = await mkGitRepoRoot();
+    await expect(getPinnedBaseBranch({ cwd: root, rootOverride: root })).resolves.toBeNull();
+  });
+
   it("getBaseBranch rejects when base branch is not pinned", async () => {
     const root = await mkGitRepoRoot();
     await expect(getBaseBranch({ cwd: root, rootOverride: root })).rejects.toThrow(
@@ -228,5 +233,13 @@ describe("base-branch", () => {
     await rm(configPath);
     await mkdir(configPath);
     await expect(getPinnedBaseBranch({ cwd: root, rootOverride: root })).rejects.toThrow();
+  });
+
+  it("preserves the diagnostic for malformed local config", async () => {
+    const root = await mkGitRepoRoot();
+    await writeFile(path.join(root, ".git", "config"), "[invalid\n");
+    await expect(getPinnedBaseBranch({ cwd: root, rootOverride: root })).rejects.toThrow(
+      /bad config/iu,
+    );
   });
 });

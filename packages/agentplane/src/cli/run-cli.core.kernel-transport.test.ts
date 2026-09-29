@@ -30,30 +30,32 @@ import { createKernelRuntime } from "../commands/task/kernel-runtime-context.js"
 import { makeTaskBackendDouble } from "@agentplane/testkit/task";
 import * as taskBackend from "../backends/task-backend.js";
 import { observeKernelTestRunner } from "../commands/task/kernel-run.testkit.js";
+import { readKernelOperationalProjection } from "../commands/task/kernel-operational-projection.js";
 
 async function createTask(root: string): Promise<string> {
-  const io = captureStdIO();
-  try {
-    const code = await runCli([
-      "task",
-      "new",
-      "--canonical",
-      "--title",
-      "Canonical creation",
-      "--description",
-      "Persist immutable intent with the canonical aggregate",
-      "--owner",
-      "CODER",
-      "--tag",
-      "code",
-      "--root",
-      root,
-    ]);
-    expect(code, io.stderr).toBe(0);
-    return io.stdout.trim();
-  } finally {
-    io.restore();
-  }
+  const created = await runJson(root, [
+    "task",
+    "create",
+    "Canonical creation",
+    "--description",
+    "Persist immutable intent with the canonical aggregate",
+    "--task-kind",
+    "code",
+    "--mutation-scope",
+    "code",
+    "--scope-root",
+    "result.txt",
+    "--scope-root",
+    "more",
+    "--repository-effect",
+    "source_code",
+    "--capability",
+    "repository_write",
+    "--verify",
+    "node --version",
+    "--json",
+  ]);
+  return String(created.task_id);
 }
 
 async function refused(root: string, argv: string[], message: string) {
@@ -106,6 +108,11 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
       execFileSync("git", ["-c", "core.hooksPath=/dev/null", ...args], { cwd: root });
     git(["add", "."]);
     git(["commit", "-m", "canonical worktree fixture"]);
+    const primaryPacket = await runJson(root, ["task", "advance", taskId, "--agent-json"]);
+    const primaryExchange = primaryPacket.exchange as { directory: string };
+    const primaryOrder = AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse(
+      JSON.parse(await readFile(path.join(primaryExchange.directory, "work-order.json"), "utf8")),
+    );
     const linked = path.join(root, ".agentplane/worktrees/canonical-context");
     git(["worktree", "add", "-b", "canonical-context", linked]);
     const initial = await loadCommandContext({ cwd: linked });
@@ -125,6 +132,7 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
     const order = AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse(
       JSON.parse(await readFile(path.join(exchange.directory, "work-order.json"), "utf8")),
     );
+    expect(order.work_order_id).not.toBe(primaryOrder.work_order_id);
     expect(order.state_fingerprint.worktree).toBe(initial.resolvedProject.gitRoot);
     expect(order.canonical_binding?.repository_fingerprint).toBe(before.fingerprint);
     await writeFile(path.join(linked, "local-change.txt"), "local change");
@@ -251,10 +259,10 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
         plan_revision: 1,
       });
       const waiting = await runJson(root, ["task", "advance", taskId, "--agent-json"]);
-      expect(waiting.action).toMatchObject({
-        kind: "external_wait",
-        reason: "kernel_work_item_result_required",
-      });
+      expect(waiting.action).toMatchObject({ kind: "agent_episode" });
+      expect((waiting.exchange as { result_path: string }).result_path).toBe(
+        implementationExchange.result_path,
+      );
       await writeFile(path.join(root, "result.txt"), "implementation");
       const result = {
         schema_version: 2,
@@ -270,9 +278,15 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
         ],
       };
       const beforeInvalid = await runtime.adapter.read(taskId);
-      for (const invalid of [
-        { ...result, canonical_binding: { ...result.canonical_binding, claim_id: "foreign" } },
-        { ...result, canonical_outputs: [] },
+      for (const { invalid, message } of [
+        {
+          invalid: {
+            ...result,
+            canonical_binding: { ...result.canonical_binding, claim_id: "foreign" },
+          },
+          message: "canonical_binding",
+        },
+        { invalid: { ...result, canonical_outputs: [] }, message: "Canonical output claims" },
       ]) {
         await writeFile(implementationExchange.result_path, JSON.stringify(invalid));
         await refused(
@@ -285,7 +299,7 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
             implementationExchange.result_path,
             "--agent-json",
           ],
-          "Canonical",
+          message,
         );
         expect(await runtime.adapter.read(taskId)).toEqual(beforeInvalid);
       }
@@ -418,7 +432,7 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
       }
       await writeFile(path.join(root, "result.txt"), "changed after inspection");
       await expect(
-        acceptKernelInspection(command, runtime, inspectionExchange.directory, review),
+        acceptKernelInspection(command, runtime, inspectionExchange.directory, review, inspection),
       ).rejects.toThrow("stale");
       await writeFile(path.join(root, "result.txt"), "implementation");
       const apply = runtime.lifecycle.apply.bind(runtime.lifecycle);
@@ -429,7 +443,7 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
         return result;
       });
       await expect(
-        acceptKernelInspection(command, runtime, inspectionExchange.directory, review),
+        acceptKernelInspection(command, runtime, inspectionExchange.directory, review, inspection),
       ).rejects.toThrow("crash after durable validation");
       crash.mockRestore();
       const interrupted = await runtime.adapter.read(taskId);
@@ -444,7 +458,13 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
         status: "passed",
         checks: [{ command: "node --version", exit_code: 0 }],
       });
-      await acceptKernelInspection(command, runtime, inspectionExchange.directory, review);
+      await acceptKernelInspection(
+        command,
+        runtime,
+        inspectionExchange.directory,
+        review,
+        inspection,
+      );
       expect(
         JSON.parse(
           await readFile(path.join(inspectionExchange.directory, "validation.json"), "utf8"),
@@ -484,13 +504,58 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
         root,
       ]);
       expect(await runtime.adapter.read(taskId)).toEqual(amended);
-      refined.work_items[1]!.execution_requirements.scope_roots = ["."];
+      refined.work_items[1]!.execution_requirements.scope_roots = [
+        "more/result.txt",
+        "more/extra.txt",
+      ];
       await refused(
         root,
         ["task", "plan", "set", taskId, "--text", JSON.stringify(refined)],
         "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
       );
-      expect(await runtime.adapter.read(taskId)).toEqual(amended);
+      expect(
+        await runCliSilent([
+          "task",
+          "plan",
+          "set",
+          taskId,
+          "--text",
+          JSON.stringify(refined),
+          "--scope-expansion-approved-by",
+          "USER",
+          "--root",
+          root,
+        ]),
+      ).toBe(0);
+      const expanded = await runtime.adapter.read(taskId);
+      if (expanded.kind !== "canonical") throw new Error("Approved amendment missing");
+      expect(expanded.record.aggregate.current_plan).toMatchObject({
+        revision: 3,
+        approval_actor_id: "USER",
+      });
+      expect(expanded.record.aggregate.current_plan?.approval_evidence_digest).not.toBe(
+        amended.record.aggregate.current_plan?.approval_evidence_digest,
+      );
+      refined.work_items[1]!.execution_requirements.scope_roots = [
+        "more/result.txt",
+        "more/extra.txt",
+        "docs/user/cli-reference.generated.mdx",
+      ];
+      await refused(
+        root,
+        [
+          "task",
+          "plan",
+          "set",
+          taskId,
+          "--text",
+          JSON.stringify(refined),
+          "--scope-expansion-approved-by",
+          "USER",
+        ],
+        "Canonical Plan exceeds the trusted execution contract: scope_roots",
+      );
+      expect(await runtime.adapter.read(taskId)).toEqual(expanded);
     },
   );
   it.each([
@@ -524,6 +589,15 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
           contract: { role: 'EXECUTOR', objective: 'Write result.txt', acceptance_criteria: ['Result exists'], verification_commands: ['node --version'] } }] };
       } else if (order.role === 'EVALUATOR') {
         assert.equal(order.authority.mutation_scope, 'none');
+        result.findings = ['The implementation was inspected against the issued contract.'];
+        if (order.canonical_binding.attempt > 1) {
+          const repositoryEvidence = order.required_inputs.find(input => input.id === 'repository-evidence');
+          assert(repositoryEvidence && repositoryEvidence.required && repositoryEvidence.path);
+          const evidence = JSON.parse(fs.readFileSync(repositoryEvidence.path, 'utf8'));
+          assert.equal(evidence.task_id, order.task.id);
+          assert.equal(evidence.work_item_id, order.task.work_item_id);
+          assert.equal(evidence.evaluator_target, evidence.implementation_commit);
+        }
         result.review = { verdict: ${backendKind === "cloud" ? "order.canonical_binding.attempt === 1 ? 'rework' : 'pass'" : "'pass'"}, missing_tests: [], hidden_assumptions: [], residual_risks: [] };
       } else {
         assert(order.required_outputs.some(output => output.id === 'output:source'));
@@ -548,12 +622,8 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
       const preview = await runJson(root, ["task", "run", taskId, "--dry-run", "--json"]);
       expect(preview.action).toMatchObject({ kind: "read_only" });
       expect(execute).not.toHaveBeenCalled();
-      const planned = await runJson(root, ["task", "run", taskId, "--json"]);
       if (mode === "real-custom") {
-        expect(planned.action).toMatchObject({
-          kind: "human_required",
-          reason: "canonical_runner_receipt_not_successful",
-        });
+        await refused(root, ["task", "run", taskId, "--json"], "required read-only planning");
         const command = await loadCommandContext({ cwd: root });
         const runtime = await createKernelRuntime({
           command,
@@ -563,9 +633,10 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
         });
         const state = await runtime.adapter.read(taskId);
         expect(state.kind === "canonical" && state.record.aggregate.current_plan).toBeNull();
-        expect(execute).toHaveBeenCalledTimes(1);
+        expect(execute).not.toHaveBeenCalled();
         return;
       }
+      const planned = await runJson(root, ["task", "run", taskId, "--json"]);
       expect(planned.action).toMatchObject({ kind: "approval_required" });
       await runCliSilent(["task", "plan", "approve", taskId, "--by", "USER", "--root", root]);
       const command = await loadCommandContext({ cwd: root });
@@ -588,7 +659,13 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
           const stopped = await runJson(root, ["task", "run", taskId, "--json"]);
           expect(stopped.action).toMatchObject({
             kind: "human_required",
-            reason: "canonical_transition_no_progress",
+            reason: "internal_anomaly",
+            diagnostic: {
+              code: "orchestrator_tight_loop",
+              repetition_count: 4,
+              exhausted_recovery_strategies: ["route_refresh", "repository_checkpoint"],
+              resume_hint: "Inspect the route and repository checkpoint, then rerun task advance.",
+            },
           });
           expect(execute).toHaveBeenCalledTimes(1);
         } finally {
@@ -605,6 +682,8 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
             return result;
           });
         try {
+          const evaluator = await runJson(root, ["task", "run", taskId, "--json"]);
+          expect(evaluator.authority).toMatchObject({ role: "EVALUATOR" });
           await refused(root, ["task", "run", taskId, "--json"], "inputs changed during checks");
         } finally {
           drift.mockRestore();
@@ -623,6 +702,12 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
             return result;
           });
         try {
+          const firstEvaluator = await runJson(root, ["task", "run", taskId, "--json"]);
+          expect(firstEvaluator.authority).toMatchObject({ role: "EVALUATOR" });
+          const rework = await runJson(root, ["task", "run", taskId, "--json"]);
+          expect(rework.authority).toMatchObject({ role: "EXECUTOR" });
+          const secondEvaluator = await runJson(root, ["task", "run", taskId, "--json"]);
+          expect(secondEvaluator.authority).toMatchObject({ role: "EVALUATOR" });
           await refused(root, ["task", "run", taskId, "--json"], "crash after final validation");
         } finally {
           crash.mockRestore();
@@ -640,12 +725,19 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
       const completed = await runtime.adapter.read(taskId);
       if (completed.kind !== "canonical") throw new Error("Missing completed task");
       expect(completed.record.aggregate.final_validation?.status).toBe("PASSED");
+      if (backendKind === "cloud") {
+        const task = await command.taskBackend.getTask(taskId);
+        expect(readKernelOperationalProjection(task?.extensions)).toMatchObject({
+          source: "task_kernel",
+        });
+      }
+      // Recovery reuses the persisted validation instead of recording a second mutation.
       if (backendKind === "cloud")
         expect(
           Object.keys(completed.record.aggregate.mutation_receipts).filter((id) =>
             id.startsWith("final-validation:"),
           ),
-        ).toHaveLength(2);
+        ).toHaveLength(1);
       expect(await readFile(path.join(root, "result.txt"), "utf8")).toBe("managed implementation");
       expect(execute).toHaveBeenCalledTimes(backendKind === "cloud" ? 5 : 3);
       const again = await runJson(root, ["task", "run", taskId, "--json"]);

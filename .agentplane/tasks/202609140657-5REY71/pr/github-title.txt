@@ -1,0 +1,1 @@
+✅ 5REY71 task: Add supervisor-owned base synchronization before semantic work on stale branch_pr candidates [202609140657-5REY71]

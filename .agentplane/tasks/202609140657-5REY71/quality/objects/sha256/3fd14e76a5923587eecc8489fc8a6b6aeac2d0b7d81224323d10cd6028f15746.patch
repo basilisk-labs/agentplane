@@ -1,0 +1,1224 @@
+diff --git a/packages/agentplane/src/commands/branch/sync-task-base.test.ts b/packages/agentplane/src/commands/branch/sync-task-base.test.ts
+new file mode 100644
+index 000000000..3a5693785
+--- /dev/null
++++ b/packages/agentplane/src/commands/branch/sync-task-base.test.ts
+@@ -0,0 +1,126 @@
++import { mkdtemp, mkdir, writeFile } from "node:fs/promises";
++import { tmpdir } from "node:os";
++import path from "node:path";
++
++import { execFileAsync } from "@agentplaneorg/core/process";
++import { describe, expect, it } from "vitest";
++
++import { synchronizeTaskBranchBase } from "./sync-task-base.js";
++
++async function git(cwd: string, ...args: string[]): Promise<string> {
++  const result = await execFileAsync("git", args, { cwd });
++  return result.stdout.trim();
++}
++
++async function fixture(conflict = false) {
++  const root = await mkdtemp(path.join(tmpdir(), "agentplane-sync-task-base-"));
++  await git(root, "init", "-b", "main");
++  await git(root, "config", "user.name", "Test User");
++  await git(root, "config", "user.email", "test@example.com");
++  await writeFile(path.join(root, ".gitignore"), ".agentplane/cache/\n", "utf8");
++  await writeFile(path.join(root, "shared.txt"), "initial\n", "utf8");
++  await git(root, "add", ".");
++  await git(root, "commit", "-m", "test: initial");
++  const initial = await git(root, "rev-parse", "HEAD");
++  const taskId = "202609140657-5REY71";
++  const branch = `task/${taskId}/sync-base`;
++  await git(root, "checkout", "-b", branch);
++  await writeFile(path.join(root, conflict ? "shared.txt" : "task.txt"), "task\n", "utf8");
++  await git(root, "add", ".");
++  await git(root, "commit", "-m", "feat: task candidate");
++  const expectedHeadSha = await git(root, "rev-parse", "HEAD");
++  await git(root, "checkout", "main");
++  await writeFile(path.join(root, conflict ? "shared.txt" : "base.txt"), "base\n", "utf8");
++  await git(root, "add", ".");
++  await git(root, "commit", "-m", "feat: advance base");
++  const expectedBaseSha = await git(root, "rev-parse", "HEAD");
++  const worktreePath = path.join(root, "task-worktree");
++  await git(root, "worktree", "add", worktreePath, branch);
++  return { root, worktreePath, taskId, branch, initial, expectedHeadSha, expectedBaseSha };
++}
++
++describe("task branch base synchronization", () => {
++  it("creates one merge commit with the exact previous head and plan-bound base", async () => {
++    const f = await fixture();
++    const taskDir = path.join(f.worktreePath, ".agentplane", "tasks", f.taskId);
++    await mkdir(taskDir, { recursive: true });
++    await writeFile(path.join(taskDir, "README.md"), "task artifact\n", "utf8");
++
++    const result = await synchronizeTaskBranchBase({
++      gitRoot: f.root,
++      worktreePath: f.worktreePath,
++      workflowDir: ".agentplane/tasks",
++      tasksPath: ".agentplane/tasks.json",
++      taskId: f.taskId,
++      branch: f.branch,
++      baseBranch: "main",
++      expectedHeadSha: f.expectedHeadSha,
++      expectedBaseSha: f.expectedBaseSha,
++    });
++
++    expect(result.state).toBe("updated");
++    expect(await git(f.worktreePath, "rev-list", "--parents", "-n", "1", result.headSha)).toBe(
++      `${result.headSha} ${f.expectedHeadSha} ${f.expectedBaseSha}`,
++    );
++    await expect(
++      git(f.worktreePath, "merge-base", "--is-ancestor", f.expectedHeadSha, result.headSha),
++    ).resolves.toBe("");
++    await expect(
++      git(f.worktreePath, "merge-base", "--is-ancestor", f.expectedBaseSha, result.headSha),
++    ).resolves.toBe("");
++  });
++
++  it("refuses a semantic conflict without changing task HEAD", async () => {
++    const f = await fixture(true);
++
++    await expect(
++      synchronizeTaskBranchBase({
++        gitRoot: f.root,
++        worktreePath: f.worktreePath,
++        workflowDir: ".agentplane/tasks",
++        tasksPath: ".agentplane/tasks.json",
++        taskId: f.taskId,
++        branch: f.branch,
++        baseBranch: "main",
++        expectedHeadSha: f.expectedHeadSha,
++        expectedBaseSha: f.expectedBaseSha,
++      }),
++    ).rejects.toThrow("require semantic conflict resolution");
++    expect(await git(f.worktreePath, "rev-parse", "HEAD")).toBe(f.expectedHeadSha);
++    expect(await git(f.worktreePath, "status", "--porcelain")).toBe("");
++  });
++
++  it("refuses stale identity and unrelated dirty content before mutation", async () => {
++    const f = await fixture();
++    await writeFile(path.join(f.worktreePath, "dirty.txt"), "dirty\n", "utf8");
++
++    await expect(
++      synchronizeTaskBranchBase({
++        gitRoot: f.root,
++        worktreePath: f.worktreePath,
++        workflowDir: ".agentplane/tasks",
++        tasksPath: ".agentplane/tasks.json",
++        taskId: f.taskId,
++        branch: f.branch,
++        baseBranch: "main",
++        expectedHeadSha: f.expectedHeadSha,
++        expectedBaseSha: f.initial,
++      }),
++    ).rejects.toThrow("base main changed");
++
++    await expect(
++      synchronizeTaskBranchBase({
++        gitRoot: f.root,
++        worktreePath: f.worktreePath,
++        workflowDir: ".agentplane/tasks",
++        tasksPath: ".agentplane/tasks.json",
++        taskId: f.taskId,
++        branch: f.branch,
++        baseBranch: "main",
++        expectedHeadSha: f.expectedHeadSha,
++        expectedBaseSha: f.expectedBaseSha,
++      }),
++    ).rejects.toThrow("task worktree is dirty: dirty.txt");
++    expect(await git(f.worktreePath, "rev-parse", "HEAD")).toBe(f.expectedHeadSha);
++  });
++});
+diff --git a/packages/agentplane/src/commands/branch/sync-task-base.ts b/packages/agentplane/src/commands/branch/sync-task-base.ts
+new file mode 100644
+index 000000000..7aa43e452
+--- /dev/null
++++ b/packages/agentplane/src/commands/branch/sync-task-base.ts
+@@ -0,0 +1,165 @@
++import { execFileAsync } from "@agentplaneorg/core/process";
++import { realpath } from "node:fs/promises";
++
++import { CliError } from "../../shared/errors.js";
++import { withGitMutationMutex } from "../../shared/git-mutation.js";
++import { filterTaskWorktreeBlockingPaths } from "../shared/route-decision-worktree-cleanliness.js";
++import { inspectTaskWorktreeCleanliness } from "../shared/task-worktree-cleanliness.js";
++
++const FULL_SHA = /^(?:[a-f0-9]{40}|[a-f0-9]{64})$/u;
++
++export type TaskBranchBaseSyncResult = {
++  state: "already_current" | "updated";
++  headSha: string;
++};
++
++function refuse(reason: string, taskId: string): never {
++  throw new CliError({
++    code: "E_VALIDATION",
++    message: `Task branch base synchronization refused for ${taskId}: ${reason}.`,
++    context: { reason_code: "task_branch_base_sync_refused", task_id: taskId },
++  });
++}
++
++async function git(cwd: string, args: string[]): Promise<string> {
++  const result = await execFileAsync("git", args, { cwd });
++  return result.stdout.trim();
++}
++
++async function isAncestor(cwd: string, ancestor: string, descendant: string): Promise<boolean> {
++  try {
++    await git(cwd, ["merge-base", "--is-ancestor", ancestor, descendant]);
++    return true;
++  } catch (error) {
++    if ((error as { exitCode?: unknown } | null)?.exitCode === 1) return false;
++    throw error;
++  }
++}
++
++export async function synchronizeTaskBranchBase(opts: {
++  gitRoot: string;
++  worktreePath: string;
++  workflowDir: string;
++  tasksPath: string;
++  taskId: string;
++  branch: string;
++  baseBranch: string;
++  expectedHeadSha: string;
++  expectedBaseSha: string;
++}): Promise<TaskBranchBaseSyncResult> {
++  if (!FULL_SHA.test(opts.expectedHeadSha) || !FULL_SHA.test(opts.expectedBaseSha)) {
++    refuse("expected head and base identities must be full commit SHAs", opts.taskId);
++  }
++  return withGitMutationMutex(
++    {
++      repoRoot: opts.worktreePath,
++      operation: "task-branch-base-sync",
++      workflowMode: "branch_pr",
++      mutationKind: "integration",
++      taskId: opts.taskId,
++    },
++    async () => {
++      const assertBoundState = async (): Promise<void> => {
++        const [topLevel, expectedTopLevel, branch, head, base] = await Promise.all([
++          git(opts.worktreePath, ["rev-parse", "--show-toplevel"]).then((value) => realpath(value)),
++          realpath(opts.worktreePath),
++          git(opts.worktreePath, ["branch", "--show-current"]),
++          git(opts.worktreePath, ["rev-parse", "--verify", "HEAD^{commit}"]),
++          git(opts.gitRoot, ["rev-parse", "--verify", `${opts.baseBranch}^{commit}`]),
++        ]);
++        if (topLevel !== expectedTopLevel)
++          refuse("authoritative worktree path changed", opts.taskId);
++        if (branch !== opts.branch) refuse(`current branch changed to ${branch}`, opts.taskId);
++        if (head !== opts.expectedHeadSha) refuse(`task HEAD changed to ${head}`, opts.taskId);
++        if (base !== opts.expectedBaseSha) {
++          refuse(`base ${opts.baseBranch} changed to ${base}`, opts.taskId);
++        }
++        const cleanliness = await inspectTaskWorktreeCleanliness({
++          gitRoot: opts.gitRoot,
++          branch: opts.branch,
++        });
++        if (cleanliness.state === "unavailable") {
++          refuse(`task worktree cleanliness is unavailable: ${cleanliness.reason}`, opts.taskId);
++        }
++        if (
++          cleanliness.state === "not_present" ||
++          !cleanliness.worktreePath ||
++          (await realpath(cleanliness.worktreePath)) !== expectedTopLevel
++        ) {
++          refuse("authoritative task worktree registration changed", opts.taskId);
++        }
++        const blockingPaths = filterTaskWorktreeBlockingPaths({
++          changedPaths: cleanliness.changedPaths,
++          workflowDir: opts.workflowDir,
++          tasksPath: opts.tasksPath,
++          taskId: opts.taskId,
++        });
++        if (blockingPaths.length > 0) {
++          refuse(`task worktree is dirty: ${blockingPaths.slice(0, 8).join(", ")}`, opts.taskId);
++        }
++      };
++
++      await assertBoundState();
++      if (await isAncestor(opts.worktreePath, opts.expectedBaseSha, opts.expectedHeadSha)) {
++        return { state: "already_current", headSha: opts.expectedHeadSha };
++      }
++      try {
++        await git(opts.worktreePath, [
++          "merge-tree",
++          "--write-tree",
++          "--no-messages",
++          opts.expectedHeadSha,
++          opts.expectedBaseSha,
++        ]);
++      } catch {
++        refuse("the exact head and base require semantic conflict resolution", opts.taskId);
++      }
++      await assertBoundState();
++      const message = `Merge branch '${opts.baseBranch}' into ${opts.branch}`;
++      try {
++        await git(opts.worktreePath, [
++          "merge",
++          "--no-ff",
++          "--no-edit",
++          "--no-overwrite-ignore",
++          "-m",
++          message,
++          opts.expectedBaseSha,
++        ]);
++      } catch (error) {
++        const observedHead = await git(opts.worktreePath, ["rev-parse", "HEAD"]);
++        if (observedHead === opts.expectedHeadSha) {
++          await git(opts.worktreePath, ["merge", "--abort"]).catch(() => null);
++        }
++        throw error;
++      }
++      const newHead = await git(opts.worktreePath, ["rev-parse", "HEAD"]);
++      const parentLine = await git(opts.worktreePath, [
++        "rev-list",
++        "--parents",
++        "-n",
++        "1",
++        newHead,
++      ]);
++      const parents = parentLine.split(/\s+/u);
++      if (
++        parents.length !== 3 ||
++        parents[1] !== opts.expectedHeadSha ||
++        parents[2] !== opts.expectedBaseSha ||
++        !(await isAncestor(opts.worktreePath, opts.expectedHeadSha, newHead)) ||
++        !(await isAncestor(opts.worktreePath, opts.expectedBaseSha, newHead))
++      ) {
++        throw new CliError({
++          code: "E_GIT_RACE",
++          message: `Task branch base synchronization produced an unproven merge for ${opts.taskId}.`,
++          context: {
++            reason_code: "task_branch_base_sync_readback_unproven",
++            task_id: opts.taskId,
++            observed_head: newHead,
++          },
++        });
++      }
++      return { state: "updated", headSha: newHead };
++    },
++  );
++}
+diff --git a/packages/agentplane/src/commands/shared/branch-base-sync-route.test.ts b/packages/agentplane/src/commands/shared/branch-base-sync-route.test.ts
+new file mode 100644
+index 000000000..0bdf2c2d5
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/branch-base-sync-route.test.ts
+@@ -0,0 +1,184 @@
++import { mkdtemp, writeFile } from "node:fs/promises";
++import { tmpdir } from "node:os";
++import path from "node:path";
++
++import { execFileAsync } from "@agentplaneorg/core/process";
++import {
++  approveTaskPlan,
++  createLegacyTaskAggregate,
++  createRepositorySnapshot,
++  createTaskPlanRevision,
++  materializeApprovedWorkItems,
++  taskCentricDigest,
++  withTaskCentricAggregate,
++  type ResourceClaimSpec,
++  type ValidationPlan,
++} from "@agentplaneorg/core/tasks";
++import { describe, expect, it } from "vitest";
++
++import type { TaskData } from "../../backends/task-backend.js";
++import { observeBranchBaseSync } from "./branch-base-sync-route.js";
++
++const NOW = "2026-09-14T00:00:00.000Z";
++
++function validation(): ValidationPlan {
++  return {
++    schema_version: 1,
++    criteria: [{ id: "criterion", description: "sync", required: true, check_ids: ["check"] }],
++    checks: [{ id: "check", kind: "deterministic", required: true, capability: "test" }],
++    evidence_fingerprint: taskCentricDigest("sync"),
++  };
++}
++
++function taskWithClaim(claim: ResourceClaimSpec, baseSha: string): TaskData {
++  const taskId = "202609140657-5REY71";
++  const check = validation();
++  const proposal = {
++    schema_version: 1 as const,
++    task_id: taskId,
++    planning_baseline: createRepositorySnapshot({
++      git: { kind: "commit", sha: baseSha, ref: "refs/heads/main" },
++      dirty_paths: [],
++      policy_digest: null,
++      config_digest: null,
++      context_digest: null,
++      task_history_cursor: null,
++      captured_at: NOW,
++    }),
++    work_items: {
++      schema_version: 1 as const,
++      work_items: [
++        {
++          id: "sync-base",
++          objective: "Synchronize the approved base before implementation.",
++          depends_on: [],
++          required_inputs: [],
++          expected_outputs: ["sync-result"],
++          scope_roots: ["packages/agentplane/src"],
++          acceptance_criteria: check.criteria,
++          validation: check,
++          context: {
++            required_sources: [],
++            optional_sources: [],
++            symbol_hints: [],
++            max_bytes: 16_384,
++          },
++          risk: "medium" as const,
++          capabilities: ["task.verify"],
++          resource_claims: [claim],
++          optional: false,
++          priority: 1,
++        },
++      ],
++    },
++    assumptions: [],
++    unresolved_questions: [],
++    top_level_validation: check,
++  };
++  const plan = createTaskPlanRevision({ proposal, revision: 1, created_at: NOW });
++  const approved = approveTaskPlan({
++    plan,
++    expected_digest: plan.digest,
++    actor: "USER",
++    approved_at: NOW,
++  });
++  const aggregate = materializeApprovedWorkItems({
++    task: createLegacyTaskAggregate({
++      id: taskId,
++      revision: 1,
++      title: "Sync base",
++      description: "Sync base",
++      status: "DOING",
++      acceptance_criteria: ["sync"],
++      captured_at: NOW,
++      updated_at: NOW,
++    }),
++    plan: approved,
++    now: NOW,
++  });
++  return {
++    id: taskId,
++    title: "Sync base",
++    description: "Sync base",
++    status: "DOING",
++    priority: "high",
++    owner: "CODER",
++    depends_on: [],
++    tags: [],
++    verify: [],
++    plan_approval: { state: "approved", approved_by: "USER", approved_at: NOW },
++    extensions: withTaskCentricAggregate({}, aggregate),
++  };
++}
++
++async function git(cwd: string, ...args: string[]): Promise<string> {
++  const result = await execFileAsync("git", args, { cwd });
++  return result.stdout.trim();
++}
++
++describe("branch base synchronization route observation", () => {
++  it("emits an exact ready operation only for a ready exclusive plan claim", async () => {
++    const root = await mkdtemp(path.join(tmpdir(), "agentplane-sync-route-"));
++    await git(root, "init", "-b", "main");
++    await git(root, "config", "user.name", "Test User");
++    await git(root, "config", "user.email", "test@example.com");
++    await writeFile(path.join(root, "base.txt"), "one\n", "utf8");
++    await git(root, "add", ".");
++    await git(root, "commit", "-m", "test: initial");
++    await git(root, "checkout", "-b", "task/sync");
++    await writeFile(path.join(root, "task.txt"), "task\n", "utf8");
++    await git(root, "add", ".");
++    await git(root, "commit", "-m", "test: task");
++    const taskHead = await git(root, "rev-parse", "HEAD");
++    await git(root, "checkout", "main");
++    await writeFile(path.join(root, "base.txt"), "two\n", "utf8");
++    await git(root, "commit", "-am", "test: base");
++    const baseSha = await git(root, "rev-parse", "HEAD");
++    const worktreePath = path.join(root, "task-worktree");
++    await git(root, "worktree", "add", worktreePath, "task/sync");
++
++    await expect(
++      observeBranchBaseSync({
++        gitRoot: root,
++        task: taskWithClaim(
++          { kind: "exclusive", resource: `branch-base:main@${baseSha}`, mode: "exclusive" },
++          baseSha,
++        ),
++        configuredBaseBranch: "main",
++        taskWorktree: {
++          state: "clean",
++          branch: "task/sync",
++          worktreePath,
++          changedPaths: [],
++        },
++      }),
++    ).resolves.toEqual({
++      state: "ready",
++      workItemId: "sync-base",
++      branch: "task/sync",
++      baseBranch: "main",
++      expectedHeadSha: taskHead,
++      expectedBaseSha: baseSha,
++    });
++  });
++
++  it("fails closed for a branch-base claim with the wrong authority kind", async () => {
++    const baseSha = "a".repeat(40);
++    await expect(
++      observeBranchBaseSync({
++        gitRoot: "/unused",
++        task: taskWithClaim(
++          { kind: "path", resource: `branch-base:main@${baseSha}`, mode: "write" },
++          baseSha,
++        ),
++        configuredBaseBranch: "main",
++        taskWorktree: {
++          state: "not_present",
++          branch: "task/sync",
++          worktreePath: null,
++          changedPaths: [],
++        },
++      }),
++    ).resolves.toMatchObject({ state: "invalid", workItemId: "sync-base" });
++  });
++});
+diff --git a/packages/agentplane/src/commands/shared/branch-base-sync-route.ts b/packages/agentplane/src/commands/shared/branch-base-sync-route.ts
+new file mode 100644
+index 000000000..bca3b07bc
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/branch-base-sync-route.ts
+@@ -0,0 +1,164 @@
++import {
++  computeReadyWorkItems,
++  taskCentricAggregateFromExtensions,
++} from "@agentplaneorg/core/tasks";
++import { execFileAsync } from "@agentplaneorg/core/process";
++
++import type { TaskData } from "../../backends/task-backend.js";
++import type { TaskWorktreeCleanliness } from "./task-worktree-cleanliness.js";
++
++const BRANCH_BASE_RESOURCE = /^branch-base:([^\s@]+)@([a-f0-9]{40}|[a-f0-9]{64})$/u;
++
++type BranchBaseSyncIdentity = {
++  workItemId: string;
++  branch: string;
++  baseBranch: string;
++  expectedHeadSha: string;
++  expectedBaseSha: string;
++};
++
++export type BranchBaseSyncObservation =
++  | { state: "not_requested" }
++  | ({ state: "waiting_for_worktree" } & Omit<BranchBaseSyncIdentity, "branch" | "expectedHeadSha">)
++  | ({ state: "satisfied" } & BranchBaseSyncIdentity)
++  | ({ state: "ready" } & BranchBaseSyncIdentity)
++  | { state: "invalid"; workItemId: string; reason: string }
++  | { state: "unavailable"; workItemId: string; reason: string };
++
++function requestedResource(
++  task: TaskData,
++):
++  | { state: "not_requested" }
++  | { state: "invalid"; workItemId: string; reason: string }
++  | { state: "requested"; workItemId: string; baseBranch: string; expectedBaseSha: string } {
++  const aggregate = taskCentricAggregateFromExtensions(task.extensions);
++  const plan = aggregate?.current_plan;
++  if (!aggregate || !plan) return { state: "not_requested" };
++  const readyIds = new Set(
++    computeReadyWorkItems({
++      graph: plan.proposal.work_items,
++      runtime: aggregate.work_items,
++    })
++      .filter((item) => item.ready)
++      .map((item) => item.work_item_id),
++  );
++  const requests = plan.proposal.work_items.work_items.flatMap((item) =>
++    readyIds.has(item.id)
++      ? item.resource_claims
++          .filter((claim) => claim.resource.startsWith("branch-base:"))
++          .map((claim) => ({ item, claim }))
++      : [],
++  );
++  if (requests.length > 1) {
++    return {
++      state: "invalid",
++      workItemId: requests[0]!.item.id,
++      reason: "ready WorkItems contain more than one branch-base resource claim",
++    };
++  }
++  for (const { item, claim } of requests) {
++    if (claim.kind !== "exclusive" || claim.mode !== "exclusive") {
++      return {
++        state: "invalid",
++        workItemId: item.id,
++        reason: "ready WorkItem branch-base resource claim must be exclusive",
++      };
++    }
++    const match = BRANCH_BASE_RESOURCE.exec(claim.resource);
++    if (!match) {
++      return {
++        state: "invalid",
++        workItemId: item.id,
++        reason: "branch-base resource must be branch-base:<base-ref>@<full-sha>",
++      };
++    }
++    return {
++      state: "requested",
++      workItemId: item.id,
++      baseBranch: match[1]!,
++      expectedBaseSha: match[2]!,
++    };
++  }
++  return { state: "not_requested" };
++}
++
++async function revParse(root: string, ref: string): Promise<string> {
++  const result = await execFileAsync("git", ["rev-parse", "--verify", `${ref}^{commit}`], {
++    cwd: root,
++  });
++  return result.stdout.trim();
++}
++
++async function isAncestor(root: string, ancestor: string, descendant: string): Promise<boolean> {
++  try {
++    await execFileAsync("git", ["merge-base", "--is-ancestor", ancestor, descendant], {
++      cwd: root,
++    });
++    return true;
++  } catch (error) {
++    if ((error as { exitCode?: unknown } | null)?.exitCode === 1) return false;
++    throw error;
++  }
++}
++
++export async function observeBranchBaseSync(opts: {
++  gitRoot: string;
++  task: TaskData;
++  configuredBaseBranch: string | null;
++  taskWorktree: TaskWorktreeCleanliness;
++}): Promise<BranchBaseSyncObservation> {
++  const request = requestedResource(opts.task);
++  if (request.state !== "requested") return request;
++  if (request.baseBranch !== opts.configuredBaseBranch) {
++    return {
++      state: "invalid",
++      workItemId: request.workItemId,
++      reason:
++        `requested base ${request.baseBranch} does not equal configured task base ` +
++        `${opts.configuredBaseBranch ?? "<unknown>"}`,
++    };
++  }
++  if (
++    opts.taskWorktree.state === "not_present" ||
++    opts.taskWorktree.state === "unavailable" ||
++    !opts.taskWorktree.worktreePath
++  ) {
++    return {
++      state: "waiting_for_worktree",
++      workItemId: request.workItemId,
++      baseBranch: request.baseBranch,
++      expectedBaseSha: request.expectedBaseSha,
++    };
++  }
++  try {
++    const [expectedHeadSha, observedBaseSha] = await Promise.all([
++      revParse(opts.gitRoot, opts.taskWorktree.branch),
++      revParse(opts.gitRoot, request.baseBranch),
++    ]);
++    if (observedBaseSha !== request.expectedBaseSha) {
++      return {
++        state: "invalid",
++        workItemId: request.workItemId,
++        reason:
++          `requested base SHA ${request.expectedBaseSha} does not equal current ` +
++          `${request.baseBranch} ${observedBaseSha}`,
++      };
++    }
++    const identity = {
++      workItemId: request.workItemId,
++      branch: opts.taskWorktree.branch,
++      baseBranch: request.baseBranch,
++      expectedHeadSha,
++      expectedBaseSha: request.expectedBaseSha,
++    };
++    return (await isAncestor(opts.gitRoot, request.expectedBaseSha, expectedHeadSha))
++      ? { state: "satisfied", ...identity }
++      : { state: "ready", ...identity };
++  } catch (error) {
++    return {
++      state: "unavailable",
++      workItemId: request.workItemId,
++      reason: error instanceof Error ? error.message : String(error),
++    };
++  }
++}
+diff --git a/packages/agentplane/src/commands/shared/route-decision.ts b/packages/agentplane/src/commands/shared/route-decision.ts
+index 85469d615..5aa1cf765 100644
+--- a/packages/agentplane/src/commands/shared/route-decision.ts
++++ b/packages/agentplane/src/commands/shared/route-decision.ts
+@@ -56,6 +56,7 @@ import { inspectTaskWorktreeRouteState } from "./task-worktree-foreign-artifact-
+ import { stabilizeWorkflowStepAfterFingerprint } from "./route-decision-fingerprint-stabilization.js";
+ import { hydrateTaskSideEffectAuthority } from "./side-effect-authority-store.js";
+ import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
++import { observeBranchBaseSync } from "./branch-base-sync-route.js";
+ export { stabilizeWorkflowStepAfterFingerprint } from "./route-decision-fingerprint-stabilization.js";
+ 
+ const routeGitSnapshots = new WeakMap<TaskRouteDecision, GitSnapshot>();
+@@ -396,6 +397,15 @@ export async function buildTaskRouteDecision(opts: {
+       baseBranch: resume.base_branch,
+       taskBranch: taskWorktreeBranch,
+     });
++  const branchBaseSync =
++    workflowMode === "branch_pr"
++      ? await observeBranchBaseSync({
++          gitRoot: ctx.resolvedProject.gitRoot,
++          task,
++          configuredBaseBranch: resume.base_branch,
++          taskWorktree: taskWorktreeCleanliness,
++        })
++      : { state: "not_requested" as const };
+   const conflictRework: ConflictReworkPreparation | null =
+     prFlow && needsProviderConflictReworkPreparation(prFlow)
+       ? await prepareConflictReworkPacket({
+@@ -450,6 +460,7 @@ export async function buildTaskRouteDecision(opts: {
+     remoteEnabled,
+     taskWorktree: taskWorktreeCleanliness,
+     foreignTaskReadmeReplicaRepair,
++    branchBaseSync,
+     conflictRework,
+   };
+   const provisionalWorkflowStep = reduceRouteState(
+diff --git a/packages/agentplane/src/commands/shared/side-effect-authority.ts b/packages/agentplane/src/commands/shared/side-effect-authority.ts
+index 032047637..93885b233 100644
+--- a/packages/agentplane/src/commands/shared/side-effect-authority.ts
++++ b/packages/agentplane/src/commands/shared/side-effect-authority.ts
+@@ -74,6 +74,7 @@ const EXTERNAL_PRE_AUTHORIZED: AuthorityRequirement = {
+  */
+ export const WORKFLOW_OPERATION_AUTHORITY_POLICY = {
+   "task.artifacts.commit": LOCAL_REVERSIBLE,
++  "task.branch.sync_base": LOCAL_REVERSIBLE,
+   "task.start": LOCAL_REVERSIBLE,
+   "task.branch.start": LOCAL_REVERSIBLE,
+   "task.scope.extend": SEMANTIC_DECISION,
+diff --git a/packages/agentplane/src/commands/shared/workflow-operation-effects.ts b/packages/agentplane/src/commands/shared/workflow-operation-effects.ts
+index 93f75f71c..a4abcc0f8 100644
+--- a/packages/agentplane/src/commands/shared/workflow-operation-effects.ts
++++ b/packages/agentplane/src/commands/shared/workflow-operation-effects.ts
+@@ -8,6 +8,7 @@ type WorkflowOperationEffect = "mutating" | "read_only" | "mode_dependent";
+  * while status/verify are observational.
+  */
+ export const WORKFLOW_OPERATION_EFFECTS = {
++  "task.branch.sync_base": "mutating",
+   "task.artifacts.commit": "mutating",
+   "task.start": "mutating",
+   "task.branch.start": "mutating",
+diff --git a/packages/agentplane/src/commands/shared/workflow-operation-prefix.ts b/packages/agentplane/src/commands/shared/workflow-operation-prefix.ts
+index be24730d2..eae294919 100644
+--- a/packages/agentplane/src/commands/shared/workflow-operation-prefix.ts
++++ b/packages/agentplane/src/commands/shared/workflow-operation-prefix.ts
+@@ -17,6 +17,7 @@ export const WORKFLOW_OPERATION_ARGV_PREFIX = {
+   "route.remote.refresh": ["agentplane", "task", "next-action"],
+   "runner.follow": ["agentplane", "task"],
+   "task.artifacts.commit": ["agentplane", "commit"],
++  "task.branch.sync_base": ["agentplane", "task", "run"],
+   "task.branch.start": ["agentplane", "task", "start-ready"],
+   "task.scope.extend": ["agentplane", "task", "scope", "extend"],
+   "task.hosted_close.open": ["agentplane", "task", "hosted-close-pr"],
+diff --git a/packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts b/packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts
+index f30b10d46..f742348c8 100644
+--- a/packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts
++++ b/packages/agentplane/src/commands/shared/workflow-operation-projection.registry.test.ts
+@@ -152,6 +152,16 @@ describe("Workflow operation projection registry", () => {
+         params: { taskId },
+         argv: ["agentplane", "commit", taskId, "--close", "--unstage-others"],
+       },
++      "task.branch.sync_base": {
++        params: {
++          taskId,
++          branch: taskBranch,
++          baseBranch: "main",
++          expectedHeadSha: taskHead,
++          expectedBaseSha: "2222222222222222222222222222222222222222",
++        },
++        argv: ["agentplane", "task", "run", taskId, "--json"],
++      },
+       "task.branch.start": {
+         params: { taskId, author: "CODER", body: "Start: branch work." },
+         argv: [
+diff --git a/packages/agentplane/src/commands/shared/workflow-operation-projection.ts b/packages/agentplane/src/commands/shared/workflow-operation-projection.ts
+index 14d189644..d0cf01b5d 100644
+--- a/packages/agentplane/src/commands/shared/workflow-operation-projection.ts
++++ b/packages/agentplane/src/commands/shared/workflow-operation-projection.ts
+@@ -112,6 +112,9 @@ function operationArgv(operation: WorkflowOperation): string[] {
+     case "task.artifacts.commit": {
+       return ["agentplane", "commit", operation.params.taskId, "--close", "--unstage-others"];
+     }
++    case "task.branch.sync_base": {
++      return ["agentplane", "task", "run", operation.params.taskId, "--json"];
++    }
+     case "task.hosted_close.open": {
+       return ["agentplane", "task", "hosted-close-pr", operation.params.taskId];
+     }
+diff --git a/packages/agentplane/src/commands/shared/workflow-postconditions.ts b/packages/agentplane/src/commands/shared/workflow-postconditions.ts
+index 7d48c120c..6a66201eb 100644
+--- a/packages/agentplane/src/commands/shared/workflow-postconditions.ts
++++ b/packages/agentplane/src/commands/shared/workflow-postconditions.ts
+@@ -12,6 +12,7 @@ type WorkflowPostconditionId =
+   | "route_state_recomputed"
+   | "runner_state_observed"
+   | "task_artifacts_committed"
++  | "task_branch_contains_base"
+   | "task_brief_loaded"
+   | "task_status_done"
+   | "task_status_doing"
+@@ -36,6 +37,11 @@ export const POSTCONDITION = {
+     subject: "task",
+     expected: "tracked task artifacts are committed",
+   },
++  taskBranchContainsBase: {
++    id: "task_branch_contains_base",
++    subject: "task",
++    expected: "task branch contains the exact plan-bound base SHA and previous task head",
++  },
+   taskDoing: {
+     id: "task_status_doing",
+     subject: "task",
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-branch-base-sync.ts b/packages/agentplane/src/commands/shared/workflow-step-branch-base-sync.ts
+new file mode 100644
+index 000000000..2dafe58a6
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/workflow-step-branch-base-sync.ts
+@@ -0,0 +1,63 @@
++import { cliOperationStep, terminalStep } from "./workflow-step-factory.js";
++import type { WorkflowOperationSpec, WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
++import { POSTCONDITION } from "./workflow-postconditions.js";
++
++export type BaseSyncParams = {
++  taskId: string;
++  branch: string;
++  baseBranch: string;
++  expectedHeadSha: string;
++  expectedBaseSha: string;
++};
++
++export const BASE_SYNC_SPEC = {
++  type: "task_branch_base_sync",
++  phase: "task_branch_base_sync",
++  checkout: "task_worktree",
++  role: "CODER",
++  expectedPostconditions: [POSTCONDITION.taskBranchContainsBase, POSTCONDITION.routeRecomputed],
++  mustNot: [
++    "do not rebase, force-push, select conflict hunks, or replace the exact plan-bound base SHA",
++  ],
++  triggersGitHooks: true,
++  verificationCandidate: null,
++  needsVerificationRecord: false,
++} as const satisfies WorkflowOperationSpec;
++
++export function branchBaseSyncStep(state: WorkflowRouteState): WorkflowStep | null {
++  const observation = state.branchBaseSync;
++  if (!observation || observation.state === "not_requested" || observation.state === "satisfied") {
++    return null;
++  }
++  if (observation.state === "waiting_for_worktree") return null;
++  if (observation.state === "invalid" || observation.state === "unavailable") {
++    return terminalStep({
++      state,
++      id: "terminal.task_branch_base_sync",
++      code: "task_branch_base_sync_blocked",
++      phase: "task_branch_base_sync_blocked",
++      checkout: "task_worktree",
++      role: "CODER",
++      outcome: "repair_required",
++      summary: `ready WorkItem ${observation.workItemId} has an unusable branch-base request: ${observation.reason}`,
++      evidenceMissing: ["valid_plan_bound_branch_base"],
++      selectedBlocker: null,
++    });
++  }
++  return cliOperationStep({
++    state,
++    operationId: "task.branch.sync_base",
++    params: {
++      taskId: state.task.id,
++      branch: observation.branch,
++      baseBranch: observation.baseBranch,
++      expectedHeadSha: observation.expectedHeadSha,
++      expectedBaseSha: observation.expectedBaseSha,
++    },
++    code: "sync_task_branch_base",
++    summary:
++      `merge exact ${observation.baseBranch} ${observation.expectedBaseSha} into the task branch ` +
++      `before executing ready WorkItem ${observation.workItemId}`,
++    selectedBlocker: null,
++  });
++}
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-branch-state.ts b/packages/agentplane/src/commands/shared/workflow-step-branch-state.ts
+index 989e77c90..4ed05e109 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-branch-state.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-branch-state.ts
+@@ -1,6 +1,24 @@
+ import type { WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
+ import { cliOperationStep, routeBlockerFor, terminalStep } from "./workflow-step-factory.js";
+ import { parseTaskScopeExtensionRequestState } from "./task-scope-extension-request.js";
++import type { RouteBlocker } from "./route-oracle.js";
++
++export function hasRouteBlocker(state: WorkflowRouteState, code: RouteBlocker["code"]): boolean {
++  return state.blockers.some((blocker) => blocker.code === code);
++}
++
++export function unavailableWorktreeBlocker(state: WorkflowRouteState): RouteBlocker {
++  const probe = state.taskWorktree;
++  return probe?.state === "unavailable"
++    ? {
++        code: "task_worktree_state_unavailable",
++        summary: `task worktree state could not be inspected: ${probe.reason}`,
++      }
++    : {
++        code: "task_worktree_state_unavailable",
++        summary: "task worktree state could not be inspected",
++      };
++}
+ 
+ export function blockedTaskStep(state: WorkflowRouteState): WorkflowStep {
+   const pending = parseTaskScopeExtensionRequestState(state.task);
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-branch.ts b/packages/agentplane/src/commands/shared/workflow-step-branch.ts
+index 1238a8b6b..5f9024de8 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-branch.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-branch.ts
+@@ -4,19 +4,21 @@ import {
+ } from "@agentplaneorg/core/tasks";
+ import { hasUninitializedTaskBaseline } from "./workflow-step-policy-scope.js";
+ import type { WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
+-import type { RouteBlocker } from "./route-oracle.js";
+ import { conflictReworkRouteStep } from "./workflow-step-conflict-rework.js";
+ import {
+   branchHeadRepairStep,
+   blockedTaskStep,
++  hasRouteBlocker,
+   missingPrRemoteRefreshStep,
+   preMergeCommit,
+   primaryIncludeTaskIds,
++  unavailableWorktreeBlocker,
+ } from "./workflow-step-branch-state.js";
+ import { supersededProviderConflictStep } from "./workflow-step-provider-conflict-superseded.js";
+ import { needsQualityEvidenceRefresh } from "./workflow-step-quality.js";
+ import { integrationQueueStep } from "./workflow-step-integration-queue.js";
+ import { providerUpdateBranchStep } from "./workflow-step-provider-update-branch.js";
++import { branchBaseSyncStep } from "./workflow-step-branch-base-sync.js";
+ import {
+   approvalStep,
+   branchImplementationStep,
+@@ -36,9 +38,6 @@ import {
+   workSlug,
+   worktreeResolutionStep,
+ } from "./workflow-step-factory.js";
+-function hasRouteBlocker(state: WorkflowRouteState, code: RouteBlocker["code"]): boolean {
+-  return state.blockers.some((blocker) => blocker.code === code);
+-}
+ function primaryBatchVerificationStep(state: WorkflowRouteState): WorkflowStep | null {
+   if (state.batchOwnership.role !== "primary") return null;
+   const ownership = state.batchOwnership;
+@@ -142,19 +141,6 @@ function runnerWaitStep(state: WorkflowRouteState): WorkflowStep {
+     }),
+   };
+ }
+-function unavailableWorktreeBlocker(state: WorkflowRouteState): RouteBlocker {
+-  const probe = state.taskWorktree;
+-  if (probe?.state === "unavailable") {
+-    return {
+-      code: "task_worktree_state_unavailable",
+-      summary: `task worktree state could not be inspected: ${probe.reason}`,
+-    };
+-  }
+-  return {
+-    code: "task_worktree_state_unavailable",
+-    summary: "task worktree state could not be inspected",
+-  };
+-}
+ export function doneBranchStep(state: WorkflowRouteState): WorkflowStep {
+   const id = state.task.id;
+   const worktreeBlocker = taskWorktreeBlocker(state);
+@@ -435,6 +421,8 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
+       worktreeResolutionStep(state, worktreeBlocker)
+     );
+   }
++  const baseSyncStep = branchBaseSyncStep(state);
++  if (baseSyncStep) return baseSyncStep;
+   const recoveryStep = conflictReworkRouteStep(state) ?? providerUpdateBranchStep(state);
+   if (recoveryStep) return recoveryStep;
+   if (state.taskWorktree?.state === "not_present" && hasRouteBlocker(state, "pr_meta_stale")) {
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts b/packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts
+index a09bb3ff6..63a87a427 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts
+@@ -95,6 +95,7 @@ function routeProjection(state: WorkflowRouteStateInput): Record<string, unknown
+     batch: state.batchOwnership,
+     taskWorktree: state.taskWorktree ?? null,
+     foreignTaskReadmeReplicaRepair: state.foreignTaskReadmeReplicaRepair ?? null,
++    branchBaseSync: state.branchBaseSync ?? null,
+     workflowMode: state.workflowMode,
+   };
+ }
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts b/packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts
+index 99d0566f8..1b03576a4 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-projections-routing.test.ts
+@@ -190,4 +190,61 @@ describe("WorkflowStep routing projections", () => {
+       exactArgv: null,
+     });
+   });
++
++  it("synchronizes an exact plan-bound base before the implementation episode", () => {
++    const expectedBaseSha = "2222222222222222222222222222222222222222";
++    const { step, packet } = executionPacket(
++      routeState({
++        branchBaseSync: {
++          state: "ready",
++          workItemId: "sync-base",
++          branch: taskBranch,
++          baseBranch: "main",
++          expectedHeadSha: resume.head_sha,
++          expectedBaseSha,
++        },
++      }),
++    );
++
++    expect(step).toMatchObject({
++      kind: "cli_operation",
++      id: "task.branch.sync_base",
++      authoritativeCheckout: "task_worktree",
++      operation: {
++        params: {
++          taskId: task.id,
++          branch: taskBranch,
++          baseBranch: "main",
++          expectedHeadSha: resume.head_sha,
++          expectedBaseSha,
++        },
++        triggersGitHooks: true,
++      },
++    });
++    expect(packet).toMatchObject({
++      actionKind: "local_command",
++      safeToMutate: true,
++      mutationPathHint: taskWorktreePath,
++      exactArgv: ["agentplane", "task", "run", task.id, "--json"],
++    });
++  });
++
++  it("fails closed when a ready WorkItem has an invalid base synchronization request", () => {
++    const { step, packet } = executionPacket(
++      routeState({
++        branchBaseSync: {
++          state: "invalid",
++          workItemId: "sync-base",
++          reason: "requested base SHA no longer matches main",
++        },
++      }),
++    );
++
++    expect(step).toMatchObject({
++      kind: "terminal",
++      id: "terminal.task_branch_base_sync",
++      outcome: { type: "repair_required" },
++    });
++    expect(packet).toMatchObject({ safeToMutate: false, exactArgv: null });
++  });
+ });
+diff --git a/packages/agentplane/src/commands/shared/workflow-step.ts b/packages/agentplane/src/commands/shared/workflow-step.ts
+index dcdd49de0..e6e46fbff 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step.ts
+@@ -11,7 +11,9 @@ import type { RouteCleanupProbe, RouteNextAction } from "./route-decision-types.
+ import type { RouteBlocker, RouteExecutionPacket, RouteOracle } from "./route-oracle.js";
+ import type { TaskWorktreeCleanliness } from "./task-worktree-cleanliness.js";
+ import type { ForeignTaskReadmeReplicaRepair } from "./task-worktree-foreign-artifact-repair.js";
++import type { BranchBaseSyncObservation } from "./branch-base-sync-route.js";
+ import { foreignTaskReadmeReplicaRepairOperation } from "./workflow-step-foreign-task-readme-repair.js";
++import { BASE_SYNC_SPEC, type BaseSyncParams } from "./workflow-step-branch-base-sync.js";
+ import { PROVIDER_UPDATE_BRANCH_OPERATION_SPEC } from "./workflow-step-provider-update-branch-spec.js";
+ import { POSTCONDITION, type WorkflowPostcondition } from "./workflow-postconditions.js";
+ 
+@@ -39,6 +41,7 @@ export type WorkflowRouteState = {
+   remoteEnabled?: boolean;
+   taskWorktree?: TaskWorktreeCleanliness;
+   foreignTaskReadmeReplicaRepair?: ForeignTaskReadmeReplicaRepair;
++  branchBaseSync?: BranchBaseSyncObservation;
+   conflictRework?: ConflictReworkPreparation | null;
+   preconditionFingerprint: StateFingerprint;
+ };
+@@ -55,6 +58,7 @@ type WorkflowOperationType =
+   | "provider_update_branch"
+   | "runner_follow"
+   | "task_record_result"
++  | "task_branch_base_sync"
+   | "task_scope_extend"
+   | "task_start"
+   | "task_view"
+@@ -78,6 +82,7 @@ export type WorkflowOperationId =
+   | "route.remote.refresh"
+   | "runner.follow"
+   | "task.artifacts.commit"
++  | "task.branch.sync_base"
+   | "task.branch.start"
+   | "task.hosted_close.open"
+   | "task.hosted_close.finalize"
+@@ -115,6 +120,7 @@ export type WorkflowOperationParams = {
+     | { mode: "status"; taskId: string; runId: string | null }
+     | { mode: "run"; taskId: string };
+   "task.artifacts.commit": { taskId: string };
++  "task.branch.sync_base": BaseSyncParams;
+   "task.branch.start": { taskId: string; author: string; body: string };
+   "task.hosted_close.open": { taskId: string };
+   "task.hosted_close.finalize": { taskId: string; base: string };
+@@ -155,6 +161,7 @@ const PR_AUTOMATION_GUARD = [
+ ] as const;
+ 
+ export const WORKFLOW_OPERATION_REGISTRY = {
++  "task.branch.sync_base": BASE_SYNC_SPEC,
+   "task.artifacts.commit": {
+     type: "task_record_result",
+     phase: "direct_done_pending_artifact_commit",
+diff --git a/packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts b/packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
+index 262881fcc..216ba3f47 100644
+--- a/packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
++++ b/packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts
+@@ -16,6 +16,7 @@ const mocks = vi.hoisted(() => ({
+   enqueue: vi.fn(),
+   cmdCleanupMerged: vi.fn(),
+   updateProviderBranch: vi.fn(),
++  synchronizeTaskBranchBase: vi.fn(),
+ }));
+ 
+ vi.mock("../shared/task-backend.js", () => ({
+@@ -43,6 +44,10 @@ vi.mock("../pr/provider-update-branch.js", () => ({
+   updateProviderBranch: mocks.updateProviderBranch,
+ }));
+ 
++vi.mock("../branch/sync-task-base.js", () => ({
++  synchronizeTaskBranchBase: mocks.synchronizeTaskBranchBase,
++}));
++
+ vi.mock("../integrate-queue.command.js", () => ({
+   makeRunIntegrateQueueAdoptLegacyProtectedConflictHandler: vi.fn(),
+   makeRunIntegrateQueueEnqueueHandler: () => mocks.enqueue,
+@@ -168,11 +173,36 @@ function updateBranchOperation(): Extract<WorkflowOperation, { id: "provider.pr.
+   };
+ }
+ 
++function syncBaseOperation(): Extract<WorkflowOperation, { id: "task.branch.sync_base" }> {
++  return {
++    id: "task.branch.sync_base",
++    type: "task_branch_base_sync",
++    params: {
++      taskId: "202607221852-71SCSW",
++      branch: "task/202607221852-71SCSW/frozen-base",
++      baseBranch: "main",
++      expectedHeadSha: "b".repeat(40),
++      expectedBaseSha: "a".repeat(40),
++    },
++    preconditionFingerprint: preMergeCloseOperation().preconditionFingerprint,
++    authorityRef: "route:test",
++    idempotencyKey: "task.branch.sync_base:test",
++    expectedPostconditions: [
++      { id: "task_branch_contains_base", subject: "task", expected: "contains base" },
++      { id: "route_state_recomputed", subject: "route", expected: "recomputed" },
++    ],
++    triggersGitHooks: true,
++  };
++}
++
+ describe("branch task supervisor operations", () => {
+   beforeEach(() => {
+     vi.clearAllMocks();
+     mocks.loadCommandContext.mockResolvedValue({
+-      config: { workflow_mode: "branch_pr" },
++      config: {
++        workflow_mode: "branch_pr",
++        paths: { workflow_dir: ".agentplane/tasks", tasks_path: ".agentplane/tasks.json" },
++      },
+       resolvedProject: { gitRoot: "/repo" },
+     } as CommandContext);
+     mocks.loadTaskFromContext.mockResolvedValue({
+@@ -199,6 +229,34 @@ describe("branch task supervisor operations", () => {
+         observedHeadSha: "c".repeat(40),
+       },
+     });
++    mocks.synchronizeTaskBranchBase.mockResolvedValue({
++      state: "updated",
++      headSha: "c".repeat(40),
++    });
++  });
++
++  it("executes exact supervisor-owned task branch base synchronization", async () => {
++    const operation = syncBaseOperation();
++    const result = await executeBranchWorkflowOperation({
++      decision: routeDecision(operation),
++      operation,
++    });
++
++    expect(result).toMatchObject({
++      status: "succeeded",
++      observed_postconditions: ["task_branch_contains_base"],
++    });
++    expect(mocks.synchronizeTaskBranchBase).toHaveBeenCalledWith({
++      gitRoot: "/repo",
++      worktreePath: "/repo/task",
++      workflowDir: ".agentplane/tasks",
++      tasksPath: ".agentplane/tasks.json",
++      taskId: operation.params.taskId,
++      branch: operation.params.branch,
++      baseBranch: operation.params.baseBranch,
++      expectedHeadSha: operation.params.expectedHeadSha,
++      expectedBaseSha: operation.params.expectedBaseSha,
++    });
+   });
+ 
+   it.each([false, true])(
+diff --git a/packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts b/packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts
+index 9af07bd7e..37df33db2 100644
+--- a/packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts
++++ b/packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts
+@@ -23,6 +23,7 @@ import { makeRunTaskHostedClosePrHandler } from "./hosted-close-pr.command.js";
+ import { cmdTaskStartReady } from "./start-ready.js";
+ import { cmdTaskScopeExtend } from "./scope-extend.js";
+ import { loadTaskCommandContext } from "../../runtime/task-execution-context/index.js";
++import { synchronizeTaskBranchBase } from "../branch/sync-task-base.js";
+ 
+ function observedPostconditions(operation: WorkflowOperation): string[] {
+   return operation.expectedPostconditions
+@@ -82,6 +83,25 @@ export async function executeBranchWorkflowOperation(opts: {
+   let exitCode: number;
+ 
+   switch (operation.id) {
++    case "task.branch.sync_base": {
++      const result = await synchronizeTaskBranchBase({
++        gitRoot: command.resolvedProject.gitRoot,
++        worktreePath: cwd,
++        workflowDir: command.config.paths.workflow_dir,
++        tasksPath: command.config.paths.tasks_path,
++        taskId: operation.params.taskId,
++        branch: operation.params.branch,
++        baseBranch: operation.params.baseBranch,
++        expectedHeadSha: operation.params.expectedHeadSha,
++        expectedBaseSha: operation.params.expectedBaseSha,
++      });
++      return succeeded(
++        operation,
++        result.state === "updated"
++          ? `merged exact base ${operation.params.expectedBaseSha} into ${operation.params.branch}; readback proved new head ${result.headSha} contains the previous task head and base`
++          : `task branch ${operation.params.branch} already contains exact base ${operation.params.expectedBaseSha}`,
++      );
++    }
+     case "worktree.prepare": {
+       exitCode = await cmdWorkStart({
+         ctx: command,

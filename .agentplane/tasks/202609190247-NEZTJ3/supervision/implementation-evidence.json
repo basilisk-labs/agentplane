@@ -1,0 +1,443 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check a6092de0a5903f7fc4d4365398508ce31ea25ad1..22b7e3aa82fd48d43160147a8a3197fd7b1b35d2",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB a6092de0a5903f7fc4d4365398508ce31ea25ad1..22b7e3aa82fd48d43160147a8a3197fd7b1b35d2",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202609190247-NEZTJ3/README.md",
+        "A\t.agentplane/tasks/202609190247-NEZTJ3/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202609190247-NEZTJ3/pr/github-body.md",
+        "A\t.agentplane/tasks/202609190247-NEZTJ3/pr/github-title.txt",
+        "A\t.agentplane/tasks/202609190247-NEZTJ3/pr/meta.json",
+        "A\t.agentplane/tasks/202609190247-NEZTJ3/pr/review.md",
+        "A\t.agentplane/tasks/202609190247-NEZTJ3/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json",
+        "A\t.agentplane/tasks/202609190247-NEZTJ3/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+        "M\tdocs/user/cli-reference.generated.mdx",
+        "M\tpackages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts",
+        "A\tpackages/agentplane/src/commands/shared/canonical-pre-merge-evidence.ts",
+        "A\tpackages/agentplane/src/commands/shared/route-decision-blockers.kernel.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/route-decision-blockers.ts",
+        "A\tpackages/agentplane/src/commands/shared/side-effect-authority-policy.ts",
+        "M\tpackages/agentplane/src/commands/shared/side-effect-authority.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/side-effect-authority.ts",
+        "M\tpackages/agentplane/src/commands/shared/task-mutation.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/task-mutation.ts",
+        "M\tpackages/agentplane/src/commands/task/advance.command.ts",
+        "M\tpackages/agentplane/src/commands/task/direct-task-verification.test.ts",
+        "M\tpackages/agentplane/src/commands/task/direct-task-verification.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-implementation-finalization.ts",
+        "M\tpackages/agentplane/src/commands/task/finish-execute.ts",
+        "M\tpackages/agentplane/src/commands/task/finish-quality-evidence.ts",
+        "M\tpackages/agentplane/src/commands/task/finish-shared.ts",
+        "M\tpackages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts",
+        "A\tpackages/agentplane/src/commands/task/git-status-path.test.ts",
+        "A\tpackages/agentplane/src/commands/task/git-status-path.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-advance.test.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-advance.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-controller-handoff.test.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-controller-handoff.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-effect-coordinator.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-exchange.test.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-exchange.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-final-validation.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-inspection.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-operational-projection.test.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-operational-projection.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-plan.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-provider-effect-coordinator.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-repository-coordinator.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-run.test.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-run.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-semantic-result.test.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-semantic-result.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-work-order.ts",
+        "M\tpackages/agentplane/src/commands/task/plan-set.command.ts",
+        "M\tpackages/agentplane/src/commands/task/run.command.ts",
+        "M\tpackages/agentplane/src/commands/task/show-kernel.test.ts",
+        "M\tpackages/agentplane/src/commands/task/show.ts",
+        "M\tpackages/agentplane/src/commands/task/verify-record-execute.ts",
+        "M\tpackages/agentplane/src/commands/task/verify-record.ts",
+        "M\tpackages/agentplane/src/commands/task/verify-record.types.ts",
+        "M\tpackages/agentplane/src/runner/usecases/kernel-authority.ts",
+        "M\tpackages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts",
+        "M\tpackages/core/src/tasks/task-kernel/authority-lineage.ts",
+        "M\tpackages/core/src/tasks/task-kernel/index.ts",
+        "M\tpackages/core/src/tasks/task-kernel/kernel.test.ts",
+        "M\tpackages/core/src/tasks/task-kernel/kernel.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "a6092de0a5903f7fc4d4365398508ce31ea25ad1",
+  "implementation_commit": "22b7e3aa82fd48d43160147a8a3197fd7b1b35d2",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      " M packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts",
+      " M packages/agentplane/src/commands/shared/route-decision-blockers.ts",
+      " M packages/agentplane/src/commands/shared/side-effect-authority.test.ts",
+      " M packages/agentplane/src/commands/shared/side-effect-authority.ts",
+      " M packages/agentplane/src/commands/shared/task-mutation.test.ts",
+      " M packages/agentplane/src/commands/shared/task-mutation.ts",
+      " M packages/agentplane/src/commands/task/advance.command.ts",
+      " M packages/agentplane/src/commands/task/direct-task-verification.test.ts",
+      " M packages/agentplane/src/commands/task/direct-task-verification.ts",
+      " M packages/agentplane/src/commands/task/external-agent-implementation-finalization.ts",
+      " M packages/agentplane/src/commands/task/finish-execute.ts",
+      " M packages/agentplane/src/commands/task/finish-quality-evidence.ts",
+      " M packages/agentplane/src/commands/task/finish-shared.ts",
+      " M packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts",
+      " M packages/agentplane/src/commands/task/kernel-advance.ts",
+      " M packages/agentplane/src/commands/task/kernel-exchange.ts",
+      " M packages/agentplane/src/commands/task/kernel-final-validation.ts",
+      " M packages/agentplane/src/commands/task/kernel-inspection.ts",
+      " M packages/agentplane/src/commands/task/kernel-plan.ts",
+      " M packages/agentplane/src/commands/task/kernel-run.ts",
+      " M packages/agentplane/src/commands/task/kernel-work-order.ts",
+      " M packages/agentplane/src/commands/task/plan-set.command.ts",
+      " M packages/agentplane/src/commands/task/run.command.ts",
+      " M packages/agentplane/src/commands/task/show-kernel.test.ts",
+      " M packages/agentplane/src/commands/task/show.ts",
+      " M packages/agentplane/src/commands/task/verify-record-execute.ts",
+      " M packages/agentplane/src/commands/task/verify-record.ts",
+      " M packages/agentplane/src/commands/task/verify-record.types.ts",
+      " M packages/agentplane/src/runner/usecases/kernel-authority.ts",
+      " M packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts",
+      " M packages/core/src/tasks/task-kernel/authority-lineage.ts",
+      " M packages/core/src/tasks/task-kernel/index.ts",
+      " M packages/core/src/tasks/task-kernel/kernel.test.ts",
+      " M packages/core/src/tasks/task-kernel/kernel.ts",
+      "?? .agentplane/tasks/202609190247-NEZTJ3/README.md",
+      "?? .agentplane/tasks/202609190247-NEZTJ3/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json",
+      "?? .agentplane/tasks/202609190247-NEZTJ3/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+      "?? packages/agentplane/src/commands/shared/canonical-pre-merge-evidence.ts",
+      "?? packages/agentplane/src/commands/shared/route-decision-blockers.kernel.test.ts",
+      "?? packages/agentplane/src/commands/shared/side-effect-authority-policy.ts",
+      "?? packages/agentplane/src/commands/task/git-status-path.test.ts",
+      "?? packages/agentplane/src/commands/task/git-status-path.ts",
+      "?? packages/agentplane/src/commands/task/kernel-advance.test.ts",
+      "?? packages/agentplane/src/commands/task/kernel-controller-handoff.test.ts",
+      "?? packages/agentplane/src/commands/task/kernel-controller-handoff.ts",
+      "?? packages/agentplane/src/commands/task/kernel-effect-coordinator.ts",
+      "?? packages/agentplane/src/commands/task/kernel-exchange.test.ts",
+      "?? packages/agentplane/src/commands/task/kernel-operational-projection.test.ts",
+      "?? packages/agentplane/src/commands/task/kernel-operational-projection.ts",
+      "?? packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts",
+      "?? packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.ts",
+      "?? packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts",
+      "?? packages/agentplane/src/commands/task/kernel-repository-coordinator.ts",
+      "?? packages/agentplane/src/commands/task/kernel-run.test.ts",
+      "?? packages/agentplane/src/commands/task/kernel-semantic-result.test.ts",
+      "?? packages/agentplane/src/commands/task/kernel-semantic-result.ts"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/route-decision-blockers.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/side-effect-authority.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/side-effect-authority.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/task-mutation.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/task-mutation.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/advance.command.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/direct-task-verification.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/direct-task-verification.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/external-agent-implementation-finalization.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/finish-execute.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/finish-quality-evidence.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/finish-shared.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-advance.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-exchange.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-final-validation.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-inspection.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-plan.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-run.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-work-order.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/plan-set.command.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/run.command.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/show-kernel.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/show.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/verify-record-execute.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/verify-record.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/verify-record.types.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/usecases/kernel-authority.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/core/src/tasks/task-kernel/authority-lineage.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/core/src/tasks/task-kernel/index.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/core/src/tasks/task-kernel/kernel.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/core/src/tasks/task-kernel/kernel.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609190247-NEZTJ3/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609190247-NEZTJ3/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202609190247-NEZTJ3/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/shared/canonical-pre-merge-evidence.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/shared/route-decision-blockers.kernel.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/shared/side-effect-authority-policy.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/git-status-path.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/git-status-path.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/kernel-advance.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/kernel-controller-handoff.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/kernel-controller-handoff.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/kernel-effect-coordinator.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/kernel-exchange.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/kernel-operational-projection.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/kernel-operational-projection.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/kernel-repository-coordinator.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/kernel-run.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/kernel-semantic-result.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/kernel-semantic-result.ts"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts",
+      " M packages/agentplane/src/commands/shared/route-decision-blockers.ts",
+      " M packages/agentplane/src/commands/shared/side-effect-authority.test.ts",
+      " M packages/agentplane/src/commands/shared/side-effect-authority.ts",
+      " M packages/agentplane/src/commands/shared/task-mutation.test.ts",
+      " M packages/agentplane/src/commands/shared/task-mutation.ts",
+      " M packages/agentplane/src/commands/task/advance.command.ts",
+      " M packages/agentplane/src/commands/task/direct-task-verification.test.ts",
+      " M packages/agentplane/src/commands/task/direct-task-verification.ts",
+      " M packages/agentplane/src/commands/task/external-agent-implementation-finalization.ts",
+      " M packages/agentplane/src/commands/task/finish-execute.ts",
+      " M packages/agentplane/src/commands/task/finish-quality-evidence.ts",
+      " M packages/agentplane/src/commands/task/finish-shared.ts",
+      " M packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts",
+      " M packages/agentplane/src/commands/task/kernel-advance.ts",
+      " M packages/agentplane/src/commands/task/kernel-exchange.ts",
+      " M packages/agentplane/src/commands/task/kernel-final-validation.ts",
+      " M packages/agentplane/src/commands/task/kernel-inspection.ts",
+      " M packages/agentplane/src/commands/task/kernel-plan.ts",
+      " M packages/agentplane/src/commands/task/kernel-run.ts",
+      " M packages/agentplane/src/commands/task/kernel-work-order.ts",
+      " M packages/agentplane/src/commands/task/plan-set.command.ts",
+      " M packages/agentplane/src/commands/task/run.command.ts",
+      " M packages/agentplane/src/commands/task/show-kernel.test.ts",
+      " M packages/agentplane/src/commands/task/show.ts",
+      " M packages/agentplane/src/commands/task/verify-record-execute.ts",
+      " M packages/agentplane/src/commands/task/verify-record.ts",
+      " M packages/agentplane/src/commands/task/verify-record.types.ts",
+      " M packages/agentplane/src/runner/usecases/kernel-authority.ts",
+      " M packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts",
+      " M packages/core/src/tasks/task-kernel/authority-lineage.ts",
+      " M packages/core/src/tasks/task-kernel/index.ts",
+      " M packages/core/src/tasks/task-kernel/kernel.test.ts",
+      " M packages/core/src/tasks/task-kernel/kernel.ts",
+      "?? .agentplane/tasks/202609190247-NEZTJ3/README.md",
+      "?? .agentplane/tasks/202609190247-NEZTJ3/quality/objects/sha256/3d0cad2f206a825324ecfa99591f571cbef27cfcd4cc0826a14682c0726c697d.json",
+      "?? .agentplane/tasks/202609190247-NEZTJ3/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+      "?? packages/agentplane/src/commands/shared/canonical-pre-merge-evidence.ts",
+      "?? packages/agentplane/src/commands/shared/route-decision-blockers.kernel.test.ts",
+      "?? packages/agentplane/src/commands/shared/side-effect-authority-policy.ts",
+      "?? packages/agentplane/src/commands/task/git-status-path.test.ts",
+      "?? packages/agentplane/src/commands/task/git-status-path.ts",
+      "?? packages/agentplane/src/commands/task/kernel-advance.test.ts",
+      "?? packages/agentplane/src/commands/task/kernel-controller-handoff.test.ts",
+      "?? packages/agentplane/src/commands/task/kernel-controller-handoff.ts",
+      "?? packages/agentplane/src/commands/task/kernel-effect-coordinator.ts",
+      "?? packages/agentplane/src/commands/task/kernel-exchange.test.ts",
+      "?? packages/agentplane/src/commands/task/kernel-operational-projection.test.ts",
+      "?? packages/agentplane/src/commands/task/kernel-operational-projection.ts",
+      "?? packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts",
+      "?? packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.ts",
+      "?? packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts",
+      "?? packages/agentplane/src/commands/task/kernel-repository-coordinator.ts",
+      "?? packages/agentplane/src/commands/task/kernel-run.test.ts",
+      "?? packages/agentplane/src/commands/task/kernel-semantic-result.test.ts",
+      "?? packages/agentplane/src/commands/task/kernel-semantic-result.ts"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202609190247-NEZTJ3"
+}

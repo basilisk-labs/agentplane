@@ -78,15 +78,12 @@ describe("maximum-assimilation task-centric compatibility", () => {
       const extensions = taskDocument.frontmatter.extensions as Record<string, unknown>;
       const context = extensions["agentplane.context"] as {
         mode?: string;
-        blueprint?: { id?: string };
         prompt_modules?: { address?: { value?: string }; content?: string }[];
         allowed_outputs?: string[];
       };
 
-      expect(taskDocument.frontmatter.blueprint_request).toBe("context.maximum_assimilation");
       expect(context).toMatchObject({
         mode: "maximum_assimilation",
-        blueprint: { id: "context.maximum_assimilation" },
       });
       expect(context.prompt_modules?.[0]).toMatchObject({
         address: { value: "framework/template/generated.artifact/context_assimilation/v2" },
@@ -117,22 +114,11 @@ describe("maximum-assimilation task-centric compatibility", () => {
       const planning = await runJson(root, ["task", "advance", taskId, "--agent-json"]);
       expect(planning).toMatchObject({
         task_id: taskId,
-        action: { kind: "approval_required" },
-        authority: { role: "EXECUTOR" },
-        operator_action: {
-          kind: "approve_plan",
-          host_user_decision: {
-            request: {
-              task_id: taskId,
-              decision: "approved",
-            },
-          },
-        },
+        action: { kind: "agent_episode" },
+        authority: { role: "PLANNER" },
       });
-      expect(planning.operator_action?.host_user_decision?.request?.plan_digest).toMatch(
-        /^sha256:[0-9a-f]{64}$/u,
-      );
-      expect(planning.exchange).toBeUndefined();
+      expect(planning.operator_action).toBeUndefined();
+      expect(planning.exchange).toBeDefined();
     },
   );
 });

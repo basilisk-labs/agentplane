@@ -6,8 +6,7 @@ import { CliError } from "../../shared/errors.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import {
-  finishDirectTask,
-  resolveDirectImplementationCommit,
+  runDirectTaskFinalizationOperation,
   type DirectImplementationEvidence,
 } from "./direct-task-finalization.js";
 import { recordDirectTaskFormalOperation } from "./direct-task-supervisor-formal-operation.js";
@@ -17,7 +16,7 @@ import {
 } from "./direct-task-verification.js";
 import { cmdVerifyParsed } from "./verify-record.js";
 
-export type DirectTaskCloseoutStopCode =
+type DirectTaskCloseoutStopCode =
   | "verification_check_unsupported"
   | "verification_check_failed"
   | "stale_route"
@@ -304,14 +303,12 @@ export async function verifyDirectTask(opts: {
 }
 
 /** Finishes a direct task only after its verified evidence has passed EVALUATOR review. */
-export async function finalizeDirectTask(opts: {
+async function finalizeDirectTask(opts: {
   ctx: CommandCtx;
   command: CommandContext;
   task_id: string;
   decision: () => Promise<TaskRouteDecision>;
-  execution_base_commit: string | null;
-  allowed_paths: readonly string[];
-  observed_changed_paths: readonly string[] | null;
+  implementation_commit: string;
   on_lifecycle_operation?: () => void;
   journal: JournalRef;
   declared_checks: number;
@@ -330,70 +327,14 @@ export async function finalizeDirectTask(opts: {
       }),
     };
   }
-  let implementation: Awaited<ReturnType<typeof resolveDirectImplementationCommit>>;
-  try {
-    implementation = await resolveDirectImplementationCommit({
-      command: opts.command,
-      cwd: opts.ctx.cwd,
-      task_id: opts.task_id,
-      execution_base_commit: opts.execution_base_commit,
-      allowed_paths: opts.allowed_paths,
-      observed_changed_paths: opts.observed_changed_paths,
-    });
-  } catch {
-    return {
-      ...opts.journal,
-      status: "stopped",
-      decision: current,
-      declared_checks: opts.declared_checks,
-      stop: {
-        code: "implementation_commit_missing",
-        reason: "The CLI could not determine the committed implementation for direct finalization.",
-        route_step_id: current.workflowStep.id,
-        operation_id: null,
-      },
-    };
-  }
-  if (implementation.status !== "ready") {
-    return {
-      ...opts.journal,
-      status: "stopped",
-      decision: current,
-      declared_checks: opts.declared_checks,
-      stop: {
-        code:
-          implementation.status === "scope_violation"
-            ? "implementation_scope_violation"
-            : "implementation_commit_missing",
-        reason: implementation.reason,
-        route_step_id: current.workflowStep.id,
-        operation_id: null,
-      },
-    };
-  }
-
   let finalized: Awaited<ReturnType<typeof recordDirectTaskFormalOperation>>;
   try {
-    finalized = await recordDirectTaskFormalOperation({
-      git_root: opts.command.resolvedProject.gitRoot,
+    finalized = await runDirectTaskFinalizationOperation({
+      ctx: opts.ctx,
+      command: opts.command,
       task_id: opts.task_id,
-      id: "task_finish",
       decision: opts.decision,
-      run: async () => {
-        const exitCode = await finishDirectTask({
-          ctx: opts.ctx,
-          command: opts.command,
-          task_id: opts.task_id,
-          implementation_commit: implementation.commit,
-        });
-        if (exitCode !== 0) {
-          throw new CliError({
-            code: "E_RUNTIME",
-            message: `Direct task finalization exited with ${exitCode}.`,
-          });
-        }
-        return { finalized: true, implementation_commit: implementation.commit };
-      },
+      implementation_commit: opts.implementation_commit,
     });
   } catch {
     return {
@@ -446,9 +387,7 @@ export async function closeDirectTask(opts: {
   task: Pick<TaskData, "verify" | "execution_contract">;
   evaluator: DirectTaskCloseoutEvaluatorEvidence;
   decision: () => Promise<TaskRouteDecision>;
-  execution_base_commit: string | null;
-  allowed_paths: readonly string[];
-  observed_changed_paths: readonly string[] | null;
+  implementation_commit: string;
   on_lifecycle_operation?: () => void;
   journal: JournalRef;
 }): Promise<DirectTaskCloseoutOutcome> {
@@ -459,9 +398,7 @@ export async function closeDirectTask(opts: {
     command: opts.command,
     task_id: opts.task_id,
     decision: opts.decision,
-    execution_base_commit: opts.execution_base_commit,
-    allowed_paths: opts.allowed_paths,
-    observed_changed_paths: opts.observed_changed_paths,
+    implementation_commit: opts.implementation_commit,
     on_lifecycle_operation: opts.on_lifecycle_operation,
     journal: { journal: verified.journal, journal_path: verified.journal_path },
     declared_checks: verified.declared_checks,

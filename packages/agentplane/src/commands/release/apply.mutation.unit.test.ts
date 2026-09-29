@@ -5,6 +5,7 @@ import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 
 import {
+  replaceAcrExampleVersionInFile,
   replaceAgentplanePackageMetadata,
   replacePackageDependencyVersion,
   replacePackageVersionInFile,
@@ -28,7 +29,49 @@ async function tempFile(name: string, text: string): Promise<string> {
   return filePath;
 }
 
+const renderAcr = (version: string) => `{
+  "producer": { "name": "agentplane", "version": "${version}" },
+  "agent": {
+    "toolchain": [
+      { "name": "agentplane", "version": "${version}" },
+      { "name": "node", "version": "0.6.3" }
+    ]
+  },
+  "permissions": { "allowed_paths": ["packages/**"], "protected_paths": [".github/**"] },
+  "metadata": { "version": "0.6.3", "description": "version: 0.6.3" }
+}\n`;
+
 describe("release apply mutation helpers", () => {
+  it("preserves ACR formatting and unrelated versions during release preparation", async () => {
+    const acrPath = await tempFile("acr.json", renderAcr("0.6.3"));
+
+    await replaceAcrExampleVersionInFile(acrPath, "0.6.4");
+    expect(await readFile(acrPath, "utf8")).toBe(renderAcr("0.6.4"));
+    await replaceAcrExampleVersionInFile(acrPath, "0.6.4");
+    expect(await readFile(acrPath, "utf8")).toBe(renderAcr("0.6.4"));
+  });
+
+  it("does not write an ACR example without an agentplane toolchain", async () => {
+    const text = '{"producer":{"version":"0.6.3"},"agent":{"toolchain":[]}}\n';
+    const acrPath = await tempFile("acr.json", text);
+    await expect(replaceAcrExampleVersionInFile(acrPath, "0.6.4")).rejects.toThrow(
+      "Failed to update agentplane toolchain version",
+    );
+    expect(await readFile(acrPath, "utf8")).toBe(text);
+  });
+
+  it.each([
+    '{"agent":{"toolchain":[{"name":"agentplane","version":"0.6.3"}]}}',
+    '{"producer":{"version":3},"agent":{"toolchain":[{"name":"agentplane","version":"0.6.3"}]}}',
+    '{"producer":{"version":"0.6.2","version":"0.6.3"},"agent":{"toolchain":[{"name":"agentplane","version":"0.6.3"}]}}',
+  ])("leaves missing or ambiguous version fields unchanged: %s", async (text) => {
+    const acrPath = await tempFile("acr.json", text);
+    await expect(replaceAcrExampleVersionInFile(acrPath, "0.6.4")).rejects.toThrow(
+      "Failed to locate an unambiguous ACR version",
+    );
+    expect(await readFile(acrPath, "utf8")).toBe(text);
+  });
+
   it("treats already-updated version surfaces as idempotent no-ops", async () => {
     const pkgPath = await tempFile("package.json", '{\n  "version": "0.6.4"\n}\n');
     await replacePackageVersionInFile(pkgPath, "0.6.4");

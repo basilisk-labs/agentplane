@@ -1,0 +1,621 @@
+diff --git a/packages/agentplane/src/cli/run-cli.core.roadmap-branch.test.ts b/packages/agentplane/src/cli/run-cli.core.roadmap-branch.test.ts
+new file mode 100644
+index 000000000..0314f06ad
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli.core.roadmap-branch.test.ts
+@@ -0,0 +1,29 @@
++import { execFile } from "node:child_process";
++import { promisify } from "node:util";
++import { expect, it } from "vitest";
++
++const exec = promisify(execFile);
++
++it(
++  "binds branch completion identities and rejects stale hosted evidence",
++  { timeout: 60_000 },
++  async () => {
++    const result = await exec(
++      "bun",
++      [
++        "run",
++        "test:project",
++        "agentplane",
++        "--maxWorkers=1",
++        "packages/agentplane/src/commands/task/branch-task-supervisor.test.ts",
++        "packages/agentplane/src/commands/pr/integrate/queue-state.test.ts",
++        "packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts",
++        "-t",
++        "runs semantic roles|returns merge authority|maps late checks|does not replay a completed hosted-close|records merged provider truth|invalidates a queued entry whenever the pinned base moves|keeps a newer unpublished head publishable",
++      ],
++      { cwd: process.cwd() },
++    );
++
++    expect(result.stdout).toContain("Tests  7 passed");
++  },
++);
+diff --git a/packages/agentplane/src/cli/run-cli.core.roadmap-direct.test.ts b/packages/agentplane/src/cli/run-cli.core.roadmap-direct.test.ts
+new file mode 100644
+index 000000000..fc859b84c
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli.core.roadmap-direct.test.ts
+@@ -0,0 +1,34 @@
++// This release characterization composes compatible production-CLI suites so
++// maintained lifecycle fixtures remain the oracle instead of copied setup.
++import { execFile } from "node:child_process";
++import { promisify } from "node:util";
++import { expect, it } from "vitest";
++
++import "./run-cli.core.direct-task-supervision.test.js";
++import "./run-cli.core.route-decision.direct-closeout.test.js";
++
++const exec = promisify(execFile);
++
++it(
++  "retains independent evaluation, scoped finalization, and checked completion",
++  { timeout: 60_000 },
++  async () => {
++    const result = await exec(
++      "bun",
++      [
++        "run",
++        "test:project",
++        "agentplane",
++        "--maxWorkers=1",
++        "packages/agentplane/src/commands/task/direct-task-supervisor.test.ts",
++        "packages/agentplane/src/commands/task/direct-task-finalization.test.ts",
++        "packages/agentplane/src/commands/task/direct-task-verification.test.ts",
++        "-t",
++        "verifies before evaluation|does not let an EXECUTOR commit|does not treat an empty",
++      ],
++      { cwd: process.cwd() },
++    );
++
++    expect(result.stdout).toContain("Tests  3 passed");
++  },
++);
+diff --git a/packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts b/packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts
+new file mode 100644
+index 000000000..7b46a79fd
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts
+@@ -0,0 +1,30 @@
++import { execFile } from "node:child_process";
++import { promisify } from "node:util";
++import { expect, it } from "vitest";
++
++const exec = promisify(execFile);
++
++it("preserves accepted semantic work across recovery boundaries", { timeout: 60_000 }, async () => {
++  const result = await exec(
++    "bun",
++    [
++      "run",
++      "test:project",
++      "agentplane",
++      "--maxWorkers=1",
++      "packages/agentplane/src/commands/task/external-agent-exchange.test.ts",
++      "packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts",
++      "packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts",
++      "packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts",
++      "packages/agentplane/src/runner/usecases/task-knowledge-request-lifecycle.test.ts",
++      "packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel-effect-in-doubt.test.ts",
++      "packages/agentplane/src/runner/usecases/task-run-active-claim.test.ts",
++      "packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts",
++      "-t",
++      "requires issuance opt-in|re-derives current role|reconciles an exact approved|advances a recovered completed|serves and persists a bounded response|fails closed when supervisor history|does not auto-recover|retains an in-doubt claim",
++    ],
++    { cwd: process.cwd() },
++  );
++
++  expect(result.stdout).toContain("Tests  7 passed");
++});
+diff --git a/packages/agentplane/src/commands/shared/roadmap-backend-roundtrip.test.ts b/packages/agentplane/src/commands/shared/roadmap-backend-roundtrip.test.ts
+new file mode 100644
+index 000000000..cb1f90a1a
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/roadmap-backend-roundtrip.test.ts
+@@ -0,0 +1,30 @@
++import { execFile } from "node:child_process";
++import { promisify } from "node:util";
++import { expect, it } from "vitest";
++
++const exec = promisify(execFile);
++
++it(
++  "preserves task authority and verification across backend boundaries",
++  { timeout: 60_000 },
++  async () => {
++    const result = await exec(
++      "bun",
++      [
++        "run",
++        "test:project",
++        "agentplane",
++        "--maxWorkers=1",
++        "packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts",
++        "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts",
++        "packages/agentplane/src/adapters/task-backend/task-backend-adapter.test.ts",
++        "packages/agentplane/src/backends/task-backend/cloud-pull.test.ts",
++        "-t",
++        "creates through the kernel|does not turn legacy status|rejects malformed canonical state|refuses unsupported atomicity|matches cloud-fake atomic CAS|binds validation and evaluator|persists approved plan|retains the winning revision|persists claims, results|completes the one canonical Task|preserves projection-read capabilities|marks provider freshness unavailable|rejects a malformed nested conflict|keeps a conflict open",
++      ],
++      { cwd: process.cwd() },
++    );
++
++    expect(result.stdout).toContain("Tests  14 passed");
++  },
++);
+diff --git a/packages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts b/packages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts
+new file mode 100644
+index 000000000..635edf669
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts
+@@ -0,0 +1,27 @@
++import { execFile } from "node:child_process";
++import { promisify } from "node:util";
++import { expect, it } from "vitest";
++
++const exec = promisify(execFile);
++
++it("conserves implementation work across verification retries", { timeout: 60_000 }, async () => {
++  const result = await exec(
++    "bun",
++    [
++      "run",
++      "test:project",
++      "agentplane",
++      "--maxWorkers=1",
++      "packages/agentplane/src/commands/task/verification-infrastructure.test.ts",
++      "packages/agentplane/src/commands/task/branch-task-verification.test.ts",
++      "packages/agentplane/src/commands/task/direct-task-verification.test.ts",
++      "packages/agentplane/src/commands/shared/workflow-step-quality.test.ts",
++      "packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts",
++      "-t",
++      "retains a failed check outside|freezes branch verification|reuses only the exact unchanged|refreshes deterministic evidence after|routes an unclassified semantic|returns direct verification rework|keeps rework semantic while|moves a newer implementation|accepts a newer supervisor|rejects a newer non-supervisor|does not match a populated task commit",
++    ],
++    { cwd: process.cwd() },
++  );
++
++  expect(result.stdout).toContain("Tests  12 passed");
++});
+diff --git a/scripts/baselines/architecture-inventory.json b/scripts/baselines/architecture-inventory.json
+new file mode 100644
+index 000000000..762058182
+--- /dev/null
++++ b/scripts/baselines/architecture-inventory.json
+@@ -0,0 +1,226 @@
++{
++  "schema_version": 1,
++  "unknown_custom_semantics": "explicit_blocker",
++  "rows": [
++    {
++      "id": "lifecycle.ordinary.run",
++      "category": "lifecycle_writer",
++      "owner": "ordinary task supervisors",
++      "caller": "task run",
++      "invariant": "Direct and branch_pr execution remain separate repository-effect policies under the ordinary task lifecycle.",
++      "replacement_test": "packages/agentplane/src/cli/run-cli.core.roadmap-direct.test.ts",
++      "replacement_test_status": "proposed",
++      "sources": [
++        {
++          "path": "packages/agentplane/src/commands/task/run.command.ts",
++          "symbols": ["superviseDirectTaskRun", "superviseBranchTaskRun"]
++        }
++      ]
++    },
++    {
++      "id": "lifecycle.ordinary.advance",
++      "category": "lifecycle_writer",
++      "owner": "ordinary task advance use cases",
++      "caller": "task advance",
++      "invariant": "Admission, semantic exchange, native verification, and formal effects use the current task identity and accepted execution grant.",
++      "replacement_test": "packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts",
++      "replacement_test_status": "proposed",
++      "sources": [
++        {
++          "path": "packages/agentplane/src/commands/task/advance.command.ts",
++          "symbols": [
++            "acceptExternalAgentResult",
++            "executeExternalAgentVerification",
++            "executeBranchWorkflowOperation"
++          ]
++        }
++      ]
++    },
++    {
++      "id": "lifecycle.kernel.dispatch",
++      "category": "lifecycle_writer",
++      "owner": "canonical kernel supervisor",
++      "caller": "task run and task advance when task_kernel is present",
++      "invariant": "Kernel records never fall through to the ordinary lifecycle and ordinary records never enter the kernel lifecycle.",
++      "replacement_test": "packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts",
++      "replacement_test_status": "existing",
++      "sources": [
++        {
++          "path": "packages/agentplane/src/commands/task/run.command.ts",
++          "symbols": ["TASK_KERNEL_EXTENSION", "runCanonicalTask"]
++        },
++        {
++          "path": "packages/agentplane/src/commands/task/advance.command.ts",
++          "symbols": ["TASK_KERNEL_EXTENSION", "advanceCanonicalTask"]
++        }
++      ]
++    },
++    {
++      "id": "lifecycle.task-centric.orchestrator",
++      "category": "public_export",
++      "owner": "core task-centric library",
++      "caller": "library consumers",
++      "invariant": "The additional orchestrator is inventoried but is not assumed to be the production lifecycle owner.",
++      "replacement_test": "packages/core/src/tasks/task-centric/orchestrator.test.ts",
++      "replacement_test_status": "existing",
++      "sources": [
++        {
++          "path": "packages/core/src/tasks/task-centric/index.ts",
++          "symbols": ["TaskCentricOrchestrator"]
++        },
++        {
++          "path": "packages/core/src/tasks/task-centric/orchestrator.ts",
++          "symbols": ["export class TaskCentricOrchestrator"]
++        }
++      ]
++    },
++    {
++      "id": "blueprint.registry-and-resolution",
++      "category": "blueprint_producer",
++      "owner": "Blueprint registry and resolver",
++      "caller": "Blueprint commands and task lifecycle projections",
++      "invariant": "Blueprint selection remains a policy projection and cannot grant authority.",
++      "replacement_test": "packages/agentplane/src/blueprints/resolve.test.ts",
++      "replacement_test_status": "existing",
++      "sources": [
++        {
++          "path": "packages/agentplane/src/blueprints/index.ts",
++          "symbols": ["createBlueprintRegistry", "resolveBlueprint"]
++        },
++        {
++          "path": "packages/agentplane/src/blueprints/resolve.ts",
++          "symbols": ["export function resolveBlueprint"]
++        }
++      ]
++    },
++    {
++      "id": "blueprint.snapshot-writer",
++      "category": "blueprint_producer",
++      "owner": "Blueprint snapshot artifact use case",
++      "caller": "verification recording",
++      "invariant": "A Blueprint snapshot reference identifies observed policy input and never substitutes for observed verification.",
++      "replacement_test": "packages/agentplane/src/blueprints/snapshot.test.ts",
++      "replacement_test_status": "existing",
++      "sources": [
++        {
++          "path": "packages/agentplane/src/blueprints/snapshot.ts",
++          "symbols": ["buildBlueprintResolvedSnapshot"]
++        },
++        {
++          "path": "packages/agentplane/src/commands/task/verify-record-references.ts",
++          "symbols": ["BlueprintSnapshotRef:"]
++        }
++      ]
++    },
++    {
++      "id": "blueprint.finish-consumer",
++      "category": "blueprint_consumer",
++      "owner": "task finish and quality admission",
++      "caller": "task finish",
++      "invariant": "Required Blueprint evidence stays current until a later release moves every enforced obligation to its target owner.",
++      "replacement_test": "packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
++      "replacement_test_status": "existing",
++      "sources": [
++        {
++          "path": "packages/agentplane/src/commands/task/finish-blueprint-evidence.ts",
++          "symbols": ["BLUEPRINT_SNAPSHOT_REF_MARKER", "BlueprintSnapshotRef:"]
++        }
++      ]
++    },
++    {
++      "id": "blueprint.project-local-definition",
++      "category": "project_local_definition",
++      "owner": "trusted project Blueprint loader",
++      "caller": "Blueprint registry construction",
++      "invariant": "Unknown project-local semantics are compatibility blockers and are never mapped to the nearest built-in behavior.",
++      "replacement_test": "packages/agentplane/src/blueprints/project-local.test.ts",
++      "replacement_test_status": "existing",
++      "sources": [
++        {
++          "path": "packages/agentplane/src/blueprints/project-local.ts",
++          "symbols": [
++            "createTrustedProjectBlueprintRegistry",
++            "loadTrustedProjectBlueprintRegistry"
++          ]
++        }
++      ]
++    },
++    {
++      "id": "recipe.blueprint-extensions",
++      "category": "recipe_extension",
++      "owner": "Recipe manifest contract",
++      "caller": "Recipe validation and Blueprint hint projection",
++      "invariant": "Recipe metadata may request stricter behavior but cannot grant effects or waive mandatory review.",
++      "replacement_test": "packages/recipes/src/blueprint-extensions.test.ts",
++      "replacement_test_status": "existing",
++      "sources": [
++        {
++          "path": "packages/recipes/src/manifest-contracts.ts",
++          "symbols": ["RecipeBlueprintExtensionKind", "blueprint_extensions"]
++        },
++        {
++          "path": "packages/recipes/src/blueprint-extensions.ts",
++          "symbols": ["preferred_blueprint"]
++        }
++      ]
++    },
++    {
++      "id": "verification.material-input-identity",
++      "category": "verification_identity",
++      "owner": "existing task_verification_input family",
++      "caller": "verification record assessment",
++      "invariant": "Checked-content identity remains distinct from current admission revision and current evidence sufficiency.",
++      "replacement_test": "packages/agentplane/src/commands/shared/task-verification-input.test.ts",
++      "replacement_test_status": "existing",
++      "sources": [
++        {
++          "path": "packages/agentplane/src/commands/shared/task-verification-input-types.ts",
++          "symbols": ["VerificationInputIdentity", "implementation", "verify_steps_digest"]
++        }
++      ]
++    },
++    {
++      "id": "backend.local-and-cloud-ports",
++      "category": "backend_entrypoint",
++      "owner": "TaskBackend ports",
++      "caller": "command execution context",
++      "invariant": "Local canonical data and remote projection freshness retain revision guards and fail closed before unsupported mutation.",
++      "replacement_test": "packages/agentplane/src/commands/shared/roadmap-backend-roundtrip.test.ts",
++      "replacement_test_status": "proposed",
++      "sources": [
++        {
++          "path": "packages/agentplane/src/backends/task-backend/local-backend.ts",
++          "symbols": ["export class LocalBackend", "supports_revision_guarded_writes"]
++        },
++        {
++          "path": "packages/agentplane/src/backends/task-backend/cloud-backend.ts",
++          "symbols": ["export class CloudBackend", "ensureCloudProjectionFreshForLocalMutation"]
++        },
++        {
++          "path": "packages/agentplane/src/adapters/task-backend/task-centric-backend-runtime.ts",
++          "symbols": ["TASK_CENTRIC_RUNTIME_EXTENSION_KEY", "TASK_KERNEL_EXTENSION"]
++        }
++      ]
++    },
++    {
++      "id": "generated.agent-and-policy-mirrors",
++      "category": "generated_mirror",
++      "owner": "packaged agent and policy assets",
++      "caller": "framework asset synchronization",
++      "invariant": "Generated repository mirrors match their packaged canonical assets byte for byte.",
++      "replacement_test": "scripts/generate/sync-agent-templates.test.mjs",
++      "replacement_test_status": "existing",
++      "sources": [
++        {
++          "path": "scripts/generate/sync-agent-templates.mjs",
++          "symbols": ["compareDirectoryTrees", "canonicalAgentsDir", "targetAgentsDir"]
++        },
++        {
++          "path": "packages/agentplane/assets/agents/PLANNER.json",
++          "symbols": ["planning.constraints"]
++        },
++        { "path": ".agentplane/agents/PLANNER.json", "symbols": ["planning.constraints"] }
++      ]
++    }
++  ]
++}
+diff --git a/scripts/checks/architecture-inventory.mjs b/scripts/checks/architecture-inventory.mjs
+new file mode 100644
+index 000000000..5391f2505
+--- /dev/null
++++ b/scripts/checks/architecture-inventory.mjs
+@@ -0,0 +1,117 @@
++import { createHash } from "node:crypto";
++import { readFile } from "node:fs/promises";
++import path from "node:path";
++import { fileURLToPath, pathToFileURL } from "node:url";
++
++const REQUIRED_CATEGORIES = new Set([
++  "backend_entrypoint",
++  "blueprint_consumer",
++  "blueprint_producer",
++  "generated_mirror",
++  "lifecycle_writer",
++  "project_local_definition",
++  "public_export",
++  "recipe_extension",
++  "verification_identity",
++]);
++
++function sha256(value) {
++  return createHash("sha256").update(value).digest("hex");
++}
++
++function requireText(value, label) {
++  if (typeof value !== "string" || value.trim().length === 0) {
++    throw new Error(`${label} must be non-empty text.`);
++  }
++  return value;
++}
++
++export async function validateArchitectureInventory({ repoRoot, inventory }) {
++  if (inventory?.schema_version !== 1 || !Array.isArray(inventory.rows)) {
++    throw new Error("Architecture inventory schema is unsupported.");
++  }
++  if (inventory.unknown_custom_semantics !== "explicit_blocker") {
++    throw new Error("Unknown custom semantics must remain explicit blockers.");
++  }
++
++  const ids = new Set();
++  const categories = new Set();
++  const sourceBytes = new Map();
++  for (const [index, row] of inventory.rows.entries()) {
++    const prefix = `rows[${index}]`;
++    const id = requireText(row?.id, `${prefix}.id`);
++    if (ids.has(id)) throw new Error(`Duplicate architecture inventory id: ${id}.`);
++    ids.add(id);
++    categories.add(requireText(row.category, `${prefix}.category`));
++    requireText(row.owner, `${prefix}.owner`);
++    requireText(row.caller, `${prefix}.caller`);
++    requireText(row.invariant, `${prefix}.invariant`);
++    requireText(row.replacement_test, `${prefix}.replacement_test`);
++    if (!new Set(["existing", "proposed"]).has(row.replacement_test_status)) {
++      throw new Error(`${prefix}.replacement_test_status is invalid.`);
++    }
++    if (!Array.isArray(row.sources) || row.sources.length === 0) {
++      throw new Error(`${prefix}.sources must not be empty.`);
++    }
++    for (const [sourceIndex, source] of row.sources.entries()) {
++      const sourcePrefix = `${prefix}.sources[${sourceIndex}]`;
++      const relativePath = requireText(source?.path, `${sourcePrefix}.path`);
++      if (path.isAbsolute(relativePath) || relativePath.split("/").includes("..")) {
++        throw new Error(`${sourcePrefix}.path must stay inside the repository.`);
++      }
++      if (!Array.isArray(source.symbols) || source.symbols.length === 0) {
++        throw new Error(`${sourcePrefix}.symbols must not be empty.`);
++      }
++      let bytes = sourceBytes.get(relativePath);
++      if (bytes === undefined) {
++        bytes = await readFile(path.join(repoRoot, relativePath), "utf8");
++        sourceBytes.set(relativePath, bytes);
++      }
++      for (const symbol of source.symbols) {
++        const expected = requireText(symbol, `${sourcePrefix}.symbols`);
++        if (!bytes.includes(expected)) {
++          throw new Error(`${id} source ${relativePath} is missing required symbol ${expected}.`);
++        }
++      }
++    }
++  }
++
++  const missingCategories = [...REQUIRED_CATEGORIES].filter(
++    (category) => !categories.has(category),
++  );
++  if (missingCategories.length > 0) {
++    throw new Error(
++      `Architecture inventory is missing categories: ${missingCategories.join(", ")}.`,
++    );
++  }
++
++  const sourceManifest = [...sourceBytes]
++    .map(([relativePath, bytes]) => `${relativePath}\0${sha256(bytes)}`)
++    .toSorted()
++    .join("\0");
++  return Object.freeze({
++    schema_version: 1,
++    row_count: inventory.rows.length,
++    source_count: sourceBytes.size,
++    categories: [...categories].toSorted(),
++    source_digest: `sha256:${sha256(sourceManifest)}`,
++    unknown_custom_semantics: inventory.unknown_custom_semantics,
++  });
++}
++
++export async function readAndValidateArchitectureInventory(repoRoot) {
++  const inventoryPath = path.join(repoRoot, "scripts/baselines/architecture-inventory.json");
++  const inventory = JSON.parse(await readFile(inventoryPath, "utf8"));
++  return await validateArchitectureInventory({ repoRoot, inventory });
++}
++
++async function main() {
++  const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
++  const repoRoot = path.resolve(scriptDirectory, "../..");
++  const report = await readAndValidateArchitectureInventory(repoRoot);
++  process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
++}
++
++if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
++  await main();
++}
+diff --git a/scripts/checks/architecture-inventory.test.mjs b/scripts/checks/architecture-inventory.test.mjs
+new file mode 100644
+index 000000000..3d46bf2ab
+--- /dev/null
++++ b/scripts/checks/architecture-inventory.test.mjs
+@@ -0,0 +1,47 @@
++import assert from "node:assert/strict";
++import { readFile } from "node:fs/promises";
++import path from "node:path";
++import test from "node:test";
++import { fileURLToPath } from "node:url";
++
++import {
++  readAndValidateArchitectureInventory,
++  validateArchitectureInventory,
++} from "./architecture-inventory.mjs";
++
++const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
++const inventoryPath = path.join(repoRoot, "scripts/baselines/architecture-inventory.json");
++
++test("reproduces the source-bound architecture inventory", async () => {
++  const first = await readAndValidateArchitectureInventory(repoRoot);
++  const second = await readAndValidateArchitectureInventory(repoRoot);
++
++  assert.deepEqual(second, first);
++  assert.equal(first.row_count, 12);
++  assert.equal(first.unknown_custom_semantics, "explicit_blocker");
++  assert.match(first.source_digest, /^sha256:[0-9a-f]{64}$/u);
++  assert.ok(first.categories.includes("generated_mirror"));
++  assert.ok(first.categories.includes("backend_entrypoint"));
++  assert.ok(first.categories.includes("project_local_definition"));
++});
++
++test("rejects missing source evidence instead of inferring a mapping", async () => {
++  const inventory = JSON.parse(await readFile(inventoryPath, "utf8"));
++  const changed = structuredClone(inventory);
++  changed.rows[0].sources[0].symbols.push("missing-architecture-owner-symbol");
++
++  await assert.rejects(
++    validateArchitectureInventory({ repoRoot, inventory: changed }),
++    /missing required symbol missing-architecture-owner-symbol/u,
++  );
++});
++
++test("requires unknown custom semantics to remain explicit blockers", async () => {
++  const inventory = JSON.parse(await readFile(inventoryPath, "utf8"));
++  const changed = { ...inventory, unknown_custom_semantics: "nearest_match" };
++
++  await assert.rejects(
++    validateArchitectureInventory({ repoRoot, inventory: changed }),
++    /must remain explicit blockers/u,
++  );
++});
+diff --git a/scripts/lib/test-route-registry.mjs b/scripts/lib/test-route-registry.mjs
+index 0a5d4bc81..0d5a6818c 100644
+--- a/scripts/lib/test-route-registry.mjs
++++ b/scripts/lib/test-route-registry.mjs
+@@ -12,7 +12,7 @@ export const VITEST_WORKSPACE_PROJECTS = [
+     name: "agentplane",
+     test: {
+       include: ["packages/agentplane/src/**/*.test.ts"],
+-      exclude: ["**/cli-smoke.test.ts", "**/run-cli*.test.ts"],
++      exclude: ["**/cli-smoke.test.ts", "**/run-cli!(*.roadmap-*).test.ts"],
+     },
+   },
+   {
+diff --git a/scripts/lib/test-route-registry.test.mjs b/scripts/lib/test-route-registry.test.mjs
+new file mode 100644
+index 000000000..fb95e518c
+--- /dev/null
++++ b/scripts/lib/test-route-registry.test.mjs
+@@ -0,0 +1,14 @@
++import assert from "node:assert/strict";
++import test from "node:test";
++
++import { getVitestWorkspaceProjects } from "./test-route-registry.mjs";
++
++test("the agentplane project admits only roadmap run-cli characterizations", () => {
++  const project = getVitestWorkspaceProjects().find((candidate) => candidate.name === "agentplane");
++
++  assert.ok(project);
++  assert.deepEqual(project.test.exclude, [
++    "**/cli-smoke.test.ts",
++    "**/run-cli!(*.roadmap-*).test.ts",
++  ]);
++});

@@ -2,24 +2,25 @@ import { normalizeCompactTaskPlanProposal, parseTaskPlanProposal } from "./schem
 import { describe, expect, it } from "vitest";
 
 import {
-  aggregateValidation,
   approveTaskPlan,
-  createLegacyTaskAggregate,
-  createRepositorySnapshot,
   createTaskPlanRevision,
   materializeApprovedWorkItems,
   reconcileReplacementPlanWorkItems,
-  taskCentricDigest,
+  type ReplacementPlanWorkItemRecoveryEvidence,
+} from "./graph.js";
+import { aggregateValidation } from "./lifecycle.js";
+import { createLegacyTaskAggregate } from "./compatibility.js";
+import { createRepositorySnapshot, taskCentricDigest } from "./digest.js";
+import {
   type DomainEvent,
   type OutputManifest,
-  type ReplacementPlanWorkItemRecoveryEvidence,
   type RepositorySnapshot,
   type TaskAggregate,
   type TaskPlanProposal,
   type TransitionReceipt,
   type ValidationPlan,
   type WorkItem,
-} from "./index.js";
+} from "./model.js";
 
 const NOW = "2026-08-22T00:00:00.000Z";
 

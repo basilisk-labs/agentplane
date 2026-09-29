@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "human_review",
+  "findings": [
+    {
+      "id": "scope-approval-required",
+      "severity": "high",
+      "summary": "The frozen diff includes a canonical authority-boundary exception for blocked-plan rejection and bun.lock workspace version changes to 0.7.12-beta.1. The supplied approved scope does not authorize these changes; the previous lockfile finding remains unresolved. All evidence digests match, and the current verification record reports all three declared commands passed.",
+      "broken_invariant": "Security-sensitive changes require explicit scope approval, and material scope drift requires re-approval. Passing verification does not establish that approval.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609231207-R59HKK/quality/objects/sha256/3dc4e9b0d5ea5b9504874a43b4c97e5898c3418bbeffd93a5fa6f388a089256c.patch",
+          "sha256": "sha256:3dc4e9b0d5ea5b9504874a43b4c97e5898c3418bbeffd93a5fa6f388a089256c",
+          "line": 2537,
+          "section": "bun.lock; kernel-runtime-context.ts; kernel.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202609231207-R59HKK/README.md",
+          "sha256": "sha256:48710bde5fbe552386ebb1ce74ee949d2d083c0d109f70ed14b047585fff5545",
+          "line": 1645,
+          "section": "Scope"
+        },
+        {
+          "path": ".agentplane/policy/security.must.md",
+          "section": "Security MUST Rules"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "section": "Material drift criteria"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The blocked-plan authority exception and lockfile version changes are approved additions to the five explicitly scoped supervisor repairs."
+  ],
+  "recovery_context": "Do you approve expanding this task’s scope to include the blocked-plan rejection authority exception and the bun.lock workspace version changes to 0.7.12-beta.1?"
+}

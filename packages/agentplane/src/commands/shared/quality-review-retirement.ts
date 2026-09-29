@@ -44,6 +44,15 @@ export async function qualityReviewIsFreshForHead(opts: {
   return expectedSha === review.evaluated_sha;
 }
 
+export async function qualityReviewReworkIsFreshForHead(
+  opts: Omit<Parameters<typeof qualityReviewIsFreshForHead>[0], "expectedState">,
+): Promise<boolean> {
+  return await qualityReviewIsFreshForHead({
+    ...opts,
+    expectedState: opts.task.quality_review?.state === "blocked" ? "blocked" : "rework",
+  });
+}
+
 /** Historical verdicts remain immutable, but a retired exchange cannot authorize closeout. */
 export async function qualityReviewHasRetiredExchange(opts: {
   ctx: CommandContext;

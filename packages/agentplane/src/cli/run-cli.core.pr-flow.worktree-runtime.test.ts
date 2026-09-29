@@ -30,6 +30,7 @@ import {
 } from "../agents/agents-template.js";
 import {
   approveTaskPlan,
+  buildCleanRuntimeModeEnv,
   captureStdIO,
   cleanGitEnv,
   commitAll,
@@ -50,6 +51,7 @@ import {
   recordVerificationOk,
 } from "@agentplane/testkit";
 import { resolveUpdateCheckCachePath } from "./update-check.js";
+import { loadTaskBackend } from "../backends/task-backend.js";
 import * as prompts from "./prompts.js";
 
 installRunCliIntegrationHarness();
@@ -57,11 +59,14 @@ installRunCliIntegrationHarness();
 const WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS = 180_000;
 const workspaceRoot = process.cwd();
 
-const staleDistRuntimeEnv = (): NodeJS.ProcessEnv => ({
-  ...cleanGitEnv(),
-  PATH: process.env.PATH ?? "",
-  AGENTPLANE_DEV_ALLOW_STALE_DIST: "1",
-});
+const staleDistRuntimeEnv = (): NodeJS.ProcessEnv => {
+  const env = buildCleanRuntimeModeEnv(cleanGitEnv(), {
+    PATH: process.env.PATH ?? "",
+    AGENTPLANE_DEV_ALLOW_STALE_DIST: "1",
+  });
+  delete env.AGENTPLANE_HOOK_RUNNER;
+  return env;
+};
 
 async function seedRepoLocalDistArtifacts(root: string): Promise<void> {
   const agentplaneDist = path.join(root, "packages", "agentplane", "dist");
@@ -186,6 +191,8 @@ describe(
         );
         await approveTaskPlan(root, taskId);
         await approveTaskPlan(root, siblingTaskId);
+        await execFileAsync("git", ["add", `.agentplane/tasks/${siblingTaskId}`], { cwd: root });
+        await execFileAsync("git", ["commit", "-m", "archive sibling task"], { cwd: root });
         const worktreeIo = captureStdIO();
         const worktreePath = path.join(root, ".agentplane", "worktrees", `${taskId}-seed-readmes`);
         try {
@@ -216,6 +223,9 @@ describe(
         );
         expect(await pathExists(taskReadmePath)).toBe(true);
         expect(await pathExists(siblingReadmePath)).toBe(false);
+        const worktreeBackend = await loadTaskBackend({ cwd: worktreePath, config });
+        const historicalTask = await worktreeBackend.backend.getTask(siblingTaskId);
+        expect(historicalTask?.id).toBe(siblingTaskId);
         expect(await pathExists(path.join(root, ".agentplane", "tasks", taskId, "README.md"))).toBe(
           false,
         );
@@ -274,12 +284,6 @@ describe(
         await seedRepoLocalNodeModules(root);
         await seedRepoLocalWebsiteNodeModules(root);
         await seedRepoLocalCorePackage(root);
-        await mkdir(path.join(root, "agentplane-recipes"), { recursive: true });
-        await writeFile(
-          path.join(root, "agentplane-recipes", "index.json"),
-          '{"schema_version":1,"recipes":[]}\n',
-          "utf8",
-        );
         await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
         const execFileAsync = promisify(execFile);
         await execFileAsync("git", ["add", "."], { cwd: root });
@@ -350,9 +354,6 @@ describe(
           ),
         ).toBe(await realpath(path.join(worktreePath, "packages", "core")));
         expect(await pathExists(path.join(worktreePath, "website", "node_modules"))).toBe(true);
-        expect(await pathExists(path.join(worktreePath, "agentplane-recipes", "index.json"))).toBe(
-          true,
-        );
         expect(await pathExists(path.join(worktreePath, ".agentplane", "bin", "agentplane"))).toBe(
           true,
         );

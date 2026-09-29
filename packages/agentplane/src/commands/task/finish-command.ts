@@ -36,7 +36,6 @@ export async function cmdFinish(options: FinishOptions): Promise<number> {
       event: "finish_started",
       details: { task_count: options.taskIds.length, backend: ctx.backendId },
     });
-    await ensureReconciledBeforeMutation({ ctx, command: "finish", taskIds: options.taskIds });
     await ensureFinishRunsOnBaseBranch({
       ctx,
       cwd: options.cwd,
@@ -46,6 +45,7 @@ export async function cmdFinish(options: FinishOptions): Promise<number> {
       preMergeClosure: options.preMergeClosure === true,
       workflowMode: taskCommand.execution.selected_mode,
     });
+    await ensureReconciledBeforeMutation({ ctx, command: "finish", taskIds: options.taskIds });
     if (options.force) {
       await ensureActionApproved({
         action: "force_action",

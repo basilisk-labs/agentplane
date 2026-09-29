@@ -32,8 +32,9 @@ import {
   withBootstrapWorkflowFingerprint,
   type WorkflowRouteStateInput,
 } from "./workflow-step-fingerprint.js";
+import { withNativeIdentity } from "./workflow-step.testkit.js";
 
-const task = {
+const task = withNativeIdentity({
   id: "202607250200-PROJ1",
   title: "Workflow step projection fixture",
   description: "Exercise execution packet projections.",
@@ -50,7 +51,7 @@ const task = {
     approved_at: "2026-07-25T00:00:00.000Z",
   },
   verification: { state: "pending" },
-} satisfies TaskData;
+} satisfies TaskData);
 
 const taskWorktreePath = `/repo/.agentplane/worktrees/${task.id}`;
 const taskBranch = `task/${task.id}/workflow-step-projection-fixture`;
@@ -270,13 +271,16 @@ describe("WorkflowStep execution projections", () => {
 
   it("projects verification as a TESTER episode with mutation forbidden", () => {
     const state = routeState({
-      task: {
-        ...task,
-        commit: {
-          hash: "2222222222222222222222222222222222222222",
-          message: "feat: implementation",
+      task: withNativeIdentity(
+        {
+          ...task,
+          commit: {
+            hash: "2222222222222222222222222222222222222222",
+            message: "feat: implementation",
+          },
         },
-      },
+        "COMPLETED",
+      ),
       blockers: [
         {
           code: "verification_required",
@@ -843,7 +847,7 @@ describe("WorkflowStep execution projections", () => {
 
   it("stabilizes a protected step when the full fingerprint resolves bootstrap approval", async () => {
     const state = routeState({
-      task: { ...task, verification: { state: "ok" } },
+      task: withNativeIdentity({ ...task, verification: { state: "ok" } }, "COMPLETED"),
       prFlow: {
         ...openPrFlow,
         task: { ...openPrFlow.task, verification: "ok" },
@@ -865,7 +869,8 @@ describe("WorkflowStep execution projections", () => {
         git: { state: "present", source: "fixture", value: { head: "full" } },
         backend_projection: { state: "present", source: "fixture", value: { backend: "full" } },
         policy: { state: "present", source: "fixture", value: { policy: "full" } },
-        blueprint: { state: "present", source: "fixture", value: { blueprint: "full" } },
+        plan: { state: "present", source: "fixture", value: { plan: "full" } },
+        capability: { state: "present", source: "fixture", value: { capability: "full" } },
         knowledge: { state: "present", source: "fixture", value: { knowledge: "full" } },
         provider: { state: "present", source: "fixture", value: { provider: "full" } },
         authority: { state: "present", source: "fixture", value: { authority: "full" } },
@@ -903,10 +908,12 @@ describe("WorkflowStep execution projections", () => {
       kind: "cli_operation",
       operation: {
         id: operation.id,
-        authorityRef: expect.stringContaining("authority:") as unknown as string,
       },
-      preconditionFingerprint: { digest: fullFingerprint.digest },
     });
+    expect(step.preconditionFingerprint.digest).toBe(fullFingerprint.digest);
+    expect(step.kind === "cli_operation" ? step.operation.authorityRef : null).toContain(
+      "authority:",
+    );
   });
 
   it("projects integration enqueue to exact INTEGRATOR argv in the base checkout", () => {

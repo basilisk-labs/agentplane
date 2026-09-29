@@ -62,7 +62,7 @@ framework:
   source: https://github.com/basilisk-labs/agentplane
   last_update: null
   cli:
-    expected_version: 0.7.9-beta.1
+    expected_version: 0.7.12
 feedback:
   github_issues:
     enabled: true
@@ -130,6 +130,8 @@ execution:
     - Outside-repo read/write.
     - Credential, keychain, or SSH material changes.
 ---
+
+
 
 
 

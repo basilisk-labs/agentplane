@@ -3,6 +3,8 @@ import {
   authorityDigest,
   canonicalAuthorityIssues,
   continuationAdmissionIssues,
+  isAdditivePlanScopeExpansion,
+  planScopeExpansionApprovalDigest,
 } from "./authority-lineage.js";
 import { kernelDigest } from "./digest.js";
 export { kernelDigest } from "./digest.js";
@@ -182,6 +184,19 @@ function planMatches(
   return plan !== null && plan.revision === revision && plan.digest === digest;
 }
 
+function isApprovedBlockedPlanRejection(input: KernelInput): boolean {
+  return (
+    input.command.kind === "reject_plan" &&
+    input.aggregate.current_plan?.state === "APPROVED" &&
+    input.aggregate.state === "ACTIVE" &&
+    Object.values(input.aggregate.work_items).some((item) => item.state === "BLOCKED") &&
+    input.actor.kind === "USER" &&
+    input.actor.transport === "manual" &&
+    input.command.rejection_evidence_digest !== undefined &&
+    isSha256Digest(input.command.rejection_evidence_digest)
+  );
+}
+
 function requiredAuthority(input: KernelInput, workItemId: string | null): KernelResult | null {
   const authority = input.authority;
   if (!authority) return rejected("AUTHORITY_MISSING", [input.command.kind], "request_authority");
@@ -194,10 +209,17 @@ function requiredAuthority(input: KernelInput, workItemId: string | null): Kerne
     return rejected("AUTHORITY_SCOPE_EXCEEDED", ["authority_expired_or_invalid_time"]);
   }
   const persisted = input.aggregate.authority_lineage?.at(-1)?.authority;
+  const rejectedPlanReplanning =
+    input.command.kind === "propose_plan" &&
+    input.aggregate.state === "PLANNING" &&
+    input.aggregate.current_plan?.state === "REJECTED";
+  const approvedBlockedPlanRejection = isApprovedBlockedPlanRejection(input);
   if (persisted && input.command.kind !== "approve_plan") {
     if (authority.digest !== authorityDigest(authority))
       return rejected("AUTHORITY_SCOPE_EXCEEDED", ["authority_digest"]);
     if (
+      !rejectedPlanReplanning &&
+      !approvedBlockedPlanRejection &&
       kernelDigest(authority) !== kernelDigest(persisted) &&
       !compareExecutionAuthority(persisted, authority).ok
     )
@@ -542,13 +564,6 @@ function amendPlan(
   if (aggregate.state !== "ACTIVE" && aggregate.state !== "FINAL_VALIDATION") {
     return rejected("ILLEGAL_TASK_TRANSITION", [aggregate.state, command.kind]);
   }
-  if (command.authority_delta_digest) {
-    return rejected(
-      "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
-      [command.authority_delta_digest],
-      "request_authority_delta",
-    );
-  }
   const proposed = command.amended_plan;
   if (proposed.revision !== current.revision + 1) {
     return rejected("PLAN_REVISION_MISMATCH", [String(proposed.revision)]);
@@ -563,7 +578,32 @@ function amendPlan(
   const issues = validateWorkItemDefinitions(proposed.work_items);
   if (issues.length > 0) return rejected("WORK_ITEM_DEPENDENCY_INCOMPLETE", issues);
   const originals = new Map(current.work_items.map((item) => [item.id, item]));
+  const scopeExpansions = proposed.work_items.filter((item) => {
+    const original = originals.get(item.id);
+    return (
+      original?.execution_requirements !== undefined &&
+      item.execution_requirements !== undefined &&
+      !executionRequirementsAreSubset(original.execution_requirements, item.execution_requirements)
+    );
+  });
+  const scopeExpansionApprovalDigest = planScopeExpansionApprovalDigest({
+    task_id: aggregate.id,
+    current_plan_digest: current.digest,
+    amended_plan_digest: proposed.digest,
+    actor_id: input.actor.id,
+  });
+  const scopeExpansionApproved =
+    scopeExpansions.length > 0 &&
+    input.actor.kind === "USER" &&
+    command.authority_delta_digest === scopeExpansionApprovalDigest &&
+    input.authority !== null &&
+    isAdditivePlanScopeExpansion({
+      current,
+      amended: proposed,
+      authority: input.authority,
+    });
   if (
+    (command.authority_delta_digest !== null && !scopeExpansionApproved) ||
     proposed.work_items.length !== current.work_items.length ||
     proposed.work_items.some((item) => {
       const original = originals.get(item.id);
@@ -576,12 +616,14 @@ function amendPlan(
         !original.depends_on.every((id) => item.depends_on.includes(id)) ||
         !item.execution_requirements ||
         !original.execution_requirements ||
-        !executionRequirementsAreSubset(
+        (!executionRequirementsAreSubset(
           original.execution_requirements,
           item.execution_requirements,
-        ) ||
-        !input.authority ||
-        !executionRequirementsAreSubset(input.authority, item.execution_requirements)
+        ) &&
+          !scopeExpansionApproved) ||
+        input.authority?.work_item_id !== null ||
+        (!scopeExpansionApproved &&
+          !executionRequirementsAreSubset(input.authority, item.execution_requirements))
       );
     })
   ) {
@@ -633,7 +675,16 @@ function amendPlan(
     ...aggregate,
     revision: aggregate.revision + 1,
     state: "ACTIVE",
-    current_plan: { ...current, ...proposed },
+    current_plan: {
+      ...current,
+      ...proposed,
+      ...(scopeExpansionApproved
+        ? {
+            approval_actor_id: input.actor.id,
+            approval_evidence_digest: scopeExpansionApprovalDigest,
+          }
+        : {}),
+    },
     plan_history: [...aggregate.plan_history, { ...current, state: "SUPERSEDED" }],
     work_items: refreshReadyItems(workItems),
     final_validation: null,
@@ -717,7 +768,8 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
       if (!planMatches(aggregate.current_plan, command.plan_revision, command.plan_digest)) {
         return rejected("PLAN_DIGEST_MISMATCH", [command.plan_digest]);
       }
-      if (aggregate.current_plan.state !== "PROPOSED") {
+      const approvedBlockedReplan = isApprovedBlockedPlanRejection(input);
+      if (aggregate.current_plan.state !== "PROPOSED" && !approvedBlockedReplan) {
         return rejected("ILLEGAL_TASK_TRANSITION", [aggregate.current_plan.state, "REJECTED"]);
       }
       next = {
@@ -730,9 +782,16 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
     }
     case "approve_plan": {
       const provenance = input.authority?.provenance;
+      const policyApproval =
+        command.authority_mode === "repository_policy" &&
+        input.actor.kind === "SYSTEM" &&
+        provenance?.kind === "SYSTEM";
+      const userApproval =
+        command.authority_mode !== "repository_policy" &&
+        input.actor.kind === "USER" &&
+        provenance?.kind === "USER";
       if (
-        input.actor.kind !== "USER" ||
-        provenance?.kind !== "USER" ||
+        (!policyApproval && !userApproval) ||
         provenance.parent_authority_digest !== null ||
         provenance.actor_id !== input.actor.id ||
         provenance.evidence_digest !== command.approval_evidence_digest

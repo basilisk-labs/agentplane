@@ -19,8 +19,8 @@ When the packet returns `action.kind=agent_episode`:
 
 1. Perform only its semantic objective.
 2. Stay inside its authority and writable roots.
-3. Write the typed result to `exchange.directory/exchange.result_ref`.
-4. Resume through `exchange.return_invocation` and request a fresh packet.
+3. Write the typed result to the exact `exchange.result_path`.
+4. Resume through the exact `exchange.resume_argv` and request a fresh packet.
 
 For a configured managed adapter, use:
 
@@ -29,9 +29,50 @@ agentplane task run <task-id>
 ```
 
 The managed and external frontends consume the same route, fingerprint, WorkOrder, evidence model,
-and stop boundaries. A newly created task still needs its initial PLANNER result through
-`task advance`; after planning and approval, either frontend may resolve an eligible semantic
-episode.
+and stop boundaries. In 0.7.12, a sufficient caller-supplied Plan can satisfy planning without a
+separate PLANNER episode. Missing, unresolved, stale, or policy-required planning remains required.
+The common coordinator makes this decision before either transport proceeds.
+
+## Supplied planning input in 0.7.12
+
+Use `task create --plan-file <path>` to supply an existing compact v2 or full v1 Plan proposal.
+The file contains semantic input, not approval, authority, or completed work. The CLI normalizes
+it against the new task and current repository baseline, retains its digest and provenance, and
+validates it against the trusted intake contract. Unknown approval and authority fields are
+rejected. For example, an existing read-only report proposal can enter through:
+
+```bash
+agentplane task create "Produce the report" --task-kind analysis --mutation-scope none --plan-file report-plan.json
+agentplane task advance <task-id> --agent-json
+```
+
+The compact proposal contains `schema_version: 2`, `criteria`, `checks`, `work_items`,
+`assumptions`, and `unresolved_questions`. WorkItems declare objectives, dependencies, outputs,
+scope, context, risk, capabilities, and resource claims. Use the existing proposal schema; do not
+add USER approval fields or copy a canonical task-state document into the input file.
+
+When the proposal is sufficient, fresh, and within the trusted contract, the coordinator proposes
+the Plan and proceeds to the ordinary approval boundary without issuing PLANNER. It does not
+remove native verification or required independent EVALUATOR review. When input is absent or
+unresolved, a check cannot be compiled, or trusted policy requires planning, the coordinator
+requests PLANNER instead. `agents.approvals.require_planner=true` requires that episode even for a
+complete supplied Plan. This policy is not controlled by fields inside the proposal.
+
+Recipe absence is not a skip signal. Without a Recipe, the same ordinary planning-obligation
+resolution applies. Failed or stale planning evidence cannot become `not_required` merely by
+retrying another transport. Material scope changes still invalidate the relevant approval.
+
+Managed PLANNER uses a read-only WorkOrder with no writable roots. Before launch, the adapter must
+declare enforceable read-only sandbox support and supervised typed result delivery. An advisory
+adapter is rejected before process launch. Declared capability is not proof of observed runtime
+containment: an unverified execution receipt still stops admission. The external `task advance`
+route remains available when the installed managed runtime is not qualified.
+
+Read-only planning projections distinguish requirement, input origin, outcome, and evidence
+freshness. Unknown external attempts and token costs remain unknown. The
+[M04 report](../releases/v0.7.12-m04.md) records **NOT ESTABLISHED** for full-host efficiency,
+first-mutation latency, and verified-result latency. Structural dispatch removal is not a token
+savings percentage.
 
 ## Agent-selected execution strategy
 
@@ -40,6 +81,10 @@ preferred `direct` or `branch_pr` strategy and declares repository scope, expect
 external effects, requirements uncertainty, implementation uncertainty, reversibility, and
 rationale. Agentplane does not infer these facts from product-language keywords such as
 `production`, `release`, `docs`, `server`, or `deployment`.
+
+This is a repository-routing choice, not an execution-engine choice. Agents never select a
+lifecycle engine, reducer, state writer, or coordinator. Both repository strategies enter the same
+Task Kernel and application coordinator described below.
 
 Agentplane compiles the declaration into one deterministic execution contract:
 
@@ -76,25 +121,120 @@ Compared with manually choosing task kind, process profile, mutation class, risk
 the normal path has no manual mode-selection command and no recovery-command sequence. Significant
 work still receives `branch_pr`, hosted-integration evidence, and explicit external authority.
 
+## Lifecycle ownership
+
+AgentPlane retains the ownership chain introduced in 0.7.11:
+
+1. `taskKernel.reduceTaskCommand` is the sole pure domain reducer.
+2. `KernelBackendAdapter.persist` is the sole canonical task-state writer.
+3. `advanceTaskStep` is the sole application coordinator for `task advance` and `task run`.
+
+The external-agent and managed-runner transports are frontends to that same chain. They do not own
+parallel state machines, and they do not offer an engine selector. Pure graph, completion, and
+validation helpers may calculate values, but they cannot admit a transition or persist state.
+Cold compatibility decoders may inspect exact historical bytes, but they cannot execute a current
+task.
+
+The formal/semantic boundary is explicit. AgentPlane owns transition admission, authority,
+persistence, effects, observation, recovery, verification, review routing, integration, and
+closure. PLANNER, EXECUTOR, and EVALUATOR perform bounded semantic WorkOrders and return typed
+results. Version 0.7.12 resolves whether a separate PLANNER episode is required; it does not omit
+planning semantics or required independent review. Review-omission qualification remains outside
+this release.
+
+The maximum-proven-deletion ledger removes the former task-centric orchestrator module and its
+production execution exports, including `TaskCentricOrchestrator`, `runCanonicalTask`, and
+`coordinateKernelEffect`. It retains only named current consumers, pure helpers, safety-test
+fixtures, and the cold migration readers. The machine-checked owner map and deletion ledger live in
+`scripts/checks/lifecycle-owner-map.json` and `scripts/checks/lifecycle-engine-retirement.json`.
+Deletion count is not a performance claim; the 0.7.11 local replay result records efficiency as
+not established.
+
+At the public package boundary, `@agentplaneorg/core/tasks` exposes the current domain reducer under
+the `taskKernel` namespace. The remaining task-centric exports are planning, graph, policy, model,
+or compatibility primitives. They are not an executable supervisor API. The application
+coordinator remains an AgentPlane application detail.
+
+## Historical compatibility boundary: 0.7.10 and earlier
+
+The following behavior describes AgentPlane 0.7.10 and older task artifacts; it is not an alternate
+0.7.11 engine. AgentPlane 0.7.10 keeps the supervised path and retires Blueprint runtime ownership. AgentPlane owns
+task state, routing, authority, verification, repository operations, and closeout. A semantic agent
+receives one bounded episode at a time. The Task Kernel plan and WorkItems own decomposition; the
+execution contract owns route and authority; native task obligations own policy, evidence,
+mandatory lifecycle stages, and stop rules.
+
+New tasks and model-visible context contain no Blueprint selection, snapshot, plan, cursor, or
+execution state. The Blueprint registry, mutation and catalog commands, project-local trust store,
+graph engine, prompt projections, and live schemas are retired. Historical snapshots remain
+readable only through a version-labelled audit decoder and cannot execute or mutate current state.
+Existing legacy tasks must pass explicit `task kernel-migrate` preview/apply admission; unknown or
+ambiguous records stop instead of being guessed. See [Blueprint compatibility](../developer/blueprints)
+for the exact migration and cold-reader boundary.
+
+For a historical 0.7.10-or-earlier task, inspect and convert it with an explicit two-step operation:
+
+```bash
+agentplane task kernel-migrate <task-id>
+agentplane task kernel-migrate <task-id> --apply --source-digest <sha256:digest> --yes
+```
+
+The first command is read-only and returns the exact source digest and field mapping. Apply only
+that digest. Unknown versions, ambiguous semantic mappings, unsupported custom graphs, stale source
+bytes, or active effects stop for manual conversion. Migration never selects or reactivates the old
+owner, and the cold decoder cannot mutate current state.
+
+Recipe V1 remains supported for domain guidance and runtime assets. Exact legacy context, output,
+artifact, evidence, check, and risk requirements are rebound to current Recipe or native task
+surfaces. Custom graphs without an exact native equivalent require manual conversion. Scenario V2
+and lifecycle-owner convergence are not part of 0.7.10. PLANNER and EVALUATOR remain mandatory
+where current policy requires them.
+
+Completed tasks expose provider token usage as informational telemetry when the provider reports
+it, or an explicit partial/unavailable state when it does not. Input, cached-input, output,
+reasoning, and total token fields keep their subset relationships; cached-input and reasoning tokens
+are not added to the total again. Token caps are disabled by default and do not depend on API
+billing, credits, purchases, or account classification. Non-token safety limits remain active.
+
+The preregistered M01 pilot does not establish a token-efficiency result for 0.7.9. Its first
+15-attempt campaign failed provider schema admission. A schema-corrected 15-attempt campaign
+observed token usage for every attempt, but a task-entry mismatch and a path-verifier defect left no
+quality-equivalent verified pair. Agentplane retains both campaigns and makes no performance or
+safety claim from their raw totals. A future measurement must use a new preregistered campaign; it
+must not replace or selectively retry these attempts.
+
+Release boundaries remain separate:
+
+| Release | Deferred task ids       | Boundary                                                                    |
+| ------- | ----------------------- | --------------------------------------------------------------------------- |
+| 0.7.11  | `LC-01` through `LC-24` | One Kernel reducer, writer, and application coordinator; no stage omission. |
+| 0.7.12  | `PL-01` through `PL-12` | Qualify optional planning while preserving required planning semantics.     |
+| 0.7.13  | `RC-01` through `RC-18` | Introduce and qualify the formal Recipe contract.                           |
+| 0.7.14  | `EV-01` through `EV-13` | Qualify a narrow review-omission rule before activation.                    |
+
+Adaptive or shadow review classification is not part of the default 0.7.10 path and is not a
+0.7.10 release dependency. Its first read-only diagnostic is deferred to `EV-04`; independent
+review remains required. Publication remains a separate operator action after exact-head local and
+hosted verification.
+
 ## First managed workflow
 
 ```bash
 agentplane task create "Fix the reported defect"
-agentplane task advance <task-id> --agent-json
-agentplane task advance <task-id> --result <exchange-directory>/result.json --agent-json
+agentplane task run <task-id>
 ```
 
-Give the first packet to an external PLANNER, write its typed result to the packet's exchange
-directory, and return it with the second command. Agentplane persists the plan and emits the exact
-operator action if human approval is required. After approval, continue with:
+The configured adapter must meet the read-only planning and typed-output requirements above.
+Agentplane persists an admitted planning result and emits the exact operator action when approval
+is required. After that boundary is resolved, continue with:
 
 ```bash
 agentplane task run <task-id>
 ```
 
-Before the PLANNER result exists, `task run` returns `semantic_input_required` and does not invoke
-the managed adapter. After planning and approval, rerun it only after resolving the exact human,
-external, or recovery boundary Agentplane returned.
+If the managed adapter cannot satisfy the planning contract, use `task advance --agent-json` and
+return the external PLANNER result to its exact exchange. Do not treat adapter failure as a waiver
+of planning. Rerun only after resolving the exact human, external, or recovery boundary returned.
 
 ## direct mode
 

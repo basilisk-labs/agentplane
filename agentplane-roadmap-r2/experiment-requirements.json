@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "kind": "agentplane_roadmap_experiment_requirements",
+  "status": "proposed; not executed; not spending authority",
+  "reviewed_product_sha": "50b1810dda648be0c0762b47e885c6ad0b2d42af",
+  "normal_workflows": ["small_direct", "medium_branch_pr", "recoverable_verification_failure"],
+  "minimum_pilot_repetitions_per_task_arm": 5,
+  "randomization": "interleaved matched blocks; preserve planned order and all attempts",
+  "metrics": [
+    "verified_success",
+    "input_tokens",
+    "uncached_input_tokens",
+    "cached_input_tokens",
+    "output_tokens",
+    "reasoning_tokens",
+    "provider_total_tokens",
+    "semantic_episodes",
+    "adapter_dispatches",
+    "provider_turns_requests_if_observable",
+    "retries",
+    "reworks",
+    "time_from_intent_to_first_scoped_mutation",
+    "time_from_intent_to_verified_result",
+    "time_to_closure",
+    "preparation_time",
+    "provider_time",
+    "check_time",
+    "git_time",
+    "filesystem_time",
+    "user_wait",
+    "external_wait",
+    "agent_tool_calls",
+    "control_plane_calls",
+    "git_commits",
+    "service_only_commits",
+    "committed_path_bytes",
+    "new_unique_git_blob_bytes",
+    "human_interventions",
+    "scope_violations",
+    "correctness_violations",
+    "usage_coverage",
+    "jev_decisions_by_purpose",
+    "jev_fallbacks_by_reason",
+    "jev_false_skips",
+    "jev_unnecessary_escalations",
+    "jev_ambiguous_labels",
+    "jev_calibration_error"
+  ],
+  "campaign_required_fields": [
+    "target_repository_start_sha",
+    "task_objective",
+    "acceptance_and_oracle_digest",
+    "product_artifact_sha_and_digest_per_arm",
+    "adapter_version",
+    "actual_model_and_effort",
+    "authority_and_sandbox",
+    "network_scope",
+    "retry_caps",
+    "cache_session_policy",
+    "authorized_budget",
+    "operator_approval_reference",
+    "randomized_order",
+    "raw_evidence_destination",
+    "jev_model_and_question_set_digest",
+    "jev_purpose_policy_digest",
+    "jev_confidence_and_fallback_policy"
+  ],
+  "missing_fields": "reject live preflight; never fill with guessed defaults",
+  "studies": {
+    "M01": {
+      "tasks": ["ST-19"],
+      "arms": ["minimal_agent", "v0.7.8", "candidate_0.7.9"],
+      "isolates": "whole product baseline"
+    },
+    "M02": {
+      "tasks": ["BP-30"],
+      "arms": ["qualified_0.7.9", "candidate_0.7.10"],
+      "isolates": "Blueprint retirement; mandatory episodes equal"
+    },
+    "M03": {
+      "tasks": ["LC-22"],
+      "arms": ["qualified_0.7.10", "candidate_0.7.11"],
+      "isolates": "single-owner convergence; mandatory episodes equal"
+    },
+    "M04": {
+      "tasks": ["PL-11"],
+      "arms": ["required_separate_planner", "sufficient_supplied_plan"],
+      "separate_substudy": ["managed_external_planning_bridge", "managed_read_only_planner"],
+      "isolates": "planning; include upstream host cost"
+    },
+    "M05": {
+      "tasks": ["RC-17"],
+      "arms": ["same_product_no_recipe", "explicit_instantiate", "specialize"],
+      "isolates": "recipe benefit; no-match and near-match included"
+    },
+    "M06": {
+      "tasks": ["EV-06", "EV-07"],
+      "arms": ["review_required", "isolated_qualified_candidate"],
+      "isolates": "quality before activation",
+      "must_not_claim": "general coding equivalence"
+    },
+    "M07": {
+      "tasks": ["EV-12"],
+      "arms": ["same_product_review_required", "same_product_qualified_omission"],
+      "isolates": "all-in cost of native proof + omitted review"
+    },
+    "M08": {
+      "tasks": ["EV-19", "EV-20"],
+      "arms": ["same_product_non_jev_route", "same_product_jev_purpose_candidate"],
+      "strata": [
+        "semantic_retrieval",
+        "model_effort_routing",
+        "context_sufficiency",
+        "planning_triage",
+        "recipe_applicability"
+      ],
+      "isolates": "purpose-specific routing quality and all-in cost; no cross-purpose qualification",
+      "must_not_claim": "general JEV routing benefit"
+    },
+    "M09": {
+      "tasks": ["EV-22", "EV-24"],
+      "arms": ["historical_replay", "live_shadow", "inactive_active_candidate"],
+      "labels": ["FULL_REVIEW_MATERIALLY_MATTERED", "NO_MATERIAL_ADDED_VALUE", "AMBIGUOUS"],
+      "isolates": "false-skip quality and calibration before evaluator-routing activation",
+      "must_not_claim": "evaluator pass means review had no value"
+    },
+    "M10": {
+      "tasks": ["EV-25"],
+      "arms": ["same_product_full_evaluator", "same_product_qualified_jev_evaluator_routing"],
+      "isolates": "all-in cost of JEV, lightweight or full evaluator, failures and fallbacks"
+    }
+  },
+  "scope_caveat": "The initial exact-output class may already be cheap with native tools. Include the genuinely minimal control; do not compare against an artificially inflated agent workflow. JEV qualification is purpose-specific; the active preset enables only exact qualified rules.",
+  "gates": {
+    "Q00": "installed-package safety/behavior/compatibility",
+    "Q01": "independent narrow review-omission quality qualification",
+    "Q02": "complete matched end-to-end efficiency evidence",
+    "Q03": "purpose-specific JEV provider, calibration, fallback and policy qualification"
+  }
+}

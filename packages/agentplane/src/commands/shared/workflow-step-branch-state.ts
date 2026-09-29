@@ -1,6 +1,24 @@
 import type { WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
 import { cliOperationStep, routeBlockerFor, terminalStep } from "./workflow-step-factory.js";
 import { parseTaskScopeExtensionRequestState } from "./task-scope-extension-request.js";
+import type { RouteBlocker } from "./route-oracle.js";
+
+export function hasRouteBlocker(state: WorkflowRouteState, code: RouteBlocker["code"]): boolean {
+  return state.blockers.some((blocker) => blocker.code === code);
+}
+
+export function unavailableWorktreeBlocker(state: WorkflowRouteState): RouteBlocker {
+  const probe = state.taskWorktree;
+  return probe?.state === "unavailable"
+    ? {
+        code: "task_worktree_state_unavailable",
+        summary: `task worktree state could not be inspected: ${probe.reason}`,
+      }
+    : {
+        code: "task_worktree_state_unavailable",
+        summary: "task worktree state could not be inspected",
+      };
+}
 
 export function blockedTaskStep(state: WorkflowRouteState): WorkflowStep {
   const pending = parseTaskScopeExtensionRequestState(state.task);

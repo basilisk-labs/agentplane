@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The final predicate accepts only supervisor-authored event-only implementation receipts, preserves exact commit matching when task.commit exists, and the live NGDG6V lifecycle advanced from implementation through TESTER to EVALUATOR without returning to CODER.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609111339-NGDG6V/quality/objects/sha256/f817d2e83cca9119981f002084c2936d56dde922932328a97f47a42493b52896.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

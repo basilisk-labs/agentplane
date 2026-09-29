@@ -12,7 +12,7 @@ import { parseTaskReadme, renderTaskReadme, type ParsedTaskReadme } from "./task
 
 const TASK_README_LOCK_TIMEOUT_MS = 5000;
 const TASK_README_LOCK_RETRY_MS = 25;
-const TASK_README_LOCK_MAX_BYTES = 16 * 1024;
+const TASK_README_LOCK_MAX_BYTES = 1024 * 1024;
 const TASK_README_LOCK_RECOVERY_ATTEMPTS = 3;
 const CURRENT_PROCESS_INSTANCE_ID = randomUUID();
 

@@ -1,0 +1,408 @@
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts b/packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
+index a217d44e6..15964e4b6 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts
+@@ -46,6 +46,7 @@ import {
+   writePlanningResult,
+   type AgentPacket,
+ } from "./task-advance-effect-recovery.testkit.js";
++import { exerciseRejectedResultApplicationRecovery } from "./task-advance-result-rejection-recovery.testkit.js";
+ import { applyExternalPlanningResult } from "../commands/task/external-agent-planning-authority.js";
+ import { loadCommandContext } from "../commands/shared/task-backend.js";
+ 
+@@ -194,6 +195,10 @@ describe("task advance effect recovery", () => {
+     expect(oldResult.stderr).toContain("retired");
+   });
+ 
++  it("fails and retires an implementation result rejected before application", async () => {
++    await exerciseRejectedResultApplicationRecovery({ createTask, readAgentPacket });
++  }, 30_000);
++
+   it("lets implementation rework proceed past stale verification failures only", () => {
+     expect(
+       blockingImplementationAuthorityViolations([
+diff --git a/packages/agentplane/src/cli/task-advance-result-rejection-recovery.testkit.ts b/packages/agentplane/src/cli/task-advance-result-rejection-recovery.testkit.ts
+new file mode 100644
+index 000000000..e06077c9f
+--- /dev/null
++++ b/packages/agentplane/src/cli/task-advance-result-rejection-recovery.testkit.ts
+@@ -0,0 +1,168 @@
++import { execFile } from "node:child_process";
++import { readFile } from "node:fs/promises";
++import path from "node:path";
++import { promisify } from "node:util";
++import {
++  validateSupervisorExecutionEpisodeJournal,
++  type AgentWorkOrderV2,
++} from "@agentplaneorg/core/schemas";
++import { mkGitRepoRootWithCommit, writeConfig } from "@agentplane/testkit";
++import { expect } from "vitest";
++
++import {
++  createSupervisorEpisodeStore,
++  resolveSupervisorExecutionEpisodePath,
++} from "../commands/shared/supervisor-execution-episode.js";
++import { defaultConfig } from "./core-imports.js";
++import {
++  captureRecoveryCli,
++  writePlanningResult,
++  type AgentPacket,
++} from "./task-advance-effect-recovery.testkit.js";
++
++const execFileAsync = promisify(execFile);
++
++async function advanceToImplementation(
++  root: string,
++  taskId: string,
++  readAgentPacket: (root: string, taskId: string) => Promise<AgentPacket>,
++): Promise<AgentPacket> {
++  const planning = await readAgentPacket(root, taskId);
++  const resultPath = await writePlanningResult(planning, "Exercise rejected result recovery.");
++  const planned = await captureRecoveryCli([
++    "task",
++    "advance",
++    taskId,
++    "--result",
++    resultPath,
++    "--agent-json",
++    "--root",
++    root,
++  ]);
++  expect(planned.code, planned.stderr).toBe(0);
++  expect(JSON.parse(planned.stdout)).toMatchObject({ action: { kind: "approval_required" } });
++  const documented = await captureRecoveryCli([
++    "task",
++    "doc",
++    "set",
++    taskId,
++    "--section",
++    "Verify Steps",
++    "--text",
++    "Run the focused recovery test and confirm exact-key replacement.",
++    "--updated-by",
++    "PLANNER",
++    "--root",
++    root,
++  ]);
++  expect(documented.code, documented.stderr).toBe(0);
++  const approved = await captureRecoveryCli([
++    "task",
++    "plan",
++    "approve",
++    taskId,
++    "--by",
++    "ORCHESTRATOR",
++    "--root",
++    root,
++  ]);
++  expect(approved.code, approved.stderr).toBe(0);
++  const implementation = await readAgentPacket(root, taskId);
++  expect(implementation).toMatchObject({ action: { kind: "agent_episode" } });
++  return implementation;
++}
++
++export async function exerciseRejectedResultApplicationRecovery(callbacks: {
++  createTask: (root: string) => Promise<string>;
++  readAgentPacket: (root: string, taskId: string) => Promise<AgentPacket>;
++}): Promise<void> {
++  const root = await mkGitRepoRootWithCommit();
++  const config = defaultConfig();
++  config.workflow_mode = "branch_pr";
++  await writeConfig(root, config);
++  const taskId = await callbacks.createTask(root);
++  const issued = await advanceToImplementation(root, taskId, callbacks.readAgentPacket);
++  if (!issued.exchange) throw new Error("expected an implementation exchange");
++  const workOrder = JSON.parse(
++    await readFile(path.join(issued.exchange.directory, issued.exchange.work_order_ref), "utf8"),
++  ) as AgentWorkOrderV2;
++  const checkout = workOrder.state_fingerprint.worktree;
++  await execFileAsync("git", ["commit", "--allow-empty", "-m", "foreign history change"], {
++    cwd: checkout,
++  });
++  const resultPath = await writePlanningResult(
++    issued,
++    "This result must be rejected before semantic application.",
++  );
++
++  const rejected = await captureRecoveryCli([
++    "task",
++    "advance",
++    taskId,
++    "--result",
++    resultPath,
++    "--agent-json",
++    "--root",
++    root,
++  ]);
++  expect(rejected.code).toBe(8);
++  expect(rejected.stderr).toContain(
++    "Git history changed outside the recoverable Agentplane implementation effect.",
++  );
++  expect(rejected.stderr).toContain("retired the rejected result");
++  expect(rejected.stderr).toContain("--replacement");
++  expect(
++    JSON.parse(await readFile(path.join(issued.exchange.directory, "exchange.json"), "utf8")),
++  ).toMatchObject({ status: "retired" });
++
++  const journalPath = await resolveSupervisorExecutionEpisodePath({
++    git_root: root,
++    task_id: taskId,
++  });
++  const store = createSupervisorEpisodeStore(journalPath);
++  const failed = validateSupervisorExecutionEpisodeJournal(await store.read());
++  const failedOperation = failed.operations.at(-1);
++  expect(failed).toMatchObject({
++    status: "stopped",
++    stop: { reason: "operation_failed" },
++  });
++  expect(failedOperation).toMatchObject({ status: "failed" });
++
++  const plain = await captureRecoveryCli([
++    "task",
++    "advance",
++    taskId,
++    "--agent-json",
++    "--root",
++    root,
++  ]);
++  expect(plain.code).toBe(8);
++  expect(plain.stderr).toContain("rerun task advance with --replacement");
++
++  const replacement = await captureRecoveryCli([
++    "task",
++    "advance",
++    taskId,
++    "--replacement",
++    "--agent-json",
++    "--root",
++    root,
++  ]);
++  expect(replacement.code, replacement.stderr).toBe(0);
++  const fresh = JSON.parse(replacement.stdout) as AgentPacket;
++  expect(fresh).toMatchObject({ action: { kind: "agent_episode" } });
++  expect(fresh.transition_id).not.toBe(issued.transition_id);
++  expect(fresh.exchange?.directory).not.toBe(issued.exchange.directory);
++  const replaced = validateSupervisorExecutionEpisodeJournal(await store.read());
++  expect(replaced).toMatchObject({
++    status: "running",
++    cursor: { phase: "intent_recorded" },
++  });
++  expect(replaced.operations.slice(-2)).toMatchObject([
++    { operation_key: failedOperation?.operation_key, status: "failed" },
++    {
++      status: "intent",
++      replacement_of_operation_key: failedOperation?.operation_key,
++    },
++  ]);
++}
+diff --git a/packages/agentplane/src/commands/task/external-agent-result-rejection-recovery.ts b/packages/agentplane/src/commands/task/external-agent-result-rejection-recovery.ts
+new file mode 100644
+index 000000000..c66521257
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/external-agent-result-rejection-recovery.ts
+@@ -0,0 +1,88 @@
++import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
++
++import { CliError } from "../../shared/errors.js";
++import type { TaskRouteDecision } from "../shared/route-decision-types.js";
++import type { SupervisorEpisodeStore } from "../shared/supervisor-execution-episode.js";
++import type { CommandContext } from "../shared/task-backend.js";
++import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-finalization.js";
++import { applyAcceptedExternalAgentResult } from "./external-agent-result-application.js";
++import type {
++  ExternalAgentExchange,
++  ExternalAgentExchangePaths,
++  ExternalAgentResultEnvelope,
++} from "./external-agent-exchange.js";
++import { usesExternalImplementationAuthority } from "./external-agent-purpose.js";
++import { refreshExternalAgentRoute } from "./external-agent-result-routing.js";
++import { failRejectedExternalAgentResult } from "./external-agent-supervisor-recovery.js";
++
++type SupervisorIntent = {
++  store: SupervisorEpisodeStore;
++  journal: Parameters<typeof failRejectedExternalAgentResult>[0]["journal"];
++  operation: { operation_key: string };
++  paths: ExternalAgentExchangePaths;
++};
++
++function sameLines(left: readonly string[], right: readonly string[]): boolean {
++  return left.length === right.length && left.every((line, index) => line === right[index]);
++}
++
++export async function applyExternalAgentResultWithRejectedResultRecovery(opts: {
++  command: CommandContext;
++  decision: TaskRouteDecision;
++  exchange: ExternalAgentExchange;
++  work_order: AgentWorkOrderV2;
++  envelope: ExternalAgentResultEnvelope;
++  supervisor: SupervisorIntent;
++  include_remote: boolean;
++  skip_application: boolean;
++}): Promise<void> {
++  if (opts.skip_application) return;
++  const [applicationHead, applicationStatus] = await Promise.all([
++    readDirectTaskHead(opts.exchange.checkout),
++    readDirectRepositoryStatus(opts.exchange.checkout),
++  ]);
++  try {
++    await applyAcceptedExternalAgentResult({
++      command: opts.command,
++      decision: opts.decision,
++      exchange: opts.exchange,
++      work_order: opts.work_order,
++      envelope: opts.envelope,
++    });
++  } catch (error) {
++    if (
++      !(error instanceof CliError) ||
++      error.code !== "E_VALIDATION" ||
++      opts.exchange.status !== "result_received" ||
++      !usesExternalImplementationAuthority(opts.exchange.purpose, opts.work_order.authority.sandbox)
++    ) {
++      throw error;
++    }
++    const [afterHead, afterStatus, afterDecision] = await Promise.all([
++      readDirectTaskHead(opts.exchange.checkout),
++      readDirectRepositoryStatus(opts.exchange.checkout),
++      refreshExternalAgentRoute({
++        cwd: opts.exchange.checkout,
++        task_id: opts.exchange.task_id,
++        include_remote: opts.include_remote,
++      }),
++    ]);
++    if (
++      applicationHead !== afterHead ||
++      !sameLines(applicationStatus?.lines ?? [], afterStatus?.lines ?? []) ||
++      opts.decision.workflowStep.preconditionFingerprint.digest !==
++        afterDecision.workflowStep.preconditionFingerprint.digest
++    ) {
++      throw error;
++    }
++    await failRejectedExternalAgentResult({
++      store: opts.supervisor.store,
++      journal: opts.supervisor.journal,
++      operation_key: opts.supervisor.operation.operation_key,
++      exchange: opts.exchange,
++      paths: opts.supervisor.paths,
++      state_fingerprint_digest: afterDecision.workflowStep.preconditionFingerprint.digest,
++      error,
++    });
++  }
++}
+diff --git a/packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts b/packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts
+index e88b26538..0510bec70 100644
+--- a/packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts
++++ b/packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts
+@@ -18,6 +18,7 @@ import {
+   createSupervisorEpisodeStore,
+   resolveSupervisorExecutionEpisodePath,
+   tryAcquireSupervisorExecutionLease,
++  type SupervisorEpisodeStore,
+ } from "../shared/supervisor-execution-episode.js";
+ import { resolveCommandGitCommonDir, type CommandContext } from "../shared/task-backend.js";
+ 
+@@ -37,6 +38,60 @@ export type RecoverableExternalAgentExchange = {
+   work_order: AgentWorkOrderV2;
+ };
+ 
++export async function failRejectedExternalAgentResult(opts: {
++  store: SupervisorEpisodeStore;
++  journal: ReturnType<typeof validateSupervisorExecutionEpisodeJournal>;
++  operation_key: string;
++  exchange: ExternalAgentExchange;
++  paths: ExternalAgentExchangePaths;
++  state_fingerprint_digest: string;
++  error: CliError;
++}): Promise<never> {
++  const failed = completeSupervisorExecutionEpisode({
++    journal: opts.journal,
++    operation_key: opts.operation_key,
++    result: {
++      classification: "external_agent_result_application_rejected",
++      transition_id: opts.exchange.transition_id,
++      result_digest: opts.exchange.result_digest,
++      error_code: opts.error.code,
++      error_message: opts.error.message,
++    },
++    failed: true,
++  });
++  if (!(await opts.store.compareAndSwap(opts.journal.digest, failed))) {
++    throw new CliError({
++      code: "E_RUNTIME",
++      message: "External-agent supervisor changed while failing the rejected result.",
++    });
++  }
++  await writeExternalAgentExchange(opts.paths.exchange, {
++    ...opts.exchange,
++    status: "retired",
++    postcondition_fingerprint: opts.state_fingerprint_digest,
++    updated_at: new Date().toISOString(),
++  });
++  throw new CliError({
++    code: "E_RUNTIME",
++    message:
++      `${opts.error.message} AgentPlane retired the rejected result; run: ` +
++      `agentplane task advance ${opts.exchange.task_id} --replacement --agent-json`,
++    context: {
++      task_id: opts.exchange.task_id,
++      transition_id: opts.exchange.transition_id,
++      rejected_error: opts.error.code,
++      exact_argv: [
++        "agentplane",
++        "task",
++        "advance",
++        opts.exchange.task_id,
++        "--replacement",
++        "--agent-json",
++      ],
++    },
++  });
++}
++
+ export function requiresPlanningRecoveryReplacement(opts: {
+   decision: TaskRouteDecision;
+   exchange: ExternalAgentExchange;
+diff --git a/packages/agentplane/src/commands/task/external-agent-supervisor.ts b/packages/agentplane/src/commands/task/external-agent-supervisor.ts
+index b423de870..3585090f2 100644
+--- a/packages/agentplane/src/commands/task/external-agent-supervisor.ts
++++ b/packages/agentplane/src/commands/task/external-agent-supervisor.ts
+@@ -50,11 +50,9 @@ import {
+   evaluatorReturnFingerprint,
+   isRecoverableAppliedEvaluatorResult,
+ } from "./external-agent-evaluator-recovery.js";
+-import {
+-  applyAcceptedExternalAgentResult,
+-  isExternalAgentResultAlreadyApplied,
+-} from "./external-agent-result-application.js";
++import { isExternalAgentResultAlreadyApplied } from "./external-agent-result-application.js";
+ import { superviseExternalAgentIssuance } from "./external-agent-supervisor-recovery.js";
++import { applyExternalAgentResultWithRejectedResultRecovery } from "./external-agent-result-rejection-recovery.js";
+ import { recordIssuedExternalAgentEpisode } from "./external-agent-supervisor-episode.js";
+ import { assertExternalPlanningResultApplicable } from "./external-agent-planning-authority.js";
+ import {
+@@ -532,15 +530,16 @@ export async function acceptExternalAgentResult(opts: {
+     ) {
+       await assertReadOnlyReturnFresh({ exchange, work_order: workOrder, decision: current });
+     }
+-    if (!acceptedApplication && !(alreadyApplied && exchange.purpose === "planning")) {
+-      await applyAcceptedExternalAgentResult({
+-        command: checkoutCommand,
+-        decision: current,
+-        exchange,
+-        work_order: workOrder,
+-        envelope,
+-      });
+-    }
++    await applyExternalAgentResultWithRejectedResultRecovery({
++      command: checkoutCommand,
++      decision: current,
++      exchange,
++      work_order: workOrder,
++      envelope,
++      supervisor: { store, journal: issuedJournal, operation, paths },
++      include_remote: includeRemote,
++      skip_application: acceptedApplication || (alreadyApplied && exchange.purpose === "planning"),
++    });
+     const after = await refreshExternalAgentRoute({
+       cwd: exchange.checkout,
+       task_id: opts.task_id,

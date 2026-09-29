@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "Prior scope-approval-conflict is resolved by the exact USER answer recorded in the task; cleanup help expectation now matches the two supported subcommands.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609232231-BYSVV6/quality/objects/sha256/1832fd19c10d83291a43181b566bbb2b6bb111750a50b094d4c56c9439ff4694.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

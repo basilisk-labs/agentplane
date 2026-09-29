@@ -17,7 +17,12 @@ import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
 
 import { defaultConfig, extractTaskSuffix, type ResolvedProject } from "./core-imports.js";
-import { readTask, renderTaskReadme } from "@agentplaneorg/core/tasks";
+import {
+  createTask as createLegacyTask,
+  readTask,
+  renderTaskReadme,
+  setTaskDocSection,
+} from "@agentplaneorg/core/tasks";
 
 import { runCli } from "./run-cli.js";
 import {
@@ -56,63 +61,54 @@ import {
 
 installRunCliIntegrationHarness();
 
+async function createLegacyReadinessTask(opts: {
+  root: string;
+  title: string;
+  description: string;
+  dependsOn?: string[];
+}): Promise<string> {
+  const task = await createLegacyTask({
+    cwd: opts.root,
+    rootOverride: opts.root,
+    title: opts.title,
+    description: opts.description,
+    priority: "med",
+    owner: "CODER",
+    tags: ["docs"],
+    dependsOn: opts.dependsOn ?? [],
+    verify: ["bun run test:cli:core"],
+  });
+  for (const [section, text] of [
+    ["Summary", `${opts.title}\n\n${opts.description}`],
+    ["Scope", "- In scope: legacy direct start readiness behavior."],
+    ["Rollback Plan", "- Restore the task to TODO."],
+  ] as const) {
+    await setTaskDocSection({
+      cwd: opts.root,
+      rootOverride: opts.root,
+      taskId: task.id,
+      section,
+      text,
+      updatedBy: "PLANNER",
+    });
+  }
+  return task.id;
+}
+
 describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
   it("start enforces dependency readiness unless forced", async () => {
     const root = await mkGitRepoRootWithCommit();
-    let taskA = "";
-    let taskB = "";
-    {
-      const io = captureStdIO();
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Dep task",
-          "--description",
-          "Dependency",
-          "--priority",
-          "med",
-          "--owner",
-          "CODER",
-          "--tag",
-          "docs",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskA = io.stdout.trim();
-      } finally {
-        io.restore();
-      }
-    }
-    {
-      const io = captureStdIO();
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Needs deps",
-          "--description",
-          "Depends on A",
-          "--priority",
-          "med",
-          "--owner",
-          "CODER",
-          "--tag",
-          "docs",
-          "--depends-on",
-          taskA,
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskB = io.stdout.trim();
-      } finally {
-        io.restore();
-      }
-    }
+    const taskA = await createLegacyReadinessTask({
+      root,
+      title: "Dep task",
+      description: "Dependency",
+    });
+    const taskB = await createLegacyReadinessTask({
+      root,
+      title: "Needs deps",
+      description: "Depends on A",
+      dependsOn: [taskA],
+    });
     await approveTaskPlan(root, taskB);
 
     {
@@ -160,32 +156,11 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
     cfg.execution.profile = "conservative";
     await writeConfig(root, cfg);
 
-    let taskId = "";
-    {
-      const io = captureStdIO();
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Start force approval",
-          "--description",
-          "conservative force approval check",
-          "--priority",
-          "med",
-          "--owner",
-          "CODER",
-          "--tag",
-          "docs",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskId = io.stdout.trim();
-      } finally {
-        io.restore();
-      }
-    }
+    const taskId = await createLegacyReadinessTask({
+      root,
+      title: "Start force approval",
+      description: "conservative force approval check",
+    });
     await approveTaskPlan(root, taskId);
 
     {

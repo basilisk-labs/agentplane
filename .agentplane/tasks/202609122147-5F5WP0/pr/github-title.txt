@@ -1,0 +1,1 @@
+✅ 5F5WP0 task: Make AgentPlane-managed GitLab MRs remove source branches [202609122147-5F5WP0]

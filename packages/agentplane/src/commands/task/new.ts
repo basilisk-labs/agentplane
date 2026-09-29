@@ -7,7 +7,7 @@ import {
   taskExecutionBaseFromExtensions,
   withTaskReadmeTransaction,
 } from "@agentplaneorg/core/tasks";
-import type { TaskExecutionRouteRequest } from "@agentplaneorg/core/tasks";
+import type { TaskExecutionContract, TaskExecutionRouteRequest } from "@agentplaneorg/core/tasks";
 import { gitCurrentBranch, gitRevParse } from "@agentplaneorg/core/git";
 
 import { mapBackendError } from "../../cli/error-map.js";
@@ -26,10 +26,9 @@ import {
   resolvePrimaryCheckoutCommandContext,
   type CommandContext,
 } from "../shared/task-backend.js";
-import { writeTaskMutation, type TaskMutationResult } from "../shared/task-mutation.js";
+import type { TaskMutationResult } from "../shared/task-mutation.js";
 import type { TaskData } from "../../backends/task-backend/shared/types.js";
 import {
-  BLUEPRINT_REQUEST_VALUES,
   MUTATION_SCOPE_VALUES,
   RISK_FLAG_VALUES,
   TASK_KIND_VALUES,
@@ -49,17 +48,12 @@ import {
 } from "./doc-template.js";
 import { formatDuplicateTaskMessage, listOpenTaskDuplicates } from "./new-duplicates.js";
 import {
-  formatTaskBlueprintCreationPreview,
-  resolveTaskBlueprintLifecycleSummary,
-} from "./blueprint-summary.js";
-import {
   resolveTaskExecutionContract,
   resolveTaskExecutionRoute,
 } from "../../runtime/task-routing/index.js";
 import { assertSupportedDeclaredTaskChecks } from "../shared/declared-check.js";
 
 export type TaskNewParsed = {
-  canonical?: boolean;
   title: string;
   description: string;
   owner: string;
@@ -68,13 +62,13 @@ export type TaskNewParsed = {
   taskKind?: TaskData["task_kind"];
   mutationScope?: TaskData["mutation_scope"];
   riskFlags?: NonNullable<TaskData["risk_flags"]>;
-  blueprintRequest?: TaskData["blueprint_request"];
   route?: TaskExecutionRouteRequest;
+  executionContract?: TaskExecutionContract;
   extensions?: TaskData["extensions"];
+  suppliedPlan?: unknown;
   dependsOn: string[];
   verify: string[];
   taskDocSections?: Partial<Record<"Plan" | "Verify Steps" | "Rollback Plan" | "Findings", string>>;
-  showBlueprint: boolean;
   allowDuplicate: boolean;
 };
 
@@ -119,6 +113,35 @@ function validateEnumArray<T extends string>(flag: string, values: T[], allowed:
   return out;
 }
 
+const CONTROLLED_OPS_RISK_FLAGS = new Set(["credentials", "deploy", "security", "external_system"]);
+
+function assertCompleteControlledOpsIntent(
+  task: Pick<TaskNewParsed, "tags" | "taskKind" | "mutationScope" | "riskFlags">,
+): void {
+  const declaresOps =
+    task.tags.some((tag) => tag.toLowerCase() === "ops") ||
+    task.taskKind === "ops" ||
+    task.mutationScope === "ops";
+  if (!declaresOps) return;
+
+  const missing: string[] = [];
+  if (task.taskKind !== "ops") missing.push("--task-kind ops");
+  if (task.mutationScope !== "ops") missing.push("--mutation-scope ops");
+  if (!(task.riskFlags ?? []).some((risk) => CONTROLLED_OPS_RISK_FLAGS.has(risk))) {
+    missing.push("--risk <credentials|deploy|security|external_system>");
+  }
+  if (missing.length === 0) return;
+
+  throw new CliError({
+    exitCode: 2,
+    code: "E_USAGE",
+    message:
+      "Incomplete controlled ops intent. Tasks tagged or declared as ops must provide " +
+      "--task-kind ops, --mutation-scope ops, and at least one controlled ops --risk. " +
+      `Missing or incompatible: ${missing.join(", ")}.`,
+  });
+}
+
 function sanitizeTaskNewParsed(p: TaskNewParsed): TaskNewParsed {
   const title = p.title.trim();
   if (!title)
@@ -160,12 +183,9 @@ function sanitizeTaskNewParsed(p: TaskNewParsed): TaskNewParsed {
     MUTATION_SCOPE_VALUES,
   );
   const riskFlags = validateEnumArray("risk", p.riskFlags ?? [], RISK_FLAG_VALUES);
-  const blueprintRequest = validateOptionalEnum(
-    "blueprint-request",
-    p.blueprintRequest,
-    BLUEPRINT_REQUEST_VALUES,
-  );
   const route = p.route ?? "auto";
+
+  assertCompleteControlledOpsIntent({ tags, taskKind, mutationScope, riskFlags });
 
   return {
     ...p,
@@ -176,7 +196,6 @@ function sanitizeTaskNewParsed(p: TaskNewParsed): TaskNewParsed {
     taskKind,
     mutationScope,
     riskFlags,
-    blueprintRequest,
     route,
     ...(p.extensions ? { extensions: structuredClone(p.extensions) } : {}),
     ...(p.taskDocSections ? { taskDocSections: structuredClone(p.taskDocSections) } : {}),
@@ -233,7 +252,8 @@ export async function runTaskNewParsed(opts: {
               }),
             }
           : p.extensions;
-      const duplicateTasks = listOpenTaskDuplicates(await ctx.taskBackend.listTasks(), p.title);
+      const existingTasks = await ctx.taskBackend.listTasks();
+      const duplicateTasks = listOpenTaskDuplicates(existingTasks, p.title);
       const exactDuplicateTasks = duplicateTasks.filter((match) => match.severity === "exact");
       if (exactDuplicateTasks.length > 0 && !p.allowDuplicate) {
         throw new CliError({
@@ -333,13 +353,14 @@ export async function runTaskNewParsed(opts: {
         task_kind: p.taskKind,
         mutation_scope: p.mutationScope,
         risk_flags: p.riskFlags,
-        blueprint_request: p.blueprintRequest,
       };
-      const executionContract = resolveTaskExecutionContract({
-        config: ctx.config,
-        requestedMode: p.route,
-        task: routeTask,
-      });
+      const executionContract =
+        p.executionContract ??
+        resolveTaskExecutionContract({
+          config: ctx.config,
+          requestedMode: p.route,
+          task: routeTask,
+        });
       const draft = createTaskGraphDraft({
         context: intakeContext,
         clarification,
@@ -356,12 +377,20 @@ export async function runTaskNewParsed(opts: {
             ...(p.taskKind ? { task_kind: p.taskKind } : {}),
             ...(p.mutationScope ? { mutation_scope: p.mutationScope } : {}),
             ...(p.riskFlags && p.riskFlags.length > 0 ? { risk_flags: p.riskFlags } : {}),
-            ...(p.blueprintRequest ? { blueprint_request: p.blueprintRequest } : {}),
-            execution_route: resolveTaskExecutionRoute({
-              config: ctx.config,
-              requestedMode: p.route,
-              task: routeTask,
-            }),
+            execution_route: p.executionContract
+              ? {
+                  schema_version: 1,
+                  requested_mode: p.route ?? "auto",
+                  selected_mode: p.executionContract.selected_mode,
+                  repository_mode: p.executionContract.repository_mode,
+                  reason_codes: [...p.executionContract.reason_codes],
+                  frozen: true,
+                }
+              : resolveTaskExecutionRoute({
+                  config: ctx.config,
+                  requestedMode: p.route,
+                  task: routeTask,
+                }),
             execution_contract: executionContract,
             ...(extensions ? { extensions } : {}),
             depends_on: p.dependsOn,
@@ -388,18 +417,8 @@ export async function runTaskNewParsed(opts: {
         });
       }
 
-      const created = p.canonical
-        ? await createCanonicalTask(ctx, task)
-        : await writeTaskMutation({ ctx, task, writeOptions: { expectedRevision: 0 } });
+      const created = await createCanonicalTask(ctx, task, p.suppliedPlan);
       if (opts.printTaskId !== false) process.stdout.write(`${created.task_id}\n`);
-      if (p.showBlueprint) {
-        const summary = await resolveTaskBlueprintLifecycleSummary({
-          task: created.task,
-          config: ctx.config,
-          projectRoot: ctx.resolvedProject.gitRoot,
-        });
-        process.stderr.write(formatTaskBlueprintCreationPreview(summary));
-      }
       return {
         task_id: created.task_id,
         revision: created.revision,

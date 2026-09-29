@@ -106,9 +106,7 @@ export function assertExternalAgentSupervisorIntent(opts: {
   if (
     operation.status === "completed" &&
     (opts.exchange.status === "result_received" || opts.exchange.status === "accepted") &&
-    (journal.cursor.phase === "completed" ||
-      journal.cursor.phase === "ready" ||
-      (journal.cursor.phase === "stopped" && journal.stop?.reason === "budget_exhausted"))
+    (journal.cursor.phase === "completed" || journal.cursor.phase === "ready")
   ) {
     return { state: "completed_pending_exchange", journal, operation };
   }
@@ -188,9 +186,7 @@ export async function finalizeCompletedExternalAgentExchange(opts: {
     });
   }
   let journal = opts.intent.journal;
-  const stoppedAfterBudget =
-    journal.cursor.phase === "stopped" && journal.stop?.reason === "budget_exhausted";
-  if (journal.cursor.phase === "completed" || stoppedAfterBudget) {
+  if (journal.cursor.phase === "completed") {
     if (
       opts.intent.operation.progress_digest !== digestSupervisorEpisodeValue(opts.postcondition)
     ) {
@@ -214,7 +210,7 @@ export async function finalizeCompletedExternalAgentExchange(opts: {
   }
   const completedOperation = journal.operations.at(-1);
   if (
-    (journal.cursor.phase === "ready" || stoppedAfterBudget) &&
+    journal.cursor.phase === "ready" &&
     (journal.state_fingerprint_digest !== opts.postcondition_fingerprint ||
       completedOperation?.postcondition_fingerprint_digest !== opts.postcondition_fingerprint)
   ) {

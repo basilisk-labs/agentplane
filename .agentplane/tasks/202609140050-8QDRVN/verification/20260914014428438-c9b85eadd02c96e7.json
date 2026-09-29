@@ -1,0 +1,118 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609140050-8QDRVN Verification Contract check affected_unit_integration (1/2)\n\nCheck: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609140050-8QDRVN Verification Contract check affected_unit_integration (2/2)\n\nCheck: critical_paths\nCommand: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609140050-8QDRVN Verification Contract check critical_paths (1/2)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609140050-8QDRVN Verification Contract check critical_paths (2/2)\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609140050-8QDRVN Verification Contract check full_regression\n\nCheck: task_outcome\nCommand: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-1\nScope: branch_pr task 202609140050-8QDRVN Verification Contract check task_outcome (1/2)\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-2\nScope: branch_pr task 202609140050-8QDRVN Verification Contract check task_outcome (2/2)",
+  "digest": "sha256:c9b85eadd02c96e704e58a6726b56be8c2b03760799bac8d294516e05e1e5321",
+  "implementation_sha": "0aa277dd97640bbc2afba29d72adb91fae64021f",
+  "input": {
+    "context": {
+      "digest": "sha256:be2cd4a1822669e850198c66e1dff5858d19f4644abe13560d0a8d2504db633b",
+      "paths": [
+        ".agentplane/WORKFLOW.md",
+        ".github/ISSUE_TEMPLATE/config.yml",
+        "bun.lock",
+        "depcruise.config.cjs",
+        "eslint.config.cjs",
+        "knip.json",
+        "package.json",
+        "packages/agentplane/package.json",
+        "packages/agentplane/src/cli/run-cli/commands/config.ts",
+        "packages/agentplane/src/runner/config.test.ts",
+        "packages/agentplane/src/runner/config.ts",
+        "packages/agentplane/tsconfig.json",
+        "packages/agentplane/tsup.config.ts",
+        "packages/core/package.json",
+        "packages/core/schemas/config.schema.json",
+        "packages/core/src/config/config.test.ts",
+        "packages/core/src/config/config.ts",
+        "packages/core/tsconfig.json",
+        "packages/core/tsup.config.ts",
+        "packages/recipes/package.json",
+        "packages/recipes/tsconfig.json",
+        "packages/recipes/tsup.config.ts",
+        "packages/spec/examples/config.json",
+        "packages/spec/package.json",
+        "packages/spec/schemas/config.schema.json",
+        "packages/testkit/package.json",
+        "packages/testkit/tsconfig.json",
+        "schemas/config.schema.json",
+        "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package-lock.json",
+        "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package.json",
+        "tsconfig.json",
+        "turbo.json",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "website/bun.lock",
+        "website/docusaurus.config.ts",
+        "website/package.json",
+        "website/tsconfig.json"
+      ]
+    },
+    "digest": "sha256:bdb0cdba7693edf45b0107f4524b4ebc0fbfb7517e8c71c7b5e7a2cfd363b944",
+    "environment": {
+      "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+      "runtime": {
+        "architecture": "arm64",
+        "bun_major": null,
+        "node_major": "24",
+        "platform": "darwin"
+      }
+    },
+    "evidence": {
+      "details_digest": "sha256:fcc5d76d664dd55cab8b0e97aebc45e34df57ffd65779553a1f95ad06312717c",
+      "digest": "sha256:d41df2fc641bd875f2f70c61fc3621a24b3174d29c19fd44205e062918d9360b",
+      "references": [
+        {
+          "digest": "sha256:799a259c668b4afbfaa910ea896f928fd105aba2cf74f3d55a7cf712b0c319c0",
+          "fragment": "check-1",
+          "path": ".agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-1",
+          "source": "filesystem"
+        },
+        {
+          "digest": "sha256:799a259c668b4afbfaa910ea896f928fd105aba2cf74f3d55a7cf712b0c319c0",
+          "fragment": "check-2",
+          "path": ".agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json",
+          "reference": ".agentplane/tasks/202609140050-8QDRVN/supervision/declared-checks.json#check-2",
+          "source": "filesystem"
+        }
+      ]
+    },
+    "execution": {
+      "authoritative_task_source": "task_worktree",
+      "base_ref": "main",
+      "base_sha": "9792878934b2c4d068e98056cef3c2c691451a90",
+      "digest": "sha256:9f24eb12d140790f70f249d9bf26520a31bd00f0f5daf3abe617df0a9d34e328",
+      "primary_task_id": "202609140050-8QDRVN",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "repository_branch_pr_floor"
+      ],
+      "repository_mode": "branch_pr",
+      "requested_mode": "branch_pr",
+      "route_source": "execution_contract",
+      "selected_mode": "branch_pr",
+      "task_ids": [
+        "202609140050-8QDRVN"
+      ]
+    },
+    "implementation": {
+      "base_sha": "9792878934b2c4d068e98056cef3c2c691451a90",
+      "digest": "sha256:1bd3fc5e3dba703d29d77fd2636263ec4d787a05ce22aa1d1d79d8982ba80787",
+      "strategy": "branch_diff",
+      "target_sha": "0aa277dd97640bbc2afba29d72adb91fae64021f"
+    },
+    "kind": "task_verification_input",
+    "schema_version": 4,
+    "verification_contract_digest": "sha256:6bc67cb9bd0ee0dfda91230935234e74f050bf97e70cc9d4e7db30a5c59be225",
+    "verify_steps_digest": "sha256:05eab6b62620509c625d909f09ebfb96b67576ef0e857e4aff2df272b855d255"
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned checks passed before independent EVALUATOR review.",
+  "recorded_at": "2026-09-14T01:44:28.438Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. Run `bunx vitest run packages/agentplane/src/cli/run-cli.core.task-advance-effect-recovery.test.ts`. Expected: all focused recovery tests pass, including the Git-history rejection regression.\n2. Confirm the rejected exchange is retired, the owning journal operation is failed, and a plain advance requires the existing exact-key `--replacement` route.\n3. Confirm existing accepted-result replay and effect-in-doubt recovery cases still pass.",
+  "scope_digest": "sha256:05eab6b62620509c625d909f09ebfb96b67576ef0e857e4aff2df272b855d255",
+  "task_id": "202609140050-8QDRVN",
+  "verification_command": "agentplane verify 202609140050-8QDRVN --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

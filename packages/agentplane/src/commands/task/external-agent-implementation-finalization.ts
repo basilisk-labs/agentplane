@@ -15,17 +15,14 @@ import type { ExternalAgentExchange } from "./external-agent-exchange.js";
 import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-finalization.js";
 import type { recordDirectTaskVerification } from "./direct-task-verification-record.js";
 import { isTaskLevelVerificationReworkState } from "./direct-task-verification.js";
+import { pathFromStatusLine } from "./git-status-path.js";
 
 import {
   recordTaskCentricExternalResult,
   type TaskCentricExternalResultProjection,
 } from "./task-centric-external-result.js";
 
-export function pathFromStatusLine(line: string): string {
-  const raw = line.length >= 4 ? line.slice(3).trim() : "";
-  const renamed = raw.includes(" -> ") ? (raw.split(" -> ").at(-1) ?? raw) : raw;
-  return renamed.replaceAll("\\", "/");
-}
+export { pathFromStatusLine } from "./git-status-path.js";
 
 export function hasChangedTaskArtifacts(statusLines: readonly string[], taskId: string): boolean {
   const prefix = `.agentplane/tasks/${taskId}/`;

@@ -1,0 +1,21 @@
+{
+  "base": "origin/main",
+  "branch": "task/202609211700-JT0KEW/release-agentplane-v0-7-11",
+  "created_at": "2026-09-21T17:18:59.736Z",
+  "diffstat_sha256": "sha256:cf9d12c7ae7bcca32591bea34e28349c51e4accbef205dd5ff3ffd7c15239af3",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202609211700-JT0KEW",
+  "updated_at": "2026-09-21T17:18:59.736Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

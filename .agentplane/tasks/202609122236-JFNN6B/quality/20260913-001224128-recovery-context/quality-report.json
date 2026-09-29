@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202609122236-JFNN6B",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-13T00:13:45.303Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "eb6e3c0b6b971928f83e5d84ae8db31ef13ab7a1",
+  "blueprint_digest": "ca972e9d6960b8448cbddbc38dfa12ba169f4bacda7ac2e4c57410397cf1c585",
+  "findings": [
+    "The reviewed change matches the approved cleanup scope: model-specific diagnostics are removed, semantic prompt assertions remain, all nine safety-critical CLI files remain in the critical route, and all five benchmark files move to qualification. Frozen verification records report passing required checks and repeated critical runs."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609122236-JFNN6B/quality/objects/sha256/60139576ecdbc1b4e0cb4c8a10b1829fb93e6ab00d3d2406bb7bbaa5ab9925cd.patch",
+    ".agentplane/tasks/202609122236-JFNN6B/README.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "The broad frozen diff includes task 202609122147-5F5WP0 changes inherited through the main-branch merge; these are separately traced GitLab work. Current workspace artifacts belong to evaluator preparation. All frozen evidence digests matched. Test execution was assessed from persisted verification evidence; this evaluator performed read-only inspection and route-membership checks."
+  ]
+}

@@ -1,0 +1,1738 @@
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts b/packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts
+new file mode 100644
+index 000000000..8c1757aac
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli.core.task-supervisor-budget-epoch.test.ts
+@@ -0,0 +1,278 @@
++import { writeFile } from "node:fs/promises";
++
++import { describe, expect, it } from "vitest";
++import {
++  advanceSupervisorExecutionEpisodeState,
++  completeSupervisorExecutionEpisode,
++  createSupervisorExecutionEpisodeJournal,
++  startSupervisorExecutionEpisode,
++  validateSupervisorExecutionEpisodeJournal,
++} from "@agentplaneorg/core/schemas";
++
++import {
++  captureStdIO,
++  installRunCliIntegrationHarness,
++  mkGitRepoRootWithCommit,
++  runCliSilent,
++  writeConfig,
++} from "@agentplane/testkit";
++
++import { createSupervisorEpisodeStore } from "../commands/shared/supervisor-execution-episode.js";
++import { buildTaskRouteDecision } from "../commands/shared/route-decision.js";
++import { loadCommandContext } from "../commands/shared/task-backend.js";
++import { defaultConfig } from "./core-imports.js";
++import { runCli } from "./run-cli.js";
++
++installRunCliIntegrationHarness();
++
++async function createTask(root: string): Promise<string> {
++  const io = captureStdIO();
++  try {
++    const code = await runCli([
++      "task",
++      "new",
++      "--title",
++      "Authorize a supervisor token budget epoch",
++      "--description",
++      "Exercise explicit USER-authorized supervisor recovery.",
++      "--priority",
++      "high",
++      "--owner",
++      "CODER",
++      "--tag",
++      "code",
++      "--verify",
++      "bun run test:critical",
++      "--root",
++      root,
++    ]);
++    expect(code, io.stderr).toBe(0);
++    return io.stdout.trim();
++  } finally {
++    io.restore();
++  }
++}
++
++function telemetryStoppedJournal(taskId: string, fingerprint: string) {
++  const initial = createSupervisorExecutionEpisodeJournal({
++    task_id: taskId,
++    task_revision: 1,
++    state_fingerprint_digest: fingerprint,
++    budget: {
++      max_episodes: 20,
++      max_agent_runs: 10,
++      max_input_tokens: 100,
++      max_output_tokens: 100,
++      max_total_tokens: 200,
++      max_wall_time_ms: null,
++      max_changed_files: null,
++      max_diff_lines: null,
++      max_no_progress_episodes: null,
++    },
++  });
++  const started = startSupervisorExecutionEpisode({
++    journal: initial,
++    role: "PLANNER",
++    kind: "agent_episode",
++    operation_identity: { task_id: taskId, role: "PLANNER" },
++    precondition_fingerprint_digest: fingerprint,
++  });
++  if (started.status !== "started") throw new Error("expected planner intent");
++  const completed = completeSupervisorExecutionEpisode({
++    journal: started.journal,
++    operation_key: started.operation_key,
++    result: { status: "completed" },
++    usage_attribution: {
++      state: "unallocatable",
++      reason: "external_host_turn_not_task_attributable",
++    },
++  });
++  const ready = advanceSupervisorExecutionEpisodeState({
++    journal: completed,
++    state_fingerprint_digest: fingerprint,
++    route_observation: { phase: "implementation" },
++  });
++  const stopped = startSupervisorExecutionEpisode({
++    journal: ready,
++    role: "EXECUTOR",
++    kind: "agent_episode",
++    operation_identity: { task_id: taskId, role: "EXECUTOR" },
++    precondition_fingerprint_digest: fingerprint,
++  });
++  if (stopped.status !== "stopped") throw new Error("expected telemetry stop");
++  return stopped.journal;
++}
++
++async function fixture() {
++  const root = await mkGitRepoRootWithCommit();
++  const config = defaultConfig();
++  config.workflow_mode = "direct";
++  await writeConfig(root, config);
++  const taskId = await createTask(root);
++  const command = await loadCommandContext({ cwd: root, rootOverride: root });
++  const decision = await buildTaskRouteDecision({
++    ctx: command,
++    cwd: root,
++    rootOverride: root,
++    includeRemote: false,
++    freshHead: true,
++    taskId,
++  });
++  const stoppedFingerprint = decision.workflowStep.preconditionFingerprint.digest;
++  const store = createSupervisorEpisodeStore(
++    `${root}/.git/agentplane/supervisor/episodes/${taskId}/journal.json`,
++  );
++  const stopped = telemetryStoppedJournal(taskId, stoppedFingerprint);
++  await store.write(stopped);
++  await writeFile(`${root}/implementation.txt`, "changed after the telemetry stop\n", "utf8");
++  const currentDecision = await buildTaskRouteDecision({
++    ctx: command,
++    cwd: root,
++    rootOverride: root,
++    includeRemote: false,
++    freshHead: true,
++    taskId,
++  });
++  const fingerprint = currentDecision.workflowStep.preconditionFingerprint.digest;
++  expect(fingerprint).not.toBe(stoppedFingerprint);
++  return { root, taskId, fingerprint, stoppedFingerprint, store, stopped };
++}
++
++async function authorize(opts: {
++  root: string;
++  taskId: string;
++  fingerprint: string;
++  journalDigest: string;
++  by?: string;
++  disableTokenLimits?: boolean;
++}) {
++  const io = captureStdIO();
++  try {
++    const tokenArgs = opts.disableTokenLimits
++      ? ["--disable-token-limits"]
++      : ["--max-input-tokens", "1000", "--max-output-tokens", "500", "--max-total-tokens", "1500"];
++    const code = await runCli([
++      "task",
++      "supervisor",
++      "budget-epoch",
++      opts.taskId,
++      "--expected-journal-digest",
++      opts.journalDigest,
++      "--state-fingerprint",
++      opts.fingerprint,
++      ...tokenArgs,
++      "--by",
++      opts.by ?? "USER",
++      "--json",
++      "--root",
++      opts.root,
++    ]);
++    return { code, stdout: io.stdout, stderr: io.stderr };
++  } finally {
++    io.restore();
++  }
++}
++
++describe("runCli task supervisor budget-epoch", { timeout: 60_000 }, () => {
++  it("records a state-bound USER epoch and resumes the stopped journal", async () => {
++    const current = await fixture();
++    const first = await authorize({
++      root: current.root,
++      taskId: current.taskId,
++      fingerprint: current.fingerprint,
++      journalDigest: current.stopped.digest,
++    });
++    expect(first.code, first.stderr).toBe(0);
++    const payload = JSON.parse(first.stdout) as { authority_digest: string };
++    expect(payload.authority_digest).toMatch(/^sha256:[0-9a-f]{64}$/u);
++
++    const persisted = validateSupervisorExecutionEpisodeJournal(await current.store.read());
++    expect(persisted.status).toBe("running");
++    expect(persisted.stop).toBeNull();
++    expect(persisted.previous_digest).toBe(current.stopped.digest);
++    expect(persisted.operations[0]?.usage_attribution?.state).toBe("unallocatable");
++    expect(persisted.operations.at(-1)?.recovery?.context).toMatchObject({
++      kind: "supervisor_token_budget_epoch",
++      authorized_by: "USER",
++      prior_journal_digest: current.stopped.digest,
++      stopped_state_fingerprint_digest: current.stoppedFingerprint,
++      authorized_state_fingerprint_digest: current.fingerprint,
++    });
++
++    const replay = await authorize({
++      root: current.root,
++      taskId: current.taskId,
++      fingerprint: current.fingerprint,
++      journalDigest: current.stopped.digest,
++    });
++    expect(replay.code, replay.stderr).toBe(0);
++    expect(validateSupervisorExecutionEpisodeJournal(await current.store.read()).digest).toBe(
++      persisted.digest,
++    );
++  });
++
++  it("rejects non-USER actors, stale fingerprints, and stale journal digests", async () => {
++    const current = await fixture();
++    expect(
++      await runCliSilent([
++        "task",
++        "supervisor",
++        "budget-epoch",
++        current.taskId,
++        "--expected-journal-digest",
++        current.stopped.digest,
++        "--state-fingerprint",
++        current.fingerprint,
++        "--max-input-tokens",
++        "1000",
++        "--max-output-tokens",
++        "500",
++        "--max-total-tokens",
++        "1500",
++        "--by",
++        "POLICY",
++        "--root",
++        current.root,
++      ]),
++    ).toBe(2);
++
++    const staleFingerprint = await authorize({
++      root: current.root,
++      taskId: current.taskId,
++      fingerprint: `sha256:${"9".repeat(64)}`,
++      journalDigest: current.stopped.digest,
++    });
++    expect(staleFingerprint.code).toBe(2);
++    expect(staleFingerprint.stderr).toContain("state fingerprint is stale");
++
++    const staleJournal = await authorize({
++      root: current.root,
++      taskId: current.taskId,
++      fingerprint: current.fingerprint,
++      journalDigest: `sha256:${"8".repeat(64)}`,
++    });
++    expect(staleJournal.code).not.toBe(0);
++    expect(staleJournal.stderr).toContain("stale or conflicts with replay");
++    expect(validateSupervisorExecutionEpisodeJournal(await current.store.read()).digest).toBe(
++      current.stopped.digest,
++    );
++  });
++
++  it("disables unobservable token caps while retaining measurable limits", async () => {
++    const current = await fixture();
++    const result = await authorize({
++      root: current.root,
++      taskId: current.taskId,
++      fingerprint: current.fingerprint,
++      journalDigest: current.stopped.digest,
++      disableTokenLimits: true,
++    });
++
++    expect(result.code, result.stderr).toBe(0);
++    const persisted = validateSupervisorExecutionEpisodeJournal(await current.store.read());
++    expect(persisted.operations.at(-1)?.recovery?.context).toMatchObject({
++      budget: { max_input_tokens: null, max_output_tokens: null, max_total_tokens: null },
++    });
++    expect(persisted.budget).toMatchObject({ max_episodes: 20, max_agent_runs: 10 });
++  });
++});
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog.ts b/packages/agentplane/src/cli/run-cli/command-catalog.ts
+index 98f779ab5..10f462426 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog.ts
+@@ -14,6 +14,7 @@ import { CORE_COMMANDS } from "./command-catalog/core.js";
+ import { LIFECYCLE_COMMANDS } from "./command-catalog/lifecycle.js";
+ import { PROJECT_COMMANDS } from "./command-catalog/project.js";
+ import { TASK_COMMANDS } from "./command-catalog/task.js";
++import { TASK_SUPERVISOR_COMMANDS } from "./command-catalog/task-supervisor.js";
+ 
+ export type { CommandEntry } from "./command-catalog/kernel.js";
+ export type { CatalogMatch, HelpSurfaceMode } from "./command-catalog-helpers.js";
+@@ -22,6 +23,7 @@ export { isCommandVisibleInHelp, makeHelpSpecForEntry } from "./command-catalog-
+ export const COMMANDS = [
+   ...CORE_COMMANDS,
+   ...TASK_COMMANDS,
++  ...TASK_SUPERVISOR_COMMANDS,
+   ...PROJECT_COMMANDS,
+   ...LIFECYCLE_COMMANDS,
+ ] as const satisfies readonly CommandEntry[];
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/task-supervisor.ts b/packages/agentplane/src/cli/run-cli/command-catalog/task-supervisor.ts
+new file mode 100644
+index 000000000..11b44a997
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/task-supervisor.ts
+@@ -0,0 +1,14 @@
++import { taskSupervisorBudgetEpochSpec } from "../../../commands/task/supervisor-budget-epoch.command.js";
++
++import { loadTaskSupervisorBudgetEpochSpec } from "../command-loaders/task.js";
++import { declareSessionCommand, type CommandEntry } from "./kernel.js";
++import { RUNNER_EXECUTION_REQUIREMENTS } from "./runner-hermes-capability-profiles.js";
++
++export const TASK_SUPERVISOR_COMMANDS = [
++  declareSessionCommand(taskSupervisorBudgetEpochSpec, {
++    load: loadTaskSupervisorBudgetEpochSpec,
++    requirements: RUNNER_EXECUTION_REQUIREMENTS,
++    surface: "advanced",
++    helpGroup: "Advanced",
++  }),
++] as const satisfies readonly CommandEntry[];
+diff --git a/packages/agentplane/src/cli/run-cli/command-loaders/task.ts b/packages/agentplane/src/cli/run-cli/command-loaders/task.ts
+index 08fd1b949..fd0c0008e 100644
+--- a/packages/agentplane/src/cli/run-cli/command-loaders/task.ts
++++ b/packages/agentplane/src/cli/run-cli/command-loaders/task.ts
+@@ -141,6 +141,14 @@ export const loadTaskAuthorityGrantSpec = (session: TaskRouteLifecycleSession) =
+   import("../../../commands/task/authority-grant.command.js").then((m) =>
+     m.makeRunTaskAuthorityGrantHandler(getTaskAuthorityRouteContexts(session)),
+   );
++export const loadTaskSupervisorBudgetEpochSpec = (session: RunnerExecutionSession) =>
++  import("../../../commands/task/supervisor-budget-epoch.command.js").then((m) =>
++    m.makeRunTaskSupervisorBudgetEpochHandler(async (command) => {
++      await session.require("git.mutate", command);
++      await session.require("approvals", command);
++      return await session.require("route.local", command);
++    }),
++  );
+ export const loadTaskListSpec = (session: TaskReadSession) =>
+   import("../../../commands/task/list.run.js").then((m) =>
+     m.makeRunTaskListHandler((command) => session.require("task.read", command)),
+diff --git a/packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts b/packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts
+new file mode 100644
+index 000000000..93ec434bf
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/supervisor-execution-budget-renewal.test.ts
+@@ -0,0 +1,296 @@
++import { describe, expect, it } from "vitest";
++
++import {
++  advanceSupervisorExecutionEpisodeState,
++  authorizeSupervisorTokenBudgetEpoch,
++  completeSupervisorExecutionEpisode,
++  createSupervisorExecutionEpisodeJournal,
++  digestSupervisorEpisodeValue,
++  prepareReplacementSupervisorExecutionEpisodeAfterFailure,
++  startSupervisorExecutionEpisode,
++  stopSupervisorExecutionEpisode,
++  type SupervisorExecutionEpisodeJournal,
++} from "@agentplaneorg/core/schemas";
++
++const FINGERPRINT = `sha256:${"1".repeat(64)}`;
++const AUTHORITY_DIGEST = `sha256:${"2".repeat(64)}`;
++
++function stoppedTelemetryJournal(): SupervisorExecutionEpisodeJournal {
++  const initial = createSupervisorExecutionEpisodeJournal({
++    task_id: "TASK-1",
++    task_revision: 1,
++    state_fingerprint_digest: FINGERPRINT,
++    budget: {
++      max_episodes: 20,
++      max_agent_runs: 10,
++      max_input_tokens: 100,
++      max_output_tokens: 100,
++      max_total_tokens: 200,
++      max_wall_time_ms: null,
++      max_changed_files: null,
++      max_diff_lines: null,
++      max_no_progress_episodes: null,
++    },
++    now: "2026-09-13T00:00:00.000Z",
++  });
++  const started = startSupervisorExecutionEpisode({
++    journal: initial,
++    role: "PLANNER",
++    kind: "agent_episode",
++    operation_identity: { task: "TASK-1", turn: 1 },
++    precondition_fingerprint_digest: FINGERPRINT,
++    now: "2026-09-13T00:00:01.000Z",
++  });
++  if (started.status !== "started") throw new Error("expected planner intent");
++  const completed = completeSupervisorExecutionEpisode({
++    journal: started.journal,
++    operation_key: started.operation_key,
++    result: { status: "completed" },
++    usage_attribution: {
++      state: "unallocatable",
++      reason: "external_host_turn_not_task_attributable",
++    },
++    now: "2026-09-13T00:00:02.000Z",
++  });
++  const ready = advanceSupervisorExecutionEpisodeState({
++    journal: completed,
++    state_fingerprint_digest: FINGERPRINT,
++    route_observation: { phase: "implementation" },
++    now: "2026-09-13T00:00:03.000Z",
++  });
++  const stopped = startSupervisorExecutionEpisode({
++    journal: ready,
++    role: "EXECUTOR",
++    kind: "agent_episode",
++    operation_identity: { task: "TASK-1", turn: 2 },
++    precondition_fingerprint_digest: FINGERPRINT,
++    now: "2026-09-13T00:00:04.000Z",
++  });
++  if (stopped.status !== "stopped") throw new Error("expected telemetry stop");
++  return stopped.journal;
++}
++
++function stoppedTelemetryJournalAfterFailedOperation(): SupervisorExecutionEpisodeJournal {
++  const stopped = stoppedTelemetryJournal();
++  const authorized = authorize(stopped);
++  const started = startSupervisorExecutionEpisode({
++    journal: authorized,
++    role: "EXECUTOR",
++    kind: "agent_episode",
++    operation_identity: { task: "TASK-1", turn: 2 },
++    precondition_fingerprint_digest: FINGERPRINT,
++    now: "2026-09-13T00:00:06.000Z",
++  });
++  if (started.status !== "started") throw new Error("expected executor intent");
++  const failed = completeSupervisorExecutionEpisode({
++    journal: started.journal,
++    operation_key: started.operation_key,
++    result: { status: "failed" },
++    usage_attribution: { state: "unavailable", reason: "provider_result_not_observed" },
++    failed: true,
++    now: "2026-09-13T00:00:07.000Z",
++  });
++  const ready = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
++    journal: failed,
++    state_fingerprint_digest: FINGERPRINT,
++    now: "2026-09-13T00:00:08.000Z",
++  });
++  const next = startSupervisorExecutionEpisode({
++    journal: ready,
++    role: "EXECUTOR",
++    kind: "agent_episode",
++    operation_identity: { task: "TASK-1", turn: 3 },
++    precondition_fingerprint_digest: FINGERPRINT,
++    replacement_of_operation_key: failed.operations.at(-1)?.operation_key,
++    now: "2026-09-13T00:00:09.000Z",
++  });
++  if (next.status !== "stopped") throw new Error("expected telemetry stop");
++  return next.journal;
++}
++
++function authorize(
++  journal: SupervisorExecutionEpisodeJournal,
++  overrides: Partial<Parameters<typeof authorizeSupervisorTokenBudgetEpoch>[0]> = {},
++) {
++  return authorizeSupervisorTokenBudgetEpoch({
++    journal,
++    expected_journal_digest: journal.digest,
++    authorized_state_fingerprint_digest: FINGERPRINT,
++    authorized_by: "USER",
++    authority_ref: "user:TASK-1:budget-epoch",
++    authority_digest: AUTHORITY_DIGEST,
++    budget: { max_input_tokens: 10, max_output_tokens: 10, max_total_tokens: 15 },
++    now: "2026-09-13T00:00:05.000Z",
++    ...overrides,
++  });
++}
++
++describe("supervisor token budget epoch", () => {
++  it("preserves historical unknown usage and admits spend only inside the new epoch", () => {
++    const stopped = stoppedTelemetryJournal();
++    const authorized = authorize(stopped);
++
++    expect(authorized.status).toBe("running");
++    expect(authorized.stop).toBeNull();
++    expect(authorized.operations[0]?.usage_attribution?.state).toBe("unallocatable");
++    expect(authorized.usage.input_tokens).toBe(0);
++    expect(authorized.operations.at(-1)?.recovery?.context).toMatchObject({
++      kind: "supervisor_token_budget_epoch",
++      prior_journal_digest: stopped.digest,
++      stopped_state_fingerprint_digest: FINGERPRINT,
++      authorized_state_fingerprint_digest: FINGERPRINT,
++      starts_after_operation_sequence: 1,
++      baseline_usage: { input_tokens: 0, output_tokens: 0, total_tokens: 0 },
++    });
++
++    const started = startSupervisorExecutionEpisode({
++      journal: authorized,
++      role: "EXECUTOR",
++      kind: "agent_episode",
++      operation_identity: { task: "TASK-1", turn: 2 },
++      precondition_fingerprint_digest: FINGERPRINT,
++      now: "2026-09-13T00:00:06.000Z",
++    });
++    expect(started.status).toBe("started");
++    if (started.status !== "started") return;
++    const completed = completeSupervisorExecutionEpisode({
++      journal: started.journal,
++      operation_key: started.operation_key,
++      result: { status: "completed" },
++      usage: { input_tokens: 7, output_tokens: 3, total_tokens: 10 },
++      provider_usage: {
++        provider: "codex",
++        run_id: "run-2",
++        work_order_id: "work-order-2",
++        thread_id: "thread-2",
++        turn_id: "turn-2",
++      },
++      now: "2026-09-13T00:00:07.000Z",
++    });
++    expect(completed.status).toBe("running");
++    expect(completed.usage.total_tokens).toBe(10);
++  });
++
++  it("blocks a new paid call when telemetry is unknown inside the authorized epoch", () => {
++    const authorized = authorize(stoppedTelemetryJournal());
++    const started = startSupervisorExecutionEpisode({
++      journal: authorized,
++      role: "EXECUTOR",
++      kind: "agent_episode",
++      operation_identity: { task: "TASK-1", turn: 2 },
++      precondition_fingerprint_digest: FINGERPRINT,
++    });
++    if (started.status !== "started") throw new Error("expected executor intent");
++    const completed = completeSupervisorExecutionEpisode({
++      journal: started.journal,
++      operation_key: started.operation_key,
++      result: { status: "completed" },
++      usage_attribution: { state: "unavailable", reason: "provider_identity_unavailable" },
++    });
++    const ready = advanceSupervisorExecutionEpisodeState({
++      journal: completed,
++      state_fingerprint_digest: FINGERPRINT,
++      route_observation: { phase: "next" },
++    });
++    const next = startSupervisorExecutionEpisode({
++      journal: ready,
++      role: "EVALUATOR",
++      kind: "evaluator_episode",
++      operation_identity: { task: "TASK-1", turn: 3 },
++      precondition_fingerprint_digest: FINGERPRINT,
++    });
++    expect(next.status).toBe("stopped");
++    if (next.status === "stopped") {
++      expect(next.stop.exhausted_dimensions).toEqual([
++        "input_tokens_telemetry",
++        "output_tokens_telemetry",
++        "total_tokens_telemetry",
++      ]);
++    }
++  });
++
++  it("authorizes a new epoch after a durably failed operation with unknown telemetry", () => {
++    const stopped = stoppedTelemetryJournalAfterFailedOperation();
++    expect(stopped.operations.at(-1)?.status).toBe("failed");
++
++    const authorized = authorize(stopped, { now: "2026-09-13T00:00:10.000Z" });
++
++    expect(authorized.status).toBe("running");
++    expect(authorized.stop).toBeNull();
++    expect(authorized.operations.at(-1)?.recovery?.context).toMatchObject({
++      kind: "supervisor_token_budget_epoch",
++      starts_after_operation_sequence: 3,
++    });
++  });
++
++  it("disables only token caps through an explicit USER epoch", () => {
++    const stopped = stoppedTelemetryJournalAfterFailedOperation();
++    const authorized = authorize(stopped, {
++      budget: { max_input_tokens: null, max_output_tokens: null, max_total_tokens: null },
++      now: "2026-09-13T00:00:10.000Z",
++    });
++
++    expect(authorized.operations.at(-1)?.recovery?.context).toMatchObject({
++      budget: { max_input_tokens: null, max_output_tokens: null, max_total_tokens: null },
++    });
++    const next = startSupervisorExecutionEpisode({
++      journal: authorized,
++      role: "EVALUATOR",
++      kind: "evaluator_episode",
++      operation_identity: { task: "TASK-1", turn: 4 },
++      precondition_fingerprint_digest: FINGERPRINT,
++    });
++    expect(next.status).toBe("started");
++    expect(next.journal.budget.max_agent_runs).toBe(10);
++    expect(next.journal.budget.max_episodes).toBe(20);
++  });
++
++  it("is replay-safe and rejects stale or conflicting authorization", () => {
++    const stopped = stoppedTelemetryJournal();
++    const authorized = authorize(stopped);
++    expect(
++      authorize(authorized, {
++        expected_journal_digest: stopped.digest,
++        now: "2026-09-13T00:01:00.000Z",
++      }).digest,
++    ).toBe(authorized.digest);
++    expect(() =>
++      authorize(authorized, {
++        expected_journal_digest: stopped.digest,
++        budget: { max_input_tokens: 11, max_output_tokens: 10, max_total_tokens: 15 },
++      }),
++    ).toThrow(/stale or conflicts with replay/u);
++    expect(() =>
++      authorize(stopped, { expected_journal_digest: digestSupervisorEpisodeValue("stale") }),
++    ).toThrow(/stale or conflicts with replay/u);
++  });
++
++  it("rejects non-USER authority, invalid caps, and human review without mutation", () => {
++    const stopped = stoppedTelemetryJournal();
++    expect(() => authorize(stopped, { authorized_by: "POLICY" })).toThrow();
++    expect(() =>
++      authorize(stopped, {
++        budget: { max_input_tokens: 0, max_output_tokens: 10, max_total_tokens: 15 },
++      }),
++    ).toThrow();
++    const ready = createSupervisorExecutionEpisodeJournal({
++      task_id: "TASK-2",
++      task_revision: 1,
++      state_fingerprint_digest: FINGERPRINT,
++      budget: {
++        max_episodes: 20,
++        max_agent_runs: 10,
++        max_input_tokens: 100,
++        max_output_tokens: 100,
++        max_total_tokens: 200,
++        max_wall_time_ms: null,
++        max_changed_files: null,
++        max_diff_lines: null,
++        max_no_progress_episodes: null,
++      },
++    });
++    const humanReview = stopSupervisorExecutionEpisode({ journal: ready, reason: "human_review" });
++    expect(() => authorize(humanReview)).toThrow(/telemetry-only budget stop/u);
++    expect(stopped.status).toBe("stopped");
++  });
++});
+diff --git a/packages/agentplane/src/commands/shared/supervisor-execution-default-budget.test.ts b/packages/agentplane/src/commands/shared/supervisor-execution-default-budget.test.ts
+new file mode 100644
+index 000000000..579196545
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/supervisor-execution-default-budget.test.ts
+@@ -0,0 +1,28 @@
++import { describe, expect, it } from "vitest";
++
++import { mkGitRepoRoot } from "@agentplane/testkit";
++
++import { openSupervisorExecutionEpisode } from "./supervisor-execution-episode.js";
++
++describe("default supervisor execution budget", () => {
++  it("leaves token caps disabled when provider telemetry is not guaranteed", async () => {
++    const root = await mkGitRepoRoot();
++    const opened = await openSupervisorExecutionEpisode({
++      git_root: root,
++      task_id: "202607280001-EPISODE",
++      task_revision: 1,
++      state_fingerprint_digest: `sha256:${"1".repeat(64)}`,
++    });
++
++    expect(opened.journal.budget).toMatchObject({
++      max_episodes: 50,
++      max_agent_runs: 50,
++      max_input_tokens: null,
++      max_output_tokens: null,
++      max_total_tokens: null,
++      max_wall_time_ms: 4 * 60 * 60 * 1000,
++      max_changed_files: 2000,
++      max_no_progress_episodes: 3,
++    });
++  });
++});
+diff --git a/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts b/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts
+index 738f096bf..d33ead0c3 100644
+--- a/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts
++++ b/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts
+@@ -38,16 +38,18 @@ export { tryAcquireSupervisorExecutionLease } from "./supervisor-execution-lease
+ const SUPERVISOR_EPISODE_ARTIFACT_DIRECTORY = "agentplane/supervisor/episodes";
+ 
+ /**
+- * Conservative process limits. They bound supervisor-owned work without
+- * becoming a second policy/configuration surface; later slices can project
+- * explicit task policy onto the same canonical contract.
++ * Conservative process limits. Token limits stay disabled until the provider
++ * supplies attributable telemetry; enforcing an unobservable token cap would
++ * stop healthy external-agent workflows after their first agent result. The
++ * measurable episode, agent-run, wall-time, changed-file, and no-progress
++ * limits continue to bound supervisor-owned work.
+  */
+ const DEFAULT_SUPERVISOR_EXECUTION_BUDGET: SupervisorExecutionBudget = {
+   max_episodes: 50,
+   max_agent_runs: 50,
+-  max_input_tokens: 3_000_000,
+-  max_output_tokens: 1_000_000,
+-  max_total_tokens: 4_000_000,
++  max_input_tokens: null,
++  max_output_tokens: null,
++  max_total_tokens: null,
+   max_wall_time_ms: 4 * 60 * 60 * 1000,
+   max_changed_files: 2000,
+   // The runner has no supervisor-observed line delta yet. A non-null default
+diff --git a/packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts b/packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts
+index dc2b69ea6..d0dfe53ee 100644
+--- a/packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts
++++ b/packages/agentplane/src/commands/task/external-agent-implementation-recovery.test.ts
+@@ -11,7 +11,10 @@ import {
+   resolveEvidenceOnlyReworkCommit,
+   selectRecordedImplementationRecoveryCommit,
+ } from "./evidence-only-rework-commit.js";
+-import { taskReadmesPreserveRecoveryContract } from "./external-agent-implementation-recovery.js";
++import {
++  requiresExactScopeRecoveryReadme,
++  taskReadmesPreserveRecoveryContract,
++} from "./external-agent-implementation-recovery.js";
+ 
+ import {
+   assertExternalImplementationReturnState,
+@@ -154,6 +157,24 @@ describe("recorded implementation recovery contract", () => {
+     ).toBe("work-item-sha");
+   });
+ 
++  it("allows lifecycle drift after scope recovery reaches WorkItem verification rework", () => {
++    expect(
++      requiresExactScopeRecoveryReadme({ scope_recovery: true, work_item_state: "READY" }),
++    ).toBe(true);
++    expect(
++      requiresExactScopeRecoveryReadme({
++        scope_recovery: true,
++        work_item_state: "REWORK_READY",
++      }),
++    ).toBe(false);
++    expect(
++      requiresExactScopeRecoveryReadme({
++        scope_recovery: false,
++        work_item_state: "REWORK_READY",
++      }),
++    ).toBe(false);
++  });
++
+   it("rebinds a verified implementation through managed evidence-only commits", () => {
+     const eligible = {
+       purpose: "implementation_rework" as const,
+diff --git a/packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts b/packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts
+index 77df59b3a..4ba4b4e8e 100644
+--- a/packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts
++++ b/packages/agentplane/src/commands/task/external-agent-implementation-recovery.ts
+@@ -379,6 +379,13 @@ async function directories(directory: string): Promise<string[]> {
+   }
+ }
+ 
++export function requiresExactScopeRecoveryReadme(opts: {
++  scope_recovery: boolean;
++  work_item_state: string | null | undefined;
++}): boolean {
++  return opts.scope_recovery && opts.work_item_state !== "REWORK_READY";
++}
++
+ /** Recover only recorded implementation effects. Checks are executed again by the caller. */
+ export async function resolveRecordedImplementationRecovery(opts: {
+   command: CommandContext;
+@@ -490,6 +497,10 @@ export async function resolveRecordedImplementationRecovery(opts: {
+     opts.work_order.state_fingerprint.git_head === opts.head;
+   if (!samePlan && !reassessment) return null;
+   if (!reassessment) {
++    const exactScopeRecoveryReadme = requiresExactScopeRecoveryReadme({
++      scope_recovery: scopeRecovery,
++      work_item_state: workItemId ? aggregate.work_items[workItemId]?.state : null,
++    });
+     const currentReadmes = await Promise.all([
+       gitShowFile(root, opts.head, `${taskPrefix}README.md`),
+       readFile(path.join(root, taskPrefix, "README.md"), "utf8"),
+@@ -498,7 +509,7 @@ export async function resolveRecordedImplementationRecovery(opts: {
+       currentReadmes.some(
+         (readme) =>
+           readme !== committedReadme &&
+-          (scopeRecovery ||
++          (exactScopeRecoveryReadme ||
+             !taskReadmesPreserveRecoveryContract(
+               taskLevelRework ? completedWorkItemRecoveryReadme(committedReadme) : committedReadme,
+               taskLevelRework ? completedWorkItemRecoveryReadme(readme) : readme,
+diff --git a/packages/agentplane/src/commands/task/scope-extend-legacy-compat.test.ts b/packages/agentplane/src/commands/task/scope-extend-legacy-compat.test.ts
+new file mode 100644
+index 000000000..fbedd0c68
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/scope-extend-legacy-compat.test.ts
+@@ -0,0 +1,220 @@
++import { describe, expect, it } from "vitest";
++
++import {
++  approveTaskPlan,
++  createExecutionGrant,
++  createLegacyTaskAggregate,
++  createPlanProposal,
++  createRepositorySnapshot,
++  createTaskPlanRevision,
++  materializeApprovedWorkItems,
++  taskCentricDigest,
++  withTaskCentricAggregate,
++  type TaskPlanProposal,
++  type ValidationPlan,
++  type WorkItem,
++} from "@agentplaneorg/core/tasks";
++import { makeTaskCommandContext, makeTaskFixture } from "@agentplane/testkit/task";
++
++import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
++import {
++  createTaskScopeExtensionRequestState,
++  scopeExtensionReceiptForState,
++  TASK_SCOPE_EXTENSION_REQUEST_KEY,
++} from "../shared/task-scope-extension-request.js";
++import {
++  extendBlockedTaskExecutionContract,
++  taskWithRebasedExecutionGrant,
++} from "./scope-extend.js";
++
++const NOW = "2026-08-18T01:00:00.000Z";
++
++function approvedAggregate(taskId: string) {
++  const validation: ValidationPlan = {
++    schema_version: 1,
++    criteria: [
++      {
++        id: "criterion-scope",
++        description: "Validate the scoped WorkItem.",
++        required: true,
++        check_ids: ["check-scope"],
++      },
++    ],
++    checks: [
++      {
++        id: "check-scope",
++        kind: "deterministic",
++        required: true,
++        capability: "task.verify",
++        command: "bun test scope",
++      },
++    ],
++    evidence_fingerprint: taskCentricDigest("scope-extension-legacy-compat-test"),
++  };
++  const active: WorkItem = {
++    id: "active",
++    objective: "Implement active",
++    depends_on: [],
++    required_inputs: [],
++    expected_outputs: ["output-active"],
++    scope_roots: ["docs/releases"],
++    acceptance_criteria: validation.criteria,
++    validation,
++    context: {
++      required_sources: ["repository"],
++      optional_sources: [],
++      symbol_hints: [],
++      max_bytes: 16_384,
++    },
++    risk: "low",
++    capabilities: ["task.verify"],
++    resource_claims: [{ kind: "path", resource: "docs/releases", mode: "write" }],
++    optional: false,
++    priority: 1,
++  };
++  const proposal: TaskPlanProposal = {
++    schema_version: 1,
++    task_id: taskId,
++    planning_baseline: createRepositorySnapshot({
++      git: { kind: "commit", sha: "a".repeat(40), ref: "refs/heads/main" },
++      dirty_paths: [],
++      policy_digest: null,
++      config_digest: null,
++      context_digest: null,
++      task_history_cursor: "task-revision:1",
++      captured_at: NOW,
++    }),
++    work_items: { schema_version: 1, work_items: [active] },
++    assumptions: [],
++    unresolved_questions: [],
++    top_level_validation: validation,
++  };
++  const draft = createTaskPlanRevision({ proposal, revision: 1, created_at: NOW });
++  const approved = approveTaskPlan({
++    plan: draft,
++    expected_digest: draft.digest,
++    actor: "USER",
++    approved_at: NOW,
++  });
++  return materializeApprovedWorkItems({
++    task: createLegacyTaskAggregate({
++      id: taskId,
++      revision: 1,
++      title: "Scope extension",
++      description: "Exercise one task-centric scope extension.",
++      status: "TODO",
++      acceptance_criteria: ["Extend the selected WorkItem."],
++      captured_at: NOW,
++      updated_at: NOW,
++    }),
++    plan: approved,
++    now: NOW,
++  });
++}
++
++function fixture() {
++  const command = makeTaskCommandContext({
++    configureConfig: (config) => {
++      config.workflow_mode = "branch_pr";
++    },
++  });
++  const executionContract = resolveTaskExecutionContract({
++    config: command.config,
++    task: { task_kind: "code", mutation_scope: "code", risk_flags: [] },
++    requestedMode: "branch_pr",
++    declaration: {
++      schema_version: 2,
++      preferred_mode: "branch_pr",
++      scope_roots: ["docs/releases"],
++      repository_effects: ["documentation"],
++      external_effects: [],
++      requirements_uncertainty: "bounded",
++      implementation_uncertainty: "bounded",
++      reversibility: "reversible",
++      rationale: ["release documentation"],
++    },
++  });
++  const pending = createTaskScopeExtensionRequestState({
++    request: {
++      schema_version: 1,
++      scope_roots: [],
++      repository_effects: ["release_metadata"],
++      rationale: "The required effect is outside the legacy contract.",
++    },
++    transition_id: "tr_11111111111111111111111111111111",
++    state_fingerprint: `sha256:${"a".repeat(64)}`,
++  });
++  pending.work_item_id = "active";
++  const task = makeTaskFixture({
++    id: "202608181404-SCOPE1",
++    status: "BLOCKED",
++    execution_contract: executionContract,
++    comments: [{ author: "SUPERVISOR", body: scopeExtensionReceiptForState(pending) }],
++  });
++  task.execution_contract!.declaration.scope_roots = [];
++  task.execution_contract!.authority.writable_roots = [];
++  task.extensions = {
++    ...withTaskCentricAggregate(task.extensions, approvedAggregate(task.id)),
++    [TASK_SCOPE_EXTENSION_REQUEST_KEY]: pending,
++  };
++  return { command, pending, task };
++}
++
++describe("legacy blocked task scope extension compatibility", () => {
++  it("migrates approved WorkItem roots for an effects-only extension", () => {
++    const { command, pending, task } = fixture();
++    const extended = extendBlockedTaskExecutionContract({
++      command,
++      task,
++      scope_roots: [],
++      repository_effects: ["release_metadata"],
++      request_digest: pending.request_digest,
++      by: "USER",
++    });
++
++    expect(extended.declaration.scope_roots).toEqual(["docs/releases"]);
++    expect(extended.authority.writable_roots).toEqual(["docs/releases"]);
++    expect(extended.declaration.repository_effects).toEqual(["documentation", "release_metadata"]);
++    expect(extended.declaration.rationale).toContain(
++      "Migrated approved WorkItem scope for a legacy rootless execution contract.",
++    );
++  });
++
++  it("invalidates a stale grant before applying an effects-only extension", () => {
++    const { command, pending, task } = fixture();
++    const repositoryIdentity = `sha256:${"f".repeat(64)}`;
++    const staleContract = structuredClone(task.execution_contract!);
++    staleContract.declaration.scope_roots = ["src/stale"];
++    staleContract.authority.writable_roots = ["src/stale"];
++    const staleGrant = createExecutionGrant({
++      proposal: createPlanProposal({
++        task_id: task.id,
++        task_revision: task.revision ?? 1,
++        plan: task.sections?.Plan ?? "",
++        execution_contract: staleContract,
++        repository_identity: repositoryIdentity,
++      }),
++      execution_contract: staleContract,
++      actor: "USER",
++      approval_kind: "manual_operator",
++      issued_at: "2026-08-18T00:00:00.000Z",
++    });
++    task.extensions = { ...task.extensions, "agentplane.execution_grant": staleGrant };
++    const executionContract = extendBlockedTaskExecutionContract({
++      command,
++      task,
++      scope_roots: [],
++      repository_effects: ["release_metadata"],
++      request_digest: pending.request_digest,
++      by: "USER",
++    });
++
++    const updated = taskWithRebasedExecutionGrant({
++      task,
++      execution_contract: executionContract,
++      repository_identity: repositoryIdentity,
++    });
++
++    expect(updated.extensions?.["agentplane.execution_grant"]).toBeUndefined();
++  });
++});
+diff --git a/packages/agentplane/src/commands/task/scope-extend.ts b/packages/agentplane/src/commands/task/scope-extend.ts
+index b1153807d..0f82d2313 100644
+--- a/packages/agentplane/src/commands/task/scope-extend.ts
++++ b/packages/agentplane/src/commands/task/scope-extend.ts
+@@ -2,6 +2,7 @@ import {
+   computeLogicalCompletionContractDigest,
+   EXECUTION_GRANT_EXTENSION_KEY,
+   executionGrantForContextFromExtensions,
++  isExecutionGrantActive,
+   rebaseExecutionGrantScope,
+   taskCentricAggregateFromExtensions,
+   type TaskRepositoryEffect,
+@@ -63,6 +64,15 @@ function hasExactSchedulableWorkItemScopeDelta(opts: {
+   return opts.scope_roots.some((root) => !workItem.scope_roots.includes(root));
+ }
+ 
++function approvedWorkItemScopeRoots(task: TaskData, workItemId: string | null): string[] {
++  if (!workItemId) return [];
++  const plan = taskCentricAggregateFromExtensions(task.extensions)?.current_plan;
++  if (plan?.approval.state !== "approved" || plan.approval.approved_digest !== plan.digest)
++    return [];
++  const workItem = plan.proposal.work_items.work_items.find((item) => item.id === workItemId);
++  return uniqueSorted((workItem?.scope_roots ?? []).map((root) => normalizeTaskScopeRoot(root)));
++}
++
+ export function extendBlockedTaskExecutionContract(opts: {
+   command: CommandContext;
+   task: NonNullable<Awaited<ReturnType<CommandContext["taskBackend"]["getTask"]>>>;
+@@ -128,7 +138,15 @@ export function extendBlockedTaskExecutionContract(opts: {
+       message: "Task execution scope extension must exactly match the pending structured request.",
+     });
+   }
+-  const scopeRoots = uniqueSorted([...current.declaration.scope_roots, ...addedRoots]);
++  const inheritedApprovedRoots =
++    current.declaration.scope_roots.length === 0
++      ? approvedWorkItemScopeRoots(opts.task, pending.work_item_id)
++      : [];
++  const scopeRoots = uniqueSorted([
++    ...current.declaration.scope_roots,
++    ...inheritedApprovedRoots,
++    ...addedRoots,
++  ]);
+   const repositoryEffects = uniqueSorted([
+     ...current.declaration.repository_effects,
+     ...opts.repository_effects,
+@@ -161,6 +179,9 @@ export function extendBlockedTaskExecutionContract(opts: {
+     repository_effects: repositoryEffects,
+     rationale: uniqueSorted([
+       ...current.declaration.rationale,
++      ...(inheritedApprovedRoots.length > 0
++        ? ["Migrated approved WorkItem scope for a legacy rootless execution contract."]
++        : []),
+       `USER-approved blocked-result scope extension: ${extensionSummary}`,
+     ]),
+   };
+@@ -188,6 +209,19 @@ export function taskWithRebasedExecutionGrant(opts: {
+     execution_contract: opts.task.execution_contract,
+   });
+   if (!executionGrant) return opts.task;
++  if (
++    !isExecutionGrantActive({
++      grant: executionGrant,
++      task_id: opts.task.id,
++      plan: opts.task.sections?.Plan ?? "",
++      execution_contract: opts.task.execution_contract,
++      repository_identity: opts.repository_identity,
++    })
++  ) {
++    const extensions = { ...(opts.task.extensions ?? {}) };
++    delete extensions[EXECUTION_GRANT_EXTENSION_KEY];
++    return { ...opts.task, extensions };
++  }
+   if (
+     computeLogicalCompletionContractDigest(opts.task.execution_contract) !==
+     computeLogicalCompletionContractDigest(opts.execution_contract)
+diff --git a/packages/agentplane/src/commands/task/supervisor-budget-epoch.command.ts b/packages/agentplane/src/commands/task/supervisor-budget-epoch.command.ts
+new file mode 100644
+index 000000000..3ad7552ea
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/supervisor-budget-epoch.command.ts
+@@ -0,0 +1,229 @@
++import {
++  authorizeSupervisorTokenBudgetEpoch,
++  digestSupervisorEpisodeValue,
++} from "@agentplaneorg/core/schemas";
++
++import { createCliEmitter, infoMessage } from "../../cli/output.js";
++import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
++import { usageError } from "../../cli/spec/errors.js";
++import { openSupervisorExecutionEpisode } from "../shared/supervisor-execution-episode.js";
++import { buildTaskRouteDecision } from "../shared/route-decision.js";
++import type { CommandContext } from "../shared/task-backend.js";
++
++type TaskSupervisorBudgetEpochParsed = {
++  taskId: string;
++  expectedJournalDigest: string;
++  stateFingerprintDigest: string;
++  maxInputTokens: number | null;
++  maxOutputTokens: number | null;
++  maxTotalTokens: number | null;
++  by: "USER";
++  json: boolean;
++};
++
++const SHA256_PATTERN = /^sha256:[0-9a-f]{64}$/u;
++
++export const taskSupervisorBudgetEpochSpec: CommandSpec<TaskSupervisorBudgetEpochParsed> = {
++  id: ["task", "supervisor", "budget-epoch"],
++  group: "Task",
++  summary: "Authorize one new token budget epoch after a telemetry-only supervisor stop.",
++  args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
++  options: [
++    {
++      kind: "string",
++      name: "expected-journal-digest",
++      valueHint: "<sha256>",
++      required: true,
++      description: "Exact stopped supervisor journal authorized by the user.",
++    },
++    {
++      kind: "string",
++      name: "state-fingerprint",
++      valueHint: "<sha256>",
++      required: true,
++      description: "Exact current task route fingerprint authorized by the user.",
++    },
++    {
++      kind: "string",
++      name: "max-input-tokens",
++      valueHint: "<positive-integer>",
++      required: false,
++      description: "Maximum input tokens in the new epoch.",
++    },
++    {
++      kind: "boolean",
++      name: "disable-token-limits",
++      default: false,
++      description:
++        "Disable token caps when provider telemetry is unavailable; measurable supervisor limits remain active.",
++    },
++    {
++      kind: "string",
++      name: "max-output-tokens",
++      valueHint: "<positive-integer>",
++      required: false,
++      description: "Maximum output tokens in the new epoch.",
++    },
++    {
++      kind: "string",
++      name: "max-total-tokens",
++      valueHint: "<positive-integer>",
++      required: false,
++      description: "Maximum total tokens in the new epoch.",
++    },
++    {
++      kind: "string",
++      name: "by",
++      valueHint: "<USER>",
++      required: true,
++      description: "Explicit human actor authorizing the new spend epoch.",
++    },
++    {
++      kind: "boolean",
++      name: "json",
++      default: false,
++      description: "Emit the authorized epoch as JSON.",
++    },
++  ],
++  validateRaw: (raw) => {
++    for (const key of ["expected-journal-digest", "state-fingerprint"] as const) {
++      if (typeof raw.opts[key] !== "string" || !SHA256_PATTERN.test(raw.opts[key])) {
++        throw usageError({
++          spec: taskSupervisorBudgetEpochSpec,
++          message: `--${key} must be a sha256 digest.`,
++        });
++      }
++    }
++    const tokenKeys = ["max-input-tokens", "max-output-tokens", "max-total-tokens"] as const;
++    const disableTokenLimits = raw.opts["disable-token-limits"] === true;
++    if (disableTokenLimits && tokenKeys.some((key) => raw.opts[key] !== undefined)) {
++      throw usageError({
++        spec: taskSupervisorBudgetEpochSpec,
++        message: "--disable-token-limits cannot be combined with explicit token caps.",
++      });
++    }
++    if (!disableTokenLimits && tokenKeys.some((key) => raw.opts[key] === undefined)) {
++      throw usageError({
++        spec: taskSupervisorBudgetEpochSpec,
++        message:
++          "Provide all three token caps or use --disable-token-limits when telemetry is unavailable.",
++      });
++    }
++    for (const key of tokenKeys) {
++      const value = raw.opts[key];
++      if (disableTokenLimits) continue;
++      if (
++        typeof value !== "string" ||
++        !/^\d+$/u.test(value) ||
++        !Number.isSafeInteger(Number(value)) ||
++        Number(value) <= 0
++      ) {
++        throw usageError({
++          spec: taskSupervisorBudgetEpochSpec,
++          message: `--${key} must be a positive safe integer.`,
++        });
++      }
++    }
++    if (raw.opts.by !== "USER") {
++      throw usageError({
++        spec: taskSupervisorBudgetEpochSpec,
++        message: "--by must be USER for a new token budget epoch.",
++      });
++    }
++  },
++  parse: (raw) => ({
++    taskId: String(raw.args["task-id"]),
++    expectedJournalDigest: String(raw.opts["expected-journal-digest"]),
++    stateFingerprintDigest: String(raw.opts["state-fingerprint"]),
++    maxInputTokens:
++      raw.opts["disable-token-limits"] === true ? null : Number(raw.opts["max-input-tokens"]),
++    maxOutputTokens:
++      raw.opts["disable-token-limits"] === true ? null : Number(raw.opts["max-output-tokens"]),
++    maxTotalTokens:
++      raw.opts["disable-token-limits"] === true ? null : Number(raw.opts["max-total-tokens"]),
++    by: "USER",
++    json: raw.opts.json === true,
++  }),
++};
++
++const emitter = createCliEmitter();
++
++export function makeRunTaskSupervisorBudgetEpochHandler(
++  getContext: (command: string) => Promise<CommandContext>,
++) {
++  return async (_ctx: CommandCtx, parsed: TaskSupervisorBudgetEpochParsed): Promise<number> => {
++    const command = await getContext("task supervisor budget-epoch");
++    const decision = await buildTaskRouteDecision({
++      ctx: command,
++      cwd: command.resolvedProject.gitRoot,
++      rootOverride: null,
++      includeRemote: false,
++      freshHead: true,
++      taskId: parsed.taskId,
++    });
++    if (decision.workflowStep.preconditionFingerprint.digest !== parsed.stateFingerprintDigest) {
++      throw usageError({
++        spec: taskSupervisorBudgetEpochSpec,
++        message: "Token budget epoch state fingerprint is stale; recompute task next-action.",
++      });
++    }
++    const budget = {
++      max_input_tokens: parsed.maxInputTokens,
++      max_output_tokens: parsed.maxOutputTokens,
++      max_total_tokens: parsed.maxTotalTokens,
++    };
++    const authorityRef = `user:${parsed.taskId}:supervisor-token-budget-epoch:${parsed.expectedJournalDigest}`;
++    const authorityDigest = digestSupervisorEpisodeValue({
++      schema_version: 1,
++      kind: "supervisor_token_budget_epoch_authority",
++      task_id: parsed.taskId,
++      expected_journal_digest: parsed.expectedJournalDigest,
++      authorized_state_fingerprint_digest: parsed.stateFingerprintDigest,
++      authorized_by: parsed.by,
++      budget,
++    });
++    for (let attempt = 0; attempt < 3; attempt += 1) {
++      const opened = await openSupervisorExecutionEpisode({
++        git_root: command.resolvedProject.gitRoot,
++        task_id: parsed.taskId,
++        task_revision: null,
++        state_fingerprint_digest: parsed.stateFingerprintDigest,
++        recover_intent: false,
++      });
++      const authorized = authorizeSupervisorTokenBudgetEpoch({
++        journal: opened.journal,
++        expected_journal_digest: parsed.expectedJournalDigest,
++        authorized_state_fingerprint_digest: parsed.stateFingerprintDigest,
++        authorized_by: parsed.by,
++        authority_ref: authorityRef,
++        authority_digest: authorityDigest,
++        budget,
++      });
++      if (
++        authorized.digest === opened.journal.digest ||
++        (await opened.store.compareAndSwap(opened.journal.digest, authorized))
++      ) {
++        const result = {
++          task_id: parsed.taskId,
++          journal_digest: authorized.digest,
++          previous_journal_digest: parsed.expectedJournalDigest,
++          state_fingerprint_digest: parsed.stateFingerprintDigest,
++          authority_ref: authorityRef,
++          authority_digest: authorityDigest,
++          budget,
++        };
++        if (parsed.json) emitter.json(result);
++        else
++          emitter.report(
++            [
++              { label: "journal", value: authorized.digest },
++              { label: "authority", value: authorityDigest },
++            ],
++            { header: infoMessage(`supervisor token budget epoch authorized: ${parsed.taskId}`) },
++          );
++        return 0;
++      }
++    }
++    throw new Error("Supervisor journal changed while authorizing the token budget epoch.");
++  };
++}
+diff --git a/packages/core/src/runner/supervisor-execution-episode.ts b/packages/core/src/runner/supervisor-execution-episode.ts
+index bdce1d9d6..ff1d2c985 100644
+--- a/packages/core/src/runner/supervisor-execution-episode.ts
++++ b/packages/core/src/runner/supervisor-execution-episode.ts
+@@ -4,6 +4,7 @@ import { z } from "zod";
+ 
+ export const SUPERVISOR_EXECUTION_EPISODE_SCHEMA_VERSION = 1 as const;
+ export const SUPERVISOR_EXECUTION_EPISODE_KIND = "supervisor_execution_episode" as const;
++export const SUPERVISOR_TOKEN_BUDGET_EPOCH_KIND = "supervisor_token_budget_epoch" as const;
+ 
+ export const SUPERVISOR_EPISODE_ROLE_VALUES = [
+   "PLANNER",
+@@ -62,6 +63,43 @@ const POSITIVE_INTEGER = z.number().int().positive();
+ 
+ const NULLABLE_LIMIT_SCHEMA = z.number().int().positive().nullable();
+ 
++const SUPERVISOR_TOKEN_BUDGET_EPOCH_ZOD_SCHEMA = z
++  .object({
++    schema_version: z.literal(1),
++    kind: z.literal(SUPERVISOR_TOKEN_BUDGET_EPOCH_KIND),
++    prior_journal_digest: SHA256_DIGEST_SCHEMA,
++    stopped_state_fingerprint_digest: SHA256_DIGEST_SCHEMA,
++    authorized_state_fingerprint_digest: SHA256_DIGEST_SCHEMA,
++    authorized_by: z.literal("USER"),
++    authority_ref: NON_EMPTY_STRING,
++    authority_digest: SHA256_DIGEST_SCHEMA,
++    starts_after_operation_sequence: NON_NEGATIVE_INTEGER,
++    baseline_usage: z
++      .object({
++        input_tokens: NON_NEGATIVE_INTEGER,
++        output_tokens: NON_NEGATIVE_INTEGER,
++        total_tokens: NON_NEGATIVE_INTEGER,
++      })
++      .strict(),
++    budget: z
++      .object({
++        max_input_tokens: NULLABLE_LIMIT_SCHEMA,
++        max_output_tokens: NULLABLE_LIMIT_SCHEMA,
++        max_total_tokens: NULLABLE_LIMIT_SCHEMA,
++      })
++      .strict()
++      .refine(
++        (budget) =>
++          Object.values(budget).every((value) => value === null) ||
++          Object.values(budget).every((value) => value !== null),
++        "Supervisor token budget epoch must set all token caps or disable all token caps.",
++      ),
++    authorized_at: ISO_UTC_TIMESTAMP_SCHEMA,
++  })
++  .strict();
++
++export type SupervisorTokenBudgetEpoch = z.infer<typeof SUPERVISOR_TOKEN_BUDGET_EPOCH_ZOD_SCHEMA>;
++
+ export const SUPERVISOR_EXECUTION_BUDGET_ZOD_SCHEMA = z
+   .object({
+     max_episodes: POSITIVE_INTEGER,
+@@ -489,6 +527,45 @@ function isAgentOperation(kind: SupervisorEpisodeOperationKind): boolean {
+   return kind === "agent_episode" || kind === "evaluator_episode";
+ }
+ 
++function tokenBudgetEpochFromOperation(
++  operation: SupervisorExecutionEpisodeJournal["operations"][number],
++): SupervisorTokenBudgetEpoch | null {
++  const context = operation.recovery?.context;
++  if (
++    typeof context !== "object" ||
++    context === null ||
++    !("kind" in context) ||
++    context.kind !== SUPERVISOR_TOKEN_BUDGET_EPOCH_KIND
++  ) {
++    return null;
++  }
++  if (operation.kind !== "cli_operation" || operation.status !== "completed") {
++    throw new Error("Supervisor token budget epoch must be a completed CLI operation.");
++  }
++  const parsed = SUPERVISOR_TOKEN_BUDGET_EPOCH_ZOD_SCHEMA.parse(context);
++  if (
++    operation.authority_ref !== parsed.authority_ref ||
++    operation.authority_digest !== parsed.authority_digest ||
++    operation.precondition_fingerprint_digest !== parsed.stopped_state_fingerprint_digest ||
++    operation.postcondition_fingerprint_digest !== parsed.authorized_state_fingerprint_digest ||
++    parsed.starts_after_operation_sequence !== operation.sequence - 1
++  ) {
++    throw new Error("Supervisor token budget epoch does not match its operation authority.");
++  }
++  return parsed;
++}
++
++function currentTokenBudgetEpoch(
++  operations: SupervisorExecutionEpisodeJournal["operations"] | undefined,
++): SupervisorTokenBudgetEpoch | null {
++  if (!operations) return null;
++  for (let index = operations.length - 1; index >= 0; index -= 1) {
++    const epoch = tokenBudgetEpochFromOperation(operations[index]!);
++    if (epoch) return epoch;
++  }
++  return null;
++}
++
+ function exhaustedDimensions(opts: {
+   budget: SupervisorExecutionBudget;
+   usage: SupervisorExecutionUsage;
+@@ -498,9 +575,26 @@ function exhaustedDimensions(opts: {
+   const { budget, usage } = opts;
+   const dimensions: string[] = [];
+   const nextIsPaidAgent = isAgentOperation(opts.next_kind ?? "cli_operation");
++  const tokenBudgetEpoch = currentTokenBudgetEpoch(opts.operations);
++  const tokenOperations = tokenBudgetEpoch
++    ? (opts.operations ?? []).filter(
++        (operation) => operation.sequence > tokenBudgetEpoch.starts_after_operation_sequence + 1,
++      )
++    : (opts.operations ?? []);
++  const tokenBudget = tokenBudgetEpoch?.budget ?? budget;
++  const tokenUsage = tokenBudgetEpoch
++    ? {
++        input_tokens: usage.input_tokens - tokenBudgetEpoch.baseline_usage.input_tokens,
++        output_tokens: usage.output_tokens - tokenBudgetEpoch.baseline_usage.output_tokens,
++        total_tokens: usage.total_tokens - tokenBudgetEpoch.baseline_usage.total_tokens,
++      }
++    : usage;
++  if (tokenUsage.input_tokens < 0 || tokenUsage.output_tokens < 0 || tokenUsage.total_tokens < 0) {
++    throw new Error("Supervisor token budget epoch baseline exceeds lifetime usage.");
++  }
+   const tokenCoverageUnknown =
+     nextIsPaidAgent &&
+-    (opts.operations ?? []).some(
++    tokenOperations.some(
+       (operation) =>
+         isAgentOperation(operation.kind) &&
+         (operation.provider_usage !== undefined ||
+@@ -518,19 +612,28 @@ function exhaustedDimensions(opts: {
+   ) {
+     dimensions.push("agent_runs");
+   }
+-  if (budget.max_input_tokens !== null && usage.input_tokens >= budget.max_input_tokens) {
++  if (
++    tokenBudget.max_input_tokens !== null &&
++    tokenUsage.input_tokens >= tokenBudget.max_input_tokens
++  ) {
+     dimensions.push("input_tokens");
+   }
+-  if (budget.max_output_tokens !== null && usage.output_tokens >= budget.max_output_tokens) {
++  if (
++    tokenBudget.max_output_tokens !== null &&
++    tokenUsage.output_tokens >= tokenBudget.max_output_tokens
++  ) {
+     dimensions.push("output_tokens");
+   }
+-  if (budget.max_total_tokens !== null && usage.total_tokens >= budget.max_total_tokens) {
++  if (
++    tokenBudget.max_total_tokens !== null &&
++    tokenUsage.total_tokens >= tokenBudget.max_total_tokens
++  ) {
+     dimensions.push("total_tokens");
+   }
+   if (tokenCoverageUnknown) {
+-    if (budget.max_input_tokens !== null) dimensions.push("input_tokens_telemetry");
+-    if (budget.max_output_tokens !== null) dimensions.push("output_tokens_telemetry");
+-    if (budget.max_total_tokens !== null) dimensions.push("total_tokens_telemetry");
++    if (tokenBudget.max_input_tokens !== null) dimensions.push("input_tokens_telemetry");
++    if (tokenBudget.max_output_tokens !== null) dimensions.push("output_tokens_telemetry");
++    if (tokenBudget.max_total_tokens !== null) dimensions.push("total_tokens_telemetry");
+   }
+   if (budget.max_wall_time_ms !== null && usage.wall_time_ms >= budget.max_wall_time_ms) {
+     dimensions.push("wall_time_ms");
+@@ -594,6 +697,160 @@ export function stopSupervisorExecutionEpisode(opts: {
+   });
+ }
+ 
++function sameTokenBudgetEpochAuthorization(
++  left: SupervisorTokenBudgetEpoch,
++  right: Omit<
++    SupervisorTokenBudgetEpoch,
++    "authorized_at" | "starts_after_operation_sequence" | "baseline_usage"
++  >,
++): boolean {
++  return (
++    left.schema_version === right.schema_version &&
++    left.kind === right.kind &&
++    left.prior_journal_digest === right.prior_journal_digest &&
++    left.stopped_state_fingerprint_digest === right.stopped_state_fingerprint_digest &&
++    left.authorized_state_fingerprint_digest === right.authorized_state_fingerprint_digest &&
++    left.authorized_by === right.authorized_by &&
++    left.authority_ref === right.authority_ref &&
++    left.authority_digest === right.authority_digest &&
++    left.budget.max_input_tokens === right.budget.max_input_tokens &&
++    left.budget.max_output_tokens === right.budget.max_output_tokens &&
++    left.budget.max_total_tokens === right.budget.max_total_tokens
++  );
++}
++
++/**
++ * Open a new independently capped token-admission epoch after an explicit USER
++ * decision. Historical operations and lifetime usage remain unchanged.
++ */
++export function authorizeSupervisorTokenBudgetEpoch(opts: {
++  journal: SupervisorExecutionEpisodeJournal;
++  expected_journal_digest: string;
++  authorized_state_fingerprint_digest: string;
++  authorized_by: string;
++  authority_ref: string;
++  authority_digest: string;
++  budget: {
++    max_input_tokens: number | null;
++    max_output_tokens: number | null;
++    max_total_tokens: number | null;
++  };
++  now?: string;
++}): SupervisorExecutionEpisodeJournal {
++  const journal = validateSupervisorExecutionEpisodeJournal(opts.journal);
++  const priorEpoch = currentTokenBudgetEpoch(journal.operations);
++  const stoppedStateFingerprint =
++    journal.digest === opts.expected_journal_digest
++      ? journal.state_fingerprint_digest
++      : (priorEpoch?.stopped_state_fingerprint_digest ?? journal.state_fingerprint_digest);
++  const authorization = {
++    schema_version: 1 as const,
++    kind: SUPERVISOR_TOKEN_BUDGET_EPOCH_KIND,
++    prior_journal_digest: opts.expected_journal_digest,
++    stopped_state_fingerprint_digest: stoppedStateFingerprint,
++    authorized_state_fingerprint_digest: opts.authorized_state_fingerprint_digest,
++    authorized_by: opts.authorized_by,
++    authority_ref: opts.authority_ref,
++    authority_digest: opts.authority_digest,
++    budget: opts.budget,
++  };
++  const parsedAuthorization = SUPERVISOR_TOKEN_BUDGET_EPOCH_ZOD_SCHEMA.omit({
++    authorized_at: true,
++    starts_after_operation_sequence: true,
++    baseline_usage: true,
++  }).parse(authorization);
++  if (journal.digest !== opts.expected_journal_digest) {
++    if (
++      priorEpoch?.prior_journal_digest === opts.expected_journal_digest &&
++      sameTokenBudgetEpochAuthorization(priorEpoch, parsedAuthorization)
++    ) {
++      return journal;
++    }
++    throw new Error(
++      "Supervisor token budget epoch authorization is stale or conflicts with replay.",
++    );
++  }
++  const exhausted = journal.stop?.exhausted_dimensions ?? [];
++  if (
++    journal.status !== "stopped" ||
++    journal.cursor.phase !== "stopped" ||
++    journal.stop?.reason !== "budget_exhausted" ||
++    exhausted.length === 0 ||
++    exhausted.some(
++      (dimension) =>
++        dimension !== "input_tokens_telemetry" &&
++        dimension !== "output_tokens_telemetry" &&
++        dimension !== "total_tokens_telemetry",
++    )
++  ) {
++    throw new Error("Supervisor token budget epoch requires a telemetry-only budget stop.");
++  }
++  const last = journal.operations.at(-1);
++  if (
++    (last?.status !== "completed" && last?.status !== "failed") ||
++    (journal.stop.operation_key !== null && journal.stop.operation_key !== last.operation_key)
++  ) {
++    throw new Error("Supervisor token budget epoch requires a durably recorded prior operation.");
++  }
++  const now = opts.now ?? new Date().toISOString();
++  const epoch = SUPERVISOR_TOKEN_BUDGET_EPOCH_ZOD_SCHEMA.parse({
++    ...parsedAuthorization,
++    starts_after_operation_sequence: last.sequence,
++    baseline_usage: {
++      input_tokens: journal.usage.input_tokens,
++      output_tokens: journal.usage.output_tokens,
++      total_tokens: journal.usage.total_tokens,
++    },
++    authorized_at: now,
++  });
++  const recovery = { operation_identity: parsedAuthorization, context: epoch };
++  const operationKey = digestSupervisorEpisodeValue({
++    task_id: journal.task_id,
++    episode: journal.usage.episodes + 1,
++    role: "EXECUTOR",
++    kind: "cli_operation",
++    operation_identity: parsedAuthorization,
++    precondition_fingerprint_digest: epoch.stopped_state_fingerprint_digest,
++    authority_ref: epoch.authority_ref,
++    authority_digest: epoch.authority_digest,
++    work_order_ref: null,
++    effect_ref: null,
++    recovery,
++  });
++  const operation: SupervisorExecutionEpisodeJournal["operations"][number] = {
++    sequence: journal.operations.length + 1,
++    episode: journal.usage.episodes + 1,
++    role: "EXECUTOR",
++    kind: "cli_operation",
++    operation_key: operationKey,
++    precondition_fingerprint_digest: epoch.stopped_state_fingerprint_digest,
++    authority_ref: epoch.authority_ref,
++    authority_digest: epoch.authority_digest,
++    work_order_ref: null,
++    effect_ref: null,
++    recovery,
++    status: "completed",
++    usage: {},
++    result_digest: digestSupervisorEpisodeValue(epoch),
++    postcondition_fingerprint_digest: epoch.authorized_state_fingerprint_digest,
++    feedback_digest: null,
++    progress_digest: null,
++    started_at: now,
++    completed_at: now,
++  };
++  return createJournal({
++    ...journal,
++    state_fingerprint_digest: epoch.authorized_state_fingerprint_digest,
++    usage: { ...journal.usage, episodes: operation.episode },
++    cursor: { episode: operation.episode, phase: "ready", operation_key: null },
++    operations: [...journal.operations, operation],
++    status: "running",
++    stop: null,
++    updated_at: now,
++    previous_digest: journal.digest,
++  });
++}
++
+ export function createSupervisorExecutionEpisodeJournal(input: {
+   task_id: string;
+   task_revision: number | null;
+@@ -637,26 +894,28 @@ export function validateSupervisorExecutionEpisodeJournal(
+     throw new Error("Supervisor episode journal operation sequences must be unique.");
+   }
+   for (const operation of parsed.operations) {
+-    if (!operation.recovery) continue;
+-    const key = digestSupervisorEpisodeValue({
+-      task_id: parsed.task_id,
+-      episode: operation.episode,
+-      role: operation.role,
+-      kind: operation.kind,
+-      operation_identity: operation.recovery.operation_identity,
+-      precondition_fingerprint_digest: operation.precondition_fingerprint_digest,
+-      authority_ref: operation.authority_ref,
+-      authority_digest: operation.authority_digest,
+-      work_order_ref: operation.work_order_ref,
+-      effect_ref: operation.effect_ref,
+-      ...(operation.replacement_of_operation_key
+-        ? { replacement_of_operation_key: operation.replacement_of_operation_key }
+-        : {}),
+-      recovery: operation.recovery,
+-    });
+-    if (operation.operation_key !== key) {
+-      throw new Error("Supervisor episode recovery evidence does not match its operation key.");
++    if (operation.recovery) {
++      const key = digestSupervisorEpisodeValue({
++        task_id: parsed.task_id,
++        episode: operation.episode,
++        role: operation.role,
++        kind: operation.kind,
++        operation_identity: operation.recovery.operation_identity,
++        precondition_fingerprint_digest: operation.precondition_fingerprint_digest,
++        authority_ref: operation.authority_ref,
++        authority_digest: operation.authority_digest,
++        work_order_ref: operation.work_order_ref,
++        effect_ref: operation.effect_ref,
++        ...(operation.replacement_of_operation_key
++          ? { replacement_of_operation_key: operation.replacement_of_operation_key }
++          : {}),
++        recovery: operation.recovery,
++      });
++      if (operation.operation_key !== key) {
++        throw new Error("Supervisor episode recovery evidence does not match its operation key.");
++      }
+     }
++    tokenBudgetEpochFromOperation(operation);
+   }
+   const pendingReplacement = parsed.cursor.replacement_of_operation_key;
+   if (pendingReplacement !== undefined) {
+diff --git a/packages/core/src/schemas/index.ts b/packages/core/src/schemas/index.ts
+index 3181706ae..47eeeaf8c 100644
+--- a/packages/core/src/schemas/index.ts
++++ b/packages/core/src/schemas/index.ts
+@@ -142,6 +142,7 @@ export {
+ export {
+   SUPERVISOR_EXECUTION_EPISODE_KIND,
+   SUPERVISOR_EXECUTION_EPISODE_SCHEMA_VERSION,
++  SUPERVISOR_TOKEN_BUDGET_EPOCH_KIND,
+   SUPERVISOR_EXECUTION_EPISODE_JOURNAL_ZOD_SCHEMA,
+   SUPERVISOR_EXECUTION_BUDGET_ZOD_SCHEMA,
+   SUPERVISOR_EXECUTION_USAGE_ZOD_SCHEMA,
+@@ -152,6 +153,7 @@ export {
+   SUPERVISOR_EPISODE_STATUS_VALUES,
+   SUPERVISOR_EPISODE_STOP_REASON_VALUES,
+   advanceSupervisorExecutionEpisodeState,
++  authorizeSupervisorTokenBudgetEpoch,
+   completeSupervisorExecutionEpisode,
+   continueSupervisorExecutionEpisodeAfterEpisodeBudget,
+   createSupervisorExecutionEpisodeJournal,
+@@ -174,6 +176,7 @@ export {
+   type SupervisorExecutionBudget,
+   type SupervisorExecutionEpisodeJournal,
+   type SupervisorExecutionUsage,
++  type SupervisorTokenBudgetEpoch,
+ } from "../runner/supervisor-execution-episode.js";
+ 
+ export {
+diff --git a/scripts/lib/test-route-registry.mjs b/scripts/lib/test-route-registry.mjs
+index 59adbc2ca..362bba9ac 100644
+--- a/scripts/lib/test-route-registry.mjs
++++ b/scripts/lib/test-route-registry.mjs
+@@ -595,7 +595,7 @@ const CLI_HELP_DISCOVERY_PATTERNS = [
+ 
+ const CLI_CORE_DISCOVERY_PATTERNS = [
+   /^packages\/agentplane\/src\/cli\/run-cli\.core\.test\.ts$/,
+-  /^packages\/agentplane\/src\/cli\/run-cli\.core\.(?:boot|branch-meta(?:\..+)?|misc|pr-flow(?:\..+)?)\.test\.ts$/,
++  /^packages\/agentplane\/src\/cli\/run-cli\.core\.(?:boot|branch-meta(?:\..+)?|misc|pr-flow(?:\..+)?|task-supervisor-budget-epoch)\.test\.ts$/,
+   /^packages\/agentplane\/src\/cli\/run-cli\.core\.lifecycle(?:\..+)?\.test\.ts$/,
+   /^packages\/agentplane\/src\/cli\/run-cli\.core\.tasks(?:\..+)?\.test\.ts$/,
+ ];

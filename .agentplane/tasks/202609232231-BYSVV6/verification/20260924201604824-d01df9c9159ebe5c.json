@@ -1,0 +1,200 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts; prior focused compact-storage and hook tests\nResult: pass\nEvidence: cleanup suites 40/40 on db2845bf; prior compact-storage focused tests 24/24 and hook tests 17/17 on d6f82fa; implementation unchanged between heads except one usage expectation\nScope: compact storage, cleanup deletion, and task branch hook\n\nCheck: critical_paths\nCommand: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts\nResult: pass\nEvidence: 40/40, including dry-run, proven deletion, dirty worktree retention, and race checks\nScope: cleanup merged safety and functionality\n\nCheck: docs_contract\nCommand: AGENTPLANE_FAST_CHANGED_FILES=<branch diff> bun run ci:local:fast\nResult: pass\nEvidence: docs-schema group passed on db2845bf; generated CLI reference and routing current\nScope: docs, CLI reference, and policy routing\n\nCheck: full_regression\nCommand: AGENTPLANE_FAST_CHANGED_FILES=<branch diff> bun run ci:local:fast\nResult: pass\nEvidence: full-fast executed all five groups on db2845bf; wall clock 1033945 ms; reusable receipt recorded\nScope: repository regression for current implementation head\n\nCheck: task_outcome\nCommand: du -sk .agentplane; du -sk .agentplane/tasks\nResult: pass\nEvidence: primary .agentplane measured 30733084 KiB (29.3 GiB) vs 38443752 KiB (36.7 GiB) initial; canonical tasks 385220 KiB; compact current worktree tasks 1988 KiB; legacy unsafe worktrees retained\nScope: live disk reduction and canonical task-store preservation",
+  "digest": "sha256:d01df9c9159ebe5c1b758a843371735e808d7c64bdf81b53893e697625a205d7",
+  "implementation_sha": "db2845bf530a13fbbd946350aa263333543d1336",
+  "input": {
+    "checked_input": {
+      "commands": {
+        "digest": "sha256:9d0cc86eeddcac43342cc125bf092072c8f16cc033a6eba92c2840a94dee2ef8",
+        "entries": [
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts; prior focused compact-storage and hook tests"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts"
+          },
+          {
+            "check_id": "docs_contract",
+            "command": "AGENTPLANE_FAST_CHANGED_FILES=<branch diff> bun run ci:local:fast"
+          },
+          {
+            "check_id": "full_regression",
+            "command": "AGENTPLANE_FAST_CHANGED_FILES=<branch diff> bun run ci:local:fast"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "du -sk .agentplane; du -sk .agentplane/tasks"
+          }
+        ]
+      },
+      "context": {
+        "digest": "sha256:d9d6be06d753cd306739380bd4aed1d1ce9b7f24d93f9916f549597135b00026",
+        "paths": [
+          ".agentplane/WORKFLOW.md",
+          ".github/ISSUE_TEMPLATE/config.yml",
+          "bun.lock",
+          "depcruise.config.cjs",
+          "eslint.config.cjs",
+          "knip.json",
+          "package.json",
+          "packages/agentplane/package.json",
+          "packages/agentplane/src/cli/run-cli/commands/config.ts",
+          "packages/agentplane/src/runner/config.test.ts",
+          "packages/agentplane/src/runner/config.ts",
+          "packages/agentplane/tsconfig.json",
+          "packages/agentplane/tsup.config.ts",
+          "packages/core/package.json",
+          "packages/core/schemas/config.schema.json",
+          "packages/core/src/config/config.test.ts",
+          "packages/core/src/config/config.ts",
+          "packages/core/tsconfig.json",
+          "packages/core/tsup.config.ts",
+          "packages/recipes/package.json",
+          "packages/recipes/tsconfig.json",
+          "packages/recipes/tsup.config.ts",
+          "packages/spec/examples/config.json",
+          "packages/spec/package.json",
+          "packages/spec/schemas/config.schema.json",
+          "packages/testkit/package.json",
+          "packages/testkit/tsconfig.json",
+          "schemas/config.schema.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package-lock.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package.json",
+          "tsconfig.json",
+          "turbo.json",
+          "vitest.config.ts",
+          "vitest.workspace.ts",
+          "website/bun.lock",
+          "website/docusaurus.config.ts",
+          "website/package.json",
+          "website/tsconfig.json"
+        ]
+      },
+      "digest": "sha256:0687768483191fa637803c47b5a32c4b82bbe6c42ceef20bc5ee3261ba5a115b",
+      "environment": {
+        "digest": "sha256:387149a023245ff80db156d5ddfc40181cf335e6425805b858e2a9e7fcd8a7a3",
+        "runtime": {
+          "architecture": "arm64",
+          "bun_major": null,
+          "node_major": "24",
+          "platform": "darwin"
+        }
+      },
+      "evidence": {
+        "details_digest": "sha256:bffbae32aa2e063f25e59e25b7a7a3f21c2bef01167b2305bd017d0f3191c5b7",
+        "digest": "sha256:64c22aae2e965253df5b519de3b957fbe28e6ba8c42655f7c29d1a0a5c65b560",
+        "references": [
+          {
+            "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+            "fragment": null,
+            "path": "17/17",
+            "reference": "17/17",
+            "source": "missing"
+          },
+          {
+            "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+            "fragment": null,
+            "path": "24/24",
+            "reference": "24/24",
+            "source": "missing"
+          },
+          {
+            "digest": "sha256:ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d",
+            "fragment": null,
+            "path": "40/40",
+            "reference": "40/40",
+            "source": "missing"
+          }
+        ]
+      },
+      "implementation": {
+        "base_sha": "97c2c3dfca1b8a4a6a6f616e4b05341cb0d89927",
+        "digest": "sha256:2eeb71e8b18116c66ec8f711e53a2925e1d46db01d4f6cd599487c4a24ed5e82",
+        "strategy": "branch_diff",
+        "target_sha": "db2845bf530a13fbbd946350aa263333543d1336"
+      }
+    },
+    "concurrency": {
+      "digest": "sha256:90ba5483ba512b6c5efcdc7fea9138bdd7b300a2b1675dae39b93d9b8c98e0dd",
+      "execution": {
+        "authoritative_task_source": "task_worktree",
+        "base_ref": "origin/main",
+        "base_sha": "97c2c3dfca1b8a4a6a6f616e4b05341cb0d89927",
+        "digest": "sha256:cfe321dda358b6ce6100d199685460731f5ec3325ec14a8b5b677a2b93db477c",
+        "primary_task_id": "202609232231-BYSVV6",
+        "reason_codes": [
+          "agent_preferred_branch_pr",
+          "effect_public_api",
+          "material_implementation_uncertainty",
+          "observed_path_outside_scope:scripts/baselines/v0.7-compatibility-candidate.json",
+          "observed_path_outside_scope:scripts/checks/check-compatibility-contract-baseline.mjs",
+          "observed_path_outside_scope:scripts/checks/run-pre-push-hook.mjs",
+          "repository_branch_pr_floor"
+        ],
+        "repository_mode": "branch_pr",
+        "requested_mode": "branch_pr",
+        "route_source": "execution_contract",
+        "selected_mode": "branch_pr",
+        "task_ids": [
+          "202609232231-BYSVV6"
+        ]
+      },
+      "task": {
+        "capability": {
+          "digest": "sha256:c4c6ab442898895169487f2938efe8bec8f521c7340e626f2a9e44bb8ba936e1"
+        },
+        "checks": {
+          "digest": "sha256:cccca880a56cf9d3ae55ad094d83681e156f3cee134649dd144c16a17442c471",
+          "required_check_ids": [
+            "affected_unit_integration",
+            "critical_paths",
+            "docs_contract",
+            "full_regression",
+            "task_outcome"
+          ],
+          "verification_contract_digest": "sha256:3e30ed3be6bebec4e5a26d2f746f558e151f1422a14cf9a36bda17f81fa7df6b"
+        },
+        "digest": "sha256:487c5e7e22577b499c7a1f5df5534be272136c04b0d9e244335a23d28210eb24",
+        "kind": "agentplane.native_task_identity",
+        "plan": {
+          "approval_state": "approved",
+          "approved_digest": "sha256:f2ee045128dd9d0d747a2ad56be4dfda3ce812c46b7376071567ca825b7221db",
+          "digest": "sha256:f2ee045128dd9d0d747a2ad56be4dfda3ce812c46b7376071567ca825b7221db",
+          "revision": 1
+        },
+        "policy": {
+          "digest": "sha256:c795bcd50defcbce5901e2cda7a0ee3e414bfc8bd91adf510a24c12d74a10ff7"
+        },
+        "schema_version": 1,
+        "task_id": "202609232231-BYSVV6"
+      }
+    },
+    "digest": "sha256:c242aa9601c4fe2308fac6ffeac20956c64c57d4dd3ce0cb224069b276162469",
+    "kind": "task_verification_input",
+    "obligations": {
+      "digest": "sha256:860f708eeb3c3ef096a5abd1f03c88e8f578c0adb69b1894881423a8b72bfc57",
+      "required_check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "full_regression",
+        "task_outcome"
+      ],
+      "verification_contract_digest": "sha256:3e30ed3be6bebec4e5a26d2f746f558e151f1422a14cf9a36bda17f81fa7df6b",
+      "verify_steps_digest": "sha256:e46322e28e3dd143afdd6b63b5c94b8f4b454e07312c8929e8d0d42d71f0e280"
+    },
+    "schema_version": 5
+  },
+  "kind": "task_verification_record",
+  "note": "Current head db2845bf passes focused cleanup tests and all five local CI groups; disk use is lower and unsafe worktrees are retained.",
+  "recorded_at": "2026-09-24T20:16:04.824Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "1. In a fixture repository with completed and active task records, create a new task worktree. Confirm that completed task directories are absent from the new checkout, the current task remains writable there, and historical task reads match canonical bytes.\n2. Confirm that Git status and execution observation still detect tracked changes and reject out-of-scope writes. Confirm missing or unsafe canonical storage fails closed.\n3. Inspect retained worktrees and nested repositories with the disk report. Confirm dirty, active, and provider-unproven entries are reported but not deleted.\n4. Measure fixture worktree disk use before and after the change with du. Record actual bytes and the scope of the measurement.\n5. Run focused history and cleanup tests, bun run typecheck, and bun run ci:local:fast. Review the final diff and report any skipped checks.",
+  "scope_digest": "sha256:e46322e28e3dd143afdd6b63b5c94b8f4b454e07312c8929e8d0d42d71f0e280",
+  "task_id": "202609232231-BYSVV6",
+  "verification_command": "agentplane verify 202609232231-BYSVV6 --ok --by TESTER",
+  "verifier": "TESTER"
+}

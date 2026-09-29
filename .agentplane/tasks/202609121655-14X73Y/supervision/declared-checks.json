@@ -1,0 +1,51 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "focused",
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/scope-extend.test.ts",
+      "duration_ms": 1748,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:e5be9d78f3d9bae7f401933eca9b9cd4297855a6df309bac94de6cfaeb8c4b13",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane \"--maxWorkers=1\" packages/agentplane/src/commands/task/scope-extend.test.ts\n",
+      "stdout_tail": "\n RUN  v4.1.9 /Users/densmirnov/Projects/agentplane/.agentplane/worktrees/202609121655-14X73Y-fix-exact-workitem-only-scope-extension-when-the\n\n\n Test Files  1 passed (1)\n      Tests  40 passed (40)\n   Start at  20:26:36\n   Duration  1.29s (transform 912ms, setup 0ms, import 1.19s, tests 39ms, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "typecheck",
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run typecheck",
+      "duration_ms": 276,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:e5be9d78f3d9bae7f401933eca9b9cd4297855a6df309bac94de6cfaeb8c4b13",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0736e85d615f7ff5c072bfc6ebe19b64f648f03d96ed7a310c1b6faecc29163e"
+      },
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202609121655-14X73Y"
+}

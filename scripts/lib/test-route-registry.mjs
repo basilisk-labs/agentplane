@@ -12,7 +12,7 @@ export const VITEST_WORKSPACE_PROJECTS = [
     name: "agentplane",
     test: {
       include: ["packages/agentplane/src/**/*.test.ts"],
-      exclude: ["**/cli-smoke.test.ts", "**/run-cli*.test.ts"],
+      exclude: ["**/cli-smoke.test.ts", "**/run-cli!(*.roadmap-*).test.ts"],
     },
   },
   {
@@ -187,6 +187,9 @@ export function listRepoFiles(relativeDir, options = {}) {
     for (const entry of readdirSync(current, { withFileTypes: true })) {
       const absolute = path.join(current, entry.name);
       if (entry.isDirectory()) {
+        const relative = normalizeRepoPath(path.relative(repoRoot, absolute));
+        // Package builds replace dist while test routes are being discovered.
+        if (entry.name === "node_modules" || /^packages\/[^/]+\/dist$/u.test(relative)) continue;
         pending.push(absolute);
         continue;
       }
@@ -292,13 +295,16 @@ const BACKEND_CRITICAL_FILES = [
   "packages/agentplane/src/commands/doctor.fast.test.ts",
   "packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts",
   "packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.tasks.incidents.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.tasks.update-scrub.test.ts",
 ];
 
 const RELEASE_CRITICAL_FILES = [
-  "packages/agentplane/src/cli/release-critical-lifecycle.test.ts",
+  "packages/agentplane/src/commands/task/create-plan-input.test.ts",
+  "packages/agentplane/src/commands/task/kernel-plan-supplied-approval.test.ts",
+  "packages/agentplane/src/commands/task/kernel-planning-view.test.ts",
+  "packages/agentplane/src/commands/task/kernel-planning-recovery.test.ts",
+  "packages/agentplane/src/commands/task/run-supplied-plan.test.ts",
+  "packages/agentplane/src/commands/task/run-required-planner.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.task-advance.roadmap-supplied-plan.test.ts",
   "packages/agentplane/src/cli/release-recovery-script.test.ts",
   "packages/agentplane/src/cli/release-smoke.test.ts",
   "packages/agentplane/src/cli/cli-smoke.test.ts",
@@ -336,12 +342,31 @@ const RELEASE_CI_BASE_FILES = discoverTests(["packages"], (filePath) => {
   ].some((pattern) => pattern.test(filePath));
 });
 
+const AGENT_EFFICIENCY_QUALIFICATION_PATTERN =
+  /^packages\/agentplane\/src\/cli\/run-cli\.critical\.agent-efficiency-.+\.test\.ts$/;
+
+const ALL_CRITICAL_CLI_FILES = discoverTestFiles(
+  ["packages/agentplane/src/cli"],
+  [/^packages\/agentplane\/src\/cli\/run-cli\.critical\..+\.test\.ts$/],
+);
+
 const CRITICAL_CLI_SUITE = {
+  chunkSize: 2,
+  config: "vitest.config.ts",
+  files: ALL_CRITICAL_CLI_FILES.filter(
+    (filePath) => !AGENT_EFFICIENCY_QUALIFICATION_PATTERN.test(filePath),
+  ),
+  maxWorkers: "4",
+  pool: "forks",
+  testTimeout: "120000",
+  hookTimeout: "120000",
+};
+
+const AGENT_EFFICIENCY_QUALIFICATION_SUITE = {
   chunkSize: 1,
   config: "vitest.config.ts",
-  files: discoverTestFiles(
-    ["packages/agentplane/src/cli"],
-    [/^packages\/agentplane\/src\/cli\/run-cli\.critical\..+\.test\.ts$/],
+  files: ALL_CRITICAL_CLI_FILES.filter((filePath) =>
+    AGENT_EFFICIENCY_QUALIFICATION_PATTERN.test(filePath),
   ),
   maxWorkers: "4",
   pool: "forks",
@@ -358,11 +383,9 @@ const V07_LIFECYCLE_FILES = [
   "packages/agentplane/src/commands/task/direct-task-supervisor-closeout.test.ts",
   "packages/agentplane/src/commands/task/branch-task-supervisor.test.ts",
   "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.task-guided.test.ts",
   "packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts",
   "packages/agentplane/src/cli/run-cli.core.lifecycle.block-finish.test.ts",
   "packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts",
 ];
 
 const V07_CONTEXT_FILES = [
@@ -378,24 +401,24 @@ const V07_CONTEXT_FILES = [
   "packages/agentplane/src/commands/context/search.fts5.unit.test.ts",
   "packages/agentplane/src/commands/context/assimilation-supervisor.unit.test.ts",
   "packages/agentplane/src/runner/context/task-context.test.ts",
+  "packages/agentplane/src/runner/context/roadmap-requirement-conservation.test.ts",
   "packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts",
 ];
 
 const V07_SUPERVISOR_FILES = [
   "packages/core/src/runner/supervisor-execution-episode.test.ts",
+  "packages/agentplane/src/runner/adapters/roadmap-output-parity.test.ts",
   "packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts",
   "packages/agentplane/src/commands/shared/workflow-supervisor.test.ts",
   "packages/agentplane/src/commands/shared/workflow-step.test.ts",
   "packages/agentplane/src/commands/shared/workflow-step-projections.test.ts",
-  "packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts",
   "packages/agentplane/src/commands/task/direct-task-supervisor.test.ts",
   "packages/agentplane/src/commands/task/branch-task-supervisor.test.ts",
   "packages/agentplane/src/commands/task/agent-action-packet.test.ts",
+  "packages/agentplane/src/commands/task/roadmap-stage-timing.test.ts",
   "packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts",
   "packages/agentplane/src/runner/usecases/task-run-bootstrap.result-examples.test.ts",
   "packages/agentplane/src/runner/usecases/task-run-lifecycle.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.task-advance.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.task-run.test.ts",
 ];
 
 const V07_RECOVERY_FILES = [
@@ -423,6 +446,7 @@ const V07_HOSTED_FILES = [
 ];
 
 export const VITEST_SUITES = {
+  "agent-efficiency-qualification": AGENT_EFFICIENCY_QUALIFICATION_SUITE,
   "backend-critical": {
     files: BACKEND_CRITICAL_FILES,
     maxWorkers: "4",
@@ -574,7 +598,7 @@ const CLI_HELP_DISCOVERY_PATTERNS = [
 
 const CLI_CORE_DISCOVERY_PATTERNS = [
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.test\.ts$/,
-  /^packages\/agentplane\/src\/cli\/run-cli\.core\.(?:boot|branch-meta(?:\..+)?|misc|pr-flow(?:\..+)?)\.test\.ts$/,
+  /^packages\/agentplane\/src\/cli\/run-cli\.core\.(?:boot|branch-meta(?:\..+)?|misc|pr-flow(?:\..+)?|task-supervisor-budget-epoch)\.test\.ts$/,
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.lifecycle(?:\..+)?\.test\.ts$/,
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.tasks(?:\..+)?\.test\.ts$/,
 ];
@@ -672,7 +696,6 @@ const CONTEXT_TEST_FILES = [
   "packages/agentplane/src/commands/context/release-readiness.test.ts",
   "packages/agentplane/src/commands/context/sqlite.unit.test.ts",
   "packages/agentplane/src/commands/context/harvest-tasks.test.ts",
-  "packages/agentplane/src/blueprints/validate.test.ts",
 ];
 
 const RUNNER_TEST_FILES = [
@@ -684,10 +707,9 @@ const RUNNER_TEST_FILES = [
 ];
 
 const ROUTE_ORACLE_TEST_FILES = [
-  "packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.route-decision.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts",
+  "packages/agentplane/src/commands/task/agent-action-packet.test.ts",
+  "packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts",
   "packages/agentplane/src/cli/command-guide.test.ts",
   "packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts",
 ];
@@ -697,7 +719,6 @@ const PROMPT_MODULES_TEST_FILES = [
   "packages/agentplane/src/runtime/prompt-modules/model.test.ts",
   "packages/agentplane/src/runtime/prompt-modules/mutations.test.ts",
   "packages/agentplane/src/runtime/prompt-modules/registry.test.ts",
-  "packages/agentplane/src/runtime/prompt-modules/gpt55-contract.test.ts",
 ];
 
 const EVALUATOR_TEST_FILES = [

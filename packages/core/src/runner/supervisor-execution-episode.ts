@@ -4,6 +4,7 @@ import { z } from "zod";
 
 export const SUPERVISOR_EXECUTION_EPISODE_SCHEMA_VERSION = 1 as const;
 export const SUPERVISOR_EXECUTION_EPISODE_KIND = "supervisor_execution_episode" as const;
+const LEGACY_SUPERVISOR_TOKEN_BUDGET_EPOCH_KIND = "supervisor_token_budget_epoch" as const;
 
 export const SUPERVISOR_EPISODE_ROLE_VALUES = [
   "PLANNER",
@@ -29,11 +30,28 @@ export const SUPERVISOR_EPISODE_OPERATION_STATUS_VALUES = [
   "failed",
 ] as const;
 export const SUPERVISOR_EPISODE_STATUS_VALUES = ["running", "stopped"] as const;
+const SUPERVISOR_LIFECYCLE_STAGE_VALUES = [
+  "lifecycle",
+  "preparation",
+  "semantic_dispatch",
+  "first_scoped_mutation",
+  "native_verification",
+  "review",
+  "provider_or_integration",
+  "verified_state",
+  "closure",
+] as const;
+const SUPERVISOR_LIFECYCLE_TIME_CATEGORY_VALUES = [
+  "local_work",
+  "user_wait",
+  "external_wait",
+] as const;
 export const SUPERVISOR_EPISODE_STOP_REASON_VALUES = [
   "budget_exhausted",
   "completed",
   "effect_in_doubt",
   "human_review",
+  "internal_anomaly",
   "operation_failed",
   "stale_state",
 ] as const;
@@ -45,6 +63,43 @@ const NON_NEGATIVE_INTEGER = z.number().int().min(0);
 const POSITIVE_INTEGER = z.number().int().positive();
 
 const NULLABLE_LIMIT_SCHEMA = z.number().int().positive().nullable();
+
+const SUPERVISOR_TOKEN_BUDGET_EPOCH_ZOD_SCHEMA = z
+  .object({
+    schema_version: z.literal(1),
+    kind: z.literal(LEGACY_SUPERVISOR_TOKEN_BUDGET_EPOCH_KIND),
+    prior_journal_digest: SHA256_DIGEST_SCHEMA,
+    stopped_state_fingerprint_digest: SHA256_DIGEST_SCHEMA,
+    authorized_state_fingerprint_digest: SHA256_DIGEST_SCHEMA,
+    authorized_by: z.literal("USER"),
+    authority_ref: NON_EMPTY_STRING,
+    authority_digest: SHA256_DIGEST_SCHEMA,
+    starts_after_operation_sequence: NON_NEGATIVE_INTEGER,
+    baseline_usage: z
+      .object({
+        input_tokens: NON_NEGATIVE_INTEGER,
+        output_tokens: NON_NEGATIVE_INTEGER,
+        total_tokens: NON_NEGATIVE_INTEGER,
+      })
+      .strict(),
+    budget: z
+      .object({
+        max_input_tokens: NULLABLE_LIMIT_SCHEMA,
+        max_output_tokens: NULLABLE_LIMIT_SCHEMA,
+        max_total_tokens: NULLABLE_LIMIT_SCHEMA,
+      })
+      .strict()
+      .refine(
+        (budget) =>
+          Object.values(budget).every((value) => value === null) ||
+          Object.values(budget).every((value) => value !== null),
+        "Supervisor token budget epoch must set all token caps or disable all token caps.",
+      ),
+    authorized_at: ISO_UTC_TIMESTAMP_SCHEMA,
+  })
+  .strict();
+
+type LegacySupervisorTokenBudgetEpoch = z.infer<typeof SUPERVISOR_TOKEN_BUDGET_EPOCH_ZOD_SCHEMA>;
 
 export const SUPERVISOR_EXECUTION_BUDGET_ZOD_SCHEMA = z
   .object({
@@ -165,6 +220,159 @@ const SUPERVISOR_EPISODE_RECOVERY_ZOD_SCHEMA = z
   })
   .strict();
 
+const SUPERVISOR_EPISODE_USAGE_ATTRIBUTION_ZOD_SCHEMA = z
+  .object({
+    state: z.enum(["observed", "partial", "unavailable", "unallocatable"]),
+    reason: NON_EMPTY_STRING.nullable(),
+  })
+  .strict();
+
+const SUPERVISOR_LIFECYCLE_TIMING_ZOD_SCHEMA = z
+  .object({
+    schema_version: z.literal(1),
+    clock: z.literal("monotonic"),
+    root_span_id: NON_EMPTY_STRING,
+    elapsed_ms: NON_NEGATIVE_INTEGER,
+    partitioned_ms: z
+      .object({
+        local_work: NON_NEGATIVE_INTEGER,
+        user_wait: NON_NEGATIVE_INTEGER,
+        external_wait: NON_NEGATIVE_INTEGER,
+      })
+      .strict(),
+    spans: z.array(
+      z
+        .object({
+          span_id: NON_EMPTY_STRING,
+          parent_span_id: NON_EMPTY_STRING.nullable(),
+          stage: z.enum(SUPERVISOR_LIFECYCLE_STAGE_VALUES),
+          category: z.enum(SUPERVISOR_LIFECYCLE_TIME_CATEGORY_VALUES),
+          offset_ms: NON_NEGATIVE_INTEGER,
+          elapsed_ms: NON_NEGATIVE_INTEGER,
+        })
+        .strict(),
+    ),
+  })
+  .strict()
+  .superRefine((timing, ctx) => {
+    const partitioned = Object.values(timing.partitioned_ms).reduce((sum, value) => sum + value, 0);
+    if (partitioned !== timing.elapsed_ms) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Lifecycle timing partitions must reconcile to elapsed_ms without overlap.",
+      });
+    }
+    const ids = new Set(timing.spans.map((span) => span.span_id));
+    if (ids.size !== timing.spans.length || !ids.has(timing.root_span_id)) {
+      ctx.addIssue({ code: "custom", message: "Lifecycle timing span identities must be unique." });
+      return;
+    }
+    const byId = new Map(timing.spans.map((span) => [span.span_id, span]));
+    const root = byId.get(timing.root_span_id)!;
+    if (
+      root.parent_span_id !== null ||
+      root.stage !== "lifecycle" ||
+      root.offset_ms !== 0 ||
+      root.elapsed_ms !== timing.elapsed_ms
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Lifecycle timing root span must cover the full lifecycle interval.",
+      });
+    }
+    const ancestors = new Map<string, Set<string>>();
+    let hierarchyIsValid = true;
+    for (const span of timing.spans) {
+      if (span.offset_ms + span.elapsed_ms > timing.elapsed_ms) {
+        ctx.addIssue({ code: "custom", message: "Lifecycle timing spans must stay in the root." });
+        hierarchyIsValid = false;
+      }
+      if (span.parent_span_id !== null && !ids.has(span.parent_span_id)) {
+        ctx.addIssue({ code: "custom", message: "Lifecycle timing parent span is missing." });
+        hierarchyIsValid = false;
+      }
+      if (span.span_id !== timing.root_span_id && span.parent_span_id === null) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Lifecycle timing contains a second root span.",
+        });
+        hierarchyIsValid = false;
+      }
+      const lineage = new Set<string>();
+      let current = span;
+      while (current.parent_span_id !== null) {
+        if (lineage.has(current.parent_span_id)) {
+          ctx.addIssue({ code: "custom", message: "Lifecycle timing contains a parent cycle." });
+          hierarchyIsValid = false;
+          break;
+        }
+        lineage.add(current.parent_span_id);
+        const parent = byId.get(current.parent_span_id);
+        if (!parent) break;
+        if (
+          current.offset_ms < parent.offset_ms ||
+          current.offset_ms + current.elapsed_ms > parent.offset_ms + parent.elapsed_ms
+        ) {
+          ctx.addIssue({
+            code: "custom",
+            message: "Lifecycle timing child span must stay inside its parent.",
+          });
+          hierarchyIsValid = false;
+        }
+        current = parent;
+      }
+      if (current.span_id !== timing.root_span_id) hierarchyIsValid = false;
+      ancestors.set(span.span_id, lineage);
+    }
+    if (!hierarchyIsValid) return;
+    const nonRootSpans = timing.spans.filter((span) => span.span_id !== timing.root_span_id);
+    for (let left = 0; left < nonRootSpans.length; left += 1) {
+      for (let right = left + 1; right < nonRootSpans.length; right += 1) {
+        const a = nonRootSpans[left]!;
+        const b = nonRootSpans[right]!;
+        const overlap =
+          a.offset_ms < b.offset_ms + b.elapsed_ms && b.offset_ms < a.offset_ms + a.elapsed_ms;
+        const nested = [
+          ancestors.get(a.span_id)?.has(b.span_id),
+          ancestors.get(b.span_id)?.has(a.span_id),
+        ].some(Boolean);
+        if (overlap && !nested) {
+          ctx.addIssue({
+            code: "custom",
+            message: "Lifecycle timing sibling spans must not overlap.",
+          });
+        }
+      }
+    }
+    const boundaries = [
+      ...new Set(
+        timing.spans.flatMap((span) => [span.offset_ms, span.offset_ms + span.elapsed_ms]),
+      ),
+    ].toSorted((a, b) => a - b);
+    const derivedPartitions = { local_work: 0, user_wait: 0, external_wait: 0 };
+    for (let index = 1; index < boundaries.length; index += 1) {
+      const start = boundaries[index - 1]!;
+      const end = boundaries[index]!;
+      const active = timing.spans
+        .filter((span) => span.offset_ms <= start && span.offset_ms + span.elapsed_ms >= end)
+        .toSorted(
+          (a, b) => (ancestors.get(b.span_id)?.size ?? 0) - (ancestors.get(a.span_id)?.size ?? 0),
+        )[0];
+      if (active) derivedPartitions[active.category] += end - start;
+    }
+    if (
+      Object.entries(derivedPartitions).some(
+        ([category, elapsed]) =>
+          timing.partitioned_ms[category as keyof typeof timing.partitioned_ms] !== elapsed,
+      )
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Lifecycle timing partitions must match the deepest active span categories.",
+      });
+    }
+  });
+
 const SUPERVISOR_EPISODE_OPERATION_ZOD_SCHEMA = z
   .object({
     sequence: POSITIVE_INTEGER,
@@ -190,6 +398,8 @@ const SUPERVISOR_EPISODE_OPERATION_ZOD_SCHEMA = z
       })
       .strict()
       .optional(),
+    usage_attribution: SUPERVISOR_EPISODE_USAGE_ATTRIBUTION_ZOD_SCHEMA.optional(),
+    lifecycle_timing: SUPERVISOR_LIFECYCLE_TIMING_ZOD_SCHEMA.optional(),
     usage: z
       .object({
         input_tokens: NON_NEGATIVE_INTEGER.optional(),
@@ -211,14 +421,40 @@ const SUPERVISOR_EPISODE_OPERATION_ZOD_SCHEMA = z
   })
   .strict();
 
+const SUPERVISOR_INTERNAL_ANOMALY_DIAGNOSTIC_ZOD_SCHEMA = z
+  .object({
+    code: z.literal("orchestrator_tight_loop"),
+    summary: NON_EMPTY_STRING,
+    semantic_state_digest: SHA256_DIGEST_SCHEMA,
+    repetition_count: POSITIVE_INTEGER,
+    exhausted_recovery_strategies: z.array(NON_EMPTY_STRING).min(1).readonly(),
+    resume_hint: NON_EMPTY_STRING,
+  })
+  .strict();
+
 const SUPERVISOR_EPISODE_STOP_ZOD_SCHEMA = z
   .object({
     reason: z.enum(SUPERVISOR_EPISODE_STOP_REASON_VALUES),
     exhausted_dimensions: z.array(NON_EMPTY_STRING).readonly(),
     operation_key: SHA256_DIGEST_SCHEMA.nullable(),
+    diagnostic: SUPERVISOR_INTERNAL_ANOMALY_DIAGNOSTIC_ZOD_SCHEMA.optional(),
     at: ISO_UTC_TIMESTAMP_SCHEMA,
   })
-  .strict();
+  .strict()
+  .superRefine((stop, ctx) => {
+    if (stop.reason === "internal_anomaly" && stop.diagnostic === undefined) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Internal anomaly stops require a concrete resumable diagnostic.",
+      });
+    }
+    if (stop.reason !== "internal_anomaly" && stop.diagnostic !== undefined) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Only internal anomaly stops may carry an anomaly diagnostic.",
+      });
+    }
+  });
 
 export const SUPERVISOR_EXECUTION_EPISODE_JOURNAL_ZOD_SCHEMA = z
   .object({
@@ -242,6 +478,9 @@ export const SUPERVISOR_EXECUTION_EPISODE_JOURNAL_ZOD_SCHEMA = z
 
 export type SupervisorExecutionBudget = z.infer<typeof SUPERVISOR_EXECUTION_BUDGET_ZOD_SCHEMA>;
 export type SupervisorExecutionUsage = z.infer<typeof SUPERVISOR_EXECUTION_USAGE_ZOD_SCHEMA>;
+export type SupervisorInternalAnomalyDiagnostic = z.infer<
+  typeof SUPERVISOR_INTERNAL_ANOMALY_DIAGNOSTIC_ZOD_SCHEMA
+>;
 export type SupervisorExecutionEpisodeJournal = z.infer<
   typeof SUPERVISOR_EXECUTION_EPISODE_JOURNAL_ZOD_SCHEMA
 >;
@@ -263,6 +502,7 @@ export type SupervisorEpisodeStartResult =
       stop: {
         reason: SupervisorEpisodeStopReason;
         exhausted_dimensions: readonly string[];
+        diagnostic?: SupervisorInternalAnomalyDiagnostic;
       };
     }
   | { status: "effect_in_doubt"; journal: SupervisorExecutionEpisodeJournal };
@@ -318,52 +558,39 @@ function isAgentOperation(kind: SupervisorEpisodeOperationKind): boolean {
   return kind === "agent_episode" || kind === "evaluator_episode";
 }
 
-function exhaustedDimensions(opts: {
-  budget: SupervisorExecutionBudget;
-  usage: SupervisorExecutionUsage;
-  next_kind?: SupervisorEpisodeOperationKind;
-}): string[] {
-  const { budget, usage } = opts;
-  const dimensions: string[] = [];
-  if (usage.episodes >= budget.max_episodes) dimensions.push("episodes");
+function tokenBudgetEpochFromOperation(
+  operation: SupervisorExecutionEpisodeJournal["operations"][number],
+): LegacySupervisorTokenBudgetEpoch | null {
+  const context = operation.recovery?.context;
   if (
-    isAgentOperation(opts.next_kind ?? "cli_operation") &&
-    budget.max_agent_runs !== null &&
-    usage.agent_runs >= budget.max_agent_runs
+    typeof context !== "object" ||
+    context === null ||
+    !("kind" in context) ||
+    context.kind !== LEGACY_SUPERVISOR_TOKEN_BUDGET_EPOCH_KIND
   ) {
-    dimensions.push("agent_runs");
+    return null;
   }
-  if (budget.max_input_tokens !== null && usage.input_tokens >= budget.max_input_tokens) {
-    dimensions.push("input_tokens");
+  if (operation.kind !== "cli_operation" || operation.status !== "completed") {
+    throw new Error("Supervisor token budget epoch must be a completed CLI operation.");
   }
-  if (budget.max_output_tokens !== null && usage.output_tokens >= budget.max_output_tokens) {
-    dimensions.push("output_tokens");
-  }
-  if (budget.max_total_tokens !== null && usage.total_tokens >= budget.max_total_tokens) {
-    dimensions.push("total_tokens");
-  }
-  if (budget.max_wall_time_ms !== null && usage.wall_time_ms >= budget.max_wall_time_ms) {
-    dimensions.push("wall_time_ms");
-  }
-  if (budget.max_changed_files !== null && usage.changed_files >= budget.max_changed_files) {
-    dimensions.push("changed_files");
-  }
-  if (budget.max_diff_lines !== null && usage.diff_lines >= budget.max_diff_lines) {
-    dimensions.push("diff_lines");
-  }
+  const parsed = SUPERVISOR_TOKEN_BUDGET_EPOCH_ZOD_SCHEMA.parse(context);
   if (
-    budget.max_no_progress_episodes !== null &&
-    usage.no_progress_episodes >= budget.max_no_progress_episodes
+    operation.authority_ref !== parsed.authority_ref ||
+    operation.authority_digest !== parsed.authority_digest ||
+    operation.precondition_fingerprint_digest !== parsed.stopped_state_fingerprint_digest ||
+    operation.postcondition_fingerprint_digest !== parsed.authorized_state_fingerprint_digest ||
+    parsed.starts_after_operation_sequence !== operation.sequence - 1
   ) {
-    dimensions.push("no_progress_episodes");
+    throw new Error("Supervisor token budget epoch does not match its operation authority.");
   }
-  return dimensions;
+  return parsed;
 }
 
 function stoppedJournal(opts: {
   journal: SupervisorExecutionEpisodeJournal;
   reason: SupervisorEpisodeStopReason;
   exhausted_dimensions?: readonly string[];
+  diagnostic?: SupervisorInternalAnomalyDiagnostic;
   operation_key?: string | null;
   at: string;
 }): SupervisorExecutionEpisodeJournal {
@@ -380,6 +607,7 @@ function stoppedJournal(opts: {
       reason: opts.reason,
       exhausted_dimensions: [...(opts.exhausted_dimensions ?? [])].toSorted(),
       operation_key: opts.operation_key ?? journal.cursor.operation_key,
+      ...(opts.diagnostic ? { diagnostic: opts.diagnostic } : {}),
       at: opts.at,
     },
     updated_at: opts.at,
@@ -393,6 +621,7 @@ export function stopSupervisorExecutionEpisode(opts: {
   journal: SupervisorExecutionEpisodeJournal;
   reason: SupervisorEpisodeStopReason;
   exhausted_dimensions?: readonly string[];
+  diagnostic?: SupervisorInternalAnomalyDiagnostic;
   now?: string;
 }): SupervisorExecutionEpisodeJournal {
   const journal = validateSupervisorExecutionEpisodeJournal(opts.journal);
@@ -400,6 +629,7 @@ export function stopSupervisorExecutionEpisode(opts: {
     journal,
     reason: opts.reason,
     exhausted_dimensions: opts.exhausted_dimensions,
+    diagnostic: opts.diagnostic,
     at: opts.now ?? new Date().toISOString(),
   });
 }
@@ -447,26 +677,28 @@ export function validateSupervisorExecutionEpisodeJournal(
     throw new Error("Supervisor episode journal operation sequences must be unique.");
   }
   for (const operation of parsed.operations) {
-    if (!operation.recovery) continue;
-    const key = digestSupervisorEpisodeValue({
-      task_id: parsed.task_id,
-      episode: operation.episode,
-      role: operation.role,
-      kind: operation.kind,
-      operation_identity: operation.recovery.operation_identity,
-      precondition_fingerprint_digest: operation.precondition_fingerprint_digest,
-      authority_ref: operation.authority_ref,
-      authority_digest: operation.authority_digest,
-      work_order_ref: operation.work_order_ref,
-      effect_ref: operation.effect_ref,
-      ...(operation.replacement_of_operation_key
-        ? { replacement_of_operation_key: operation.replacement_of_operation_key }
-        : {}),
-      recovery: operation.recovery,
-    });
-    if (operation.operation_key !== key) {
-      throw new Error("Supervisor episode recovery evidence does not match its operation key.");
+    if (operation.recovery) {
+      const key = digestSupervisorEpisodeValue({
+        task_id: parsed.task_id,
+        episode: operation.episode,
+        role: operation.role,
+        kind: operation.kind,
+        operation_identity: operation.recovery.operation_identity,
+        precondition_fingerprint_digest: operation.precondition_fingerprint_digest,
+        authority_ref: operation.authority_ref,
+        authority_digest: operation.authority_digest,
+        work_order_ref: operation.work_order_ref,
+        effect_ref: operation.effect_ref,
+        ...(operation.replacement_of_operation_key
+          ? { replacement_of_operation_key: operation.replacement_of_operation_key }
+          : {}),
+        recovery: operation.recovery,
+      });
+      if (operation.operation_key !== key) {
+        throw new Error("Supervisor episode recovery evidence does not match its operation key.");
+      }
     }
+    tokenBudgetEpochFromOperation(operation);
   }
   const pendingReplacement = parsed.cursor.replacement_of_operation_key;
   if (pendingReplacement !== undefined) {
@@ -654,6 +886,7 @@ export function startSupervisorExecutionEpisode(opts: {
       stop: {
         reason: journal.stop?.reason ?? "human_review",
         exhausted_dimensions: journal.stop?.exhausted_dimensions ?? [],
+        ...(journal.stop?.diagnostic ? { diagnostic: journal.stop.diagnostic } : {}),
       },
     };
   }
@@ -680,23 +913,6 @@ export function startSupervisorExecutionEpisode(opts: {
     throw new Error(
       "Supervisor episode replacement requires a pending terminal operation_failed authorization.",
     );
-  }
-  const exhausted = exhaustedDimensions({
-    budget: journal.budget,
-    usage: journal.usage,
-    next_kind: opts.kind,
-  });
-  if (exhausted.length > 0) {
-    return {
-      status: "stopped",
-      journal: stoppedJournal({
-        journal,
-        reason: "budget_exhausted",
-        exhausted_dimensions: exhausted,
-        at: now,
-      }),
-      stop: { reason: "budget_exhausted", exhausted_dimensions: exhausted },
-    };
   }
   const recoveryBinding =
     opts.recovery_context === undefined
@@ -736,6 +952,14 @@ export function startSupervisorExecutionEpisode(opts: {
     effect_ref: opts.effect_ref?.trim() ?? null,
     ...replacementBinding,
     ...recoveryBinding,
+    ...(isAgentOperation(opts.kind)
+      ? {
+          usage_attribution: {
+            state: "unavailable" as const,
+            reason: "provider_result_not_observed",
+          },
+        }
+      : {}),
     status: "intent" as const,
     result_digest: null,
     postcondition_fingerprint_digest: null,
@@ -765,6 +989,8 @@ export function completeSupervisorExecutionEpisode(opts: {
   result: unknown;
   usage?: Partial<Omit<SupervisorExecutionUsage, "episodes" | "agent_runs">>;
   provider_usage?: SupervisorExecutionEpisodeJournal["operations"][number]["provider_usage"];
+  usage_attribution?: SupervisorExecutionEpisodeJournal["operations"][number]["usage_attribution"];
+  lifecycle_timing?: SupervisorExecutionEpisodeJournal["operations"][number]["lifecycle_timing"];
   progress?: unknown;
   bounded_feedback?: unknown;
   failed?: boolean;
@@ -814,6 +1040,21 @@ export function completeSupervisorExecutionEpisode(opts: {
     Number.isSafeInteger(usageInput.reasoning_tokens) &&
     Number(usageInput.visible_output_tokens) >= 0 &&
     Number(usageInput.reasoning_tokens) >= 0;
+  const observedTokenFields = [
+    usageInput.input_tokens,
+    usageInput.output_tokens,
+    usageInput.total_tokens,
+  ].filter((value) => Number.isSafeInteger(value) && Number(value) >= 0).length;
+  const usageAttribution = isAgentOperation(last.kind)
+    ? (opts.usage_attribution ??
+      (tokenUsageObserved
+        ? { state: "observed" as const, reason: null }
+        : observedTokenFields > 0
+          ? { state: "partial" as const, reason: "partial_provider_token_telemetry" }
+          : providerUsage
+            ? { state: "unavailable" as const, reason: "provider_token_telemetry_unavailable" }
+            : { state: "unavailable" as const, reason: "provider_identity_unavailable" }))
+    : undefined;
   const previousProgress = journal.operations.findLast(
     (operation) => operation.progress_digest !== null,
   )?.progress_digest;
@@ -862,6 +1103,8 @@ export function completeSupervisorExecutionEpisode(opts: {
   const operation = {
     ...last,
     ...(providerUsage ? { provider_usage: providerUsage } : {}),
+    ...(usageAttribution ? { usage_attribution: usageAttribution } : {}),
+    ...(opts.lifecycle_timing ? { lifecycle_timing: opts.lifecycle_timing } : {}),
     usage: Object.fromEntries(
       [
         "input_tokens",
@@ -899,23 +1142,12 @@ export function completeSupervisorExecutionEpisode(opts: {
   const completed = createJournal(next);
   if (opts.failed)
     return stoppedJournal({ journal: completed, reason: "operation_failed", at: now });
-  const exhausted = exhaustedDimensions({
-    budget: completed.budget,
-    usage: completed.usage,
-  });
-  return exhausted.length > 0
-    ? stoppedJournal({
-        journal: completed,
-        reason: "budget_exhausted",
-        exhausted_dimensions: exhausted,
-        at: now,
-      })
-    : completed;
+  return completed;
 }
 
 /**
  * Re-open only a durably failed CLI operation.  The previous failed attempt
- * stays in the history and continues to count against the shared budget; the
+ * stays in the history and continues to contribute to usage telemetry; the
  * caller must supply the unchanged precondition before it can record a new
  * intent for that same registry operation.
  */
@@ -940,19 +1172,6 @@ export function retryFailedSupervisorExecutionEpisode(opts: {
       journal,
       reason: "stale_state",
       exhausted_dimensions: ["state_fingerprint"],
-      at: now,
-    });
-  }
-  const exhausted = exhaustedDimensions({
-    budget: journal.budget,
-    usage: journal.usage,
-    next_kind: opts.next_kind,
-  });
-  if (exhausted.length > 0) {
-    return stoppedJournal({
-      journal,
-      reason: "budget_exhausted",
-      exhausted_dimensions: exhausted,
       at: now,
     });
   }
@@ -983,14 +1202,16 @@ export function advanceSupervisorExecutionEpisodeState(opts: {
   const last = journal.operations.at(-1);
   const completedRunningOperation =
     journal.status === "running" && journal.cursor.phase === "completed";
-  const completedBudgetStoppedOperation =
+  const completedStoppedOperation =
     journal.status === "stopped" &&
-    journal.stop?.reason === "budget_exhausted" &&
+    (journal.stop?.reason === "budget_exhausted" ||
+      journal.stop?.reason === "human_review" ||
+      journal.stop?.reason === "internal_anomaly") &&
     journal.cursor.phase === "stopped" &&
     journal.stop.operation_key === last?.operation_key;
-  if (!completedRunningOperation && !completedBudgetStoppedOperation) {
+  if (!completedRunningOperation && !completedStoppedOperation) {
     throw new Error(
-      "Supervisor episode state advance requires a completed running operation or budget-stopped completed operation.",
+      "Supervisor episode state advance requires a completed running operation or a resumable stopped operation.",
     );
   }
   if (!last || (last.status !== "completed" && last.status !== "failed")) {
@@ -1006,12 +1227,12 @@ export function advanceSupervisorExecutionEpisodeState(opts: {
   const next: Omit<SupervisorExecutionEpisodeJournal, "digest"> = {
     ...journal,
     state_fingerprint_digest: opts.state_fingerprint_digest,
-    cursor: completedBudgetStoppedOperation
+    cursor: completedStoppedOperation
       ? journal.cursor
       : { episode: journal.cursor.episode, phase: "ready", operation_key: null },
     operations: [...journal.operations.slice(0, -1), operation],
-    status: completedBudgetStoppedOperation ? "stopped" : "running",
-    stop: completedBudgetStoppedOperation ? journal.stop : null,
+    status: completedStoppedOperation ? "stopped" : "running",
+    stop: completedStoppedOperation ? journal.stop : null,
     updated_at: now,
     previous_digest: journal.digest,
   };
@@ -1021,7 +1242,7 @@ export function advanceSupervisorExecutionEpisodeState(opts: {
 /**
  * Reopen a journal only when its last provider operation completed durably and
  * a later attempt was stopped before recording another intent because the
- * route fingerprint changed. This preserves the accumulated budget while
+ * route fingerprint changed. This preserves accumulated telemetry while
  * refusing to guess about failed or ambiguous provider effects.
  */
 export function reopenCompletedSupervisorExecutionEpisodeAfterStaleState(opts: {
@@ -1052,6 +1273,72 @@ export function reopenCompletedSupervisorExecutionEpisodeAfterStaleState(opts: {
     previous_digest: journal.digest,
   };
   return createJournal(next);
+}
+
+/**
+ * Resume an orchestration journal after an operator has inspected an internal
+ * anomaly. The completed operation history and its diagnostic remain durable.
+ */
+export function resumeSupervisorExecutionEpisodeAfterInternalAnomaly(opts: {
+  journal: SupervisorExecutionEpisodeJournal;
+  state_fingerprint_digest: string;
+  now?: string;
+}): SupervisorExecutionEpisodeJournal {
+  const journal = validateSupervisorExecutionEpisodeJournal(opts.journal);
+  const now = opts.now ?? new Date().toISOString();
+  const last = journal.operations.at(-1);
+  if (
+    journal.status !== "stopped" ||
+    journal.stop?.reason !== "internal_anomaly" ||
+    journal.cursor.phase !== "stopped" ||
+    journal.stop.diagnostic === undefined ||
+    last?.status !== "completed" ||
+    (journal.stop.operation_key !== null && journal.stop.operation_key !== last.operation_key)
+  ) {
+    throw new Error(
+      "Supervisor episode anomaly resume requires a diagnosed internal-anomaly stop after a completed operation.",
+    );
+  }
+  return createJournal({
+    ...journal,
+    state_fingerprint_digest: opts.state_fingerprint_digest,
+    cursor: { episode: journal.cursor.episode, phase: "ready", operation_key: null },
+    status: "running",
+    stop: null,
+    updated_at: now,
+    previous_digest: journal.digest,
+  });
+}
+
+/**
+ * Convert a persisted budget stop into a runnable journal. New execution never
+ * creates this stop; the helper exists only for cold compatibility migration.
+ */
+export function resumeSupervisorExecutionEpisodeAfterLegacyBudgetStop(opts: {
+  journal: SupervisorExecutionEpisodeJournal;
+  now?: string;
+}): SupervisorExecutionEpisodeJournal {
+  const journal = validateSupervisorExecutionEpisodeJournal(opts.journal);
+  const last = journal.operations.at(-1);
+  if (
+    journal.status !== "stopped" ||
+    journal.stop?.reason !== "budget_exhausted" ||
+    journal.cursor.phase !== "stopped" ||
+    last?.status === "intent"
+  ) {
+    throw new Error(
+      "Supervisor episode legacy budget resume requires a budget-stopped journal without a pending intent.",
+    );
+  }
+  const now = opts.now ?? new Date().toISOString();
+  return createJournal({
+    ...journal,
+    cursor: { episode: journal.cursor.episode, phase: "ready", operation_key: null },
+    status: "running",
+    stop: null,
+    updated_at: now,
+    previous_digest: journal.digest,
+  });
 }
 
 /**
@@ -1092,7 +1379,7 @@ export function refreshPendingReplacementSupervisorExecutionEpisode(opts: {
  * The failed operation remains in the journal and the next start binds its
  * replacement to that operation key. The successor may have a different role
  * or kind when the recomputed route changed; this is deliberately narrower
- * than a retry because ambiguous effects and exhausted budgets stay terminal.
+ * than a retry because ambiguous effects stay terminal.
  */
 export function prepareReplacementSupervisorExecutionEpisodeAfterFailure(opts: {
   journal: SupervisorExecutionEpisodeJournal;
@@ -1117,16 +1404,6 @@ export function prepareReplacementSupervisorExecutionEpisodeAfterFailure(opts: {
       "Supervisor episode replacement requires a stopped operation_failed journal or a stale_state journal with a failed latest operation.",
     );
   }
-  const exhausted = exhaustedDimensions({
-    budget: journal.budget,
-    usage: journal.usage,
-    next_kind: last.kind,
-  });
-  if (exhausted.length > 0) {
-    throw new Error(
-      `Supervisor episode replacement requires remaining budget; exhausted: ${exhausted.join(", ")}.`,
-    );
-  }
   const next: Omit<SupervisorExecutionEpisodeJournal, "digest"> = {
     ...journal,
     state_fingerprint_digest: opts.state_fingerprint_digest,
@@ -1136,51 +1413,6 @@ export function prepareReplacementSupervisorExecutionEpisodeAfterFailure(opts: {
       operation_key: null,
       replacement_of_operation_key: last.operation_key,
     },
-    status: "running",
-    stop: null,
-    updated_at: now,
-    previous_digest: journal.digest,
-  };
-  return createJournal(next);
-}
-
-/**
- * Continue a long-running control flow after only its episode-count budget was exhausted.
- * Resource budgets remain terminal; callers must explicitly supply a larger monotonic episode cap.
- */
-export function continueSupervisorExecutionEpisodeAfterEpisodeBudget(opts: {
-  journal: SupervisorExecutionEpisodeJournal;
-  state_fingerprint_digest: string;
-  max_episodes: number;
-  now?: string;
-}): SupervisorExecutionEpisodeJournal {
-  const journal = validateSupervisorExecutionEpisodeJournal(opts.journal);
-  const now = opts.now ?? new Date().toISOString();
-  const last = journal.operations.at(-1);
-  const exhausted = journal.stop?.exhausted_dimensions ?? [];
-  if (
-    journal.status !== "stopped" ||
-    journal.stop?.reason !== "budget_exhausted" ||
-    journal.cursor.phase !== "stopped" ||
-    last?.status !== "completed" ||
-    journal.stop.operation_key !== last.operation_key ||
-    exhausted.length !== 1 ||
-    exhausted[0] !== "episodes"
-  ) {
-    throw new Error(
-      "Supervisor episode continuation requires a completed stop caused only by the episode-count budget.",
-    );
-  }
-  if (!Number.isInteger(opts.max_episodes) || opts.max_episodes <= journal.budget.max_episodes) {
-    throw new Error(
-      "Supervisor episode continuation requires a larger integer max_episodes budget.",
-    );
-  }
-  const next: Omit<SupervisorExecutionEpisodeJournal, "digest"> = {
-    ...journal,
-    state_fingerprint_digest: opts.state_fingerprint_digest,
-    budget: { ...journal.budget, max_episodes: opts.max_episodes },
-    cursor: { episode: journal.cursor.episode, phase: "ready", operation_key: null },
     status: "running",
     stop: null,
     updated_at: now,

@@ -1,8 +1,11 @@
 import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 import { resolveProject, type ResolvedProject } from "@agentplaneorg/core/project";
 import path from "node:path";
+import { lstat, realpath } from "node:fs/promises";
 
 import { loadConfig } from "@agentplaneorg/core/config";
+import { gitEnv, listWorktrees } from "@agentplaneorg/core/git";
+import { execFileAsync } from "@agentplaneorg/core/process";
 
 import { readContainedStableTextNoFollow } from "../../shared/contained-stable-file.js";
 import { isRecord } from "../../shared/guards.js";
@@ -63,14 +66,69 @@ async function loadBackendConfig(
   }
 }
 
-function loadLocalTaskBackend(ctx: TaskBackendLoaderContext): TaskBackendLoaderResult {
+async function loadLocalTaskBackend(
+  ctx: TaskBackendLoaderContext,
+): Promise<TaskBackendLoaderResult> {
   const localDir =
     resolveMaybeRelative(ctx.resolved.gitRoot, ctx.settings.dir) ??
     path.join(ctx.resolved.gitRoot, ctx.config.paths.workflow_dir);
+  const historyDir = await compactTaskHistoryRoot(ctx.resolved.gitRoot, localDir);
   return {
-    backend: new LocalBackend({ dir: localDir }),
+    backend: new LocalBackend({ dir: localDir, historyDir: historyDir ?? undefined }),
     backendId: "local",
   };
+}
+
+async function compactTaskHistoryRoot(repoRoot: string, localDir: string): Promise<string | null> {
+  const marker = await execFileAsync(
+    "git",
+    ["config", "--worktree", "--get", "agentplane.compactTaskHistory"],
+    { cwd: repoRoot, env: gitEnv() },
+  )
+    .then(({ stdout }) => stdout.trim())
+    .catch(() => null);
+  if (marker === null) return null;
+  if (marker !== "true")
+    throw new BackendError("Invalid compact task history marker.", "E_BACKEND");
+
+  const worktrees = await listWorktrees(repoRoot);
+  const primary = worktrees[0];
+  if (!primary) throw new BackendError("Canonical task worktree is unavailable.", "E_BACKEND");
+  const [currentRoot, primaryRoot] = await Promise.all([
+    realpath(repoRoot),
+    realpath(primary.path),
+  ]);
+  if (currentRoot === primaryRoot) {
+    throw new BackendError(
+      "Compact task history marker is invalid on the primary worktree.",
+      "E_BACKEND",
+    );
+  }
+  const relativeDir = path.relative(repoRoot, localDir);
+  if (relativeDir !== path.join(".agentplane", "tasks")) {
+    throw new BackendError(
+      "Compact task history requires the standard local task store.",
+      "E_BACKEND",
+    );
+  }
+  const localStats = await lstat(localDir).catch(() => null);
+  if (
+    !localStats?.isDirectory() ||
+    localStats.isSymbolicLink() ||
+    (await realpath(localDir)) !== path.join(currentRoot, relativeDir)
+  ) {
+    throw new BackendError("Current worktree task store is unavailable or unsafe.", "E_BACKEND");
+  }
+  const historyDir = path.join(primaryRoot, relativeDir);
+  const stats = await lstat(historyDir).catch(() => null);
+  if (
+    !stats?.isDirectory() ||
+    stats.isSymbolicLink() ||
+    (await realpath(historyDir)) !== historyDir
+  ) {
+    throw new BackendError("Canonical task store is unavailable or unsafe.", "E_BACKEND");
+  }
+  return historyDir;
 }
 
 async function loadCloudTaskBackend(

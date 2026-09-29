@@ -11,11 +11,6 @@ export const taskNewSpec: CommandSpec<TaskNewParsed> = {
     "Creates a TODO task with doc_version=3, seeds the README v3 section layout, and writes it via the configured task backend.",
   options: [
     {
-      kind: "boolean",
-      name: "canonical",
-      description: "Create an atomic canonical Task during staged controller cutover.",
-    },
-    {
       kind: "string",
       name: "title",
       valueHint: "<text>",
@@ -57,14 +52,14 @@ export const taskNewSpec: CommandSpec<TaskNewParsed> = {
       name: "task-kind",
       valueHint: "<analysis|content|docs|code|release|ops|context>",
       choices: ["analysis", "content", "docs", "code", "release", "ops", "context"],
-      description: "Structured blueprint task-kind intent. Tags/title remain fallback hints.",
+      description: "Structured task-kind intent. Tags/title remain fallback hints.",
     },
     {
       kind: "string",
       name: "mutation-scope",
       valueHint: "<none|docs|code|release|ops|context|unknown>",
       choices: ["none", "docs", "code", "release", "ops", "context", "unknown"],
-      description: "Structured mutation scope used by blueprint resolution.",
+      description: "Structured task mutation scope.",
     },
     {
       kind: "string",
@@ -80,27 +75,8 @@ export const taskNewSpec: CommandSpec<TaskNewParsed> = {
         "security",
         "external_system",
       ],
-      description: "Structured risk flag used by blueprint resolution. Repeatable.",
-    },
-    {
-      kind: "string",
-      name: "blueprint-request",
-      valueHint: "<id>",
-      choices: [
-        "analysis.light",
-        "content.light",
-        "docs.change",
-        "code.direct",
-        "code.branch_pr",
-        "performance.benchmark",
-        "quality.regression",
-        "context.assimilation",
-        "context.maximum_assimilation",
-        "post_run.improvement_review",
-        "release.strict",
-        "ops.approval",
-      ],
-      description: "Explicit blueprint request stored on the task; resolver still validates it.",
+      description:
+        "Structured task risk flag. Repeatable. Controlled ops requires credentials, deploy, security, or external_system.",
     },
     {
       kind: "string",
@@ -128,13 +104,6 @@ export const taskNewSpec: CommandSpec<TaskNewParsed> = {
     },
     {
       kind: "boolean",
-      name: "show-blueprint",
-      default: false,
-      description:
-        "Print a resolved blueprint route preview to stderr after creation without changing stdout.",
-    },
-    {
-      kind: "boolean",
       name: "allow-duplicate",
       default: false,
       description:
@@ -147,14 +116,14 @@ export const taskNewSpec: CommandSpec<TaskNewParsed> = {
       why: "Create a new task with one tag.",
     },
     {
-      cmd: 'agentplane task new --title "Market analysis note" --description "Analyze market context" --owner ANALYST --tag analysis --task-kind analysis --mutation-scope none --show-blueprint',
-      why: "Create a task and preview the resolved route without changing the task-id stdout contract.",
+      cmd: 'agentplane task new --title "Restart the worker" --description "Restart one production worker" --owner OPS --tag ops --task-kind ops --mutation-scope ops --risk external_system',
+      why: "Create a controlled ops task with complete structured intent.",
     },
   ],
   notes: [
     "Task creation defaults to doc_version=3 and seeds the README v3 section contract automatically.",
     "For verify-required primary tags, this command seeds a default ## Verify Steps acceptance contract in README.",
-    "`--show-blueprint` writes route preview details to stderr; stdout remains only the generated task id.",
+    "Tasks tagged or declared as ops must provide task kind, mutation scope, and a controlled ops risk before creation.",
   ],
   parse: (raw) => ({
     title: raw.opts.title as string,
@@ -165,12 +134,9 @@ export const taskNewSpec: CommandSpec<TaskNewParsed> = {
     taskKind: raw.opts["task-kind"] as TaskNewParsed["taskKind"],
     mutationScope: raw.opts["mutation-scope"] as TaskNewParsed["mutationScope"],
     riskFlags: (raw.opts.risk ?? []) as TaskNewParsed["riskFlags"],
-    blueprintRequest: raw.opts["blueprint-request"] as TaskNewParsed["blueprintRequest"],
     route: (raw.opts.route ?? "repository") as TaskNewParsed["route"],
     dependsOn: (raw.opts["depends-on"] ?? []) as string[],
     verify: (raw.opts.verify ?? []) as string[],
-    canonical: raw.opts.canonical === true,
-    showBlueprint: raw.opts["show-blueprint"] === true,
     allowDuplicate: raw.opts["allow-duplicate"] === true,
   }),
 };

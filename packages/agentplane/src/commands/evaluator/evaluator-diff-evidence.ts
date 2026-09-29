@@ -47,9 +47,8 @@ export async function resolveEvaluatorDiffBase(opts: {
       !upstreamMergeBase ||
       upstreamMergeBase === localMergeBase ||
       !(await gitIsAncestor(opts.gitRoot, localMergeBase, upstreamMergeBase))
-    ) {
+    )
       return localMergeBase;
-    }
 
     // A squash-merged base update can leave the checked-out local base on a
     // content-equivalent sibling commit. Prefer its newer tracking ref so the
@@ -74,7 +73,7 @@ export async function renderActualDiff(
   if (!evaluatedSha) return "No committed task work unit is available for semantic evaluation.\n";
   try {
     const artifactRoot = taskArtifactRoot?.trim().replaceAll("\\", "/").replaceAll(/\/+$/gu, "");
-    // The task document, blueprint, checks, and policy are frozen as separate evidence. Exclude
+    // The task document, native identity, checks, and policy are frozen as separate evidence. Exclude
     // only this task's generated subtree so it cannot recursively inflate the implementation diff.
     const taskArtifactExclude = artifactRoot
       ? ["--", ".", `:(exclude,glob)${artifactRoot}/**`]

@@ -343,7 +343,6 @@ describe("context harvest tasks", () => {
     const created = createdParsed[0] as {
       owner: string;
       tags: string[];
-      blueprintRequest: string;
       verify: string[];
       extensions: {
         "agentplane.context": {
@@ -358,7 +357,6 @@ describe("context harvest tasks", () => {
     };
     expect(created.owner).toBe("CURATOR");
     expect(created.tags).toEqual(expect.arrayContaining(["knowledge-proposal"]));
-    expect(created.blueprintRequest).toBe("context.maximum_assimilation");
     expect(created.extensions["agentplane.context"].proposal.ids).toHaveLength(1);
     expect(created.extensions["agentplane.context"].proposal.publication_state).toBe(
       "not_published",

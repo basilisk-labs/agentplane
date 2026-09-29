@@ -13,24 +13,92 @@ import {
 } from "./workflow-step-fingerprint.js";
 import type { WorkflowRouteState } from "./workflow-step.js";
 
-export const task = {
-  id: "202607250100-TYPED1",
-  title: "Typed route fixture",
-  description: "Exercise typed route state.",
-  status: "DOING",
-  priority: "high",
-  owner: "CODER",
-  revision: 7,
-  depends_on: [],
-  tags: ["code"],
-  verify: ["bun test"],
-  plan_approval: {
-    state: "approved",
-    approved_by: "ORCHESTRATOR",
-    approved_at: "2026-07-25T00:00:00.000Z",
-  },
-  verification: { state: "pending" },
-} satisfies TaskData;
+export function withNativeIdentity(
+  value: TaskData,
+  workItemState: "READY" | "REWORK_READY" | "COMPLETED" = "READY",
+): TaskData {
+  const digest = `sha256:${"a".repeat(64)}` as const;
+  return {
+    ...value,
+    execution_contract: {
+      schema_version: 1,
+      source: "agent_declared",
+      selected_mode: "branch_pr",
+      repository_mode: "branch_pr",
+      reason_codes: [],
+      safety: { requires_worktree: true },
+      authority: {},
+      verification: {
+        contract: { digest, selected_checks: [], policy_floor: {} },
+      },
+    } as unknown as NonNullable<TaskData["execution_contract"]>,
+    extensions: {
+      ...(value.extensions ?? {}),
+      "agentplane.task_centric": {
+        schema_version: 1,
+        id: value.id,
+        revision: value.revision ?? 1,
+        intent: {
+          task_id: value.id,
+          request: value.description,
+          constraints: [],
+          acceptance_criteria: [],
+          captured_at: "2026-07-25T00:00:00.000Z",
+        },
+        lifecycle: "ACTIVE",
+        current_plan: {
+          schema_version: 1,
+          task_id: value.id,
+          revision: 1,
+          digest,
+          proposal: { work_items: { work_items: [{ id: "implementation", optional: false }] } },
+          approval: { state: "approved", approved_digest: digest },
+          created_at: "2026-07-25T00:00:00.000Z",
+        },
+        work_items: {
+          implementation: {
+            id: "implementation",
+            state: workItemState,
+            revision: 1,
+            // Projection fixtures model tasks that have already crossed the formal
+            // start boundary. READY here means executable work, not an
+            // uninitialized canonical task.
+            attempt: 1,
+            claim_id: null,
+            output_manifests: [],
+            validation_result: null,
+            last_failure: null,
+          },
+        },
+        final_validation: null,
+        event_cursor: 1,
+        updated_at: "2026-07-25T00:00:00.000Z",
+      },
+    },
+  };
+}
+
+export const task = withNativeIdentity(
+  {
+    id: "202607250100-TYPED1",
+    title: "Typed route fixture",
+    description: "Exercise typed route state.",
+    status: "DOING",
+    priority: "high",
+    owner: "CODER",
+    revision: 7,
+    depends_on: [],
+    tags: ["code"],
+    verify: ["bun test"],
+    plan_approval: {
+      state: "approved",
+      approved_by: "ORCHESTRATOR",
+      approved_at: "2026-07-25T00:00:00.000Z",
+    },
+    verification: { state: "pending" },
+  } satisfies TaskData,
+  "COMPLETED",
+);
 
 export const resume = {
   task_id: task.id,

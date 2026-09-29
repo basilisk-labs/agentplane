@@ -2,7 +2,6 @@ import path from "node:path";
 
 import { extractTaskSuffix } from "@agentplaneorg/core/commit";
 import { loadConfig } from "@agentplaneorg/core/config";
-
 import { execFileAsync } from "@agentplaneorg/core/process";
 import { gitEnv, GitContext, parseTaskIdFromBranch } from "@agentplaneorg/core/git";
 import { appendDcoSignoff } from "../../guard/impl/dco.js";
@@ -21,8 +20,6 @@ import {
 import { fileExists } from "../apply.preflight.plan.js";
 import type { ReleaseCommandMutation, ReleaseCommandState } from "../apply.types.js";
 import { emitReleaseLine } from "./shared.js";
-
-const RELEASE_CANDIDATE_BLUEPRINT_SNAPSHOT_PATH = "blueprint/resolved-snapshot.json";
 
 async function applyReleaseMutation(opts: {
   agentplaneDir: string;
@@ -102,22 +99,10 @@ async function applyReleaseMutation(opts: {
   if (await fileExists(path.join(opts.gitRoot, "bun.lock"))) {
     stagePaths.push("bun.lock");
   }
-  const loaded = await loadConfig(opts.agentplaneDir);
   const taskId =
     opts.route.kind === "release_candidate"
       ? parseTaskIdFromBranch(opts.taskBranchPrefix, opts.route.current_branch)
       : null;
-  if (taskId) {
-    const blueprintSnapshotPath = path.join(
-      opts.gitRoot,
-      loaded.config.paths.workflow_dir,
-      taskId,
-      RELEASE_CANDIDATE_BLUEPRINT_SNAPSHOT_PATH,
-    );
-    if (await fileExists(blueprintSnapshotPath)) {
-      stagePaths.push(path.relative(opts.gitRoot, blueprintSnapshotPath));
-    }
-  }
   await opts.git.stage(stagePaths);
 
   const staged = await opts.git.statusStagedPaths();
@@ -129,6 +114,7 @@ async function applyReleaseMutation(opts: {
   const subject = taskId
     ? `✨ ${extractTaskSuffix(taskId)} release: publish ${opts.nextTag}`
     : `✨ release: publish ${opts.nextTag}`;
+  const loaded = await loadConfig(opts.agentplaneDir);
   const body = appendDcoSignoff({ config: loaded.config, body: undefined });
   await opts.git.commit({ message: subject, body, env: cleanHookEnv() });
   const { stdout: headHash } = await execFileAsync("git", ["rev-parse", "HEAD"], {

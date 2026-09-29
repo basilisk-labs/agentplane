@@ -18,7 +18,12 @@ import { describe, expect, it, vi } from "vitest";
 import { extractTaskSuffix, validateCommitSubject } from "@agentplaneorg/core/commit";
 import { defaultConfig } from "@agentplaneorg/core/config";
 import type { ResolvedProject } from "@agentplaneorg/core/project";
-import { readTask, renderTaskReadme } from "@agentplaneorg/core/tasks";
+import {
+  createTask as createLegacyTask,
+  readTask,
+  renderTaskReadme,
+  setTaskDocSection,
+} from "@agentplaneorg/core/tasks";
 import { createIncidentRegistrySkeleton } from "../runtime/incidents/index.js";
 
 vi.mock("../commands/pr/integrate/internal/github-protection.js", () => ({
@@ -71,6 +76,39 @@ const TEST_WORKFLOW_GITIGNORE =
   ".agentplane/cache.sqlite\n" +
   ".agentplane/cache.sqlite-wal\n" +
   ".agentplane/cache.sqlite-shm\n";
+
+async function createLegacyIntegrateTask(opts: {
+  root: string;
+  title: string;
+  verify?: string[];
+}): Promise<string> {
+  const task = await createLegacyTask({
+    cwd: opts.root,
+    rootOverride: opts.root,
+    title: opts.title,
+    description: "Branch integration",
+    priority: "med",
+    owner: "CODER",
+    tags: ["nodejs"],
+    dependsOn: [],
+    verify: opts.verify ?? [],
+  });
+  for (const [section, text] of [
+    ["Summary", `${opts.title}\n\nBranch integration`],
+    ["Scope", "- In scope: legacy local integration mechanics."],
+    ["Rollback Plan", "- Restore the integration fixture branch."],
+  ] as const) {
+    await setTaskDocSection({
+      cwd: opts.root,
+      rootOverride: opts.root,
+      taskId: task.id,
+      section,
+      text,
+      updatedBy: "PLANNER",
+    });
+  }
+  return task.id;
+}
 
 async function installFakeGhProtection(opts: { scenarioName: string; protectedBranch?: string }) {
   const fakeBin = path.join(
@@ -127,32 +165,11 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
-      let taskId = "";
-      const ioTask = captureStdIO();
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Rebase verify failure",
-          "--description",
-          "Branch integration",
-          "--priority",
-          "med",
-          "--owner",
-          "CODER",
-          "--tag",
-          "nodejs",
-          "--verify",
-          "false",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskId = ioTask.stdout.trim();
-      } finally {
-        ioTask.restore();
-      }
+      const taskId = await createLegacyIntegrateTask({
+        root,
+        title: "Rebase verify failure",
+        verify: ["false"],
+      });
       await approveTaskPlan(root, taskId);
       await recordVerificationOk(root, taskId);
       await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
@@ -218,30 +235,10 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       await execFileAsync("git", ["add", "README.md"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
 
-      let taskId = "";
-      const ioTask = captureStdIO();
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Integrate missing PR",
-          "--description",
-          "Branch integration",
-          "--priority",
-          "med",
-          "--owner",
-          "CODER",
-          "--tag",
-          "nodejs",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskId = ioTask.stdout.trim();
-      } finally {
-        ioTask.restore();
-      }
+      const taskId = await createLegacyIntegrateTask({
+        root,
+        title: "Integrate missing PR",
+      });
       await approveTaskPlan(root, taskId);
       await recordVerificationOk(root, taskId);
       await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
@@ -310,30 +307,10 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       await execFileAsync("git", ["add", "README.md"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
 
-      let taskId = "";
-      const ioTask = captureStdIO();
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Integrate missing committed PR artifacts",
-          "--description",
-          "Branch integration",
-          "--priority",
-          "med",
-          "--owner",
-          "CODER",
-          "--tag",
-          "nodejs",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskId = ioTask.stdout.trim();
-      } finally {
-        ioTask.restore();
-      }
+      const taskId = await createLegacyIntegrateTask({
+        root,
+        title: "Integrate missing committed PR artifacts",
+      });
       await approveTaskPlan(root, taskId);
       await recordVerificationOk(root, taskId);
       // The quality fixture creates PR metadata; omit it from this intentionally incomplete branch.
@@ -422,32 +399,11 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       await execFileAsync("git", ["add", "README.md"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
 
-      let taskId = "";
-      const ioTask = captureStdIO();
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Verify integrate",
-          "--description",
-          "Branch integration",
-          "--priority",
-          "med",
-          "--owner",
-          "CODER",
-          "--tag",
-          "nodejs",
-          "--verify",
-          "git status --short",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskId = ioTask.stdout.trim();
-      } finally {
-        ioTask.restore();
-      }
+      const taskId = await createLegacyIntegrateTask({
+        root,
+        title: "Verify integrate",
+        verify: ["git status --short"],
+      });
       await approveTaskPlan(root, taskId);
       await recordVerificationOk(root, taskId);
       await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
