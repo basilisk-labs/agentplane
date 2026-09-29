@@ -17,13 +17,13 @@ import {
   type KernelEffectPortResolver,
 } from "./kernel-effect-coordinator.js";
 import { commitCanonicalTerminalTaskArtifacts } from "./kernel-repository-coordinator.js";
+import { decideCanonicalWorkflowEffect } from "./kernel-provider-effect-coordinator.js";
 import {
-  decideCanonicalWorkflowEffect,
-  prepareCanonicalWorkflowEffect,
-} from "./kernel-provider-effect-coordinator.js";
+  advanceCompletedProviderWorkflow,
+  resolveCompletedWorkflowBase,
+} from "./kernel-completed-provider-workflow.js";
 import { executeCanonicalCompletedWorkflowLocally } from "./kernel-completed-workflow.js";
 import { ensureKernelOperationalProjectionEvidence } from "./kernel-operational-projection.js";
-import { transferCanonicalControllerToBase } from "./kernel-controller-handoff.js";
 import { acceptKernelSemanticResult } from "./kernel-semantic-result.js";
 import { workItemResumeOperatorAction } from "./kernel-work-item-resume.js";
 import { ensureCanonicalTaskWorktree } from "./kernel-worktree-routing.js";
@@ -218,21 +218,17 @@ async function advanceCanonicalRoute(opts: {
         baseCheckout &&
         path.resolve(baseCheckout) !== path.resolve(opts.command.resolvedProject.gitRoot)
       ) {
-        const target = await transferCanonicalControllerToBase({
+        const target = await resolveCompletedWorkflowBase({
           command: opts.command,
-          runtime,
-          task_id: opts.task_id,
+          record,
           base_checkout: baseCheckout,
         });
-        return {
-          schema_version: 1,
-          task_id: opts.task_id,
-          action: {
-            kind: "external_wait",
-            reason: "canonical_controller_transferred",
-            must_run_from: target.resolvedProject.gitRoot,
-          },
-        };
+        return await advanceCanonicalRoute({
+          ...opts,
+          command: target,
+          result_path: undefined,
+          replace_failed_operation: replaceFailedOperation,
+        });
       }
       const terminal =
         workflow.workflowStep.kind === "terminal" &&
@@ -256,25 +252,23 @@ async function advanceCanonicalRoute(opts: {
         if (providerProgress === "agent") replaceFailedOperation = false;
         continue;
       }
-      const prepared = await prepareCanonicalWorkflowEffect({
+      const provider = await advanceCompletedProviderWorkflow({
         command: opts.command,
-        runtime,
-        record,
         decision: workflow,
+        task_id: opts.task_id,
       });
-      if (prepared === "prepared") {
+      if (provider?.kind === "progress") {
         anomalyTracker.reset();
         continue;
       }
+      if (provider?.kind === "stop")
+        return { schema_version: 1, task_id: opts.task_id, action: provider.action };
       return {
         schema_version: 1,
         task_id: opts.task_id,
         action: {
           kind: workflow.workflowStep.kind === "wait" ? "external_wait" : "human_required",
-          reason:
-            prepared === "already_observed"
-              ? "canonical_workflow_effect_no_progress"
-              : "canonical_workflow_effect_unavailable",
+          reason: "canonical_workflow_effect_unavailable",
           workflow_step: workflow.workflowStep.id,
         },
       };
