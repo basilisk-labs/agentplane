@@ -299,6 +299,7 @@ export async function exerciseManagedConflict(opts: {
     throw new Error(`Managed conflict stopped before runner evidence: ${JSON.stringify(outcome)}`);
   }
   const run = await loadTaskRunnerInspection({ cwd: worktree, task_id: taskId });
+  expect(run.bundle.work_order?.authority.writable_roots).toEqual([path.join(worktree, "docs")]);
   const receipt = JSON.parse(await readFile(run.paths.receipt_path, "utf8")) as {
     scope_evaluation?: unknown;
   };

@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_provider_failure_receipt",
+  "work_order_id": "evaluator-work-order-202609261720-KKE9ZN-5cfbed745893b3c8b93d43be",
+  "provider": "codex",
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": []
+  },
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--ignore-user-config",
+    "--strict-config",
+    "--disable",
+    "hooks",
+    "--ephemeral",
+    "--json",
+    "-C",
+    "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202609261720-KKE9ZN-implement-and-qualify-agentplane-0-7-12-planning",
+    "-s",
+    "read-only",
+    "--output-schema",
+    "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202609261720-KKE9ZN-implement-and-qualify-agentplane-0-7-12-planning/.agentplane/tasks/202609261720-KKE9ZN/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json",
+    "-"
+  ],
+  "started_at": "2026-09-28T15:33:02.583Z",
+  "ended_at": "2026-09-28T15:33:38.641Z",
+  "stdout_bytes": 1440,
+  "stderr_bytes": 0,
+  "provider_usage_status": "partial",
+  "provider_usage": {
+    "cached_input_tokens": 64896,
+    "input_tokens": 94335,
+    "output_tokens": 437,
+    "total_tokens": 94772,
+    "visible_output_tokens": 427,
+    "reasoning_tokens": 10,
+    "thread_id": "01a0e8a5-ebd3-79d0-a7a0-b5061652b7c8"
+  },
+  "provider_thread_id": "01a0e8a5-ebd3-79d0-a7a0-b5061652b7c8",
+  "provider_turn_id": null,
+  "workspace_state": "unchanged",
+  "failure": {
+    "kind": "evaluator_provider_failure",
+    "classification": "malformed_structured_result",
+    "exit_code": null,
+    "signal": null
+  }
+}

@@ -586,6 +586,8 @@ describe("persisted supervisor execution episodes", () => {
     });
 
     expect(executions).toBe(0);
+    expect(outcome.execution.result).toBeNull();
+    expect(outcome.execution.refreshed_decision).toBe(refreshed);
     expect(outcome.journal).toMatchObject({
       status: "running",
       cursor: { phase: "ready", operation_key: null },

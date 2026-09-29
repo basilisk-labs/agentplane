@@ -54,7 +54,7 @@ export function makeRunTaskBriefHandler(session: {
       : session.getLocalContext("task brief"));
     const canonical = await readTaskKernel(commandCtx, parsed.taskId);
     if (canonical.kind !== "legacy_unmigrated") {
-      return reportTaskKernelRead(canonical, parsed.taskId, parsed.json);
+      return reportTaskKernelRead(canonical, parsed.taskId, parsed.json, commandCtx);
     }
     const brief = await buildTaskBrief({
       commandCtx,

@@ -286,6 +286,7 @@ export {
   decideConfirmation,
   dispositionForOutcome,
   recoveryDecisionForFailure,
+  resolvePlanningObligation,
   validateHumanDecisionAnswer,
   type ConfirmationFacts,
   type PlanChangeClassification,
@@ -295,6 +296,8 @@ export {
 export { type TaskRepositoryCapabilities, type TaskRepositoryPort } from "./task-centric/ports.js";
 export {
   parseTaskPlanProposal,
+  normalizeTaskPlanProposal,
+  TASK_PLAN_PROPOSAL_INPUT_ZOD_SCHEMA,
   REPOSITORY_SNAPSHOT_ZOD_SCHEMA,
   TASK_PLAN_PROPOSAL_ZOD_SCHEMA,
   type ParsedTaskPlanProposal,

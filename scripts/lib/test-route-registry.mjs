@@ -187,6 +187,9 @@ export function listRepoFiles(relativeDir, options = {}) {
     for (const entry of readdirSync(current, { withFileTypes: true })) {
       const absolute = path.join(current, entry.name);
       if (entry.isDirectory()) {
+        const relative = normalizeRepoPath(path.relative(repoRoot, absolute));
+        // Package builds replace dist while test routes are being discovered.
+        if (entry.name === "node_modules" || /^packages\/[^/]+\/dist$/u.test(relative)) continue;
         pending.push(absolute);
         continue;
       }
@@ -295,6 +298,13 @@ const BACKEND_CRITICAL_FILES = [
 ];
 
 const RELEASE_CRITICAL_FILES = [
+  "packages/agentplane/src/commands/task/create-plan-input.test.ts",
+  "packages/agentplane/src/commands/task/kernel-plan-supplied-approval.test.ts",
+  "packages/agentplane/src/commands/task/kernel-planning-view.test.ts",
+  "packages/agentplane/src/commands/task/kernel-planning-recovery.test.ts",
+  "packages/agentplane/src/commands/task/run-supplied-plan.test.ts",
+  "packages/agentplane/src/commands/task/run-required-planner.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.task-advance.roadmap-supplied-plan.test.ts",
   "packages/agentplane/src/cli/release-recovery-script.test.ts",
   "packages/agentplane/src/cli/release-smoke.test.ts",
   "packages/agentplane/src/cli/cli-smoke.test.ts",

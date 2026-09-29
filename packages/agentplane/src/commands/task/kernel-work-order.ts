@@ -148,6 +148,10 @@ export async function buildKernelAgentWorkOrder(opts: {
   });
   const objective = implementation?.contract.objective ?? record.documents.intent.objective;
   const role = implementation?.contract.role ?? "PLANNER";
+  const planInputDigest = implementation
+    ? implementation.contract.plan_input_digest
+    : record.documents.intent.plan_input_digest;
+  const planInput = planInputDigest ? record.documents.plan_inputs?.[planInputDigest] : undefined;
   const criteria = implementation?.contract.acceptance_criteria ?? [
     "Return a bounded canonical plan with contracts, dependencies, output IDs, scope and verification commands.",
   ];
@@ -170,7 +174,11 @@ export async function buildKernelAgentWorkOrder(opts: {
         description,
         required: true,
       })),
-      unresolved_questions: [],
+      unresolved_questions: (planInput?.unresolved_questions ?? []).map((question, index) => ({
+        id: `supplied-plan-question-${index + 1}`,
+        question,
+        blocking: true,
+      })),
       ...(implementation ? { work_item_id: implementation.binding.work_item_id } : {}),
     },
     canonical_binding: binding,
@@ -202,7 +210,9 @@ export async function buildKernelAgentWorkOrder(opts: {
       expires_at: authority?.expires_at ?? null,
     },
     context_intent: {
-      purpose: record.documents.intent.context,
+      purpose: planInput
+        ? `${record.documents.intent.context}\n\nCaller-supplied Plan input (not approval):\n${JSON.stringify(planInput)}`
+        : record.documents.intent.context,
       required_knowledge_ref_digests: [],
       require_prepared_evidence: false,
     },

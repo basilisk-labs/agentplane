@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "recovery-workspace-gap-resolved",
+      "severity": "low",
+      "summary": "The supplied current Git observation resolves the previous workspace-evidence gap: status is clean, and HEAD differs from the evaluated implementation only in this task's artifacts. Frozen verification records passing required checks at the evaluated SHA. Reviewed regressions cover planning reuse, approval binding, negative admission, drift, and retry recovery.",
+      "broken_invariant": "None; the previous evidence gap is resolved.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609261720-KKE9ZN/README.md",
+          "sha256": "sha256:d5072aafad712b45f8b1d01a859a58816c363e1bf3f65d8c72d1e6ae1d1ec2d6",
+          "section": "quality_review"
+        },
+        {
+          "path": ".agentplane/tasks/202609261720-KKE9ZN/verification/20260928153207125-240201868571d349.json",
+          "sha256": "sha256:8a0b065690cf7d4a992f77ab02a91a6614f66d226bb3081d274afe7ca03de5ea",
+          "section": "implementation_sha and details"
+        },
+        {
+          "path": ".agentplane/tasks/202609261720-KKE9ZN/quality/objects/sha256/08b303b5830e201ae83e902b766c7a3bf3658172bead4082f1f461303a919b5e.patch",
+          "sha256": "sha256:08b303b5830e201ae83e902b766c7a3bf3658172bead4082f1f461303a919b5e"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "recovery_context": "Pass applies to implementation qualification at c0b3be603d850883aae69d3117428609ce446761. The supplied observation classifies subsequent changes as committed task artifacts and places the separate release-wrapper repair in another worktree. M04 remains NOT ESTABLISHED; live-provider containment and exact-SHA hosted release/publication gates remain outside this passing verdict."
+}

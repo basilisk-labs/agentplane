@@ -30,6 +30,7 @@ import {
 } from "../agents/agents-template.js";
 import {
   approveTaskPlan,
+  buildCleanRuntimeModeEnv,
   captureStdIO,
   cleanGitEnv,
   commitAll,
@@ -58,11 +59,14 @@ installRunCliIntegrationHarness();
 const WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS = 180_000;
 const workspaceRoot = process.cwd();
 
-const staleDistRuntimeEnv = (): NodeJS.ProcessEnv => ({
-  ...cleanGitEnv(),
-  PATH: process.env.PATH ?? "",
-  AGENTPLANE_DEV_ALLOW_STALE_DIST: "1",
-});
+const staleDistRuntimeEnv = (): NodeJS.ProcessEnv => {
+  const env = buildCleanRuntimeModeEnv(cleanGitEnv(), {
+    PATH: process.env.PATH ?? "",
+    AGENTPLANE_DEV_ALLOW_STALE_DIST: "1",
+  });
+  delete env.AGENTPLANE_HOOK_RUNNER;
+  return env;
+};
 
 async function seedRepoLocalDistArtifacts(root: string): Promise<void> {
   const agentplaneDist = path.join(root, "packages", "agentplane", "dist");

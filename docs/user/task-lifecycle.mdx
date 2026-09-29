@@ -18,7 +18,7 @@ The supervisor never converts an approval, unresolved question, hosted wait, sta
 effect-in-doubt boundary into success. It returns a typed stop and waits for the appropriate human,
 provider, or recovery action.
 
-## Lifecycle ownership in 0.7.11
+## Lifecycle ownership
 
 All current task entrypoints use one ownership chain. The Task Kernel is the sole pure reducer,
 `KernelBackendAdapter.persist` is the sole canonical writer, and `advanceTaskStep` is the sole
@@ -28,8 +28,9 @@ that same coordinator; neither is a second engine. Agents choose neither an engi
 The Kernel and coordinator own formal decisions: transition admission, authority checks,
 persistence, effect execution and observation, recovery, verification persistence, integration,
 and closure. Semantic agents own bounded judgment only: PLANNER proposes the plan, EXECUTOR performs
-an authorized work item, and EVALUATOR independently assesses it. AgentPlane 0.7.11 does not make a
-policy-required semantic stage optional.
+an authorized work item, and EVALUATOR independently assesses it. In 0.7.12 a sufficient supplied
+Plan can satisfy planning without a separate PLANNER episode. Required independent evaluation
+does not become optional.
 
 The current public domain API is the `taskKernel` namespace from `@agentplaneorg/core/tasks`.
 Task-centric graph, policy, model, and compatibility exports are pure or conversion-only helpers;
@@ -73,10 +74,12 @@ agentplane task run <task-id>
 ```
 
 `task run` uses the same route decision, state fingerprint, WorkOrder, authority, result contract,
-verification boundary, and execution journal as `task advance`. Before a task-specific plan exists,
-`task run` returns `semantic_input_required`; obtain and return the initial PLANNER result through
-`task advance`. After planning and approval, eligible semantic episodes may be resolved by either an
-external caller or the configured runner adapter.
+verification boundary, and execution journal as `task advance`. The coordinator first resolves
+the planning obligation. Sufficient caller input proceeds to ordinary approval without PLANNER;
+required planning uses a read-only PLANNER episode. Managed execution requires an adapter with
+enforceable read-only sandbox support and supervised typed results. Advisory adapters fail before
+launch, and an unverified runtime receipt cannot admit a planning result. Use the external
+`task advance` route when the managed runtime cannot satisfy this contract.
 
 The managed runner also stops at human approval, hosted/external, stale-state, effect-in-doubt, and
 terminal boundaries. Rerun `task run` only after the returned boundary has been resolved.
@@ -121,10 +124,48 @@ terminal boundary. No manual lifecycle choreography is required from the agent o
 
 ## Planning and approval
 
-A newly created task contains a non-approvable placeholder, not synthetic semantic evidence.
-`task advance` returns a read-only PLANNER episode; `task run` returns
-`semantic_input_required` until that result has been supplied through the external protocol.
-Agentplane persists the returned plan and then stops for human approval when policy requires it.
+A newly created task without sufficient planning input contains a non-approvable placeholder,
+not synthetic semantic evidence. Both transports use the common planning-obligation resolver.
+`task create --plan-file <path>` accepts an existing compact v2 or full v1 proposal. Native intake
+binds it to the new task and current baseline; an issued semantic result must still match its
+exact task and WorkOrder identity. The original normalized input is retained by digest.
+
+With `--plan-file`, the create response reports `status: "advance_required"` and
+`required_role: null`: only the next coordinator packet decides whether PLANNER is needed.
+Without supplied input, the existing `semantic_input_required` intake response is unchanged.
+
+A fresh, sufficient proposal within the trusted contract becomes a proposed Plan without a
+separate PLANNER dispatch. Missing input, unresolved questions, unsupported checks, stale evidence,
+or `agents.approvals.require_planner=true` preserve the planning requirement. Malformed input is
+rejected rather than repaired by guessing. Failed required planning cannot silently become a
+successful skip. With no Recipe, ordinary obligation resolution still applies.
+
+Agentplane persists an admitted Plan and then stops for human approval when policy requires it.
+Planning input is never user approval. Supplying it does not relax verification, independent
+EVALUATOR review, repository scope, capability limits, or external authority.
+
+### Compatibility and evidence
+
+Full v1 and compact v2 proposal input are accepted through the existing normalizer. These input
+versions do not select a lifecycle engine or replace canonical task state. Version 0.7.12 adds
+immutable `plan_inputs` documents and `plan_input_digest` references. Records without those
+optional fields remain supported. Strict older writers may reject or lose new provenance fields;
+do not use an older CLI to mutate tasks written with supplied-plan provenance. Upgrade all task
+writers together. A rollback requires restoring a consistent pre-upgrade repository and task-state
+backup, not deleting the new fields or converting an old approval into current authority.
+
+Planning views distinguish `required` from `not_required`, caller origin from planner origin,
+and current evidence from historical evidence. A retained failed attempt is not erased by a later
+success. Local journal counts do not establish total external attempts; missing costs and totals
+are unknown rather than zero.
+
+Installed-package tests qualify local route behavior. They do not certify live provider
+containment or full-host efficiency. The [M04 disposition](../releases/v0.7.12-m04.md) is
+**NOT ESTABLISHED**: upstream construction and retry costs and both latency endpoints are unknown.
+Independent review remains required, and no 0.7.13 Recipe contract or 0.7.14 review omission is
+introduced.
+
+### Approval provenance
 
 An exact contract-bounded repository Plan may be approved by repository policy when explicit plan
 approval is disabled. Every remaining approval boundary requires a user-originated host event, a

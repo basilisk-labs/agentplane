@@ -110,6 +110,12 @@ export async function acceptKernelSemanticResult(
   }
   if (semantic.status !== "completed") {
     const binding = workOrder.canonical_binding;
+    if (binding?.phase === "planning")
+      await writeKernelArtifact(
+        directory,
+        `planning-result-${k.kernelDigest(semantic).slice(7)}.json`,
+        semantic,
+      );
     if (binding && binding.phase !== "planning") {
       await writeKernelArtifact(directory, "received-result.json", semantic);
       await continueKernelSemanticStopAuthority({

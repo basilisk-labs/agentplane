@@ -15,6 +15,7 @@ import {
 } from "../../runtime/task-routing/index.js";
 import { cmdVerifyParsed as executeVerify } from "./verify-record.js";
 import {
+  resolveObservedVerificationChangeSet,
   resolveObservedVerificationChangedPaths,
   resolveObservedVerificationRepositoryEffects,
   resolveInheritedVerificationPaths,
@@ -592,7 +593,7 @@ describe("task verification durability", () => {
         });
         const inherited = await resolveInheritedVerificationPaths({
           ctx: authoritativeCtx,
-          taskId,
+          task: task!,
           evaluatedSha: implementationSha,
           artifactTaskIds: [taskId],
           execution: { ...execution, base_sha: implementationSha },
@@ -613,7 +614,7 @@ describe("task verification durability", () => {
         await expect(
           resolveInheritedVerificationPaths({
             ctx: authoritativeCtx,
-            taskId,
+            task: task!,
             evaluatedSha: implementationSha,
             artifactTaskIds: [taskId],
             execution: { ...execution, base_sha: implementationSha },
@@ -747,7 +748,7 @@ describe("task verification durability", () => {
     },
   );
 
-  it("observes the complete direct task diff from the frozen execution base", async () => {
+  it("observes direct paths and effects from one task snapshot without rereading a concurrent writer", async () => {
     const root = await makeRepo();
     const taskId = "202602050900-V1F4B";
     await addTask(root, taskId);
@@ -760,7 +761,7 @@ describe("task verification durability", () => {
     const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
     const task = await ctx.taskBackend.getTask(taskId);
     if (!task) throw new Error("missing direct task fixture");
-    await ctx.taskBackend.writeTask?.({
+    const frozenTask = {
       ...task,
       extensions: {
         ...task.extensions,
@@ -768,7 +769,8 @@ describe("task verification durability", () => {
           start_head_sha: baseSha,
         },
       },
-    });
+    };
+    await ctx.taskBackend.writeTask?.(frozenTask);
     await mkdir(path.join(root, "packages", "app"), { recursive: true });
     await writeFile(path.join(root, "packages", "app", "first.ts"), "export const first = 1;\n");
     await execFileAsync("git", ["add", "packages/app/first.ts"], { cwd: root });
@@ -779,10 +781,15 @@ describe("task verification durability", () => {
     const { stdout: evaluatedShaOutput } = await execFileAsync("git", ["rev-parse", "HEAD"], {
       cwd: root,
     });
-    const changedPaths = await resolveObservedVerificationChangedPaths({
+    const getTask = vi
+      .spyOn(ctx.taskBackend, "getTask")
+      .mockRejectedValue(
+        new Error("Concurrent task reads must not replace the transaction snapshot."),
+      );
+    const observed = await resolveObservedVerificationChangeSet({
       ctx,
       evaluatedSha: evaluatedShaOutput.trim(),
-      taskId,
+      task: frozenTask,
       artifactTaskIds: [taskId],
       execution: {
         schema_version: 1,
@@ -799,7 +806,12 @@ describe("task verification durability", () => {
       },
     });
 
-    expect(changedPaths).toEqual(["packages/app/first.ts", "packages/app/second.ts"]);
+    expect(observed).toEqual({
+      changed_paths: ["packages/app/first.ts", "packages/app/second.ts"],
+      inherited_paths: [],
+      repository_effects: ["repository_write", "source_code"],
+    });
+    expect(getTask).not.toHaveBeenCalled();
   });
 
   it("observes package dependency effects from manifest content instead of its path", async () => {
@@ -820,10 +832,11 @@ describe("task verification durability", () => {
     const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
     const task = await ctx.taskBackend.getTask(taskId);
     if (!task) throw new Error("missing manifest task fixture");
-    await ctx.taskBackend.writeTask?.({
+    const frozenTask = {
       ...task,
       extensions: { ...task.extensions, workflow_route_baseline: { start_head_sha: baseSha } },
-    });
+    };
+    await ctx.taskBackend.writeTask?.(frozenTask);
     const execution = {
       schema_version: 1 as const,
       primary_task_id: taskId,
@@ -850,7 +863,7 @@ describe("task verification durability", () => {
     const metadataEffects = await resolveObservedVerificationRepositoryEffects({
       ctx,
       evaluatedSha: metadataSha,
-      taskId,
+      task: frozenTask,
       artifactTaskIds: [taskId],
       execution,
       changed_paths: [manifestPath],
@@ -871,7 +884,7 @@ describe("task verification durability", () => {
     const dependencyEffects = await resolveObservedVerificationRepositoryEffects({
       ctx,
       evaluatedSha: dependencySha,
-      taskId,
+      task: frozenTask,
       artifactTaskIds: [taskId],
       execution,
       changed_paths: [manifestPath],
@@ -902,11 +915,13 @@ describe("task verification durability", () => {
     });
     const evaluatedSha = evaluatedShaOutput.trim();
     const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
+    const task = await ctx.taskBackend.getTask(taskId);
+    if (!task) throw new Error("missing legacy direct task fixture");
 
     const changedPaths = await resolveObservedVerificationChangedPaths({
       ctx,
       evaluatedSha,
-      taskId,
+      task,
       artifactTaskIds: [taskId],
       execution: {
         schema_version: 1,

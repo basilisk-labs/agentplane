@@ -10,6 +10,7 @@ import {
   kernelIntentSchema,
   kernelWorkContractSchema,
   type KernelIntent,
+  type KernelDocuments,
   type KernelWorkContract,
 } from "../../adapters/task-backend/kernel-documents.js";
 import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js";
@@ -79,6 +80,7 @@ export class KernelTaskLifecycle {
     task: TaskData,
     intent: KernelIntent,
     input: KernelCommandInput,
+    planInputs?: KernelDocuments["plan_inputs"],
   ): Promise<KernelAdapterResult> {
     if (!kernelIntentSchema.safeParse(intent).success) return unavailable("invalid_intent");
     if (
@@ -86,23 +88,29 @@ export class KernelTaskLifecycle {
       input.command.intent_digest !== taskKernel.kernelDigest(intent)
     )
       return unavailable("intent_binding_mismatch");
-    return this.adapter.create(task, input, { intent, contracts: {} });
+    return this.adapter.create(task, input, {
+      intent,
+      contracts: {},
+      ...(planInputs ? { plan_inputs: planInputs } : {}),
+    });
   }
 
   async apply(
     input: KernelCommandInput,
     contracts: readonly KernelWorkContract[] = [],
+    planInputs?: KernelDocuments["plan_inputs"],
   ): Promise<KernelAdapterResult> {
     if (input.command.kind === "approve_plan" && input.command.authority_mode !== undefined)
       return unavailable("authority_resolver_required");
     if (input.command.kind === "transition_work_item" && input.command.action === "begin")
       return unavailable("begin_boundary_required");
-    return this.applyInput(input, contracts);
+    return this.applyInput(input, contracts, planInputs);
   }
 
   private async applyInput(
     input: KernelCommandInput,
     contracts: readonly KernelWorkContract[] = [],
+    planInputs?: KernelDocuments["plan_inputs"],
   ): Promise<KernelAdapterResult> {
     if (!lifecycleCommands.has(input.command.kind)) return unavailable("not_a_lifecycle_command");
     const read = await this.readTask(input.command.task_id);
@@ -110,13 +118,20 @@ export class KernelTaskLifecycle {
     if (!read.record.documents) return unavailable("document_migration_required");
     if (input.command.kind === "accept_work_item_result")
       return unavailable("result_binding_required");
-    if (contracts.length === 0) return this.adapter.execute(input);
+    if (contracts.length === 0) {
+      if (planInputs !== undefined) return unavailable("unexpected_plan_inputs");
+      return this.adapter.execute(input);
+    }
     if (input.command.kind !== "propose_plan" && input.command.kind !== "amend_plan")
       return unavailable("unexpected_contracts");
     if (contracts.some((contract) => !kernelWorkContractSchema.safeParse(contract).success))
       return unavailable("invalid_work_contract");
     const documents = {
+      ...read.record.documents,
       intent: read.record.documents.intent,
+      ...(planInputs
+        ? { plan_inputs: { ...read.record.documents.plan_inputs, ...planInputs } }
+        : {}),
       contracts: {
         ...read.record.documents.contracts,
         ...Object.fromEntries(

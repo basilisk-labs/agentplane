@@ -28,7 +28,7 @@ const PROMOTABLE_FINDING = [
   "  Impact: reusable recovery knowledge stayed task-local and operators repeated the same cleanup steps.",
   "  Resolution: promote incidents during reconcile whenever a DONE task already carries structured external Findings.",
   "  Fixability: external",
-].join("\n");
+].join("\\n");
 
 describe("runCli", { timeout: NORMALIZE_MIGRATE_INTEGRATION_TIMEOUT_MS }, () => {
   it(
@@ -515,7 +515,7 @@ describe("runCli", { timeout: NORMALIZE_MIGRATE_INTEGRATION_TIMEOUT_MS }, () => 
         root,
       ]);
       expect(addCode).toBe(0);
-      await runCliSilent([
+      const docCode = await runCliSilent([
         "task",
         "doc",
         "set",
@@ -527,7 +527,7 @@ describe("runCli", { timeout: NORMALIZE_MIGRATE_INTEGRATION_TIMEOUT_MS }, () => 
         "--root",
         root,
       ]);
-
+      expect(docCode).toBe(0);
       const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
       await mkdir(prDir, { recursive: true });
       await writeFile(

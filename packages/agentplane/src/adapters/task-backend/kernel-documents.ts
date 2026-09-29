@@ -2,6 +2,7 @@ import {
   taskKernel,
   kernelIntentSchema,
   kernelWorkContractSchema,
+  TASK_PLAN_PROPOSAL_ZOD_SCHEMA,
 } from "@agentplaneorg/core/tasks";
 import { z } from "zod";
 
@@ -11,6 +12,9 @@ export { kernelIntentSchema, kernelWorkContractSchema } from "@agentplaneorg/cor
 export const kernelDocumentsSchema = z.strictObject({
   intent: kernelIntentSchema,
   contracts: z.record(z.string().regex(/^sha256:[a-f0-9]{64}$/u), kernelWorkContractSchema),
+  plan_inputs: z
+    .record(z.string().regex(/^sha256:[a-f0-9]{64}$/u), TASK_PLAN_PROPOSAL_ZOD_SCHEMA)
+    .optional(),
 });
 export type KernelIntent = z.infer<typeof kernelIntentSchema>;
 export type KernelWorkContract = z.infer<typeof kernelWorkContractSchema>;
@@ -32,6 +36,20 @@ export function kernelDocumentIssues(
     issues.push("intent_digest");
   for (const [digest, contract] of Object.entries(documents.contracts)) {
     if (taskKernel.kernelDigest(contract) !== digest) issues.push(`contract_digest:${digest}`);
+  }
+  const inputs = documents.plan_inputs ?? {};
+  const inputRefs = new Set(
+    [documents.intent, ...Object.values(documents.contracts)]
+      .map((value) => value.plan_input_digest)
+      .filter((value): value is string => value !== undefined),
+  );
+  for (const digest of inputRefs) {
+    if (!Object.hasOwn(inputs, digest)) issues.push(`plan_input_missing:${digest}`);
+  }
+  for (const [digest, proposal] of Object.entries(inputs)) {
+    if (taskKernel.kernelDigest(proposal) !== digest || proposal.task_id !== aggregate.id)
+      issues.push(`plan_input_identity:${digest}`);
+    if (!inputRefs.has(digest)) issues.push(`plan_input_unreferenced:${digest}`);
   }
   const referenced = new Set<taskKernel.Sha256Digest>();
   for (const plan of [aggregate.current_plan, ...aggregate.plan_history]) {

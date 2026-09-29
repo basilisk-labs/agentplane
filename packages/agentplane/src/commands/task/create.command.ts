@@ -1,4 +1,7 @@
+import path from "node:path";
 import type { CommandCtx, CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
+import { readStableRegularTextNoFollow } from "../../shared/stable-file.js";
+import { parseSuppliedPlanInput } from "./create-plan-input.js";
 import { usageError } from "../../cli/spec/errors.js";
 import { createCliEmitter } from "../../cli/output.js";
 import { makeExecutionContext } from "../../runtime/execution-context.js";
@@ -42,6 +45,7 @@ export type TaskCreateParsed = {
   capabilities: string[];
   resources: string[];
   base?: string;
+  planFile?: string;
   allowDuplicate: boolean;
   json: boolean;
 };
@@ -149,6 +153,13 @@ export const taskCreateSpec: CommandSpec<TaskCreateParsed> = {
     "Validates caller-supplied structured intent. Without it, creates a neutral PLANNER intake boundary without classifying title words.",
   args: [{ name: "outcome", required: true, valueHint: "<outcome>" }],
   options: [
+    {
+      kind: "string",
+      name: "plan-file",
+      valueHint: "<path>",
+      description:
+        "Read an existing compact v2 or full v1 Plan proposal. This input never grants approval.",
+    },
     {
       kind: "string",
       name: "description",
@@ -314,6 +325,8 @@ export const taskCreateSpec: CommandSpec<TaskCreateParsed> = {
     if (typeof raw.opts.base === "string" && !raw.opts.base.trim()) {
       throw usageError({ spec: taskCreateSpec, message: "Invalid value for --base: empty." });
     }
+    if (typeof raw.opts["plan-file"] === "string" && !raw.opts["plan-file"].trim())
+      throw usageError({ spec: taskCreateSpec, message: "Invalid value for --plan-file: empty." });
     const hasAnyStructuredIntent = [
       raw.opts["task-kind"],
       raw.opts["mutation-scope"],
@@ -366,6 +379,7 @@ export const taskCreateSpec: CommandSpec<TaskCreateParsed> = {
     capabilities: Array.isArray(raw.opts.capability) ? (raw.opts.capability as string[]) : [],
     resources: Array.isArray(raw.opts.resource) ? (raw.opts.resource as string[]) : [],
     base: typeof raw.opts.base === "string" ? raw.opts.base.trim() : undefined,
+    planFile: typeof raw.opts["plan-file"] === "string" ? raw.opts["plan-file"].trim() : undefined,
     allowDuplicate: raw.opts["allow-duplicate"] === true,
     json: raw.opts.json === true,
   }),
@@ -375,6 +389,16 @@ export function makeRunTaskCreateHandler(
   getCtx: (commandForErrorContext: string) => Promise<CommandContext>,
 ): CommandHandler<TaskCreateParsed> {
   return async (ctx: CommandCtx, parsed: TaskCreateParsed): Promise<number> => {
+    const suppliedPlan = parsed.planFile
+      ? parseSuppliedPlanInput(
+          JSON.parse(
+            await readStableRegularTextNoFollow(
+              path.resolve(ctx.cwd, parsed.planFile),
+              "supplied Plan",
+            ),
+          ),
+        )
+      : undefined;
     const command = await getCtx("task create");
     const execution = await makeExecutionContext(command);
     throwIfPolicyDecisionDenied(
@@ -437,6 +461,7 @@ export function makeRunTaskCreateHandler(
         riskFlags: intent.riskFlags,
         route: parsed.route,
         executionContract,
+        ...(suppliedPlan ? { suppliedPlan } : {}),
         ...(explicitBase
           ? {
               extensions: {
@@ -461,13 +486,13 @@ export function makeRunTaskCreateHandler(
     };
     const payload = {
       task_id: created.task_id,
-      status: "semantic_input_required" as const,
+      status: suppliedPlan ? ("advance_required" as const) : ("semantic_input_required" as const),
       semantic_intent: semanticIntent,
       /** @deprecated Compatibility alias for pre-0.7.6 JSON consumers. */
       inferred_intent: semanticIntent,
       execution_route: route,
       execution_contract: executionContract,
-      required_role: "PLANNER" as const,
+      required_role: suppliedPlan ? null : ("PLANNER" as const),
       next_command: nextCommand,
     };
 
@@ -495,7 +520,7 @@ export function makeRunTaskCreateHandler(
               `repository=${route.repository_mode}`,
           },
           { label: "route_reasons", value: route.reason_codes.join(", ") },
-          { label: "required_role", value: payload.required_role },
+          { label: "required_role", value: payload.required_role ?? "pending_advance" },
           { label: "next", value: nextCommand },
         ],
         { header: "task create" },

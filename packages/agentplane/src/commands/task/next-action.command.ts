@@ -164,7 +164,7 @@ export function makeRunTaskNextActionHandler(session: {
       : session.getLocalContext("task next-action"));
     const canonical = await readTaskKernel(commandCtx, parsed.taskId);
     if (canonical.kind !== "legacy_unmigrated" && !parsed.remote) {
-      return reportTaskKernelRead(canonical, parsed.taskId, parsed.json);
+      return reportTaskKernelRead(canonical, parsed.taskId, parsed.json, commandCtx);
     }
     const preparedWorkOrder = requirePreparedAgentWorkOrder(
       await prepareAgentWorkOrder({

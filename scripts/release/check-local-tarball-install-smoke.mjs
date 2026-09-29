@@ -6,6 +6,7 @@ import path from "node:path";
 
 import { defineScript, runScriptMain } from "../lib/script-runtime.mjs";
 import { runInstalledMigrationMatrix } from "../lib/installed-migration-matrix.mjs";
+import { runInstalledPlanningMatrix } from "../lib/installed-planning-matrix.mjs";
 
 const PACKAGES = ["core", "recipes", "agentplane"];
 const V0_6_26_ASSIMILATION_COMMIT = "13af54063ead7d2bba75b577ff93f7bf1ef76f63";
@@ -348,18 +349,14 @@ const main = defineScript({
         { cwd: repo },
       );
 
+      const legacyPlanPath = path.join(tempRoot, "legacy-smoke-plan.md");
+      writeFileSync(
+        legacyPlanPath,
+        "1. Exercise installed contract failures\n2. Verify JSON envelopes and exit codes\n",
+      );
       run(
         agentplane,
-        [
-          "task",
-          "plan",
-          "set",
-          taskId,
-          "--text",
-          "1) Exercise installed contract failures\n2) Verify JSON envelopes and exit codes",
-          "--updated-by",
-          "ORCHESTRATOR",
-        ],
+        ["task", "plan", "set", taskId, "--file", legacyPlanPath, "--updated-by", "ORCHESTRATOR"],
         { cwd: repo },
       );
       run(
@@ -431,6 +428,13 @@ const main = defineScript({
         installedJsonErrorContract,
       );
 
+      const planningMatrix = runInstalledPlanningMatrix({
+        agentplane,
+        tempRoot: path.join(tempRoot, "planning-matrix"),
+        run,
+        runFailure,
+      });
+      process.stdout.write(`installed planning matrix OK (scenarios=${planningMatrix.count})\n`);
       const migrationSourceRoot = prepareMigrationSourceRepository(process.cwd(), tempRoot);
       const migrationMatrix = runInstalledMigrationMatrix({
         agentplane,

@@ -15,6 +15,17 @@ const VITEST_TIMEOUT_MS = "60000";
 export const VITEST_CHUNK_TIMEOUT_MS = 10 * 60 * 1000;
 export const SUITES = ROUTE_SUITES;
 
+export function resolveVitestChunkTimeoutMs(raw) {
+  if (raw === undefined || String(raw).trim() === "") return VITEST_CHUNK_TIMEOUT_MS;
+  const value = Number(raw);
+  if (!Number.isSafeInteger(value) || value < VITEST_CHUNK_TIMEOUT_MS || value > 3_600_000) {
+    throw new Error(
+      "AGENTPLANE_VITEST_CHUNK_TIMEOUT_MS must be an integer from 600000 to 3600000.",
+    );
+  }
+  return value;
+}
+
 function printHelp() {
   process.stdout.write(`Usage: node scripts/run-vitest-suite.mjs <suite> [vitest args...]
 
@@ -97,7 +108,7 @@ function runVitestCaptured(args, files) {
     encoding: "utf8",
     env: process.env,
     maxBuffer: 64 * 1024 * 1024,
-    timeout: VITEST_CHUNK_TIMEOUT_MS,
+    timeout: resolveVitestChunkTimeoutMs(process.env.AGENTPLANE_VITEST_CHUNK_TIMEOUT_MS),
   });
   const output = [result.stdout, result.stderr].filter(Boolean).join("");
   const fileList = files.join(", ");

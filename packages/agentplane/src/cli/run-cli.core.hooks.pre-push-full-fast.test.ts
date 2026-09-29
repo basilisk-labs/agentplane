@@ -15,6 +15,25 @@ const PRE_PUSH_HOOK_SCRIPT = path.resolve(
 );
 
 describe("pre-push full-fast guard", () => {
+  it("allows an initial push when the project defines no optional CI script", async () => {
+    const root = await mkGitRepoRoot();
+    await writeFile(path.join(root, "README.md"), "# User project\n", "utf8");
+    execFileSync("git", ["add", "README.md"], { cwd: root });
+    execFileSync("git", ["commit", "-m", "seed documentation"], { cwd: root });
+    const localSha = execFileSync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+      encoding: "utf8",
+    }).trim();
+    const output = execFileSync("node", [PRE_PUSH_HOOK_SCRIPT], {
+      cwd: root,
+      input: `refs/heads/main ${localSha} refs/heads/main ${"0".repeat(40)}\n`,
+      encoding: "utf8",
+      stdio: ["pipe", "pipe", "pipe"],
+    });
+    expect(output).toContain("Skipping ci:local:fast: package.json script is not defined.");
+    expect(output).toContain("Skipping format:check: package.json script is not defined.");
+  });
+
   it("reuses exact local verification for the same clean outgoing commit", async () => {
     const root = await mkGitRepoRoot();
     await mkdir(path.join(root, ".agentplane", "tasks", "202601010101-ABCDEF"), {

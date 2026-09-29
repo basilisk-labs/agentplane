@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202609261720-KKE9ZN",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-09-28T18:12:05.732Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "300d2399b1bd6b392e6ec61cb5922b3a88bd4ac3",
+  "review_identity_digest": "sha256:5a50a9e8fc0fb16916b4b802e2c94dd751bf0891f6bb8ca432e5807d823e53af",
+  "findings": [
+    "Reviewed planning reuse and recovery preserve approval, independent evaluation, stale-result rejection, and retry evidence. Closure and cursor recovery include positive and negative regressions. Required checks passed at the evaluated SHA. The current Git observation resolves the workspace-evidence gap: status is clean and subsequent changes are confined to this task's artifacts. M04 remains NOT ESTABLISHED; hosted integration and publication retain their separate gates."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202609261720-KKE9ZN/quality/objects/sha256/94df67dc8d1275949d0ee38ca2c4876da6e16770dff95bd9a59ba0aeb8a201ee.patch",
+    ".agentplane/tasks/202609261720-KKE9ZN/verification/20260928180827375-e3952578b7103f25.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

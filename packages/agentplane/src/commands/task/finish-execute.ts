@@ -23,7 +23,10 @@ import {
   type FinishExecutionPlan,
   type FinishOptions,
 } from "./finish-types.js";
-import { hasCanonicalPreMergeEvidence } from "../shared/canonical-pre-merge-evidence.js";
+import {
+  hasCanonicalPreMergeEvidence,
+  hasCompletedCanonicalFinalValidation,
+} from "../shared/canonical-pre-merge-evidence.js";
 import { collectIncidentsForLoadedTasks, loadFinishTasks } from "./finish-execute-load.js";
 import { resolveImplementationCommitInfo, resolveTaskCommitInfo } from "./finish-execute-commit.js";
 import { assertCloseCommitCanMutateTaskState, finalizeCloseTail } from "./finish-execute-close.js";
@@ -138,7 +141,12 @@ export async function executeFinishPlan(opts: {
         implementationCommitInfo,
         allowCanonicalProjection:
           plan.preMergeClosure &&
-          loadedState.loadedTasks.every(({ task }) => hasCanonicalPreMergeEvidence(task)),
+          loadedState.loadedTasks.every(
+            ({ task }) =>
+              hasCanonicalPreMergeEvidence(task) ||
+              // Current SHA-bound verification and review passed above; retain the completed Kernel.
+              hasCompletedCanonicalFinalValidation(task),
+          ),
       });
       closeoutJournal = await advanceFinishCloseoutJournal({
         path: closeout.path,

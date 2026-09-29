@@ -560,7 +560,7 @@ function main() {
       return;
     }
   }
-  if (!isReleasePush) {
+  if (!isReleasePush && Object.hasOwn(scripts, ciScript)) {
     failIfStandardPrePushRequiresFullFast({ updates, changedFiles, diffRange });
   }
   if (!trackedChangesShort()) {

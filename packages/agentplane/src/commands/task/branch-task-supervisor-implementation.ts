@@ -297,7 +297,10 @@ export async function applyBranchImplementationResult(
     execution_base_commit: conflict?.local.base_head_sha ?? executionBaseCommit,
     observed_base_commit: conflict ? (executionBaseCommit ?? undefined) : undefined,
     execution_baseline_status: executionBaselineStatus,
-    allowed_paths: lifecycle.lifecycle.work_order_authority?.writable_roots ?? [],
+    allowed_paths: [
+      ...(lifecycle.lifecycle.work_order_authority?.writable_roots ?? []),
+      ...(conflict ? [`${command.config.paths.workflow_dir}/${opts.input.task_id}`] : []),
+    ],
     observed_changed_paths:
       lifecycle.result?.evidence?.provenance === "supervisor_observed"
         ? (lifecycle.result.evidence.changed_paths ?? [])

@@ -213,7 +213,7 @@ describe("runCli task doc set validation and errors", () => {
         root,
       ]);
       expect(code4).toBe(2);
-      expect(io4.stderr).toContain("Exactly one of --text or --file is required.");
+      expect(io4.stderr).toContain("Missing required option: --text (or pass --file).");
     } finally {
       io4.restore();
     }

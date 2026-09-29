@@ -31,6 +31,30 @@ afterEach(async () => {
 });
 
 describe("direct task verification sequences", () => {
+  it.each([
+    { script: "release:prepublish", explicitTimeout: undefined, expectedTimeout: 150 * 60_000 },
+    { script: "release:prepublish", explicitTimeout: 1000, expectedTimeout: 1000 },
+    { script: "release:prepublish:fast", explicitTimeout: undefined, expectedTimeout: 30 * 60_000 },
+  ])(
+    "bounds $script with explicit timeout $explicitTimeout",
+    async ({ script, explicitTimeout, expectedTimeout }) => {
+      const cwd = await root();
+      const check = `bun run ${script}`;
+      runProcess.mockResolvedValue({ exitCode: 0, stdout: "ok", stderr: "" });
+      const result = await runDirectTaskVerification({
+        command: command(cwd),
+        task: { verify: [check], task_kind: "code", mutation_scope: "code" },
+        task_id: TASK_ID,
+        cwd,
+        run_process: runProcess,
+        additional_commands: [{ command: check, timeout_ms: explicitTimeout }],
+      });
+      expect(result.status).toBe("passed");
+      expect(runProcess).toHaveBeenCalledOnce();
+      expect(runProcess.mock.calls[0]?.[0]).toHaveProperty("timeoutMs", expectedTimeout);
+    },
+  );
+
   it("rejects incomplete runtime evidence and succeeds on a fully qualified retry", async () => {
     const cwd = await root();
     const check = "bun run first && bun run second";

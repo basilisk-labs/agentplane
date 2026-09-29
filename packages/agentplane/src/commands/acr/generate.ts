@@ -24,6 +24,8 @@ import {
   inferCheckType,
 } from "./generate-extensions.js";
 import { defaultAcrPath } from "./validate.js";
+import { readTaskKernel } from "../task/kernel-read.js";
+import { projectKernelPlanning } from "../task/kernel-planning-view.js";
 
 type ModelProvider = "anthropic" | "openai" | "cursor" | "aider" | "unknown" | "custom";
 
@@ -154,7 +156,11 @@ export async function generateAcr(opts: {
     evidence,
   });
   const mergeReady = residualRisks.length === 0;
+  const canonical = await readTaskKernel(opts.ctx, task.id, task);
   const extensions = {
+    ...(canonical.kind === "canonical"
+      ? { "agentplane.planning": await projectKernelPlanning(opts.ctx, task, canonical.record) }
+      : {}),
     "agentplane.native-identity": nativeIdentity,
     ...(task.token_usage ? { "agentplane.token-usage": task.token_usage } : {}),
     ...buildAcrContextExtension(task),

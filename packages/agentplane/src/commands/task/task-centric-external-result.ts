@@ -20,7 +20,7 @@ import type { CommandContext } from "../shared/task-backend.js";
 import type { TaskData } from "../../backends/task-backend.js";
 import type { DirectTaskVerificationResult } from "./direct-task-verification.js";
 
-export const TASK_CENTRIC_EXECUTION_CAPABILITIES = new Set(["task.verify"]);
+export { PLAN_VALIDATION_CAPABILITIES as TASK_CENTRIC_EXECUTION_CAPABILITIES } from "./planning-capabilities.js";
 
 export function taskCentricMutationReceipt(task: TaskData, idempotencyKey: string) {
   return runtimeFrom(task).mutation_receipts[idempotencyKey];

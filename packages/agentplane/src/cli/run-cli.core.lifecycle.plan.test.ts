@@ -197,8 +197,7 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
       expect(
         await runCli([
           "task",
-          "new",
-          "--title",
+          "create",
           "Atomic rejection",
           "--description",
           "Reject the structured plan atomically",
@@ -208,11 +207,20 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
           "CODER",
           "--tag",
           "code",
+          "--task-kind",
+          "code",
+          "--mutation-scope",
+          "code",
+          "--scope-root",
+          ".",
+          "--capability",
+          "task.verify",
+          "--json",
           "--root",
           root,
         ]),
       ).toBe(0);
-      taskId = ioNew.stdout.trim();
+      taskId = (JSON.parse(ioNew.stdout) as { task_id: string }).task_id;
     } finally {
       ioNew.restore();
     }
@@ -394,7 +402,7 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
       "set",
       taskId,
       "--text",
-      "1) Do the work\n2) Verify the work",
+      "1) Do the work\\n2) Verify the work",
       "--updated-by",
       "ORCHESTRATOR",
       "--root",
@@ -498,7 +506,7 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
       "set",
       taskId,
       "--text",
-      "1) Implement the change\n2) Verify the change",
+      "1) Implement the change\\n2) Verify the change",
       "--updated-by",
       "ORCHESTRATOR",
       "--root",
@@ -521,6 +529,12 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
       ]),
     ).not.toBe(0);
 
+    const verifyStepsFile = path.join(await mkTempDir(), "verify-steps.md");
+    await writeFile(
+      verifyStepsFile,
+      "1. Run `bun run test:critical`. Expected: the task-specific behavior passes.",
+      "utf8",
+    );
     expect(
       await runCli([
         "task",
@@ -529,8 +543,8 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
         taskId,
         "--section",
         "Verify Steps",
-        "--text",
-        "1. Run `bun run test:critical`. Expected: the task-specific behavior passes.",
+        "--file",
+        verifyStepsFile,
         "--updated-by",
         "PLANNER",
         "--root",
@@ -579,7 +593,7 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
           "set",
           taskId,
           "--text",
-          "1) Implement the revised change\n2) Verify the revised change",
+          "1) Implement the revised change\\n2) Verify the revised change",
           "--updated-by",
           "ORCHESTRATOR",
           "--root",

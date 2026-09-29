@@ -1,0 +1,1 @@
+🚧 E81FJR task: Prepare stable AgentPlane 0.7.12 release candidate [202609282003-E81FJR]

@@ -121,42 +121,6 @@ describe("runCli", () => {
       root,
     ]);
     await setTaskVerifySteps(root, depId);
-    await runCliSilent([
-      "task",
-      "plan",
-      "set",
-      depId,
-      "--text",
-      "1. Complete dependency fixture\n2. Verify readiness fixture",
-      "--updated-by",
-      "ORCHESTRATOR",
-      "--quiet",
-      "--root",
-      root,
-    ]);
-    await runCliSilent([
-      "task",
-      "plan",
-      "approve",
-      depId,
-      "--by",
-      "ORCHESTRATOR",
-      "--quiet",
-      "--root",
-      root,
-    ]);
-    await runCliSilent([
-      "task",
-      "start-ready",
-      depId,
-      "--author",
-      "CODER",
-      "--body",
-      "Start: dependency fixture for readiness details.",
-      "--quiet",
-      "--root",
-      root,
-    ]);
     const execFileAsync = promisify(execFile);
     await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
     await execFileAsync("git", ["add", "seed.txt"], { cwd: root });

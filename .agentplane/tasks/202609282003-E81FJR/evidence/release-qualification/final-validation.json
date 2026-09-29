@@ -1,0 +1,654 @@
+{
+  "binding": {
+    "task_id": "202609282003-E81FJR",
+    "plan_digest": "sha256:faa1295c812611e1addad5d44bdc9bb6c70d5ed5a5b0e34f2e3d9261b9572980",
+    "repository_fingerprint": "sha256:8a8d15422485881e2aa1bf2e23ec22f39b26ae45e9b479db4bb2b9d5cb33d42c",
+    "authority_digest": "sha256:9e63e0e56b0563ffcadb5049dce9f5a82ca0cb82655e38d82d26b4ebe80e4d7d",
+    "commands": [
+      "bun run release:parity",
+      "bun run release:tasks:check -- --allow-active-release-task",
+      "bun run release:prepublish"
+    ],
+    "environment_digest": "sha256:19b9b3a1d66f8016d6af2bfab760ac01fd80cb603ee8fba0954d00267d4fc866",
+    "repository_evidence": [],
+    "evaluator_target": null,
+    "verification_contract": {
+      "schema_version": 1,
+      "source": "agent_declared",
+      "declaration": {
+        "schema_version": 2,
+        "preferred_mode": "branch_pr",
+        "scope_roots": [
+          ".agentplane/WORKFLOW.md",
+          "bun.lock",
+          "docs/reference/generated-reference.mdx",
+          "docs/releases/v0.7.12.md",
+          "packages/agentplane/package.json",
+          "packages/core/package.json",
+          "packages/recipes/package.json",
+          "packages/recipes/src/index.ts",
+          "packages/spec/examples/acr.json",
+          "packages/testkit/package.json",
+          "scripts/release/release-scope-exclusions.json"
+        ],
+        "repository_effects": [
+          "dependencies",
+          "documentation",
+          "public_api",
+          "release_metadata",
+          "repository_write",
+          "source_code",
+          "tests"
+        ],
+        "external_effects": [
+          "external_write",
+          "network_read",
+          "publish"
+        ],
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "recovery_required",
+        "rationale": [
+          "explicit structured task intake"
+        ]
+      },
+      "selected_mode": "branch_pr",
+      "repository_mode": "branch_pr",
+      "reason_codes": [
+        "agent_preferred_branch_pr",
+        "effect_dependencies",
+        "effect_external_write",
+        "effect_public_api",
+        "effect_publish",
+        "effect_release_metadata",
+        "observed_path_outside_scope:.agentplane/tasks/202609261720-KKE9ZN/evidence/final-repair-inline-review/README.md",
+        "observed_path_outside_scope:.agentplane/tasks/202609261720-KKE9ZN/evidence/final-repair-inline-review/provider.jsonl",
+        "observed_path_outside_scope:.agentplane/tasks/202609261720-KKE9ZN/evidence/inline-review-recovery/README.md",
+        "observed_path_outside_scope:.agentplane/tasks/202609261720-KKE9ZN/evidence/inline-review-recovery/kke9zn-inline-review-2.jsonl",
+        "observed_path_outside_scope:.agentplane/tasks/202609261720-KKE9ZN/evidence/inline-review-recovery/kke9zn-inline-review.jsonl",
+        "observed_path_outside_scope:.agentplane/tasks/202609261720-KKE9ZN/evidence/verification-repair-inline-review/README.md",
+        "observed_path_outside_scope:.agentplane/tasks/202609261720-KKE9ZN/evidence/verification-repair-inline-review/kke9zn-inline-review-4.jsonl",
+        "observed_path_outside_scope:.agentplane/workflows/last-known-good.md",
+        "observed_path_outside_scope:packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap",
+        "observed_path_outside_scope:packages/agentplane/src/cli/managed-conflict-recovery.testkit.ts",
+        "observed_path_outside_scope:packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts",
+        "observed_path_outside_scope:packages/agentplane/src/cli/run-cli.core.command-session.test.ts",
+        "observed_path_outside_scope:packages/agentplane/src/cli/run-cli.core.demo.test.ts",
+        "observed_path_outside_scope:packages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts",
+        "observed_path_outside_scope:packages/agentplane/src/cli/run-cli.core.incidents.test.ts",
+        "observed_path_outside_scope:packages/agentplane/src/cli/run-cli.core.installed-smoke.test.ts",
+        "observed_path_outside_scope:packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts",
+        "observed_path_outside_scope:packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts",
+        "observed_path_outside_scope:packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-merge.test.ts",
+        "observed_path_outside_scope:packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts",
+        "observed_path_outside_scope:packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts",
+        "observed_path_outside_scope:packages/agentplane/src/cli/run-cli.core.tasks.doc-write.validation.test.ts",
+        "observed_path_outside_scope:packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts",
+        "observed_path_outside_scope:packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
+        "observed_path_outside_scope:packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts",
+        "observed_path_outside_scope:packages/agentplane/src/cli/run-cli/commands/core/demo.ts",
+        "observed_path_outside_scope:packages/agentplane/src/commands/release/apply.mutation.ts",
+        "observed_path_outside_scope:packages/agentplane/src/commands/release/apply.mutation.unit.test.ts",
+        "observed_path_outside_scope:packages/agentplane/src/commands/release/release-ci-contract.test.ts",
+        "observed_path_outside_scope:packages/agentplane/src/commands/task/branch-task-supervisor-episodes.test.ts",
+        "observed_path_outside_scope:packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts",
+        "observed_path_outside_scope:packages/agentplane/src/commands/task/branch-task-supervisor-implementation.ts",
+        "observed_path_outside_scope:scripts/baselines/v0.7-compatibility-candidate.json",
+        "observed_path_outside_scope:scripts/checks/run-pre-push-hook.mjs",
+        "observed_path_outside_scope:scripts/checks/run-vitest-suite.mjs",
+        "observed_path_outside_scope:scripts/oversized-test-baseline.json",
+        "repository_branch_pr_floor",
+        "reversibility_recovery_required"
+      ],
+      "authority": {
+        "writable_roots": [
+          ".agentplane/WORKFLOW.md",
+          "bun.lock",
+          "docs/reference/generated-reference.mdx",
+          "docs/releases/v0.7.12.md",
+          "packages/agentplane/package.json",
+          "packages/core/package.json",
+          "packages/recipes/package.json",
+          "packages/recipes/src/index.ts",
+          "packages/spec/examples/acr.json",
+          "packages/testkit/package.json",
+          "scripts/release/release-scope-exclusions.json"
+        ],
+        "allowed_repository_effects": [
+          "dependencies",
+          "documentation",
+          "public_api",
+          "release_metadata",
+          "repository_write",
+          "source_code",
+          "tests"
+        ],
+        "forbidden_repository_effects": [
+          "schema",
+          "ci",
+          "security_boundary"
+        ],
+        "allowed_external_effects": [
+          "network_read"
+        ],
+        "forbidden_external_effects": [
+          "external_write",
+          "credentials",
+          "publish",
+          "deploy",
+          "destructive_git"
+        ],
+        "allowed_capabilities": [
+          "provider.merge",
+          "provider.pr",
+          "repository.integrate",
+          "repository.write",
+          "repository_write",
+          "task.verify"
+        ],
+        "allowed_resources": []
+      },
+      "safety": {
+        "requires_worktree": true,
+        "requires_user_approval": true,
+        "approval_effects": [
+          "external_write",
+          "publish"
+        ]
+      },
+      "verification": {
+        "required_evidence": [
+          "external_effect:external_write",
+          "external_effect:network_read",
+          "external_effect:publish",
+          "hosted_integration",
+          "repository_effect:dependencies",
+          "repository_effect:documentation",
+          "repository_effect:public_api",
+          "repository_effect:release_metadata",
+          "repository_effect:repository_write",
+          "repository_effect:source_code",
+          "repository_effect:tests",
+          "task_outcome"
+        ],
+        "contract": {
+          "schema_version": 2,
+          "source": "execution_contract",
+          "phase": "task",
+          "declared": {
+            "repository_effects": [
+              "dependencies",
+              "documentation",
+              "public_api",
+              "release_metadata",
+              "repository_write",
+              "source_code",
+              "tests"
+            ],
+            "external_effects": [
+              "external_write",
+              "network_read",
+              "publish"
+            ],
+            "components": [
+              ".agentplane/WORKFLOW.md",
+              "bun.lock",
+              "docs/reference/generated-reference.mdx",
+              "docs/releases/v0.7.12.md",
+              "packages/agentplane/package.json",
+              "packages/core/package.json",
+              "packages/recipes/package.json",
+              "packages/recipes/src/index.ts",
+              "packages/spec/examples/acr.json",
+              "packages/testkit/package.json",
+              "scripts/release/release-scope-exclusions.json"
+            ],
+            "risk": {
+              "requirements_uncertainty": "bounded",
+              "implementation_uncertainty": "bounded",
+              "reversibility": "recovery_required"
+            },
+            "evidence_requirements": [
+              "external_effect:external_write",
+              "external_effect:network_read",
+              "external_effect:publish",
+              "hosted_integration",
+              "repository_effect:dependencies",
+              "repository_effect:documentation",
+              "repository_effect:public_api",
+              "repository_effect:release_metadata",
+              "repository_effect:repository_write",
+              "repository_effect:source_code",
+              "repository_effect:tests",
+              "task_outcome"
+            ]
+          },
+          "observed": {
+            "repository_effects": [
+              "dependencies",
+              "documentation",
+              "public_api",
+              "release_metadata",
+              "repository_write",
+              "source_code",
+              "tests"
+            ],
+            "external_effects": [],
+            "changed_components": [
+              ".agentplane",
+              "bun.lock",
+              "docs",
+              "packages/agentplane",
+              "packages/core",
+              "packages/recipes",
+              "packages/spec",
+              "packages/testkit",
+              "scripts"
+            ],
+            "changed_files": [
+              ".agentplane/WORKFLOW.md",
+              ".agentplane/tasks/202609261720-KKE9ZN/evidence/final-repair-inline-review/README.md",
+              ".agentplane/tasks/202609261720-KKE9ZN/evidence/final-repair-inline-review/provider.jsonl",
+              ".agentplane/tasks/202609261720-KKE9ZN/evidence/inline-review-recovery/README.md",
+              ".agentplane/tasks/202609261720-KKE9ZN/evidence/inline-review-recovery/kke9zn-inline-review-2.jsonl",
+              ".agentplane/tasks/202609261720-KKE9ZN/evidence/inline-review-recovery/kke9zn-inline-review.jsonl",
+              ".agentplane/tasks/202609261720-KKE9ZN/evidence/verification-repair-inline-review/README.md",
+              ".agentplane/tasks/202609261720-KKE9ZN/evidence/verification-repair-inline-review/kke9zn-inline-review-4.jsonl",
+              ".agentplane/workflows/last-known-good.md",
+              "bun.lock",
+              "docs/reference/generated-reference.mdx",
+              "docs/releases/v0.7.12.md",
+              "packages/agentplane/package.json",
+              "packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap",
+              "packages/agentplane/src/cli/managed-conflict-recovery.testkit.ts",
+              "packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts",
+              "packages/agentplane/src/cli/run-cli.core.command-session.test.ts",
+              "packages/agentplane/src/cli/run-cli.core.demo.test.ts",
+              "packages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts",
+              "packages/agentplane/src/cli/run-cli.core.incidents.test.ts",
+              "packages/agentplane/src/cli/run-cli.core.installed-smoke.test.ts",
+              "packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts",
+              "packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts",
+              "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-merge.test.ts",
+              "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts",
+              "packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts",
+              "packages/agentplane/src/cli/run-cli.core.tasks.doc-write.validation.test.ts",
+              "packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts",
+              "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
+              "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts",
+              "packages/agentplane/src/cli/run-cli/commands/core/demo.ts",
+              "packages/agentplane/src/commands/release/apply.mutation.ts",
+              "packages/agentplane/src/commands/release/apply.mutation.unit.test.ts",
+              "packages/agentplane/src/commands/release/release-ci-contract.test.ts",
+              "packages/agentplane/src/commands/task/branch-task-supervisor-episodes.test.ts",
+              "packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts",
+              "packages/agentplane/src/commands/task/branch-task-supervisor-implementation.ts",
+              "packages/core/package.json",
+              "packages/recipes/package.json",
+              "packages/recipes/src/index.ts",
+              "packages/spec/examples/acr.json",
+              "packages/testkit/package.json",
+              "scripts/baselines/v0.7-compatibility-candidate.json",
+              "scripts/checks/run-pre-push-hook.mjs",
+              "scripts/checks/run-vitest-suite.mjs",
+              "scripts/oversized-test-baseline.json",
+              "scripts/release/release-scope-exclusions.json"
+            ]
+          },
+          "policy_floor": {
+            "pr_full_regression": true,
+            "unknown_or_central_full_regression": true,
+            "monotonic_strengthening": true
+          },
+          "selector": {
+            "kind": "semantic",
+            "reason": "execution_declaration",
+            "execution_mode": "semantic",
+            "bucket": null,
+            "buckets": [],
+            "lint_targets": [],
+            "vitest_pool": "forks",
+            "run_cli_docs_check": false,
+            "selected_test_files": []
+          },
+          "selected_checks": [
+            "affected_unit_integration",
+            "critical_paths",
+            "docs_contract",
+            "full_regression",
+            "hosted_integration",
+            "real_e2e",
+            "task_outcome"
+          ],
+          "execution_groups": [
+            "docs-schema",
+            "core",
+            "runtime",
+            "cli"
+          ],
+          "escalation_reasons": [
+            "central_component:bun.lock",
+            "central_component:packages/core/package.json",
+            "central_component:scripts/release/release-scope-exclusions.json",
+            "central_path:bun.lock",
+            "central_path:packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap",
+            "central_path:packages/agentplane/src/cli/managed-conflict-recovery.testkit.ts",
+            "central_path:packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts",
+            "central_path:packages/agentplane/src/cli/run-cli.core.command-session.test.ts",
+            "central_path:packages/agentplane/src/cli/run-cli.core.demo.test.ts",
+            "central_path:packages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts",
+            "central_path:packages/agentplane/src/cli/run-cli.core.incidents.test.ts",
+            "central_path:packages/agentplane/src/cli/run-cli.core.installed-smoke.test.ts",
+            "central_path:packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts",
+            "central_path:packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts",
+            "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-merge.test.ts",
+            "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts",
+            "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts",
+            "central_path:packages/agentplane/src/cli/run-cli.core.tasks.doc-write.validation.test.ts",
+            "central_path:packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts",
+            "central_path:packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
+            "central_path:packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts",
+            "central_path:packages/agentplane/src/cli/run-cli/commands/core/demo.ts",
+            "central_path:packages/core/package.json",
+            "central_path:scripts/checks/run-pre-push-hook.mjs",
+            "central_path:scripts/checks/run-vitest-suite.mjs",
+            "central_path:scripts/release/release-scope-exclusions.json",
+            "effect_dependencies",
+            "effect_public_api",
+            "effect_release_metadata",
+            "external_effect_requires_real_e2e",
+            "reversibility_recovery_required",
+            "unknown_path:.agentplane/tasks/202609261720-KKE9ZN/evidence/final-repair-inline-review/provider.jsonl",
+            "unknown_path:.agentplane/tasks/202609261720-KKE9ZN/evidence/inline-review-recovery/kke9zn-inline-review-2.jsonl",
+            "unknown_path:.agentplane/tasks/202609261720-KKE9ZN/evidence/inline-review-recovery/kke9zn-inline-review.jsonl",
+            "unknown_path:.agentplane/tasks/202609261720-KKE9ZN/evidence/verification-repair-inline-review/kke9zn-inline-review-4.jsonl",
+            "unknown_path:packages/agentplane/package.json",
+            "unknown_path:packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap",
+            "unknown_path:packages/core/package.json",
+            "unknown_path:packages/recipes/package.json",
+            "unknown_path:packages/spec/examples/acr.json",
+            "unknown_path:packages/testkit/package.json",
+            "unknown_path:scripts/baselines/v0.7-compatibility-candidate.json",
+            "unknown_path:scripts/oversized-test-baseline.json",
+            "unknown_path:scripts/release/release-scope-exclusions.json"
+          ],
+          "requires_full_regression": true,
+          "requires_real_e2e": true,
+          "digest": "sha256:d3a685294059a7dc880d041dde0b0d7c5de4415f94a4753b5018915d0c19cf10"
+        }
+      },
+      "observed": {
+        "repository_effects": [
+          "dependencies",
+          "documentation",
+          "public_api",
+          "release_metadata",
+          "repository_write",
+          "source_code",
+          "tests"
+        ],
+        "external_effects": [],
+        "changed_paths": [
+          ".agentplane/WORKFLOW.md",
+          ".agentplane/tasks/202609261720-KKE9ZN/evidence/final-repair-inline-review/README.md",
+          ".agentplane/tasks/202609261720-KKE9ZN/evidence/final-repair-inline-review/provider.jsonl",
+          ".agentplane/tasks/202609261720-KKE9ZN/evidence/inline-review-recovery/README.md",
+          ".agentplane/tasks/202609261720-KKE9ZN/evidence/inline-review-recovery/kke9zn-inline-review-2.jsonl",
+          ".agentplane/tasks/202609261720-KKE9ZN/evidence/inline-review-recovery/kke9zn-inline-review.jsonl",
+          ".agentplane/tasks/202609261720-KKE9ZN/evidence/verification-repair-inline-review/README.md",
+          ".agentplane/tasks/202609261720-KKE9ZN/evidence/verification-repair-inline-review/kke9zn-inline-review-4.jsonl",
+          ".agentplane/workflows/last-known-good.md",
+          "bun.lock",
+          "docs/reference/generated-reference.mdx",
+          "docs/releases/v0.7.12.md",
+          "packages/agentplane/package.json",
+          "packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap",
+          "packages/agentplane/src/cli/managed-conflict-recovery.testkit.ts",
+          "packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts",
+          "packages/agentplane/src/cli/run-cli.core.command-session.test.ts",
+          "packages/agentplane/src/cli/run-cli.core.demo.test.ts",
+          "packages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts",
+          "packages/agentplane/src/cli/run-cli.core.incidents.test.ts",
+          "packages/agentplane/src/cli/run-cli.core.installed-smoke.test.ts",
+          "packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts",
+          "packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts",
+          "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-merge.test.ts",
+          "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts",
+          "packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts",
+          "packages/agentplane/src/cli/run-cli.core.tasks.doc-write.validation.test.ts",
+          "packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts",
+          "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
+          "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts",
+          "packages/agentplane/src/cli/run-cli/commands/core/demo.ts",
+          "packages/agentplane/src/commands/release/apply.mutation.ts",
+          "packages/agentplane/src/commands/release/apply.mutation.unit.test.ts",
+          "packages/agentplane/src/commands/release/release-ci-contract.test.ts",
+          "packages/agentplane/src/commands/task/branch-task-supervisor-episodes.test.ts",
+          "packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts",
+          "packages/agentplane/src/commands/task/branch-task-supervisor-implementation.ts",
+          "packages/core/package.json",
+          "packages/recipes/package.json",
+          "packages/recipes/src/index.ts",
+          "packages/spec/examples/acr.json",
+          "packages/testkit/package.json",
+          "scripts/baselines/v0.7-compatibility-candidate.json",
+          "scripts/checks/run-pre-push-hook.mjs",
+          "scripts/checks/run-vitest-suite.mjs",
+          "scripts/oversized-test-baseline.json",
+          "scripts/release/release-scope-exclusions.json"
+        ],
+        "changed_components": [
+          ".agentplane",
+          "bun.lock",
+          "docs",
+          "packages/agentplane",
+          "packages/core",
+          "packages/recipes",
+          "packages/spec",
+          "packages/testkit",
+          "scripts"
+        ],
+        "verification_results": [],
+        "authority_violations": [
+          "writable_scope:.agentplane/tasks/202609261720-KKE9ZN/evidence/final-repair-inline-review/README.md",
+          "writable_scope:.agentplane/tasks/202609261720-KKE9ZN/evidence/final-repair-inline-review/provider.jsonl",
+          "writable_scope:.agentplane/tasks/202609261720-KKE9ZN/evidence/inline-review-recovery/README.md",
+          "writable_scope:.agentplane/tasks/202609261720-KKE9ZN/evidence/inline-review-recovery/kke9zn-inline-review-2.jsonl",
+          "writable_scope:.agentplane/tasks/202609261720-KKE9ZN/evidence/inline-review-recovery/kke9zn-inline-review.jsonl",
+          "writable_scope:.agentplane/tasks/202609261720-KKE9ZN/evidence/verification-repair-inline-review/README.md",
+          "writable_scope:.agentplane/tasks/202609261720-KKE9ZN/evidence/verification-repair-inline-review/kke9zn-inline-review-4.jsonl",
+          "writable_scope:.agentplane/workflows/last-known-good.md",
+          "writable_scope:packages/agentplane/src/cli/__snapshots__/run-cli.core.help-snap.test.ts.snap",
+          "writable_scope:packages/agentplane/src/cli/managed-conflict-recovery.testkit.ts",
+          "writable_scope:packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts",
+          "writable_scope:packages/agentplane/src/cli/run-cli.core.command-session.test.ts",
+          "writable_scope:packages/agentplane/src/cli/run-cli.core.demo.test.ts",
+          "writable_scope:packages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts",
+          "writable_scope:packages/agentplane/src/cli/run-cli.core.incidents.test.ts",
+          "writable_scope:packages/agentplane/src/cli/run-cli.core.installed-smoke.test.ts",
+          "writable_scope:packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts",
+          "writable_scope:packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts",
+          "writable_scope:packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-merge.test.ts",
+          "writable_scope:packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts",
+          "writable_scope:packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts",
+          "writable_scope:packages/agentplane/src/cli/run-cli.core.tasks.doc-write.validation.test.ts",
+          "writable_scope:packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts",
+          "writable_scope:packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
+          "writable_scope:packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts",
+          "writable_scope:packages/agentplane/src/cli/run-cli/commands/core/demo.ts",
+          "writable_scope:packages/agentplane/src/commands/release/apply.mutation.ts",
+          "writable_scope:packages/agentplane/src/commands/release/apply.mutation.unit.test.ts",
+          "writable_scope:packages/agentplane/src/commands/release/release-ci-contract.test.ts",
+          "writable_scope:packages/agentplane/src/commands/task/branch-task-supervisor-episodes.test.ts",
+          "writable_scope:packages/agentplane/src/commands/task/branch-task-supervisor-episodes.ts",
+          "writable_scope:packages/agentplane/src/commands/task/branch-task-supervisor-implementation.ts",
+          "writable_scope:scripts/baselines/v0.7-compatibility-candidate.json",
+          "writable_scope:scripts/checks/run-pre-push-hook.mjs",
+          "writable_scope:scripts/checks/run-vitest-suite.mjs",
+          "writable_scope:scripts/oversized-test-baseline.json"
+        ]
+      }
+    },
+    "work_items": {
+      "RC02": {
+        "state": "COMPLETED",
+        "result_digest": "sha256:ed75e3257181713877e1ba26ca4e7946926318494e629c38b02076b20e3eba55",
+        "validation": {
+          "status": "PASSED",
+          "identity": {
+            "implementation_identity": "sha256:ed75e3257181713877e1ba26ca4e7946926318494e629c38b02076b20e3eba55",
+            "check_id": "canonical-contract-and-inspection",
+            "command_digest": "sha256:da48dd7232bc2424e06a132b8041a717f2282c574ab262f61d75de95fb4f5c23",
+            "toolchain_digest": "sha256:5a3b0e29e27baf58fa8f4697c8a875f35fc209aaa906b14d0f3f20bd67718381",
+            "environment_digest": "sha256:8b65a087a4bfc89b87cf5af90733c3939ba13de71cbc621eb486567b6b81784d"
+          },
+          "evidence_digests": [
+            "sha256:ad6e804248b636e798f6c22448e7a844bc158615296087c97d18e1f815b7d47a",
+            "sha256:d7f37272b567002938ecdc8e9f8374858cac09e93595ded386b6ba8837fc25f2"
+          ],
+          "observed_at": "2026-09-29T01:38:08.300Z"
+        }
+      }
+    }
+  },
+  "checks": {
+    "status": "passed",
+    "checks": [
+      {
+        "runtime": {
+          "kind": "local_runtime_resolution",
+          "status": "resolved",
+          "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+          "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6",
+          "environment_digest": "sha256:57d287a513206088c6ce326cc0b0c7ae5fc1f1bb41c574de58d11c606bd39db0"
+        },
+        "command": "bun run release:parity",
+        "script": "release:parity",
+        "check_ids": [
+          "affected_unit_integration",
+          "critical_paths",
+          "docs_contract",
+          "real_e2e",
+          "task_outcome"
+        ],
+        "exit_code": 0,
+        "duration_ms": 722,
+        "stdout_tail": "Release parity check passed (core=0.7.12, agentplane=0.7.12, recipes=0.7.12, coreDep=0.7.12, recipesDep=0.7.12, recipesRuntime=0.7.12).\n",
+        "stderr_tail": "$ node scripts/release/check-release-parity.mjs\n"
+      },
+      {
+        "runtime": {
+          "kind": "local_runtime_resolution",
+          "status": "resolved",
+          "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+          "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6",
+          "environment_digest": "sha256:57d287a513206088c6ce326cc0b0c7ae5fc1f1bb41c574de58d11c606bd39db0"
+        },
+        "command": "bun run release:tasks:check -- --allow-active-release-task",
+        "script": "release:tasks:check",
+        "check_ids": [
+          "affected_unit_integration",
+          "critical_paths",
+          "docs_contract",
+          "real_e2e",
+          "task_outcome"
+        ],
+        "exit_code": 0,
+        "duration_ms": 4446,
+        "stdout_tail": "task state OK (tasks=3439 release_closure=72 release_scope_exclusions=11)\naccepted release scope exclusions: 202609200139-9R40KQ (published_tag at 4470b04c34da735ffb46914ea6e6398a54eb39ac), 202609210002-0TQ72H (merged_commit at 4f28ee5433e7666de75437015b2003a9895073fc), 202609210154-5R1Q9A (merged_commit at be534096c332e29fe0831974844687961ba9807e), 202609210324-CC13V3 (superseded_by_task at 9d108f903c0fe89b80d65bc3a4482463d79be093), 202609211321-WKCWNP (superseded_by_task at a111e45ab09c91e8567ba700430c8a319ec9e556), 202609211325-YFF78T (superseded_by_task at a111e45ab09c91e8567ba700430c8a319ec9e556), 202609211544-JKVHYA (merged_commit at 787f96425a4b382a0322fbe2df893871028ccfad), 202609211700-JT0KEW (published_tag at 65b1c24e83576b7daca306e6dc6b7085c522cf58), 202609230938-QFMVQ0 (merged_commit at 940209a800dedc5b27c382a2642dff316b30a8fc), 202609231941-2A8922 (merged_commit at 5ee2da01f9fa34bbdd8386dc8be29a93b2c4fcb2), 202609232204-B33RAA (merged_commit at cc0516672e107f63083aa97aa4d8a8509e19d169)\n",
+        "stderr_tail": "$ node scripts/release/check-task-registry-ready.mjs --allow-active-release-task\n"
+      },
+      {
+        "runtime": {
+          "kind": "local_runtime_resolution",
+          "status": "resolved",
+          "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+          "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6",
+          "environment_digest": "sha256:57d287a513206088c6ce326cc0b0c7ae5fc1f1bb41c574de58d11c606bd39db0"
+        },
+        "command": "bun run release:prepublish",
+        "script": "release:prepublish",
+        "check_ids": [
+          "affected_unit_integration",
+          "critical_paths",
+          "docs_contract",
+          "real_e2e",
+          "task_outcome"
+        ],
+        "exit_code": 0,
+        "duration_ms": 5909790,
+        "stdout_tail": "hunk 114/117 (10 files): packages/core/src/runner/state-fingerprint.test.ts, packages/core/src/runner/supervisor-execution-episode-legacy.test.ts, packages/core/src/runner/supervisor-execution-episode-telemetry-admission.test.ts, packages/core/src/runner/supervisor-execution-episode-timing.test.ts, packages/core/src/runner/supervisor-execution-episode.test.ts, packages/core/src/tasks/plan-execution-grant.test.ts, packages/core/src/tasks/task-artifact-schema.test.ts, packages/core/src/tasks/task-centric/planning-obligation.test.ts, packages/core/src/tasks/task-centric/replacement-plan-recovery.test.ts, packages/core/src/tasks/task-centric/task-centric.test.ts\nVitest suite release-ci-base: chunk 114/117 passed in 5163ms (Test Files  10 passed (10); Tests  144 passed (144); Duration  4.29s (transform 1.87s, setup 601ms, import 3.89s, tests 1.10s, environment 1ms))\nVitest suite release-ci-base: chunk 115/117 (10 files): packages/core/src/tasks/task-doc-mutation.test.ts, packages/core/src/tasks/task-doc.test.ts, packages/core/src/tasks/task-execution-contract-compat.test.ts, packages/core/src/tasks/task-kernel/authority-delta.test.ts, packages/core/src/tasks/task-kernel/invariants.test.ts, packages/core/src/tasks/task-kernel/kernel-replan.test.ts, packages/core/src/tasks/task-kernel/kernel.test.ts, packages/core/src/tasks/task-kernel/model.test.ts, packages/core/src/tasks/task-kernel/repository-policy-approval.test.ts, packages/core/src/tasks/task-provider-safe-projection.test.ts\nVitest suite release-ci-base: chunk 115/117 passed in 5119ms (Test Files  10 passed (10); Tests  126 passed (126); Duration  4.26s (transform 2.18s, setup 838ms, import 4.48s, tests 547ms, environment 1ms))\nVitest suite release-ci-base: chunk 116/117 (10 files): packages/core/src/tasks/task-readme-io.test.ts, packages/core/src/tasks/task-readme.test.ts, packages/core/src/tasks/task-status.test.ts, packages/core/src/tasks/task-store.test.ts, packages/core/src/tasks/task-sync-envelope-schema.test.ts, packages/core/src/tasks/tasks-export.test.ts, packages/core/src/tasks/tasks-lint.test.ts, packages/core/src/tasks/verification-contract.test.ts, packages/recipes/src/index.test.ts, packages/recipes/src/overlay.test.ts\nVitest suite release-ci-base: chunk 116/117 passed in 8357ms (Test Files  10 passed (10); Tests  90 passed (90); Duration  7.71s (transform 1.63s, setup 595ms, import 4.51s, tests 7.47s, environment 3ms))\nVitest suite release-ci-base: chunk 117/117 (4 files): packages/testkit/src/cli-harness/recipe-archives.test.ts, packages/testkit/src/cli-harness/temp-root-cleanup.test.ts, packages/testkit/src/cli.test.ts, packages/testkit/src/index.test.ts\nVitest suite release-ci-base: chunk 117/117 passed in 7047ms (Test Files  4 passed (4); Tests  12 passed (12); Duration  6.43s (transform 7.99s, setup 302ms, import 11.23s, tests 288ms, environment 0ms))\n\n RUN  v4.1.9 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202609282003-E81FJR-prepare-stable-agentplane-0-7-12-release-candida\n\n\n Test Files  13 passed (13)\n      Tests  51 passed (51)\n   Start at  06:15:03\n   Duration  3.85s (transform 1.80s, setup 875ms, import 4.96s, tests 3.23s, environment 5ms)\n\nWorkflow harness suite contract OK (5 source targets; matrix=docs/developer/workflow-harness-test-matrix.mdx).\n\n RUN  v4.1.9 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202609282003-E81FJR-prepare-stable-agentplane-0-7-12-release-candida\n\n\n Test Files  19 passed (19)\n      Tests  204 passed (204)\n   Start at  06:15:09\n   Duration  34.35s (transform 42.97s, setup 1.74s, import 59.47s, tests 57.90s, environment 5ms)\n\nSignificant suite contract OK (17 source targets).\n\n RUN  v4.1.9 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202609282003-E81FJR-prepare-stable-agentplane-0-7-12-release-candida\n\n\n Test Files  11 passed (11)\n      Tests  64 passed (64)\n   Start at  06:15:44\n   Duration  88.60s (transform 59.30s, setup 699ms, import 63.43s, tests 236.19s, environment 1ms)\n\n",
+        "stderr_tail": "check-no-console.mjs\n$ bun run arch:baseline && bun run arch:deps\n$ node scripts/checks/check-depcruise-known-violations.mjs\n$ node scripts/checks/run-depcruise-arch.mjs depcruise.config.cjs\n$ node scripts/checks/check-clone-baseline.mjs\n$ node scripts/checks/check-knip-baseline.mjs\n$ bun run artifacts:check && bun run task-state:check && bun run build && bun run package:tarball:check && bun run package:install-smoke && bun run docs:cli:check && bun run docs:recipes:check && GIT_AUTHOR_NAME=agentplane-ci GIT_AUTHOR_EMAIL=agentplane-ci@example.com GIT_COMMITTER_NAME=agentplane-ci@example.com GIT_COMMITTER_EMAIL=agentplane-ci@example.com node scripts/checks/run-vitest-suite.mjs release-ci-base && bun run coverage:workflow-suite && bun run coverage:significant-suite && GIT_AUTHOR_NAME=agentplane-ci GIT_AUTHOR_EMAIL=agentplane-ci@example.com GIT_COMMITTER_NAME=agentplane-ci@example.com GIT_COMMITTER_EMAIL=agentplane-ci@example.com bun run test:release:critical\n$ node scripts/checks/check-agentplane-artifacts.mjs\n$ node scripts/checks/check-task-state.mjs\n$ node scripts/checks/run-typescript-build.mjs && bun run --filter=@agentplaneorg/core build:bundle && bun run --filter=@agentplaneorg/recipes build:bundle && bun run --filter=agentplane build:bundle\n$ node scripts/release/check-package-tarball.mjs\n$ node scripts/release/check-local-tarball-install-smoke.mjs\n$ node scripts/checks/check-cli-reference-fresh.mjs\n$ node scripts/checks/check-recipes-inventory-fresh.mjs\n$ node scripts/workflow/run-workflow-coverage-suite.mjs\n{\"ts\":\"2026-09-29T03:15:05.625Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-29T03:15:05.695Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":1}}\n{\"ts\":\"2026-09-29T03:15:05.701Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-29T03:15:05.717Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":2}}\n{\"ts\":\"2026-09-29T03:15:05.718Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-29T03:15:05.744Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_completed\",\"details\":{\"diagnostics\":0}}\n{\"ts\":\"2026-09-29T03:15:05.998Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-UMgR1F/agentplane-workflow-hBRv1m/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/tmp/agentplane-vitest-run-UMgR1F/agentplane-workflow-hBRv1m/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-29T03:15:06.164Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-UMgR1F/agentplane-workflow-JSTDAi/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/tmp/agentplane-vitest-run-UMgR1F/agentplane-workflow-JSTDAi/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-29T03:15:06.216Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-UMgR1F/agentplane-workflow-JSTDAi/.agentplane/WORKFLOW.md\",\"from\":\"/tmp/agentplane-vitest-run-UMgR1F/agentplane-workflow-JSTDAi/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-29T03:15:06.262Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-UMgR1F/agentplane-workflow-3MpQ2e/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/tmp/agentplane-vitest-run-UMgR1F/agentplane-workflow-3MpQ2e/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-29T03:15:06.294Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_failed\",\"code\":\"WF_UNSUPPORTED_VERSION\",\"details\":{\"reason\":\"Unsupported WORKFLOW version 3; supported versions: 1, 2.\"}}\n$ node scripts/checks/check-workflow-harness-coverage.mjs\n$ node scripts/checks/run-significant-coverage-suite.mjs\n$ node scripts/checks/check-significant-coverage.mjs\n$ node scripts/checks/run-vitest-suite.mjs release-critical\n"
+      },
+      {
+        "runtime": {
+          "kind": "local_runtime_resolution",
+          "status": "resolved",
+          "executable_digest": "sha256:7fde7b8afa198da66257f42ee2001d874c7355631e6d1579a5fb5ef1f246df4c",
+          "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6",
+          "environment_digest": "sha256:57d287a513206088c6ce326cc0b0c7ae5fc1f1bb41c574de58d11c606bd39db0"
+        },
+        "command": "node .agentplane/policy/check-routing.mjs",
+        "script": null,
+        "check_ids": [
+          "affected_unit_integration",
+          "critical_paths",
+          "docs_contract",
+          "real_e2e",
+          "task_outcome"
+        ],
+        "exit_code": 0,
+        "duration_ms": 739,
+        "stdout_tail": "policy routing OK\n",
+        "stderr_tail": ""
+      },
+      {
+        "runtime": {
+          "kind": "local_runtime_resolution",
+          "status": "resolved",
+          "executable_digest": "sha256:7fde7b8afa198da66257f42ee2001d874c7355631e6d1579a5fb5ef1f246df4c",
+          "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6",
+          "environment_digest": "sha256:57d287a513206088c6ce326cc0b0c7ae5fc1f1bb41c574de58d11c606bd39db0"
+        },
+        "command": "agentplane doctor",
+        "script": null,
+        "check_ids": [
+          "affected_unit_integration",
+          "critical_paths",
+          "docs_contract",
+          "real_e2e",
+          "task_outcome"
+        ],
+        "exit_code": 0,
+        "duration_ms": 51258,
+        "stdout_tail": "✅ doctor (OK)\n",
+        "stderr_tail": "side the AgentPlane managed hook set\nNext action: agentplane hooks install (refresh managed hooks only after manually reconciling custom hook files that should remain custom)\nDetails: Unmanaged hooks: commit-msg, pre-commit, pre-push\n- [WARN] State: branch_pr tasks appear shipped on the base branch but remain open\nLikely cause: the verified task commit already landed on the base branch, but canonical task closure artifacts were never reconciled\nNext action: agentplane task normalize --sync-branch-pr-state (mark locally shipped branch_pr tasks as DONE in the task projection before committing the reconciled task artifacts on the base branch)\nDetails: Affected tasks: 38\n  - Examples: 202607221908-7WV0A7@main:b14fb5a94795 verified_via=task, 202607221908-RC1DX8@main:aea474462713 verified_via=task, 202607221908-YD5J89@main:d183683d77ba verified_via=task, 202607300112-48RH1X@main:d8b93f77c2cb verified_via=task, 202607300150-MGCHE6@main:2c8d47c38939 verified_via=task\n- [WARN] State: DONE branch_pr tasks still have open or unmerged PR artifacts\nLikely cause: the task was marked DONE, but its branch_pr PR artifacts were never reconciled to MERGED and the task branch still exists\nNext action: agentplane task normalize --sync-branch-pr-state --task-id <task-id> (reconcile the shipped task's local branch_pr state and PR artifacts to MERGED without scanning unrelated task history)\nDetails: Affected tasks: 1\n  - Examples: 202609211051-X92CWM@agentplane/release-0.7.11-repair-base:3a6c32e19b16 branch=task/202609211051-X92CWM/repair-the-demonstrated-0-7-11-release-blockers\n- [INFO] State: local plan approval requires a host-originated user decision\nLikely cause: no trusted signed-receipt issuer is configured\nNext action: ap task advance <task-id> --agent-json (present the emitted host_user_decision request in Codex; use task plan approve --by USER only as explicit manual compatibility)\nDetails: Reason code: host_user_decision_required\n  - AgentPlane will not emit an unavailable signed_user_receipt transport.\n  - A managed runner cannot synthesize the user decision and stops at the plan boundary.\n- [INFO] Runtime mode: repo-local-handoff (repo-local binary reached via handoff from a global install)\n- [INFO] Active binary: /home/agentplane/workspace/agentplane/.agentplane/worktrees/202609282003-E81FJR-prepare-stable-agentplane-0-7-12-release-candida/packages/agentplane/bin/agentplane.js\n- [INFO] Handoff source binary: /home/agentplane/.local/opt/agentplane-release-0.7.12-final-c39a66/lib/node_modules/agentplane/bin/agentplane.js\n- [INFO] Resolved agentplane: 0.7.12 @ /home/agentplane/workspace/agentplane/.agentplane/worktrees/202609282003-E81FJR-prepare-stable-agentplane-0-7-12-release-candida/packages/agentplane\n- [INFO] Resolved @agentplaneorg/core: 0.7.12 @ /home/agentplane/workspace/agentplane/.agentplane/worktrees/202609282003-E81FJR-prepare-stable-agentplane-0-7-12-release-candida/packages/core\n- [INFO] Framework repo root: /home/agentplane/workspace/agentplane/.agentplane/worktrees/202609282003-E81FJR-prepare-stable-agentplane-0-7-12-release-candida\n- [INFO] Framework agentplane root: /home/agentplane/workspace/agentplane/.agentplane/worktrees/202609282003-E81FJR-prepare-stable-agentplane-0-7-12-release-candida/packages/agentplane\n- [INFO] Framework core root: /home/agentplane/workspace/agentplane/.agentplane/worktrees/202609282003-E81FJR-prepare-stable-agentplane-0-7-12-release-candida/packages/core\n- [INFO] Historical task archive contains 155 DONE tasks with unknown implementation commit hashes across 155 distinct commit hashes. Examples: 042f68391d3b51915e07f648cc6f02bf54579bd6 (1 task: 202608271544-1TDVPJ); 08be56971aec26c3366d50e67b4043b47e142377 (1 task: 202609190050-3MJ7GQ); 08c437b3d19e21c6e85de277fc47ef9e269651ec (1 task: 202609111339-NGDG6V); +152 more hash groups\n- [WARN] DONE task implementation commit points to a close commit: 202609071219-QV0SX9 -> 3c45166b31d0a9960f52aa11c3259afd472dd691 (🚧 QV0SX9 task: pre-merge closure)\n"
+      },
+      {
+        "runtime": {
+          "kind": "local_runtime_resolution",
+          "status": "resolved",
+          "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+          "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6",
+          "environment_digest": "sha256:57d287a513206088c6ce326cc0b0c7ae5fc1f1bb41c574de58d11c606bd39db0"
+        },
+        "command": "bun run ci:local:full",
+        "script": "ci:local:full",
+        "check_ids": [
+          "affected_unit_integration",
+          "critical_paths",
+          "docs_contract",
+          "full_regression",
+          "real_e2e",
+          "task_outcome"
+        ],
+        "exit_code": 0,
+        "duration_ms": 2323348,
+        "stdout_tail": "eak.test.ts, packages/agentplane/src/cli/run-cli.critical.symlink-root.test.ts\nVitest suite critical-cli: chunk 3/5 passed in 17311ms (Test Files  2 passed (2); Tests  7 passed (7); Duration  16.77s (transform 6.99s, setup 237ms, import 10.41s, tests 19.31s, environment 0ms))\nVitest suite critical-cli: chunk 4/5 (2 files): packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts, packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet-regressions.test.ts\nVitest suite critical-cli: chunk 4/5 passed in 59849ms (Test Files  2 passed (2); Tests  7 passed (7); Duration  59.36s (transform 12.35s, setup 128ms, import 11.02s, tests 54.78s, environment 0ms))\nVitest suite critical-cli: chunk 5/5 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts\nVitest suite critical-cli: chunk 5/5 passed in 16607ms (Test Files  1 passed (1); Tests  12 passed (12); Duration  16.17s (transform 4.20s, setup 74ms, import 4.95s, tests 10.97s, environment 0ms))\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":true,\"groups\":[{\"id\":\"runtime\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":104165},{\"id\":\"docs-schema\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":76665},{\"id\":\"core\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":1862403},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":135796}]}\n{\"schema_version\":1,\"kind\":\"verification_metrics\",\"route\":\"full-fast\",\"wall_clock_ms\":2196364,\"selected_groups\":5,\"executed_groups\":5,\"parallel_group_concurrency\":1,\"build_invocations\":1,\"ok\":true}\n\n== Docs site pipeline (generate + typecheck + build + design) ==\nok: docs IA, sidebar coverage, and current path references are aligned\nok: docs/reference/generated-reference.mdx is fresh\nok: website/static/llms-full.txt is fresh\n[site-content] ok\n\n ------------------------------------------------------------------------------                                                                                                         Update available 3.10.1 → 3.10.2                                                                                                                To upgrade Docusaurus packages with the latest version, run the                                       following command:                                           `npm i @docusaurus/core@latest @docusaurus/faster@latest                    @docusaurus/preset-classic@latest @docusaurus/theme-common@latest            @docusaurus/theme-mermaid@latest @docusaurus/module-type-aliases@latest                  @docusaurus/tsconfig@latest @docusaurus/types@latest`                                                                                               ------------------------------------------------------------------------------ \n\n[INFO] [en] Creating an optimized production build...\n[navigation-check] ok: checked 6 docs targets from website/build\n[SUCCESS] Generated static files in \"build\".\n[INFO] Use `npm run serve` command to test your build locally.\nDESIGN.md compliance check passed\n\n== Workflows lint (actionlint) ==\nworkflow and command guidance contract OK\nworkflow lifecycle parity OK\ncritical Vitest route OK\n\n== Windows platform-critical tests ==\n\n RUN  v4.1.9 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202609282003-E81FJR-prepare-stable-agentplane-0-7-12-release-candida\n\n\n Test Files  7 passed (7)\n      Tests  98 passed (98)\n   Start at  06:55:19\n   Duration  69.12s (transform 48.55s, setup 820ms, import 44.60s, tests 184.50s, environment 1ms)\n\n\n== Significant file coverage (guard) ==\n\n RUN  v4.1.9 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202609282003-E81FJR-prepare-stable-agentplane-0-7-12-release-candida\n      Coverage enabled with v8\n\n\n Test Files  8 passed (8)\n      Tests  101 passed (101)\n   Start at  06:56:28\n   Duration  18.47s (transform 5.83s, setup 295ms, import 7.84s, tests 7.47s, environment 1ms)\n\n\n== Coverage threshold (significant) ==\nSignificant suite contract OK (17 source targets).\n",
+        "stderr_tail": "workflow_build_completed\",\"details\":{\"diagnostics\":0}}\n{\"ts\":\"2026-09-29T03:48:07.416Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-ekQ8U3/agentplane-cli-test-S2v4Oi/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/tmp/agentplane-vitest-run-ekQ8U3/agentplane-cli-test-S2v4Oi/.agentplane/workflows/last-known-good.md\"}}\nℹ️ task doc set outcome=section-updated section=Summary\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Summary\nℹ️ task doc set outcome=full-doc-updated section=Summary\n{\"ts\":\"2026-09-29T03:49:49.972Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-447124/agentplane-workflow-1Slksg/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/tmp/agentplane-vitest-run-447124/agentplane-workflow-1Slksg/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-29T03:49:49.982Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-447124/agentplane-workflow-HHtjRm/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/tmp/agentplane-vitest-run-447124/agentplane-workflow-HHtjRm/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-29T03:49:49.990Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-447124/agentplane-workflow-HHtjRm/.agentplane/WORKFLOW.md\",\"from\":\"/tmp/agentplane-vitest-run-447124/agentplane-workflow-HHtjRm/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-29T03:49:50.030Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-447124/agentplane-workflow-TDXYnj/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/tmp/agentplane-vitest-run-447124/agentplane-workflow-TDXYnj/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-09-29T03:49:50.046Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_failed\",\"code\":\"WF_UNSUPPORTED_VERSION\",\"details\":{\"reason\":\"Unsupported WORKFLOW version 3; supported versions: 1, 2.\"}}\n{\"ts\":\"2026-09-29T03:50:39.905Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-29T03:50:39.991Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":1}}\n{\"ts\":\"2026-09-29T03:50:39.994Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-29T03:50:40.015Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":2}}\n{\"ts\":\"2026-09-29T03:50:40.016Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-09-29T03:50:40.032Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_completed\",\"details\":{\"diagnostics\":0}}\n$ node scripts/checks/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 3 --fixture local-basic --timeout-ms 10000\n$ node scripts/checks/run-vitest-suite.mjs critical-cli\n$ bun run docs:ia:check && bun run docs:site:generate:check && bun run docs:site:typecheck && bun run docs:site:build:check && bun run docs:site:check:design\n$ node scripts/checks/check-docs-ia.mjs\n$ node scripts/generate/generate-website-docs.mjs --check && node scripts/generate/generate-llms-full.mjs --check\n$ bun run --cwd website typecheck\n$ node ../scripts/checks/run-typescript-build.mjs -p tsconfig.json --noEmit\n$ bun run --cwd website build:check\n$ bun run check-content && docusaurus build\n$ node scripts/check-site-content.mjs\n$ node scripts/checks/check-design-language.mjs\n$ node scripts/workflow/run-workflows-lint.mjs && node scripts/checks/check-workflow-command-contract.mjs && bun scripts/checks/check-lifecycle-parity.ts && node scripts/checks/check-critical-test-route.mjs\n$ node scripts/checks/run-vitest-suite.mjs platform-critical\n$ node scripts/checks/check-significant-coverage.mjs\n"
+      }
+    ],
+    "reason": null,
+    "artifact_path": ".agentplane/tasks/202609282003-E81FJR/supervision/declared-checks.json"
+  }
+}
