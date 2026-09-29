@@ -3,7 +3,8 @@
   "branch": "task/202609291255-PGF2EM/recognize-empty-schema-object-staging-directorie",
   "created_at": "2026-09-29T13:08:35.647Z",
   "diffstat_sha256": "sha256:122001fe6c02b98c58b31cf54f63cbc0232e6852f933fa588e0efc55b9dc3eff",
-  "last_verified_at": null,
+  "last_verified_at": "2026-09-29T13:11:51.555Z",
+  "last_verified_diffstat_sha256": "sha256:122001fe6c02b98c58b31cf54f63cbc0232e6852f933fa588e0efc55b9dc3eff",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202609291255-PGF2EM",
   "updated_at": "2026-09-29T13:08:35.647Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

@@ -6,14 +6,14 @@ Created: 2026-09-29T13:08:35.647Z
 
 - Task: `202609291255-PGF2EM`
 - Title: Recognize empty schema object staging directories during task scans
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609291255-PGF2EM/recognize-empty-schema-object-staging-directorie`
 - Canonical task record: `.agentplane/tasks/202609291255-PGF2EM/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

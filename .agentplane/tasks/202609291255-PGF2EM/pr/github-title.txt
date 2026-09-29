@@ -1,1 +1,1 @@
-🚧 PGF2EM task: Recognize empty schema object staging directories during task scans [202609291255-PGF2EM]
+✅ PGF2EM task: Recognize empty schema object staging directories during task scans [202609291255-PGF2EM]
