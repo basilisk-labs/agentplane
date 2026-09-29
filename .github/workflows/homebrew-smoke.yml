@@ -1,0 +1,66 @@
+name: Homebrew smoke
+
+on:
+  pull_request:
+    paths:
+      - scripts/generate/render-homebrew-formula.mjs
+      - scripts/generate/generate-bun-cli-assets.mjs
+      - .github/workflows/homebrew-smoke.yml
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Published release tag (empty selects latest stable release)
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  install:
+    name: Install (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15, macos-15-intel]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    env:
+      HOMEBREW_NO_AUTO_UPDATE: "1"
+      HOMEBREW_NO_INSTALL_CLEANUP: "1"
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+      - name: Render formula from the published release manifest
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          args=()
+          if [[ -n "$RELEASE_TAG" ]]; then args+=("$RELEASE_TAG"); fi
+          gh release download "${args[@]}" --repo "$GITHUB_REPOSITORY" \
+            --pattern release-distribution.json --dir "$RUNNER_TEMP/release-manifest"
+          node scripts/render-homebrew-formula.mjs \
+            --manifest "$RUNNER_TEMP/release-manifest/release-distribution.json" \
+            --out "$RUNNER_TEMP/generated-tap" --json
+      - name: Install and test both executable names
+        run: |
+          git -C "$RUNNER_TEMP/generated-tap" init
+          git -C "$RUNNER_TEMP/generated-tap" add Formula/agentplane.rb
+          git -C "$RUNNER_TEMP/generated-tap" \
+            -c user.name=homebrew-smoke -c user.email=homebrew-smoke@example.invalid \
+            commit -m "Render formula for installation verification"
+          brew tap --custom-remote basilisk-labs/agentplane "$RUNNER_TEMP/generated-tap"
+          if brew help trust >/dev/null 2>&1; then
+            brew trust --tap basilisk-labs/agentplane
+          fi
+          brew install --build-from-source basilisk-labs/agentplane/agentplane
+          brew test basilisk-labs/agentplane/agentplane
+          test -x "$(brew --prefix)/bin/agentplane"
+          test -x "$(brew --prefix)/bin/ap"
+          "$(brew --prefix)/bin/agentplane" --version
+          "$(brew --prefix)/bin/ap" --version

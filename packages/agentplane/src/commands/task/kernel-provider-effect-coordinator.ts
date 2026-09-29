@@ -27,10 +27,7 @@ import type {
   KernelEffectPort,
   KernelEffectPortResolver,
 } from "./kernel-effect-coordinator.js";
-import type { createKernelRuntime } from "./kernel-runtime-context.js";
-import { requireKernelCommit } from "./kernel-runtime-context.js";
 import { readStableRegularTextNoFollow } from "../../shared/stable-file.js";
-import { writeKernelArtifact } from "./kernel-exchange.js";
 import {
   recoverCanonicalControllerSuspension,
   withCanonicalControllerSuspendedForOperation,
@@ -38,8 +35,6 @@ import {
 import { ensureKernelOperationalProjectionEvidence } from "./kernel-operational-projection.js";
 import { executeProductionBranchEpisode } from "./branch-task-supervisor-episodes.js";
 import { CliError } from "../../shared/errors.js";
-
-type Runtime = Awaited<ReturnType<typeof createKernelRuntime>>;
 
 type SupportedOperationId = keyof typeof CANONICAL_EFFECT_KIND_BY_OPERATION;
 
@@ -179,26 +174,6 @@ async function providerEffectDirectory(
     "provider-effects",
     taskId,
     requestDigest.slice("sha256:".length),
-  );
-}
-
-async function writeProviderEffectEnvelope(opts: {
-  command: CommandContext;
-  effect: k.ExternalEffect;
-  decision: TaskRouteDecision;
-}): Promise<void> {
-  const contents = {
-    schema_version: 1 as const,
-    task_id: opts.decision.task.id,
-    effect_id: opts.effect.id,
-    request_digest: opts.effect.request_digest,
-    decision: opts.decision,
-  };
-  const envelope: ProviderEffectEnvelope = { ...contents, digest: k.kernelDigest(contents) };
-  await writeKernelArtifact(
-    await providerEffectDirectory(opts.command, contents.task_id, contents.request_digest),
-    "effect-envelope.json",
-    envelope,
   );
 }
 
@@ -471,30 +446,6 @@ export function canonicalWorkflowEffectForDecision(
     provider_receipt_digest: null,
     observed_state_digest: null,
   };
-}
-
-export async function prepareCanonicalWorkflowEffect(opts: {
-  command: CommandContext;
-  runtime: Runtime;
-  record: KernelRecord;
-  decision: TaskRouteDecision;
-}): Promise<"prepared" | "already_observed" | "unsupported"> {
-  const effect = canonicalWorkflowEffectForDecision(opts.record, opts.decision);
-  if (!effect) return "unsupported";
-  const existing = opts.record.aggregate.effects.find(
-    (candidate) => candidate.request_digest === effect.request_digest,
-  );
-  if (existing) return "already_observed";
-  await writeProviderEffectEnvelope({ command: opts.command, effect, decision: opts.decision });
-  requireKernelCommit(
-    await opts.runtime.lifecycle.apply(
-      await opts.runtime.input(
-        { kind: "prepare_effect", effect },
-        `effect:prepare:${effect.id}:${effect.request_digest}`,
-      ),
-    ),
-  );
-  return "prepared";
 }
 
 /** Execute repository-local lifecycle work without misclassifying it as a provider effect. */
