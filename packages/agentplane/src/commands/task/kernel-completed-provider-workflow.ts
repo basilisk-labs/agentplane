@@ -151,7 +151,8 @@ export async function advanceCompletedProviderWorkflow(opts: {
     refreshed?.workflowStep.kind === "cli_operation" &&
     canonicalWorkflowRequestDigest(opts.task_id, refreshed, refreshed.workflowStep.operation) ===
       requestDigest;
-  if ((recoveredCursor || succeeded) && !unchanged) return { kind: "progress" as const };
+  // Cursor recovery is journal progress, even when the provider request is unchanged.
+  if (recoveredCursor || (succeeded && !unchanged)) return { kind: "progress" as const };
   return {
     kind: "stop" as const,
     action: {

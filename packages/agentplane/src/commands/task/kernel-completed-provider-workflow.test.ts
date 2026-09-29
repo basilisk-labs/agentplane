@@ -177,19 +177,27 @@ describe("completed provider workflow", () => {
     expect(mocks.execute).not.toHaveBeenCalled();
   });
 
-  it.each([null, { status: "succeeded" }])(
-    "stops when the same request is still current (%j)",
-    async (result) => {
-      const before = decision();
-      mocks.admit.mockResolvedValue(persisted({ result, refreshed_decision: before }));
-      await expect(
-        advanceCompletedProviderWorkflow({ command, decision: before, task_id: "T-1" }),
-      ).resolves.toMatchObject({
-        kind: "stop",
-        action: { reason: "canonical_workflow_effect_no_progress" },
-      });
-    },
-  );
+  it("stops when a successful operation has no observed postcondition", async () => {
+    const before = decision();
+    mocks.admit.mockResolvedValue(persisted({ refreshed_decision: before }));
+    await expect(
+      advanceCompletedProviderWorkflow({ command, decision: before, task_id: "T-1" }),
+    ).resolves.toMatchObject({
+      kind: "stop",
+      action: { reason: "canonical_workflow_effect_no_progress" },
+    });
+  });
+
+  it("resumes a recovered ready cursor even when its provider request is unchanged", async () => {
+    const before = decision();
+    mocks.admit.mockResolvedValue(
+      persisted({ executable: false, result: null, refreshed_decision: before }),
+    );
+    await expect(
+      advanceCompletedProviderWorkflow({ command, decision: before, task_id: "T-1" }),
+    ).resolves.toEqual({ kind: "progress" });
+    expect(mocks.execute).not.toHaveBeenCalled();
+  });
 
   it("preserves effect-in-doubt evidence without retrying", async () => {
     const outcome = persisted({
