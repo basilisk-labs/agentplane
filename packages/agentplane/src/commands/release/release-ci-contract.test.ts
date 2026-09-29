@@ -216,9 +216,10 @@ describe("release CI contract", () => {
       expect.stringContaining("run-cli.critical.agent-efficiency"),
     );
     expect(SUITES["agent-efficiency-qualification"]?.chunkSize).toBe(1);
-    expect(SUITES["agent-efficiency-qualification"]?.files).toHaveLength(5);
+    expect(SUITES["agent-efficiency-qualification"]?.files).toHaveLength(6);
     expect(SUITES["agent-efficiency-qualification"]?.files).toEqual(
       expect.arrayContaining([
+        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-anchor-lock.test.ts",
         "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
         "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-candidate.test.ts",
         "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts",
