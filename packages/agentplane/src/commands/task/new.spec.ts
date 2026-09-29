@@ -1,4 +1,5 @@
 import type { CommandSpec } from "../../cli/spec/spec.js";
+import { executionContractOptions } from "./execution-contract-options.js";
 
 import type { TaskNewParsed } from "./new.js";
 import { normalizeDependsOnInput } from "./shared.js";
@@ -102,6 +103,7 @@ export const taskNewSpec: CommandSpec<TaskNewParsed> = {
       repeatable: true,
       description: "Repeatable. Verification commands/checks to run for this task.",
     },
+    ...executionContractOptions,
     {
       kind: "boolean",
       name: "allow-duplicate",
@@ -137,6 +139,11 @@ export const taskNewSpec: CommandSpec<TaskNewParsed> = {
     route: (raw.opts.route ?? "repository") as TaskNewParsed["route"],
     dependsOn: (raw.opts["depends-on"] ?? []) as string[],
     verify: (raw.opts.verify ?? []) as string[],
+    scopeRoots: (raw.opts["scope-root"] ?? []) as string[],
+    repositoryEffects: (raw.opts["repository-effect"] ?? []) as TaskNewParsed["repositoryEffects"],
+    externalEffects: (raw.opts["external-effect"] ?? []) as TaskNewParsed["externalEffects"],
+    capabilities: (raw.opts.capability ?? []) as string[],
+    resources: (raw.opts.resource ?? []) as string[],
     allowDuplicate: raw.opts["allow-duplicate"] === true,
   }),
 };

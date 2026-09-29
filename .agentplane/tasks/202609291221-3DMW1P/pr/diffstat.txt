@@ -1,0 +1,7 @@
+ .../agentplane/src/commands/task/create.command.ts | 128 +----------------
+ .../src/commands/task/execution-contract-intake.ts |  93 ++++++++++++
+ .../commands/task/execution-contract-options.ts    |  59 ++++++++
+ .../commands/task/new-execution-contract.test.ts   | 159 +++++++++++++++++++++
+ packages/agentplane/src/commands/task/new.spec.ts  |   7 +
+ packages/agentplane/src/commands/task/new.ts       |  49 +++----
+ 6 files changed, 349 insertions(+), 146 deletions(-)
