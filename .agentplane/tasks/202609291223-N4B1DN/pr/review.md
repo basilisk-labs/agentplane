@@ -6,14 +6,14 @@ Created: 2026-09-29T22:42:38.299Z
 
 - Task: `202609291223-N4B1DN`
 - Title: Complete issue 5991: verify test fixture cleanup and interrupted-run recovery
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609291223-N4B1DN/complete-issue-5991-verify-test-fixture-cleanup`
 - Canonical task record: `.agentplane/tasks/202609291223-N4B1DN/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

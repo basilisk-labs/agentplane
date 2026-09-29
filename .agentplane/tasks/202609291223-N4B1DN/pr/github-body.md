@@ -15,8 +15,8 @@ Current main has owned Vitest temp roots and bounded stale-root recovery. Four c
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>
