@@ -1,0 +1,2 @@
+ scripts/generate/render-homebrew-formula.mjs | 25 +++++++++++++++++++++----
+ 1 file changed, 21 insertions(+), 4 deletions(-)
