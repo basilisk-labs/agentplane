@@ -11,11 +11,11 @@
       "cli_topology": "814f5c2558bfa2793200ecb88e6b6c4e2fb547291fb525de7683f3f0d8267905",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
-      "package_manifests": "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
+      "package_manifests": "8bfba4f6df0470889d90bcb234fc9ab0192a164b1f6b7644b01d5b8c0a35912a",
       "tarball_policy": "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd",
       "workflow_schema": "dc851f68ff13c52fec5dbe522fa96cc1084771ce7e09ed0178c44f15d7c46452"
     },
-    "surface_sha256": "a1439501160b1ecbb89901b9deee5b38a2d0dec26eb0fb9398cca8816abd834b"
+    "surface_sha256": "9ab33b0b494008cf110c252a05c98e4b8dae04f5847b76050aad12bff9ccbf2b"
   },
   "candidate_id": "agentplane.compatibility.v0.7.cumulative",
   "contract_artifacts": {
@@ -3411,12 +3411,15 @@
   ],
   "pre_release_package_delta": {
     "allowed_json_paths": [
+      "$.package_manifests[0].dependencies.@clack/prompts",
+      "$.package_manifests[0].dependencies.zod",
       "$.package_manifests[0].files[13]",
       "$.package_manifests[0].files[14]",
       "$.package_manifests[0].files[15]",
       "$.package_manifests[0].files[16]",
       "$.package_manifests[0].files[17]",
       "$.package_manifests[0].normalized_sha256",
+      "$.package_manifests[1].dependencies.zod",
       "$.package_manifests[1].exports[10][0]",
       "$.package_manifests[1].exports[10][1]",
       "$.package_manifests[1].exports[11]",
@@ -3446,7 +3449,7 @@
       "202608171853-X3FD5M",
       "202609211330-5A54M1"
     ],
-    "to_sha256": "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff"
+    "to_sha256": "8bfba4f6df0470889d90bcb234fc9ab0192a164b1f6b7644b01d5b8c0a35912a"
   },
   "release_version_delta": {
     "allowed_json_paths": [
@@ -3460,12 +3463,12 @@
       "$.package_manifests[2].version"
     ],
     "classification": "planned_version_parity",
-    "from_sha256": "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
+    "from_sha256": "8bfba4f6df0470889d90bcb234fc9ab0192a164b1f6b7644b01d5b8c0a35912a",
     "from_version": "0.6.24",
     "section": "package_manifests",
     "source_task": "202608082119-P6SHBN",
-    "surface_sha256": "b91e8e6448bd8d2e42cd0f7d3357b772027a0f72ee755e36f7ecf73d6c0f05bc",
-    "to_sha256": "88b7915c87da9c68ef4d717af42aac7e56db39164a501134772a3c95f33f096c",
+    "surface_sha256": "65384c1a59896f908840057ce89c926a8e25d787090e0b873a15ddf1e7c7f141",
+    "to_sha256": "3a60ec08e552ad801665bc09ba3d0ff94f4c86911e985b1b01408a66f9c0b203",
     "to_version": "0.7.12"
   },
   "review": {
