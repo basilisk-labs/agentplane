@@ -22,7 +22,7 @@ User-approved scanner repair. Native quality schema storage leaves an empty qual
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-29T13:08:35.647Z
+- Updated: 2026-09-29T19:12:34.316Z
 - Branch: task/202609291255-PGF2EM/recognize-empty-schema-object-staging-directorie
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
