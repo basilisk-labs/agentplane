@@ -19,7 +19,11 @@ after the reviewed implementation contained only this task's artifacts.
 The checkout remained unchanged during the review.
 
 The reviewer returned `pass` without a prescribed verdict.
-`provider.jsonl` preserves its actual events and usage.
+The raw `provider.jsonl` was archived during release task `202609282003-E81FJR`
+because the release artifact policy prohibits tracked volatile logs.
+Its original bytes remain available in Git blob
+`7440b3e0f40478eb596ea8050494300cb4efe455` and in the ignored operator archive.
+Its SHA-256 is `f037dd82dea74ba77bd0fe050b9474b5789a7a6baa1fc9762c4f02c833d337da`.
 `provider-result.json` preserves its unmodified structured answer.
 `workspace-observation.json` preserves the actual Git observations.
 This transport recovery is not a replacement native provider receipt.

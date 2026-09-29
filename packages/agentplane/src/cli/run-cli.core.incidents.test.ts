@@ -90,7 +90,7 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
           "  Impact: operators repeated the same manual recovery mistakes.",
           "  Resolution: keep one reusable recovery note in the incident registry.",
           "  Fixability: external",
-        ].join("\n"),
+        ].join("\\n"),
         "--root",
         root,
       ]),
@@ -147,7 +147,7 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
           "--section",
           "Verification",
           "--text",
-          "BlueprintSnapshotRef:\n- state: current",
+          "BlueprintSnapshotRef:\\n- state: current",
           "--root",
           root,
         ]);
@@ -555,11 +555,11 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
             "  Impact: they had to open incidents.md manually after every collect run.",
             "  Resolution: include promoted ids and registry files directly in the success output.",
             "  Fixability: external",
-          ].join("\n"),
+          ].join("\\n"),
           "--root",
           root,
         ]);
-        expect(code).toBe(0);
+        expect(code, io.stderr).toBe(0);
       } finally {
         io.restore();
       }
@@ -672,11 +672,11 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
             "- Observation: transient GitHub transport failures forced manual retries.",
             "  Impact: operators had to repeat the same reconcile loop.",
             "  Resolution: move the flaky path onto resilient polling.",
-          ].join("\n"),
+          ].join("\\n"),
           "--root",
           root,
         ]);
-        expect(code).toBe(0);
+        expect(code, io.stderr).toBe(0);
       } finally {
         io.restore();
       }
@@ -923,11 +923,11 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
             "  Impact: check-routing would fail after the write.",
             "  Resolution: validate the candidate registry size before writing.",
             "  Fixability: external",
-          ].join("\n"),
+          ].join("\\n"),
           "--root",
           root,
         ]);
-        expect(code).toBe(0);
+        expect(code, io.stderr).toBe(0);
       } finally {
         io.restore();
       }

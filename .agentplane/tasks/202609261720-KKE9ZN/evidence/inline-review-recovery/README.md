@@ -10,6 +10,11 @@ The first inline invocation returned blocked because current workspace-state evi
 
 The second inline invocation received the fresh complete packet and the separately captured readonly Git observation included here. Both Git commands exited 0 with empty output. The workspace was clean, and the implementation had not changed outside task artifacts since `c0b3be603d850883aae69d3117428609ce446761`. The wrapper also compared workspace status before and after the invocation and observed no change.
 
-The second invocation returned pass. The unmodified result was submitted through `agentplane evaluator apply`, which validates frozen identities and evidence. The JSONL files preserve actual provider events and usage for both inline invocations. No native provider-success receipt was fabricated. The native timeout receipt remains a failure.
+The second invocation returned pass. The unmodified result was submitted through `agentplane evaluator apply`, which validates frozen identities and evidence. No native provider-success receipt was fabricated. The native timeout receipt remains a failure.
+
+Release task `202609282003-E81FJR` archived the raw JSONL files because the release artifact policy prohibits tracked volatile logs. Their exact bytes remain in Git history and the ignored operator archive:
+
+- `kke9zn-inline-review.jsonl`: Git blob `d0fa38668bb2bd2b748b1a11eebe31395aef44e2`; SHA-256 `60fe59abe0264ba9107f105ee39c5685b170e9cec8ecbfe46ddcd80e94c2009b`.
+- `kke9zn-inline-review-2.jsonl`: Git blob `b680f55ba351c3c3dc11dc71d65314ae1483a4c2`; SHA-256 `b546b75270f96a5dd859c6c2d6915a8bf86a9b33b084e05fcf80f6870325fe58`.
 
 This review qualifies the implementation only. M04 remains NOT ESTABLISHED. It does not certify live-provider containment, hosted checks, release publication, or downstream distribution.

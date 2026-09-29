@@ -1,5 +1,6 @@
 import path from "node:path";
 import { readFile, readdir, writeFile } from "node:fs/promises";
+import { parseTaskReadme } from "@agentplaneorg/core/tasks";
 
 import {
   captureStdIO,
@@ -50,6 +51,15 @@ describe("runCli demo", () => {
 
       expect(readme).toContain("Agentplane demo: first traceable task");
       expect(readme).toContain("DEMO - VERIFY - ok");
+      expect(parseTaskReadme(readme).frontmatter.execution_contract).toMatchObject({
+        authority: {
+          writable_roots: [`.agentplane/tasks/${taskId}`],
+          allowed_repository_effects: ["documentation", "repository_write"],
+          allowed_external_effects: [],
+          allowed_capabilities: ["repository_write"],
+          allowed_resources: [`task:${taskId}`],
+        },
+      });
       expect(acr.task?.task_id).toBe(taskId);
       expect(acr.extensions?.["agentplane.native-identity"]).toBeDefined();
       expect(await readFile(path.join(root, "parser.js"), "utf8")).toBe(

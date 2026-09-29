@@ -129,8 +129,8 @@ async function completeCanonicalDemoTask(ctx: CommandContext, task: TaskData): P
         required_inputs: [],
         expected_outputs: ["demo-audit-trail"],
         execution_requirements: {
-          scope_roots: [ctx.config.paths.workflow_dir],
-          repository_effects: ["agentplane_task_artifacts"],
+          scope_roots: [path.posix.join(ctx.config.paths.workflow_dir, taskId)],
+          repository_effects: ["documentation"],
           external_effects: [],
           capabilities: ["repository_write"],
           resources: [`task:${taskId}`],
@@ -341,7 +341,20 @@ async function createDemoTask(ctx: CommandContext): Promise<DemoResult> {
     config: ctx.config,
     requestedMode: "direct",
     task: routeTask,
+    declaration: {
+      schema_version: 2,
+      preferred_mode: "direct",
+      scope_roots: [path.posix.join(ctx.config.paths.workflow_dir, taskId)],
+      repository_effects: ["documentation"],
+      external_effects: [],
+      requirements_uncertainty: "bounded",
+      implementation_uncertainty: "bounded",
+      reversibility: "reversible",
+      rationale: ["Explicit demo invocation permits only this task's local audit artifacts."],
+    },
   });
+  executionContract.authority.allowed_capabilities = ["repository_write"];
+  executionContract.authority.allowed_resources = [`task:${taskId}`];
   const task: TaskData = {
     id: taskId,
     title,
@@ -360,6 +373,7 @@ async function createDemoTask(ctx: CommandContext): Promise<DemoResult> {
       config: ctx.config,
       requestedMode: "direct",
       task: routeTask,
+      declaration: executionContract.declaration,
     }),
     execution_contract: executionContract,
     verify: ["agentplane acr validate <task-id> --mode local"],

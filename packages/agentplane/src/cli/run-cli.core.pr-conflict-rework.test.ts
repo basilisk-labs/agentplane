@@ -11,6 +11,7 @@ import {
 import { exerciseManagedConflict } from "./managed-conflict-recovery.testkit.js";
 import { materializeRepoLocalDistForWorktree } from "../commands/branch/work-start.materialize.js";
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
+import { findWorktreeForBranch } from "@agentplaneorg/core/git";
 import { ensureRuntimeGitignore } from "../runtime/shared/runtime-gitignore.js";
 
 import { describe } from "vitest";
@@ -127,8 +128,7 @@ async function createBranchPrTask(root: string): Promise<{
     expect(
       await runCli([
         "task",
-        "new",
-        "--title",
+        "create",
         "Prepare semantic conflict rework route",
         "--description",
         "Exercise a provider-reported conflict route without allowing CLI resolution.",
@@ -138,6 +138,15 @@ async function createBranchPrTask(root: string): Promise<{
         "CODER",
         "--tag",
         "code",
+        "--task-kind",
+        "docs",
+        "--mutation-scope",
+        "docs",
+        "--scope-root",
+        "docs",
+        "--capability",
+        "task.verify",
+        "--json",
         "--verify",
         "node --version",
         "--allow-duplicate",
@@ -146,7 +155,7 @@ async function createBranchPrTask(root: string): Promise<{
       ]),
       createIo.stderr,
     ).toBe(0);
-    taskId = createIo.stdout.trim();
+    taskId = (JSON.parse(createIo.stdout) as { task_id: string }).task_id;
   } finally {
     createIo.restore();
   }
@@ -199,7 +208,7 @@ async function createBranchPrTask(root: string): Promise<{
             optional: false,
             execution_requirements: {
               scope_roots: ["docs"],
-              repository_effects: ["source_code"],
+              repository_effects: ["documentation"],
               external_effects: [],
               capabilities: ["repository_write", "task.verify"],
               resources: [],
@@ -262,7 +271,8 @@ async function createBranchPrTask(root: string): Promise<{
     materializeIo.restore();
   }
   const branch = `task/${taskId}/prepare-semantic-conflict-rework-route`;
-  const worktree = await worktreeForBranch(root, branch);
+  const worktree = await findWorktreeForBranch(root, branch);
+  if (!worktree) throw new Error(`No worktree found for ${branch}`);
   expect(path.resolve(materialized.action.must_run_from)).toBe(path.resolve(worktree));
   const executionIo = captureStdIO();
   let executionPacket!: CanonicalEpisodePacket;
@@ -287,20 +297,6 @@ async function createBranchPrTask(root: string): Promise<{
     worktree,
     executionPacket,
   };
-}
-
-async function worktreeForBranch(root: string, branch: string): Promise<string> {
-  const { stdout } = await execFileAsync("git", ["worktree", "list", "--porcelain"], {
-    cwd: root,
-  });
-  for (const entry of stdout.split("\n\n")) {
-    const lines = entry.split("\n");
-    const worktreeLine = lines.find((line) => line.startsWith("worktree "));
-    const branchLine = lines.find((line) => line.startsWith("branch "));
-    if (branchLine !== `branch refs/heads/${branch}` || !worktreeLine) continue;
-    return worktreeLine.slice("worktree ".length);
-  }
-  throw new Error(`No worktree found for ${branch}`);
 }
 
 async function completeCanonicalWorkItem(
@@ -412,6 +408,7 @@ async function readRemoteRoute(root: string, taskId: string): Promise<ConflictRo
 describe("provider conflict rework CLI", () => {
   it("routes a clean strict local descendant through guarded publication before conflict rework", async () => {
     const root = await mkGitRepoRootWithBranch("main");
+    expect(await runCliSilent(["init", "--yes", "--hooks", "no", "--root", root])).toBe(0);
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);

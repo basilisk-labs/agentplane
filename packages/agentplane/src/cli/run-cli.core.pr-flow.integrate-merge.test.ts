@@ -609,21 +609,29 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
           "  Impact: branch_pr operators keep repeating the same manual reconciliation steps.",
           "  Resolution: confirm the remote ref exists before waiting on workflow runs, then retry the recovery path only for real refs.",
           "  Fixability: external",
-        ].join("\n"),
+        ].join("\\n"),
       ],
     ] as const) {
-      await runCliSilent([
-        "task",
-        "doc",
-        "set",
-        taskId,
-        "--section",
-        section,
-        "--text",
-        text,
-        "--root",
-        root,
-      ]);
+      const ioDoc = captureStdIO();
+      try {
+        expect(
+          await runCli([
+            "task",
+            "doc",
+            "set",
+            taskId,
+            "--section",
+            section,
+            "--text",
+            text,
+            "--root",
+            root,
+          ]),
+          ioDoc.stderr,
+        ).toBe(0);
+      } finally {
+        ioDoc.restore();
+      }
     }
 
     await recordVerificationOk(root, taskId);
