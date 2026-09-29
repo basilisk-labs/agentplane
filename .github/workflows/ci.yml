@@ -63,11 +63,11 @@ jobs:
       reuse_sha: ${{ steps.plan.outputs.reuse_sha }}
       requires_real_e2e: ${{ steps.plan.outputs.requires_real_e2e }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ env.AGENTPLANE_CI_REF }}
           fetch-depth: 0
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: "24"
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
@@ -87,14 +87,14 @@ jobs:
       needs.plan.outputs.route != 'full-fast'
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ env.AGENTPLANE_CI_REF }}
           fetch-depth: 0
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
           bun-version: "1.4.2"
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: "24"
       - name: Install actionlint
@@ -104,7 +104,7 @@ jobs:
         run: go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.12
       - name: Cache Bun artifacts
         if: needs.plan.outputs.route != 'reuse-verified-parent'
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.bun/install/cache
@@ -141,21 +141,21 @@ jobs:
       needs.plan.outputs.route == 'full-fast'
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ env.AGENTPLANE_CI_REF }}
           fetch-depth: 0
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
           bun-version: "1.4.2"
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: "24"
       - name: Install actionlint
         if: needs.plan.outputs.workflow_lint == 'true'
         run: go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.12
       - name: Cache Bun artifacts
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.bun/install/cache
@@ -210,14 +210,14 @@ jobs:
     if: needs.plan.outputs.package_runtime == 'true'
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ env.AGENTPLANE_CI_REF }}
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
           bun-version: "1.4.2"
       - name: Use supported build runtime
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: "24"
       - run: bun install --frozen-lockfile --ignore-scripts
@@ -235,7 +235,7 @@ jobs:
           npm pack --json --pack-destination "$RUNNER_TEMP/package-node-runtime/recipes"
       - name: Use minimum core runtime
         if: needs.plan.outputs.package_runtime_core == 'true'
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: "20.5.0"
       - name: Exercise core public API on Node 20.5
@@ -246,7 +246,7 @@ jobs:
           --tarball-dir "$RUNNER_TEMP/package-node-runtime/core"
       - name: Use current core runtime
         if: needs.plan.outputs.package_runtime_core == 'true'
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: "24"
       - name: Exercise core public API on Node 24
@@ -257,7 +257,7 @@ jobs:
           --tarball-dir "$RUNNER_TEMP/package-node-runtime/core"
       - name: Use minimum recipes runtime
         if: needs.plan.outputs.package_runtime_recipes == 'true'
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: "20.0.0"
       - name: Exercise recipes public API on Node 20
@@ -268,7 +268,7 @@ jobs:
           --tarball-dir "$RUNNER_TEMP/package-node-runtime/recipes"
       - name: Use current recipes runtime
         if: needs.plan.outputs.package_runtime_recipes == 'true'
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: "24"
       - name: Exercise recipes public API on Node 24
@@ -285,17 +285,17 @@ jobs:
       needs.plan.outputs.route == 'full-fast'
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ env.AGENTPLANE_CI_REF }}
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
           bun-version: "1.4.2"
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: "24"
       - name: Cache Bun artifacts
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.bun/install/cache
@@ -324,18 +324,18 @@ jobs:
       GIT_COMMITTER_NAME: agentplane-ci
       GIT_COMMITTER_EMAIL: agentplane-ci@example.com
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ env.AGENTPLANE_CI_REF }}
           fetch-depth: 0
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
           bun-version: "1.4.2"
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: "24"
       - name: Cache Bun artifacts
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.bun/install/cache
@@ -374,18 +374,18 @@ jobs:
       GIT_COMMITTER_NAME: agentplane-ci
       GIT_COMMITTER_EMAIL: agentplane-ci@example.com
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ env.AGENTPLANE_CI_REF }}
           fetch-depth: 0
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
           bun-version: "1.4.2"
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: "24"
       - name: Cache Bun artifacts
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.bun/install/cache
@@ -411,17 +411,17 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ env.AGENTPLANE_CI_REF }}
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
           bun-version: "1.4.2"
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: "24"
       - name: Cache Bun artifacts
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.bun/install/cache
@@ -454,17 +454,17 @@ jobs:
     if: needs.plan.outputs.docs == 'true' && needs.plan.outputs.route != 'full-fast'
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ env.AGENTPLANE_CI_REF }}
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
           bun-version: "1.4.2"
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: "24"
       - name: Cache Bun artifacts
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.bun/install/cache
@@ -487,7 +487,7 @@ jobs:
       pull-requests: read
       security-events: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ env.AGENTPLANE_CI_REF }}
           fetch-depth: 0
@@ -514,17 +514,17 @@ jobs:
     if: needs.plan.outputs.exact_sha_recovery == 'true'
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ env.AGENTPLANE_CI_REF }}
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
           bun-version: "1.4.2"
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: "24"
       - name: Cache Bun artifacts
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.bun/install/cache
@@ -586,7 +586,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ env.AGENTPLANE_CI_REF }}
           fetch-depth: 0
@@ -596,7 +596,7 @@ jobs:
         run: |
           set -euo pipefail
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: "24"
       - name: Release incidents (check)
@@ -655,10 +655,10 @@ jobs:
     if: always()
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           ref: ${{ env.AGENTPLANE_CI_REF }}
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: "24"
       - name: Evaluate aggregate verification

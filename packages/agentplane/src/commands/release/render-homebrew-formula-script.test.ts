@@ -91,7 +91,17 @@ describe("render-homebrew-formula script", () => {
     expect(formula).toContain("Hardware::CPU.arm?");
     expect(formula).toContain("agentplane-bun-v0.4.1-darwin-arm64.tar.gz");
     expect(formula).toContain("agentplane-bun-v0.4.1-darwin-x64.tar.gz");
-    expect(formula).toContain('bin.install_symlink libexec/"bin/agentplane" => "agentplane"');
+    expect(formula).toContain('libexec.install "agentplane"');
+    expect(formula).not.toContain('libexec/"bin/agentplane"');
+    for (const command of ["agentplane", "ap"]) {
+      expect(formula).toContain(`bin.install_symlink libexec/"agentplane" => "${command}"`);
+      expect(formula).toContain(
+        `assert_match "0.4.1", shell_output("#{bin}/${command} --version")`,
+      );
+      expect(formula).toContain(
+        `assert_match "agentplane", shell_output("#{bin}/${command} --help")`,
+      );
+    }
     expect(formula).not.toContain('depends_on "node"');
     expect(formula).not.toContain("cached_download");
     expect(formula).not.toContain("npm");

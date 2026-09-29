@@ -19,6 +19,8 @@ const mocks = vi.hoisted(() => ({
   executeCanonicalCompletedAgentEpisode: vi.fn().mockResolvedValue(null),
   executeCanonicalLocalWorkflowOperation: vi.fn().mockResolvedValue(false),
   prepareCanonicalWorkflowEffect: vi.fn(),
+  advanceCompletedProviderWorkflow: vi.fn().mockResolvedValue(null),
+  resolveCompletedWorkflowBase: vi.fn(),
   restoreKernelFinalValidation: vi.fn().mockResolvedValue(null),
   runKernelFinalValidation: vi.fn(),
   ensureKernelOperationalProjectionEvidence: vi.fn().mockResolvedValue(undefined),
@@ -42,6 +44,10 @@ vi.mock("./kernel-provider-effect-coordinator.js", () => ({
   executeCanonicalLocalWorkflowOperation: mocks.executeCanonicalLocalWorkflowOperation,
   prepareCanonicalWorkflowEffect: mocks.prepareCanonicalWorkflowEffect,
 }));
+vi.mock("./kernel-completed-provider-workflow.js", () => ({
+  advanceCompletedProviderWorkflow: mocks.advanceCompletedProviderWorkflow,
+  resolveCompletedWorkflowBase: mocks.resolveCompletedWorkflowBase,
+}));
 vi.mock("./kernel-repository-coordinator.js", () => ({
   commitCanonicalTerminalTaskArtifacts: mocks.commitCanonicalTerminalTaskArtifacts,
 }));
@@ -61,6 +67,7 @@ afterEach(async () => {
   mocks.executeCanonicalLocalWorkflowOperation.mockResolvedValue(false);
   mocks.restoreKernelFinalValidation.mockResolvedValue(null);
   mocks.ensureKernelOperationalProjectionEvidence.mockResolvedValue(undefined);
+  mocks.advanceCompletedProviderWorkflow.mockResolvedValue(null);
   await Promise.all(
     temporaryRoots.splice(0).map((root) => rm(root, { recursive: true, force: true })),
   );
@@ -119,6 +126,84 @@ async function repositorySnapshot(root: string, evidencePath: string, record: un
 }
 
 describe("LC-20 terminal replay", () => {
+  it("dispatches completed provider work without preparing a new Kernel effect", async () => {
+    const { runtime, record, apply, input } = completedRuntime();
+    const before = JSON.stringify(record);
+    mocks.createKernelRuntime.mockResolvedValue(runtime);
+    const waiting = { workspace: {}, workflowStep: { kind: "wait" } };
+    const provider = {
+      workspace: {},
+      workflowStep: { kind: "cli_operation", operation: { id: "pr.open" } },
+    };
+    mocks.decideCanonicalWorkflowEffect
+      .mockResolvedValueOnce(waiting)
+      .mockResolvedValueOnce(provider)
+      .mockResolvedValueOnce({ workflowStep: { kind: "terminal", outcome: { type: "done" } } });
+    mocks.advanceCompletedProviderWorkflow.mockResolvedValueOnce({ kind: "progress" });
+    await expect(
+      advanceTaskStep({
+        command: { resolvedProject: { gitRoot: "/repo" } } as never,
+        task_id: "task-1",
+        transport: "host",
+        allow_provider_effects: true,
+      }),
+    ).resolves.toMatchObject({ action: { kind: "terminal" } });
+    expect(mocks.advanceCompletedProviderWorkflow).toHaveBeenCalledWith(
+      expect.objectContaining({ decision: provider }),
+    );
+    expect(mocks.prepareCanonicalWorkflowEffect).not.toHaveBeenCalled();
+    expect(apply).not.toHaveBeenCalled();
+    expect(input).not.toHaveBeenCalled();
+    expect(JSON.stringify(record)).toBe(before);
+  });
+
+  it("does not admit completed provider work without remote access", async () => {
+    const { runtime, apply } = completedRuntime();
+    mocks.createKernelRuntime.mockResolvedValue(runtime);
+    mocks.decideCanonicalWorkflowEffect.mockResolvedValue({
+      workspace: {},
+      workflowStep: { kind: "wait" },
+    });
+    await expect(
+      advanceTaskStep({
+        command: { resolvedProject: { gitRoot: "/repo" } } as never,
+        task_id: "task-1",
+        transport: "host",
+        allow_provider_effects: false,
+      }),
+    ).resolves.toMatchObject({ action: { reason: "canonical_provider_access_required" } });
+    expect(mocks.advanceCompletedProviderWorkflow).not.toHaveBeenCalled();
+    expect(apply).not.toHaveBeenCalled();
+  });
+
+  it("continues post-merge cleanup from proven base without a Kernel controller mutation", async () => {
+    const { runtime, apply, input } = completedRuntime();
+    const base = { resolvedProject: { gitRoot: "/repo/base" } };
+    mocks.createKernelRuntime.mockResolvedValue(runtime);
+    mocks.resolveCompletedWorkflowBase.mockResolvedValue(base);
+    mocks.decideCanonicalWorkflowEffect
+      .mockResolvedValueOnce({ workspace: {}, workflowStep: { kind: "wait" } })
+      .mockResolvedValueOnce({
+        workspace: { baseCheckoutPath: "/repo/base" },
+        workflowStep: { kind: "cli_operation", operation: { id: "task.worktree.cleanup" } },
+      })
+      .mockResolvedValueOnce({ workflowStep: { kind: "terminal", outcome: { type: "done" } } });
+    await expect(
+      advanceTaskStep({
+        command: { resolvedProject: { gitRoot: "/repo/task" } } as never,
+        task_id: "task-1",
+        transport: "host",
+        allow_provider_effects: true,
+      }),
+    ).resolves.toMatchObject({ action: { kind: "terminal" } });
+    expect(mocks.createKernelRuntime).toHaveBeenLastCalledWith(
+      expect.objectContaining({ command: base }),
+    );
+    expect(mocks.decideCanonicalWorkflowEffect).toHaveBeenLastCalledWith(base, "task-1", false);
+    expect(apply).not.toHaveBeenCalled();
+    expect(input).not.toHaveBeenCalled();
+  });
+
   it("consumes replacement authority before advancing to the next canonical episode", async () => {
     const { runtime } = completedRuntime();
     mocks.createKernelRuntime.mockResolvedValue(runtime);
