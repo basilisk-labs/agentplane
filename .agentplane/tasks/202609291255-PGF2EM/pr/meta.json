@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:122001fe6c02b98c58b31cf54f63cbc0232e6852f933fa588e0efc55b9dc3eff",
   "pr_number": 6034,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6034",
+  "pre_merge_closure": {
+    "basis_commit": "eeccba88603f7defccf13f1286e3ed04ea90481f",
+    "branch": "task/202609291255-PGF2EM/recognize-empty-schema-object-staging-directorie",
+    "pr_number": 6034,
+    "recorded_at": "2026-09-29T19:17:37.645Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
