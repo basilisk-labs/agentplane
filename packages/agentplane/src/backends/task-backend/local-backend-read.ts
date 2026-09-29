@@ -180,7 +180,17 @@ async function isIgnorableMissingReadmeTaskDir(root: string, dirName: string): P
     // this exact object-store shape; a damaged task or other quality evidence still warns.
     let directory = path.join(root, dirName, "quality");
     for (const component of ["objects", "sha256"]) {
-      const children = await readdir(directory, { withFileTypes: true });
+      let children = await readdir(directory, { withFileTypes: true });
+      if (component === "sha256") {
+        const staging = children.find((entry) => entry.name === ".staging");
+        if (staging) {
+          // The native object writer retains its empty staging directory after publication.
+          if (!staging.isDirectory()) return false;
+          const stagedObjects = await readdir(path.join(directory, ".staging"));
+          if (stagedObjects.length > 0) return false;
+          children = children.filter((entry) => entry !== staging);
+        }
+      }
       if (children.length !== 1 || !children[0]?.isDirectory() || children[0].name !== component)
         return false;
       directory = path.join(directory, component);
