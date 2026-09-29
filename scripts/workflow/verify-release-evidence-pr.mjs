@@ -6,15 +6,15 @@ const execFileAsync = promisify(execFile);
 const DEFAULT_DISCOVERY_ATTEMPTS = 40;
 const DEFAULT_MERGE_ATTEMPTS = 40;
 const DEFAULT_POLL_INTERVAL_MS = 15_000;
-const RUN_JSON_FIELDS = "databaseId,createdAt,event,headBranch,headSha,status,url";
+const RUN_JSON_FIELDS = "conclusion,databaseId,createdAt,event,headBranch,headSha,status,url";
 
 function usage() {
   process.stdout.write(
     [
       "Usage: node scripts/workflow/verify-release-evidence-pr.mjs --workflow <file> --ref <branch> --sha <sha> --pr-url <url> --repo <owner/name>",
       "",
-      "Dispatch exact-SHA Core CI, publish the required PR check, and merge the release-evidence PR.",
-      "The dispatched run is discovered from a baseline delta instead of relying on optional gh output.",
+      "Wait for exact-SHA native pull_request Core CI and merge the release-evidence PR.",
+      "The PR must expose a non-empty native check rollup accepted by branch protection.",
       "",
       "Options:",
       "  --discovery-attempts <count>  New-run discovery poll budget. Default: 40.",
@@ -164,7 +164,7 @@ function runListArgs(options) {
     "--commit",
     options.sha,
     "--event",
-    "workflow_dispatch",
+    "pull_request",
     "--limit",
     "100",
     "--json",
@@ -178,6 +178,7 @@ function normalizeRuns(payload) {
     .map((entry) => ({
       databaseId: Number(entry?.databaseId),
       createdAt: typeof entry?.createdAt === "string" ? entry.createdAt : "",
+      conclusion: typeof entry?.conclusion === "string" ? entry.conclusion : "",
       event: typeof entry?.event === "string" ? entry.event : "",
       headBranch: typeof entry?.headBranch === "string" ? entry.headBranch : "",
       headSha: typeof entry?.headSha === "string" ? entry.headSha : "",
@@ -187,19 +188,18 @@ function normalizeRuns(payload) {
     .filter((entry) => Number.isInteger(entry.databaseId) && entry.databaseId > 0);
 }
 
-function selectNewExactRun(runs, baselineIds, options) {
+function selectExactPullRequestRun(runs, options) {
   return runs
     .filter(
       (run) =>
-        !baselineIds.has(run.databaseId) &&
-        run.event === "workflow_dispatch" &&
+        run.event === "pull_request" &&
         run.headBranch === options.ref &&
         run.headSha.toLowerCase() === options.sha.toLowerCase() &&
         /\/actions\/runs\/[0-9]+$/u.test(run.url),
     )
     .toSorted((left, right) => {
-      const byCreatedAt = left.createdAt.localeCompare(right.createdAt);
-      return byCreatedAt || left.databaseId - right.databaseId;
+      const byCreatedAt = right.createdAt.localeCompare(left.createdAt);
+      return byCreatedAt || right.databaseId - left.databaseId;
     })[0];
 }
 
@@ -208,42 +208,62 @@ async function sleep(ms) {
   await new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function discoverDispatchedRun(options, baselineIds) {
+async function discoverNativePullRequestRun(options) {
   for (let attempt = 1; attempt <= options.discoveryAttempts; attempt += 1) {
     const runs = normalizeRuns(await runGhJson(runListArgs(options)));
-    const selected = selectNewExactRun(runs, baselineIds, options);
+    const selected = selectExactPullRequestRun(runs, options);
     if (selected) return selected;
     process.stderr.write(
-      `Waiting for exact-SHA Core CI dispatch (${attempt}/${options.discoveryAttempts})\n`,
+      `Waiting for exact-SHA pull_request Core CI (${attempt}/${options.discoveryAttempts})\n`,
     );
     if (attempt < options.discoveryAttempts) await sleep(options.pollIntervalMs);
   }
   throw new Error(
-    `No new ${options.workflow} workflow_dispatch run appeared for ${options.ref}@${options.sha}`,
+    `No native ${options.workflow} pull_request run appeared for ${options.ref}@${options.sha}`,
   );
 }
 
-async function publishRequiredCheck(options, run) {
-  await runGh([
-    "api",
-    `repos/${options.repo}/check-runs`,
-    "--method",
-    "POST",
-    "-f",
-    "name=PR verification",
-    "-f",
-    `head_sha=${options.sha}`,
-    "-f",
-    "status=completed",
-    "-f",
-    "conclusion=success",
-    "-f",
-    `details_url=${run.url}`,
-    "-f",
-    "output[title]=Release evidence verification passed",
-    "-f",
-    "output[summary]=The exact release-evidence closure SHA passed Core CI.",
+function normalizedRollupConclusion(entry) {
+  const conclusion = typeof entry?.conclusion === "string" ? entry.conclusion.trim() : "";
+  if (conclusion) return conclusion.toUpperCase();
+  const state = typeof entry?.state === "string" ? entry.state.trim() : "";
+  return state.toUpperCase();
+}
+
+async function assertNativePullRequestRollup(options) {
+  const payload = await runGhJson([
+    "pr",
+    "view",
+    options.prUrl,
+    "--repo",
+    options.repo,
+    "--json",
+    "headRefOid,statusCheckRollup",
   ]);
+  const headSha = typeof payload?.headRefOid === "string" ? payload.headRefOid.trim() : "";
+  if (headSha.toLowerCase() !== options.sha.toLowerCase()) {
+    throw new Error(
+      `Release-evidence PR head SHA does not match ${options.sha}: ${headSha || "missing"}`,
+    );
+  }
+  const rollup = Array.isArray(payload?.statusCheckRollup) ? payload.statusCheckRollup : [];
+  if (rollup.length === 0) {
+    throw new Error(`Release-evidence PR has an empty native check rollup for ${options.sha}`);
+  }
+  const failures = rollup
+    .map((entry) => ({
+      name: typeof entry?.name === "string" ? entry.name : "unnamed check",
+      conclusion: normalizedRollupConclusion(entry),
+    }))
+    .filter(({ conclusion }) => !["SUCCESS", "NEUTRAL", "SKIPPED"].includes(conclusion));
+  if (failures.length > 0) {
+    throw new Error(
+      `Release-evidence PR native check rollup is not successful: ${failures
+        .map(({ name, conclusion }) => `${name}=${conclusion || "PENDING"}`)
+        .join(", ")}`,
+    );
+  }
+  return rollup.length;
 }
 
 async function mergePullRequest(options) {
@@ -257,6 +277,7 @@ async function mergePullRequest(options) {
     "--interval",
     "15",
   ]);
+  const nativeCheckCount = await assertNativePullRequestRollup(options);
 
   const immediate = await runGh(
     ["pr", "merge", options.prUrl, "--repo", options.repo, "--merge", "--delete-branch"],
@@ -287,7 +308,7 @@ async function mergePullRequest(options) {
       "state,mergedAt,mergeCommit",
     ]);
     const state = typeof payload?.state === "string" ? payload.state.toUpperCase() : "";
-    if (state === "MERGED") return payload;
+    if (state === "MERGED") return { ...payload, nativeCheckCount };
     if (state === "CLOSED") {
       throw new Error(`Release-evidence PR closed without merge: ${options.prUrl}`);
     }
@@ -307,22 +328,10 @@ async function main() {
   }
   requireInputs(options);
 
-  const baselineRuns = normalizeRuns(await runGhJson(runListArgs(options)));
-  const baselineIds = new Set(baselineRuns.map((run) => run.databaseId));
-
-  await runGh([
-    "workflow",
-    "run",
-    options.workflow,
-    "--repo",
-    options.repo,
-    "--ref",
-    options.ref,
-    "-f",
-    `sha=${options.sha}`,
-  ]);
-
-  const run = await discoverDispatchedRun(options, baselineIds);
+  const run = await discoverNativePullRequestRun(options);
+  if (run.status === "completed" && run.conclusion.toLowerCase() === "action_required") {
+    throw new Error(`Native pull_request Core CI requires action for ${options.sha}`);
+  }
   await runGh([
     "run",
     "watch",
@@ -333,7 +342,6 @@ async function main() {
     "--interval",
     "15",
   ]);
-  await publishRequiredCheck(options, run);
   const merge = await mergePullRequest(options);
 
   const result = {
@@ -344,6 +352,7 @@ async function main() {
     closure_sha: options.sha,
     ci_run_id: run.databaseId,
     ci_run_url: run.url,
+    native_check_count: merge?.nativeCheckCount ?? 0,
     merge_commit: merge?.mergeCommit ?? null,
     merged_at: merge?.mergedAt ?? null,
   };
