@@ -1,11 +1,12 @@
 import { createHash } from "node:crypto";
-import { mkdir, rm, symlink, writeFile } from "node:fs/promises";
+import { mkdir, readFile, readdir, rm, symlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { mkTempDir, silenceStdIO } from "@agentplane/testkit";
 
 import { LocalBackend } from "./task-backend.js";
+import { putEvaluatorEvidenceObject } from "../commands/evaluator/evaluator-evidence-store.js";
 
 describe("LocalBackend handoff artifacts", () => {
   let tempDir = "";
@@ -57,6 +58,54 @@ describe("LocalBackend handoff artifacts", () => {
     expect(warnings).not.toContain("skip:202601300000-EMPTY: missing_or_unreadable_readme");
     expect(warnings).not.toContain("skip:202601300000-HANDOF: missing_or_unreadable_readme");
   });
+
+  it.each(["empty", "nonempty", "symlink", "file", "unknown_sibling", "readme"])(
+    "handles native schema staging without hiding unsafe contents: %s",
+    async (scenario) => {
+      const taskId = "202601300000-STAGED";
+      const tasksRoot = path.join(tempDir, ".agentplane", "tasks");
+      const taskRoot = path.join(tasksRoot, taskId);
+      const backend = new LocalBackend({ dir: tasksRoot });
+      const contents = JSON.stringify({
+        $id: "https://agentplane.org/schemas/agent-semantic-payload.schema.json",
+        $schema: "http://json-schema.org/draft-07/schema#",
+        type: "object",
+      });
+      const artifact = await putEvaluatorEvidenceObject({
+        gitRoot: tempDir,
+        taskQualityRoot: path.join(taskRoot, "quality"),
+        logicalName: "semantic-payload-schema",
+        kind: "result_schema",
+        extension: ".json",
+        mediaType: "application/schema+json",
+        contents,
+      });
+      const objects = path.join(taskRoot, "quality", "objects");
+      const staging = path.join(objects, ".staging");
+      expect(await readdir(staging)).toEqual([]);
+      if (scenario === "nonempty") await writeFile(path.join(staging, "pending.tmp"), "pending");
+      if (scenario === "symlink" || scenario === "file") {
+        await rm(staging, { recursive: true });
+        if (scenario === "file") await writeFile(staging, "unexpected");
+        else {
+          const target = path.join(tempDir, "outside-staging");
+          await mkdir(target);
+          await symlink(target, staging, process.platform === "win32" ? "junction" : "dir");
+        }
+      }
+      if (scenario === "unknown_sibling") await mkdir(path.join(objects, "unexpected"));
+      if (scenario === "readme") await mkdir(path.join(taskRoot, "README.md"));
+      const expectedWarnings =
+        scenario === "empty" ? [] : [`skip:${taskId}: missing_or_unreadable_readme`];
+      expect(await backend.listTasks()).toEqual([]);
+      expect(backend.getLastListWarnings()).toEqual(expectedWarnings);
+      await backend.listProjectionTasks();
+      expect(backend.getLastListWarnings()).toEqual(expectedWarnings);
+      expect(await readFile(path.resolve(tempDir, artifact.path), "utf8")).toBe(contents);
+      if (scenario === "nonempty")
+        expect(await readFile(path.join(staging, "pending.tmp"), "utf8")).toBe("pending");
+    },
+  );
 
   it.each(
     ["agent-semantic-result", "agent-semantic-payload"].flatMap((schemaName) =>
