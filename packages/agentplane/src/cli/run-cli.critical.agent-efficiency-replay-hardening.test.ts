@@ -720,7 +720,7 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
     ).toThrow("does not link");
   });
 
-  it("accepts only the frozen TypeScript 7 and coherent workspace release lock deltas", async () => {
+  it("accepts only the frozen toolchain and coherent workspace release lock deltas", async () => {
     const replay = await importModule<{
       REPLAY_ANCHOR_COMMIT: string;
     }>("scripts/lib/agent-efficiency-replay.mjs");

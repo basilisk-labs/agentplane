@@ -112,6 +112,44 @@ function projectApprovedWorkspaceReleaseLock(driverLock, subjectLock) {
   return projected;
 }
 
+function projectApprovedVitestSecurityLock(driverLock, subjectLock) {
+  const packageNames = [
+    "vitest",
+    "@vitest/coverage-v8",
+    "@vitest/expect",
+    "@vitest/mocker",
+    "@vitest/pretty-format",
+    "@vitest/runner",
+    "@vitest/snapshot",
+    "@vitest/spy",
+    "@vitest/utils",
+  ];
+  const dependencyNames = ["vitest", "@vitest/coverage-v8"];
+  const lockSubset = (lock) => ({
+    dependencies: Object.fromEntries(
+      dependencyNames.map((name) => [name, lock.workspaces?.[""]?.devDependencies?.[name]]),
+    ),
+    packages: Object.fromEntries(packageNames.map((name) => [name, lock.packages?.[name]])),
+  });
+  // Freeze the complete reviewed 4.1.9 -> 4.1.11 delta for GHSA-82fw-gwwq-j7x9.
+  if (
+    sha256(stableJson(lockSubset(subjectLock))) !==
+      "sha256:f69e5fc87f34b7c04e8a4ee1701b541e064f22138366b77f011040a71e644051" ||
+    sha256(stableJson(lockSubset(driverLock))) !==
+      "sha256:8fa1308d65180877716202d061e22f5c462ee2a975a82cc5876f96cfd6553fca"
+  ) {
+    return null;
+  }
+  const projected = structuredClone(driverLock);
+  for (const name of dependencyNames) {
+    projected.workspaces[""].devDependencies[name] =
+      subjectLock.workspaces[""].devDependencies[name];
+  }
+  for (const name of packageNames)
+    projected.packages[name] = structuredClone(subjectLock.packages[name]);
+  return projected;
+}
+
 export function assertAnchorLockCompatible(subjectLockBytes, driverLockBytes) {
   if (sha256(subjectLockBytes) === sha256(driverLockBytes)) return;
   let subjectLock;
@@ -127,7 +165,10 @@ export function assertAnchorLockCompatible(subjectLockBytes, driverLockBytes) {
     typescriptProjected === null
       ? null
       : projectApprovedWorkspaceReleaseLock(typescriptProjected, subjectLock);
-  if (projected === null || stableJson(projected) !== stableJson(subjectLock)) {
+  if (projected !== null && stableJson(projected) === stableJson(subjectLock)) return;
+  const securityProjected =
+    projected === null ? null : projectApprovedVitestSecurityLock(projected, subjectLock);
+  if (securityProjected === null || stableJson(securityProjected) !== stableJson(subjectLock)) {
     fail("ANCHOR_LOCK_MISMATCH");
   }
 }
