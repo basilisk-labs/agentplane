@@ -1,0 +1,49 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun x vitest run --config vitest.config.ts --maxWorkers=2 packages/agentplane/src/backends/task-backend.local-handoff.test.ts packages/agentplane/src/commands/shared/reconcile-check.test.ts",
+      "duration_ms": 11933,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:57d287a513206088c6ce326cc0b0c7ae5fc1f1bb41c574de58d11c606bd39db0",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v4.1.11 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202609291255-PGF2EM-recognize-empty-schema-object-staging-directorie\n\n\n Test Files  2 passed (2)\n      Tests  34 passed (34)\n   Start at  16:11:36\n   Duration  10.69s (transform 8.49s, setup 123ms, import 11.91s, tests 2.11s, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run typecheck",
+      "duration_ms": 922,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:57d287a513206088c6ce326cc0b0c7ae5fc1f1bb41c574de58d11c606bd39db0",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202609291255-PGF2EM"
+}
