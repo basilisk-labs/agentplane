@@ -1,10 +1,11 @@
 ---
 id: "202609301727-VET3VW"
 title: "Document workflow modes and shared feature deliveries as roadmap release 0.7.15"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -38,6 +39,22 @@ quality_review:
   findings:
     - "Inspected the committed diff from 1053fee6f to db02e9d7 and controller evidence. All three summaries link to the new 0.7.15 stage. Mode selection, shared delivery readiness, authority separation, compatibility, recovery and exclusions match the contract. Existing atomic catalogue files are unchanged."
     - "Verified required context and input digests using canonical JSON, excluding the repository evidence self-digest. Native validation records both approved commands passing on the implementation inputs. The document explicitly limits that validation to the existing 132-card catalogue."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:b3578e9313c1ca03123bbb92dc89559629107d9aa9ba7a544dc38c934525ada1"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-09-30T18:07:54.037Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -233,9 +250,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "db02e9d788073ce307478e6717f8c19dd8da2a5d"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "1df46deaca472fb58a5913fd967e267b7d75035d"
+  message: "✅ VET3VW task: persist canonical completion"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -243,9 +263,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-09-30T18:07:54.037Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "1df46deaca472fb58a5913fd967e267b7d75035d"
 doc_version: 3
-doc_updated_at: "2026-09-30T17:43:01.604Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-30T18:07:54.037Z"
+doc_updated_by: "CODER"
 description: "User explicitly requests a new roadmap stage as the next patch release after 0.7.14. Add release 0.7.15 for three workflow modes and shared feature deliveries. direct pins the current selected branch without implicit merge; branch isolates work from an explicit base; branch_pr adds PR creation only after aggregate delivery readiness. Multiple tasks may share a selected feature branch and delivery. Require all members, explicit closure intent, clean workspace and aggregate checks before PR creation. Preserve separate approval and merge authority. Keep 0.7.13 Scenario V2 and 0.7.14 qualified EVALUATOR omission unchanged. Do not add a recipe engine, automatic recipe publication or generalized memory. Update roadmap release table and bundle README and add a bounded release-stage document with scope, sequencing, compatibility and acceptance. Keep existing 132 atomic contracts intact; label new stage as requiring decomposition before implementation. Documentation only; no runtime changes, publishing or external writes."
 sections:
   Summary: |-
@@ -410,6 +438,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:ecd982593fa993424d7cdc652db7e56fae3f353fdc2ac4b1f960e7c21cb06aa9"
     work_order_id: "sha256:36dee84c3e02cbb08ea661258b9018b0e3db6b7d6ed20465350fb22c16c4d11a"
+  implementation_commit:
+    hash: "db02e9d788073ce307478e6717f8c19dd8da2a5d"
+    message: "🚧 VET3VW task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "1053fee6f16c70a25154d54d4664ccfe609b5082"
@@ -1021,3 +1052,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:b3578e9313c1ca03123bbb92dc89559629107d9aa9ba7a544dc38c934525ada1`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-09-30T18:07:54.037Z`

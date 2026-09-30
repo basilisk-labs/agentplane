@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:f02e698e594344975ce094b15d61c3a971fe826d58fc3512db796a50c097d27d",
   "pr_number": 6040,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6040",
+  "pre_merge_closure": {
+    "basis_commit": "1df46deaca472fb58a5913fd967e267b7d75035d",
+    "branch": "task/202609301727-VET3VW/document-workflow-modes-and-shared-feature-deliv",
+    "pr_number": 6040,
+    "recorded_at": "2026-09-30T18:07:54.655Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
