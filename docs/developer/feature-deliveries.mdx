@@ -1,0 +1,198 @@
+---
+title: "Feature Deliveries and Semantic Workflow Selection"
+description: "Accepted target contract for sequential tasks in a shared feature branch and policy-validated semantic routing."
+---
+
+## Status and scope
+
+This is the accepted target design from [ADR 0018](../adr/0018-feature-deliveries-and-semantic-routing.md).
+Implementation is pending. Field names below define the proposed contract, not a current public API.
+Existing `task advance --agent-json` remains the semantic execution protocol.
+
+This work extends the existing execution resolver, Task Kernel, workspace allocator, and integration
+queue. It does not replace Task, Plan, or WorkItem. It does not change current repository settings.
+A repository with a `branch_pr` floor still requires a PR for small changes.
+
+## User outcome
+
+A user starts a feature delivery and selects or creates its feature branch. The user can add
+independent tasks A, B, and C over time. Each task has its own plan and acceptance criteria.
+The executor completes and verifies A, then starts B from A's accepted head in the same worktree.
+One delivery owns one PR. Completing A or B does not merge the PR or delete the worktree.
+When the feature is ready, the controller verifies the aggregate candidate and integrates once.
+
+| Intent                               | Membership      | Integration gate         | Workspace                       |
+| ------------------------------------ | --------------- | ------------------------ | ------------------------------- |
+| Small independent reversible change  | One task        | Direct if policy permits | Isolated by default             |
+| Independent change requiring review  | One task        | PR                       | Dedicated delivery worktree     |
+| Several tasks implementing a feature | Shared delivery | One PR for the feature   | Reused worktree with one writer |
+
+`direct` describes the absence of a PR gate. It does not permit concurrent writes to the base
+checkout. An existing feature branch is not selected merely because it is the current directory.
+
+## Semantic proposal and deterministic admission
+
+The planning agent supplies a structured proposal with:
+
+- preferred integration mode and membership intent (`new` or an explicit delivery ID);
+- scope roots and repository and external effects;
+- requirements uncertainty, implementation uncertainty, and reversibility;
+- need for independent review or rollback;
+- reason codes and a short semantic rationale.
+
+The CLI resolves the proposal in this order:
+
+1. Validate an explicit existing delivery ID, its state, membership authority, and compatibility.
+2. Apply repository and target-branch policy floors. A member cannot weaken its delivery gate.
+3. Apply isolation requirements from effects, uncertainty, reversibility, and concurrency.
+4. Select the least costly compatible route or return a typed conflict with the reason.
+5. Persist the decision and bind execution authority before issuing an implementation WorkOrder.
+
+An existing compatible delivery wins over creating a new task branch. If the delivery cannot admit
+the task, stop with a reason; do not silently create another branch. An explicit user branch choice
+is honored when valid. A title, natural-language keyword, or estimated line count is not a policy.
+Semantic interpretation may differ between planning attempts. Determinism means that the same
+admitted proposal, policy version, and state produce the same decision, and retries reuse it.
+
+The executor receives the selected mode, delivery ID, branch, authoritative workspace, writable
+roots, verification requirements, and stop rules. It does not reselect the mode at each episode.
+External publication and merge still require matching authority. Planning preference is not consent.
+
+## Durable identities and ownership
+
+Persist a path-neutral delivery record with these logical fields:
+
+| Field                             | Contract                                                 |
+| --------------------------------- | -------------------------------------------------------- |
+| `delivery_id`, `revision`         | Stable identity and compare-and-swap revision            |
+| `repository_identity`             | Existing logical repository identity                     |
+| `integration_mode`                | `direct` or `branch_pr`                                  |
+| `target_ref`, `creation_base_sha` | Frozen initial target identity                           |
+| `branch_ref`, `workspace_id`      | Owned branch and allocator identity                      |
+| `members`                         | Explicit task IDs and membership revisions               |
+| `route_decision`                  | Proposal digest, policy version, selected route, reasons |
+| `provider_identity`               | Host, project, PR identity, or absent before publication |
+| `state`, `candidate`              | Delivery state and exact candidate head/base/evidence    |
+| `operation_receipts`              | Idempotency and effect reconciliation references         |
+
+Absolute paths are runtime projections of `workspace_id`. A rename or relocation does not change
+semantic identity. A task has at most one active delivery binding. A branch/workspace has one
+active delivery owner. Joining an existing branch checks its ownership and preserves its commits.
+Two competing bindings fail atomically. Repeating a successful bind returns the existing binding.
+
+Keep the initial base immutable for audit. Record subsequent accepted base updates separately.
+Each task also records its start head within the delivery and implementation result head. Task
+verification uses that bounded change; delivery verification uses the entire integration candidate.
+Never rewrite a task's original intake base silently when it joins a delivery at a later head.
+
+## Sequential execution
+
+Resolve delivery membership before task-local worktree preparation, including for a new `TODO` task.
+Acquire one delivery writer lease bound to task, attempt, expected head, and a fencing token.
+A second writer waits or receives a typed contention result. A stale process cannot commit after
+another attempt has acquired the lease. Lease recovery requires proof and a recorded transition.
+
+Before handing the workspace from A to B, require A's accepted result, persisted verification,
+accounted-for tracked and untracked changes, and a recorded head. B receives that head as its
+execution baseline. Dirty or failed work remains assigned to A and blocks the handoff.
+Tasks with disjoint scopes still cannot write concurrently into this worktree. Independent parallel
+execution requires separate allocations and an explicit integration path.
+
+A completed task retains its original outcome and evidence. Later tasks may change the same files;
+that does not retroactively erase A's historical validation. The final delivery gate must detect
+regressions in the combined candidate.
+
+## Validation and delivery lifecycle
+
+Expose task validation and delivery integration separately. A UI may display
+`task validated / delivery open`. It must not imply the change has landed in the target branch.
+Map this distinction onto canonical Task state through typed transitions; do not edit legacy status
+fields or introduce a competing Task lifecycle.
+
+The proposed delivery progression is:
+
+```text
+OPEN -> READY -> INTEGRATING -> INTEGRATED -> RETIRED
+```
+
+`OPEN` admits tasks. `READY` freezes membership and the candidate. Any admitted change after readiness
+returns the delivery to `OPEN` and invalidates the readiness receipt. `INTEGRATING` holds the
+serialized integration reservation. Uncertain effects block progress until reconciled. Cancellation
+retains unique work and evidence; it is not a shortcut to deleting the branch.
+
+Readiness requires all required members to be validated, no active writer, a clean accounted-for
+workspace, and the aggregate verification contract. Record task input/output SHAs and content
+digests, the candidate SHA, target SHA, policy/plan digests, and required-check receipts.
+Reuse evidence only when its declared input dependencies remain unchanged. Re-run checks invalidated
+by subsequent tasks or base updates. A service-artifact-only commit must not cause an unbounded
+verification/commit loop, but excluding artifacts requires an explicit verified-content contract.
+
+For `branch_pr`, the provider is the sole merge authority. Do not locally merge and then report the
+hosted PR as merged. Guard the provider operation with the observed head; reconcile the provider
+receipt and then synchronize the local target. For `direct`, retain the serialized queue from
+ADR 0016. A changed target or candidate invalidates the reservation and triggers the documented
+revalidation path. Do not use a local fallback when provider state is unavailable.
+
+## Escalation and recovery
+
+An observed new risk can strengthen the route. Pause execution, record the reason and preserved
+head/evidence, resolve the new contract, obtain any additional authority, and resume in the admitted
+workspace. Never lose or duplicate implementation while moving from direct to PR delivery.
+A member cannot escalate by silently forking itself out of a feature. Splitting or moving membership
+is explicit and validates dependent tasks and existing commits. Automatic downgrade is forbidden.
+
+Allocate stable operation IDs for branch creation, workspace allocation, PR publication, merge,
+and cleanup. Persist intent before effects and reconcile observed effects after interruption.
+A missing worktree is recovered against the recorded branch. A changed title does not generate a
+new branch name. Multiple plausible branches produce an ownership error, not a heuristic choice.
+
+Cleanup belongs to the delivery. It requires integrated or explicitly reconciled cancellation state,
+no active lease, no unpublished unique work, a clean workspace, and provider/base proof where needed.
+Finishing a member task never triggers delivery cleanup. An open feature remains resumable.
+
+## Migration and rollout
+
+1. Add versioned contracts and read-only projections behind explicit rollout control.
+2. Import single-task ownership as a one-member delivery without moving commits or opening a PR.
+3. Import umbrella ownership only when all structured task and PR identities agree.
+4. Reject duplicate ownership and ambiguous local/remote refs with a repair report.
+5. Replay representative direct, branch, included-task, completed, and interrupted histories.
+6. Enable new bindings, then sequential execution, then integration after their respective gates.
+7. Remove compatibility inference only after all active ownership has a migration receipt.
+
+Migration is idempotent and records old/new digests and the version. Rollback disables new delivery
+admission. Existing delivery state and outstanding operation receipts remain readable and recoverable.
+Do not restore unsafe shared writes or convert unknown provider outcomes into local success.
+
+## Observability and efficiency
+
+A compact status exposes task, delivery, branch, workspace, target, route reason, writer owner,
+verification state, PR, next action, and blockers. An explain view shows policy and decision versions.
+The normal semantic packet contains one actionable objective and authoritative identities.
+
+Measure an isolated one-task change and a three-task feature before and after rollout: branch and
+worktree allocations, PR count, service commits, repeated checks, provider calls, model turns, and
+elapsed time. The three-task feature must use one delivery branch, one worktree, one PR, and one
+merge. Do not claim a speedup from commit counts alone. Coalesce redundant service commits only
+when durable receipts and crash replay remain intact.
+
+## Acceptance scenarios
+
+- A compatible low-risk task selects direct under permissive policy; a PR floor prevents downgrade.
+- A one-line security-boundary change selects isolation regardless of its size.
+- A, B, and C have independent plans and use the same feature allocation in sequence.
+- A new TODO member routes to the delivery before any task-local branch allocation.
+- C can join after A validates while the delivery remains open.
+- A concurrent writer is fenced; interrupted A cannot corrupt B's execution.
+- A restart, changed title, or moved repository reuses the same delivery identity.
+- A new material risk preserves work and requires an explicit route transition.
+- B invalidates relevant combined checks without destroying A's historical validation.
+- A new commit after READY invalidates readiness and cannot merge under an old receipt.
+- Unknown provider state stops integration; retry after a successful merge does not merge twice.
+- Completing A does not clean up the open feature; final cleanup preserves unique untracked work.
+- Ambiguous umbrella migration stops without changing branches or PR state.
+
+## Implementation boundary
+
+The implementation backlog must assign each contract above to an atomic, dependency-ordered work
+item with its own acceptance and verification. Creating the backlog does not authorize its execution.
