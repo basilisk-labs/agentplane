@@ -1,10 +1,11 @@
 ---
 id: "202609300006-CGH9FT"
 title: "Integrate all four open issue fixes with canonical routing and hermetic CI evidence"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -52,6 +53,22 @@ quality_review:
   findings:
     - "Compared current HEAD 591b881b43afce9249879c93f8a7f1626d536191 with evaluated commit 41de4459ac676a3d8df91b17234a965e2e5889e1. All changes are confined to eight task-owned evidence/document paths. The exact sorted 34-source-file digest remains sha256:2fe357d90e0b14982378b4c226e7051ff801d8e0bda8ef4139b29240836709f3."
     - "Native targeted checks and full local regression passed. Hosted CI run 36665896578 passed all required checks on the same implementation. No source assertions or security policy were relaxed."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:2a7ace6ca6705d78bfcc1410eb10d6ded8afe2f7dcdff5993c8dc5b3f59a9b10"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-09-30T04:07:43.693Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -385,9 +402,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "41de4459ac676a3d8df91b17234a965e2e5889e1"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "4dd18963e6551220dc20f8215d0d8357ded81f31"
+  message: "🧩 CGH9FT task: refresh task artifacts after commit"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -395,9 +415,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-09-30T04:07:43.693Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "4dd18963e6551220dc20f8215d0d8357ded81f31"
 doc_version: 3
-doc_updated_at: "2026-09-30T03:28:38.754Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-30T04:07:43.693Z"
+doc_updated_by: "CODER"
 description: "Consolidate reviewed source changes from SQE8J4, SYX432 (#6018), 6GZ3RV (#6020), TS0XNK (#6037), and P4YDKF (#5991) onto current main. Reconcile overlapping routing and transport tests. Fix confirmed release fixture Bash startup PATH contamination without weakening assertions. Preserve generic subprocess security and immutable compatibility baseline. Run focused regressions, static checks, and one isolated full CI measurement proving zero leftover temporary entries/bytes. Native and hosted checks must pass before integration. Superseded PRs 6035/6036 and issues close only after evidence-backed integration. Preserve unrelated work and old evidence."
 sections:
   Summary: |-
@@ -603,6 +631,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:a178b534e812b34b95d2b8645c956bd2c840edd9c5ebdcd16043938b43681d45"
     work_order_id: "sha256:9f82fcf2bbaf2932bd39c3cb0ffd84329bfee9f687033f2545e87953078d90f4"
+  implementation_commit:
+    hash: "41de4459ac676a3d8df91b17234a965e2e5889e1"
+    message: "🚧 CGH9FT task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "fe046eb21a7378298cb4b30dd8357515220ecd02"
@@ -1328,3 +1359,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:2a7ace6ca6705d78bfcc1410eb10d6ded8afe2f7dcdff5993c8dc5b3f59a9b10`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-09-30T04:07:43.693Z`

@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:9631ce798f3deceb39d5e80c2b953f9f8e2ccb164fab26199977eb3449366085",
   "pr_number": 6038,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6038",
+  "pre_merge_closure": {
+    "basis_commit": "4dd18963e6551220dc20f8215d0d8357ded81f31",
+    "branch": "task/202609300006-CGH9FT/integrate-all-four-open-issue-fixes-with-canonic",
+    "pr_number": 6038,
+    "recorded_at": "2026-09-30T04:07:43.843Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
