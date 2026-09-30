@@ -4,7 +4,7 @@ title: "Integrate the independent website extraction from 202609301619-2GPBMT"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -27,17 +27,30 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-30T17:42:44.961Z"
+  updated_at: "2026-09-30T20:03:18.105Z"
   updated_by: "EVALUATOR"
-  note: "Canonical EVALUATOR review passed."
+  note: "EVALUATOR returned pass with 2 typed finding(s)."
   evaluated_sha: "32943ef6841f367127103adf8f264960fb9961f1"
-  review_identity_digest: "sha256:f52402026fcbf6a39592b4eeb725db8b8ae208a3dc6d9a3c21dfc83b41113295"
+  review_identity_digest: "sha256:5ed80b32dab5c22a4127e10949e179a58ed3ff5dbbd502e4333e101fe53d3c33"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202609301724-M0S90X/a59ef46c09bd38783fefdd897a716dacf3ce46b77416887e232dddac8dcd1869/quality-report.json"
+    - ".agentplane/tasks/202609301724-M0S90X/quality/20260930-200316385-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609301724-M0S90X/quality/20260930-200316385-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609301724-M0S90X/quality/objects/sha256/637ceb0cbd34b37ba0f8e654851ffc7d027154d0de1123109a0b4cc3188b5575.md"
+    - ".agentplane/tasks/202609301724-M0S90X/quality/20260930-200316385-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609301724-M0S90X/quality/20260930-200316385-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609301724-M0S90X/quality/20260930-200316385-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609301724-M0S90X/README.md"
+    - ".agentplane/tasks/202609301724-M0S90X/quality/objects/sha256/53e14bd0abdcd96c0727b31c45017c3df025a66456b872c47f189a3a6c800a23.patch"
+    - ".agentplane/tasks/202609301724-M0S90X/quality/objects/sha256/7d55a44acc39ad7c3c99e042abac4de521639c2e2b92a6c39ff4ad8730f2a60a.json"
+    - ".agentplane/tasks/202609301724-M0S90X/verification/20260930195818790-57a88ef56723be0f.json"
+    - ".agentplane/tasks/202609301724-M0S90X/quality/objects/sha256/dbb45a6469f678e0e0edcf125ab64caf52bd67c8cb91de2486d3b64c2b1775e2.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Commit 32943ef6841f367127103adf8f264960fb9961f1 contains the scoped framework cleanup and no temporary site payload. Its implementation diff matches the inspected source extraction exactly."
-    - "Workspace, CI, release generation and developer scripts preserve canonical documentation while removing website build dependencies."
-    - "All six native checks passed. Fresh affected tests report 101 passing and one explicitly skipped baseline failure. Changed-source formatting, lint and compatibility passed."
+    - "The diff from the original evaluated implementation to current HEAD contains only task artifacts; framework source, scripts, workflows, and documentation are unchanged."
+    - "All nine native final verification commands passed, including full local CI after increasing the Node heap to 4096 MB and the local suite timeout to 3600000 ms."
 execution_route:
   frozen: true
   reason_codes:
