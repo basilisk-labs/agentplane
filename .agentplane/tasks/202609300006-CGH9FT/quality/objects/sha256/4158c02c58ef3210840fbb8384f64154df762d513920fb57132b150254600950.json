@@ -1,0 +1,43 @@
+{
+  "native_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_task_identity",
+    "task_id": "202609300006-CGH9FT",
+    "plan": {
+      "revision": 1,
+      "digest": "sha256:ad7297a455e79d44fa93806185dab393f98fd0a9c71431f014e82aa992af7d73",
+      "approval_state": "approved",
+      "approved_digest": "sha256:ad7297a455e79d44fa93806185dab393f98fd0a9c71431f014e82aa992af7d73"
+    },
+    "policy": {
+      "digest": "sha256:56c0ded46446a019f1031b396976e3e85a3d15c1cdaaae98d48c0c10a0a80ac0"
+    },
+    "capability": {
+      "digest": "sha256:a4223b65f0a84cf6d9c4d7834d8326254cac254c3d88addf591ff62137b85167"
+    },
+    "checks": {
+      "verification_contract_digest": "sha256:7dd25b83cb8e96929f6c7c4bba23166d35c038849deab15404ea250024ff5ca6",
+      "required_check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "full_regression",
+        "task_outcome"
+      ],
+      "digest": "sha256:e293ec7fc947d5d8994a18201cbaa54a4ad854f0607bc3c41568f1eeee54c808"
+    },
+    "digest": "sha256:4be188805f0d7af5af9b64d36de71a2116282e8a2bca7bf50a2bcbe5b81898b7"
+  },
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202609300006-CGH9FT",
+    "plan_digest": "sha256:ad7297a455e79d44fa93806185dab393f98fd0a9c71431f014e82aa992af7d73",
+    "policy_digest": "sha256:56c0ded46446a019f1031b396976e3e85a3d15c1cdaaae98d48c0c10a0a80ac0",
+    "capability_digest": "sha256:a4223b65f0a84cf6d9c4d7834d8326254cac254c3d88addf591ff62137b85167",
+    "checks_digest": "sha256:e293ec7fc947d5d8994a18201cbaa54a4ad854f0607bc3c41568f1eeee54c808",
+    "verification_input_digest": "sha256:64522c6aa8cfd3da4f62811bac9921b57426033549ffaa85759b95d71cb9c397",
+    "acceptance_digest": "sha256:f12a3d97a80db704151b4c9f7b74ca287b387fd6236773511e5cf0631a59d054",
+    "implementation_sha": "41de4459ac676a3d8df91b17234a965e2e5889e1",
+    "digest": "sha256:ebf164462ae910f257d3029a982346633fd28348fa8b5b77b73f73ec7b506f1b"
+  }
+}

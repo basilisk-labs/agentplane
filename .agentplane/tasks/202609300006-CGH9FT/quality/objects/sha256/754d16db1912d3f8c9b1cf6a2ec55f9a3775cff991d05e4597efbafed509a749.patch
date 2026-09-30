@@ -1,0 +1,3105 @@
+diff --git a/knip.json b/knip.json
+index f5beea4b2..0445959ed 100644
+--- a/knip.json
++++ b/knip.json
+@@ -1,21 +1,28 @@
+ {
+   "$schema": "https://unpkg.com/knip@6/schema.json",
+-  "entry": [
+-    "eslint.config.cjs",
+-    "vitest.config.ts",
+-    "vitest.workspace.ts",
+-    "packages/*/tsup.config.ts",
+-    "packages/*/src/index.ts",
+-    "packages/agentplane/src/cli.ts",
+-    "packages/agentplane/bin/*.js",
+-    "scripts/**/*.mjs"
+-  ],
+-  "project": [
+-    "packages/*/src/**/*.ts",
+-    "packages/*/tsup.config.ts",
+-    "scripts/**/*.mjs",
+-    "*.config.{cjs,js,ts}"
+-  ],
++  "workspaces": {
++    ".": {
++      "entry": [
++        "eslint.config.cjs",
++        "vitest.config.ts",
++        "vitest.workspace.ts",
++        "packages/*/tsup.config.ts",
++        "packages/*/src/index.ts",
++        "packages/agentplane/src/cli.ts",
++        "packages/agentplane/bin/*.js",
++        "scripts/**/*.mjs"
++      ],
++      "project": [
++        "packages/*/src/**/*.ts",
++        "packages/*/tsup.config.ts",
++        "scripts/**/*.mjs",
++        "*.config.{cjs,js,ts}"
++      ]
++    },
++    "packages/testkit": {
++      "entry": ["src/index.ts", "src/cli-harness/temp-root-cleanup.measure.mjs"]
++    }
++  },
+   "ignore": [
+     ".agentplane/**",
+     "docs/**",
+diff --git a/packages/agentplane/src/cli/run-cli.core.kernel-projection.testkit.ts b/packages/agentplane/src/cli/run-cli.core.kernel-projection.testkit.ts
+new file mode 100644
+index 000000000..217312ae0
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli.core.kernel-projection.testkit.ts
+@@ -0,0 +1,116 @@
++import { execFileSync } from "node:child_process";
++import { readFile, rm, writeFile } from "node:fs/promises";
++import path from "node:path";
++import { expect } from "vitest";
++import { AGENT_WORK_ORDER_V2_ZOD_SCHEMA } from "@agentplaneorg/core/schemas";
++import { kernelExchangeDirectory } from "../commands/task/kernel-exchange.js";
++import {
++  KERNEL_OPERATIONAL_PROJECTION,
++  readKernelOperationalProjection,
++} from "../commands/task/kernel-operational-projection.js";
++import { recoverKernelOperationalProjection } from "../commands/task/kernel-operational-projection-recovery.js";
++import type { loadCommandContext } from "../commands/shared/task-backend.js";
++import type { createKernelRuntime } from "../commands/task/kernel-runtime-context.js";
++
++export async function assertProjectionRecovery(
++  root: string,
++  command: Awaited<ReturnType<typeof loadCommandContext>>,
++  runtime: Awaited<ReturnType<typeof createKernelRuntime>>,
++  taskId: string,
++) {
++  const read = await runtime.adapter.read(taskId);
++  if (read.kind !== "canonical") throw new Error("Missing recovery fixture");
++  const original = readKernelOperationalProjection(read.task.extensions);
++  expect(original).not.toBeNull();
++  const extensions = { ...read.task.extensions };
++  delete extensions[KERNEL_OPERATIONAL_PROJECTION];
++  await command.taskBackend.writeTask(
++    { ...read.task, extensions, revision: read.task.revision! + 1 },
++    { expectedRevision: read.task.revision },
++  );
++  const missing = await runtime.adapter.read(taskId);
++  if (missing.kind !== "canonical") throw new Error("Missing recovery fixture");
++  const task = {
++    ...missing.task,
++    execution_route: { ...missing.task.execution_route!, repository_mode: "branch_pr" as const },
++  };
++  const recover = () => recoverKernelOperationalProjection(command, missing.record, task);
++  const inspectionId = Object.keys(missing.record.aggregate.mutation_receipts).findLast((id) =>
++    id.startsWith("validation:sha256:"),
++  )!;
++  const directory = await kernelExchangeDirectory(
++    command,
++    taskId,
++    inspectionId.slice("validation:".length),
++  );
++  const order = AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse(
++    JSON.parse(await readFile(path.join(directory, "work-order.json"), "utf8")),
++  );
++  const nativePath = order.required_inputs.find((input) => input.id === "native-validation")!.path!;
++  const repositoryPath = order.required_inputs.find(
++    (input) => input.id === "repository-evidence",
++  )!.path!;
++  const reviewPath = path.join(directory, "inspection-result.json");
++  for (const target of [
++    order.required_inputs.find((input) => input.id === "implementation-result")!.path!,
++    nativePath,
++    repositoryPath,
++    reviewPath,
++    path.join(directory, "quality-report.json"),
++  ]) {
++    const contents = await readFile(target, "utf8");
++    await writeFile(target, "{}");
++    const stopped = await recover();
++    expect(stopped).toMatchObject({
++      kind: "stop",
++      action: {
++        reason: "canonical_operational_projection_recovery_required",
++        operator_action: {
++          kind: "create_recovery_task",
++        },
++      },
++    });
++    if (stopped.kind !== "stop") throw new Error("Invalid evidence requires recovery");
++    expect(stopped.action.operator_action.argv.slice(0, 3)).toEqual([
++      "agentplane",
++      "task",
++      "create",
++    ]);
++    expect(await runtime.adapter.read(taskId)).toEqual(missing);
++    await writeFile(target, contents);
++  }
++  const repositoryContents = await readFile(repositoryPath, "utf8");
++  await rm(repositoryPath);
++  expect(await recover()).toMatchObject({ kind: "stop" });
++  await writeFile(repositoryPath, repositoryContents);
++  const stale = structuredClone(missing.record);
++  stale.aggregate.work_items.build!.attempt += 1;
++  expect(await recoverKernelOperationalProjection(command, stale, task)).toMatchObject({
++    kind: "stop",
++  });
++  expect(await runtime.adapter.read(taskId)).toEqual(missing);
++  await writeFile(path.join(root, "result.txt"), "unreviewed change");
++  expect(await recover()).toMatchObject({ kind: "stop" });
++  await writeFile(path.join(root, "result.txt"), "managed implementation");
++  expect(
++    await recover(),
++    execFileSync("git", ["status", "--short", "--untracked-files=all"], {
++      cwd: root,
++      encoding: "utf8",
++    }),
++  ).toEqual({ kind: "restored" });
++  const restored = await runtime.adapter.read(taskId);
++  if (restored.kind !== "canonical") throw new Error("Missing restored fixture");
++  expect(restored.record).toEqual(missing.record);
++  expect(readKernelOperationalProjection(restored.task.extensions)).toMatchObject({
++    implementation_commit: original!.implementation_commit,
++    review_identity_digest: original!.review_identity_digest,
++  });
++  expect(
++    await recoverKernelOperationalProjection(command, restored.record, {
++      ...restored.task,
++      execution_route: task.execution_route,
++    }),
++  ).toEqual({ kind: "unchanged" });
++  expect(await runtime.adapter.read(taskId)).toEqual(restored);
++}
+diff --git a/packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts b/packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts
+index 4359e8da9..312f090fd 100644
+--- a/packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts
+@@ -1,6 +1,9 @@
+ import { readKernelOrderResult } from "../commands/task/kernel-exchange.js";
++import { assertProjectionRecovery } from "./run-cli.core.kernel-projection.testkit.js";
+ import { KernelTaskLifecycle } from "../runner/usecases/kernel-task-lifecycle.js";
+-import { execFileSync } from "node:child_process";
++import { execFile, execFileSync } from "node:child_process";
++import { promisify } from "node:util";
++import { fileURLToPath } from "node:url";
+ import * as finalChecks from "../commands/task/direct-task-verification.js";
+ import {
+   acceptKernelInspection,
+@@ -30,7 +33,12 @@ import { createKernelRuntime } from "../commands/task/kernel-runtime-context.js"
+ import { makeTaskBackendDouble } from "@agentplane/testkit/task";
+ import * as taskBackend from "../backends/task-backend.js";
+ import { observeKernelTestRunner } from "../commands/task/kernel-run.testkit.js";
+-import { readKernelOperationalProjection } from "../commands/task/kernel-operational-projection.js";
++import {
++  KERNEL_OPERATIONAL_PROJECTION,
++  readKernelOperationalProjection,
++} from "../commands/task/kernel-operational-projection.js";
++import { recoverKernelOperationalProjection } from "../commands/task/kernel-operational-projection-recovery.js";
++import { ensureRuntimeGitignore } from "../runtime/shared/runtime-gitignore.js";
+ 
+ async function createTask(root: string): Promise<string> {
+   const created = await runJson(root, [
+@@ -97,9 +105,155 @@ async function installCloudBackend(root: string) {
+   });
+ }
+ 
++function checkoutGit(cwd: string, args: string[]): string {
++  return execFileSync("git", ["-c", "core.hooksPath=/dev/null", ...args], {
++    cwd,
++    encoding: "utf8",
++  }).trim();
++}
++
++const execFileAsync = promisify(execFile);
++async function runBundledJson(root: string, args: string[]): Promise<Record<string, unknown>> {
++  const { stdout } = await execFileAsync(
++    process.execPath,
++    [fileURLToPath(new URL("../../dist/cli.js", import.meta.url)), ...args, "--root", root],
++    { cwd: root, maxBuffer: 8 * 1024 * 1024 },
++  );
++  return JSON.parse(stdout) as Record<string, unknown>;
++}
++
+ installRunCliIntegrationHarness();
+ afterEach(() => vi.restoreAllMocks());
+ describe("canonical CLI transport", { timeout: 60_000 }, () => {
++  it.each([
++    { baseKind: "branch", compact: false, bundled: false },
++    { baseKind: "commit", compact: false, bundled: false },
++    { baseKind: "branch", compact: true, bundled: false },
++    { baseKind: "commit", compact: true, bundled: false },
++    { baseKind: "branch", compact: true, bundled: true },
++  ])(
++    "routes planning to a divergent explicit $baseKind base (compact=$compact, bundled=$bundled)",
++    async ({ baseKind, compact, bundled }) => {
++      const runPacket = bundled ? runBundledJson : runJson;
++      const root = await mkGitRepoRootWithCommit();
++      const config = defaultConfig();
++      config.workflow_mode = "branch_pr";
++      await writeConfig(root, config);
++      checkoutGit(root, ["add", "."]);
++      checkoutGit(root, ["commit", "--allow-empty", "-m", "base checkout fixture"]);
++      const linked = path.join(root, ".agentplane/worktrees/development");
++      checkoutGit(root, ["worktree", "add", "-b", "development", linked]);
++      if (compact) {
++        checkoutGit(root, ["config", "extensions.worktreeConfig", "true"]);
++        checkoutGit(linked, ["config", "--worktree", "agentplane.compactTaskHistory", "true"]);
++        await mkdir(path.join(linked, ".agentplane/tasks"), { recursive: true });
++      }
++      await writeFile(path.join(linked, "base-only.txt"), "different development content");
++      checkoutGit(linked, ["add", "base-only.txt"]);
++      checkoutGit(linked, ["commit", "-m", "divergent development base"]);
++      const base =
++        baseKind === "branch" ? "development" : checkoutGit(linked, ["rev-parse", "HEAD"]);
++      const created = await runPacket(root, [
++        "task",
++        "create",
++        "Plan on explicit development base",
++        "--base",
++        base,
++        "--route",
++        "branch_pr",
++        "--task-kind",
++        "code",
++        "--mutation-scope",
++        "code",
++        "--scope-root",
++        "result.txt",
++        "--json",
++      ]);
++      const taskId = String(created.task_id);
++      expect(created.execution_route).toMatchObject({ repository_mode: "branch_pr" });
++      const routed = await runPacket(root, ["task", "advance", taskId, "--agent-json"]);
++      expect(routed.action).toMatchObject({
++        kind: "external_wait",
++        reason: "canonical_planning_checkout_required",
++        must_run_from: linked,
++      });
++      expect(routed.exchange).toBeUndefined();
++      const packet = await runPacket(linked, ["task", "advance", taskId, "--agent-json"]);
++      expect(packet.action).toMatchObject({ kind: "agent_episode" });
++      const exchange = packet.exchange as { directory: string; result_path: string };
++      const order = AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse(
++        JSON.parse(await readFile(path.join(exchange.directory, "work-order.json"), "utf8")),
++      );
++      expect(order.state_fingerprint.worktree).toBe(linked);
++      const invocation = await loadCommandContext({ cwd: linked });
++      const command = await resolveTaskOwnerCommandContext({ ctx: invocation, taskId });
++      const runtime = await createKernelRuntime({
++        command,
++        task_id: taskId,
++        transport: "host",
++        operation_id: "explicit-base-fixture",
++      });
++      const observed = await runtime.observe();
++      expect(order.canonical_binding?.repository_fingerprint).toBe(observed.fingerprint);
++      await writeFile(
++        exchange.result_path,
++        JSON.stringify({
++          work_order_id: order.work_order_id,
++          status: "completed",
++          summary: "Plan persists in the primary store from the development checkout",
++          findings: [],
++          uncertainty: [],
++          canonical_plan: {
++            work_items: [
++              {
++                id: "build",
++                depends_on: [],
++                required_inputs: [],
++                expected_outputs: ["source"],
++                optional: false,
++                execution_requirements: {
++                  scope_roots: ["result.txt"],
++                  repository_effects: ["source_code"],
++                  external_effects: [],
++                  capabilities: ["repository_write"],
++                  resources: [],
++                },
++                contract: {
++                  objective: "Write result.txt",
++                  acceptance_criteria: ["Result contains implementation"],
++                  verification_commands: ["node --version"],
++                  role: "EXECUTOR",
++                },
++              },
++            ],
++          },
++        }),
++      );
++      await runPacket(linked, [
++        "task",
++        "advance",
++        taskId,
++        "--result",
++        exchange.result_path,
++        "--agent-json",
++      ]);
++      const primary = await loadCommandContext({ cwd: root });
++      const primaryRuntime = await createKernelRuntime({
++        command: primary,
++        task_id: taskId,
++        transport: "host",
++        operation_id: "primary-plan-readback",
++      });
++      const stored = await primaryRuntime.adapter.read(taskId);
++      expect(stored.kind).toBe("canonical");
++      if (stored.kind !== "canonical") throw new Error("Canonical plan was not persisted");
++      expect(stored.record.aggregate.current_plan?.work_items[0]?.id).toBe("build");
++      await expect(
++        readFile(path.join(linked, ".agentplane/tasks", taskId, "README.md")),
++      ).rejects.toMatchObject({ code: "ENOENT" });
++    },
++  );
++
+   it("keeps canonical observation and WorkOrder roots in the invocation worktree", async () => {
+     const root = await mkGitRepoRootWithCommit();
+     await writeConfig(root, defaultConfig());
+@@ -557,6 +711,7 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
+       );
+       expect(await runtime.adapter.read(taskId)).toEqual(expanded);
+     },
++    180_000,
+   );
+   it.each([
+     "real-custom:local",
+@@ -613,6 +768,9 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
+       fs.writeFileSync(process.env.AGENTPLANE_RUNNER_RESULT_PATH, JSON.stringify(result));
+     `,
+       );
++      await ensureRuntimeGitignore({ gitRoot: root });
++      checkoutGit(root, ["add", "."]);
++      checkoutGit(root, ["commit", "-m", "managed runner fixture"]);
+       if (backendKind === "cloud") await installCloudBackend(root);
+       const taskId = await createTask(root);
+       const execute = observeKernelTestRunner(
+@@ -717,6 +875,7 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
+           "FINAL_VALIDATION",
+         );
+       }
++      await assertProjectionRecovery(root, command, runtime, taskId);
+       const implemented = await runJson(root, ["task", "run", taskId, "--json"]);
+       expect(implemented.action).toMatchObject({
+         kind: "terminal",
+@@ -743,6 +902,31 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
+       const again = await runJson(root, ["task", "run", taskId, "--json"]);
+       expect(again.action).toMatchObject({ kind: "terminal", reason: "kernel_task_completed" });
+       expect(execute).toHaveBeenCalledTimes(backendKind === "cloud" ? 5 : 3);
++      if (backendKind === "local") {
++        const extensions = { ...completed.task.extensions };
++        delete extensions[KERNEL_OPERATIONAL_PROJECTION];
++        await writeFile(path.join(root, "result.txt"), "committed unreviewed implementation");
++        checkoutGit(root, ["add", "result.txt"]);
++        checkoutGit(root, ["commit", "-m", "different implementation must be re-evaluated"]);
++        const recovery = await recoverKernelOperationalProjection(command, completed.record, {
++          ...completed.task,
++          extensions,
++          execution_route: { ...completed.task.execution_route!, repository_mode: "branch_pr" },
++        });
++        expect(recovery).toMatchObject({
++          kind: "stop",
++          action: {
++            detail: "The current implementation differs from the retained evaluated commit",
++          },
++        });
++        if (recovery.kind !== "stop") throw new Error("Changed commit requires recovery");
++        const preserved = await runtime.adapter.read(taskId);
++        const replacement = await runJson(root, recovery.action.operator_action.argv.slice(1));
++        expect(replacement).toMatchObject({ status: "semantic_input_required" });
++        expect(replacement.task_id).not.toBe(taskId);
++        expect(await runtime.adapter.read(taskId)).toEqual(preserved);
++      }
+     },
++    180_000,
+   );
+ });
+diff --git a/packages/agentplane/src/commands/release/render-scoop-and-setup-standalone-script.test.ts b/packages/agentplane/src/commands/release/render-scoop-and-setup-standalone-script.test.ts
+index 20eaf38c8..7187586ef 100644
+--- a/packages/agentplane/src/commands/release/render-scoop-and-setup-standalone-script.test.ts
++++ b/packages/agentplane/src/commands/release/render-scoop-and-setup-standalone-script.test.ts
+@@ -10,6 +10,20 @@ import { afterEach, describe, expect, it } from "vitest";
+ import { parse as parseYaml } from "yaml";
+ 
+ const execFileAsync = promisify(execFile);
++function runFixtureBash(
++  fixture: { root: string; env: NodeJS.ProcessEnv },
++  script: string,
++  overrides: NodeJS.ProcessEnv = {},
++) {
++  const env = { ...fixture.env, ...overrides };
++  delete env.BASH_ENV;
++  delete env.ENV;
++  return execFileAsync("bash", ["--noprofile", "--norc", "-c", script], {
++    cwd: fixture.root,
++    env,
++  });
++}
++
+ const SCOOP_SCRIPT_PATH = path.resolve(process.cwd(), "scripts/render-scoop-manifest.mjs");
+ const SETUP_SCRIPT_PATH = path.resolve(process.cwd(), "scripts/render-setup-agentplane-action.mjs");
+ const tempRoots: string[] = [];
+@@ -140,30 +154,47 @@ describe("standalone consumer renderers", () => {
+     "keeps a verified %s installation usable in a later step",
+     async (version) => {
+       const fixture = await setupInstallFixture();
+-      await execFileAsync("bash", ["-c", fixture.script], {
+-        cwd: fixture.root,
+-        env: { ...fixture.env, AGENTPLANE_VERSION: version },
+-      });
++      await runFixtureBash(fixture, fixture.script, { AGENTPLANE_VERSION: version });
+       const pathContent = await readFile(fixture.githubPath, "utf8");
+       const installedPath = pathContent.trim();
+       expect(installedPath).not.toBe("");
+-      const { stdout } = await execFileAsync("bash", ["-c", "agentplane --version"], {
+-        cwd: fixture.root,
+-        env: { ...fixture.env, PATH: `${installedPath}${path.delimiter}${process.env.PATH ?? ""}` },
++      const { stdout } = await runFixtureBash(fixture, "agentplane --version", {
++        PATH: `${installedPath}${path.delimiter}${process.env.PATH ?? ""}`,
+       });
+       expect(stdout.trim()).toBe("0.4.1");
+     },
+   );
+ 
++  it("isolates install and later-step shells from inherited startup files", async () => {
++    const fixture = await setupInstallFixture();
++    const startup = path.join(fixture.root, ".bashrc");
++    await writeFile(startup, "touch startup-loaded\nexport PATH=/nonexistent\n");
++    const env = {
++      ...fixture.env,
++      HOME: fixture.root,
++      BASH_ENV: startup,
++      ENV: startup,
++      SSH_CLIENT: "127.0.0.1 12345 22",
++    };
++    await runFixtureBash({ ...fixture, env }, fixture.script);
++    const pathContent = await readFile(fixture.githubPath, "utf8");
++    const installedPath = pathContent.trim();
++    expect(installedPath).not.toBe("");
++    const { stdout } = await runFixtureBash({ ...fixture, env }, "agentplane --version", {
++      PATH: `${installedPath}${path.delimiter}${process.env.PATH ?? ""}`,
++    });
++    expect(stdout.trim()).toBe("0.4.1");
++    await expect(readFile(path.join(fixture.root, "startup-loaded"))).rejects.toMatchObject({
++      code: "ENOENT",
++    });
++  });
++
+   it.each(["0.4.2", "$(touch injected)"])(
+     "rejects version input %s without executing it",
+     async (version) => {
+       const fixture = await setupInstallFixture();
+       await expect(
+-        execFileAsync("bash", ["-c", fixture.script], {
+-          cwd: fixture.root,
+-          env: { ...fixture.env, AGENTPLANE_VERSION: version },
+-        }),
++        runFixtureBash(fixture, fixture.script, { AGENTPLANE_VERSION: version }),
+       ).rejects.toMatchObject({ code: 2 });
+       expect(await readFile(fixture.githubPath, "utf8")).toBe("");
+       await expect(readFile(path.join(fixture.root, "injected"))).rejects.toMatchObject({
+@@ -175,28 +206,15 @@ describe("standalone consumer renderers", () => {
+   it("does not add a corrupted archive to PATH", async () => {
+     const fixture = await setupInstallFixture();
+     await writeFile(fixture.archive, "corrupted archive");
+-    await expect(
+-      execFileAsync("bash", ["-c", fixture.script], {
+-        cwd: fixture.root,
+-        env: fixture.env,
+-      }),
+-    ).rejects.toMatchObject({ code: 2 });
++    await expect(runFixtureBash(fixture, fixture.script)).rejects.toMatchObject({ code: 2 });
+     expect(await readFile(fixture.githubPath, "utf8")).toBe("");
+   });
+ 
+   it("only publishes PATH after the requested CLI verification passes", async () => {
+     const fixture = await setupInstallFixture("0.0.0");
+-    await expect(
+-      execFileAsync("bash", ["-c", fixture.script], {
+-        cwd: fixture.root,
+-        env: fixture.env,
+-      }),
+-    ).rejects.toMatchObject({ code: 1 });
++    await expect(runFixtureBash(fixture, fixture.script)).rejects.toMatchObject({ code: 1 });
+     expect(await readFile(fixture.githubPath, "utf8")).toBe("");
+-    await execFileAsync("bash", ["-c", fixture.script], {
+-      cwd: fixture.root,
+-      env: { ...fixture.env, AGENTPLANE_VERIFY: "false" },
+-    });
++    await runFixtureBash(fixture, fixture.script, { AGENTPLANE_VERIFY: "false" });
+     const pathContent = await readFile(fixture.githubPath, "utf8");
+     expect(pathContent.trim()).not.toBe("");
+   });
+diff --git a/packages/agentplane/src/commands/shared/declared-check.test.ts b/packages/agentplane/src/commands/shared/declared-check.test.ts
+index 923234fbc..30b0b9a50 100644
+--- a/packages/agentplane/src/commands/shared/declared-check.test.ts
++++ b/packages/agentplane/src/commands/shared/declared-check.test.ts
+@@ -13,6 +13,15 @@ describe("declared task check contract", () => {
+     ["npm test", "npm", ["test"]],
+     ["pnpm run test:unit", "pnpm", ["run", "test:unit"]],
+     ["python -m pytest tests/unit", "python", ["-m", "pytest"]],
++    ["python3 -B -m unittest -v", "python3", ["-B", "-m", "unittest"]],
++    ["python3 -m pytest", "python3", ["-m", "pytest"]],
++    [
++      "python3 -BWignore::DeprecationWarning -m unittest",
++      "python3",
++      ["-BWignore::DeprecationWarning", "-m"],
++    ],
++    ["python3 -BXcheck -m unittest", "python3", ["-BXcheck", "-m"]],
++    ["python3 -Bmcompileall", "python3", ["-Bmcompileall"]],
+     ["go test ./...", "go", ["test", "./..."]],
+     ["cargo test --workspace", "cargo", ["test", "--workspace"]],
+     ["./gradlew test", "./gradlew", ["test"]],
+@@ -33,6 +42,12 @@ describe("declared task check contract", () => {
+     "node -e 'process.exit(0)'",
+     "node --eval=process.exit(0)",
+     "python -c 'print(1)'",
++    "python3 -c 'print(1)'",
++    "python3 -Bc 'print(1)'",
++    "python -IBcprint(1)",
++    "python3 -BBc=print(1)",
++    "python3 -m unittest; echo unsafe",
++    "python3 ../outside.py",
+     "bun install",
+     "git reset --hard",
+     "git branch scratch",
+diff --git a/packages/agentplane/src/commands/shared/declared-check.ts b/packages/agentplane/src/commands/shared/declared-check.ts
+index d7d9bab75..1c42745f6 100644
+--- a/packages/agentplane/src/commands/shared/declared-check.ts
++++ b/packages/agentplane/src/commands/shared/declared-check.ts
+@@ -289,7 +289,11 @@ export function resolveDeclaredTaskCheck(command: string): DeclaredTaskCheckReso
+     }
+   }
+   const inlineFlags = INLINE_CODE_FLAGS.get(base);
+-  if (inlineFlags && hasInlineCodeFlag(invocation.args, inlineFlags)) {
++  // Python clusters short flags. W, X and m consume the remaining token as an argument.
++  const pythonInlineCode =
++    (base === "python" || base === "python3") &&
++    invocation.args.some((argument) => /^-[^-WXm]*c/u.test(argument));
++  if (inlineFlags && (hasInlineCodeFlag(invocation.args, inlineFlags) || pythonInlineCode)) {
+     return { ok: false, reason: `inline code evaluation is not allowed for ${base}` };
+   }
+   if (base === "git") {
+diff --git a/packages/agentplane/src/commands/shared/route-decision-workspace.test.ts b/packages/agentplane/src/commands/shared/route-decision-workspace.test.ts
+index fc2437ceb..104804154 100644
+--- a/packages/agentplane/src/commands/shared/route-decision-workspace.test.ts
++++ b/packages/agentplane/src/commands/shared/route-decision-workspace.test.ts
+@@ -1,6 +1,6 @@
+-import { describe, expect, it, vi } from "vitest";
++import { beforeEach, describe, expect, it, vi } from "vitest";
+ 
+-import { findWorktreeForBranch } from "@agentplaneorg/core/git";
++import { findWorktreeForBranch, gitRevParse, listWorktrees } from "@agentplaneorg/core/git";
+ import type { TaskResumeContext } from "../task/handoff.shared.js";
+ import {
+   deriveRouteCheckoutRole,
+@@ -8,7 +8,13 @@ import {
+   inferTaskRouteBranch,
+ } from "./route-decision-workspace.js";
+ 
+-vi.mock("@agentplaneorg/core/git", () => ({ findWorktreeForBranch: vi.fn() }));
++vi.mock("@agentplaneorg/core/git", () => ({
++  findWorktreeForBranch: vi.fn(),
++  gitRevParse: vi.fn(),
++  listWorktrees: vi.fn(),
++}));
++
++beforeEach(() => vi.resetAllMocks());
+ 
+ function resume(overrides: Partial<TaskResumeContext> = {}): TaskResumeContext {
+   return {
+@@ -36,6 +42,34 @@ function resume(overrides: Partial<TaskResumeContext> = {}): TaskResumeContext {
+ }
+ 
+ describe("route decision workspace", () => {
++  it("resolves an exact commit only when one registered checkout has that HEAD", async () => {
++    const sha = "a".repeat(40);
++    vi.mocked(findWorktreeForBranch).mockResolvedValue(null);
++    vi.mocked(listWorktrees).mockResolvedValue([
++      { path: "/repo", branch: "refs/heads/main" },
++      { path: "/base", branch: null },
++    ]);
++    vi.mocked(gitRevParse).mockResolvedValueOnce("b".repeat(40)).mockResolvedValueOnce(sha);
++    await expect(findRouteWorktreePath("/repo", sha)).resolves.toBe("/base");
++  });
++
++  it.each([{ paths: [] }, { paths: ["/one", "/two"] }])(
++    "does not guess a SHA checkout from $paths",
++    async ({ paths }) => {
++      const sha = "a".repeat(40);
++      vi.mocked(findWorktreeForBranch).mockResolvedValue(null);
++      vi.mocked(listWorktrees).mockResolvedValue(paths.map((p) => ({ path: p, branch: null })));
++      vi.mocked(gitRevParse).mockResolvedValue(sha);
++      await expect(findRouteWorktreePath("/repo", sha)).resolves.toBeNull();
++    },
++  );
++
++  it("does not reinterpret a missing named branch as another checkout", async () => {
++    vi.mocked(findWorktreeForBranch).mockResolvedValue(null);
++    await expect(findRouteWorktreePath("/repo", "missing")).resolves.toBeNull();
++    expect(listWorktrees).not.toHaveBeenCalled();
++  });
++
+   it.each(["origin/main", "refs/remotes/origin/main"])(
+     "treats local main as the base checkout for %s",
+     (baseBranch) => {
+diff --git a/packages/agentplane/src/commands/shared/route-decision-workspace.ts b/packages/agentplane/src/commands/shared/route-decision-workspace.ts
+index aebc03feb..55c358e9c 100644
+--- a/packages/agentplane/src/commands/shared/route-decision-workspace.ts
++++ b/packages/agentplane/src/commands/shared/route-decision-workspace.ts
+@@ -1,4 +1,4 @@
+-import { findWorktreeForBranch } from "@agentplaneorg/core/git";
++import { findWorktreeForBranch, gitRevParse, listWorktrees } from "@agentplaneorg/core/git";
+ 
+ import type { PrFlowStatusReport } from "../pr/flow-status.js";
+ import type { TaskResumeContext } from "../task/handoff.shared.js";
+@@ -20,7 +20,14 @@ export async function findRouteWorktreePath(
+   const exact = await findWorktreeForBranch(cwd, branch);
+   if (exact) return exact;
+   const normalized = normalizeBranchIdentity(branch);
+-  return normalized === branch ? null : await findWorktreeForBranch(cwd, normalized);
++  if (normalized !== branch) return await findWorktreeForBranch(cwd, normalized);
++  if (!/^(?:[a-f0-9]{40}|[a-f0-9]{64})$/u.test(branch)) return null;
++  const matches: string[] = [];
++  for (const worktree of await listWorktrees(cwd)) {
++    const head = await gitRevParse(worktree.path, ["HEAD^{commit}"]).catch(() => null);
++    if (head === branch) matches.push(worktree.path);
++  }
++  return matches.length === 1 ? matches[0]! : null;
+ }
+ 
+ export function inferTaskRouteBranch(
+diff --git a/packages/agentplane/src/commands/shared/task-backend.ts b/packages/agentplane/src/commands/shared/task-backend.ts
+index 1a281a70e..99447bf0b 100644
+--- a/packages/agentplane/src/commands/shared/task-backend.ts
++++ b/packages/agentplane/src/commands/shared/task-backend.ts
+@@ -2,7 +2,11 @@ import type { ResolvedProject } from "@agentplaneorg/core/project";
+ import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
+ import path from "node:path";
+ import type { AgentplaneConfig } from "@agentplaneorg/core/config";
+-import { resolveTaskDocUpdatedBy, taskDocToSectionMap } from "@agentplaneorg/core/tasks";
++import {
++  resolveTaskDocUpdatedBy,
++  taskDocToSectionMap,
++  taskExecutionBaseFromExtensions,
++} from "@agentplaneorg/core/tasks";
+ 
+ import type { ResolvedHarnessContract } from "../../runtime/harness/index.js";
+ import { CliError } from "../../shared/errors.js";
+@@ -13,14 +17,16 @@ import {
+ } from "../../shared/preparation-trace.js";
+ import {
+   loadTaskBackend,
++  LocalBackend,
+   type TaskBackendCapabilities,
+   type TaskBackend,
+   toTaskSummary,
+   type TaskData,
+   type TaskSummary,
+ } from "../../backends/task-backend.js";
+-import { GitContext, listWorktrees } from "@agentplaneorg/core/git";
++import { GitContext, gitConfigGet, listWorktrees } from "@agentplaneorg/core/git";
+ import { resolveCommonGitDirectory } from "../../shared/env.js";
++import { findRouteWorktreePath } from "./route-decision-workspace.js";
+ import {
+   loadTaskFromBranchSnapshot,
+   supplementTaskProjectionFromWorktrees,
+@@ -236,7 +242,17 @@ export async function resolveTaskOwnerCommandContext(opts: {
+   ctx: CommandContext;
+   taskId: string;
+ }): Promise<CommandContext> {
+-  const localTask = await opts.ctx.taskBackend.getTask(opts.taskId);
++  const backend = opts.ctx.taskBackend;
++  // Compact history reads do not give the invocation backend write ownership.
++  const compactHistory =
++    opts.ctx.backendId === "local" &&
++    (await gitConfigGet(opts.ctx.resolvedProject.gitRoot, "agentplane.compactTaskHistory")) ===
++      "true";
++  const localTask = compactHistory
++    ? await new LocalBackend({
++        dir: path.join(opts.ctx.resolvedProject.gitRoot, ".agentplane/tasks"),
++      }).getTask(opts.taskId)
++    : await backend.getTask(opts.taskId);
+   // Canonical tasks bind observations and WorkOrders to the invocation checkout.
+   // They have no legacy task branch; their kernel validates state and authority.
+   if (localTask?.extensions && Object.hasOwn(localTask.extensions, TASK_KERNEL_EXTENSION))
+@@ -265,7 +281,34 @@ export async function resolveTaskOwnerCommandContext(opts: {
+   }
+ 
+   const primaryCtx = await resolvePrimaryCheckoutCommandContext(opts.ctx);
+-  if (await primaryCtx.taskBackend.getTask(opts.taskId)) return primaryCtx;
++  const primaryTask = await primaryCtx.taskBackend.getTask(opts.taskId);
++  if (primaryTask) {
++    const base = taskExecutionBaseFromExtensions(primaryTask.extensions);
++    if (
++      primaryCtx !== opts.ctx &&
++      Object.hasOwn(primaryTask.extensions ?? {}, TASK_KERNEL_EXTENSION) &&
++      primaryTask.execution_route?.repository_mode === "branch_pr" &&
++      base?.source === "explicit"
++    ) {
++      const baseCheckout = await findRouteWorktreePath(
++        opts.ctx.resolvedProject.gitRoot,
++        base.base_ref,
++      );
++      if (
++        baseCheckout &&
++        path.resolve(baseCheckout) === path.resolve(opts.ctx.resolvedProject.gitRoot)
++      ) {
++        // Keep canonical storage in the primary checkout while observing the selected base.
++        return {
++          ...opts.ctx,
++          taskBackend: primaryCtx.taskBackend,
++          backendId: primaryCtx.backendId,
++          backendConfigPath: primaryCtx.backendConfigPath,
++        };
++      }
++    }
++    return primaryCtx;
++  }
+   if (
+     primaryCtx !== opts.ctx &&
+     opts.ctx.config.workflow_mode !== "branch_pr" &&
+diff --git a/packages/agentplane/src/commands/task/advance-task-step.ts b/packages/agentplane/src/commands/task/advance-task-step.ts
+index fa47dab1e..79b243190 100644
+--- a/packages/agentplane/src/commands/task/advance-task-step.ts
++++ b/packages/agentplane/src/commands/task/advance-task-step.ts
+@@ -24,9 +24,11 @@ import {
+ } from "./kernel-completed-provider-workflow.js";
+ import { executeCanonicalCompletedWorkflowLocally } from "./kernel-completed-workflow.js";
+ import { ensureKernelOperationalProjectionEvidence } from "./kernel-operational-projection.js";
++import { recoverKernelOperationalProjection } from "./kernel-operational-projection-recovery.js";
+ import { acceptKernelSemanticResult } from "./kernel-semantic-result.js";
+ import { workItemResumeOperatorAction } from "./kernel-work-item-resume.js";
+ import { ensureCanonicalTaskWorktree } from "./kernel-worktree-routing.js";
++import { canonicalPlanningCheckoutBoundary } from "./kernel-planning-checkout.js";
+ import { canonicalCompletionPrecedesWorkflow } from "./ordinary-advance-step.js";
+ import {
+   kernelPlanApprovalOperatorAction,
+@@ -91,6 +93,12 @@ async function advanceCanonicalRoute(opts: {
+     transport: opts.transport,
+     operation_id: `continuation:${opts.task_id}`,
+   });
++  const planningCheckout = await canonicalPlanningCheckoutBoundary({
++    command: opts.command,
++    read: await runtime.adapter.read(opts.task_id),
++  });
++  if (planningCheckout)
++    return { schema_version: 1, task_id: opts.task_id, action: planningCheckout };
+   if (opts.result_path) {
+     const stop = await acceptKernelSemanticResult(
+       opts.command,
+@@ -136,6 +144,22 @@ async function advanceCanonicalRoute(opts: {
+         action: anomaly.action,
+       };
+     }
++    if (
++      [
++        "kernel_final_validation_required",
++        "kernel_task_completion_required",
++        "kernel_task_completed",
++      ].includes(route.reason_code)
++    ) {
++      const recovery = await recoverKernelOperationalProjection(
++        opts.command,
++        record,
++        current.read.task,
++      );
++      if (recovery.kind === "stop")
++        return { schema_version: 1, task_id: opts.task_id, action: recovery.action };
++      if (recovery.kind === "restored") continue;
++    }
+     finalValidation ??= await restoreKernelFinalValidation(
+       opts.command,
+       record,
+diff --git a/packages/agentplane/src/commands/task/create.command.ts b/packages/agentplane/src/commands/task/create.command.ts
+index e4b8ac040..28fd4e125 100644
+--- a/packages/agentplane/src/commands/task/create.command.ts
++++ b/packages/agentplane/src/commands/task/create.command.ts
+@@ -9,15 +9,12 @@ import { gitRevParse } from "@agentplaneorg/core/git";
+ import {
+   createTaskExecutionBaseIdentity,
+   TASK_EXECUTION_CONTEXT_EXTENSION_KEY,
+-  type TaskExecutionContract,
+-  type TaskExecutionDeclaration,
+   type TaskExternalEffect,
+   type TaskRepositoryEffect,
+ } from "@agentplaneorg/core/tasks";
+-import {
+-  resolveTaskExecutionContract,
+-  resolveTaskExecutionRoute,
+-} from "../../runtime/task-routing/index.js";
++import { resolveTaskExecutionRoute } from "../../runtime/task-routing/index.js";
++import { resolveExplicitExecutionContract } from "./execution-contract-intake.js";
++import { executionContractOptions } from "./execution-contract-options.js";
+ import { throwIfPolicyDecisionDenied } from "../shared/policy-deny.js";
+ import type { CommandContext } from "../shared/task-backend.js";
+ 
+@@ -26,6 +23,8 @@ import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.
+ 
+ const output = createCliEmitter();
+ 
++export { resolveExplicitExecutionContract } from "./execution-contract-intake.js";
++
+ type UserTaskRoute = Exclude<NonNullable<TaskNewParsed["route"]>, "repository">;
+ 
+ export type TaskCreateParsed = {
+@@ -84,67 +83,6 @@ export function resolveUserTaskIntent(parsed: TaskCreateParsed): UserTaskIntent
+   };
+ }
+ 
+-function unique<T extends string>(values: readonly T[]): T[] {
+-  return [...new Set(values)].toSorted();
+-}
+-
+-export function resolveExplicitExecutionContract(opts: {
+-  parsed: TaskCreateParsed;
+-  config: Parameters<typeof resolveTaskExecutionContract>[0]["config"];
+-  intent: UserTaskIntent;
+-}): TaskExecutionContract {
+-  const repositoryEffects: TaskRepositoryEffect[] = [...opts.parsed.repositoryEffects];
+-  if (opts.intent.mutationScope && opts.intent.mutationScope !== "none")
+-    repositoryEffects.push("repository_write");
+-  if (opts.intent.mutationScope === "docs") repositoryEffects.push("documentation");
+-  if (opts.intent.mutationScope === "code") repositoryEffects.push("source_code");
+-  if (opts.intent.mutationScope === "release") repositoryEffects.push("release_metadata");
+-  if (opts.parsed.verify.length > 0) repositoryEffects.push("tests");
+-  const externalEffects: TaskExternalEffect[] = [...opts.parsed.externalEffects];
+-  for (const risk of opts.intent.riskFlags) {
+-    if (risk === "network") externalEffects.push("network_read");
+-    if (risk === "credentials") externalEffects.push("credentials");
+-    if (risk === "deploy") externalEffects.push("deploy");
+-    if (risk === "publish") externalEffects.push("publish");
+-    if (risk === "external_system") externalEffects.push("external_write");
+-    if (risk === "security") repositoryEffects.push("security_boundary");
+-    if (risk === "merge") repositoryEffects.push("release_metadata");
+-  }
+-  const hasRecoveryRisk =
+-    externalEffects.some((effect) => effect !== "network_read") ||
+-    repositoryEffects.includes("release_metadata");
+-  const declaration: TaskExecutionDeclaration = {
+-    schema_version: 2,
+-    preferred_mode: opts.parsed.route === "branch_pr" ? "branch_pr" : "direct",
+-    scope_roots:
+-      repositoryEffects.length > 0
+-        ? unique(opts.parsed.scopeRoots.length > 0 ? opts.parsed.scopeRoots : ["."])
+-        : [],
+-    repository_effects: unique(repositoryEffects),
+-    external_effects: unique(externalEffects),
+-    requirements_uncertainty: opts.intent.mutationScope === "unknown" ? "material" : "bounded",
+-    implementation_uncertainty: "bounded",
+-    reversibility: hasRecoveryRisk ? "recovery_required" : "reversible",
+-    rationale: ["explicit structured task intake"],
+-  };
+-  const contract = resolveTaskExecutionContract({
+-    config: opts.config,
+-    requestedMode: opts.parsed.route,
+-    task: {
+-      task_kind: opts.intent.taskKind,
+-      mutation_scope: opts.intent.mutationScope,
+-      risk_flags: opts.intent.riskFlags,
+-    },
+-    declaration,
+-  });
+-  contract.authority.allowed_capabilities = unique([
+-    ...opts.parsed.capabilities,
+-    ...(repositoryEffects.length > 0 ? ["repository_write"] : []),
+-  ]);
+-  contract.authority.allowed_resources = unique(opts.parsed.resources);
+-  return contract;
+-}
+-
+ export const taskCreateSpec: CommandSpec<TaskCreateParsed> = {
+   id: ["task", "create"],
+   group: "Task",
+@@ -233,61 +171,7 @@ export const taskCreateSpec: CommandSpec<TaskCreateParsed> = {
+       repeatable: true,
+       description: "Repeatable. Seed an explicit verification command.",
+     },
+-    {
+-      kind: "string",
+-      name: "scope-root",
+-      valueHint: "<repository-relative-path>",
+-      repeatable: true,
+-      description: "Repeatable writable root admitted by the execution contract.",
+-    },
+-    {
+-      kind: "string",
+-      name: "repository-effect",
+-      valueHint: "<effect>",
+-      choices: [
+-        "repository_write",
+-        "documentation",
+-        "source_code",
+-        "tests",
+-        "public_api",
+-        "schema",
+-        "dependencies",
+-        "ci",
+-        "release_metadata",
+-        "security_boundary",
+-      ],
+-      repeatable: true,
+-      description: "Repeatable repository effect admitted by the execution contract.",
+-    },
+-    {
+-      kind: "string",
+-      name: "external-effect",
+-      valueHint: "<effect>",
+-      choices: [
+-        "network_read",
+-        "external_write",
+-        "credentials",
+-        "publish",
+-        "deploy",
+-        "destructive_git",
+-      ],
+-      repeatable: true,
+-      description: "Repeatable external effect declared at intake.",
+-    },
+-    {
+-      kind: "string",
+-      name: "capability",
+-      valueHint: "<capability>",
+-      repeatable: true,
+-      description: "Repeatable semantic capability admitted by the execution contract.",
+-    },
+-    {
+-      kind: "string",
+-      name: "resource",
+-      valueHint: "<resource>",
+-      repeatable: true,
+-      description: "Repeatable resource claim admitted by the execution contract.",
+-    },
++    ...executionContractOptions,
+     {
+       kind: "string",
+       name: "base",
+diff --git a/packages/agentplane/src/commands/task/create.test.ts b/packages/agentplane/src/commands/task/create.test.ts
+new file mode 100644
+index 000000000..4deb516e5
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/create.test.ts
+@@ -0,0 +1,33 @@
++import { describe, expect, it } from "vitest";
++import { defaultConfig } from "../../cli/core-imports.js";
++import { resolveExplicitExecutionContract } from "./create.command.js";
++
++describe("task create shared execution contract", () => {
++  it("keeps read-only intake without repository authority", () => {
++    const contract = resolveExplicitExecutionContract({
++      config: defaultConfig(),
++      parsed: { route: "auto", verify: [] },
++      intent: { mutationScope: "none", riskFlags: [] },
++    });
++    expect(contract.declaration.scope_roots).toEqual([]);
++    expect(contract.declaration.repository_effects).toEqual([]);
++    expect(contract.authority.allowed_capabilities).toEqual([]);
++  });
++
++  it("admits source and test effects only inside explicit roots", () => {
++    const contract = resolveExplicitExecutionContract({
++      config: defaultConfig(),
++      parsed: { route: "auto", verify: ["node --version"], scopeRoots: ["src", "src"] },
++      intent: { taskKind: "code", mutationScope: "code", riskFlags: [] },
++    });
++    expect(contract.declaration.scope_roots).toEqual(["src"]);
++    expect(contract.declaration.repository_effects).toEqual([
++      "repository_write",
++      "source_code",
++      "tests",
++    ]);
++    expect(contract.declaration.external_effects).toEqual([]);
++    expect(contract.authority.allowed_capabilities).toEqual(["repository_write"]);
++    expect(contract.authority.allowed_resources).toEqual([]);
++  });
++});
+diff --git a/packages/agentplane/src/commands/task/direct-task-verification.python.test.ts b/packages/agentplane/src/commands/task/direct-task-verification.python.test.ts
+new file mode 100644
+index 000000000..3e7f51a2e
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/direct-task-verification.python.test.ts
+@@ -0,0 +1,218 @@
++import { access, mkdir, writeFile } from "node:fs/promises";
++import path from "node:path";
++import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
++import { runProcess, startProcess } from "@agentplaneorg/core/process";
++import {
++  captureStdIO,
++  installRunCliIntegrationHarness,
++  mkGitRepoRootWithBranch,
++  mkTempDir,
++  writeConfig,
++} from "@agentplane/testkit";
++import { defaultConfig } from "../../cli/core-imports.js";
++import { runCli } from "../../cli/run-cli.js";
++import { resolveLocalExecutable } from "../../shared/runtime-env.js";
++import { assertSupportedDeclaredTaskChecks } from "../shared/declared-check.js";
++import { loadCommandContext } from "../shared/task-backend.js";
++import * as verifyLog from "../shared/pr-meta/verify-log.js";
++import { runDirectTaskVerification } from "./direct-task-verification.js";
++
++installRunCliIntegrationHarness();
++
++const interpreter =
++  resolveLocalExecutable("python3", process.env) ?? resolveLocalExecutable("python", process.env);
++const taskId = "202609290000-PYTHON";
++type Options = Parameters<typeof runDirectTaskVerification>[0];
++
++function verify(cwd: string, check: string, timeoutMs?: number) {
++  return runDirectTaskVerification({
++    command: {
++      config: { paths: { workflow_dir: ".agentplane/tasks" } },
++      resolvedProject: { gitRoot: cwd },
++    } as Options["command"],
++    task: { verify: [check], task_kind: "code", mutation_scope: "code" },
++    task_id: taskId,
++    cwd,
++    ...(timeoutMs === undefined
++      ? {}
++      : {
++          additional_only: true,
++          additional_commands: [{ command: check, timeout_ms: timeoutMs }],
++        }),
++  });
++}
++
++afterEach(() => {
++  vi.restoreAllMocks();
++  vi.unstubAllEnvs();
++});
++
++describe.skipIf(!interpreter)("real Python declared verification", { timeout: 120_000 }, () => {
++  let root: string;
++
++  beforeEach(async () => {
++    root = await mkTempDir();
++    const venv = path.join(root, "venv");
++    const created = await startProcess({
++      command: interpreter!,
++      args: ["-m", "venv", "--without-pip", venv],
++      buffer: true,
++      timeoutMs: 30_000,
++    });
++    expect(created.exitCode, created.stderr).toBe(0);
++    const bin = path.join(venv, process.platform === "win32" ? "Scripts" : "bin");
++    vi.stubEnv("PATH", bin + path.delimiter + process.env.PATH);
++    vi.stubEnv("PYTHONPATH", undefined);
++    vi.stubEnv("PYTHONHOME", undefined);
++    vi.stubEnv("PYTHONNOUSERSITE", "1");
++    await writeFile(
++      path.join(root, "test_example.py"),
++      "import unittest\nclass Example(unittest.TestCase):\n    def test_value(self):\n        self.assertEqual(2 + 2, 4)\n",
++    );
++    await writeFile(
++      path.join(root, "package.json"),
++      JSON.stringify({ private: true, scripts: { test: "python -B -m unittest -v" } }),
++    );
++  });
++
++  it.each(["python", "python3"])(
++    "executes %s unittest with the real default runner",
++    async (python) => {
++      const check = python + " -B -m unittest -v";
++      assertSupportedDeclaredTaskChecks([check]);
++      const result = await verify(root, check);
++      expect(result.status).toBe("passed");
++      expect(result.checks[0]).toMatchObject({ exit_code: 0, runtime: { status: "resolved" } });
++      expect(result.checks[0]?.stderr_tail).toContain("Ran 1 test");
++    },
++  );
++
++  it.each(["python", "python3"])(
++    "launches %s -m pytest without a package-policy rejection",
++    async (python) => {
++      // This isolated venv has no pytest. A numeric Python error proves launcher parity, not pytest success.
++      const check = python + " -m pytest";
++      assertSupportedDeclaredTaskChecks([check]);
++      const result = await verify(root, check);
++      expect(result.status).toBe("failed");
++      expect(result.checks[0]).toMatchObject({ exit_code: 1, runtime: { status: "resolved" } });
++      expect(result.checks[0]?.stderr_tail).toContain("No module named pytest");
++      expect(result.checks[0]?.failure_kind).toBeUndefined();
++    },
++  );
++
++  it("records a launched failing unittest with its numeric exit code", async () => {
++    await writeFile(
++      path.join(root, "test_example.py"),
++      "import unittest\nclass Example(unittest.TestCase):\n    def test_value(self):\n        self.fail('intentional assertion')\n",
++    );
++    const result = await verify(root, "python -B -m unittest -v");
++    expect(result.status).toBe("failed");
++    expect(result.checks[0]).toMatchObject({ exit_code: 1 });
++    expect(result.checks[0]?.stderr_tail).toContain("FAILED (failures=1)");
++    expect(result.checks[0]?.failure_kind).toBeUndefined();
++  });
++
++  it("keeps npm test launching the same Python unittest", async () => {
++    const result = await verify(root, "npm test");
++    expect(result.status).toBe("passed");
++    expect(result.checks[0]?.exit_code).toBe(0);
++    expect(result.checks[0]?.stderr_tail).toContain("Ran 1 test");
++  });
++
++  it("classifies a missing interpreter as infrastructure, not a failed test", async () => {
++    const empty = path.join(root, "empty-bin");
++    await mkdir(empty);
++    vi.spyOn(verifyLog, "verificationChildEnv").mockReturnValue({ PATH: empty, HOME: root });
++    const result = await verify(root, "python3 -m unittest");
++    expect(result.status).toBe("unsupported");
++    expect(result.checks[0]).toMatchObject({
++      exit_code: null,
++      failure_kind: "infrastructure",
++      runtime: { status: "unavailable" },
++    });
++    expect(result.checks[0]?.stderr_tail).not.toContain("allowed executable set");
++  });
++
++  it("enforces the declared timeout on an actual Python process", async () => {
++    await writeFile(path.join(root, "slow.py"), "import time\ntime.sleep(60)\n");
++    const result = await verify(root, "python slow.py", 100);
++    expect(result.status).toBe("failed");
++    expect(result.checks[0]?.exit_code).not.toBe(0);
++  });
++
++  it("enforces buffered output limits on an actual Python process", async () => {
++    await writeFile(path.join(root, "noisy.py"), "print('x' * (3 * 1024 * 1024))\n");
++    const result = await verify(root, "python noisy.py");
++    expect(result.status).toBe("failed");
++    expect(result.checks[0]?.exit_code).not.toBe(0);
++    expect(result.checks[0]!.stdout_tail.length).toBeLessThanOrEqual(4000);
++  });
++
++  it.each(["python -c", "python3 -Bc", "python -IBc"])(
++    "rejects %s before its inline code can run",
++    async (prefix) => {
++      const result = await verify(root, prefix + " \"open('unexpected','w').write('bad')\"");
++      expect(result.status).toBe("unsupported");
++      expect(result.checks).toEqual([]);
++      await expect(access(path.join(root, "unexpected"))).rejects.toMatchObject({ code: "ENOENT" });
++    },
++  );
++
++  it("keeps Python outside the generic process allowlist", async () => {
++    await expect(runProcess({ command: "python", args: ["--version"] })).rejects.toThrow(
++      /allowed executable set/u,
++    );
++  });
++
++  it("preserves non-Python managed executable restrictions", async () => {
++    const result = await verify(root, "custom-runner --version");
++    expect(result.status).toBe("failed");
++    expect(result.checks[0]?.stderr_tail).toContain("allowed executable set");
++  });
++
++  it("accepts the reported commands at real CLI task intake", async () => {
++    const repo = await mkGitRepoRootWithBranch("main");
++    await writeConfig(repo, defaultConfig());
++    for (const check of [
++      "python3 -B -m unittest -v",
++      "python -m pytest",
++      "python3 -m pytest",
++      "npm test",
++    ]) {
++      const io = captureStdIO();
++      let createdId: string;
++      try {
++        const code = await runCli([
++          "task",
++          "create",
++          "Verify Python: " + check,
++          "--task-kind",
++          "code",
++          "--mutation-scope",
++          "code",
++          "--route",
++          "direct",
++          "--scope-root",
++          "test_example.py",
++          "--repository-effect",
++          "source_code",
++          "--capability",
++          "repository_write",
++          "--verify",
++          check,
++          "--json",
++          "--root",
++          repo,
++        ]);
++        expect(code, io.stderr).toBe(0);
++        createdId = (JSON.parse(io.stdout) as { task_id: string }).task_id;
++      } finally {
++        io.restore();
++      }
++      const ctx = await loadCommandContext({ cwd: repo, rootOverride: repo });
++      const task = await ctx.taskBackend.getTask(createdId!);
++      expect(task?.verify).toContain(check);
++    }
++  });
++});
+diff --git a/packages/agentplane/src/commands/task/direct-task-verification.ts b/packages/agentplane/src/commands/task/direct-task-verification.ts
+index bd267b2dc..64f7b4dfd 100644
+--- a/packages/agentplane/src/commands/task/direct-task-verification.ts
++++ b/packages/agentplane/src/commands/task/direct-task-verification.ts
+@@ -1,4 +1,4 @@
+-import { runProcess } from "@agentplaneorg/core/process";
++import { runProcess, startProcess } from "@agentplaneorg/core/process";
+ import { mkdir, mkdtemp, readFile, rm, symlink } from "node:fs/promises";
+ import os from "node:os";
+ import path from "node:path";
+@@ -476,7 +476,7 @@ export async function runDirectTaskVerification(opts: {
+           );
+         }
+         const segmentRuntime = localRuntimeEvidence(parsed.executable, env);
+-        const executed = await (opts.run_process ?? runProcess)({
++        const processOptions = {
+           command: parsed.executable,
+           args: parsed.args,
+           cwd: isolatedCheckout.cwd,
+@@ -484,14 +484,22 @@ export async function runDirectTaskVerification(opts: {
+           timeoutMs: remainingTimeoutMs,
+           maxBuffer: 1024 * 1024,
+           reject: false,
+-        });
+-        stdout.push(executed.stdout);
+-        stderr.push(executed.stderr);
+-        exitCode = Number.isInteger(executed.exitCode) ? executed.exitCode : null;
++        };
++        // Python is admitted by the verifier grammar, not the generic process allowlist.
++        const executed = opts.run_process
++          ? await opts.run_process(processOptions)
++          : parsed.executable === "python" || parsed.executable === "python3"
++            ? await startProcess({ ...processOptions, buffer: true })
++            : await runProcess(processOptions);
++        const segmentStdout = String(executed.stdout ?? "");
++        const segmentStderr = String(executed.stderr ?? "");
++        stdout.push(segmentStdout);
++        stderr.push(segmentStderr);
++        exitCode = Number.isInteger(executed.exitCode) ? (executed.exitCode ?? null) : null;
+         zeroTests = bunTestReportedZeroTests({
+           parsed,
+-          stdout: executed.stdout,
+-          stderr: executed.stderr,
++          stdout: segmentStdout,
++          stderr: segmentStderr,
+         });
+         infrastructureFailure =
+           segmentRuntime.status === "unavailable" || isVerificationInfrastructureError(executed);
+diff --git a/packages/agentplane/src/commands/task/execution-contract-intake.ts b/packages/agentplane/src/commands/task/execution-contract-intake.ts
+new file mode 100644
+index 000000000..37ff76f5f
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/execution-contract-intake.ts
+@@ -0,0 +1,93 @@
++import type {
++  TaskExecutionContract,
++  TaskExecutionDeclaration,
++  TaskExecutionRouteRequest,
++  TaskExternalEffect,
++  TaskRepositoryEffect,
++} from "@agentplaneorg/core/tasks";
++import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
++import type { TaskData } from "../../backends/task-backend/shared/types.js";
++
++export type ExecutionContractInputs = {
++  scopeRoots?: string[];
++  repositoryEffects?: TaskRepositoryEffect[];
++  externalEffects?: TaskExternalEffect[];
++  capabilities?: string[];
++  resources?: string[];
++};
++
++type StructuredIntake = ExecutionContractInputs & {
++  route?: TaskExecutionRouteRequest;
++  verify: string[];
++};
++
++type StructuredIntent = {
++  taskKind?: TaskData["task_kind"];
++  mutationScope?: TaskData["mutation_scope"];
++  riskFlags?: NonNullable<TaskData["risk_flags"]>;
++};
++
++function unique<T extends string>(values: readonly T[]): T[] {
++  return [...new Set(values)].toSorted();
++}
++
++export function resolveExplicitExecutionContract(opts: {
++  parsed: StructuredIntake;
++  config: Parameters<typeof resolveTaskExecutionContract>[0]["config"];
++  intent: StructuredIntent;
++}): TaskExecutionContract {
++  const repositoryEffects: TaskRepositoryEffect[] = [...(opts.parsed.repositoryEffects ?? [])];
++  if (opts.intent.mutationScope && opts.intent.mutationScope !== "none")
++    repositoryEffects.push("repository_write");
++  if (opts.intent.mutationScope === "docs") repositoryEffects.push("documentation");
++  if (opts.intent.mutationScope === "code") repositoryEffects.push("source_code");
++  if (opts.intent.mutationScope === "release") repositoryEffects.push("release_metadata");
++  if (opts.parsed.verify.length > 0) repositoryEffects.push("tests");
++  const externalEffects: TaskExternalEffect[] = [...(opts.parsed.externalEffects ?? [])];
++  for (const risk of opts.intent.riskFlags ?? []) {
++    if (risk === "network") externalEffects.push("network_read");
++    if (risk === "credentials") externalEffects.push("credentials");
++    if (risk === "deploy") externalEffects.push("deploy");
++    if (risk === "publish") externalEffects.push("publish");
++    if (risk === "external_system") externalEffects.push("external_write");
++    if (risk === "security") repositoryEffects.push("security_boundary");
++    if (risk === "merge") repositoryEffects.push("release_metadata");
++  }
++  const hasRecoveryRisk =
++    externalEffects.some((effect) => effect !== "network_read") ||
++    repositoryEffects.includes("release_metadata");
++  const declaration: TaskExecutionDeclaration = {
++    schema_version: 2,
++    preferred_mode: opts.parsed.route === "branch_pr" ? "branch_pr" : "direct",
++    scope_roots:
++      repositoryEffects.length > 0
++        ? unique(
++            opts.parsed.scopeRoots && opts.parsed.scopeRoots.length > 0
++              ? opts.parsed.scopeRoots
++              : ["."],
++          )
++        : [],
++    repository_effects: unique(repositoryEffects),
++    external_effects: unique(externalEffects),
++    requirements_uncertainty: opts.intent.mutationScope === "unknown" ? "material" : "bounded",
++    implementation_uncertainty: "bounded",
++    reversibility: hasRecoveryRisk ? "recovery_required" : "reversible",
++    rationale: ["explicit structured task intake"],
++  };
++  const contract = resolveTaskExecutionContract({
++    config: opts.config,
++    requestedMode: opts.parsed.route,
++    task: {
++      task_kind: opts.intent.taskKind,
++      mutation_scope: opts.intent.mutationScope,
++      risk_flags: opts.intent.riskFlags,
++    },
++    declaration,
++  });
++  contract.authority.allowed_capabilities = unique([
++    ...(opts.parsed.capabilities ?? []),
++    ...(repositoryEffects.length > 0 ? ["repository_write"] : []),
++  ]);
++  contract.authority.allowed_resources = unique(opts.parsed.resources ?? []);
++  return contract;
++}
+diff --git a/packages/agentplane/src/commands/task/execution-contract-options.ts b/packages/agentplane/src/commands/task/execution-contract-options.ts
+new file mode 100644
+index 000000000..e3689dcf3
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/execution-contract-options.ts
+@@ -0,0 +1,59 @@
++import type { CommandSpec } from "../../cli/spec/spec.js";
++
++export const executionContractOptions: NonNullable<CommandSpec["options"]> = [
++  {
++    kind: "string",
++    name: "scope-root",
++    valueHint: "<repository-relative-path>",
++    repeatable: true,
++    description: "Repeatable writable root admitted by the execution contract.",
++  },
++  {
++    kind: "string",
++    name: "repository-effect",
++    valueHint: "<effect>",
++    choices: [
++      "repository_write",
++      "documentation",
++      "source_code",
++      "tests",
++      "public_api",
++      "schema",
++      "dependencies",
++      "ci",
++      "release_metadata",
++      "security_boundary",
++    ],
++    repeatable: true,
++    description: "Repeatable repository effect admitted by the execution contract.",
++  },
++  {
++    kind: "string",
++    name: "external-effect",
++    valueHint: "<effect>",
++    choices: [
++      "network_read",
++      "external_write",
++      "credentials",
++      "publish",
++      "deploy",
++      "destructive_git",
++    ],
++    repeatable: true,
++    description: "Repeatable external effect declared at intake.",
++  },
++  {
++    kind: "string",
++    name: "capability",
++    valueHint: "<capability>",
++    repeatable: true,
++    description: "Repeatable semantic capability admitted by the execution contract.",
++  },
++  {
++    kind: "string",
++    name: "resource",
++    valueHint: "<resource>",
++    repeatable: true,
++    description: "Repeatable resource claim admitted by the execution contract.",
++  },
++];
+diff --git a/packages/agentplane/src/commands/task/kernel-advance.test.ts b/packages/agentplane/src/commands/task/kernel-advance.test.ts
+index 3a10b3385..71b06fcc3 100644
+--- a/packages/agentplane/src/commands/task/kernel-advance.test.ts
++++ b/packages/agentplane/src/commands/task/kernel-advance.test.ts
+@@ -375,6 +375,12 @@ describe("canonical task worktree routing", () => {
+     });
+     const canonicalWorktree = await realpath(worktree);
+     advanceMocks.createKernelRuntime.mockResolvedValue({
++      adapter: {
++        read: vi.fn().mockResolvedValue({
++          kind: "canonical",
++          record: { aggregate: { state: "EXECUTING" } },
++        }),
++      },
+       native: {
+         readContext: vi.fn().mockResolvedValue({ repository_fingerprint: "sha256:fingerprint" }),
+       },
+diff --git a/packages/agentplane/src/commands/task/kernel-final-validation.test.ts b/packages/agentplane/src/commands/task/kernel-final-validation.test.ts
+index 35c845b10..458d23ad9 100644
+--- a/packages/agentplane/src/commands/task/kernel-final-validation.test.ts
++++ b/packages/agentplane/src/commands/task/kernel-final-validation.test.ts
+@@ -13,6 +13,10 @@ const mocks = vi.hoisted(() => ({
+   repositoryEvidence: vi.fn(),
+   target: vi.fn(),
+   status: vi.fn(),
++  recover: vi.fn(),
++}));
++vi.mock("./kernel-operational-projection-recovery.js", () => ({
++  recoverKernelOperationalProjection: mocks.recover,
+ }));
+ vi.mock("./external-agent-implementation-recovery.js", () => ({
+   resolveImplementationVerificationTask: mocks.resolve,
+@@ -201,12 +205,26 @@ function fixture() {
+ describe("canonical final Verification Contract projection", () => {
+   beforeEach(() => {
+     vi.resetAllMocks();
++    mocks.recover.mockResolvedValue({ kind: "unchanged" });
+     mocks.repositoryEvidence.mockResolvedValue([{ implementation_commit: evaluatorTarget }]);
+     mocks.target.mockResolvedValue(evaluatorTarget);
+     mocks.status.mockResolvedValue({ lines: [] });
+     mocks.project.mockResolvedValue(0);
+   });
+ 
++  it("does not run or persist final checks when projection recovery needs re-evaluation", async () => {
++    const f = fixture();
++    const action = {
++      kind: "human_required",
++      reason: "canonical_operational_projection_recovery_required",
++    };
++    mocks.recover.mockResolvedValue({ kind: "stop", action });
++    expect(await f.run()).toEqual({ stop: action });
++    expect(mocks.checks).not.toHaveBeenCalled();
++    expect(mocks.project).not.toHaveBeenCalled();
++    expect(f.apply).not.toHaveBeenCalled();
++  });
++
+   it("executes and projects the same strengthened contract before recording final validation", async () => {
+     const f = fixture();
+     await f.run();
+diff --git a/packages/agentplane/src/commands/task/kernel-final-validation.ts b/packages/agentplane/src/commands/task/kernel-final-validation.ts
+index 486a979fd..0a5012399 100644
+--- a/packages/agentplane/src/commands/task/kernel-final-validation.ts
++++ b/packages/agentplane/src/commands/task/kernel-final-validation.ts
+@@ -16,6 +16,7 @@ import type { createKernelRuntime } from "./kernel-runtime-context.js";
+ import { requireKernelCommit } from "./kernel-runtime-context.js";
+ import { listKernelRepositoryEvidence } from "./kernel-repository-coordinator.js";
+ import { resolveQualityReviewTargetSha } from "../shared/quality-review-target.js";
++import { recoverKernelOperationalProjection } from "./kernel-operational-projection-recovery.js";
+ 
+ type Runtime = Awaited<ReturnType<typeof createKernelRuntime>>;
+ const FINAL_VALIDATION_CHECK_ID = "canonical-final-contracts-v2";
+@@ -163,8 +164,14 @@ export async function runKernelFinalValidation(
+   const evaluatorTarget = await resolveEvaluatorTarget(command, taskId, previousEvaluatorTarget);
+   if (previousEvaluatorTarget && !evaluatorTarget)
+     throw new Error("Canonical final validation commit identity is unavailable");
+-  const operationalTask = await command.taskBackend.getTask(taskId);
++  let operationalTask = await command.taskBackend.getTask(taskId);
+   if (!operationalTask) throw new Error("Canonical operational verification task is unavailable");
++  const recovery = await recoverKernelOperationalProjection(command, record, operationalTask);
++  if (recovery.kind === "stop") return { stop: recovery.action };
++  if (recovery.kind === "restored") {
++    operationalTask = await command.taskBackend.getTask(taskId);
++    if (!operationalTask) throw new Error("Recovered operational task is unavailable");
++  }
+   const verification =
+     operationalTask.execution_route?.repository_mode === "branch_pr"
+       ? await resolveImplementationVerificationTask({
+diff --git a/packages/agentplane/src/commands/task/kernel-inspection.ts b/packages/agentplane/src/commands/task/kernel-inspection.ts
+index b932641e0..117a1b826 100644
+--- a/packages/agentplane/src/commands/task/kernel-inspection.ts
++++ b/packages/agentplane/src/commands/task/kernel-inspection.ts
+@@ -1,4 +1,5 @@
+ import path from "node:path";
++import { recoverKernelOperationalProjection } from "./kernel-operational-projection-recovery.js";
+ import {
+   AGENT_WORK_ORDER_V2_ZOD_SCHEMA,
+   AGENT_SEMANTIC_RESULT_ZOD_SCHEMA,
+@@ -326,7 +327,11 @@ export async function acceptKernelInspection(
+   if (resolved.authority.digest !== binding.authority_digest)
+     throw new Error("Canonical inspection authority changed");
+   await writeKernelArtifact(directory, "inspection-result.json", semantic);
+-  if (item.state === "COMPLETED" || item.state === "REWORK_READY") return;
++  if (item.state === "COMPLETED") {
++    const recovery = await recoverKernelOperationalProjection(command, read.record, read.task);
++    return recovery.kind === "stop" ? recovery.action : undefined;
++  }
++  if (item.state === "REWORK_READY") return;
+   const reviewDecision = decideIndependentReviewApplication({
+     verdict: semantic.review.verdict,
+     provenance_accepted: true,
+diff --git a/packages/agentplane/src/commands/task/kernel-operational-projection-recovery.ts b/packages/agentplane/src/commands/task/kernel-operational-projection-recovery.ts
+new file mode 100644
+index 000000000..461ab664d
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/kernel-operational-projection-recovery.ts
+@@ -0,0 +1,276 @@
++import path from "node:path";
++import {
++  AGENT_SEMANTIC_RESULT_ZOD_SCHEMA,
++  AGENT_WORK_ORDER_V2_ZOD_SCHEMA,
++} from "@agentplaneorg/core/schemas";
++import { taskExecutionBaseFromExtensions, taskKernel as k } from "@agentplaneorg/core/tasks";
++import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js";
++import type { TaskData } from "../../backends/task-backend.js";
++import { readStableRegularTextNoFollow } from "../../shared/stable-file.js";
++import type { CommandContext } from "../shared/task-backend.js";
++import { resolveQualityReviewTargetSha } from "../shared/quality-review-target.js";
++import { readDirectRepositoryStatus } from "./direct-task-finalization.js";
++import { pathFromStatusLine } from "./git-status-path.js";
++import { kernelExchangeDirectory, writeKernelArtifact } from "./kernel-exchange.js";
++import {
++  validationRecord,
++  type KernelNativeValidationEvidence,
++  type KernelValidationEvidence,
++} from "./kernel-inspection-validation.js";
++import {
++  projectKernelOperationalEvidence,
++  readKernelOperationalProjection,
++} from "./kernel-operational-projection.js";
++import {
++  listKernelRepositoryEvidence,
++  type KernelRepositoryEvidence,
++} from "./kernel-repository-coordinator.js";
++
++async function artifact(directory: string, name: string): Promise<unknown> {
++  return JSON.parse(
++    await readStableRegularTextNoFollow(
++      path.join(directory, name),
++      "canonical projection recovery",
++    ),
++  );
++}
++
++function recoveryBoundary(task: TaskData, detail: string) {
++  const base = taskExecutionBaseFromExtensions(task.extensions);
++  const declaration = task.execution_contract?.declaration;
++  const argv = [
++    "agentplane",
++    "task",
++    "create",
++    `Re-evaluate implementation for ${task.id}`,
++    "--description",
++    `Recover ${task.id} by reapplying its implementation from the preserved task branch onto the current development base. Run fresh checks and independent evaluation. Do not inherit the historical passing review.`,
++    "--route",
++    "branch_pr",
++    "--task-kind",
++    "code",
++    "--mutation-scope",
++    "code",
++    ...(base ? ["--base", base.base_ref] : []),
++    ...(declaration?.scope_roots ?? []).flatMap((root) => ["--scope-root", root]),
++    ...(declaration?.repository_effects ?? []).flatMap((effect) => ["--repository-effect", effect]),
++    "--json",
++  ];
++  return {
++    kind: "human_required" as const,
++    reason: "canonical_operational_projection_recovery_required",
++    summary:
++      "The operational projection cannot be reconstructed from current commit-bound evidence. Preserve this task and use a replacement task for fresh implementation checks and evaluation.",
++    detail,
++    operator_action: { kind: "create_recovery_task", argv },
++  };
++}
++
++async function recoverableInspection(
++  command: CommandContext,
++  record: KernelRecord,
++  repository: KernelRepositoryEvidence,
++) {
++  const item = record.aggregate.work_items[repository.work_item_id];
++  const plan = record.aggregate.current_plan;
++  const contract = record.documents?.contracts[String(item?.definition.contract_digest ?? "")];
++  if (item?.state !== "COMPLETED" || item.validation?.status !== "PASSED" || !plan || !contract)
++    throw new Error("Completed inspection evidence is unavailable");
++  for (const mutationId of Object.keys(record.aggregate.mutation_receipts).toReversed()) {
++    if (!/^validation:sha256:[a-f0-9]{64}$/u.test(mutationId)) continue;
++    const orderId = mutationId.slice("validation:".length);
++    const directory = await kernelExchangeDirectory(command, record.aggregate.id, orderId);
++    const review = AGENT_SEMANTIC_RESULT_ZOD_SCHEMA.parse(
++      await artifact(directory, "inspection-result.json"),
++    );
++    const binding = review.canonical_binding;
++    if (binding?.phase !== "inspection" || binding.work_item_id !== item.definition.id) continue;
++    if (
++      review.work_order_id !== orderId ||
++      review.status !== "completed" ||
++      review.review?.verdict !== "pass" ||
++      binding.task_id !== record.aggregate.id ||
++      binding.plan_digest !== plan.digest ||
++      binding.plan_revision !== plan.revision ||
++      binding.attempt !== item.attempt ||
++      binding.claim_id !== item.claim_id ||
++      binding.contract_digest !== item.definition.contract_digest ||
++      binding.result_digest !== item.result_digest ||
++      !item.validation.evidence_digests.includes(k.kernelDigest(review))
++    )
++      throw new Error("Retained inspection identity does not match the completed WorkItem");
++    const order = AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse(
++      await artifact(directory, "work-order.json"),
++    );
++    if (
++      order.work_order_id !== orderId ||
++      k.kernelDigest(order.canonical_binding) !== k.kernelDigest(binding)
++    )
++      throw new Error("Retained inspection WorkOrder binding changed");
++    const implementationInput = order.required_inputs.find(
++      (input) => input.id === "implementation-result",
++    );
++    if (!implementationInput?.path || implementationInput.digest !== binding.result_digest)
++      throw new Error("Retained implementation result is unavailable");
++    const implementation = AGENT_SEMANTIC_RESULT_ZOD_SCHEMA.parse(
++      await artifact(
++        path.dirname(implementationInput.path),
++        path.basename(implementationInput.path),
++      ),
++    );
++    const implementationDirectory = await kernelExchangeDirectory(
++      command,
++      record.aggregate.id,
++      implementation.work_order_id,
++    );
++    if (implementation.canonical_binding?.phase !== "implementation")
++      throw new Error("Retained result is not an implementation attempt");
++    const {
++      result_digest: _resultDigest,
++      repository_fingerprint: _inspectionFingerprint,
++      authority_digest: _inspectionAuthority,
++      ...inspectionBinding
++    } = binding;
++    const {
++      repository_fingerprint: _implementationFingerprint,
++      authority_digest: _implementationAuthority,
++      ...implementationBinding
++    } = implementation.canonical_binding;
++    // Commit continuation can change repository authority but not the WorkItem attempt identity.
++    if (
++      implementationInput.path !== path.join(implementationDirectory, "received-result.json") ||
++      k.kernelDigest(implementation) !== binding.result_digest ||
++      implementation.status !== "completed" ||
++      k.kernelDigest(implementationBinding) !==
++        k.kernelDigest({ ...inspectionBinding, phase: "implementation" })
++    )
++      throw new Error("Retained implementation attempt does not match the inspection");
++    const nativeInput = order.required_inputs.find((input) => input.id === "native-validation");
++    if (
++      !nativeInput?.path ||
++      path.dirname(nativeInput.path) !== implementationDirectory ||
++      !/^native-validation-[a-f0-9]{64}\.json$/u.test(path.basename(nativeInput.path))
++    )
++      throw new Error("Retained native-check evidence is unavailable");
++    const native = (await artifact(
++      implementationDirectory,
++      path.basename(nativeInput.path),
++    )) as KernelNativeValidationEvidence;
++    const evidence = (await artifact(directory, "validation.json")) as KernelValidationEvidence;
++    const nativeDigest = k.kernelDigest(native);
++    if (
++      nativeDigest !== nativeInput.digest ||
++      !item.validation.evidence_digests.includes(nativeDigest) ||
++      native.input_digest !== k.kernelDigest(native.input) ||
++      native.checks.status !== "passed" ||
++      native.input.task_id !== binding.task_id ||
++      native.input.work_item_id !== binding.work_item_id ||
++      native.input.result_digest !== binding.result_digest ||
++      native.input.repository_fingerprint !== binding.repository_fingerprint ||
++      native.input.repository_evidence_digest !== repository.digest ||
++      k.kernelDigest(native.repository_evidence) !== k.kernelDigest(repository) ||
++      evidence.status !== "PASSED" ||
++      evidence.task_id !== binding.task_id ||
++      evidence.work_item_id !== binding.work_item_id ||
++      evidence.attempt !== binding.attempt ||
++      evidence.contract_digest !== binding.contract_digest ||
++      evidence.repository_fingerprint !== binding.repository_fingerprint ||
++      evidence.result_digest !== binding.result_digest ||
++      evidence.review_digest !== k.kernelDigest(review) ||
++      evidence.native_evidence_digest !== nativeDigest ||
++      k.kernelDigest(evidence.repository_evidence) !== k.kernelDigest(repository) ||
++      k.kernelDigest(evidence.checks) !== k.kernelDigest(native.checks) ||
++      k.kernelDigest(
++        validationRecord({
++          binding,
++          contractCommands: contract.verification_commands,
++          native,
++          reviewDigest: k.kernelDigest(review),
++          status: "PASSED",
++          observedAt: item.validation.observed_at,
++        }),
++      ) !== k.kernelDigest(item.validation)
++    )
++      throw new Error("Retained native validation does not match canonical evidence");
++    return { directory, review, evidence, projectedAt: item.validation.observed_at };
++  }
++  throw new Error("No retained passing inspection matches the implementation");
++}
++
++/** Reconstruct compatibility metadata without changing canonical lifecycle or approval identity. */
++export async function recoverKernelOperationalProjection(
++  command: CommandContext,
++  record: KernelRecord,
++  task: TaskData,
++) {
++  if (
++    task.execution_route?.repository_mode !== "branch_pr" ||
++    readKernelOperationalProjection(task.extensions)
++  )
++    return { kind: "unchanged" as const };
++  let recovered: Awaited<ReturnType<typeof recoverableInspection>>;
++  let repository: KernelRepositoryEvidence;
++  try {
++    const candidates = await listKernelRepositoryEvidence(command, record);
++    const candidate = candidates.at(-1);
++    if (!candidate) throw new Error("No commit-bound repository evidence exists");
++    repository = candidate;
++    const target = await resolveQualityReviewTargetSha({
++      gitRoot: command.resolvedProject.gitRoot,
++      workflowDir: command.config.paths.workflow_dir,
++      taskId: task.id,
++      previousEvaluatedSha: repository.implementation_commit,
++      workflowMode: "branch_pr",
++    });
++    const status = await readDirectRepositoryStatus(command.resolvedProject.gitRoot);
++    const prefix = `${command.config.paths.workflow_dir}/${task.id}/`;
++    if (target !== repository.implementation_commit || repository.evaluator_target !== target)
++      throw new Error("The current implementation differs from the retained evaluated commit");
++    if (!status || status.lines.some((line) => !pathFromStatusLine(line).startsWith(prefix)))
++      throw new Error("The worktree contains changes outside the task evidence");
++    recovered = await recoverableInspection(command, record, repository);
++  } catch (error) {
++    return {
++      kind: "stop" as const,
++      action: recoveryBoundary(task, error instanceof Error ? error.message : String(error)),
++    };
++  }
++  const findings =
++    recovered.review.findings.length > 0 ? recovered.review.findings : [recovered.review.summary];
++  try {
++    await writeKernelArtifact(recovered.directory, "quality-report.json", {
++      schema_version: 1,
++      kind: "canonical_quality_review",
++      task_id: task.id,
++      work_order_id: recovered.review.work_order_id,
++      verdict: "pass",
++      findings,
++      residual_risks: recovered.review.review!.residual_risks,
++      review_identity_digest: k.kernelDigest(recovered.review),
++      repository_evidence_digest: repository.digest,
++    });
++  } catch (error) {
++    return {
++      kind: "stop" as const,
++      action: recoveryBoundary(task, error instanceof Error ? error.message : String(error)),
++    };
++  }
++  await projectKernelOperationalEvidence({
++    command,
++    task_id: task.id,
++    repository_evidence: repository,
++    verification_evidence_digest: k.kernelDigest(recovered.evidence),
++    review_identity_digest: k.kernelDigest(recovered.review),
++    evidence_refs: [
++      path
++        .relative(
++          command.resolvedProject.gitRoot,
++          path.join(recovered.directory, "quality-report.json"),
++        )
++        .replaceAll(path.sep, "/"),
++    ],
++    findings,
++    projected_at: recovered.projectedAt,
++  });
++  return { kind: "restored" as const };
++}
+diff --git a/packages/agentplane/src/commands/task/kernel-planning-checkout.test.ts b/packages/agentplane/src/commands/task/kernel-planning-checkout.test.ts
+new file mode 100644
+index 000000000..91fe7d25e
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/kernel-planning-checkout.test.ts
+@@ -0,0 +1,95 @@
++import { beforeEach, describe, expect, it, vi } from "vitest";
++import { gitRevParse } from "@agentplaneorg/core/git";
++import {
++  createTaskExecutionBaseIdentity,
++  TASK_EXECUTION_CONTEXT_EXTENSION_KEY,
++  taskKernel as k,
++} from "@agentplaneorg/core/tasks";
++
++import type { KernelRead } from "../../adapters/task-backend/kernel-record.js";
++import type { CommandContext } from "../shared/task-backend.js";
++import { findRouteWorktreePath } from "../shared/route-decision-workspace.js";
++import { canonicalPlanningCheckoutBoundary } from "./kernel-planning-checkout.js";
++
++vi.mock("@agentplaneorg/core/git", () => ({ gitRevParse: vi.fn() }));
++vi.mock("../shared/route-decision-workspace.js", () => ({ findRouteWorktreePath: vi.fn() }));
++
++const sha = "a".repeat(40);
++const command = { resolvedProject: { gitRoot: "/repo" } } as CommandContext;
++function read(): Extract<KernelRead, { kind: "canonical" }> {
++  return {
++    kind: "canonical",
++    task: {
++      execution_route: { repository_mode: "branch_pr" },
++      extensions: {
++        [TASK_EXECUTION_CONTEXT_EXTENSION_KEY]: createTaskExecutionBaseIdentity({
++          base_ref: "development",
++          base_sha: sha,
++          source: "explicit",
++          repository_identity: k.kernelDigest("repo"),
++        }),
++      },
++    },
++    record: { aggregate: { state: "PLANNING", authority_lineage: [] } },
++  } as unknown as Extract<KernelRead, { kind: "canonical" }>;
++}
++
++beforeEach(() => {
++  vi.resetAllMocks();
++  vi.mocked(findRouteWorktreePath).mockResolvedValue("/development");
++  vi.mocked(gitRevParse).mockResolvedValue(sha);
++});
++
++describe("canonical planning checkout boundary", () => {
++  it.each(["CAPTURED", "PLANNING", "AWAITING_PLAN_APPROVAL"] as const)(
++    "routes an explicit base before issuing authority in %s",
++    async (state) => {
++      const planning = read();
++      planning.record.aggregate.state = state;
++      await expect(canonicalPlanningCheckoutBoundary({ command, read: planning })).resolves.toEqual(
++        {
++          kind: "external_wait",
++          reason: "canonical_planning_checkout_required",
++          must_run_from: "/development",
++        },
++      );
++    },
++  );
++
++  it("continues in the exact frozen base checkout", async () => {
++    vi.mocked(findRouteWorktreePath).mockResolvedValue("/repo");
++    await expect(canonicalPlanningCheckoutBoundary({ command, read: read() })).resolves.toBeNull();
++  });
++
++  it.each(["missing", "moved", "unreadable"])("fails closed for a %s base", async (state) => {
++    if (state === "missing") vi.mocked(findRouteWorktreePath).mockResolvedValue(null);
++    if (state === "moved") vi.mocked(gitRevParse).mockResolvedValue("b".repeat(40));
++    if (state === "unreadable") vi.mocked(gitRevParse).mockRejectedValue(new Error("unavailable"));
++    await expect(
++      canonicalPlanningCheckoutBoundary({ command, read: read() }),
++    ).resolves.toMatchObject({
++      kind: "human_required",
++      reason: "canonical_planning_base_unavailable",
++      base_sha: sha,
++    });
++  });
++
++  it("does not reroute existing authority or bypass its drift validation", async () => {
++    const existing = read();
++    existing.record.aggregate.authority_lineage = [{}] as never;
++    await expect(
++      canonicalPlanningCheckoutBoundary({ command, read: existing }),
++    ).resolves.toBeNull();
++    expect(findRouteWorktreePath).not.toHaveBeenCalled();
++  });
++
++  it("leaves active task checkouts and direct tasks unchanged", async () => {
++    const active = read();
++    active.record.aggregate.state = "ACTIVE";
++    await expect(canonicalPlanningCheckoutBoundary({ command, read: active })).resolves.toBeNull();
++    const direct = read();
++    direct.task.execution_route!.repository_mode = "direct";
++    await expect(canonicalPlanningCheckoutBoundary({ command, read: direct })).resolves.toBeNull();
++    expect(findRouteWorktreePath).not.toHaveBeenCalled();
++  });
++});
+diff --git a/packages/agentplane/src/commands/task/kernel-planning-checkout.ts b/packages/agentplane/src/commands/task/kernel-planning-checkout.ts
+new file mode 100644
+index 000000000..51c44aa87
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/kernel-planning-checkout.ts
+@@ -0,0 +1,45 @@
++import path from "node:path";
++import { gitRevParse } from "@agentplaneorg/core/git";
++import { taskExecutionBaseFromExtensions } from "@agentplaneorg/core/tasks";
++
++import type { KernelRead } from "../../adapters/task-backend/kernel-record.js";
++import type { CommandContext } from "../shared/task-backend.js";
++import { findRouteWorktreePath } from "../shared/route-decision-workspace.js";
++
++/** Resolve the development checkout before planning binds repository authority. */
++export async function canonicalPlanningCheckoutBoundary(opts: {
++  command: CommandContext;
++  read: KernelRead;
++}) {
++  if (
++    opts.read.kind !== "canonical" ||
++    !["CAPTURED", "PLANNING", "AWAITING_PLAN_APPROVAL"].includes(
++      opts.read.record.aggregate.state,
++    ) ||
++    opts.read.record.aggregate.authority_lineage?.length ||
++    opts.read.task.execution_route?.repository_mode !== "branch_pr"
++  )
++    return null;
++  const base = taskExecutionBaseFromExtensions(opts.read.task.extensions);
++  if (base?.source !== "explicit") return null;
++  const root = opts.command.resolvedProject.gitRoot;
++  const target = await findRouteWorktreePath(root, base.base_ref);
++  const head = target ? await gitRevParse(target, ["HEAD^{commit}"]).catch(() => null) : null;
++  if (!target || head !== base.base_sha) {
++    return {
++      kind: "human_required" as const,
++      reason: "canonical_planning_base_unavailable",
++      summary:
++        "Planning requires one registered checkout of the frozen development base. " +
++        "Restore that checkout or create a task with an available named base before planning.",
++      base_ref: base.base_ref,
++      base_sha: base.base_sha,
++    };
++  }
++  if (path.resolve(target) === path.resolve(root)) return null;
++  return {
++    kind: "external_wait" as const,
++    reason: "canonical_planning_checkout_required",
++    must_run_from: target,
++  };
++}
+diff --git a/packages/agentplane/src/commands/task/new-execution-contract.test.ts b/packages/agentplane/src/commands/task/new-execution-contract.test.ts
+new file mode 100644
+index 000000000..db95be507
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/new-execution-contract.test.ts
+@@ -0,0 +1,159 @@
++import { describe, expect, it } from "vitest";
++import { taskKernel as k } from "@agentplaneorg/core/tasks";
++import {
++  captureStdIO,
++  installRunCliIntegrationHarness,
++  mkGitRepoRootWithBranch,
++  writeConfig,
++} from "@agentplane/testkit";
++import { runCli } from "../../cli/run-cli.js";
++import { defaultConfig } from "../../cli/core-imports.js";
++import { loadCommandContext } from "../shared/task-backend.js";
++import { canonicalPlanContractViolations } from "./kernel-plan-authority.js";
++import { runTaskNewParsed } from "./new.js";
++import { resolveExplicitExecutionContract } from "./execution-contract-intake.js";
++
++installRunCliIntegrationHarness();
++
++function plan(overrides: Partial<k.ExecutionRequirements> = {}): k.PlanRecord {
++  const workItems = [
++    {
++      id: "fix",
++      depends_on: [],
++      required_inputs: [],
++      expected_outputs: ["fix"],
++      execution_requirements: {
++        scope_roots: ["src/parser.ts", "tests/parser.test.ts"],
++        repository_effects: ["repository_write", "source_code", "tests"],
++        external_effects: [],
++        capabilities: ["repository_write"],
++        resources: [],
++        ...overrides,
++      },
++      optional: false,
++    },
++  ];
++  return {
++    revision: 1,
++    digest: k.kernelDigest({ revision: 1, work_items: workItems }),
++    state: "PROPOSED",
++    approval_actor_id: null,
++    approval_evidence_digest: null,
++    work_items: workItems,
++  };
++}
++
++async function createFromCli(extra: string[] = []) {
++  const root = await mkGitRepoRootWithBranch("main");
++  const config = defaultConfig();
++  config.workflow_mode = "branch_pr";
++  await writeConfig(root, config);
++  const io = captureStdIO();
++  let taskId: string;
++  try {
++    const code = await runCli([
++      "task",
++      "new",
++      "--title",
++      "Bounded source test repair",
++      "--description",
++      "Admit a bounded source and regression test plan.",
++      "--owner",
++      "CODER",
++      "--tag",
++      "code",
++      "--task-kind",
++      "code",
++      "--mutation-scope",
++      "code",
++      "--verify",
++      "node --version",
++      ...extra,
++      "--root",
++      root,
++    ]);
++    expect(code, io.stderr).toBe(0);
++    taskId = io.stdout.trim();
++  } finally {
++    io.restore();
++  }
++  const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
++  const task = await ctx.taskBackend.getTask(taskId);
++  expect(task).not.toBeNull();
++  return task!;
++}
++
++describe("task new structured execution authority", { timeout: 180_000 }, () => {
++  it("admits a bounded source-and-test plan with the default structured code envelope", async () => {
++    const task = await createFromCli();
++    expect(task.execution_contract?.declaration.scope_roots).toEqual(["."]);
++    expect(task.execution_contract?.source).toBe("agent_declared");
++    expect(canonicalPlanContractViolations(task, plan())).toEqual([]);
++    expect(
++      canonicalPlanContractViolations(task, plan({ external_effects: ["publish"] })),
++    ).toContain("external_effects");
++    expect(task.execution_route?.selected_mode).toBe(task.execution_contract?.selected_mode);
++  });
++
++  it("preserves explicit roots and resources while rejecting undeclared authority", async () => {
++    const task = await createFromCli([
++      "--scope-root",
++      "src",
++      "--scope-root",
++      "tests",
++      "--repository-effect",
++      "tests",
++      "--capability",
++      "repository_write",
++      "--resource",
++      "parser-lock",
++    ]);
++    expect(task.execution_contract?.declaration.scope_roots).toEqual(["src", "tests"]);
++    expect(canonicalPlanContractViolations(task, plan({ resources: ["parser-lock"] }))).toEqual([]);
++    expect(
++      canonicalPlanContractViolations(task, plan({ scope_roots: ["outside/file.ts"] })),
++    ).toContain("scope_roots");
++    expect(
++      canonicalPlanContractViolations(task, plan({ repository_effects: ["schema"] })),
++    ).toContain("repository_effects");
++    expect(
++      canonicalPlanContractViolations(task, plan({ capabilities: ["provider_write"] })),
++    ).toContain("capabilities");
++    expect(canonicalPlanContractViolations(task, plan({ resources: ["another-lock"] }))).toContain(
++      "resources",
++    );
++  });
++
++  it("preserves programmatically supplied execution contracts", async () => {
++    const root = await mkGitRepoRootWithBranch("main");
++    const config = defaultConfig();
++    await writeConfig(root, config);
++    const executionContract = resolveExplicitExecutionContract({
++      config,
++      intent: { taskKind: "code", mutationScope: "code", riskFlags: [] },
++      parsed: { route: "auto", verify: [], scopeRoots: ["narrow"], repositoryEffects: ["tests"] },
++    });
++    const created = await runTaskNewParsed({
++      cwd: root,
++      rootOverride: root,
++      printTaskId: false,
++      parsed: {
++        title: "Preserve supplied authority",
++        description: "Do not derive a wider contract.",
++        owner: "CODER",
++        priority: "med",
++        tags: ["code"],
++        taskKind: "code",
++        mutationScope: "code",
++        dependsOn: [],
++        verify: [],
++        allowDuplicate: false,
++        scopeRoots: ["."],
++        executionContract,
++      },
++    });
++    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
++    const task = await ctx.taskBackend.getTask(created.task_id);
++    expect(task?.execution_contract).toEqual(executionContract);
++  });
++});
+diff --git a/packages/agentplane/src/commands/task/new.spec.ts b/packages/agentplane/src/commands/task/new.spec.ts
+index 8c5ec67f1..4796e6932 100644
+--- a/packages/agentplane/src/commands/task/new.spec.ts
++++ b/packages/agentplane/src/commands/task/new.spec.ts
+@@ -1,4 +1,5 @@
+ import type { CommandSpec } from "../../cli/spec/spec.js";
++import { executionContractOptions } from "./execution-contract-options.js";
+ 
+ import type { TaskNewParsed } from "./new.js";
+ import { normalizeDependsOnInput } from "./shared.js";
+@@ -102,6 +103,7 @@ export const taskNewSpec: CommandSpec<TaskNewParsed> = {
+       repeatable: true,
+       description: "Repeatable. Verification commands/checks to run for this task.",
+     },
++    ...executionContractOptions,
+     {
+       kind: "boolean",
+       name: "allow-duplicate",
+@@ -137,6 +139,11 @@ export const taskNewSpec: CommandSpec<TaskNewParsed> = {
+     route: (raw.opts.route ?? "repository") as TaskNewParsed["route"],
+     dependsOn: (raw.opts["depends-on"] ?? []) as string[],
+     verify: (raw.opts.verify ?? []) as string[],
++    scopeRoots: (raw.opts["scope-root"] ?? []) as string[],
++    repositoryEffects: (raw.opts["repository-effect"] ?? []) as TaskNewParsed["repositoryEffects"],
++    externalEffects: (raw.opts["external-effect"] ?? []) as TaskNewParsed["externalEffects"],
++    capabilities: (raw.opts.capability ?? []) as string[],
++    resources: (raw.opts.resource ?? []) as string[],
+     allowDuplicate: raw.opts["allow-duplicate"] === true,
+   }),
+ };
+diff --git a/packages/agentplane/src/commands/task/new.ts b/packages/agentplane/src/commands/task/new.ts
+index 820dc55f4..1a64a35c2 100644
+--- a/packages/agentplane/src/commands/task/new.ts
++++ b/packages/agentplane/src/commands/task/new.ts
+@@ -47,13 +47,14 @@ import {
+   TASK_DOC_VERSION_V3,
+ } from "./doc-template.js";
+ import { formatDuplicateTaskMessage, listOpenTaskDuplicates } from "./new-duplicates.js";
+-import {
+-  resolveTaskExecutionContract,
+-  resolveTaskExecutionRoute,
+-} from "../../runtime/task-routing/index.js";
++import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
+ import { assertSupportedDeclaredTaskChecks } from "../shared/declared-check.js";
++import {
++  resolveExplicitExecutionContract,
++  type ExecutionContractInputs,
++} from "./execution-contract-intake.js";
+ 
+-export type TaskNewParsed = {
++export type TaskNewParsed = ExecutionContractInputs & {
+   title: string;
+   description: string;
+   owner: string;
+@@ -356,11 +357,17 @@ export async function runTaskNewParsed(opts: {
+       };
+       const executionContract =
+         p.executionContract ??
+-        resolveTaskExecutionContract({
+-          config: ctx.config,
+-          requestedMode: p.route,
+-          task: routeTask,
+-        });
++        (p.taskKind !== undefined ||
++        p.mutationScope !== undefined ||
++        [p.scopeRoots, p.repositoryEffects, p.externalEffects, p.capabilities, p.resources].some(
++          (values) => values && values.length > 0,
++        )
++          ? resolveExplicitExecutionContract({ config: ctx.config, parsed: p, intent: p })
++          : resolveTaskExecutionContract({
++              config: ctx.config,
++              requestedMode: p.route,
++              task: routeTask,
++            }));
+       const draft = createTaskGraphDraft({
+         context: intakeContext,
+         clarification,
+@@ -377,20 +384,14 @@ export async function runTaskNewParsed(opts: {
+             ...(p.taskKind ? { task_kind: p.taskKind } : {}),
+             ...(p.mutationScope ? { mutation_scope: p.mutationScope } : {}),
+             ...(p.riskFlags && p.riskFlags.length > 0 ? { risk_flags: p.riskFlags } : {}),
+-            execution_route: p.executionContract
+-              ? {
+-                  schema_version: 1,
+-                  requested_mode: p.route ?? "auto",
+-                  selected_mode: p.executionContract.selected_mode,
+-                  repository_mode: p.executionContract.repository_mode,
+-                  reason_codes: [...p.executionContract.reason_codes],
+-                  frozen: true,
+-                }
+-              : resolveTaskExecutionRoute({
+-                  config: ctx.config,
+-                  requestedMode: p.route,
+-                  task: routeTask,
+-                }),
++            execution_route: {
++              schema_version: 1,
++              requested_mode: p.route ?? "auto",
++              selected_mode: executionContract.selected_mode,
++              repository_mode: executionContract.repository_mode,
++              reason_codes: [...executionContract.reason_codes],
++              frozen: true,
++            },
+             execution_contract: executionContract,
+             ...(extensions ? { extensions } : {}),
+             depends_on: p.dependsOn,
+diff --git a/packages/agentplane/src/commands/task/roadmap-common-review-application.test.ts b/packages/agentplane/src/commands/task/roadmap-common-review-application.test.ts
+index 4c2334174..d6866cf96 100644
+--- a/packages/agentplane/src/commands/task/roadmap-common-review-application.test.ts
++++ b/packages/agentplane/src/commands/task/roadmap-common-review-application.test.ts
+@@ -95,6 +95,7 @@ describe("LC-08 common independent-review application", () => {
+       adapter: {
+         read: vi.fn().mockResolvedValue({
+           kind: "canonical",
++          task: { execution_route: { repository_mode: "direct" } },
+           record: {
+             aggregate: {
+               current_plan: { revision: 1, digest: binding.plan_digest },
+@@ -132,6 +133,7 @@ describe("LC-08 common independent-review application", () => {
+ 
+     runtime.adapter.read.mockResolvedValueOnce({
+       kind: "canonical",
++      task: { execution_route: { repository_mode: "direct" } },
+       record: {
+         aggregate: {
+           current_plan: { revision: 1, digest: binding.plan_digest },
+diff --git a/packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts b/packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts
+index 63c3a760d..0f36f7599 100644
+--- a/packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts
++++ b/packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts
+@@ -24,6 +24,7 @@ const mocks = vi.hoisted(() => ({
+   restoreKernelFinalValidation: vi.fn().mockResolvedValue(null),
+   runKernelFinalValidation: vi.fn(),
+   ensureKernelOperationalProjectionEvidence: vi.fn().mockResolvedValue(undefined),
++  recoverKernelOperationalProjection: vi.fn().mockResolvedValue({ kind: "unchanged" }),
+ }));
+ 
+ vi.mock("./kernel-runtime-context.js", () => ({
+@@ -54,6 +55,9 @@ vi.mock("./kernel-repository-coordinator.js", () => ({
+ vi.mock("./kernel-operational-projection.js", () => ({
+   ensureKernelOperationalProjectionEvidence: mocks.ensureKernelOperationalProjectionEvidence,
+ }));
++vi.mock("./kernel-operational-projection-recovery.js", () => ({
++  recoverKernelOperationalProjection: mocks.recoverKernelOperationalProjection,
++}));
+ 
+ import { advanceTaskStep } from "./advance-task-step.js";
+ 
+@@ -67,6 +71,7 @@ afterEach(async () => {
+   mocks.executeCanonicalLocalWorkflowOperation.mockResolvedValue(false);
+   mocks.restoreKernelFinalValidation.mockResolvedValue(null);
+   mocks.ensureKernelOperationalProjectionEvidence.mockResolvedValue(undefined);
++  mocks.recoverKernelOperationalProjection.mockResolvedValue({ kind: "unchanged" });
+   mocks.advanceCompletedProviderWorkflow.mockResolvedValue(null);
+   await Promise.all(
+     temporaryRoots.splice(0).map((root) => rm(root, { recursive: true, force: true })),
+@@ -90,6 +95,13 @@ function completedRuntime() {
+   const input = vi.fn();
+   const checkpoint = vi.fn();
+   const runtime = {
++    adapter: {
++      read: vi.fn().mockResolvedValue({
++        kind: "canonical",
++        task: { execution_route: { repository_mode: "branch_pr" } },
++        record,
++      }),
++    },
+     native: {
+       readContext: vi.fn().mockResolvedValue({ repository_fingerprint: "sha256:repo" }),
+     },
+@@ -126,6 +138,27 @@ async function repositorySnapshot(root: string, evidencePath: string, record: un
+ }
+ 
+ describe("LC-20 terminal replay", () => {
++  it("stops before terminal effects when projection recovery requires re-evaluation", async () => {
++    const { runtime, apply } = completedRuntime();
++    mocks.createKernelRuntime.mockResolvedValue(runtime);
++    const action = {
++      kind: "human_required",
++      reason: "canonical_operational_projection_recovery_required",
++    };
++    mocks.recoverKernelOperationalProjection.mockResolvedValueOnce({ kind: "stop", action });
++    await expect(
++      advanceTaskStep({
++        command: { resolvedProject: { gitRoot: "/repo" } } as never,
++        task_id: "task-1",
++        transport: "host",
++        allow_provider_effects: true,
++      }),
++    ).resolves.toMatchObject({ action });
++    expect(apply).not.toHaveBeenCalled();
++    expect(mocks.decideCanonicalWorkflowEffect).not.toHaveBeenCalled();
++    expect(mocks.commitCanonicalTerminalTaskArtifacts).not.toHaveBeenCalled();
++  });
++
+   it("dispatches completed provider work without preparing a new Kernel effect", async () => {
+     const { runtime, record, apply, input } = completedRuntime();
+     const before = JSON.stringify(record);
+@@ -248,6 +281,7 @@ describe("LC-20 terminal replay", () => {
+     };
+     const completion = { command: { expected_task_revision: 12 } };
+     const runtime = {
++      adapter: { read: vi.fn().mockResolvedValue({ kind: "canonical", record }) },
+       native: {
+         readContext: vi.fn().mockResolvedValue({ repository_fingerprint: "sha256:repo" }),
+       },
+@@ -311,6 +345,7 @@ describe("LC-20 terminal replay", () => {
+       },
+     };
+     const runtime = {
++      adapter: { read: vi.fn().mockResolvedValue({ kind: "canonical", record }) },
+       native: {
+         readContext: vi.fn().mockResolvedValue({ repository_fingerprint: "sha256:repo" }),
+       },
+diff --git a/packages/agentplane/src/commands/task/scope-extend.command.test.ts b/packages/agentplane/src/commands/task/scope-extend.command.test.ts
+index 258ded548..83a852738 100644
+--- a/packages/agentplane/src/commands/task/scope-extend.command.test.ts
++++ b/packages/agentplane/src/commands/task/scope-extend.command.test.ts
+@@ -1,4 +1,8 @@
+-import { describe, expect, it } from "vitest";
++import { afterEach, describe, expect, it, vi } from "vitest";
++import * as taskBackend from "../shared/task-backend.js";
++import * as kernelRuntime from "./kernel-runtime-context.js";
++import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
++import { cmdTaskScopeExtend } from "./scope-extend.js";
+ import { parseCommandArgv } from "../../cli/spec/parse.js";
+ import { taskScopeExtendSpec } from "./scope-extend.command.js";
+ 
+@@ -6,6 +10,82 @@ const REQUEST_DIGEST = `sha256:${"1".repeat(64)}`;
+ const STATE_SCOPE_DIGEST = `sha256:${"2".repeat(64)}`;
+ const STATE_FINGERPRINT = `sha256:${"3".repeat(64)}`;
+ 
++afterEach(() => vi.restoreAllMocks());
++
++describe("canonical scope grant ownership", () => {
++  it("uses the resolved owner context without changing the approval binding", async () => {
++    const ctx = {
++      taskBackend: {
++        getTask: vi.fn().mockResolvedValue({ extensions: { [TASK_KERNEL_EXTENSION]: {} } }),
++      },
++    } as unknown as taskBackend.CommandContext;
++    const owner = { ...ctx, backendId: "authoritative-test-backend" };
++    const resolve = vi
++      .spyOn(taskBackend, "resolveTaskOwnerCommandContext")
++      .mockResolvedValue(owner);
++    const approveDelta = vi.fn().mockResolvedValue({ kind: "committed" });
++    const create = vi.spyOn(kernelRuntime, "createKernelRuntime").mockResolvedValue({
++      authority: { approveDelta },
++    } as never);
++    await expect(
++      cmdTaskScopeExtend({
++        ctx,
++        taskId: "T-1",
++        scopeRoots: ["source.ts"],
++        repositoryEffects: ["source_code"],
++        requestDigest: REQUEST_DIGEST,
++        stateScopeDigest: REQUEST_DIGEST,
++        by: "USER",
++        quiet: true,
++      }),
++    ).resolves.toBe(0);
++    expect(resolve).toHaveBeenCalledWith({ ctx, taskId: "T-1" });
++    expect(create).toHaveBeenCalledWith(
++      expect.objectContaining({
++        command: owner,
++        approval: { kind: "manual_operator", actor_id: "USER", invocation_id: REQUEST_DIGEST },
++      }),
++    );
++    expect(approveDelta).toHaveBeenCalledWith(
++      expect.objectContaining({
++        task_id: "T-1",
++        scope_roots: ["source.ts"],
++        repository_effects: ["source_code"],
++        request_digest: REQUEST_DIGEST,
++      }),
++    );
++  });
++
++  it.each([
++    { by: "EXECUTOR", stateScopeDigest: REQUEST_DIGEST },
++    { by: "USER", stateScopeDigest: STATE_SCOPE_DIGEST },
++  ])(
++    "rejects invalid authority before resolving writable storage: $by $stateScopeDigest",
++    async (approval) => {
++      const ctx = {
++        taskBackend: {
++          getTask: vi.fn().mockResolvedValue({ extensions: { [TASK_KERNEL_EXTENSION]: {} } }),
++        },
++      } as unknown as taskBackend.CommandContext;
++      const resolve = vi.spyOn(taskBackend, "resolveTaskOwnerCommandContext");
++      const create = vi.spyOn(kernelRuntime, "createKernelRuntime");
++      await expect(
++        cmdTaskScopeExtend({
++          ctx,
++          taskId: "T-1",
++          scopeRoots: ["source.ts"],
++          repositoryEffects: ["source_code"],
++          requestDigest: REQUEST_DIGEST,
++          ...approval,
++          quiet: true,
++        }),
++      ).rejects.toThrow("Canonical authority delta");
++      expect(resolve).not.toHaveBeenCalled();
++      expect(create).not.toHaveBeenCalled();
++    },
++  );
++});
++
+ describe("task scope extend command parsing", () => {
+   it.each(
+     [
+diff --git a/packages/agentplane/src/commands/task/scope-extend.ts b/packages/agentplane/src/commands/task/scope-extend.ts
+index 3f35e9660..2239f4da7 100644
+--- a/packages/agentplane/src/commands/task/scope-extend.ts
++++ b/packages/agentplane/src/commands/task/scope-extend.ts
+@@ -28,7 +28,11 @@ import {
+   parseTaskScopeExtensionRequestState,
+   scopeExtensionReceiptForState,
+ } from "../shared/task-scope-extension-request.js";
+-import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
++import {
++  loadCommandContext,
++  resolveTaskOwnerCommandContext,
++  type CommandContext,
++} from "../shared/task-backend.js";
+ import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
+ import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
+ import { createKernelRuntime, requireKernelCommit } from "./kernel-runtime-context.js";
+@@ -303,7 +307,7 @@ export async function cmdTaskScopeExtend(opts: {
+           message: "Canonical authority delta state scope must equal its exact request digest.",
+         });
+       const runtime = await createKernelRuntime({
+-        command: opts.ctx,
++        command: await resolveTaskOwnerCommandContext({ ctx: opts.ctx, taskId: opts.taskId }),
+         task_id: opts.taskId,
+         transport: "manual",
+         operation_id: `authority-delta:${opts.requestDigest}`,
+diff --git a/packages/testkit/src/cli-harness/temp-root-cleanup.integration.test.ts b/packages/testkit/src/cli-harness/temp-root-cleanup.integration.test.ts
+new file mode 100644
+index 000000000..29e82e797
+--- /dev/null
++++ b/packages/testkit/src/cli-harness/temp-root-cleanup.integration.test.ts
+@@ -0,0 +1,211 @@
++import { execFile, spawn } from "node:child_process";
++import { once } from "node:events";
++import { chmod, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
++import { createRequire } from "node:module";
++import os from "node:os";
++import path from "node:path";
++import { createInterface } from "node:readline";
++import { fileURLToPath } from "node:url";
++import { promisify, stripVTControlCharacters } from "node:util";
++import { afterEach, describe, expect, it } from "vitest";
++import { recoverStaleVitestTempRoots, VITEST_TEMP_ROOT_STALE_MS } from "./temp-root-cleanup.js";
++
++const execFileAsync = promisify(execFile);
++const require = createRequire(import.meta.url);
++const roots: string[] = [];
++const workers: ReturnType<typeof startWorker>[] = [];
++
++async function sandbox() {
++  const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cleanup-lifecycle-"));
++  roots.push(root);
++  return root;
++}
++
++function startWorker(parent: string) {
++  const helper = fileURLToPath(new URL("temp-root-cleanup.ts", import.meta.url));
++  const child = spawn(
++    "bun",
++    [
++      "-e",
++      `
++    import { installOwnedVitestTempRoot } from ${JSON.stringify(helper)};
++    const cleanup = await installOwnedVitestTempRoot({ parent: ${JSON.stringify(parent)} });
++    console.log(JSON.stringify({ root: process.env.TMPDIR }));
++    await new Promise(resolve => process.stdin.once('data', resolve));
++    await cleanup();
++    process.stdin.destroy();
++  `,
++    ],
++    { stdio: ["pipe", "pipe", "pipe"] },
++  );
++  child.stderr.resume();
++  const closed = once(child, "close") as Promise<[number | null, NodeJS.Signals | null]>;
++  const lines = createInterface({ input: child.stdout });
++  const ready = once(lines, "line").then(([line]) => {
++    lines.close();
++    return (JSON.parse(String(line)) as { root: string }).root;
++  });
++  return { child, ready, closed };
++}
++
++afterEach(async () => {
++  for (const worker of workers.splice(0)) {
++    if (worker.child.exitCode === null && worker.child.signalCode === null)
++      worker.child.kill("SIGKILL");
++    await worker.closed;
++  }
++  for (const root of roots.splice(0)) await rm(root, { recursive: true, force: true });
++});
++
++describe("owned temp-root process lifecycle", { timeout: 120_000 }, () => {
++  it.skipIf(process.platform === "win32").each(["cache", "fixture", "symlink"])(
++    "measurement handles %s residue without hiding fixture leaks",
++    async (scenario) => {
++      const root = await sandbox();
++      const bin = path.join(root, "bin");
++      const target = path.join(root, "preserved");
++      await mkdir(bin);
++      await mkdir(target);
++      await writeFile(path.join(target, "sentinel"), "preserve");
++      const executable = path.join(bin, "bun");
++      await writeFile(
++        executable,
++        `#!${process.execPath}\n
++const fs = require('node:fs');
++const path = require('node:path');
++const root = process.env.TMPDIR;
++const cache = path.join(root, 'node-jiti');
++if (${JSON.stringify(scenario)} === 'symlink') {
++  fs.symlinkSync(${JSON.stringify(target)}, cache, 'dir');
++} else {
++  fs.mkdirSync(cache, { recursive: true });
++  fs.writeFileSync(path.join(cache, 'compiled.js'), 'toolchain cache');
++  if (${JSON.stringify(scenario)} === 'fixture') {
++    fs.writeFileSync(path.join(root, 'unexpected-fixture'), 'must fail');
++  }
++}
++`,
++      );
++      await chmod(executable, 0o755);
++      const script = fileURLToPath(new URL("temp-root-cleanup.measure.mjs", import.meta.url));
++      const result = await execFileAsync(process.execPath, [script, "--focused"], {
++        cwd: root,
++        env: { ...process.env, PATH: `${bin}${path.delimiter}${process.env.PATH ?? ""}` },
++        timeout: 90_000,
++      }).then(
++        ({ stdout }) => ({ code: 0, stdout }),
++        (error: { code: unknown; stdout: string }) => error,
++      );
++      expect(result.code).toBe(scenario === "cache" ? 0 : 1);
++      const records = result.stdout
++        .trim()
++        .split("\n")
++        .map(
++          (line) =>
++            JSON.parse(line) as {
++              kind: string;
++              phase?: string;
++              entries?: number;
++            },
++        );
++      const after = records.filter((record) => record.phase === "after");
++      expect(after).toHaveLength(scenario === "cache" ? 2 : 1);
++      expect(after.every((record) => record.entries === 0)).toBe(scenario === "cache");
++      expect(records.some((record) => record.kind === "toolchain_cache_cleanup")).toBe(
++        scenario !== "symlink",
++      );
++      expect(await readFile(path.join(target, "sentinel"), "utf8")).toBe("preserve");
++    },
++  );
++
++  it.each([
++    ["assertion", "0"],
++    ["assertion", "1"],
++    ["subprocess", "0"],
++    ["subprocess", "1"],
++  ])("cleans up after a real %s test failure with FORCE_COLOR=%s", async (failure, forceColor) => {
++    const root = await sandbox();
++    const temporary = path.join(root, "temporary");
++    await mkdir(temporary);
++    const setup = fileURLToPath(new URL("../vitest-temp-root.setup.ts", import.meta.url));
++    await writeFile(
++      path.join(root, "vitest.config.mjs"),
++      `export default ${JSON.stringify({
++        test: {
++          globals: true,
++          include: ["failure.test.mjs"],
++          setupFiles: [setup],
++          maxWorkers: 1,
++        },
++      })};`,
++    );
++    await writeFile(
++      path.join(root, "failure.test.mjs"),
++      `
++      import { mkdtempSync, writeFileSync } from 'node:fs';
++      import os from 'node:os';
++      import path from 'node:path';
++      import { execFileSync } from 'node:child_process';
++      test('intentional failure after allocating data', () => {
++        const root = mkdtempSync(path.join(os.tmpdir(), 'fixture-'));
++        writeFileSync(path.join(root, 'payload'), 'owned test data');
++        ${failure === "assertion" ? "expect(false).toBe(true);" : "execFileSync(process.execPath, ['-e', 'process.exit(17)']);"}
++      });
++    `,
++    );
++    const outcome = await execFileAsync(
++      process.execPath,
++      [
++        path.join(path.dirname(require.resolve("vitest/package.json")), "vitest.mjs"),
++        "run",
++        "--config",
++        "vitest.config.mjs",
++      ],
++      {
++        cwd: root,
++        env: {
++          ...process.env,
++          FORCE_COLOR: forceColor,
++          TMPDIR: temporary,
++          TMP: temporary,
++          TEMP: temporary,
++        },
++        timeout: 90_000,
++        maxBuffer: 2 * 1024 * 1024,
++      },
++    ).then(
++      () => ({ code: 0, stdout: "" }),
++      (error: { code: unknown; stdout: string }) => error,
++    );
++    expect(outcome.code).toBe(1);
++    expect(stripVTControlCharacters(outcome.stdout)).toMatch(/Tests\s+1 failed/u);
++    expect(await readdir(temporary)).toEqual([]);
++  });
++
++  it("preserves concurrent live roots and recovers only an interrupted stale worker", async () => {
++    const parent = await sandbox();
++    const first = startWorker(parent);
++    workers.push(first);
++    const second = startWorker(parent);
++    workers.push(second);
++    const firstRoot = await first.ready;
++    const secondRoot = await second.ready;
++    expect(firstRoot).not.toBe(secondRoot);
++    const future = Date.now() + VITEST_TEMP_ROOT_STALE_MS + 60_000;
++    await recoverStaleVitestTempRoots(parent, { nowMs: future });
++    const activeRoots = await readdir(parent);
++    expect(activeRoots.toSorted()).toEqual(
++      [path.basename(firstRoot), path.basename(secondRoot)].toSorted(),
++    );
++    first.child.kill("SIGKILL");
++    await first.closed;
++    await recoverStaleVitestTempRoots(parent);
++    expect(await readdir(parent)).toHaveLength(2);
++    await recoverStaleVitestTempRoots(parent, { nowMs: future });
++    expect(await readdir(parent)).toEqual([path.basename(secondRoot)]);
++    second.child.stdin.end("cleanup\n");
++    const [exitCode] = await second.closed;
++    expect(exitCode).toBe(0);
++    expect(await readdir(parent)).toEqual([]);
++  });
++});
+diff --git a/packages/testkit/src/cli-harness/temp-root-cleanup.measure.mjs b/packages/testkit/src/cli-harness/temp-root-cleanup.measure.mjs
+new file mode 100644
+index 000000000..653048a7b
+--- /dev/null
++++ b/packages/testkit/src/cli-harness/temp-root-cleanup.measure.mjs
+@@ -0,0 +1,106 @@
++import { spawn } from "node:child_process";
++import { lstat, mkdtemp, readdir, rm } from "node:fs/promises";
++import os from "node:os";
++import path from "node:path";
++
++const mode = process.argv[2];
++if (process.argv.length !== 3 || !["--focused", "--full"].includes(mode)) {
++  throw new Error("Expected --focused or --full");
++}
++const parent = await mkdtemp(path.join(os.tmpdir(), "agentplane-cleanup-measure-"));
++const args =
++  mode === "--full"
++    ? ["run", "ci:local:full"]
++    : [
++        "x",
++        "vitest",
++        "run",
++        "--config",
++        "vitest.config.ts",
++        "--maxWorkers=2",
++        "packages/testkit/src/cli-harness/temp-root-cleanup.test.ts",
++        "packages/testkit/src/cli-harness/temp-root-cleanup.integration.test.ts",
++        "packages/agentplane/src/commands/guard/impl/close-message.test.ts",
++      ];
++
++async function measure(root) {
++  let entries = 0;
++  let directories = 0;
++  let bytes = 0;
++  for (const name of await readdir(root)) {
++    const target = path.join(root, name);
++    const stat = await lstat(target);
++    entries += 1;
++    if (stat.isDirectory() && !stat.isSymbolicLink()) {
++      directories += 1;
++      const nested = await measure(target);
++      entries += nested.entries;
++      directories += nested.directories;
++      bytes += nested.bytes;
++    } else bytes += stat.size;
++  }
++  return { entries, directories, bytes };
++}
++
++try {
++  console.log(
++    JSON.stringify({ kind: "temp_residue", phase: "before", ...(await measure(parent)) }),
++  );
++  for (let run = 1; run <= (mode === "--focused" ? 2 : 1); run += 1) {
++    const code = await new Promise((resolve, reject) => {
++      const child = spawn("bun", args, {
++        stdio: "inherit",
++        env: {
++          ...process.env,
++          TMPDIR: parent,
++          TMP: parent,
++          TEMP: parent,
++          // Measure fixture cleanup without persistent toolchain performance caches.
++          NODE_DISABLE_COMPILE_CACHE: "1",
++          JITI_FS_CACHE: "false",
++        },
++      });
++      child.once("error", reject);
++      child.once("close", (status) => resolve(status ?? 1));
++    });
++    const rawResidue = await measure(parent);
++    console.log(
++      JSON.stringify({ kind: "temp_residue", phase: "raw_after", mode, run, code, ...rawResidue }),
++    );
++    // Docusaurus forces Jiti 1's cache on. This reserved tool cache is not a test fixture.
++    const jitiCache = path.join(parent, "node-jiti");
++    const cacheStat = await lstat(jitiCache).catch((error) => {
++      if (error.code !== "ENOENT") throw error;
++      return null;
++    });
++    if (cacheStat?.isDirectory() && !cacheStat.isSymbolicLink()) {
++      console.log(
++        JSON.stringify({
++          kind: "toolchain_cache_cleanup",
++          cache: "node-jiti",
++          ...(await measure(jitiCache)),
++        }),
++      );
++      await rm(jitiCache, { recursive: true, force: true });
++    }
++    const residue = await measure(parent);
++    const topLevelEntries = await readdir(parent);
++    console.log(
++      JSON.stringify({
++        kind: "temp_residue",
++        phase: "after",
++        mode,
++        run,
++        code,
++        ...residue,
++        top_level_entries: topLevelEntries.slice(0, 20),
++      }),
++    );
++    if (code !== 0 || residue.entries !== 0) {
++      process.exitCode = code || 1;
++      break;
++    }
++  }
++} finally {
++  await rm(parent, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
++}
+diff --git a/scripts/baselines/v0.7-compatibility-candidate.json b/scripts/baselines/v0.7-compatibility-candidate.json
+index 01ec31cfd..aacfffbbd 100644
+--- a/scripts/baselines/v0.7-compatibility-candidate.json
++++ b/scripts/baselines/v0.7-compatibility-candidate.json
+@@ -8,14 +8,14 @@
+   "candidate": {
+     "section_digests": {
+       "agent_facing_context_contracts": "7710a5217ea614a3da8b4e99fe61e16fb738179797eba64c75c9537bc33f7785",
+-      "cli_topology": "814f5c2558bfa2793200ecb88e6b6c4e2fb547291fb525de7683f3f0d8267905",
++      "cli_topology": "2b002b702e51063193fc1c8d1eac8de2ee27c10c061bb289ae4d31a168a50061",
+       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
+       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+       "package_manifests": "8bfba4f6df0470889d90bcb234fc9ab0192a164b1f6b7644b01d5b8c0a35912a",
+       "tarball_policy": "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd",
+       "workflow_schema": "dc851f68ff13c52fec5dbe522fa96cc1084771ce7e09ed0178c44f15d7c46452"
+     },
+-    "surface_sha256": "9ab33b0b494008cf110c252a05c98e4b8dae04f5847b76050aad12bff9ccbf2b"
++    "surface_sha256": "8ea26f20076ccfa43234b3bd600703f33f80fc120ff852bf511a7b4aa6694b8f"
+   },
+   "candidate_id": "agentplane.compatibility.v0.7.cumulative",
+   "contract_artifacts": {
+@@ -1413,6 +1413,54 @@
+             "name": "yes",
+             "valueHint": null
+           },
++          {
++            "command": "task new",
++            "kind": "string",
++            "name": "capability",
++            "repeatable": true,
++            "valueHint": "<capability>"
++          },
++          {
++            "choices": [
++              "network_read",
++              "external_write",
++              "credentials",
++              "publish",
++              "deploy",
++              "destructive_git"
++            ],
++            "command": "task new",
++            "kind": "string",
++            "name": "external-effect",
++            "repeatable": true,
++            "valueHint": "<effect>"
++          },
++          {
++            "choices": [
++              "repository_write",
++              "documentation",
++              "source_code",
++              "tests",
++              "public_api",
++              "schema",
++              "dependencies",
++              "ci",
++              "release_metadata",
++              "security_boundary"
++            ],
++            "command": "task new",
++            "kind": "string",
++            "name": "repository-effect",
++            "repeatable": true,
++            "valueHint": "<effect>"
++          },
++          {
++            "command": "task new",
++            "kind": "string",
++            "name": "resource",
++            "repeatable": true,
++            "valueHint": "<resource>"
++          },
+           {
+             "choices": ["auto", "direct", "branch_pr"],
+             "command": "task new",
+@@ -1421,6 +1469,13 @@
+             "name": "route",
+             "valueHint": "<auto|direct|branch_pr>"
+           },
++          {
++            "command": "task new",
++            "kind": "string",
++            "name": "scope-root",
++            "repeatable": true,
++            "valueHint": "<repository-relative-path>"
++          },
+           {
+             "command": "task plan approve",
+             "kind": "string",
+@@ -2236,6 +2291,36 @@
+             "name": "verify",
+             "source_task": "202608061646-30TKV4"
+           },
++          {
++            "command": "task new",
++            "kind": "option",
++            "name": "capability",
++            "source_task": "202609292230-6GZ3RV"
++          },
++          {
++            "command": "task new",
++            "kind": "option",
++            "name": "external-effect",
++            "source_task": "202609292230-6GZ3RV"
++          },
++          {
++            "command": "task new",
++            "kind": "option",
++            "name": "repository-effect",
++            "source_task": "202609292230-6GZ3RV"
++          },
++          {
++            "command": "task new",
++            "kind": "option",
++            "name": "resource",
++            "source_task": "202609292230-6GZ3RV"
++          },
++          {
++            "command": "task new",
++            "kind": "option",
++            "name": "scope-root",
++            "source_task": "202609292230-6GZ3RV"
++          },
+           {
+             "command": "task new",
+             "kind": "option",
+@@ -2732,7 +2817,7 @@
+             "identity": "task plan approve --by"
+           }
+         ],
+-        "option_count": { "from": 767, "to": 849 },
++        "option_count": { "from": 767, "to": 854 },
+         "positional_count": { "from": 165, "to": 174 },
+         "removed_command_descriptors": [
+           {
+@@ -3204,6 +3289,7 @@
+       "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
+       "section": "cli_topology",
+       "source_tasks": [
++        "202609292230-6GZ3RV",
+         "202609271356-4SANDJ",
+         "202609232231-BYSVV6",
+         "202607221846-4VB97J",
+@@ -3250,7 +3336,7 @@
+         "202609261720-KKE9ZN"
+       ],
+       "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with caller-supplied structured semantic intent and neutral planner intake, including bounded scope, effect, capability, and resource declarations, explainable per-task workflow routing, signed dialogue approval receipts, compatibility retirement diagnostics, safe local evidence statistics, compaction, garbage collection, and a state-bound USER-approved blocked-task scope extension; promotes the managed task runner; moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces; canonicalizes setup and execution profile selection to standard while retaining legacy init aliases; and makes auto the task route default while retiring repository as a user-facing route. Adds exact-intent operator reconciliation for interrupted integration workflow effects. Retires the active supervisor budget-epoch command after spend limits became telemetry-only. Retires the active Blueprint command surface after Task Kernel replacement proof while preserving cold compatibility readers.",
+-      "to_sha256": "814f5c2558bfa2793200ecb88e6b6c4e2fb547291fb525de7683f3f0d8267905"
++      "to_sha256": "2b002b702e51063193fc1c8d1eac8de2ee27c10c061bb289ae4d31a168a50061"
+     },
+     {
+       "classification": "intentional_breaking_retirement",
+@@ -3467,7 +3553,7 @@
+     "from_version": "0.6.24",
+     "section": "package_manifests",
+     "source_task": "202608082119-P6SHBN",
+-    "surface_sha256": "65384c1a59896f908840057ce89c926a8e25d787090e0b873a15ddf1e7c7f141",
++    "surface_sha256": "88a85ef71f7b3c1bb98218e7dde69dd022f41948c81b55f7c0e5150e4097d9b4",
+     "to_sha256": "3a60ec08e552ad801665bc09ba3d0ff94f4c86911e985b1b01408a66f9c0b203",
+     "to_version": "0.7.12"
+   },
+@@ -3483,6 +3569,7 @@
+   },
+   "schema_version": 3,
+   "source_tasks": [
++    "202609292230-6GZ3RV",
+     "202609271356-4SANDJ",
+     "202609232231-BYSVV6",
+     "202607221846-4VB97J",
+diff --git a/scripts/checks/check-compatibility-contract-baseline.mjs b/scripts/checks/check-compatibility-contract-baseline.mjs
+index 1df7f3b01..7172314af 100644
+--- a/scripts/checks/check-compatibility-contract-baseline.mjs
++++ b/scripts/checks/check-compatibility-contract-baseline.mjs
+@@ -318,6 +318,7 @@ function validateReviewedCandidate({
+     "compatibility candidate id drift",
+   );
+   const cliSourceTasks = [
++    "202609292230-6GZ3RV",
+     "202609271356-4SANDJ",
+     "202609232231-BYSVV6",
+     "202607221846-4VB97J",
+@@ -364,6 +365,7 @@ function validateReviewedCandidate({
+     "202609261720-KKE9ZN",
+   ];
+   const expectedSourceTasks = [
++    "202609292230-6GZ3RV",
+     "202609271356-4SANDJ",
+     "202609232231-BYSVV6",
+     "202607221846-4VB97J",
+@@ -2345,6 +2347,54 @@ function validateReviewedCandidate({
+       name: "yes",
+       valueHint: null,
+     },
++    {
++      command: "task new",
++      kind: "string",
++      name: "capability",
++      repeatable: true,
++      valueHint: "<capability>",
++    },
++    {
++      choices: [
++        "network_read",
++        "external_write",
++        "credentials",
++        "publish",
++        "deploy",
++        "destructive_git",
++      ],
++      command: "task new",
++      kind: "string",
++      name: "external-effect",
++      repeatable: true,
++      valueHint: "<effect>",
++    },
++    {
++      choices: [
++        "repository_write",
++        "documentation",
++        "source_code",
++        "tests",
++        "public_api",
++        "schema",
++        "dependencies",
++        "ci",
++        "release_metadata",
++        "security_boundary",
++      ],
++      command: "task new",
++      kind: "string",
++      name: "repository-effect",
++      repeatable: true,
++      valueHint: "<effect>",
++    },
++    {
++      command: "task new",
++      kind: "string",
++      name: "resource",
++      repeatable: true,
++      valueHint: "<resource>",
++    },
+     { command: "task new", kind: "boolean", name: "canonical", valueHint: null },
+     {
+       command: "task new",
+@@ -2354,6 +2404,13 @@ function validateReviewedCandidate({
+       default: "auto",
+       choices: ["auto", "direct", "branch_pr"],
+     },
++    {
++      command: "task new",
++      kind: "string",
++      name: "scope-root",
++      repeatable: true,
++      valueHint: "<repository-relative-path>",
++    },
+     {
+       command: "task plan approve",
+       name: "approval-receipt",
+@@ -3104,6 +3161,21 @@ function validateReviewedCandidate({
+       name: "verify",
+       source_task: "202608061646-30TKV4",
+     },
++    { kind: "option", command: "task new", name: "capability", source_task: "202609292230-6GZ3RV" },
++    {
++      kind: "option",
++      command: "task new",
++      name: "external-effect",
++      source_task: "202609292230-6GZ3RV",
++    },
++    {
++      kind: "option",
++      command: "task new",
++      name: "repository-effect",
++      source_task: "202609292230-6GZ3RV",
++    },
++    { kind: "option", command: "task new", name: "resource", source_task: "202609292230-6GZ3RV" },
++    { kind: "option", command: "task new", name: "scope-root", source_task: "202609292230-6GZ3RV" },
+     {
+       kind: "option",
+       command: "task new",
