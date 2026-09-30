@@ -1,10 +1,11 @@
 ---
 id: "202609301724-M0S90X"
 title: "Integrate the independent website extraction from 202609301619-2GPBMT"
+result_summary: "Independent website extracted; framework cleanup passed full local and hosted CI."
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -51,6 +52,22 @@ quality_review:
   findings:
     - "The diff from the original evaluated implementation to current HEAD contains only task artifacts; framework source, scripts, workflows, and documentation are unchanged."
     - "All nine native final verification commands passed, including full local CI after increasing the Node heap to 4096 MB and the local suite timeout to 3600000 ms."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:cfc3f44d37a2b3e31b456028308e1f640345d04a29a901257145eba1189b312c"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-09-30T20:06:00.123Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -702,9 +719,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "32943ef6841f367127103adf8f264960fb9961f1"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "16750805ffb1de64bf6e56dd4e6a129e367ae046"
+  message: "✅ M0S90X task: persist canonical completion"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -712,9 +732,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-09-30T20:06:00.123Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "16750805ffb1de64bf6e56dd4e6a129e367ae046"
 doc_version: 3
-doc_updated_at: "2026-09-30T19:58:21.498Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-09-30T20:06:00.123Z"
+doc_updated_by: "CODER"
 description: "Recover 202609301619-2GPBMT by reapplying its preserved framework cleanup onto main. The public basilisk-labs/agentplane-web repository is already deployed independently at agentplane.org. Retain documentation sources and code-derived reference generation in agentplane; remove website source, dependencies, scripts and CI. Reapply only implementation changes from 7565a4d744a51551e74ae21a11fb9888fb1d3c47 relative to 1053fee6f16c70a25154d54d4664ccfe609b5082, excluding .agentplane task artifacts. Run fresh checks and evaluation, then publish the framework PR. Do not inherit historical passing review. Use explicit scope roots to avoid the native empty-root repository-evidence bug."
 sections:
   Summary: |-
@@ -1006,6 +1034,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:d62546d5242ae489de877f1ec1364e5b6785b5684948ffaa196cd1f4b32692c2"
     work_order_id: "sha256:fb8a6356935700c68bb7029b445fa189e3eb7ed8e5a3360a678b5bc1c12424d1"
+  implementation_commit:
+    hash: "32943ef6841f367127103adf8f264960fb9961f1"
+    message: "🧹 M0S90X task: extract website from framework"
   task_execution_context:
     base_ref: "main"
     base_sha: "1053fee6f16c70a25154d54d4664ccfe609b5082"
@@ -1942,3 +1973,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:cfc3f44d37a2b3e31b456028308e1f640345d04a29a901257145eba1189b312c`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-09-30T20:06:00.123Z`
