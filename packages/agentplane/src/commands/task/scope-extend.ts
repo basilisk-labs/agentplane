@@ -28,7 +28,11 @@ import {
   parseTaskScopeExtensionRequestState,
   scopeExtensionReceiptForState,
 } from "../shared/task-scope-extension-request.js";
-import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
+import {
+  loadCommandContext,
+  resolveTaskOwnerCommandContext,
+  type CommandContext,
+} from "../shared/task-backend.js";
 import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
 import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
 import { createKernelRuntime, requireKernelCommit } from "./kernel-runtime-context.js";
@@ -303,7 +307,7 @@ export async function cmdTaskScopeExtend(opts: {
           message: "Canonical authority delta state scope must equal its exact request digest.",
         });
       const runtime = await createKernelRuntime({
-        command: opts.ctx,
+        command: await resolveTaskOwnerCommandContext({ ctx: opts.ctx, taskId: opts.taskId }),
         task_id: opts.taskId,
         transport: "manual",
         operation_id: `authority-delta:${opts.requestDigest}`,

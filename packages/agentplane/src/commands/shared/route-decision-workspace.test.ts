@@ -1,6 +1,6 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { findWorktreeForBranch } from "@agentplaneorg/core/git";
+import { findWorktreeForBranch, gitRevParse, listWorktrees } from "@agentplaneorg/core/git";
 import type { TaskResumeContext } from "../task/handoff.shared.js";
 import {
   deriveRouteCheckoutRole,
@@ -8,7 +8,13 @@ import {
   inferTaskRouteBranch,
 } from "./route-decision-workspace.js";
 
-vi.mock("@agentplaneorg/core/git", () => ({ findWorktreeForBranch: vi.fn() }));
+vi.mock("@agentplaneorg/core/git", () => ({
+  findWorktreeForBranch: vi.fn(),
+  gitRevParse: vi.fn(),
+  listWorktrees: vi.fn(),
+}));
+
+beforeEach(() => vi.resetAllMocks());
 
 function resume(overrides: Partial<TaskResumeContext> = {}): TaskResumeContext {
   return {
@@ -36,6 +42,34 @@ function resume(overrides: Partial<TaskResumeContext> = {}): TaskResumeContext {
 }
 
 describe("route decision workspace", () => {
+  it("resolves an exact commit only when one registered checkout has that HEAD", async () => {
+    const sha = "a".repeat(40);
+    vi.mocked(findWorktreeForBranch).mockResolvedValue(null);
+    vi.mocked(listWorktrees).mockResolvedValue([
+      { path: "/repo", branch: "refs/heads/main" },
+      { path: "/base", branch: null },
+    ]);
+    vi.mocked(gitRevParse).mockResolvedValueOnce("b".repeat(40)).mockResolvedValueOnce(sha);
+    await expect(findRouteWorktreePath("/repo", sha)).resolves.toBe("/base");
+  });
+
+  it.each([{ paths: [] }, { paths: ["/one", "/two"] }])(
+    "does not guess a SHA checkout from $paths",
+    async ({ paths }) => {
+      const sha = "a".repeat(40);
+      vi.mocked(findWorktreeForBranch).mockResolvedValue(null);
+      vi.mocked(listWorktrees).mockResolvedValue(paths.map((p) => ({ path: p, branch: null })));
+      vi.mocked(gitRevParse).mockResolvedValue(sha);
+      await expect(findRouteWorktreePath("/repo", sha)).resolves.toBeNull();
+    },
+  );
+
+  it("does not reinterpret a missing named branch as another checkout", async () => {
+    vi.mocked(findWorktreeForBranch).mockResolvedValue(null);
+    await expect(findRouteWorktreePath("/repo", "missing")).resolves.toBeNull();
+    expect(listWorktrees).not.toHaveBeenCalled();
+  });
+
   it.each(["origin/main", "refs/remotes/origin/main"])(
     "treats local main as the base checkout for %s",
     (baseBranch) => {

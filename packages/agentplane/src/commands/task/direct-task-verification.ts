@@ -1,4 +1,4 @@
-import { runProcess } from "@agentplaneorg/core/process";
+import { runProcess, startProcess } from "@agentplaneorg/core/process";
 import { mkdir, mkdtemp, readFile, rm, symlink } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -476,7 +476,7 @@ export async function runDirectTaskVerification(opts: {
           );
         }
         const segmentRuntime = localRuntimeEvidence(parsed.executable, env);
-        const executed = await (opts.run_process ?? runProcess)({
+        const processOptions = {
           command: parsed.executable,
           args: parsed.args,
           cwd: isolatedCheckout.cwd,
@@ -484,14 +484,22 @@ export async function runDirectTaskVerification(opts: {
           timeoutMs: remainingTimeoutMs,
           maxBuffer: 1024 * 1024,
           reject: false,
-        });
-        stdout.push(executed.stdout);
-        stderr.push(executed.stderr);
-        exitCode = Number.isInteger(executed.exitCode) ? executed.exitCode : null;
+        };
+        // Python is admitted by the verifier grammar, not the generic process allowlist.
+        const executed = opts.run_process
+          ? await opts.run_process(processOptions)
+          : parsed.executable === "python" || parsed.executable === "python3"
+            ? await startProcess({ ...processOptions, buffer: true })
+            : await runProcess(processOptions);
+        const segmentStdout = String(executed.stdout ?? "");
+        const segmentStderr = String(executed.stderr ?? "");
+        stdout.push(segmentStdout);
+        stderr.push(segmentStderr);
+        exitCode = Number.isInteger(executed.exitCode) ? (executed.exitCode ?? null) : null;
         zeroTests = bunTestReportedZeroTests({
           parsed,
-          stdout: executed.stdout,
-          stderr: executed.stderr,
+          stdout: segmentStdout,
+          stderr: segmentStderr,
         });
         infrastructureFailure =
           segmentRuntime.status === "unavailable" || isVerificationInfrastructureError(executed);

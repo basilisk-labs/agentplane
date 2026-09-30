@@ -24,6 +24,7 @@ const mocks = vi.hoisted(() => ({
   restoreKernelFinalValidation: vi.fn().mockResolvedValue(null),
   runKernelFinalValidation: vi.fn(),
   ensureKernelOperationalProjectionEvidence: vi.fn().mockResolvedValue(undefined),
+  recoverKernelOperationalProjection: vi.fn().mockResolvedValue({ kind: "unchanged" }),
 }));
 
 vi.mock("./kernel-runtime-context.js", () => ({
@@ -54,6 +55,9 @@ vi.mock("./kernel-repository-coordinator.js", () => ({
 vi.mock("./kernel-operational-projection.js", () => ({
   ensureKernelOperationalProjectionEvidence: mocks.ensureKernelOperationalProjectionEvidence,
 }));
+vi.mock("./kernel-operational-projection-recovery.js", () => ({
+  recoverKernelOperationalProjection: mocks.recoverKernelOperationalProjection,
+}));
 
 import { advanceTaskStep } from "./advance-task-step.js";
 
@@ -67,6 +71,7 @@ afterEach(async () => {
   mocks.executeCanonicalLocalWorkflowOperation.mockResolvedValue(false);
   mocks.restoreKernelFinalValidation.mockResolvedValue(null);
   mocks.ensureKernelOperationalProjectionEvidence.mockResolvedValue(undefined);
+  mocks.recoverKernelOperationalProjection.mockResolvedValue({ kind: "unchanged" });
   mocks.advanceCompletedProviderWorkflow.mockResolvedValue(null);
   await Promise.all(
     temporaryRoots.splice(0).map((root) => rm(root, { recursive: true, force: true })),
@@ -90,6 +95,13 @@ function completedRuntime() {
   const input = vi.fn();
   const checkpoint = vi.fn();
   const runtime = {
+    adapter: {
+      read: vi.fn().mockResolvedValue({
+        kind: "canonical",
+        task: { execution_route: { repository_mode: "branch_pr" } },
+        record,
+      }),
+    },
     native: {
       readContext: vi.fn().mockResolvedValue({ repository_fingerprint: "sha256:repo" }),
     },
@@ -126,6 +138,27 @@ async function repositorySnapshot(root: string, evidencePath: string, record: un
 }
 
 describe("LC-20 terminal replay", () => {
+  it("stops before terminal effects when projection recovery requires re-evaluation", async () => {
+    const { runtime, apply } = completedRuntime();
+    mocks.createKernelRuntime.mockResolvedValue(runtime);
+    const action = {
+      kind: "human_required",
+      reason: "canonical_operational_projection_recovery_required",
+    };
+    mocks.recoverKernelOperationalProjection.mockResolvedValueOnce({ kind: "stop", action });
+    await expect(
+      advanceTaskStep({
+        command: { resolvedProject: { gitRoot: "/repo" } } as never,
+        task_id: "task-1",
+        transport: "host",
+        allow_provider_effects: true,
+      }),
+    ).resolves.toMatchObject({ action });
+    expect(apply).not.toHaveBeenCalled();
+    expect(mocks.decideCanonicalWorkflowEffect).not.toHaveBeenCalled();
+    expect(mocks.commitCanonicalTerminalTaskArtifacts).not.toHaveBeenCalled();
+  });
+
   it("dispatches completed provider work without preparing a new Kernel effect", async () => {
     const { runtime, record, apply, input } = completedRuntime();
     const before = JSON.stringify(record);
@@ -248,6 +281,7 @@ describe("LC-20 terminal replay", () => {
     };
     const completion = { command: { expected_task_revision: 12 } };
     const runtime = {
+      adapter: { read: vi.fn().mockResolvedValue({ kind: "canonical", record }) },
       native: {
         readContext: vi.fn().mockResolvedValue({ repository_fingerprint: "sha256:repo" }),
       },
@@ -311,6 +345,7 @@ describe("LC-20 terminal replay", () => {
       },
     };
     const runtime = {
+      adapter: { read: vi.fn().mockResolvedValue({ kind: "canonical", record }) },
       native: {
         readContext: vi.fn().mockResolvedValue({ repository_fingerprint: "sha256:repo" }),
       },

@@ -10,6 +10,20 @@ import { afterEach, describe, expect, it } from "vitest";
 import { parse as parseYaml } from "yaml";
 
 const execFileAsync = promisify(execFile);
+function runFixtureBash(
+  fixture: { root: string; env: NodeJS.ProcessEnv },
+  script: string,
+  overrides: NodeJS.ProcessEnv = {},
+) {
+  const env = { ...fixture.env, ...overrides };
+  delete env.BASH_ENV;
+  delete env.ENV;
+  return execFileAsync("bash", ["--noprofile", "--norc", "-c", script], {
+    cwd: fixture.root,
+    env,
+  });
+}
+
 const SCOOP_SCRIPT_PATH = path.resolve(process.cwd(), "scripts/render-scoop-manifest.mjs");
 const SETUP_SCRIPT_PATH = path.resolve(process.cwd(), "scripts/render-setup-agentplane-action.mjs");
 const tempRoots: string[] = [];
@@ -140,30 +154,47 @@ describe("standalone consumer renderers", () => {
     "keeps a verified %s installation usable in a later step",
     async (version) => {
       const fixture = await setupInstallFixture();
-      await execFileAsync("bash", ["-c", fixture.script], {
-        cwd: fixture.root,
-        env: { ...fixture.env, AGENTPLANE_VERSION: version },
-      });
+      await runFixtureBash(fixture, fixture.script, { AGENTPLANE_VERSION: version });
       const pathContent = await readFile(fixture.githubPath, "utf8");
       const installedPath = pathContent.trim();
       expect(installedPath).not.toBe("");
-      const { stdout } = await execFileAsync("bash", ["-c", "agentplane --version"], {
-        cwd: fixture.root,
-        env: { ...fixture.env, PATH: `${installedPath}${path.delimiter}${process.env.PATH ?? ""}` },
+      const { stdout } = await runFixtureBash(fixture, "agentplane --version", {
+        PATH: `${installedPath}${path.delimiter}${process.env.PATH ?? ""}`,
       });
       expect(stdout.trim()).toBe("0.4.1");
     },
   );
+
+  it("isolates install and later-step shells from inherited startup files", async () => {
+    const fixture = await setupInstallFixture();
+    const startup = path.join(fixture.root, ".bashrc");
+    await writeFile(startup, "touch startup-loaded\nexport PATH=/nonexistent\n");
+    const env = {
+      ...fixture.env,
+      HOME: fixture.root,
+      BASH_ENV: startup,
+      ENV: startup,
+      SSH_CLIENT: "127.0.0.1 12345 22",
+    };
+    await runFixtureBash({ ...fixture, env }, fixture.script);
+    const pathContent = await readFile(fixture.githubPath, "utf8");
+    const installedPath = pathContent.trim();
+    expect(installedPath).not.toBe("");
+    const { stdout } = await runFixtureBash({ ...fixture, env }, "agentplane --version", {
+      PATH: `${installedPath}${path.delimiter}${process.env.PATH ?? ""}`,
+    });
+    expect(stdout.trim()).toBe("0.4.1");
+    await expect(readFile(path.join(fixture.root, "startup-loaded"))).rejects.toMatchObject({
+      code: "ENOENT",
+    });
+  });
 
   it.each(["0.4.2", "$(touch injected)"])(
     "rejects version input %s without executing it",
     async (version) => {
       const fixture = await setupInstallFixture();
       await expect(
-        execFileAsync("bash", ["-c", fixture.script], {
-          cwd: fixture.root,
-          env: { ...fixture.env, AGENTPLANE_VERSION: version },
-        }),
+        runFixtureBash(fixture, fixture.script, { AGENTPLANE_VERSION: version }),
       ).rejects.toMatchObject({ code: 2 });
       expect(await readFile(fixture.githubPath, "utf8")).toBe("");
       await expect(readFile(path.join(fixture.root, "injected"))).rejects.toMatchObject({
@@ -175,28 +206,15 @@ describe("standalone consumer renderers", () => {
   it("does not add a corrupted archive to PATH", async () => {
     const fixture = await setupInstallFixture();
     await writeFile(fixture.archive, "corrupted archive");
-    await expect(
-      execFileAsync("bash", ["-c", fixture.script], {
-        cwd: fixture.root,
-        env: fixture.env,
-      }),
-    ).rejects.toMatchObject({ code: 2 });
+    await expect(runFixtureBash(fixture, fixture.script)).rejects.toMatchObject({ code: 2 });
     expect(await readFile(fixture.githubPath, "utf8")).toBe("");
   });
 
   it("only publishes PATH after the requested CLI verification passes", async () => {
     const fixture = await setupInstallFixture("0.0.0");
-    await expect(
-      execFileAsync("bash", ["-c", fixture.script], {
-        cwd: fixture.root,
-        env: fixture.env,
-      }),
-    ).rejects.toMatchObject({ code: 1 });
+    await expect(runFixtureBash(fixture, fixture.script)).rejects.toMatchObject({ code: 1 });
     expect(await readFile(fixture.githubPath, "utf8")).toBe("");
-    await execFileAsync("bash", ["-c", fixture.script], {
-      cwd: fixture.root,
-      env: { ...fixture.env, AGENTPLANE_VERIFY: "false" },
-    });
+    await runFixtureBash(fixture, fixture.script, { AGENTPLANE_VERIFY: "false" });
     const pathContent = await readFile(fixture.githubPath, "utf8");
     expect(pathContent.trim()).not.toBe("");
   });

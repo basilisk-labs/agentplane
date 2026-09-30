@@ -375,6 +375,12 @@ describe("canonical task worktree routing", () => {
     });
     const canonicalWorktree = await realpath(worktree);
     advanceMocks.createKernelRuntime.mockResolvedValue({
+      adapter: {
+        read: vi.fn().mockResolvedValue({
+          kind: "canonical",
+          record: { aggregate: { state: "EXECUTING" } },
+        }),
+      },
       native: {
         readContext: vi.fn().mockResolvedValue({ repository_fingerprint: "sha256:fingerprint" }),
       },

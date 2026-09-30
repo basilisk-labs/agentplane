@@ -289,7 +289,11 @@ export function resolveDeclaredTaskCheck(command: string): DeclaredTaskCheckReso
     }
   }
   const inlineFlags = INLINE_CODE_FLAGS.get(base);
-  if (inlineFlags && hasInlineCodeFlag(invocation.args, inlineFlags)) {
+  // Python clusters short flags. W, X and m consume the remaining token as an argument.
+  const pythonInlineCode =
+    (base === "python" || base === "python3") &&
+    invocation.args.some((argument) => /^-[^-WXm]*c/u.test(argument));
+  if (inlineFlags && (hasInlineCodeFlag(invocation.args, inlineFlags) || pythonInlineCode)) {
     return { ok: false, reason: `inline code evaluation is not allowed for ${base}` };
   }
   if (base === "git") {

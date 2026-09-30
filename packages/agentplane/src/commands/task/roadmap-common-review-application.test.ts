@@ -95,6 +95,7 @@ describe("LC-08 common independent-review application", () => {
       adapter: {
         read: vi.fn().mockResolvedValue({
           kind: "canonical",
+          task: { execution_route: { repository_mode: "direct" } },
           record: {
             aggregate: {
               current_plan: { revision: 1, digest: binding.plan_digest },
@@ -132,6 +133,7 @@ describe("LC-08 common independent-review application", () => {
 
     runtime.adapter.read.mockResolvedValueOnce({
       kind: "canonical",
+      task: { execution_route: { repository_mode: "direct" } },
       record: {
         aggregate: {
           current_plan: { revision: 1, digest: binding.plan_digest },

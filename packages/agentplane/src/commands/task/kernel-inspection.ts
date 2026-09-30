@@ -1,4 +1,5 @@
 import path from "node:path";
+import { recoverKernelOperationalProjection } from "./kernel-operational-projection-recovery.js";
 import {
   AGENT_WORK_ORDER_V2_ZOD_SCHEMA,
   AGENT_SEMANTIC_RESULT_ZOD_SCHEMA,
@@ -326,7 +327,11 @@ export async function acceptKernelInspection(
   if (resolved.authority.digest !== binding.authority_digest)
     throw new Error("Canonical inspection authority changed");
   await writeKernelArtifact(directory, "inspection-result.json", semantic);
-  if (item.state === "COMPLETED" || item.state === "REWORK_READY") return;
+  if (item.state === "COMPLETED") {
+    const recovery = await recoverKernelOperationalProjection(command, read.record, read.task);
+    return recovery.kind === "stop" ? recovery.action : undefined;
+  }
+  if (item.state === "REWORK_READY") return;
   const reviewDecision = decideIndependentReviewApplication({
     verdict: semantic.review.verdict,
     provenance_accepted: true,

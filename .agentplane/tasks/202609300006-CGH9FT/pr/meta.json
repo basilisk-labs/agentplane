@@ -1,0 +1,22 @@
+{
+  "base": "main",
+  "branch": "task/202609300006-CGH9FT/integrate-all-four-open-issue-fixes-with-canonic",
+  "created_at": "2026-09-30T02:39:13.388Z",
+  "diffstat_sha256": "sha256:9631ce798f3deceb39d5e80c2b953f9f8e2ccb164fab26199977eb3449366085",
+  "last_verified_at": "2026-09-30T03:28:37.190Z",
+  "last_verified_diffstat_sha256": "sha256:9631ce798f3deceb39d5e80c2b953f9f8e2ccb164fab26199977eb3449366085",
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202609300006-CGH9FT",
+  "updated_at": "2026-09-30T02:39:13.388Z",
+  "verify": {
+    "status": "pass"
+  }
+}

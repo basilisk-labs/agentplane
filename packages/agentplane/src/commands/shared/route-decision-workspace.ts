@@ -1,4 +1,4 @@
-import { findWorktreeForBranch } from "@agentplaneorg/core/git";
+import { findWorktreeForBranch, gitRevParse, listWorktrees } from "@agentplaneorg/core/git";
 
 import type { PrFlowStatusReport } from "../pr/flow-status.js";
 import type { TaskResumeContext } from "../task/handoff.shared.js";
@@ -20,7 +20,14 @@ export async function findRouteWorktreePath(
   const exact = await findWorktreeForBranch(cwd, branch);
   if (exact) return exact;
   const normalized = normalizeBranchIdentity(branch);
-  return normalized === branch ? null : await findWorktreeForBranch(cwd, normalized);
+  if (normalized !== branch) return await findWorktreeForBranch(cwd, normalized);
+  if (!/^(?:[a-f0-9]{40}|[a-f0-9]{64})$/u.test(branch)) return null;
+  const matches: string[] = [];
+  for (const worktree of await listWorktrees(cwd)) {
+    const head = await gitRevParse(worktree.path, ["HEAD^{commit}"]).catch(() => null);
+    if (head === branch) matches.push(worktree.path);
+  }
+  return matches.length === 1 ? matches[0]! : null;
 }
 
 export function inferTaskRouteBranch(
