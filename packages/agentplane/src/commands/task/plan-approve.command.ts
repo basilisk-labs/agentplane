@@ -29,6 +29,7 @@ export type TaskPlanApproveParsed = {
   approvalReceipt?: string;
   hostUserDecision?: string;
   note?: string;
+  renewAuthority?: boolean;
 };
 
 export const taskPlanApproveSpec: CommandSpec<TaskPlanApproveParsed> = {
@@ -37,6 +38,13 @@ export const taskPlanApproveSpec: CommandSpec<TaskPlanApproveParsed> = {
   summary: "Approve the current task plan (enforces Verify Steps gating when configured).",
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
   options: [
+    {
+      kind: "boolean",
+      name: "renew-authority",
+      default: false,
+      description:
+        "Renew changed policy authority for an unchanged approved Plan. Requires --by USER.",
+    },
     {
       kind: "string",
       name: "by",
@@ -75,6 +83,15 @@ export const taskPlanApproveSpec: CommandSpec<TaskPlanApproveParsed> = {
     const hasBy = typeof by === "string" && by.trim().length > 0;
     const hasReceipt = typeof receipt === "string" && receipt.trim().length > 0;
     const hasHostDecision = typeof hostDecision === "string" && hostDecision.trim().length > 0;
+    if (
+      raw.opts["renew-authority"] === true &&
+      (!hasBy || !/^USER(?::[A-Za-z0-9._@-]+)?$/u.test(String(by)))
+    ) {
+      throw usageError({
+        spec: taskPlanApproveSpec,
+        message: "--renew-authority requires explicit --by USER operator approval.",
+      });
+    }
     if ([hasBy, hasReceipt, hasHostDecision].filter(Boolean).length !== 1) {
       throw usageError({
         spec: taskPlanApproveSpec,
@@ -85,6 +102,7 @@ export const taskPlanApproveSpec: CommandSpec<TaskPlanApproveParsed> = {
   parse: (raw) => {
     return {
       taskId: String(raw.args["task-id"]),
+      renewAuthority: raw.opts["renew-authority"] === true,
       by: typeof raw.opts.by === "string" ? raw.opts.by.trim() : undefined,
       approvalReceipt:
         typeof raw.opts["approval-receipt"] === "string"
@@ -122,7 +140,11 @@ export function makeRunTaskPlanApproveHandler(getCtx: (cmd: string) => Promise<C
             },
       });
       await runtime.checkpoint(await runtime.observe());
-      const result = requireKernelCommit(await runtime.authority.approve(p.taskId));
+      const result = requireKernelCommit(
+        p.renewAuthority
+          ? await runtime.authority.renewPolicy(p.taskId)
+          : await runtime.authority.approve(p.taskId),
+      );
       await projectCanonicalPlanApproval(commandCtx, p.taskId, result.record, p.note);
       createCliEmitter().json({
         task_id: p.taskId,
@@ -131,6 +153,12 @@ export function makeRunTaskPlanApproveHandler(getCtx: (cmd: string) => Promise<C
       });
       return 0;
     }
+    if (p.renewAuthority)
+      throw usageError({
+        spec: taskPlanApproveSpec,
+        message:
+          "--renew-authority requires a canonical Task; use explicit kernel migration first.",
+      });
     let by = p.by;
     let note = p.note;
     let expectedTaskRevision: number | undefined;
