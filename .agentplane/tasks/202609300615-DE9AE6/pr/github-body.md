@@ -16,7 +16,7 @@ User approved the design: the planning agent proposes direct, isolated delivery,
 ## Verification
 
 - State: ok
-- Note: Canonical validation sha256:ae5fac63f429d8047cd001d3d39a268042ee5d0a3dd637e66d2db05b2bcce934
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>

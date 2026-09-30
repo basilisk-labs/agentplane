@@ -1,9 +1,12 @@
 {
   "checks": [
     {
-      "check_ids": [],
+      "check_ids": [
+        "docs_contract",
+        "task_outcome"
+      ],
       "command": "git diff --check",
-      "duration_ms": 913,
+      "duration_ms": 755,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:e9970e0222261dcb51b9dea12a6e40fd0d1f3cc919e27603192ff802cba00905",
@@ -15,6 +18,44 @@
       "script": null,
       "stderr_tail": "",
       "stdout_tail": ""
+    },
+    {
+      "check_ids": [
+        "docs_contract",
+        "task_outcome"
+      ],
+      "command": "node .agentplane/policy/check-routing.mjs",
+      "duration_ms": 707,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:e9970e0222261dcb51b9dea12a6e40fd0d1f3cc919e27603192ff802cba00905",
+        "executable_digest": "sha256:7fde7b8afa198da66257f42ee2001d874c7355631e6d1579a5fb5ef1f246df4c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "policy routing OK\n"
+    },
+    {
+      "check_ids": [
+        "docs_contract",
+        "task_outcome"
+      ],
+      "command": "agentplane doctor",
+      "duration_ms": 16998,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:e9970e0222261dcb51b9dea12a6e40fd0d1f3cc919e27603192ff802cba00905",
+        "executable_digest": "sha256:7fde7b8afa198da66257f42ee2001d874c7355631e6d1579a5fb5ef1f246df4c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "ℹ️ doctor: checking workflow contract\n{\"ts\":\"2026-09-30T06:30:34.559Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_doctor_check\",\"details\":{\"ok\":true,\"findings\":0}}\nℹ️ doctor: checking workspace\nℹ️ doctor: checking branch_pr drift\nℹ️ doctor: checking runtime source\nℹ️ doctor: checking prompt graph\nℹ️ doctor: checking recent task archive\n⚠️ doctor findings: errors=0 warnings=1 info=9\n- [INFO] State: local plan approval requires a host-originated user decision\nLikely cause: no trusted signed-receipt issuer is configured\nNext action: ap task advance <task-id> --agent-json (present the emitted host_user_decision request in Codex; use task plan approve --by USER only as explicit manual compatibility)\nDetails: Reason code: host_user_decision_required\n  - AgentPlane will not emit an unavailable signed_user_receipt transport.\n  - A managed runner cannot synthesize the user decision and stops at the plan boundary.\n- [INFO] Runtime mode: repo-local (repo-local framework binary)\n- [INFO] Active binary: /home/agentplane/workspace/agentplane/.agentplane/worktrees/202609300615-DE9AE6-document-semantic-workflow-selection-and-feature/packages/agentplane/bin/agentplane.js\n- [INFO] Resolved agentplane: 0.7.12 @ /home/agentplane/workspace/agentplane/.agentplane/worktrees/202609300615-DE9AE6-document-semantic-workflow-selection-and-feature/packages/agentplane\n- [INFO] Resolved @agentplaneorg/core: 0.7.12 @ /home/agentplane/workspace/agentplane/.agentplane/worktrees/202609300615-DE9AE6-document-semantic-workflow-selection-and-feature/packages/core\n- [INFO] Framework repo root: /home/agentplane/workspace/agentplane/.agentplane/worktrees/202609300615-DE9AE6-document-semantic-workflow-selection-and-feature\n- [INFO] Framework agentplane root: /home/agentplane/workspace/agentplane/.agentplane/worktrees/202609300615-DE9AE6-document-semantic-workflow-selection-and-feature/packages/agentplane\n- [INFO] Framework core root: /home/agentplane/workspace/agentplane/.agentplane/worktrees/202609300615-DE9AE6-document-semantic-workflow-selection-and-feature/packages/core\n- [INFO] Historical task archive contains 153 DONE tasks with unknown implementation commit hashes across 153 distinct commit hashes. Examples: 042f68391d3b51915e07f648cc6f02bf54579bd6 (1 task: 202608271544-1TDVPJ); 08be56971aec26c3366d50e67b4043b47e142377 (1 task: 202609190050-3MJ7GQ); 08c437b3d19e21c6e85de277fc47ef9e269651ec (1 task: 202609111339-NGDG6V); +150 more hash groups\n- [WARN] DONE task implementation commit points to a close commit: 202609071219-QV0SX9 -> 3c45166b31d0a9960f52aa11c3259afd472dd691 (🚧 QV0SX9 task: pre-merge closure)\n",
+      "stdout_tail": "✅ doctor (OK)\n"
     }
   ],
   "kind": "direct_task_declared_checks",
