@@ -9,15 +9,12 @@ import { gitRevParse } from "@agentplaneorg/core/git";
 import {
   createTaskExecutionBaseIdentity,
   TASK_EXECUTION_CONTEXT_EXTENSION_KEY,
-  type TaskExecutionContract,
-  type TaskExecutionDeclaration,
   type TaskExternalEffect,
   type TaskRepositoryEffect,
 } from "@agentplaneorg/core/tasks";
-import {
-  resolveTaskExecutionContract,
-  resolveTaskExecutionRoute,
-} from "../../runtime/task-routing/index.js";
+import { resolveTaskExecutionRoute } from "../../runtime/task-routing/index.js";
+import { resolveExplicitExecutionContract } from "./execution-contract-intake.js";
+import { executionContractOptions } from "./execution-contract-options.js";
 import { throwIfPolicyDecisionDenied } from "../shared/policy-deny.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
@@ -25,6 +22,8 @@ import { runTaskNewParsed, type TaskNewParsed } from "./new.js";
 import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
 
 const output = createCliEmitter();
+
+export { resolveExplicitExecutionContract } from "./execution-contract-intake.js";
 
 type UserTaskRoute = Exclude<NonNullable<TaskNewParsed["route"]>, "repository">;
 
@@ -82,67 +81,6 @@ export function resolveUserTaskIntent(parsed: TaskCreateParsed): UserTaskIntent 
     code: "semantic_intake_pending",
     confirmation_required: true,
   };
-}
-
-function unique<T extends string>(values: readonly T[]): T[] {
-  return [...new Set(values)].toSorted();
-}
-
-export function resolveExplicitExecutionContract(opts: {
-  parsed: TaskCreateParsed;
-  config: Parameters<typeof resolveTaskExecutionContract>[0]["config"];
-  intent: UserTaskIntent;
-}): TaskExecutionContract {
-  const repositoryEffects: TaskRepositoryEffect[] = [...opts.parsed.repositoryEffects];
-  if (opts.intent.mutationScope && opts.intent.mutationScope !== "none")
-    repositoryEffects.push("repository_write");
-  if (opts.intent.mutationScope === "docs") repositoryEffects.push("documentation");
-  if (opts.intent.mutationScope === "code") repositoryEffects.push("source_code");
-  if (opts.intent.mutationScope === "release") repositoryEffects.push("release_metadata");
-  if (opts.parsed.verify.length > 0) repositoryEffects.push("tests");
-  const externalEffects: TaskExternalEffect[] = [...opts.parsed.externalEffects];
-  for (const risk of opts.intent.riskFlags) {
-    if (risk === "network") externalEffects.push("network_read");
-    if (risk === "credentials") externalEffects.push("credentials");
-    if (risk === "deploy") externalEffects.push("deploy");
-    if (risk === "publish") externalEffects.push("publish");
-    if (risk === "external_system") externalEffects.push("external_write");
-    if (risk === "security") repositoryEffects.push("security_boundary");
-    if (risk === "merge") repositoryEffects.push("release_metadata");
-  }
-  const hasRecoveryRisk =
-    externalEffects.some((effect) => effect !== "network_read") ||
-    repositoryEffects.includes("release_metadata");
-  const declaration: TaskExecutionDeclaration = {
-    schema_version: 2,
-    preferred_mode: opts.parsed.route === "branch_pr" ? "branch_pr" : "direct",
-    scope_roots:
-      repositoryEffects.length > 0
-        ? unique(opts.parsed.scopeRoots.length > 0 ? opts.parsed.scopeRoots : ["."])
-        : [],
-    repository_effects: unique(repositoryEffects),
-    external_effects: unique(externalEffects),
-    requirements_uncertainty: opts.intent.mutationScope === "unknown" ? "material" : "bounded",
-    implementation_uncertainty: "bounded",
-    reversibility: hasRecoveryRisk ? "recovery_required" : "reversible",
-    rationale: ["explicit structured task intake"],
-  };
-  const contract = resolveTaskExecutionContract({
-    config: opts.config,
-    requestedMode: opts.parsed.route,
-    task: {
-      task_kind: opts.intent.taskKind,
-      mutation_scope: opts.intent.mutationScope,
-      risk_flags: opts.intent.riskFlags,
-    },
-    declaration,
-  });
-  contract.authority.allowed_capabilities = unique([
-    ...opts.parsed.capabilities,
-    ...(repositoryEffects.length > 0 ? ["repository_write"] : []),
-  ]);
-  contract.authority.allowed_resources = unique(opts.parsed.resources);
-  return contract;
 }
 
 export const taskCreateSpec: CommandSpec<TaskCreateParsed> = {
@@ -233,61 +171,7 @@ export const taskCreateSpec: CommandSpec<TaskCreateParsed> = {
       repeatable: true,
       description: "Repeatable. Seed an explicit verification command.",
     },
-    {
-      kind: "string",
-      name: "scope-root",
-      valueHint: "<repository-relative-path>",
-      repeatable: true,
-      description: "Repeatable writable root admitted by the execution contract.",
-    },
-    {
-      kind: "string",
-      name: "repository-effect",
-      valueHint: "<effect>",
-      choices: [
-        "repository_write",
-        "documentation",
-        "source_code",
-        "tests",
-        "public_api",
-        "schema",
-        "dependencies",
-        "ci",
-        "release_metadata",
-        "security_boundary",
-      ],
-      repeatable: true,
-      description: "Repeatable repository effect admitted by the execution contract.",
-    },
-    {
-      kind: "string",
-      name: "external-effect",
-      valueHint: "<effect>",
-      choices: [
-        "network_read",
-        "external_write",
-        "credentials",
-        "publish",
-        "deploy",
-        "destructive_git",
-      ],
-      repeatable: true,
-      description: "Repeatable external effect declared at intake.",
-    },
-    {
-      kind: "string",
-      name: "capability",
-      valueHint: "<capability>",
-      repeatable: true,
-      description: "Repeatable semantic capability admitted by the execution contract.",
-    },
-    {
-      kind: "string",
-      name: "resource",
-      valueHint: "<resource>",
-      repeatable: true,
-      description: "Repeatable resource claim admitted by the execution contract.",
-    },
+    ...executionContractOptions,
     {
       kind: "string",
       name: "base",

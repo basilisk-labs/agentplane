@@ -318,6 +318,7 @@ function validateReviewedCandidate({
     "compatibility candidate id drift",
   );
   const cliSourceTasks = [
+    "202609292230-6GZ3RV",
     "202609271356-4SANDJ",
     "202609232231-BYSVV6",
     "202607221846-4VB97J",
@@ -364,6 +365,7 @@ function validateReviewedCandidate({
     "202609261720-KKE9ZN",
   ];
   const expectedSourceTasks = [
+    "202609292230-6GZ3RV",
     "202609271356-4SANDJ",
     "202609232231-BYSVV6",
     "202607221846-4VB97J",
@@ -2345,6 +2347,54 @@ function validateReviewedCandidate({
       name: "yes",
       valueHint: null,
     },
+    {
+      command: "task new",
+      kind: "string",
+      name: "capability",
+      repeatable: true,
+      valueHint: "<capability>",
+    },
+    {
+      choices: [
+        "network_read",
+        "external_write",
+        "credentials",
+        "publish",
+        "deploy",
+        "destructive_git",
+      ],
+      command: "task new",
+      kind: "string",
+      name: "external-effect",
+      repeatable: true,
+      valueHint: "<effect>",
+    },
+    {
+      choices: [
+        "repository_write",
+        "documentation",
+        "source_code",
+        "tests",
+        "public_api",
+        "schema",
+        "dependencies",
+        "ci",
+        "release_metadata",
+        "security_boundary",
+      ],
+      command: "task new",
+      kind: "string",
+      name: "repository-effect",
+      repeatable: true,
+      valueHint: "<effect>",
+    },
+    {
+      command: "task new",
+      kind: "string",
+      name: "resource",
+      repeatable: true,
+      valueHint: "<resource>",
+    },
     { command: "task new", kind: "boolean", name: "canonical", valueHint: null },
     {
       command: "task new",
@@ -2353,6 +2403,13 @@ function validateReviewedCandidate({
       valueHint: "<auto|direct|branch_pr>",
       default: "auto",
       choices: ["auto", "direct", "branch_pr"],
+    },
+    {
+      command: "task new",
+      kind: "string",
+      name: "scope-root",
+      repeatable: true,
+      valueHint: "<repository-relative-path>",
     },
     {
       command: "task plan approve",
@@ -3104,6 +3161,21 @@ function validateReviewedCandidate({
       name: "verify",
       source_task: "202608061646-30TKV4",
     },
+    { kind: "option", command: "task new", name: "capability", source_task: "202609292230-6GZ3RV" },
+    {
+      kind: "option",
+      command: "task new",
+      name: "external-effect",
+      source_task: "202609292230-6GZ3RV",
+    },
+    {
+      kind: "option",
+      command: "task new",
+      name: "repository-effect",
+      source_task: "202609292230-6GZ3RV",
+    },
+    { kind: "option", command: "task new", name: "resource", source_task: "202609292230-6GZ3RV" },
+    { kind: "option", command: "task new", name: "scope-root", source_task: "202609292230-6GZ3RV" },
     {
       kind: "option",
       command: "task new",

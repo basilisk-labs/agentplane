@@ -24,9 +24,11 @@ import {
 } from "./kernel-completed-provider-workflow.js";
 import { executeCanonicalCompletedWorkflowLocally } from "./kernel-completed-workflow.js";
 import { ensureKernelOperationalProjectionEvidence } from "./kernel-operational-projection.js";
+import { recoverKernelOperationalProjection } from "./kernel-operational-projection-recovery.js";
 import { acceptKernelSemanticResult } from "./kernel-semantic-result.js";
 import { workItemResumeOperatorAction } from "./kernel-work-item-resume.js";
 import { ensureCanonicalTaskWorktree } from "./kernel-worktree-routing.js";
+import { canonicalPlanningCheckoutBoundary } from "./kernel-planning-checkout.js";
 import { canonicalCompletionPrecedesWorkflow } from "./ordinary-advance-step.js";
 import {
   kernelPlanApprovalOperatorAction,
@@ -91,6 +93,12 @@ async function advanceCanonicalRoute(opts: {
     transport: opts.transport,
     operation_id: `continuation:${opts.task_id}`,
   });
+  const planningCheckout = await canonicalPlanningCheckoutBoundary({
+    command: opts.command,
+    read: await runtime.adapter.read(opts.task_id),
+  });
+  if (planningCheckout)
+    return { schema_version: 1, task_id: opts.task_id, action: planningCheckout };
   if (opts.result_path) {
     const stop = await acceptKernelSemanticResult(
       opts.command,
@@ -135,6 +143,22 @@ async function advanceCanonicalRoute(opts: {
         task_id: opts.task_id,
         action: anomaly.action,
       };
+    }
+    if (
+      [
+        "kernel_final_validation_required",
+        "kernel_task_completion_required",
+        "kernel_task_completed",
+      ].includes(route.reason_code)
+    ) {
+      const recovery = await recoverKernelOperationalProjection(
+        opts.command,
+        record,
+        current.read.task,
+      );
+      if (recovery.kind === "stop")
+        return { schema_version: 1, task_id: opts.task_id, action: recovery.action };
+      if (recovery.kind === "restored") continue;
     }
     finalValidation ??= await restoreKernelFinalValidation(
       opts.command,

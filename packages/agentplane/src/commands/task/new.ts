@@ -47,13 +47,14 @@ import {
   TASK_DOC_VERSION_V3,
 } from "./doc-template.js";
 import { formatDuplicateTaskMessage, listOpenTaskDuplicates } from "./new-duplicates.js";
-import {
-  resolveTaskExecutionContract,
-  resolveTaskExecutionRoute,
-} from "../../runtime/task-routing/index.js";
+import { resolveTaskExecutionContract } from "../../runtime/task-routing/index.js";
 import { assertSupportedDeclaredTaskChecks } from "../shared/declared-check.js";
+import {
+  resolveExplicitExecutionContract,
+  type ExecutionContractInputs,
+} from "./execution-contract-intake.js";
 
-export type TaskNewParsed = {
+export type TaskNewParsed = ExecutionContractInputs & {
   title: string;
   description: string;
   owner: string;
@@ -356,11 +357,17 @@ export async function runTaskNewParsed(opts: {
       };
       const executionContract =
         p.executionContract ??
-        resolveTaskExecutionContract({
-          config: ctx.config,
-          requestedMode: p.route,
-          task: routeTask,
-        });
+        (p.taskKind !== undefined ||
+        p.mutationScope !== undefined ||
+        [p.scopeRoots, p.repositoryEffects, p.externalEffects, p.capabilities, p.resources].some(
+          (values) => values && values.length > 0,
+        )
+          ? resolveExplicitExecutionContract({ config: ctx.config, parsed: p, intent: p })
+          : resolveTaskExecutionContract({
+              config: ctx.config,
+              requestedMode: p.route,
+              task: routeTask,
+            }));
       const draft = createTaskGraphDraft({
         context: intakeContext,
         clarification,
@@ -377,20 +384,14 @@ export async function runTaskNewParsed(opts: {
             ...(p.taskKind ? { task_kind: p.taskKind } : {}),
             ...(p.mutationScope ? { mutation_scope: p.mutationScope } : {}),
             ...(p.riskFlags && p.riskFlags.length > 0 ? { risk_flags: p.riskFlags } : {}),
-            execution_route: p.executionContract
-              ? {
-                  schema_version: 1,
-                  requested_mode: p.route ?? "auto",
-                  selected_mode: p.executionContract.selected_mode,
-                  repository_mode: p.executionContract.repository_mode,
-                  reason_codes: [...p.executionContract.reason_codes],
-                  frozen: true,
-                }
-              : resolveTaskExecutionRoute({
-                  config: ctx.config,
-                  requestedMode: p.route,
-                  task: routeTask,
-                }),
+            execution_route: {
+              schema_version: 1,
+              requested_mode: p.route ?? "auto",
+              selected_mode: executionContract.selected_mode,
+              repository_mode: executionContract.repository_mode,
+              reason_codes: [...executionContract.reason_codes],
+              frozen: true,
+            },
             execution_contract: executionContract,
             ...(extensions ? { extensions } : {}),
             depends_on: p.dependsOn,

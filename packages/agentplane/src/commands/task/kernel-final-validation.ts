@@ -16,6 +16,7 @@ import type { createKernelRuntime } from "./kernel-runtime-context.js";
 import { requireKernelCommit } from "./kernel-runtime-context.js";
 import { listKernelRepositoryEvidence } from "./kernel-repository-coordinator.js";
 import { resolveQualityReviewTargetSha } from "../shared/quality-review-target.js";
+import { recoverKernelOperationalProjection } from "./kernel-operational-projection-recovery.js";
 
 type Runtime = Awaited<ReturnType<typeof createKernelRuntime>>;
 const FINAL_VALIDATION_CHECK_ID = "canonical-final-contracts-v2";
@@ -163,8 +164,14 @@ export async function runKernelFinalValidation(
   const evaluatorTarget = await resolveEvaluatorTarget(command, taskId, previousEvaluatorTarget);
   if (previousEvaluatorTarget && !evaluatorTarget)
     throw new Error("Canonical final validation commit identity is unavailable");
-  const operationalTask = await command.taskBackend.getTask(taskId);
+  let operationalTask = await command.taskBackend.getTask(taskId);
   if (!operationalTask) throw new Error("Canonical operational verification task is unavailable");
+  const recovery = await recoverKernelOperationalProjection(command, record, operationalTask);
+  if (recovery.kind === "stop") return { stop: recovery.action };
+  if (recovery.kind === "restored") {
+    operationalTask = await command.taskBackend.getTask(taskId);
+    if (!operationalTask) throw new Error("Recovered operational task is unavailable");
+  }
   const verification =
     operationalTask.execution_route?.repository_mode === "branch_pr"
       ? await resolveImplementationVerificationTask({

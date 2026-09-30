@@ -8,14 +8,14 @@
   "candidate": {
     "section_digests": {
       "agent_facing_context_contracts": "7710a5217ea614a3da8b4e99fe61e16fb738179797eba64c75c9537bc33f7785",
-      "cli_topology": "814f5c2558bfa2793200ecb88e6b6c4e2fb547291fb525de7683f3f0d8267905",
+      "cli_topology": "2b002b702e51063193fc1c8d1eac8de2ee27c10c061bb289ae4d31a168a50061",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
       "package_manifests": "8bfba4f6df0470889d90bcb234fc9ab0192a164b1f6b7644b01d5b8c0a35912a",
       "tarball_policy": "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd",
       "workflow_schema": "dc851f68ff13c52fec5dbe522fa96cc1084771ce7e09ed0178c44f15d7c46452"
     },
-    "surface_sha256": "9ab33b0b494008cf110c252a05c98e4b8dae04f5847b76050aad12bff9ccbf2b"
+    "surface_sha256": "8ea26f20076ccfa43234b3bd600703f33f80fc120ff852bf511a7b4aa6694b8f"
   },
   "candidate_id": "agentplane.compatibility.v0.7.cumulative",
   "contract_artifacts": {
@@ -1414,12 +1414,67 @@
             "valueHint": null
           },
           {
+            "command": "task new",
+            "kind": "string",
+            "name": "capability",
+            "repeatable": true,
+            "valueHint": "<capability>"
+          },
+          {
+            "choices": [
+              "network_read",
+              "external_write",
+              "credentials",
+              "publish",
+              "deploy",
+              "destructive_git"
+            ],
+            "command": "task new",
+            "kind": "string",
+            "name": "external-effect",
+            "repeatable": true,
+            "valueHint": "<effect>"
+          },
+          {
+            "choices": [
+              "repository_write",
+              "documentation",
+              "source_code",
+              "tests",
+              "public_api",
+              "schema",
+              "dependencies",
+              "ci",
+              "release_metadata",
+              "security_boundary"
+            ],
+            "command": "task new",
+            "kind": "string",
+            "name": "repository-effect",
+            "repeatable": true,
+            "valueHint": "<effect>"
+          },
+          {
+            "command": "task new",
+            "kind": "string",
+            "name": "resource",
+            "repeatable": true,
+            "valueHint": "<resource>"
+          },
+          {
             "choices": ["auto", "direct", "branch_pr"],
             "command": "task new",
             "default": "auto",
             "kind": "string",
             "name": "route",
             "valueHint": "<auto|direct|branch_pr>"
+          },
+          {
+            "command": "task new",
+            "kind": "string",
+            "name": "scope-root",
+            "repeatable": true,
+            "valueHint": "<repository-relative-path>"
           },
           {
             "command": "task plan approve",
@@ -2239,6 +2294,36 @@
           {
             "command": "task new",
             "kind": "option",
+            "name": "capability",
+            "source_task": "202609292230-6GZ3RV"
+          },
+          {
+            "command": "task new",
+            "kind": "option",
+            "name": "external-effect",
+            "source_task": "202609292230-6GZ3RV"
+          },
+          {
+            "command": "task new",
+            "kind": "option",
+            "name": "repository-effect",
+            "source_task": "202609292230-6GZ3RV"
+          },
+          {
+            "command": "task new",
+            "kind": "option",
+            "name": "resource",
+            "source_task": "202609292230-6GZ3RV"
+          },
+          {
+            "command": "task new",
+            "kind": "option",
+            "name": "scope-root",
+            "source_task": "202609292230-6GZ3RV"
+          },
+          {
+            "command": "task new",
+            "kind": "option",
             "name": "route",
             "source_task": "202608200903-J459C2"
           },
@@ -2732,7 +2817,7 @@
             "identity": "task plan approve --by"
           }
         ],
-        "option_count": { "from": 767, "to": 849 },
+        "option_count": { "from": 767, "to": 854 },
         "positional_count": { "from": 165, "to": 174 },
         "removed_command_descriptors": [
           {
@@ -3204,6 +3289,7 @@
       "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
       "section": "cli_topology",
       "source_tasks": [
+        "202609292230-6GZ3RV",
         "202609271356-4SANDJ",
         "202609232231-BYSVV6",
         "202607221846-4VB97J",
@@ -3250,7 +3336,7 @@
         "202609261720-KKE9ZN"
       ],
       "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with caller-supplied structured semantic intent and neutral planner intake, including bounded scope, effect, capability, and resource declarations, explainable per-task workflow routing, signed dialogue approval receipts, compatibility retirement diagnostics, safe local evidence statistics, compaction, garbage collection, and a state-bound USER-approved blocked-task scope extension; promotes the managed task runner; moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces; canonicalizes setup and execution profile selection to standard while retaining legacy init aliases; and makes auto the task route default while retiring repository as a user-facing route. Adds exact-intent operator reconciliation for interrupted integration workflow effects. Retires the active supervisor budget-epoch command after spend limits became telemetry-only. Retires the active Blueprint command surface after Task Kernel replacement proof while preserving cold compatibility readers.",
-      "to_sha256": "814f5c2558bfa2793200ecb88e6b6c4e2fb547291fb525de7683f3f0d8267905"
+      "to_sha256": "2b002b702e51063193fc1c8d1eac8de2ee27c10c061bb289ae4d31a168a50061"
     },
     {
       "classification": "intentional_breaking_retirement",
@@ -3467,7 +3553,7 @@
     "from_version": "0.6.24",
     "section": "package_manifests",
     "source_task": "202608082119-P6SHBN",
-    "surface_sha256": "65384c1a59896f908840057ce89c926a8e25d787090e0b873a15ddf1e7c7f141",
+    "surface_sha256": "88a85ef71f7b3c1bb98218e7dde69dd022f41948c81b55f7c0e5150e4097d9b4",
     "to_sha256": "3a60ec08e552ad801665bc09ba3d0ff94f4c86911e985b1b01408a66f9c0b203",
     "to_version": "0.7.12"
   },
@@ -3483,6 +3569,7 @@
   },
   "schema_version": 3,
   "source_tasks": [
+    "202609292230-6GZ3RV",
     "202609271356-4SANDJ",
     "202609232231-BYSVV6",
     "202607221846-4VB97J",

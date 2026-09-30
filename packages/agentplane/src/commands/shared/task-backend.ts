@@ -2,7 +2,11 @@ import type { ResolvedProject } from "@agentplaneorg/core/project";
 import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
 import path from "node:path";
 import type { AgentplaneConfig } from "@agentplaneorg/core/config";
-import { resolveTaskDocUpdatedBy, taskDocToSectionMap } from "@agentplaneorg/core/tasks";
+import {
+  resolveTaskDocUpdatedBy,
+  taskDocToSectionMap,
+  taskExecutionBaseFromExtensions,
+} from "@agentplaneorg/core/tasks";
 
 import type { ResolvedHarnessContract } from "../../runtime/harness/index.js";
 import { CliError } from "../../shared/errors.js";
@@ -13,14 +17,16 @@ import {
 } from "../../shared/preparation-trace.js";
 import {
   loadTaskBackend,
+  LocalBackend,
   type TaskBackendCapabilities,
   type TaskBackend,
   toTaskSummary,
   type TaskData,
   type TaskSummary,
 } from "../../backends/task-backend.js";
-import { GitContext, listWorktrees } from "@agentplaneorg/core/git";
+import { GitContext, gitConfigGet, listWorktrees } from "@agentplaneorg/core/git";
 import { resolveCommonGitDirectory } from "../../shared/env.js";
+import { findRouteWorktreePath } from "./route-decision-workspace.js";
 import {
   loadTaskFromBranchSnapshot,
   supplementTaskProjectionFromWorktrees,
@@ -236,7 +242,17 @@ export async function resolveTaskOwnerCommandContext(opts: {
   ctx: CommandContext;
   taskId: string;
 }): Promise<CommandContext> {
-  const localTask = await opts.ctx.taskBackend.getTask(opts.taskId);
+  const backend = opts.ctx.taskBackend;
+  // Compact history reads do not give the invocation backend write ownership.
+  const compactHistory =
+    opts.ctx.backendId === "local" &&
+    (await gitConfigGet(opts.ctx.resolvedProject.gitRoot, "agentplane.compactTaskHistory")) ===
+      "true";
+  const localTask = compactHistory
+    ? await new LocalBackend({
+        dir: path.join(opts.ctx.resolvedProject.gitRoot, ".agentplane/tasks"),
+      }).getTask(opts.taskId)
+    : await backend.getTask(opts.taskId);
   // Canonical tasks bind observations and WorkOrders to the invocation checkout.
   // They have no legacy task branch; their kernel validates state and authority.
   if (localTask?.extensions && Object.hasOwn(localTask.extensions, TASK_KERNEL_EXTENSION))
@@ -265,7 +281,34 @@ export async function resolveTaskOwnerCommandContext(opts: {
   }
 
   const primaryCtx = await resolvePrimaryCheckoutCommandContext(opts.ctx);
-  if (await primaryCtx.taskBackend.getTask(opts.taskId)) return primaryCtx;
+  const primaryTask = await primaryCtx.taskBackend.getTask(opts.taskId);
+  if (primaryTask) {
+    const base = taskExecutionBaseFromExtensions(primaryTask.extensions);
+    if (
+      primaryCtx !== opts.ctx &&
+      Object.hasOwn(primaryTask.extensions ?? {}, TASK_KERNEL_EXTENSION) &&
+      primaryTask.execution_route?.repository_mode === "branch_pr" &&
+      base?.source === "explicit"
+    ) {
+      const baseCheckout = await findRouteWorktreePath(
+        opts.ctx.resolvedProject.gitRoot,
+        base.base_ref,
+      );
+      if (
+        baseCheckout &&
+        path.resolve(baseCheckout) === path.resolve(opts.ctx.resolvedProject.gitRoot)
+      ) {
+        // Keep canonical storage in the primary checkout while observing the selected base.
+        return {
+          ...opts.ctx,
+          taskBackend: primaryCtx.taskBackend,
+          backendId: primaryCtx.backendId,
+          backendConfigPath: primaryCtx.backendConfigPath,
+        };
+      }
+    }
+    return primaryCtx;
+  }
   if (
     primaryCtx !== opts.ctx &&
     opts.ctx.config.workflow_mode !== "branch_pr" &&

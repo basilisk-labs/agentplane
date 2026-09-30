@@ -1,21 +1,28 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
-  "entry": [
-    "eslint.config.cjs",
-    "vitest.config.ts",
-    "vitest.workspace.ts",
-    "packages/*/tsup.config.ts",
-    "packages/*/src/index.ts",
-    "packages/agentplane/src/cli.ts",
-    "packages/agentplane/bin/*.js",
-    "scripts/**/*.mjs"
-  ],
-  "project": [
-    "packages/*/src/**/*.ts",
-    "packages/*/tsup.config.ts",
-    "scripts/**/*.mjs",
-    "*.config.{cjs,js,ts}"
-  ],
+  "workspaces": {
+    ".": {
+      "entry": [
+        "eslint.config.cjs",
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "packages/*/tsup.config.ts",
+        "packages/*/src/index.ts",
+        "packages/agentplane/src/cli.ts",
+        "packages/agentplane/bin/*.js",
+        "scripts/**/*.mjs"
+      ],
+      "project": [
+        "packages/*/src/**/*.ts",
+        "packages/*/tsup.config.ts",
+        "scripts/**/*.mjs",
+        "*.config.{cjs,js,ts}"
+      ]
+    },
+    "packages/testkit": {
+      "entry": ["src/index.ts", "src/cli-harness/temp-root-cleanup.measure.mjs"]
+    }
+  },
   "ignore": [
     ".agentplane/**",
     "docs/**",

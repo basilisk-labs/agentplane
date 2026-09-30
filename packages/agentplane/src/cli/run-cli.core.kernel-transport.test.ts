@@ -1,6 +1,9 @@
 import { readKernelOrderResult } from "../commands/task/kernel-exchange.js";
+import { assertProjectionRecovery } from "./run-cli.core.kernel-projection.testkit.js";
 import { KernelTaskLifecycle } from "../runner/usecases/kernel-task-lifecycle.js";
-import { execFileSync } from "node:child_process";
+import { execFile, execFileSync } from "node:child_process";
+import { promisify } from "node:util";
+import { fileURLToPath } from "node:url";
 import * as finalChecks from "../commands/task/direct-task-verification.js";
 import {
   acceptKernelInspection,
@@ -30,7 +33,12 @@ import { createKernelRuntime } from "../commands/task/kernel-runtime-context.js"
 import { makeTaskBackendDouble } from "@agentplane/testkit/task";
 import * as taskBackend from "../backends/task-backend.js";
 import { observeKernelTestRunner } from "../commands/task/kernel-run.testkit.js";
-import { readKernelOperationalProjection } from "../commands/task/kernel-operational-projection.js";
+import {
+  KERNEL_OPERATIONAL_PROJECTION,
+  readKernelOperationalProjection,
+} from "../commands/task/kernel-operational-projection.js";
+import { recoverKernelOperationalProjection } from "../commands/task/kernel-operational-projection-recovery.js";
+import { ensureRuntimeGitignore } from "../runtime/shared/runtime-gitignore.js";
 
 async function createTask(root: string): Promise<string> {
   const created = await runJson(root, [
@@ -97,9 +105,155 @@ async function installCloudBackend(root: string) {
   });
 }
 
+function checkoutGit(cwd: string, args: string[]): string {
+  return execFileSync("git", ["-c", "core.hooksPath=/dev/null", ...args], {
+    cwd,
+    encoding: "utf8",
+  }).trim();
+}
+
+const execFileAsync = promisify(execFile);
+async function runBundledJson(root: string, args: string[]): Promise<Record<string, unknown>> {
+  const { stdout } = await execFileAsync(
+    process.execPath,
+    [fileURLToPath(new URL("../../dist/cli.js", import.meta.url)), ...args, "--root", root],
+    { cwd: root, maxBuffer: 8 * 1024 * 1024 },
+  );
+  return JSON.parse(stdout) as Record<string, unknown>;
+}
+
 installRunCliIntegrationHarness();
 afterEach(() => vi.restoreAllMocks());
 describe("canonical CLI transport", { timeout: 60_000 }, () => {
+  it.each([
+    { baseKind: "branch", compact: false, bundled: false },
+    { baseKind: "commit", compact: false, bundled: false },
+    { baseKind: "branch", compact: true, bundled: false },
+    { baseKind: "commit", compact: true, bundled: false },
+    { baseKind: "branch", compact: true, bundled: true },
+  ])(
+    "routes planning to a divergent explicit $baseKind base (compact=$compact, bundled=$bundled)",
+    async ({ baseKind, compact, bundled }) => {
+      const runPacket = bundled ? runBundledJson : runJson;
+      const root = await mkGitRepoRootWithCommit();
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      await writeConfig(root, config);
+      checkoutGit(root, ["add", "."]);
+      checkoutGit(root, ["commit", "--allow-empty", "-m", "base checkout fixture"]);
+      const linked = path.join(root, ".agentplane/worktrees/development");
+      checkoutGit(root, ["worktree", "add", "-b", "development", linked]);
+      if (compact) {
+        checkoutGit(root, ["config", "extensions.worktreeConfig", "true"]);
+        checkoutGit(linked, ["config", "--worktree", "agentplane.compactTaskHistory", "true"]);
+        await mkdir(path.join(linked, ".agentplane/tasks"), { recursive: true });
+      }
+      await writeFile(path.join(linked, "base-only.txt"), "different development content");
+      checkoutGit(linked, ["add", "base-only.txt"]);
+      checkoutGit(linked, ["commit", "-m", "divergent development base"]);
+      const base =
+        baseKind === "branch" ? "development" : checkoutGit(linked, ["rev-parse", "HEAD"]);
+      const created = await runPacket(root, [
+        "task",
+        "create",
+        "Plan on explicit development base",
+        "--base",
+        base,
+        "--route",
+        "branch_pr",
+        "--task-kind",
+        "code",
+        "--mutation-scope",
+        "code",
+        "--scope-root",
+        "result.txt",
+        "--json",
+      ]);
+      const taskId = String(created.task_id);
+      expect(created.execution_route).toMatchObject({ repository_mode: "branch_pr" });
+      const routed = await runPacket(root, ["task", "advance", taskId, "--agent-json"]);
+      expect(routed.action).toMatchObject({
+        kind: "external_wait",
+        reason: "canonical_planning_checkout_required",
+        must_run_from: linked,
+      });
+      expect(routed.exchange).toBeUndefined();
+      const packet = await runPacket(linked, ["task", "advance", taskId, "--agent-json"]);
+      expect(packet.action).toMatchObject({ kind: "agent_episode" });
+      const exchange = packet.exchange as { directory: string; result_path: string };
+      const order = AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse(
+        JSON.parse(await readFile(path.join(exchange.directory, "work-order.json"), "utf8")),
+      );
+      expect(order.state_fingerprint.worktree).toBe(linked);
+      const invocation = await loadCommandContext({ cwd: linked });
+      const command = await resolveTaskOwnerCommandContext({ ctx: invocation, taskId });
+      const runtime = await createKernelRuntime({
+        command,
+        task_id: taskId,
+        transport: "host",
+        operation_id: "explicit-base-fixture",
+      });
+      const observed = await runtime.observe();
+      expect(order.canonical_binding?.repository_fingerprint).toBe(observed.fingerprint);
+      await writeFile(
+        exchange.result_path,
+        JSON.stringify({
+          work_order_id: order.work_order_id,
+          status: "completed",
+          summary: "Plan persists in the primary store from the development checkout",
+          findings: [],
+          uncertainty: [],
+          canonical_plan: {
+            work_items: [
+              {
+                id: "build",
+                depends_on: [],
+                required_inputs: [],
+                expected_outputs: ["source"],
+                optional: false,
+                execution_requirements: {
+                  scope_roots: ["result.txt"],
+                  repository_effects: ["source_code"],
+                  external_effects: [],
+                  capabilities: ["repository_write"],
+                  resources: [],
+                },
+                contract: {
+                  objective: "Write result.txt",
+                  acceptance_criteria: ["Result contains implementation"],
+                  verification_commands: ["node --version"],
+                  role: "EXECUTOR",
+                },
+              },
+            ],
+          },
+        }),
+      );
+      await runPacket(linked, [
+        "task",
+        "advance",
+        taskId,
+        "--result",
+        exchange.result_path,
+        "--agent-json",
+      ]);
+      const primary = await loadCommandContext({ cwd: root });
+      const primaryRuntime = await createKernelRuntime({
+        command: primary,
+        task_id: taskId,
+        transport: "host",
+        operation_id: "primary-plan-readback",
+      });
+      const stored = await primaryRuntime.adapter.read(taskId);
+      expect(stored.kind).toBe("canonical");
+      if (stored.kind !== "canonical") throw new Error("Canonical plan was not persisted");
+      expect(stored.record.aggregate.current_plan?.work_items[0]?.id).toBe("build");
+      await expect(
+        readFile(path.join(linked, ".agentplane/tasks", taskId, "README.md")),
+      ).rejects.toMatchObject({ code: "ENOENT" });
+    },
+  );
+
   it("keeps canonical observation and WorkOrder roots in the invocation worktree", async () => {
     const root = await mkGitRepoRootWithCommit();
     await writeConfig(root, defaultConfig());
@@ -557,6 +711,7 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
       );
       expect(await runtime.adapter.read(taskId)).toEqual(expanded);
     },
+    180_000,
   );
   it.each([
     "real-custom:local",
@@ -613,6 +768,9 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
       fs.writeFileSync(process.env.AGENTPLANE_RUNNER_RESULT_PATH, JSON.stringify(result));
     `,
       );
+      await ensureRuntimeGitignore({ gitRoot: root });
+      checkoutGit(root, ["add", "."]);
+      checkoutGit(root, ["commit", "-m", "managed runner fixture"]);
       if (backendKind === "cloud") await installCloudBackend(root);
       const taskId = await createTask(root);
       const execute = observeKernelTestRunner(
@@ -717,6 +875,7 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
           "FINAL_VALIDATION",
         );
       }
+      await assertProjectionRecovery(root, command, runtime, taskId);
       const implemented = await runJson(root, ["task", "run", taskId, "--json"]);
       expect(implemented.action).toMatchObject({
         kind: "terminal",
@@ -743,6 +902,31 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
       const again = await runJson(root, ["task", "run", taskId, "--json"]);
       expect(again.action).toMatchObject({ kind: "terminal", reason: "kernel_task_completed" });
       expect(execute).toHaveBeenCalledTimes(backendKind === "cloud" ? 5 : 3);
+      if (backendKind === "local") {
+        const extensions = { ...completed.task.extensions };
+        delete extensions[KERNEL_OPERATIONAL_PROJECTION];
+        await writeFile(path.join(root, "result.txt"), "committed unreviewed implementation");
+        checkoutGit(root, ["add", "result.txt"]);
+        checkoutGit(root, ["commit", "-m", "different implementation must be re-evaluated"]);
+        const recovery = await recoverKernelOperationalProjection(command, completed.record, {
+          ...completed.task,
+          extensions,
+          execution_route: { ...completed.task.execution_route!, repository_mode: "branch_pr" },
+        });
+        expect(recovery).toMatchObject({
+          kind: "stop",
+          action: {
+            detail: "The current implementation differs from the retained evaluated commit",
+          },
+        });
+        if (recovery.kind !== "stop") throw new Error("Changed commit requires recovery");
+        const preserved = await runtime.adapter.read(taskId);
+        const replacement = await runJson(root, recovery.action.operator_action.argv.slice(1));
+        expect(replacement).toMatchObject({ status: "semantic_input_required" });
+        expect(replacement.task_id).not.toBe(taskId);
+        expect(await runtime.adapter.read(taskId)).toEqual(preserved);
+      }
     },
+    180_000,
   );
 });

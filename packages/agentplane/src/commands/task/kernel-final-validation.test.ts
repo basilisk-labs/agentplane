@@ -13,6 +13,10 @@ const mocks = vi.hoisted(() => ({
   repositoryEvidence: vi.fn(),
   target: vi.fn(),
   status: vi.fn(),
+  recover: vi.fn(),
+}));
+vi.mock("./kernel-operational-projection-recovery.js", () => ({
+  recoverKernelOperationalProjection: mocks.recover,
 }));
 vi.mock("./external-agent-implementation-recovery.js", () => ({
   resolveImplementationVerificationTask: mocks.resolve,
@@ -201,10 +205,24 @@ function fixture() {
 describe("canonical final Verification Contract projection", () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    mocks.recover.mockResolvedValue({ kind: "unchanged" });
     mocks.repositoryEvidence.mockResolvedValue([{ implementation_commit: evaluatorTarget }]);
     mocks.target.mockResolvedValue(evaluatorTarget);
     mocks.status.mockResolvedValue({ lines: [] });
     mocks.project.mockResolvedValue(0);
+  });
+
+  it("does not run or persist final checks when projection recovery needs re-evaluation", async () => {
+    const f = fixture();
+    const action = {
+      kind: "human_required",
+      reason: "canonical_operational_projection_recovery_required",
+    };
+    mocks.recover.mockResolvedValue({ kind: "stop", action });
+    expect(await f.run()).toEqual({ stop: action });
+    expect(mocks.checks).not.toHaveBeenCalled();
+    expect(mocks.project).not.toHaveBeenCalled();
+    expect(f.apply).not.toHaveBeenCalled();
   });
 
   it("executes and projects the same strengthened contract before recording final validation", async () => {
