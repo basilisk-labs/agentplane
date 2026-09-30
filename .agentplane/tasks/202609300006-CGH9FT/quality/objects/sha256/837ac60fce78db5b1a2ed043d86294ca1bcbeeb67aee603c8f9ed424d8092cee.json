@@ -1,0 +1,267 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "ci",
+        "repository_write",
+        "security_boundary",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "components": [
+        "knip.json",
+        "packages/agentplane/src/cli",
+        "packages/agentplane/src/commands/release/render-scoop-and-setup-standalone-script.test.ts",
+        "packages/agentplane/src/commands/shared",
+        "packages/agentplane/src/commands/task",
+        "packages/testkit/src/cli-harness/temp-root-cleanup.integration.test.ts",
+        "packages/testkit/src/cli-harness/temp-root-cleanup.measure.mjs",
+        "scripts/baselines/v0.7-compatibility-candidate.json",
+        "scripts/checks/check-compatibility-contract-baseline.mjs"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "reversible"
+      },
+      "evidence_requirements": [
+        "hosted_integration",
+        "repository_effect:ci",
+        "repository_effect:repository_write",
+        "repository_effect:security_boundary",
+        "repository_effect:source_code",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        "knip.json",
+        "packages/agentplane",
+        "packages/testkit",
+        "scripts"
+      ],
+      "changed_files": [
+        "knip.json",
+        "packages/agentplane/src/cli/run-cli.core.kernel-projection.testkit.ts",
+        "packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts",
+        "packages/agentplane/src/commands/release/render-scoop-and-setup-standalone-script.test.ts",
+        "packages/agentplane/src/commands/shared/declared-check.test.ts",
+        "packages/agentplane/src/commands/shared/declared-check.ts",
+        "packages/agentplane/src/commands/shared/route-decision-workspace.test.ts",
+        "packages/agentplane/src/commands/shared/route-decision-workspace.ts",
+        "packages/agentplane/src/commands/shared/task-backend.ts",
+        "packages/agentplane/src/commands/task/advance-task-step.ts",
+        "packages/agentplane/src/commands/task/create.command.ts",
+        "packages/agentplane/src/commands/task/create.test.ts",
+        "packages/agentplane/src/commands/task/direct-task-verification.python.test.ts",
+        "packages/agentplane/src/commands/task/direct-task-verification.ts",
+        "packages/agentplane/src/commands/task/execution-contract-intake.ts",
+        "packages/agentplane/src/commands/task/execution-contract-options.ts",
+        "packages/agentplane/src/commands/task/kernel-advance.test.ts",
+        "packages/agentplane/src/commands/task/kernel-final-validation.test.ts",
+        "packages/agentplane/src/commands/task/kernel-final-validation.ts",
+        "packages/agentplane/src/commands/task/kernel-inspection.ts",
+        "packages/agentplane/src/commands/task/kernel-operational-projection-recovery.ts",
+        "packages/agentplane/src/commands/task/kernel-planning-checkout.test.ts",
+        "packages/agentplane/src/commands/task/kernel-planning-checkout.ts",
+        "packages/agentplane/src/commands/task/new-execution-contract.test.ts",
+        "packages/agentplane/src/commands/task/new.spec.ts",
+        "packages/agentplane/src/commands/task/new.ts",
+        "packages/agentplane/src/commands/task/roadmap-common-review-application.test.ts",
+        "packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts",
+        "packages/agentplane/src/commands/task/scope-extend.command.test.ts",
+        "packages/agentplane/src/commands/task/scope-extend.ts",
+        "packages/testkit/src/cli-harness/temp-root-cleanup.integration.test.ts",
+        "packages/testkit/src/cli-harness/temp-root-cleanup.measure.mjs",
+        "scripts/baselines/v0.7-compatibility-candidate.json",
+        "scripts/checks/check-compatibility-contract-baseline.mjs"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "full_regression",
+      "hosted_integration",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "central_component:scripts/checks/check-compatibility-contract-baseline.mjs",
+      "central_path:packages/agentplane/src/cli/run-cli.core.kernel-projection.testkit.ts",
+      "central_path:packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/declared-check.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/declared-check.ts",
+      "central_path:packages/agentplane/src/commands/shared/route-decision-workspace.test.ts",
+      "central_path:packages/agentplane/src/commands/shared/route-decision-workspace.ts",
+      "central_path:packages/agentplane/src/commands/shared/task-backend.ts",
+      "central_path:scripts/checks/check-compatibility-contract-baseline.mjs",
+      "effect_ci",
+      "effect_security_boundary",
+      "unknown_path:knip.json",
+      "unknown_path:scripts/baselines/v0.7-compatibility-candidate.json"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": false,
+    "digest": "sha256:7dd25b83cb8e96929f6c7c4bba23166d35c038849deab15404ea250024ff5ca6"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-09-30T03:28:37.190Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: canonical Task Kernel final checks passed."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202609300006-CGH9FT/verification/20260930032837190-b701946933720558.json",
+      "sha256": "sha256:5699d8509431a2f18263866e0b5920e01b8500d4d444cca2358a29bea2a94520"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check fe046eb21a7378298cb4b30dd8357515220ecd02..41de4459ac676a3d8df91b17234a965e2e5889e1",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB fe046eb21a7378298cb4b30dd8357515220ecd02..41de4459ac676a3d8df91b17234a965e2e5889e1",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "A\t.agentplane/tasks/202609300006-CGH9FT/README.md",
+          "A\t.agentplane/tasks/202609300006-CGH9FT/pr/diffstat.txt",
+          "A\t.agentplane/tasks/202609300006-CGH9FT/pr/github-body.md",
+          "A\t.agentplane/tasks/202609300006-CGH9FT/pr/github-title.txt",
+          "A\t.agentplane/tasks/202609300006-CGH9FT/pr/meta.json",
+          "A\t.agentplane/tasks/202609300006-CGH9FT/pr/review.md",
+          "A\t.agentplane/tasks/202609300006-CGH9FT/quality/objects/sha256/3843bff288bb14b89e3366c8d7dec5532bcc3f35106b624f48f00047b3593844.json",
+          "A\t.agentplane/tasks/202609300006-CGH9FT/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+          "M\tknip.json",
+          "A\tpackages/agentplane/src/cli/run-cli.core.kernel-projection.testkit.ts",
+          "M\tpackages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts",
+          "M\tpackages/agentplane/src/commands/release/render-scoop-and-setup-standalone-script.test.ts",
+          "M\tpackages/agentplane/src/commands/shared/declared-check.test.ts",
+          "M\tpackages/agentplane/src/commands/shared/declared-check.ts",
+          "M\tpackages/agentplane/src/commands/shared/route-decision-workspace.test.ts",
+          "M\tpackages/agentplane/src/commands/shared/route-decision-workspace.ts",
+          "M\tpackages/agentplane/src/commands/shared/task-backend.ts",
+          "M\tpackages/agentplane/src/commands/task/advance-task-step.ts",
+          "M\tpackages/agentplane/src/commands/task/create.command.ts",
+          "A\tpackages/agentplane/src/commands/task/create.test.ts",
+          "A\tpackages/agentplane/src/commands/task/direct-task-verification.python.test.ts",
+          "M\tpackages/agentplane/src/commands/task/direct-task-verification.ts",
+          "A\tpackages/agentplane/src/commands/task/execution-contract-intake.ts",
+          "A\tpackages/agentplane/src/commands/task/execution-contract-options.ts",
+          "M\tpackages/agentplane/src/commands/task/kernel-advance.test.ts",
+          "M\tpackages/agentplane/src/commands/task/kernel-final-validation.test.ts",
+          "M\tpackages/agentplane/src/commands/task/kernel-final-validation.ts",
+          "M\tpackages/agentplane/src/commands/task/kernel-inspection.ts",
+          "A\tpackages/agentplane/src/commands/task/kernel-operational-projection-recovery.ts",
+          "A\tpackages/agentplane/src/commands/task/kernel-planning-checkout.test.ts",
+          "A\tpackages/agentplane/src/commands/task/kernel-planning-checkout.ts",
+          "A\tpackages/agentplane/src/commands/task/new-execution-contract.test.ts",
+          "M\tpackages/agentplane/src/commands/task/new.spec.ts",
+          "M\tpackages/agentplane/src/commands/task/new.ts",
+          "M\tpackages/agentplane/src/commands/task/roadmap-common-review-application.test.ts",
+          "M\tpackages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts",
+          "M\tpackages/agentplane/src/commands/task/scope-extend.command.test.ts",
+          "M\tpackages/agentplane/src/commands/task/scope-extend.ts",
+          "A\tpackages/testkit/src/cli-harness/temp-root-cleanup.integration.test.ts",
+          "A\tpackages/testkit/src/cli-harness/temp-root-cleanup.measure.mjs",
+          "M\tscripts/baselines/v0.7-compatibility-candidate.json",
+          "M\tscripts/checks/check-compatibility-contract-baseline.mjs"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "fe046eb21a7378298cb4b30dd8357515220ecd02",
+    "implementation_commit": "41de4459ac676a3d8df91b17234a965e2e5889e1",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [
+        "?? .agentplane/tasks/202609300006-CGH9FT/README.md",
+        "?? .agentplane/tasks/202609300006-CGH9FT/quality/objects/sha256/3843bff288bb14b89e3366c8d7dec5532bcc3f35106b624f48f00047b3593844.json",
+        "?? .agentplane/tasks/202609300006-CGH9FT/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+      ],
+      "classification": [
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202609300006-CGH9FT/README.md"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202609300006-CGH9FT/quality/objects/sha256/3843bff288bb14b89e3366c8d7dec5532bcc3f35106b624f48f00047b3593844.json"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202609300006-CGH9FT/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+        }
+      ],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [
+        "?? .agentplane/tasks/202609300006-CGH9FT/README.md",
+        "?? .agentplane/tasks/202609300006-CGH9FT/quality/objects/sha256/3843bff288bb14b89e3366c8d7dec5532bcc3f35106b624f48f00047b3593844.json",
+        "?? .agentplane/tasks/202609300006-CGH9FT/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+      ],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202609300006-CGH9FT",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202609300006-CGH9FT/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

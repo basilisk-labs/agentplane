@@ -4,7 +4,7 @@ title: "Integrate all four open issue fixes with canonical routing and hermetic 
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -29,21 +29,29 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-09-30T02:44:43.798Z"
+  updated_at: "2026-09-30T04:05:31.632Z"
   updated_by: "EVALUATOR"
-  note: "Canonical EVALUATOR review passed."
+  note: "EVALUATOR returned pass with 2 typed finding(s)."
   evaluated_sha: "41de4459ac676a3d8df91b17234a965e2e5889e1"
-  review_identity_digest: "sha256:cc0bcf57241ffb253bbdf9561c4d79fb3d3ececc08c6ab09965ec6a6a10aacd2"
+  review_identity_digest: "sha256:ebf164462ae910f257d3029a982346633fd28348fa8b5b77b73f73ec7b506f1b"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202609300006-CGH9FT/e797e02ca860c2edffbf0c8d06dff32cf119c5fa7223378ac3249971c3f6fe89/quality-report.json"
+    - ".agentplane/tasks/202609300006-CGH9FT/quality/20260930-040530810-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202609300006-CGH9FT/quality/20260930-040530810-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202609300006-CGH9FT/quality/objects/sha256/1acca9095cd7237c46522682fb973eef7dbc2d855415cee8cbb03190e7ca162e.md"
+    - ".agentplane/tasks/202609300006-CGH9FT/quality/20260930-040530810-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202609300006-CGH9FT/quality/20260930-040530810-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202609300006-CGH9FT/quality/20260930-040530810-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202609300006-CGH9FT/README.md"
+    - ".agentplane/tasks/202609300006-CGH9FT/quality/objects/sha256/754d16db1912d3f8c9b1cf6a2ec55f9a3775cff991d05e4597efbafed509a749.patch"
+    - ".agentplane/tasks/202609300006-CGH9FT/quality/objects/sha256/837ac60fce78db5b1a2ed043d86294ca1bcbeeb67aee603c8f9ed424d8092cee.json"
+    - ".agentplane/tasks/202609300006-CGH9FT/verification/20260930032837190-b701946933720558.json"
+    - ".agentplane/tasks/202609300006-CGH9FT/quality/objects/sha256/4158c02c58ef3210840fbb8384f64154df762d513920fb57132b150254600950.json"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Validated every required context block and input digest. The accepted implementation result, repository evidence and native validation bind to commit 41de4459ac676a3d8df91b17234a965e2e5889e1. The path-sorted 34-file output digest matches sha256:2fe357d90e0b14982378b4c226e7051ff801d8e0bda8ef4139b29240836709f3."
-    - "Projection recovery verifies the completed attempt, accepted implementation, inspection identity, native checks and current evaluated commit. Tampered or absent evidence and dirty implementation changes stop before canonical lifecycle effects. Tests verify unchanged canonical records and idempotent restored metadata."
-    - "Structured task-new intake shares task-create contract logic, preserves supplied contracts, rejects undeclared roots/effects/capabilities/resources, and adds exactly five reviewed options without changing the immutable compatibility baseline."
-    - "Admitted Python commands use the existing buffered process runner with timeout and output limits. Generic executable restrictions are unchanged. Grouped inline-code flags are rejected, and real interpreter pass, failure, missing-runtime and npm controls are covered."
-    - "Cleanup tests exercise failed assertions and subprocesses with color enabled and disabled, live concurrent workers, stale interrupted workers, cache-only residue, unexpected fixture residue, and a cache symlink. Full measurement distinguishes raw Jiti compiler cache from fixture residue and applies strict zero-residue validation after explicitly logged owned-cache cleanup."
-    - "Bundled backend ownership and frozen planning checkout changes preserve primary metadata ownership. Release fixture shells ignore inherited startup files while retaining exact installed-version assertions."
-    - "Native controller checks passed: 184 tests in 14 files; focused measurement 30 tests twice with zero raw/final residue; compatibility baseline and candidate; Knip unchanged at 21 baseline findings; typecheck. The separately observed complete full measurement passed all CI stages with 6064 core tests and one existing skip, and final zero residue."
+    - "Compared current HEAD 591b881b43afce9249879c93f8a7f1626d536191 with evaluated commit 41de4459ac676a3d8df91b17234a965e2e5889e1. All changes are confined to eight task-owned evidence/document paths. The exact sorted 34-source-file digest remains sha256:2fe357d90e0b14982378b4c226e7051ff801d8e0bda8ef4139b29240836709f3."
+    - "Native targeted checks and full local regression passed. Hosted CI run 36665896578 passed all required checks on the same implementation. No source assertions or security policy were relaxed."
 execution_route:
   frozen: true
   reason_codes:

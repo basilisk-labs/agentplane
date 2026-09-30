@@ -1,0 +1,113 @@
+{
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609300006-CGH9FT-2a6c7de3c41e5a11712aaabc",
+  "prepared_at": "2026-09-30T04:05:30.810Z",
+  "task": {
+    "id": "202609300006-CGH9FT",
+    "revision": 18,
+    "objective": "Integrate all four open issue fixes with canonical routing and hermetic CI evidence\n\nConsolidate reviewed source changes from SQE8J4, SYX432 (#6018), 6GZ3RV (#6020), TS0XNK (#6037), and P4YDKF (#5991) onto current main. Reconcile overlapping routing and transport tests. Fix confirmed release fixture Bash startup PATH contamination without weakening assertions. Preserve generic subprocess security and immutable compatibility baseline. Run focused regressions, static checks, and one isolated full CI measurement proving zero leftover temporary entries/bytes. Native and hosted checks must pass before integration. Superseded PRs 6035/6036 and issues close only after evidence-backed integration. Preserve unrelated work and old evidence.",
+    "acceptance_criteria": [
+      "- In scope: Consolidate reviewed source changes from SQE8J4, SYX432 (#6018), 6GZ3RV (#6020), TS0XNK (#6037), and P4YDKF (#5991) onto current main. Reconcile overlapping routing and transport tests. Fix confirmed release fixture Bash startup PATH contamination without weakening assertions. Preserve generic subprocess security and immutable compatibility baseline. Run focused regressions, static checks, and one isolated full CI measurement proving zero leftover temporary entries/bytes. Native and hosted checks must pass before integration. Superseded PRs 6035/6036 and issues close only after evidence-backed integration. Preserve unrelated work and old evidence.\n- Out of scope: unrelated refactors not required for \"Integrate all four open issue fixes with canonical routing and hermetic CI evidence\".",
+      "1. Execute approved WorkItem combined-issues.",
+      "PLANNER fallback scaffold for \"Integrate all four open issue fixes with canonical routing and hermetic CI evidence\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Integrate all four open issue fixes with canonical routing and hermetic CI evidence\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "41de4459ac676a3d8df91b17234a965e2e5889e1",
+  "diff_base_sha": "fe046eb21a7378298cb4b30dd8357515220ecd02",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609300006-CGH9FT/quality/20260930-040530810-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:d385062dfde88f16180eef4ea5d3c656fdddb388ae41fd886ce7ef2e13e3bf1e",
+    "prompt_path": ".agentplane/tasks/202609300006-CGH9FT/quality/objects/sha256/1acca9095cd7237c46522682fb973eef7dbc2d855415cee8cbb03190e7ca162e.md",
+    "result_schema_path": ".agentplane/tasks/202609300006-CGH9FT/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "schema_version": 2,
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202609300006-CGH9FT",
+    "plan_digest": "sha256:ad7297a455e79d44fa93806185dab393f98fd0a9c71431f014e82aa992af7d73",
+    "policy_digest": "sha256:56c0ded46446a019f1031b396976e3e85a3d15c1cdaaae98d48c0c10a0a80ac0",
+    "capability_digest": "sha256:a4223b65f0a84cf6d9c4d7834d8326254cac254c3d88addf591ff62137b85167",
+    "checks_digest": "sha256:e293ec7fc947d5d8994a18201cbaa54a4ad854f0607bc3c41568f1eeee54c808",
+    "verification_input_digest": "sha256:64522c6aa8cfd3da4f62811bac9921b57426033549ffaa85759b95d71cb9c397",
+    "acceptance_digest": "sha256:f12a3d97a80db704151b4c9f7b74ca287b387fd6236773511e5cf0631a59d054",
+    "implementation_sha": "41de4459ac676a3d8df91b17234a965e2e5889e1",
+    "digest": "sha256:ebf164462ae910f257d3029a982346633fd28348fa8b5b77b73f73ec7b506f1b"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609300006-CGH9FT/README.md",
+      "sha256": "sha256:77dcef7d3cc761f426b626654ee5224f05ae5572ef04ee2b46e3ec7dad9993f9",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609300006-CGH9FT/quality/objects/sha256/754d16db1912d3f8c9b1cf6a2ec55f9a3775cff991d05e4597efbafed509a749.patch",
+      "sha256": "sha256:754d16db1912d3f8c9b1cf6a2ec55f9a3775cff991d05e4597efbafed509a749",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609300006-CGH9FT/quality/objects/sha256/837ac60fce78db5b1a2ed043d86294ca1bcbeeb67aee603c8f9ed424d8092cee.json",
+      "sha256": "sha256:837ac60fce78db5b1a2ed043d86294ca1bcbeeb67aee603c8f9ed424d8092cee",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609300006-CGH9FT/verification/20260930032837190-b701946933720558.json",
+      "sha256": "sha256:5699d8509431a2f18263866e0b5920e01b8500d4d444cca2358a29bea2a94520",
+      "required": true
+    },
+    {
+      "id": "native-identity",
+      "kind": "plan",
+      "path": ".agentplane/tasks/202609300006-CGH9FT/quality/objects/sha256/4158c02c58ef3210840fbb8384f64154df762d513920fb57132b150254600950.json",
+      "sha256": "sha256:4158c02c58ef3210840fbb8384f64154df762d513920fb57132b150254600950",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
