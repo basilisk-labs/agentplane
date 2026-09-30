@@ -6,7 +6,7 @@ Created: 2026-09-30T06:21:25.402Z
 
 - Task: `202609300615-DE9AE6`
 - Title: Document semantic workflow selection and feature delivery ownership; create atomic implementation roadmap
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609300615-DE9AE6/document-semantic-workflow-selection-and-feature`
 - Canonical task record: `.agentplane/tasks/202609300615-DE9AE6/README.md`
 
