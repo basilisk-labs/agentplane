@@ -6,7 +6,7 @@ Created: 2026-09-30T02:39:13.388Z
 
 - Task: `202609300006-CGH9FT`
 - Title: Integrate all four open issue fixes with canonical routing and hermetic CI evidence
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609300006-CGH9FT/integrate-all-four-open-issue-fixes-with-canonic`
 - Canonical task record: `.agentplane/tasks/202609300006-CGH9FT/README.md`
 
