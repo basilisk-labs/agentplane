@@ -6,14 +6,14 @@ Created: 2026-09-30T17:36:23.768Z
 
 - Task: `202609301727-VET3VW`
 - Title: Document workflow modes and shared feature deliveries as roadmap release 0.7.15
-- Status: DOING
+- Status: DONE
 - Branch: `task/202609301727-VET3VW/document-workflow-modes-and-shared-feature-deliv`
 - Canonical task record: `.agentplane/tasks/202609301727-VET3VW/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
