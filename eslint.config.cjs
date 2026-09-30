@@ -24,11 +24,7 @@ const nRecommendedModuleRules = rulesFromConfig(
     nPlugin.configs.recommended,
 );
 
-const tsconfigProjects = [
-  "./tsconfig.eslint.json",
-  "./packages/*/tsconfig.json",
-  "./website/tsconfig.eslint.json",
-];
+const tsconfigProjects = ["./tsconfig.eslint.json", "./packages/*/tsconfig.json"];
 
 const sharedBoundaryTargets = [
   "./packages/agentplane/src/commands",
@@ -272,16 +268,7 @@ const unicorn66CompatibilityRules = {
 /** @type {import("eslint").Linter.FlatConfig[]} */
 module.exports = [
   {
-    ignores: [
-      "**/node_modules/**",
-      "**/dist/**",
-      "**/coverage/**",
-      ".agentplane/**",
-      "website/.docusaurus/**",
-      "website/build/**",
-      "website/static/presentation/aimindset20260325/**",
-      "**/*.d.ts",
-    ],
+    ignores: ["**/node_modules/**", "**/dist/**", "**/coverage/**", ".agentplane/**", "**/*.d.ts"],
   },
 
   js.configs.recommended,
@@ -318,14 +305,6 @@ module.exports = [
 
   {
     files: ["packages/agentplane/bin/agentplane.js"],
-    rules: {
-      "import/no-unresolved": "off",
-      "n/no-missing-import": "off",
-    },
-  },
-
-  {
-    files: ["website/scripts/generate-social-images.mjs"],
     rules: {
       "import/no-unresolved": "off",
       "n/no-missing-import": "off",
@@ -444,17 +423,6 @@ module.exports = [
           paths: [coreRootProductionImportPath],
         },
       ],
-    },
-  },
-
-  {
-    files: [
-      "website/src/components/**/*.{ts,tsx}",
-      "website/src/data/**/*.{ts,tsx}",
-      "website/src/theme/**/*.{ts,tsx}",
-    ],
-    rules: {
-      "unicorn/filename-case": "off",
     },
   },
 

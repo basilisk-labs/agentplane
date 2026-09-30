@@ -52,14 +52,12 @@ function sha256(value) {
 function projectApprovedTypeScript7Lock(lock) {
   const projected = structuredClone(lock);
   const rootDependencies = projected.workspaces?.[""]?.devDependencies;
-  const websiteDependencies = projected.workspaces?.website?.devDependencies;
   const nativePackage = projected.packages?.["@typescript/native"];
   const nativeMetadata = nativePackage?.[2];
   const optionalDependencies = nativeMetadata?.optionalDependencies;
   if (
     rootDependencies?.["@typescript/native"] !== TYPESCRIPT_NATIVE_ALIAS ||
     rootDependencies?.typescript !== "6.0.3" ||
-    websiteDependencies?.typescript !== "6.0.3" ||
     nativePackage?.[0] !== `typescript@${TYPESCRIPT_NATIVE_VERSION}` ||
     nativeMetadata?.bin?.tsc !== "bin/tsc" ||
     stableJson(Object.keys(optionalDependencies ?? {}).toSorted()) !==
@@ -73,7 +71,6 @@ function projectApprovedTypeScript7Lock(lock) {
 
   delete rootDependencies["@typescript/native"];
   rootDependencies.typescript = "^6.0.3";
-  websiteDependencies.typescript = "~6.0.3";
   delete projected.packages["@typescript/native"];
   for (const packageName of TYPESCRIPT_PLATFORM_PACKAGES) {
     const platformPackage = projected.packages?.[packageName];

@@ -18,19 +18,17 @@ export const GITHUB_CI_GATE_JOBS = [
 const TASK_ARTIFACT_PATTERNS = [/^\.agentplane\/tasks\//u];
 const DOCS_PATTERNS = [
   /^docs\//u,
-  /^website\//u,
   /^packages\/[^/]+\/(?:README(?:\.[^.]+)?\.md|docs\/)/u,
   /^README(?:\.[^.]+)?\.md$/u,
   /^DESIGN\.md$/u,
   /^package\.json$/u,
   /^bun\.lock$/u,
-  /^scripts\/(?:generate\/generate-(?:website-docs|llms-full)|checks\/check-(?:design-language|docs-ia))\.mjs$/u,
+  /^scripts\/(?:generate\/generate-package-reference|checks\/check-docs-ia)\.mjs$/u,
 ];
 const DEPENDENCY_PATTERNS = [
   /^(?:package|bun)\.lock$/u,
   /^package\.json$/u,
   /^packages\/[^/]+\/package\.json$/u,
-  /^website\/(?:package\.json|bun\.lock)$/u,
   /^\.github\/(?:dependabot\.yml|workflows\/)/u,
 ];
 const WORKFLOW_PATTERNS = [
@@ -46,12 +44,7 @@ const ROUTING_SENSITIVE_PATTERNS = [
   /^packages\/agentplane\/src\/cli\/local-ci-selection\.test\.ts$/u,
   /^packages\/agentplane\/src\/commands\/release\/(?:ci-workflow-contract|github-ci-(?:plan|aggregate)|workflow-node-version-contract)\.test\.ts$/u,
 ];
-const JAVASCRIPT_SOURCE_PATTERNS = [
-  /\.(?:[cm]?js|tsx?)$/u,
-  /^packages\//u,
-  /^scripts\//u,
-  /^website\//u,
-];
+const JAVASCRIPT_SOURCE_PATTERNS = [/\.(?:[cm]?js|tsx?)$/u, /^packages\//u, /^scripts\//u];
 const CORE_RUNTIME_PATTERNS = [/^packages\/core\//u, /^packages\/core\/package\.json$/u];
 const RECIPES_RUNTIME_PATTERNS = [/^packages\/recipes\//u, /^packages\/recipes\/package\.json$/u];
 const SHARED_RUNTIME_PATTERNS = [/^package\.json$/u, /^bun\.lock$/u];
@@ -80,8 +73,8 @@ const CORE_INCLUDE_PATTERNS = [
   /^\.github\/(?:workflows\/|path-filters\.yml$|actionlint\.yaml$|codeql\/)/u,
 ];
 const CORE_EXCLUDE_PATTERNS = [
-  /^scripts\/generate\/generate-(?:website-docs|llms-full)\.mjs$/u,
-  /^scripts\/checks\/check-(?:design-language|docs-ia)\.mjs$/u,
+  /^scripts\/generate\/generate-package-reference\.mjs$/u,
+  /^scripts\/checks\/check-docs-ia\.mjs$/u,
   ...TASK_ARTIFACT_PATTERNS,
 ];
 const KNOWN_PATH_PATTERNS = [
