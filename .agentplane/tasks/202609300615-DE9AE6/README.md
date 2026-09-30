@@ -1,10 +1,10 @@
 ---
 id: "202609300615-DE9AE6"
 title: "Document semantic workflow selection and feature delivery ownership; create atomic implementation roadmap"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 25
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -310,7 +310,7 @@ sections:
   Findings: ""
 extensions:
   agentplane.kernel_operational_projection:
-    digest: "sha256:d41e675feb6adc70e4e564200c491831bca8446d3de87b237609697fa2ea75e0"
+    digest: "sha256:fb6fc071124eb83ffaf731e07173e5f8e29b01e0c4b8c4397d9d671f23271524"
     evidence_refs:
       - "../../../.git/agentplane/kernel/exchanges/202609300615-DE9AE6/feef9e8680e9b65d3fb9f9e7b1043990214643d0e985b72070c012fc726b2404/quality-report.json"
     findings:
@@ -323,7 +323,7 @@ extensions:
     review_identity_digest: "sha256:750cfaf4a353ba02e732272ff89524993bf89e509275555940274936283d748a"
     schema_version: 1
     source: "task_kernel"
-    verification_evidence_digest: "sha256:0f5d5bfee3da1660052839bb8e7993f906f26d2e38d99a3fbccd127ed18aa76e"
+    verification_evidence_digest: "sha256:486cf7651a10a7f2ade9206a0ccb67bd6f1ab0e697de8c6d0ce9ce7b4a30b47d"
     work_order_id: "sha256:739f1f059e6769e2937f1366577e60fe87f2bd0754debd0043bb6f44280f60f6"
   task_execution_context:
     base_ref: "main"
@@ -547,6 +547,15 @@ extensions:
           event_digests:
             - "sha256:d451d801bd8e590e1d9706331f1b0a436ea51eb110d0f1d9e798659ba6d6651b"
           mutation_id: "final-validation:sha256:486cf7651a10a7f2ade9206a0ccb67bd6f1ab0e697de8c6d0ce9ce7b4a30b47d:18"
+        kernel_task_completion_required:sha256:671de0a45b0bd73c6d614c04bc27deb7a1e797e660f3746240ecef2eb61293ff:sha256:e4ab0c39226aa216c1986a59a5b3a2027bf54f26a2d09e166c0add41cbb0aa94:
+          after_revision: 20
+          aggregate_digest: "sha256:aecee8bf978fe4d78036d394297ff58ed6cb73db0c93879abb517f453af211ea"
+          before_revision: 19
+          command_digest: "sha256:c7ce9651e6187901b7ab1c16a338c1d6e3abd8560e1b6708c65a879f1a09ef5a"
+          effect_ids: []
+          event_digests:
+            - "sha256:a5fec480e2cfbd849bd6cf40a6c7918ac0e58d1c8ea38924c9c7985eccdc65f2"
+          mutation_id: "kernel_task_completion_required:sha256:671de0a45b0bd73c6d614c04bc27deb7a1e797e660f3746240ecef2eb61293ff:sha256:e4ab0c39226aa216c1986a59a5b3a2027bf54f26a2d09e166c0add41cbb0aa94"
         kernel_work_item_claim_required:sha256:02293cd7e4d936b4b731592aaf069a3209ec1e2c24007b6cf1dc2708d713ba3a:sha256:d2b7ce2196b8209cdff59c0afc82ef6acf3788525921c170b8369c952ef32ea9:
           after_revision: 5
           aggregate_digest: "sha256:dab18fa424f8f4c9e73f5279500908f00c11625496af023f4e0f7c9040368929"
@@ -701,9 +710,9 @@ extensions:
             - "sha256:8ebcd4b021dca81a8c02f9281d56be14aa264825e2183b0f2424a8d396eea426"
           mutation_id: "validation:sha256:feef9e8680e9b65d3fb9f9e7b1043990214643d0e985b72070c012fc726b2404"
       plan_history: []
-      revision: 19
+      revision: 20
       schema_version: 1
-      state: "FINAL_VALIDATION"
+      state: "COMPLETED"
       work_items:
         delivery-design:
           attempt: 1
@@ -797,7 +806,7 @@ extensions:
               toolchain_digest: "sha256:1b40843e15ab2bb312959fc9298e3086b96356d1702033776aba57fdea7c8049"
             observed_at: "2026-09-30T06:30:04.439Z"
             status: "PASSED"
-    digest: "sha256:671de0a45b0bd73c6d614c04bc27deb7a1e797e660f3746240ecef2eb61293ff"
+    digest: "sha256:78d923db94331bba9cdbe0a85b4fba1a17791a94ee8315b0e1eacb14b59a23b2"
     documents:
       contracts:
         sha256:3cb01b8d5ce57f615a3fe2fe1402b3bd15a160a3f92182601e27afa8e1026f18:
@@ -993,6 +1002,15 @@ extensions:
         payload_digest: "sha256:061b64c43e766deec68402b745cdbeebf06d7f074e836a20923db1df75ee5a64"
         task_id: "202609300615-DE9AE6"
         task_revision: 19
+      -
+        command_digest: "sha256:c7ce9651e6187901b7ab1c16a338c1d6e3abd8560e1b6708c65a879f1a09ef5a"
+        id: "kernel_task_completion_required:sha256:671de0a45b0bd73c6d614c04bc27deb7a1e797e660f3746240ecef2eb61293ff:sha256:e4ab0c39226aa216c1986a59a5b3a2027bf54f26a2d09e166c0add41cbb0aa94:task_completed"
+        kind: "task_completed"
+        mutation_id: "kernel_task_completion_required:sha256:671de0a45b0bd73c6d614c04bc27deb7a1e797e660f3746240ecef2eb61293ff:sha256:e4ab0c39226aa216c1986a59a5b3a2027bf54f26a2d09e166c0add41cbb0aa94"
+        occurred_at: "2026-09-30T06:33:00.073Z"
+        payload_digest: "sha256:ec42a2bbe60c2ff7acf39a31bba461482945ff99db021c2bab72ffc67a06d4d1"
+        task_id: "202609300615-DE9AE6"
+        task_revision: 20
     kind: "canonical_task"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
