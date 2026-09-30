@@ -1,10 +1,10 @@
 ---
 id: "202609300006-CGH9FT"
 title: "Integrate all four open issue fixes with canonical routing and hermetic CI evidence"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -576,7 +576,7 @@ sections:
   Findings: ""
 extensions:
   agentplane.kernel_operational_projection:
-    digest: "sha256:279d3785d5e8a1775e78ebb6cbffeda8b5c0630f17da3ab6740dd036e21a1706"
+    digest: "sha256:15dac666b55673ffaa452722400dc125b6f515dd810ef492f6971f670cdb74b8"
     evidence_refs:
       - "../../../.git/agentplane/kernel/exchanges/202609300006-CGH9FT/e797e02ca860c2edffbf0c8d06dff32cf119c5fa7223378ac3249971c3f6fe89/quality-report.json"
     findings:
@@ -593,7 +593,7 @@ extensions:
     review_identity_digest: "sha256:cc0bcf57241ffb253bbdf9561c4d79fb3d3ececc08c6ab09965ec6a6a10aacd2"
     schema_version: 1
     source: "task_kernel"
-    verification_evidence_digest: "sha256:1c0f9ab8cef335af72bcf2ce6bc3893dea11c6093503af19f8e01ecc7870595e"
+    verification_evidence_digest: "sha256:a178b534e812b34b95d2b8645c956bd2c840edd9c5ebdcd16043938b43681d45"
     work_order_id: "sha256:9f82fcf2bbaf2932bd39c3cb0ffd84329bfee9f687033f2545e87953078d90f4"
   task_execution_context:
     base_ref: "main"
@@ -817,6 +817,15 @@ extensions:
           event_digests:
             - "sha256:d3f7de56de971f37b07f70d78e45f74ec158fc952bbe4279e2468c2df60f106b"
           mutation_id: "final-validation:sha256:a178b534e812b34b95d2b8645c956bd2c840edd9c5ebdcd16043938b43681d45:11"
+        kernel_task_completion_required:sha256:6930c97445b59abde3adb3103b8b885b09e68d662a5c0fae3b1bae0c10b6aecd:sha256:d2b7ce2196b8209cdff59c0afc82ef6acf3788525921c170b8369c952ef32ea9:
+          after_revision: 13
+          aggregate_digest: "sha256:1e784d71de246b2d98fc8c292c147a440f38e71656c8d25f5298fdea69137837"
+          before_revision: 12
+          command_digest: "sha256:27862c25a79daf75d6c363dfb4cd0a84dcf0410e38992d98102e1485e17f6e64"
+          effect_ids: []
+          event_digests:
+            - "sha256:07cc8e832b703a7511afadf9b72f5db9efcf72a1fc11b1688ce6cb3e200bd60e"
+          mutation_id: "kernel_task_completion_required:sha256:6930c97445b59abde3adb3103b8b885b09e68d662a5c0fae3b1bae0c10b6aecd:sha256:d2b7ce2196b8209cdff59c0afc82ef6acf3788525921c170b8369c952ef32ea9"
         kernel_work_item_claim_required:sha256:59a900deb6b02da9f2f8a11675db90acfcd95e357fe49b0de37da9990f2ab608:sha256:d59328527a747302e7127ff752a5ccfe2cc273f2a2e015de8028dcd698fc0821:
           after_revision: 5
           aggregate_digest: "sha256:9ab592c73c0776eec741f8488ef7eb7705c9bfdf2dfbca611990914a237fefcb"
@@ -908,9 +917,9 @@ extensions:
             - "sha256:3b9b1d516a994cbe231d083978d19227289244a8c43c31f135895a38ba3b63ab"
           mutation_id: "validation:sha256:e797e02ca860c2edffbf0c8d06dff32cf119c5fa7223378ac3249971c3f6fe89"
       plan_history: []
-      revision: 12
+      revision: 13
       schema_version: 1
-      state: "FINAL_VALIDATION"
+      state: "COMPLETED"
       work_items:
         combined-issues:
           attempt: 1
@@ -969,7 +978,7 @@ extensions:
               toolchain_digest: "sha256:b2c350024c98b67af2e565e8224ece8deff2283460e86b84f7195e836781e7ba"
             observed_at: "2026-09-30T02:44:43.798Z"
             status: "PASSED"
-    digest: "sha256:6930c97445b59abde3adb3103b8b885b09e68d662a5c0fae3b1bae0c10b6aecd"
+    digest: "sha256:509fa1e3cb8d67730876fed7cb28029aa9efbdae082b519e8cb96836a97ebdc8"
     documents:
       contracts:
         sha256:4850cb44d39e5f443a929c06fb53a5c1c0d9d5d4005a5fdacd63366c8794edce:
@@ -1102,6 +1111,15 @@ extensions:
         payload_digest: "sha256:9e549d5b36bd56fef56919030b686bf2c89c370449146299ed7a802bfe2aff52"
         task_id: "202609300006-CGH9FT"
         task_revision: 12
+      -
+        command_digest: "sha256:27862c25a79daf75d6c363dfb4cd0a84dcf0410e38992d98102e1485e17f6e64"
+        id: "kernel_task_completion_required:sha256:6930c97445b59abde3adb3103b8b885b09e68d662a5c0fae3b1bae0c10b6aecd:sha256:d2b7ce2196b8209cdff59c0afc82ef6acf3788525921c170b8369c952ef32ea9:task_completed"
+        kind: "task_completed"
+        mutation_id: "kernel_task_completion_required:sha256:6930c97445b59abde3adb3103b8b885b09e68d662a5c0fae3b1bae0c10b6aecd:sha256:d2b7ce2196b8209cdff59c0afc82ef6acf3788525921c170b8369c952ef32ea9"
+        occurred_at: "2026-09-30T04:02:41.634Z"
+        payload_digest: "sha256:ae743eab051bd6a1e4873e5dd9f9c4f11e55aba5a3ec2b0a285930130dc72fbd"
+        task_id: "202609300006-CGH9FT"
+        task_revision: 13
     kind: "canonical_task"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
