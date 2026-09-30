@@ -73,7 +73,7 @@ When a change affects user-facing behavior, update the matching docs in the
 same task.
 
 - Root policy and contributor guidance live in `AGENTS.md` and this file.
-- Public docs live under `docs/`; the site shell lives under `website/`.
+- Canonical docs live under `docs/`; the independent static site lives in [agentplane-web](https://github.com/basilisk-labs/agentplane-web).
 - Shared module ownership and dependency direction are documented in
   `docs/developer/module-topology.mdx`.
 - Generated command references should be refreshed through the documented

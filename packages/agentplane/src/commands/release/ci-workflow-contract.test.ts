@@ -4,7 +4,6 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 const CI_WORKFLOW_PATH = path.resolve(process.cwd(), ".github/workflows/ci.yml");
-const DOCS_WORKFLOW_PATH = path.resolve(process.cwd(), ".github/workflows/docs-ci.yml");
 const WORKFLOW_LINT_PATH = path.resolve(process.cwd(), ".github/workflows/workflows-lint.yml");
 const DEPENDENCY_REVIEW_PATH = path.resolve(
   process.cwd(),
@@ -96,12 +95,8 @@ describe("Core CI workflow contract", () => {
   });
 
   it("removes duplicate PR workflows while retaining canonical post-merge and manual surfaces", async () => {
-    const docsWorkflow = await readFile(DOCS_WORKFLOW_PATH, "utf8");
     const workflowLint = await readFile(WORKFLOW_LINT_PATH, "utf8");
 
-    expect(docsWorkflow).not.toContain("pull_request:");
-    expect(docsWorkflow).toContain("push:");
-    expect(docsWorkflow).toContain("run: bun run docs:site:check");
     expect(workflowLint).not.toContain("pull_request:");
     expect(workflowLint).not.toContain("push:");
     expect(workflowLint).toContain("workflow_dispatch:");

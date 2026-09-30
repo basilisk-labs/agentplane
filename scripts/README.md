@@ -73,26 +73,21 @@ Implementation layout: canonical script implementations live under `scripts/chec
 
 ## Docs
 
-| Script                     | Command                                                                                                                                                       | Purpose                                            |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
-| `docs:bootstrap:check`     | `node scripts/checks/check-agent-bootstrap-fresh.mjs`                                                                                                         | Run docs workflow: bootstrap check.                |
-| `docs:bootstrap:generate`  | `node scripts/generate/generate-agent-bootstrap-doc.mjs`                                                                                                      | Run docs workflow: bootstrap generate.             |
-| `docs:cli:check`           | `node scripts/checks/check-cli-reference-fresh.mjs`                                                                                                           | Run docs workflow: cli check.                      |
-| `docs:cli:generate`        | `node packages/agentplane/dist/cli.js docs cli --out docs/user/cli-reference.generated.mdx`                                                                   | Run docs workflow: cli generate.                   |
-| `docs:ia:check`            | `node scripts/checks/check-docs-ia.mjs`                                                                                                                       | Run docs workflow: ia check.                       |
-| `docs:onboarding:check`    | `node scripts/checks/check-agent-onboarding-scenario.mjs`                                                                                                     | Run docs workflow: onboarding check.               |
-| `docs:recipes:check`       | `node scripts/checks/check-recipes-inventory-fresh.mjs`                                                                                                       | Run docs workflow: recipes check.                  |
-| `docs:recipes:generate`    | `node scripts/generate/generate-recipes-inventory.mjs`                                                                                                        | Run docs workflow: recipes generate.               |
-| `docs:scripts:check`       | `node scripts/generate/generate-scripts-readme.mjs --check`                                                                                                   | Check scripts/README.md freshness.                 |
-| `docs:scripts:generate`    | `node scripts/generate/generate-scripts-readme.mjs`                                                                                                           | Regenerate scripts/README.md from package scripts. |
-| `docs:site:build`          | `bun run --cwd website build`                                                                                                                                 | Run docs workflow: site build.                     |
-| `docs:site:build:check`    | `bun run --cwd website build:check`                                                                                                                           | Run docs workflow: site build check.               |
-| `docs:site:check`          | `bun run docs:ia:check && bun run docs:site:generate:check && bun run docs:site:typecheck && bun run docs:site:build:check && bun run docs:site:check:design` | Run docs workflow: site check.                     |
-| `docs:site:check:design`   | `node scripts/checks/check-design-language.mjs`                                                                                                               | Run docs workflow: site check design.              |
-| `docs:site:generate`       | `node scripts/generate/generate-website-docs.mjs && node scripts/generate/generate-llms-full.mjs`                                                             | Run docs workflow: site generate.                  |
-| `docs:site:generate:check` | `node scripts/generate/generate-website-docs.mjs --check && node scripts/generate/generate-llms-full.mjs --check`                                             | Run docs workflow: site generate check.            |
-| `docs:site:start`          | `bun run --cwd website start`                                                                                                                                 | Run docs workflow: site start.                     |
-| `docs:site:typecheck`      | `bun run --cwd website typecheck`                                                                                                                             | Run docs workflow: site typecheck.                 |
+| Script                    | Command                                                                                     | Purpose                                            |
+| ------------------------- | ------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| `docs:bootstrap:check`    | `node scripts/checks/check-agent-bootstrap-fresh.mjs`                                       | Run docs workflow: bootstrap check.                |
+| `docs:bootstrap:generate` | `node scripts/generate/generate-agent-bootstrap-doc.mjs`                                    | Run docs workflow: bootstrap generate.             |
+| `docs:check`              | `bun run docs:ia:check && bun run docs:reference:check && bun run docs:onboarding:check`    | Run docs workflow: check.                          |
+| `docs:cli:check`          | `node scripts/checks/check-cli-reference-fresh.mjs`                                         | Run docs workflow: cli check.                      |
+| `docs:cli:generate`       | `node packages/agentplane/dist/cli.js docs cli --out docs/user/cli-reference.generated.mdx` | Run docs workflow: cli generate.                   |
+| `docs:ia:check`           | `node scripts/checks/check-docs-ia.mjs`                                                     | Run docs workflow: ia check.                       |
+| `docs:onboarding:check`   | `node scripts/checks/check-agent-onboarding-scenario.mjs`                                   | Run docs workflow: onboarding check.               |
+| `docs:recipes:check`      | `node scripts/checks/check-recipes-inventory-fresh.mjs`                                     | Run docs workflow: recipes check.                  |
+| `docs:recipes:generate`   | `node scripts/generate/generate-recipes-inventory.mjs`                                      | Run docs workflow: recipes generate.               |
+| `docs:reference:check`    | `node scripts/generate/generate-package-reference.mjs --check`                              | Run docs workflow: reference check.                |
+| `docs:reference:generate` | `node scripts/generate/generate-package-reference.mjs`                                      | Run docs workflow: reference generate.             |
+| `docs:scripts:check`      | `node scripts/generate/generate-scripts-readme.mjs --check`                                 | Check scripts/README.md freshness.                 |
+| `docs:scripts:generate`   | `node scripts/generate/generate-scripts-readme.mjs`                                         | Regenerate scripts/README.md from package scripts. |
 
 ## Test
 
@@ -180,7 +175,6 @@ Implementation layout: canonical script implementations live under `scripts/chec
 | `dev:task-scope:check`                | `node scripts/checks/check-task-scope.mjs`                                                                                                                                                                                       | Run dev workflow: task-scope check.                       |
 | `dev:turbo:affected`                  | `node scripts/checks/run-turbo-local-ci.mjs --affected`                                                                                                                                                                          | Run dev workflow: turbo affected.                         |
 | `dev:turbo:build`                     | `TURBO_TELEMETRY_DISABLED=1 turbo run build --filter='./packages/*' --summarize`                                                                                                                                                 | Run dev workflow: turbo build.                            |
-| `dev:turbo:docs`                      | `TURBO_TELEMETRY_DISABLED=1 turbo run typecheck build --filter='./website' --summarize`                                                                                                                                          | Run dev workflow: turbo docs.                             |
 | `dev:turbo:graph`                     | `mkdir -p .agentplane/cache && TURBO_TELEMETRY_DISABLED=1 turbo run build typecheck test --filter='./packages/*' --graph=.agentplane/cache/turbo-task-graph.mermaid`                                                             | Run dev workflow: turbo graph.                            |
 | `dev:turbo:ls`                        | `TURBO_TELEMETRY_DISABLED=1 turbo ls --output=json`                                                                                                                                                                              | Run dev workflow: turbo ls.                               |
 | `e2e:v0.7.1:audit`                    | `node scripts/qualification/run-v0.7.1-release-qualification.mjs --mode audit --profile full`                                                                                                                                    | Run e2e workflow: v0.7.1 audit.                           |
@@ -197,10 +191,9 @@ Implementation layout: canonical script implementations live under `scripts/chec
 | `knip:check`                          | `node scripts/checks/check-knip-baseline.mjs`                                                                                                                                                                                    | Run knip workflow: check.                                 |
 | `knip:report`                         | `knip --config knip.json --no-exit-code`                                                                                                                                                                                         | Run knip workflow: report.                                |
 | `lifecycle:invariants`                | `node scripts/checks/check-lifecycle-invariants.mjs`                                                                                                                                                                             | Run lifecycle workflow: invariants.                       |
-| `lint`                                | `bun run lint:core && bun run lint:website`                                                                                                                                                                                      | Run full lint suite.                                      |
+| `lint`                                | `bun run lint:core`                                                                                                                                                                                                              | Run full lint suite.                                      |
 | `lint:core`                           | `eslint packages scripts eslint.config.cjs vitest.config.ts`                                                                                                                                                                     | Run lint workflow: core.                                  |
 | `lint:fix`                            | `eslint . --fix`                                                                                                                                                                                                                 | Run lint workflow: fix.                                   |
-| `lint:website`                        | `eslint website`                                                                                                                                                                                                                 | Run lint workflow: website.                               |
 | `logging:check`                       | `node scripts/checks/check-no-console.mjs`                                                                                                                                                                                       | Run logging workflow: check.                              |
 | `package:install-smoke`               | `node scripts/release/check-local-tarball-install-smoke.mjs`                                                                                                                                                                     | Run package workflow: install-smoke.                      |
 | `package:tarball:check`               | `node scripts/release/check-package-tarball.mjs`                                                                                                                                                                                 | Run package workflow: tarball check.                      |
@@ -239,7 +232,6 @@ Implementation layout: canonical script implementations live under `scripts/chec
 - `dev:task-scope:check` is currently grouped as `misc` (review namespace intent).
 - `dev:turbo:affected` is currently grouped as `misc` (review namespace intent).
 - `dev:turbo:build` is currently grouped as `misc` (review namespace intent).
-- `dev:turbo:docs` is currently grouped as `misc` (review namespace intent).
 - `dev:turbo:graph` is currently grouped as `misc` (review namespace intent).
 - `dev:turbo:ls` is currently grouped as `misc` (review namespace intent).
 - `e2e:v0.7.1:audit` is currently grouped as `misc` (review namespace intent).
@@ -257,7 +249,6 @@ Implementation layout: canonical script implementations live under `scripts/chec
 - `lifecycle:invariants` is currently grouped as `misc` (review namespace intent).
 - `lint:core` is currently grouped as `misc` (review namespace intent).
 - `lint:fix` is currently grouped as `misc` (review namespace intent).
-- `lint:website` is currently grouped as `misc` (review namespace intent).
 - `logging:check` is currently grouped as `misc` (review namespace intent).
 - `package:install-smoke` is currently grouped as `misc` (review namespace intent).
 - `package:tarball:check` is currently grouped as `misc` (review namespace intent).

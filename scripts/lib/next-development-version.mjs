@@ -102,7 +102,7 @@ export function applyNextDevelopmentVersion(rootDir, publishedVersion, opts = {}
   if (opts.skipInstall !== true && existsSync(path.join(rootDir, "bun.lock"))) {
     run("bun", ["install", "--frozen-lockfile", "--ignore-scripts"], rootDir, opts.quiet === true);
   }
-  const generatorPath = path.join(rootDir, "scripts", "generate", "generate-website-docs.mjs");
+  const generatorPath = path.join(rootDir, "scripts", "generate", "generate-package-reference.mjs");
   if (existsSync(generatorPath)) {
     run("node", [generatorPath], rootDir, opts.quiet === true);
   }

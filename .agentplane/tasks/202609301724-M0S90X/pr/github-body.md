@@ -1,0 +1,179 @@
+Task: `202609301724-M0S90X`
+Title: Integrate the independent website extraction from 202609301619-2GPBMT
+Canonical task record: `.agentplane/tasks/202609301724-M0S90X/README.md`
+
+## Summary
+
+Integrate the independent website extraction from 202609301619-2GPBMT
+
+Recover 202609301619-2GPBMT by reapplying its preserved framework cleanup onto main. The public basilisk-labs/agentplane-web repository is already deployed independently at agentplane.org. Retain documentation sources and code-derived reference generation in agentplane; remove website source, dependencies, scripts and CI. Reapply only implementation changes from 7565a4d744a51551e74ae21a11fb9888fb1d3c47 relative to 1053fee6f16c70a25154d54d4664ccfe609b5082, excluding .agentplane task artifacts. Run fresh checks and evaluation, then publish the framework PR. Do not inherit historical passing review. Use explicit scope roots to avoid the native empty-root repository-evidence bug.
+
+## Scope
+
+- In scope: Recover 202609301619-2GPBMT by reapplying its preserved framework cleanup onto main. The public basilisk-labs/agentplane-web repository is already deployed independently at agentplane.org. Retain documentation sources and code-derived reference generation in agentplane; remove website source, dependencies, scripts and CI. Reapply only implementation changes from 7565a4d744a51551e74ae21a11fb9888fb1d3c47 relative to 1053fee6f16c70a25154d54d4664ccfe609b5082, excluding .agentplane task artifacts. Run fresh checks and evaluation, then publish the framework PR. Do not inherit historical passing review. Use explicit scope roots to avoid the native empty-root repository-evidence bug.
+- Out of scope: unrelated refactors not required for "Integrate the independent website extraction from 202609301619-2GPBMT".
+
+## Verification
+
+- State: ok
+- Note: Canonical validation sha256:df6496155e37ea24c6edb48d5ff518cdfe576f0994d31d399b16580a1574d7a0
+- Canonical workflow state lives in the task README.
+
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-09-30T17:36:49.314Z
+- Branch: task/202609301724-M0S90X/integrate-the-independent-website-extraction-fro
+- Head: computed live by `agentplane pr check` / `agentplane integrate`
+
+```text
+ .github/dependabot.yml                             |   19 -
+ .github/path-filters.yml                           |    2 -
+ .github/workflows/ci.yml                           |   14 +-
+ .github/workflows/docs-ci.yml                      |   76 -
+ .github/workflows/pages-deploy.yml                 |   67 -
+ .prettierignore                                    |    2 -
+ CONTRIBUTING.md                                    |    2 +-
+ bun.lock                                           | 4115 +++-----------------
+ docs/README.md                                     |    6 +-
+ docs/contributing/citation-guidelines.mdx          |    2 +-
+ .../documentation-information-architecture.mdx     |    5 +-
+ docs/developer/testing-and-quality.mdx             |    7 +-
+ docs/recipes/docs-update.mdx                       |    2 +-
+ docs/reference/generated-reference.mdx             |    4 +-
+ eslint.config.cjs                                  |   36 +-
+ knip.json                                          |    1 -
+ package.json                                       |   20 +-
+ .../src/cli/bootstrap-framework-dev-script.test.ts |   20 +-
+ .../agentplane/src/cli/local-ci-selection.test.ts  |   10 +-
+ .../run-cli.core.pr-flow.worktree-runtime.test.ts  |   11 -
+ ...i.core.task-advance.worktree-resolution.test.ts |    1 -
+ .../commands/branch/work-start.materialize.test.ts |    5 +-
+ .../src/commands/branch/work-start.materialize.ts  |    2 +-
+ .../src/commands/release/apply.mutation.ts         |    4 +-
+ .../release/apply.version-mutation.test.ts         |    4 +-
+ .../commands/release/ci-workflow-contract.test.ts  |    5 -
+ .../release/workflow-node-version-contract.test.ts |    1 -
+ scripts/README.md                                  |   41 +-
+ .../internal/agent-efficiency-anchor-runtime.mjs   |    3 -
+ scripts/check-design-language.mjs                  |    1 -
+ scripts/checks/check-agent-onboarding-scenario.mjs |   34 +-
+ scripts/checks/check-design-language.mjs           |  161 -
+ scripts/checks/check-docs-ia.mjs                   |   58 +-
+ scripts/checks/check-typescript-toolchain.mjs      |   16 -
+ scripts/checks/profile-local-quality.mjs           |    2 +-
+ scripts/checks/run-local-ci.mjs                    |    5 +-
+ scripts/checks/run-pre-push-hook.mjs               |    7 +-
+ scripts/generate-llms-full.mjs                     |    1 -
+ scripts/generate-roadmap-illustration.mjs          |    1 -
+ scripts/generate-website-docs.mjs                  |    1 -
+ scripts/generate/generate-llms-full.mjs            |   70 -
+ scripts/generate/generate-package-reference.mjs    |  108 +
+ scripts/generate/generate-roadmap-illustration.mjs |   49 -
+ scripts/lib/github-ci-capabilities.mjs             |   15 +-
+ scripts/lib/local-ci-selection.mjs                 |    8 +-
+ scripts/lib/next-development-version.mjs           |    2 +-
+ scripts/workflow/bootstrap-framework-dev.mjs       |    7 +-
+ website/.env.example                               |    2 -
+ website/.gitignore                                 |   20 -
+ website/CONTENT.md                                 |  224 --
+ ...-02-24-roadmap-0-5-blueprints-cloud-backend.mdx |  139 -
+ ...e-0-2-25-safer-commits-cleaner-release-flow.mdx |   68 -
+ ...0-3-0-policy-gateway-and-release-discipline.mdx |   82 -
+ ...-0-3-1-publish-recovery-and-quieter-surface.mdx |   69 -
+ ...e-0-3-2-smoother-upgrades-and-framework-dev.mdx |   74 -
+ ...lease-0-3-3-runtime-hardening-and-readme-v3.mdx |   85 -
+ ...-4-install-first-startup-and-upgrade-repair.mdx |   75 -
+ ...readme-v3-docs-shell-and-backend-projection.mdx |   94 -
+ ...7-legacy-recovery-redmine-and-safer-publish.mdx |   84 -
+ ...d-0-3-9-preparing-0-4-fixing-installability.mdx |   79 -
+ .../blog/2026-04-30-agentplane-0-3-road-to-0-4.mdx |   96 -
+ ...0-release-0-4-0-modular-prompts-and-recipes.mdx |   67 -
+ ...ase-0-4-1-hosted-close-and-release-evidence.mdx |   26 -
+ ...-05-03-coding-agent-audit-layer-and-recipes.mdx |  100 -
+ website/blog/2026-05-04-introducing-acr-v0-1.mdx   |   60 -
+ website/blog/2026-05-12-why-blueprints-matter.mdx  |   90 -
+ ...-agentplane-0-6-context-management-llm-wiki.mdx |  122 -
+ .../2026-05-14-recipes-reusable-agent-behavior.mdx |   90 -
+ website/blog/authors.yml                           |    5 -
+ website/blog/tags.yml                              |   39 -
+ website/bun.lock                                   | 2836 --------------
+ website/docusaurus.config.ts                       |  330 --
+ website/package.json                               |   58 -
+ website/scripts/check-links.mjs                    |   79 -
+ website/scripts/check-navigation.mjs               |  140 -
+ website/scripts/check-site-content.mjs             |   89 -
+ website/scripts/site-smoke.mjs                     |  131 -
+ website/sidebars.ts                                |  136 -
+ website/src/components/CommandBlock.module.css     |   56 -
+ website/src/components/CommandBlock.tsx            |   58 -
+ website/src/components/FurtherReading.tsx          |   23 -
+ .../src/components/GitHubStarsButton.module.css    |   34 -
+ website/src/components/GitHubStarsButton.tsx       |   85 -
+ website/src/components/RedirectTo.tsx              |   25 -
+ website/src/css/custom.css                         | 1223 ------
+ website/src/data/homepage-content.ts               |  129 -
+ website/src/data/referenceSources.ts               |   85 -
+ website/src/data/site.ts                           |   11 -
+ website/src/pages/_home.module.css                 | 1170 ------
+ website/src/pages/about.tsx                        |   55 -
+ website/src/pages/blog/index.module.css            |  183 -
+ website/src/pages/blog/index.tsx                   |  138 -
+ .../docs/contributing/citation-guidelines.tsx      |    6 -
+ .../docs/developer/website-success-metrics.tsx     |    6 -
+ website/src/pages/docs/listing.tsx                 |    6 -
+ website/src/pages/docs/showcase.tsx                |    6 -
+ .../src/pages/docs/user/agent-change-record.tsx    |    6 -
+ website/src/pages/docs/user/website-ia.tsx         |    6 -
+ website/src/pages/docs/website-success-metrics.tsx |    6 -
+ website/src/pages/examples.module.css              |   81 -
+ website/src/pages/examples.tsx                     |   87 -
+ website/src/pages/index.tsx                        |  387 --
+ .../theme/BlogPostItem/Header/Authors/index.tsx    |    3 -
+ website/src/theme/DocItem/Layout/index.tsx         |   11 -
+ website/src/theme/DocRoot/Layout/Main/index.tsx    |   11 -
+ website/src/theme/DocRoot/Layout/Sidebar/index.tsx |   65 -
+ .../theme/DocRoot/Layout/Sidebar/styles.module.css |   32 -
+ website/src/theme/DocRoot/Layout/index.tsx         |   11 -
+ website/src/theme/DocSidebar/Desktop/index.tsx     |   32 -
+ .../src/theme/DocSidebar/Desktop/styles.module.css |   37 -
+ website/src/theme/Root.tsx                         |  273 --
+ website/src/types.d.ts                             |   23 -
+ website/static/CNAME                               |    1 -
+ website/static/img/agentplane-demo.gif             |  Bin 3834539 -> 0 bytes
+ website/static/img/agentplane-favicon.svg          |    1 -
+ website/static/img/agentplane.svg                  |    1 -
+ website/static/img/android-chrome-192x192.png      |  Bin 2719 -> 0 bytes
+ website/static/img/android-chrome-512x512.png      |  Bin 8509 -> 0 bytes
+ website/static/img/apple-touch-icon.png            |  Bin 2558 -> 0 bytes
+ .../blog/release-0-2-25-kandinsky-agentplane.svg   |   13 -
+ .../blog/release-0-3-0-kandinsky-agentplane.svg    |   13 -
+ .../img/blog/roadmap-kandinsky-agentplane.svg      |   12 -
+ website/static/img/favicon-16x16.png               |  Bin 284 -> 0 bytes
+ website/static/img/favicon-32x32.png               |  Bin 506 -> 0 bytes
+ website/static/img/favicon.ico                     |  Bin 5430 -> 0 bytes
+ website/static/img/header.png                      |  Bin 84547 -> 0 bytes
+ website/static/img/header.svg                      |   40 -
+ website/static/img/hn-card.png                     |  Bin 52746 -> 0 bytes
+ website/static/img/logo.svg                        |    1 -
+ website/static/img/og-image.png                    |  Bin 54158 -> 0 bytes
+ website/static/img/twitter-card.png                |  Bin 63515 -> 0 bytes
+ website/static/llms-full.txt                       | 1839 ---------
+ website/static/llms.txt                            |   25 -
+ .../aimindset20260325/assets/agentplane-cli.png    |  Bin 819121 -> 0 bytes
+ .../aimindset20260325/assets/example.jpg           |  Bin 393482 -> 0 bytes
+ .../aimindset20260325/assets/scenario.md           |  153 -
+ .../aimindset20260325/assets/slide2.png            |  Bin 1330029 -> 0 bytes
+ .../aimindset20260325/assets/slide8.png            |  Bin 1271613 -> 0 bytes
+ .../presentation/aimindset20260325/index.html      |  296 --
+ .../presentation/aimindset20260325/script.js       |  109 -
+ .../presentation/aimindset20260325/styles.css      |  864 ----
+ website/static/robots.txt                          |    4 -
+ website/static/site.webmanifest                    |   20 -
+ website/tsconfig.docusaurus.json                   |   18 -
+ website/tsconfig.eslint.json                       |   17 -
+ website/tsconfig.json                              |   10 -
+ 146 files changed, 803 insertions(+), 17626 deletions(-)
+```
+
+</details>

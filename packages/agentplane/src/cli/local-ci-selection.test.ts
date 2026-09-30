@@ -248,7 +248,7 @@ describe("local CI fast selection", () => {
   it("treats docs and policy changes as docs-only", () => {
     const plan = selectFastCiPlan(["docs/user/setup.mdx", ".agentplane/policy/workflow.direct.md"]);
     expect(plan.kind).toBe("docs-only");
-    expect(plan.reason).toBe("docs_policy_website_only");
+    expect(plan.reason).toBe("docs_policy_only");
   });
 
   it("treats isolated task artifacts as docs-only", () => {
@@ -257,7 +257,7 @@ describe("local CI fast selection", () => {
       ".agentplane/tasks/202604070443-T8F4ZZ/pr/meta.json",
     ]);
     expect(plan.kind).toBe("docs-only");
-    expect(plan.reason).toBe("docs_policy_website_only");
+    expect(plan.reason).toBe("docs_policy_only");
   });
 
   it("treats task artifact-only staged changes as docs-only", () => {
@@ -266,7 +266,7 @@ describe("local CI fast selection", () => {
       ".agentplane/tasks/202604070443-T8F4ZZ/pr/meta.json",
     ]);
     expect(plan.kind).toBe("docs-only");
-    expect(plan.reason).toBe("docs_policy_website_only");
+    expect(plan.reason).toBe("docs_policy_only");
   });
 
   it("routes isolated task command paths to the task bucket", () => {
@@ -799,9 +799,9 @@ describe("local CI fast selection", () => {
   });
 
   it("parses newline-delimited changed files from env", () => {
-    expect(parseChangedFilesEnv("docs/a.mdx\n\nwebsite/b.tsx\n")).toEqual([
+    expect(parseChangedFilesEnv("docs/a.mdx\n\ndocs/b.mdx\n")).toEqual([
       "docs/a.mdx",
-      "website/b.tsx",
+      "docs/b.mdx",
     ]);
   });
 

@@ -297,10 +297,7 @@ if (parsedArgs.lifecycleEventLog) {
 }
 
 const fullOnlySteps = [
-  [
-    "Docs site pipeline (generate + typecheck + build + design)",
-    () => run("bun", ["run", "docs:site:check"]),
-  ],
+  ["Documentation contracts", () => run("bun", ["run", "docs:check"])],
   ["Workflows lint (actionlint)", () => run("bun", ["run", "workflows:lint"])],
   ["Windows platform-critical tests", () => run("bun", ["run", "test:platform-critical"], testEnv)],
   [

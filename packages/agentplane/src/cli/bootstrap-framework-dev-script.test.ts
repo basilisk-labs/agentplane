@@ -26,7 +26,6 @@ async function mkFrameworkRepo() {
   await mkdir(path.join(repoRoot, ".agentplane"), { recursive: true });
   await mkdir(path.join(repoRoot, "packages", "agentplane"), { recursive: true });
   await mkdir(path.join(repoRoot, "packages", "core"), { recursive: true });
-  await mkdir(path.join(repoRoot, "website"), { recursive: true });
   await writeFile(path.join(repoRoot, ".agentplane", "config.json"), "{}\n", "utf8");
   await writeFile(path.join(repoRoot, "package.json"), '{ "name": "agentplane-repo" }\n', "utf8");
   await writeFile(
@@ -37,11 +36,6 @@ async function mkFrameworkRepo() {
   await writeFile(
     path.join(repoRoot, "packages", "core", "package.json"),
     '{ "name": "@agentplaneorg/core" }\n',
-    "utf8",
-  );
-  await writeFile(
-    path.join(repoRoot, "website", "package.json"),
-    '{ "name": "website" }\n',
     "utf8",
   );
   return repoRoot;
@@ -173,7 +167,6 @@ describe("bootstrap-framework-dev script", () => {
     await mkdir(path.join(repoRoot, "packages", "agentplane", "node_modules"), {
       recursive: true,
     });
-    await mkdir(path.join(repoRoot, "website", "node_modules"), { recursive: true });
     const calls: string[] = [];
     const exec = (currentRepoRoot: string, cmd: string, args: string[]) =>
       recordCallExec(currentRepoRoot, cmd, args, calls);
@@ -213,7 +206,7 @@ describe("bootstrap-framework-dev script", () => {
         await fs.promises.symlink(baseDependency, path.join(foreignRoot, "eslint"), "dir");
       }
       await fs.promises.symlink(foreignRoot, path.join(repoRoot, "node_modules"), "dir");
-      const packageLayouts = ["packages/core", "packages/agentplane", "website"];
+      const packageLayouts = ["packages/core", "packages/agentplane"];
       for (const relative of packageLayouts)
         await mkdir(path.join(repoRoot, relative, "node_modules"), { recursive: true });
       const calls: string[] = [];
@@ -260,7 +253,6 @@ describe("bootstrap-framework-dev script", () => {
     await mkdir(path.join(repoRoot, "packages", "agentplane", "node_modules"), {
       recursive: true,
     });
-    await mkdir(path.join(repoRoot, "website", "node_modules"), { recursive: true });
     const foreignDependency = path.join(
       repoRoot,
       ".agentplane",
@@ -294,7 +286,6 @@ describe("bootstrap-framework-dev script", () => {
     await expect(
       lstat(path.join(repoRoot, "packages", "agentplane", "node_modules")),
     ).rejects.toThrow();
-    await expect(lstat(path.join(repoRoot, "website", "node_modules"))).rejects.toThrow();
   });
 
   it("reconciles the managed hook set and adds a missing post-merge hook", async () => {
@@ -305,7 +296,6 @@ describe("bootstrap-framework-dev script", () => {
     await mkdir(path.join(repoRoot, "packages", "agentplane", "node_modules"), {
       recursive: true,
     });
-    await mkdir(path.join(repoRoot, "website", "node_modules"), { recursive: true });
     await writeFile(
       path.join(repoRoot, ".git", "hooks", "pre-push"),
       '#!/usr/bin/env sh\n# agentplane-hook (do not edit)\nexec agentplane hooks run pre-push "$@"\n',
@@ -339,7 +329,6 @@ describe("bootstrap-framework-dev script", () => {
     await mkdir(path.join(commonRepoRoot, "packages", "agentplane", "node_modules"), {
       recursive: true,
     });
-    await mkdir(path.join(commonRepoRoot, "website", "node_modules"), { recursive: true });
     await fs.promises.symlink(
       path.join(commonRepoRoot, "packages", "core", "node_modules"),
       path.join(repoRoot, "packages", "core", "node_modules"),
@@ -348,11 +337,6 @@ describe("bootstrap-framework-dev script", () => {
     await fs.promises.symlink(
       path.join(commonRepoRoot, "packages", "agentplane", "node_modules"),
       path.join(repoRoot, "packages", "agentplane", "node_modules"),
-      "dir",
-    );
-    await fs.promises.symlink(
-      path.join(commonRepoRoot, "website", "node_modules"),
-      path.join(repoRoot, "website", "node_modules"),
       "dir",
     );
     const calls: string[] = [];
@@ -373,7 +357,6 @@ describe("bootstrap-framework-dev script", () => {
     await expect(
       lstat(path.join(repoRoot, "packages", "agentplane", "node_modules")),
     ).rejects.toThrow();
-    await expect(lstat(path.join(repoRoot, "website", "node_modules"))).rejects.toThrow();
   });
 
   it("repairs legacy lefthook-generated hooks after building the repo-local runtime", async () => {
@@ -384,7 +367,6 @@ describe("bootstrap-framework-dev script", () => {
     await mkdir(path.join(repoRoot, "packages", "agentplane", "node_modules"), {
       recursive: true,
     });
-    await mkdir(path.join(repoRoot, "website", "node_modules"), { recursive: true });
     await writeFile(
       path.join(repoRoot, ".git", "hooks", "pre-push"),
       '#!/bin/sh\ncall_lefthook()\n{\n  echo "Can\'t find lefthook in PATH"\n}\n',
