@@ -1,10 +1,10 @@
 ---
 id: "202609301724-M0S90X"
 title: "Integrate the independent website extraction from 202609301619-2GPBMT"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 14
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -20,10 +20,10 @@ plan_approval:
   note: "Projected from the approved canonical Task Kernel plan."
 verification:
   state: "ok"
-  updated_at: "2026-09-30T17:42:44.961Z"
+  updated_at: "2026-09-30T19:58:18.790Z"
   updated_by: "SUPERVISOR"
-  note: "Canonical validation sha256:df6496155e37ea24c6edb48d5ff518cdfe576f0994d31d399b16580a1574d7a0"
-  attempts: 1
+  note: "Verified: canonical Task Kernel final checks passed."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -116,11 +116,288 @@ execution_contract:
       - "website"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - ".github"
+      - ".prettierignore"
+      - "CONTRIBUTING.md"
+      - "bun.lock"
+      - "docs"
+      - "eslint.config.cjs"
+      - "knip.json"
+      - "package.json"
+      - "packages/agentplane"
+      - "scripts"
+      - "website"
+    changed_paths:
+      - ".github/dependabot.yml"
+      - ".github/path-filters.yml"
+      - ".github/workflows/ci.yml"
+      - ".github/workflows/docs-ci.yml"
+      - ".github/workflows/pages-deploy.yml"
+      - ".prettierignore"
+      - "CONTRIBUTING.md"
+      - "bun.lock"
+      - "docs/README.md"
+      - "docs/contributing/citation-guidelines.mdx"
+      - "docs/developer/documentation-information-architecture.mdx"
+      - "docs/developer/testing-and-quality.mdx"
+      - "docs/recipes/docs-update.mdx"
+      - "docs/reference/generated-reference.mdx"
+      - "eslint.config.cjs"
+      - "knip.json"
+      - "package.json"
+      - "packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts"
+      - "packages/agentplane/src/cli/local-ci-selection.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
+      - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
+      - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
+      - "packages/agentplane/src/commands/release/apply.mutation.ts"
+      - "packages/agentplane/src/commands/release/apply.version-mutation.test.ts"
+      - "packages/agentplane/src/commands/release/ci-workflow-contract.test.ts"
+      - "packages/agentplane/src/commands/release/workflow-node-version-contract.test.ts"
+      - "scripts/README.md"
+      - "scripts/bench/internal/agent-efficiency-anchor-runtime.mjs"
+      - "scripts/check-design-language.mjs"
+      - "scripts/checks/check-agent-onboarding-scenario.mjs"
+      - "scripts/checks/check-design-language.mjs"
+      - "scripts/checks/check-docs-ia.mjs"
+      - "scripts/checks/check-typescript-toolchain.mjs"
+      - "scripts/checks/profile-local-quality.mjs"
+      - "scripts/checks/run-local-ci.mjs"
+      - "scripts/checks/run-pre-push-hook.mjs"
+      - "scripts/generate-llms-full.mjs"
+      - "scripts/generate-roadmap-illustration.mjs"
+      - "scripts/generate-website-docs.mjs"
+      - "scripts/generate/generate-llms-full.mjs"
+      - "scripts/generate/generate-package-reference.mjs"
+      - "scripts/generate/generate-roadmap-illustration.mjs"
+      - "scripts/lib/github-ci-capabilities.mjs"
+      - "scripts/lib/local-ci-selection.mjs"
+      - "scripts/lib/next-development-version.mjs"
+      - "scripts/workflow/bootstrap-framework-dev.mjs"
+      - "website/.env.example"
+      - "website/.gitignore"
+      - "website/CONTENT.md"
+      - "website/blog/2026-02-24-roadmap-0-5-blueprints-cloud-backend.mdx"
+      - "website/blog/2026-02-26-release-0-2-25-safer-commits-cleaner-release-flow.mdx"
+      - "website/blog/2026-03-06-release-0-3-0-policy-gateway-and-release-discipline.mdx"
+      - "website/blog/2026-03-06-release-0-3-1-publish-recovery-and-quieter-surface.mdx"
+      - "website/blog/2026-03-07-release-0-3-2-smoother-upgrades-and-framework-dev.mdx"
+      - "website/blog/2026-03-08-release-0-3-3-runtime-hardening-and-readme-v3.mdx"
+      - "website/blog/2026-03-09-release-0-3-4-install-first-startup-and-upgrade-repair.mdx"
+      - "website/blog/2026-03-12-release-0-3-5-readme-v3-docs-shell-and-backend-projection.mdx"
+      - "website/blog/2026-03-14-release-0-3-7-legacy-recovery-redmine-and-safer-publish.mdx"
+      - "website/blog/2026-04-03-release-0-3-8-and-0-3-9-preparing-0-4-fixing-installability.mdx"
+      - "website/blog/2026-04-30-agentplane-0-3-road-to-0-4.mdx"
+      - "website/blog/2026-04-30-release-0-4-0-modular-prompts-and-recipes.mdx"
+      - "website/blog/2026-05-01-release-0-4-1-hosted-close-and-release-evidence.mdx"
+      - "website/blog/2026-05-03-coding-agent-audit-layer-and-recipes.mdx"
+      - "website/blog/2026-05-04-introducing-acr-v0-1.mdx"
+      - "website/blog/2026-05-12-why-blueprints-matter.mdx"
+      - "website/blog/2026-05-14-agentplane-0-6-context-management-llm-wiki.mdx"
+      - "website/blog/2026-05-14-recipes-reusable-agent-behavior.mdx"
+      - "website/blog/authors.yml"
+      - "website/blog/tags.yml"
+      - "website/bun.lock"
+      - "website/docusaurus.config.ts"
+      - "website/package.json"
+      - "website/scripts/check-links.mjs"
+      - "website/scripts/check-navigation.mjs"
+      - "website/scripts/check-site-content.mjs"
+      - "website/scripts/site-smoke.mjs"
+      - "website/sidebars.ts"
+      - "website/src/components/CommandBlock.module.css"
+      - "website/src/components/CommandBlock.tsx"
+      - "website/src/components/FurtherReading.tsx"
+      - "website/src/components/GitHubStarsButton.module.css"
+      - "website/src/components/GitHubStarsButton.tsx"
+      - "website/src/components/RedirectTo.tsx"
+      - "website/src/css/custom.css"
+      - "website/src/data/homepage-content.ts"
+      - "website/src/data/referenceSources.ts"
+      - "website/src/data/site.ts"
+      - "website/src/pages/_home.module.css"
+      - "website/src/pages/about.tsx"
+      - "website/src/pages/blog/index.module.css"
+      - "website/src/pages/blog/index.tsx"
+      - "website/src/pages/docs/contributing/citation-guidelines.tsx"
+      - "website/src/pages/docs/developer/website-success-metrics.tsx"
+      - "website/src/pages/docs/listing.tsx"
+      - "website/src/pages/docs/showcase.tsx"
+      - "website/src/pages/docs/user/agent-change-record.tsx"
+      - "website/src/pages/docs/user/website-ia.tsx"
+      - "website/src/pages/docs/website-success-metrics.tsx"
+      - "website/src/pages/examples.module.css"
+      - "website/src/pages/examples.tsx"
+      - "website/src/pages/index.tsx"
+      - "website/src/theme/BlogPostItem/Header/Authors/index.tsx"
+      - "website/src/theme/DocItem/Layout/index.tsx"
+      - "website/src/theme/DocRoot/Layout/Main/index.tsx"
+      - "website/src/theme/DocRoot/Layout/Sidebar/index.tsx"
+      - "website/src/theme/DocRoot/Layout/Sidebar/styles.module.css"
+      - "website/src/theme/DocRoot/Layout/index.tsx"
+      - "website/src/theme/DocSidebar/Desktop/index.tsx"
+      - "website/src/theme/DocSidebar/Desktop/styles.module.css"
+      - "website/src/theme/Root.tsx"
+      - "website/src/types.d.ts"
+      - "website/static/CNAME"
+      - "website/static/img/agentplane-demo.gif"
+      - "website/static/img/agentplane-favicon.svg"
+      - "website/static/img/agentplane.svg"
+      - "website/static/img/android-chrome-192x192.png"
+      - "website/static/img/android-chrome-512x512.png"
+      - "website/static/img/apple-touch-icon.png"
+      - "website/static/img/blog/release-0-2-25-kandinsky-agentplane.svg"
+      - "website/static/img/blog/release-0-3-0-kandinsky-agentplane.svg"
+      - "website/static/img/blog/roadmap-kandinsky-agentplane.svg"
+      - "website/static/img/favicon-16x16.png"
+      - "website/static/img/favicon-32x32.png"
+      - "website/static/img/favicon.ico"
+      - "website/static/img/header.png"
+      - "website/static/img/header.svg"
+      - "website/static/img/hn-card.png"
+      - "website/static/img/logo.svg"
+      - "website/static/img/og-image.png"
+      - "website/static/img/twitter-card.png"
+      - "website/static/llms-full.txt"
+      - "website/static/llms.txt"
+      - "website/static/presentation/aimindset20260325/assets/agentplane-cli.png"
+      - "website/static/presentation/aimindset20260325/assets/example.jpg"
+      - "website/static/presentation/aimindset20260325/assets/scenario.md"
+      - "website/static/presentation/aimindset20260325/assets/slide2.png"
+      - "website/static/presentation/aimindset20260325/assets/slide8.png"
+      - "website/static/presentation/aimindset20260325/index.html"
+      - "website/static/presentation/aimindset20260325/script.js"
+      - "website/static/presentation/aimindset20260325/styles.css"
+      - "website/static/robots.txt"
+      - "website/static/site.webmanifest"
+      - "website/tsconfig.docusaurus.json"
+      - "website/tsconfig.eslint.json"
+      - "website/tsconfig.json"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "ci"
+      - "dependencies"
+      - "documentation"
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-10"
+        result: "pass"
+      -
+        id: "recorded-check-11"
+        result: "pass"
+      -
+        id: "recorded-check-12"
+        result: "pass"
+      -
+        id: "recorded-check-13"
+        result: "pass"
+      -
+        id: "recorded-check-14"
+        result: "pass"
+      -
+        id: "recorded-check-15"
+        result: "pass"
+      -
+        id: "recorded-check-16"
+        result: "pass"
+      -
+        id: "recorded-check-17"
+        result: "pass"
+      -
+        id: "recorded-check-18"
+        result: "pass"
+      -
+        id: "recorded-check-19"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-20"
+        result: "pass"
+      -
+        id: "recorded-check-21"
+        result: "pass"
+      -
+        id: "recorded-check-22"
+        result: "pass"
+      -
+        id: "recorded-check-23"
+        result: "pass"
+      -
+        id: "recorded-check-24"
+        result: "pass"
+      -
+        id: "recorded-check-25"
+        result: "pass"
+      -
+        id: "recorded-check-26"
+        result: "pass"
+      -
+        id: "recorded-check-27"
+        result: "pass"
+      -
+        id: "recorded-check-28"
+        result: "pass"
+      -
+        id: "recorded-check-29"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-30"
+        result: "pass"
+      -
+        id: "recorded-check-31"
+        result: "pass"
+      -
+        id: "recorded-check-32"
+        result: "pass"
+      -
+        id: "recorded-check-33"
+        result: "pass"
+      -
+        id: "recorded-check-34"
+        result: "pass"
+      -
+        id: "recorded-check-35"
+        result: "pass"
+      -
+        id: "recorded-check-36"
+        result: "pass"
+      -
+        id: "recorded-check-37"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
+      -
+        id: "verification-record"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_ci"
@@ -170,22 +447,212 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:30b0f75425a069bfe10c72e625f653374ca69c89ad38159f3392350f8626911e"
+      digest: "sha256:a69f6ae5892b930ac437e9b006d11cd6d84f64cf1d33869209d8bdf8765fdbf3"
       escalation_reasons:
         - "central_component:bun.lock"
         - "central_component:package.json"
+        - "central_path:.github/dependabot.yml"
+        - "central_path:.github/path-filters.yml"
+        - "central_path:.github/workflows/ci.yml"
+        - "central_path:.github/workflows/docs-ci.yml"
+        - "central_path:.github/workflows/pages-deploy.yml"
+        - "central_path:bun.lock"
+        - "central_path:package.json"
+        - "central_path:packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts"
+        - "central_path:packages/agentplane/src/cli/local-ci-selection.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
+        - "central_path:scripts/checks/check-agent-onboarding-scenario.mjs"
+        - "central_path:scripts/checks/check-design-language.mjs"
+        - "central_path:scripts/checks/check-docs-ia.mjs"
+        - "central_path:scripts/checks/check-typescript-toolchain.mjs"
+        - "central_path:scripts/checks/profile-local-quality.mjs"
+        - "central_path:scripts/checks/run-local-ci.mjs"
+        - "central_path:scripts/checks/run-pre-push-hook.mjs"
+        - "central_path:scripts/lib/github-ci-capabilities.mjs"
+        - "central_path:scripts/lib/local-ci-selection.mjs"
+        - "central_path:scripts/lib/next-development-version.mjs"
+        - "central_path:scripts/workflow/bootstrap-framework-dev.mjs"
         - "effect_ci"
         - "effect_dependencies"
+        - "unknown_path:.github/dependabot.yml"
+        - "unknown_path:.github/path-filters.yml"
+        - "unknown_path:.prettierignore"
+        - "unknown_path:knip.json"
+        - "unknown_path:package.json"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - ".github"
+          - ".prettierignore"
+          - "CONTRIBUTING.md"
+          - "bun.lock"
+          - "docs"
+          - "eslint.config.cjs"
+          - "knip.json"
+          - "package.json"
+          - "packages/agentplane"
+          - "scripts"
+          - "website"
+        changed_files:
+          - ".github/dependabot.yml"
+          - ".github/path-filters.yml"
+          - ".github/workflows/ci.yml"
+          - ".github/workflows/docs-ci.yml"
+          - ".github/workflows/pages-deploy.yml"
+          - ".prettierignore"
+          - "CONTRIBUTING.md"
+          - "bun.lock"
+          - "docs/README.md"
+          - "docs/contributing/citation-guidelines.mdx"
+          - "docs/developer/documentation-information-architecture.mdx"
+          - "docs/developer/testing-and-quality.mdx"
+          - "docs/recipes/docs-update.mdx"
+          - "docs/reference/generated-reference.mdx"
+          - "eslint.config.cjs"
+          - "knip.json"
+          - "package.json"
+          - "packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts"
+          - "packages/agentplane/src/cli/local-ci-selection.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts"
+          - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
+          - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
+          - "packages/agentplane/src/commands/release/apply.mutation.ts"
+          - "packages/agentplane/src/commands/release/apply.version-mutation.test.ts"
+          - "packages/agentplane/src/commands/release/ci-workflow-contract.test.ts"
+          - "packages/agentplane/src/commands/release/workflow-node-version-contract.test.ts"
+          - "scripts/README.md"
+          - "scripts/bench/internal/agent-efficiency-anchor-runtime.mjs"
+          - "scripts/check-design-language.mjs"
+          - "scripts/checks/check-agent-onboarding-scenario.mjs"
+          - "scripts/checks/check-design-language.mjs"
+          - "scripts/checks/check-docs-ia.mjs"
+          - "scripts/checks/check-typescript-toolchain.mjs"
+          - "scripts/checks/profile-local-quality.mjs"
+          - "scripts/checks/run-local-ci.mjs"
+          - "scripts/checks/run-pre-push-hook.mjs"
+          - "scripts/generate-llms-full.mjs"
+          - "scripts/generate-roadmap-illustration.mjs"
+          - "scripts/generate-website-docs.mjs"
+          - "scripts/generate/generate-llms-full.mjs"
+          - "scripts/generate/generate-package-reference.mjs"
+          - "scripts/generate/generate-roadmap-illustration.mjs"
+          - "scripts/lib/github-ci-capabilities.mjs"
+          - "scripts/lib/local-ci-selection.mjs"
+          - "scripts/lib/next-development-version.mjs"
+          - "scripts/workflow/bootstrap-framework-dev.mjs"
+          - "website/.env.example"
+          - "website/.gitignore"
+          - "website/CONTENT.md"
+          - "website/blog/2026-02-24-roadmap-0-5-blueprints-cloud-backend.mdx"
+          - "website/blog/2026-02-26-release-0-2-25-safer-commits-cleaner-release-flow.mdx"
+          - "website/blog/2026-03-06-release-0-3-0-policy-gateway-and-release-discipline.mdx"
+          - "website/blog/2026-03-06-release-0-3-1-publish-recovery-and-quieter-surface.mdx"
+          - "website/blog/2026-03-07-release-0-3-2-smoother-upgrades-and-framework-dev.mdx"
+          - "website/blog/2026-03-08-release-0-3-3-runtime-hardening-and-readme-v3.mdx"
+          - "website/blog/2026-03-09-release-0-3-4-install-first-startup-and-upgrade-repair.mdx"
+          - "website/blog/2026-03-12-release-0-3-5-readme-v3-docs-shell-and-backend-projection.mdx"
+          - "website/blog/2026-03-14-release-0-3-7-legacy-recovery-redmine-and-safer-publish.mdx"
+          - "website/blog/2026-04-03-release-0-3-8-and-0-3-9-preparing-0-4-fixing-installability.mdx"
+          - "website/blog/2026-04-30-agentplane-0-3-road-to-0-4.mdx"
+          - "website/blog/2026-04-30-release-0-4-0-modular-prompts-and-recipes.mdx"
+          - "website/blog/2026-05-01-release-0-4-1-hosted-close-and-release-evidence.mdx"
+          - "website/blog/2026-05-03-coding-agent-audit-layer-and-recipes.mdx"
+          - "website/blog/2026-05-04-introducing-acr-v0-1.mdx"
+          - "website/blog/2026-05-12-why-blueprints-matter.mdx"
+          - "website/blog/2026-05-14-agentplane-0-6-context-management-llm-wiki.mdx"
+          - "website/blog/2026-05-14-recipes-reusable-agent-behavior.mdx"
+          - "website/blog/authors.yml"
+          - "website/blog/tags.yml"
+          - "website/bun.lock"
+          - "website/docusaurus.config.ts"
+          - "website/package.json"
+          - "website/scripts/check-links.mjs"
+          - "website/scripts/check-navigation.mjs"
+          - "website/scripts/check-site-content.mjs"
+          - "website/scripts/site-smoke.mjs"
+          - "website/sidebars.ts"
+          - "website/src/components/CommandBlock.module.css"
+          - "website/src/components/CommandBlock.tsx"
+          - "website/src/components/FurtherReading.tsx"
+          - "website/src/components/GitHubStarsButton.module.css"
+          - "website/src/components/GitHubStarsButton.tsx"
+          - "website/src/components/RedirectTo.tsx"
+          - "website/src/css/custom.css"
+          - "website/src/data/homepage-content.ts"
+          - "website/src/data/referenceSources.ts"
+          - "website/src/data/site.ts"
+          - "website/src/pages/_home.module.css"
+          - "website/src/pages/about.tsx"
+          - "website/src/pages/blog/index.module.css"
+          - "website/src/pages/blog/index.tsx"
+          - "website/src/pages/docs/contributing/citation-guidelines.tsx"
+          - "website/src/pages/docs/developer/website-success-metrics.tsx"
+          - "website/src/pages/docs/listing.tsx"
+          - "website/src/pages/docs/showcase.tsx"
+          - "website/src/pages/docs/user/agent-change-record.tsx"
+          - "website/src/pages/docs/user/website-ia.tsx"
+          - "website/src/pages/docs/website-success-metrics.tsx"
+          - "website/src/pages/examples.module.css"
+          - "website/src/pages/examples.tsx"
+          - "website/src/pages/index.tsx"
+          - "website/src/theme/BlogPostItem/Header/Authors/index.tsx"
+          - "website/src/theme/DocItem/Layout/index.tsx"
+          - "website/src/theme/DocRoot/Layout/Main/index.tsx"
+          - "website/src/theme/DocRoot/Layout/Sidebar/index.tsx"
+          - "website/src/theme/DocRoot/Layout/Sidebar/styles.module.css"
+          - "website/src/theme/DocRoot/Layout/index.tsx"
+          - "website/src/theme/DocSidebar/Desktop/index.tsx"
+          - "website/src/theme/DocSidebar/Desktop/styles.module.css"
+          - "website/src/theme/Root.tsx"
+          - "website/src/types.d.ts"
+          - "website/static/CNAME"
+          - "website/static/img/agentplane-demo.gif"
+          - "website/static/img/agentplane-favicon.svg"
+          - "website/static/img/agentplane.svg"
+          - "website/static/img/android-chrome-192x192.png"
+          - "website/static/img/android-chrome-512x512.png"
+          - "website/static/img/apple-touch-icon.png"
+          - "website/static/img/blog/release-0-2-25-kandinsky-agentplane.svg"
+          - "website/static/img/blog/release-0-3-0-kandinsky-agentplane.svg"
+          - "website/static/img/blog/roadmap-kandinsky-agentplane.svg"
+          - "website/static/img/favicon-16x16.png"
+          - "website/static/img/favicon-32x32.png"
+          - "website/static/img/favicon.ico"
+          - "website/static/img/header.png"
+          - "website/static/img/header.svg"
+          - "website/static/img/hn-card.png"
+          - "website/static/img/logo.svg"
+          - "website/static/img/og-image.png"
+          - "website/static/img/twitter-card.png"
+          - "website/static/llms-full.txt"
+          - "website/static/llms.txt"
+          - "website/static/presentation/aimindset20260325/assets/agentplane-cli.png"
+          - "website/static/presentation/aimindset20260325/assets/example.jpg"
+          - "website/static/presentation/aimindset20260325/assets/scenario.md"
+          - "website/static/presentation/aimindset20260325/assets/slide2.png"
+          - "website/static/presentation/aimindset20260325/assets/slide8.png"
+          - "website/static/presentation/aimindset20260325/index.html"
+          - "website/static/presentation/aimindset20260325/script.js"
+          - "website/static/presentation/aimindset20260325/styles.css"
+          - "website/static/robots.txt"
+          - "website/static/site.webmanifest"
+          - "website/tsconfig.docusaurus.json"
+          - "website/tsconfig.eslint.json"
+          - "website/tsconfig.json"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "ci"
+          - "dependencies"
+          - "documentation"
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -225,10 +692,16 @@ commit:
   hash: "32943ef6841f367127103adf8f264960fb9961f1"
   message: "AgentPlane-owned canonical implementation commit"
 comments: []
-events: []
+events:
+  -
+    type: "verify"
+    at: "2026-09-30T19:58:18.790Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: canonical Task Kernel final checks passed."
 doc_version: 3
-doc_updated_at: "2026-09-30T17:24:14.251Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-09-30T19:58:21.498Z"
+doc_updated_by: "SUPERVISOR"
 description: "Recover 202609301619-2GPBMT by reapplying its preserved framework cleanup onto main. The public basilisk-labs/agentplane-web repository is already deployed independently at agentplane.org. Retain documentation sources and code-derived reference generation in agentplane; remove website source, dependencies, scripts and CI. Reapply only implementation changes from 7565a4d744a51551e74ae21a11fb9888fb1d3c47 relative to 1053fee6f16c70a25154d54d4664ccfe609b5082, excluding .agentplane task artifacts. Run fresh checks and evaluation, then publish the framework PR. Do not inherit historical passing review. Use explicit scope roots to avoid the native empty-root repository-evidence bug."
 sections:
   Summary: |-
@@ -247,6 +720,257 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-09-30T19:58:18.790Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: canonical Task Kernel final checks passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:b8b7d533d4de09a375f62284cf8ebfd53b5f1e12b2858c3463de689880a389f0, input_digest=sha256:a12443c1a898158e6b3bdc1db71832adfe5b02a924428c325f5244369bed5504
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check affected_unit_integration (1/9)
+
+    Check: affected_unit_integration
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check affected_unit_integration (2/9)
+
+    Check: affected_unit_integration
+    Command: bun run docs:cli:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check affected_unit_integration (3/9)
+
+    Check: affected_unit_integration
+    Command: bun run docs:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check affected_unit_integration (4/9)
+
+    Check: affected_unit_integration
+    Command: bun run docs:scripts:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check affected_unit_integration (5/9)
+
+    Check: affected_unit_integration
+    Command: bun run workflows:command-check
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check affected_unit_integration (6/9)
+
+    Check: affected_unit_integration
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check affected_unit_integration (7/9)
+
+    Check: affected_unit_integration
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check affected_unit_integration (8/9)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check affected_unit_integration (9/9)
+
+    Check: critical_paths
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check critical_paths (1/9)
+
+    Check: critical_paths
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check critical_paths (2/9)
+
+    Check: critical_paths
+    Command: bun run docs:cli:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check critical_paths (3/9)
+
+    Check: critical_paths
+    Command: bun run docs:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check critical_paths (4/9)
+
+    Check: critical_paths
+    Command: bun run docs:scripts:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check critical_paths (5/9)
+
+    Check: critical_paths
+    Command: bun run workflows:command-check
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check critical_paths (6/9)
+
+    Check: critical_paths
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check critical_paths (7/9)
+
+    Check: critical_paths
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check critical_paths (8/9)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check critical_paths (9/9)
+
+    Check: docs_contract
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check docs_contract (1/9)
+
+    Check: docs_contract
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check docs_contract (2/9)
+
+    Check: docs_contract
+    Command: bun run docs:cli:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check docs_contract (3/9)
+
+    Check: docs_contract
+    Command: bun run docs:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check docs_contract (4/9)
+
+    Check: docs_contract
+    Command: bun run docs:scripts:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check docs_contract (5/9)
+
+    Check: docs_contract
+    Command: bun run workflows:command-check
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check docs_contract (6/9)
+
+    Check: docs_contract
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check docs_contract (7/9)
+
+    Check: docs_contract
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check docs_contract (8/9)
+
+    Check: docs_contract
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check docs_contract (9/9)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check task_outcome (1/9)
+
+    Check: task_outcome
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check task_outcome (2/9)
+
+    Check: task_outcome
+    Command: bun run docs:cli:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check task_outcome (3/9)
+
+    Check: task_outcome
+    Command: bun run docs:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check task_outcome (4/9)
+
+    Check: task_outcome
+    Command: bun run docs:scripts:check
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check task_outcome (5/9)
+
+    Check: task_outcome
+    Command: bun run workflows:command-check
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check task_outcome (6/9)
+
+    Check: task_outcome
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check task_outcome (7/9)
+
+    Check: task_outcome
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check task_outcome (8/9)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202609301724-M0S90X Verification Contract check task_outcome (9/9)
+
+    NativeTaskIdentityRef:
+    - plan_digest: sha256:e99412216a795a516d880e38f1822a60fc389f6618208d240638be28a6b6c002
+    - policy_digest: sha256:99bf76d0cabcefa25ef8369acdad558e8d2798653e3cfb278d79cf66ea21b693
+    - capability_digest: sha256:e5b3223845acaddce23ed60b8f41212cb4d7084f827a5e0058b47246d08254a1
+    - checks_digest: sha256:550800ac7145574528ecbcf8e66897f90195173eb1ad0ae0418509796222d104
+    - identity_digest: sha256:2b5284f2a199b041296e5858e646c6b4c383fb9807c711e7897673b7977e2800
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202609301724-M0S90X
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -254,7 +978,7 @@ sections:
   Findings: ""
 extensions:
   agentplane.kernel_operational_projection:
-    digest: "sha256:ebd0a15fefa6b6c100cfd6bf27e1e18c3aed0fa66aa7634a893109ca63bbd2d6"
+    digest: "sha256:7e4a30f84e5a3f91fe52567582726531fe68ef48caa862773026381897419f63"
     evidence_refs:
       - "../../../.git/agentplane/kernel/exchanges/202609301724-M0S90X/a59ef46c09bd38783fefdd897a716dacf3ce46b77416887e232dddac8dcd1869/quality-report.json"
     findings:
@@ -267,7 +991,7 @@ extensions:
     review_identity_digest: "sha256:f52402026fcbf6a39592b4eeb725db8b8ae208a3dc6d9a3c21dfc83b41113295"
     schema_version: 1
     source: "task_kernel"
-    verification_evidence_digest: "sha256:df6496155e37ea24c6edb48d5ff518cdfe576f0994d31d399b16580a1574d7a0"
+    verification_evidence_digest: "sha256:d62546d5242ae489de877f1ec1364e5b6785b5684948ffaa196cd1f4b32692c2"
     work_order_id: "sha256:fb8a6356935700c68bb7029b445fa189e3eb7ed8e5a3360a678b5bc1c12424d1"
   task_execution_context:
     base_ref: "main"
@@ -581,7 +1305,17 @@ extensions:
             optional: false
             required_inputs: []
       effects: []
-      final_validation: null
+      final_validation:
+        evidence_digests:
+          - "sha256:d62546d5242ae489de877f1ec1364e5b6785b5684948ffaa196cd1f4b32692c2"
+        identity:
+          check_id: "canonical-final-contracts-v2"
+          command_digest: "sha256:f229863e8ec8830873af4cbaf5c5b81aa091e7410b12d37df5073eaec8fd96fe"
+          environment_digest: "sha256:8e3d45e25271bd47da47628f0964e78271e96600ee304d2add68d87d00807f9d"
+          implementation_identity: "sha256:06d86d4586ba514e43191bf940a4d4067cb235e667070f8e7b4a86aed159a8bd"
+          toolchain_digest: "sha256:f0100cc8e6c9f894569805c7f5341a11362a41f3c06a1e4e5f0f33ef856bb53a"
+        observed_at: "2026-09-30T19:16:57.090Z"
+        status: "PASSED"
       id: "202609301724-M0S90X"
       intent_digest: "sha256:83f9ab0994f85c8f0919beb721756d6ac38fe1437a0c4a87b84d64caed7315af"
       migration_receipts: []
@@ -595,6 +1329,24 @@ extensions:
           event_digests:
             - "sha256:acb361f99ff0de9a370477b6c1c899d477a51f1e2b7ff642a6f0313e677af44b"
           mutation_id: "capture:202609301724-M0S90X"
+        final-validation:sha256:d62546d5242ae489de877f1ec1364e5b6785b5684948ffaa196cd1f4b32692c2:11:
+          after_revision: 12
+          aggregate_digest: "sha256:efdce05d20380e74a0a0786b8c6d686b1c7680afed9b0c44486c2ac2307cf478"
+          before_revision: 11
+          command_digest: "sha256:43be48959484e5447248ddb1d34d614289c95eb5123529b9af099e1bccb75718"
+          effect_ids: []
+          event_digests:
+            - "sha256:0ba786f431ade6bb424c9916790c628ab56359034d9f03e86d05cb3116676664"
+          mutation_id: "final-validation:sha256:d62546d5242ae489de877f1ec1364e5b6785b5684948ffaa196cd1f4b32692c2:11"
+        kernel_task_completion_required:sha256:161d595f3ddaf0d2458704c15fff5eb8904dc6a615cbfdd33aa6828770768e51:sha256:06d86d4586ba514e43191bf940a4d4067cb235e667070f8e7b4a86aed159a8bd:
+          after_revision: 13
+          aggregate_digest: "sha256:114cb4e3b69abc530d0f45397765d3c217a8233c39aaf840fc641d8a8c267897"
+          before_revision: 12
+          command_digest: "sha256:b557da63b423a47c5e790d85df56364b8fdeaf67806c5e7aafdbe408c3e03724"
+          effect_ids: []
+          event_digests:
+            - "sha256:fdd71c6f576ffb4a8485f6a9d228310fdcf602d49b3f7619113a9ce3a8eb5089"
+          mutation_id: "kernel_task_completion_required:sha256:161d595f3ddaf0d2458704c15fff5eb8904dc6a615cbfdd33aa6828770768e51:sha256:06d86d4586ba514e43191bf940a4d4067cb235e667070f8e7b4a86aed159a8bd"
         kernel_work_item_claim_required:sha256:648e4d0bef65ed1316730291e4276440df4b0abd1d3c786c0fb07ac86c9fea65:sha256:d2b7ce2196b8209cdff59c0afc82ef6acf3788525921c170b8369c952ef32ea9:
           after_revision: 5
           aggregate_digest: "sha256:7ef41dfba99433c69729b7e59888b6a157d46744c9315d78fe5366f0f042cb27"
@@ -686,9 +1438,9 @@ extensions:
             - "sha256:fc08d3ab917663a0f9a98354693f70660c1b5067ca0aa5560eb2ca127c2284d9"
           mutation_id: "validation:sha256:a59ef46c09bd38783fefdd897a716dacf3ce46b77416887e232dddac8dcd1869"
       plan_history: []
-      revision: 11
+      revision: 13
       schema_version: 1
-      state: "ACTIVE"
+      state: "COMPLETED"
       work_items:
         framework-cleanup:
           attempt: 1
@@ -749,7 +1501,7 @@ extensions:
               toolchain_digest: "sha256:b2c350024c98b67af2e565e8224ece8deff2283460e86b84f7195e836781e7ba"
             observed_at: "2026-09-30T17:42:44.961Z"
             status: "PASSED"
-    digest: "sha256:3987a472dfd11b32085a441eca2e96e75eb5a1d90396ecebff48dab31eff5101"
+    digest: "sha256:d53c7608c7c7e659a975e5430855c34a4fb5cf2208db79adb57bf3cc5446c608"
     documents:
       contracts:
         sha256:e18be1e76d29abead392d534e0f26bc0f700a012394512ffad03afa0ec728f85:
@@ -869,6 +1621,24 @@ extensions:
         payload_digest: "sha256:93f873b9d59c2f84a775335c1e6ddaded56a75244f1d33960e8b54cd1eefa169"
         task_id: "202609301724-M0S90X"
         task_revision: 11
+      -
+        command_digest: "sha256:43be48959484e5447248ddb1d34d614289c95eb5123529b9af099e1bccb75718"
+        id: "final-validation:sha256:d62546d5242ae489de877f1ec1364e5b6785b5684948ffaa196cd1f4b32692c2:11:final_validation_recorded"
+        kind: "final_validation_recorded"
+        mutation_id: "final-validation:sha256:d62546d5242ae489de877f1ec1364e5b6785b5684948ffaa196cd1f4b32692c2:11"
+        occurred_at: "2026-09-30T19:58:31.710Z"
+        payload_digest: "sha256:9e549d5b36bd56fef56919030b686bf2c89c370449146299ed7a802bfe2aff52"
+        task_id: "202609301724-M0S90X"
+        task_revision: 12
+      -
+        command_digest: "sha256:b557da63b423a47c5e790d85df56364b8fdeaf67806c5e7aafdbe408c3e03724"
+        id: "kernel_task_completion_required:sha256:161d595f3ddaf0d2458704c15fff5eb8904dc6a615cbfdd33aa6828770768e51:sha256:06d86d4586ba514e43191bf940a4d4067cb235e667070f8e7b4a86aed159a8bd:task_completed"
+        kind: "task_completed"
+        mutation_id: "kernel_task_completion_required:sha256:161d595f3ddaf0d2458704c15fff5eb8904dc6a615cbfdd33aa6828770768e51:sha256:06d86d4586ba514e43191bf940a4d4067cb235e667070f8e7b4a86aed159a8bd"
+        occurred_at: "2026-09-30T19:59:17.522Z"
+        payload_digest: "sha256:ae743eab051bd6a1e4873e5dd9f9c4f11e55aba5a3ec2b0a285930130dc72fbd"
+        task_id: "202609301724-M0S90X"
+        task_revision: 13
     kind: "canonical_task"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
@@ -900,6 +1670,257 @@ PLANNER fallback scaffold for "Integrate the independent website extraction from
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-09-30T19:58:18.790Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: canonical Task Kernel final checks passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:b8b7d533d4de09a375f62284cf8ebfd53b5f1e12b2858c3463de689880a389f0, input_digest=sha256:a12443c1a898158e6b3bdc1db71832adfe5b02a924428c325f5244369bed5504
+
+Details:
+
+Check: affected_unit_integration
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check affected_unit_integration (1/9)
+
+Check: affected_unit_integration
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check affected_unit_integration (2/9)
+
+Check: affected_unit_integration
+Command: bun run docs:cli:check
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check affected_unit_integration (3/9)
+
+Check: affected_unit_integration
+Command: bun run docs:check
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check affected_unit_integration (4/9)
+
+Check: affected_unit_integration
+Command: bun run docs:scripts:check
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check affected_unit_integration (5/9)
+
+Check: affected_unit_integration
+Command: bun run workflows:command-check
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check affected_unit_integration (6/9)
+
+Check: affected_unit_integration
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check affected_unit_integration (7/9)
+
+Check: affected_unit_integration
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check affected_unit_integration (8/9)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check affected_unit_integration (9/9)
+
+Check: critical_paths
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check critical_paths (1/9)
+
+Check: critical_paths
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check critical_paths (2/9)
+
+Check: critical_paths
+Command: bun run docs:cli:check
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check critical_paths (3/9)
+
+Check: critical_paths
+Command: bun run docs:check
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check critical_paths (4/9)
+
+Check: critical_paths
+Command: bun run docs:scripts:check
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check critical_paths (5/9)
+
+Check: critical_paths
+Command: bun run workflows:command-check
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check critical_paths (6/9)
+
+Check: critical_paths
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check critical_paths (7/9)
+
+Check: critical_paths
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check critical_paths (8/9)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check critical_paths (9/9)
+
+Check: docs_contract
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check docs_contract (1/9)
+
+Check: docs_contract
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check docs_contract (2/9)
+
+Check: docs_contract
+Command: bun run docs:cli:check
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check docs_contract (3/9)
+
+Check: docs_contract
+Command: bun run docs:check
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check docs_contract (4/9)
+
+Check: docs_contract
+Command: bun run docs:scripts:check
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check docs_contract (5/9)
+
+Check: docs_contract
+Command: bun run workflows:command-check
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check docs_contract (6/9)
+
+Check: docs_contract
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check docs_contract (7/9)
+
+Check: docs_contract
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check docs_contract (8/9)
+
+Check: docs_contract
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check docs_contract (9/9)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check full_regression
+
+Check: task_outcome
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check task_outcome (1/9)
+
+Check: task_outcome
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check task_outcome (2/9)
+
+Check: task_outcome
+Command: bun run docs:cli:check
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check task_outcome (3/9)
+
+Check: task_outcome
+Command: bun run docs:check
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check task_outcome (4/9)
+
+Check: task_outcome
+Command: bun run docs:scripts:check
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check task_outcome (5/9)
+
+Check: task_outcome
+Command: bun run workflows:command-check
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check task_outcome (6/9)
+
+Check: task_outcome
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check task_outcome (7/9)
+
+Check: task_outcome
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check task_outcome (8/9)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202609301724-M0S90X/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202609301724-M0S90X Verification Contract check task_outcome (9/9)
+
+NativeTaskIdentityRef:
+- plan_digest: sha256:e99412216a795a516d880e38f1822a60fc389f6618208d240638be28a6b6c002
+- policy_digest: sha256:99bf76d0cabcefa25ef8369acdad558e8d2798653e3cfb278d79cf66ea21b693
+- capability_digest: sha256:e5b3223845acaddce23ed60b8f41212cb4d7084f827a5e0058b47246d08254a1
+- checks_digest: sha256:550800ac7145574528ecbcf8e66897f90195173eb1ad0ae0418509796222d104
+- identity_digest: sha256:2b5284f2a199b041296e5858e646c6b4c383fb9807c711e7897673b7977e2800
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202609301724-M0S90X
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

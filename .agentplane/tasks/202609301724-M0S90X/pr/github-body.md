@@ -16,13 +16,13 @@ Recover 202609301619-2GPBMT by reapplying its preserved framework cleanup onto m
 ## Verification
 
 - State: ok
-- Note: Canonical validation sha256:df6496155e37ea24c6edb48d5ff518cdfe576f0994d31d399b16580a1574d7a0
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-30T17:36:49.314Z
+- Updated: 2026-09-30T18:19:09.720Z
 - Branch: task/202609301724-M0S90X/integrate-the-independent-website-extraction-fro
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
