@@ -16,6 +16,9 @@ Primary goal: **lower total cost per equivalently verified result**, subject to 
 | 0.7.12  | Accept sufficient existing Plan input without a separate PLANNER; remove managed planning forwarding                        | EVALUATOR stays required under the current policy                                     |
 | 0.7.13  | Scenario V2 reusable strategies compiled to the Kernel-owned Plan                                                           | No Recipe workflow engine, automatic recipe publication or generalized task memory    |
 | 0.7.14  | Narrow, independently qualified EVALUATOR omission                                                                          | No general low-risk classifier, no generic waiver, no broad review disabling          |
+| 0.7.15  | Explicit workflow modes and shared feature deliveries through the existing Kernel-backed coordinator | No Recipe engine, automatic Recipe publication, generalized task memory or new review waiver |
+
+The next planned patch after 0.7.14 is [0.7.15: workflow modes and shared feature deliveries](releases/0.7.15.md). This milestone is a scope contract pending atomic decomposition and runtime qualification. The existing 132 task cards and their validated dependency graph still cover 0.7.9 through 0.7.14. The original document filename and source baseline are retained for stable references. Scheduling after 0.7.14 does not require activating optional EVALUATOR omission.
 
 The extra release between Blueprint removal and adaptive planning is deliberate. Current `run` and `advance` have separate ordinary/kernel paths; changing both ownership and stage requirements in one patch would make failures difficult to attribute. [S01][S02] A .10 deletion release can preserve the existing execution paths while moving their obligations out of Blueprint. The .11 release then deletes superseded executable paths, rather than teaching each of them adaptive behavior.
 

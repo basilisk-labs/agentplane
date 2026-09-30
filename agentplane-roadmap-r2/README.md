@@ -12,8 +12,11 @@ Reviewed main: `50b1810dda648be0c0762b47e885c6ad0b2d42af`; package `0.7.9-beta.1
 | 0.7.12  |           12 | Avoid a separate PLANNER episode when an accepted contract is already sufficient |
 | 0.7.13  |           18 | Formalize reusable recipes as Scenario V2 compiled to the Kernel-owned Plan      |
 | 0.7.14  |           26 | Qualify optional JEV decision routing and narrow EVALUATOR omission              |
+| [0.7.15](releases/0.7.15.md) | Pending decomposition | Add explicit workflow modes and shared feature deliveries |
 
-Total: **132** atomic task cards. All **37** original roadmap groups are mapped. A task is an independent change/acceptance unit, not a mandatory separate PR or paid model episode.
+Total: **132** atomic task cards for 0.7.9 through 0.7.14. All **37** original roadmap groups are mapped. A task is an independent change/acceptance unit, not a mandatory separate PR or paid model episode.
+
+The 0.7.15 milestone is planned as the next patch after 0.7.14. Its scope, delivery sequence and acceptance gates are documented separately. It is not yet part of the machine-readable task catalogue or validated dependency graph. Reconcile existing workflow-selection and feature-delivery work before adding atomic cards. The original main-document filename is retained for stable references.
 
 Files:
 

@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202609301727-VET3VW/document-workflow-modes-and-shared-feature-deliv",
+  "created_at": "2026-09-30T17:36:23.768Z",
+  "diffstat_sha256": "sha256:f02e698e594344975ce094b15d61c3a971fe826d58fc3512db796a50c097d27d",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202609301727-VET3VW",
+  "updated_at": "2026-09-30T17:36:23.768Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
