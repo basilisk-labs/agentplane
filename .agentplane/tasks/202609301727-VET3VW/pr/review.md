@@ -24,7 +24,7 @@ Created: 2026-09-30T17:36:23.768Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-09-30T17:36:23.768Z
+- Updated: 2026-09-30T18:01:48.734Z
 - Branch: task/202609301727-VET3VW/document-workflow-modes-and-shared-feature-deliv
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
