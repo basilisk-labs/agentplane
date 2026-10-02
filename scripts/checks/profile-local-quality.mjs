@@ -13,7 +13,7 @@ const CHECKS = [
   ["docs:scripts:check", ["bun", "run", "docs:scripts:check"]],
   ["docs:cli:check", ["bun", "run", "docs:cli:check"]],
   ["docs:recipes:check", ["bun", "run", "docs:recipes:check"]],
-  ["docs:site:check", ["bun", "run", "docs:site:check"]],
+  ["docs:check", ["bun", "run", "docs:check"]],
 ];
 
 function writeUsage(stream) {

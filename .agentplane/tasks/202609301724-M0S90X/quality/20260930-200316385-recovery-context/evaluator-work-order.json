@@ -1,0 +1,120 @@
+{
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202609301724-M0S90X-5a76dfd57040d09ded0bac18",
+  "prepared_at": "2026-09-30T20:03:16.385Z",
+  "task": {
+    "id": "202609301724-M0S90X",
+    "revision": 18,
+    "objective": "Integrate the independent website extraction from 202609301619-2GPBMT\n\nRecover 202609301619-2GPBMT by reapplying its preserved framework cleanup onto main. The public basilisk-labs/agentplane-web repository is already deployed independently at agentplane.org. Retain documentation sources and code-derived reference generation in agentplane; remove website source, dependencies, scripts and CI. Reapply only implementation changes from 7565a4d744a51551e74ae21a11fb9888fb1d3c47 relative to 1053fee6f16c70a25154d54d4664ccfe609b5082, excluding .agentplane task artifacts. Run fresh checks and evaluation, then publish the framework PR. Do not inherit historical passing review. Use explicit scope roots to avoid the native empty-root repository-evidence bug.",
+    "acceptance_criteria": [
+      "- In scope: Recover 202609301619-2GPBMT by reapplying its preserved framework cleanup onto main. The public basilisk-labs/agentplane-web repository is already deployed independently at agentplane.org. Retain documentation sources and code-derived reference generation in agentplane; remove website source, dependencies, scripts and CI. Reapply only implementation changes from 7565a4d744a51551e74ae21a11fb9888fb1d3c47 relative to 1053fee6f16c70a25154d54d4664ccfe609b5082, excluding .agentplane task artifacts. Run fresh checks and evaluation, then publish the framework PR. Do not inherit historical passing review. Use explicit scope roots to avoid the native empty-root repository-evidence bug.\n- Out of scope: unrelated refactors not required for \"Integrate the independent website extraction from 202609301619-2GPBMT\".",
+      "1. Execute approved WorkItem framework-cleanup.",
+      "PLANNER fallback scaffold for \"Integrate the independent website extraction from 202609301619-2GPBMT\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Integrate the independent website extraction from 202609301619-2GPBMT\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "32943ef6841f367127103adf8f264960fb9961f1",
+  "diff_base_sha": "1053fee6f16c70a25154d54d4664ccfe609b5082",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202609301724-M0S90X/quality/20260930-200316385-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:44ac533a1aa28ba917e080d55f3e9aaf3f98b1bc14f983b9695dd06a8e651ace",
+    "prompt_path": ".agentplane/tasks/202609301724-M0S90X/quality/objects/sha256/637ceb0cbd34b37ba0f8e654851ffc7d027154d0de1123109a0b4cc3188b5575.md",
+    "result_schema_path": ".agentplane/tasks/202609301724-M0S90X/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "schema_version": 2,
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202609301724-M0S90X",
+    "plan_digest": "sha256:e99412216a795a516d880e38f1822a60fc389f6618208d240638be28a6b6c002",
+    "policy_digest": "sha256:99bf76d0cabcefa25ef8369acdad558e8d2798653e3cfb278d79cf66ea21b693",
+    "capability_digest": "sha256:e5b3223845acaddce23ed60b8f41212cb4d7084f827a5e0058b47246d08254a1",
+    "checks_digest": "sha256:a527b3380ae53629de976b915659015b261227bcd0492ccda519493ad57f8908",
+    "verification_input_digest": "sha256:a12443c1a898158e6b3bdc1db71832adfe5b02a924428c325f5244369bed5504",
+    "acceptance_digest": "sha256:fe38811f7f3f90eeb476ff2f6fe89cf9633f1a51300a6d5e1525d9ec334ce248",
+    "implementation_sha": "32943ef6841f367127103adf8f264960fb9961f1",
+    "digest": "sha256:5ed80b32dab5c22a4127e10949e179a58ed3ff5dbbd502e4333e101fe53d3c33"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202609301724-M0S90X/README.md",
+      "sha256": "sha256:1ca79a2d58877ca7afba23c438868e16e3f4f64ad2aac7472646e48eb3f9463e",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202609301724-M0S90X/quality/objects/sha256/53e14bd0abdcd96c0727b31c45017c3df025a66456b872c47f189a3a6c800a23.patch",
+      "sha256": "sha256:53e14bd0abdcd96c0727b31c45017c3df025a66456b872c47f189a3a6c800a23",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202609301724-M0S90X/quality/objects/sha256/7d55a44acc39ad7c3c99e042abac4de521639c2e2b92a6c39ff4ad8730f2a60a.json",
+      "sha256": "sha256:7d55a44acc39ad7c3c99e042abac4de521639c2e2b92a6c39ff4ad8730f2a60a",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202609301724-M0S90X/verification/20260930195818790-57a88ef56723be0f.json",
+      "sha256": "sha256:f05a4a6153b09db14b24d1f97e6db88f5b32d2f5161a3f6536a079c51326e04c",
+      "required": true
+    },
+    {
+      "id": "native-identity",
+      "kind": "plan",
+      "path": ".agentplane/tasks/202609301724-M0S90X/quality/objects/sha256/dbb45a6469f678e0e0edcf125ab64caf52bd67c8cb91de2486d3b64c2b1775e2.json",
+      "sha256": "sha256:dbb45a6469f678e0e0edcf125ab64caf52bd67c8cb91de2486d3b64c2b1775e2",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}

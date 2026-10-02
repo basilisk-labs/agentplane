@@ -6,8 +6,6 @@ coverage
 package-lock.json
 pnpm-lock.yaml
 yarn.lock
-website/.docusaurus
-website/build
 
 # Canonical content-addressed RF-04 capture bytes; formatting would invalidate hashes.
 scripts/baselines/agent-efficiency-pre-v0.7-replay.json

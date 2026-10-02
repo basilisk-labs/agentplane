@@ -2,8 +2,7 @@
   "name": "agentplane-repo",
   "private": true,
   "workspaces": [
-    "packages/*",
-    "website"
+    "packages/*"
   ],
   "engines": {
     "node": ">=24"
@@ -56,7 +55,6 @@
     "dev:turbo:affected": "node scripts/checks/run-turbo-local-ci.mjs --affected",
     "dev:turbo:graph": "mkdir -p .agentplane/cache && TURBO_TELEMETRY_DISABLED=1 turbo run build typecheck test --filter='./packages/*' --graph=.agentplane/cache/turbo-task-graph.mermaid",
     "dev:turbo:build": "TURBO_TELEMETRY_DISABLED=1 turbo run build --filter='./packages/*' --summarize",
-    "dev:turbo:docs": "TURBO_TELEMETRY_DISABLED=1 turbo run typecheck build --filter='./website' --summarize",
     "dev:impact": "node scripts/checks/dev-impact.mjs",
     "dev:task-scope:check": "node scripts/checks/check-task-scope.mjs",
     "deps:triage": "node scripts/checks/deps-triage.mjs",
@@ -102,11 +100,10 @@
     "task-state:check": "node scripts/checks/check-task-state.mjs",
     "package:tarball:check": "node scripts/release/check-package-tarball.mjs",
     "package:install-smoke": "node scripts/release/check-local-tarball-install-smoke.mjs",
-    "lint": "bun run lint:core && bun run lint:website",
+    "lint": "bun run lint:core",
     "lint:core": "eslint packages scripts eslint.config.cjs vitest.config.ts",
     "guards:check": "node scripts/checks/check-shared-guards.mjs && bun run trust:ratchet:check",
     "trust:ratchet:check": "node scripts/checks/check-trust-boundary-ratchet.mjs",
-    "lint:website": "eslint website",
     "workflows:lint": "node scripts/workflow/run-workflows-lint.mjs && node scripts/checks/check-workflow-command-contract.mjs && bun scripts/checks/check-lifecycle-parity.ts && node scripts/checks/check-critical-test-route.mjs",
     "workflows:command-check": "node scripts/checks/check-workflow-command-contract.mjs && bun scripts/checks/check-lifecycle-parity.ts && node scripts/checks/check-critical-test-route.mjs",
     "lifecycle:invariants": "node scripts/checks/check-lifecycle-invariants.mjs",
@@ -162,24 +159,19 @@
     "docs:bootstrap:check": "node scripts/checks/check-agent-bootstrap-fresh.mjs",
     "docs:onboarding:check": "node scripts/checks/check-agent-onboarding-scenario.mjs",
     "docs:ia:check": "node scripts/checks/check-docs-ia.mjs",
-    "docs:site:generate": "node scripts/generate/generate-website-docs.mjs && node scripts/generate/generate-llms-full.mjs",
-    "docs:site:generate:check": "node scripts/generate/generate-website-docs.mjs --check && node scripts/generate/generate-llms-full.mjs --check",
-    "docs:site:typecheck": "bun run --cwd website typecheck",
-    "docs:site:build": "bun run --cwd website build",
-    "docs:site:build:check": "bun run --cwd website build:check",
-    "docs:site:start": "bun run --cwd website start",
-    "docs:site:check:design": "node scripts/checks/check-design-language.mjs",
-    "docs:site:check": "bun run docs:ia:check && bun run docs:site:generate:check && bun run docs:site:typecheck && bun run docs:site:build:check && bun run docs:site:check:design",
     "logging:check": "node scripts/checks/check-no-console.mjs",
     "release:bun:smoke": "node scripts/release/smoke-bun-compiled-cli.mjs",
     "assets:builtin:generate": "node scripts/generate/generate-builtin-assets.mjs",
     "assets:builtin:check": "node scripts/generate/generate-builtin-assets.mjs --check",
     "release:bun:generate": "bun run assets:builtin:generate && node scripts/generate/generate-bun-cli-assets.mjs",
-    "release:bun:check": "bun run assets:builtin:check && node scripts/generate/generate-bun-cli-assets.mjs --check"
+    "release:bun:check": "bun run assets:builtin:check && node scripts/generate/generate-bun-cli-assets.mjs --check",
+    "docs:reference:generate": "node scripts/generate/generate-package-reference.mjs",
+    "docs:reference:check": "node scripts/generate/generate-package-reference.mjs --check",
+    "docs:check": "bun run docs:ia:check && bun run docs:reference:check && bun run docs:onboarding:check"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@types/node": "^25.9.3",
+    "@types/node": "^26.6.3",
     "@typescript-eslint/eslint-plugin": "^8.70.1",
     "@typescript-eslint/parser": "^8.70.1",
     "@vitest/coverage-v8": "4.1.11",

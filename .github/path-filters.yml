@@ -2,8 +2,6 @@ core:
   - "packages/**"
   - "schemas/**"
   - "scripts/**"
-  - "!scripts/generate-website-docs.mjs"
-  - "!scripts/check-design-language.mjs"
   - ".agentplane/**"
   - "!.agentplane/tasks/**"
   - "package.json"

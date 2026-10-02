@@ -61,11 +61,10 @@ execution evidence for local development. It is not a semantic code map and does
 Agentplane task scope, policy routing, context wiki, architecture docs, or human review of domain
 impact.
 
-Default Turbo package checks intentionally target `packages/*`. The docs website has separate build
-side effects and should be checked explicitly when docs or site files change:
+Default Turbo package checks target `packages/*`. Validate canonical documentation independently:
 
 ```bash
-bun run dev:turbo:docs
+bun run docs:check
 ```
 
 Inside this framework checkout, `agentplane` from `PATH` now delegates automatically to the
@@ -395,7 +394,7 @@ By default, hooks run:
   - Finish commits must use `✅` (enforced via `AGENTPLANE_STATUS_TO=DONE`)
 - `pre-commit`: staged-only format/lint checks + `test:precommit`
 - `pre-push`: runs `bun run ci:local` by default. This fast local gate is intentionally read-only: it uses `format:check`, fails with an explicit remediation command instead of rewriting files, and blocks if any hook step mutates tracked content. It always covers format, schemas, agent templates, policy routing, release parity, build, onboarding, lint, architecture boundaries, fast tests, and critical CLI checks, but it now chooses a narrower contour when the changed-file scope is isolated:
-  - `docs-only`: docs, website, policy, and task-doc changes skip code-heavy checks
+  - `docs-only`: docs, policy, and task-doc changes skip code-heavy checks
   - `targeted(task)`: task command paths run the task-focused fast suite
   - `targeted(doctor)`: doctor command paths run the doctor-focused fast suite
   - `targeted(backend)`: backend/projection paths run the backend-critical fast suite

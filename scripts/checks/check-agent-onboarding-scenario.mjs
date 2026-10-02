@@ -17,9 +17,6 @@ const files = {
   workflowGuides: path.join(ROOT, "docs", "workflow-guides", "index.mdx"),
   recovery: path.join(ROOT, "docs", "help", "legacy-upgrade-recovery.mdx"),
   troubleshooting: path.join(ROOT, "docs", "help", "troubleshooting.mdx"),
-  llmsFull: path.join(ROOT, "website", "static", "llms-full.txt"),
-  sidebar: path.join(ROOT, "website", "sidebars.ts"),
-  docusaurusConfig: path.join(ROOT, "website", "docusaurus.config.ts"),
 };
 
 function assertIncludes(haystack, needle, label) {
@@ -159,27 +156,6 @@ const main = defineScript({
       }
     }
 
-    for (const label of [
-      'label: "Start"',
-      'label: "Context"',
-      'label: "Core concepts"',
-      'label: "Workflow guides"',
-      'label: "Reference"',
-    ]) {
-      assertIncludes(fileContents.sidebar, label, "sidebar");
-    }
-
-    for (const retiredToolPage of [
-      '"workflow-guides/claude-code"',
-      '"workflow-guides/codex"',
-      '"workflow-guides/cursor"',
-      '"workflow-guides/aider"',
-    ]) {
-      if (fileContents.sidebar.includes(retiredToolPage)) {
-        throw new Error(`sidebar must not expose retired tool-specific page: ${retiredToolPage}`);
-      }
-    }
-
     assertIncludes(
       fileContents.docsIndex,
       "Hand work to any coding agent",
@@ -196,10 +172,6 @@ const main = defineScript({
       "unified workflow guide",
     );
 
-    for (const navLabel of ['label: "Docs"', 'label: "Examples"', 'label: "Quickstart"']) {
-      assertIncludes(fileContents.docusaurusConfig, navLabel, "navbar");
-    }
-
     for (const scenario of onboardingScenarios) {
       for (const [fileKey, needle] of scenario.checks) {
         assertScenarioText(fileContents, fileKey, needle, scenario.name);
@@ -210,7 +182,6 @@ const main = defineScript({
       ["bootstrap", "generated bootstrap"],
       ["lifecycle", "task lifecycle"],
       ["workflow", "workflow guide"],
-      ["llmsFull", "LLM documentation corpus"],
     ]) {
       const contents = fileContents[fileKey];
       for (const required of ["--plan-file", "read-only", "EVALUATOR", "require_planner"]) {
@@ -250,10 +221,7 @@ const main = defineScript({
       ],
       "task lifecycle planning boundary",
     );
-    for (const [fileKey, label] of [
-      ["workflow", "workflow guide"],
-      ["llmsFull", "LLM documentation corpus"],
-    ]) {
+    for (const [fileKey, label] of [["workflow", "workflow guide"]]) {
       assertTextOrder(
         fileContents[fileKey],
         [

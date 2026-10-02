@@ -32,7 +32,7 @@ steps:
     type: agent.run
   - id: verify-links
     type: check.run
-    command: bun run docs:site:build
+    command: bun run docs:check
   - id: export-trace
     type: trace.export
 ```
