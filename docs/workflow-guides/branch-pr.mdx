@@ -81,3 +81,11 @@ they are not the normal coding-agent prompt.
 `branch_pr` adds hosted and worktree overhead. Per-task automatic routing can keep small, safe work
 in `direct` and escalate tasks that need isolation. Configure a repository-wide `branch_pr` floor
 when every task must use that boundary.
+
+## Planned feature delivery support
+
+[ADR 0018](../adr/0018-feature-deliveries-and-semantic-routing.md) records the accepted design for
+multiple independent tasks in one feature branch, worktree, and PR. The planner proposes a route;
+the CLI validates policy and freezes the route before execution. Completing a member task will not
+integrate or clean up an open delivery. This feature is pending implementation. See the
+[delivery specification](../developer/feature-deliveries.mdx) for the target contract.
