@@ -1,0 +1,815 @@
+{
+  "schema_version": 2,
+  "criteria": [
+    {
+      "id": "bounded-result",
+      "description": "The work item meets its bounded acceptance criteria and preserves existing unrelated lifecycle behavior.",
+      "required": true,
+      "check_ids": ["review"]
+    },
+    {
+      "id": "dlv-01-criterion-1",
+      "description": "Add versioned path-neutral Delivery identity, membership, route decision, candidate, state and receipt contracts using the existing schema source of truth.",
+      "required": true,
+      "check_ids": ["dlv-01-tests", "review"]
+    },
+    {
+      "id": "dlv-01-criterion-2",
+      "description": "Pure transitions enforce OPEN, READY, INTEGRATING, INTEGRATED and RETIRED invariants without a second Task state machine.",
+      "required": true,
+      "check_ids": ["dlv-01-tests", "review"]
+    },
+    {
+      "id": "dlv-01-criterion-3",
+      "description": "Reject invalid transitions and duplicate member identity; round-trip fixtures and deterministic replay pass.",
+      "required": true,
+      "check_ids": ["dlv-01-tests", "review"]
+    },
+    {
+      "id": "dlv-02-criterion-1",
+      "description": "Persist Delivery revisions and task bindings through existing backend transaction boundaries.",
+      "required": true,
+      "check_ids": ["dlv-02-tests", "review"]
+    },
+    {
+      "id": "dlv-02-criterion-2",
+      "description": "Enforce unique active task membership and branch/workspace ownership with compare-and-swap.",
+      "required": true,
+      "check_ids": ["dlv-02-tests", "review"]
+    },
+    {
+      "id": "dlv-02-criterion-3",
+      "description": "Concurrent bind attempts have one winner; retry and crash after persistence return the same receipt.",
+      "required": true,
+      "check_ids": ["dlv-02-tests", "review"]
+    },
+    {
+      "id": "dlv-03-criterion-1",
+      "description": "Accept mode preference, new/existing membership intent, explicit delivery ID, effects, uncertainty, reversibility and rationale.",
+      "required": true,
+      "check_ids": ["dlv-03-tests", "review"]
+    },
+    {
+      "id": "dlv-03-criterion-2",
+      "description": "Keep the semantic proposal distinct from authority and from the final CLI route.",
+      "required": true,
+      "check_ids": ["dlv-03-tests", "review"]
+    },
+    {
+      "id": "dlv-03-criterion-3",
+      "description": "Reject malformed proposals and unauthorized effects; retain compatible existing planner payloads through explicit version handling.",
+      "required": true,
+      "check_ids": ["dlv-03-tests", "review"]
+    },
+    {
+      "id": "dlv-04-criterion-1",
+      "description": "Resolve explicit compatible membership before new allocation, then enforce repository floors and risk requirements.",
+      "required": true,
+      "check_ids": ["dlv-04-tests", "review"]
+    },
+    {
+      "id": "dlv-04-criterion-2",
+      "description": "Persist proposal digest, policy version, selected delivery/mode, reasons and base identity before implementation.",
+      "required": true,
+      "check_ids": ["dlv-04-tests", "review"]
+    },
+    {
+      "id": "dlv-04-criterion-3",
+      "description": "Table tests cover safe direct, forced PR, existing feature, invalid membership, unknown scope and deterministic retry; task size alone cannot lower a gate.",
+      "required": true,
+      "check_ids": ["dlv-04-tests", "review"]
+    },
+    {
+      "id": "dlv-05-criterion-1",
+      "description": "Create or join an OPEN delivery through typed commands; validate existing branch ownership and preserve its commits.",
+      "required": true,
+      "check_ids": ["dlv-05-tests", "review"]
+    },
+    {
+      "id": "dlv-05-criterion-2",
+      "description": "Bind independent Tasks before execution; record immutable intake base and distinct delivery start head.",
+      "required": true,
+      "check_ids": ["dlv-05-tests", "review"]
+    },
+    {
+      "id": "dlv-05-criterion-3",
+      "description": "Duplicate requests return the existing binding; incompatible targets and conflicting owners fail without creating another branch.",
+      "required": true,
+      "check_ids": ["dlv-05-tests", "review"]
+    },
+    {
+      "id": "dlv-06-criterion-1",
+      "description": "Allocate one worktree per shared delivery and resolve TODO membership before task-local worktree preparation.",
+      "required": true,
+      "check_ids": ["dlv-06-tests", "review"]
+    },
+    {
+      "id": "dlv-06-criterion-2",
+      "description": "Lease acquisition binds task attempt, expected head and fencing token; concurrent and stale writers cannot mutate the checkout.",
+      "required": true,
+      "check_ids": ["dlv-06-tests", "review"]
+    },
+    {
+      "id": "dlv-06-criterion-3",
+      "description": "Restart, changed title and repository relocation recover the recorded branch and workspace without duplicate allocation.",
+      "required": true,
+      "check_ids": ["dlv-06-tests", "review"]
+    },
+    {
+      "id": "dlv-07-criterion-1",
+      "description": "Execute A then B in one delivery; B begins at the accepted A head with its own Plan and execution grant.",
+      "required": true,
+      "check_ids": ["dlv-07-tests", "review"]
+    },
+    {
+      "id": "dlv-07-criterion-2",
+      "description": "Require accepted result, persisted evidence and accounted-for clean state before writer handoff; failed or dirty A blocks B.",
+      "required": true,
+      "check_ids": ["dlv-07-tests", "review"]
+    },
+    {
+      "id": "dlv-07-criterion-3",
+      "description": "Completing a member neither merges nor cleans the delivery; adding C to OPEN reuses the same workspace.",
+      "required": true,
+      "check_ids": ["dlv-07-tests", "review"]
+    },
+    {
+      "id": "dlv-08-criterion-1",
+      "description": "Bind each member validation to its input/output heads, content, plan and check-input digests.",
+      "required": true,
+      "check_ids": ["dlv-08-tests", "review"]
+    },
+    {
+      "id": "dlv-08-criterion-2",
+      "description": "Preserve historical member validation while invalidating combined evidence affected by subsequent work or base updates.",
+      "required": true,
+      "check_ids": ["dlv-08-tests", "review"]
+    },
+    {
+      "id": "dlv-08-criterion-3",
+      "description": "Expose validated-task versus integrated-delivery facts separately; service-only artifacts cannot cause unbounded verification loops.",
+      "required": true,
+      "check_ids": ["dlv-08-tests", "review"]
+    },
+    {
+      "id": "dlv-09-criterion-1",
+      "description": "READY requires all required members validated, no writer, clean accounted-for workspace and aggregate checks.",
+      "required": true,
+      "check_ids": ["dlv-09-tests", "review"]
+    },
+    {
+      "id": "dlv-09-criterion-2",
+      "description": "Freeze membership, candidate SHA, target SHA and policy/evidence digests in one readiness receipt.",
+      "required": true,
+      "check_ids": ["dlv-09-tests", "review"]
+    },
+    {
+      "id": "dlv-09-criterion-3",
+      "description": "Adding a member or changing candidate/base invalidates the receipt; integration under the old receipt is rejected.",
+      "required": true,
+      "check_ids": ["dlv-09-tests", "review"]
+    },
+    {
+      "id": "dlv-10-criterion-1",
+      "description": "Use one serialized reservation per delivery; direct uses the existing queue and branch_pr uses the provider as sole merge authority.",
+      "required": true,
+      "check_ids": ["dlv-10-tests", "review"]
+    },
+    {
+      "id": "dlv-10-criterion-2",
+      "description": "Guard provider merge with exact candidate identity, reconcile its receipt and synchronize the local target; never fall back to local merge.",
+      "required": true,
+      "check_ids": ["dlv-10-tests", "review"]
+    },
+    {
+      "id": "dlv-10-criterion-3",
+      "description": "Head/base movement, unavailable provider, and a crash after successful merge preserve recoverable state; retries cannot duplicate the merge.",
+      "required": true,
+      "check_ids": ["dlv-10-tests", "review"]
+    },
+    {
+      "id": "dlv-11-criterion-1",
+      "description": "Strengthening direct to PR preserves implementation and evidence, records a new decision, and requires any additional authority.",
+      "required": true,
+      "check_ids": ["dlv-11-tests", "review"]
+    },
+    {
+      "id": "dlv-11-criterion-2",
+      "description": "Moving or splitting membership is explicit; outstanding effects are reconciled using stable operation IDs.",
+      "required": true,
+      "check_ids": ["dlv-11-tests", "review"]
+    },
+    {
+      "id": "dlv-11-criterion-3",
+      "description": "Only delivery retirement may clean the workspace; active leases, open features, dirty files and unpublished unique commits prevent deletion.",
+      "required": true,
+      "check_ids": ["dlv-11-tests", "review"]
+    },
+    {
+      "id": "dlv-12-criterion-1",
+      "description": "Import a single-task branch as one member and a coherent umbrella as one shared delivery without Git or provider effects.",
+      "required": true,
+      "check_ids": ["dlv-12-tests", "review"]
+    },
+    {
+      "id": "dlv-12-criterion-2",
+      "description": "Ambiguous branches, conflicting task bindings or inconsistent PR/base identities produce typed repair output and no partial migration.",
+      "required": true,
+      "check_ids": ["dlv-12-tests", "review"]
+    },
+    {
+      "id": "dlv-12-criterion-3",
+      "description": "Migration records old/new digests and is idempotent; rollback disables new admissions while retaining active state and unresolved receipts.",
+      "required": true,
+      "check_ids": ["dlv-12-tests", "review"]
+    },
+    {
+      "id": "dlv-13-criterion-1",
+      "description": "Expose supported create/join/ready/recover actions through existing operator and supervisor boundaries; generate CLI reference from actual commands.",
+      "required": true,
+      "check_ids": ["dlv-13-tests", "review"]
+    },
+    {
+      "id": "dlv-13-criterion-2",
+      "description": "Compact status includes task, delivery, route reason, branch, worktree, target, writer, validation, PR and next action.",
+      "required": true,
+      "check_ids": ["dlv-13-tests", "review"]
+    },
+    {
+      "id": "dlv-13-criterion-3",
+      "description": "User scenarios cover small direct work, one-task PR and incremental feature tasks; no runtime internals appear in the normal user flow.",
+      "required": true,
+      "check_ids": ["dlv-13-tests", "review"]
+    },
+    {
+      "id": "dlv-14-criterion-1",
+      "description": "A real local Git fixture runs independent A, B and C through one branch/worktree/PR identity and one integration with isolated provider fixtures.",
+      "required": true,
+      "check_ids": ["dlv-14-tests", "review"]
+    },
+    {
+      "id": "dlv-14-criterion-2",
+      "description": "Qualify concurrent writer rejection, new TODO membership, restart, relocation, escalation, stale head, dirty handoff, unavailable provider and interrupted merge.",
+      "required": true,
+      "check_ids": ["dlv-14-tests", "review"]
+    },
+    {
+      "id": "dlv-14-criterion-3",
+      "description": "Record before/after allocation, service-commit, check, provider-call, model-turn and elapsed-time measurements; block rollout on invariant failures.",
+      "required": true,
+      "check_ids": ["dlv-14-tests", "review"]
+    },
+    {
+      "id": "dlv-15-criterion-1",
+      "description": "Use the qualified baseline to select one bounded redundant artifact-commit path for coalescing.",
+      "required": true,
+      "check_ids": ["dlv-15-tests", "review"]
+    },
+    {
+      "id": "dlv-15-criterion-2",
+      "description": "Preserve durable receipts, exact verification inputs, provider head consistency and interruption recovery; do not squash user implementation history.",
+      "required": true,
+      "check_ids": ["dlv-15-tests", "review"]
+    },
+    {
+      "id": "dlv-15-criterion-3",
+      "description": "The same lifecycle fixture has fewer service commits without added checks or lost evidence; document measured results and retain existing behavior when coalescing is unsafe.",
+      "required": true,
+      "check_ids": ["dlv-15-tests", "review"]
+    }
+  ],
+  "checks": [
+    {
+      "id": "review",
+      "kind": "semantic",
+      "required": true,
+      "capability": "task.verify"
+    },
+    {
+      "id": "diff-check",
+      "kind": "deterministic",
+      "required": true,
+      "capability": "task.verify",
+      "command": "git diff --check"
+    },
+    {
+      "id": "dlv-01-tests",
+      "kind": "deterministic",
+      "required": true,
+      "capability": "task.verify",
+      "command": "bun run test:project core packages/core/src/tasks/delivery-contract.test.ts"
+    },
+    {
+      "id": "dlv-02-tests",
+      "kind": "deterministic",
+      "required": true,
+      "capability": "task.verify",
+      "command": "bun run test:project agentplane packages/agentplane/src/commands/task/delivery-store.test.ts"
+    },
+    {
+      "id": "dlv-03-tests",
+      "kind": "deterministic",
+      "required": true,
+      "capability": "task.verify",
+      "command": "bun run test:project agentplane packages/agentplane/src/commands/task/delivery-proposal.test.ts"
+    },
+    {
+      "id": "dlv-04-tests",
+      "kind": "deterministic",
+      "required": true,
+      "capability": "task.verify",
+      "command": "bun run test:project agentplane packages/agentplane/src/runtime/task-routing/delivery-route.test.ts"
+    },
+    {
+      "id": "dlv-05-tests",
+      "kind": "deterministic",
+      "required": true,
+      "capability": "task.verify",
+      "command": "bun run test:project agentplane packages/agentplane/src/commands/task/delivery-binding.test.ts"
+    },
+    {
+      "id": "dlv-06-tests",
+      "kind": "deterministic",
+      "required": true,
+      "capability": "task.verify",
+      "command": "bun run test:project agentplane packages/agentplane/src/commands/task/delivery-workspace.test.ts"
+    },
+    {
+      "id": "dlv-07-tests",
+      "kind": "deterministic",
+      "required": true,
+      "capability": "task.verify",
+      "command": "bun run test:project agentplane packages/agentplane/src/commands/task/delivery-sequential.test.ts"
+    },
+    {
+      "id": "dlv-08-tests",
+      "kind": "deterministic",
+      "required": true,
+      "capability": "task.verify",
+      "command": "bun run test:project agentplane packages/agentplane/src/commands/task/delivery-verification.test.ts"
+    },
+    {
+      "id": "dlv-09-tests",
+      "kind": "deterministic",
+      "required": true,
+      "capability": "task.verify",
+      "command": "bun run test:project agentplane packages/agentplane/src/commands/task/delivery-readiness.test.ts"
+    },
+    {
+      "id": "dlv-10-tests",
+      "kind": "deterministic",
+      "required": true,
+      "capability": "task.verify",
+      "command": "bun run test:project agentplane packages/agentplane/src/commands/task/delivery-integration.test.ts"
+    },
+    {
+      "id": "dlv-11-tests",
+      "kind": "deterministic",
+      "required": true,
+      "capability": "task.verify",
+      "command": "bun run test:project agentplane packages/agentplane/src/commands/task/delivery-recovery.test.ts"
+    },
+    {
+      "id": "dlv-12-tests",
+      "kind": "deterministic",
+      "required": true,
+      "capability": "task.verify",
+      "command": "bun run test:project agentplane packages/agentplane/src/commands/task/delivery-migration.test.ts"
+    },
+    {
+      "id": "dlv-13-tests",
+      "kind": "deterministic",
+      "required": true,
+      "capability": "task.verify",
+      "command": "bun run test:project agentplane packages/agentplane/src/commands/task/delivery-cli.test.ts"
+    },
+    {
+      "id": "dlv-14-tests",
+      "kind": "deterministic",
+      "required": true,
+      "capability": "task.verify",
+      "command": "bun run test:project agentplane packages/agentplane/src/cli/run-cli.core.delivery-lifecycle.test.ts"
+    },
+    {
+      "id": "dlv-15-tests",
+      "kind": "deterministic",
+      "required": true,
+      "capability": "task.verify",
+      "command": "bun run test:project agentplane packages/agentplane/src/commands/task/delivery-artifact-coalescing.test.ts"
+    }
+  ],
+  "work_items": [
+    {
+      "id": "DLV-01",
+      "objective": "Define the Delivery domain contract. Add versioned path-neutral Delivery identity, membership, route decision, candidate, state and receipt contracts using the existing schema source of truth. Pure transitions enforce OPEN, READY, INTEGRATING, INTEGRATED and RETIRED invariants without a second Task state machine. Reject invalid transitions and duplicate member identity; round-trip fixtures and deterministic replay pass. Add the focused regression suite at packages/core/src/tasks/delivery-contract.test.ts.",
+      "depends_on": [],
+      "required_inputs": [],
+      "expected_outputs": ["dlv-01-result"],
+      "scope_roots": [
+        "packages/core/src/tasks",
+        "packages/core/schemas",
+        "packages/spec/schemas",
+        "schemas"
+      ],
+      "criterion_ids": ["dlv-01-criterion-1", "dlv-01-criterion-2", "dlv-01-criterion-3"],
+      "check_ids": ["dlv-01-tests", "review"],
+      "context": {
+        "required_sources": [
+          "docs/adr/0018-feature-deliveries-and-semantic-routing.md",
+          "docs/developer/feature-deliveries.mdx",
+          "docs/developer/feature-delivery-roadmap.mdx"
+        ],
+        "optional_sources": [],
+        "symbol_hints": [],
+        "max_bytes": 50000
+      },
+      "risk": "medium",
+      "capabilities": ["repository_write"],
+      "resource_claims": [],
+      "optional": false,
+      "priority": 99
+    },
+    {
+      "id": "DLV-02",
+      "objective": "Persist delivery ownership atomically. Persist Delivery revisions and task bindings through existing backend transaction boundaries. Enforce unique active task membership and branch/workspace ownership with compare-and-swap. Concurrent bind attempts have one winner; retry and crash after persistence return the same receipt. Add the focused regression suite at packages/agentplane/src/commands/task/delivery-store.test.ts.",
+      "depends_on": ["DLV-01"],
+      "required_inputs": ["dlv-01-result"],
+      "expected_outputs": ["dlv-02-result"],
+      "scope_roots": ["packages/agentplane/src"],
+      "criterion_ids": ["dlv-02-criterion-1", "dlv-02-criterion-2", "dlv-02-criterion-3"],
+      "check_ids": ["dlv-02-tests", "review"],
+      "context": {
+        "required_sources": [
+          "docs/adr/0018-feature-deliveries-and-semantic-routing.md",
+          "docs/developer/feature-deliveries.mdx",
+          "docs/developer/feature-delivery-roadmap.mdx"
+        ],
+        "optional_sources": [],
+        "symbol_hints": [],
+        "max_bytes": 50000
+      },
+      "risk": "medium",
+      "capabilities": ["repository_write"],
+      "resource_claims": [],
+      "optional": false,
+      "priority": 98
+    },
+    {
+      "id": "DLV-03",
+      "objective": "Admit semantic delivery proposals from planning. Accept mode preference, new/existing membership intent, explicit delivery ID, effects, uncertainty, reversibility and rationale. Keep the semantic proposal distinct from authority and from the final CLI route. Reject malformed proposals and unauthorized effects; retain compatible existing planner payloads through explicit version handling. Add the focused regression suite at packages/agentplane/src/commands/task/delivery-proposal.test.ts.",
+      "depends_on": ["DLV-01"],
+      "required_inputs": ["dlv-01-result"],
+      "expected_outputs": ["dlv-03-result"],
+      "scope_roots": [
+        "packages/core/src/runner",
+        "packages/core/src/tasks",
+        "packages/agentplane/src/commands/task"
+      ],
+      "criterion_ids": ["dlv-03-criterion-1", "dlv-03-criterion-2", "dlv-03-criterion-3"],
+      "check_ids": ["dlv-03-tests", "review"],
+      "context": {
+        "required_sources": [
+          "docs/adr/0018-feature-deliveries-and-semantic-routing.md",
+          "docs/developer/feature-deliveries.mdx",
+          "docs/developer/feature-delivery-roadmap.mdx"
+        ],
+        "optional_sources": [],
+        "symbol_hints": [],
+        "max_bytes": 50000
+      },
+      "risk": "medium",
+      "capabilities": ["repository_write"],
+      "resource_claims": [],
+      "optional": false,
+      "priority": 97
+    },
+    {
+      "id": "DLV-04",
+      "objective": "Resolve and freeze policy-compatible delivery routes. Resolve explicit compatible membership before new allocation, then enforce repository floors and risk requirements. Persist proposal digest, policy version, selected delivery/mode, reasons and base identity before implementation. Table tests cover safe direct, forced PR, existing feature, invalid membership, unknown scope and deterministic retry; task size alone cannot lower a gate. Add the focused regression suite at packages/agentplane/src/runtime/task-routing/delivery-route.test.ts.",
+      "depends_on": ["DLV-02", "DLV-03"],
+      "required_inputs": ["dlv-02-result", "dlv-03-result"],
+      "expected_outputs": ["dlv-04-result"],
+      "scope_roots": [
+        "packages/agentplane/src/runtime/task-routing",
+        "packages/agentplane/src/commands/task"
+      ],
+      "criterion_ids": ["dlv-04-criterion-1", "dlv-04-criterion-2", "dlv-04-criterion-3"],
+      "check_ids": ["dlv-04-tests", "review"],
+      "context": {
+        "required_sources": [
+          "docs/adr/0018-feature-deliveries-and-semantic-routing.md",
+          "docs/developer/feature-deliveries.mdx",
+          "docs/developer/feature-delivery-roadmap.mdx"
+        ],
+        "optional_sources": [],
+        "symbol_hints": [],
+        "max_bytes": 50000
+      },
+      "risk": "medium",
+      "capabilities": ["repository_write"],
+      "resource_claims": [],
+      "optional": false,
+      "priority": 96
+    },
+    {
+      "id": "DLV-05",
+      "objective": "Bind tasks and adopt explicitly selected feature branches. Create or join an OPEN delivery through typed commands; validate existing branch ownership and preserve its commits. Bind independent Tasks before execution; record immutable intake base and distinct delivery start head. Duplicate requests return the existing binding; incompatible targets and conflicting owners fail without creating another branch. Add the focused regression suite at packages/agentplane/src/commands/task/delivery-binding.test.ts.",
+      "depends_on": ["DLV-02", "DLV-04"],
+      "required_inputs": ["dlv-02-result", "dlv-04-result"],
+      "expected_outputs": ["dlv-05-result"],
+      "scope_roots": ["packages/agentplane/src"],
+      "criterion_ids": ["dlv-05-criterion-1", "dlv-05-criterion-2", "dlv-05-criterion-3"],
+      "check_ids": ["dlv-05-tests", "review"],
+      "context": {
+        "required_sources": [
+          "docs/adr/0018-feature-deliveries-and-semantic-routing.md",
+          "docs/developer/feature-deliveries.mdx",
+          "docs/developer/feature-delivery-roadmap.mdx"
+        ],
+        "optional_sources": [],
+        "symbol_hints": [],
+        "max_bytes": 50000
+      },
+      "risk": "medium",
+      "capabilities": ["repository_write"],
+      "resource_claims": [],
+      "optional": false,
+      "priority": 95
+    },
+    {
+      "id": "DLV-06",
+      "objective": "Reuse delivery workspaces under fenced writer leases. Allocate one worktree per shared delivery and resolve TODO membership before task-local worktree preparation. Lease acquisition binds task attempt, expected head and fencing token; concurrent and stale writers cannot mutate the checkout. Restart, changed title and repository relocation recover the recorded branch and workspace without duplicate allocation. Add the focused regression suite at packages/agentplane/src/commands/task/delivery-workspace.test.ts.",
+      "depends_on": ["DLV-05"],
+      "required_inputs": ["dlv-05-result"],
+      "expected_outputs": ["dlv-06-result"],
+      "scope_roots": ["packages/core/src/git", "packages/agentplane/src"],
+      "criterion_ids": ["dlv-06-criterion-1", "dlv-06-criterion-2", "dlv-06-criterion-3"],
+      "check_ids": ["dlv-06-tests", "review"],
+      "context": {
+        "required_sources": [
+          "docs/adr/0018-feature-deliveries-and-semantic-routing.md",
+          "docs/developer/feature-deliveries.mdx",
+          "docs/developer/feature-delivery-roadmap.mdx"
+        ],
+        "optional_sources": [],
+        "symbol_hints": [],
+        "max_bytes": 50000
+      },
+      "risk": "medium",
+      "capabilities": ["repository_write"],
+      "resource_claims": [],
+      "optional": false,
+      "priority": 94
+    },
+    {
+      "id": "DLV-07",
+      "objective": "Execute independent member tasks sequentially. Execute A then B in one delivery; B begins at the accepted A head with its own Plan and execution grant. Require accepted result, persisted evidence and accounted-for clean state before writer handoff; failed or dirty A blocks B. Completing a member neither merges nor cleans the delivery; adding C to OPEN reuses the same workspace. Add the focused regression suite at packages/agentplane/src/commands/task/delivery-sequential.test.ts.",
+      "depends_on": ["DLV-06"],
+      "required_inputs": ["dlv-06-result"],
+      "expected_outputs": ["dlv-07-result"],
+      "scope_roots": [
+        "packages/agentplane/src/commands/task",
+        "packages/agentplane/src/commands/shared",
+        "packages/agentplane/src/runner"
+      ],
+      "criterion_ids": ["dlv-07-criterion-1", "dlv-07-criterion-2", "dlv-07-criterion-3"],
+      "check_ids": ["dlv-07-tests", "review"],
+      "context": {
+        "required_sources": [
+          "docs/adr/0018-feature-deliveries-and-semantic-routing.md",
+          "docs/developer/feature-deliveries.mdx",
+          "docs/developer/feature-delivery-roadmap.mdx"
+        ],
+        "optional_sources": [],
+        "symbol_hints": [],
+        "max_bytes": 50000
+      },
+      "risk": "medium",
+      "capabilities": ["repository_write"],
+      "resource_claims": [],
+      "optional": false,
+      "priority": 93
+    },
+    {
+      "id": "DLV-08",
+      "objective": "Track member evidence and aggregate candidate validity. Bind each member validation to its input/output heads, content, plan and check-input digests. Preserve historical member validation while invalidating combined evidence affected by subsequent work or base updates. Expose validated-task versus integrated-delivery facts separately; service-only artifacts cannot cause unbounded verification loops. Add the focused regression suite at packages/agentplane/src/commands/task/delivery-verification.test.ts.",
+      "depends_on": ["DLV-07"],
+      "required_inputs": ["dlv-07-result"],
+      "expected_outputs": ["dlv-08-result"],
+      "scope_roots": [
+        "packages/core/src/tasks",
+        "packages/agentplane/src/commands/task",
+        "packages/agentplane/src/commands/shared"
+      ],
+      "criterion_ids": ["dlv-08-criterion-1", "dlv-08-criterion-2", "dlv-08-criterion-3"],
+      "check_ids": ["dlv-08-tests", "review"],
+      "context": {
+        "required_sources": [
+          "docs/adr/0018-feature-deliveries-and-semantic-routing.md",
+          "docs/developer/feature-deliveries.mdx",
+          "docs/developer/feature-delivery-roadmap.mdx"
+        ],
+        "optional_sources": [],
+        "symbol_hints": [],
+        "max_bytes": 50000
+      },
+      "risk": "medium",
+      "capabilities": ["repository_write"],
+      "resource_claims": [],
+      "optional": false,
+      "priority": 92
+    },
+    {
+      "id": "DLV-09",
+      "objective": "Freeze delivery readiness and reopen on candidate changes. READY requires all required members validated, no writer, clean accounted-for workspace and aggregate checks. Freeze membership, candidate SHA, target SHA and policy/evidence digests in one readiness receipt. Adding a member or changing candidate/base invalidates the receipt; integration under the old receipt is rejected. Add the focused regression suite at packages/agentplane/src/commands/task/delivery-readiness.test.ts.",
+      "depends_on": ["DLV-08"],
+      "required_inputs": ["dlv-08-result"],
+      "expected_outputs": ["dlv-09-result"],
+      "scope_roots": ["packages/core/src/tasks", "packages/agentplane/src/commands/task"],
+      "criterion_ids": ["dlv-09-criterion-1", "dlv-09-criterion-2", "dlv-09-criterion-3"],
+      "check_ids": ["dlv-09-tests", "review"],
+      "context": {
+        "required_sources": [
+          "docs/adr/0018-feature-deliveries-and-semantic-routing.md",
+          "docs/developer/feature-deliveries.mdx",
+          "docs/developer/feature-delivery-roadmap.mdx"
+        ],
+        "optional_sources": [],
+        "symbol_hints": [],
+        "max_bytes": 50000
+      },
+      "risk": "medium",
+      "capabilities": ["repository_write"],
+      "resource_claims": [],
+      "optional": false,
+      "priority": 91
+    },
+    {
+      "id": "DLV-10",
+      "objective": "Integrate each delivery exactly once through its gate. Use one serialized reservation per delivery; direct uses the existing queue and branch_pr uses the provider as sole merge authority. Guard provider merge with exact candidate identity, reconcile its receipt and synchronize the local target; never fall back to local merge. Head/base movement, unavailable provider, and a crash after successful merge preserve recoverable state; retries cannot duplicate the merge. Add the focused regression suite at packages/agentplane/src/commands/task/delivery-integration.test.ts.",
+      "depends_on": ["DLV-09"],
+      "required_inputs": ["dlv-09-result"],
+      "expected_outputs": ["dlv-10-result"],
+      "scope_roots": ["packages/agentplane/src"],
+      "criterion_ids": ["dlv-10-criterion-1", "dlv-10-criterion-2", "dlv-10-criterion-3"],
+      "check_ids": ["dlv-10-tests", "review"],
+      "context": {
+        "required_sources": [
+          "docs/adr/0018-feature-deliveries-and-semantic-routing.md",
+          "docs/developer/feature-deliveries.mdx",
+          "docs/developer/feature-delivery-roadmap.mdx"
+        ],
+        "optional_sources": [],
+        "symbol_hints": [],
+        "max_bytes": 50000
+      },
+      "risk": "medium",
+      "capabilities": ["repository_write"],
+      "resource_claims": [],
+      "optional": false,
+      "priority": 90
+    },
+    {
+      "id": "DLV-11",
+      "objective": "Recover escalations and retire deliveries conservatively. Strengthening direct to PR preserves implementation and evidence, records a new decision, and requires any additional authority. Moving or splitting membership is explicit; outstanding effects are reconciled using stable operation IDs. Only delivery retirement may clean the workspace; active leases, open features, dirty files and unpublished unique commits prevent deletion. Add the focused regression suite at packages/agentplane/src/commands/task/delivery-recovery.test.ts.",
+      "depends_on": ["DLV-07", "DLV-10"],
+      "required_inputs": ["dlv-07-result", "dlv-10-result"],
+      "expected_outputs": ["dlv-11-result"],
+      "scope_roots": ["packages/agentplane/src"],
+      "criterion_ids": ["dlv-11-criterion-1", "dlv-11-criterion-2", "dlv-11-criterion-3"],
+      "check_ids": ["dlv-11-tests", "review"],
+      "context": {
+        "required_sources": [
+          "docs/adr/0018-feature-deliveries-and-semantic-routing.md",
+          "docs/developer/feature-deliveries.mdx",
+          "docs/developer/feature-delivery-roadmap.mdx"
+        ],
+        "optional_sources": [],
+        "symbol_hints": [],
+        "max_bytes": 50000
+      },
+      "risk": "medium",
+      "capabilities": ["repository_write"],
+      "resource_claims": [],
+      "optional": false,
+      "priority": 89
+    },
+    {
+      "id": "DLV-12",
+      "objective": "Migrate legacy task and umbrella ownership. Import a single-task branch as one member and a coherent umbrella as one shared delivery without Git or provider effects. Ambiguous branches, conflicting task bindings or inconsistent PR/base identities produce typed repair output and no partial migration. Migration records old/new digests and is idempotent; rollback disables new admissions while retaining active state and unresolved receipts. Add the focused regression suite at packages/agentplane/src/commands/task/delivery-migration.test.ts.",
+      "depends_on": ["DLV-05", "DLV-11"],
+      "required_inputs": ["dlv-05-result", "dlv-11-result"],
+      "expected_outputs": ["dlv-12-result"],
+      "scope_roots": ["packages/agentplane/src"],
+      "criterion_ids": ["dlv-12-criterion-1", "dlv-12-criterion-2", "dlv-12-criterion-3"],
+      "check_ids": ["dlv-12-tests", "review"],
+      "context": {
+        "required_sources": [
+          "docs/adr/0018-feature-deliveries-and-semantic-routing.md",
+          "docs/developer/feature-deliveries.mdx",
+          "docs/developer/feature-delivery-roadmap.mdx"
+        ],
+        "optional_sources": [],
+        "symbol_hints": [],
+        "max_bytes": 50000
+      },
+      "risk": "medium",
+      "capabilities": ["repository_write"],
+      "resource_claims": [],
+      "optional": false,
+      "priority": 88
+    },
+    {
+      "id": "DLV-13",
+      "objective": "Expose delivery selection and progress in CLI and docs. Expose supported create/join/ready/recover actions through existing operator and supervisor boundaries; generate CLI reference from actual commands. Compact status includes task, delivery, route reason, branch, worktree, target, writer, validation, PR and next action. User scenarios cover small direct work, one-task PR and incremental feature tasks; no runtime internals appear in the normal user flow. Add the focused regression suite at packages/agentplane/src/commands/task/delivery-cli.test.ts.",
+      "depends_on": ["DLV-04", "DLV-07", "DLV-09", "DLV-11", "DLV-12"],
+      "required_inputs": [
+        "dlv-04-result",
+        "dlv-07-result",
+        "dlv-09-result",
+        "dlv-11-result",
+        "dlv-12-result"
+      ],
+      "expected_outputs": ["dlv-13-result"],
+      "scope_roots": ["packages/agentplane/src", "docs"],
+      "criterion_ids": ["dlv-13-criterion-1", "dlv-13-criterion-2", "dlv-13-criterion-3"],
+      "check_ids": ["dlv-13-tests", "review"],
+      "context": {
+        "required_sources": [
+          "docs/adr/0018-feature-deliveries-and-semantic-routing.md",
+          "docs/developer/feature-deliveries.mdx",
+          "docs/developer/feature-delivery-roadmap.mdx"
+        ],
+        "optional_sources": [],
+        "symbol_hints": [],
+        "max_bytes": 50000
+      },
+      "risk": "medium",
+      "capabilities": ["repository_write"],
+      "resource_claims": [],
+      "optional": false,
+      "priority": 87
+    },
+    {
+      "id": "DLV-14",
+      "objective": "Qualify the complete feature delivery lifecycle. A real local Git fixture runs independent A, B and C through one branch/worktree/PR identity and one integration with isolated provider fixtures. Qualify concurrent writer rejection, new TODO membership, restart, relocation, escalation, stale head, dirty handoff, unavailable provider and interrupted merge. Record before/after allocation, service-commit, check, provider-call, model-turn and elapsed-time measurements; block rollout on invariant failures. Add the focused regression suite at packages/agentplane/src/cli/run-cli.core.delivery-lifecycle.test.ts.",
+      "depends_on": ["DLV-10", "DLV-11", "DLV-12", "DLV-13"],
+      "required_inputs": ["dlv-10-result", "dlv-11-result", "dlv-12-result", "dlv-13-result"],
+      "expected_outputs": ["dlv-14-result"],
+      "scope_roots": ["packages/agentplane/src", "packages/testkit/src", "docs"],
+      "criterion_ids": ["dlv-14-criterion-1", "dlv-14-criterion-2", "dlv-14-criterion-3"],
+      "check_ids": ["dlv-14-tests", "review"],
+      "context": {
+        "required_sources": [
+          "docs/adr/0018-feature-deliveries-and-semantic-routing.md",
+          "docs/developer/feature-deliveries.mdx",
+          "docs/developer/feature-delivery-roadmap.mdx"
+        ],
+        "optional_sources": [],
+        "symbol_hints": [],
+        "max_bytes": 50000
+      },
+      "risk": "medium",
+      "capabilities": ["repository_write"],
+      "resource_claims": [],
+      "optional": false,
+      "priority": 86
+    },
+    {
+      "id": "DLV-15",
+      "objective": "Coalesce redundant delivery service commits. Use the qualified baseline to select one bounded redundant artifact-commit path for coalescing. Preserve durable receipts, exact verification inputs, provider head consistency and interruption recovery; do not squash user implementation history. The same lifecycle fixture has fewer service commits without added checks or lost evidence; document measured results and retain existing behavior when coalescing is unsafe. Add the focused regression suite at packages/agentplane/src/commands/task/delivery-artifact-coalescing.test.ts.",
+      "depends_on": ["DLV-14"],
+      "required_inputs": ["dlv-14-result"],
+      "expected_outputs": ["dlv-15-result"],
+      "scope_roots": ["packages/agentplane/src", "docs"],
+      "criterion_ids": ["dlv-15-criterion-1", "dlv-15-criterion-2", "dlv-15-criterion-3"],
+      "check_ids": ["dlv-15-tests", "review"],
+      "context": {
+        "required_sources": [
+          "docs/adr/0018-feature-deliveries-and-semantic-routing.md",
+          "docs/developer/feature-deliveries.mdx",
+          "docs/developer/feature-delivery-roadmap.mdx"
+        ],
+        "optional_sources": [],
+        "symbol_hints": [],
+        "max_bytes": 50000
+      },
+      "risk": "medium",
+      "capabilities": ["repository_write"],
+      "resource_claims": [],
+      "optional": false,
+      "priority": 85
+    }
+  ],
+  "top_level_validation": {
+    "criterion_ids": ["bounded-result"],
+    "check_ids": ["review", "diff-check"]
+  },
+  "assumptions": [
+    "Accepted target design is ADR 0018; runtime implementation has not started.",
+    "Use the existing Task Kernel and coordinator; preserve ADR 0015 isolation and ADR 0016 serialized integration.",
+    "Focused test paths in this plan are implementation deliverables, not tests claimed to exist today.",
+    "No provider mutation, release, deployment or repository policy change is authorized by this backlog."
+  ],
+  "unresolved_questions": []
+}
