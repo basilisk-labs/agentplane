@@ -793,6 +793,7 @@ agentplane task plan approve <task-id> [options]
 
 Options:
 
+- `--renew-authority`: Renew changed policy authority for an unchanged approved Plan. Requires --by USER. (default=false)
 - `--by <id>`: Approver id.
 - `--approval-receipt <base64url>`: Signed user approval receipt from a configured trusted bridge.
 - `--host-user-decision <base64url>`: Host-originated user decision bound to the current plan and route fingerprint.

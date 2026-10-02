@@ -4,6 +4,7 @@ import {
   taskKernel as k,
 } from "@agentplaneorg/core/tasks";
 import { verifyUserApprovalReceipt } from "../../adapters/authority/user-approval-receipt.js";
+import { renewKernelPolicyAuthority } from "./kernel-policy-renewal.js";
 import {
   kernelAuthorityRecordSchema,
   kernelAuthoritySchema,
@@ -259,6 +260,17 @@ export class KernelAuthorityResolver {
 
   async approve(taskId: string) {
     return this.approveObserved(taskId, null);
+  }
+
+  async renewPolicy(taskId: string) {
+    return renewKernelPolicyAuthority({
+      task_id: taskId,
+      adapter: this.adapter,
+      native: this.native,
+      ...(await this.context(taskId)),
+      assertCeiling: this.assertCeiling.bind(this),
+      assertFresh: this.assertFresh.bind(this),
+    });
   }
 
   /** Trusted repository controller path. Semantic results cannot supply this observation. */

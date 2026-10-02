@@ -8,6 +8,7 @@ import {
   type UserApprovalReceipt,
 } from "../../adapters/authority/user-approval-receipt.js";
 import { KernelBackendAdapter } from "../../adapters/task-backend/kernel-backend-adapter.js";
+import { projectKernelTask } from "../../adapters/task-backend/kernel-projector.js";
 import {
   makeKernelRecord,
   TASK_KERNEL_EXTENSION,
@@ -202,6 +203,7 @@ async function fixture(
       const record = current as { events?: readonly k.DomainEvent[] };
       saved = {
         ...saved,
+        status: projectKernelTask(aggregate).status,
         extensions: {
           ...saved.extensions,
           [TASK_KERNEL_EXTENSION]: makeKernelRecord(
@@ -218,6 +220,164 @@ async function fixture(
 const effects = (path: string) => (path.startsWith("schemas/") ? ["schema"] : ["source_code"]);
 
 describe("canonical native authority", () => {
+  it.each(["EXECUTING", "COMPLETED"] as const)(
+    "renews changed policy without losing %s work or original approval evidence",
+    async (state) => {
+      const f = await fixture();
+      expect(await f.resolver.approve(f.taskId)).toMatchObject({ kind: "committed" });
+      const read = await f.adapter.read(f.taskId);
+      if (read.kind !== "canonical") throw new Error(read.kind);
+      const parent = read.record.aggregate.authority_lineage![0]!.authority;
+      const definition = read.record.aggregate.current_plan!.work_items[0]!;
+      const resultDigest = k.kernelDigest("completed-result");
+      const validation: k.ValidationRecord = {
+        status: "PASSED",
+        identity: {
+          implementation_identity: resultDigest,
+          check_id: "focused",
+          command_digest: k.kernelDigest("check"),
+          toolchain_digest: k.kernelDigest("toolchain"),
+          environment_digest: k.kernelDigest("environment"),
+        },
+        evidence_digests: [k.kernelDigest("evidence")],
+        observed_at: now,
+      };
+      const item: k.WorkItemRuntime = {
+        definition,
+        state,
+        revision: 7,
+        attempt: 1,
+        claim_id: "existing-claim",
+        result_digest: resultDigest,
+        validation,
+        output_manifests: definition.expected_outputs.map((id) => ({
+          id,
+          kind: "report",
+          digest: k.kernelDigest(id),
+          task_id: f.taskId,
+          plan_revision: f.plan.revision,
+          work_item_id: definition.id,
+          attempt: 1,
+          repository_fingerprint: parent.repository_fingerprint,
+        })),
+      };
+      const before = { ...read.record.aggregate, work_items: { [definition.id]: item } };
+      f.replaceAggregate(before);
+      f.values.ceiling = { ...f.values.ceiling, policy_digests: [k.kernelDigest("new-policy")] };
+      f.values.repository_fingerprint = k.kernelDigest("new-policy-checkout");
+      f.setObservation({
+        kind: "repository_implementation",
+        previous_fingerprint: parent.repository_fingerprint,
+        changed_paths: [".agentplane/policy/local.md"],
+        evidence_digest: k.kernelDigest("policy-diff"),
+      });
+      await expect(f.resolver.resolve(f.taskId)).rejects.toThrow("native_policy_changed");
+      expect(await f.resolver.renewPolicy(f.taskId)).toMatchObject({ kind: "committed" });
+      const after = await f.adapter.read(f.taskId);
+      if (after.kind !== "canonical") throw new Error(after.kind);
+      expect(after.record.aggregate).toMatchObject({
+        state: before.state,
+        current_plan: before.current_plan,
+        work_items: before.work_items,
+        final_validation: before.final_validation,
+      });
+      expect(after.record.aggregate.authority_lineage![0]!.authority).toEqual(parent);
+      expect(k.canonicalAuthorityIssues(after.record.aggregate)).toEqual([]);
+      const resolved = await f.resolver.resolve(f.taskId);
+      expect(resolved.authority.policy_digests).toEqual(f.values.ceiling.policy_digests);
+      expect(resolved.authority.provenance.evidence_digest).toBe(parent.provenance.evidence_digest);
+    },
+  );
+
+  it.each([
+    null,
+    { kind: "manual_operator", actor_id: "EXECUTOR", invocation_id: "forged" },
+  ] as const)("refuses policy renewal without explicit USER approval: %j", async (approval) => {
+    const f = await fixture();
+    await f.resolver.approve(f.taskId);
+    f.values.ceiling = { ...f.values.ceiling, policy_digests: [k.kernelDigest("new-policy")] };
+    f.setApproval(approval);
+    const before = await f.adapter.read(f.taskId);
+    await expect(f.resolver.renewPolicy(f.taskId)).rejects.toThrow("explicit manual USER");
+    expect(await f.adapter.read(f.taskId)).toEqual(before);
+  });
+
+  it("refuses changed obligations, stale context and unchanged policy without mutation", async () => {
+    const f = await fixture();
+    await f.resolver.approve(f.taskId);
+    const before = await f.adapter.read(f.taskId);
+    expect(await f.resolver.renewPolicy(f.taskId)).toMatchObject({ kind: "rejected" });
+    f.values.ceiling = {
+      ...f.values.ceiling,
+      policy_digests: [k.kernelDigest("new-policy")],
+      validation_requirements: ["new-required-check"],
+    };
+    await expect(f.resolver.renewPolicy(f.taskId)).rejects.toThrow("native_policy_changed");
+    f.values.ceiling = { ...f.values.ceiling, validation_requirements: ["focused"] };
+    const readContext = f.port.readContext.bind(f.port);
+    let calls = 0;
+    f.port.readContext = async (taskId) => {
+      const context = await readContext(taskId);
+      return ++calls > 1
+        ? { ...context, repository_fingerprint: k.kernelDigest("raced-checkout") }
+        : context;
+    };
+    await expect(f.resolver.renewPolicy(f.taskId)).rejects.toThrow("native_context_changed");
+    expect(await f.adapter.read(f.taskId)).toEqual(before);
+  });
+
+  it("does not adopt changes outside approved scope while renewing policy", async () => {
+    const f = await fixture();
+    await f.resolver.approve(f.taskId);
+    const before = await f.adapter.read(f.taskId);
+    f.values.ceiling = { ...f.values.ceiling, policy_digests: [k.kernelDigest("new-policy")] };
+    const previous = f.values.repository_fingerprint;
+    f.values.repository_fingerprint = k.kernelDigest("policy-and-outside-change");
+    f.setObservation({
+      kind: "repository_implementation",
+      previous_fingerprint: previous,
+      changed_paths: [".agentplane/policy/local.md", "outside/task.ts"],
+      evidence_digest: k.kernelDigest("native-diff"),
+    });
+    expect(await f.resolver.renewPolicy(f.taskId)).toMatchObject({ kind: "rejected" });
+    expect(await f.adapter.read(f.taskId)).toEqual(before);
+  });
+
+  it("refuses terminal task and uncertain effect renewal", async () => {
+    const f = await fixture();
+    await f.resolver.approve(f.taskId);
+    const read = await f.adapter.read(f.taskId);
+    if (read.kind !== "canonical") throw new Error(read.kind);
+    f.values.ceiling = { ...f.values.ceiling, policy_digests: [k.kernelDigest("new-policy")] };
+    for (const extra of [
+      { state: "CANCELLED" as const },
+      {
+        effects: [
+          {
+            id: "pending",
+            kind: "deploy",
+            state: "PENDING" as const,
+            idempotency_key: "pending",
+            request_digest: k.kernelDigest("pending"),
+            provider_receipt_digest: null,
+            observed_state_digest: null,
+            execution_requirements: {
+              scope_roots: [],
+              repository_effects: [],
+              external_effects: [],
+              capabilities: [],
+              resources: [],
+            },
+          },
+        ],
+      },
+    ]) {
+      f.replaceAggregate({ ...read.record.aggregate, ...extra });
+      const before = await f.adapter.read(f.taskId);
+      expect(await f.resolver.renewPolicy(f.taskId)).toMatchObject({ kind: "rejected" });
+      expect(await f.adapter.read(f.taskId)).toEqual(before);
+    }
+  });
   it.each([
     "manual_operator",
     "signed_user_receipt",

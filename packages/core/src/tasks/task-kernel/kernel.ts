@@ -1,5 +1,6 @@
 import {
   authorityDeltaApprovalEvidence,
+  policyRenewalIssues,
   authorityDigest,
   canonicalAuthorityIssues,
   continuationAdmissionIssues,
@@ -146,6 +147,7 @@ const EVENT_KIND: Readonly<Record<TaskCommand["kind"], DomainEvent["kind"]>> = {
   reject_plan: "plan_rejected",
   approve_plan: "plan_approved",
   continue_authority: "authority_continued",
+  renew_policy_authority: "authority_continued",
   approve_authority_delta: "authority_continued",
   materialize_work_items: "work_items_materialized",
   transition_work_item: "work_item_transitioned",
@@ -446,6 +448,29 @@ function preconditions(input: KernelInput): KernelResult | null {
     input.command.kind !== "supersede_effect"
   ) {
     return rejected("EFFECT_RECONCILIATION_REQUIRED", [uncertain.id], "reconcile_effect");
+  }
+  if (input.command.kind === "renew_policy_authority") {
+    const record = input.command.record;
+    const parent = input.aggregate.authority_lineage?.at(-1)?.authority;
+    const plan = input.aggregate.current_plan;
+    const issues =
+      !parent ||
+      !["ACTIVE", "BLOCKED", "HUMAN_REQUIRED", "FINAL_VALIDATION"].includes(
+        input.aggregate.state,
+      ) ||
+      plan?.state !== "APPROVED" ||
+      plan.revision !== parent.plan_revision ||
+      plan.digest !== parent.plan_digest ||
+      input.actor.kind !== "USER" ||
+      input.actor.transport !== "manual" ||
+      input.actor.id !== record.authority.provenance.actor_id ||
+      input.authority !== null ||
+      record.authority.repository_fingerprint !== input.repository_fingerprint ||
+      record.observation?.request_task_revision !== input.aggregate.revision ||
+      (parent.expires_at !== null &&
+        Date.parse(parent.expires_at) <= Date.parse(input.occurred_at)) ||
+      policyRenewalIssues(parent, record).length > 0;
+    return issues ? rejected("AUTHORITY_SCOPE_EXCEEDED", ["policy_renewal_binding"]) : null;
   }
   if (input.command.kind === "continue_authority") {
     const issues = continuationAdmissionIssues(input, input.command.record);
@@ -842,6 +867,7 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
       };
       break;
     }
+    case "renew_policy_authority":
     case "continue_authority": {
       next = {
         ...aggregate,
