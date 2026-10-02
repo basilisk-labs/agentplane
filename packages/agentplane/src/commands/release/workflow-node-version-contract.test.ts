@@ -11,7 +11,6 @@ const NODE_ENGINE_CONTRACTS = {
   "packages/agentplane/package.json": ">=24",
   "packages/core/package.json": ">=20.5.0",
   "packages/recipes/package.json": ">=20",
-  "website/package.json": ">=24",
 } as const;
 const DEPCRUISE_SCRIPT_PATH = path.resolve(process.cwd(), "scripts/checks/run-depcruise-arch.mjs");
 

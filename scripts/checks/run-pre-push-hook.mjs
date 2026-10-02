@@ -264,12 +264,7 @@ function isBranchRef(ref) {
 }
 
 function isDocsOnlyPath(filePath) {
-  return (
-    DOC_FILE_RE.test(filePath) ||
-    DOC_EXT_RE.test(filePath) ||
-    isUnder(filePath, "docs") ||
-    isUnder(filePath, "website/docs")
-  );
+  return DOC_FILE_RE.test(filePath) || DOC_EXT_RE.test(filePath) || isUnder(filePath, "docs");
 }
 
 function isTaskArtifactPath(filePath) {

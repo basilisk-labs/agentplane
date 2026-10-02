@@ -164,7 +164,7 @@ describeWhenNotHook(
       await mkdir(path.join(root, "packages", "recipes"), { recursive: true });
       await mkdir(path.join(root, "docs", "releases"), { recursive: true });
       await mkdir(path.join(root, "docs", "reference"), { recursive: true });
-      await mkdir(path.join(root, "scripts"), { recursive: true });
+      await mkdir(path.join(root, "scripts", "generate"), { recursive: true });
 
       await writeFile(
         path.join(root, "packages", "core", "package.json"),
@@ -207,7 +207,7 @@ describeWhenNotHook(
         "utf8",
       );
       await writeFile(
-        path.join(root, "scripts", "generate-website-docs.mjs"),
+        path.join(root, "scripts", "generate", "generate-package-reference.mjs"),
         [
           "import { mkdir, readFile, writeFile } from 'node:fs/promises';",
           "import path from 'node:path';",
