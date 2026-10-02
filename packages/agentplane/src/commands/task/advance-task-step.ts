@@ -93,6 +93,9 @@ async function advanceCanonicalRoute(opts: {
     transport: opts.transport,
     operation_id: `continuation:${opts.task_id}`,
   });
+  // The runtime keeps the approved policy in force throughout this task, including
+  // verification and provider routing after a policy-editing WorkItem completes.
+  opts = { ...opts, command: runtime.command };
   const planningCheckout = await canonicalPlanningCheckoutBoundary({
     command: opts.command,
     read: await runtime.adapter.read(opts.task_id),

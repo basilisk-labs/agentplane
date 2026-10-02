@@ -1,0 +1,11 @@
+ .../src/commands/task/advance-task-step.ts         |   3 +
+ .../src/commands/task/kernel-advance.test.ts       |   6 +-
+ .../commands/task/kernel-policy-baseline.test.ts   | 141 ++++++++++++++++
+ .../src/commands/task/kernel-policy-baseline.ts    | 188 +++++++++++++++++++++
+ .../commands/task/kernel-policy-completion.test.ts | 179 ++++++++++++++++++++
+ .../task/kernel-repository-coordinator.test.ts     |  66 +++++++-
+ .../commands/task/kernel-repository-coordinator.ts |  29 +++-
+ .../src/commands/task/kernel-runtime-context.ts    |  20 ++-
+ .../src/commands/task/kernel-semantic-result.ts    |   4 +-
+ .../commands/task/roadmap-terminal-noop.test.ts    |   6 +-
+ 10 files changed, 630 insertions(+), 12 deletions(-)

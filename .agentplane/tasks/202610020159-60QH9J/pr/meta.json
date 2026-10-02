@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202610020159-60QH9J/repair-authorized-policy-change-completion-and-r",
+  "created_at": "2026-10-02T03:22:12.106Z",
+  "diffstat_sha256": "sha256:39d73abbe2e526b6461303d8d49d908be44a4f2991e1f4fc31c8f10ff97fb493",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610020159-60QH9J",
+  "updated_at": "2026-10-02T03:22:12.106Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
