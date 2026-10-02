@@ -1,0 +1,387 @@
+---
+title: "Feature Delivery Implementation Roadmap"
+description: "Fifteen atomic implementation work items with executable dependencies and bounded acceptance."
+---
+
+## Status
+
+Planned implementation of [ADR 0018](../adr/0018-feature-deliveries-and-semantic-routing.md).
+The [delivery specification](./feature-deliveries.mdx) is the architectural contract.
+This backlog does not implement or authorize execution of the feature.
+
+## Executable representation
+
+The companion `docs/developer/feature-delivery-plan.json` is a compact v2 Plan input.
+It contains 15 canonical WorkItems, explicit dependency edges, output IDs, scope roots, acceptance
+criteria, and focused verification commands. Import it with the supported `task create --plan-file`
+operator interface. The CLI assigns the canonical Task ID and repository baseline.
+Creation does not approve or start implementation. Do not manually edit task-state artifacts.
+
+The WorkItems are atomic implementation tasks inside one canonical implementation Task.
+They are distinct from the future independent Tasks that can join a feature Delivery.
+Dependencies are enforced in the WorkItem graph rather than represented only in prose.
+
+## Dependency graph
+
+| Work item | Bounded outcome                                           | Depends on                             |
+| --------- | --------------------------------------------------------- | -------------------------------------- |
+| DLV-01    | Define the Delivery domain contract                       | None                                   |
+| DLV-02    | Persist delivery ownership atomically                     | DLV-01                                 |
+| DLV-03    | Admit semantic delivery proposals from planning           | DLV-01                                 |
+| DLV-04    | Resolve and freeze policy-compatible delivery routes      | DLV-02, DLV-03                         |
+| DLV-05    | Bind tasks and adopt explicitly selected feature branches | DLV-02, DLV-04                         |
+| DLV-06    | Reuse delivery workspaces under fenced writer leases      | DLV-05                                 |
+| DLV-07    | Execute independent member tasks sequentially             | DLV-06                                 |
+| DLV-08    | Track member evidence and aggregate candidate validity    | DLV-07                                 |
+| DLV-09    | Freeze delivery readiness and reopen on candidate changes | DLV-08                                 |
+| DLV-10    | Integrate each delivery exactly once through its gate     | DLV-09                                 |
+| DLV-11    | Recover escalations and retire deliveries conservatively  | DLV-07, DLV-10                         |
+| DLV-12    | Migrate legacy task and umbrella ownership                | DLV-05, DLV-11                         |
+| DLV-13    | Expose delivery selection and progress in CLI and docs    | DLV-04, DLV-07, DLV-09, DLV-11, DLV-12 |
+| DLV-14    | Qualify the complete feature delivery lifecycle           | DLV-10, DLV-11, DLV-12, DLV-13         |
+| DLV-15    | Coalesce redundant delivery service commits               | DLV-14                                 |
+
+## Execution rules
+
+Use a fresh supervisor packet for each semantic episode. Keep changes within the WorkItem scope.
+A failed dependency blocks its consumers. Add each named regression suite during its implementation;
+the test paths are planned deliverables and are not present or passing by virtue of this document.
+Use the repository-native checks in addition to the focused contract where required by the packet.
+Do not skip a missing suite or use a pass-with-no-tests option.
+
+Each result records changed paths, verification commands and outcomes, evidence digests, and residual
+risks. Deliver one reviewable outcome per WorkItem. Preserve existing task and provider behavior until
+the relevant rollout gate passes. No external writes are authorized by this backlog.
+
+## Atomic contracts
+
+### DLV-01: Define the Delivery domain contract
+
+Depends on: none.
+Output: `dlv-01-result`.
+
+Integration area: Existing Task Kernel domain and generated contract schemas.
+
+Scope: `packages/core/src/tasks`, `packages/core/schemas`, `packages/spec/schemas`, `schemas`.
+
+Acceptance:
+
+- Add versioned path-neutral Delivery identity, membership, route decision, candidate, state and receipt contracts using the existing schema source of truth.
+- Pure transitions enforce OPEN, READY, INTEGRATING, INTEGRATED and RETIRED invariants without a second Task state machine.
+- Reject invalid transitions and duplicate member identity; round-trip fixtures and deterministic replay pass.
+
+Focused verification:
+
+```bash
+bun run test:project core packages/core/src/tasks/delivery-contract.test.ts
+```
+
+### DLV-02: Persist delivery ownership atomically
+
+Depends on: DLV-01.
+Output: `dlv-02-result`.
+
+Integration area: Task backend transactions and canonical delivery registry.
+
+Scope: `packages/agentplane/src`.
+
+Acceptance:
+
+- Persist Delivery revisions and task bindings through existing backend transaction boundaries.
+- Enforce unique active task membership and branch/workspace ownership with compare-and-swap.
+- Concurrent bind attempts have one winner; retry and crash after persistence return the same receipt.
+
+Focused verification:
+
+```bash
+bun run test:project agentplane packages/agentplane/src/commands/task/delivery-store.test.ts
+```
+
+### DLV-03: Admit semantic delivery proposals from planning
+
+Depends on: DLV-01.
+Output: `dlv-03-result`.
+
+Integration area: Planner WorkOrder, semantic payload and plan intake.
+
+Scope: `packages/core/src/runner`, `packages/core/src/tasks`, `packages/agentplane/src/commands/task`.
+
+Acceptance:
+
+- Accept mode preference, new/existing membership intent, explicit delivery ID, effects, uncertainty, reversibility and rationale.
+- Keep the semantic proposal distinct from authority and from the final CLI route.
+- Reject malformed proposals and unauthorized effects; retain compatible existing planner payloads through explicit version handling.
+
+Focused verification:
+
+```bash
+bun run test:project agentplane packages/agentplane/src/commands/task/delivery-proposal.test.ts
+```
+
+### DLV-04: Resolve and freeze policy-compatible delivery routes
+
+Depends on: DLV-02, DLV-03.
+Output: `dlv-04-result`.
+
+Integration area: Existing task execution resolver and decision persistence.
+
+Scope: `packages/agentplane/src/runtime/task-routing`, `packages/agentplane/src/commands/task`.
+
+Acceptance:
+
+- Resolve explicit compatible membership before new allocation, then enforce repository floors and risk requirements.
+- Persist proposal digest, policy version, selected delivery/mode, reasons and base identity before implementation.
+- Table tests cover safe direct, forced PR, existing feature, invalid membership, unknown scope and deterministic retry; task size alone cannot lower a gate.
+
+Focused verification:
+
+```bash
+bun run test:project agentplane packages/agentplane/src/runtime/task-routing/delivery-route.test.ts
+```
+
+### DLV-05: Bind tasks and adopt explicitly selected feature branches
+
+Depends on: DLV-02, DLV-04.
+Output: `dlv-05-result`.
+
+Integration area: Canonical task intake and delivery membership commands.
+
+Scope: `packages/agentplane/src`.
+
+Acceptance:
+
+- Create or join an OPEN delivery through typed commands; validate existing branch ownership and preserve its commits.
+- Bind independent Tasks before execution; record immutable intake base and distinct delivery start head.
+- Duplicate requests return the existing binding; incompatible targets and conflicting owners fail without creating another branch.
+
+Focused verification:
+
+```bash
+bun run test:project agentplane packages/agentplane/src/commands/task/delivery-binding.test.ts
+```
+
+### DLV-06: Reuse delivery workspaces under fenced writer leases
+
+Depends on: DLV-05.
+Output: `dlv-06-result`.
+
+Integration area: Workspace allocator and lease adapter.
+
+Scope: `packages/core/src/git`, `packages/agentplane/src`.
+
+Acceptance:
+
+- Allocate one worktree per shared delivery and resolve TODO membership before task-local worktree preparation.
+- Lease acquisition binds task attempt, expected head and fencing token; concurrent and stale writers cannot mutate the checkout.
+- Restart, changed title and repository relocation recover the recorded branch and workspace without duplicate allocation.
+
+Focused verification:
+
+```bash
+bun run test:project agentplane packages/agentplane/src/commands/task/delivery-workspace.test.ts
+```
+
+### DLV-07: Execute independent member tasks sequentially
+
+Depends on: DLV-06.
+Output: `dlv-07-result`.
+
+Integration area: Supervisor and WorkOrder routing.
+
+Scope: `packages/agentplane/src/commands/task`, `packages/agentplane/src/commands/shared`, `packages/agentplane/src/runner`.
+
+Acceptance:
+
+- Execute A then B in one delivery; B begins at the accepted A head with its own Plan and execution grant.
+- Require accepted result, persisted evidence and accounted-for clean state before writer handoff; failed or dirty A blocks B.
+- Completing a member neither merges nor cleans the delivery; adding C to OPEN reuses the same workspace.
+
+Focused verification:
+
+```bash
+bun run test:project agentplane packages/agentplane/src/commands/task/delivery-sequential.test.ts
+```
+
+### DLV-08: Track member evidence and aggregate candidate validity
+
+Depends on: DLV-07.
+Output: `dlv-08-result`.
+
+Integration area: Verification input contracts and validation persistence.
+
+Scope: `packages/core/src/tasks`, `packages/agentplane/src/commands/task`, `packages/agentplane/src/commands/shared`.
+
+Acceptance:
+
+- Bind each member validation to its input/output heads, content, plan and check-input digests.
+- Preserve historical member validation while invalidating combined evidence affected by subsequent work or base updates.
+- Expose validated-task versus integrated-delivery facts separately; service-only artifacts cannot cause unbounded verification loops.
+
+Focused verification:
+
+```bash
+bun run test:project agentplane packages/agentplane/src/commands/task/delivery-verification.test.ts
+```
+
+### DLV-09: Freeze delivery readiness and reopen on candidate changes
+
+Depends on: DLV-08.
+Output: `dlv-09-result`.
+
+Integration area: Delivery readiness transitions and reservation input.
+
+Scope: `packages/core/src/tasks`, `packages/agentplane/src/commands/task`.
+
+Acceptance:
+
+- READY requires all required members validated, no writer, clean accounted-for workspace and aggregate checks.
+- Freeze membership, candidate SHA, target SHA and policy/evidence digests in one readiness receipt.
+- Adding a member or changing candidate/base invalidates the receipt; integration under the old receipt is rejected.
+
+Focused verification:
+
+```bash
+bun run test:project agentplane packages/agentplane/src/commands/task/delivery-readiness.test.ts
+```
+
+### DLV-10: Integrate each delivery exactly once through its gate
+
+Depends on: DLV-09.
+Output: `dlv-10-result`.
+
+Integration area: Existing integration queue and provider adapters.
+
+Scope: `packages/agentplane/src`.
+
+Acceptance:
+
+- Use one serialized reservation per delivery; direct uses the existing queue and branch_pr uses the provider as sole merge authority.
+- Guard provider merge with exact candidate identity, reconcile its receipt and synchronize the local target; never fall back to local merge.
+- Head/base movement, unavailable provider, and a crash after successful merge preserve recoverable state; retries cannot duplicate the merge.
+
+Focused verification:
+
+```bash
+bun run test:project agentplane packages/agentplane/src/commands/task/delivery-integration.test.ts
+```
+
+### DLV-11: Recover escalations and retire deliveries conservatively
+
+Depends on: DLV-07, DLV-10.
+Output: `dlv-11-result`.
+
+Integration area: Route recovery, operation journal and merged workspace cleanup.
+
+Scope: `packages/agentplane/src`.
+
+Acceptance:
+
+- Strengthening direct to PR preserves implementation and evidence, records a new decision, and requires any additional authority.
+- Moving or splitting membership is explicit; outstanding effects are reconciled using stable operation IDs.
+- Only delivery retirement may clean the workspace; active leases, open features, dirty files and unpublished unique commits prevent deletion.
+
+Focused verification:
+
+```bash
+bun run test:project agentplane packages/agentplane/src/commands/task/delivery-recovery.test.ts
+```
+
+### DLV-12: Migrate legacy task and umbrella ownership
+
+Depends on: DLV-05, DLV-11.
+Output: `dlv-12-result`.
+
+Integration area: Versioned migration adapter and compatibility projections.
+
+Scope: `packages/agentplane/src`.
+
+Acceptance:
+
+- Import a single-task branch as one member and a coherent umbrella as one shared delivery without Git or provider effects.
+- Ambiguous branches, conflicting task bindings or inconsistent PR/base identities produce typed repair output and no partial migration.
+- Migration records old/new digests and is idempotent; rollback disables new admissions while retaining active state and unresolved receipts.
+
+Focused verification:
+
+```bash
+bun run test:project agentplane packages/agentplane/src/commands/task/delivery-migration.test.ts
+```
+
+### DLV-13: Expose delivery selection and progress in CLI and docs
+
+Depends on: DLV-04, DLV-07, DLV-09, DLV-11, DLV-12.
+Output: `dlv-13-result`.
+
+Integration area: Command catalog, status/explain projections and user documentation.
+
+Scope: `packages/agentplane/src`, `docs`.
+
+Acceptance:
+
+- Expose supported create/join/ready/recover actions through existing operator and supervisor boundaries; generate CLI reference from actual commands.
+- Compact status includes task, delivery, route reason, branch, worktree, target, writer, validation, PR and next action.
+- User scenarios cover small direct work, one-task PR and incremental feature tasks; no runtime internals appear in the normal user flow.
+
+Focused verification:
+
+```bash
+bun run test:project agentplane packages/agentplane/src/commands/task/delivery-cli.test.ts
+```
+
+### DLV-14: Qualify the complete feature delivery lifecycle
+
+Depends on: DLV-10, DLV-11, DLV-12, DLV-13.
+Output: `dlv-14-result`.
+
+Integration area: CLI integration harness and repeatable efficiency report.
+
+Scope: `packages/agentplane/src`, `packages/testkit/src`, `docs`.
+
+Acceptance:
+
+- A real local Git fixture runs independent A, B and C through one branch/worktree/PR identity and one integration with isolated provider fixtures.
+- Qualify concurrent writer rejection, new TODO membership, restart, relocation, escalation, stale head, dirty handoff, unavailable provider and interrupted merge.
+- Record before/after allocation, service-commit, check, provider-call, model-turn and elapsed-time measurements; block rollout on invariant failures.
+
+Focused verification:
+
+```bash
+bun run test:project agentplane packages/agentplane/src/cli/run-cli.core.delivery-lifecycle.test.ts
+```
+
+### DLV-15: Coalesce redundant delivery service commits
+
+Depends on: DLV-14.
+Output: `dlv-15-result`.
+
+Integration area: Artifact commit policy and measured delivery overhead.
+
+Scope: `packages/agentplane/src`, `docs`.
+
+Acceptance:
+
+- Use the qualified baseline to select one bounded redundant artifact-commit path for coalescing.
+- Preserve durable receipts, exact verification inputs, provider head consistency and interruption recovery; do not squash user implementation history.
+- The same lifecycle fixture has fewer service commits without added checks or lost evidence; document measured results and retain existing behavior when coalescing is unsafe.
+
+Focused verification:
+
+```bash
+bun run test:project agentplane packages/agentplane/src/commands/task/delivery-artifact-coalescing.test.ts
+```
+
+## Rollout gates
+
+1. DLV-01 through DLV-05 admit and persist delivery identities without enabling execution.
+2. DLV-06 through DLV-09 qualify shared execution and candidate validity behind rollout control.
+3. DLV-10 through DLV-14 qualify integration, migration, recovery, UX and the complete lifecycle.
+4. DLV-15 reduces measured overhead after correctness is established.
+
+Rollback stops new delivery admission and preserves accepted bindings, unique work and operation
+receipts. It never re-enables concurrent writes in a shared checkout or fabricates provider success.
+
+## Non-goals
+
+This roadmap does not change repository policy to allow direct mode, deploy a release, rewrite
+existing Git history, or automatically merge an implementation PR. Those actions need their own
+matching operator authority. It does not introduce a separate autonomous routing agent.
