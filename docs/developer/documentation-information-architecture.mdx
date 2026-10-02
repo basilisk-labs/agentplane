@@ -121,10 +121,7 @@ Implementation and harness-development docs live behind the direct-link develope
 
 1. Find the owning page by using the mapping table above.
 2. Confirm behavior in code before editing text.
-3. Update navigation and site wiring if a page is added, renamed, or removed:
-   - `docs/index.mdx`
-   - `website/sidebars.ts`
-   - `website/docusaurus.config.ts`
+3. Update `docs/index.mdx` if a page is added, renamed, or removed. Update links in [agentplane-web](https://github.com/basilisk-labs/agentplane-web) separately when needed.
 4. If command output changed, regenerate `docs/user/cli-reference.generated.mdx`.
 5. Run the docs task verification checklist before closing the task.
 

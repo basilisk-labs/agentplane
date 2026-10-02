@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The diff from the original evaluated implementation to current HEAD contains only task artifacts; framework source, scripts, workflows, and documentation are unchanged.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609301724-M0S90X/quality/objects/sha256/53e14bd0abdcd96c0727b31c45017c3df025a66456b872c47f189a3a6c800a23.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "All nine native final verification commands passed, including full local CI after increasing the Node heap to 4096 MB and the local suite timeout to 3600000 ms.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202609301724-M0S90X/quality/objects/sha256/53e14bd0abdcd96c0727b31c45017c3df025a66456b872c47f189a3a6c800a23.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

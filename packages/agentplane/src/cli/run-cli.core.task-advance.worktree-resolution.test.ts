@@ -81,7 +81,6 @@ async function writeHarnessGitignore(root: string): Promise<void> {
       "packages/core/package.json",
       "packages/recipes/dist",
       "packages/recipes/package.json",
-      "website/node_modules",
       "",
     ].join("\n"),
     "utf8",

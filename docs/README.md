@@ -9,9 +9,7 @@ Page text lives in the Markdown and MDX files under this directory.
 
 `docs/index.mdx` is the published reading order for the docs site. If you are reading this in GitHub, start there.
 
-`website/` is the site shell that renders and deploys the public docs. It owns sidebar wiring, routing, layout, and presentation. It does not define canonical page content.
-
-`website/sidebars.ts` is the active navigation manifest for the public docs site.
+The static homepage and blog live in [basilisk-labs/agentplane-web](https://github.com/basilisk-labs/agentplane-web). That repository builds and publishes independently. It links to the canonical documentation here and does not import it during builds.
 
 Marketing and positioning source documents live in the independent
 [`basilisk-labs/agentplane-marketing`](https://github.com/basilisk-labs/agentplane-marketing)
@@ -47,8 +45,6 @@ When adding or moving pages, update these files together:
 
 - `docs/index.mdx`
 - `docs/README.md`
-- `website/sidebars.ts`
-- `website/docusaurus.config.ts`
 
 Generated command reference:
 

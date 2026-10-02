@@ -176,7 +176,7 @@ describe("task-worktree install layout materialization", () => {
     ).toBe(localCore);
   });
 
-  it("preserves healthy workspace, website, and package-local reuse", async () => {
+  it("preserves healthy workspace and package-local reuse", async () => {
     const repoRoot = await temporaryRepo();
     const worktreePath = path.join(repoRoot, ".agentplane", "worktrees", "current");
     await writeRootManifest(repoRoot);
@@ -186,7 +186,6 @@ describe("task-worktree install layout materialization", () => {
       '{"name":"eslint"}\n',
       "utf8",
     );
-    await mkdir(path.join(repoRoot, "website", "node_modules"), { recursive: true });
     await mkdir(path.join(repoRoot, "packages", "core", "node_modules"), { recursive: true });
     await writeFile(
       path.join(repoRoot, "packages", "core", "node_modules", "marker.txt"),
@@ -198,13 +197,11 @@ describe("task-worktree install layout materialization", () => {
     await materializeRepoLocalInstallLayoutForWorktree({ repoRoot, worktreePath });
 
     const workspaceNodeModules = await lstat(path.join(worktreePath, "node_modules"));
-    const websiteNodeModules = await lstat(path.join(worktreePath, "website", "node_modules"));
 
     expect(workspaceNodeModules.isSymbolicLink()).toBe(true);
     expect(await readlink(path.join(worktreePath, "node_modules"))).toBe(
       path.join(repoRoot, "node_modules"),
     );
-    expect(websiteNodeModules.isSymbolicLink()).toBe(true);
     await expect(
       readFile(path.join(worktreePath, "packages", "core", "node_modules", "marker.txt"), "utf8"),
     ).resolves.toBe("healthy\n");

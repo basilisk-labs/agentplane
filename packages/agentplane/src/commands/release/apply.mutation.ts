@@ -209,7 +209,7 @@ export async function maybeRefreshGeneratedReference(
   gitRoot: string,
   fileExists: (p: string) => Promise<boolean>,
 ): Promise<boolean> {
-  const scriptPath = path.join(gitRoot, "scripts", "generate-website-docs.mjs");
+  const scriptPath = path.join(gitRoot, "scripts", "generate", "generate-package-reference.mjs");
   if (!(await fileExists(scriptPath))) return false;
 
   try {
@@ -226,7 +226,7 @@ export async function maybeRefreshGeneratedReference(
       message:
         "Failed to refresh docs/reference/generated-reference.mdx after bumping release versions.\n" +
         "Fix:\n" +
-        "  1) Run `node scripts/generate-website-docs.mjs`\n" +
+        "  1) Run `node scripts/generate/generate-package-reference.mjs`\n" +
         "  2) Re-run `agentplane release apply`\n" +
         (e?.message ? `\nDetails:\n${e.message}` : ""),
     });

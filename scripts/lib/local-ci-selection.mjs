@@ -27,7 +27,6 @@ const {
 
 const DOCS_ONLY_PATTERNS = [
   /^docs\//,
-  /^website\//,
   /^\.agentplane\/tasks\//,
   /^\.agentplane\/policy\//,
   /^AGENTS\.md$/,
@@ -441,7 +440,7 @@ export function selectFastCiPlan(changedFiles) {
   const effectiveFiles = stripNeutralPaths(files, NEUTRAL_TASK_ARTIFACT_PATTERNS);
 
   if (everyPathMatches(effectiveFiles, DOCS_ONLY_PATTERNS)) {
-    return { kind: "docs-only", reason: "docs_policy_website_only", files };
+    return { kind: "docs-only", reason: "docs_policy_only", files };
   }
 
   if (everyPathMatches(effectiveFiles, HOSTED_CLOSE_PR_BUCKET_PATTERNS)) {
@@ -815,10 +814,7 @@ function fastStepReports({ runCliDocsCheck }) {
 
 function fullOnlyStepReports() {
   return [
-    commandStep(
-      "Docs site pipeline (generate + typecheck + build + design)",
-      "bun run docs:site:check",
-    ),
+    commandStep("Documentation contracts", "bun run docs:check"),
     commandStep("Workflows lint (actionlint)", "bun run workflows:lint"),
     commandStep("Windows platform-critical tests", "bun run test:platform-critical"),
     commandStep(
