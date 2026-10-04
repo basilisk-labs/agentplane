@@ -1,0 +1,11 @@
+ bun.lock                                           |   4 +
+ packages/core/src/tasks/index.ts                   |   1 +
+ packages/recipes/package.json                      |   4 +
+ packages/recipes/src/index.ts                      |   1 +
+ packages/recipes/src/resolver-contracts.ts         |   2 +-
+ .../recipes/src/roadmap-scenario-v2-parser.test.ts | 153 +++++++++++++++++++++
+ packages/recipes/src/scenario-contracts.ts         |   2 +
+ packages/recipes/src/scenario-v2.ts                |  66 +++++++++
+ packages/recipes/src/scenario.ts                   |  15 ++
+ packages/recipes/tsconfig.json                     |   7 +-
+ 10 files changed, 253 insertions(+), 2 deletions(-)

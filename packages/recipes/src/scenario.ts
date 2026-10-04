@@ -9,6 +9,7 @@ import {
   requiredFieldMessage,
 } from "./internal-utils.js";
 import { normalizeScenarioId } from "./normalize.js";
+import { parseScenarioV2, type ScenarioV2Definition } from "./scenario-v2.js";
 import type {
   RecipeManifest,
   RecipeScenarioDetail,
@@ -199,6 +200,20 @@ function validateScenarioDefinition(raw: unknown, sourcePath: string): ScenarioD
     evidence: normalizeScenarioEvidence(raw.evidence, sourcePath),
     steps: raw.steps,
   };
+}
+
+/** Explicit format negotiation. The default reader remains V1-only. */
+export function parseScenarioDefinition(
+  raw: unknown,
+  supportedVersions: readonly ("1" | "2")[] = ["1"],
+): ScenarioDefinition | ScenarioV2Definition {
+  if (!isRecord(raw)) throw new Error("Invalid scenario: expected object");
+  // Missing version is the historical V1 format, never an implicit V2 upgrade.
+  const version = raw.schema_version === undefined ? "1" : raw.schema_version;
+  if ((version !== "1" && version !== "2") || !supportedVersions.includes(version)) {
+    throw new Error(`Unsupported scenario API version: ${JSON.stringify(version)}`);
+  }
+  return version === "2" ? parseScenarioV2(raw) : validateScenarioDefinition(raw, "scenario");
 }
 
 export async function readScenarioDefinition(filePath: string): Promise<ScenarioDefinition> {

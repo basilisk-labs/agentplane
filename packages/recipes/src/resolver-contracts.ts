@@ -3,7 +3,7 @@ import type { RecipeTaskTemplate } from "./manifest-contracts.js";
 export type RecipeResolverContext = {
   agentplane_version: string;
   manifest_api_version: "1" | "2";
-  scenario_api_version: "1";
+  scenario_api_version: "1" | "2";
   runtime_api_version: "1";
   platform: string;
   repo_types: string[];

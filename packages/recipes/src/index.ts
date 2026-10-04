@@ -5,4 +5,5 @@ export * from "./manifest.js";
 export * from "./normalize.js";
 export * from "./overlay.js";
 export * from "./scenario.js";
+export * from "./scenario-v2.js";
 export * from "./types.js";

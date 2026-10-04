@@ -1,0 +1,21 @@
+{
+  "base": "origin/main",
+  "branch": "task/202610041748-K43XFE/implement-and-qualify-agentplane-0-7-13-scenario",
+  "created_at": "2026-10-04T18:13:17.876Z",
+  "diffstat_sha256": "sha256:699ea52c414272902e64ed3e309d5dbd49bd38064d9b1097c1c73061a79bf6c6",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610041748-K43XFE",
+  "updated_at": "2026-10-04T18:13:17.876Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
