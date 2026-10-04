@@ -125,7 +125,7 @@ export type CanonicalApprovalMode =
   | "repository_policy";
 
 export type AuthorityObservation = Readonly<{
-  kind: "plan_amendment" | "repository_implementation" | "authority_delta";
+  kind: "plan_amendment" | "repository_implementation" | "authority_delta" | "policy_renewal";
   evidence_digest: Sha256Digest;
   previous_fingerprint: Sha256Digest;
   changed_paths: readonly string[];
@@ -289,6 +289,7 @@ export type TaskCommand =
       }
     >
   | CommandEnvelope<"continue_authority", { record: CanonicalAuthorityRecord }>
+  | CommandEnvelope<"renew_policy_authority", { record: CanonicalAuthorityRecord }>
   | CommandEnvelope<
       "approve_authority_delta",
       {

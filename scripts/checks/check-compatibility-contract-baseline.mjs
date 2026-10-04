@@ -318,6 +318,7 @@ function validateReviewedCandidate({
     "compatibility candidate id drift",
   );
   const cliSourceTasks = [
+    "202609301755-N31BSK",
     "202609292230-6GZ3RV",
     "202609271356-4SANDJ",
     "202609232231-BYSVV6",
@@ -365,6 +366,7 @@ function validateReviewedCandidate({
     "202609261720-KKE9ZN",
   ];
   const expectedSourceTasks = [
+    "202609301755-N31BSK",
     "202609292230-6GZ3RV",
     "202609271356-4SANDJ",
     "202609232231-BYSVV6",
@@ -2424,6 +2426,13 @@ function validateReviewedCandidate({
       valueHint: "<base64url>",
     },
     {
+      command: "task plan approve",
+      name: "renew-authority",
+      kind: "boolean",
+      default: false,
+      valueHint: null,
+    },
+    {
       command: "task plan recover-rejection",
       name: "by",
       kind: "string",
@@ -3034,6 +3043,12 @@ function validateReviewedCandidate({
       command: "task plan approve",
       name: "host-user-decision",
       source_task: "202608211020-FGAPJC",
+    },
+    {
+      kind: "option",
+      command: "task plan approve",
+      name: "renew-authority",
+      source_task: "202609301755-N31BSK",
     },
     {
       kind: "option",
