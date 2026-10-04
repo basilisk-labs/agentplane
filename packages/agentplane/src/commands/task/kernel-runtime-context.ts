@@ -126,12 +126,20 @@ export async function createKernelRuntime(opts: {
           ]),
         ],
       };
+      // Explicit operator approval must observe current policy. This only supplies
+      // observations; the authority resolver still validates and issues the approval.
+      // In particular, the policy-renewal route must not renew the frozen digest.
+      const explicitPolicyApproval =
+        opts.transport === "manual" &&
+        opts.operation_id === `approve:${opts.task_id}` &&
+        opts.approval?.kind === "manual_operator" &&
+        /^USER(?::[A-Za-z0-9._@-]+)?$/u.test(opts.approval.actor_id);
       const policy = await resolveKernelPolicyBaseline({
         root: ctx.resolvedProject.gitRoot,
         observation_directory: observationDir,
         config: liveConfig,
         repository,
-        approved,
+        approved: explicitPolicyApproval ? undefined : approved,
         items,
       });
       ctx.config = policy.config;

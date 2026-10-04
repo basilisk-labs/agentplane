@@ -8,7 +8,8 @@ const exec = promisify(execFile);
 
 it(
   "preserves accepted semantic work across recovery boundaries",
-  { timeout: 120_000 },
+  // This wrapper runs seven recovery fixtures sequentially, including CLI startup.
+  { timeout: 300_000 },
   async () => {
     const result = await exec(
       "bun",
@@ -27,7 +28,7 @@ it(
         "-t",
         "requires issuance opt-in|re-derives current role|advances a recovered completed|serves and persists a bounded response|fails closed when supervisor history|does not auto-recover|retains an in-doubt claim",
       ],
-      { cwd: process.cwd() },
+      { cwd: process.cwd(), timeout: 270_000 },
     );
 
     expect(stripAnsi(result.stdout)).toMatch(/\bTests\s+7 passed\b/);

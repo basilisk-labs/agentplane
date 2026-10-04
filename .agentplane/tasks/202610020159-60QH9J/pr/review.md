@@ -29,19 +29,20 @@ Created: 2026-10-02T03:22:12.106Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .../src/cli/run-cli.core.roadmap-recovery.test.ts  |   5 +-
  .../src/commands/task/advance-task-step.ts         |   3 +
  .../direct-task-verification.sequence.cases.ts     |   2 +
  .../src/commands/task/direct-task-verification.ts  |   2 +
  .../src/commands/task/kernel-advance.test.ts       |   6 +-
- .../commands/task/kernel-policy-baseline.test.ts   | 141 ++++++++++++++++
- .../src/commands/task/kernel-policy-baseline.ts    | 188 +++++++++++++++++++++
- .../commands/task/kernel-policy-completion.test.ts | 179 ++++++++++++++++++++
- .../task/kernel-repository-coordinator.test.ts     |  66 +++++++-
- .../commands/task/kernel-repository-coordinator.ts |  29 +++-
- .../src/commands/task/kernel-runtime-context.ts    |  20 ++-
+ .../commands/task/kernel-policy-baseline.test.ts   | 141 ++++++++++++++
+ .../src/commands/task/kernel-policy-baseline.ts    | 188 ++++++++++++++++++
+ .../commands/task/kernel-policy-completion.test.ts | 209 +++++++++++++++++++++
+ .../task/kernel-repository-coordinator.test.ts     |  66 ++++++-
+ .../commands/task/kernel-repository-coordinator.ts |  29 ++-
+ .../src/commands/task/kernel-runtime-context.ts    |  28 ++-
  .../src/commands/task/kernel-semantic-result.ts    |   4 +-
  .../commands/task/roadmap-terminal-noop.test.ts    |   6 +-
- 12 files changed, 634 insertions(+), 12 deletions(-)
+ 13 files changed, 675 insertions(+), 14 deletions(-)
 ```
 
 </details>

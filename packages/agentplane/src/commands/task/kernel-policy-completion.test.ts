@@ -149,6 +149,36 @@ describe("authorized policy result completion", { timeout: 180_000 }, () => {
       });
       return { command, runtime };
     };
+    for (const [transport, operation, actor, current] of [
+      ["manual", `approve:${id}`, "USER", true],
+      ["manual", `approve:${id}`, "EXECUTOR", false],
+      ["host", `approve:${id}`, "USER", false],
+      ["manual", "policy-result-test", "USER", false],
+    ] as const) {
+      const command = await loadCommandContext({ cwd, rootOverride: cwd });
+      const approvalRuntime = await createKernelRuntime({
+        command,
+        task_id: id,
+        transport,
+        operation_id: operation,
+        approval: { kind: "manual_operator", actor_id: actor, invocation_id: "policy-test" },
+      });
+      const context = await approvalRuntime.native.readContext(id);
+      expect(approvalRuntime.command.config.authority.mode).toBe(
+        current ? "all" : originalConfig.authority.mode,
+      );
+      const record = await approvalRuntime.adapter.read(id);
+      if (record.kind !== "canonical") throw new Error("Missing approval fixture");
+      const approvedDigest = record.record.aggregate.authority_lineage!.findLast(
+        (entry) => entry.approval_mode !== null,
+      )!.authority.policy_digests;
+      if (current) expect(context.ceiling.policy_digests).not.toEqual(approvedDigest);
+      else expect(context.ceiling.policy_digests).toEqual(approvedDigest);
+      // Observing a pending operator approval cannot issue authority by itself.
+      expect(record.record.aggregate.current_plan?.digest).toBe(
+        work.canonical_binding?.plan_digest,
+      );
+    }
     const commit = vi
       .spyOn(commits, "cmdCommit")
       .mockRejectedValueOnce(new Error("simulated hook failure"));
