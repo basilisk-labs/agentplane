@@ -41,3 +41,5 @@ export type RecipeScenarioDetail = {
   steps?: unknown[];
   source: "definition" | "index" | "manifest";
 };
+
+export type { ScenarioV2Definition, ScenarioParameter, ScenarioPredicate } from "./scenario-v2.js";

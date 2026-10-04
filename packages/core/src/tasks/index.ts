@@ -298,6 +298,7 @@ export {
   parseTaskPlanProposal,
   normalizeTaskPlanProposal,
   TASK_PLAN_PROPOSAL_INPUT_ZOD_SCHEMA,
+  COMPACT_TASK_PLAN_PROPOSAL_ZOD_SCHEMA,
   REPOSITORY_SNAPSHOT_ZOD_SCHEMA,
   TASK_PLAN_PROPOSAL_ZOD_SCHEMA,
   type ParsedTaskPlanProposal,
