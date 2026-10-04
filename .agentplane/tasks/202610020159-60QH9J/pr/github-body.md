@@ -28,6 +28,8 @@ User explicitly authorizes implementing and testing a bounded repair for task 20
 
 ```text
  .../src/commands/task/advance-task-step.ts         |   3 +
+ .../direct-task-verification.sequence.cases.ts     |   2 +
+ .../src/commands/task/direct-task-verification.ts  |   2 +
  .../src/commands/task/kernel-advance.test.ts       |   6 +-
  .../commands/task/kernel-policy-baseline.test.ts   | 141 ++++++++++++++++
  .../src/commands/task/kernel-policy-baseline.ts    | 188 +++++++++++++++++++++
@@ -37,7 +39,7 @@ User explicitly authorizes implementing and testing a bounded repair for task 20
  .../src/commands/task/kernel-runtime-context.ts    |  20 ++-
  .../src/commands/task/kernel-semantic-result.ts    |   4 +-
  .../commands/task/roadmap-terminal-noop.test.ts    |   6 +-
- 10 files changed, 630 insertions(+), 12 deletions(-)
+ 12 files changed, 634 insertions(+), 12 deletions(-)
 ```
 
 </details>

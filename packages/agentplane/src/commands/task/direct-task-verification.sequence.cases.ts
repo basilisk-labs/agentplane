@@ -32,6 +32,8 @@ afterEach(async () => {
 
 describe("direct task verification sequences", () => {
   it.each([
+    { script: "test:fast", explicitTimeout: undefined, expectedTimeout: 60 * 60_000 },
+    { script: "test:fast", explicitTimeout: 1000, expectedTimeout: 1000 },
     { script: "release:prepublish", explicitTimeout: undefined, expectedTimeout: 150 * 60_000 },
     { script: "release:prepublish", explicitTimeout: 1000, expectedTimeout: 1000 },
     { script: "release:prepublish:fast", explicitTimeout: undefined, expectedTimeout: 30 * 60_000 },

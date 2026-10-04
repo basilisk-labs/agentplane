@@ -1,0 +1,57 @@
+{
+  "checks": [
+    {
+      "check_ids": [],
+      "command": "bun run test:fast -- packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-semantic-result.test.ts packages/agentplane/src/runner/usecases/kernel-authority.test.ts",
+      "duration_ms": 13602,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:e9970e0222261dcb51b9dea12a6e40fd0d1f3cc919e27603192ff802cba00905",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "test:fast",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane --project core --project recipes --project testkit --maxWorkers=4 packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-semantic-result.test.ts packages/agentplane/src/runner/usecases/kernel-authority.test.ts\n",
+      "stdout_tail": "\n RUN  v4.1.11 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610020159-60QH9J-repair-authorized-policy-change-completion-and-r\n\n\n Test Files  3 passed (3)\n      Tests  33 passed (33)\n   Start at  06:23:50\n   Duration  9.71s (transform 13.05s, setup 538ms, import 19.69s, tests 1.24s, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [],
+      "command": "bun run typecheck",
+      "duration_ms": 1222,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:e9970e0222261dcb51b9dea12a6e40fd0d1f3cc919e27603192ff802cba00905",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [],
+      "command": "bun run test:fast",
+      "duration_ms": 1804105,
+      "exit_code": 143,
+      "runtime": {
+        "environment_digest": "sha256:e9970e0222261dcb51b9dea12a6e40fd0d1f3cc919e27603192ff802cba00905",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "test:fast",
+      "stderr_tail": "ent\":\"workflow-runtime\",\"event\":\"workflow_doctor_check\",\"details\":{\"ok\":true,\"findings\":0}}\nℹ️ doctor: checking workspace\nℹ️ doctor: checking branch_pr drift\nℹ️ doctor: checking runtime source\nℹ️ doctor: checking prompt graph\nℹ️ doctor: checking recent task archive\n⚠️ doctor findings: errors=0 warnings=0 info=1\n- [INFO] State: local plan approval requires a host-originated user decision\nLikely cause: no trusted signed-receipt issuer is configured\nNext action: ap task advance <task-id> --agent-json (present the emitted host_user_decision request in Codex; use task plan approve --by USER only as explicit manual compatibility)\nDetails: Reason code: host_user_decision_required\n  - AgentPlane will not emit an unavailable signed_user_receipt transport.\n  - A managed runner cannot synthesize the user decision and stops at the plan boundary.\nℹ️ doctor: checking workflow contract\n{\"ts\":\"2026-10-02T03:48:30.460Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_doctor_check\",\"details\":{\"ok\":true,\"findings\":0}}\nℹ️ doctor: checking workspace\nℹ️ doctor: checking branch_pr drift\nℹ️ doctor: checking runtime source\nℹ️ doctor: checking prompt graph\nℹ️ doctor: checking recent task archive\n⚠️ doctor findings: errors=1 warnings=0 info=1\n- Missing required policy gateway file: AGENTS.md or CLAUDE.md\n- [INFO] State: local plan approval requires a host-originated user decision\nLikely cause: no trusted signed-receipt issuer is configured\nNext action: ap task advance <task-id> --agent-json (present the emitted host_user_decision request in Codex; use task plan approve --by USER only as explicit manual compatibility)\nDetails: Reason code: host_user_decision_required\n  - AgentPlane will not emit an unavailable signed_user_receipt transport.\n  - A managed runner cannot synthesize the user decision and stops at the plan boundary.\nℹ️ doctor: checking workflow contract\n{\"ts\":\"2026-10-02T03:48:31.182Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_doctor_check\",\"details\":{\"ok\":true,\"findings\":0}}\nℹ️ doctor: checking workspace\nℹ️ doctor: checking branch_pr drift\nℹ️ doctor: checking runtime source\nℹ️ doctor: checking prompt graph\nℹ️ doctor: checking recent task archive\n⚠️ doctor findings: errors=0 warnings=2 info=1\n- [WARN] State: DONE task archive README files exist on disk but are missing from the git index\nLikely cause: task metadata reached DONE state, but the human-readable task README archive never landed in a tracked close commit\nNext action: git add .agentplane/tasks/202602111800-ABC123/README.md (stage the missing archived task README files and commit them before continuing)\nDetails: Affected DONE tasks: 1\n  - Examples: 202602111800-ABC123\n- [INFO] State: local plan approval requires a host-originated user decision\nLikely cause: no trusted signed-receipt issuer is configured\nNext action: ap task advance <task-id> --agent-json (present the emitted host_user_decision request in Codex; use task plan approve --by USER only as explicit manual compatibility)\nDetails: Reason code: host_user_decision_required\n  - AgentPlane will not emit an unavailable signed_user_receipt transport.\n  - A managed runner cannot synthesize the user decision and stops at the plan boundary.\n- [WARN] DONE task is missing implementation commit hash: 202602111800-ABC123 (finish with --commit <hash>).\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nPreparing worktree (new branch 'task/202601300003-ABCD/compact')\n⚠️ upgrade: pre-existing tracked changes detected; continuing with preservation\n- Saved pre-upgrade tracked diff: .agentplane/.upgrade/user-dirty/tracked.patch\nPreparing worktree (new branch 'comparison/full')\nPreparing worktree (new branch 'task/202601300001-ABCD/compact')\nerror: script \"test:fast\" exited with code 143\n",
+      "stdout_tail": "or fix (Skip: could not rebuild tasks index cache.)\n✅ doctor fix (Skip: Unsupported WORKFLOW version 3; supported versions: 1, 2.)\n✅ doctor fix (Skip: no AgentPlane-managed hook files found.)\n✅ doctor (OK)\n✅ doctor (OK)\n ❯ |agentplane| packages/agentplane/src/adapters/task-backend/kernel-replay-persistence.test.ts (345 tests | 3 failed) 1120452ms\n     × serialized-direct after-write at completion recovers without a duplicate mutation 5955ms\n     × serialized-direct after-write at observe-release.publish recovers without a duplicate mutation 628ms\n     × serialized-direct after-write at observe-registry.publish recovers without a duplicate mutation 1247ms\nRelease plan written: .agentplane/.release/plan/2026-10-02T03-49-04-447Z\nNext tag: v0.2.7\nHint: Create a DOCS task to write docs/releases/v0.2.7.md based on this plan.\n202605240900-EV26\n/tmp/agentplane-vitest-run-fMgiq2/agentplane-cli-test-5SowvN/.agentplane/tasks/202605240900-EV26/README.md\n202609130000-FA01\n202605240900-EV27\n/tmp/agentplane-vitest-run-fMgiq2/agentplane-cli-test-hqbYQe/.agentplane/tasks/202605240900-EV27/README.md\n202609130000-FA02\n202605240900-EV28\n/tmp/agentplane-vitest-run-fMgiq2/agentplane-cli-test-NKLfH2/.agentplane/tasks/202605240900-EV28/README.md\n202609130000-FA03\n202605240900-EV29\n/tmp/agentplane-vitest-run-fMgiq2/agentplane-cli-test-sXnJmm/.agentplane/tasks/202605240900-EV29/README.md\n202609130000-FA04\n202605240900-EV30\n/tmp/agentplane-vitest-run-fMgiq2/agentplane-cli-test-qeeOd2/.agentplane/tasks/202605240900-EV30/README.md\n202609130000-FA05\n ❯ |agentplane| packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-provenance.test.ts (2 tests | 1 failed) 59773ms\n     × resume creates a fresh run from current task/config and external source provenance 31184ms\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nUpgrade source: explicit upgrade bundle\nUpgrade version: v0.7.12\nUpgrade mode: apply\nUpgrade applied: 1 add, 0 update, 0 remove, 0 unchanged\nUpgrade commit: 2c52ce682b2d ⬆️ upgrade: apply framework v0.7.12\nUpgrade source: explicit upgrade bundle\nUpgrade version: v0.7.12\nUpgrade mode: apply\nUpgrade source: explicit upgrade bundle\nUpgrade version: v0.7.12\nUpgrade mode: apply\nUpgrade source: explicit upgrade bundle\nUpgrade version: v0.7.12\nUpgrade mode: apply\nUpgrade source: explicit upgrade bundle\nUpgrade version: v0.7.12\nUpgrade mode: apply\nUpgrade source: explicit upgrade bundle\nUpgrade version: v0.7.12\nUpgrade mode: apply\nUpgrade applied: 0 add, 1 update, 0 remove, 0 unchanged\nUpgrade commit: ad4ecf3762bb ⬆️ upgrade: apply framework v0.7.12\n ❯ |agentplane| packages/agentplane/src/commands/recipes.list.test.ts (11 tests | 1 failed) 2378ms\n     × lists recipes in full JSON output 228ms\nResumed task-1/kernel. Request a fresh task advance packet.\ncontext wiki new: context/wiki/decisions/context-claims.md\ncontext wiki new: context/wiki/modules/payment-api.md\ncontext wiki new: context/wiki/workflows/context-writer.md\ncontext wiki lint: ok (1 page(s))\nℹ️ reindex prepared at /tmp/agentplane-vitest-run-n7t8Wg/agentplane-context-dashboard-vvJMJJ/.agentplane/cache.sqlite\nℹ️ reindex_receipt strategy=full-rebuild reason=reset-requested added=9 changed=0 removed=0 unchanged=0\nℹ️ rows=14 files=9\nℹ️ projection_metrics source_bytes=1681 search_text_bytes=1818 preview_text_bytes=1699 elapsed_ms=11\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": "Declared check failed: bun run test:fast",
+  "schema_version": 1,
+  "status": "failed",
+  "task_id": "202610020159-60QH9J"
+}
