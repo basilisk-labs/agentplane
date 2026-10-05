@@ -25,6 +25,7 @@ export type * from "./model.js";
 
 export {
   additivePlanScopeExpansionRoots,
+  planAmendmentScopeRoots,
   authorityDigest,
   canonicalAuthorityIssues,
   continuationIssues,

@@ -231,7 +231,7 @@ export async function buildKernelAgentWorkOrder(opts: {
         id: "semantic-result",
         kind: "semantic_result",
         description:
-          "Return AgentSemanticResult v2 with the exact canonical_binding. Use canonical_plan for planning or canonical_outputs for implementation. Do not claim user authority or native verification.",
+          "Return AgentSemanticResult v2 with the exact canonical_binding. Use canonical_plan for planning (a full proposal, or bounded plan_refinement operations pinned to this task and current Plan digest) or canonical_outputs for implementation. Do not claim user authority or native verification.",
         required: true,
       },
       ...(implementation?.expected_outputs.map((id) => ({

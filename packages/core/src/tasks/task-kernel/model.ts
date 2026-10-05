@@ -1,3 +1,4 @@
+import type { KernelWorkContract } from "../kernel-plan-refinement.js";
 export type Sha256Digest = `sha256:${string}`;
 
 export const TASK_STATES = [
@@ -358,6 +359,7 @@ export type TaskCommand =
         plan_digest: Sha256Digest;
         amendment_digest: Sha256Digest;
         amended_plan: Pick<PlanRecord, "revision" | "digest" | "work_items">;
+        work_contracts?: Readonly<Record<string, KernelWorkContract>>;
         authority_delta_digest: Sha256Digest | null;
       }
     >

@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { kernelPlanProposalSchema, taskKernel as k } from "@agentplaneorg/core/tasks";
+import { resolveKernelPlanInput, taskKernel as k } from "@agentplaneorg/core/tasks";
 import type { KernelCommandInput } from "../../adapters/task-backend/kernel-backend-adapter.js";
 import type { KernelWorkBinding } from "../../runner/usecases/kernel-task-lifecycle.js";
 import { readStableRegularTextNoFollow } from "../../shared/stable-file.js";
@@ -153,7 +153,6 @@ export async function acceptKernelSemanticResult(
   if (binding.phase === "planning") {
     if (semantic.canonical_outputs)
       throw new Error("Planning cannot submit implementation outputs");
-    const proposal = kernelPlanProposalSchema.parse(semantic.canonical_plan);
     const read = await runtime.adapter.read(taskId);
     if (read.kind !== "canonical") throw new Error("Canonical Task unavailable");
     const observation = await runtime.observe();
@@ -163,6 +162,16 @@ export async function acceptKernelSemanticResult(
         observation.fingerprint !== binding.repository_fingerprint)
     )
       throw new Error("Canonical planning result is stale");
+    const proposal = resolveKernelPlanInput({
+      task_id: taskId,
+      value: semantic.canonical_plan,
+      current: saved
+        ? ([read.record.aggregate.current_plan, ...read.record.aggregate.plan_history].find(
+            (plan) => plan?.digest === binding.plan_digest,
+          ) ?? null)
+        : read.record.aggregate.current_plan,
+      contracts: read.record.documents?.contracts ?? {},
+    });
     const plan = canonicalPlanFromProposal(proposal, binding.plan_revision + 1);
     assertCanonicalPlanWithinExecutionContract(read.task, plan);
     await writeKernelArtifact(directory, "received-result.json", semantic);
