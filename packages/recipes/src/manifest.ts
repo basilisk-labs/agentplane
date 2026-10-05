@@ -1,3 +1,4 @@
+import { RECIPE_DEPENDENCY_CLOSURE_ZOD_SCHEMA } from "./compiled-contracts.js";
 import { readFile } from "node:fs/promises";
 
 import { invalidFieldMessage, isRecord } from "./internal-utils.js";
@@ -551,6 +552,9 @@ function normalizeProjectOverlay(raw: Record<string, unknown>): ProjectOverlayMa
     tags: tags.length > 0 ? tags : undefined,
     compatibility: normalizeCompatibility(raw.compatibility),
     requires: normalizeOptionalStringList(raw.requires, "manifest.requires"),
+    ...(raw.dependency_closure === undefined
+      ? {}
+      : { dependency_closure: RECIPE_DEPENDENCY_CLOSURE_ZOD_SCHEMA.parse(raw.dependency_closure) }),
     conflicts: Array.isArray(raw.conflicts)
       ? raw.conflicts.map((entry, index) => {
           if (!isRecord(entry)) {

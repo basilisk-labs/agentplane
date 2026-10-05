@@ -130,3 +130,8 @@ export {
   type RecipeApplicabilityObservers,
   type RecipeApplicabilityObservation,
 } from "./recipe-applicability.js";
+export {
+  computeRecipeDependencyClosure,
+  RecipeClosureError,
+  type ComputedRecipeClosure,
+} from "./recipe-closure.js";
