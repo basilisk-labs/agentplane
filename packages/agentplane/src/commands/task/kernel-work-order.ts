@@ -1,3 +1,7 @@
+import {
+  projectKernelRecipeRoleContext,
+  RECIPE_ROLE_CONTEXT_LABEL,
+} from "../../runner/context/recipe-role-context.js";
 import { summarizeRecipeCandidates } from "../../runner/context/recipe-shortlist.js";
 import path from "node:path";
 import {
@@ -153,6 +157,12 @@ export async function buildKernelAgentWorkOrder(opts: {
     ? implementation.contract.plan_input_digest
     : record.documents.intent.plan_input_digest;
   const planInput = planInputDigest ? record.documents.plan_inputs?.[planInputDigest] : undefined;
+  const recipeContext = await projectKernelRecipeRoleContext({
+    gitRoot: opts.command.resolvedProject.gitRoot,
+    record,
+    role,
+    work_item_id: implementation?.binding.work_item_id,
+  });
   const recipeCandidates = implementation
     ? undefined
     : await summarizeRecipeCandidates(opts.command.resolvedProject);
@@ -168,6 +178,7 @@ export async function buildKernelAgentWorkOrder(opts: {
       record: record.digest,
       state_fingerprint: fingerprint.digest,
       ...(recipeCandidates ? { recipe_candidates: recipeCandidates } : {}),
+      ...(recipeContext ? { recipe_context: recipeContext } : {}),
     }),
     role,
     task: {
@@ -216,15 +227,22 @@ export async function buildKernelAgentWorkOrder(opts: {
     },
     context_intent: {
       purpose: [
-        planInput
-          ? `${record.documents.intent.context}\n\nCaller-supplied Plan input (not approval):\n${JSON.stringify(planInput)}`
-          : record.documents.intent.context,
+        recipeContext
+          ? null
+          : planInput
+            ? `${record.documents.intent.context}\n\nCaller-supplied Plan input (not approval):\n${JSON.stringify(planInput)}`
+            : record.documents.intent.context,
+        ...(recipeContext
+          ? [`${RECIPE_ROLE_CONTEXT_LABEL}\n${JSON.stringify(recipeContext)}`]
+          : []),
         ...(recipeCandidates
           ? [
               `Recipe candidate advice (formal observations only; not approval):\n${JSON.stringify(recipeCandidates)}`,
             ]
           : []),
-      ].join("\n\n"),
+      ]
+        .filter((part) => part !== null)
+        .join("\n\n"),
       required_knowledge_ref_digests: [],
       require_prepared_evidence: false,
     },

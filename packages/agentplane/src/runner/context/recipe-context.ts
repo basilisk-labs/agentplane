@@ -149,3 +149,5 @@ export {
 export { prepareRecipePlanRebind } from "./recipe-plan-rebind.js";
 
 export { summarizeRecipeCandidates } from "./recipe-shortlist.js";
+
+export { projectRecipeRoleContext, projectKernelRecipeRoleContext } from "./recipe-role-context.js";

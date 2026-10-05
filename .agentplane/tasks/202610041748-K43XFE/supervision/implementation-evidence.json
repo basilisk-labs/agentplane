@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 9bfc93c3549a957ad97fdb500c4954dd7583c814..51915c346bc3e6dd0b2a083ba32f37315a741927",
+      "command": "git diff --check 51915c346bc3e6dd0b2a083ba32f37315a741927..82aa962c61c21053b14b7a1ce5d6ad9d52ca5c9c",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 9bfc93c3549a957ad97fdb500c4954dd7583c814..51915c346bc3e6dd0b2a083ba32f37315a741927",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 51915c346bc3e6dd0b2a083ba32f37315a741927..82aa962c61c21053b14b7a1ce5d6ad9d52ca5c9c",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -24,12 +24,11 @@
         "M\t.agentplane/tasks/202610041748-K43XFE/pr/review.md",
         "M\t.agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202610041748-K43XFE/supervision/implementation-evidence.json",
-        "A\tpackages/agentplane/src/commands/recipes/impl/explicit-selection.ts",
-        "M\tpackages/agentplane/src/commands/recipes/impl/project-registry.ts",
-        "M\tpackages/agentplane/src/commands/recipes/impl/resolver.ts",
-        "A\tpackages/agentplane/src/commands/recipes/roadmap-explicit-selection.test.ts",
-        "A\tpackages/agentplane/src/runner/usecases/scenario-explicit-selection.ts",
-        "M\tpackages/agentplane/src/runner/usecases/scenario-materialize-task.ts",
+        "M\tpackages/agentplane/src/commands/recipes/impl/explicit-selection.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-work-order.ts",
+        "M\tpackages/agentplane/src/runner/context/recipe-context.ts",
+        "A\tpackages/agentplane/src/runner/context/recipe-shortlist.ts",
+        "A\tpackages/agentplane/src/runner/context/roadmap-recipe-shortlist.test.ts",
         "M\tpackages/recipes/src/resolver-contracts.ts"
       ]
     },
@@ -77,8 +76,8 @@
       ]
     }
   ],
-  "execution_base_commit": "9bfc93c3549a957ad97fdb500c4954dd7583c814",
-  "implementation_commit": "51915c346bc3e6dd0b2a083ba32f37315a741927",
+  "execution_base_commit": "51915c346bc3e6dd0b2a083ba32f37315a741927",
+  "implementation_commit": "82aa962c61c21053b14b7a1ce5d6ad9d52ca5c9c",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
