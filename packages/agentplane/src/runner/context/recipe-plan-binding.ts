@@ -26,7 +26,9 @@ function freezeJson<T>(value: T): T {
   return value;
 }
 
-function retainedScenario(retained: Awaited<ReturnType<typeof readRetainedRecipeClosure>>) {
+export function readRetainedRecipeScenario(
+  retained: Awaited<ReturnType<typeof readRetainedRecipeClosure>>,
+) {
   const scenarioNode = retained.closure.nodes.find(
     (node) => node.id === `scenario:${retained.closure.scenario_id}`,
   );
@@ -65,7 +67,7 @@ export async function bindRecipePlanProvenance(opts: {
     throw new Error("Historical Recipe closure v1 requires explicit recompilation before binding.");
   if (retained.closure.plan_semantics_digest !== recipeSourcePlanSemanticDigest(proposal))
     throw new Error("Retained Recipe closure belongs to a different source Plan.");
-  const scenario = retainedScenario(retained);
+  const scenario = readRetainedRecipeScenario(retained);
   const bindings = structuredClone(opts.bindings);
   const expanded = resolveScenarioParameters(scenario, bindings);
   if (
@@ -145,7 +147,7 @@ export async function readBoundRecipePlanClosure(opts: { gitRoot: string; propos
     taskCentricDigest(retained.closure.recipe) !== taskCentricDigest(provenance.package)
   )
     throw new Error("Retained Recipe closure does not match bound Plan provenance.");
-  const scenario = retainedScenario(retained);
+  const scenario = readRetainedRecipeScenario(retained);
   const expanded = resolveScenarioParameters(scenario, provenance.parameters);
   if (taskCentricDigest(expanded) !== provenance.scenario.digest)
     throw new Error("Bound Recipe parameters do not match the retained Scenario.");
