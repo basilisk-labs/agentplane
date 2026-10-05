@@ -12,8 +12,8 @@ Created: 2026-10-04T18:13:17.876Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:618a4278260b812e37b7e3e84d7fafa13d6f8ae46e23f504dfc317c1a50db9b9
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -32,14 +32,17 @@ Created: 2026-10-04T18:13:17.876Z
  bun.lock                                           |   4 +
  packages/core/src/tasks/index.ts                   |   1 +
  packages/recipes/package.json                      |   4 +
- packages/recipes/src/index.ts                      |   1 +
+ packages/recipes/src/index.ts                      |   2 +
+ packages/recipes/src/internal-utils.ts             |  14 +
  packages/recipes/src/resolver-contracts.ts         |   2 +-
- .../recipes/src/roadmap-scenario-v2-parser.test.ts | 153 +++++++++++++++++++++
+ .../recipes/src/roadmap-recipe-parameters.test.ts  | 334 +++++++++++++++++++++
+ .../recipes/src/roadmap-scenario-v2-parser.test.ts | 153 ++++++++++
  packages/recipes/src/scenario-contracts.ts         |   2 +
- packages/recipes/src/scenario-v2.ts                |  66 +++++++++
- packages/recipes/src/scenario.ts                   |  15 ++
+ packages/recipes/src/scenario-parameters.ts        | 108 +++++++
+ packages/recipes/src/scenario-v2.ts                |  70 +++++
+ packages/recipes/src/scenario.ts                   |  15 +
  packages/recipes/tsconfig.json                     |   7 +-
- 10 files changed, 253 insertions(+), 2 deletions(-)
+ 13 files changed, 714 insertions(+), 2 deletions(-)
 ```
 
 </details>

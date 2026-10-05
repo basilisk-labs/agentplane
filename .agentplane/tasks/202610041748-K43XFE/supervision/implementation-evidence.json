@@ -1,0 +1,372 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 65696d9032b77e80e31c6bca7668a5f32c99c443..291ff92d4d109762ce005fe4fcae0bb8c83f7081",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 65696d9032b77e80e31c6bca7668a5f32c99c443..291ff92d4d109762ce005fe4fcae0bb8c83f7081",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202610041748-K43XFE/README.md",
+        "A\t.agentplane/tasks/202610041748-K43XFE/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202610041748-K43XFE/pr/github-body.md",
+        "A\t.agentplane/tasks/202610041748-K43XFE/pr/github-title.txt",
+        "A\t.agentplane/tasks/202610041748-K43XFE/pr/meta.json",
+        "A\t.agentplane/tasks/202610041748-K43XFE/pr/review.md",
+        "A\t.agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/3843bff288bb14b89e3366c8d7dec5532bcc3f35106b624f48f00047b3593844.json",
+        "A\t.agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+        "M\tbun.lock",
+        "M\tpackages/core/src/tasks/index.ts",
+        "M\tpackages/recipes/package.json",
+        "M\tpackages/recipes/src/index.ts",
+        "M\tpackages/recipes/src/resolver-contracts.ts",
+        "A\tpackages/recipes/src/roadmap-scenario-v2-parser.test.ts",
+        "M\tpackages/recipes/src/scenario-contracts.ts",
+        "A\tpackages/recipes/src/scenario-v2.ts",
+        "M\tpackages/recipes/src/scenario.ts",
+        "M\tpackages/recipes/tsconfig.json"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": [
+        "?? .agentplane/tmp/60QH9J-pre-fast-forward-schema.json",
+        "?? .agentplane/tmp/K43XFE-pre-fast-forward/202609300615-DE9AE6.json",
+        "?? .agentplane/tmp/K43XFE-pre-fast-forward/202609301727-VET3VW.json",
+        "?? .agentplane/tmp/pr-integration-MP3J6N/6042-body.md",
+        "?? .agentplane/tmp/pr-integration-MP3J6N/6042-ci.log",
+        "?? .agentplane/tmp/pr-integration-MP3J6N/6042-core-retry.log",
+        "?? .agentplane/tmp/pr-integration-MP3J6N/6042-core-tests.log",
+        "?? .agentplane/tmp/pr-integration-MP3J6N/6042-lint-shards.log",
+        "?? .agentplane/tmp/pr-integration-MP3J6N/6044-body.md",
+        "?? .agentplane/tmp/pr-integration-MP3J6N/6044-bootstrap.log",
+        "?? .agentplane/tmp/pr-integration-MP3J6N/6044-build.log",
+        "?? .agentplane/tmp/pr-integration-MP3J6N/6044-coverage.log",
+        "?? .agentplane/tmp/pr-integration-MP3J6N/6044-original-body.md",
+        "?? .agentplane/tmp/pr-integration-MP3J6N/6044-replay-fixed.log",
+        "?? .agentplane/tmp/pr-integration-MP3J6N/6044-review-body.md",
+        "?? .agentplane/tmp/pr-integration-MP3J6N/6044-reviewed.patch",
+        "?? .agentplane/tmp/pr-integration-MP3J6N/6044.patch",
+        "?? .agentplane/tmp/pr-integration-MP3J6N/6045-original-body.md",
+        "?? .agentplane/tmp/pr-integration-MP3J6N/6045-review-body.md",
+        "?? .agentplane/tmp/pr-integration-MP3J6N/6048-anchor-build-debug.log",
+        "?? .agentplane/tmp/pr-integration-MP3J6N/6048-body.md",
+        "?? .agentplane/tmp/pr-integration-MP3J6N/6048-bootstrap.log",
+        "?? .agentplane/tmp/pr-integration-MP3J6N/6048-ci.log",
+        "?? .agentplane/tmp/pr-integration-MP3J6N/6048-in-progress.patch",
+        "?? .agentplane/tmp/pr-integration-MP3J6N/6048-lint-main-delta.log",
+        "?? .agentplane/tmp/pr-integration-MP3J6N/6048-lint.log",
+        "?? .agentplane/tmp/pr-integration-MP3J6N/6048-memory-install.log",
+        "?? .agentplane/tmp/pr-integration-MP3J6N/6048-original-body.md",
+        "?? .agentplane/tmp/pr-integration-MP3J6N/6048-replay-check.log",
+        "?? .agentplane/tmp/pr-integration-MP3J6N/6048-replay-fixed.log",
+        "?? .agentplane/tmp/pr-integration-MP3J6N/6048-review-body.md",
+        "?? .agentplane/tmp/pr-integration-MP3J6N/6048-reviewed.patch",
+        "?? .agentplane/tmp/pr-integration-MP3J6N/6048-typecheck.log",
+        "?? .agentplane/tmp/pr-integration-MP3J6N/6048.patch",
+        "?? .agentplane/tmp/pr-integration-MP3J6N/integration-result.json",
+        "?? packages/agentplane/tsup.config.bundled_gb1x1suwt6t.mjs"
+      ]
+    }
+  ],
+  "execution_base_commit": "65696d9032b77e80e31c6bca7668a5f32c99c443",
+  "implementation_commit": "291ff92d4d109762ce005fe4fcae0bb8c83f7081",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      "?? .agentplane/tasks/202610041748-K43XFE/README.md",
+      "?? .agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/3843bff288bb14b89e3366c8d7dec5532bcc3f35106b624f48f00047b3593844.json",
+      "?? .agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+      "?? .agentplane/tmp/60QH9J-pre-fast-forward-schema.json",
+      "?? .agentplane/tmp/K43XFE-pre-fast-forward/202609300615-DE9AE6.json",
+      "?? .agentplane/tmp/K43XFE-pre-fast-forward/202609301727-VET3VW.json",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6042-body.md",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6042-ci.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6042-core-retry.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6042-core-tests.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6042-lint-shards.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6044-body.md",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6044-bootstrap.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6044-build.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6044-coverage.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6044-original-body.md",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6044-replay-fixed.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6044-review-body.md",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6044-reviewed.patch",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6044.patch",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6045-original-body.md",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6045-review-body.md",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-anchor-build-debug.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-body.md",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-bootstrap.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-ci.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-in-progress.patch",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-lint-main-delta.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-lint.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-memory-install.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-original-body.md",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-replay-check.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-replay-fixed.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-review-body.md",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-reviewed.patch",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-typecheck.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048.patch",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/integration-result.json",
+      "?? packages/agentplane/tsup.config.bundled_gb1x1suwt6t.mjs"
+    ],
+    "classification": [
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tmp/60QH9J-pre-fast-forward-schema.json"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tmp/K43XFE-pre-fast-forward/202609300615-DE9AE6.json"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tmp/K43XFE-pre-fast-forward/202609301727-VET3VW.json"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tmp/pr-integration-MP3J6N/6042-body.md"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tmp/pr-integration-MP3J6N/6042-ci.log"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tmp/pr-integration-MP3J6N/6042-core-retry.log"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tmp/pr-integration-MP3J6N/6042-core-tests.log"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tmp/pr-integration-MP3J6N/6042-lint-shards.log"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tmp/pr-integration-MP3J6N/6044-body.md"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tmp/pr-integration-MP3J6N/6044-bootstrap.log"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tmp/pr-integration-MP3J6N/6044-build.log"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tmp/pr-integration-MP3J6N/6044-coverage.log"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tmp/pr-integration-MP3J6N/6044-original-body.md"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tmp/pr-integration-MP3J6N/6044-replay-fixed.log"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tmp/pr-integration-MP3J6N/6044-review-body.md"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tmp/pr-integration-MP3J6N/6044-reviewed.patch"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tmp/pr-integration-MP3J6N/6044.patch"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tmp/pr-integration-MP3J6N/6045-original-body.md"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tmp/pr-integration-MP3J6N/6045-review-body.md"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tmp/pr-integration-MP3J6N/6048-anchor-build-debug.log"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tmp/pr-integration-MP3J6N/6048-body.md"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tmp/pr-integration-MP3J6N/6048-bootstrap.log"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tmp/pr-integration-MP3J6N/6048-ci.log"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tmp/pr-integration-MP3J6N/6048-in-progress.patch"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tmp/pr-integration-MP3J6N/6048-lint-main-delta.log"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tmp/pr-integration-MP3J6N/6048-lint.log"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tmp/pr-integration-MP3J6N/6048-memory-install.log"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tmp/pr-integration-MP3J6N/6048-original-body.md"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tmp/pr-integration-MP3J6N/6048-replay-check.log"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tmp/pr-integration-MP3J6N/6048-replay-fixed.log"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tmp/pr-integration-MP3J6N/6048-review-body.md"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tmp/pr-integration-MP3J6N/6048-reviewed.patch"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tmp/pr-integration-MP3J6N/6048-typecheck.log"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tmp/pr-integration-MP3J6N/6048.patch"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tmp/pr-integration-MP3J6N/integration-result.json"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? packages/agentplane/tsup.config.bundled_gb1x1suwt6t.mjs"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610041748-K43XFE/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/3843bff288bb14b89e3366c8d7dec5532bcc3f35106b624f48f00047b3593844.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+      }
+    ],
+    "final": [
+      "?? .agentplane/tmp/60QH9J-pre-fast-forward-schema.json",
+      "?? .agentplane/tmp/K43XFE-pre-fast-forward/202609300615-DE9AE6.json",
+      "?? .agentplane/tmp/K43XFE-pre-fast-forward/202609301727-VET3VW.json",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6042-body.md",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6042-ci.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6042-core-retry.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6042-core-tests.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6042-lint-shards.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6044-body.md",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6044-bootstrap.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6044-build.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6044-coverage.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6044-original-body.md",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6044-replay-fixed.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6044-review-body.md",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6044-reviewed.patch",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6044.patch",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6045-original-body.md",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6045-review-body.md",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-anchor-build-debug.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-body.md",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-bootstrap.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-ci.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-in-progress.patch",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-lint-main-delta.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-lint.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-memory-install.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-original-body.md",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-replay-check.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-replay-fixed.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-review-body.md",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-reviewed.patch",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-typecheck.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048.patch",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/integration-result.json",
+      "?? packages/agentplane/tsup.config.bundled_gb1x1suwt6t.mjs"
+    ],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      "?? .agentplane/tasks/202610041748-K43XFE/README.md",
+      "?? .agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/3843bff288bb14b89e3366c8d7dec5532bcc3f35106b624f48f00047b3593844.json",
+      "?? .agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+    ],
+    "unchanged_from_execution_baseline": [
+      "?? .agentplane/tmp/60QH9J-pre-fast-forward-schema.json",
+      "?? .agentplane/tmp/K43XFE-pre-fast-forward/202609300615-DE9AE6.json",
+      "?? .agentplane/tmp/K43XFE-pre-fast-forward/202609301727-VET3VW.json",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6042-body.md",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6042-ci.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6042-core-retry.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6042-core-tests.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6042-lint-shards.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6044-body.md",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6044-bootstrap.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6044-build.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6044-coverage.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6044-original-body.md",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6044-replay-fixed.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6044-review-body.md",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6044-reviewed.patch",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6044.patch",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6045-original-body.md",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6045-review-body.md",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-anchor-build-debug.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-body.md",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-bootstrap.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-ci.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-in-progress.patch",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-lint-main-delta.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-lint.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-memory-install.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-original-body.md",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-replay-check.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-replay-fixed.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-review-body.md",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-reviewed.patch",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048-typecheck.log",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/6048.patch",
+      "?? .agentplane/tmp/pr-integration-MP3J6N/integration-result.json",
+      "?? packages/agentplane/tsup.config.bundled_gb1x1suwt6t.mjs"
+    ]
+  },
+  "schema_version": 1,
+  "task_id": "202610041748-K43XFE"
+}

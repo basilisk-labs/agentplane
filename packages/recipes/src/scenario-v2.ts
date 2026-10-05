@@ -1,5 +1,6 @@
 import { COMPACT_TASK_PLAN_PROPOSAL_ZOD_SCHEMA } from "@agentplaneorg/core/tasks";
 import { z } from "zod";
+import { isScenarioRepoPath } from "./internal-utils.js";
 
 const TEXT = z.string().trim().min(1);
 const NAME = z.string().regex(/^[A-Za-z_][A-Za-z0-9_]*$/u);
@@ -17,8 +18,11 @@ const PARAMETERS = z
   .array(
     z.union([
       parameter("string", z.string()),
-      parameter("repo_path", TEXT),
-      parameter("integer", z.number().int()),
+      parameter(
+        "repo_path",
+        z.string().refine(isScenarioRepoPath, "Expected a repository-relative path."),
+      ),
+      parameter("integer", z.number().int().safe()),
       parameter("boolean", z.boolean()),
     ]),
   )
