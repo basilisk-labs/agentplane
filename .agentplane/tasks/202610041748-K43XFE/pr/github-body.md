@@ -28,21 +28,26 @@ User explicitly authorizes autonomous completion of all necessary development, i
 
 ```text
  bun.lock                                           |    4 +
+ .../src/cli/run-cli/command-catalog/project.ts     |    5 +
+ .../src/cli/run-cli/command-loaders/project.ts     |    3 +
  .../evaluator/evaluator-evidence-boundary.ts       |   23 +-
  .../commands/evaluator/evaluator-evidence-store.ts |   69 +
  .../commands/recipes/impl/explicit-selection.ts    |  157 ++
  .../src/commands/recipes/impl/project-registry.ts  |   28 +-
  .../src/commands/recipes/impl/resolver.ts          |    2 +-
+ .../src/commands/recipes/impl/v1-conversion.ts     |  351 ++++
+ .../src/commands/recipes/preview-v1.command.ts     |   21 +
  .../recipes/roadmap-explicit-selection.test.ts     |  342 ++++
+ .../recipes/roadmap-v1-v2-conversion.test.ts       |  426 ++++
  .../src/commands/task/create-plan-input.ts         |   65 +-
- .../src/commands/task/kernel-inspection.ts         |   19 +-
+ .../src/commands/task/kernel-inspection.ts         |   27 +-
  .../task/kernel-plan-supplied-approval.test.ts     |   68 +
  .../agentplane/src/commands/task/kernel-plan.ts    |   60 +-
  .../src/commands/task/kernel-planning-view.ts      |   10 +-
  .../src/commands/task/kernel-recipe-admission.ts   |  106 +
  .../src/commands/task/kernel-runtime-context.ts    |    8 +
- .../src/commands/task/kernel-semantic-result.ts    |   30 +-
- .../src/commands/task/kernel-work-order.ts         |   43 +-
+ .../src/commands/task/kernel-semantic-result.ts    |   38 +-
+ .../src/commands/task/kernel-work-order.ts         |   58 +-
  .../src/commands/task/roadmap-recipe-repin.test.ts |  467 +++++
  .../src/runner/context/recipe-applicability.ts     |  371 ++++
  .../src/runner/context/recipe-closure.ts           |  416 ++++
@@ -85,7 +90,7 @@ User explicitly authorizes autonomous completion of all necessary development, i
  packages/core/src/tasks/task-kernel/model.ts       |    2 +
  packages/recipes/package.json                      |    4 +
  packages/recipes/src/compiled-contracts.ts         |   75 +
- packages/recipes/src/index.ts                      |    8 +
+ packages/recipes/src/index.ts                      |    9 +
  packages/recipes/src/internal-utils.ts             |   14 +
  packages/recipes/src/manifest-contracts.ts         |    2 +
  packages/recipes/src/manifest.ts                   |    4 +
@@ -94,12 +99,13 @@ User explicitly authorizes autonomous completion of all necessary development, i
  .../recipes/src/roadmap-scenario-v2-parser.test.ts |  153 ++
  packages/recipes/src/scenario-compiler.ts          |  103 +
  packages/recipes/src/scenario-contracts.ts         |    2 +
+ packages/recipes/src/scenario-conversion.ts        |  185 ++
  packages/recipes/src/scenario-parameters.ts        |  108 +
  packages/recipes/src/scenario-v2.ts                |   70 +
  packages/recipes/src/scenario.ts                   |   15 +
  packages/recipes/tsconfig.json                     |    7 +-
  schemas/agent-semantic-result.schema.json          | 2081 ++++++++++++++++----
- 72 files changed, 10735 insertions(+), 428 deletions(-)
+ 78 files changed, 11755 insertions(+), 431 deletions(-)
 ```
 
 </details>

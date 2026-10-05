@@ -205,6 +205,9 @@ export const loadWorkResumeSpec = (session: LocalOpsWriteSession) =>
 export const fromRecipesActiveSpec = commandModule(
   () => import("../../../commands/recipes/active.command.js"),
 );
+export const fromRecipesPreviewV1Spec = commandModule(
+  () => import("../../../commands/recipes/preview-v1.command.js"),
+);
 export const fromRecipesInfoSpec = commandModule(
   () => import("../../../commands/recipes/info.command.js"),
 );

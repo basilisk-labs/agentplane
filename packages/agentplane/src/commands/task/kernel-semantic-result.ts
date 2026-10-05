@@ -1,3 +1,4 @@
+import { assertRecipeV1ConversionResultClaim } from "../recipes/impl/v1-conversion.js";
 import { validateKernelRecipeBindings } from "./kernel-recipe-admission.js";
 import path from "node:path";
 
@@ -203,6 +204,13 @@ export async function acceptKernelSemanticResult(
   } else {
     if (semantic.canonical_plan) throw new Error("Implementation cannot replace the approved plan");
     if (!semantic.canonical_outputs) throw new Error("Canonical outputs are required");
+    await assertRecipeV1ConversionResultClaim({
+      command,
+      task_id: taskId,
+      contract: { objective: workOrder.task.objective, role: workOrder.role },
+      summary: semantic.summary,
+      outputs: semantic.canonical_outputs,
+    });
     if (!saved) {
       let changedPaths: string[] = [];
       let continueAuthority = false;
