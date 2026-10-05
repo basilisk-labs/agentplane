@@ -124,3 +124,9 @@ export async function assembleRunnerRecipeContext(opts: {
 }
 
 export { validateRecipeScenarioPlan, type ValidatedRecipePlan } from "./recipe-plan-validation.js";
+export {
+  observeRecipeApplicability,
+  assertRecipeApplicable,
+  type RecipeApplicabilityObservers,
+  type RecipeApplicabilityObservation,
+} from "./recipe-applicability.js";
