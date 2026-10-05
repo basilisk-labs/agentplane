@@ -1,3 +1,4 @@
+import { summarizeRecipeCandidates } from "../../runner/context/recipe-shortlist.js";
 import path from "node:path";
 import {
   AGENT_WORK_ORDER_V2_ZOD_SCHEMA,
@@ -152,6 +153,9 @@ export async function buildKernelAgentWorkOrder(opts: {
     ? implementation.contract.plan_input_digest
     : record.documents.intent.plan_input_digest;
   const planInput = planInputDigest ? record.documents.plan_inputs?.[planInputDigest] : undefined;
+  const recipeCandidates = implementation
+    ? undefined
+    : await summarizeRecipeCandidates(opts.command.resolvedProject);
   const criteria = implementation?.contract.acceptance_criteria ?? [
     "Return a bounded canonical plan with contracts, dependencies, output IDs, scope and verification commands.",
   ];
@@ -163,6 +167,7 @@ export async function buildKernelAgentWorkOrder(opts: {
       revision: aggregate.revision,
       record: record.digest,
       state_fingerprint: fingerprint.digest,
+      ...(recipeCandidates ? { recipe_candidates: recipeCandidates } : {}),
     }),
     role,
     task: {
@@ -210,9 +215,16 @@ export async function buildKernelAgentWorkOrder(opts: {
       expires_at: authority?.expires_at ?? null,
     },
     context_intent: {
-      purpose: planInput
-        ? `${record.documents.intent.context}\n\nCaller-supplied Plan input (not approval):\n${JSON.stringify(planInput)}`
-        : record.documents.intent.context,
+      purpose: [
+        planInput
+          ? `${record.documents.intent.context}\n\nCaller-supplied Plan input (not approval):\n${JSON.stringify(planInput)}`
+          : record.documents.intent.context,
+        ...(recipeCandidates
+          ? [
+              `Recipe candidate advice (formal observations only; not approval):\n${JSON.stringify(recipeCandidates)}`,
+            ]
+          : []),
+      ].join("\n\n"),
       required_knowledge_ref_digests: [],
       require_prepared_evidence: false,
     },
@@ -258,6 +270,11 @@ export async function buildKernelAgentWorkOrder(opts: {
     semantic_result_schema: "agentplane.agent_semantic_result.v2",
     stop_rules: [
       "Perform only this semantic objective.",
+      ...(recipeCandidates
+        ? [
+            "Recipe candidates describe formal compatibility only. Choose an exact candidate or decline during this planning episode. Use existing explicit Recipe selection and retained Plan binding before admission. A candidate is not applicability evidence, approval or permission. Preserve mandatory review. Do not request a selection-only episode.",
+          ]
+        : []),
       "Return the exact canonical_binding with the semantic result.",
       "Do not invoke task, Git or provider lifecycle commands.",
       "Do not write outside authorized roots or modify protected native state.",

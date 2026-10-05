@@ -80,3 +80,17 @@ export type ExplicitRecipeScenarioSelection = {
   scenario_id: string;
   scenario_api_version: "2";
 };
+
+/** Formal discovery only. These observations do not assert semantic suitability or approval. */
+export type RecipeCandidateSummary = {
+  schema_version: 1;
+  purpose: "planning_advice_only";
+  semantic_applicability: "not_assessed";
+  status: "complete" | "bounded" | "unavailable";
+  candidates: {
+    selection: Required<ExplicitRecipeScenarioSelection>;
+    reasons: string[];
+  }[];
+  omitted: number;
+  unavailable: number;
+};
