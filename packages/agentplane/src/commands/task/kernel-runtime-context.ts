@@ -1,3 +1,4 @@
+import { validateKernelRecipeBindings } from "./kernel-recipe-admission.js";
 import { writeKernelArtifact } from "./kernel-exchange.js";
 import { readStableRegularTextNoFollow } from "../../shared/stable-file.js";
 import path from "node:path";
@@ -101,6 +102,13 @@ export async function createKernelRuntime(opts: {
       if (read.kind !== "canonical" && read.kind !== "missing")
         throw new Error(`Canonical mutation requires explicit migration: ${read.kind}`);
       const aggregate = read.kind === "canonical" ? read.record.aggregate : null;
+      if (read.kind === "canonical" && aggregate?.current_plan?.state !== "REJECTED")
+        await validateKernelRecipeBindings({
+          command: ctx,
+          task: read.task,
+          plan: aggregate?.current_plan ?? null,
+          documents: read.record.documents,
+        });
       const items = aggregate?.current_plan?.work_items ?? [];
       const union = (key: keyof k.ExecutionRequirements) =>
         [...new Set(items.flatMap((item) => item.execution_requirements[key]))].toSorted();

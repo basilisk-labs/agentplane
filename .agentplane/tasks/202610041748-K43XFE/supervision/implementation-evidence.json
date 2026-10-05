@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 3547b1316ddeb5ae5a9b5a35d55209d3e40d6d14..d75014d4361a5fe86a45a2eb55dfe049c666ab30",
+      "command": "git diff --check d75014d4361a5fe86a45a2eb55dfe049c666ab30..dc17982bd1ddd4d95bfa863f12908402001b3c4e",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 3547b1316ddeb5ae5a9b5a35d55209d3e40d6d14..d75014d4361a5fe86a45a2eb55dfe049c666ab30",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB d75014d4361a5fe86a45a2eb55dfe049c666ab30..dc17982bd1ddd4d95bfa863f12908402001b3c4e",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -24,15 +24,21 @@
         "M\t.agentplane/tasks/202610041748-K43XFE/pr/review.md",
         "M\t.agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202610041748-K43XFE/supervision/implementation-evidence.json",
-        "M\tpackages/agentplane/src/commands/task/create-plan-input.ts",
-        "A\tpackages/agentplane/src/runner/context/recipe-native-observers.ts",
-        "M\tpackages/agentplane/src/runner/context/recipe-plan-binding.ts",
-        "M\tpackages/agentplane/src/runner/context/recipe-plan-validation.ts",
-        "A\tpackages/agentplane/src/runner/usecases/roadmap-recipe-instantiation.test.ts",
-        "A\tpackages/agentplane/src/runner/usecases/scenario-instantiate.ts",
-        "M\tpackages/agentplane/src/runner/usecases/scenario-materialize-task.ts",
-        "M\tpackages/recipes/src/index.ts",
-        "A\tpackages/recipes/src/scenario-compiler.ts"
+        "M\tpackages/agentplane/src/commands/task/kernel-plan-supplied-approval.test.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-plan.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-planning-view.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-semantic-result.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-work-order.ts",
+        "M\tpackages/agentplane/src/runner/usecases/kernel-authority.ts",
+        "A\tpackages/core/src/commands/task/roadmap-recipe-specialization.test.ts",
+        "M\tpackages/core/src/runner/agent-semantic-result.ts",
+        "M\tpackages/core/src/tasks/index.ts",
+        "A\tpackages/core/src/tasks/kernel-plan-refinement.ts",
+        "M\tpackages/core/src/tasks/task-kernel/authority-lineage.ts",
+        "M\tpackages/core/src/tasks/task-kernel/index.ts",
+        "M\tpackages/core/src/tasks/task-kernel/kernel.ts",
+        "M\tpackages/core/src/tasks/task-kernel/model.ts",
+        "M\tschemas/agent-semantic-result.schema.json"
       ]
     },
     {
@@ -79,8 +85,8 @@
       ]
     }
   ],
-  "execution_base_commit": "3547b1316ddeb5ae5a9b5a35d55209d3e40d6d14",
-  "implementation_commit": "d75014d4361a5fe86a45a2eb55dfe049c666ab30",
+  "execution_base_commit": "d75014d4361a5fe86a45a2eb55dfe049c666ab30",
+  "implementation_commit": "dc17982bd1ddd4d95bfa863f12908402001b3c4e",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
