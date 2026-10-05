@@ -1,9 +1,6 @@
+import { kernelPlanInputSchema } from "../tasks/kernel-plan-refinement.js";
 import { z } from "zod";
-import {
-  kernelEpisodeBindingSchema,
-  kernelPlanProposalSchema,
-  kernelOutputClaimsSchema,
-} from "../tasks/kernel-semantic.js";
+import { kernelEpisodeBindingSchema, kernelOutputClaimsSchema } from "../tasks/kernel-semantic.js";
 
 import {
   NON_EMPTY_STRING,
@@ -211,7 +208,7 @@ const AGENT_SEMANTIC_RESULT_BASE_SHAPE = {
     "Recipe provenance must be bound by native intake, not an agent result.",
   ).optional(),
   canonical_binding: kernelEpisodeBindingSchema.optional(),
-  canonical_plan: kernelPlanProposalSchema.optional(),
+  canonical_plan: kernelPlanInputSchema.optional(),
   canonical_outputs: kernelOutputClaimsSchema.optional(),
   plan_refinement: AGENT_SEMANTIC_RESULT_PLAN_REFINEMENT_ZOD_SCHEMA.optional(),
   claimed_checks: z.array(AGENT_SEMANTIC_RESULT_CLAIMED_CHECK_ZOD_SCHEMA).optional(),
@@ -447,7 +444,7 @@ export function buildAgentSemanticPayloadSchema(context: SemanticPayloadContext)
     blocker: AGENT_SEMANTIC_RESULT_BLOCKER_ZOD_SCHEMA.optional(),
     knowledge_request: AGENT_SEMANTIC_RESULT_KNOWLEDGE_REQUEST_ZOD_SCHEMA.optional(),
   };
-  if (context.phase === "planning") fields.canonical_plan = kernelPlanProposalSchema.optional();
+  if (context.phase === "planning") fields.canonical_plan = kernelPlanInputSchema.optional();
   else if (context.phase === "implementation")
     fields.canonical_outputs = kernelOutputClaimsSchema.optional();
   else if (!context.phase && context.role === "PLANNER") {

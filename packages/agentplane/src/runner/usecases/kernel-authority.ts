@@ -412,7 +412,7 @@ export class KernelAuthorityResolver {
           actor_id: plan.approval_actor_id,
         })
         ? (
-            k.additivePlanScopeExpansionRoots({
+            k.planAmendmentScopeRoots({
               current: sourcePlan,
               amended: plan,
               authority: parent,

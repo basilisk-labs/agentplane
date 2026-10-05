@@ -320,3 +320,11 @@ export {
   type KernelMigrationSemanticAssessment,
   type KernelMigrationSemanticAssessmentRequest,
 } from "./kernel-semantic.js";
+
+export {
+  kernelPlanRefinementSchema,
+  kernelPlanInputSchema,
+  resolveKernelPlanInput,
+  planObligationIssues,
+  type KernelPlanRefinement,
+} from "./kernel-plan-refinement.js";

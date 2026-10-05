@@ -1,3 +1,4 @@
+import { taskKernel as k } from "@agentplaneorg/core/tasks";
 import { generateKeyPairSync, sign } from "node:crypto";
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -178,6 +179,73 @@ describe("supplied Plan approval", { timeout: 180_000 }, () => {
     expect(read.record.aggregate.current_plan?.digest).toBe(
       f.original.aggregate.current_plan?.digest,
     );
+  });
+
+  it("admits a pinned common recovery refinement only with exact USER approval and continues authority", async () => {
+    const f = await setup();
+    const native = await f.runtime(f.encoded);
+    requireKernelCommit(await native.authority.approve(f.id));
+    const approved = await native.adapter.read(f.id);
+    if (approved.kind !== "canonical") throw new Error("Canonical record missing");
+    const current = approved.record.aggregate.current_plan!;
+    requireKernelCommit(
+      await native.lifecycle.apply(
+        await native.input(
+          {
+            kind: "materialize_work_items",
+            plan_revision: current.revision,
+            plan_digest: current.digest,
+          },
+          "materialize-recovery-fixture",
+        ),
+      ),
+    );
+    const definition = current.work_items[0]!;
+    const { contract_digest, ...base } = definition;
+    const originalContract = approved.record.documents!.contracts[String(contract_digest)]!;
+    const request = {
+      schema_version: 1,
+      kind: "plan_refinement",
+      task_id: f.id,
+      base_plan_digest: current.digest,
+      operations: [
+        {
+          kind: "add",
+          work_item: {
+            ...base,
+            id: "bounded-recovery",
+            depends_on: [definition.id],
+            expected_outputs: ["recovery-evidence"],
+            contract: { ...originalContract, objective: "Produce bounded recovery evidence" },
+          },
+        },
+      ],
+    };
+    const before = await native.adapter.read(f.id);
+    await expect(setCanonicalPlan(f.ctx, f.id, request)).rejects.toThrow(
+      "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
+    );
+    expect(await native.adapter.read(f.id)).toEqual(before);
+    await setCanonicalPlan(f.ctx, f.id, request, { scopeExpansionApprovedBy: "USER" });
+    const after = await native.adapter.read(f.id);
+    if (after.kind !== "canonical" || before.kind !== "canonical")
+      throw new Error("Canonical record missing");
+    expect(after.record.aggregate.work_items[definition.id]).toEqual(
+      before.record.aggregate.work_items[definition.id],
+    );
+    expect(after.record.aggregate.work_items["bounded-recovery"]).toMatchObject({
+      state: "PLANNED",
+      attempt: 0,
+    });
+    expect(after.record.aggregate.plan_history.at(-1)).toEqual({ ...current, state: "SUPERSEDED" });
+    expect(after.record.aggregate.authority_lineage?.at(-1)?.authority.plan_digest).toBe(
+      after.record.aggregate.current_plan?.digest,
+    );
+    expect(k.canonicalAuthorityIssues(after.record.aggregate)).toEqual([]);
+    await expect(
+      setCanonicalPlan(f.ctx, f.id, request, { scopeExpansionApprovedBy: "USER" }),
+    ).rejects.toThrow("base digest mismatch");
+    expect(await native.adapter.read(f.id)).toEqual(after);
   });
 
   it.each(["origin", "approval_actor_id", "authority"])(
