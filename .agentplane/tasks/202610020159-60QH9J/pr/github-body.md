@@ -28,6 +28,9 @@ User explicitly authorizes implementing and testing a bounded repair for task 20
 
 ```text
  .../src/cli/run-cli.core.roadmap-recovery.test.ts  |   5 +-
+ .../evaluator/evaluator-evidence-boundary.ts       |  47 ++++-
+ .../evaluator/evaluator-evidence-store.test.ts     | 140 +++++++++++++-
+ .../commands/evaluator/evaluator-evidence-store.ts |   2 +
  .../src/commands/task/advance-task-step.ts         |   3 +
  .../direct-task-verification.sequence.cases.ts     |   2 +
  .../src/commands/task/direct-task-verification.ts  |   2 +
@@ -42,7 +45,7 @@ User explicitly authorizes implementing and testing a bounded repair for task 20
  .../commands/task/roadmap-terminal-noop.test.ts    |   6 +-
  ...te-fingerprint-residual-git.integration.test.ts |   3 +-
  .../usecases/task-run-lifecycle-cancel.test.ts     |   3 +-
- 15 files changed, 679 insertions(+), 16 deletions(-)
+ 18 files changed, 865 insertions(+), 19 deletions(-)
 ```
 
 </details>

@@ -149,6 +149,7 @@ export async function putEvaluatorEvidenceObject(opts: {
     gitRoot: opts.gitRoot,
     filePath: objectPath,
     label: "Evaluator evidence object",
+    waitForObjectFinalization: true,
     hook: opts.boundaryHook,
   });
   if (sha256(stored) !== digest || !stored.equals(Buffer.from(opts.contents, "utf8"))) {
@@ -333,6 +334,7 @@ export async function readEvaluatorEvidenceObject(opts: {
     gitRoot: opts.gitRoot,
     filePath: artifactPath,
     label: `Evaluator packet artifact ${artifact.logical_name}`,
+    waitForObjectFinalization: true,
     hook: opts.boundaryHook,
   });
   if (bytes.byteLength !== artifact.size_bytes || sha256(bytes) !== artifact.sha256) {
