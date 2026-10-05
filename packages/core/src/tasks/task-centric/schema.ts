@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { taskCentricDigest } from "./digest.js";
+import { recipeSourcePlanSemanticDigest, taskCentricDigest } from "./digest.js";
 import { validateWorkItemGraph } from "./graph.js";
 import type { RepositorySnapshot, Sha256Digest } from "./model.js";
 
@@ -123,6 +123,36 @@ const WORK_ITEM = z
   })
   .strict();
 
+/** Versioned immutable source identity. This data is not applicability or approval authority. */
+const RECIPE_PLAN_PROVENANCE = z.strictObject({
+  schema_version: z.literal(1),
+  package: z.strictObject({ id: NON_EMPTY, version: NON_EMPTY }),
+  scenario: z.strictObject({ id: NON_EMPTY, api_version: z.literal("2"), digest: DIGEST }),
+  compiler: z.strictObject({ id: z.literal("agentplane.scenario"), version: z.literal(1) }),
+  source_plan_semantics_digest: DIGEST,
+  parameters: z
+    .array(
+      z.strictObject({
+        name: NON_EMPTY,
+        value: z.union([z.string().max(8192), z.number().int().safe(), z.boolean()]),
+      }),
+    )
+    .max(256)
+    .superRefine((values, ctx) => {
+      if (values.some((entry, index) => index > 0 && values[index - 1]!.name >= entry.name))
+        ctx.addIssue({ code: "custom", message: "Recipe parameters must be unique and sorted." });
+    }),
+  applicability: z.strictObject({ observed_by: z.literal("agentplane"), evidence_digest: DIGEST }),
+  closure: z.strictObject({
+    digest: DIGEST,
+    artifact_digest: DIGEST,
+    artifact_path: NON_EMPTY,
+    artifact_size_bytes: z.number().int().nonnegative(),
+    task_quality_root: NON_EMPTY,
+  }),
+});
+export type RecipePlanProvenance = z.infer<typeof RECIPE_PLAN_PROVENANCE>;
+
 export const TASK_PLAN_PROPOSAL_ZOD_SCHEMA = z
   .object({
     schema_version: z.literal(1),
@@ -134,9 +164,19 @@ export const TASK_PLAN_PROPOSAL_ZOD_SCHEMA = z
     assumptions: z.array(z.string()),
     unresolved_questions: z.array(z.string()),
     top_level_validation: VALIDATION_PLAN,
+    recipe_provenance: RECIPE_PLAN_PROVENANCE.optional(),
   })
   .strict()
   .superRefine((value, ctx) => {
+    if (value.recipe_provenance) {
+      const { recipe_provenance, ...source } = value;
+      if (recipeSourcePlanSemanticDigest(source) !== recipe_provenance.source_plan_semantics_digest)
+        ctx.addIssue({
+          code: "custom",
+          path: ["recipe_provenance", "source_plan_semantics_digest"],
+          message: "Recipe provenance does not bind this exact source Plan.",
+        });
+    }
     for (const issue of validateWorkItemGraph(value.work_items)) {
       ctx.addIssue({
         code: "custom",

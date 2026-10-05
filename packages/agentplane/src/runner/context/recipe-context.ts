@@ -140,3 +140,8 @@ export {
   readRetainedRecipeClosure,
   type RecipeClosureReference,
 } from "./recipe-retention.js";
+export {
+  bindRecipePlanProvenance,
+  readBoundRecipePlanClosure,
+  validateRecipePlanForAdmission,
+} from "./recipe-plan-binding.js";

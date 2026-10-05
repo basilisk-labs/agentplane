@@ -229,6 +229,7 @@ export {
   isGitObjectId,
   isSha256Digest,
   taskCentricDigest,
+  recipeSourcePlanSemanticDigest,
 } from "./task-centric/digest.js";
 export {
   belongsInLiveTaskIndex,
@@ -302,6 +303,7 @@ export {
   REPOSITORY_SNAPSHOT_ZOD_SCHEMA,
   TASK_PLAN_PROPOSAL_ZOD_SCHEMA,
   type ParsedTaskPlanProposal,
+  type RecipePlanProvenance,
 } from "./task-centric/schema.js";
 export type * from "./task-centric/model.js";
 

@@ -32,21 +32,28 @@ Created: 2026-10-04T18:13:17.876Z
  bun.lock                                           |   4 +
  .../evaluator/evaluator-evidence-boundary.ts       |  23 +-
  .../commands/evaluator/evaluator-evidence-store.ts |  69 +++
+ .../src/commands/task/create-plan-input.ts         |  10 +
  .../src/runner/context/recipe-applicability.ts     | 371 ++++++++++++++
- .../src/runner/context/recipe-closure.ts           | 412 +++++++++++++++
- .../src/runner/context/recipe-context.ts           |  18 +
+ .../src/runner/context/recipe-closure.ts           | 416 +++++++++++++++
+ .../src/runner/context/recipe-context.ts           |  23 +
+ .../src/runner/context/recipe-plan-binding.ts      | 179 +++++++
  .../src/runner/context/recipe-plan-validation.ts   | 112 ++++
- .../src/runner/context/recipe-retention.ts         | 219 ++++++++
+ .../src/runner/context/recipe-retention.ts         | 222 ++++++++
  .../context/roadmap-recipe-applicability.test.ts   | 406 +++++++++++++++
- .../runner/context/roadmap-recipe-closure.test.ts  | 561 +++++++++++++++++++++
+ .../runner/context/roadmap-recipe-closure.test.ts  | 565 +++++++++++++++++++++
+ .../context/roadmap-recipe-plan-binding.test.ts    | 530 +++++++++++++++++++
  .../context/roadmap-recipe-plan-validation.test.ts | 352 +++++++++++++
  .../context/roadmap-recipe-retention.test.ts       | 396 +++++++++++++++
  .../agentplane/src/shared/contained-stable-file.ts |  62 ++-
- packages/core/src/tasks/index.ts                   |   1 +
+ packages/core/src/runner/agent-semantic-result.ts  |   5 +-
+ packages/core/src/tasks/index.ts                   |   3 +
+ packages/core/src/tasks/task-centric/digest.ts     |  24 +-
  packages/core/src/tasks/task-centric/graph.ts      |  45 +-
+ packages/core/src/tasks/task-centric/model.ts      |   3 +
+ packages/core/src/tasks/task-centric/schema.ts     |  42 +-
  .../src/tasks/task-centric/task-centric.test.ts    |  64 +++
  packages/recipes/package.json                      |   4 +
- packages/recipes/src/compiled-contracts.ts         |  74 +++
+ packages/recipes/src/compiled-contracts.ts         |  75 +++
  packages/recipes/src/index.ts                      |   3 +
  packages/recipes/src/internal-utils.ts             |  14 +
  packages/recipes/src/manifest-contracts.ts         |   2 +
@@ -59,7 +66,8 @@ Created: 2026-10-04T18:13:17.876Z
  packages/recipes/src/scenario-v2.ts                |  70 +++
  packages/recipes/src/scenario.ts                   |  15 +
  packages/recipes/tsconfig.json                     |   7 +-
- 30 files changed, 3895 insertions(+), 12 deletions(-)
+ schemas/agent-semantic-result.schema.json          | 414 +++++++++++++++
+ 38 files changed, 5118 insertions(+), 15 deletions(-)
 ```
 
 </details>
