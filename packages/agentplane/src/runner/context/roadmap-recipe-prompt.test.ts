@@ -23,6 +23,8 @@ import { loadCommandContext } from "../../commands/shared/task-backend.js";
 import { runTaskNewParsed } from "../../commands/task/new.js";
 import { compactPlanInput } from "../../commands/task/create-plan-input.testkit.js";
 import { observeSuppliedPlanBaseline } from "../../commands/task/create-plan-input.js";
+import { createCanonicalTask } from "../../commands/task/kernel-create.js";
+import { resolveExplicitExecutionContract } from "../../commands/task/execution-contract-intake.js";
 import { setCanonicalPlan } from "../../commands/task/kernel-plan.js";
 import {
   createKernelRuntime,
@@ -42,35 +44,45 @@ import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js"
 
 installRunCliIntegrationHarness();
 async function fixture(
-  opts: { guidance?: string; source?: string; secondItem?: boolean; executorRole?: string } = {},
+  opts: {
+    guidance?: string;
+    source?: string;
+    secondItem?: boolean;
+    executorRole?: string;
+    requirePlanner?: boolean;
+  } = {},
 ) {
   const root = await mkGitRepoRootWithBranch("main");
   await configureGitUser(root);
-  await writeConfig(root, defaultConfig());
+  const config = defaultConfig();
+  if (opts.requirePlanner) config.agents.approvals.require_planner = true;
+  await writeConfig(root, config);
   await writeFile(
     path.join(root, "source.txt"),
     opts.source ?? "Required retained source. Stop if evidence is incomplete.",
   );
   await commitAll(root, "seed role context");
   const command = await loadCommandContext({ cwd: root, rootOverride: root });
-  const created = await runTaskNewParsed({
-    ctx: command,
-    cwd: root,
-    rootOverride: root,
-    printTaskId: false,
-    parsed: {
-      title: "Role context",
-      description: "Preserve the user constraint: no external writes.",
-      owner: "CODER",
-      priority: "med",
-      tags: ["workflow"],
-      taskKind: "analysis",
-      mutationScope: "none",
-      verify: [],
-      dependsOn: [],
-      allowDuplicate: true,
-    },
-  });
+  const created = opts.requirePlanner
+    ? { task_id: "202610050000-P2AN13" }
+    : await runTaskNewParsed({
+        ctx: command,
+        cwd: root,
+        rootOverride: root,
+        printTaskId: false,
+        parsed: {
+          title: "Role context",
+          description: "Preserve the user constraint: no external writes.",
+          owner: "CODER",
+          priority: "med",
+          tags: ["workflow"],
+          taskKind: "analysis",
+          mutationScope: "none",
+          verify: [],
+          dependsOn: [],
+          allowDuplicate: true,
+        },
+      });
   const id = created.task_id;
   const recipe = path.join(root, ".agentplane/recipes/demo");
   await mkdir(recipe, { recursive: true });
@@ -84,6 +96,27 @@ async function fixture(
     other.objective = "Unrelated WorkItem objective";
     other.expected_outputs = ["other-report"];
     plan.work_items.push(other);
+  }
+  if (opts.requirePlanner) {
+    Object.assign(plan.work_items[0]!, { criterion_ids: ["c"], check_ids: ["review"] });
+    plan.criteria.push({
+      id: "task-wide-retention",
+      description: "The report preserves the task-wide retention constraint.",
+      required: true,
+      check_ids: ["task-wide-review"],
+    });
+    plan.checks.push({
+      id: "task-wide-review",
+      kind: "semantic",
+      required: true,
+      capability: "task.verify",
+    });
+    Object.assign(plan, {
+      top_level_validation: {
+        criterion_ids: ["task-wide-retention"],
+        check_ids: ["task-wide-review"],
+      },
+    });
   }
   const scenario = parseScenarioV2({
     schema_version: "2",
@@ -230,7 +263,30 @@ async function fixture(
   });
   // Removal precedes native admission/approval; no external dirty edit is hidden from authority.
   await rm(recipe, { recursive: true });
-  await setCanonicalPlan(command, id, bound);
+  if (opts.requirePlanner) {
+    await createCanonicalTask(
+      command,
+      {
+        id,
+        title: "Role context",
+        description: "Preserve the user constraint: no external writes.",
+        status: "TODO",
+        owner: "CODER",
+        priority: "med",
+        tags: ["workflow"],
+        task_kind: "analysis",
+        mutation_scope: "none",
+        verify: [],
+        depends_on: [],
+        execution_contract: resolveExplicitExecutionContract({
+          config,
+          parsed: { verify: [] },
+          intent: { taskKind: "analysis", mutationScope: "none" },
+        }),
+      },
+      bound,
+    );
+  } else await setCanonicalPlan(command, id, bound);
   const record = (await command.taskBackend.getTask(id))!.extensions!.task_kernel as KernelRecord;
   const source = Object.values(record.documents!.plan_inputs!).find(
     (input) => input.recipe_provenance,
@@ -355,6 +411,97 @@ describe("retained Recipe role projection and managed restart", { timeout: 180_0
     expect(bundle.semantic_context.blocks.find((block) => block.id === "constraints")!.digest).toBe(
       taskCentricDigest(order.context_intent),
     );
+  });
+
+  it("preserves top-level-only obligations through required native planning and managed disk restart", async () => {
+    const f = await fixture({ requirePlanner: true });
+    expect(
+      f.source.work_items.work_items.every(
+        (item) =>
+          item.acceptance_criteria.every((criterion) => criterion.id !== "task-wide-retention") &&
+          item.validation.checks.every((check) => check.id !== "task-wide-review"),
+      ),
+    ).toBe(true);
+    const before = await f.command.taskBackend.getTask(f.id);
+    const packet = await f.advance();
+    if (!("exchange" in packet)) throw new Error(JSON.stringify(packet.action));
+    const order = AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse(
+      JSON.parse(await readFile(path.join(packet.exchange.directory, "work-order.json"), "utf8")),
+    );
+    expect(order.role).toBe("PLANNER");
+    expect(order.authority).toMatchObject({
+      mutation_scope: "none",
+      writable_roots: [],
+      network: "deny",
+      external_side_effects: [],
+    });
+    const projected = JSON.parse(
+      order.context_intent.purpose
+        .split(`${RECIPE_ROLE_CONTEXT_LABEL}\n`)[1]!
+        .split("\n\nRecipe candidate advice")[0]!,
+    ) as { top_level_validation?: unknown };
+    expect(projected.top_level_validation).toEqual({
+      schema_version: 1,
+      criteria: [
+        {
+          id: "task-wide-retention",
+          description: "The report preserves the task-wide retention constraint.",
+          required: true,
+          check_ids: ["task-wide-review"],
+        },
+      ],
+      checks: [
+        { id: "task-wide-review", kind: "semantic", required: true, capability: "task.verify" },
+      ],
+    });
+    const bundle = makeRunnerContextBundle({ runId: "recipe-planner-restart" });
+    bundle.work_order = order;
+    bundle.semantic_context = buildWorkOrderContextManifest(
+      order,
+      path.join(packet.exchange.directory, "work-order.json"),
+    );
+    bundle.execution.write_scope = {
+      ...bundle.execution.write_scope!,
+      writable_roots: [...order.authority.writable_roots],
+    };
+    const delivered = renderTaskRunnerBootstrap(bundle);
+    const wireBundle = path.join(f.root, "managed-planner-bundle.json");
+    await writeFile(wireBundle, JSON.stringify(bundle));
+    const restarted = renderTaskRunnerBootstrap(
+      JSON.parse(await readFile(wireBundle, "utf8")) as typeof bundle,
+    );
+    expect(restarted).toBe(delivered);
+    for (const text of [order.context_intent.purpose, delivered, restarted]) {
+      for (const required of [
+        "The report preserves the task-wide retention constraint.",
+        "task-wide-review",
+        "task.verify",
+        "PLANNER GUIDANCE",
+        "no external writes",
+        "forbidden.txt",
+        "Stop if excluded applicability is true or unknown",
+      ])
+        expect(text).toContain(required);
+      for (const unrelated of [
+        "EXECUTOR GUIDANCE",
+        "EVALUATOR GUIDANCE",
+        "CATALOGUE TEXT",
+        "Caller-supplied Plan input",
+        "plan_template",
+        "base64",
+      ])
+        expect(text).not.toContain(unrelated);
+    }
+    expect(projected.top_level_validation).not.toHaveProperty("evidence_fingerprint");
+    expect(bundle.semantic_context.blocks.find((block) => block.id === "constraints")!.digest).toBe(
+      taskCentricDigest(order.context_intent),
+    );
+    const after = await f.command.taskBackend.getTask(f.id);
+    expect(after).toEqual(before);
+    const record = after!.extensions!.task_kernel as KernelRecord;
+    expect(record.aggregate.current_plan).toBeNull();
+    expect(record.aggregate.authority_lineage ?? []).toEqual([]);
+    expect(order.stop_rules.join(" ")).toContain("Preserve mandatory review");
   });
 
   it("uses the same retained role owner for native independent inspection", async () => {

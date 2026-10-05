@@ -53,13 +53,13 @@ User explicitly authorizes autonomous completion of all necessary development, i
  .../src/runner/context/recipe-plan-validation.ts   |  120 ++
  .../src/runner/context/recipe-prompt-blocks.ts     |    2 +
  .../src/runner/context/recipe-retention.ts         |  222 +++
- .../src/runner/context/recipe-role-context.ts      |  187 ++
+ .../src/runner/context/recipe-role-context.ts      |  191 ++
  .../src/runner/context/recipe-shortlist.ts         |  116 ++
  .../context/roadmap-recipe-applicability.test.ts   |  406 ++++
  .../runner/context/roadmap-recipe-closure.test.ts  |  565 ++++++
  .../context/roadmap-recipe-plan-binding.test.ts    |  530 +++++
  .../context/roadmap-recipe-plan-validation.test.ts |  352 ++++
- .../runner/context/roadmap-recipe-prompt.test.ts   |  440 +++++
+ .../runner/context/roadmap-recipe-prompt.test.ts   |  587 ++++++
  .../context/roadmap-recipe-retention.test.ts       |  396 ++++
  .../context/roadmap-recipe-shortlist.test.ts       |  331 ++++
  .../src/runner/usecases/kernel-authority.ts        |    2 +-
@@ -99,7 +99,7 @@ User explicitly authorizes autonomous completion of all necessary development, i
  packages/recipes/src/scenario.ts                   |   15 +
  packages/recipes/tsconfig.json                     |    7 +-
  schemas/agent-semantic-result.schema.json          | 2081 ++++++++++++++++----
- 72 files changed, 10584 insertions(+), 428 deletions(-)
+ 72 files changed, 10735 insertions(+), 428 deletions(-)
 ```
 
 </details>

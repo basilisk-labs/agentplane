@@ -23,9 +23,12 @@ const strings = (value: unknown): string[] => {
     throw new Error("Retained Recipe guidance references are malformed.");
   return value as string[];
 };
+function semanticValidation(plan: ParsedTaskPlanProposal["top_level_validation"]) {
+  const { evidence_fingerprint: _fingerprint, ...validation } = plan;
+  return validation;
+}
 function semanticItem(item: ParsedTaskPlanProposal["work_items"]["work_items"][number]) {
-  const { evidence_fingerprint: _fingerprint, ...validation } = item.validation;
-  return { ...item, validation };
+  return { ...item, validation: semanticValidation(item.validation) };
 }
 
 function boundedProjection<T>(projection: T): T {
@@ -117,6 +120,7 @@ export async function projectRecipeRoleContext(opts: {
     applicability: scenario.applicability,
     assumptions: proposal.assumptions,
     unresolved_questions: proposal.unresolved_questions,
+    top_level_validation: semanticValidation(proposal.top_level_validation),
     current_work_items: items.map((item) => semanticItem(item)),
     deviations: items.flatMap((item) => {
       const original = template.work_items.work_items.find((entry) => entry.id === item.id);
