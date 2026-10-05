@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 2ec3144fdcf953210be38331cc66646bbd4feb24..82ae9295a9b7806e71df96402b6c9b8ddf623e39",
+      "command": "git diff --check 82ae9295a9b7806e71df96402b6c9b8ddf623e39..c735b819b2b60999563531d31a44ef910a06cfff",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 2ec3144fdcf953210be38331cc66646bbd4feb24..82ae9295a9b7806e71df96402b6c9b8ddf623e39",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 82ae9295a9b7806e71df96402b6c9b8ddf623e39..c735b819b2b60999563531d31a44ef910a06cfff",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -24,10 +24,12 @@
         "M\t.agentplane/tasks/202610041748-K43XFE/pr/review.md",
         "M\t.agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202610041748-K43XFE/supervision/implementation-evidence.json",
-        "A\tpackages/agentplane/src/runner/context/recipe-applicability.ts",
+        "A\tpackages/agentplane/src/runner/context/recipe-closure.ts",
         "M\tpackages/agentplane/src/runner/context/recipe-context.ts",
-        "A\tpackages/agentplane/src/runner/context/roadmap-recipe-applicability.test.ts",
-        "M\tpackages/recipes/src/index.ts"
+        "A\tpackages/agentplane/src/runner/context/roadmap-recipe-closure.test.ts",
+        "M\tpackages/recipes/src/compiled-contracts.ts",
+        "M\tpackages/recipes/src/manifest-contracts.ts",
+        "M\tpackages/recipes/src/manifest.ts"
       ]
     },
     {
@@ -74,8 +76,8 @@
       ]
     }
   ],
-  "execution_base_commit": "2ec3144fdcf953210be38331cc66646bbd4feb24",
-  "implementation_commit": "82ae9295a9b7806e71df96402b6c9b8ddf623e39",
+  "execution_base_commit": "82ae9295a9b7806e71df96402b6c9b8ddf623e39",
+  "implementation_commit": "c735b819b2b60999563531d31a44ef910a06cfff",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [

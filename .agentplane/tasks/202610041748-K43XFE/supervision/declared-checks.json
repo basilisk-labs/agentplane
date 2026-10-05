@@ -2,8 +2,8 @@
   "checks": [
     {
       "check_ids": [],
-      "command": "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-applicability.test.ts",
-      "duration_ms": 11634,
+      "command": "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-closure.test.ts",
+      "duration_ms": 22298,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:e9970e0222261dcb51b9dea12a6e40fd0d1f3cc919e27603192ff802cba00905",
@@ -13,13 +13,13 @@
         "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
       },
       "script": "test:project",
-      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane \"--maxWorkers=1\" packages/agentplane/src/runner/context/roadmap-recipe-applicability.test.ts\n",
-      "stdout_tail": "\n RUN  v4.1.11 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario\n\n\n Test Files  1 passed (1)\n      Tests  30 passed (30)\n   Start at  15:43:26\n   Duration  5.51s (transform 2.77s, setup 293ms, import 3.89s, tests 525ms, environment 0ms)\n\n"
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane \"--maxWorkers=1\" packages/agentplane/src/runner/context/roadmap-recipe-closure.test.ts\n",
+      "stdout_tail": "\n RUN  v4.1.11 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario\n\n\n Test Files  1 passed (1)\n      Tests  37 passed (37)\n   Start at  16:16:48\n   Duration  13.93s (transform 6.00s, setup 507ms, import 9.23s, tests 3.31s, environment 0ms)\n\n"
     },
     {
       "check_ids": [],
       "command": "bun run typecheck",
-      "duration_ms": 4358,
+      "duration_ms": 3204,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:e9970e0222261dcb51b9dea12a6e40fd0d1f3cc919e27603192ff802cba00905",

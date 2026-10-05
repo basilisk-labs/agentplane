@@ -63,20 +63,42 @@ export type ComputedRecipeClosure = {
   closure: CompiledRecipeDependencyClosure;
   /** Non-secret bytes for the existing evidence owner. This function does not persist them. */
   objects: { digest: string; bytes: Uint8Array }[];
+  /** Re-observe live sources. Retained historical bytes do not require this live-source check. */
   assertUnchanged: () => Promise<void>;
+};
+
+type RecipeClosureOptions = {
+  recipe_root: string;
+  repository_root: string;
+  scenario_id: string;
+  bindings: readonly ScenarioParameterBinding[];
+  proposed_plan: unknown;
 };
 
 /** Pre-approval computation only. Declarations describe dependencies; they grant no permission.
  * Packages must declare a complete file inventory and pin its content digest. External package
  * dependencies must be explicit. This is not a JavaScript/shell import analyzer or effect sandbox.
  */
-export async function computeRecipeDependencyClosure(opts: {
-  recipe_root: string;
-  repository_root: string;
-  scenario_id: string;
-  bindings: readonly ScenarioParameterBinding[];
-  proposed_plan: unknown;
-}): Promise<ComputedRecipeClosure> {
+export async function computeRecipeDependencyClosure(
+  opts: RecipeClosureOptions,
+): Promise<ComputedRecipeClosure> {
+  const inputs = structuredClone(opts);
+  const observed = await observeRecipeDependencyClosure(inputs);
+  const assertUnchanged = async () => {
+    observed.assertResultUnchanged();
+    await observed.assertPathsUnchanged();
+    // Use the same selective observer rather than a second dependency walker. This refreshes
+    // source bytes, selected manifest semantics, package inventories and package pins.
+    const current = await observeRecipeDependencyClosure(inputs);
+    if (current.closure.digest !== observed.closure.digest)
+      fail("source_closure_changed", inputs.scenario_id);
+    observed.assertResultUnchanged();
+    await observed.assertPathsUnchanged();
+  };
+  return Object.freeze({ closure: observed.closure, objects: observed.objects, assertUnchanged });
+}
+
+async function observeRecipeDependencyClosure(opts: RecipeClosureOptions) {
   if (!["linux", "darwin"].includes(process.platform) || !constants.O_NOFOLLOW)
     fail("containment_unsupported", process.platform);
   const roots = {
@@ -346,16 +368,45 @@ export async function computeRecipeDependencyClosure(opts: {
   ].toSorted((a, b) => compareText(a.digest, b.digest));
   const reportDigest = taskCentricDigest(closure);
   const objectInventoryDigest = taskCentricDigest(objects.map((object) => object.digest));
-  const assertUnchanged = async () => {
+  const assertResultUnchanged = () => {
     if (
       taskCentricDigest(closure) !== reportDigest ||
       taskCentricDigest(objects.map((object) => object.digest)) !== objectInventoryDigest ||
       objects.some((object) => bytesDigest(object.bytes) !== object.digest)
     )
       fail("computed_closure_changed", scenario.id);
+  };
+  const assertPathsUnchanged = async () => {
     for (const identity of identities)
       await assertContainedPathChainIdentityUnchanged(identity, "Recipe closure");
   };
-  await assertUnchanged();
-  return Object.freeze({ closure, objects, assertUnchanged });
+  assertResultUnchanged();
+  await assertPathsUnchanged();
+  // The shared path guard intentionally ignores content timestamps. Each observation pass
+  // must also reject a file rewrite or directory inventory change after its earlier read.
+  // Compare only observed targets, so unrelated ancestor/catalogue metadata is not identity.
+  for (const identity of identities) {
+    const current = await captureContainedPathChainIdentity({
+      repository_root: identity.repository_root,
+      file_path: identity.file_path,
+      path_policy: identity.path_policy,
+      label: "Recipe closure observation",
+    });
+    const before = identity.identities.at(-1)!;
+    const after = current.identities.at(-1)!;
+    if (
+      !current.target_exists ||
+      before.path !== after.path ||
+      before.dev !== after.dev ||
+      before.ino !== after.ino ||
+      before.ctime_ns !== after.ctime_ns ||
+      before.mtime_ns !== after.mtime_ns
+    ) {
+      fail(
+        "source_changed_during_observation",
+        path.relative(identity.repository_root, identity.file_path),
+      );
+    }
+  }
+  return { closure, objects, assertResultUnchanged, assertPathsUnchanged };
 }
