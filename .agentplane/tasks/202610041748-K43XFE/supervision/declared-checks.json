@@ -2,8 +2,8 @@
   "checks": [
     {
       "check_ids": [],
-      "command": "bun run test:project recipes --maxWorkers=1 packages/recipes/src/roadmap-recipe-parameters.test.ts",
-      "duration_ms": 4991,
+      "command": "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-plan-validation.test.ts",
+      "duration_ms": 6069,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:e9970e0222261dcb51b9dea12a6e40fd0d1f3cc919e27603192ff802cba00905",
@@ -13,13 +13,13 @@
         "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
       },
       "script": "test:project",
-      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project recipes \"--maxWorkers=1\" packages/recipes/src/roadmap-recipe-parameters.test.ts\n",
-      "stdout_tail": "\n RUN  v4.1.11 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario\n\n\n Test Files  1 passed (1)\n      Tests  51 passed (51)\n   Start at  14:46:41\n   Duration  2.34s (transform 1.02s, setup 113ms, import 1.55s, tests 145ms, environment 0ms)\n\n"
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane \"--maxWorkers=1\" packages/agentplane/src/runner/context/roadmap-recipe-plan-validation.test.ts\n",
+      "stdout_tail": "\n RUN  v4.1.11 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario\n\n\n Test Files  1 passed (1)\n      Tests  32 passed (32)\n   Start at  15:06:29\n   Duration  3.21s (transform 1.62s, setup 137ms, import 2.46s, tests 311ms, environment 0ms)\n\n"
     },
     {
       "check_ids": [],
       "command": "bun run typecheck",
-      "duration_ms": 1166,
+      "duration_ms": 1682,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:e9970e0222261dcb51b9dea12a6e40fd0d1f3cc919e27603192ff802cba00905",

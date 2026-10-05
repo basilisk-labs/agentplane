@@ -318,4 +318,35 @@ describe("Recipe Plan native normalization and containment", () => {
     await expect(result.assertPathsUnchanged()).rejects.toThrow("Plan changed");
     await expect(result.readContextSource("guidance.md")).rejects.toThrow("Plan changed");
   });
+  it.each(["input-only", "mixed", "acyclic"] as const)(
+    "validates %s producer relationships through native normalization",
+    async (kind) => {
+      const input = scenario();
+      const first = input.plan_template.work_items[0]!;
+      first.criterion_ids = ["correct"];
+      first.check_ids = ["test"];
+      const second = {
+        ...structuredClone(first),
+        id: "consumer",
+        expected_outputs: ["report"],
+        required_inputs: ["patch"],
+      };
+      input.plan_template.work_items.push(second);
+      input.plan_template.top_level_validation = {
+        criterion_ids: ["correct"],
+        check_ids: ["test"],
+      };
+      if (kind === "input-only") first.required_inputs = ["report"];
+      if (kind === "mixed") first.depends_on = ["consumer"];
+      if (kind === "acyclic") {
+        const result = await validate(input);
+        expect(result.proposal.work_items.work_items[1]).toMatchObject({
+          depends_on: [],
+          required_inputs: ["patch"],
+        });
+      } else {
+        await expect(validate(input)).rejects.toThrow("dependency_cycle");
+      }
+    },
+  );
 });
