@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 1062da7009c1637720379e8eeeb4b727234c18bb..2ec3144fdcf953210be38331cc66646bbd4feb24",
+      "command": "git diff --check 2ec3144fdcf953210be38331cc66646bbd4feb24..82ae9295a9b7806e71df96402b6c9b8ddf623e39",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 1062da7009c1637720379e8eeeb4b727234c18bb..2ec3144fdcf953210be38331cc66646bbd4feb24",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 2ec3144fdcf953210be38331cc66646bbd4feb24..82ae9295a9b7806e71df96402b6c9b8ddf623e39",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -24,9 +24,10 @@
         "M\t.agentplane/tasks/202610041748-K43XFE/pr/review.md",
         "M\t.agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202610041748-K43XFE/supervision/implementation-evidence.json",
-        "M\tpackages/agentplane/src/runner/context/roadmap-recipe-plan-validation.test.ts",
-        "M\tpackages/core/src/tasks/task-centric/graph.ts",
-        "M\tpackages/core/src/tasks/task-centric/task-centric.test.ts"
+        "A\tpackages/agentplane/src/runner/context/recipe-applicability.ts",
+        "M\tpackages/agentplane/src/runner/context/recipe-context.ts",
+        "A\tpackages/agentplane/src/runner/context/roadmap-recipe-applicability.test.ts",
+        "M\tpackages/recipes/src/index.ts"
       ]
     },
     {
@@ -73,8 +74,8 @@
       ]
     }
   ],
-  "execution_base_commit": "1062da7009c1637720379e8eeeb4b727234c18bb",
-  "implementation_commit": "2ec3144fdcf953210be38331cc66646bbd4feb24",
+  "execution_base_commit": "2ec3144fdcf953210be38331cc66646bbd4feb24",
+  "implementation_commit": "82ae9295a9b7806e71df96402b6c9b8ddf623e39",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
