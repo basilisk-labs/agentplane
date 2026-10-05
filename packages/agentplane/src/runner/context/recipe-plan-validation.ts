@@ -19,6 +19,13 @@ import {
   type ContainedPathChainIdentity,
 } from "../../shared/contained-stable-file.js";
 
+export class MissingRecipeContextSourceError extends Error {
+  constructor(readonly source: string) {
+    super(`Dangling Recipe context source: ${source}`);
+    this.name = "MissingRecipeContextSourceError";
+  }
+}
+
 export type ValidatedRecipePlan = {
   scenario: ScenarioV2Definition;
   proposal: ParsedTaskPlanProposal;
@@ -56,13 +63,14 @@ export async function validateRecipeScenarioPlan(opts: {
       label,
       path_policy: {
         target_kind: contextSource ? "file" : "file_or_directory",
-        allow_missing_ancestors: !contextSource,
+        // Observe absence precisely; required context still fails below when the target is missing.
+        allow_missing_ancestors: true,
         exact_case: true,
         allow_root: !contextSource,
       },
     });
     if (contextSource && !identity.target_exists) {
-      throw new Error(`Dangling Recipe context source: ${relative}`);
+      throw new MissingRecipeContextSourceError(relative);
     }
     paths.set(`${contextSource ? "context" : "scope"}:${relative}`, identity);
   }

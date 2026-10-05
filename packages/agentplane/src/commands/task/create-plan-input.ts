@@ -5,6 +5,7 @@ import {
   taskKernel as k,
   type ParsedTaskPlanProposal,
 } from "@agentplaneorg/core/tasks";
+import { createNativeRecipeApplicabilityObservers } from "../../runner/context/recipe-native-observers.js";
 import { validateRecipePlanForAdmission } from "../../runner/context/recipe-plan-binding.js";
 import type { RecipeApplicabilityObservers } from "../../runner/context/recipe-applicability.js";
 import { captureGitSnapshot } from "../../runner/observation/git-snapshot.js";
@@ -40,37 +41,14 @@ export async function prepareSuppliedPlan(
     await validateRecipePlanForAdmission({
       gitRoot: command.resolvedProject.gitRoot,
       proposal: input,
-      observers: nativeRecipeObservers,
+      observers: nativeRecipeObservers ?? createNativeRecipeApplicabilityObservers(command),
     });
   }
-  const git = await captureGitSnapshot({
-    repository_root: command.resolvedProject.gitRoot,
-    excluded_roots: [
-      command.config.paths.workflow_dir,
-      command.config.paths.tasks_path,
-      command.config.paths.worktrees_dir,
-    ],
-    fingerprint_tracked_paths: true,
-  });
-  if (git.state !== "available" || git.errors.length > 0)
-    throw new CliError({
-      code: "E_VALIDATION",
-      message: "Supplied Plan requires a current Git observation.",
-    });
+  const planningBaseline = await observeSuppliedPlanBaseline(command);
   const normalized = normalizeTaskPlanProposal(input, {
     task_id: taskId,
     rebind: true,
-    planning_baseline: createRepositorySnapshot({
-      git: git.head_commit
-        ? { kind: "commit", sha: git.head_commit, ref: null }
-        : { kind: "unborn", ref: null },
-      dirty_paths: git.dirty_paths,
-      policy_digest: null,
-      config_digest: k.kernelDigest(command.config),
-      context_digest: git.snapshot_sha256 as `sha256:${string}` | null,
-      task_history_cursor: null,
-      captured_at: git.captured_at,
-    }),
+    planning_baseline: planningBaseline,
   });
   if (previous) {
     const materialBaseline = (proposal: ParsedTaskPlanProposal) =>
@@ -88,4 +66,33 @@ export async function prepareSuppliedPlan(
       return previous;
   }
   return normalized;
+}
+
+/** Shared native repository observation for every supplied Plan compiler. */
+export async function observeSuppliedPlanBaseline(command: CommandContext) {
+  const git = await captureGitSnapshot({
+    repository_root: command.resolvedProject.gitRoot,
+    excluded_roots: [
+      command.config.paths.workflow_dir,
+      command.config.paths.tasks_path,
+      command.config.paths.worktrees_dir,
+    ],
+    fingerprint_tracked_paths: true,
+  });
+  if (git.state !== "available" || git.errors.length > 0)
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: "Supplied Plan requires a current Git observation.",
+    });
+  return createRepositorySnapshot({
+    git: git.head_commit
+      ? { kind: "commit", sha: git.head_commit, ref: null }
+      : { kind: "unborn", ref: null },
+    dirty_paths: git.dirty_paths,
+    policy_digest: null,
+    config_digest: k.kernelDigest(command.config),
+    context_digest: git.snapshot_sha256 as `sha256:${string}` | null,
+    task_history_cursor: null,
+    captured_at: git.captured_at,
+  });
 }

@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 056f006103a5d534305868825615a3c111e7b899..b36019160ad0339a759e8bec4dd88f35d8958d8b",
+      "command": "git diff --check b36019160ad0339a759e8bec4dd88f35d8958d8b..3547b1316ddeb5ae5a9b5a35d55209d3e40d6d14",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 056f006103a5d534305868825615a3c111e7b899..b36019160ad0339a759e8bec4dd88f35d8958d8b",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB b36019160ad0339a759e8bec4dd88f35d8958d8b..3547b1316ddeb5ae5a9b5a35d55209d3e40d6d14",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -24,11 +24,20 @@
         "M\t.agentplane/tasks/202610041748-K43XFE/pr/review.md",
         "M\t.agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202610041748-K43XFE/supervision/implementation-evidence.json",
-        "M\tpackages/agentplane/src/commands/evaluator/evaluator-evidence-boundary.ts",
-        "M\tpackages/agentplane/src/commands/evaluator/evaluator-evidence-store.ts",
+        "M\tpackages/agentplane/src/commands/task/create-plan-input.ts",
+        "M\tpackages/agentplane/src/runner/context/recipe-closure.ts",
         "M\tpackages/agentplane/src/runner/context/recipe-context.ts",
-        "A\tpackages/agentplane/src/runner/context/recipe-retention.ts",
-        "A\tpackages/agentplane/src/runner/context/roadmap-recipe-retention.test.ts"
+        "A\tpackages/agentplane/src/runner/context/recipe-plan-binding.ts",
+        "M\tpackages/agentplane/src/runner/context/recipe-retention.ts",
+        "M\tpackages/agentplane/src/runner/context/roadmap-recipe-closure.test.ts",
+        "A\tpackages/agentplane/src/runner/context/roadmap-recipe-plan-binding.test.ts",
+        "M\tpackages/core/src/runner/agent-semantic-result.ts",
+        "M\tpackages/core/src/tasks/index.ts",
+        "M\tpackages/core/src/tasks/task-centric/digest.ts",
+        "M\tpackages/core/src/tasks/task-centric/model.ts",
+        "M\tpackages/core/src/tasks/task-centric/schema.ts",
+        "M\tpackages/recipes/src/compiled-contracts.ts",
+        "M\tschemas/agent-semantic-result.schema.json"
       ]
     },
     {
@@ -75,8 +84,8 @@
       ]
     }
   ],
-  "execution_base_commit": "056f006103a5d534305868825615a3c111e7b899",
-  "implementation_commit": "b36019160ad0339a759e8bec4dd88f35d8958d8b",
+  "execution_base_commit": "b36019160ad0339a759e8bec4dd88f35d8958d8b",
+  "implementation_commit": "3547b1316ddeb5ae5a9b5a35d55209d3e40d6d14",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
