@@ -32,7 +32,7 @@ Created: 2026-10-04T18:13:17.876Z
  bun.lock                                           |    4 +
  .../evaluator/evaluator-evidence-boundary.ts       |   23 +-
  .../commands/evaluator/evaluator-evidence-store.ts |   69 +
- .../commands/recipes/impl/explicit-selection.ts    |  134 ++
+ .../commands/recipes/impl/explicit-selection.ts    |  157 ++
  .../src/commands/recipes/impl/project-registry.ts  |   28 +-
  .../src/commands/recipes/impl/resolver.ts          |    2 +-
  .../recipes/roadmap-explicit-selection.test.ts     |  342 ++++
@@ -43,21 +43,23 @@ Created: 2026-10-04T18:13:17.876Z
  .../src/commands/task/kernel-recipe-admission.ts   |  106 +
  .../src/commands/task/kernel-runtime-context.ts    |    8 +
  .../src/commands/task/kernel-semantic-result.ts    |   30 +-
- .../src/commands/task/kernel-work-order.ts         |    2 +-
+ .../src/commands/task/kernel-work-order.ts         |   25 +-
  .../src/commands/task/roadmap-recipe-repin.test.ts |  467 +++++
  .../src/runner/context/recipe-applicability.ts     |  371 ++++
  .../src/runner/context/recipe-closure.ts           |  416 ++++
- .../src/runner/context/recipe-context.ts           |   25 +
+ .../src/runner/context/recipe-context.ts           |   27 +
  .../src/runner/context/recipe-native-observers.ts  |   34 +
  .../src/runner/context/recipe-plan-binding.ts      |  181 ++
  .../src/runner/context/recipe-plan-rebind.ts       |   73 +
  .../src/runner/context/recipe-plan-validation.ts   |  120 ++
  .../src/runner/context/recipe-retention.ts         |  222 +++
+ .../src/runner/context/recipe-shortlist.ts         |  116 ++
  .../context/roadmap-recipe-applicability.test.ts   |  406 ++++
  .../runner/context/roadmap-recipe-closure.test.ts  |  565 ++++++
  .../context/roadmap-recipe-plan-binding.test.ts    |  530 +++++
  .../context/roadmap-recipe-plan-validation.test.ts |  352 ++++
  .../context/roadmap-recipe-retention.test.ts       |  396 ++++
+ .../context/roadmap-recipe-shortlist.test.ts       |  331 ++++
  .../src/runner/usecases/kernel-authority.ts        |    2 +-
  .../usecases/roadmap-recipe-instantiation.test.ts  |  430 ++++
  .../runner/usecases/scenario-explicit-selection.ts |  127 ++
@@ -83,7 +85,7 @@ Created: 2026-10-04T18:13:17.876Z
  packages/recipes/src/internal-utils.ts             |   14 +
  packages/recipes/src/manifest-contracts.ts         |    2 +
  packages/recipes/src/manifest.ts                   |    4 +
- packages/recipes/src/resolver-contracts.ts         |   10 +-
+ packages/recipes/src/resolver-contracts.ts         |   24 +-
  .../recipes/src/roadmap-recipe-parameters.test.ts  |  334 ++++
  .../recipes/src/roadmap-scenario-v2-parser.test.ts |  153 ++
  packages/recipes/src/scenario-compiler.ts          |  103 +
@@ -93,7 +95,7 @@ Created: 2026-10-04T18:13:17.876Z
  packages/recipes/src/scenario.ts                   |   15 +
  packages/recipes/tsconfig.json                     |    7 +-
  schemas/agent-semantic-result.schema.json          | 2081 ++++++++++++++++----
- 64 files changed, 9407 insertions(+), 422 deletions(-)
+ 66 files changed, 9913 insertions(+), 425 deletions(-)
 ```
 
 </details>

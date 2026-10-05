@@ -5,6 +5,7 @@ import {
   validateRecipeManifest,
   isScenarioRepoPath,
   type ExplicitRecipeScenarioSelection,
+  type ProjectRecipeRegistryEntry,
 } from "@agentplaneorg/recipes";
 import type { ResolvedProject } from "@agentplaneorg/core/project";
 import { taskCentricDigest } from "@agentplaneorg/core/tasks";
@@ -34,24 +35,32 @@ export class ExplicitRecipeSelectionError extends Error {
   }
 }
 
+/** Shared bounded native reads for exact selection and advisory discovery. */
+export async function readExplicitRecipeRegistry(project: ResolvedProject) {
+  const registryIdentity = await captureContainedPathChainIdentity({
+    repository_root: project.gitRoot,
+    file_path: resolveProjectRecipesRegistryPath(project),
+    label: "Explicit Recipe registry",
+    path_policy: { target_kind: "file", exact_case: true },
+  });
+  const registry = parseProjectRecipesRegistry(
+    JSON.parse(
+      await readStableRegularTextNoFollow(registryIdentity.file_path, "Explicit Recipe registry", {
+        max_bytes: 1024 * 1024,
+      }),
+    ),
+  );
+  await assertContainedPathChainIdentityUnchanged(registryIdentity, "Explicit Recipe registry");
+  return registry;
+}
+
 /** Exact project-installed selection. No ranking, provider, task mutation or permission grant. */
 export async function resolveExplicitRecipeScenarioSelection(opts: {
   project: ResolvedProject;
   selection: ExplicitRecipeScenarioSelection;
 }) {
   const selection = selectionSchema.parse(opts.selection);
-  const registryIdentity = await captureContainedPathChainIdentity({
-    repository_root: opts.project.gitRoot,
-    file_path: resolveProjectRecipesRegistryPath(opts.project),
-    label: "Explicit Recipe registry",
-    path_policy: { target_kind: "file", exact_case: true },
-  });
-  const registry = parseProjectRecipesRegistry(
-    JSON.parse(
-      await readStableRegularTextNoFollow(registryIdentity.file_path, "Explicit Recipe registry"),
-    ),
-  );
-  await assertContainedPathChainIdentityUnchanged(registryIdentity, "Explicit Recipe registry");
+  const registry = await readExplicitRecipeRegistry(opts.project);
   const matches = registry.recipes.filter(
     (entry) =>
       entry.id === selection.recipe_id &&
@@ -65,39 +74,10 @@ export async function resolveExplicitRecipeScenarioSelection(opts: {
         : matches.map((entry) => `${entry.id}@${entry.version}:${entry.path}`),
     );
   const selected = matches[0]!;
-  if (!isScenarioRepoPath(selected.path))
-    throw new ExplicitRecipeSelectionError("unsafe_installed_path", [selected.path]);
-  const recipeRoot = path.resolve(resolveProjectRecipesDir(opts.project), selected.path);
-  const rootIdentity = await captureContainedPathChainIdentity({
-    repository_root: opts.project.gitRoot,
-    file_path: recipeRoot,
-    label: "Explicit Recipe package",
-    path_policy: { target_kind: "file_or_directory", exact_case: true },
-  });
-  async function read(relative: string) {
-    if (!isScenarioRepoPath(relative))
-      throw new ExplicitRecipeSelectionError("unsafe_selected_path", [relative]);
-    const identity = await captureContainedPathChainIdentity({
-      repository_root: opts.project.gitRoot,
-      file_path: path.resolve(recipeRoot, relative),
-      label: "Explicit Recipe selection",
-      path_policy: { target_kind: "file", exact_case: true },
-    });
-    const raw = JSON.parse(
-      await readStableRegularTextNoFollow(identity.file_path, "Explicit Recipe selection"),
-    ) as unknown;
-    await assertContainedPathChainIdentityUnchanged(identity, "Explicit Recipe selection");
-    await assertContainedPathChainIdentityUnchanged(rootIdentity, "Explicit Recipe package");
-    return raw;
-  }
-  const manifest = validateRecipeManifest(await read("manifest.json"));
-  if (manifest.id !== selected.id || manifest.version !== selected.version)
-    throw new ExplicitRecipeSelectionError("installed_identity_mismatch", [
-      selected.id,
-      selected.version,
-      manifest.id,
-      manifest.version,
-    ]);
+  const { recipeRoot, manifest, read } = await readExplicitInstalledRecipeSource(
+    opts.project,
+    selected,
+  );
   const scenarios = manifest.scenarios?.filter((entry) => entry.id === selection.scenario_id) ?? [];
   if (scenarios.length !== 1)
     throw new ExplicitRecipeSelectionError("scenario_not_found", [selection.scenario_id]);
@@ -131,4 +111,47 @@ export async function resolveExplicitRecipeScenarioSelection(opts: {
     compatibility,
     scenario_digest: taskCentricDigest(scenario),
   };
+}
+
+export async function readExplicitInstalledRecipeSource(
+  project: ResolvedProject,
+  selected: ProjectRecipeRegistryEntry,
+  budget: { max_bytes?: number } = {},
+) {
+  if (!isScenarioRepoPath(selected.path))
+    throw new ExplicitRecipeSelectionError("unsafe_installed_path", [selected.path]);
+  const recipeRoot = path.resolve(resolveProjectRecipesDir(project), selected.path);
+  const rootIdentity = await captureContainedPathChainIdentity({
+    repository_root: project.gitRoot,
+    file_path: recipeRoot,
+    label: "Explicit Recipe package",
+    path_policy: { target_kind: "file_or_directory", exact_case: true },
+  });
+  async function read(relative: string) {
+    if (!isScenarioRepoPath(relative))
+      throw new ExplicitRecipeSelectionError("unsafe_selected_path", [relative]);
+    const identity = await captureContainedPathChainIdentity({
+      repository_root: project.gitRoot,
+      file_path: path.resolve(recipeRoot, relative),
+      label: "Explicit Recipe selection",
+      path_policy: { target_kind: "file", exact_case: true },
+    });
+    const raw = JSON.parse(
+      await readStableRegularTextNoFollow(identity.file_path, "Explicit Recipe selection", {
+        max_bytes: budget.max_bytes ?? 16 * 1024 * 1024,
+      }),
+    ) as unknown;
+    await assertContainedPathChainIdentityUnchanged(identity, "Explicit Recipe selection");
+    await assertContainedPathChainIdentityUnchanged(rootIdentity, "Explicit Recipe package");
+    return raw;
+  }
+  const manifest = validateRecipeManifest(await read("manifest.json"));
+  if (manifest.id !== selected.id || manifest.version !== selected.version)
+    throw new ExplicitRecipeSelectionError("installed_identity_mismatch", [
+      selected.id,
+      selected.version,
+      manifest.id,
+      manifest.version,
+    ]);
+  return { recipeRoot, manifest, read };
 }
