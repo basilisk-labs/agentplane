@@ -28,13 +28,17 @@ User explicitly authorizes autonomous completion of all necessary development, i
 
 ```text
  bun.lock                                           |   4 +
+ .../evaluator/evaluator-evidence-boundary.ts       |  23 +-
+ .../commands/evaluator/evaluator-evidence-store.ts |  69 +++
  .../src/runner/context/recipe-applicability.ts     | 371 ++++++++++++++
  .../src/runner/context/recipe-closure.ts           | 412 +++++++++++++++
- .../src/runner/context/recipe-context.ts           |  13 +
+ .../src/runner/context/recipe-context.ts           |  18 +
  .../src/runner/context/recipe-plan-validation.ts   | 112 ++++
+ .../src/runner/context/recipe-retention.ts         | 219 ++++++++
  .../context/roadmap-recipe-applicability.test.ts   | 406 +++++++++++++++
  .../runner/context/roadmap-recipe-closure.test.ts  | 561 +++++++++++++++++++++
  .../context/roadmap-recipe-plan-validation.test.ts | 352 +++++++++++++
+ .../context/roadmap-recipe-retention.test.ts       | 396 +++++++++++++++
  .../agentplane/src/shared/contained-stable-file.ts |  62 ++-
  packages/core/src/tasks/index.ts                   |   1 +
  packages/core/src/tasks/task-centric/graph.ts      |  45 +-
@@ -53,7 +57,7 @@ User explicitly authorizes autonomous completion of all necessary development, i
  packages/recipes/src/scenario-v2.ts                |  70 +++
  packages/recipes/src/scenario.ts                   |  15 +
  packages/recipes/tsconfig.json                     |   7 +-
- 26 files changed, 3184 insertions(+), 11 deletions(-)
+ 30 files changed, 3895 insertions(+), 12 deletions(-)
 ```
 
 </details>
