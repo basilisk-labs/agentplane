@@ -68,7 +68,7 @@ function pushCompatibilityFailure(
   failures.push({ field, expected, actual, reason });
 }
 
-function resolveRecipeCompatibility(opts: {
+export function resolveRecipeCompatibility(opts: {
   compatibility?: RecipeCompatibility;
   context: RecipeResolverContext;
 }): RecipeResolverCompatibility {

@@ -72,3 +72,11 @@ export type ResolveRecipeScenarioSelectionFlags = {
 export type ResolvedRecipeScenarioSelection = ResolvedRecipeScenario & {
   selection_reasons: string[];
 };
+
+/** Explicit strategy identity. Omitting the version is allowed only for one installed match. */
+export type ExplicitRecipeScenarioSelection = {
+  recipe_id: string;
+  recipe_version?: string;
+  scenario_id: string;
+  scenario_api_version: "2";
+};
