@@ -145,3 +145,5 @@ export {
   readBoundRecipePlanClosure,
   validateRecipePlanForAdmission,
 } from "./recipe-plan-binding.js";
+
+export { prepareRecipePlanRebind } from "./recipe-plan-rebind.js";

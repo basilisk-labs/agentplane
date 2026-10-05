@@ -32,15 +32,19 @@ User explicitly authorizes autonomous completion of all necessary development, i
  .../commands/evaluator/evaluator-evidence-store.ts |   69 +
  .../src/commands/task/create-plan-input.ts         |   65 +-
  .../task/kernel-plan-supplied-approval.test.ts     |   68 +
- .../agentplane/src/commands/task/kernel-plan.ts    |   26 +-
+ .../agentplane/src/commands/task/kernel-plan.ts    |   60 +-
  .../src/commands/task/kernel-planning-view.ts      |   10 +-
- .../src/commands/task/kernel-semantic-result.ts    |   13 +-
+ .../src/commands/task/kernel-recipe-admission.ts   |  106 +
+ .../src/commands/task/kernel-runtime-context.ts    |    8 +
+ .../src/commands/task/kernel-semantic-result.ts    |   30 +-
  .../src/commands/task/kernel-work-order.ts         |    2 +-
+ .../src/commands/task/roadmap-recipe-repin.test.ts |  467 +++++
  .../src/runner/context/recipe-applicability.ts     |  371 ++++
  .../src/runner/context/recipe-closure.ts           |  416 ++++
- .../src/runner/context/recipe-context.ts           |   23 +
+ .../src/runner/context/recipe-context.ts           |   25 +
  .../src/runner/context/recipe-native-observers.ts  |   34 +
  .../src/runner/context/recipe-plan-binding.ts      |  181 ++
+ .../src/runner/context/recipe-plan-rebind.ts       |   73 +
  .../src/runner/context/recipe-plan-validation.ts   |  120 ++
  .../src/runner/context/recipe-retention.ts         |  222 +++
  .../context/roadmap-recipe-applicability.test.ts   |  406 ++++
@@ -82,7 +86,7 @@ User explicitly authorizes autonomous completion of all necessary development, i
  packages/recipes/src/scenario.ts                   |   15 +
  packages/recipes/tsconfig.json                     |    7 +-
  schemas/agent-semantic-result.schema.json          | 2081 ++++++++++++++++----
- 55 files changed, 8048 insertions(+), 406 deletions(-)
+ 59 files changed, 8752 insertions(+), 409 deletions(-)
 ```
 
 </details>

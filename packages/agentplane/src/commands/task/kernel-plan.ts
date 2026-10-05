@@ -1,4 +1,8 @@
 import {
+  preserveCompletedRecipeContracts,
+  validateKernelRecipeBindings,
+} from "./kernel-recipe-admission.js";
+import {
   taskKernel as k,
   kernelPlanInputSchema,
   resolveKernelPlanInput,
@@ -45,7 +49,7 @@ export async function setCanonicalPlan(
   const input = supplied
     ? await prepareSuppliedPlan(command, taskId, supplied, previousInput)
     : undefined;
-  const proposal = input
+  const candidate = input
     ? suppliedKernelProposal(input, read.task)
     : resolveKernelPlanInput({
         task_id: taskId,
@@ -53,12 +57,39 @@ export async function setCanonicalPlan(
         current: current ?? null,
         contracts: read.record.documents?.contracts ?? {},
       });
+  const proposal = input?.recipe_provenance
+    ? preserveCompletedRecipeContracts({
+        proposal: candidate,
+        aggregate: read.record.aggregate,
+        documents: read.record.documents,
+      })
+    : candidate;
   if (
     options.expectedSuppliedInputDigest !== undefined &&
     (!input || k.kernelDigest(input) !== options.expectedSuppliedInputDigest)
   )
     throw new Error("Supplied Plan observation changed before proposal admission");
   const planInputs = input ? { [String(k.kernelDigest(input))]: input } : undefined;
+  const plan = canonicalPlanFromProposal(proposal, (current?.revision ?? 0) + 1);
+  assertCanonicalPlanWithinExecutionContract(read.task, plan);
+  const contracts = proposal.work_items.map((item) => item.contract);
+  await validateKernelRecipeBindings({
+    command,
+    task: read.task,
+    plan,
+    documents: read.record.documents
+      ? {
+          ...read.record.documents,
+          plan_inputs: { ...read.record.documents.plan_inputs, ...planInputs },
+          contracts: {
+            ...read.record.documents.contracts,
+            ...Object.fromEntries(
+              contracts.map((contract) => [k.kernelDigest(contract), contract]),
+            ),
+          },
+        }
+      : undefined,
+  });
   if (
     current &&
     k.kernelDigest(canonicalPlanFromProposal(proposal, current.revision).work_items) ===
@@ -69,9 +100,6 @@ export async function setCanonicalPlan(
       return requireKernelCommit(await runtime.authority.continue(taskId));
     return { kind: "committed" as const, record: read.record, receipts: [], replayed: true };
   }
-  const plan = canonicalPlanFromProposal(proposal, (current?.revision ?? 0) + 1);
-  assertCanonicalPlanWithinExecutionContract(read.task, plan);
-  const contracts = proposal.work_items.map((item) => item.contract);
   if (current?.state !== "APPROVED") {
     return requireKernelCommit(
       await runtime.lifecycle.apply(

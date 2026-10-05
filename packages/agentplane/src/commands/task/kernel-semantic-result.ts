@@ -1,3 +1,4 @@
+import { validateKernelRecipeBindings } from "./kernel-recipe-admission.js";
 import path from "node:path";
 
 import { resolveKernelPlanInput, taskKernel as k } from "@agentplaneorg/core/tasks";
@@ -174,6 +175,22 @@ export async function acceptKernelSemanticResult(
     });
     const plan = canonicalPlanFromProposal(proposal, binding.plan_revision + 1);
     assertCanonicalPlanWithinExecutionContract(read.task, plan);
+    await validateKernelRecipeBindings({
+      command,
+      task: read.task,
+      plan,
+      documents: read.record.documents
+        ? {
+            ...read.record.documents,
+            contracts: {
+              ...read.record.documents.contracts,
+              ...Object.fromEntries(
+                proposal.work_items.map(({ contract }) => [k.kernelDigest(contract), contract]),
+              ),
+            },
+          }
+        : undefined,
+    });
     await writeKernelArtifact(directory, "received-result.json", semantic);
     const input = saved ?? (await runtime.input({ kind: "propose_plan", plan }, mutationId, true));
     await writeKernelArtifact(directory, "command-input.json", input);
