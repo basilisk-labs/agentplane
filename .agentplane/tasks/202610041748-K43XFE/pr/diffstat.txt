@@ -1,6 +1,10 @@
  bun.lock                                           |    4 +
  .../evaluator/evaluator-evidence-boundary.ts       |   23 +-
  .../commands/evaluator/evaluator-evidence-store.ts |   69 +
+ .../commands/recipes/impl/explicit-selection.ts    |  134 ++
+ .../src/commands/recipes/impl/project-registry.ts  |   28 +-
+ .../src/commands/recipes/impl/resolver.ts          |    2 +-
+ .../recipes/roadmap-explicit-selection.test.ts     |  342 ++++
  .../src/commands/task/create-plan-input.ts         |   65 +-
  .../task/kernel-plan-supplied-approval.test.ts     |   68 +
  .../agentplane/src/commands/task/kernel-plan.ts    |   60 +-
@@ -25,8 +29,9 @@
  .../context/roadmap-recipe-retention.test.ts       |  396 ++++
  .../src/runner/usecases/kernel-authority.ts        |    2 +-
  .../usecases/roadmap-recipe-instantiation.test.ts  |  430 ++++
+ .../runner/usecases/scenario-explicit-selection.ts |  127 ++
  .../src/runner/usecases/scenario-instantiate.ts    |  201 ++
- .../runner/usecases/scenario-materialize-task.ts   |   46 +-
+ .../runner/usecases/scenario-materialize-task.ts   |   73 +-
  .../agentplane/src/shared/contained-stable-file.ts |   62 +-
  .../task/roadmap-recipe-specialization.test.ts     |  398 ++++
  packages/core/src/runner/agent-semantic-result.ts  |   16 +-
@@ -47,7 +52,7 @@
  packages/recipes/src/internal-utils.ts             |   14 +
  packages/recipes/src/manifest-contracts.ts         |    2 +
  packages/recipes/src/manifest.ts                   |    4 +
- packages/recipes/src/resolver-contracts.ts         |    2 +-
+ packages/recipes/src/resolver-contracts.ts         |   10 +-
  .../recipes/src/roadmap-recipe-parameters.test.ts  |  334 ++++
  .../recipes/src/roadmap-scenario-v2-parser.test.ts |  153 ++
  packages/recipes/src/scenario-compiler.ts          |  103 +
@@ -57,4 +62,4 @@
  packages/recipes/src/scenario.ts                   |   15 +
  packages/recipes/tsconfig.json                     |    7 +-
  schemas/agent-semantic-result.schema.json          | 2081 ++++++++++++++++----
- 59 files changed, 8752 insertions(+), 409 deletions(-)
+ 64 files changed, 9407 insertions(+), 422 deletions(-)

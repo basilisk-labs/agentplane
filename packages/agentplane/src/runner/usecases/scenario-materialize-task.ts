@@ -1,9 +1,16 @@
 import {
+  prepareExplicitRecipeInstantiation,
+  type ExplicitRecipeInstantiationOutcome,
+} from "./scenario-explicit-selection.js";
+import type {
+  ExplicitRecipeScenarioSelection,
+  ScenarioParameterBinding,
+} from "@agentplaneorg/recipes";
+import {
   prepareRecipeScenarioInstantiation,
   type RecipeInstantiationOutcome,
 } from "./scenario-instantiate.js";
 import type { RecipeClosureReference } from "../context/recipe-retention.js";
-import type { ScenarioParameterBinding } from "@agentplaneorg/recipes";
 import path from "node:path";
 import { setMarkdownSection } from "@agentplaneorg/core/tasks";
 
@@ -184,6 +191,10 @@ type RecipeScenarioInstantiation = {
   bindings: readonly ScenarioParameterBinding[];
 };
 
+type ExplicitRecipeScenarioInstantiation = Omit<RecipeScenarioInstantiation, "reference"> & {
+  selection: ExplicitRecipeScenarioSelection;
+};
+
 export function materializeRecipeScenarioTask(
   opts: LegacyRecipeScenarioMaterialization,
 ): Promise<MaterializedRecipeScenarioTask>;
@@ -191,10 +202,19 @@ export function materializeRecipeScenarioTask(
 export function materializeRecipeScenarioTask(
   opts: RecipeScenarioInstantiation,
 ): Promise<RecipeInstantiationOutcome>;
+// eslint-disable-next-line no-redeclare -- Exact selection prepares the native retention boundary.
+export function materializeRecipeScenarioTask(
+  opts: ExplicitRecipeScenarioInstantiation,
+): Promise<ExplicitRecipeInstantiationOutcome>;
 // eslint-disable-next-line no-redeclare -- One implementation serves both explicit format overloads.
 export async function materializeRecipeScenarioTask(
-  opts: LegacyRecipeScenarioMaterialization | RecipeScenarioInstantiation,
-): Promise<MaterializedRecipeScenarioTask | RecipeInstantiationOutcome> {
+  opts:
+    | LegacyRecipeScenarioMaterialization
+    | RecipeScenarioInstantiation
+    | ExplicitRecipeScenarioInstantiation,
+): Promise<
+  MaterializedRecipeScenarioTask | RecipeInstantiationOutcome | ExplicitRecipeInstantiationOutcome
+> {
   if (opts.mode !== undefined && opts.mode !== "legacy" && opts.mode !== "instantiate")
     throw new Error("Unsupported Recipe materialization mode.");
   const command =
@@ -203,6 +223,13 @@ export async function materializeRecipeScenarioTask(
   if (opts.mode === "instantiate") {
     const task = await command.taskBackend.getTask(opts.task_id);
     if (!task) throw new Error(`Recipe instantiation target Task is unavailable: ${opts.task_id}`);
+    if ("selection" in opts)
+      return prepareExplicitRecipeInstantiation({
+        command,
+        task,
+        selection: opts.selection,
+        bindings: opts.bindings,
+      });
     // V2 returns a native Plan proposal. The canonical owner alone admits it and runs lifecycle.
     return prepareRecipeScenarioInstantiation({
       command,
