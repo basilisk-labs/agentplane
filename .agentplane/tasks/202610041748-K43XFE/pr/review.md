@@ -30,8 +30,9 @@ Created: 2026-10-04T18:13:17.876Z
 
 ```text
  bun.lock                                           |    4 +
- .../src/cli/run-cli/command-catalog/project.ts     |    5 +
- .../src/cli/run-cli/command-loaders/project.ts     |    3 +
+ ...n-cli.core.roadmap-recipe-v2-entrypoint.test.ts |  377 ++++
+ .../src/cli/run-cli/command-catalog/project.ts     |   10 +
+ .../src/cli/run-cli/command-loaders/project.ts     |    6 +
  .../evaluator/evaluator-evidence-boundary.ts       |   23 +-
  .../commands/evaluator/evaluator-evidence-store.ts |   69 +
  .../commands/recipes/impl/explicit-selection.ts    |  157 ++
@@ -39,9 +40,11 @@ Created: 2026-10-04T18:13:17.876Z
  .../src/commands/recipes/impl/resolver.ts          |    2 +-
  .../src/commands/recipes/impl/v1-conversion.ts     |  351 ++++
  .../src/commands/recipes/preview-v1.command.ts     |   21 +
+ .../src/commands/recipes/preview-v2.command.ts     |   51 +
  .../recipes/roadmap-explicit-selection.test.ts     |  342 ++++
  .../recipes/roadmap-v1-v2-conversion.test.ts       |  426 ++++
  .../src/commands/task/create-plan-input.ts         |   65 +-
+ .../agentplane/src/commands/task/create.command.ts |   55 +-
  .../src/commands/task/kernel-inspection.ts         |   27 +-
  .../task/kernel-plan-supplied-approval.test.ts     |   68 +
  .../agentplane/src/commands/task/kernel-plan.ts    |   60 +-
@@ -50,6 +53,8 @@ Created: 2026-10-04T18:13:17.876Z
  .../src/commands/task/kernel-runtime-context.ts    |    8 +
  .../src/commands/task/kernel-semantic-result.ts    |   38 +-
  .../src/commands/task/kernel-work-order.ts         |   58 +-
+ .../src/commands/task/plan-set.command.ts          |   70 +-
+ .../agentplane/src/commands/task/recipe-input.ts   |  116 ++
  .../src/commands/task/roadmap-recipe-repin.test.ts |  467 +++++
  .../src/runner/context/recipe-applicability.ts     |  371 ++++
  .../src/runner/context/recipe-closure.ts           |  416 ++++
@@ -107,7 +112,7 @@ Created: 2026-10-04T18:13:17.876Z
  packages/recipes/src/scenario.ts                   |   15 +
  packages/recipes/tsconfig.json                     |    7 +-
  schemas/agent-semantic-result.schema.json          | 2081 ++++++++++++++++----
- 78 files changed, 11755 insertions(+), 431 deletions(-)
+ 83 files changed, 12422 insertions(+), 441 deletions(-)
 ```
 
 </details>
