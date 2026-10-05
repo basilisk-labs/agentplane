@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 92
+revision: 93
 origin:
   system: "manual"
 depends_on: []
@@ -26,10 +26,10 @@ plan_approval:
   note: "Projected from the approved canonical Task Kernel plan."
 verification:
   state: "needs_rework"
-  updated_at: "2026-10-05T22:39:05.618Z"
+  updated_at: "2026-10-05T23:08:26.992Z"
   updated_by: "SUPERVISOR"
   note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 1
+  attempts: 2
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -660,8 +660,14 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "verify"
+    at: "2026-10-05T23:08:26.992Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-10-05T22:39:34.145Z"
+doc_updated_at: "2026-10-05T23:08:51.444Z"
 doc_updated_by: "CODER"
 description: "User explicitly authorizes implementing and testing a bounded repair for task 202610020153-XXZXW4: canonical completion hardcodes allowPolicy=false and continuation rejects native_policy_changed after an authorized policy edit. Preserve fail-closed checks for unauthorized drift, frozen task scope, independent review and evidence. Support authorized policy edits and safe retry after commit failure without self-authorizing from edited policy. Merge the repair into main through the supported supervisor route, then recover and complete the approved autonomy configuration task. Network, PR publication and merge into main are explicitly requested. Preserve unrelated task artifacts. No release publishing, credentials changes, destructive history or weakening general authority checks."
 sections:
@@ -1144,6 +1150,50 @@ sections:
     - capability_digest: sha256:1f13a134d190cadb90eec53ca4028f8d91ed2b1c7ff886d9d922fd3e65894801
     - checks_digest: sha256:3d128d0d3a904307a9c97734109e1c35cfa0958b438d908de32086e594cf4175
     - identity_digest: sha256:95ac0fd1a1ce3dd1e7770b407d2fcc2b67f242ef6dd8829c3378d82debfa91fa
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-10-05T23:08:26.992Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 2
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:5f2b544cf4918bf0790a155330c875fc6221356fbf2487bca7482fadb8e38c18, input_digest=sha256:dd814be1165bab198f5c8a7fd7e05774b502122fd978322ebfe9cb2e63c69503
+
+    Details:
+
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610020159-60QH9J/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610020159-60QH9J declared verification
+
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202610020159-60QH9J/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610020159-60QH9J declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202610020159-60QH9J/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610020159-60QH9J declared verification
+
+    NativeTaskIdentityRef:
+    - plan_digest: sha256:145d1a6e05eb6400c390fb2f769bc6a618eb3af6354bcf95a35b277d2c0c43c1
+    - policy_digest: sha256:d8917017e8c739a73eb6e7bb07eb94ae9de656af9deea47c5ec134f722722585
+    - capability_digest: sha256:1f13a134d190cadb90eec53ca4028f8d91ed2b1c7ff886d9d922fd3e65894801
+    - checks_digest: sha256:780b8f541f4bad4cfe05e7819bed92832a9faf7d0e2804d6c35cac40578399c4
+    - identity_digest: sha256:905f5fc7f20eaea5108dc4553a80a09b7f4ad7f218117f55b40a6ec88ddfb210
 
     DecisionContextRef:
     - operator_action: stop
@@ -4726,6 +4776,50 @@ NativeTaskIdentityRef:
 - capability_digest: sha256:1f13a134d190cadb90eec53ca4028f8d91ed2b1c7ff886d9d922fd3e65894801
 - checks_digest: sha256:3d128d0d3a904307a9c97734109e1c35cfa0958b438d908de32086e594cf4175
 - identity_digest: sha256:95ac0fd1a1ce3dd1e7770b407d2fcc2b67f242ef6dd8829c3378d82debfa91fa
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-10-05T23:08:26.992Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 2
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:5f2b544cf4918bf0790a155330c875fc6221356fbf2487bca7482fadb8e38c18, input_digest=sha256:dd814be1165bab198f5c8a7fd7e05774b502122fd978322ebfe9cb2e63c69503
+
+Details:
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610020159-60QH9J/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610020159-60QH9J declared verification
+
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202610020159-60QH9J/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610020159-60QH9J declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202610020159-60QH9J/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610020159-60QH9J declared verification
+
+NativeTaskIdentityRef:
+- plan_digest: sha256:145d1a6e05eb6400c390fb2f769bc6a618eb3af6354bcf95a35b277d2c0c43c1
+- policy_digest: sha256:d8917017e8c739a73eb6e7bb07eb94ae9de656af9deea47c5ec134f722722585
+- capability_digest: sha256:1f13a134d190cadb90eec53ca4028f8d91ed2b1c7ff886d9d922fd3e65894801
+- checks_digest: sha256:780b8f541f4bad4cfe05e7819bed92832a9faf7d0e2804d6c35cac40578399c4
+- identity_digest: sha256:905f5fc7f20eaea5108dc4553a80a09b7f4ad7f218117f55b40a6ec88ddfb210
 
 DecisionContextRef:
 - operator_action: stop
