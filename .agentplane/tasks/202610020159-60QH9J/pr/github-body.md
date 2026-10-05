@@ -16,7 +16,7 @@ User explicitly authorizes implementing and testing a bounded repair for task 20
 ## Verification
 
 - State: ok
-- Note: Canonical validation sha256:71afa7041e992fffcc91ff51e7304a25e654df224f58e3c2d2236e3e0cfdac4b
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>

@@ -6,14 +6,14 @@ Created: 2026-10-02T03:22:12.106Z
 
 - Task: `202610020159-60QH9J`
 - Title: Repair authorized policy-change completion and recovery, merge the fix to main, then enable repository autonomy
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610020159-60QH9J/repair-authorized-policy-change-completion-and-r`
 - Canonical task record: `.agentplane/tasks/202610020159-60QH9J/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Canonical validation sha256:71afa7041e992fffcc91ff51e7304a25e654df224f58e3c2d2236e3e0cfdac4b
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
