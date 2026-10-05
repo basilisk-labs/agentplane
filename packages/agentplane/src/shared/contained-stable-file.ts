@@ -1,4 +1,4 @@
-import { lstat, realpath } from "node:fs/promises";
+import { lstat, realpath, readdir } from "node:fs/promises";
 import path from "node:path";
 
 import { readStableRegularTextNoFollow, type StableFileIdentity } from "./stable-file.js";
@@ -19,6 +19,14 @@ export type ContainedPathChainIdentity = {
   file_path: string;
   target_exists: boolean;
   identities: PathIdentity[];
+  path_policy?: ContainedPathPolicy;
+};
+
+export type ContainedPathPolicy = {
+  target_kind?: "file" | "file_or_directory";
+  allow_missing_ancestors?: boolean;
+  exact_case?: boolean;
+  allow_root?: boolean;
 };
 
 function unsafeObservation(message: string): NodeJS.ErrnoException {
@@ -45,11 +53,18 @@ async function capturePathChain(
   target: string,
   label: string,
   allowMissingTarget = false,
+  policy: ContainedPathPolicy = {},
 ): Promise<{ identities: PathIdentity[]; targetExists: boolean }> {
-  const parts = relativeDescendant(repositoryRoot, target, label).split(path.sep);
+  const parts =
+    policy.allow_root && repositoryRoot === target
+      ? []
+      : relativeDescendant(repositoryRoot, target, label).split(path.sep);
   const rootStats = await lstat(repositoryRoot, { bigint: true });
   if (rootStats.isSymbolicLink() || !rootStats.isDirectory()) {
     throw unsafeObservation(`Refusing non-directory repository root: ${repositoryRoot}`);
+  }
+  if (policy.exact_case && rootStats.ino <= 0n) {
+    throw unsafeObservation(`Repository root has no stable filesystem identity: ${repositoryRoot}`);
   }
   const identities: PathIdentity[] = [
     {
@@ -62,6 +77,19 @@ async function capturePathChain(
   ];
   let current = repositoryRoot;
   for (const [index, part] of parts.entries()) {
+    let exactEntry = true;
+    if (policy.exact_case) {
+      const siblings = await readdir(current);
+      exactEntry = siblings.includes(part);
+      if (siblings.some((name) => name !== part && name.toLowerCase() === part.toLowerCase())) {
+        throw unsafeObservation(`Refusing case-aliased ${label} path: ${path.join(current, part)}`);
+      }
+      if (!exactEntry && !allowMissingTarget) {
+        throw unsafeObservation(
+          `Refusing missing or case-aliased ${label} path: ${path.join(current, part)}`,
+        );
+      }
+    }
     current = path.join(current, part);
     let stats;
     try {
@@ -69,12 +97,15 @@ async function capturePathChain(
     } catch (error) {
       if (
         allowMissingTarget &&
-        index === parts.length - 1 &&
+        (index === parts.length - 1 || policy.allow_missing_ancestors) &&
         (error as NodeJS.ErrnoException | null)?.code === "ENOENT"
       ) {
         return { identities, targetExists: false };
       }
       throw error;
+    }
+    if (policy.exact_case && (!exactEntry || stats.ino <= 0n)) {
+      throw unsafeObservation(`Refusing aliased or unidentifiable ${label} path: ${current}`);
     }
     if (stats.isSymbolicLink()) {
       throw unsafeObservation(`Refusing symlinked ${label} path: ${current}`);
@@ -82,7 +113,11 @@ async function capturePathChain(
     if (index < parts.length - 1 && !stats.isDirectory()) {
       throw unsafeObservation(`Refusing non-directory ${label} ancestor: ${current}`);
     }
-    if (index === parts.length - 1 && !stats.isFile()) {
+    if (
+      index === parts.length - 1 &&
+      !stats.isFile() &&
+      !(policy.target_kind === "file_or_directory" && stats.isDirectory())
+    ) {
       throw unsafeObservation(`Refusing non-regular ${label}: ${current}`);
     }
     identities.push({
@@ -149,18 +184,32 @@ export async function captureContainedPathChainIdentity(opts: {
   repository_root: string;
   file_path: string;
   label: string;
+  path_policy?: ContainedPathPolicy;
 }): Promise<ContainedPathChainIdentity> {
   const repositoryRootInput = path.resolve(opts.repository_root);
   const filePathInput = path.resolve(opts.file_path);
-  const relativePath = relativeDescendant(repositoryRootInput, filePathInput, opts.label);
+  const relativePath =
+    opts.path_policy?.allow_root && repositoryRootInput === filePathInput
+      ? ""
+      : relativeDescendant(repositoryRootInput, filePathInput, opts.label);
   const repositoryRoot = await realpath(repositoryRootInput);
+  if (opts.path_policy?.exact_case && repositoryRoot !== repositoryRootInput) {
+    throw unsafeObservation(`Refusing aliased repository root: ${repositoryRootInput}`);
+  }
   const filePath = path.join(repositoryRoot, relativePath);
-  const captured = await capturePathChain(repositoryRoot, filePath, opts.label, true);
+  const captured = await capturePathChain(
+    repositoryRoot,
+    filePath,
+    opts.label,
+    true,
+    opts.path_policy,
+  );
   return {
     repository_root: repositoryRoot,
     file_path: filePath,
     target_exists: captured.targetExists,
     identities: captured.identities,
+    ...(opts.path_policy ? { path_policy: { ...opts.path_policy } } : {}),
   };
 }
 
@@ -174,6 +223,7 @@ export async function assertContainedPathChainIdentityUnchanged(
       expected.file_path,
       label,
       true,
+      expected.path_policy,
     );
     if (
       observed.targetExists !== expected.target_exists ||

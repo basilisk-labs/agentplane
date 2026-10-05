@@ -30,7 +30,13 @@ Created: 2026-10-04T18:13:17.876Z
 
 ```text
  bun.lock                                           |   4 +
+ .../src/runner/context/recipe-context.ts           |   2 +
+ .../src/runner/context/recipe-plan-validation.ts   | 112 +++++++
+ .../context/roadmap-recipe-plan-validation.test.ts | 321 ++++++++++++++++++++
+ .../agentplane/src/shared/contained-stable-file.ts |  62 +++-
  packages/core/src/tasks/index.ts                   |   1 +
+ packages/core/src/tasks/task-centric/graph.ts      |  26 ++
+ .../src/tasks/task-centric/task-centric.test.ts    |  32 ++
  packages/recipes/package.json                      |   4 +
  packages/recipes/src/index.ts                      |   2 +
  packages/recipes/src/internal-utils.ts             |  14 +
@@ -42,7 +48,7 @@ Created: 2026-10-04T18:13:17.876Z
  packages/recipes/src/scenario-v2.ts                |  70 +++++
  packages/recipes/src/scenario.ts                   |  15 +
  packages/recipes/tsconfig.json                     |   7 +-
- 13 files changed, 714 insertions(+), 2 deletions(-)
+ 19 files changed, 1263 insertions(+), 8 deletions(-)
 ```
 
 </details>

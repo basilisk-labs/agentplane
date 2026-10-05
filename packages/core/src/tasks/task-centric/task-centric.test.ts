@@ -974,3 +974,35 @@ describe("task-centric domain", () => {
     ).toBe(false);
   });
 });
+
+describe("native graph output references", () => {
+  it("rejects dangling and self inputs and duplicate output producers", () => {
+    expect(
+      validateWorkItemGraph({
+        schema_version: 1,
+        work_items: [item({ id: "a", required_inputs: ["missing"] })],
+      }),
+    ).toContainEqual(expect.objectContaining({ code: "missing_input_declaration" }));
+    expect(
+      validateWorkItemGraph({
+        schema_version: 1,
+        work_items: [item({ id: "a", required_inputs: ["out-a"] })],
+      }),
+    ).toContainEqual(expect.objectContaining({ code: "missing_input_declaration" }));
+    expect(
+      validateWorkItemGraph({
+        schema_version: 1,
+        work_items: [item({ id: "a" }), item({ id: "b", expected_outputs: ["out-a"] })],
+      }),
+    ).toContainEqual(expect.objectContaining({ code: "duplicate_output_declaration" }));
+    expect(
+      validateWorkItemGraph({
+        schema_version: 1,
+        work_items: [
+          item({ id: "a" }),
+          item({ id: "b", depends_on: ["a"], required_inputs: ["out-a"] }),
+        ],
+      }),
+    ).toEqual([]);
+  });
+});

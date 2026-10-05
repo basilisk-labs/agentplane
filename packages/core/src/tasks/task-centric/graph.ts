@@ -20,6 +20,8 @@ export type GraphValidationIssue = Readonly<{
     | "missing_dependency"
     | "dependency_cycle"
     | "missing_output_declaration"
+    | "duplicate_output_declaration"
+    | "missing_input_declaration"
     | "missing_acceptance"
     | "missing_validation"
     | "unsupported_capability"
@@ -104,6 +106,30 @@ export function validateWorkItemGraph(
 ): readonly GraphValidationIssue[] {
   const issues: GraphValidationIssue[] = [];
   validateDependencies(graph, issues);
+  const outputOwners = new Map<string, string>();
+  for (const [index, item] of graph.work_items.entries()) {
+    for (const output of item.expected_outputs) {
+      if (outputOwners.has(output)) {
+        issues.push({
+          code: "duplicate_output_declaration",
+          path: `work_items[${index}].expected_outputs`,
+          message: `Output ${output} is declared more than once.`,
+        });
+      }
+      outputOwners.set(output, item.id);
+    }
+  }
+  for (const [index, item] of graph.work_items.entries()) {
+    for (const input of item.required_inputs) {
+      if (!outputOwners.has(input) || outputOwners.get(input) === item.id) {
+        issues.push({
+          code: "missing_input_declaration",
+          path: `work_items[${index}].required_inputs`,
+          message: `Input ${input} has no other producing WorkItem.`,
+        });
+      }
+    }
+  }
   for (const [index, item] of graph.work_items.entries()) {
     if (
       item.expected_outputs.length === 0 ||

@@ -122,3 +122,5 @@ export async function assembleRunnerRecipeContext(opts: {
     recipe: toRecipeContext({ entry, selection, scenario, assets }),
   };
 }
+
+export { validateRecipeScenarioPlan, type ValidatedRecipePlan } from "./recipe-plan-validation.js";
