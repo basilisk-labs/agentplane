@@ -1,3 +1,7 @@
+import {
+  projectKernelRecipeRoleContext,
+  RECIPE_ROLE_CONTEXT_LABEL,
+} from "../../runner/context/recipe-role-context.js";
 import path from "node:path";
 import { recoverKernelOperationalProjection } from "./kernel-operational-projection-recovery.js";
 import {
@@ -161,10 +165,20 @@ export async function issueKernelInspection(
       };
     return null;
   }
+  const recipeContext = await projectKernelRecipeRoleContext({
+    gitRoot: command.resolvedProject.gitRoot,
+    record,
+    role: "EVALUATOR",
+    work_item_id: workItemId,
+  });
   const order = AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse({
     schema_version: 2,
     kind: "agent_work_order",
-    work_order_id: k.kernelDigest({ binding, revision: record.aggregate.revision }),
+    work_order_id: k.kernelDigest({
+      binding,
+      revision: record.aggregate.revision,
+      ...(recipeContext ? { recipe_context: recipeContext } : {}),
+    }),
     role: "EVALUATOR",
     task: {
       id: record.aggregate.id,
@@ -210,7 +224,8 @@ export async function issueKernelInspection(
     },
     context_intent: {
       purpose:
-        "Inspect source and output evidence against the approved contract. Return a review verdict. Do not modify implementation or claim native verification. The controller executes the approved checks independently.",
+        "Inspect source and output evidence against the approved contract. Return a review verdict. Do not modify implementation or claim native verification. The controller executes the approved checks independently." +
+        (recipeContext ? `\n\n${RECIPE_ROLE_CONTEXT_LABEL}\n${JSON.stringify(recipeContext)}` : ""),
       required_knowledge_ref_digests: [],
       require_prepared_evidence: false,
     },

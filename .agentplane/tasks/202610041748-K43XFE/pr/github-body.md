@@ -35,27 +35,31 @@ User explicitly authorizes autonomous completion of all necessary development, i
  .../src/commands/recipes/impl/resolver.ts          |    2 +-
  .../recipes/roadmap-explicit-selection.test.ts     |  342 ++++
  .../src/commands/task/create-plan-input.ts         |   65 +-
+ .../src/commands/task/kernel-inspection.ts         |   19 +-
  .../task/kernel-plan-supplied-approval.test.ts     |   68 +
  .../agentplane/src/commands/task/kernel-plan.ts    |   60 +-
  .../src/commands/task/kernel-planning-view.ts      |   10 +-
  .../src/commands/task/kernel-recipe-admission.ts   |  106 +
  .../src/commands/task/kernel-runtime-context.ts    |    8 +
  .../src/commands/task/kernel-semantic-result.ts    |   30 +-
- .../src/commands/task/kernel-work-order.ts         |   25 +-
+ .../src/commands/task/kernel-work-order.ts         |   43 +-
  .../src/commands/task/roadmap-recipe-repin.test.ts |  467 +++++
  .../src/runner/context/recipe-applicability.ts     |  371 ++++
  .../src/runner/context/recipe-closure.ts           |  416 ++++
- .../src/runner/context/recipe-context.ts           |   27 +
+ .../src/runner/context/recipe-context.ts           |   29 +
  .../src/runner/context/recipe-native-observers.ts  |   34 +
  .../src/runner/context/recipe-plan-binding.ts      |  181 ++
  .../src/runner/context/recipe-plan-rebind.ts       |   73 +
  .../src/runner/context/recipe-plan-validation.ts   |  120 ++
+ .../src/runner/context/recipe-prompt-blocks.ts     |    2 +
  .../src/runner/context/recipe-retention.ts         |  222 +++
+ .../src/runner/context/recipe-role-context.ts      |  187 ++
  .../src/runner/context/recipe-shortlist.ts         |  116 ++
  .../context/roadmap-recipe-applicability.test.ts   |  406 ++++
  .../runner/context/roadmap-recipe-closure.test.ts  |  565 ++++++
  .../context/roadmap-recipe-plan-binding.test.ts    |  530 +++++
  .../context/roadmap-recipe-plan-validation.test.ts |  352 ++++
+ .../runner/context/roadmap-recipe-prompt.test.ts   |  440 +++++
  .../context/roadmap-recipe-retention.test.ts       |  396 ++++
  .../context/roadmap-recipe-shortlist.test.ts       |  331 ++++
  .../src/runner/usecases/kernel-authority.ts        |    2 +-
@@ -63,6 +67,8 @@ User explicitly authorizes autonomous completion of all necessary development, i
  .../runner/usecases/scenario-explicit-selection.ts |  127 ++
  .../src/runner/usecases/scenario-instantiate.ts    |  201 ++
  .../runner/usecases/scenario-materialize-task.ts   |   73 +-
+ .../src/runner/usecases/task-run-bootstrap.ts      |    2 +-
+ .../src/runner/usecases/task-run-recipe-context.ts |    4 +
  .../agentplane/src/shared/contained-stable-file.ts |   62 +-
  .../task/roadmap-recipe-specialization.test.ts     |  398 ++++
  packages/core/src/runner/agent-semantic-result.ts  |   16 +-
@@ -93,7 +99,7 @@ User explicitly authorizes autonomous completion of all necessary development, i
  packages/recipes/src/scenario.ts                   |   15 +
  packages/recipes/tsconfig.json                     |    7 +-
  schemas/agent-semantic-result.schema.json          | 2081 ++++++++++++++++----
- 66 files changed, 9913 insertions(+), 425 deletions(-)
+ 72 files changed, 10584 insertions(+), 428 deletions(-)
 ```
 
 </details>
