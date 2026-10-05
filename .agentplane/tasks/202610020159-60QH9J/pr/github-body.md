@@ -45,10 +45,12 @@ User explicitly authorizes implementing and testing a bounded repair for task 20
  .../src/commands/task/kernel-semantic-result.ts    |   4 +-
  .../commands/task/roadmap-terminal-noop.test.ts    |   6 +-
  ...te-fingerprint-residual-git.integration.test.ts |   3 +-
+ .../usecases/task-run-context.integration.test.ts  |   2 +-
+ .../usecases/task-run-effect-resolution.test.ts    | 159 ++++++++++------
  .../usecases/task-run-lifecycle-cancel.test.ts     |   3 +-
  .../src/tasks/task-kernel/authority-delta.test.ts  | 158 +++++++++++++++-
  .../src/tasks/task-kernel/authority-lineage.ts     |  40 +++-
- 21 files changed, 1270 insertions(+), 26 deletions(-)
+ 23 files changed, 1371 insertions(+), 86 deletions(-)
 ```
 
 </details>

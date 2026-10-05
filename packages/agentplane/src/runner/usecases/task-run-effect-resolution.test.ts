@@ -289,68 +289,109 @@ describe("task runner effect resolution", () => {
     expect(existsSync(opposingFixture.adapterMarker)).toBe(false);
   });
 
-  it("waits through a concurrent active-claim retirement beyond the legacy retry window", async () => {
-    const fixture = await uncertainEffectFixture();
-    const input = resolutionInput(fixture);
-    const acquisition = await acquireTaskRunnerActiveClaimRecoveryLease({
-      git_root: fixture.root,
-      workflow_dir: fixture.ctx.config.paths.workflow_dir,
-      task_id: fixture.taskId,
-      target_generation: fixture.claim.generation,
-    });
-    expect(acquisition.status).toBe("acquired");
-    if (acquisition.status !== "acquired") {
-      throw new Error("Expected to hold the active-claim recovery lease.");
-    }
-    const originalRead = stableFile.readStableRegularTextNoFollow;
-    let activeClaimReads = 0;
-    let signalWaitStarted!: () => void;
-    const waitStarted = new Promise<void>((resolve) => {
-      signalWaitStarted = resolve;
-    });
-    const readSpy = vi
-      .spyOn(stableFile, "readStableRegularTextNoFollow")
-      .mockImplementation(async (...args) => {
-        const isRetirementWaitRead = args[1] === "runner active claim";
-        if (isRetirementWaitRead) {
-          activeClaimReads += 1;
-          if (activeClaimReads === 2) signalWaitStarted();
+  it.each([false, true])(
+    "observes concurrent retirement beyond the legacy window (deadline expires: %s)",
+    async (expires) => {
+      const fixture = await uncertainEffectFixture();
+      const input = resolutionInput(fixture);
+      const acquisition = await acquireTaskRunnerActiveClaimRecoveryLease({
+        git_root: fixture.root,
+        workflow_dir: fixture.ctx.config.paths.workflow_dir,
+        task_id: fixture.taskId,
+        target_generation: fixture.claim.generation,
+      });
+      expect(acquisition.status).toBe("acquired");
+      if (acquisition.status !== "acquired") {
+        throw new Error("Expected to hold the active-claim recovery lease.");
+      }
+      const originalRead = stableFile.readStableRegularTextNoFollow;
+      let monotonicNow = 0;
+      const clockSpy = vi.spyOn(performance, "now").mockImplementation(() => monotonicNow);
+      let releaseWait!: () => void;
+      const waitGate = new Promise<void>((resolve) => {
+        releaseWait = resolve;
+      });
+      let activeClaimReads = 0;
+      let signalWaitStarted!: () => void;
+      const waitStarted = new Promise<void>((resolve) => {
+        signalWaitStarted = resolve;
+      });
+      const readSpy = vi
+        .spyOn(stableFile, "readStableRegularTextNoFollow")
+        .mockImplementation(async (...args) => {
+          const isRetirementWaitRead = args[1] === "runner active claim";
+          if (isRetirementWaitRead) {
+            activeClaimReads += 1;
+            // The first read precedes retirement. Eleven wait observations must
+            // remain possible; the former ten-attempt loop cannot reach this gate.
+            if (!expires && activeClaimReads <= 12) {
+              monotonicNow = (activeClaimReads - 1) * 25;
+            }
+            if (activeClaimReads === (expires ? 2 : 12)) {
+              signalWaitStarted();
+              await waitGate;
+            }
+          }
+          return await originalRead(...args);
+        });
+
+      try {
+        const waitingResolution = resolveTaskRunnerEffect(input);
+        await waitStarted;
+        // Real filesystem work is gated independently of the production monotonic
+        // deadline. Neither scheduler load nor filesystem latency advances this clock.
+        if (expires) {
+          const rejected = expect(waitingResolution).rejects.toMatchObject({
+            context: { reason: "runner_effect_resolution_retirement_busy" },
+          });
+          monotonicNow = 2000;
+          releaseWait();
+          await rejected;
+          expect(activeClaimReads).toBeGreaterThanOrEqual(2);
+          await expect(
+            readTaskRunnerActiveClaim({
+              git_root: fixture.root,
+              workflow_dir: fixture.ctx.config.paths.workflow_dir,
+              task_id: fixture.taskId,
+              run_id: fixture.prepared.invocation.run_id,
+            }),
+          ).resolves.toMatchObject({ generation: fixture.claim.generation });
+          return;
         }
-        return await originalRead(...args);
-      });
+        monotonicNow = 300;
+        await releaseTaskRunnerActiveClaimRecoveryLease({
+          lease: acquisition.lease,
+          succeeded: false,
+        });
+        const completing = await resolveTaskRunnerEffect(input);
+        releaseWait();
+        const waiting = await waitingResolution;
 
-    try {
-      const waitingResolution = resolveTaskRunnerEffect(input);
-      await waitStarted;
-      await releaseTaskRunnerActiveClaimRecoveryLease({
-        lease: acquisition.lease,
-        succeeded: false,
-      });
-      // The former ten-attempt backoff exhausted in roughly 225 ms. Delaying
-      // the competing resolver beyond that window makes the regression
-      // deterministic without depending on hosted-runner scheduler pressure.
-      await new Promise<void>((resolve) => setTimeout(resolve, 300));
-      const [waiting, completing] = await Promise.all([
-        waitingResolution,
-        resolveTaskRunnerEffect(input),
-      ]);
-
-      expect(activeClaimReads).toBeGreaterThanOrEqual(2);
-      expect(waiting.resolution.digest).toBe(completing.resolution.digest);
-      expect(waiting.claim_retirement).toBe("absent");
-      expect(completing.claim_retirement).toBe("retired");
-      await expect(
-        readTaskRunnerActiveClaim({
-          git_root: fixture.root,
-          workflow_dir: fixture.ctx.config.paths.workflow_dir,
-          task_id: fixture.taskId,
-          run_id: fixture.prepared.invocation.run_id,
-        }),
-      ).resolves.toBeNull();
-    } finally {
-      readSpy.mockRestore();
-    }
-  });
+        expect(activeClaimReads).toBeGreaterThanOrEqual(12);
+        expect(waiting.resolution.digest).toBe(completing.resolution.digest);
+        expect(waiting.claim_retirement).toBe("absent");
+        expect(completing.claim_retirement).toBe("retired");
+        await expect(
+          readTaskRunnerActiveClaim({
+            git_root: fixture.root,
+            workflow_dir: fixture.ctx.config.paths.workflow_dir,
+            task_id: fixture.taskId,
+            run_id: fixture.prepared.invocation.run_id,
+          }),
+        ).resolves.toBeNull();
+      } finally {
+        releaseWait();
+        readSpy.mockRestore();
+        clockSpy.mockRestore();
+        if (expires) {
+          await releaseTaskRunnerActiveClaimRecoveryLease({
+            lease: acquisition.lease,
+            succeeded: false,
+          });
+        }
+      }
+    },
+  );
 
   it("rejects authority mismatch before creating an intent", async () => {
     const fixture = await uncertainEffectFixture();
