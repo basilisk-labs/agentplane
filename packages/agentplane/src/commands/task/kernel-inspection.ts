@@ -1,3 +1,4 @@
+import { recipeV1ConversionSourceInput } from "../recipes/impl/v1-conversion.js";
 import {
   projectKernelRecipeRoleContext,
   RECIPE_ROLE_CONTEXT_LABEL,
@@ -171,6 +172,11 @@ export async function issueKernelInspection(
     role: "EVALUATOR",
     work_item_id: workItemId,
   });
+  const conversionSource = await recipeV1ConversionSourceInput({
+    command,
+    task_id: record.aggregate.id,
+    contract,
+  });
   const order = AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse({
     schema_version: 2,
     kind: "agent_work_order",
@@ -178,6 +184,7 @@ export async function issueKernelInspection(
       binding,
       revision: record.aggregate.revision,
       ...(recipeContext ? { recipe_context: recipeContext } : {}),
+      ...(conversionSource ? { conversion_source: conversionSource } : {}),
     }),
     role: "EVALUATOR",
     task: {
@@ -232,6 +239,7 @@ export async function issueKernelInspection(
     knowledge_refs: [],
     prepared_evidence: [],
     required_inputs: [
+      ...(conversionSource ? [conversionSource] : []),
       {
         id: "implementation-result",
         kind: "source_artifact",

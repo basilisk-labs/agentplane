@@ -14,3 +14,4 @@ export {
   type ScenarioInstantiationInput,
   type ScenarioInstantiationCompilation,
 } from "./scenario-compiler.js";
+export * from "./scenario-conversion.js";

@@ -1,3 +1,4 @@
+import { recipeV1ConversionSourceInput } from "../recipes/impl/v1-conversion.js";
 import {
   projectKernelRecipeRoleContext,
   RECIPE_ROLE_CONTEXT_LABEL,
@@ -163,6 +164,11 @@ export async function buildKernelAgentWorkOrder(opts: {
     role,
     work_item_id: implementation?.binding.work_item_id,
   });
+  const conversionSource = await recipeV1ConversionSourceInput({
+    command: opts.command,
+    task_id: aggregate.id,
+    contract: implementation?.contract,
+  });
   const recipeCandidates = implementation
     ? undefined
     : await summarizeRecipeCandidates(opts.command.resolvedProject);
@@ -179,6 +185,7 @@ export async function buildKernelAgentWorkOrder(opts: {
       state_fingerprint: fingerprint.digest,
       ...(recipeCandidates ? { recipe_candidates: recipeCandidates } : {}),
       ...(recipeContext ? { recipe_context: recipeContext } : {}),
+      ...(conversionSource ? { conversion_source: conversionSource } : {}),
     }),
     role,
     task: {
@@ -248,14 +255,16 @@ export async function buildKernelAgentWorkOrder(opts: {
     },
     knowledge_refs: [],
     prepared_evidence: [],
-    required_inputs:
-      implementation?.inputs.map((manifest) => ({
+    required_inputs: [
+      ...(implementation?.inputs.map((manifest) => ({
         id: manifest.id,
         kind: "source_artifact",
         description: manifest.kind,
         digest: manifest.digest,
         required: true,
-      })) ?? [],
+      })) ?? []),
+      ...(conversionSource ? [conversionSource] : []),
+    ],
     required_outputs: [
       {
         id: "semantic-result",
