@@ -135,3 +135,8 @@ export {
   RecipeClosureError,
   type ComputedRecipeClosure,
 } from "./recipe-closure.js";
+export {
+  prepareRecipeClosureRetention,
+  readRetainedRecipeClosure,
+  type RecipeClosureReference,
+} from "./recipe-retention.js";
