@@ -50,7 +50,11 @@ export type ReplacementPlanWorkItemRecoveryEvidence = Readonly<{
   receipt: TransitionReceipt;
 }>;
 
-function validateDependencies(graph: WorkItemGraph, issues: GraphValidationIssue[]): void {
+function validateDependencies(
+  graph: WorkItemGraph,
+  outputOwners: ReadonlyMap<string, string>,
+  issues: GraphValidationIssue[],
+): void {
   const ids = new Set<string>();
   for (const [index, item] of graph.work_items.entries()) {
     if (ids.has(item.id)) {
@@ -81,7 +85,16 @@ function validateDependencies(graph: WorkItemGraph, issues: GraphValidationIssue
     if (visiting.has(id)) return true;
     if (visited.has(id)) return false;
     visiting.add(id);
-    for (const dependency of byId.get(id)?.depends_on ?? []) {
+    const item = byId.get(id);
+    // Readiness waits for both explicit dependencies and required-input producers.
+    const prerequisites = [
+      ...(item?.depends_on ?? []),
+      ...(item?.required_inputs ?? []).flatMap((input) => {
+        const producer = outputOwners.get(input);
+        return producer === undefined ? [] : [producer];
+      }),
+    ];
+    for (const dependency of prerequisites) {
       if (byId.has(dependency) && visit(dependency)) return true;
     }
     visiting.delete(id);
@@ -105,7 +118,6 @@ export function validateWorkItemGraph(
   supportedCapabilities: ReadonlySet<string> = new Set(),
 ): readonly GraphValidationIssue[] {
   const issues: GraphValidationIssue[] = [];
-  validateDependencies(graph, issues);
   const outputOwners = new Map<string, string>();
   for (const [index, item] of graph.work_items.entries()) {
     for (const output of item.expected_outputs) {
@@ -119,6 +131,7 @@ export function validateWorkItemGraph(
       outputOwners.set(output, item.id);
     }
   }
+  validateDependencies(graph, outputOwners, issues);
   for (const [index, item] of graph.work_items.entries()) {
     for (const input of item.required_inputs) {
       if (!outputOwners.has(input) || outputOwners.get(input) === item.id) {

@@ -1006,3 +1006,35 @@ describe("native graph output references", () => {
     ).toEqual([]);
   });
 });
+
+describe("effective input-producer dependencies", () => {
+  it.each(["input-only", "mixed"] as const)("rejects a %s prerequisite cycle", (kind) => {
+    const graph = {
+      schema_version: 1 as const,
+      work_items: [
+        item({
+          id: "a",
+          ...(kind === "input-only" ? { required_inputs: ["out-b"] } : { depends_on: ["b"] }),
+        }),
+        item({ id: "b", required_inputs: ["out-a"] }),
+      ],
+    };
+    expect(validateWorkItemGraph(graph)).toContainEqual(
+      expect.objectContaining({ code: "dependency_cycle" }),
+    );
+  });
+
+  it("accepts an acyclic input-only producer chain without rewriting explicit dependencies", () => {
+    const graph = {
+      schema_version: 1 as const,
+      work_items: [
+        item({ id: "a" }),
+        item({ id: "b", required_inputs: ["out-a"] }),
+        item({ id: "c", required_inputs: ["out-b"] }),
+      ],
+    };
+    const before = structuredClone(graph);
+    expect(validateWorkItemGraph(graph)).toEqual([]);
+    expect(graph).toEqual(before);
+  });
+});
