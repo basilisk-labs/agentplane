@@ -1,8 +1,8 @@
-import { mkdir, mkdtemp, realpath, rename, rm, symlink, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, realpath, rename, rm, stat, symlink, writeFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import os from "node:os";
 import path from "node:path";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   createRepositorySnapshot,
   normalizeTaskPlanProposal,
@@ -14,6 +14,7 @@ import {
   type RecipeDependencyClosureDeclaration,
 } from "@agentplaneorg/recipes";
 import { computeRecipeDependencyClosure } from "./recipe-context.js";
+import * as stableFile from "../../shared/stable-file.js";
 
 const digest = (text: string) => `sha256:${createHash("sha256").update(text).digest("hex")}`;
 const baseline = createRepositorySnapshot({
@@ -185,6 +186,7 @@ beforeEach(async () => {
   });
 });
 afterEach(async () => {
+  vi.restoreAllMocks();
   await rm(root, { recursive: true, force: true });
 });
 
@@ -377,12 +379,93 @@ describe("pre-execution Recipe dependency closure", () => {
     await symlink(path.join(root, "guidance.md"), path.join(recipe, "tool/helper.js"));
     await expect(compute()).rejects.toMatchObject({ code: "unsafe_package_entry" });
   });
-  it("detects ancestor replacement and changed bytes at use time", async () => {
+  it("detects ancestor replacement at use time", async () => {
     const result = await compute();
     await rename(path.join(recipe, "tool"), path.join(recipe, "old-tool"));
     await mkdir(path.join(recipe, "tool"));
     await expect(result.assertUnchanged()).rejects.toThrow(/changed/iu);
   });
+  it.each(["tool/helper.js", "transitive.md", "scenario.json"])(
+    "rejects same-inode source rewrites: %s",
+    async (relative) => {
+      const result = await compute();
+      const source = path.join(recipe, relative);
+      const before = await stat(source);
+      await writeFile(
+        source,
+        relative === "scenario.json"
+          ? JSON.stringify({ ...scenario, goal: "Changed goal" })
+          : "Changed bytes",
+      );
+      const after = await stat(source);
+      expect(after.ino).toBe(before.ino);
+      await expect(result.assertUnchanged()).rejects.toThrow();
+    },
+  );
+  it("rejects same-inode selected manifest metadata rewrites", async () => {
+    const result = await compute();
+    const before = await stat(path.join(recipe, "manifest.json"));
+    (manifest.tools as { permissions?: string[] }[])[0]!.permissions = ["new_permission"];
+    await writeManifest();
+    const after = await stat(path.join(recipe, "manifest.json"));
+    expect(after.ino).toBe(before.ino);
+    await expect(result.assertUnchanged()).rejects.toMatchObject({
+      code: "source_closure_changed",
+    });
+  });
+  it("rejects added unlisted package files without a directory inode change", async () => {
+    const result = await compute();
+    const before = await stat(path.join(recipe, "tool"));
+    await writeFile(path.join(recipe, "tool/unlisted.js"), "new helper");
+    const after = await stat(path.join(recipe, "tool"));
+    expect(after.ino).toBe(before.ino);
+    await expect(result.assertUnchanged()).rejects.toMatchObject({
+      code: "package_inventory_unpinned",
+    });
+  });
+  it("keeps unrelated catalogue edits irrelevant to a live closure", async () => {
+    const result = await compute();
+    (manifest.skills as unknown[]).push({ id: "unrelated", summary: "Unused", file: "absent.md" });
+    await writeManifest();
+    await result.assertUnchanged();
+    const unchanged = await compute();
+    expect(unchanged.closure).toEqual(result.closure);
+  });
+  it("preserves pinned byte copies when live sources become stale", async () => {
+    const result = await compute();
+    const file = result.closure.files.find((entry) => entry.path === "tool/helper.js")!;
+    const object = result.objects.find((entry) => entry.digest === file.digest)!;
+    await writeFile(path.join(recipe, "tool/helper.js"), "changed helper");
+    await expect(result.assertUnchanged()).rejects.toThrow();
+    expect(Buffer.from(object.bytes).toString("utf8")).toBe(helper);
+    expect(digest(Buffer.from(object.bytes).toString("utf8"))).toBe(file.digest);
+  });
+  it.each(["helper", "manifest", "inventory"])(
+    "rejects a %s change during initial observation",
+    async (target) => {
+      const originalRead = stableFile.readStableRegularFileNoFollow;
+      vi.spyOn(stableFile, "readStableRegularFileNoFollow").mockImplementation(
+        async (filePath, label, options) => {
+          const bytes = await originalRead(filePath, label, options);
+          if (filePath === path.join(root, "guidance.md")) {
+            if (target === "helper")
+              await writeFile(
+                path.join(recipe, "tool/helper.js"),
+                "Changed after package pin check",
+              );
+            else if (target === "inventory")
+              await writeFile(path.join(recipe, "tool/unlisted.js"), "Added after package walk");
+            else {
+              (manifest.tools as { permissions?: string[] }[])[0]!.permissions = ["new_permission"];
+              await writeManifest();
+            }
+          }
+          return bytes;
+        },
+      );
+      await expect(compute()).rejects.toMatchObject({ code: "source_changed_during_observation" });
+    },
+  );
   it("detects changed output and object bytes", async () => {
     const result = await compute();
     result.closure.recipe.version = "forged";
