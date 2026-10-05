@@ -19,7 +19,7 @@ import {
 import { readStableRegularTextNoFollow } from "../../../shared/stable-file.js";
 
 const text = z.string().min(1).max(256);
-const selectionSchema = z.strictObject({
+export const explicitRecipeSelectionSchema = z.strictObject({
   recipe_id: text,
   recipe_version: text.optional(),
   scenario_id: text,
@@ -59,7 +59,7 @@ export async function resolveExplicitRecipeScenarioSelection(opts: {
   project: ResolvedProject;
   selection: ExplicitRecipeScenarioSelection;
 }) {
-  const selection = selectionSchema.parse(opts.selection);
+  const selection = explicitRecipeSelectionSchema.parse(opts.selection);
   const registry = await readExplicitRecipeRegistry(opts.project);
   const matches = registry.recipes.filter(
     (entry) =>
