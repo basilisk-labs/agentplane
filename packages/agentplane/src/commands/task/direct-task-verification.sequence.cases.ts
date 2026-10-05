@@ -85,6 +85,47 @@ describe("direct task verification sequences", () => {
     }
   });
 
+  it("isolates heap settings across segments and binds every effective environment", async () => {
+    const cwd = await root();
+    const inherited = process.env.NODE_OPTIONS;
+    runProcess.mockResolvedValue({ exitCode: 0, stdout: "ok", stderr: "" });
+    const verify = async (size: number) =>
+      await runDirectTaskVerification({
+        command: command(cwd),
+        task: {
+          verify: [
+            `NODE_OPTIONS=--max-old-space-size=${String(size)} node first.mjs && node second.mjs`,
+            "node third.mjs",
+          ],
+          task_kind: "code",
+          mutation_scope: "code",
+        },
+        task_id: TASK_ID,
+        cwd,
+        run_process: runProcess,
+      });
+    const first = await verify(4096);
+    expect(first.status).toBe("passed");
+    expect(runProcess.mock.calls[0]?.[0]).toHaveProperty(
+      "env.NODE_OPTIONS",
+      "--max-old-space-size=4096",
+    );
+    type Invocation = Parameters<
+      NonNullable<Parameters<typeof runDirectTaskVerification>[0]["run_process"]>
+    >[0];
+    const secondInvocation = runProcess.mock.calls[1]?.[0] as Invocation | undefined;
+    const thirdInvocation = runProcess.mock.calls[2]?.[0] as Invocation | undefined;
+    expect(secondInvocation?.env?.NODE_OPTIONS).toBe(inherited);
+    expect(thirdInvocation?.env?.NODE_OPTIONS).toBe(inherited);
+    const second = await verify(512);
+    expect(second.status).toBe("passed");
+    expect(first.checks[0]?.runtime?.environment_digest).not.toBe(
+      second.checks[0]?.runtime?.environment_digest,
+    );
+    expect(first.checks[1]?.runtime).toEqual(second.checks[1]?.runtime);
+    expect(process.env.NODE_OPTIONS).toBe(inherited);
+  });
+
   it("runs a safe sequence in order without a shell", async () => {
     const cwd = await root();
     runProcess
