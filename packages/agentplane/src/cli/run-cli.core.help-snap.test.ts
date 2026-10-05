@@ -15,6 +15,16 @@ afterEach(() => {
 });
 
 describe("runCli help snapshots (cli2)", () => {
+  it("help task plan approve names the explicit policy renewal boundary", async () => {
+    const io = captureStdIO();
+    try {
+      expect(await runCli(["help", "task", "plan", "approve"])).toBe(0);
+      expect(io.stdout).toContain("--renew-authority");
+      expect(io.stdout).toContain("Requires --by USER");
+    } finally {
+      io.restore();
+    }
+  });
   it("help (registry) snapshot", async () => {
     const io = captureStdIO();
     try {

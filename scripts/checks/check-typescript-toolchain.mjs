@@ -93,21 +93,6 @@ if (parserTypescriptVersion !== expectedApiVersion) {
   );
 }
 
-const docusaurusPackage = require.resolve("@docusaurus/tsconfig/package.json", {
-  paths: [path.join(root, "website")],
-});
-const docusaurusConfig = JSON.parse(
-  readFileSync(path.join(path.dirname(docusaurusPackage), "tsconfig.json"), "utf8"),
-);
-const bridgeConfig = readJson("website/tsconfig.docusaurus.json");
-const expectedBridgeOptions = { ...docusaurusConfig.compilerOptions };
-delete expectedBridgeOptions.baseUrl;
-if (JSON.stringify(bridgeConfig.compilerOptions) !== JSON.stringify(expectedBridgeOptions)) {
-  throw new Error(
-    "website/tsconfig.docusaurus.json must mirror the pinned Docusaurus config except for removed baseUrl.",
-  );
-}
-
 const depcruiseConfig = readJson("tsconfig.depcruise.json");
 const expectedDepcruiseOptions = {
   module: "NodeNext",
@@ -139,7 +124,6 @@ const workspaces = [
   "packages/recipes/package.json",
   "packages/agentplane/package.json",
   "packages/testkit/package.json",
-  "website/package.json",
 ];
 for (const workspace of workspaces) {
   const typecheck = readJson(workspace).scripts?.typecheck ?? "";

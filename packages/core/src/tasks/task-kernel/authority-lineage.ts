@@ -144,6 +144,104 @@ export function authorityDeltaApprovalEvidence(input: {
   return kernelDigest({ kind: "canonical_authority_delta_approval", ...input });
 }
 
+export function policyRenewalRequestDigest(input: {
+  task_revision: number;
+  parent: ExecutionAuthority;
+  repository_fingerprint: Sha256Digest;
+  policy_digests: readonly Sha256Digest[];
+  changed_paths?: readonly string[];
+  repository_evidence_digest?: Sha256Digest;
+}) {
+  return kernelDigest({
+    kind: "canonical_policy_authority_renewal",
+    task_id: input.parent.task_id,
+    task_revision: input.task_revision,
+    parent_authority_digest: input.parent.digest,
+    repository_fingerprint: input.repository_fingerprint,
+    policy_digests: input.policy_digests,
+    changed_paths: input.changed_paths ?? [],
+    repository_evidence_digest: input.repository_evidence_digest ?? null,
+  });
+}
+
+export function policyRenewalApprovalEvidence(input: {
+  request_digest: Sha256Digest;
+  actor_id: string;
+}) {
+  return kernelDigest({ kind: "canonical_policy_authority_renewal_approval", ...input });
+}
+
+/** Renewal changes the policy binding, never the approved execution permissions or obligations. */
+export function policyRenewalIssues(
+  parent: ExecutionAuthority,
+  record: CanonicalAuthorityRecord,
+): string[] {
+  const child = record.authority;
+  const observation = record.observation;
+  const unchanged = {
+    ...child,
+    digest: parent.digest,
+    repository_fingerprint: parent.repository_fingerprint,
+    policy_digests: parent.policy_digests,
+    provenance: parent.provenance,
+  };
+  if (
+    record.approval_mode !== "manual_operator" ||
+    observation?.kind !== "policy_renewal" ||
+    observation.request_task_revision === undefined ||
+    observation.previous_fingerprint !== parent.repository_fingerprint ||
+    (child.repository_fingerprint !== parent.repository_fingerprint &&
+      observation.changed_paths.length === 0) ||
+    JSON.stringify(observation.changed_paths) !==
+      JSON.stringify([...new Set(observation.changed_paths)].toSorted()) ||
+    observation.changed_paths.some((changed) => {
+      const requirements = {
+        scope_roots: [changed],
+        repository_effects: [],
+        external_effects: [],
+        capabilities: [],
+        resources: [],
+      };
+      const policyPath =
+        ["AGENTS.md", ".agentplane/WORKFLOW.md", ".agentplane/config.json"].includes(changed) ||
+        changed.startsWith(".agentplane/policy/");
+      return (
+        !executionRequirementsAreSubset({ ...parent, scope_roots: ["."] }, requirements) ||
+        (!policyPath && !executionRequirementsAreSubset(parent, requirements))
+      );
+    }) ||
+    observation.added_scope_roots !== undefined ||
+    observation.added_repository_effects !== undefined ||
+    (observation.changed_paths.length > 0 &&
+      !/^sha256:[0-9a-f]{64}$/u.test(observation.repository_evidence_digest ?? "")) ||
+    child.provenance.kind !== "USER" ||
+    !/^USER(?::[A-Za-z0-9._@-]+)?$/u.test(child.provenance.actor_id) ||
+    child.provenance.parent_authority_digest !== parent.digest ||
+    child.provenance.evidence_digest !== parent.provenance.evidence_digest ||
+    child.digest !== authorityDigest(child) ||
+    kernelDigest(unchanged) !== kernelDigest(parent) ||
+    kernelDigest(child.policy_digests) === kernelDigest(parent.policy_digests) ||
+    child.policy_digests.length === 0 ||
+    child.policy_digests.some((value) => !/^sha256:[0-9a-f]{64}$/u.test(value)) ||
+    observation.request_digest !==
+      policyRenewalRequestDigest({
+        task_revision: observation.request_task_revision,
+        parent,
+        repository_fingerprint: child.repository_fingerprint,
+        policy_digests: child.policy_digests,
+        changed_paths: observation.changed_paths,
+        repository_evidence_digest: observation.repository_evidence_digest,
+      }) ||
+    observation.evidence_digest !==
+      policyRenewalApprovalEvidence({
+        request_digest: observation.request_digest!,
+        actor_id: child.provenance.actor_id,
+      })
+  )
+    return ["policy_renewal_binding"];
+  return [];
+}
+
 export function canonicalAuthorityIssues(aggregate: TaskAggregate): string[] {
   const issues: string[] = [];
   const records = aggregate.authority_lineage ?? [];
@@ -190,7 +288,9 @@ export function canonicalAuthorityIssues(aggregate: TaskAggregate): string[] {
       !continuedApprovedPlanAuthority
     )
       issues.push("authority_plan");
-    if (record.observation?.kind === "authority_delta") {
+    if (record.observation?.kind === "policy_renewal") {
+      if (!parent || policyRenewalIssues(parent, record).length > 0) issues.push("policy_renewal");
+    } else if (record.observation?.kind === "authority_delta") {
       const observation = record.observation;
       const immutable = parent
         ? {

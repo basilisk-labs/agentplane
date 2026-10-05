@@ -103,6 +103,11 @@ Options:
   --route <auto|direct|branch_pr>  Task execution route. auto selects direct unless repository policy or isolation risk requires branch_pr. (choices=auto|direct|branch_pr, default=auto)
   --depends-on <task-id>  Repeatable. Adds a dependency. Special-case: '[]' is treated as empty. (repeatable)
   --verify <command>  Repeatable. Verification commands/checks to run for this task. (repeatable)
+  --scope-root <repository-relative-path>  Repeatable writable root admitted by the execution contract. (repeatable)
+  --repository-effect <effect>  Repeatable repository effect admitted by the execution contract. (repeatable, choices=repository_write|documentation|source_code|tests|public_api|schema|dependencies|ci|release_metadata|security_boundary)
+  --external-effect <effect>  Repeatable external effect declared at intake. (repeatable, choices=network_read|external_write|credentials|publish|deploy|destructive_git)
+  --capability <capability>  Repeatable semantic capability admitted by the execution contract. (repeatable)
+  --resource <resource>  Repeatable resource claim admitted by the execution contract. (repeatable)
   --allow-duplicate  Allow creating a task even when an open task with a highly similar title already exists. (default=false)
 "
 `;

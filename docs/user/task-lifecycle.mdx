@@ -354,6 +354,24 @@ The lifecycle still contains intake, planning, approval, execution, verification
 integration, and closure. Those stages are CLI state, not a procedure the semantic agent must
 memorize.
 
+## Renew authority after policy changes
+
+An approved task stops with `native_policy_changed` when its repository policy changes.
+An operator who has reviewed and approved the current policy can renew the binding:
+
+```bash
+agentplane task plan approve <task-id> --renew-authority --by USER
+agentplane task advance <task-id> --agent-json
+```
+
+This command requires explicit manual USER approval and an unchanged approved Plan.
+It appends authority evidence bound to the current task revision, repository fingerprint
+and policy digests. It preserves the Plan, WorkItem progress, outputs and historical verification.
+It cannot widen permissions, remove verification obligations, renew expired authority,
+reopen a terminal task or resolve uncertain external effects.
+Repository changes must stay within approved scope or the canonical policy paths.
+Request a fresh packet after renewal; an earlier semantic episode retains its original binding.
+
 ## Guardrails
 
 - Plans, network actions, verification records, and external effects respect repository approval

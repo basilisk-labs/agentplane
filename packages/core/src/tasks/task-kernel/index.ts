@@ -30,4 +30,7 @@ export {
   continuationIssues,
   isAdditivePlanScopeExpansion,
   planScopeExpansionApprovalDigest,
+  policyRenewalApprovalEvidence,
+  policyRenewalIssues,
+  policyRenewalRequestDigest,
 } from "./authority-lineage.js";

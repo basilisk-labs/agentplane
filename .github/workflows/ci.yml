@@ -164,9 +164,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-bun-
       - run: bun install --frozen-lockfile --ignore-scripts
-      - name: Install website dependencies
-        if: needs.plan.outputs.docs == 'true'
-        run: bun install --cwd website --frozen-lockfile --ignore-scripts
       - name: Format (check)
         run: bun run format:check
       - name: Schemas (check)
@@ -197,9 +194,9 @@ jobs:
         run: bun run docs:cli:check
       - name: Hotspot Threshold (check)
         run: bun run hotspots:check
-      - name: Docs site contract
+      - name: Documentation contract
         if: needs.plan.outputs.docs == 'true'
-        run: bun run docs:site:check
+        run: bun run docs:check
       - name: Workflow lint and command contract
         if: needs.plan.outputs.workflow_lint == 'true'
         run: bun run workflows:lint
@@ -469,13 +466,12 @@ jobs:
           path: |
             ~/.bun/install/cache
             ~/.cache/bun
-          key: ${{ runner.os }}-docs-bun-${{ hashFiles('bun.lock', 'website/bun.lock') }}
+          key: ${{ runner.os }}-docs-bun-${{ hashFiles('bun.lock') }}
           restore-keys: |
             ${{ runner.os }}-docs-bun-
       - run: bun install --frozen-lockfile --ignore-scripts
-      - run: bun install --cwd website --frozen-lockfile --ignore-scripts
-      - name: Docs site contract
-        run: bun run docs:site:check
+      - name: Documentation contract
+        run: bun run docs:check
 
   verify-security:
     needs: plan

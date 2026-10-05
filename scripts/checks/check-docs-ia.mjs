@@ -5,7 +5,6 @@ import { ROOT, defineScript, runScriptMain } from "../lib/script-runtime.mjs";
 
 const DOCS_DIR = path.join(ROOT, "docs");
 const DOCS_INDEX_PATH = path.join(DOCS_DIR, "index.mdx");
-const SIDEBARS_PATH = path.join(ROOT, "website", "sidebars.ts");
 
 const NAV_DOC_ROOTS = new Set([
   "context",
@@ -68,7 +67,6 @@ const repoPathPrefixes = [
   "scripts/",
   "tsconfig.json",
   "vitest.workspace.ts",
-  "website/",
 ];
 
 const projectLocalPrefixes = [
@@ -163,34 +161,6 @@ function isGeneratedOrHistoricalDoc(file) {
   );
 }
 
-function extractSidebarDocIds(source) {
-  const ids = new Set();
-  let inItems = false;
-
-  for (const line of source.split(/\r?\n/)) {
-    const trimmed = line.trim();
-    if (trimmed.startsWith("items:")) {
-      inItems = true;
-    }
-
-    if (inItems) {
-      for (const match of trimmed.matchAll(/"([^"]+)"/g)) {
-        const id = match[1];
-        const root = id.split("/")[0] ?? "";
-        if (INDEX_DOC_ROOTS.has(root)) {
-          ids.add(id);
-        }
-      }
-    }
-
-    if (inItems && trimmed.includes("]")) {
-      inItems = false;
-    }
-  }
-
-  return ids;
-}
-
 function normalizeIndexDocLink(destination) {
   let value = destination.trim();
   if (value.length === 0 || value.startsWith("#") || /^[a-z][a-z0-9+.-]*:/i.test(value)) {
@@ -232,26 +202,12 @@ async function resolveDocIdFile(id) {
 }
 
 async function assertDocsNavigationAligned() {
-  const [indexSource, sidebarSource] = await Promise.all([
-    readFile(DOCS_INDEX_PATH, "utf8"),
-    readFile(SIDEBARS_PATH, "utf8"),
-  ]);
-
-  const indexIds = extractIndexDocIds(indexSource);
-  const sidebarIds = extractSidebarDocIds(sidebarSource);
-
-  assertEmpty(
-    [...indexIds].filter((id) => !sidebarIds.has(id)).toSorted(),
-    "docs/index.mdx links are missing from website/sidebars.ts:",
-  );
-
-  const deadSidebarIds = [];
-  for (const id of sidebarIds) {
-    if (!(await resolveDocIdFile(id))) {
-      deadSidebarIds.push(id);
-    }
+  const indexIds = extractIndexDocIds(await readFile(DOCS_INDEX_PATH, "utf8"));
+  const missing = [];
+  for (const id of indexIds) {
+    if (!(await resolveDocIdFile(id))) missing.push(id);
   }
-  assertEmpty(deadSidebarIds.toSorted(), "website/sidebars.ts points at missing docs:");
+  assertEmpty(missing.toSorted(), "docs/index.mdx points at missing docs:");
 }
 
 async function assertNoStaleCurrentDocReferences() {
@@ -339,9 +295,7 @@ const main = defineScript({
     await assertDocsNavigationAligned();
     await assertNoStaleCurrentDocReferences();
     await assertRepoPathReferencesExist();
-    process.stdout.write(
-      "ok: docs IA, sidebar coverage, and current path references are aligned\n",
-    );
+    process.stdout.write("ok: docs index and current path references are aligned\n");
   },
 });
 
