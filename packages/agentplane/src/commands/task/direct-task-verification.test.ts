@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -125,6 +125,59 @@ afterEach(async () => {
 });
 
 describe("direct task verification", () => {
+  it.each(["ap config show", "agentplane config show"])(
+    "executes %s through the real repository CLI",
+    async (check) => {
+      const cwd = await root();
+      await processRunner.runProcess({ command: "git", args: ["init", "--quiet"], cwd });
+      await mkdir(path.join(cwd, ".agentplane"));
+      const config = defaultConfig();
+      config.branch.task_prefix = "readonly-cli-fixture";
+      await writeFile(path.join(cwd, ".agentplane/config.json"), JSON.stringify(config));
+      const result = await runVerification(cwd, { verify: [check] }, { run_process: undefined });
+      expect(result.status, JSON.stringify(result)).toBe("passed");
+      expect(result.checks[0]?.stdout_tail).toContain("readonly-cli-fixture");
+      expect(mocks.runProcess).not.toHaveBeenCalled();
+    },
+  );
+
+  it("delivers the heap override to a real child without leaking to the next segment", async () => {
+    const cwd = await root();
+    const inherited = process.env.NODE_OPTIONS ?? "";
+    await writeFile(
+      path.join(cwd, "heap.mjs"),
+      "console.log(JSON.stringify(process.env.NODE_OPTIONS ?? ''));\n",
+    );
+    const result = await runVerification(
+      cwd,
+      { verify: ["NODE_OPTIONS=--max-old-space-size=512 node heap.mjs && node heap.mjs"] },
+      { run_process: undefined },
+    );
+    expect(result.status, JSON.stringify(result)).toBe("passed");
+    expect(result.checks[0]?.stdout_tail.trim().split("\n\n")).toEqual([
+      JSON.stringify("--max-old-space-size=512"),
+      JSON.stringify(inherited),
+    ]);
+    expect(process.env.NODE_OPTIONS ?? "").toBe(inherited);
+  });
+
+  it.each([
+    "NODE_OPTIONS='--max-old-space-size=4096 --import=evil.mjs' node effect.mjs",
+    "NODE_OPTIONS=--max-old-space-size=4096 NODE_OPTIONS=--require=evil.cjs node effect.mjs",
+    "NODE_OPTIONS=--max-old-space-size=4096 ap config set workflow_mode direct",
+    "ap config show --root elsewhere",
+  ])("rejects %s before a real subprocess effect", async (check) => {
+    const cwd = await root();
+    await writeFile(
+      path.join(cwd, "effect.mjs"),
+      "import {writeFileSync} from 'node:fs'; writeFileSync('effect', 'bad');",
+    );
+    const result = await runVerification(cwd, { verify: [check] }, { run_process: undefined });
+    expect(result.status).toBe("unsupported");
+    expect(result.checks).toEqual([]);
+    await expect(readFile(path.join(cwd, "effect"))).rejects.toMatchObject({ code: "ENOENT" });
+  });
+
   it.each(["ENOENT", "ENOSPC", "EDQUOT"])(
     "records native %s as infrastructure evidence rather than a failing implementation",
     async (code) => {

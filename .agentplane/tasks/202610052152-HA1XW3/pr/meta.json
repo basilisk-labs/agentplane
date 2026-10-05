@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202610052152-HA1XW3/repair-native-execution-of-approved-read-only-cl",
+  "created_at": "2026-10-05T22:09:14.395Z",
+  "diffstat_sha256": "sha256:3f5e06ff0c6fbe8374b9ca60784a35306795d5dadbbadc88255fcc2f8ec9ffe4",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610052152-HA1XW3",
+  "updated_at": "2026-10-05T22:09:14.395Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
