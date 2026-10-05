@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:10d5e3498c5d9d6baee2cd7dbb16e5fd7a7ab10d9594af6df241b1aa7cf6fa73",
   "pr_number": 6051,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6051",
+  "pre_merge_closure": {
+    "basis_commit": "1ceb44ef055ecc52481c603e1806b90cb6ab790b",
+    "branch": "task/202610020159-60QH9J/repair-authorized-policy-change-completion-and-r",
+    "pr_number": 6051,
+    "recorded_at": "2026-10-05T21:15:35.138Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",

@@ -1,10 +1,11 @@
 ---
 id: "202610020159-60QH9J"
 title: "Repair authorized policy-change completion and recovery, merge the fix to main, then enable repository autonomy"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 90
+revision: 91
 origin:
   system: "manual"
 depends_on: []
@@ -45,6 +46,22 @@ quality_review:
     - "The success test retains real filesystem reads and simultaneous pending/completing resolvers. It holds the competing lease through eleven waiting observations and only then allows the second resolver to retire the claim. Controlled monotonic time reaches 300ms, beyond the old ten-poll window; an old bounded retry loop cannot reach the release gate. Exact equal resolution digests, absent/retired outcomes and final claim absence remain asserted."
     - "The expiry branch retains the lease, advances the controlled clock from zero to exactly 2000ms at the first wait observation and requires runner_effect_resolution_retirement_busy plus the unchanged claim generation. The production loop reads that clock for its remaining deadline. Ignoring expiry or extending the deadline cannot complete this branch successfully; the finite test timeout remains a failure bound. Clock/read spies and gates are restored in finally."
     - "Native evidence reports both files and all 24 tests passed, full lint:core exited zero, and typecheck/diff checks exited zero. The evaluator performed read-only inspection without running tests or lifecycle commands."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:5c2b76ea817fe679041ce3f37a9583e696338bcbf894e245734378d90cfe8d29"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-10-05T21:15:34.554Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -481,9 +498,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "22278500160bc50d1120a19e004a44b175738965"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "1ceb44ef055ecc52481c603e1806b90cb6ab790b"
+  message: "📝 60QH9J task: record hosted PR identity"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -491,9 +511,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-05T21:15:34.554Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "1ceb44ef055ecc52481c603e1806b90cb6ab790b"
 doc_version: 3
-doc_updated_at: "2026-10-05T20:54:49.404Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-05T21:15:34.554Z"
+doc_updated_by: "CODER"
 description: "User explicitly authorizes implementing and testing a bounded repair for task 202610020153-XXZXW4: canonical completion hardcodes allowPolicy=false and continuation rejects native_policy_changed after an authorized policy edit. Preserve fail-closed checks for unauthorized drift, frozen task scope, independent review and evidence. Support authorized policy edits and safe retry after commit failure without self-authorizing from edited policy. Merge the repair into main through the supported supervisor route, then recover and complete the approved autonomy configuration task. Network, PR publication and merge into main are explicitly requested. Preserve unrelated task artifacts. No release publishing, credentials changes, destructive history or weakening general authority checks."
 sections:
   Summary: |-
@@ -967,6 +995,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:9bc3a354e9785f2a79564cda5d4bb730ad34f6ee97218a648038b09a9e2e6c4f"
     work_order_id: "sha256:6bfc31646b964bad47852ad86f0ad43813cbd6ec77d4caa234f0b3e0a51a3499"
+  implementation_commit:
+    hash: "22278500160bc50d1120a19e004a44b175738965"
+    message: "🚧 60QH9J task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "1053fee6f16c70a25154d54d4664ccfe609b5082"
@@ -4489,3 +4520,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:5c2b76ea817fe679041ce3f37a9583e696338bcbf894e245734378d90cfe8d29`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-10-05T21:15:34.554Z`
