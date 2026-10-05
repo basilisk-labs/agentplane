@@ -11,4 +11,6 @@
  .../src/commands/task/kernel-runtime-context.ts    |  28 ++-
  .../src/commands/task/kernel-semantic-result.ts    |   4 +-
  .../commands/task/roadmap-terminal-noop.test.ts    |   6 +-
- 13 files changed, 675 insertions(+), 14 deletions(-)
+ ...te-fingerprint-residual-git.integration.test.ts |   3 +-
+ .../usecases/task-run-lifecycle-cancel.test.ts     |   3 +-
+ 15 files changed, 679 insertions(+), 16 deletions(-)

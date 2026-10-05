@@ -15,8 +15,8 @@ User explicitly authorizes implementing and testing a bounded repair for task 20
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:71afa7041e992fffcc91ff51e7304a25e654df224f58e3c2d2236e3e0cfdac4b
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -40,7 +40,9 @@ User explicitly authorizes implementing and testing a bounded repair for task 20
  .../src/commands/task/kernel-runtime-context.ts    |  28 ++-
  .../src/commands/task/kernel-semantic-result.ts    |   4 +-
  .../commands/task/roadmap-terminal-noop.test.ts    |   6 +-
- 13 files changed, 675 insertions(+), 14 deletions(-)
+ ...te-fingerprint-residual-git.integration.test.ts |   3 +-
+ .../usecases/task-run-lifecycle-cancel.test.ts     |   3 +-
+ 15 files changed, 679 insertions(+), 16 deletions(-)
 ```
 
 </details>
