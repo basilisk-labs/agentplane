@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check c735b819b2b60999563531d31a44ef910a06cfff..056f006103a5d534305868825615a3c111e7b899",
+      "command": "git diff --check 056f006103a5d534305868825615a3c111e7b899..b36019160ad0339a759e8bec4dd88f35d8958d8b",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB c735b819b2b60999563531d31a44ef910a06cfff..056f006103a5d534305868825615a3c111e7b899",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 056f006103a5d534305868825615a3c111e7b899..b36019160ad0339a759e8bec4dd88f35d8958d8b",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -24,8 +24,11 @@
         "M\t.agentplane/tasks/202610041748-K43XFE/pr/review.md",
         "M\t.agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202610041748-K43XFE/supervision/implementation-evidence.json",
-        "M\tpackages/agentplane/src/runner/context/recipe-closure.ts",
-        "M\tpackages/agentplane/src/runner/context/roadmap-recipe-closure.test.ts"
+        "M\tpackages/agentplane/src/commands/evaluator/evaluator-evidence-boundary.ts",
+        "M\tpackages/agentplane/src/commands/evaluator/evaluator-evidence-store.ts",
+        "M\tpackages/agentplane/src/runner/context/recipe-context.ts",
+        "A\tpackages/agentplane/src/runner/context/recipe-retention.ts",
+        "A\tpackages/agentplane/src/runner/context/roadmap-recipe-retention.test.ts"
       ]
     },
     {
@@ -72,8 +75,8 @@
       ]
     }
   ],
-  "execution_base_commit": "c735b819b2b60999563531d31a44ef910a06cfff",
-  "implementation_commit": "056f006103a5d534305868825615a3c111e7b899",
+  "execution_base_commit": "056f006103a5d534305868825615a3c111e7b899",
+  "implementation_commit": "b36019160ad0339a759e8bec4dd88f35d8958d8b",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [

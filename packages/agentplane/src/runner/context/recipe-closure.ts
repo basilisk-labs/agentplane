@@ -2,7 +2,11 @@ import { createHash } from "node:crypto";
 import { constants } from "node:fs";
 import { readdir } from "node:fs/promises";
 import path from "node:path";
-import { parseTaskPlanProposal, taskCentricDigest } from "@agentplaneorg/core/tasks";
+import {
+  parseTaskPlanProposal,
+  recipeSourcePlanSemanticDigest,
+  taskCentricDigest,
+} from "@agentplaneorg/core/tasks";
 import {
   isScenarioRepoPath,
   resolveScenarioParameters,
@@ -346,12 +350,12 @@ async function observeRecipeDependencyClosure(opts: RecipeClosureOptions) {
       await root({ kind: "file", source: "repository", path: source });
   }
   const body = {
-    schema_version: 1 as const,
+    schema_version: 2 as const,
     kind: "recipe_dependency_closure" as const,
     recipe: { id: manifest.id, version: manifest.version },
     scenario_id: scenario.id,
     scenario_digest: taskCentricDigest(scenario),
-    plan_digest: taskCentricDigest(proposal),
+    plan_semantics_digest: recipeSourcePlanSemanticDigest(proposal),
     roots: sorted(rootKeys),
     nodes: sorted(nodes.keys()).map((id) => nodes.get(id)!),
     files: sorted(content.keys()).map((id) => content.get(id)!.record),

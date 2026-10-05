@@ -182,15 +182,16 @@ export type RecipeClosureFile = {
   size_bytes: number;
 };
 export type CompiledRecipeDependencyClosure = {
-  schema_version: 1;
   kind: "recipe_dependency_closure";
   recipe: { id: string; version: string };
   scenario_id: string;
   scenario_digest: string;
-  plan_digest: string;
   roots: string[];
   nodes: { id: string; definition: unknown; dependencies: string[] }[];
   files: RecipeClosureFile[];
   secret_refs: { id: string; version: string }[];
   digest: string;
-};
+} & (
+  | { schema_version: 1; plan_digest: string }
+  | { schema_version: 2; plan_semantics_digest: string }
+);

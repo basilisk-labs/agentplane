@@ -5,6 +5,8 @@ import {
   taskKernel as k,
   type ParsedTaskPlanProposal,
 } from "@agentplaneorg/core/tasks";
+import { validateRecipePlanForAdmission } from "../../runner/context/recipe-plan-binding.js";
+import type { RecipeApplicabilityObservers } from "../../runner/context/recipe-applicability.js";
 import { captureGitSnapshot } from "../../runner/observation/git-snapshot.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { CliError } from "../../shared/errors.js";
@@ -31,8 +33,16 @@ export async function prepareSuppliedPlan(
   taskId: string,
   value: unknown,
   previous?: ParsedTaskPlanProposal,
+  nativeRecipeObservers?: RecipeApplicabilityObservers,
 ): Promise<ParsedTaskPlanProposal> {
   const input = parseSuppliedPlanInput(value);
+  if (input.schema_version === 1 && input.recipe_provenance) {
+    await validateRecipePlanForAdmission({
+      gitRoot: command.resolvedProject.gitRoot,
+      proposal: input,
+      observers: nativeRecipeObservers,
+    });
+  }
   const git = await captureGitSnapshot({
     repository_root: command.resolvedProject.gitRoot,
     excluded_roots: [

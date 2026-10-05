@@ -1,7 +1,7 @@
 import canonicalize from "canonicalize";
 import { createHash } from "node:crypto";
 
-import type { RepositorySnapshot, Sha256Digest } from "./model.js";
+import type { RepositorySnapshot, Sha256Digest, TaskPlanProposal } from "./model.js";
 
 export function taskCentricDigest(value: unknown): Sha256Digest {
   const canonical = canonicalize(value);
@@ -25,4 +25,26 @@ export function createRepositorySnapshot(
   }
   const value = { schema_version: 1 as const, ...input };
   return Object.freeze({ ...value, digest: taskCentricDigest(value) });
+}
+
+/** Recipe closure v2 source semantics. Only native observations and bound provenance are omitted.
+ * Final Kernel Plan/input digests continue to cover the complete proposal and current baseline.
+ */
+export function recipeSourcePlanSemanticDigest(proposal: TaskPlanProposal): Sha256Digest {
+  const { planning_baseline: _baseline, recipe_provenance: _provenance, ...source } = proposal;
+  const validation = (value: TaskPlanProposal["top_level_validation"]) => {
+    const { evidence_fingerprint: _fingerprint, ...semantics } = value;
+    return semantics;
+  };
+  return taskCentricDigest({
+    ...source,
+    work_items: {
+      ...source.work_items,
+      work_items: source.work_items.work_items.map((item) => ({
+        ...item,
+        validation: validation(item.validation),
+      })),
+    },
+    top_level_validation: validation(source.top_level_validation),
+  });
 }

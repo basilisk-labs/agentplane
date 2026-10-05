@@ -206,7 +206,10 @@ const AGENT_SEMANTIC_RESULT_BASE_SHAPE = {
   findings: z.array(z.string()),
   uncertainty: z.array(z.string()),
   task_intent: AGENT_SEMANTIC_RESULT_TASK_INTENT_ZOD_SCHEMA.optional(),
-  task_plan_proposal: TASK_PLAN_PROPOSAL_ZOD_SCHEMA.optional(),
+  task_plan_proposal: TASK_PLAN_PROPOSAL_ZOD_SCHEMA.refine(
+    (proposal) => proposal.recipe_provenance === undefined,
+    "Recipe provenance must be bound by native intake, not an agent result.",
+  ).optional(),
   canonical_binding: kernelEpisodeBindingSchema.optional(),
   canonical_plan: kernelPlanProposalSchema.optional(),
   canonical_outputs: kernelOutputClaimsSchema.optional(),

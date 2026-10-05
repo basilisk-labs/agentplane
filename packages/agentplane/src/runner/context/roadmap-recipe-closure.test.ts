@@ -7,6 +7,7 @@ import {
   createRepositorySnapshot,
   normalizeTaskPlanProposal,
   taskCentricDigest,
+  recipeSourcePlanSemanticDigest,
 } from "@agentplaneorg/core/tasks";
 import {
   parseScenarioV2,
@@ -195,7 +196,10 @@ describe("pre-execution Recipe dependency closure", () => {
     const first = await compute();
     const second = await compute();
     expect(first.closure).toEqual(second.closure);
-    expect(first.closure.plan_digest).toBe(taskCentricDigest(proposal));
+    expect(first.closure).toMatchObject({
+      schema_version: 2,
+      plan_semantics_digest: recipeSourcePlanSemanticDigest(proposal),
+    });
     expect(first.closure.scenario_digest).toBe(taskCentricDigest(scenario));
     expect(first.closure.files.map((file) => file.path)).toEqual([
       "agent.md",

@@ -16,13 +16,11 @@ const DIGEST = z.string().regex(/^sha256:[a-f0-9]{64}$/u);
 const TEXT = z.string().min(1).max(8192);
 const FILE_PATH = TEXT.refine((value) => value !== "." && isScenarioRepoPath(value));
 const SOURCE = z.enum(["recipe", "repository"]);
-const CLOSURE = z.strictObject({
-  schema_version: z.literal(1),
+const CLOSURE_FIELDS = z.strictObject({
   kind: z.literal("recipe_dependency_closure"),
   recipe: z.strictObject({ id: TEXT, version: TEXT }),
   scenario_id: TEXT,
   scenario_digest: DIGEST,
-  plan_digest: DIGEST,
   roots: z.array(TEXT).max(4096),
   nodes: z
     .array(
@@ -42,6 +40,11 @@ const CLOSURE = z.strictObject({
   secret_refs: z.array(z.strictObject({ id: TEXT, version: TEXT })).max(4096),
   digest: DIGEST,
 });
+// V1 retains its exact-proposal meaning. New closures explicitly use semantic identity v2.
+const CLOSURE = z.discriminatedUnion("schema_version", [
+  CLOSURE_FIELDS.extend({ schema_version: z.literal(1), plan_digest: DIGEST }),
+  CLOSURE_FIELDS.extend({ schema_version: z.literal(2), plan_semantics_digest: DIGEST }),
+]);
 const RETENTION = "keep_in_current_tree_until_task_and_audit_complete" as const;
 const ENVELOPE = z.strictObject({
   schema_version: z.literal(1),
