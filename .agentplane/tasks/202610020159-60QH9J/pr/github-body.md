@@ -27,6 +27,7 @@ User explicitly authorizes implementing and testing a bounded repair for task 20
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .../task-backend/kernel-backend-adapter.test.ts    | 192 +++++++++++++++++++
  .../src/cli/run-cli.core.roadmap-recovery.test.ts  |   5 +-
  .../evaluator/evaluator-evidence-boundary.ts       |  47 ++++-
  .../evaluator/evaluator-evidence-store.test.ts     | 140 +++++++++++++-
@@ -45,7 +46,9 @@ User explicitly authorizes implementing and testing a bounded repair for task 20
  .../commands/task/roadmap-terminal-noop.test.ts    |   6 +-
  ...te-fingerprint-residual-git.integration.test.ts |   3 +-
  .../usecases/task-run-lifecycle-cancel.test.ts     |   3 +-
- 18 files changed, 865 insertions(+), 19 deletions(-)
+ .../src/tasks/task-kernel/authority-delta.test.ts  | 158 +++++++++++++++-
+ .../src/tasks/task-kernel/authority-lineage.ts     |  40 +++-
+ 21 files changed, 1248 insertions(+), 26 deletions(-)
 ```
 
 </details>

@@ -49,7 +49,7 @@ function approvedPlanScopeExpansionRoots(input: {
       })
   )
     return null;
-  const added = additivePlanScopeExpansionRoots({
+  const added = planAmendmentScopeRoots({
     current: input.source,
     amended: input.amended,
     authority: input.authority,
@@ -96,6 +96,33 @@ export function additivePlanScopeExpansionRoots(input: {
     return true;
   });
   return valid && addedRoots.size > 0 ? [...addedRoots].toSorted() : null;
+}
+
+/** Material Plan changes may alter work, but cannot invent non-scope execution authority. */
+export function planAmendmentScopeRoots(input: {
+  current: Pick<PlanRecord, "work_items">;
+  amended: Pick<PlanRecord, "work_items">;
+  authority: ExecutionAuthority;
+}): string[] | null {
+  const scopeOnly = additivePlanScopeExpansionRoots(input);
+  if (scopeOnly !== null) return scopeOnly;
+  const originals = new Map(input.current.work_items.map((item) => [item.id, item]));
+  const material =
+    input.current.work_items.length !== input.amended.work_items.length ||
+    input.amended.work_items.some(
+      (item) =>
+        !originals.has(item.id) || originals.get(item.id)?.contract_digest !== item.contract_digest,
+    );
+  if (!material) return null;
+  if (
+    input.amended.work_items.some(
+      (item) =>
+        !item.execution_requirements ||
+        !executionRequirementsAreSubset(input.authority, item.execution_requirements),
+    )
+  )
+    return null;
+  return [];
 }
 
 export function isAdditivePlanScopeExpansion(
@@ -366,11 +393,12 @@ export function continuationAdmissionIssues(
         JSON.stringify(addedAuthorityRoots);
     if (
       (!unchangedApproval && !approvedScopeExpansion) ||
-      source?.work_items.length !== plan.work_items.length ||
-      plan.work_items.some((item) => {
-        const original = source?.work_items.find((entry) => entry.id === item.id);
-        return !original || original.contract_digest !== item.contract_digest;
-      })
+      (!approvedScopeExpansion &&
+        (source?.work_items.length !== plan.work_items.length ||
+          plan.work_items.some((item) => {
+            const original = source?.work_items.find((entry) => entry.id === item.id);
+            return !original || original.contract_digest !== item.contract_digest;
+          })))
     )
       return ["nonmaterial_plan_observation_required"];
   }
