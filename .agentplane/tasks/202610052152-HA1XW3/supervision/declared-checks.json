@@ -1,0 +1,110 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run test:fast -- packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts",
+      "duration_ms": 83655,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "test:fast",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane --project core --project recipes --project testkit --maxWorkers=4 packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts\n",
+      "stdout_tail": "\n RUN  v4.1.11 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610052152-HA1XW3-repair-native-execution-of-approved-read-only-cl\n\n\n Test Files  2 passed (2)\n      Tests  108 passed (108)\n   Start at  01:14:08\n   Duration  81.79s (transform 7.15s, setup 380ms, import 8.56s, tests 73.08s, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bunx --no-install eslint packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/shared/declared-check.ts packages/agentplane/src/commands/task/direct-task-verification.sequence.cases.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/task/direct-task-verification.ts",
+      "duration_ms": 35970,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run typecheck",
+      "duration_ms": 2388,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "git diff --check",
+      "duration_ms": 1325,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:3af96d136a78eaa0237142d6ed294a0d3442cc679e83d5ff75cbb33af1efb54b",
+        "executable_digest": "sha256:2a8c18fbf43da9f692d75474c72bea9dfd796c260b0f3dfe456376abc3bbd668",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "full_regression",
+        "task_outcome"
+      ],
+      "command": "bun run ci:local:full",
+      "duration_ms": 1791725,
+      "exit_code": 1,
+      "runtime": {
+        "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "ci:local:full",
+      "stderr_tail": "at checkExecSyncError (node:child_process:942:11)\n    at execFileSync (node:child_process:978:15)\n    at run (file:///home/agentplane/workspace/agentplane/.agentplane/worktrees/202610052152-HA1XW3-repair-native-execution-of-approved-read-only-cl/scripts/checks/run-local-ci-group.mjs:4:32)\n    at bunScript (file:///home/agentplane/workspace/agentplane/.agentplane/worktrees/202610052152-HA1XW3-repair-native-execution-of-approved-read-only-cl/scripts/checks/run-local-ci-group.mjs:5:29)\n    at docs-schema (file:///home/agentplane/workspace/agentplane/.agentplane/worktrees/202610052152-HA1XW3-repair-native-execution-of-approved-read-only-cl/scripts/checks/run-local-ci-group.mjs:24:7)\n    at file:///home/agentplane/workspace/agentplane/.agentplane/worktrees/202610052152-HA1XW3-repair-native-execution-of-approved-read-only-cl/scripts/checks/run-local-ci-group.mjs:78:14\n    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)\n    at async node:internal/modules/esm/loader:647:26 {\n  status: 1,\n  signal: null,\n  output: [ null, null, null ],\n  pid: 4085269,\n  stdout: null,\n  stderr: null\n}\n\nNode.js v24.21.0\n$ eslint packages scripts eslint.config.cjs vitest.config.ts\nerror: script \"lint:core\" exited with code 1\nnode:internal/errors:986\n  const err = new Error(message);\n              ^\n\nError: Command failed: bun run lint:core\n    at genericNodeError (node:internal/errors:986:15)\n    at wrappedFn (node:internal/errors:540:14)\n    at checkExecSyncError (node:child_process:942:11)\n    at execFileSync (node:child_process:978:15)\n    at run (file:///home/agentplane/workspace/agentplane/.agentplane/worktrees/202610052152-HA1XW3-repair-native-execution-of-approved-read-only-cl/scripts/checks/run-local-ci-group.mjs:4:32)\n    at bunScript (file:///home/agentplane/workspace/agentplane/.agentplane/worktrees/202610052152-HA1XW3-repair-native-execution-of-approved-read-only-cl/scripts/checks/run-local-ci-group.mjs:5:29)\n    at Object.core (file:///home/agentplane/workspace/agentplane/.agentplane/worktrees/202610052152-HA1XW3-repair-native-execution-of-approved-read-only-cl/scripts/checks/run-local-ci-group.mjs:28:5)\n    at file:///home/agentplane/workspace/agentplane/.agentplane/worktrees/202610052152-HA1XW3-repair-native-execution-of-approved-read-only-cl/scripts/checks/run-local-ci-group.mjs:78:14\n    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)\n    at async node:internal/modules/esm/loader:647:26 {\n  status: 1,\n  signal: null,\n  output: [ null, null, null ],\n  pid: 4085720,\n  stdout: null,\n  stderr: null\n}\n\nNode.js v24.21.0\n$ node scripts/checks/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 3 --fixture local-basic --timeout-ms 10000\n$ node scripts/checks/run-vitest-suite.mjs critical-cli\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":false,\"groups\":[{\"id\":\"runtime\",\"exit_code\":1,\"timed_out\":false,\"duration_ms\":466324},{\"id\":\"docs-schema\",\"exit_code\":1,\"timed_out\":false,\"duration_ms\":246963},{\"id\":\"core\",\"exit_code\":1,\"timed_out\":false,\"duration_ms\":696376},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":308997}]}\nfile:///home/agentplane/workspace/agentplane/.agentplane/worktrees/202610052152-HA1XW3-repair-native-execution-of-approved-read-only-cl/scripts/checks/run-local-ci.mjs:522\n  if (!ok) throw new Error(\"Full verification group failed.\");\n                 ^\n\nError: Full verification group failed.\n    at runFullFastPath (file:///home/agentplane/workspace/agentplane/.agentplane/worktrees/202610052152-HA1XW3-repair-native-execution-of-approved-read-only-cl/scripts/checks/run-local-ci.mjs:522:18)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async file:///home/agentplane/workspace/agentplane/.agentplane/worktrees/202610052152-HA1XW3-repair-native-execution-of-approved-read-only-cl/scripts/checks/run-local-ci.mjs:597:7\n\nNode.js v24.21.0\nerror: script \"ci:local:full\" exited with code 1\n",
+      "stdout_tail": "zed test warning: 9 test file(s) exceed 1000 lines.\n- packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts: 1193 lines\n- packages/agentplane/src/commands/task/finish.validation.unit.test.ts: 1160 lines\n- packages/agentplane/src/commands/doctor.command.open-pr.test.ts: 1124 lines\n- packages/agentplane/src/commands/shared/task-store.test.ts: 1115 lines\n- packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts: 1102 lines\n- packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts: 1095 lines\n- packages/agentplane/src/commands/task/direct-task-verification.test.ts: 1047 lines\n- packages/agentplane/src/cli/run-cli.core.test.ts: 1046 lines\n- packages/agentplane/src/commands/doctor.command.runtime.test.ts: 1037 lines\nHotspot threshold check passed (runtime: warn>400, error>600; tests: warn>1000, error>1300).\n\n== core (696376ms) ==\n\n/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610052152-HA1XW3-repair-native-execution-of-approved-read-only-cl/packages/agentplane/tsup.config.bundled_gb1x1suwt6t.mjs\n  1:1  error  Empty files are not allowed  unicorn/no-empty-file\n\n✖ 1 problem (1 error, 0 warnings)\n\n\n== cli (308997ms) ==\nCLI cold-start baseline OK using fixture local-basic (quickstart median=476.632ms (threshold=5000ms, p95=476.632ms); task_list median=661.228ms (threshold=10000ms, p95=661.228ms); task_search median=596.673ms (threshold=6000ms, p95=596.673ms); task_next median=714.516ms (threshold=8000ms, p95=714.516ms); preflight_quick median=831.535ms (threshold=6000ms, p95=831.535ms))\nVitest suite critical-cli: chunk 1/5 (2 files): packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts, packages/agentplane/src/cli/run-cli.critical.exit-codes.test.ts\nVitest suite critical-cli: chunk 1/5 passed in 28419ms (Test Files  2 passed (2); Tests  3 passed (3); Duration  27.29s (transform 17.52s, setup 650ms, import 15.62s, tests 32.13s, environment 0ms))\nVitest suite critical-cli: chunk 2/5 (2 files): packages/agentplane/src/cli/run-cli.critical.git-edge.test.ts, packages/agentplane/src/cli/run-cli.critical.protected-paths.test.ts\nVitest suite critical-cli: chunk 2/5 passed in 23988ms (Test Files  2 passed (2); Tests  5 passed (5); Duration  23.32s (transform 12.11s, setup 294ms, import 15.98s, tests 28.20s, environment 0ms))\nVitest suite critical-cli: chunk 3/5 (2 files): packages/agentplane/src/cli/run-cli.critical.scope-leak.test.ts, packages/agentplane/src/cli/run-cli.critical.symlink-root.test.ts\nVitest suite critical-cli: chunk 3/5 passed in 31295ms (Test Files  2 passed (2); Tests  7 passed (7); Duration  30.31s (transform 20.76s, setup 79ms, import 28.19s, tests 27.00s, environment 0ms))\nVitest suite critical-cli: chunk 4/5 (2 files): packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts, packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet-regressions.test.ts\nVitest suite critical-cli: chunk 4/5 passed in 165656ms (Test Files  2 passed (2); Tests  7 passed (7); Duration  163.85s (transform 22.04s, setup 188ms, import 23.46s, tests 152.66s, environment 0ms))\nVitest suite critical-cli: chunk 5/5 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts\nVitest suite critical-cli: chunk 5/5 passed in 53231ms (Test Files  1 passed (1); Tests  12 passed (12); Duration  50.00s (transform 14.55s, setup 310ms, import 16.86s, tests 31.84s, environment 0ms))\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":false,\"groups\":[{\"id\":\"runtime\",\"exit_code\":1,\"timed_out\":false,\"duration_ms\":466324},{\"id\":\"docs-schema\",\"exit_code\":1,\"timed_out\":false,\"duration_ms\":246963},{\"id\":\"core\",\"exit_code\":1,\"timed_out\":false,\"duration_ms\":696376},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":308997}]}\n{\"schema_version\":1,\"kind\":\"verification_metrics\",\"route\":\"full-fast\",\"wall_clock_ms\":1789093,\"selected_groups\":5,\"executed_groups\":5,\"parallel_group_concurrency\":1,\"build_invocations\":1,\"ok\":false}\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": "Declared check failed: bun run ci:local:full",
+  "schema_version": 1,
+  "status": "failed",
+  "task_id": "202610052152-HA1XW3"
+}

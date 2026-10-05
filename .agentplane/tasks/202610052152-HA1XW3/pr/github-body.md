@@ -15,8 +15,8 @@ Release recovery is blocked because native verification rejects ap config show a
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:ad1540dad357a6122ecb154a5afeef28f8b484105f4283e273ed166a7f3fbbcd
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,12 +27,11 @@ Release recovery is blocked because native verification rejects ap config show a
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/shared/declared-check.test.ts     | 56 +++++++++++++++++++++-
- .../src/commands/shared/declared-check.ts          | 31 ++++++++++--
- .../direct-task-verification.sequence.cases.ts     | 41 ++++++++++++++++
- .../commands/task/direct-task-verification.test.ts | 55 ++++++++++++++++++++-
- .../src/commands/task/direct-task-verification.ts  | 27 +++++++++--
- 5 files changed, 201 insertions(+), 9 deletions(-)
+ .../src/commands/shared/declared-check.test.ts     |  56 ++++++++++-
+ .../src/commands/shared/declared-check.ts          |  31 +++++-
+ .../direct-task-verification.sequence.cases.ts     | 104 ++++++++++++++++++++-
+ .../src/commands/task/direct-task-verification.ts  |  27 +++++-
+ 4 files changed, 209 insertions(+), 9 deletions(-)
 ```
 
 </details>
