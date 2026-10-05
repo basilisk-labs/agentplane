@@ -74,6 +74,18 @@ async function createCompletePacket(root: string, taskId: string) {
   return { qualityRoot, reviewRoot, manifestPath, artifacts, written };
 }
 
+function uninitializedPublicationGate(): never {
+  throw new Error("Publication gate was not initialized");
+}
+
+function publicationGate(): { promise: Promise<void>; resolve: () => void } {
+  let complete: () => void = uninitializedPublicationGate;
+  const promise = new Promise<void>((resolve) => {
+    complete = resolve;
+  });
+  return { promise, resolve: complete };
+}
+
 describe("evaluator evidence object store", () => {
   it("waits for a concurrent identical publisher to remove its staging link", async () => {
     const root = await mkGitRepoRoot();
@@ -86,8 +98,8 @@ describe("evaluator evidence object store", () => {
       mediaType: "application/json",
       contents: "{}\n",
     };
-    const linked = Promise.withResolvers<void>();
-    const release = Promise.withResolvers<void>();
+    const linked = publicationGate();
+    const release = publicationGate();
     const winner = putEvaluatorEvidenceObject({
       ...opts,
       boundaryHook: async (phase) => {
@@ -132,7 +144,7 @@ describe("evaluator evidence object store", () => {
       await utimes(staging, 0, 0);
       await link(staging, object);
       let entered = false;
-      let clock: ReturnType<typeof vi.spyOn> | undefined;
+      let clock: { mockRestore: () => void } | undefined;
       try {
         const reading = readStableEvaluatorEvidenceFile({
           gitRoot: root,
@@ -142,25 +154,35 @@ describe("evaluator evidence object store", () => {
           hook: async (phase) => {
             if (phase !== "before_object_finalization_wait" || entered) return;
             entered = true;
-            if (action === "external cleanup") {
-              // A separate process completes publication; no process-local lock is involved.
-              await promisify(execFile)(process.execPath, [
-                "-e",
-                "require('node:fs').unlinkSync(process.argv[1])",
-                staging,
-              ]);
-            } else if (action === "replacement") {
-              await rename(object, `${object}.old`);
-              await writeFile(object, "original");
-            } else if (action === "write") {
-              await writeFile(object, "modified");
-            } else {
-              clock = vi.spyOn(performance, "now").mockReturnValue(Number.MAX_SAFE_INTEGER);
+            switch (action) {
+              case "external cleanup": {
+                // A separate process completes publication; no process-local lock is involved.
+                await promisify(execFile)(process.execPath, [
+                  "-e",
+                  "require('node:fs').unlinkSync(process.argv[1])",
+                  staging,
+                ]);
+                break;
+              }
+              case "replacement": {
+                await rename(object, `${object}.old`);
+                await writeFile(object, "original");
+                break;
+              }
+              case "write": {
+                await writeFile(object, "modified");
+                break;
+              }
+              case "abandoned": {
+                clock = vi.spyOn(performance, "now").mockReturnValue(Number.MAX_SAFE_INTEGER);
+                break;
+              }
             }
           },
         });
         if (action === "external cleanup") {
-          expect((await reading).toString()).toBe("original");
+          const contents = await reading;
+          expect(contents.toString()).toBe("original");
         } else {
           await expect(reading).rejects.toThrow(
             action === "abandoned"

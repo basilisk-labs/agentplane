@@ -270,16 +270,16 @@ describe("canonical kernel persistence boundary", () => {
         ),
       };
       const corruptRecord = makeKernelRecord(identity, tampered, []);
-      expect(
-        readKernelRecord(
-          { ...loaded.task, extensions: { [TASK_KERNEL_EXTENSION]: corruptRecord } },
-          identity,
-        ),
-      ).toMatchObject({
+      const corruptRead = readKernelRecord(
+        { ...loaded.task, extensions: { [TASK_KERNEL_EXTENSION]: corruptRecord } },
+        identity,
+      );
+      expect(corruptRead).toMatchObject({
         kind: "malformed",
         reason: "canonical_invariant_violation",
-        fields: expect.arrayContaining(["authority_plan"]),
       });
+      if (corruptRead.kind !== "malformed") throw new Error("Expected malformed record");
+      expect(corruptRead.fields).toContain("authority_plan");
     },
   );
 

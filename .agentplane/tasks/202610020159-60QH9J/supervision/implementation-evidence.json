@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 956811709be2aa261cb9a76d4ddb4580d5ee50a3..6853368c6407d8152f0e9d85853aa749ea25addc",
+      "command": "git diff --check 6853368c6407d8152f0e9d85853aa749ea25addc..f97ed9f2b68d3304d564bb75feaad0c6920843c5",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 956811709be2aa261cb9a76d4ddb4580d5ee50a3..6853368c6407d8152f0e9d85853aa749ea25addc",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 6853368c6407d8152f0e9d85853aa749ea25addc..f97ed9f2b68d3304d564bb75feaad0c6920843c5",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -24,9 +24,9 @@
         "M\t.agentplane/tasks/202610020159-60QH9J/pr/review.md",
         "M\t.agentplane/tasks/202610020159-60QH9J/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202610020159-60QH9J/supervision/implementation-evidence.json",
-        "M\tpackages/agentplane/src/commands/evaluator/evaluator-evidence-boundary.ts",
-        "M\tpackages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts",
-        "M\tpackages/agentplane/src/commands/evaluator/evaluator-evidence-store.ts"
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts",
+        "M\tpackages/core/src/tasks/task-kernel/authority-delta.test.ts",
+        "M\tpackages/core/src/tasks/task-kernel/authority-lineage.ts"
       ]
     },
     {
@@ -38,8 +38,8 @@
       ]
     }
   ],
-  "execution_base_commit": "956811709be2aa261cb9a76d4ddb4580d5ee50a3",
-  "implementation_commit": "6853368c6407d8152f0e9d85853aa749ea25addc",
+  "execution_base_commit": "6853368c6407d8152f0e9d85853aa749ea25addc",
+  "implementation_commit": "f97ed9f2b68d3304d564bb75feaad0c6920843c5",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [

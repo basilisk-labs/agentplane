@@ -30,7 +30,7 @@ User explicitly authorizes implementing and testing a bounded repair for task 20
  .../task-backend/kernel-backend-adapter.test.ts    | 192 +++++++++++++++++++
  .../src/cli/run-cli.core.roadmap-recovery.test.ts  |   5 +-
  .../evaluator/evaluator-evidence-boundary.ts       |  47 ++++-
- .../evaluator/evaluator-evidence-store.test.ts     | 140 +++++++++++++-
+ .../evaluator/evaluator-evidence-store.test.ts     | 162 +++++++++++++++-
  .../commands/evaluator/evaluator-evidence-store.ts |   2 +
  .../src/commands/task/advance-task-step.ts         |   3 +
  .../direct-task-verification.sequence.cases.ts     |   2 +
@@ -48,7 +48,7 @@ User explicitly authorizes implementing and testing a bounded repair for task 20
  .../usecases/task-run-lifecycle-cancel.test.ts     |   3 +-
  .../src/tasks/task-kernel/authority-delta.test.ts  | 158 +++++++++++++++-
  .../src/tasks/task-kernel/authority-lineage.ts     |  40 +++-
- 21 files changed, 1248 insertions(+), 26 deletions(-)
+ 21 files changed, 1270 insertions(+), 26 deletions(-)
 ```
 
 </details>
