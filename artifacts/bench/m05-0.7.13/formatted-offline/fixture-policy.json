@@ -4,8 +4,5 @@
   "native_approval": false,
   "network": "deny",
   "provider_calls": false,
-  "scope": [
-    "plan.json",
-    "route.json"
-  ]
+  "scope": ["plan.json", "route.json"]
 }

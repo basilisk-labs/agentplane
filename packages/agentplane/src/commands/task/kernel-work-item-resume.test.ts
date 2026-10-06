@@ -19,12 +19,10 @@ const mocks = vi.hoisted(() => ({
   create: vi.fn(),
   write: vi.fn(),
   commonDir: vi.fn().mockResolvedValue("/repo/.git"),
-  nativeStop: vi
-    .fn()
-    .mockResolvedValue({
-      work_order_id: "sha256:" + "3".repeat(64),
-      validation_digest: "sha256:" + "4".repeat(64),
-    }),
+  nativeStop: vi.fn().mockResolvedValue({
+    work_order_id: "sha256:" + "3".repeat(64),
+    validation_digest: "sha256:" + "4".repeat(64),
+  }),
   semanticStop: vi.fn().mockResolvedValue({
     work_order_id: "sha256:" + "1".repeat(64),
     result_digest: "sha256:" + "2".repeat(64),

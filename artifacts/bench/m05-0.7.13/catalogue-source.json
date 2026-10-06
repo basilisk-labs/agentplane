@@ -1,0 +1,31 @@
+{
+  "kind": "m05_documentation_catalogue_source",
+  "remote": "https://github.com/basilisk-labs/agentplane-recipes.git",
+  "commit": "ddfcafcaf86462e407d7ce52dcb1a1e1f8e63fd8",
+  "cache_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario/artifacts/bench/m05-0.7.13/node_modules/.cache/recipes-catalog",
+  "cache_ignored": true,
+  "real_contained_parents": true,
+  "catalogue_code_or_hooks_executed": false,
+  "required_sources": [
+    {
+      "path": "index.json",
+      "size_bytes": 13121,
+      "sha256": "sha256:6b6707d43927f6f40aeef9908229bffa7aba30809626ebc2520dd46a9e696176"
+    },
+    {
+      "path": "recipes/code-map/manifest.json",
+      "size_bytes": 3162,
+      "sha256": "sha256:42c48d44148dee11d5a383a39939d6456b03f636b11e048db933f4ff3a99ecae"
+    },
+    {
+      "path": "recipes/llm-wiki/manifest.json",
+      "size_bytes": 3281,
+      "sha256": "sha256:e358756b1ab87b70cb250bdbf6c8dbe3b7c4a547a0314d1baeb6ac957f872a37"
+    },
+    {
+      "path": "recipes/parallel-codex/manifest.json",
+      "size_bytes": 2998,
+      "sha256": "sha256:386aa085f3d64e2cd2e9389a4da4922a908bb32020e8f7db266635da244bf7ee"
+    }
+  ]
+}

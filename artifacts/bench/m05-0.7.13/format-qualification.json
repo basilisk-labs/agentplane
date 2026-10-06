@@ -1,0 +1,9 @@
+{
+  "kind": "m05_final_formatted_byte_pins",
+  "verified_pins": 57,
+  "attempts": 75,
+  "cli_replay_attempts": 15,
+  "canonical_semantic_digests": "unchanged algorithm; all six evidence payloads and five normalized manifests verified",
+  "request_preparation_pin": "sha256:c731d2221f5aeecfc9804c3319b1b0e49ec06b84566ade905756bd6e804a6c5f",
+  "efficiency": "NOT_ESTABLISHED"
+}

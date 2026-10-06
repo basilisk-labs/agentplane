@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check bd16ef7c1f0ce8a980ab52f417e5d56e76205fee..bb76df31b89a964295f7eb396589314cf1780848",
+      "command": "git diff --check bb76df31b89a964295f7eb396589314cf1780848..de67c508f74309c745341a241d984529818c9e88",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB bd16ef7c1f0ce8a980ab52f417e5d56e76205fee..bb76df31b89a964295f7eb396589314cf1780848",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB bb76df31b89a964295f7eb396589314cf1780848..de67c508f74309c745341a241d984529818c9e88",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -24,23 +24,10 @@
         "M\t.agentplane/tasks/202610041748-K43XFE/pr/review.md",
         "M\t.agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202610041748-K43XFE/supervision/implementation-evidence.json",
-        "A\tartifacts/rc18/installed-examples.json",
-        "A\tartifacts/rc18/qualification.json",
+        "A\tartifacts/recipes-v2-docs/installed-examples.json",
+        "A\tartifacts/recipes-v2-docs/qualification.json",
         "M\tdocs/developer/recipes-development.mdx",
-        "M\tdocs/developer/recipes-how-it-works.mdx",
-        "M\tdocs/developer/recipes-spec.mdx",
-        "A\tdocs/examples/recipes-v2/agent.md",
-        "A\tdocs/examples/recipes-v2/legacy-unsupported.json",
-        "A\tdocs/examples/recipes-v2/manifest.json",
-        "A\tdocs/examples/recipes-v2/scenario.json",
-        "A\tdocs/examples/recipes-v2/selection.json",
-        "M\tdocs/recipes/docs-update.mdx",
-        "M\tdocs/recipes/index.mdx",
-        "M\tdocs/recipes/security-review.mdx",
-        "M\tdocs/recipes/tdd.mdx",
-        "M\tdocs/user/cli-reference.generated.mdx",
-        "M\tdocs/user/workflow.mdx",
-        "A\tpackages/recipes/scripts/validate-doc-examples.mjs"
+        "M\tpackage.json"
       ]
     },
     {
@@ -90,8 +77,8 @@
       ]
     }
   ],
-  "execution_base_commit": "bd16ef7c1f0ce8a980ab52f417e5d56e76205fee",
-  "implementation_commit": "bb76df31b89a964295f7eb396589314cf1780848",
+  "execution_base_commit": "bb76df31b89a964295f7eb396589314cf1780848",
+  "implementation_commit": "de67c508f74309c745341a241d984529818c9e88",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
