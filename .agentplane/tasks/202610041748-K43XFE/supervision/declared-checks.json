@@ -1,9 +1,433 @@
 {
   "checks": [
     {
-      "check_ids": [],
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run test:project recipes --maxWorkers=1 packages/recipes/src/roadmap-scenario-v2-parser.test.ts",
+      "duration_ms": 2900,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project recipes \"--maxWorkers=1\" \"packages/recipes/src/roadmap-scenario-v2-parser.test.ts\"\n",
+      "stdout_tail": "\n RUN  v4.1.11 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario\n\n\n Test Files  1 passed (1)\n      Tests  13 passed (13)\n   Start at  07:55:58\n   Duration  1.58s (transform 1.02s, setup 126ms, import 1.30s, tests 20ms, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run typecheck",
+      "duration_ms": 1221,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run test:project recipes --maxWorkers=1 packages/recipes/src/roadmap-recipe-parameters.test.ts",
+      "duration_ms": 3236,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project recipes \"--maxWorkers=1\" packages/recipes/src/roadmap-recipe-parameters.test.ts\n",
+      "stdout_tail": "\n RUN  v4.1.11 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario\n\n\n Test Files  1 passed (1)\n      Tests  51 passed (51)\n   Start at  07:56:03\n   Duration  1.55s (transform 837ms, setup 88ms, import 1.16s, tests 82ms, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-plan-validation.test.ts",
+      "duration_ms": 3511,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane \"--maxWorkers=1\" packages/agentplane/src/runner/context/roadmap-recipe-plan-validation.test.ts\n",
+      "stdout_tail": "\n RUN  v4.1.11 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario\n\n\n Test Files  1 passed (1)\n      Tests  35 passed (35)\n   Start at  07:56:06\n   Duration  1.91s (transform 1.12s, setup 76ms, import 1.51s, tests 153ms, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-applicability.test.ts",
+      "duration_ms": 3176,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane \"--maxWorkers=1\" packages/agentplane/src/runner/context/roadmap-recipe-applicability.test.ts\n",
+      "stdout_tail": "\n RUN  v4.1.11 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario\n\n\n Test Files  1 passed (1)\n      Tests  30 passed (30)\n   Start at  07:56:09\n   Duration  1.56s (transform 783ms, setup 93ms, import 1.12s, tests 175ms, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-closure.test.ts",
+      "duration_ms": 3718,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane \"--maxWorkers=1\" packages/agentplane/src/runner/context/roadmap-recipe-closure.test.ts\n",
+      "stdout_tail": "\n RUN  v4.1.11 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario\n\n\n Test Files  1 passed (1)\n      Tests  47 passed (47)\n   Start at  07:56:12\n   Duration  2.26s (transform 979ms, setup 55ms, import 1.37s, tests 697ms, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-retention.test.ts",
+      "duration_ms": 18415,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane \"--maxWorkers=1\" packages/agentplane/src/runner/context/roadmap-recipe-retention.test.ts\n",
+      "stdout_tail": "\n RUN  v4.1.11 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario\n\n\n Test Files  1 passed (1)\n      Tests  16 passed (16)\n   Start at  07:56:16\n   Duration  17.04s (transform 4.39s, setup 56ms, import 5.44s, tests 11.41s, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-plan-binding.test.ts",
+      "duration_ms": 9572,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane \"--maxWorkers=1\" packages/agentplane/src/runner/context/roadmap-recipe-plan-binding.test.ts\n",
+      "stdout_tail": "\n RUN  v4.1.11 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario\n\n\n Test Files  1 passed (1)\n      Tests  13 passed (13)\n   Start at  07:56:35\n   Duration  8.02s (transform 3.90s, setup 77ms, import 4.98s, tests 2.80s, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/usecases/roadmap-recipe-instantiation.test.ts",
+      "duration_ms": 16629,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane \"--maxWorkers=1\" packages/agentplane/src/runner/usecases/roadmap-recipe-instantiation.test.ts\n",
+      "stdout_tail": "\n RUN  v4.1.11 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario\n\n\n Test Files  1 passed (1)\n      Tests  11 passed (11)\n   Start at  07:56:44\n   Duration  14.87s (transform 5.87s, setup 86ms, import 7.29s, tests 7.34s, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run test:project core --maxWorkers=1 packages/core/src/commands/task/roadmap-recipe-specialization.test.ts",
+      "duration_ms": 1765,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project core \"--maxWorkers=1\" packages/core/src/commands/task/roadmap-recipe-specialization.test.ts\n",
+      "stdout_tail": "\n RUN  v4.1.11 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario\n\n\n Test Files  1 passed (1)\n      Tests  16 passed (16)\n   Start at  07:57:01\n   Duration  582ms (transform 279ms, setup 66ms, import 343ms, tests 38ms, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-recipe-repin.test.ts",
+      "duration_ms": 22400,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane \"--maxWorkers=1\" packages/agentplane/src/commands/task/roadmap-recipe-repin.test.ts\n",
+      "stdout_tail": "\n RUN  v4.1.11 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario\n\n\n Test Files  1 passed (1)\n      Tests  7 passed (7)\n   Start at  07:57:03\n   Duration  20.83s (transform 5.83s, setup 71ms, import 7.15s, tests 13.38s, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/recipes/roadmap-explicit-selection.test.ts",
+      "duration_ms": 11368,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane \"--maxWorkers=1\" packages/agentplane/src/commands/recipes/roadmap-explicit-selection.test.ts\n",
+      "stdout_tail": "\n RUN  v4.1.11 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario\n\n\n Test Files  1 passed (1)\n      Tests  7 passed (7)\n   Start at  07:57:25\n   Duration  9.70s (transform 4.04s, setup 84ms, import 5.05s, tests 4.39s, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-shortlist.test.ts",
+      "duration_ms": 13781,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane \"--maxWorkers=1\" packages/agentplane/src/runner/context/roadmap-recipe-shortlist.test.ts\n",
+      "stdout_tail": "\n RUN  v4.1.11 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario\n\n\n Test Files  1 passed (1)\n      Tests  7 passed (7)\n   Start at  07:57:36\n   Duration  12.51s (transform 6.54s, setup 106ms, import 7.97s, tests 4.26s, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-prompt.test.ts",
+      "duration_ms": 30224,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane \"--maxWorkers=1\" packages/agentplane/src/runner/context/roadmap-recipe-prompt.test.ts\n",
+      "stdout_tail": "\n RUN  v4.1.11 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario\n\n\n Test Files  1 passed (1)\n      Tests  9 passed (9)\n   Start at  07:57:50\n   Duration  28.96s (transform 5.74s, setup 64ms, import 7.13s, tests 21.62s, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/recipes/roadmap-v1-v2-conversion.test.ts",
+      "duration_ms": 21296,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane \"--maxWorkers=1\" \"packages/agentplane/src/commands/recipes/roadmap-v1-v2-conversion.test.ts\"\n",
+      "stdout_tail": "\n RUN  v4.1.11 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario\n\n\n Test Files  1 passed (1)\n      Tests  6 passed (6)\n   Start at  07:58:20\n   Duration  20.09s (transform 6.30s, setup 81ms, import 5.80s, tests 14.07s, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-recipe-v2-entrypoint.test.ts",
+      "duration_ms": 20104,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane \"--maxWorkers=1\" \"packages/agentplane/src/cli/run-cli.core.roadmap-recipe-v2-entrypoint.test.ts\"\n",
+      "stdout_tail": "\n RUN  v4.1.11 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario\n\n\n Test Files  1 passed (1)\n      Tests  3 passed (3)\n   Start at  07:58:42\n   Duration  18.48s (transform 7.97s, setup 50ms, import 5.31s, tests 12.97s, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run package:install-smoke",
+      "duration_ms": 349674,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "package:install-smoke",
+      "stderr_tail": "$ node scripts/release/check-local-tarball-install-smoke.mjs\n",
+      "stdout_tail": "installed runtime dependencies: [\"@agentplaneorg/core@0.7.12\",\"@agentplaneorg/recipes@0.7.12\",\"@clack/core@1.5.1\",\"@clack/prompts@1.8.1\",\"@sec-ant/readable-stream@0.4.1\",\"@sindresorhus/merge-streams@4.0.0\",\"agentplane@0.7.12\",\"canonicalize@3.0.0\",\"cross-spawn@7.0.6\",\"execa@9.6.1\",\"fast-string-truncated-width@3.0.3\",\"fast-string-width@3.0.2\",\"fast-wrap-ansi@0.2.2\",\"figures@6.1.0\",\"get-stream@9.0.1\",\"human-signals@8.0.1\",\"is-plain-obj@4.1.0\",\"is-stream@4.0.1\",\"is-unicode-supported@2.1.0\",\"isexe@2.0.0\",\"npm-run-path@6.0.0\",\"parse-ms@4.0.0\",\"path-key@3.1.1\",\"path-key@4.0.0\",\"pend@1.2.0\",\"pretty-ms@9.3.1\",\"shebang-command@2.0.0\",\"shebang-regex@3.0.0\",\"signal-exit@4.1.0\",\"sisteransi@1.0.5\",\"strip-final-newline@4.0.0\",\"unicorn-magic@0.3.0\",\"which@2.0.2\",\"yaml@2.9.1\",\"yauzl@3.4.0\",\"yoctocolors@2.2.0\",\"zod-validation-error@5.0.0\",\"zod@4.4.3\"]\ninstalled Recipe matrix OK (scenarios=6)\ninstalled planning matrix OK (scenarios=6)\ninstalled migration matrix OK (scenarios=8)\nlocal tarball install smoke OK (202609170001-TRB1)\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run schemas:check",
+      "duration_ms": 1557,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "schemas:check",
+      "stderr_tail": "$ bun scripts/generate/sync-schemas.mjs check\n",
+      "stdout_tail": "schemas OK\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run test:release:critical",
+      "duration_ms": 192085,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "test:release:critical",
+      "stderr_tail": "$ node scripts/checks/run-vitest-suite.mjs release-critical\n⚠️ task requires Verify Steps by primary tag; seeded a PLANNER fallback ## Verify Steps scaffold in README (replace with task-specific acceptance coverage when available)\n",
+      "stdout_tail": "\n RUN  v4.1.11 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario\n\n\n Test Files  35 passed (35)\n      Tests  425 passed (425)\n   Start at  08:04:53\n   Duration  189.29s (transform 84.07s, setup 2.86s, import 132.54s, tests 544.72s, environment 9ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
       "command": "bun run bench:agent-efficiency:check",
-      "duration_ms": 1012,
+      "duration_ms": 1415,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
@@ -17,9 +441,15 @@
       "stdout_tail": "Agent-efficiency baseline OK (10 RF-04 scenarios; 10 measured cost metrics; structural_sha256=sha256:a9b855c5887f697c21690d7386c627c555f8d46d7b083cab8c54636411e47351; timing_compared=false; summaries=0)\n"
     },
     {
-      "check_ids": [],
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
       "command": "bun run bench:agent-efficiency:replay:check",
-      "duration_ms": 1078,
+      "duration_ms": 1246,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
@@ -33,9 +463,15 @@
       "stdout_tail": "RF-04 replay baseline OK (50 runs; 70/70 outcomes; 27/27 provider token cells; 170/170 scalar cells; structural_sha256=sha256:006ddc6d2b8e8c350a879edeb7140d36dbbd31c0c745b96f57792871b9099ee4; diagnostics_sha256=sha256:01c7b81828826b44d18d0b6a26288ac62b031cf4e30242a421f77ec37b2ca44e)\n"
     },
     {
-      "check_ids": [],
-      "command": "bun run typecheck",
-      "duration_ms": 1100,
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run docs:onboarding:check",
+      "duration_ms": 1026,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
@@ -44,14 +480,168 @@
         "status": "resolved",
         "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
       },
-      "script": "typecheck",
-      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "script": "docs:onboarding:check",
+      "stderr_tail": "$ node scripts/checks/check-agent-onboarding-scenario.mjs\n",
+      "stdout_tail": "ok: agent onboarding scenario surfaces are aligned\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run test:fast -- packages/agentplane/src/commands/task/kernel-advance-network.test.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/task/kernel-work-order.network.test.ts packages/agentplane/src/commands/task/roadmap-curator-parity.test.ts packages/agentplane/src/commands/task/create-plan-input.test.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts --testTimeout=60000 --hookTimeout=60000",
+      "duration_ms": 63781,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "test:fast",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane --project core --project recipes --project testkit --maxWorkers=4 packages/agentplane/src/commands/task/kernel-advance-network.test.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/task/kernel-work-order.network.test.ts packages/agentplane/src/commands/task/roadmap-curator-parity.test.ts packages/agentplane/src/commands/task/create-plan-input.test.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts \"--testTimeout=60000\" \"--hookTimeout=60000\"\n",
+      "stdout_tail": "\n RUN  v4.1.11 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario\n\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\n\n Test Files  9 passed (9)\n      Tests  218 passed (218)\n   Start at  08:08:10\n   Duration  60.96s (transform 27.74s, setup 1.12s, import 53.99s, tests 70.00s, environment 1ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bunx --no-install eslint packages/agentplane/src/commands/task/kernel-work-order.ts packages/agentplane/src/commands/task/kernel-work-order.network.test.ts packages/agentplane/src/commands/task/kernel-exchange.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/shared/declared-check.ts packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.ts packages/agentplane/src/commands/task/direct-task-verification.sequence.cases.ts packages/agentplane/src/commands/task/advance-task-step.ts packages/agentplane/src/commands/task/kernel-advance-network.test.ts",
+      "duration_ms": 19379,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "git diff --check",
+      "duration_ms": 973,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:3af96d136a78eaa0237142d6ed294a0d3442cc679e83d5ff75cbb33af1efb54b",
+        "executable_digest": "sha256:2a8c18fbf43da9f692d75474c72bea9dfd796c260b0f3dfe456376abc3bbd668",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run test:fast -- packages/agentplane/src/commands/task/kernel-policy-baseline.test.ts packages/agentplane/src/commands/task/kernel-policy-completion.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts packages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts packages/core/src/tasks/task-kernel/authority-delta.test.ts packages/agentplane/src/commands/branch/work-start.test.ts packages/agentplane/src/commands/task/kernel-inspection-validation.test.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/task/kernel-work-item-resume.test.ts packages/agentplane/src/commands/task/kernel-advance-network.test.ts packages/agentplane/src/commands/task/kernel-work-order.network.test.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/shared/worktree-topology.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/commands/branch/work-start.git.test.ts packages/agentplane/src/commands/branch/work-start.direct.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/commands/task/kernel-rework-proof.test.ts packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-centric/task-centric.output-dependencies.test.ts --testTimeout=60000 --hookTimeout=60000",
+      "duration_ms": 216244,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "test:fast",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane --project core --project recipes --project testkit --maxWorkers=4 packages/agentplane/src/commands/task/kernel-policy-baseline.test.ts packages/agentplane/src/commands/task/kernel-policy-completion.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts packages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts packages/core/src/tasks/task-kernel/authority-delta.test.ts packages/agentplane/src/commands/branch/work-start.test.ts packages/agentplane/src/commands/task/kernel-inspection-validation.test.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/task/kernel-work-item-resume.test.ts packages/agentplane/src/commands/task/kernel-advance-network.test.ts packages/agentplane/src/commands/task/kernel-work-order.network.test.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/shared/worktree-topology.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/commands/branch/work-start.git.test.ts packages/agentplane/src/commands/branch/work-start.direct.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/commands/task/kernel-rework-proof.test.ts packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-centric/task-centric.output-dependencies.test.ts \"--testTimeout=60000\" \"--hookTimeout=60000\"\n",
+      "stdout_tail": "\n RUN  v4.1.11 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario\n\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\n\n Test Files  29 passed (29)\n      Tests  424 passed (424)\n   Start at  08:09:34\n   Duration  213.76s (transform 39.80s, setup 2.50s, import 90.13s, tests 747.79s, environment 17ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bunx --no-install eslint packages/agentplane/src/commands/task/advance-task-step.ts packages/agentplane/src/commands/task/kernel-policy-baseline.ts packages/agentplane/src/commands/task/kernel-policy-baseline.test.ts packages/agentplane/src/commands/task/kernel-policy-completion.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-runtime-context.ts packages/agentplane/src/commands/task/kernel-semantic-result.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-boundary.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts packages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts packages/core/src/tasks/task-kernel/authority-delta.test.ts packages/agentplane/src/commands/branch/work-start.ts packages/agentplane/src/commands/branch/work-start.test.ts packages/agentplane/src/commands/task/kernel-inspection-validation.ts packages/agentplane/src/commands/task/kernel-inspection-validation.test.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/task/kernel-work-item-resume.ts packages/agentplane/src/commands/task/kernel-work-item-resume.test.ts packages/agentplane/src/commands/task/kernel-exchange.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/kernel-rework-proof.ts packages/agentplane/src/commands/task/kernel-rework-proof.test.ts packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-centric/task-centric.output-dependencies.test.ts",
+      "duration_ms": 20827,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run hotspots:check",
+      "duration_ms": 1451,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "hotspots:check",
+      "stderr_tail": "$ node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300 && node scripts/checks/check-oversized-test-baseline.mjs --threshold-lines 1000\n",
+      "stdout_tail": "entplane/src/commands/task/branch-task-supervisor-operations.ts: 466 lines\n- packages/agentplane/src/commands/pr/internal/sync-gitlab.ts: 464 lines\n- packages/agentplane/src/commands/backend.ts: 463 lines\n- packages/agentplane/src/commands/branch/cleanup-merged.ts: 463 lines\n- packages/agentplane/src/commands/task/create.command.ts: 463 lines\n- packages/agentplane/src/commands/pr/provider-update-branch.ts: 462 lines\n- packages/agentplane/src/commands/task/migration-apply.ts: 453 lines\n- packages/agentplane/src/commands/task/kernel-run.ts: 445 lines\n- packages/agentplane/src/runner/state-fingerprint-observation.ts: 445 lines\n- packages/agentplane/src/runner/artifacts.ts: 444 lines\n- packages/agentplane/src/runner/observation/protected-filesystem-capture-support.ts: 442 lines\n- packages/agentplane/src/commands/task/next-action.command.ts: 441 lines\n- packages/agentplane/src/commands/hermes/hermes.command.ts: 439 lines\n- packages/agentplane/src/runner/usecases/task-knowledge-request.ts: 437 lines\n- packages/agentplane/src/commands/task/new.ts: 434 lines\n- packages/agentplane/src/commands/shared/declared-check.ts: 432 lines\n- packages/agentplane/src/commands/task/shared/workflow-transition-service.ts: 432 lines\n- packages/agentplane/src/backends/task-backend/shared/record.ts: 429 lines\n- packages/agentplane/src/cli/run-cli.ts: 429 lines\n- packages/agentplane/src/runner/run-state-validation.ts: 429 lines\n- packages/agentplane/src/commands/task/active.command.ts: 426 lines\n- packages/agentplane/src/commands/shared/merged-branch-cleanup.ts: 424 lines\n- packages/agentplane/src/runtime/task-execution-context/resolve.ts: 424 lines\n- packages/agentplane/src/runner/usecases/task-run-inspect.ts: 423 lines\n- packages/agentplane/src/backends/task-backend/shared/normalize.ts: 422 lines\n- packages/agentplane/src/runner/state-fingerprint.testkit.ts: 418 lines\n- packages/agentplane/src/commands/evaluator/evaluator-evidence-store.ts: 417 lines\n- packages/agentplane/src/runner/context/recipe-closure.ts: 417 lines\n- packages/agentplane/src/backends/task-backend/local-backend-write.ts: 415 lines\n- packages/agentplane/src/commands/pr/integrate/internal/merge.ts: 415 lines\n- packages/agentplane/src/context/doctor.ts: 413 lines\n- packages/agentplane/src/context/extraction-writer.ts: 413 lines\n- packages/agentplane/src/runner/context/semantic-prompt-projection.ts: 413 lines\n- packages/agentplane/src/runner/usecases/agent-work-order.ts: 413 lines\n- packages/agentplane/src/commands/task/external-agent-workflow-recovery.ts: 410 lines\n- packages/agentplane/src/context/harvest-tasks-extraction.ts: 408 lines\n- packages/agentplane/src/commands/task/direct-task-supervisor-closeout.ts: 407 lines\n- packages/agentplane/src/runner/usecases/task-run-lifecycle-replay.ts: 407 lines\n- packages/agentplane/src/cli/run-cli/command-loaders/task.ts: 406 lines\n- packages/agentplane/src/commands/doctor/legacy-probes.ts: 406 lines\n- packages/agentplane/src/commands/insights/insights-report.ts: 404 lines\n- packages/agentplane/src/commands/pr/check.ts: 403 lines\n- packages/agentplane/src/commands/task/kernel-controller-handoff.ts: 401 lines\nOversized test warning: 8 test file(s) exceed 1000 lines.\n- packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts: 1193 lines\n- packages/agentplane/src/commands/task/finish.validation.unit.test.ts: 1160 lines\n- packages/agentplane/src/commands/doctor.command.open-pr.test.ts: 1124 lines\n- packages/agentplane/src/commands/shared/task-store.test.ts: 1115 lines\n- packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts: 1102 lines\n- packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts: 1095 lines\n- packages/agentplane/src/cli/run-cli.core.test.ts: 1046 lines\n- packages/agentplane/src/commands/doctor.command.runtime.test.ts: 1037 lines\nHotspot threshold check passed (runtime: warn>400, error>600; tests: warn>1000, error>1300).\nOversized test baseline OK (8 entries, 8872 total lines, threshold>1000).\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run knip:check",
+      "duration_ms": 5339,
+      "exit_code": 1,
+      "runtime": {
+        "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "knip:check",
+      "stderr_tail": "$ node scripts/checks/check-knip-baseline.mjs\nerror: Knip unused-code baseline guard failed.\nNew unused-code entries:\n- files: packages/recipes/scripts/validate-doc-examples.mjs packages/recipes/scripts/validate-doc-examples.mjs\n\nRemove newly introduced unused code, or run with --update-baseline only after reviewed debt changes.\nerror: script \"knip:check\" exited with code 1\n",
       "stdout_tail": ""
     }
   ],
   "kind": "direct_task_declared_checks",
-  "reason": null,
+  "reason": "Declared check failed: bun run knip:check",
   "schema_version": 1,
-  "status": "passed",
+  "status": "failed",
   "task_id": "202610041748-K43XFE"
 }

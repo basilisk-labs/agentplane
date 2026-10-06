@@ -57,6 +57,8 @@ Created: 2026-10-04T18:13:17.876Z
  .../m05-0.7.13/release-disposition.request.json    |    48 +
  artifacts/rc18/installed-examples.json             |     7 +
  artifacts/rc18/qualification.json                  |    57 +
+ artifacts/recipes-v2-docs/installed-examples.json  |     7 +
+ artifacts/recipes-v2-docs/qualification.json       |    29 +
  bun.lock                                           |     4 +
  docs/developer/recipes-development.mdx             |   217 +-
  docs/developer/recipes-how-it-works.mdx            |    43 +-
@@ -73,6 +75,7 @@ Created: 2026-10-04T18:13:17.876Z
  docs/releases/v0.7.13-m05.md                       |   140 +
  docs/user/cli-reference.generated.mdx              |    26 +
  docs/user/workflow.mdx                             |    20 +
+ package.json                                       |     1 +
  packages/agentplane/package.json                   |    13 +-
  .../task-backend/kernel-backend-adapter.test.ts    |   192 +
  ...n-cli.core.roadmap-recipe-v2-entrypoint.test.ts |   377 +
@@ -206,7 +209,7 @@ Created: 2026-10-04T18:13:17.876Z
  scripts/lib/test-route-registry.mjs                |    24 +
  .../release/check-local-tarball-install-smoke.mjs  |    71 +-
  scripts/release/installed-recipe-matrix.mjs        |   790 +
- 177 files changed, 57574 insertions(+), 1043 deletions(-)
+ 180 files changed, 57611 insertions(+), 1043 deletions(-)
 ```
 
 </details>

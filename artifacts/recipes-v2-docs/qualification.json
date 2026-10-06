@@ -1,0 +1,29 @@
+{
+  "command": "bun run docs:recipes:examples:check artifacts/recipes-v2-docs/installed",
+  "head": "bb76df31b89a964295f7eb396589314cf1780848",
+  "packed_artifacts": [
+    {
+      "name": "@agentplaneorg/core",
+      "version": "0.7.12",
+      "integrity": "sha512-L25TR9TV2uyh1BLwMpxrF0AZiPkFm7rJXdbj2JNaCdARZUSFL7N+0lfzAnDe1pFep+SJh4IKMxec2tzontBDSw==",
+      "sha256": "sha256:382d5615525c5d6f6b11b243cde2c8f2624b18d3d80ad6bc4c2a91c6beed0f0b"
+    },
+    {
+      "name": "@agentplaneorg/recipes",
+      "version": "0.7.12",
+      "integrity": "sha512-GaYBq5pmPRyOwEia1xCYDgolFJQj25JZ2cb83iy+uKeJUGOMabcfrpMcEH8N1AZgPskRHT86XZUj46c47CYaUg==",
+      "sha256": "sha256:ecf1fbb5a9c6ef1a8741fae1da7183663f0821edd90e44080f522c162d95c883"
+    }
+  ],
+  "installation": "Offline npm local-tarball install; ignore-scripts/no-audit/no-fund; copied repository-local cache;29 installed packages; no network",
+  "result": {
+    "kind": "installed_recipe_documentation_examples",
+    "assertions": 24,
+    "entry": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario/artifacts/recipes-v2-docs/installed/node_modules/@agentplaneorg/recipes/dist/index.js",
+    "package_version": "0.7.12",
+    "scope": "Installed public parser/parameter/V1 audit only; native retained closure and admission were qualified separately by RC16."
+  },
+  "validator_sha256": "sha256:019d2366ccb178323ccaa4f659bf66d0796a8a4f31eb5bc159ef06a7ad7b89e9",
+  "validator_unchanged": true,
+  "temporary_material_removed": true
+}

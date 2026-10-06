@@ -130,7 +130,7 @@ lifecycle or automatic execution of legacy `steps`.
 
 ## Validation and measured limits
 
-Run `node packages/recipes/scripts/validate-doc-examples.mjs <installed-project-root>` from this repository after installing packed core and recipes artifacts into that isolated project. The validator refuses source-workspace resolution.
+Run `bun run docs:recipes:examples:check <installed-project-root>` from this repository after installing packed core and recipes artifacts into that isolated project. The validator refuses source-workspace resolution.
 
 The example validator imports the installed `@agentplaneorg/recipes` public export and checks the
 actual JSON examples, V1/V2 negotiation, parameter/path negatives and exact-byte V1 audit. Schema
