@@ -432,9 +432,18 @@ describe("Recipe specialization dependency rebinding", { timeout: 180_000 }, () 
   });
   it("routes current trust revocation through native policy admission", async () => {
     const f = await fixture();
+    await f.native.checkpoint(await f.native.observe());
     requireKernelCommit(await f.native.authority.approve(f.id));
     f.command.config.authority.approval_receipts.trusted_issuers = [];
-    await expect(f.native.authority.resolve(f.id)).rejects.toThrow("native_policy_changed");
+    await writeConfig(f.root, f.command.config);
+    const command = await loadCommandContext({ cwd: f.root, rootOverride: f.root });
+    const native = await createKernelRuntime({
+      command,
+      task_id: f.id,
+      transport: "manual",
+      operation_id: "recipe-repin-after-trust-revocation",
+    });
+    await expect(native.authority.resolve(f.id)).rejects.toThrow("native_policy_changed");
     const finalRead = await f.read();
     expect(finalRead.record.aggregate.current_plan?.state).toBe("APPROVED");
   });
