@@ -1,0 +1,11 @@
+{
+  "independent_oracle_required": true,
+  "kind": "offline_fixture_policy",
+  "native_approval": false,
+  "network": "deny",
+  "provider_calls": false,
+  "scope": [
+    "plan.json",
+    "route.json"
+  ]
+}
