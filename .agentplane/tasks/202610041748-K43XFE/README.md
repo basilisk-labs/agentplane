@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 304
+revision: 305
 origin:
   system: "manual"
 depends_on: []
@@ -64,19 +64,21 @@ quality_review:
     - "Residual risk: M05/Q02 economic benefit remains NOT_ESTABLISHED. release-disposition.request.json is UNRESOLVED; explicit release-owner measurement disposition is still required before publication. This review neither accepts measurement debt nor grants paid campaign authority."
     - "Residual risk: Hosted qualification of the final source, main integration, autonomy-task integration, exact0.7.13 candidate/versioning and publication remain downstream native/operator gates. Local correctness PASS does not establish those actions complete."
 token_usage:
-  agent_runs: 0
-  input_tokens: null
-  journal_digest: "sha256:a2ab37ca1642d963b60798ce256f81457d0f77529c20fad3b5946720a391a89f"
-  observed_agent_runs: 0
+  agent_runs: 14
+  cached_input_observed_agent_runs: 1
+  cached_input_tokens: 63744
+  input_tokens: 104217
+  journal_digest: "sha256:47bb3b0ee7e626ddb498972c0c96f300e29d5648c91c0e8df4be48a978f4cc42"
+  observed_agent_runs: 1
   observed_by: "agentplane"
   output_tokens: null
   reasoning_tokens: null
   schema_version: 1
   source: "supervisor_journal"
-  state: "unavailable"
-  total_tokens: null
-  unavailable_reason: "no_supervised_agent_runs"
-  updated_at: "2026-10-06T09:03:53.967Z"
+  state: "partial"
+  total_tokens: 104677
+  unavailable_reason: "some_agent_runs_unallocatable"
+  updated_at: "2026-10-06T20:53:31.653Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -1012,7 +1014,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "ad5fe5a336b774df784af72ace93647aac7a3549"
+  message: "🚧 K43XFE task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -1020,6 +1024,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The external completed-task rework route now issues an executor packet, but its native stop rules require resolution of an incompatible ops execution profile before source mutation. No source files were changed. Recommended action: Resolve the native profile and CI authority through an operator recovery route, then issue a fresh executor packet. Preserve the canonical completed history and persisted evaluator findings. Agentplane receipt: external-agent-blocker/tr_02be8b345dc9bb49e00a022c84ab60f4/sha256:5eb75bd96d1524b561b135f9e00b287a96e2a3499c7d1b5f7992a795f34b5aa1."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -1065,9 +1072,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-10-06T20:53:31.653Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "ad5fe5a336b774df784af72ace93647aac7a3549"
 doc_version: 3
-doc_updated_at: "2026-10-06T20:52:01.314Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-06T20:53:31.699Z"
+doc_updated_by: "CODER"
 description: "User explicitly authorizes autonomous completion of all necessary development, integration and release work for version 0.7.13. Implement the current agentplane-roadmap-r2/releases/0.7.13.md RC-01 through RC-18 and EXECUTION-CHARTER.md contracts against the current source. Reuse the existing Recipe package, compact Plan input, sole Task Kernel coordinator, evidence storage, approval and independent EVALUATOR. Preserve V1 compatibility with explicit negotiation, bounded typed interpolation, observed applicability, retained pinned dependency closure, shared instantiation and refinement, scoped context, offline conversion preview, and installed-package recovery qualification. Inventory existing implementations before adding code. Use sequential independently verifiable WorkItems; do not introduce a second workflow engine or implement 0.7.14. Preserve existing repair task 202610020159-60QH9J and autonomy task 202610020153-XXZXW4; integrate their accepted results through supported routes. Network reads, PR publication and main integration are authorized. Prepare the exact 0.7.13 candidate and evidence for a subsequent publication task under the same user release authorization. Preserve unrelated work, credentials and history. Do not fabricate measured savings or paid campaign authority; prepare the exact M05 campaign and explicit measurement disposition. Full validation must preserve all required tests and assertions and use realistic bounded execution budgets."
 sections:
   Summary: |-
@@ -3162,6 +3177,7 @@ extensions:
     work_order_id: "sha256:851e560d03888ee1ed974ae63856a80fffbbd7c19f4947c49f1c2b4ba7cc25ff"
   implementation_commit:
     hash: "d81d6062cb790cff96ad13b9d495dd6dd484f6b4"
+    message: "🚧 K43XFE task: apply external agent result"
   task_execution_context:
     base_ref: "origin/main"
     base_sha: "65696d9032b77e80e31c6bca7668a5f32c99c443"
@@ -24278,13 +24294,13 @@ DecisionContextRef:
 
 ## Token Usage
 
-- State: `unavailable`
-- Completeness: `0/0` agent runs
-- Input tokens: `unavailable`
+- State: `partial`
+- Completeness: `1/14` agent runs
+- Input tokens: `104217`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
-- Total tokens: `unavailable`
+- Total tokens: `104677`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:a2ab37ca1642d963b60798ce256f81457d0f77529c20fad3b5946720a391a89f`
-- Unavailable reason: `no_supervised_agent_runs`
-- Updated at: `2026-10-06T09:03:53.967Z`
+- Journal digest: `sha256:47bb3b0ee7e626ddb498972c0c96f300e29d5648c91c0e8df4be48a978f4cc42`
+- Unavailable reason: `some_agent_runs_unallocatable`
+- Updated at: `2026-10-06T20:53:31.653Z`
