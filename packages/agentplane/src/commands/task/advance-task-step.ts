@@ -537,10 +537,13 @@ async function advanceCanonicalRoute(opts: {
           task_id: opts.task_id,
           action: { kind: "human_required", reason: "canonical_begin_dispatch_uncertain" },
         };
+      const dispatch = await runtime.authority.resolve(opts.task_id, route.work_item_id);
+      if (dispatch.authority.digest !== begun.work_order.authority.digest)
+        throw new Error("Canonical authority changed after begin");
       const order = await buildKernelAgentWorkOrder({
         command: opts.command,
         record: result.record,
-        context,
+        context: dispatch.context,
         implementation: begun.work_order,
       });
       return issueKernelExchange(opts.command, order, opts.transport, result.record);
