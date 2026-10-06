@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check cdb6e7800ab8521b2350e86a8ee5db75d813b79f..2fc22f16e54f5e505adfe80a2c2e2036b10db35d",
+      "command": "git diff --check e71d833ca2200df40c13f1bd87446500e23306e4..571dda9dce770856efc6c10de601550473e52486",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB cdb6e7800ab8521b2350e86a8ee5db75d813b79f..2fc22f16e54f5e505adfe80a2c2e2036b10db35d",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB e71d833ca2200df40c13f1bd87446500e23306e4..571dda9dce770856efc6c10de601550473e52486",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,53 +21,17 @@
         "M\t.agentplane/tasks/202610041748-K43XFE/pr/github-body.md",
         "M\t.agentplane/tasks/202610041748-K43XFE/pr/meta.json",
         "M\t.agentplane/tasks/202610041748-K43XFE/pr/review.md",
-        "M\t.github/workflows/ci.yml",
-        "M\tdocs/developer/cli-contract.mdx",
-        "M\tdocs/releases/v0.7.13-m05.md",
-        "M\tpackages/agentplane/src/commands/pr/internal/provider-base.ts",
-        "A\tpackages/agentplane/src/commands/pr/internal/sync-frozen-base.test.ts",
-        "M\tpackages/agentplane/src/commands/pr/internal/sync-model.ts",
-        "M\tpackages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts",
-        "M\tpackages/agentplane/src/commands/pr/internal/sync-open-step.ts",
-        "M\tpackages/agentplane/src/commands/pr/internal/sync-update-step.ts",
-        "M\tpackages/agentplane/src/commands/pr/internal/sync.ts",
-        "M\tpackages/agentplane/src/commands/release/apply.pipeline/mutation.ts",
-        "M\tpackages/agentplane/src/commands/release/apply.version-mutation.test.ts",
-        "M\tpackages/agentplane/src/commands/release/check-release-parity-script.test.ts",
-        "M\tpackages/agentplane/src/commands/release/workflow-node-version-contract.test.ts",
-        "M\tpackages/agentplane/src/commands/task/advance-task-step.ts",
-        "M\tpackages/agentplane/src/commands/task/advance.command.ts",
-        "M\tpackages/agentplane/src/commands/task/direct-task-verification-record.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-blocked-result.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-implementation-authority.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-implementation-finalization.ts",
+        "M\tpackages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/route-decision-blockers.ts",
+        "A\tpackages/agentplane/src/commands/shared/route-decision-done-rework.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/route-decision-verification.ts",
+        "M\tpackages/agentplane/src/commands/task/direct-task-verification.test.ts",
+        "A\tpackages/agentplane/src/commands/task/external-agent-read-only-observation.test.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-read-only-observation.ts",
         "M\tpackages/agentplane/src/commands/task/external-agent-result-application.ts",
-        "A\tpackages/agentplane/src/commands/task/kernel-completed-external-blocker-boundary.ts",
-        "A\tpackages/agentplane/src/commands/task/kernel-completed-external-blocker.ts",
-        "A\tpackages/agentplane/src/commands/task/kernel-completed-external-rework.test.ts",
-        "A\tpackages/agentplane/src/commands/task/kernel-completed-external-rework.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-completed-workflow.ts",
-        "A\tpackages/agentplane/src/commands/task/kernel-terminal-artifacts.test.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-terminal-artifacts.ts",
-        "M\tpackages/agentplane/src/commands/task/ordinary-advance-step.ts",
-        "M\tpackages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts",
-        "M\tpackages/agentplane/src/commands/task/task-execution-contract-observation.ts",
-        "M\tpackages/agentplane/src/runner/usecases/agent-work-order-build.ts",
-        "A\tpackages/agentplane/src/runner/usecases/agent-work-order-protected-paths.ts",
-        "M\tpackages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts",
-        "M\tpackages/agentplane/src/runtime/task-obligations/resolve.test.ts",
-        "M\tpackages/agentplane/src/runtime/task-obligations/resolve.ts",
-        "M\tpackages/recipes/package.json",
-        "M\tpackages/testkit/src/release.ts",
-        "M\tscripts/baselines/v0.7-compatibility-candidate.json",
-        "M\tscripts/bench/capture-compatibility-candidate.mjs",
-        "M\tscripts/bench/paired-m05-offline.test.mjs",
-        "M\tscripts/bench/paired-m05-product.mjs",
-        "M\tscripts/checks/check-compatibility-contract-baseline.mjs",
-        "M\tscripts/lib/release-version-surfaces.mjs",
-        "M\tscripts/release/check-package-node-runtime.mjs",
-        "A\tscripts/release/check-package-node-runtime.test.mjs",
-        "M\tscripts/release/version-surfaces.json"
+        "M\tpackages/agentplane/src/commands/task/external-agent-supervisor-recovery.test.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-supervisor.ts"
       ]
     },
     {
@@ -77,8 +41,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "cdb6e7800ab8521b2350e86a8ee5db75d813b79f",
-  "implementation_commit": "2fc22f16e54f5e505adfe80a2c2e2036b10db35d",
+  "execution_base_commit": "e71d833ca2200df40c13f1bd87446500e23306e4",
+  "implementation_commit": "571dda9dce770856efc6c10de601550473e52486",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
