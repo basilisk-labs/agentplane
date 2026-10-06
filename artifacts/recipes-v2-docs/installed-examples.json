@@ -1,0 +1,7 @@
+{
+  "kind": "installed_recipe_documentation_examples",
+  "assertions": 24,
+  "entry": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario/artifacts/recipes-v2-docs/installed/node_modules/@agentplaneorg/recipes/dist/index.js",
+  "package_version": "0.7.12",
+  "scope": "Installed public parser/parameter/V1 audit only; native retained closure and admission were qualified separately by RC16."
+}

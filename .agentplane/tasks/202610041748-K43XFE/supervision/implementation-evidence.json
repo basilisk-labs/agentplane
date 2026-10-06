@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 3bc7288366425d87add6abf6356de836276dc8dd..bd16ef7c1f0ce8a980ab52f417e5d56e76205fee",
+      "command": "git diff --check bd16ef7c1f0ce8a980ab52f417e5d56e76205fee..bb76df31b89a964295f7eb396589314cf1780848",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 3bc7288366425d87add6abf6356de836276dc8dd..bd16ef7c1f0ce8a980ab52f417e5d56e76205fee",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB bd16ef7c1f0ce8a980ab52f417e5d56e76205fee..bb76df31b89a964295f7eb396589314cf1780848",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -22,81 +22,25 @@
         "M\t.agentplane/tasks/202610041748-K43XFE/pr/github-body.md",
         "M\t.agentplane/tasks/202610041748-K43XFE/pr/meta.json",
         "M\t.agentplane/tasks/202610041748-K43XFE/pr/review.md",
-        "D\tartifacts/bench/m05-0.7.13/final-offline/branch-change/campaign.offline.lock.json",
-        "D\tartifacts/bench/m05-0.7.13/final-offline/branch-change/evidence.json",
-        "D\tartifacts/bench/m05-0.7.13/final-offline/branch-change/target.bundle",
-        "D\tartifacts/bench/m05-0.7.13/final-offline/direct-fix/campaign.offline.lock.json",
-        "D\tartifacts/bench/m05-0.7.13/final-offline/direct-fix/evidence.json",
-        "D\tartifacts/bench/m05-0.7.13/final-offline/direct-fix/target.bundle",
-        "D\tartifacts/bench/m05-0.7.13/final-offline/fixture-policy.json",
-        "D\tartifacts/bench/m05-0.7.13/final-offline/near-match/campaign.offline.lock.json",
-        "D\tartifacts/bench/m05-0.7.13/final-offline/near-match/evidence.json",
-        "D\tartifacts/bench/m05-0.7.13/final-offline/near-match/target.bundle",
-        "D\tartifacts/bench/m05-0.7.13/final-offline/no-match/campaign.offline.lock.json",
-        "D\tartifacts/bench/m05-0.7.13/final-offline/no-match/evidence.json",
-        "D\tartifacts/bench/m05-0.7.13/final-offline/no-match/target.bundle",
-        "D\tartifacts/bench/m05-0.7.13/final-offline/oracle.mjs",
-        "D\tartifacts/bench/m05-0.7.13/final-offline/preparation.json",
-        "D\tartifacts/bench/m05-0.7.13/final-offline/product.mjs",
-        "D\tartifacts/bench/m05-0.7.13/final-offline/recovery/campaign.offline.lock.json",
-        "D\tartifacts/bench/m05-0.7.13/final-offline/recovery/evidence.json",
-        "D\tartifacts/bench/m05-0.7.13/final-offline/recovery/target.bundle",
-        "A\tartifacts/bench/m05-0.7.13/historical-corpora.inventory.json",
-        "A\tartifacts/bench/m05-0.7.13/historical-corpora.tar",
-        "R078\tartifacts/bench/m05-0.7.13/checked-offline/branch-change/campaign.offline.lock.json\tartifacts/bench/m05-0.7.13/normalized-offline/branch-change/campaign.offline.lock.json",
-        "R086\tartifacts/bench/m05-0.7.13/checked-offline/branch-change/evidence.json\tartifacts/bench/m05-0.7.13/normalized-offline/branch-change/evidence.json",
-        "R100\tartifacts/bench/m05-0.7.13/checked-offline/branch-change/target.bundle\tartifacts/bench/m05-0.7.13/normalized-offline/branch-change/target.bundle",
-        "R078\tartifacts/bench/m05-0.7.13/checked-offline/direct-fix/campaign.offline.lock.json\tartifacts/bench/m05-0.7.13/normalized-offline/direct-fix/campaign.offline.lock.json",
-        "R086\tartifacts/bench/m05-0.7.13/checked-offline/direct-fix/evidence.json\tartifacts/bench/m05-0.7.13/normalized-offline/direct-fix/evidence.json",
-        "R100\tartifacts/bench/m05-0.7.13/checked-offline/direct-fix/target.bundle\tartifacts/bench/m05-0.7.13/normalized-offline/direct-fix/target.bundle",
-        "R100\tartifacts/bench/m05-0.7.13/checked-offline/fixture-policy.json\tartifacts/bench/m05-0.7.13/normalized-offline/fixture-policy.json",
-        "R078\tartifacts/bench/m05-0.7.13/checked-offline/near-match/campaign.offline.lock.json\tartifacts/bench/m05-0.7.13/normalized-offline/near-match/campaign.offline.lock.json",
-        "R086\tartifacts/bench/m05-0.7.13/checked-offline/near-match/evidence.json\tartifacts/bench/m05-0.7.13/normalized-offline/near-match/evidence.json",
-        "R100\tartifacts/bench/m05-0.7.13/checked-offline/near-match/target.bundle\tartifacts/bench/m05-0.7.13/normalized-offline/near-match/target.bundle",
-        "R078\tartifacts/bench/m05-0.7.13/checked-offline/no-match/campaign.offline.lock.json\tartifacts/bench/m05-0.7.13/normalized-offline/no-match/campaign.offline.lock.json",
-        "R086\tartifacts/bench/m05-0.7.13/checked-offline/no-match/evidence.json\tartifacts/bench/m05-0.7.13/normalized-offline/no-match/evidence.json",
-        "R100\tartifacts/bench/m05-0.7.13/checked-offline/no-match/target.bundle\tartifacts/bench/m05-0.7.13/normalized-offline/no-match/target.bundle",
-        "R100\tartifacts/bench/m05-0.7.13/checked-offline/oracle.mjs\tartifacts/bench/m05-0.7.13/normalized-offline/oracle.mjs",
-        "R062\tartifacts/bench/m05-0.7.13/checked-offline/preparation.json\tartifacts/bench/m05-0.7.13/normalized-offline/preparation.json",
-        "R099\tartifacts/bench/m05-0.7.13/checked-offline/product.mjs\tartifacts/bench/m05-0.7.13/normalized-offline/product.mjs",
-        "R078\tartifacts/bench/m05-0.7.13/checked-offline/recovery/campaign.offline.lock.json\tartifacts/bench/m05-0.7.13/normalized-offline/recovery/campaign.offline.lock.json",
-        "R086\tartifacts/bench/m05-0.7.13/checked-offline/recovery/evidence.json\tartifacts/bench/m05-0.7.13/normalized-offline/recovery/evidence.json",
-        "R100\tartifacts/bench/m05-0.7.13/checked-offline/recovery/target.bundle\tartifacts/bench/m05-0.7.13/normalized-offline/recovery/target.bundle",
-        "D\tartifacts/bench/m05-0.7.13/offline-qualified/branch-change/campaign.offline.lock.json",
-        "D\tartifacts/bench/m05-0.7.13/offline-qualified/branch-change/evidence.json",
-        "D\tartifacts/bench/m05-0.7.13/offline-qualified/branch-change/target.bundle",
-        "D\tartifacts/bench/m05-0.7.13/offline-qualified/direct-fix/campaign.offline.lock.json",
-        "D\tartifacts/bench/m05-0.7.13/offline-qualified/direct-fix/evidence.json",
-        "D\tartifacts/bench/m05-0.7.13/offline-qualified/direct-fix/target.bundle",
-        "D\tartifacts/bench/m05-0.7.13/offline-qualified/fixture-policy.json",
-        "D\tartifacts/bench/m05-0.7.13/offline-qualified/near-match/campaign.offline.lock.json",
-        "D\tartifacts/bench/m05-0.7.13/offline-qualified/near-match/evidence.json",
-        "D\tartifacts/bench/m05-0.7.13/offline-qualified/near-match/target.bundle",
-        "D\tartifacts/bench/m05-0.7.13/offline-qualified/no-match/campaign.offline.lock.json",
-        "D\tartifacts/bench/m05-0.7.13/offline-qualified/no-match/evidence.json",
-        "D\tartifacts/bench/m05-0.7.13/offline-qualified/no-match/target.bundle",
-        "D\tartifacts/bench/m05-0.7.13/offline-qualified/oracle.mjs",
-        "D\tartifacts/bench/m05-0.7.13/offline-qualified/preparation.json",
-        "D\tartifacts/bench/m05-0.7.13/offline-qualified/product.mjs",
-        "D\tartifacts/bench/m05-0.7.13/offline-qualified/recovery/campaign.offline.lock.json",
-        "D\tartifacts/bench/m05-0.7.13/offline-qualified/recovery/evidence.json",
-        "D\tartifacts/bench/m05-0.7.13/offline-qualified/recovery/target.bundle",
-        "D\tartifacts/bench/m05-0.7.13/offline/branch-change/campaign.offline.lock.json",
-        "D\tartifacts/bench/m05-0.7.13/offline/branch-change/diagnostic-git-evidence/git-directory.tar",
-        "D\tartifacts/bench/m05-0.7.13/offline/branch-change/diagnostic-git-evidence/inventory.json",
-        "D\tartifacts/bench/m05-0.7.13/offline/branch-change/diagnostic-git-evidence/repository.bundle",
-        "D\tartifacts/bench/m05-0.7.13/offline/branch-change/diagnostic/fixture.json",
-        "D\tartifacts/bench/m05-0.7.13/offline/branch-change/target.bundle",
-        "D\tartifacts/bench/m05-0.7.13/offline/direct-fix/campaign.offline.lock.json",
-        "D\tartifacts/bench/m05-0.7.13/offline/direct-fix/evidence.json",
-        "D\tartifacts/bench/m05-0.7.13/offline/direct-fix/target.bundle",
-        "D\tartifacts/bench/m05-0.7.13/offline/fixture-policy.json",
-        "D\tartifacts/bench/m05-0.7.13/offline/oracle.mjs",
-        "D\tartifacts/bench/m05-0.7.13/offline/product.mjs",
-        "M\tartifacts/bench/m05-0.7.13/release-disposition.request.json",
-        "M\tdocs/releases/v0.7.13-m05.md",
-        "M\tscripts/bench/paired-m05-offline.mjs",
-        "M\tscripts/bench/paired-m05-offline.test.mjs"
+        "M\t.agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json",
+        "M\t.agentplane/tasks/202610041748-K43XFE/supervision/implementation-evidence.json",
+        "A\tartifacts/rc18/installed-examples.json",
+        "A\tartifacts/rc18/qualification.json",
+        "M\tdocs/developer/recipes-development.mdx",
+        "M\tdocs/developer/recipes-how-it-works.mdx",
+        "M\tdocs/developer/recipes-spec.mdx",
+        "A\tdocs/examples/recipes-v2/agent.md",
+        "A\tdocs/examples/recipes-v2/legacy-unsupported.json",
+        "A\tdocs/examples/recipes-v2/manifest.json",
+        "A\tdocs/examples/recipes-v2/scenario.json",
+        "A\tdocs/examples/recipes-v2/selection.json",
+        "M\tdocs/recipes/docs-update.mdx",
+        "M\tdocs/recipes/index.mdx",
+        "M\tdocs/recipes/security-review.mdx",
+        "M\tdocs/recipes/tdd.mdx",
+        "M\tdocs/user/cli-reference.generated.mdx",
+        "M\tdocs/user/workflow.mdx",
+        "A\tpackages/recipes/scripts/validate-doc-examples.mjs"
       ]
     },
     {
@@ -146,12 +90,14 @@
       ]
     }
   ],
-  "execution_base_commit": "3bc7288366425d87add6abf6356de836276dc8dd",
-  "implementation_commit": "bd16ef7c1f0ce8a980ab52f417e5d56e76205fee",
+  "execution_base_commit": "bd16ef7c1f0ce8a980ab52f417e5d56e76205fee",
+  "implementation_commit": "bb76df31b89a964295f7eb396589314cf1780848",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
       " M .agentplane/tasks/202610041748-K43XFE/README.md",
+      " M .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json",
+      " M .agentplane/tasks/202610041748-K43XFE/supervision/implementation-evidence.json",
       "?? .agentplane/tasks/202610052127-ZKSA87/quality/objects/sha256/cd35fbf396f0028e374b3f84595480f6edd9dcf606c23ee72655c873780bf2b2.json",
       "?? .agentplane/tasks/202610060111-K1VMJ8/quality/objects/sha256/3843bff288bb14b89e3366c8d7dec5532bcc3f35106b624f48f00047b3593844.json",
       "?? .agentplane/tasks/task-1/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
@@ -352,6 +298,14 @@
       {
         "classification": "removed_during_execution",
         "line": " M .agentplane/tasks/202610041748-K43XFE/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202610041748-K43XFE/supervision/implementation-evidence.json"
       }
     ],
     "final": [
@@ -397,7 +351,9 @@
     ],
     "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
-      " M .agentplane/tasks/202610041748-K43XFE/README.md"
+      " M .agentplane/tasks/202610041748-K43XFE/README.md",
+      " M .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json",
+      " M .agentplane/tasks/202610041748-K43XFE/supervision/implementation-evidence.json"
     ],
     "unchanged_from_execution_baseline": [
       "?? .agentplane/tasks/202610052127-ZKSA87/quality/objects/sha256/cd35fbf396f0028e374b3f84595480f6edd9dcf606c23ee72655c873780bf2b2.json",

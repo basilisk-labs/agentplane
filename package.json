@@ -154,6 +154,7 @@
     "docs:scripts:generate": "node scripts/generate/generate-scripts-readme.mjs",
     "docs:scripts:check": "node scripts/generate/generate-scripts-readme.mjs --check",
     "docs:recipes:generate": "node scripts/generate/generate-recipes-inventory.mjs",
+    "docs:recipes:examples:check": "node packages/recipes/scripts/validate-doc-examples.mjs",
     "docs:recipes:check": "node scripts/checks/check-recipes-inventory-fresh.mjs",
     "docs:bootstrap:generate": "node scripts/generate/generate-agent-bootstrap-doc.mjs",
     "docs:bootstrap:check": "node scripts/checks/check-agent-bootstrap-fresh.mjs",
