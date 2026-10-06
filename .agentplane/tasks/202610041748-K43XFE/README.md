@@ -1,10 +1,10 @@
 ---
 id: "202610041748-K43XFE"
 title: "Implement and qualify AgentPlane 0.7.13 Scenario V2 recipes for production release"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 278
+revision: 288
 origin:
   system: "manual"
 depends_on: []
@@ -22,32 +22,30 @@ verify:
   - "bun run typecheck"
 plan_approval:
   state: "approved"
-  updated_at: "2026-10-06T07:46:42.693Z"
+  updated_at: "2026-10-06T07:56:29.557Z"
   updated_by: "USER"
   note: "Projected from the approved canonical Task Kernel plan."
 verification:
   state: "ok"
-  updated_at: "2026-10-05T11:28:33.292Z"
+  updated_at: "2026-10-06T08:54:55.172Z"
   updated_by: "SUPERVISOR"
-  note: "Canonical validation sha256:618a4278260b812e37b7e3e84d7fafa13d6f8ae46e23f504dfc317c1a50db9b9"
-  attempts: 1
+  note: "Verified: canonical Task Kernel final checks passed."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-10-06T06:49:36.043Z"
+  updated_at: "2026-10-06T07:56:29.557Z"
   updated_by: "EVALUATOR"
   note: "Canonical EVALUATOR review passed."
-  evaluated_sha: "1dc69aa858c14a5f5f2a541ec30388113176294f"
-  review_identity_digest: "sha256:84d86e6398d4938a1add0cb15913b5b2b7ee1e2ca78535fe701e971bae64dabf"
+  evaluated_sha: "c9593e7510a4f9979393a17e33ef1f8dd4d6354e"
+  review_identity_digest: "sha256:e66c00707fbb3c726a8abe097992ed94ca31cac614d52f2afa35d57669c1c9fc"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202610041748-K43XFE/305f2a3f17d1e5930c9644a19067483901db8ff92a7e96cedc1f636ea3dda31e/quality-report.json"
+    - "../../../.git/agentplane/kernel/exchanges/202610041748-K43XFE/3c3ae5437a3de6215db46e5316812f69925bab2295c5fc6234edbc24acdb7574/quality-report.json"
   findings:
-    - "Verified all 13 required blocks, input/report digests, frozen source and native validation bindings. All six mandatory native checks passed, including repository-wide formatting, complete docs-schema, unchanged historical benchmark checks and Knip. No heavy checks were repeated."
-    - "Independently matched all 22 pre-format archive members and all 69 original historical archive members against their pinned original Git objects and inventory hashes. Earlier immutable bytes remain recoverable instead of being silently reformatted."
-    - "Reviewed final formatting order: awaited product/policy/fixture formatting precedes hashing and fixture commit; manifest and evidence formatting precedes retained byte pins. Driver schema-v2 display serialization occurs after canonical digest calculation; canonical digest functions, schema-v1 behavior and live authority rejection are unchanged."
-    - "Verified current preparation source/product/oracle and campaign/evidence byte pins, 75 verified corpus outcomes, six evidence canonical digests, five normalized manifest digests, 15-attempt CLI replay and the request preparation pin. Provider usage remains unavailable and economic benefit unestablished. Retained qualification records 57 byte-pin checks and passing 21 benchmark plus 20 recovery tests."
-    - "The recovery-test delta changes layout only. The generated scripts README adds the actual installed-example command through the existing inventory owner; its freshness passed in native docs-schema. No formatting exclusion, analyzer baseline change or assertion weakening was introduced."
-    - "Read-only inspection confirmed catalogue source files match pinned commit ddfcafcaf86462e407d7ce52dcb1a1e1f8e63fd8 in the repository-contained cache and recorded file hashes. Provenance records the bounded approved public GitHub read; this evaluator performed no network access."
+    - "Validated all 13 required context blocks, implementation/report/repository/native-validation digests, frozen HEAD and native input bindings. Native evidence records eight passing focused tests and successful global formatting, typecheck and diff checks."
+    - "The resolver selects options.env ?? process.env once, then resolves the explicit recipesSource before that selected environment. An explicit empty or unrelated environment cannot fall through to the host; omitted env retains process.env behavior. Existing relative resolution, missing-source and invalid-checkout rejection remain unchanged."
+    - "Four added regression cases populate host state, exercise empty/unrelated explicit environments, omitted-env fallback and explicit-source precedence. The two isolation cases would fail under the previous implementation. vi.unstubAllEnvs restores inherited state before fixture cleanup; all four existing tests and assertions remain intact."
+    - "The source delta is confined to the approved resolver and test file outside native task metadata. No global environment clearing, CI exemption, catalogue validation weakening, release-artifact change or measurement authority is introduced."
 execution_route:
   frozen: true
   reason_codes:
@@ -138,11 +136,835 @@ execution_contract:
       - "scripts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "artifacts"
+      - "bun.lock"
+      - "docs"
+      - "package.json"
+      - "packages/agentplane"
+      - "packages/core"
+      - "packages/recipes"
+      - "schemas"
+      - "scripts"
+    changed_paths:
+      - "artifacts/bench/m05-0.7.13/catalogue-source.json"
+      - "artifacts/bench/m05-0.7.13/format-qualification.json"
+      - "artifacts/bench/m05-0.7.13/formatted-no-match-replay.json"
+      - "artifacts/bench/m05-0.7.13/formatted-offline/branch-change/campaign.offline.lock.json"
+      - "artifacts/bench/m05-0.7.13/formatted-offline/branch-change/evidence.json"
+      - "artifacts/bench/m05-0.7.13/formatted-offline/branch-change/target.bundle"
+      - "artifacts/bench/m05-0.7.13/formatted-offline/direct-fix/campaign.offline.lock.json"
+      - "artifacts/bench/m05-0.7.13/formatted-offline/direct-fix/evidence.json"
+      - "artifacts/bench/m05-0.7.13/formatted-offline/direct-fix/target.bundle"
+      - "artifacts/bench/m05-0.7.13/formatted-offline/fixture-policy.json"
+      - "artifacts/bench/m05-0.7.13/formatted-offline/near-match/campaign.offline.lock.json"
+      - "artifacts/bench/m05-0.7.13/formatted-offline/near-match/evidence.json"
+      - "artifacts/bench/m05-0.7.13/formatted-offline/near-match/target.bundle"
+      - "artifacts/bench/m05-0.7.13/formatted-offline/no-match/campaign.offline.lock.json"
+      - "artifacts/bench/m05-0.7.13/formatted-offline/no-match/evidence.json"
+      - "artifacts/bench/m05-0.7.13/formatted-offline/no-match/target.bundle"
+      - "artifacts/bench/m05-0.7.13/formatted-offline/oracle.mjs"
+      - "artifacts/bench/m05-0.7.13/formatted-offline/preparation.json"
+      - "artifacts/bench/m05-0.7.13/formatted-offline/product.mjs"
+      - "artifacts/bench/m05-0.7.13/formatted-offline/recovery/campaign.offline.lock.json"
+      - "artifacts/bench/m05-0.7.13/formatted-offline/recovery/evidence.json"
+      - "artifacts/bench/m05-0.7.13/formatted-offline/recovery/target.bundle"
+      - "artifacts/bench/m05-0.7.13/historical-corpora.inventory.json"
+      - "artifacts/bench/m05-0.7.13/historical-corpora.tar"
+      - "artifacts/bench/m05-0.7.13/historical-fixture-recovery.json"
+      - "artifacts/bench/m05-0.7.13/omitted-historical-fixtures.json"
+      - "artifacts/bench/m05-0.7.13/pre-format-evidence.inventory.json"
+      - "artifacts/bench/m05-0.7.13/pre-format-evidence.tar"
+      - "artifacts/bench/m05-0.7.13/release-disposition.request.json"
+      - "artifacts/rc18/installed-examples.json"
+      - "artifacts/rc18/qualification.json"
+      - "artifacts/recipes-v2-docs/installed-examples.json"
+      - "artifacts/recipes-v2-docs/qualification.json"
+      - "bun.lock"
+      - "docs/developer/recipes-development.mdx"
+      - "docs/developer/recipes-how-it-works.mdx"
+      - "docs/developer/recipes-spec.mdx"
+      - "docs/examples/recipes-v2/agent.md"
+      - "docs/examples/recipes-v2/legacy-unsupported.json"
+      - "docs/examples/recipes-v2/manifest.json"
+      - "docs/examples/recipes-v2/scenario.json"
+      - "docs/examples/recipes-v2/selection.json"
+      - "docs/recipes/docs-update.mdx"
+      - "docs/recipes/index.mdx"
+      - "docs/recipes/security-review.mdx"
+      - "docs/recipes/tdd.mdx"
+      - "docs/releases/v0.7.13-m05.md"
+      - "docs/user/cli-reference.generated.mdx"
+      - "docs/user/workflow.mdx"
+      - "package.json"
+      - "packages/agentplane/package.json"
+      - "packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts"
+      - "packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.roadmap-recipe-v2-entrypoint.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts"
+      - "packages/agentplane/src/cli/run-cli/command-catalog/project.ts"
+      - "packages/agentplane/src/cli/run-cli/command-loaders/project.ts"
+      - "packages/agentplane/src/commands/branch/work-start.test.ts"
+      - "packages/agentplane/src/commands/branch/work-start.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-evidence-boundary.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-evidence-store.ts"
+      - "packages/agentplane/src/commands/recipes/impl/apply.ts"
+      - "packages/agentplane/src/commands/recipes/impl/explicit-selection.ts"
+      - "packages/agentplane/src/commands/recipes/impl/project-registry.ts"
+      - "packages/agentplane/src/commands/recipes/impl/resolver.ts"
+      - "packages/agentplane/src/commands/recipes/impl/v1-conversion.ts"
+      - "packages/agentplane/src/commands/recipes/preview-v1.command.ts"
+      - "packages/agentplane/src/commands/recipes/preview-v2.command.ts"
+      - "packages/agentplane/src/commands/recipes/roadmap-explicit-selection.test.ts"
+      - "packages/agentplane/src/commands/recipes/roadmap-installed-recipe-negotiation.test.ts"
+      - "packages/agentplane/src/commands/recipes/roadmap-v1-v2-conversion.test.ts"
+      - "packages/agentplane/src/commands/shared/declared-check.test.ts"
+      - "packages/agentplane/src/commands/shared/declared-check.ts"
+      - "packages/agentplane/src/commands/task/advance-task-step.ts"
+      - "packages/agentplane/src/commands/task/create-plan-input.ts"
+      - "packages/agentplane/src/commands/task/create.command.ts"
+      - "packages/agentplane/src/commands/task/direct-task-verification.sequence.cases.ts"
+      - "packages/agentplane/src/commands/task/direct-task-verification.ts"
+      - "packages/agentplane/src/commands/task/kernel-advance-network.test.ts"
+      - "packages/agentplane/src/commands/task/kernel-advance.test.ts"
+      - "packages/agentplane/src/commands/task/kernel-exchange.test.ts"
+      - "packages/agentplane/src/commands/task/kernel-exchange.ts"
+      - "packages/agentplane/src/commands/task/kernel-inspection-validation.test.ts"
+      - "packages/agentplane/src/commands/task/kernel-inspection-validation.ts"
+      - "packages/agentplane/src/commands/task/kernel-inspection.ts"
+      - "packages/agentplane/src/commands/task/kernel-plan-supplied-approval.test.ts"
+      - "packages/agentplane/src/commands/task/kernel-plan.ts"
+      - "packages/agentplane/src/commands/task/kernel-planning-view.ts"
+      - "packages/agentplane/src/commands/task/kernel-policy-baseline.test.ts"
+      - "packages/agentplane/src/commands/task/kernel-policy-baseline.ts"
+      - "packages/agentplane/src/commands/task/kernel-policy-completion.test.ts"
+      - "packages/agentplane/src/commands/task/kernel-recipe-admission.ts"
+      - "packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts"
+      - "packages/agentplane/src/commands/task/kernel-recovery-evidence.ts"
+      - "packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts"
+      - "packages/agentplane/src/commands/task/kernel-repository-coordinator.ts"
+      - "packages/agentplane/src/commands/task/kernel-rework-lineage.test.ts"
+      - "packages/agentplane/src/commands/task/kernel-rework-lineage.ts"
+      - "packages/agentplane/src/commands/task/kernel-rework-proof.test.ts"
+      - "packages/agentplane/src/commands/task/kernel-rework-proof.ts"
+      - "packages/agentplane/src/commands/task/kernel-runtime-context.ts"
+      - "packages/agentplane/src/commands/task/kernel-semantic-result.ts"
+      - "packages/agentplane/src/commands/task/kernel-work-item-resume.test.ts"
+      - "packages/agentplane/src/commands/task/kernel-work-item-resume.ts"
+      - "packages/agentplane/src/commands/task/kernel-work-order.network.test.ts"
+      - "packages/agentplane/src/commands/task/kernel-work-order.ts"
+      - "packages/agentplane/src/commands/task/plan-set.command.ts"
+      - "packages/agentplane/src/commands/task/recipe-input.ts"
+      - "packages/agentplane/src/commands/task/roadmap-recipe-repin.test.ts"
+      - "packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts"
+      - "packages/agentplane/src/recipe-api.ts"
+      - "packages/agentplane/src/runner/context/recipe-applicability.ts"
+      - "packages/agentplane/src/runner/context/recipe-closure.ts"
+      - "packages/agentplane/src/runner/context/recipe-context.ts"
+      - "packages/agentplane/src/runner/context/recipe-native-observers.ts"
+      - "packages/agentplane/src/runner/context/recipe-plan-binding.ts"
+      - "packages/agentplane/src/runner/context/recipe-plan-rebind.ts"
+      - "packages/agentplane/src/runner/context/recipe-plan-validation.ts"
+      - "packages/agentplane/src/runner/context/recipe-prompt-blocks.ts"
+      - "packages/agentplane/src/runner/context/recipe-retention.ts"
+      - "packages/agentplane/src/runner/context/recipe-role-context.ts"
+      - "packages/agentplane/src/runner/context/recipe-shortlist.ts"
+      - "packages/agentplane/src/runner/context/roadmap-recipe-applicability.test.ts"
+      - "packages/agentplane/src/runner/context/roadmap-recipe-closure.test.ts"
+      - "packages/agentplane/src/runner/context/roadmap-recipe-plan-binding.test.ts"
+      - "packages/agentplane/src/runner/context/roadmap-recipe-plan-validation.test.ts"
+      - "packages/agentplane/src/runner/context/roadmap-recipe-prompt.test.ts"
+      - "packages/agentplane/src/runner/context/roadmap-recipe-retention.test.ts"
+      - "packages/agentplane/src/runner/context/roadmap-recipe-shortlist.test.ts"
+      - "packages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts"
+      - "packages/agentplane/src/runner/usecases/kernel-authority.ts"
+      - "packages/agentplane/src/runner/usecases/roadmap-recipe-instantiation.test.ts"
+      - "packages/agentplane/src/runner/usecases/scenario-explicit-selection.ts"
+      - "packages/agentplane/src/runner/usecases/scenario-instantiate.ts"
+      - "packages/agentplane/src/runner/usecases/scenario-materialize-task.ts"
+      - "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts"
+      - "packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts"
+      - "packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts"
+      - "packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts"
+      - "packages/agentplane/src/runner/usecases/task-run-recipe-context.ts"
+      - "packages/agentplane/src/shared/contained-stable-file.ts"
+      - "packages/agentplane/tsup.config.ts"
+      - "packages/core/src/commands/task/roadmap-recipe-specialization.test.ts"
+      - "packages/core/src/runner/agent-semantic-result.ts"
+      - "packages/core/src/tasks/index.ts"
+      - "packages/core/src/tasks/kernel-plan-refinement.ts"
+      - "packages/core/src/tasks/task-centric/digest.ts"
+      - "packages/core/src/tasks/task-centric/graph.ts"
+      - "packages/core/src/tasks/task-centric/model.ts"
+      - "packages/core/src/tasks/task-centric/schema.ts"
+      - "packages/core/src/tasks/task-centric/task-centric.output-dependencies.test.ts"
+      - "packages/core/src/tasks/task-kernel/authority-delta.test.ts"
+      - "packages/core/src/tasks/task-kernel/authority-lineage.ts"
+      - "packages/core/src/tasks/task-kernel/index.ts"
+      - "packages/core/src/tasks/task-kernel/kernel.ts"
+      - "packages/core/src/tasks/task-kernel/model.ts"
+      - "packages/recipes/package.json"
+      - "packages/recipes/scripts/validate-doc-examples.mjs"
+      - "packages/recipes/src/compiled-contracts.ts"
+      - "packages/recipes/src/index.ts"
+      - "packages/recipes/src/internal-utils.ts"
+      - "packages/recipes/src/manifest-contracts.ts"
+      - "packages/recipes/src/manifest.ts"
+      - "packages/recipes/src/resolver-contracts.ts"
+      - "packages/recipes/src/roadmap-recipe-parameters.test.ts"
+      - "packages/recipes/src/roadmap-scenario-v2-parser.test.ts"
+      - "packages/recipes/src/scenario-compiler.ts"
+      - "packages/recipes/src/scenario-contracts.ts"
+      - "packages/recipes/src/scenario-conversion.ts"
+      - "packages/recipes/src/scenario-parameters.ts"
+      - "packages/recipes/src/scenario-v2.ts"
+      - "packages/recipes/src/scenario.ts"
+      - "packages/recipes/tsconfig.json"
+      - "schemas/agent-semantic-result.schema.json"
+      - "scripts/README.md"
+      - "scripts/bench/paired-m05-offline.mjs"
+      - "scripts/bench/paired-m05-offline.test.mjs"
+      - "scripts/bench/paired-m05-oracle.mjs"
+      - "scripts/bench/paired-m05-product.mjs"
+      - "scripts/bench/paired-production-driver.mjs"
+      - "scripts/bench/paired-production-driver.test.mjs"
+      - "scripts/generate/generate-recipes-inventory.mjs"
+      - "scripts/lib/test-route-registry.mjs"
+      - "scripts/release/check-local-tarball-install-smoke.mjs"
+      - "scripts/release/installed-recipe-matrix.mjs"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "dependencies"
+      - "documentation"
+      - "public_api"
+      - "release_metadata"
+      - "repository_write"
+      - "schema"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-10"
+        result: "pass"
+      -
+        id: "recorded-check-100"
+        result: "pass"
+      -
+        id: "recorded-check-101"
+        result: "pass"
+      -
+        id: "recorded-check-102"
+        result: "pass"
+      -
+        id: "recorded-check-103"
+        result: "pass"
+      -
+        id: "recorded-check-104"
+        result: "pass"
+      -
+        id: "recorded-check-105"
+        result: "pass"
+      -
+        id: "recorded-check-106"
+        result: "pass"
+      -
+        id: "recorded-check-107"
+        result: "pass"
+      -
+        id: "recorded-check-108"
+        result: "pass"
+      -
+        id: "recorded-check-109"
+        result: "pass"
+      -
+        id: "recorded-check-11"
+        result: "pass"
+      -
+        id: "recorded-check-110"
+        result: "pass"
+      -
+        id: "recorded-check-111"
+        result: "pass"
+      -
+        id: "recorded-check-112"
+        result: "pass"
+      -
+        id: "recorded-check-113"
+        result: "pass"
+      -
+        id: "recorded-check-114"
+        result: "pass"
+      -
+        id: "recorded-check-115"
+        result: "pass"
+      -
+        id: "recorded-check-116"
+        result: "pass"
+      -
+        id: "recorded-check-117"
+        result: "pass"
+      -
+        id: "recorded-check-118"
+        result: "pass"
+      -
+        id: "recorded-check-119"
+        result: "pass"
+      -
+        id: "recorded-check-12"
+        result: "pass"
+      -
+        id: "recorded-check-120"
+        result: "pass"
+      -
+        id: "recorded-check-121"
+        result: "pass"
+      -
+        id: "recorded-check-122"
+        result: "pass"
+      -
+        id: "recorded-check-123"
+        result: "pass"
+      -
+        id: "recorded-check-124"
+        result: "pass"
+      -
+        id: "recorded-check-125"
+        result: "pass"
+      -
+        id: "recorded-check-126"
+        result: "pass"
+      -
+        id: "recorded-check-127"
+        result: "pass"
+      -
+        id: "recorded-check-128"
+        result: "pass"
+      -
+        id: "recorded-check-129"
+        result: "pass"
+      -
+        id: "recorded-check-13"
+        result: "pass"
+      -
+        id: "recorded-check-130"
+        result: "pass"
+      -
+        id: "recorded-check-131"
+        result: "pass"
+      -
+        id: "recorded-check-132"
+        result: "pass"
+      -
+        id: "recorded-check-133"
+        result: "pass"
+      -
+        id: "recorded-check-134"
+        result: "pass"
+      -
+        id: "recorded-check-135"
+        result: "pass"
+      -
+        id: "recorded-check-136"
+        result: "pass"
+      -
+        id: "recorded-check-137"
+        result: "pass"
+      -
+        id: "recorded-check-138"
+        result: "pass"
+      -
+        id: "recorded-check-139"
+        result: "pass"
+      -
+        id: "recorded-check-14"
+        result: "pass"
+      -
+        id: "recorded-check-140"
+        result: "pass"
+      -
+        id: "recorded-check-141"
+        result: "pass"
+      -
+        id: "recorded-check-142"
+        result: "pass"
+      -
+        id: "recorded-check-143"
+        result: "pass"
+      -
+        id: "recorded-check-144"
+        result: "pass"
+      -
+        id: "recorded-check-145"
+        result: "pass"
+      -
+        id: "recorded-check-146"
+        result: "pass"
+      -
+        id: "recorded-check-147"
+        result: "pass"
+      -
+        id: "recorded-check-148"
+        result: "pass"
+      -
+        id: "recorded-check-149"
+        result: "pass"
+      -
+        id: "recorded-check-15"
+        result: "pass"
+      -
+        id: "recorded-check-150"
+        result: "pass"
+      -
+        id: "recorded-check-151"
+        result: "pass"
+      -
+        id: "recorded-check-152"
+        result: "pass"
+      -
+        id: "recorded-check-153"
+        result: "pass"
+      -
+        id: "recorded-check-154"
+        result: "pass"
+      -
+        id: "recorded-check-155"
+        result: "pass"
+      -
+        id: "recorded-check-156"
+        result: "pass"
+      -
+        id: "recorded-check-157"
+        result: "pass"
+      -
+        id: "recorded-check-158"
+        result: "pass"
+      -
+        id: "recorded-check-159"
+        result: "pass"
+      -
+        id: "recorded-check-16"
+        result: "pass"
+      -
+        id: "recorded-check-160"
+        result: "pass"
+      -
+        id: "recorded-check-161"
+        result: "pass"
+      -
+        id: "recorded-check-162"
+        result: "pass"
+      -
+        id: "recorded-check-163"
+        result: "pass"
+      -
+        id: "recorded-check-164"
+        result: "pass"
+      -
+        id: "recorded-check-165"
+        result: "pass"
+      -
+        id: "recorded-check-166"
+        result: "pass"
+      -
+        id: "recorded-check-167"
+        result: "pass"
+      -
+        id: "recorded-check-168"
+        result: "pass"
+      -
+        id: "recorded-check-169"
+        result: "pass"
+      -
+        id: "recorded-check-17"
+        result: "pass"
+      -
+        id: "recorded-check-170"
+        result: "pass"
+      -
+        id: "recorded-check-171"
+        result: "pass"
+      -
+        id: "recorded-check-172"
+        result: "pass"
+      -
+        id: "recorded-check-173"
+        result: "pass"
+      -
+        id: "recorded-check-174"
+        result: "pass"
+      -
+        id: "recorded-check-175"
+        result: "pass"
+      -
+        id: "recorded-check-176"
+        result: "pass"
+      -
+        id: "recorded-check-177"
+        result: "pass"
+      -
+        id: "recorded-check-178"
+        result: "pass"
+      -
+        id: "recorded-check-179"
+        result: "pass"
+      -
+        id: "recorded-check-18"
+        result: "pass"
+      -
+        id: "recorded-check-180"
+        result: "pass"
+      -
+        id: "recorded-check-181"
+        result: "pass"
+      -
+        id: "recorded-check-182"
+        result: "pass"
+      -
+        id: "recorded-check-183"
+        result: "pass"
+      -
+        id: "recorded-check-184"
+        result: "pass"
+      -
+        id: "recorded-check-185"
+        result: "pass"
+      -
+        id: "recorded-check-186"
+        result: "pass"
+      -
+        id: "recorded-check-187"
+        result: "pass"
+      -
+        id: "recorded-check-188"
+        result: "pass"
+      -
+        id: "recorded-check-189"
+        result: "pass"
+      -
+        id: "recorded-check-19"
+        result: "pass"
+      -
+        id: "recorded-check-190"
+        result: "pass"
+      -
+        id: "recorded-check-191"
+        result: "pass"
+      -
+        id: "recorded-check-192"
+        result: "pass"
+      -
+        id: "recorded-check-193"
+        result: "pass"
+      -
+        id: "recorded-check-194"
+        result: "pass"
+      -
+        id: "recorded-check-195"
+        result: "pass"
+      -
+        id: "recorded-check-196"
+        result: "pass"
+      -
+        id: "recorded-check-197"
+        result: "pass"
+      -
+        id: "recorded-check-198"
+        result: "pass"
+      -
+        id: "recorded-check-199"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-20"
+        result: "pass"
+      -
+        id: "recorded-check-200"
+        result: "pass"
+      -
+        id: "recorded-check-201"
+        result: "pass"
+      -
+        id: "recorded-check-202"
+        result: "pass"
+      -
+        id: "recorded-check-203"
+        result: "pass"
+      -
+        id: "recorded-check-204"
+        result: "pass"
+      -
+        id: "recorded-check-205"
+        result: "pass"
+      -
+        id: "recorded-check-206"
+        result: "pass"
+      -
+        id: "recorded-check-21"
+        result: "pass"
+      -
+        id: "recorded-check-22"
+        result: "pass"
+      -
+        id: "recorded-check-23"
+        result: "pass"
+      -
+        id: "recorded-check-24"
+        result: "pass"
+      -
+        id: "recorded-check-25"
+        result: "pass"
+      -
+        id: "recorded-check-26"
+        result: "pass"
+      -
+        id: "recorded-check-27"
+        result: "pass"
+      -
+        id: "recorded-check-28"
+        result: "pass"
+      -
+        id: "recorded-check-29"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-30"
+        result: "pass"
+      -
+        id: "recorded-check-31"
+        result: "pass"
+      -
+        id: "recorded-check-32"
+        result: "pass"
+      -
+        id: "recorded-check-33"
+        result: "pass"
+      -
+        id: "recorded-check-34"
+        result: "pass"
+      -
+        id: "recorded-check-35"
+        result: "pass"
+      -
+        id: "recorded-check-36"
+        result: "pass"
+      -
+        id: "recorded-check-37"
+        result: "pass"
+      -
+        id: "recorded-check-38"
+        result: "pass"
+      -
+        id: "recorded-check-39"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-40"
+        result: "pass"
+      -
+        id: "recorded-check-41"
+        result: "pass"
+      -
+        id: "recorded-check-42"
+        result: "pass"
+      -
+        id: "recorded-check-43"
+        result: "pass"
+      -
+        id: "recorded-check-44"
+        result: "pass"
+      -
+        id: "recorded-check-45"
+        result: "pass"
+      -
+        id: "recorded-check-46"
+        result: "pass"
+      -
+        id: "recorded-check-47"
+        result: "pass"
+      -
+        id: "recorded-check-48"
+        result: "pass"
+      -
+        id: "recorded-check-49"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-50"
+        result: "pass"
+      -
+        id: "recorded-check-51"
+        result: "pass"
+      -
+        id: "recorded-check-52"
+        result: "pass"
+      -
+        id: "recorded-check-53"
+        result: "pass"
+      -
+        id: "recorded-check-54"
+        result: "pass"
+      -
+        id: "recorded-check-55"
+        result: "pass"
+      -
+        id: "recorded-check-56"
+        result: "pass"
+      -
+        id: "recorded-check-57"
+        result: "pass"
+      -
+        id: "recorded-check-58"
+        result: "pass"
+      -
+        id: "recorded-check-59"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-60"
+        result: "pass"
+      -
+        id: "recorded-check-61"
+        result: "pass"
+      -
+        id: "recorded-check-62"
+        result: "pass"
+      -
+        id: "recorded-check-63"
+        result: "pass"
+      -
+        id: "recorded-check-64"
+        result: "pass"
+      -
+        id: "recorded-check-65"
+        result: "pass"
+      -
+        id: "recorded-check-66"
+        result: "pass"
+      -
+        id: "recorded-check-67"
+        result: "pass"
+      -
+        id: "recorded-check-68"
+        result: "pass"
+      -
+        id: "recorded-check-69"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-70"
+        result: "pass"
+      -
+        id: "recorded-check-71"
+        result: "pass"
+      -
+        id: "recorded-check-72"
+        result: "pass"
+      -
+        id: "recorded-check-73"
+        result: "pass"
+      -
+        id: "recorded-check-74"
+        result: "pass"
+      -
+        id: "recorded-check-75"
+        result: "pass"
+      -
+        id: "recorded-check-76"
+        result: "pass"
+      -
+        id: "recorded-check-77"
+        result: "pass"
+      -
+        id: "recorded-check-78"
+        result: "pass"
+      -
+        id: "recorded-check-79"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-80"
+        result: "pass"
+      -
+        id: "recorded-check-81"
+        result: "pass"
+      -
+        id: "recorded-check-82"
+        result: "pass"
+      -
+        id: "recorded-check-83"
+        result: "pass"
+      -
+        id: "recorded-check-84"
+        result: "pass"
+      -
+        id: "recorded-check-85"
+        result: "pass"
+      -
+        id: "recorded-check-86"
+        result: "pass"
+      -
+        id: "recorded-check-87"
+        result: "pass"
+      -
+        id: "recorded-check-88"
+        result: "pass"
+      -
+        id: "recorded-check-89"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
+      -
+        id: "recorded-check-90"
+        result: "pass"
+      -
+        id: "recorded-check-91"
+        result: "pass"
+      -
+        id: "recorded-check-92"
+        result: "pass"
+      -
+        id: "recorded-check-93"
+        result: "pass"
+      -
+        id: "recorded-check-94"
+        result: "pass"
+      -
+        id: "recorded-check-95"
+        result: "pass"
+      -
+        id: "recorded-check-96"
+        result: "pass"
+      -
+        id: "recorded-check-97"
+        result: "pass"
+      -
+        id: "recorded-check-98"
+        result: "pass"
+      -
+        id: "recorded-check-99"
+        result: "pass"
+      -
+        id: "verification-record"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_ci"
@@ -211,10 +1033,37 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:04409f4f3b3219094ce63e8b0470506b8216709205272991e6f96ea46a6da487"
+      digest: "sha256:7e0df02d92cbba6d48f6e74b42fca6a5c51a39ef34b694625cc18dd0b111ebaa"
       escalation_reasons:
         - "central_component:bun.lock"
         - "central_component:package.json"
+        - "central_path:bun.lock"
+        - "central_path:package.json"
+        - "central_path:packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.roadmap-recipe-v2-entrypoint.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli/command-catalog/project.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli/command-loaders/project.ts"
+        - "central_path:packages/agentplane/src/commands/shared/declared-check.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/declared-check.ts"
+        - "central_path:packages/core/src/commands/task/roadmap-recipe-specialization.test.ts"
+        - "central_path:packages/core/src/runner/agent-semantic-result.ts"
+        - "central_path:packages/core/src/tasks/index.ts"
+        - "central_path:packages/core/src/tasks/kernel-plan-refinement.ts"
+        - "central_path:packages/core/src/tasks/task-centric/digest.ts"
+        - "central_path:packages/core/src/tasks/task-centric/graph.ts"
+        - "central_path:packages/core/src/tasks/task-centric/model.ts"
+        - "central_path:packages/core/src/tasks/task-centric/schema.ts"
+        - "central_path:packages/core/src/tasks/task-centric/task-centric.output-dependencies.test.ts"
+        - "central_path:packages/core/src/tasks/task-kernel/authority-delta.test.ts"
+        - "central_path:packages/core/src/tasks/task-kernel/authority-lineage.ts"
+        - "central_path:packages/core/src/tasks/task-kernel/index.ts"
+        - "central_path:packages/core/src/tasks/task-kernel/kernel.ts"
+        - "central_path:packages/core/src/tasks/task-kernel/model.ts"
+        - "central_path:schemas/agent-semantic-result.schema.json"
+        - "central_path:scripts/lib/test-route-registry.mjs"
+        - "central_path:scripts/release/check-local-tarball-install-smoke.mjs"
+        - "central_path:scripts/release/installed-recipe-matrix.mjs"
         - "effect_ci"
         - "effect_dependencies"
         - "effect_public_api"
@@ -223,16 +1072,254 @@ execution_contract:
         - "effect_security_boundary"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
+        - "unknown_path:artifacts/bench/m05-0.7.13/catalogue-source.json"
+        - "unknown_path:artifacts/bench/m05-0.7.13/format-qualification.json"
+        - "unknown_path:artifacts/bench/m05-0.7.13/formatted-no-match-replay.json"
+        - "unknown_path:artifacts/bench/m05-0.7.13/formatted-offline/branch-change/campaign.offline.lock.json"
+        - "unknown_path:artifacts/bench/m05-0.7.13/formatted-offline/branch-change/evidence.json"
+        - "unknown_path:artifacts/bench/m05-0.7.13/formatted-offline/branch-change/target.bundle"
+        - "unknown_path:artifacts/bench/m05-0.7.13/formatted-offline/direct-fix/campaign.offline.lock.json"
+        - "unknown_path:artifacts/bench/m05-0.7.13/formatted-offline/direct-fix/evidence.json"
+        - "unknown_path:artifacts/bench/m05-0.7.13/formatted-offline/direct-fix/target.bundle"
+        - "unknown_path:artifacts/bench/m05-0.7.13/formatted-offline/fixture-policy.json"
+        - "unknown_path:artifacts/bench/m05-0.7.13/formatted-offline/near-match/campaign.offline.lock.json"
+        - "unknown_path:artifacts/bench/m05-0.7.13/formatted-offline/near-match/evidence.json"
+        - "unknown_path:artifacts/bench/m05-0.7.13/formatted-offline/near-match/target.bundle"
+        - "unknown_path:artifacts/bench/m05-0.7.13/formatted-offline/no-match/campaign.offline.lock.json"
+        - "unknown_path:artifacts/bench/m05-0.7.13/formatted-offline/no-match/evidence.json"
+        - "unknown_path:artifacts/bench/m05-0.7.13/formatted-offline/no-match/target.bundle"
+        - "unknown_path:artifacts/bench/m05-0.7.13/formatted-offline/preparation.json"
+        - "unknown_path:artifacts/bench/m05-0.7.13/formatted-offline/recovery/campaign.offline.lock.json"
+        - "unknown_path:artifacts/bench/m05-0.7.13/formatted-offline/recovery/evidence.json"
+        - "unknown_path:artifacts/bench/m05-0.7.13/formatted-offline/recovery/target.bundle"
+        - "unknown_path:artifacts/bench/m05-0.7.13/historical-corpora.inventory.json"
+        - "unknown_path:artifacts/bench/m05-0.7.13/historical-corpora.tar"
+        - "unknown_path:artifacts/bench/m05-0.7.13/historical-fixture-recovery.json"
+        - "unknown_path:artifacts/bench/m05-0.7.13/omitted-historical-fixtures.json"
+        - "unknown_path:artifacts/bench/m05-0.7.13/pre-format-evidence.inventory.json"
+        - "unknown_path:artifacts/bench/m05-0.7.13/pre-format-evidence.tar"
+        - "unknown_path:artifacts/bench/m05-0.7.13/release-disposition.request.json"
+        - "unknown_path:artifacts/rc18/installed-examples.json"
+        - "unknown_path:artifacts/rc18/qualification.json"
+        - "unknown_path:artifacts/recipes-v2-docs/installed-examples.json"
+        - "unknown_path:artifacts/recipes-v2-docs/qualification.json"
+        - "unknown_path:package.json"
+        - "unknown_path:packages/agentplane/package.json"
+        - "unknown_path:packages/recipes/package.json"
+        - "unknown_path:packages/recipes/tsconfig.json"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "artifacts"
+          - "bun.lock"
+          - "docs"
+          - "package.json"
+          - "packages/agentplane"
+          - "packages/core"
+          - "packages/recipes"
+          - "schemas"
+          - "scripts"
+        changed_files:
+          - "artifacts/bench/m05-0.7.13/catalogue-source.json"
+          - "artifacts/bench/m05-0.7.13/format-qualification.json"
+          - "artifacts/bench/m05-0.7.13/formatted-no-match-replay.json"
+          - "artifacts/bench/m05-0.7.13/formatted-offline/branch-change/campaign.offline.lock.json"
+          - "artifacts/bench/m05-0.7.13/formatted-offline/branch-change/evidence.json"
+          - "artifacts/bench/m05-0.7.13/formatted-offline/branch-change/target.bundle"
+          - "artifacts/bench/m05-0.7.13/formatted-offline/direct-fix/campaign.offline.lock.json"
+          - "artifacts/bench/m05-0.7.13/formatted-offline/direct-fix/evidence.json"
+          - "artifacts/bench/m05-0.7.13/formatted-offline/direct-fix/target.bundle"
+          - "artifacts/bench/m05-0.7.13/formatted-offline/fixture-policy.json"
+          - "artifacts/bench/m05-0.7.13/formatted-offline/near-match/campaign.offline.lock.json"
+          - "artifacts/bench/m05-0.7.13/formatted-offline/near-match/evidence.json"
+          - "artifacts/bench/m05-0.7.13/formatted-offline/near-match/target.bundle"
+          - "artifacts/bench/m05-0.7.13/formatted-offline/no-match/campaign.offline.lock.json"
+          - "artifacts/bench/m05-0.7.13/formatted-offline/no-match/evidence.json"
+          - "artifacts/bench/m05-0.7.13/formatted-offline/no-match/target.bundle"
+          - "artifacts/bench/m05-0.7.13/formatted-offline/oracle.mjs"
+          - "artifacts/bench/m05-0.7.13/formatted-offline/preparation.json"
+          - "artifacts/bench/m05-0.7.13/formatted-offline/product.mjs"
+          - "artifacts/bench/m05-0.7.13/formatted-offline/recovery/campaign.offline.lock.json"
+          - "artifacts/bench/m05-0.7.13/formatted-offline/recovery/evidence.json"
+          - "artifacts/bench/m05-0.7.13/formatted-offline/recovery/target.bundle"
+          - "artifacts/bench/m05-0.7.13/historical-corpora.inventory.json"
+          - "artifacts/bench/m05-0.7.13/historical-corpora.tar"
+          - "artifacts/bench/m05-0.7.13/historical-fixture-recovery.json"
+          - "artifacts/bench/m05-0.7.13/omitted-historical-fixtures.json"
+          - "artifacts/bench/m05-0.7.13/pre-format-evidence.inventory.json"
+          - "artifacts/bench/m05-0.7.13/pre-format-evidence.tar"
+          - "artifacts/bench/m05-0.7.13/release-disposition.request.json"
+          - "artifacts/rc18/installed-examples.json"
+          - "artifacts/rc18/qualification.json"
+          - "artifacts/recipes-v2-docs/installed-examples.json"
+          - "artifacts/recipes-v2-docs/qualification.json"
+          - "bun.lock"
+          - "docs/developer/recipes-development.mdx"
+          - "docs/developer/recipes-how-it-works.mdx"
+          - "docs/developer/recipes-spec.mdx"
+          - "docs/examples/recipes-v2/agent.md"
+          - "docs/examples/recipes-v2/legacy-unsupported.json"
+          - "docs/examples/recipes-v2/manifest.json"
+          - "docs/examples/recipes-v2/scenario.json"
+          - "docs/examples/recipes-v2/selection.json"
+          - "docs/recipes/docs-update.mdx"
+          - "docs/recipes/index.mdx"
+          - "docs/recipes/security-review.mdx"
+          - "docs/recipes/tdd.mdx"
+          - "docs/releases/v0.7.13-m05.md"
+          - "docs/user/cli-reference.generated.mdx"
+          - "docs/user/workflow.mdx"
+          - "package.json"
+          - "packages/agentplane/package.json"
+          - "packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts"
+          - "packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.roadmap-recipe-v2-entrypoint.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts"
+          - "packages/agentplane/src/cli/run-cli/command-catalog/project.ts"
+          - "packages/agentplane/src/cli/run-cli/command-loaders/project.ts"
+          - "packages/agentplane/src/commands/branch/work-start.test.ts"
+          - "packages/agentplane/src/commands/branch/work-start.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-evidence-boundary.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-evidence-store.ts"
+          - "packages/agentplane/src/commands/recipes/impl/apply.ts"
+          - "packages/agentplane/src/commands/recipes/impl/explicit-selection.ts"
+          - "packages/agentplane/src/commands/recipes/impl/project-registry.ts"
+          - "packages/agentplane/src/commands/recipes/impl/resolver.ts"
+          - "packages/agentplane/src/commands/recipes/impl/v1-conversion.ts"
+          - "packages/agentplane/src/commands/recipes/preview-v1.command.ts"
+          - "packages/agentplane/src/commands/recipes/preview-v2.command.ts"
+          - "packages/agentplane/src/commands/recipes/roadmap-explicit-selection.test.ts"
+          - "packages/agentplane/src/commands/recipes/roadmap-installed-recipe-negotiation.test.ts"
+          - "packages/agentplane/src/commands/recipes/roadmap-v1-v2-conversion.test.ts"
+          - "packages/agentplane/src/commands/shared/declared-check.test.ts"
+          - "packages/agentplane/src/commands/shared/declared-check.ts"
+          - "packages/agentplane/src/commands/task/advance-task-step.ts"
+          - "packages/agentplane/src/commands/task/create-plan-input.ts"
+          - "packages/agentplane/src/commands/task/create.command.ts"
+          - "packages/agentplane/src/commands/task/direct-task-verification.sequence.cases.ts"
+          - "packages/agentplane/src/commands/task/direct-task-verification.ts"
+          - "packages/agentplane/src/commands/task/kernel-advance-network.test.ts"
+          - "packages/agentplane/src/commands/task/kernel-advance.test.ts"
+          - "packages/agentplane/src/commands/task/kernel-exchange.test.ts"
+          - "packages/agentplane/src/commands/task/kernel-exchange.ts"
+          - "packages/agentplane/src/commands/task/kernel-inspection-validation.test.ts"
+          - "packages/agentplane/src/commands/task/kernel-inspection-validation.ts"
+          - "packages/agentplane/src/commands/task/kernel-inspection.ts"
+          - "packages/agentplane/src/commands/task/kernel-plan-supplied-approval.test.ts"
+          - "packages/agentplane/src/commands/task/kernel-plan.ts"
+          - "packages/agentplane/src/commands/task/kernel-planning-view.ts"
+          - "packages/agentplane/src/commands/task/kernel-policy-baseline.test.ts"
+          - "packages/agentplane/src/commands/task/kernel-policy-baseline.ts"
+          - "packages/agentplane/src/commands/task/kernel-policy-completion.test.ts"
+          - "packages/agentplane/src/commands/task/kernel-recipe-admission.ts"
+          - "packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts"
+          - "packages/agentplane/src/commands/task/kernel-recovery-evidence.ts"
+          - "packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts"
+          - "packages/agentplane/src/commands/task/kernel-repository-coordinator.ts"
+          - "packages/agentplane/src/commands/task/kernel-rework-lineage.test.ts"
+          - "packages/agentplane/src/commands/task/kernel-rework-lineage.ts"
+          - "packages/agentplane/src/commands/task/kernel-rework-proof.test.ts"
+          - "packages/agentplane/src/commands/task/kernel-rework-proof.ts"
+          - "packages/agentplane/src/commands/task/kernel-runtime-context.ts"
+          - "packages/agentplane/src/commands/task/kernel-semantic-result.ts"
+          - "packages/agentplane/src/commands/task/kernel-work-item-resume.test.ts"
+          - "packages/agentplane/src/commands/task/kernel-work-item-resume.ts"
+          - "packages/agentplane/src/commands/task/kernel-work-order.network.test.ts"
+          - "packages/agentplane/src/commands/task/kernel-work-order.ts"
+          - "packages/agentplane/src/commands/task/plan-set.command.ts"
+          - "packages/agentplane/src/commands/task/recipe-input.ts"
+          - "packages/agentplane/src/commands/task/roadmap-recipe-repin.test.ts"
+          - "packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts"
+          - "packages/agentplane/src/recipe-api.ts"
+          - "packages/agentplane/src/runner/context/recipe-applicability.ts"
+          - "packages/agentplane/src/runner/context/recipe-closure.ts"
+          - "packages/agentplane/src/runner/context/recipe-context.ts"
+          - "packages/agentplane/src/runner/context/recipe-native-observers.ts"
+          - "packages/agentplane/src/runner/context/recipe-plan-binding.ts"
+          - "packages/agentplane/src/runner/context/recipe-plan-rebind.ts"
+          - "packages/agentplane/src/runner/context/recipe-plan-validation.ts"
+          - "packages/agentplane/src/runner/context/recipe-prompt-blocks.ts"
+          - "packages/agentplane/src/runner/context/recipe-retention.ts"
+          - "packages/agentplane/src/runner/context/recipe-role-context.ts"
+          - "packages/agentplane/src/runner/context/recipe-shortlist.ts"
+          - "packages/agentplane/src/runner/context/roadmap-recipe-applicability.test.ts"
+          - "packages/agentplane/src/runner/context/roadmap-recipe-closure.test.ts"
+          - "packages/agentplane/src/runner/context/roadmap-recipe-plan-binding.test.ts"
+          - "packages/agentplane/src/runner/context/roadmap-recipe-plan-validation.test.ts"
+          - "packages/agentplane/src/runner/context/roadmap-recipe-prompt.test.ts"
+          - "packages/agentplane/src/runner/context/roadmap-recipe-retention.test.ts"
+          - "packages/agentplane/src/runner/context/roadmap-recipe-shortlist.test.ts"
+          - "packages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts"
+          - "packages/agentplane/src/runner/usecases/kernel-authority.ts"
+          - "packages/agentplane/src/runner/usecases/roadmap-recipe-instantiation.test.ts"
+          - "packages/agentplane/src/runner/usecases/scenario-explicit-selection.ts"
+          - "packages/agentplane/src/runner/usecases/scenario-instantiate.ts"
+          - "packages/agentplane/src/runner/usecases/scenario-materialize-task.ts"
+          - "packages/agentplane/src/runner/usecases/task-run-bootstrap.ts"
+          - "packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts"
+          - "packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts"
+          - "packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts"
+          - "packages/agentplane/src/runner/usecases/task-run-recipe-context.ts"
+          - "packages/agentplane/src/shared/contained-stable-file.ts"
+          - "packages/agentplane/tsup.config.ts"
+          - "packages/core/src/commands/task/roadmap-recipe-specialization.test.ts"
+          - "packages/core/src/runner/agent-semantic-result.ts"
+          - "packages/core/src/tasks/index.ts"
+          - "packages/core/src/tasks/kernel-plan-refinement.ts"
+          - "packages/core/src/tasks/task-centric/digest.ts"
+          - "packages/core/src/tasks/task-centric/graph.ts"
+          - "packages/core/src/tasks/task-centric/model.ts"
+          - "packages/core/src/tasks/task-centric/schema.ts"
+          - "packages/core/src/tasks/task-centric/task-centric.output-dependencies.test.ts"
+          - "packages/core/src/tasks/task-kernel/authority-delta.test.ts"
+          - "packages/core/src/tasks/task-kernel/authority-lineage.ts"
+          - "packages/core/src/tasks/task-kernel/index.ts"
+          - "packages/core/src/tasks/task-kernel/kernel.ts"
+          - "packages/core/src/tasks/task-kernel/model.ts"
+          - "packages/recipes/package.json"
+          - "packages/recipes/scripts/validate-doc-examples.mjs"
+          - "packages/recipes/src/compiled-contracts.ts"
+          - "packages/recipes/src/index.ts"
+          - "packages/recipes/src/internal-utils.ts"
+          - "packages/recipes/src/manifest-contracts.ts"
+          - "packages/recipes/src/manifest.ts"
+          - "packages/recipes/src/resolver-contracts.ts"
+          - "packages/recipes/src/roadmap-recipe-parameters.test.ts"
+          - "packages/recipes/src/roadmap-scenario-v2-parser.test.ts"
+          - "packages/recipes/src/scenario-compiler.ts"
+          - "packages/recipes/src/scenario-contracts.ts"
+          - "packages/recipes/src/scenario-conversion.ts"
+          - "packages/recipes/src/scenario-parameters.ts"
+          - "packages/recipes/src/scenario-v2.ts"
+          - "packages/recipes/src/scenario.ts"
+          - "packages/recipes/tsconfig.json"
+          - "schemas/agent-semantic-result.schema.json"
+          - "scripts/README.md"
+          - "scripts/bench/paired-m05-offline.mjs"
+          - "scripts/bench/paired-m05-offline.test.mjs"
+          - "scripts/bench/paired-m05-oracle.mjs"
+          - "scripts/bench/paired-m05-product.mjs"
+          - "scripts/bench/paired-production-driver.mjs"
+          - "scripts/bench/paired-production-driver.test.mjs"
+          - "scripts/generate/generate-recipes-inventory.mjs"
+          - "scripts/lib/test-route-registry.mjs"
+          - "scripts/release/check-local-tarball-install-smoke.mjs"
+          - "scripts/release/installed-recipe-matrix.mjs"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "dependencies"
+          - "documentation"
+          - "public_api"
+          - "release_metadata"
+          - "repository_write"
+          - "schema"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -276,13 +1363,19 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "1dc69aa858c14a5f5f2a541ec30388113176294f"
+  hash: "c9593e7510a4f9979393a17e33ef1f8dd4d6354e"
   message: "AgentPlane-owned canonical implementation commit"
 comments: []
-events: []
+events:
+  -
+    type: "verify"
+    at: "2026-10-06T08:54:55.172Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: canonical Task Kernel final checks passed."
 doc_version: 3
-doc_updated_at: "2026-10-04T17:48:52.819Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-10-06T08:54:58.436Z"
+doc_updated_by: "SUPERVISOR"
 description: "User explicitly authorizes autonomous completion of all necessary development, integration and release work for version 0.7.13. Implement the current agentplane-roadmap-r2/releases/0.7.13.md RC-01 through RC-18 and EXECUTION-CHARTER.md contracts against the current source. Reuse the existing Recipe package, compact Plan input, sole Task Kernel coordinator, evidence storage, approval and independent EVALUATOR. Preserve V1 compatibility with explicit negotiation, bounded typed interpolation, observed applicability, retained pinned dependency closure, shared instantiation and refinement, scoped context, offline conversion preview, and installed-package recovery qualification. Inventory existing implementations before adding code. Use sequential independently verifiable WorkItems; do not introduce a second workflow engine or implement 0.7.14. Preserve existing repair task 202610020159-60QH9J and autonomy task 202610020153-XXZXW4; integrate their accepted results through supported routes. Network reads, PR publication and main integration are authorized. Prepare the exact 0.7.13 candidate and evidence for a subsequent publication task under the same user release authorization. Preserve unrelated work, credentials and history. Do not fabricate measured savings or paid campaign authority; prepare the exact M05 campaign and explicit measurement disposition. Full validation must preserve all required tests and assertions and use realistic bounded execution budgets."
 sections:
   Summary: |-
@@ -324,6 +1417,1271 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-10-06T08:54:55.172Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: canonical Task Kernel final checks passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:bcf1339b31b927529dfba966ecc5e3d72753ff3623a924812750041d230501e0, input_digest=sha256:f6a706f348fe3f6567427474fb4dbe80f894c7d9bfc840c7878183aa0b8367bc
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run test:project recipes --maxWorkers=1 packages/recipes/src/roadmap-scenario-v2-parser.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (1/41)
+
+    Check: affected_unit_integration
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (2/41)
+
+    Check: affected_unit_integration
+    Command: bun run test:project recipes --maxWorkers=1 packages/recipes/src/roadmap-recipe-parameters.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (3/41)
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-plan-validation.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (4/41)
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-applicability.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (5/41)
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-closure.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (6/41)
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-retention.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (7/41)
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-plan-binding.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (8/41)
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/usecases/roadmap-recipe-instantiation.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (9/41)
+
+    Check: affected_unit_integration
+    Command: bun run test:project core --maxWorkers=1 packages/core/src/commands/task/roadmap-recipe-specialization.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-10
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (10/41)
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-recipe-repin.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-11
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (11/41)
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/recipes/roadmap-explicit-selection.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-12
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (12/41)
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-shortlist.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-13
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (13/41)
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-prompt.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-14
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (14/41)
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/recipes/roadmap-v1-v2-conversion.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-15
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (15/41)
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-recipe-v2-entrypoint.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-16
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (16/41)
+
+    Check: affected_unit_integration
+    Command: bun run package:install-smoke
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-17
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (17/41)
+
+    Check: affected_unit_integration
+    Command: bun run schemas:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-18
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (18/41)
+
+    Check: affected_unit_integration
+    Command: bun run test:release:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-19
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (19/41)
+
+    Check: affected_unit_integration
+    Command: bun run bench:agent-efficiency:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-20
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (20/41)
+
+    Check: affected_unit_integration
+    Command: bun run bench:agent-efficiency:replay:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-21
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (21/41)
+
+    Check: affected_unit_integration
+    Command: bun run docs:onboarding:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-22
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (22/41)
+
+    Check: affected_unit_integration
+    Command: bun run test:fast -- packages/agentplane/src/commands/task/kernel-advance-network.test.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/task/kernel-work-order.network.test.ts packages/agentplane/src/commands/task/roadmap-curator-parity.test.ts packages/agentplane/src/commands/task/create-plan-input.test.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts --testTimeout=60000 --hookTimeout=60000
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-23
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (23/41)
+
+    Check: affected_unit_integration
+    Command: bunx --no-install eslint packages/agentplane/src/commands/task/kernel-work-order.ts packages/agentplane/src/commands/task/kernel-work-order.network.test.ts packages/agentplane/src/commands/task/kernel-exchange.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/shared/declared-check.ts packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.ts packages/agentplane/src/commands/task/direct-task-verification.sequence.cases.ts packages/agentplane/src/commands/task/advance-task-step.ts packages/agentplane/src/commands/task/kernel-advance-network.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-24
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (24/41)
+
+    Check: affected_unit_integration
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-25
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (25/41)
+
+    Check: affected_unit_integration
+    Command: bun run test:fast -- packages/agentplane/src/commands/task/kernel-policy-baseline.test.ts packages/agentplane/src/commands/task/kernel-policy-completion.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts packages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts packages/core/src/tasks/task-kernel/authority-delta.test.ts packages/agentplane/src/commands/branch/work-start.test.ts packages/agentplane/src/commands/task/kernel-inspection-validation.test.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/task/kernel-work-item-resume.test.ts packages/agentplane/src/commands/task/kernel-advance-network.test.ts packages/agentplane/src/commands/task/kernel-work-order.network.test.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/shared/worktree-topology.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/commands/branch/work-start.git.test.ts packages/agentplane/src/commands/branch/work-start.direct.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/commands/task/kernel-rework-proof.test.ts packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-centric/task-centric.output-dependencies.test.ts --testTimeout=60000 --hookTimeout=60000
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-26
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (26/41)
+
+    Check: affected_unit_integration
+    Command: bunx --no-install eslint packages/agentplane/src/commands/task/advance-task-step.ts packages/agentplane/src/commands/task/kernel-policy-baseline.ts packages/agentplane/src/commands/task/kernel-policy-baseline.test.ts packages/agentplane/src/commands/task/kernel-policy-completion.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-runtime-context.ts packages/agentplane/src/commands/task/kernel-semantic-result.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-boundary.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts packages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts packages/core/src/tasks/task-kernel/authority-delta.test.ts packages/agentplane/src/commands/branch/work-start.ts packages/agentplane/src/commands/branch/work-start.test.ts packages/agentplane/src/commands/task/kernel-inspection-validation.ts packages/agentplane/src/commands/task/kernel-inspection-validation.test.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/task/kernel-work-item-resume.ts packages/agentplane/src/commands/task/kernel-work-item-resume.test.ts packages/agentplane/src/commands/task/kernel-exchange.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/kernel-rework-proof.ts packages/agentplane/src/commands/task/kernel-rework-proof.test.ts packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-centric/task-centric.output-dependencies.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-27
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (27/41)
+
+    Check: affected_unit_integration
+    Command: bun run hotspots:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-28
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (28/41)
+
+    Check: affected_unit_integration
+    Command: bun run knip:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-29
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (29/41)
+
+    Check: affected_unit_integration
+    Command: bunx --no-install eslint packages/agentplane/src/commands/task/kernel-advance-network.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-30
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (30/41)
+
+    Check: affected_unit_integration
+    Command: bun run test:fast -- packages/agentplane/src/commands/task/kernel-rework-lineage.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-31
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (31/41)
+
+    Check: affected_unit_integration
+    Command: bunx --no-install eslint packages/agentplane/src/commands/task/kernel-rework-lineage.ts packages/agentplane/src/commands/task/kernel-rework-lineage.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-32
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (32/41)
+
+    Check: affected_unit_integration
+    Command: bunx --no-install eslint packages/agentplane/src/commands/recipes/impl/explicit-selection.ts packages/agentplane/src/runner/context/recipe-closure.ts packages/agentplane/src/runner/context/recipe-context.ts packages/agentplane/src/runner/context/recipe-applicability.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-33
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (33/41)
+
+    Check: affected_unit_integration
+    Command: bun run test:fast -- packages/agentplane/src/runner/context/roadmap-recipe-closure.test.ts packages/agentplane/src/runner/context/roadmap-recipe-applicability.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-34
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (34/41)
+
+    Check: affected_unit_integration
+    Command: bun run docs:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-35
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (35/41)
+
+    Check: affected_unit_integration
+    Command: bun run format:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-36
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (36/41)
+
+    Check: affected_unit_integration
+    Command: node scripts/checks/run-local-ci-group.mjs docs-schema
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-37
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (37/41)
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-38
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (38/41)
+
+    Check: affected_unit_integration
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-39
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (39/41)
+
+    Check: affected_unit_integration
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-40
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (40/41)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-41
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (41/41)
+
+    Check: critical_paths
+    Command: bun run test:project recipes --maxWorkers=1 packages/recipes/src/roadmap-scenario-v2-parser.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (1/41)
+
+    Check: critical_paths
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (2/41)
+
+    Check: critical_paths
+    Command: bun run test:project recipes --maxWorkers=1 packages/recipes/src/roadmap-recipe-parameters.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (3/41)
+
+    Check: critical_paths
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-plan-validation.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (4/41)
+
+    Check: critical_paths
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-applicability.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (5/41)
+
+    Check: critical_paths
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-closure.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (6/41)
+
+    Check: critical_paths
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-retention.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (7/41)
+
+    Check: critical_paths
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-plan-binding.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (8/41)
+
+    Check: critical_paths
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/usecases/roadmap-recipe-instantiation.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (9/41)
+
+    Check: critical_paths
+    Command: bun run test:project core --maxWorkers=1 packages/core/src/commands/task/roadmap-recipe-specialization.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-10
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (10/41)
+
+    Check: critical_paths
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-recipe-repin.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-11
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (11/41)
+
+    Check: critical_paths
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/recipes/roadmap-explicit-selection.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-12
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (12/41)
+
+    Check: critical_paths
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-shortlist.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-13
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (13/41)
+
+    Check: critical_paths
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-prompt.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-14
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (14/41)
+
+    Check: critical_paths
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/recipes/roadmap-v1-v2-conversion.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-15
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (15/41)
+
+    Check: critical_paths
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-recipe-v2-entrypoint.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-16
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (16/41)
+
+    Check: critical_paths
+    Command: bun run package:install-smoke
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-17
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (17/41)
+
+    Check: critical_paths
+    Command: bun run schemas:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-18
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (18/41)
+
+    Check: critical_paths
+    Command: bun run test:release:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-19
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (19/41)
+
+    Check: critical_paths
+    Command: bun run bench:agent-efficiency:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-20
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (20/41)
+
+    Check: critical_paths
+    Command: bun run bench:agent-efficiency:replay:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-21
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (21/41)
+
+    Check: critical_paths
+    Command: bun run docs:onboarding:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-22
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (22/41)
+
+    Check: critical_paths
+    Command: bun run test:fast -- packages/agentplane/src/commands/task/kernel-advance-network.test.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/task/kernel-work-order.network.test.ts packages/agentplane/src/commands/task/roadmap-curator-parity.test.ts packages/agentplane/src/commands/task/create-plan-input.test.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts --testTimeout=60000 --hookTimeout=60000
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-23
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (23/41)
+
+    Check: critical_paths
+    Command: bunx --no-install eslint packages/agentplane/src/commands/task/kernel-work-order.ts packages/agentplane/src/commands/task/kernel-work-order.network.test.ts packages/agentplane/src/commands/task/kernel-exchange.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/shared/declared-check.ts packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.ts packages/agentplane/src/commands/task/direct-task-verification.sequence.cases.ts packages/agentplane/src/commands/task/advance-task-step.ts packages/agentplane/src/commands/task/kernel-advance-network.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-24
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (24/41)
+
+    Check: critical_paths
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-25
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (25/41)
+
+    Check: critical_paths
+    Command: bun run test:fast -- packages/agentplane/src/commands/task/kernel-policy-baseline.test.ts packages/agentplane/src/commands/task/kernel-policy-completion.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts packages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts packages/core/src/tasks/task-kernel/authority-delta.test.ts packages/agentplane/src/commands/branch/work-start.test.ts packages/agentplane/src/commands/task/kernel-inspection-validation.test.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/task/kernel-work-item-resume.test.ts packages/agentplane/src/commands/task/kernel-advance-network.test.ts packages/agentplane/src/commands/task/kernel-work-order.network.test.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/shared/worktree-topology.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/commands/branch/work-start.git.test.ts packages/agentplane/src/commands/branch/work-start.direct.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/commands/task/kernel-rework-proof.test.ts packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-centric/task-centric.output-dependencies.test.ts --testTimeout=60000 --hookTimeout=60000
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-26
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (26/41)
+
+    Check: critical_paths
+    Command: bunx --no-install eslint packages/agentplane/src/commands/task/advance-task-step.ts packages/agentplane/src/commands/task/kernel-policy-baseline.ts packages/agentplane/src/commands/task/kernel-policy-baseline.test.ts packages/agentplane/src/commands/task/kernel-policy-completion.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-runtime-context.ts packages/agentplane/src/commands/task/kernel-semantic-result.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-boundary.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts packages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts packages/core/src/tasks/task-kernel/authority-delta.test.ts packages/agentplane/src/commands/branch/work-start.ts packages/agentplane/src/commands/branch/work-start.test.ts packages/agentplane/src/commands/task/kernel-inspection-validation.ts packages/agentplane/src/commands/task/kernel-inspection-validation.test.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/task/kernel-work-item-resume.ts packages/agentplane/src/commands/task/kernel-work-item-resume.test.ts packages/agentplane/src/commands/task/kernel-exchange.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/kernel-rework-proof.ts packages/agentplane/src/commands/task/kernel-rework-proof.test.ts packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-centric/task-centric.output-dependencies.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-27
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (27/41)
+
+    Check: critical_paths
+    Command: bun run hotspots:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-28
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (28/41)
+
+    Check: critical_paths
+    Command: bun run knip:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-29
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (29/41)
+
+    Check: critical_paths
+    Command: bunx --no-install eslint packages/agentplane/src/commands/task/kernel-advance-network.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-30
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (30/41)
+
+    Check: critical_paths
+    Command: bun run test:fast -- packages/agentplane/src/commands/task/kernel-rework-lineage.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-31
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (31/41)
+
+    Check: critical_paths
+    Command: bunx --no-install eslint packages/agentplane/src/commands/task/kernel-rework-lineage.ts packages/agentplane/src/commands/task/kernel-rework-lineage.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-32
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (32/41)
+
+    Check: critical_paths
+    Command: bunx --no-install eslint packages/agentplane/src/commands/recipes/impl/explicit-selection.ts packages/agentplane/src/runner/context/recipe-closure.ts packages/agentplane/src/runner/context/recipe-context.ts packages/agentplane/src/runner/context/recipe-applicability.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-33
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (33/41)
+
+    Check: critical_paths
+    Command: bun run test:fast -- packages/agentplane/src/runner/context/roadmap-recipe-closure.test.ts packages/agentplane/src/runner/context/roadmap-recipe-applicability.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-34
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (34/41)
+
+    Check: critical_paths
+    Command: bun run docs:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-35
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (35/41)
+
+    Check: critical_paths
+    Command: bun run format:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-36
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (36/41)
+
+    Check: critical_paths
+    Command: node scripts/checks/run-local-ci-group.mjs docs-schema
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-37
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (37/41)
+
+    Check: critical_paths
+    Command: bunx vitest run packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-38
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (38/41)
+
+    Check: critical_paths
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-39
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (39/41)
+
+    Check: critical_paths
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-40
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (40/41)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-41
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (41/41)
+
+    Check: docs_contract
+    Command: bun run test:project recipes --maxWorkers=1 packages/recipes/src/roadmap-scenario-v2-parser.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (1/41)
+
+    Check: docs_contract
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (2/41)
+
+    Check: docs_contract
+    Command: bun run test:project recipes --maxWorkers=1 packages/recipes/src/roadmap-recipe-parameters.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (3/41)
+
+    Check: docs_contract
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-plan-validation.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (4/41)
+
+    Check: docs_contract
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-applicability.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (5/41)
+
+    Check: docs_contract
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-closure.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (6/41)
+
+    Check: docs_contract
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-retention.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (7/41)
+
+    Check: docs_contract
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-plan-binding.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (8/41)
+
+    Check: docs_contract
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/usecases/roadmap-recipe-instantiation.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (9/41)
+
+    Check: docs_contract
+    Command: bun run test:project core --maxWorkers=1 packages/core/src/commands/task/roadmap-recipe-specialization.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-10
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (10/41)
+
+    Check: docs_contract
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-recipe-repin.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-11
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (11/41)
+
+    Check: docs_contract
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/recipes/roadmap-explicit-selection.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-12
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (12/41)
+
+    Check: docs_contract
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-shortlist.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-13
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (13/41)
+
+    Check: docs_contract
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-prompt.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-14
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (14/41)
+
+    Check: docs_contract
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/recipes/roadmap-v1-v2-conversion.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-15
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (15/41)
+
+    Check: docs_contract
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-recipe-v2-entrypoint.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-16
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (16/41)
+
+    Check: docs_contract
+    Command: bun run package:install-smoke
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-17
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (17/41)
+
+    Check: docs_contract
+    Command: bun run schemas:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-18
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (18/41)
+
+    Check: docs_contract
+    Command: bun run test:release:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-19
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (19/41)
+
+    Check: docs_contract
+    Command: bun run bench:agent-efficiency:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-20
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (20/41)
+
+    Check: docs_contract
+    Command: bun run bench:agent-efficiency:replay:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-21
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (21/41)
+
+    Check: docs_contract
+    Command: bun run docs:onboarding:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-22
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (22/41)
+
+    Check: docs_contract
+    Command: bun run test:fast -- packages/agentplane/src/commands/task/kernel-advance-network.test.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/task/kernel-work-order.network.test.ts packages/agentplane/src/commands/task/roadmap-curator-parity.test.ts packages/agentplane/src/commands/task/create-plan-input.test.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts --testTimeout=60000 --hookTimeout=60000
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-23
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (23/41)
+
+    Check: docs_contract
+    Command: bunx --no-install eslint packages/agentplane/src/commands/task/kernel-work-order.ts packages/agentplane/src/commands/task/kernel-work-order.network.test.ts packages/agentplane/src/commands/task/kernel-exchange.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/shared/declared-check.ts packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.ts packages/agentplane/src/commands/task/direct-task-verification.sequence.cases.ts packages/agentplane/src/commands/task/advance-task-step.ts packages/agentplane/src/commands/task/kernel-advance-network.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-24
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (24/41)
+
+    Check: docs_contract
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-25
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (25/41)
+
+    Check: docs_contract
+    Command: bun run test:fast -- packages/agentplane/src/commands/task/kernel-policy-baseline.test.ts packages/agentplane/src/commands/task/kernel-policy-completion.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts packages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts packages/core/src/tasks/task-kernel/authority-delta.test.ts packages/agentplane/src/commands/branch/work-start.test.ts packages/agentplane/src/commands/task/kernel-inspection-validation.test.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/task/kernel-work-item-resume.test.ts packages/agentplane/src/commands/task/kernel-advance-network.test.ts packages/agentplane/src/commands/task/kernel-work-order.network.test.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/shared/worktree-topology.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/commands/branch/work-start.git.test.ts packages/agentplane/src/commands/branch/work-start.direct.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/commands/task/kernel-rework-proof.test.ts packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-centric/task-centric.output-dependencies.test.ts --testTimeout=60000 --hookTimeout=60000
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-26
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (26/41)
+
+    Check: docs_contract
+    Command: bunx --no-install eslint packages/agentplane/src/commands/task/advance-task-step.ts packages/agentplane/src/commands/task/kernel-policy-baseline.ts packages/agentplane/src/commands/task/kernel-policy-baseline.test.ts packages/agentplane/src/commands/task/kernel-policy-completion.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-runtime-context.ts packages/agentplane/src/commands/task/kernel-semantic-result.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-boundary.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts packages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts packages/core/src/tasks/task-kernel/authority-delta.test.ts packages/agentplane/src/commands/branch/work-start.ts packages/agentplane/src/commands/branch/work-start.test.ts packages/agentplane/src/commands/task/kernel-inspection-validation.ts packages/agentplane/src/commands/task/kernel-inspection-validation.test.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/task/kernel-work-item-resume.ts packages/agentplane/src/commands/task/kernel-work-item-resume.test.ts packages/agentplane/src/commands/task/kernel-exchange.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/kernel-rework-proof.ts packages/agentplane/src/commands/task/kernel-rework-proof.test.ts packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-centric/task-centric.output-dependencies.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-27
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (27/41)
+
+    Check: docs_contract
+    Command: bun run hotspots:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-28
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (28/41)
+
+    Check: docs_contract
+    Command: bun run knip:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-29
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (29/41)
+
+    Check: docs_contract
+    Command: bunx --no-install eslint packages/agentplane/src/commands/task/kernel-advance-network.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-30
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (30/41)
+
+    Check: docs_contract
+    Command: bun run test:fast -- packages/agentplane/src/commands/task/kernel-rework-lineage.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-31
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (31/41)
+
+    Check: docs_contract
+    Command: bunx --no-install eslint packages/agentplane/src/commands/task/kernel-rework-lineage.ts packages/agentplane/src/commands/task/kernel-rework-lineage.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-32
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (32/41)
+
+    Check: docs_contract
+    Command: bunx --no-install eslint packages/agentplane/src/commands/recipes/impl/explicit-selection.ts packages/agentplane/src/runner/context/recipe-closure.ts packages/agentplane/src/runner/context/recipe-context.ts packages/agentplane/src/runner/context/recipe-applicability.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-33
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (33/41)
+
+    Check: docs_contract
+    Command: bun run test:fast -- packages/agentplane/src/runner/context/roadmap-recipe-closure.test.ts packages/agentplane/src/runner/context/roadmap-recipe-applicability.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-34
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (34/41)
+
+    Check: docs_contract
+    Command: bun run docs:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-35
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (35/41)
+
+    Check: docs_contract
+    Command: bun run format:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-36
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (36/41)
+
+    Check: docs_contract
+    Command: node scripts/checks/run-local-ci-group.mjs docs-schema
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-37
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (37/41)
+
+    Check: docs_contract
+    Command: bunx vitest run packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-38
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (38/41)
+
+    Check: docs_contract
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-39
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (39/41)
+
+    Check: docs_contract
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-40
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (40/41)
+
+    Check: docs_contract
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-41
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (41/41)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-41
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check full_regression
+
+    Check: real_e2e
+    Command: bun run test:project recipes --maxWorkers=1 packages/recipes/src/roadmap-scenario-v2-parser.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (1/41)
+
+    Check: real_e2e
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (2/41)
+
+    Check: real_e2e
+    Command: bun run test:project recipes --maxWorkers=1 packages/recipes/src/roadmap-recipe-parameters.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (3/41)
+
+    Check: real_e2e
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-plan-validation.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (4/41)
+
+    Check: real_e2e
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-applicability.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (5/41)
+
+    Check: real_e2e
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-closure.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (6/41)
+
+    Check: real_e2e
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-retention.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (7/41)
+
+    Check: real_e2e
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-plan-binding.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (8/41)
+
+    Check: real_e2e
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/usecases/roadmap-recipe-instantiation.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (9/41)
+
+    Check: real_e2e
+    Command: bun run test:project core --maxWorkers=1 packages/core/src/commands/task/roadmap-recipe-specialization.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-10
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (10/41)
+
+    Check: real_e2e
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-recipe-repin.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-11
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (11/41)
+
+    Check: real_e2e
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/recipes/roadmap-explicit-selection.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-12
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (12/41)
+
+    Check: real_e2e
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-shortlist.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-13
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (13/41)
+
+    Check: real_e2e
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-prompt.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-14
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (14/41)
+
+    Check: real_e2e
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/recipes/roadmap-v1-v2-conversion.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-15
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (15/41)
+
+    Check: real_e2e
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-recipe-v2-entrypoint.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-16
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (16/41)
+
+    Check: real_e2e
+    Command: bun run package:install-smoke
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-17
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (17/41)
+
+    Check: real_e2e
+    Command: bun run schemas:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-18
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (18/41)
+
+    Check: real_e2e
+    Command: bun run test:release:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-19
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (19/41)
+
+    Check: real_e2e
+    Command: bun run bench:agent-efficiency:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-20
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (20/41)
+
+    Check: real_e2e
+    Command: bun run bench:agent-efficiency:replay:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-21
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (21/41)
+
+    Check: real_e2e
+    Command: bun run docs:onboarding:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-22
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (22/41)
+
+    Check: real_e2e
+    Command: bun run test:fast -- packages/agentplane/src/commands/task/kernel-advance-network.test.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/task/kernel-work-order.network.test.ts packages/agentplane/src/commands/task/roadmap-curator-parity.test.ts packages/agentplane/src/commands/task/create-plan-input.test.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts --testTimeout=60000 --hookTimeout=60000
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-23
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (23/41)
+
+    Check: real_e2e
+    Command: bunx --no-install eslint packages/agentplane/src/commands/task/kernel-work-order.ts packages/agentplane/src/commands/task/kernel-work-order.network.test.ts packages/agentplane/src/commands/task/kernel-exchange.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/shared/declared-check.ts packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.ts packages/agentplane/src/commands/task/direct-task-verification.sequence.cases.ts packages/agentplane/src/commands/task/advance-task-step.ts packages/agentplane/src/commands/task/kernel-advance-network.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-24
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (24/41)
+
+    Check: real_e2e
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-25
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (25/41)
+
+    Check: real_e2e
+    Command: bun run test:fast -- packages/agentplane/src/commands/task/kernel-policy-baseline.test.ts packages/agentplane/src/commands/task/kernel-policy-completion.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts packages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts packages/core/src/tasks/task-kernel/authority-delta.test.ts packages/agentplane/src/commands/branch/work-start.test.ts packages/agentplane/src/commands/task/kernel-inspection-validation.test.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/task/kernel-work-item-resume.test.ts packages/agentplane/src/commands/task/kernel-advance-network.test.ts packages/agentplane/src/commands/task/kernel-work-order.network.test.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/shared/worktree-topology.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/commands/branch/work-start.git.test.ts packages/agentplane/src/commands/branch/work-start.direct.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/commands/task/kernel-rework-proof.test.ts packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-centric/task-centric.output-dependencies.test.ts --testTimeout=60000 --hookTimeout=60000
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-26
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (26/41)
+
+    Check: real_e2e
+    Command: bunx --no-install eslint packages/agentplane/src/commands/task/advance-task-step.ts packages/agentplane/src/commands/task/kernel-policy-baseline.ts packages/agentplane/src/commands/task/kernel-policy-baseline.test.ts packages/agentplane/src/commands/task/kernel-policy-completion.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-runtime-context.ts packages/agentplane/src/commands/task/kernel-semantic-result.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-boundary.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts packages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts packages/core/src/tasks/task-kernel/authority-delta.test.ts packages/agentplane/src/commands/branch/work-start.ts packages/agentplane/src/commands/branch/work-start.test.ts packages/agentplane/src/commands/task/kernel-inspection-validation.ts packages/agentplane/src/commands/task/kernel-inspection-validation.test.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/task/kernel-work-item-resume.ts packages/agentplane/src/commands/task/kernel-work-item-resume.test.ts packages/agentplane/src/commands/task/kernel-exchange.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/kernel-rework-proof.ts packages/agentplane/src/commands/task/kernel-rework-proof.test.ts packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-centric/task-centric.output-dependencies.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-27
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (27/41)
+
+    Check: real_e2e
+    Command: bun run hotspots:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-28
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (28/41)
+
+    Check: real_e2e
+    Command: bun run knip:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-29
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (29/41)
+
+    Check: real_e2e
+    Command: bunx --no-install eslint packages/agentplane/src/commands/task/kernel-advance-network.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-30
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (30/41)
+
+    Check: real_e2e
+    Command: bun run test:fast -- packages/agentplane/src/commands/task/kernel-rework-lineage.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-31
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (31/41)
+
+    Check: real_e2e
+    Command: bunx --no-install eslint packages/agentplane/src/commands/task/kernel-rework-lineage.ts packages/agentplane/src/commands/task/kernel-rework-lineage.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-32
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (32/41)
+
+    Check: real_e2e
+    Command: bunx --no-install eslint packages/agentplane/src/commands/recipes/impl/explicit-selection.ts packages/agentplane/src/runner/context/recipe-closure.ts packages/agentplane/src/runner/context/recipe-context.ts packages/agentplane/src/runner/context/recipe-applicability.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-33
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (33/41)
+
+    Check: real_e2e
+    Command: bun run test:fast -- packages/agentplane/src/runner/context/roadmap-recipe-closure.test.ts packages/agentplane/src/runner/context/roadmap-recipe-applicability.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-34
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (34/41)
+
+    Check: real_e2e
+    Command: bun run docs:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-35
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (35/41)
+
+    Check: real_e2e
+    Command: bun run format:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-36
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (36/41)
+
+    Check: real_e2e
+    Command: node scripts/checks/run-local-ci-group.mjs docs-schema
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-37
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (37/41)
+
+    Check: real_e2e
+    Command: bunx vitest run packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-38
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (38/41)
+
+    Check: real_e2e
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-39
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (39/41)
+
+    Check: real_e2e
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-40
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (40/41)
+
+    Check: real_e2e
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-41
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (41/41)
+
+    Check: task_outcome
+    Command: bun run test:project recipes --maxWorkers=1 packages/recipes/src/roadmap-scenario-v2-parser.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (1/41)
+
+    Check: task_outcome
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (2/41)
+
+    Check: task_outcome
+    Command: bun run test:project recipes --maxWorkers=1 packages/recipes/src/roadmap-recipe-parameters.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (3/41)
+
+    Check: task_outcome
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-plan-validation.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (4/41)
+
+    Check: task_outcome
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-applicability.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (5/41)
+
+    Check: task_outcome
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-closure.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (6/41)
+
+    Check: task_outcome
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-retention.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (7/41)
+
+    Check: task_outcome
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-plan-binding.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (8/41)
+
+    Check: task_outcome
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/usecases/roadmap-recipe-instantiation.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (9/41)
+
+    Check: task_outcome
+    Command: bun run test:project core --maxWorkers=1 packages/core/src/commands/task/roadmap-recipe-specialization.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-10
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (10/41)
+
+    Check: task_outcome
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-recipe-repin.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-11
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (11/41)
+
+    Check: task_outcome
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/recipes/roadmap-explicit-selection.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-12
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (12/41)
+
+    Check: task_outcome
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-shortlist.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-13
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (13/41)
+
+    Check: task_outcome
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-prompt.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-14
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (14/41)
+
+    Check: task_outcome
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/recipes/roadmap-v1-v2-conversion.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-15
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (15/41)
+
+    Check: task_outcome
+    Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-recipe-v2-entrypoint.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-16
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (16/41)
+
+    Check: task_outcome
+    Command: bun run package:install-smoke
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-17
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (17/41)
+
+    Check: task_outcome
+    Command: bun run schemas:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-18
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (18/41)
+
+    Check: task_outcome
+    Command: bun run test:release:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-19
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (19/41)
+
+    Check: task_outcome
+    Command: bun run bench:agent-efficiency:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-20
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (20/41)
+
+    Check: task_outcome
+    Command: bun run bench:agent-efficiency:replay:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-21
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (21/41)
+
+    Check: task_outcome
+    Command: bun run docs:onboarding:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-22
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (22/41)
+
+    Check: task_outcome
+    Command: bun run test:fast -- packages/agentplane/src/commands/task/kernel-advance-network.test.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/task/kernel-work-order.network.test.ts packages/agentplane/src/commands/task/roadmap-curator-parity.test.ts packages/agentplane/src/commands/task/create-plan-input.test.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts --testTimeout=60000 --hookTimeout=60000
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-23
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (23/41)
+
+    Check: task_outcome
+    Command: bunx --no-install eslint packages/agentplane/src/commands/task/kernel-work-order.ts packages/agentplane/src/commands/task/kernel-work-order.network.test.ts packages/agentplane/src/commands/task/kernel-exchange.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/shared/declared-check.ts packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.ts packages/agentplane/src/commands/task/direct-task-verification.sequence.cases.ts packages/agentplane/src/commands/task/advance-task-step.ts packages/agentplane/src/commands/task/kernel-advance-network.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-24
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (24/41)
+
+    Check: task_outcome
+    Command: git diff --check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-25
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (25/41)
+
+    Check: task_outcome
+    Command: bun run test:fast -- packages/agentplane/src/commands/task/kernel-policy-baseline.test.ts packages/agentplane/src/commands/task/kernel-policy-completion.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts packages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts packages/core/src/tasks/task-kernel/authority-delta.test.ts packages/agentplane/src/commands/branch/work-start.test.ts packages/agentplane/src/commands/task/kernel-inspection-validation.test.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/task/kernel-work-item-resume.test.ts packages/agentplane/src/commands/task/kernel-advance-network.test.ts packages/agentplane/src/commands/task/kernel-work-order.network.test.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/shared/worktree-topology.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/commands/branch/work-start.git.test.ts packages/agentplane/src/commands/branch/work-start.direct.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/commands/task/kernel-rework-proof.test.ts packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-centric/task-centric.output-dependencies.test.ts --testTimeout=60000 --hookTimeout=60000
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-26
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (26/41)
+
+    Check: task_outcome
+    Command: bunx --no-install eslint packages/agentplane/src/commands/task/advance-task-step.ts packages/agentplane/src/commands/task/kernel-policy-baseline.ts packages/agentplane/src/commands/task/kernel-policy-baseline.test.ts packages/agentplane/src/commands/task/kernel-policy-completion.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-runtime-context.ts packages/agentplane/src/commands/task/kernel-semantic-result.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-boundary.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts packages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts packages/core/src/tasks/task-kernel/authority-delta.test.ts packages/agentplane/src/commands/branch/work-start.ts packages/agentplane/src/commands/branch/work-start.test.ts packages/agentplane/src/commands/task/kernel-inspection-validation.ts packages/agentplane/src/commands/task/kernel-inspection-validation.test.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/task/kernel-work-item-resume.ts packages/agentplane/src/commands/task/kernel-work-item-resume.test.ts packages/agentplane/src/commands/task/kernel-exchange.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/kernel-rework-proof.ts packages/agentplane/src/commands/task/kernel-rework-proof.test.ts packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-centric/task-centric.output-dependencies.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-27
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (27/41)
+
+    Check: task_outcome
+    Command: bun run hotspots:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-28
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (28/41)
+
+    Check: task_outcome
+    Command: bun run knip:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-29
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (29/41)
+
+    Check: task_outcome
+    Command: bunx --no-install eslint packages/agentplane/src/commands/task/kernel-advance-network.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-30
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (30/41)
+
+    Check: task_outcome
+    Command: bun run test:fast -- packages/agentplane/src/commands/task/kernel-rework-lineage.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-31
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (31/41)
+
+    Check: task_outcome
+    Command: bunx --no-install eslint packages/agentplane/src/commands/task/kernel-rework-lineage.ts packages/agentplane/src/commands/task/kernel-rework-lineage.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-32
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (32/41)
+
+    Check: task_outcome
+    Command: bunx --no-install eslint packages/agentplane/src/commands/recipes/impl/explicit-selection.ts packages/agentplane/src/runner/context/recipe-closure.ts packages/agentplane/src/runner/context/recipe-context.ts packages/agentplane/src/runner/context/recipe-applicability.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-33
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (33/41)
+
+    Check: task_outcome
+    Command: bun run test:fast -- packages/agentplane/src/runner/context/roadmap-recipe-closure.test.ts packages/agentplane/src/runner/context/roadmap-recipe-applicability.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-34
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (34/41)
+
+    Check: task_outcome
+    Command: bun run docs:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-35
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (35/41)
+
+    Check: task_outcome
+    Command: bun run format:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-36
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (36/41)
+
+    Check: task_outcome
+    Command: node scripts/checks/run-local-ci-group.mjs docs-schema
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-37
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (37/41)
+
+    Check: task_outcome
+    Command: bunx vitest run packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-38
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (38/41)
+
+    Check: task_outcome
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-39
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (39/41)
+
+    Check: task_outcome
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-40
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (40/41)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-41
+    Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (41/41)
+
+    NativeTaskIdentityRef:
+    - plan_digest: sha256:f2e287a7a29376fd292c8c2f2a3707df9e95b0c61c5921f325ba0275e0a6871e
+    - policy_digest: sha256:649ea2aa3aa2eff9e709b3075d17deaef97f82440494ba18905f15280a598931
+    - capability_digest: sha256:9c954e5cb756345b8471e7c827245f46466a455f655bd8eb5841bc137bc713b0
+    - checks_digest: sha256:30e0d912dffde870c5840834290e0cd6edfd56b6ee9aacabe07f7811aaa4aa15
+    - identity_digest: sha256:d482aa4139cbfdf96c520fff794a08c88cadf7526432aea4d23498eeef4cadeb
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -331,24 +2689,22 @@ sections:
   Findings: ""
 extensions:
   agentplane.kernel_operational_projection:
-    digest: "sha256:882d962b67158288c28d4edd33b8c1ae94a0fec7794f0661ec45c90089297b2b"
+    digest: "sha256:56660116ba9ac3a877b3d6be308c2b4a5670f031ad2b18001e4885a1b0db5afe"
     evidence_refs:
-      - "../../../.git/agentplane/kernel/exchanges/202610041748-K43XFE/305f2a3f17d1e5930c9644a19067483901db8ff92a7e96cedc1f636ea3dda31e/quality-report.json"
+      - "../../../.git/agentplane/kernel/exchanges/202610041748-K43XFE/3c3ae5437a3de6215db46e5316812f69925bab2295c5fc6234edbc24acdb7574/quality-report.json"
     findings:
-      - "Verified all 13 required blocks, input/report digests, frozen source and native validation bindings. All six mandatory native checks passed, including repository-wide formatting, complete docs-schema, unchanged historical benchmark checks and Knip. No heavy checks were repeated."
-      - "Independently matched all 22 pre-format archive members and all 69 original historical archive members against their pinned original Git objects and inventory hashes. Earlier immutable bytes remain recoverable instead of being silently reformatted."
-      - "Reviewed final formatting order: awaited product/policy/fixture formatting precedes hashing and fixture commit; manifest and evidence formatting precedes retained byte pins. Driver schema-v2 display serialization occurs after canonical digest calculation; canonical digest functions, schema-v1 behavior and live authority rejection are unchanged."
-      - "Verified current preparation source/product/oracle and campaign/evidence byte pins, 75 verified corpus outcomes, six evidence canonical digests, five normalized manifest digests, 15-attempt CLI replay and the request preparation pin. Provider usage remains unavailable and economic benefit unestablished. Retained qualification records 57 byte-pin checks and passing 21 benchmark plus 20 recovery tests."
-      - "The recovery-test delta changes layout only. The generated scripts README adds the actual installed-example command through the existing inventory owner; its freshness passed in native docs-schema. No formatting exclusion, analyzer baseline change or assertion weakening was introduced."
-      - "Read-only inspection confirmed catalogue source files match pinned commit ddfcafcaf86462e407d7ce52dcb1a1e1f8e63fd8 in the repository-contained cache and recorded file hashes. Provenance records the bounded approved public GitHub read; this evaluator performed no network access."
-    implementation_commit: "1dc69aa858c14a5f5f2a541ec30388113176294f"
-    implementation_tree: "67c17249de239bb4a6af46531072f3586c359451"
-    projected_at: "2026-10-06T06:49:36.043Z"
-    review_identity_digest: "sha256:84d86e6398d4938a1add0cb15913b5b2b7ee1e2ca78535fe701e971bae64dabf"
+      - "Validated all 13 required context blocks, implementation/report/repository/native-validation digests, frozen HEAD and native input bindings. Native evidence records eight passing focused tests and successful global formatting, typecheck and diff checks."
+      - "The resolver selects options.env ?? process.env once, then resolves the explicit recipesSource before that selected environment. An explicit empty or unrelated environment cannot fall through to the host; omitted env retains process.env behavior. Existing relative resolution, missing-source and invalid-checkout rejection remain unchanged."
+      - "Four added regression cases populate host state, exercise empty/unrelated explicit environments, omitted-env fallback and explicit-source precedence. The two isolation cases would fail under the previous implementation. vi.unstubAllEnvs restores inherited state before fixture cleanup; all four existing tests and assertions remain intact."
+      - "The source delta is confined to the approved resolver and test file outside native task metadata. No global environment clearing, CI exemption, catalogue validation weakening, release-artifact change or measurement authority is introduced."
+    implementation_commit: "c9593e7510a4f9979393a17e33ef1f8dd4d6354e"
+    implementation_tree: "a2c58d41657c7db9a266791c51cb7af25538abb6"
+    projected_at: "2026-10-06T07:56:29.557Z"
+    review_identity_digest: "sha256:e66c00707fbb3c726a8abe097992ed94ca31cac614d52f2afa35d57669c1c9fc"
     schema_version: 1
     source: "task_kernel"
-    verification_evidence_digest: "sha256:38a706107c17de63fd5a3b2bee2ae27443354d90b2606dfb7b14d5d50a5c65b2"
-    work_order_id: "sha256:5603c9954d056ef119250291a8bcc003a6a457f260ce7691249ebe838bbe60cc"
+    verification_evidence_digest: "sha256:d2b44bc83fd760b9f96610195c2172dc20fc50bdfe6f2fa30609c321fb555a18"
+    work_order_id: "sha256:851e560d03888ee1ed974ae63856a80fffbbd7c19f4947c49f1c2b4ba7cc25ff"
   task_execution_context:
     base_ref: "origin/main"
     base_sha: "65696d9032b77e80e31c6bca7668a5f32c99c443"
@@ -3980,6 +6336,74 @@ extensions:
             evidence_digest: "sha256:6697c1ff501c4956de1631260304e4af2e29dd079b796753db16e4e5b6550501"
             kind: "plan_amendment"
             previous_fingerprint: "sha256:10748466ecbae5e2a835d03f39da6b2b20897845d2335bb04465068bc50d63d5"
+        -
+          approval_mode: null
+          authority:
+            capabilities:
+              - "repository_write"
+            completion_requirements:
+              - "work_item_validation"
+              - "final_validation"
+            digest: "sha256:b041a40e293c88e7509fd3732c288c562250b8e59c518911a139838007be8b6b"
+            expires_at: null
+            external_effects:
+              - "network_read"
+            plan_digest: "sha256:f2e287a7a29376fd292c8c2f2a3707df9e95b0c61c5921f325ba0275e0a6871e"
+            plan_revision: 14
+            policy_digests:
+              - "sha256:46ab96cb2da8e193a7f501a37237d84581adf7e67f1f87977fcafc07bc4ae1c6"
+            provenance:
+              actor_id: "agentplane:kernel-controller"
+              evidence_digest: "sha256:2bf0ceda5f1623766563d33b97fe917ccff227e7df9d5222dcea2eee3976a34e"
+              kind: "SYSTEM"
+              parent_authority_digest: "sha256:86aa00abffc07926d1ed7379cdbb62555572e3dfc307a1a00d4bce62fccbcc54"
+            repository_effects:
+              - "ci"
+              - "dependencies"
+              - "documentation"
+              - "public_api"
+              - "release_metadata"
+              - "repository_write"
+              - "schema"
+              - "security_boundary"
+              - "source_code"
+              - "tests"
+            repository_fingerprint: "sha256:8cb70c1b44a721f63735146de36c330a9a2950fc6c0d520eb2aed80607126fc8"
+            repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+            resources: []
+            risk:
+              implementation: "bounded"
+              requirements: "bounded"
+              reversibility: "recovery_required"
+            scope_roots:
+              - ".github"
+              - "README.md"
+              - "agentplane-roadmap-r2"
+              - "artifacts"
+              - "bun.lock"
+              - "docs"
+              - "integrations"
+              - "package.json"
+              - "packages"
+              - "schemas"
+              - "scripts"
+            task_id: "202610041748-K43XFE"
+            validation_requirements:
+              - "affected_unit_integration"
+              - "critical_paths"
+              - "docs_contract"
+              - "full_regression"
+              - "hosted_integration"
+              - "real_e2e"
+              - "task_outcome"
+            work_item_id: null
+          observation:
+            changed_paths:
+              - "packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts"
+              - "scripts/generate/generate-recipes-inventory.mjs"
+            evidence_digest: "sha256:3557b3e99a416dc548e01d883a1ed113637fbb8d06a108c9b96660f26601bda1"
+            kind: "repository_implementation"
+            previous_fingerprint: "sha256:10748466ecbae5e2a835d03f39da6b2b20897845d2335bb04465068bc50d63d5"
       controller_transfer: null
       current_plan:
         approval_actor_id: "USER"
@@ -4708,7 +7132,17 @@ extensions:
             required_inputs:
               - "rc-evidence-formatting-evidence"
       effects: []
-      final_validation: null
+      final_validation:
+        evidence_digests:
+          - "sha256:d2b44bc83fd760b9f96610195c2172dc20fc50bdfe6f2fa30609c321fb555a18"
+        identity:
+          check_id: "canonical-final-contracts-v2"
+          command_digest: "sha256:d9841701090548fe6e16c8f14f9c0b084b24af995149bf134f2455c74aec499c"
+          environment_digest: "sha256:b16acd2650ba15c4e51475a627afbdefeab616a360a44e200943b74ff30034e3"
+          implementation_identity: "sha256:8cb70c1b44a721f63735146de36c330a9a2950fc6c0d520eb2aed80607126fc8"
+          toolchain_digest: "sha256:48793777f21258d42a1fd7066ef363de40c28a085cafe2fca23e87210d7b80a6"
+        observed_at: "2026-10-06T07:57:10.374Z"
+        status: "PASSED"
       id: "202610041748-K43XFE"
       intent_digest: "sha256:6f70bdb801147e3373cb984261c7a95567ab32520321ba527a162b23d93eb5f0"
       migration_receipts: []
@@ -4839,6 +7273,24 @@ extensions:
           event_digests:
             - "sha256:892fbf2ebda2527fcb8b88df498902d79e869698c4e38d570983ff645d9ff615"
           mutation_id: "capture:202610041748-K43XFE"
+        final-validation:sha256:d2b44bc83fd760b9f96610195c2172dc20fc50bdfe6f2fa30609c321fb555a18:255:
+          after_revision: 256
+          aggregate_digest: "sha256:9bd2251c1b864857db2b995c9fa8b76eecd92ae31ebb247719a8c35852402f2d"
+          before_revision: 255
+          command_digest: "sha256:68eaac787fe7fd8e0a19925fcbbb574c43fded49b0bddc1ca60c67aada566219"
+          effect_ids: []
+          event_digests:
+            - "sha256:a21a6014250322dca974a6f3316f25fcf3b0a063f76fa439e45e337fbec9dc8d"
+          mutation_id: "final-validation:sha256:d2b44bc83fd760b9f96610195c2172dc20fc50bdfe6f2fa30609c321fb555a18:255"
+        kernel_task_completion_required:sha256:618ae9f6df2da353e39da866a256253e393133a3446a6e015cabe68999800c39:sha256:8cb70c1b44a721f63735146de36c330a9a2950fc6c0d520eb2aed80607126fc8:
+          after_revision: 257
+          aggregate_digest: "sha256:606d48db65ca06a3c0f54cc1063e4097b237802d5f5a8cd54a10d341695d954e"
+          before_revision: 256
+          command_digest: "sha256:7aed2d264612902efcc38b6ad29e4c9f92ce9de73d52b68256aa6cdbcdc1cf8d"
+          effect_ids: []
+          event_digests:
+            - "sha256:a44d9da94d44091d773c3e288678a692dd7b2911118f622130a48b397fee801a"
+          mutation_id: "kernel_task_completion_required:sha256:618ae9f6df2da353e39da866a256253e393133a3446a6e015cabe68999800c39:sha256:8cb70c1b44a721f63735146de36c330a9a2950fc6c0d520eb2aed80607126fc8"
         kernel_work_item_claim_required:sha256:0f732e66e5add00be77226cd43a9d163fe1c042079a404da8648ed08582eb7ad:sha256:9a298ee7eaedf45aecbae41134725f8d213185a70863f5dc6d9d9fd1706d83f6:
           after_revision: 141
           aggregate_digest: "sha256:5d5cd5939a5820f23991e65f9d8563ae2ed7bb81da52cc21e53a871a7f69dcbc"
@@ -5541,6 +7993,15 @@ extensions:
           event_digests:
             - "sha256:69bd4a8fb9bf926686dde5501ce7f9eae57b2e5c5a1f3161629ab545f3dd2ead"
           mutation_id: "kernel_work_item_inspection_required:sha256:44f310b1c4bc3267bba8637168ebc7cd05288d487604e76d813aff46ee88170b:sha256:fb9d804fb989f29285bbb506f40a11dc51d49dc3cfc987f3c3cd871fa5ae7554"
+        kernel_work_item_inspection_required:sha256:48c165d57fbfa56046b19146266f5a87e339b69f85824bc871687d3c59bc3f97:sha256:8cb70c1b44a721f63735146de36c330a9a2950fc6c0d520eb2aed80607126fc8:
+          after_revision: 253
+          aggregate_digest: "sha256:1cbe5e3c7cd760bd530595c11d9bb152466faa3527eabfe52a17cf98822d756b"
+          before_revision: 252
+          command_digest: "sha256:cd641086c90d0e7aed33f45d2adc6c482aa82a1a3b33e1f74b54fe8c287c9df3"
+          effect_ids: []
+          event_digests:
+            - "sha256:f2e8f51b77d3646b034de731d11415289186d4d61d5d3c8bf48ec4784342aa0a"
+          mutation_id: "kernel_work_item_inspection_required:sha256:48c165d57fbfa56046b19146266f5a87e339b69f85824bc871687d3c59bc3f97:sha256:8cb70c1b44a721f63735146de36c330a9a2950fc6c0d520eb2aed80607126fc8"
         kernel_work_item_inspection_required:sha256:52b185931f6af14e91588e46d9d7caeb3a012f0084398b5951a3fcba39efef42:sha256:558a99d0bbb7677da7507553a2266fa161bcebc094b4c76b993f2173d2403b9b:
           after_revision: 77
           aggregate_digest: "sha256:6482e3338d3c349bfccfd97ba92948b3ecc2363e2f5b31e510407197fd6b6d4e"
@@ -5829,6 +8290,15 @@ extensions:
           event_digests:
             - "sha256:6c54c0a8eb3a53f6949cd5c0a34d057e16c1bf4bb0efb221c105dbc04d447306"
           mutation_id: "result:sha256:83d37cd21d96abc5446f4a9bb1017296689acf5115895dd2310a6466ff4f4dc8"
+        result:sha256:851e560d03888ee1ed974ae63856a80fffbbd7c19f4947c49f1c2b4ba7cc25ff:
+          after_revision: 252
+          aggregate_digest: "sha256:03adfca71c76e07f63eb8707c9cb679cf957b0bd6311397a7a7a3205568f7eb2"
+          before_revision: 251
+          command_digest: "sha256:a7e20a41546c7c5f4147c6fa0dd1b973f2a6a281f5ed5e113ff6fc8373554195"
+          effect_ids: []
+          event_digests:
+            - "sha256:c4a2c5e1b2b7d6898ea4387d8e07a0a5f52170bc997e7de4d6cf804a1751716e"
+          mutation_id: "result:sha256:851e560d03888ee1ed974ae63856a80fffbbd7c19f4947c49f1c2b4ba7cc25ff"
         result:sha256:885eb514a4678149115827539b3bac77015ad0d8b320d191e66383be350ba3f2:
           after_revision: 83
           aggregate_digest: "sha256:ff7815c69b74f51a2b8d29f1c1bb0ff3c94a91b2fa6df8547a20b31584188956"
@@ -6162,6 +8632,15 @@ extensions:
           event_digests:
             - "sha256:3836dd0e73b553e7df999ef6951c8a2c5035a2a026b4bb4e47ef30766cd11107"
           mutation_id: "sha256:4451a4764a67af65267ae3c23a67fe0b288284cad5a583c88311669b2d778ae3"
+        sha256:484e9c8260a5aca4499c472fb84bed925905ec3baf5b21d740b5ff34bed945ce:
+          after_revision: 251
+          aggregate_digest: "sha256:688dda7e505c7ad2926bdf0c290510d706e394fa32a415507cc920488f476cce"
+          before_revision: 250
+          command_digest: "sha256:a9fd7844058d140544b6532d30ac4e08c77f7da09dd4c49e4085cde32c135462"
+          effect_ids: []
+          event_digests:
+            - "sha256:745a06b3d2875f685381844a40eed8424ba53086fa1715e8d8c55a48d4e001d3"
+          mutation_id: "sha256:484e9c8260a5aca4499c472fb84bed925905ec3baf5b21d740b5ff34bed945ce"
         sha256:4e10e2089537e2e8014362de6214ec568727130f2efd9c105c67fd91158250ad:
           after_revision: 140
           aggregate_digest: "sha256:57a1a06a9ea33b65e780ec34446e2096536eafc769bfb81051861c06ae46ed28"
@@ -6567,6 +9046,15 @@ extensions:
           event_digests:
             - "sha256:c18c522c127dcd4f7dd084d6a7aa0d86c30f6987cd41e3c9ce21b1452fa4a51e"
           mutation_id: "validation-resolution:sha256:45fea4add5ea2c48c2b03a2eb0812dcec2598f9badf30914fd69383b82c85e13"
+        validation-resolution:sha256:46043d925524d4f726292135544965ca9c55d71ce5bc9790dcffe5a82f15061b:
+          after_revision: 255
+          aggregate_digest: "sha256:fd8e900c5a08dda4df05d38aabb8477b295bf997c02405048130e2911051c4a3"
+          before_revision: 254
+          command_digest: "sha256:bf906e06a113ed3c381721e3ff9a9f82cceacdcd57a9e1f1c5b447e0b2b5be02"
+          effect_ids: []
+          event_digests:
+            - "sha256:f52ac80891cd52faacf5478a136b9caf5461dd50257c6aad36a0c7638d7c9c6b"
+          mutation_id: "validation-resolution:sha256:46043d925524d4f726292135544965ca9c55d71ce5bc9790dcffe5a82f15061b"
         validation-resolution:sha256:7905108c9ea189f9f2eca4ce53e24a334f8800b0cd1a9598ab7956034a897a2c:
           after_revision: 225
           aggregate_digest: "sha256:46eff615f8c5d7ccef51ed8190789a993ac03186320b27ed4d5a317a4b6a4fb1"
@@ -6837,6 +9325,15 @@ extensions:
           event_digests:
             - "sha256:6019171d77e5dc680ed0b54742603d45aa35f0a476a5292a1a2f324e289e289d"
           mutation_id: "validation:sha256:38b36844fc21a272480c8a8de545d1fc718ebd69fbedb064e96e8d60c7852fb7"
+        validation:sha256:3c3ae5437a3de6215db46e5316812f69925bab2295c5fc6234edbc24acdb7574:
+          after_revision: 254
+          aggregate_digest: "sha256:8b3047dce692a410c861841e7c34e37b1061da43a86f0417b28dca1fd0d81400"
+          before_revision: 253
+          command_digest: "sha256:270954051f778ce36376a4333fb682dec075672ca1f47582362b17b79d7ef6ff"
+          effect_ids: []
+          event_digests:
+            - "sha256:47e64ddfea55b3343099784202a96c7291ba47a4e730143a588e21bee184b1a9"
+          mutation_id: "validation:sha256:3c3ae5437a3de6215db46e5316812f69925bab2295c5fc6234edbc24acdb7574"
         validation:sha256:4b5eceecd18fee4a226bba6eb842192cf57f48f25ff2d95d6cddd3fac1fb179b:
           after_revision: 29
           aggregate_digest: "sha256:d5cce7d9ba46a15a5c393cc713de9d2b3b1218753ec14885e5b733a73b1a00d9"
@@ -15137,9 +17634,9 @@ extensions:
               optional: false
               required_inputs:
                 - "rc-documentation-validator-wiring-evidence"
-      revision: 250
+      revision: 257
       schema_version: 1
-      state: "ACTIVE"
+      state: "COMPLETED"
       work_items:
         rc-01:
           attempt: 2
@@ -16221,11 +18718,31 @@ extensions:
             optional: false
             required_inputs:
               - "rc-evidence-formatting-evidence"
-          output_manifests: []
-          result_digest: null
-          revision: 4
-          state: "EXECUTING"
-          validation: null
+          output_manifests:
+            -
+              attempt: 1
+              digest: "sha256:994f5a12862fa13eea08376bc7cbbb52db855e6bf23524fee5be478a7b116c39"
+              id: "rc-catalogue-environment-isolation-evidence"
+              kind: "report"
+              plan_revision: 14
+              repository_fingerprint: "sha256:8cb70c1b44a721f63735146de36c330a9a2950fc6c0d520eb2aed80607126fc8"
+              task_id: "202610041748-K43XFE"
+              work_item_id: "rc-catalogue-environment-isolation"
+          result_digest: "sha256:a11e582ce038c2b8b85667467680e46c0fbef00f02d96193e6bbed08b979faf8"
+          revision: 8
+          state: "COMPLETED"
+          validation:
+            evidence_digests:
+              - "sha256:c2deb9cf74317112b3bf42917bd3a95316634c4d6bd956f9815cc28e947632b6"
+              - "sha256:e66c00707fbb3c726a8abe097992ed94ca31cac614d52f2afa35d57669c1c9fc"
+            identity:
+              check_id: "canonical-contract-and-inspection"
+              command_digest: "sha256:f4bcfcab08a5fb3a096ebcfd76fc373d31b0e26788de8e3509305fb94c520d85"
+              environment_digest: "sha256:50f4e21b929aedfeef6a9990e17d7da6dfb8dee97283d306f86ecefeb85ee745"
+              implementation_identity: "sha256:a11e582ce038c2b8b85667467680e46c0fbef00f02d96193e6bbed08b979faf8"
+              toolchain_digest: "sha256:97398f9060d1177dc7c1604a218cd6ba7b702d285fbdc8a1a0399f01b12330f3"
+            observed_at: "2026-10-06T07:56:29.557Z"
+            status: "PASSED"
         rc-documentation-validator-wiring:
           attempt: 1
           claim_id: "sha256:a8c13125c7b7b9d0b84a83e40f112996362bf605690eea40d31ca8eaac00a06d"
@@ -16484,7 +19001,7 @@ extensions:
               toolchain_digest: "sha256:97398f9060d1177dc7c1604a218cd6ba7b702d285fbdc8a1a0399f01b12330f3"
             observed_at: "2026-10-06T01:07:33.392Z"
             status: "PASSED"
-    digest: "sha256:df980c1b50cff6bd1d04afadc0fd09cd6d155b3ee41ef07cd4e898334d72b7c9"
+    digest: "sha256:4cb4f7249d9ac5f0fbc5af7c2a7aa77e70c0490775fface500aff0b3cfa3da76"
     documents:
       contracts:
         sha256:02b354cf5181d407fbefed439bd0074ed5dbb12e2b9c3b7fd17cbcf33207cc49:
@@ -19149,6 +21666,69 @@ extensions:
         payload_digest: "sha256:edd5e296ae25857f9bf07a1935009a97a90fc7c36963716336f0d70d7f4a0700"
         task_id: "202610041748-K43XFE"
         task_revision: 250
+      -
+        command_digest: "sha256:a9fd7844058d140544b6532d30ac4e08c77f7da09dd4c49e4085cde32c135462"
+        id: "sha256:484e9c8260a5aca4499c472fb84bed925905ec3baf5b21d740b5ff34bed945ce:authority_continued"
+        kind: "authority_continued"
+        mutation_id: "sha256:484e9c8260a5aca4499c472fb84bed925905ec3baf5b21d740b5ff34bed945ce"
+        occurred_at: "2026-10-06T07:52:56.144Z"
+        payload_digest: "sha256:0cc2e1b20160bcb738380cfd3bda29eafbba01610af76c3fb0916928d79a2817"
+        task_id: "202610041748-K43XFE"
+        task_revision: 251
+      -
+        command_digest: "sha256:a7e20a41546c7c5f4147c6fa0dd1b973f2a6a281f5ed5e113ff6fc8373554195"
+        id: "result:sha256:851e560d03888ee1ed974ae63856a80fffbbd7c19f4947c49f1c2b4ba7cc25ff:work_item_result_accepted"
+        kind: "work_item_result_accepted"
+        mutation_id: "result:sha256:851e560d03888ee1ed974ae63856a80fffbbd7c19f4947c49f1c2b4ba7cc25ff"
+        occurred_at: "2026-10-06T07:53:16.688Z"
+        payload_digest: "sha256:259f2d63ac01abdca96a5e36cad69756aea5d8e725e333c12eb75557d9261f54"
+        task_id: "202610041748-K43XFE"
+        task_revision: 252
+      -
+        command_digest: "sha256:cd641086c90d0e7aed33f45d2adc6c482aa82a1a3b33e1f74b54fe8c287c9df3"
+        id: "kernel_work_item_inspection_required:sha256:48c165d57fbfa56046b19146266f5a87e339b69f85824bc871687d3c59bc3f97:sha256:8cb70c1b44a721f63735146de36c330a9a2950fc6c0d520eb2aed80607126fc8:work_item_transitioned"
+        kind: "work_item_transitioned"
+        mutation_id: "kernel_work_item_inspection_required:sha256:48c165d57fbfa56046b19146266f5a87e339b69f85824bc871687d3c59bc3f97:sha256:8cb70c1b44a721f63735146de36c330a9a2950fc6c0d520eb2aed80607126fc8"
+        occurred_at: "2026-10-06T07:53:33.715Z"
+        payload_digest: "sha256:1981a34a14b062b39734152dd9daa43b62fe164725d8b65cc86528e75d50f5e5"
+        task_id: "202610041748-K43XFE"
+        task_revision: 253
+      -
+        command_digest: "sha256:270954051f778ce36376a4333fb682dec075672ca1f47582362b17b79d7ef6ff"
+        id: "validation:sha256:3c3ae5437a3de6215db46e5316812f69925bab2295c5fc6234edbc24acdb7574:work_item_validation_recorded"
+        kind: "work_item_validation_recorded"
+        mutation_id: "validation:sha256:3c3ae5437a3de6215db46e5316812f69925bab2295c5fc6234edbc24acdb7574"
+        occurred_at: "2026-10-06T07:56:42.045Z"
+        payload_digest: "sha256:1d5630893acd3a521d1b42d73f054c94a02e9f807d069525c89e67aa2fa8ce1f"
+        task_id: "202610041748-K43XFE"
+        task_revision: 254
+      -
+        command_digest: "sha256:bf906e06a113ed3c381721e3ff9a9f82cceacdcd57a9e1f1c5b447e0b2b5be02"
+        id: "validation-resolution:sha256:46043d925524d4f726292135544965ca9c55d71ce5bc9790dcffe5a82f15061b:work_item_transitioned"
+        kind: "work_item_transitioned"
+        mutation_id: "validation-resolution:sha256:46043d925524d4f726292135544965ca9c55d71ce5bc9790dcffe5a82f15061b"
+        occurred_at: "2026-10-06T07:56:53.711Z"
+        payload_digest: "sha256:a0fa3ffb94259b917fe23095914cc401edec3abfb4194c1c4b55286b327dd19d"
+        task_id: "202610041748-K43XFE"
+        task_revision: 255
+      -
+        command_digest: "sha256:68eaac787fe7fd8e0a19925fcbbb574c43fded49b0bddc1ca60c67aada566219"
+        id: "final-validation:sha256:d2b44bc83fd760b9f96610195c2172dc20fc50bdfe6f2fa30609c321fb555a18:255:final_validation_recorded"
+        kind: "final_validation_recorded"
+        mutation_id: "final-validation:sha256:d2b44bc83fd760b9f96610195c2172dc20fc50bdfe6f2fa30609c321fb555a18:255"
+        occurred_at: "2026-10-06T08:55:09.453Z"
+        payload_digest: "sha256:2299386cbf662bfa61c2194d8a7f977300523a1d30add2d97f8f24d4a4e1264d"
+        task_id: "202610041748-K43XFE"
+        task_revision: 256
+      -
+        command_digest: "sha256:7aed2d264612902efcc38b6ad29e4c9f92ce9de73d52b68256aa6cdbcdc1cf8d"
+        id: "kernel_task_completion_required:sha256:618ae9f6df2da353e39da866a256253e393133a3446a6e015cabe68999800c39:sha256:8cb70c1b44a721f63735146de36c330a9a2950fc6c0d520eb2aed80607126fc8:task_completed"
+        kind: "task_completed"
+        mutation_id: "kernel_task_completion_required:sha256:618ae9f6df2da353e39da866a256253e393133a3446a6e015cabe68999800c39:sha256:8cb70c1b44a721f63735146de36c330a9a2950fc6c0d520eb2aed80607126fc8"
+        occurred_at: "2026-10-06T08:57:08.561Z"
+        payload_digest: "sha256:0db47ed786743f98344b16a112907c36f8876d8f534d8be23874e11d89714998"
+        task_id: "202610041748-K43XFE"
+        task_revision: 257
     kind: "canonical_task"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
@@ -19202,6 +21782,1271 @@ PLANNER fallback scaffold for "Implement and qualify AgentPlane 0.7.13 Scenario 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-10-06T08:54:55.172Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: canonical Task Kernel final checks passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:bcf1339b31b927529dfba966ecc5e3d72753ff3623a924812750041d230501e0, input_digest=sha256:f6a706f348fe3f6567427474fb4dbe80f894c7d9bfc840c7878183aa0b8367bc
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run test:project recipes --maxWorkers=1 packages/recipes/src/roadmap-scenario-v2-parser.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (1/41)
+
+Check: affected_unit_integration
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (2/41)
+
+Check: affected_unit_integration
+Command: bun run test:project recipes --maxWorkers=1 packages/recipes/src/roadmap-recipe-parameters.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (3/41)
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-plan-validation.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (4/41)
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-applicability.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (5/41)
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-closure.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (6/41)
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-retention.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (7/41)
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-plan-binding.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (8/41)
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/usecases/roadmap-recipe-instantiation.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (9/41)
+
+Check: affected_unit_integration
+Command: bun run test:project core --maxWorkers=1 packages/core/src/commands/task/roadmap-recipe-specialization.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-10
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (10/41)
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-recipe-repin.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-11
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (11/41)
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/recipes/roadmap-explicit-selection.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-12
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (12/41)
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-shortlist.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-13
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (13/41)
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-prompt.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-14
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (14/41)
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/recipes/roadmap-v1-v2-conversion.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-15
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (15/41)
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-recipe-v2-entrypoint.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-16
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (16/41)
+
+Check: affected_unit_integration
+Command: bun run package:install-smoke
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-17
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (17/41)
+
+Check: affected_unit_integration
+Command: bun run schemas:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-18
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (18/41)
+
+Check: affected_unit_integration
+Command: bun run test:release:critical
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-19
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (19/41)
+
+Check: affected_unit_integration
+Command: bun run bench:agent-efficiency:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-20
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (20/41)
+
+Check: affected_unit_integration
+Command: bun run bench:agent-efficiency:replay:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-21
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (21/41)
+
+Check: affected_unit_integration
+Command: bun run docs:onboarding:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-22
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (22/41)
+
+Check: affected_unit_integration
+Command: bun run test:fast -- packages/agentplane/src/commands/task/kernel-advance-network.test.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/task/kernel-work-order.network.test.ts packages/agentplane/src/commands/task/roadmap-curator-parity.test.ts packages/agentplane/src/commands/task/create-plan-input.test.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts --testTimeout=60000 --hookTimeout=60000
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-23
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (23/41)
+
+Check: affected_unit_integration
+Command: bunx --no-install eslint packages/agentplane/src/commands/task/kernel-work-order.ts packages/agentplane/src/commands/task/kernel-work-order.network.test.ts packages/agentplane/src/commands/task/kernel-exchange.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/shared/declared-check.ts packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.ts packages/agentplane/src/commands/task/direct-task-verification.sequence.cases.ts packages/agentplane/src/commands/task/advance-task-step.ts packages/agentplane/src/commands/task/kernel-advance-network.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-24
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (24/41)
+
+Check: affected_unit_integration
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-25
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (25/41)
+
+Check: affected_unit_integration
+Command: bun run test:fast -- packages/agentplane/src/commands/task/kernel-policy-baseline.test.ts packages/agentplane/src/commands/task/kernel-policy-completion.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts packages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts packages/core/src/tasks/task-kernel/authority-delta.test.ts packages/agentplane/src/commands/branch/work-start.test.ts packages/agentplane/src/commands/task/kernel-inspection-validation.test.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/task/kernel-work-item-resume.test.ts packages/agentplane/src/commands/task/kernel-advance-network.test.ts packages/agentplane/src/commands/task/kernel-work-order.network.test.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/shared/worktree-topology.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/commands/branch/work-start.git.test.ts packages/agentplane/src/commands/branch/work-start.direct.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/commands/task/kernel-rework-proof.test.ts packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-centric/task-centric.output-dependencies.test.ts --testTimeout=60000 --hookTimeout=60000
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-26
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (26/41)
+
+Check: affected_unit_integration
+Command: bunx --no-install eslint packages/agentplane/src/commands/task/advance-task-step.ts packages/agentplane/src/commands/task/kernel-policy-baseline.ts packages/agentplane/src/commands/task/kernel-policy-baseline.test.ts packages/agentplane/src/commands/task/kernel-policy-completion.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-runtime-context.ts packages/agentplane/src/commands/task/kernel-semantic-result.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-boundary.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts packages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts packages/core/src/tasks/task-kernel/authority-delta.test.ts packages/agentplane/src/commands/branch/work-start.ts packages/agentplane/src/commands/branch/work-start.test.ts packages/agentplane/src/commands/task/kernel-inspection-validation.ts packages/agentplane/src/commands/task/kernel-inspection-validation.test.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/task/kernel-work-item-resume.ts packages/agentplane/src/commands/task/kernel-work-item-resume.test.ts packages/agentplane/src/commands/task/kernel-exchange.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/kernel-rework-proof.ts packages/agentplane/src/commands/task/kernel-rework-proof.test.ts packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-centric/task-centric.output-dependencies.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-27
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (27/41)
+
+Check: affected_unit_integration
+Command: bun run hotspots:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-28
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (28/41)
+
+Check: affected_unit_integration
+Command: bun run knip:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-29
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (29/41)
+
+Check: affected_unit_integration
+Command: bunx --no-install eslint packages/agentplane/src/commands/task/kernel-advance-network.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-30
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (30/41)
+
+Check: affected_unit_integration
+Command: bun run test:fast -- packages/agentplane/src/commands/task/kernel-rework-lineage.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-31
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (31/41)
+
+Check: affected_unit_integration
+Command: bunx --no-install eslint packages/agentplane/src/commands/task/kernel-rework-lineage.ts packages/agentplane/src/commands/task/kernel-rework-lineage.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-32
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (32/41)
+
+Check: affected_unit_integration
+Command: bunx --no-install eslint packages/agentplane/src/commands/recipes/impl/explicit-selection.ts packages/agentplane/src/runner/context/recipe-closure.ts packages/agentplane/src/runner/context/recipe-context.ts packages/agentplane/src/runner/context/recipe-applicability.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-33
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (33/41)
+
+Check: affected_unit_integration
+Command: bun run test:fast -- packages/agentplane/src/runner/context/roadmap-recipe-closure.test.ts packages/agentplane/src/runner/context/roadmap-recipe-applicability.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-34
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (34/41)
+
+Check: affected_unit_integration
+Command: bun run docs:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-35
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (35/41)
+
+Check: affected_unit_integration
+Command: bun run format:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-36
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (36/41)
+
+Check: affected_unit_integration
+Command: node scripts/checks/run-local-ci-group.mjs docs-schema
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-37
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (37/41)
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-38
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (38/41)
+
+Check: affected_unit_integration
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-39
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (39/41)
+
+Check: affected_unit_integration
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-40
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (40/41)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-41
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check affected_unit_integration (41/41)
+
+Check: critical_paths
+Command: bun run test:project recipes --maxWorkers=1 packages/recipes/src/roadmap-scenario-v2-parser.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (1/41)
+
+Check: critical_paths
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (2/41)
+
+Check: critical_paths
+Command: bun run test:project recipes --maxWorkers=1 packages/recipes/src/roadmap-recipe-parameters.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (3/41)
+
+Check: critical_paths
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-plan-validation.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (4/41)
+
+Check: critical_paths
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-applicability.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (5/41)
+
+Check: critical_paths
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-closure.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (6/41)
+
+Check: critical_paths
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-retention.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (7/41)
+
+Check: critical_paths
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-plan-binding.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (8/41)
+
+Check: critical_paths
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/usecases/roadmap-recipe-instantiation.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (9/41)
+
+Check: critical_paths
+Command: bun run test:project core --maxWorkers=1 packages/core/src/commands/task/roadmap-recipe-specialization.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-10
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (10/41)
+
+Check: critical_paths
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-recipe-repin.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-11
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (11/41)
+
+Check: critical_paths
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/recipes/roadmap-explicit-selection.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-12
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (12/41)
+
+Check: critical_paths
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-shortlist.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-13
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (13/41)
+
+Check: critical_paths
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-prompt.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-14
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (14/41)
+
+Check: critical_paths
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/recipes/roadmap-v1-v2-conversion.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-15
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (15/41)
+
+Check: critical_paths
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-recipe-v2-entrypoint.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-16
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (16/41)
+
+Check: critical_paths
+Command: bun run package:install-smoke
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-17
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (17/41)
+
+Check: critical_paths
+Command: bun run schemas:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-18
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (18/41)
+
+Check: critical_paths
+Command: bun run test:release:critical
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-19
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (19/41)
+
+Check: critical_paths
+Command: bun run bench:agent-efficiency:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-20
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (20/41)
+
+Check: critical_paths
+Command: bun run bench:agent-efficiency:replay:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-21
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (21/41)
+
+Check: critical_paths
+Command: bun run docs:onboarding:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-22
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (22/41)
+
+Check: critical_paths
+Command: bun run test:fast -- packages/agentplane/src/commands/task/kernel-advance-network.test.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/task/kernel-work-order.network.test.ts packages/agentplane/src/commands/task/roadmap-curator-parity.test.ts packages/agentplane/src/commands/task/create-plan-input.test.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts --testTimeout=60000 --hookTimeout=60000
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-23
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (23/41)
+
+Check: critical_paths
+Command: bunx --no-install eslint packages/agentplane/src/commands/task/kernel-work-order.ts packages/agentplane/src/commands/task/kernel-work-order.network.test.ts packages/agentplane/src/commands/task/kernel-exchange.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/shared/declared-check.ts packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.ts packages/agentplane/src/commands/task/direct-task-verification.sequence.cases.ts packages/agentplane/src/commands/task/advance-task-step.ts packages/agentplane/src/commands/task/kernel-advance-network.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-24
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (24/41)
+
+Check: critical_paths
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-25
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (25/41)
+
+Check: critical_paths
+Command: bun run test:fast -- packages/agentplane/src/commands/task/kernel-policy-baseline.test.ts packages/agentplane/src/commands/task/kernel-policy-completion.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts packages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts packages/core/src/tasks/task-kernel/authority-delta.test.ts packages/agentplane/src/commands/branch/work-start.test.ts packages/agentplane/src/commands/task/kernel-inspection-validation.test.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/task/kernel-work-item-resume.test.ts packages/agentplane/src/commands/task/kernel-advance-network.test.ts packages/agentplane/src/commands/task/kernel-work-order.network.test.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/shared/worktree-topology.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/commands/branch/work-start.git.test.ts packages/agentplane/src/commands/branch/work-start.direct.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/commands/task/kernel-rework-proof.test.ts packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-centric/task-centric.output-dependencies.test.ts --testTimeout=60000 --hookTimeout=60000
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-26
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (26/41)
+
+Check: critical_paths
+Command: bunx --no-install eslint packages/agentplane/src/commands/task/advance-task-step.ts packages/agentplane/src/commands/task/kernel-policy-baseline.ts packages/agentplane/src/commands/task/kernel-policy-baseline.test.ts packages/agentplane/src/commands/task/kernel-policy-completion.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-runtime-context.ts packages/agentplane/src/commands/task/kernel-semantic-result.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-boundary.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts packages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts packages/core/src/tasks/task-kernel/authority-delta.test.ts packages/agentplane/src/commands/branch/work-start.ts packages/agentplane/src/commands/branch/work-start.test.ts packages/agentplane/src/commands/task/kernel-inspection-validation.ts packages/agentplane/src/commands/task/kernel-inspection-validation.test.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/task/kernel-work-item-resume.ts packages/agentplane/src/commands/task/kernel-work-item-resume.test.ts packages/agentplane/src/commands/task/kernel-exchange.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/kernel-rework-proof.ts packages/agentplane/src/commands/task/kernel-rework-proof.test.ts packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-centric/task-centric.output-dependencies.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-27
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (27/41)
+
+Check: critical_paths
+Command: bun run hotspots:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-28
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (28/41)
+
+Check: critical_paths
+Command: bun run knip:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-29
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (29/41)
+
+Check: critical_paths
+Command: bunx --no-install eslint packages/agentplane/src/commands/task/kernel-advance-network.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-30
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (30/41)
+
+Check: critical_paths
+Command: bun run test:fast -- packages/agentplane/src/commands/task/kernel-rework-lineage.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-31
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (31/41)
+
+Check: critical_paths
+Command: bunx --no-install eslint packages/agentplane/src/commands/task/kernel-rework-lineage.ts packages/agentplane/src/commands/task/kernel-rework-lineage.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-32
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (32/41)
+
+Check: critical_paths
+Command: bunx --no-install eslint packages/agentplane/src/commands/recipes/impl/explicit-selection.ts packages/agentplane/src/runner/context/recipe-closure.ts packages/agentplane/src/runner/context/recipe-context.ts packages/agentplane/src/runner/context/recipe-applicability.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-33
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (33/41)
+
+Check: critical_paths
+Command: bun run test:fast -- packages/agentplane/src/runner/context/roadmap-recipe-closure.test.ts packages/agentplane/src/runner/context/roadmap-recipe-applicability.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-34
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (34/41)
+
+Check: critical_paths
+Command: bun run docs:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-35
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (35/41)
+
+Check: critical_paths
+Command: bun run format:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-36
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (36/41)
+
+Check: critical_paths
+Command: node scripts/checks/run-local-ci-group.mjs docs-schema
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-37
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (37/41)
+
+Check: critical_paths
+Command: bunx vitest run packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-38
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (38/41)
+
+Check: critical_paths
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-39
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (39/41)
+
+Check: critical_paths
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-40
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (40/41)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-41
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check critical_paths (41/41)
+
+Check: docs_contract
+Command: bun run test:project recipes --maxWorkers=1 packages/recipes/src/roadmap-scenario-v2-parser.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (1/41)
+
+Check: docs_contract
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (2/41)
+
+Check: docs_contract
+Command: bun run test:project recipes --maxWorkers=1 packages/recipes/src/roadmap-recipe-parameters.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (3/41)
+
+Check: docs_contract
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-plan-validation.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (4/41)
+
+Check: docs_contract
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-applicability.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (5/41)
+
+Check: docs_contract
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-closure.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (6/41)
+
+Check: docs_contract
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-retention.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (7/41)
+
+Check: docs_contract
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-plan-binding.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (8/41)
+
+Check: docs_contract
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/usecases/roadmap-recipe-instantiation.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (9/41)
+
+Check: docs_contract
+Command: bun run test:project core --maxWorkers=1 packages/core/src/commands/task/roadmap-recipe-specialization.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-10
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (10/41)
+
+Check: docs_contract
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-recipe-repin.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-11
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (11/41)
+
+Check: docs_contract
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/recipes/roadmap-explicit-selection.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-12
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (12/41)
+
+Check: docs_contract
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-shortlist.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-13
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (13/41)
+
+Check: docs_contract
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-prompt.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-14
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (14/41)
+
+Check: docs_contract
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/recipes/roadmap-v1-v2-conversion.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-15
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (15/41)
+
+Check: docs_contract
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-recipe-v2-entrypoint.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-16
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (16/41)
+
+Check: docs_contract
+Command: bun run package:install-smoke
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-17
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (17/41)
+
+Check: docs_contract
+Command: bun run schemas:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-18
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (18/41)
+
+Check: docs_contract
+Command: bun run test:release:critical
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-19
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (19/41)
+
+Check: docs_contract
+Command: bun run bench:agent-efficiency:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-20
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (20/41)
+
+Check: docs_contract
+Command: bun run bench:agent-efficiency:replay:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-21
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (21/41)
+
+Check: docs_contract
+Command: bun run docs:onboarding:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-22
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (22/41)
+
+Check: docs_contract
+Command: bun run test:fast -- packages/agentplane/src/commands/task/kernel-advance-network.test.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/task/kernel-work-order.network.test.ts packages/agentplane/src/commands/task/roadmap-curator-parity.test.ts packages/agentplane/src/commands/task/create-plan-input.test.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts --testTimeout=60000 --hookTimeout=60000
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-23
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (23/41)
+
+Check: docs_contract
+Command: bunx --no-install eslint packages/agentplane/src/commands/task/kernel-work-order.ts packages/agentplane/src/commands/task/kernel-work-order.network.test.ts packages/agentplane/src/commands/task/kernel-exchange.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/shared/declared-check.ts packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.ts packages/agentplane/src/commands/task/direct-task-verification.sequence.cases.ts packages/agentplane/src/commands/task/advance-task-step.ts packages/agentplane/src/commands/task/kernel-advance-network.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-24
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (24/41)
+
+Check: docs_contract
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-25
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (25/41)
+
+Check: docs_contract
+Command: bun run test:fast -- packages/agentplane/src/commands/task/kernel-policy-baseline.test.ts packages/agentplane/src/commands/task/kernel-policy-completion.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts packages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts packages/core/src/tasks/task-kernel/authority-delta.test.ts packages/agentplane/src/commands/branch/work-start.test.ts packages/agentplane/src/commands/task/kernel-inspection-validation.test.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/task/kernel-work-item-resume.test.ts packages/agentplane/src/commands/task/kernel-advance-network.test.ts packages/agentplane/src/commands/task/kernel-work-order.network.test.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/shared/worktree-topology.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/commands/branch/work-start.git.test.ts packages/agentplane/src/commands/branch/work-start.direct.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/commands/task/kernel-rework-proof.test.ts packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-centric/task-centric.output-dependencies.test.ts --testTimeout=60000 --hookTimeout=60000
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-26
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (26/41)
+
+Check: docs_contract
+Command: bunx --no-install eslint packages/agentplane/src/commands/task/advance-task-step.ts packages/agentplane/src/commands/task/kernel-policy-baseline.ts packages/agentplane/src/commands/task/kernel-policy-baseline.test.ts packages/agentplane/src/commands/task/kernel-policy-completion.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-runtime-context.ts packages/agentplane/src/commands/task/kernel-semantic-result.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-boundary.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts packages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts packages/core/src/tasks/task-kernel/authority-delta.test.ts packages/agentplane/src/commands/branch/work-start.ts packages/agentplane/src/commands/branch/work-start.test.ts packages/agentplane/src/commands/task/kernel-inspection-validation.ts packages/agentplane/src/commands/task/kernel-inspection-validation.test.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/task/kernel-work-item-resume.ts packages/agentplane/src/commands/task/kernel-work-item-resume.test.ts packages/agentplane/src/commands/task/kernel-exchange.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/kernel-rework-proof.ts packages/agentplane/src/commands/task/kernel-rework-proof.test.ts packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-centric/task-centric.output-dependencies.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-27
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (27/41)
+
+Check: docs_contract
+Command: bun run hotspots:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-28
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (28/41)
+
+Check: docs_contract
+Command: bun run knip:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-29
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (29/41)
+
+Check: docs_contract
+Command: bunx --no-install eslint packages/agentplane/src/commands/task/kernel-advance-network.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-30
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (30/41)
+
+Check: docs_contract
+Command: bun run test:fast -- packages/agentplane/src/commands/task/kernel-rework-lineage.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-31
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (31/41)
+
+Check: docs_contract
+Command: bunx --no-install eslint packages/agentplane/src/commands/task/kernel-rework-lineage.ts packages/agentplane/src/commands/task/kernel-rework-lineage.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-32
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (32/41)
+
+Check: docs_contract
+Command: bunx --no-install eslint packages/agentplane/src/commands/recipes/impl/explicit-selection.ts packages/agentplane/src/runner/context/recipe-closure.ts packages/agentplane/src/runner/context/recipe-context.ts packages/agentplane/src/runner/context/recipe-applicability.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-33
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (33/41)
+
+Check: docs_contract
+Command: bun run test:fast -- packages/agentplane/src/runner/context/roadmap-recipe-closure.test.ts packages/agentplane/src/runner/context/roadmap-recipe-applicability.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-34
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (34/41)
+
+Check: docs_contract
+Command: bun run docs:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-35
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (35/41)
+
+Check: docs_contract
+Command: bun run format:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-36
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (36/41)
+
+Check: docs_contract
+Command: node scripts/checks/run-local-ci-group.mjs docs-schema
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-37
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (37/41)
+
+Check: docs_contract
+Command: bunx vitest run packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-38
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (38/41)
+
+Check: docs_contract
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-39
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (39/41)
+
+Check: docs_contract
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-40
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (40/41)
+
+Check: docs_contract
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-41
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check docs_contract (41/41)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-41
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check full_regression
+
+Check: real_e2e
+Command: bun run test:project recipes --maxWorkers=1 packages/recipes/src/roadmap-scenario-v2-parser.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (1/41)
+
+Check: real_e2e
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (2/41)
+
+Check: real_e2e
+Command: bun run test:project recipes --maxWorkers=1 packages/recipes/src/roadmap-recipe-parameters.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (3/41)
+
+Check: real_e2e
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-plan-validation.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (4/41)
+
+Check: real_e2e
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-applicability.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (5/41)
+
+Check: real_e2e
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-closure.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (6/41)
+
+Check: real_e2e
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-retention.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (7/41)
+
+Check: real_e2e
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-plan-binding.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (8/41)
+
+Check: real_e2e
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/usecases/roadmap-recipe-instantiation.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (9/41)
+
+Check: real_e2e
+Command: bun run test:project core --maxWorkers=1 packages/core/src/commands/task/roadmap-recipe-specialization.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-10
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (10/41)
+
+Check: real_e2e
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-recipe-repin.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-11
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (11/41)
+
+Check: real_e2e
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/recipes/roadmap-explicit-selection.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-12
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (12/41)
+
+Check: real_e2e
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-shortlist.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-13
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (13/41)
+
+Check: real_e2e
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-prompt.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-14
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (14/41)
+
+Check: real_e2e
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/recipes/roadmap-v1-v2-conversion.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-15
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (15/41)
+
+Check: real_e2e
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-recipe-v2-entrypoint.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-16
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (16/41)
+
+Check: real_e2e
+Command: bun run package:install-smoke
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-17
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (17/41)
+
+Check: real_e2e
+Command: bun run schemas:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-18
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (18/41)
+
+Check: real_e2e
+Command: bun run test:release:critical
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-19
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (19/41)
+
+Check: real_e2e
+Command: bun run bench:agent-efficiency:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-20
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (20/41)
+
+Check: real_e2e
+Command: bun run bench:agent-efficiency:replay:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-21
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (21/41)
+
+Check: real_e2e
+Command: bun run docs:onboarding:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-22
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (22/41)
+
+Check: real_e2e
+Command: bun run test:fast -- packages/agentplane/src/commands/task/kernel-advance-network.test.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/task/kernel-work-order.network.test.ts packages/agentplane/src/commands/task/roadmap-curator-parity.test.ts packages/agentplane/src/commands/task/create-plan-input.test.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts --testTimeout=60000 --hookTimeout=60000
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-23
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (23/41)
+
+Check: real_e2e
+Command: bunx --no-install eslint packages/agentplane/src/commands/task/kernel-work-order.ts packages/agentplane/src/commands/task/kernel-work-order.network.test.ts packages/agentplane/src/commands/task/kernel-exchange.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/shared/declared-check.ts packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.ts packages/agentplane/src/commands/task/direct-task-verification.sequence.cases.ts packages/agentplane/src/commands/task/advance-task-step.ts packages/agentplane/src/commands/task/kernel-advance-network.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-24
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (24/41)
+
+Check: real_e2e
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-25
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (25/41)
+
+Check: real_e2e
+Command: bun run test:fast -- packages/agentplane/src/commands/task/kernel-policy-baseline.test.ts packages/agentplane/src/commands/task/kernel-policy-completion.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts packages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts packages/core/src/tasks/task-kernel/authority-delta.test.ts packages/agentplane/src/commands/branch/work-start.test.ts packages/agentplane/src/commands/task/kernel-inspection-validation.test.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/task/kernel-work-item-resume.test.ts packages/agentplane/src/commands/task/kernel-advance-network.test.ts packages/agentplane/src/commands/task/kernel-work-order.network.test.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/shared/worktree-topology.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/commands/branch/work-start.git.test.ts packages/agentplane/src/commands/branch/work-start.direct.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/commands/task/kernel-rework-proof.test.ts packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-centric/task-centric.output-dependencies.test.ts --testTimeout=60000 --hookTimeout=60000
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-26
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (26/41)
+
+Check: real_e2e
+Command: bunx --no-install eslint packages/agentplane/src/commands/task/advance-task-step.ts packages/agentplane/src/commands/task/kernel-policy-baseline.ts packages/agentplane/src/commands/task/kernel-policy-baseline.test.ts packages/agentplane/src/commands/task/kernel-policy-completion.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-runtime-context.ts packages/agentplane/src/commands/task/kernel-semantic-result.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-boundary.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts packages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts packages/core/src/tasks/task-kernel/authority-delta.test.ts packages/agentplane/src/commands/branch/work-start.ts packages/agentplane/src/commands/branch/work-start.test.ts packages/agentplane/src/commands/task/kernel-inspection-validation.ts packages/agentplane/src/commands/task/kernel-inspection-validation.test.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/task/kernel-work-item-resume.ts packages/agentplane/src/commands/task/kernel-work-item-resume.test.ts packages/agentplane/src/commands/task/kernel-exchange.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/kernel-rework-proof.ts packages/agentplane/src/commands/task/kernel-rework-proof.test.ts packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-centric/task-centric.output-dependencies.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-27
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (27/41)
+
+Check: real_e2e
+Command: bun run hotspots:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-28
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (28/41)
+
+Check: real_e2e
+Command: bun run knip:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-29
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (29/41)
+
+Check: real_e2e
+Command: bunx --no-install eslint packages/agentplane/src/commands/task/kernel-advance-network.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-30
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (30/41)
+
+Check: real_e2e
+Command: bun run test:fast -- packages/agentplane/src/commands/task/kernel-rework-lineage.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-31
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (31/41)
+
+Check: real_e2e
+Command: bunx --no-install eslint packages/agentplane/src/commands/task/kernel-rework-lineage.ts packages/agentplane/src/commands/task/kernel-rework-lineage.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-32
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (32/41)
+
+Check: real_e2e
+Command: bunx --no-install eslint packages/agentplane/src/commands/recipes/impl/explicit-selection.ts packages/agentplane/src/runner/context/recipe-closure.ts packages/agentplane/src/runner/context/recipe-context.ts packages/agentplane/src/runner/context/recipe-applicability.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-33
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (33/41)
+
+Check: real_e2e
+Command: bun run test:fast -- packages/agentplane/src/runner/context/roadmap-recipe-closure.test.ts packages/agentplane/src/runner/context/roadmap-recipe-applicability.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-34
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (34/41)
+
+Check: real_e2e
+Command: bun run docs:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-35
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (35/41)
+
+Check: real_e2e
+Command: bun run format:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-36
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (36/41)
+
+Check: real_e2e
+Command: node scripts/checks/run-local-ci-group.mjs docs-schema
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-37
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (37/41)
+
+Check: real_e2e
+Command: bunx vitest run packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-38
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (38/41)
+
+Check: real_e2e
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-39
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (39/41)
+
+Check: real_e2e
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-40
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (40/41)
+
+Check: real_e2e
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-41
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check real_e2e (41/41)
+
+Check: task_outcome
+Command: bun run test:project recipes --maxWorkers=1 packages/recipes/src/roadmap-scenario-v2-parser.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (1/41)
+
+Check: task_outcome
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (2/41)
+
+Check: task_outcome
+Command: bun run test:project recipes --maxWorkers=1 packages/recipes/src/roadmap-recipe-parameters.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (3/41)
+
+Check: task_outcome
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-plan-validation.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (4/41)
+
+Check: task_outcome
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-applicability.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (5/41)
+
+Check: task_outcome
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-closure.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (6/41)
+
+Check: task_outcome
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-retention.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (7/41)
+
+Check: task_outcome
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-plan-binding.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (8/41)
+
+Check: task_outcome
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/usecases/roadmap-recipe-instantiation.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (9/41)
+
+Check: task_outcome
+Command: bun run test:project core --maxWorkers=1 packages/core/src/commands/task/roadmap-recipe-specialization.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-10
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (10/41)
+
+Check: task_outcome
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/task/roadmap-recipe-repin.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-11
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (11/41)
+
+Check: task_outcome
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/recipes/roadmap-explicit-selection.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-12
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (12/41)
+
+Check: task_outcome
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-shortlist.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-13
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (13/41)
+
+Check: task_outcome
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/runner/context/roadmap-recipe-prompt.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-14
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (14/41)
+
+Check: task_outcome
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/commands/recipes/roadmap-v1-v2-conversion.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-15
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (15/41)
+
+Check: task_outcome
+Command: bun run test:project agentplane --maxWorkers=1 packages/agentplane/src/cli/run-cli.core.roadmap-recipe-v2-entrypoint.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-16
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (16/41)
+
+Check: task_outcome
+Command: bun run package:install-smoke
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-17
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (17/41)
+
+Check: task_outcome
+Command: bun run schemas:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-18
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (18/41)
+
+Check: task_outcome
+Command: bun run test:release:critical
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-19
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (19/41)
+
+Check: task_outcome
+Command: bun run bench:agent-efficiency:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-20
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (20/41)
+
+Check: task_outcome
+Command: bun run bench:agent-efficiency:replay:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-21
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (21/41)
+
+Check: task_outcome
+Command: bun run docs:onboarding:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-22
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (22/41)
+
+Check: task_outcome
+Command: bun run test:fast -- packages/agentplane/src/commands/task/kernel-advance-network.test.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/task/kernel-work-order.network.test.ts packages/agentplane/src/commands/task/roadmap-curator-parity.test.ts packages/agentplane/src/commands/task/create-plan-input.test.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts --testTimeout=60000 --hookTimeout=60000
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-23
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (23/41)
+
+Check: task_outcome
+Command: bunx --no-install eslint packages/agentplane/src/commands/task/kernel-work-order.ts packages/agentplane/src/commands/task/kernel-work-order.network.test.ts packages/agentplane/src/commands/task/kernel-exchange.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/shared/declared-check.ts packages/agentplane/src/commands/shared/declared-check.test.ts packages/agentplane/src/commands/task/direct-task-verification.ts packages/agentplane/src/commands/task/direct-task-verification.sequence.cases.ts packages/agentplane/src/commands/task/advance-task-step.ts packages/agentplane/src/commands/task/kernel-advance-network.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-24
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (24/41)
+
+Check: task_outcome
+Command: git diff --check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-25
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (25/41)
+
+Check: task_outcome
+Command: bun run test:fast -- packages/agentplane/src/commands/task/kernel-policy-baseline.test.ts packages/agentplane/src/commands/task/kernel-policy-completion.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts packages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts packages/core/src/tasks/task-kernel/authority-delta.test.ts packages/agentplane/src/commands/branch/work-start.test.ts packages/agentplane/src/commands/task/kernel-inspection-validation.test.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/task/kernel-work-item-resume.test.ts packages/agentplane/src/commands/task/kernel-advance-network.test.ts packages/agentplane/src/commands/task/kernel-work-order.network.test.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts packages/agentplane/src/commands/shared/worktree-topology.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/commands/branch/work-start.git.test.ts packages/agentplane/src/commands/branch/work-start.direct.test.ts packages/agentplane/src/commands/branch/work-start.materialize.test.ts packages/agentplane/src/commands/task/kernel-rework-proof.test.ts packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-centric/task-centric.output-dependencies.test.ts --testTimeout=60000 --hookTimeout=60000
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-26
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (26/41)
+
+Check: task_outcome
+Command: bunx --no-install eslint packages/agentplane/src/commands/task/advance-task-step.ts packages/agentplane/src/commands/task/kernel-policy-baseline.ts packages/agentplane/src/commands/task/kernel-policy-baseline.test.ts packages/agentplane/src/commands/task/kernel-policy-completion.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/kernel-runtime-context.ts packages/agentplane/src/commands/task/kernel-semantic-result.ts packages/agentplane/src/commands/task/kernel-advance.test.ts packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-boundary.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts packages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts packages/core/src/tasks/task-kernel/authority-delta.test.ts packages/agentplane/src/commands/branch/work-start.ts packages/agentplane/src/commands/branch/work-start.test.ts packages/agentplane/src/commands/task/kernel-inspection-validation.ts packages/agentplane/src/commands/task/kernel-inspection-validation.test.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.ts packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/task/kernel-work-item-resume.ts packages/agentplane/src/commands/task/kernel-work-item-resume.test.ts packages/agentplane/src/commands/task/kernel-exchange.ts packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/kernel-rework-proof.ts packages/agentplane/src/commands/task/kernel-rework-proof.test.ts packages/core/src/tasks/task-centric/task-centric.test.ts packages/core/src/tasks/task-centric/task-centric.output-dependencies.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-27
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (27/41)
+
+Check: task_outcome
+Command: bun run hotspots:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-28
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (28/41)
+
+Check: task_outcome
+Command: bun run knip:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-29
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (29/41)
+
+Check: task_outcome
+Command: bunx --no-install eslint packages/agentplane/src/commands/task/kernel-advance-network.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-30
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (30/41)
+
+Check: task_outcome
+Command: bun run test:fast -- packages/agentplane/src/commands/task/kernel-rework-lineage.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-31
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (31/41)
+
+Check: task_outcome
+Command: bunx --no-install eslint packages/agentplane/src/commands/task/kernel-rework-lineage.ts packages/agentplane/src/commands/task/kernel-rework-lineage.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-32
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (32/41)
+
+Check: task_outcome
+Command: bunx --no-install eslint packages/agentplane/src/commands/recipes/impl/explicit-selection.ts packages/agentplane/src/runner/context/recipe-closure.ts packages/agentplane/src/runner/context/recipe-context.ts packages/agentplane/src/runner/context/recipe-applicability.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-33
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (33/41)
+
+Check: task_outcome
+Command: bun run test:fast -- packages/agentplane/src/runner/context/roadmap-recipe-closure.test.ts packages/agentplane/src/runner/context/roadmap-recipe-applicability.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-34
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (34/41)
+
+Check: task_outcome
+Command: bun run docs:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-35
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (35/41)
+
+Check: task_outcome
+Command: bun run format:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-36
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (36/41)
+
+Check: task_outcome
+Command: node scripts/checks/run-local-ci-group.mjs docs-schema
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-37
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (37/41)
+
+Check: task_outcome
+Command: bunx vitest run packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-38
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (38/41)
+
+Check: task_outcome
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-39
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (39/41)
+
+Check: task_outcome
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-40
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (40/41)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-41
+Scope: branch_pr task 202610041748-K43XFE Verification Contract check task_outcome (41/41)
+
+NativeTaskIdentityRef:
+- plan_digest: sha256:f2e287a7a29376fd292c8c2f2a3707df9e95b0c61c5921f325ba0275e0a6871e
+- policy_digest: sha256:649ea2aa3aa2eff9e709b3075d17deaef97f82440494ba18905f15280a598931
+- capability_digest: sha256:9c954e5cb756345b8471e7c827245f46466a455f655bd8eb5841bc137bc713b0
+- checks_digest: sha256:30e0d912dffde870c5840834290e0cd6edfd56b6ee9aacabe07f7811aaa4aa15
+- identity_digest: sha256:d482aa4139cbfdf96c520fff794a08c88cadf7526432aea4d23498eeef4cadeb
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

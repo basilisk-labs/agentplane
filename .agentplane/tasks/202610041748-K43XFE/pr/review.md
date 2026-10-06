@@ -6,14 +6,14 @@ Created: 2026-10-04T18:13:17.876Z
 
 - Task: `202610041748-K43XFE`
 - Title: Implement and qualify AgentPlane 0.7.13 Scenario V2 recipes for production release
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610041748-K43XFE/implement-and-qualify-agentplane-0-7-13-scenario`
 - Canonical task record: `.agentplane/tasks/202610041748-K43XFE/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Canonical validation sha256:618a4278260b812e37b7e3e84d7fafa13d6f8ae46e23f504dfc317c1a50db9b9
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
