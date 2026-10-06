@@ -88,21 +88,11 @@ export async function readKernelOrderResult(
   if (path.resolve(resultPath) !== path.join(directory, "result.json"))
     throw new Error("Canonical result path mismatch");
   const workOrder = AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse(
-    JSON.parse(
-      await readStableRegularTextNoFollow(
-        path.join(directory, "work-order.json"),
-        "canonical work order",
-      ),
-    ),
+    await retainedJson(directory, "work-order.json"),
   );
   const compact = !("kind" in raw);
   if (compact) {
-    const owner: unknown = JSON.parse(
-      await readStableRegularTextNoFollow(
-        path.join(directory, "transport-owner.json"),
-        "canonical transport owner",
-      ),
-    );
+    const owner: unknown = await retainedJson(directory, "transport-owner.json");
     if (
       !isRecord(owner) ||
       owner.result_format !== "semantic_payload_v1" ||
@@ -180,8 +170,7 @@ export async function withKernelReworkEvidence(
           kind: "source_artifact",
           path: reviewPath,
           digest: k.kernelDigest(review),
-          description:
-            "Unresolved evaluator findings from the preceding attempt. Digest uses canonical JSON.",
+          description: "Prior unresolved EVALUATOR findings. Digest uses canonical JSON.",
           required: true,
         });
       } else if (validation.checks.status !== "failed") {
@@ -192,16 +181,17 @@ export async function withKernelReworkEvidence(
         kind: "source_artifact",
         path: validationPath,
         digest: k.kernelDigest(validation),
-        description:
-          "Native check or review failure from the preceding attempt. Digest uses canonical JSON.",
+        description: "Prior native check or review failure. Digest uses canonical JSON.",
         required: true,
       });
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
     }
   }
+  if (inputs.length === 0)
+    inputs.push(...(await approvedAmendmentInputs(order, directory, record)));
   if (inputs.length === 0) inputs.push(...(await kernelRecoveryInputs(order, directory, record)));
-  if (inputs.length === 0 && !isKernelScopeExpansionRecovery(order, record))
+  if (inputs.length === 0)
     throw new Error("Canonical rework requires retained review or failed-check evidence");
   return AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse({
     ...order,
@@ -209,46 +199,266 @@ export async function withKernelReworkEvidence(
   });
 }
 
-/** A USER-approved additive plan amendment starts a fresh definition, not evaluator rework. */
+/** Recognize an approved changed definition; preceding-attempt evidence is checked separately. */
 export function isKernelScopeExpansionRecovery(
   order: AgentWorkOrderV2,
   record?: KernelRecord,
 ): boolean {
   const binding = order.canonical_binding;
   const aggregate = record?.aggregate;
-  if (binding?.phase !== "implementation" || !aggregate) return false;
-  const current = aggregate?.current_plan;
-  if (
-    current?.state !== "APPROVED" ||
-    binding.plan_revision !== current.revision ||
-    binding.plan_digest !== current.digest ||
-    current.approval_actor_id === null ||
-    current.approval_evidence_digest === null
-  )
-    return false;
-  const source = aggregate.plan_history.find((plan) => plan.revision === current.revision - 1);
-  const authority = aggregate.authority_lineage?.at(-1)?.authority;
+  if (binding?.phase !== "implementation" || !aggregate || !record) return false;
+  const current = aggregate.current_plan;
+  const source = aggregate.plan_history.at(-1);
+  const lineage = aggregate.authority_lineage ?? [];
+  const authority = lineage.at(-1)?.authority;
+  const amendmentIndex = lineage.findLastIndex(
+    (entry) =>
+      entry.observation?.kind === "plan_amendment" &&
+      entry.authority.plan_digest === current?.digest,
+  );
+  const parent = lineage[amendmentIndex - 1]?.authority;
   const previous = source?.work_items.find((item) => item.id === binding.work_item_id);
-  const amended = current.work_items.find((item) => item.id === binding.work_item_id);
+  const amended = current?.work_items.find((item) => item.id === binding.work_item_id);
   const runtime = aggregate.work_items[binding.work_item_id];
-  if (!source || !authority || !previous || !amended || !runtime) return false;
+  if (!current || !source || !authority || !parent || !previous || !amended || !runtime)
+    return false;
   return Boolean(
+    current.state === "APPROVED" &&
+    source.state === "SUPERSEDED" &&
+    source.revision === current.revision - 1 &&
+    /^USER(?::[A-Za-z0-9._@-]+)?$/u.test(current.approval_actor_id ?? "") &&
+    current.digest ===
+      k.kernelDigest({ revision: current.revision, work_items: current.work_items }) &&
+    source.digest ===
+      k.kernelDigest({ revision: source.revision, work_items: source.work_items }) &&
+    binding.task_id === aggregate.id &&
+    order.task.id === aggregate.id &&
+    order.task.revision === aggregate.revision &&
+    order.task.work_item_id === binding.work_item_id &&
+    binding.repository_identity === record.repository_identity &&
+    binding.repository_identity === authority.repository_identity &&
+    binding.repository_fingerprint === authority.repository_fingerprint &&
+    binding.plan_revision === current.revision &&
+    binding.plan_digest === current.digest &&
+    binding.contract_digest === amended.contract_digest &&
+    runtime.state === "EXECUTING" &&
     runtime.attempt === binding.attempt &&
+    runtime.claim_id !== null &&
+    runtime.claim_id === binding.claim_id &&
     runtime.result_digest === null &&
     runtime.validation === null &&
+    runtime.output_manifests.length === 0 &&
     k.kernelDigest(runtime.definition) === k.kernelDigest(amended) &&
-    amended.execution_requirements.scope_roots.some(
-      (root) => !previous.execution_requirements.scope_roots.includes(root),
-    ) &&
+    k.kernelDigest(previous) !== k.kernelDigest(amended) &&
+    parent.plan_digest === source.digest &&
+    parent.plan_revision === source.revision &&
+    authority.plan_digest === current.digest &&
+    authority.plan_revision === current.revision &&
+    authority.work_item_id === null &&
+    order.state_fingerprint.components.authority.digest ===
+      k.kernelDigest({
+        state: "present",
+        source: "canonical_authority",
+        value: { issued: binding.authority_digest, lineage: authority.digest },
+      }) &&
+    k.canonicalAuthorityIssues(aggregate).length === 0 &&
     current.approval_evidence_digest ===
       k.planScopeExpansionApprovalDigest({
         task_id: aggregate.id,
         current_plan_digest: source.digest,
         amended_plan_digest: current.digest,
-        actor_id: current.approval_actor_id,
+        actor_id: current.approval_actor_id!,
       }) &&
-    k.isAdditivePlanScopeExpansion({ current: source, amended: current, authority }),
+    k.planAmendmentScopeRoots({ current: source, amended: current, authority: parent }) !== null,
   );
+}
+
+async function retainedJson(source: string, name: string): Promise<unknown> {
+  return JSON.parse(await readStableRegularTextNoFollow(path.join(source, name), name));
+}
+
+function precedingStopContinuation(
+  record: KernelRecord,
+  prior: AgentWorkOrderV2,
+  revision: number,
+  fingerprint: unknown,
+  roots: readonly string[],
+): boolean {
+  const binding = prior.canonical_binding!;
+  let cursor = prior.task.revision!;
+  let observed = binding.repository_fingerprint;
+  const events = record.events.filter(
+    (event) => event.task_revision > cursor && event.task_revision <= revision,
+  );
+  for (const event of events) {
+    const receipt = record.aggregate.mutation_receipts[event.mutation_id];
+    const continuation = record.aggregate.authority_lineage?.find(
+      (entry) =>
+        entry.observation?.kind === "repository_implementation" &&
+        entry.observation.previous_fingerprint === observed &&
+        entry.authority.plan_digest === binding.plan_digest &&
+        entry.observation.changed_paths.every((changed) =>
+          roots.some((root) => root === "." || changed === root || changed.startsWith(`${root}/`)),
+        ) &&
+        event.command_digest ===
+          k.kernelDigest({
+            kind: "continue_authority",
+            task_id: binding.task_id,
+            expected_task_revision: cursor,
+            expected_state_fingerprint: entry.authority.repository_fingerprint,
+            record: entry,
+          }),
+    );
+    if (
+      event.kind !== "authority_continued" ||
+      event.task_revision !== cursor + 1 ||
+      receipt?.before_revision !== cursor ||
+      receipt.after_revision !== event.task_revision ||
+      receipt.command_digest !== event.command_digest ||
+      !continuation
+    )
+      return false;
+    cursor = event.task_revision;
+    observed = continuation.authority.repository_fingerprint;
+  }
+  return cursor === revision && observed === fingerprint;
+}
+
+/** A retained native stop/failure binds this exemption to the first attempt of the new definition. */
+async function approvedAmendmentInputs(
+  order: AgentWorkOrderV2,
+  directory: string,
+  record?: KernelRecord,
+): Promise<AgentWorkOrderV2["required_inputs"]> {
+  if (!record || !isKernelScopeExpansionRecovery(order, record)) return [];
+  const binding = order.canonical_binding!;
+  if (binding.phase !== "implementation") return [];
+  const sourcePlan = record.aggregate.plan_history.at(-1)!;
+  const previous = sourcePlan.work_items.find((item) => item.id === binding.work_item_id)!;
+  const amendment = record.events.findLast((event) => event.kind === "plan_amended");
+  if (!amendment) return [];
+  // Native events do not retain attempt payloads. Require the exact immediate
+  // continuation/claim/begin sequence; an intervening retry cannot reuse approval.
+  const after = record.events.filter((event) => event.task_revision > amendment.task_revision);
+  if (after.length !== 3 || after[0]?.kind !== "authority_continued") return [];
+  for (const [index, action] of ["claim", "begin"].entries()) {
+    const event = after[index + 1]!;
+    const receipt = record.aggregate.mutation_receipts[event.mutation_id];
+    const command = {
+      kind: "transition_work_item",
+      action,
+      task_id: binding.task_id,
+      expected_task_revision: amendment.task_revision + index + 1,
+      expected_state_fingerprint: binding.repository_fingerprint,
+      work_item_id: binding.work_item_id,
+      claim_id: binding.claim_id,
+    };
+    if (
+      event.kind !== "work_item_transitioned" ||
+      event.task_revision !== amendment.task_revision + index + 2 ||
+      event.command_digest !== k.kernelDigest(command) ||
+      receipt?.command_digest !== event.command_digest ||
+      receipt.after_revision !== event.task_revision ||
+      receipt.before_revision !== event.task_revision - 1
+    )
+      return [];
+  }
+  if (after[2]!.task_revision !== record.aggregate.revision) return [];
+  for (const [id, receipt] of Object.entries(record.aggregate.mutation_receipts).toSorted(
+    ([a], [b]) => a.localeCompare(b),
+  )) {
+    const match = /^(semantic-stop|validation):(sha256:[a-f0-9]{64})$/u.exec(id);
+    if (!match || receipt.after_revision >= amendment.task_revision) continue;
+    const source = path.join(path.dirname(directory), match[2]!.slice(7));
+    try {
+      const orderPath = path.join(source, "work-order.json");
+      const prior = AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse(
+        await retainedJson(source, "work-order.json"),
+      );
+      const old = prior.canonical_binding;
+      if (
+        !old ||
+        old.phase === "planning" ||
+        prior.work_order_id !== match[2] ||
+        old.task_id !== binding.task_id ||
+        old.repository_identity !== binding.repository_identity ||
+        old.plan_revision !== sourcePlan.revision ||
+        old.plan_digest !== sourcePlan.digest ||
+        old.work_item_id !== binding.work_item_id ||
+        old.contract_digest !== previous.contract_digest ||
+        old.attempt !== binding.attempt - 1 ||
+        prior.task.revision === null ||
+        prior.task.revision > receipt.before_revision
+      )
+        continue;
+      if (match[1] === "semantic-stop") {
+        const saved: unknown = await retainedJson(source, "semantic-stop-command.json");
+        if (
+          !isRecord(saved) ||
+          !isRecord(saved.command) ||
+          k.kernelDigest(saved.command) !== receipt.command_digest ||
+          saved.command.kind !== "transition_work_item" ||
+          saved.command.action !== "block" ||
+          saved.command.task_id !== old.task_id ||
+          saved.command.work_item_id !== old.work_item_id ||
+          old.phase !== "implementation" ||
+          saved.command.claim_id !== old.claim_id ||
+          saved.command.expected_task_revision !== receipt.before_revision ||
+          !precedingStopContinuation(
+            record,
+            prior,
+            receipt.before_revision,
+            saved.command.expected_state_fingerprint,
+            previous.execution_requirements.scope_roots,
+          )
+        )
+          continue;
+      } else {
+        const validation = (await retainedJson(
+          source,
+          "validation.json",
+        )) as KernelValidationEvidence;
+        const saved: unknown = await retainedJson(source, "validation-command.json");
+        if (
+          !isRecord(saved) ||
+          !isRecord(saved.command) ||
+          k.kernelDigest(saved.command) !== receipt.command_digest ||
+          saved.command.kind !== "record_work_item_validation" ||
+          saved.command.task_id !== old.task_id ||
+          saved.command.work_item_id !== old.work_item_id ||
+          !isRecord(saved.command.validation) ||
+          saved.command.validation.status !== "FAILED" ||
+          !isRecord(saved.command.validation.identity) ||
+          saved.command.validation.identity.implementation_identity !== validation.result_digest ||
+          !Array.isArray(saved.command.validation.evidence_digests) ||
+          !saved.command.validation.evidence_digests.includes(validation.native_evidence_digest) ||
+          (validation.review_digest !== null &&
+            !saved.command.validation.evidence_digests.includes(validation.review_digest)) ||
+          validation.task_id !== old.task_id ||
+          validation.work_item_id !== old.work_item_id ||
+          validation.attempt !== old.attempt ||
+          validation.contract_digest !== old.contract_digest ||
+          validation.repository_fingerprint !== old.repository_fingerprint ||
+          validation.status !== "FAILED"
+        )
+          continue;
+      }
+      return [
+        {
+          id: `previous-definition:${match[2]}`,
+          kind: "source_artifact",
+          path: orderPath,
+          digest: k.kernelDigest(prior),
+          required: true,
+          description:
+            "Preceding native attempt under the immediate superseded Plan. The current definition has exact USER-approved amendment authority. Digest uses canonical JSON.",
+        },
+      ];
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+    }
+  }
+  return [];
 }
 
 export async function issueKernelExchange(
@@ -261,12 +471,7 @@ export async function issueKernelExchange(
   order = await withKernelReworkEvidence(order, directory, record);
   let resultFormat: "semantic_payload_v1" | undefined;
   try {
-    const owner: unknown = JSON.parse(
-      await readStableRegularTextNoFollow(
-        path.join(directory, "transport-owner.json"),
-        "canonical transport owner",
-      ),
-    );
+    const owner: unknown = await retainedJson(directory, "transport-owner.json");
     if (
       !isRecord(owner) ||
       owner.transport !== transport ||
@@ -302,12 +507,7 @@ export async function issueKernelExchange(
     if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
     let stored: unknown;
     try {
-      stored = JSON.parse(
-        await readStableRegularTextNoFollow(
-          path.join(directory, "result-schema-object.json"),
-          "canonical schema descriptor",
-        ),
-      );
+      stored = await retainedJson(directory, "result-schema-object.json");
     } catch (missing) {
       if ((missing as NodeJS.ErrnoException).code !== "ENOENT") throw missing;
       stored = await putEvaluatorEvidenceObject({

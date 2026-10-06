@@ -105,6 +105,7 @@ export type CommandInvocation = {
 };
 
 export type ParsedDeclaredTaskCheck = {
+  env?: { NODE_OPTIONS: string };
   executable: string;
   args: string[];
   script: string | null;
@@ -249,6 +250,20 @@ export function resolveDeclaredTaskCheck(command: string): DeclaredTaskCheckReso
   } catch (error) {
     return { ok: false, reason: error instanceof Error ? error.message : "invalid argv syntax" };
   }
+  let env: ParsedDeclaredTaskCheck["env"];
+  if (invocation.command.startsWith("NODE_OPTIONS=")) {
+    const heap = /^NODE_OPTIONS=--max-old-space-size=([0-9]+)$/u.exec(invocation.command);
+    const size = heap ? Number(heap[1]) : NaN;
+    // A finite heap budget is the only admitted environment override (MiB).
+    if (!Number.isSafeInteger(size) || size < 256 || size > 8192) {
+      return {
+        ok: false,
+        reason: "NODE_OPTIONS must contain only a heap size from 256 to 8192 MiB",
+      };
+    }
+    env = { NODE_OPTIONS: `--max-old-space-size=${String(size)}` };
+    invocation = { command: invocation.args[0] ?? "", args: invocation.args.slice(1) };
+  }
   if (!validExecutable(invocation.command)) {
     return { ok: false, reason: "executable must be a command name or repository-bound path" };
   }
@@ -325,27 +340,37 @@ export function resolveDeclaredTaskCheck(command: string): DeclaredTaskCheckReso
     ["agentplane", "ap"].includes(base) &&
     ((invocation.args.length === 1 && invocation.args[0] === "doctor") ||
       (invocation.args.length === 2 &&
-        invocation.args[0] === "task" &&
-        invocation.args[1] === "lint"))
+        ((invocation.args[0] === "task" && invocation.args[1] === "lint") ||
+          (invocation.args[0] === "config" && invocation.args[1] === "show"))))
   ) {
     return {
       ok: true,
       check: {
+        ...(env ? { env } : {}),
         executable: process.execPath,
         args: [AGENTPLANE_BIN, ...invocation.args],
         script: null,
       },
     };
   }
+  if (base === "agentplane" || base === "ap") {
+    return { ok: false, reason: "unsupported AgentPlane verification command" };
+  }
   if (base === "bunx") {
     return {
       ok: true,
-      check: { executable: "bun", args: ["x", ...invocation.args], script: null },
+      check: {
+        ...(env ? { env } : {}),
+        executable: "bun",
+        args: ["x", ...invocation.args],
+        script: null,
+      },
     };
   }
   return {
     ok: true,
     check: {
+      ...(env ? { env } : {}),
       executable: invocation.command,
       args: invocation.args,
       script: packageScript(invocation),

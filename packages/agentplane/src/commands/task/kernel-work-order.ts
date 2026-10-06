@@ -106,6 +106,46 @@ export async function buildKernelStateFingerprint(opts: {
   });
 }
 
+/** Network reads require all three native grants for this exact implementation episode. */
+function permitsNetworkRead(
+  record: KernelRecord,
+  context: NativeAuthorityContext,
+  implementation: KernelWorkOrder | undefined,
+): boolean {
+  if (!implementation || !["EXECUTOR", "CURATOR"].includes(implementation.contract.role))
+    return false;
+  const { binding, authority } = implementation;
+  const definition = record.aggregate.current_plan?.work_items?.find(
+    (item) => item.id === binding.work_item_id,
+  );
+  if (
+    record.aggregate.current_plan?.state !== "APPROVED" ||
+    context.task_id !== record.aggregate.id ||
+    context.task_revision !== record.aggregate.revision ||
+    !definition?.execution_requirements.external_effects.includes("network_read") ||
+    !record.aggregate.work_items[binding.work_item_id] ||
+    !authority.external_effects?.includes("network_read") ||
+    !context.ceiling.external_effects.includes("network_read") ||
+    authority.task_id !== binding.task_id ||
+    authority.work_item_id !== binding.work_item_id ||
+    authority.plan_revision !== binding.plan_revision ||
+    authority.plan_digest !== binding.plan_digest ||
+    authority.repository_identity !== context.repository_identity ||
+    authority.repository_fingerprint !== context.repository_fingerprint ||
+    authority.digest !== k.authorityDigest(authority) ||
+    k.kernelDigest(definition) !==
+      k.kernelDigest(record.aggregate.work_items[binding.work_item_id]?.definition)
+  )
+    return false;
+  const current = resumeKernelWorkOrder({
+    record,
+    work_item_id: binding.work_item_id,
+    authority,
+    repository_fingerprint: context.repository_fingerprint,
+  });
+  return current !== null && k.kernelDigest(current) === k.kernelDigest(implementation);
+}
+
 /** Project one semantic episode. This object never selects or executes a lifecycle transition. */
 export async function buildKernelAgentWorkOrder(opts: {
   command: CommandContext;
@@ -133,6 +173,7 @@ export async function buildKernelAgentWorkOrder(opts: {
         plan_digest: plan?.digest ?? aggregate.intent_digest,
       };
   const authority = implementation?.authority;
+  const networkRead = permitsNetworkRead(record, context, implementation);
   const policy = {
     fingerprint_schema_version: 2 as const,
     required_components: [
@@ -227,7 +268,7 @@ export async function buildKernelAgentWorkOrder(opts: {
         "report_blocker",
         ...(authority ? ["workspace_write", "run_checks"] : []),
       ],
-      network: "deny",
+      network: networkRead ? "allowed" : "deny",
       external_side_effects: [],
       sandbox: authority ? "workspace-write" : "read-only",
       expires_at: authority?.expires_at ?? null,

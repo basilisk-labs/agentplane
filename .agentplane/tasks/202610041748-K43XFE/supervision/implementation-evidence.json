@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check cd4ab7228ab42954510e868be657a17d7531246c..4e0654f97c6e1c1f9ce6b7e31585324b1b759939",
+      "command": "git diff --check 4e0654f97c6e1c1f9ce6b7e31585324b1b759939..0cc00f364c7be0927047ef4ce3d066da6531482f",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB cd4ab7228ab42954510e868be657a17d7531246c..4e0654f97c6e1c1f9ce6b7e31585324b1b759939",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 4e0654f97c6e1c1f9ce6b7e31585324b1b759939..0cc00f364c7be0927047ef4ce3d066da6531482f",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -24,16 +24,14 @@
         "M\t.agentplane/tasks/202610041748-K43XFE/pr/review.md",
         "M\t.agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202610041748-K43XFE/supervision/implementation-evidence.json",
+        "A\tpackages/agentplane/src/cli/run-cli.core.roadmap-recipe-v2-entrypoint.test.ts",
         "M\tpackages/agentplane/src/cli/run-cli/command-catalog/project.ts",
         "M\tpackages/agentplane/src/cli/run-cli/command-loaders/project.ts",
-        "A\tpackages/agentplane/src/commands/recipes/impl/v1-conversion.ts",
-        "A\tpackages/agentplane/src/commands/recipes/preview-v1.command.ts",
-        "A\tpackages/agentplane/src/commands/recipes/roadmap-v1-v2-conversion.test.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-inspection.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-semantic-result.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-work-order.ts",
-        "M\tpackages/recipes/src/index.ts",
-        "A\tpackages/recipes/src/scenario-conversion.ts"
+        "M\tpackages/agentplane/src/commands/recipes/impl/explicit-selection.ts",
+        "A\tpackages/agentplane/src/commands/recipes/preview-v2.command.ts",
+        "M\tpackages/agentplane/src/commands/task/create.command.ts",
+        "M\tpackages/agentplane/src/commands/task/plan-set.command.ts",
+        "A\tpackages/agentplane/src/commands/task/recipe-input.ts"
       ]
     },
     {
@@ -80,8 +78,8 @@
       ]
     }
   ],
-  "execution_base_commit": "cd4ab7228ab42954510e868be657a17d7531246c",
-  "implementation_commit": "4e0654f97c6e1c1f9ce6b7e31585324b1b759939",
+  "execution_base_commit": "4e0654f97c6e1c1f9ce6b7e31585324b1b759939",
+  "implementation_commit": "0cc00f364c7be0927047ef4ce3d066da6531482f",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [

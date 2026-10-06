@@ -1,8 +1,11 @@
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
 import { afterEach, describe, expect, it, vi } from "vitest";
+
+import * as processRunner from "@agentplaneorg/core/process";
+import { defaultConfig } from "../../cli/core-imports.js";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import * as runtimeEnv from "../../shared/runtime-env.js";
@@ -30,7 +33,65 @@ afterEach(async () => {
   await Promise.all(roots.splice(0).map(async (entry) => await rm(entry, { recursive: true })));
 });
 
+function runNativeVerification(
+  cwd: string,
+  task: Parameters<typeof runDirectTaskVerification>[0]["task"],
+) {
+  return runDirectTaskVerification({ command: command(cwd), task, task_id: TASK_ID, cwd });
+}
+
 describe("direct task verification sequences", () => {
+  it.each(["ap config show", "agentplane config show"])(
+    "executes %s through the real repository CLI",
+    async (check) => {
+      const cwd = await root();
+      await processRunner.runProcess({ command: "git", args: ["init", "--quiet"], cwd });
+      await mkdir(path.join(cwd, ".agentplane"));
+      const config = defaultConfig();
+      config.branch.task_prefix = "readonly-cli-fixture";
+      await writeFile(path.join(cwd, ".agentplane/config.json"), JSON.stringify(config));
+      const result = await runNativeVerification(cwd, { verify: [check] });
+      expect(result.status, JSON.stringify(result)).toBe("passed");
+      expect(result.checks[0]?.stdout_tail).toContain("readonly-cli-fixture");
+      expect(runProcess).not.toHaveBeenCalled();
+    },
+  );
+
+  it("delivers the heap override to a real child without leaking to the next segment", async () => {
+    const cwd = await root();
+    const inherited = process.env.NODE_OPTIONS ?? "";
+    await writeFile(
+      path.join(cwd, "heap.mjs"),
+      "console.log(JSON.stringify(process.env.NODE_OPTIONS ?? ''));\n",
+    );
+    const result = await runNativeVerification(cwd, {
+      verify: ["NODE_OPTIONS=--max-old-space-size=512 node heap.mjs && node heap.mjs"],
+    });
+    expect(result.status, JSON.stringify(result)).toBe("passed");
+    expect(result.checks[0]?.stdout_tail.trim().split("\n\n")).toEqual([
+      JSON.stringify("--max-old-space-size=512"),
+      JSON.stringify(inherited),
+    ]);
+    expect(process.env.NODE_OPTIONS ?? "").toBe(inherited);
+  });
+
+  it.each([
+    "NODE_OPTIONS='--max-old-space-size=4096 --import=evil.mjs' node effect.mjs",
+    "NODE_OPTIONS=--max-old-space-size=4096 NODE_OPTIONS=--require=evil.cjs node effect.mjs",
+    "NODE_OPTIONS=--max-old-space-size=4096 ap config set workflow_mode direct",
+    "ap config show --root elsewhere",
+  ])("rejects %s before a real subprocess effect", async (check) => {
+    const cwd = await root();
+    await writeFile(
+      path.join(cwd, "effect.mjs"),
+      "import {writeFileSync} from 'node:fs'; writeFileSync('effect', 'bad');",
+    );
+    const result = await runNativeVerification(cwd, { verify: [check] });
+    expect(result.status).toBe("unsupported");
+    expect(result.checks).toEqual([]);
+    await expect(readFile(path.join(cwd, "effect"))).rejects.toMatchObject({ code: "ENOENT" });
+  });
+
   it.each([
     { script: "release:prepublish", explicitTimeout: undefined, expectedTimeout: 150 * 60_000 },
     { script: "release:prepublish", explicitTimeout: 1000, expectedTimeout: 1000 },
@@ -83,6 +144,47 @@ describe("direct task verification sequences", () => {
     } finally {
       observation.mockRestore();
     }
+  });
+
+  it("isolates heap settings across segments and binds every effective environment", async () => {
+    const cwd = await root();
+    const inherited = process.env.NODE_OPTIONS;
+    runProcess.mockResolvedValue({ exitCode: 0, stdout: "ok", stderr: "" });
+    const verify = async (size: number) =>
+      await runDirectTaskVerification({
+        command: command(cwd),
+        task: {
+          verify: [
+            `NODE_OPTIONS=--max-old-space-size=${String(size)} node first.mjs && node second.mjs`,
+            "node third.mjs",
+          ],
+          task_kind: "code",
+          mutation_scope: "code",
+        },
+        task_id: TASK_ID,
+        cwd,
+        run_process: runProcess,
+      });
+    const first = await verify(4096);
+    expect(first.status).toBe("passed");
+    expect(runProcess.mock.calls[0]?.[0]).toHaveProperty(
+      "env.NODE_OPTIONS",
+      "--max-old-space-size=4096",
+    );
+    type Invocation = Parameters<
+      NonNullable<Parameters<typeof runDirectTaskVerification>[0]["run_process"]>
+    >[0];
+    const secondInvocation = runProcess.mock.calls[1]?.[0] as Invocation | undefined;
+    const thirdInvocation = runProcess.mock.calls[2]?.[0] as Invocation | undefined;
+    expect(secondInvocation?.env?.NODE_OPTIONS).toBe(inherited);
+    expect(thirdInvocation?.env?.NODE_OPTIONS).toBe(inherited);
+    const second = await verify(512);
+    expect(second.status).toBe("passed");
+    expect(first.checks[0]?.runtime?.environment_digest).not.toBe(
+      second.checks[0]?.runtime?.environment_digest,
+    );
+    expect(first.checks[1]?.runtime).toEqual(second.checks[1]?.runtime);
+    expect(process.env.NODE_OPTIONS).toBe(inherited);
   });
 
   it("runs a safe sequence in order without a shell", async () => {
