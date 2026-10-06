@@ -16,7 +16,7 @@ Release recovery is blocked because native verification rejects ap config show a
 ## Verification
 
 - State: ok
-- Note: Canonical validation sha256:ad1540dad357a6122ecb154a5afeef28f8b484105f4283e273ed166a7f3fbbcd
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>
