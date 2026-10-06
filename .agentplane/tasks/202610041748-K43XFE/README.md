@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 297
+revision: 298
 origin:
   system: "manual"
 depends_on: []
@@ -28,10 +28,10 @@ plan_approval:
   note: "Projected from the approved canonical Task Kernel plan."
 verification:
   state: "needs_rework"
-  updated_at: "2026-10-06T15:32:05.128Z"
+  updated_at: "2026-10-06T17:25:41.534Z"
   updated_by: "SUPERVISOR"
   note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 1
+  attempts: 2
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
@@ -952,8 +952,14 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "verify"
+    at: "2026-10-06T17:25:41.534Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-10-06T15:33:47.561Z"
+doc_updated_at: "2026-10-06T17:25:50.087Z"
 doc_updated_by: "SUPERVISOR"
 description: "User explicitly authorizes autonomous completion of all necessary development, integration and release work for version 0.7.13. Implement the current agentplane-roadmap-r2/releases/0.7.13.md RC-01 through RC-18 and EXECUTION-CHARTER.md contracts against the current source. Reuse the existing Recipe package, compact Plan input, sole Task Kernel coordinator, evidence storage, approval and independent EVALUATOR. Preserve V1 compatibility with explicit negotiation, bounded typed interpolation, observed applicability, retained pinned dependency closure, shared instantiation and refinement, scoped context, offline conversion preview, and installed-package recovery qualification. Inventory existing implementations before adding code. Use sequential independently verifiable WorkItems; do not introduce a second workflow engine or implement 0.7.14. Preserve existing repair task 202610020159-60QH9J and autonomy task 202610020153-XXZXW4; integrate their accepted results through supported routes. Network reads, PR publication and main integration are authorized. Prepare the exact 0.7.13 candidate and evidence for a subsequent publication task under the same user release authorization. Preserve unrelated work, credentials and history. Do not fabricate measured savings or paid campaign authority; prepare the exact M05 campaign and explicit measurement disposition. Full validation must preserve all required tests and assertions and use realistic bounded execution budgets."
 sections:
@@ -2523,6 +2529,65 @@ sections:
     - capability_digest: sha256:9c954e5cb756345b8471e7c827245f46466a455f655bd8eb5841bc137bc713b0
     - checks_digest: sha256:e375e0a94fff214558a0d64e6405d7040ae41792ab078251cda7cad19beeec2f
     - identity_digest: sha256:44935a3668858a79e806f4dd39d6fedc0887d5354629aa59a3bcb4f9cd565e09
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-10-06T17:25:41.534Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 2
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:bcf1339b31b927529dfba966ecc5e3d72753ff3623a924812750041d230501e0, input_digest=sha256:f773cb6e302e043e799df2f8b7fcb1d1b79ea5ccb3837ca6ec0da3d197a2c062
+
+    Details:
+
+    Command: bun run schemas:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610041748-K43XFE declared verification
+
+    Command: bun run test:release:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610041748-K43XFE declared verification
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610041748-K43XFE declared verification
+
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610041748-K43XFE declared verification
+
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202610041748-K43XFE declared verification
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202610041748-K43XFE declared verification
+
+    NativeTaskIdentityRef:
+    - plan_digest: sha256:f2e287a7a29376fd292c8c2f2a3707df9e95b0c61c5921f325ba0275e0a6871e
+    - policy_digest: sha256:649ea2aa3aa2eff9e709b3075d17deaef97f82440494ba18905f15280a598931
+    - capability_digest: sha256:9c954e5cb756345b8471e7c827245f46466a455f655bd8eb5841bc137bc713b0
+    - checks_digest: sha256:ba90ce3b0929d074975696f66011ff5c66f3b6809725a77436bbd00f22dff953
+    - identity_digest: sha256:d6c64824c4eb47410d81c1d2576bab79aa018eae6f9e0d7993e963d79d1c33ec
 
     DecisionContextRef:
     - operator_action: stop
@@ -23162,6 +23227,65 @@ NativeTaskIdentityRef:
 - capability_digest: sha256:9c954e5cb756345b8471e7c827245f46466a455f655bd8eb5841bc137bc713b0
 - checks_digest: sha256:e375e0a94fff214558a0d64e6405d7040ae41792ab078251cda7cad19beeec2f
 - identity_digest: sha256:44935a3668858a79e806f4dd39d6fedc0887d5354629aa59a3bcb4f9cd565e09
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-10-06T17:25:41.534Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 2
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:bcf1339b31b927529dfba966ecc5e3d72753ff3623a924812750041d230501e0, input_digest=sha256:f773cb6e302e043e799df2f8b7fcb1d1b79ea5ccb3837ca6ec0da3d197a2c062
+
+Details:
+
+Command: bun run schemas:check
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610041748-K43XFE declared verification
+
+Command: bun run test:release:critical
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610041748-K43XFE declared verification
+
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610041748-K43XFE declared verification
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610041748-K43XFE declared verification
+
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202610041748-K43XFE declared verification
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202610041748-K43XFE declared verification
+
+NativeTaskIdentityRef:
+- plan_digest: sha256:f2e287a7a29376fd292c8c2f2a3707df9e95b0c61c5921f325ba0275e0a6871e
+- policy_digest: sha256:649ea2aa3aa2eff9e709b3075d17deaef97f82440494ba18905f15280a598931
+- capability_digest: sha256:9c954e5cb756345b8471e7c827245f46466a455f655bd8eb5841bc137bc713b0
+- checks_digest: sha256:ba90ce3b0929d074975696f66011ff5c66f3b6809725a77436bbd00f22dff953
+- identity_digest: sha256:d6c64824c4eb47410d81c1d2576bab79aa018eae6f9e0d7993e963d79d1c33ec
 
 DecisionContextRef:
 - operator_action: stop
