@@ -24,7 +24,7 @@ Created: 2026-10-04T18:13:17.876Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-10-06T22:46:12.070Z
+- Updated: 2026-10-06T23:08:12.494Z
 - Branch: task/202610041748-K43XFE/implement-and-qualify-agentplane-0-7-13-scenario
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
@@ -113,6 +113,7 @@ Created: 2026-10-04T18:13:17.876Z
  .../commands/release/apply.pipeline/mutation.ts    |     8 +
  .../release/apply.version-mutation.test.ts         |    74 +
  .../release/check-release-parity-script.test.ts    |   136 +
+ .../commands/release/snapshot-file-script.test.ts  |    24 +
  .../release/workflow-node-version-contract.test.ts |    16 +-
  .../route-decision-blockers.quality-review.test.ts |    40 +
  .../src/commands/shared/route-decision-blockers.ts |    12 +-
@@ -140,9 +141,10 @@ Created: 2026-10-04T18:13:17.876Z
  .../src/commands/task/kernel-advance.test.ts       |     6 +-
  .../kernel-completed-external-blocker-boundary.ts  |   111 +
  .../task/kernel-completed-external-blocker.ts      |   128 +
- .../task/kernel-completed-external-rework.test.ts  |   923 +
+ .../task/kernel-completed-external-rework.test.ts  |   797 +
+ .../kernel-completed-external-rework.testkit.ts    |   237 +
  .../task/kernel-completed-external-rework.ts       |    36 +
- .../src/commands/task/kernel-completed-workflow.ts |    28 +-
+ .../src/commands/task/kernel-completed-workflow.ts |    34 +-
  .../src/commands/task/kernel-exchange.test.ts      |   716 +-
  .../src/commands/task/kernel-exchange.ts           |   260 +-
  .../task/kernel-inspection-validation.test.ts      |   103 +
@@ -267,7 +269,7 @@ Created: 2026-10-04T18:13:17.876Z
  scripts/release/snapshot-file.mjs                  |    26 +
  scripts/release/snapshot-file.test.mjs             |    48 +
  scripts/release/version-surfaces.json              |     7 +
- 238 files changed, 63735 insertions(+), 1283 deletions(-)
+ 240 files changed, 63876 insertions(+), 1283 deletions(-)
 ```
 
 </details>

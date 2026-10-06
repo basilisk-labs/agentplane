@@ -20,10 +20,16 @@ export async function executeCanonicalCompletedWorkflowLocally(opts: {
     opts.transport === "host" &&
     opts.decision.workflowMode === "branch_pr" &&
     step.kind === "agent_episode" &&
-    ["implementation_rework", "quality_review"].includes(step.episode.purpose)
+    [
+      "implementation_rework",
+      "quality_review",
+      "verification",
+      "task_worktree_resolution",
+    ].includes(step.episode.purpose)
   ) {
     // Re-resolve through the existing external owner after each native transition.
     // The new packet must bind the post-persistence task and repository state.
+    // Recover pending external results before dirty-source handling or verification.
     const outcome = await advanceOrdinaryRoute({
       ctx: { cwd: opts.command.resolvedProject.gitRoot },
       command: opts.command,
