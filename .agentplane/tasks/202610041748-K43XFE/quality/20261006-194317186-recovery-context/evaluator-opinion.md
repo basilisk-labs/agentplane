@@ -1,0 +1,21 @@
+# Semantic quality review: rework
+
+Provenance: evaluator_supplied
+
+EVALUATOR returned rework with 1 typed finding(s).
+
+## Findings
+- packages/agentplane/src/commands/task/external-agent-supervisor.ts:158-179 calls recordIssuedExternalAgentEpisode for an existing consumed exchange without a terminal-state guard. After a completed read-only observation leaves the state unchanged, another advance creates a second intent for the same immutable WorkOrder and effect. external-agent-supervisor-recovery.ts skips consumed exchanges, while consumed result replay returns before reconciling the intent. This violates exactly-once receipt ownership and prevents the next task route. The defect remains in evaluated source 571dda9dce770856efc6c10de601550473e52486 and metadata-only HEAD bc7b0c9ed2b2b4d993dd5ed6b3453789a173192e. Guard terminal exchange reuse before journal mutation and recover only authenticated immediately duplicated read-only intents through native CAS without rewriting the original consumed evidence. Frozen actual-diff evidence: .agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/2a286795e5b9e6d71390a63a0b5a58cf5f6ea7471c224228e92abb241eecad74.patch.
+
+## Evidence
+- .agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/2a286795e5b9e6d71390a63a0b5a58cf5f6ea7471c224228e92abb241eecad74.patch
+
+## Missing Tests
+- A consumed unchanged-state observation must not create another journal intent or reissue its WorkOrder.
+- Native recovery must fail only an exactly authenticated duplicate intent, preserve prior receipt/result/usage/kernel bytes, reject wrong or missing evidence and CAS races, and bind any new replacement to current state.
+
+## Hidden Assumptions
+- A passing deterministic suite does not establish idempotence when a read-only semantic result makes no repository progress.
+
+## Residual Risks
+- All 21 context block digests (17 required) and nine frozen evaluator evidence digests were verified. Native verification records all six declared checks passing, including full local CI; no checks were rerun. The frozen evaluator target is 571dda9dce770856efc6c10de601550473e52486; bc7b0c9ed2b2b4d993dd5ed6b3453789a173192e adds only native task evidence. Real C operations18/19 reproduced the duplicate before operator recovery using separately reviewed R8 runtime. R8 source5b0cf08303c27bacde429f49525291d2374e99b3 and its60-test native evidence are available for scoped composition, but are not yet C product source. Require a fresh bounded implementation episode and verification of composed source before a new independent verdict. Preserve the successful existing verification history, original consumed exchange and immutable canonical lifecycle. This verdict makes no release or measurement-savings claim.
