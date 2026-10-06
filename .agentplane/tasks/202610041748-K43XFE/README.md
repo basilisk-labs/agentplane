@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 293
+revision: 294
 origin:
   system: "manual"
 depends_on: []
@@ -891,6 +891,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The external completed-task rework route now issues an executor packet, but its native stop rules require resolution of an incompatible ops execution profile before source mutation. No source files were changed. Recommended action: Resolve the native profile and CI authority through an operator recovery route, then issue a fresh executor packet. Preserve the canonical completed history and persisted evaluator findings. Agentplane receipt: external-agent-blocker/tr_02be8b345dc9bb49e00a022c84ab60f4/sha256:5eb75bd96d1524b561b135f9e00b287a96e2a3499c7d1b5f7992a795f34b5aa1."
 events:
   -
     type: "verify"
@@ -913,8 +916,8 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-10-06T11:44:04.653Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-10-06T13:40:09.812Z"
+doc_updated_by: "SUPERVISOR"
 description: "User explicitly authorizes autonomous completion of all necessary development, integration and release work for version 0.7.13. Implement the current agentplane-roadmap-r2/releases/0.7.13.md RC-01 through RC-18 and EXECUTION-CHARTER.md contracts against the current source. Reuse the existing Recipe package, compact Plan input, sole Task Kernel coordinator, evidence storage, approval and independent EVALUATOR. Preserve V1 compatibility with explicit negotiation, bounded typed interpolation, observed applicability, retained pinned dependency closure, shared instantiation and refinement, scoped context, offline conversion preview, and installed-package recovery qualification. Inventory existing implementations before adding code. Use sequential independently verifiable WorkItems; do not introduce a second workflow engine or implement 0.7.14. Preserve existing repair task 202610020159-60QH9J and autonomy task 202610020153-XXZXW4; integrate their accepted results through supported routes. Network reads, PR publication and main integration are authorized. Prepare the exact 0.7.13 candidate and evidence for a subsequent publication task under the same user release authorization. Preserve unrelated work, credentials and history. Do not fabricate measured savings or paid campaign authority; prepare the exact M05 campaign and explicit measurement disposition. Full validation must preserve all required tests and assertions and use realistic bounded execution budgets."
 sections:
   Summary: |-
