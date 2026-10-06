@@ -3,17 +3,10 @@
   "branch": "task/202610041748-K43XFE/implement-and-qualify-agentplane-0-7-13-scenario",
   "created_at": "2026-10-04T18:13:17.876Z",
   "diffstat_sha256": "sha256:a67aca3b3b76782be38bd95d1b55c78f3f88383fc02408c704ea28f76fff5b3c",
-  "last_verified_at": "2026-10-06T11:03:00.669Z",
-  "last_verified_diffstat_sha256": "sha256:c23d9e48006fb6ce2f22f92b3816f2fe00e5c6b27faa5bfc01abfcfdbf8b5c1a",
+  "last_verified_at": "2026-10-06T15:32:05.128Z",
+  "last_verified_diffstat_sha256": "sha256:a67aca3b3b76782be38bd95d1b55c78f3f88383fc02408c704ea28f76fff5b3c",
   "pr_number": 6053,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6053",
-  "pre_merge_closure": {
-    "basis_commit": "ee558123ceee443190cf96abe00aaf83bf01a26e",
-    "branch": "task/202610041748-K43XFE/implement-and-qualify-agentplane-0-7-13-scenario",
-    "pr_number": 6053,
-    "recorded_at": "2026-10-06T09:03:54.651Z",
-    "state": "closed_before_merge"
-  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -25,8 +18,8 @@
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202610041748-K43XFE",
-  "updated_at": "2026-10-06T14:19:36.291Z",
+  "updated_at": "2026-10-06T15:34:21.128Z",
   "verify": {
-    "status": "pass"
+    "status": "fail"
   }
 }
