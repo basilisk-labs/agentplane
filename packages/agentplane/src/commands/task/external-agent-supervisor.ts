@@ -1,3 +1,4 @@
+import { assertReadOnlyReturnFresh } from "./external-agent-read-only-observation.js";
 import { captureExternalTaskArtifacts } from "./external-agent-task-artifact-baseline.js";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
@@ -47,11 +48,14 @@ import {
 import { semanticPurpose, usesExternalImplementationAuthority } from "./external-agent-purpose.js";
 import {
   bindPreparedEvaluatorState,
-  evaluatorReturnFingerprint,
   isRecoverableAppliedEvaluatorResult,
 } from "./external-agent-evaluator-recovery.js";
 import { isExternalAgentResultAlreadyApplied } from "./external-agent-result-application.js";
-import { superviseExternalAgentIssuance } from "./external-agent-supervisor-recovery.js";
+import {
+  failRejectedExternalAgentResult,
+  isReadOnlyWorktreeObservation,
+  superviseExternalAgentIssuance,
+} from "./external-agent-supervisor-recovery.js";
 import { applyExternalAgentResultWithRejectedResultRecovery } from "./external-agent-result-rejection-recovery.js";
 import { recordIssuedExternalAgentEpisode } from "./external-agent-supervisor-episode.js";
 import { assertExternalPlanningResultApplicable } from "./external-agent-planning-authority.js";
@@ -296,41 +300,6 @@ export async function issueExternalAgentExchange(opts: {
   });
 }
 
-async function assertReadOnlyReturnFresh(opts: {
-  exchange: ExternalAgentExchange;
-  work_order: AgentWorkOrderV2;
-  decision: TaskRouteDecision;
-}): Promise<void> {
-  if (
-    opts.decision.workflowStep.preconditionFingerprint.digest !==
-    evaluatorReturnFingerprint({
-      exchange: opts.exchange,
-      work_order: opts.work_order,
-    })
-  ) {
-    throw new CliError({
-      code: "E_VALIDATION",
-      message: "External-agent result is stale; request a fresh action packet.",
-    });
-  }
-  if (opts.exchange.purpose === "quality_review") {
-    const frozen = opts.work_order.required_inputs.find(
-      (input) => input.id === "evaluator-work-order",
-    );
-    if (
-      !opts.exchange.evaluator_work_order_ref ||
-      externalAgentExchangeDigest(
-        await readFile(opts.exchange.evaluator_work_order_ref, "utf8"),
-      ) !== frozen?.digest
-    ) {
-      throw new CliError({
-        code: "E_VALIDATION",
-        message: "Frozen evaluator work order changed after issuance.",
-      });
-    }
-  }
-}
-
 export async function acceptExternalAgentResult(opts: {
   ctx: CommandCtx;
   command: CommandContext;
@@ -404,6 +373,19 @@ export async function acceptExternalAgentResult(opts: {
     const includeRemote = opts.include_remote || conflictContext !== null;
     const envelope = validateExternalAgentResultEnvelope({ raw, exchange, work_order: workOrder });
     const resultDigest = externalAgentResultDigest(envelope);
+    if (
+      exchange.purpose === "task_worktree_resolution" &&
+      workOrder.authority.sandbox === "read-only" &&
+      (exchange.status === "result_received" ||
+        exchange.status === "accepted" ||
+        exchange.status === "consumed") &&
+      (!exchange.result || externalAgentResultDigest(exchange.result) !== exchange.result_digest)
+    ) {
+      throw new CliError({
+        code: "E_VALIDATION",
+        message: "Retained read-only observation does not match its recorded result digest.",
+      });
+    }
     if (exchange.status === "consumed") {
       if (exchange.result_digest !== resultDigest) {
         throw new CliError({
@@ -528,6 +510,26 @@ export async function acceptExternalAgentResult(opts: {
       !alreadyApplied &&
       !usesExternalImplementationAuthority(exchange.purpose, workOrder.authority.sandbox)
     ) {
+      if (
+        isReadOnlyWorktreeObservation({ exchange, work_order: workOrder }) &&
+        current.workflowStep.preconditionFingerprint.digest !== exchange.state_fingerprint
+      ) {
+        // Reject the stale observation and release only its authenticated read-only
+        // intent. The native failed receipt preserves its original result identity;
+        // a replacement must bind current state before any further semantic work.
+        await failRejectedExternalAgentResult({
+          store,
+          journal: issuedJournal,
+          operation_key: operation.operation_key,
+          exchange,
+          paths,
+          state_fingerprint_digest: current.workflowStep.preconditionFingerprint.digest,
+          error: new CliError({
+            code: "E_VALIDATION",
+            message: "Read-only worktree observation is stale and was not applied.",
+          }),
+        });
+      }
       await assertReadOnlyReturnFresh({ exchange, work_order: workOrder, decision: current });
     }
     await applyExternalAgentResultWithRejectedResultRecovery({
