@@ -6,14 +6,14 @@ Created: 2026-10-05T22:09:14.395Z
 
 - Task: `202610052152-HA1XW3`
 - Title: Repair native execution of approved read-only CLI and bounded Node heap checks
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610052152-HA1XW3/repair-native-execution-of-approved-read-only-cl`
 - Canonical task record: `.agentplane/tasks/202610052152-HA1XW3/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Canonical validation sha256:ad1540dad357a6122ecb154a5afeef28f8b484105f4283e273ed166a7f3fbbcd
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
