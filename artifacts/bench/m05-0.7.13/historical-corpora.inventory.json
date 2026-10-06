@@ -1,0 +1,355 @@
+{
+  "kind": "m05_historical_corpora_archive",
+  "source_commit": "3bc7288366425d87add6abf6356de836276dc8dd",
+  "archive": "artifacts/bench/m05-0.7.13/historical-corpora.tar",
+  "archive_sha256": "sha256:ef5da5381059df26431de9140dc7e6eb0a9c3db04c1b429806e8a979e23acefc",
+  "files": [
+    {
+      "path": "artifacts/bench/m05-0.7.13/offline/branch-change/campaign.offline.lock.json",
+      "size_bytes": 19580,
+      "sha256": "sha256:5f872a5a6627ebc39acde7f96b2d97634a214ea0d8d121fc949b3ad2badc7893"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/offline/branch-change/diagnostic/fixture.json",
+      "size_bytes": 4757,
+      "sha256": "sha256:5ee2202fcaba72f85851befa127e0aba5d2015ba4f9ea60665fde7c5999d940e"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/offline/branch-change/diagnostic-git-evidence/git-directory.tar",
+      "size_bytes": 92160,
+      "sha256": "sha256:afbee02b2367c0a9cbdb06a7e0d53603d6ce6c6f9357612ba8b05417fdfcab86"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/offline/branch-change/diagnostic-git-evidence/inventory.json",
+      "size_bytes": 4357,
+      "sha256": "sha256:56f0ca9b9c9748efea2f6bd0bcfdb9e608b2204fa31fafc53687d3dbbb7c8c89"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/offline/branch-change/diagnostic-git-evidence/repository.bundle",
+      "size_bytes": 1208,
+      "sha256": "sha256:25d1858ed3d249e108d4efbfea668790f12692048168b42d22fe7826063261fd"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/offline/branch-change/target.bundle",
+      "size_bytes": 1208,
+      "sha256": "sha256:25d1858ed3d249e108d4efbfea668790f12692048168b42d22fe7826063261fd"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/offline/direct-fix/campaign.offline.lock.json",
+      "size_bytes": 19521,
+      "sha256": "sha256:d9526c1d8854824e7af1ed4e26052bf82be6396a3714728aa6004dd418a97070"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/offline/direct-fix/evidence.json",
+      "size_bytes": 44595,
+      "sha256": "sha256:743f3822551396dfc512607811788f57a4753578bc090c19cb237b73c2f8e39c"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/offline/direct-fix/target.bundle",
+      "size_bytes": 1127,
+      "sha256": "sha256:f201e4fbaac6aa5a66cfc9418e377f1f3f08ab7859877980b04ff59aae8e788e"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/offline/fixture-policy.json",
+      "size_bytes": 206,
+      "sha256": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/offline/oracle.mjs",
+      "size_bytes": 2381,
+      "sha256": "sha256:1ff45e7d8ba2e9ffaf27c07751e93d19ac8ca58c08119d8124fffb50b9b5ec32"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/offline/product.mjs",
+      "size_bytes": 820266,
+      "sha256": "sha256:b76b003d52eadc2e61be9e8b53da26502897e3e7348497d7561e4ce0145fc8a7"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/offline-qualified/branch-change/campaign.offline.lock.json",
+      "size_bytes": 19670,
+      "sha256": "sha256:2d4bf83c3f0495a8b7d39bd02ba9a41866849ae064961a45c5f180b6cbc208b4"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/offline-qualified/branch-change/evidence.json",
+      "size_bytes": 44717,
+      "sha256": "sha256:4d0082bbfb3686e73e266e8f0e587c9619aff0ec6dabadc0d451bf219ff4e1c5"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/offline-qualified/branch-change/target.bundle",
+      "size_bytes": 1285,
+      "sha256": "sha256:84372adc63244968eaeac74b7eeb207fd56c77cb0b3039cb3116911c8bc8f4a0"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/offline-qualified/direct-fix/campaign.offline.lock.json",
+      "size_bytes": 19611,
+      "sha256": "sha256:803c63ad22839870eb66e36d8be8d85e935c78a8e4eaa4ee525cbb9c74161786"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/offline-qualified/direct-fix/evidence.json",
+      "size_bytes": 44647,
+      "sha256": "sha256:18d7041db4a1a13d1faf7b844ebd62a58f0555c9e5dd232794d9953fa0276105"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/offline-qualified/direct-fix/target.bundle",
+      "size_bytes": 1202,
+      "sha256": "sha256:af5204f86ae462f8586794827c1757d3f257b87e78bd6e161dca275b2f4fe69b"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/offline-qualified/fixture-policy.json",
+      "size_bytes": 206,
+      "sha256": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/offline-qualified/near-match/campaign.offline.lock.json",
+      "size_bytes": 19624,
+      "sha256": "sha256:c4e324d904d853b590ad68cf1675feda63619eacb748bd89e9f1d82b3c641df7"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/offline-qualified/near-match/evidence.json",
+      "size_bytes": 44627,
+      "sha256": "sha256:807687513659ad2cb3ca3dac6558bf9efe590d48e424b855def778534b7beac6"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/offline-qualified/near-match/target.bundle",
+      "size_bytes": 1184,
+      "sha256": "sha256:a7ced1f5370f241a67403af71bf6d0307c4e40f7c06c776684f54a1888719b8a"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/offline-qualified/no-match/campaign.offline.lock.json",
+      "size_bytes": 19582,
+      "sha256": "sha256:ba5a52b75a3042f5e25d1d0ccb387780b52f9f56484b665ec7e320e6141c7e7a"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/offline-qualified/no-match/evidence.json",
+      "size_bytes": 44551,
+      "sha256": "sha256:cd30bf5a977537347f346ddfd9c99fa8d863d8a3f7d80f62bc6b07363f1e202d"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/offline-qualified/no-match/target.bundle",
+      "size_bytes": 1206,
+      "sha256": "sha256:c9aa612778f3625196c3b68ee73d7dd8fffea7e8f2acf042e4ff419152265777"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/offline-qualified/oracle.mjs",
+      "size_bytes": 2381,
+      "sha256": "sha256:1ff45e7d8ba2e9ffaf27c07751e93d19ac8ca58c08119d8124fffb50b9b5ec32"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/offline-qualified/preparation.json",
+      "size_bytes": 5290,
+      "sha256": "sha256:8eecccb6e449a84d587070197dd748568009374101ab873c940bda2118e38579"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/offline-qualified/product.mjs",
+      "size_bytes": 820266,
+      "sha256": "sha256:b76b003d52eadc2e61be9e8b53da26502897e3e7348497d7561e4ce0145fc8a7"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/offline-qualified/recovery/campaign.offline.lock.json",
+      "size_bytes": 19588,
+      "sha256": "sha256:e2c5321391d531d2f2236ce130180d122060b29f0a3639229204a4f8f0610e52"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/offline-qualified/recovery/evidence.json",
+      "size_bytes": 44530,
+      "sha256": "sha256:8cb8cba979b6caf55e586206f1d72102309a5465694fc50a0f2be6b546b55d26"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/offline-qualified/recovery/target.bundle",
+      "size_bytes": 1288,
+      "sha256": "sha256:0539ccba17bd128e6cbd1fc1438ee44191a8ec1074320864e58a13e4869bc03f"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/final-offline/branch-change/campaign.offline.lock.json",
+      "size_bytes": 19634,
+      "sha256": "sha256:e4cdbc8354caf8f6b992e2d15e4448f720273a3b013217a84be005c611c4afff"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/final-offline/branch-change/evidence.json",
+      "size_bytes": 46526,
+      "sha256": "sha256:77e48a652ff30e51e885856a3cba9fd9e4f70471c886bcca44ca13f894fbba72"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/final-offline/branch-change/target.bundle",
+      "size_bytes": 1285,
+      "sha256": "sha256:84372adc63244968eaeac74b7eeb207fd56c77cb0b3039cb3116911c8bc8f4a0"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/final-offline/direct-fix/campaign.offline.lock.json",
+      "size_bytes": 19575,
+      "sha256": "sha256:30be7b9a2e58338e010ba130b572ff9874e429e645f5249e94d157d993dfe7e8"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/final-offline/direct-fix/evidence.json",
+      "size_bytes": 46368,
+      "sha256": "sha256:a522b1b6b07ba9d6ae26c527af7efc4db4265408a8daee819ee57377c0d047e0"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/final-offline/direct-fix/target.bundle",
+      "size_bytes": 1202,
+      "sha256": "sha256:af5204f86ae462f8586794827c1757d3f257b87e78bd6e161dca275b2f4fe69b"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/final-offline/fixture-policy.json",
+      "size_bytes": 206,
+      "sha256": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/final-offline/near-match/campaign.offline.lock.json",
+      "size_bytes": 19588,
+      "sha256": "sha256:fb94afbc76bf3649c6937444d09d3c36997ccf68bcbbc13db72e8140d56107f7"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/final-offline/near-match/evidence.json",
+      "size_bytes": 46383,
+      "sha256": "sha256:d85bcc1859c5a7f26c543af5a415860de90553a86258b6133a5375687d3eec11"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/final-offline/near-match/target.bundle",
+      "size_bytes": 1184,
+      "sha256": "sha256:a7ced1f5370f241a67403af71bf6d0307c4e40f7c06c776684f54a1888719b8a"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/final-offline/no-match/campaign.offline.lock.json",
+      "size_bytes": 19546,
+      "sha256": "sha256:81c5f09d61180f8ee2b3e09bae31f9a2e24302621f162e2cc2e782c2c48dae42"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/final-offline/no-match/evidence.json",
+      "size_bytes": 46338,
+      "sha256": "sha256:54320270546ae6859e3f3caddb0f6463161490c7bb87454a5a26b6445d8199ea"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/final-offline/no-match/target.bundle",
+      "size_bytes": 1206,
+      "sha256": "sha256:c9aa612778f3625196c3b68ee73d7dd8fffea7e8f2acf042e4ff419152265777"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/final-offline/oracle.mjs",
+      "size_bytes": 3838,
+      "sha256": "sha256:bfb0d460146f82da6c953d460fd2a663389d80f608f5f1ef1c106fd0c1d278f1"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/final-offline/preparation.json",
+      "size_bytes": 5914,
+      "sha256": "sha256:d685a6e64631deb3bc3a4439ac3d86dd262fc0685f47cdaecf87bb391138d407"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/final-offline/product.mjs",
+      "size_bytes": 820278,
+      "sha256": "sha256:d503a55c7760a2105d4f506283a8e522db147f4868d43d08d77e830c89275d7e"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/final-offline/recovery/campaign.offline.lock.json",
+      "size_bytes": 19552,
+      "sha256": "sha256:a4197d01bc7fadf86c606e30351c1562995b774de2d2653372e3732c0d5bdd32"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/final-offline/recovery/evidence.json",
+      "size_bytes": 46271,
+      "sha256": "sha256:ffe5aaf640b77b5e007a421a918457da4b3378596a81feee47a6647772cc8ed4"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/final-offline/recovery/target.bundle",
+      "size_bytes": 1288,
+      "sha256": "sha256:0539ccba17bd128e6cbd1fc1438ee44191a8ec1074320864e58a13e4869bc03f"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/checked-offline/branch-change/campaign.offline.lock.json",
+      "size_bytes": 19652,
+      "sha256": "sha256:0fd4db6110616de4dfd4ae0b95a75c40337b2aaf0980c8c7f4d50d50f2b9d5ff"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/checked-offline/branch-change/evidence.json",
+      "size_bytes": 46523,
+      "sha256": "sha256:72f78ef0d055097825ccff21e08780f5cc662a67d53a64ea99987c67226a702c"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/checked-offline/branch-change/target.bundle",
+      "size_bytes": 1285,
+      "sha256": "sha256:84372adc63244968eaeac74b7eeb207fd56c77cb0b3039cb3116911c8bc8f4a0"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/checked-offline/direct-fix/campaign.offline.lock.json",
+      "size_bytes": 19593,
+      "sha256": "sha256:5ff9a2fd5ef5303ea88d46815c8692b8e415ccff24c23179f47a6361492873d5"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/checked-offline/direct-fix/evidence.json",
+      "size_bytes": 46365,
+      "sha256": "sha256:fa427d36587edddfe423ce5fe19f505cc52c9c78f5008a89b285b9ad347a4b77"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/checked-offline/direct-fix/target.bundle",
+      "size_bytes": 1202,
+      "sha256": "sha256:af5204f86ae462f8586794827c1757d3f257b87e78bd6e161dca275b2f4fe69b"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/checked-offline/fixture-policy.json",
+      "size_bytes": 206,
+      "sha256": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/checked-offline/near-match/campaign.offline.lock.json",
+      "size_bytes": 19606,
+      "sha256": "sha256:a78b82be961b2929d6e8ab58c6ccc5eaa33a062d0d3d94a469fcd1e1801a179c"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/checked-offline/near-match/evidence.json",
+      "size_bytes": 46344,
+      "sha256": "sha256:41b18a6989b99f4b9dae9092fdbdfa0f0e698c6e38c2753a2606614970ba3102"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/checked-offline/near-match/target.bundle",
+      "size_bytes": 1184,
+      "sha256": "sha256:a7ced1f5370f241a67403af71bf6d0307c4e40f7c06c776684f54a1888719b8a"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/checked-offline/no-match/campaign.offline.lock.json",
+      "size_bytes": 19564,
+      "sha256": "sha256:165f350d69665396c62fe5b7e9a596d0d7eece5ac09b31a5d0787c46a911374a"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/checked-offline/no-match/evidence.json",
+      "size_bytes": 46320,
+      "sha256": "sha256:da554456e9bcbc52bc47b374555799dd0a4ef9d83a70d353fce81b6f2267a73b"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/checked-offline/no-match/target.bundle",
+      "size_bytes": 1206,
+      "sha256": "sha256:c9aa612778f3625196c3b68ee73d7dd8fffea7e8f2acf042e4ff419152265777"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/checked-offline/oracle.mjs",
+      "size_bytes": 4068,
+      "sha256": "sha256:ec08387f007807c459c0f9e9941c0dea3763609526a166b9ecc7e2582bd6ac8e"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/checked-offline/preparation.json",
+      "size_bytes": 5934,
+      "sha256": "sha256:806b1eb9fcd951c479242b704454d437f9a500de718c4235ebc5f628d0be2536"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/checked-offline/product.mjs",
+      "size_bytes": 820278,
+      "sha256": "sha256:d503a55c7760a2105d4f506283a8e522db147f4868d43d08d77e830c89275d7e"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/checked-offline/recovery/campaign.offline.lock.json",
+      "size_bytes": 19570,
+      "sha256": "sha256:c57667f962595d92f6f44769cbdb82d3bff13691702bd8801c36f9604fb9d04a"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/checked-offline/recovery/evidence.json",
+      "size_bytes": 46293,
+      "sha256": "sha256:2909a624e04e3c4f52a5391477cdf151a6670999293472f9e4df8e49deedd847"
+    },
+    {
+      "path": "artifacts/bench/m05-0.7.13/checked-offline/recovery/target.bundle",
+      "size_bytes": 1288,
+      "sha256": "sha256:0539ccba17bd128e6cbd1fc1438ee44191a8ec1074320864e58a13e4869bc03f"
+    }
+  ],
+  "restoration": "Extract from repository root in a separate historical checkout. Original absolute manifest paths require original checkout location or explicit rematerialization; pins were not rewritten.",
+  "reason": "Preserve exact earlier artifacts including whitespace-bearing bundles; qualify a separate normalized corpus."
+}

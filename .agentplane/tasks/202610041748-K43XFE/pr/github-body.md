@@ -28,81 +28,33 @@ User explicitly authorizes autonomous completion of all necessary development, i
 
 ```text
  .../bench/m05-0.7.13/checked-no-match-replay.json  |  1282 +
- .../branch-change/campaign.offline.lock.json       |   458 +
- .../checked-offline/branch-change/evidence.json    |  1282 +
- .../checked-offline/branch-change/target.bundle    |   Bin 0 -> 1285 bytes
- .../direct-fix/campaign.offline.lock.json          |   458 +
- .../checked-offline/direct-fix/evidence.json       |  1282 +
- .../checked-offline/direct-fix/target.bundle       |   Bin 0 -> 1202 bytes
- .../m05-0.7.13/checked-offline/fixture-policy.json |    11 +
- .../near-match/campaign.offline.lock.json          |   458 +
- .../checked-offline/near-match/evidence.json       |  1282 +
- .../checked-offline/near-match/target.bundle       |   Bin 0 -> 1184 bytes
- .../no-match/campaign.offline.lock.json            |   458 +
- .../checked-offline/no-match/evidence.json         |  1282 +
- .../checked-offline/no-match/target.bundle         |   Bin 0 -> 1206 bytes
- .../bench/m05-0.7.13/checked-offline/oracle.mjs    |    98 +
- .../m05-0.7.13/checked-offline/preparation.json    |    94 +
- .../bench/m05-0.7.13/checked-offline/product.mjs   | 24136 +++++++++++++++++++
- .../recovery/campaign.offline.lock.json            |   458 +
- .../checked-offline/recovery/evidence.json         |  1282 +
- .../checked-offline/recovery/target.bundle         |   Bin 0 -> 1288 bytes
- .../branch-change/campaign.offline.lock.json       |   458 +
- .../final-offline/branch-change/evidence.json      |  1282 +
- .../final-offline/branch-change/target.bundle      |   Bin 0 -> 1285 bytes
- .../direct-fix/campaign.offline.lock.json          |   458 +
- .../final-offline/direct-fix/evidence.json         |  1282 +
- .../final-offline/direct-fix/target.bundle         |   Bin 0 -> 1202 bytes
- .../m05-0.7.13/final-offline/fixture-policy.json   |    11 +
- .../near-match/campaign.offline.lock.json          |   458 +
- .../final-offline/near-match/evidence.json         |  1282 +
- .../final-offline/near-match/target.bundle         |   Bin 0 -> 1184 bytes
- .../no-match/campaign.offline.lock.json            |   458 +
- .../final-offline/no-match/evidence.json           |  1282 +
- .../final-offline/no-match/target.bundle           |   Bin 0 -> 1206 bytes
- .../bench/m05-0.7.13/final-offline/oracle.mjs      |    96 +
- .../m05-0.7.13/final-offline/preparation.json      |    94 +
- .../bench/m05-0.7.13/final-offline/product.mjs     | 24136 +++++++++++++++++++
- .../recovery/campaign.offline.lock.json            |   458 +
- .../final-offline/recovery/evidence.json           |  1282 +
- .../final-offline/recovery/target.bundle           |   Bin 0 -> 1288 bytes
+ .../m05-0.7.13/historical-corpora.inventory.json   |   355 +
+ artifacts/bench/m05-0.7.13/historical-corpora.tar  |   Bin 0 -> 4567040 bytes
  .../m05-0.7.13/historical-fixture-recovery.json    |    10 +
  artifacts/bench/m05-0.7.13/no-match-replay.json    |  1282 +
  .../branch-change/campaign.offline.lock.json       |   458 +
- .../offline-qualified/branch-change/evidence.json  |  1222 +
- .../offline-qualified/branch-change/target.bundle  |   Bin 0 -> 1285 bytes
+ .../normalized-offline/branch-change/evidence.json |  1282 +
+ .../normalized-offline/branch-change/target.bundle |   Bin 0 -> 1285 bytes
  .../direct-fix/campaign.offline.lock.json          |   458 +
- .../offline-qualified/direct-fix/evidence.json     |  1222 +
- .../offline-qualified/direct-fix/target.bundle     |   Bin 0 -> 1202 bytes
- .../offline-qualified/fixture-policy.json          |    11 +
+ .../normalized-offline/direct-fix/evidence.json    |  1282 +
+ .../normalized-offline/direct-fix/target.bundle    |   Bin 0 -> 1202 bytes
+ .../normalized-offline/fixture-policy.json         |    11 +
  .../near-match/campaign.offline.lock.json          |   458 +
- .../offline-qualified/near-match/evidence.json     |  1222 +
- .../offline-qualified/near-match/target.bundle     |   Bin 0 -> 1184 bytes
+ .../normalized-offline/near-match/evidence.json    |  1282 +
+ .../normalized-offline/near-match/target.bundle    |   Bin 0 -> 1184 bytes
  .../no-match/campaign.offline.lock.json            |   458 +
- .../offline-qualified/no-match/evidence.json       |  1222 +
- .../offline-qualified/no-match/target.bundle       |   Bin 0 -> 1206 bytes
- .../bench/m05-0.7.13/offline-qualified/oracle.mjs  |    47 +
- .../m05-0.7.13/offline-qualified/preparation.json  |    76 +
- .../bench/m05-0.7.13/offline-qualified/product.mjs | 24127 ++++++++++++++++++
+ .../normalized-offline/no-match/evidence.json      |  1282 +
+ .../normalized-offline/no-match/target.bundle      |   Bin 0 -> 1206 bytes
+ .../bench/m05-0.7.13/normalized-offline/oracle.mjs |    98 +
+ .../m05-0.7.13/normalized-offline/preparation.json |    94 +
+ .../m05-0.7.13/normalized-offline/product.mjs      | 24136 +++++++++++++++++++
  .../recovery/campaign.offline.lock.json            |   458 +
- .../offline-qualified/recovery/evidence.json       |  1222 +
- .../offline-qualified/recovery/target.bundle       |   Bin 0 -> 1288 bytes
- .../branch-change/campaign.offline.lock.json       |   458 +
- .../diagnostic-git-evidence/git-directory.tar      |   Bin 0 -> 92160 bytes
- .../diagnostic-git-evidence/inventory.json         |   131 +
- .../diagnostic-git-evidence/repository.bundle      |   Bin 0 -> 1208 bytes
- .../offline/branch-change/diagnostic/fixture.json  |   199 +
- .../m05-0.7.13/offline/branch-change/target.bundle |   Bin 0 -> 1208 bytes
- .../offline/direct-fix/campaign.offline.lock.json  |   458 +
- .../m05-0.7.13/offline/direct-fix/evidence.json    |  1222 +
- .../m05-0.7.13/offline/direct-fix/target.bundle    |   Bin 0 -> 1127 bytes
- .../bench/m05-0.7.13/offline/fixture-policy.json   |    11 +
- artifacts/bench/m05-0.7.13/offline/oracle.mjs      |    47 +
- artifacts/bench/m05-0.7.13/offline/product.mjs     | 24127 ++++++++++++++++++
+ .../normalized-offline/recovery/evidence.json      |  1282 +
+ .../normalized-offline/recovery/target.bundle      |   Bin 0 -> 1288 bytes
  .../m05-0.7.13/omitted-historical-fixtures.json    |    43 +
  .../m05-0.7.13/release-disposition.request.json    |    48 +
  bun.lock                                           |     4 +
- docs/releases/v0.7.13-m05.md                       |   138 +
+ docs/releases/v0.7.13-m05.md                       |   140 +
  packages/agentplane/package.json                   |    13 +-
  .../task-backend/kernel-backend-adapter.test.ts    |   192 +
  ...n-cli.core.roadmap-recipe-v2-entrypoint.test.ts |   377 +
@@ -226,8 +178,8 @@ User explicitly authorizes autonomous completion of all necessary development, i
  packages/recipes/src/scenario.ts                   |    15 +
  packages/recipes/tsconfig.json                     |     7 +-
  schemas/agent-semantic-result.schema.json          |  2081 +-
- scripts/bench/paired-m05-offline.mjs               |   333 +
- scripts/bench/paired-m05-offline.test.mjs          |    62 +
+ scripts/bench/paired-m05-offline.mjs               |   339 +
+ scripts/bench/paired-m05-offline.test.mjs          |    70 +
  scripts/bench/paired-m05-oracle.mjs                |    98 +
  scripts/bench/paired-m05-product.mjs               |   111 +
  scripts/bench/paired-production-driver.mjs         |   125 +-
@@ -235,7 +187,7 @@ User explicitly authorizes autonomous completion of all necessary development, i
  scripts/lib/test-route-registry.mjs                |    24 +
  .../release/check-local-tarball-install-smoke.mjs  |    71 +-
  scripts/release/installed-recipe-matrix.mjs        |   790 +
- 208 files changed, 148886 insertions(+), 714 deletions(-)
+ 160 files changed, 56906 insertions(+), 714 deletions(-)
 ```
 
 </details>

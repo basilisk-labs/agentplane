@@ -60,6 +60,10 @@ function workItem(id, objective, dependsOn = []) {
     priority: 0,
   };
 }
+export function normalizeM05Bundle(source) {
+  return source.replaceAll(/^[\t ]+$/gm, "");
+}
+
 export function m05Corpus() {
   return [
     ["direct-fix", "Fix the off-by-one result in the bounded fixture", "exact"],
@@ -147,6 +151,8 @@ export async function prepareM05Offline(outputRoot) {
     ],
     { cwd: root, stdio: "pipe" },
   );
+  // Normalize newly generated blank lines before any artifact identity is pinned.
+  writeFileSync(product, normalizeM05Bundle(readFileSync(product, "utf8")));
   chmodSync(product, 0o700);
   const oracle = path.join(output, "oracle.mjs");
   copyFileSync(path.join(root, "scripts/bench/paired-m05-oracle.mjs"), oracle);

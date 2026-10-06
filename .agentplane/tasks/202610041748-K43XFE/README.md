@@ -4,7 +4,7 @@ title: "Implement and qualify AgentPlane 0.7.13 Scenario V2 recipes for producti
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 224
+revision: 225
 origin:
   system: "manual"
 depends_on: []
@@ -3010,6 +3010,74 @@ extensions:
             evidence_digest: "sha256:80de248fdcaa4c4888813c41921f5afae0ea8f692fcd84a3541f47cee33d4b04"
             kind: "repository_implementation"
             previous_fingerprint: "sha256:fb8589ed901f6efaa87f05ddfb1fcc95446466c1ba337cc058b5d38a93f1d5f5"
+        -
+          approval_mode: null
+          authority:
+            capabilities:
+              - "repository_write"
+            completion_requirements:
+              - "work_item_validation"
+              - "final_validation"
+            digest: "sha256:ef9bc099301b6ea6d1bac47f3c2380a0fbc4e5bcb0c67a01be2195b07f78a9d2"
+            expires_at: null
+            external_effects:
+              - "network_read"
+            plan_digest: "sha256:9cfbbb0edc6cbf62acdddf0e5333662ffa23427621169ca0b96818d2a1f2d4e2"
+            plan_revision: 9
+            policy_digests:
+              - "sha256:46ab96cb2da8e193a7f501a37237d84581adf7e67f1f87977fcafc07bc4ae1c6"
+            provenance:
+              actor_id: "agentplane:kernel-controller"
+              evidence_digest: "sha256:2bf0ceda5f1623766563d33b97fe917ccff227e7df9d5222dcea2eee3976a34e"
+              kind: "SYSTEM"
+              parent_authority_digest: "sha256:788d37bb8e0e2ba021137674b0ab777c45921c3fb972e1fb57a793ecd1a86b85"
+            repository_effects:
+              - "ci"
+              - "dependencies"
+              - "documentation"
+              - "public_api"
+              - "release_metadata"
+              - "repository_write"
+              - "schema"
+              - "security_boundary"
+              - "source_code"
+              - "tests"
+            repository_fingerprint: "sha256:2ab250bdfaace932566f70138d670e2ba2a80290346c7d94e30c878e0a836119"
+            repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+            resources: []
+            risk:
+              implementation: "bounded"
+              requirements: "bounded"
+              reversibility: "recovery_required"
+            scope_roots:
+              - ".github"
+              - "README.md"
+              - "agentplane-roadmap-r2"
+              - "artifacts"
+              - "bun.lock"
+              - "docs"
+              - "integrations"
+              - "package.json"
+              - "packages"
+              - "schemas"
+              - "scripts"
+            task_id: "202610041748-K43XFE"
+            validation_requirements:
+              - "affected_unit_integration"
+              - "critical_paths"
+              - "docs_contract"
+              - "full_regression"
+              - "hosted_integration"
+              - "real_e2e"
+              - "task_outcome"
+            work_item_id: null
+          observation:
+            changed_paths:
+              - "artifacts/bench/m05-0.7.13/historical-fixture-recovery.json"
+              - "docs/releases/v0.7.13-m05.md"
+            evidence_digest: "sha256:2f164679e6c7e47e6cb892a9d2c0b6083c6b6d880d304e72b17e4a6f6b018765"
+            kind: "repository_implementation"
+            previous_fingerprint: "sha256:2dc8d55add6b7d1db890470435cf0cf1f644bec89eb5e1c48e6ac48d85f1e5e6"
       controller_transfer: null
       current_plan:
         approval_actor_id: "USER"
@@ -4791,6 +4859,15 @@ extensions:
           event_digests:
             - "sha256:e4d14a27da565f36579f8e32c60eca26522d28fd8e0e33b4db480f63e733b3af"
           mutation_id: "sha256:0366e12c3cb24b4824c08fe25c217937d4d18016da734cea9a60ec532983d162"
+        sha256:0b98cac66cefac963065578de01f8ac9cbd6a46b2b58333ee21043c491f9acdf:
+          after_revision: 204
+          aggregate_digest: "sha256:9a0a645848ac990fbdd01687c5c56baf574112d97ac4f5d9658e9d5d00781990"
+          before_revision: 203
+          command_digest: "sha256:93b7cd26e7ec30413ae01c03a70462493382ef02e6b387d4fbb32909bae9bf04"
+          effect_ids: []
+          event_digests:
+            - "sha256:cbb2f3d87bff06ea0881a47dbe11eb6fc8c7663891451e88e6ce858358ea7372"
+          mutation_id: "sha256:0b98cac66cefac963065578de01f8ac9cbd6a46b2b58333ee21043c491f9acdf"
         sha256:10f3a7f9dfaac7614cf541ea5aa2903c0253f872c255fb9ea9027a42ff007431:
           after_revision: 33
           aggregate_digest: "sha256:5ac971ef4f800dad36186ce0c4092801407e43469be761790dcfe73b04e44f56"
@@ -10235,7 +10312,7 @@ extensions:
               optional: false
               required_inputs:
                 - "rc-supervisor-composition-evidence"
-      revision: 203
+      revision: 204
       schema_version: 1
       state: "ACTIVE"
       work_items:
@@ -11401,7 +11478,7 @@ extensions:
               toolchain_digest: "sha256:97398f9060d1177dc7c1604a218cd6ba7b702d285fbdc8a1a0399f01b12330f3"
             observed_at: "2026-10-06T01:07:33.392Z"
             status: "PASSED"
-    digest: "sha256:fe1b1fc5344f812e01541ad26ccd3ee284b94e30f8978f8eb42702df985a549d"
+    digest: "sha256:2059f8f2f1fdb4234afe4c007ef4d7ead01ab7676990c689c1ea20fff9a32b63"
     documents:
       contracts:
         sha256:02b354cf5181d407fbefed439bd0074ed5dbb12e2b9c3b7fd17cbcf33207cc49:
@@ -13570,6 +13647,15 @@ extensions:
         payload_digest: "sha256:698530dd016d35c265273deaab53fa02947bff8ee533f3345f3f2b3cb69c80a1"
         task_id: "202610041748-K43XFE"
         task_revision: 203
+      -
+        command_digest: "sha256:93b7cd26e7ec30413ae01c03a70462493382ef02e6b387d4fbb32909bae9bf04"
+        id: "sha256:0b98cac66cefac963065578de01f8ac9cbd6a46b2b58333ee21043c491f9acdf:authority_continued"
+        kind: "authority_continued"
+        mutation_id: "sha256:0b98cac66cefac963065578de01f8ac9cbd6a46b2b58333ee21043c491f9acdf"
+        occurred_at: "2026-10-06T04:31:13.306Z"
+        payload_digest: "sha256:22e01100451841e33e665a373e103c63e1c713b3e9aba4b52570c42d5b348b0d"
+        task_id: "202610041748-K43XFE"
+        task_revision: 204
     kind: "canonical_task"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1

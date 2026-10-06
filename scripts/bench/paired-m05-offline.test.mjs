@@ -4,7 +4,7 @@ import {
   createRepositorySnapshot,
   normalizeTaskPlanProposal,
 } from "../../packages/core/dist/tasks/index.js";
-import { m05Corpus } from "./paired-m05-offline.mjs";
+import { m05Corpus, normalizeM05Bundle } from "./paired-m05-offline.mjs";
 import { verifyM05Plan } from "./paired-m05-oracle.mjs";
 
 const commit = "1".repeat(40);
@@ -60,3 +60,11 @@ for (const [label, mutate] of [
     mutate(plan);
     assert.equal(verifyM05Plan(task, plan, route, "no_recipe", commit), false);
   });
+
+test("M05 normalizes only generated whitespace-only lines before pinning", () => {
+  const source = "  const x = `value`;\n \t \n\tcode();\n";
+  const normalized = normalizeM05Bundle(source);
+  assert.equal(normalized, "  const x = `value`;\n\n\tcode();\n");
+  assert.equal(normalizeM05Bundle(normalized), normalized);
+  assert.equal(/^[\t ]+$/m.test(normalized), false);
+});
