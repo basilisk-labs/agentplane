@@ -1,3 +1,11 @@
+import {
+  findReworkLineage,
+  historicalAmendment,
+  retainedIssuanceAuthority,
+  authenticReworkEvent,
+  precedingStopContinuation,
+} from "./kernel-rework-lineage.js";
+import { authenticatedAmendmentHistory } from "./kernel-rework-proof.js";
 import { isRecord } from "../../shared/guards.js";
 import { kernelRecoveryInputs } from "./kernel-recovery-evidence.js";
 import {
@@ -208,13 +216,14 @@ export function isKernelScopeExpansionRecovery(
   const aggregate = record?.aggregate;
   if (binding?.phase !== "implementation" || !aggregate || !record) return false;
   const current = aggregate.current_plan;
-  const source = aggregate.plan_history.at(-1);
+  const history = findReworkLineage(record, binding.work_item_id);
+  const source = history?.source;
   const lineage = aggregate.authority_lineage ?? [];
   const authority = lineage.at(-1)?.authority;
   const amendmentIndex = lineage.findLastIndex(
     (entry) =>
       entry.observation?.kind === "plan_amendment" &&
-      entry.authority.plan_digest === current?.digest,
+      entry.authority.plan_digest === history?.origin.digest,
   );
   const parent = lineage[amendmentIndex - 1]?.authority;
   const previous = source?.work_items.find((item) => item.id === binding.work_item_id);
@@ -225,7 +234,7 @@ export function isKernelScopeExpansionRecovery(
   return Boolean(
     current.state === "APPROVED" &&
     source.state === "SUPERSEDED" &&
-    source.revision === current.revision - 1 &&
+    Boolean(history) &&
     /^USER(?::[A-Za-z0-9._@-]+)?$/u.test(current.approval_actor_id ?? "") &&
     current.digest ===
       k.kernelDigest({ revision: current.revision, work_items: current.work_items }) &&
@@ -262,66 +271,12 @@ export function isKernelScopeExpansionRecovery(
         value: { issued: binding.authority_digest, lineage: authority.digest },
       }) &&
     k.canonicalAuthorityIssues(aggregate).length === 0 &&
-    current.approval_evidence_digest ===
-      k.planScopeExpansionApprovalDigest({
-        task_id: aggregate.id,
-        current_plan_digest: source.digest,
-        amended_plan_digest: current.digest,
-        actor_id: current.approval_actor_id!,
-      }) &&
-    k.planAmendmentScopeRoots({ current: source, amended: current, authority: parent }) !== null,
+    Boolean(history),
   );
 }
 
 async function retainedJson(source: string, name: string): Promise<unknown> {
   return JSON.parse(await readStableRegularTextNoFollow(path.join(source, name), name));
-}
-
-function precedingStopContinuation(
-  record: KernelRecord,
-  prior: AgentWorkOrderV2,
-  revision: number,
-  fingerprint: unknown,
-  roots: readonly string[],
-): boolean {
-  const binding = prior.canonical_binding!;
-  let cursor = prior.task.revision!;
-  let observed = binding.repository_fingerprint;
-  const events = record.events.filter(
-    (event) => event.task_revision > cursor && event.task_revision <= revision,
-  );
-  for (const event of events) {
-    const receipt = record.aggregate.mutation_receipts[event.mutation_id];
-    const continuation = record.aggregate.authority_lineage?.find(
-      (entry) =>
-        entry.observation?.kind === "repository_implementation" &&
-        entry.observation.previous_fingerprint === observed &&
-        entry.authority.plan_digest === binding.plan_digest &&
-        entry.observation.changed_paths.every((changed) =>
-          roots.some((root) => root === "." || changed === root || changed.startsWith(`${root}/`)),
-        ) &&
-        event.command_digest ===
-          k.kernelDigest({
-            kind: "continue_authority",
-            task_id: binding.task_id,
-            expected_task_revision: cursor,
-            expected_state_fingerprint: entry.authority.repository_fingerprint,
-            record: entry,
-          }),
-    );
-    if (
-      event.kind !== "authority_continued" ||
-      event.task_revision !== cursor + 1 ||
-      receipt?.before_revision !== cursor ||
-      receipt.after_revision !== event.task_revision ||
-      receipt.command_digest !== event.command_digest ||
-      !continuation
-    )
-      return false;
-    cursor = event.task_revision;
-    observed = continuation.authority.repository_fingerprint;
-  }
-  return cursor === revision && observed === fingerprint;
 }
 
 /** A retained native stop/failure binds this exemption to the first attempt of the new definition. */
@@ -333,37 +288,26 @@ async function approvedAmendmentInputs(
   if (!record || !isKernelScopeExpansionRecovery(order, record)) return [];
   const binding = order.canonical_binding!;
   if (binding.phase !== "implementation") return [];
-  const sourcePlan = record.aggregate.plan_history.at(-1)!;
+  const history = findReworkLineage(record, binding.work_item_id)!;
+  const sourcePlan = history.source;
   const previous = sourcePlan.work_items.find((item) => item.id === binding.work_item_id)!;
-  const amendment = record.events.findLast((event) => event.kind === "plan_amended");
+  const originAuthority = record.aggregate.authority_lineage?.find(
+    (entry) =>
+      entry.observation?.kind === "plan_amendment" &&
+      entry.authority.plan_digest === history.origin.digest,
+  );
+  const amendment = record.events.find(
+    (event) =>
+      originAuthority?.observation &&
+      historicalAmendment(
+        record,
+        history.origin,
+        event,
+        originAuthority.observation.previous_fingerprint,
+      ),
+  );
   if (!amendment) return [];
-  // Native events do not retain attempt payloads. Require the exact immediate
-  // continuation/claim/begin sequence; an intervening retry cannot reuse approval.
-  const after = record.events.filter((event) => event.task_revision > amendment.task_revision);
-  if (after.length !== 3 || after[0]?.kind !== "authority_continued") return [];
-  for (const [index, action] of ["claim", "begin"].entries()) {
-    const event = after[index + 1]!;
-    const receipt = record.aggregate.mutation_receipts[event.mutation_id];
-    const command = {
-      kind: "transition_work_item",
-      action,
-      task_id: binding.task_id,
-      expected_task_revision: amendment.task_revision + index + 1,
-      expected_state_fingerprint: binding.repository_fingerprint,
-      work_item_id: binding.work_item_id,
-      claim_id: binding.claim_id,
-    };
-    if (
-      event.kind !== "work_item_transitioned" ||
-      event.task_revision !== amendment.task_revision + index + 2 ||
-      event.command_digest !== k.kernelDigest(command) ||
-      receipt?.command_digest !== event.command_digest ||
-      receipt.after_revision !== event.task_revision ||
-      receipt.before_revision !== event.task_revision - 1
-    )
-      return [];
-  }
-  if (after[2]!.task_revision !== record.aggregate.revision) return [];
+  if (!(await authenticatedAmendmentHistory(order, directory, record, amendment))) return [];
   for (const [id, receipt] of Object.entries(record.aggregate.mutation_receipts).toSorted(
     ([a], [b]) => a.localeCompare(b),
   )) {
@@ -378,6 +322,7 @@ async function approvedAmendmentInputs(
       const old = prior.canonical_binding;
       if (
         !old ||
+        (old.phase === "implementation" && !retainedIssuanceAuthority(record, prior)) ||
         old.phase === "planning" ||
         prior.work_order_id !== match[2] ||
         old.task_id !== binding.task_id ||
@@ -397,6 +342,11 @@ async function approvedAmendmentInputs(
           !isRecord(saved) ||
           !isRecord(saved.command) ||
           k.kernelDigest(saved.command) !== receipt.command_digest ||
+          !record.events.some(
+            (event) =>
+              event.mutation_id === id &&
+              authenticReworkEvent(record, event, saved.command as k.TaskCommand),
+          ) ||
           saved.command.kind !== "transition_work_item" ||
           saved.command.action !== "block" ||
           saved.command.task_id !== old.task_id ||
@@ -451,7 +401,7 @@ async function approvedAmendmentInputs(
           digest: k.kernelDigest(prior),
           required: true,
           description:
-            "Preceding native attempt under the immediate superseded Plan. The current definition has exact USER-approved amendment authority. Digest uses canonical JSON.",
+            "Preceding native attempt under the originating superseded Plan. The current definition has exact USER-approved amendment authority. Digest uses canonical JSON.",
         },
       ];
     } catch (error) {
@@ -572,7 +522,7 @@ export async function issueKernelExchange(
     authority: {
       role: order.role,
       mutation: order.authority.writable_roots.length > 0 ? "scoped_write" : "read_only",
-      network: "deny",
+      network: order.authority.network,
       required: false,
       reference:
         order.canonical_binding && order.canonical_binding.phase !== "planning"

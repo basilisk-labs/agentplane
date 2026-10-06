@@ -135,7 +135,8 @@ async function expectExactlyChanged(opts: {
   expect(apply).not.toHaveBeenCalled();
 }
 
-describe("runner residual Git fingerprint", () => {
+// Real Git fixtures need bounded setup headroom under concurrent integration load.
+describe("runner residual Git fingerprint", { timeout: 120_000 }, () => {
   it("assigns an active task README mutation exactly to task", async () => {
     const fixture = await prepareLocalCase("Residual task");
     const current = await fixture.ctx.taskBackend.getTask(fixture.taskId);

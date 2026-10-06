@@ -19,12 +19,21 @@ const mocks = vi.hoisted(() => ({
   create: vi.fn(),
   write: vi.fn(),
   commonDir: vi.fn().mockResolvedValue("/repo/.git"),
+  nativeStop: vi
+    .fn()
+    .mockResolvedValue({
+      work_order_id: "sha256:" + "3".repeat(64),
+      validation_digest: "sha256:" + "4".repeat(64),
+    }),
   semanticStop: vi.fn().mockResolvedValue({
     work_order_id: "sha256:" + "1".repeat(64),
     result_digest: "sha256:" + "2".repeat(64),
   }),
 }));
-vi.mock("./kernel-recovery-evidence.js", () => ({ captureKernelSemanticStop: mocks.semanticStop }));
+vi.mock("./kernel-recovery-evidence.js", () => ({
+  captureKernelSemanticStop: mocks.semanticStop,
+  captureKernelNativeValidation: mocks.nativeStop,
+}));
 vi.mock("./kernel-runtime-context.js", async (importOriginal) => ({
   ...(await importOriginal<typeof RuntimeModule>()),
   createKernelRuntime: mocks.create,
@@ -41,14 +50,23 @@ import {
 } from "./kernel-work-item-resume.js";
 import { taskWorkItemResumeSpec } from "./kernel-work-item-resume.command.js";
 
-function fixture() {
+function fixture(native = false) {
   const state = aggregate({
     work_items: {
       kernel: {
-        ...runtime("BLOCKED"),
+        ...runtime(native ? "VALIDATING" : "BLOCKED"),
         result_digest: resultDigest,
         output_manifests: [manifest()],
-        validation: validation(resultDigest),
+        validation: native
+          ? {
+              ...validation(resultDigest),
+              status: "BLOCKED",
+              identity: {
+                ...validation(resultDigest).identity,
+                check_id: "canonical-native-checks",
+              },
+            }
+          : validation(resultDigest),
       },
     },
   });
@@ -60,7 +78,10 @@ function fixture() {
     by: "USER",
     note: "Installed and verified the missing check dependency.",
   };
-  const commandInput = input(state, transitionCommand(state, "resume"));
+  const commandInput = input(state, {
+    ...transitionCommand(state, native ? "rework" : "resume"),
+    claim_id: state.work_items.kernel!.claim_id,
+  });
   const { aggregate: _aggregate, ...nativeInput } = commandInput;
   const apply = vi.fn().mockImplementation((value: Omit<k.KernelInput, "aggregate">) => {
     const result = k.reduceTaskCommand({ ...value, aggregate: state });
@@ -176,5 +197,64 @@ describe("canonical WorkItem operator recovery", () => {
       output_manifests: [],
     });
     expect(claimed.aggregate.current_plan).toEqual(f.state.current_plan);
+  });
+});
+
+describe("blocked native validation recovery", () => {
+  it("uses rework while retaining validation and binds the USER receipt to the transition", async () => {
+    const f = fixture(true);
+    const before = structuredClone(f.record);
+    await cmdWorkItemResume({} as never, f.opts);
+    const submitted = f.apply.mock.calls[0]![0] as Omit<k.KernelInput, "aggregate">;
+    const recovered = (await f.apply.mock.results[0]!.value) as { record: typeof f.record };
+    expect(submitted.command).toMatchObject({ action: "rework", claim_id: "claim-1" });
+    expect(submitted.actor).toMatchObject({ kind: "USER", transport: "manual" });
+    expect(mocks.write).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.any(String),
+      expect.objectContaining({
+        native_validation: {
+          work_order_id: "sha256:" + "3".repeat(64),
+          validation_digest: "sha256:" + "4".repeat(64),
+        },
+        transition: submitted.command,
+      }),
+    );
+    expect(recovered.record.aggregate.work_items.kernel).toMatchObject({
+      state: "REWORK_READY",
+      attempt: 1,
+      validation: before.aggregate.work_items.kernel!.validation,
+    });
+    expect(f.record).toEqual(before);
+    f.read.mockResolvedValue({ kind: "canonical", record: recovered.record });
+    await expect(cmdWorkItemResume({} as never, f.opts)).rejects.toThrow("stale");
+    expect(f.apply).toHaveBeenCalledOnce();
+    expect(mocks.semanticStop).not.toHaveBeenCalled();
+  });
+
+  it.each(["PASSED", "FAILED", "STALE"] as const)("rejects %s validation", async (status) => {
+    const f = fixture(true);
+    f.record.aggregate.work_items.kernel!.validation!.status = status;
+    await expect(cmdWorkItemResume({} as never, f.opts)).rejects.toThrow("blocked WorkItem");
+    expect(f.apply).not.toHaveBeenCalled();
+  });
+
+  it("rejects missing evidence before writing or mutating", async () => {
+    const f = fixture(true);
+    mocks.nativeStop.mockRejectedValueOnce(new Error("Retained checks missing"));
+    await expect(cmdWorkItemResume({} as never, f.opts)).rejects.toThrow("missing");
+    expect(f.apply).not.toHaveBeenCalled();
+    expect(mocks.write).not.toHaveBeenCalled();
+  });
+
+  it("rejects evidence changing during the state check", async () => {
+    const f = fixture(true);
+    mocks.nativeStop.mockResolvedValueOnce({
+      work_order_id: k.kernelDigest("old"),
+      validation_digest: k.kernelDigest("old"),
+    });
+    await expect(cmdWorkItemResume({} as never, f.opts)).rejects.toThrow("changed");
+    expect(f.apply).not.toHaveBeenCalled();
+    expect(mocks.write).not.toHaveBeenCalled();
   });
 });

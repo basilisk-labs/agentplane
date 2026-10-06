@@ -41,7 +41,7 @@ const referenceKey = (ref: RecipeDependencyReference): string =>
       ? `${ref.kind}:${ref.id}`
       : `secret:${JSON.stringify([ref.id, ref.version])}`;
 
-export class RecipeClosureError extends Error {
+class RecipeClosureError extends Error {
   constructor(
     readonly code: string,
     readonly reference: string,

@@ -5,7 +5,10 @@ import { CliError } from "../../shared/errors.js";
 import { resolveCommandGitCommonDir, type CommandContext } from "../shared/task-backend.js";
 import { writeKernelArtifact } from "./kernel-exchange.js";
 import { createKernelRuntime, requireKernelCommit } from "./kernel-runtime-context.js";
-import { captureKernelSemanticStop } from "./kernel-recovery-evidence.js";
+import {
+  captureKernelNativeValidation,
+  captureKernelSemanticStop,
+} from "./kernel-recovery-evidence.js";
 
 export type WorkItemResumeOptions = {
   taskId: string;
@@ -50,7 +53,15 @@ export function assertWorkItemResume(record: KernelRecord, opts: WorkItemResumeO
   if (
     aggregate.state !== "ACTIVE" ||
     aggregate.current_plan?.state !== "APPROVED" ||
-    aggregate.work_items[opts.workItemId]?.state !== "BLOCKED"
+    !(
+      aggregate.work_items[opts.workItemId]?.state === "BLOCKED" ||
+      (aggregate.work_items[opts.workItemId]?.state === "VALIDATING" &&
+        aggregate.work_items[opts.workItemId]?.validation?.status === "BLOCKED" &&
+        aggregate.work_items[opts.workItemId]?.validation?.identity.check_id ===
+          "canonical-native-checks" &&
+        aggregate.work_items[opts.workItemId]?.claim_id &&
+        aggregate.work_items[opts.workItemId]?.result_digest)
+    )
   )
     throw new CliError({
       code: "E_VALIDATION",
@@ -77,7 +88,26 @@ export async function cmdWorkItemResume(command: CommandContext, opts: WorkItemR
     throw new CliError({ code: "E_VALIDATION", message: "Recovery requires a canonical Task." });
   assertWorkItemResume(read.record, opts);
   const kernelRoot = path.join(await resolveCommandGitCommonDir(command), "agentplane", "kernel");
-  const semanticStop = await captureKernelSemanticStop(kernelRoot, read.record, opts.workItemId);
+  const nativeRecovery = read.record.aggregate.work_items[opts.workItemId]!.state === "VALIDATING";
+  const evidence = nativeRecovery
+    ? {
+        native_validation: await captureKernelNativeValidation(
+          kernelRoot,
+          read.record,
+          opts.workItemId,
+        ),
+      }
+    : { semantic_stop: await captureKernelSemanticStop(kernelRoot, read.record, opts.workItemId) };
+  const input = await runtime.input(
+    {
+      kind: "transition_work_item",
+      action: nativeRecovery ? "rework" : "resume",
+      work_item_id: opts.workItemId,
+      claim_id: read.record.aggregate.work_items[opts.workItemId]!.claim_id,
+    },
+    `work-item-resume:${opts.stateDigest}`,
+  );
+  const transition = { ...input.command, expected_task_revision: read.record.aggregate.revision };
   const receipt = {
     kind: "operator_work_item_resume",
     task_id: opts.taskId,
@@ -85,28 +115,28 @@ export async function cmdWorkItemResume(command: CommandContext, opts: WorkItemR
     state_digest: opts.stateDigest,
     actor: opts.by,
     note: opts.note.trim(),
-    semantic_stop: semanticStop,
+    ...evidence,
+    ...(nativeRecovery ? { transition } : {}),
   };
   const digest = k.kernelDigest(receipt);
-  const input = await runtime.input(
-    {
-      kind: "transition_work_item",
-      action: "resume",
-      work_item_id: opts.workItemId,
-      claim_id: read.record.aggregate.work_items[opts.workItemId]!.claim_id,
-    },
-    `work-item-resume:${digest}`,
-  );
   // Bind the mutation to the state the operator saw, including the planning revision.
   const boundInput = {
     ...input,
-    command: { ...input.command, expected_task_revision: read.record.aggregate.revision },
+    command: transition,
+    mutation_id: `work-item-resume:${digest}`,
     actor: { ...input.actor, id: opts.by, kind: "USER" as const, transport: "manual" as const },
   };
   const current = await runtime.adapter.read(opts.taskId);
   if (current.kind !== "canonical")
     throw new CliError({ code: "E_VALIDATION", message: "Canonical Task became unavailable." });
   assertWorkItemResume(current.record, opts);
+  if (
+    nativeRecovery &&
+    k.kernelDigest(
+      await captureKernelNativeValidation(kernelRoot, current.record, opts.workItemId),
+    ) !== k.kernelDigest(evidence.native_validation)
+  )
+    throw new Error("Native validation changed before recovery");
   const directory = path.join(kernelRoot, "recoveries", opts.taskId);
   await writeKernelArtifact(directory, `${digest.slice(7)}.json`, receipt);
   requireKernelCommit(await runtime.lifecycle.apply(boundInput));

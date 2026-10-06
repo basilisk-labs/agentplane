@@ -123,18 +123,9 @@ export async function assembleRunnerRecipeContext(opts: {
   };
 }
 
-export { validateRecipeScenarioPlan, type ValidatedRecipePlan } from "./recipe-plan-validation.js";
-export {
-  observeRecipeApplicability,
-  assertRecipeApplicable,
-  type RecipeApplicabilityObservers,
-  type RecipeApplicabilityObservation,
-} from "./recipe-applicability.js";
-export {
-  computeRecipeDependencyClosure,
-  RecipeClosureError,
-  type ComputedRecipeClosure,
-} from "./recipe-closure.js";
+export { validateRecipeScenarioPlan } from "./recipe-plan-validation.js";
+export { observeRecipeApplicability } from "./recipe-applicability.js";
+export { computeRecipeDependencyClosure } from "./recipe-closure.js";
 export {
   prepareRecipeClosureRetention,
   readRetainedRecipeClosure,
@@ -145,9 +136,3 @@ export {
   readBoundRecipePlanClosure,
   validateRecipePlanForAdmission,
 } from "./recipe-plan-binding.js";
-
-export { prepareRecipePlanRebind } from "./recipe-plan-rebind.js";
-
-export { summarizeRecipeCandidates } from "./recipe-shortlist.js";
-
-export { projectRecipeRoleContext, projectKernelRecipeRoleContext } from "./recipe-role-context.js";

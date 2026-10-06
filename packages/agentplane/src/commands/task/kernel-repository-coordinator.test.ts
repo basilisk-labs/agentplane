@@ -17,6 +17,7 @@ const mocks = vi.hoisted(() => ({
   readStatus: vi.fn(),
   readHead: vi.fn(),
   stage: vi.fn(),
+  stagedPaths: vi.fn(),
 }));
 
 vi.mock("@agentplaneorg/core/process", () => ({ runProcess: mocks.runProcess }));
@@ -54,7 +55,7 @@ const workOrder = {
 const invalidateStatus = vi.fn();
 const command = {
   resolvedProject: { gitRoot: "/repo" },
-  git: { invalidateStatus, stage: mocks.stage },
+  git: { invalidateStatus, stage: mocks.stage, statusStagedPaths: mocks.stagedPaths },
   config: {
     branch: { task_prefix: "task", task_close_prefix: "task-close" },
     paths: { workflow_dir: ".agentplane/tasks" },
@@ -95,6 +96,69 @@ describe("canonical repository coordinator", () => {
       "dedicated task worktree",
     );
   });
+
+  it.each([
+    [".agentplane/policy/local.md", ["security_boundary"], true, false],
+    [".agentplane/config.json", ["security_boundary"], false, true],
+    [".agentplane/policy/local.md", ["documentation"], false, false],
+  ])(
+    "derives protected commit flags for %s from approved effects %j",
+    async (file, effects, allowPolicy, allowConfig) => {
+      const baseline = {
+        schema_version: 1,
+        kind: "canonical_repository_baseline",
+        task_id: taskId,
+        work_order_id: workOrderId,
+        checkout: "/repo",
+        branch: `task/${taskId}/canonical`,
+        head: "base-sha",
+        tree: "base-tree",
+        status: { command: "git status", lines: [] },
+      };
+      mocks.readStable.mockImplementation((target: string) =>
+        target.endsWith("repository-baseline.json")
+          ? Promise.resolve(JSON.stringify(baseline))
+          : Promise.reject(Object.assign(new Error("missing"), { code: "ENOENT" })),
+      );
+      mocks.readStatus.mockResolvedValue({ command: "git status", lines: [` M ${file}`] });
+      mocks.stagedPaths.mockResolvedValue([file]);
+      mocks.cmdCommit.mockRejectedValue(new Error("hook rejected"));
+      const order = {
+        task: { id: taskId },
+        work_order_id: workOrderId,
+        authority: { writable_roots: [`/repo/${file}`] },
+      } as never;
+      // Retry must derive the same allowances; a rejected hook is not an authority grant.
+      for (let attempt = 0; attempt < 2; attempt++) {
+        await expect(
+          commitCanonicalImplementation({
+            command,
+            directory: "/exchange",
+            work_order: order,
+            changed_paths: [file],
+            repository_effects: effects,
+          }),
+        ).rejects.toThrow("hook rejected");
+      }
+      expect(mocks.cmdCommit).toHaveBeenCalledTimes(2);
+      expect(mocks.cmdCommit).toHaveBeenLastCalledWith(
+        expect.objectContaining({ allowPolicy, allowConfig, allow: [file] }),
+      );
+      if (allowPolicy || allowConfig) {
+        mocks.stagedPaths.mockResolvedValue([file, ".agentplane/policy/unrelated.md"]);
+        await expect(
+          commitCanonicalImplementation({
+            command,
+            directory: "/exchange",
+            work_order: order,
+            changed_paths: [file],
+            repository_effects: effects,
+          }),
+        ).rejects.toThrow("unrelated staged paths");
+        expect(mocks.cmdCommit).toHaveBeenCalledTimes(2);
+      }
+    },
+  );
 
   it("commits the accumulated observed delta and freezes commit, tree, and evaluator identity", async () => {
     const baseline = {

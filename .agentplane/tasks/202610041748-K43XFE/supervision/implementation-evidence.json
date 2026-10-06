@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 4e0654f97c6e1c1f9ce6b7e31585324b1b759939..0cc00f364c7be0927047ef4ce3d066da6531482f",
+      "command": "git diff --check 0cc00f364c7be0927047ef4ce3d066da6531482f..52ffec6aaf219d8af968e23e1b7b0767c43f60a9",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,25 +13,23 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 4e0654f97c6e1c1f9ce6b7e31585324b1b759939..0cc00f364c7be0927047ef4ce3d066da6531482f",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 0cc00f364c7be0927047ef4ce3d066da6531482f..52ffec6aaf219d8af968e23e1b7b0767c43f60a9",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
         "M\t.agentplane/tasks/202610041748-K43XFE/README.md",
-        "M\t.agentplane/tasks/202610041748-K43XFE/pr/diffstat.txt",
-        "M\t.agentplane/tasks/202610041748-K43XFE/pr/github-body.md",
-        "M\t.agentplane/tasks/202610041748-K43XFE/pr/meta.json",
-        "M\t.agentplane/tasks/202610041748-K43XFE/pr/review.md",
         "M\t.agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202610041748-K43XFE/supervision/implementation-evidence.json",
-        "A\tpackages/agentplane/src/cli/run-cli.core.roadmap-recipe-v2-entrypoint.test.ts",
-        "M\tpackages/agentplane/src/cli/run-cli/command-catalog/project.ts",
-        "M\tpackages/agentplane/src/cli/run-cli/command-loaders/project.ts",
-        "M\tpackages/agentplane/src/commands/recipes/impl/explicit-selection.ts",
-        "A\tpackages/agentplane/src/commands/recipes/preview-v2.command.ts",
-        "M\tpackages/agentplane/src/commands/task/create.command.ts",
-        "M\tpackages/agentplane/src/commands/task/plan-set.command.ts",
-        "A\tpackages/agentplane/src/commands/task/recipe-input.ts"
+        "M\tpackages/agentplane/src/commands/shared/declared-check.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/declared-check.ts",
+        "M\tpackages/agentplane/src/commands/task/advance-task-step.ts",
+        "M\tpackages/agentplane/src/commands/task/direct-task-verification.sequence.cases.ts",
+        "M\tpackages/agentplane/src/commands/task/direct-task-verification.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-advance-network.test.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-exchange.test.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-exchange.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-work-order.network.test.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-work-order.ts"
       ]
     },
     {
@@ -39,6 +37,16 @@
       "id": "final-repository-status",
       "result": "pass",
       "stdout": [
+        "M  .agentplane/tasks/202610041748-K43XFE/pr/diffstat.txt",
+        "M  .agentplane/tasks/202610041748-K43XFE/pr/github-body.md",
+        "M  .agentplane/tasks/202610041748-K43XFE/pr/meta.json",
+        "M  .agentplane/tasks/202610041748-K43XFE/pr/review.md",
+        " M packages/agentplane/package.json",
+        " M packages/agentplane/src/commands/recipes/impl/apply.ts",
+        " M packages/agentplane/tsup.config.ts",
+        " M scripts/lib/test-route-registry.mjs",
+        " M scripts/release/check-local-tarball-install-smoke.mjs",
+        "?? .agentplane/tasks/202610052127-ZKSA87/quality/objects/sha256/cd35fbf396f0028e374b3f84595480f6edd9dcf606c23ee72655c873780bf2b2.json",
         "?? .agentplane/tmp/60QH9J-pre-fast-forward-schema.json",
         "?? .agentplane/tmp/K43XFE-pre-fast-forward/202609300615-DE9AE6.json",
         "?? .agentplane/tmp/K43XFE-pre-fast-forward/202609301727-VET3VW.json",
@@ -74,18 +82,27 @@
         "?? .agentplane/tmp/pr-integration-MP3J6N/6048-typecheck.log",
         "?? .agentplane/tmp/pr-integration-MP3J6N/6048.patch",
         "?? .agentplane/tmp/pr-integration-MP3J6N/integration-result.json",
-        "?? packages/agentplane/tsup.config.bundled_gb1x1suwt6t.mjs"
+        "?? packages/agentplane/src/commands/recipes/roadmap-installed-recipe-negotiation.test.ts",
+        "?? packages/agentplane/src/recipe-api.ts",
+        "?? packages/agentplane/tsup.config.bundled_gb1x1suwt6t.mjs",
+        "?? scripts/release/installed-recipe-matrix.mjs"
       ]
     }
   ],
-  "execution_base_commit": "4e0654f97c6e1c1f9ce6b7e31585324b1b759939",
-  "implementation_commit": "0cc00f364c7be0927047ef4ce3d066da6531482f",
+  "execution_base_commit": "0cc00f364c7be0927047ef4ce3d066da6531482f",
+  "implementation_commit": "52ffec6aaf219d8af968e23e1b7b0767c43f60a9",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
       " M .agentplane/tasks/202610041748-K43XFE/README.md",
       " M .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json",
       " M .agentplane/tasks/202610041748-K43XFE/supervision/implementation-evidence.json",
+      " M packages/agentplane/package.json",
+      " M packages/agentplane/src/commands/recipes/impl/apply.ts",
+      " M packages/agentplane/tsup.config.ts",
+      " M scripts/lib/test-route-registry.mjs",
+      " M scripts/release/check-local-tarball-install-smoke.mjs",
+      "?? .agentplane/tasks/202610052127-ZKSA87/quality/objects/sha256/cd35fbf396f0028e374b3f84595480f6edd9dcf606c23ee72655c873780bf2b2.json",
       "?? .agentplane/tmp/60QH9J-pre-fast-forward-schema.json",
       "?? .agentplane/tmp/K43XFE-pre-fast-forward/202609300615-DE9AE6.json",
       "?? .agentplane/tmp/K43XFE-pre-fast-forward/202609301727-VET3VW.json",
@@ -121,9 +138,52 @@
       "?? .agentplane/tmp/pr-integration-MP3J6N/6048-typecheck.log",
       "?? .agentplane/tmp/pr-integration-MP3J6N/6048.patch",
       "?? .agentplane/tmp/pr-integration-MP3J6N/integration-result.json",
-      "?? packages/agentplane/tsup.config.bundled_gb1x1suwt6t.mjs"
+      "?? packages/agentplane/src/commands/recipes/roadmap-installed-recipe-negotiation.test.ts",
+      "?? packages/agentplane/src/recipe-api.ts",
+      "?? packages/agentplane/tsup.config.bundled_gb1x1suwt6t.mjs",
+      "?? scripts/release/installed-recipe-matrix.mjs"
     ],
     "classification": [
+      {
+        "classification": "introduced_during_execution",
+        "line": "M  .agentplane/tasks/202610041748-K43XFE/pr/diffstat.txt"
+      },
+      {
+        "classification": "introduced_during_execution",
+        "line": "M  .agentplane/tasks/202610041748-K43XFE/pr/github-body.md"
+      },
+      {
+        "classification": "introduced_during_execution",
+        "line": "M  .agentplane/tasks/202610041748-K43XFE/pr/meta.json"
+      },
+      {
+        "classification": "introduced_during_execution",
+        "line": "M  .agentplane/tasks/202610041748-K43XFE/pr/review.md"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": " M packages/agentplane/package.json"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": " M packages/agentplane/src/commands/recipes/impl/apply.ts"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": " M packages/agentplane/tsup.config.ts"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": " M scripts/lib/test-route-registry.mjs"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": " M scripts/release/check-local-tarball-install-smoke.mjs"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tasks/202610052127-ZKSA87/quality/objects/sha256/cd35fbf396f0028e374b3f84595480f6edd9dcf606c23ee72655c873780bf2b2.json"
+      },
       {
         "classification": "preexisting_before_execution",
         "line": "?? .agentplane/tmp/60QH9J-pre-fast-forward-schema.json"
@@ -266,7 +326,19 @@
       },
       {
         "classification": "preexisting_before_execution",
+        "line": "?? packages/agentplane/src/commands/recipes/roadmap-installed-recipe-negotiation.test.ts"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? packages/agentplane/src/recipe-api.ts"
+      },
+      {
+        "classification": "preexisting_before_execution",
         "line": "?? packages/agentplane/tsup.config.bundled_gb1x1suwt6t.mjs"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? scripts/release/installed-recipe-matrix.mjs"
       },
       {
         "classification": "removed_during_execution",
@@ -282,6 +354,16 @@
       }
     ],
     "final": [
+      "M  .agentplane/tasks/202610041748-K43XFE/pr/diffstat.txt",
+      "M  .agentplane/tasks/202610041748-K43XFE/pr/github-body.md",
+      "M  .agentplane/tasks/202610041748-K43XFE/pr/meta.json",
+      "M  .agentplane/tasks/202610041748-K43XFE/pr/review.md",
+      " M packages/agentplane/package.json",
+      " M packages/agentplane/src/commands/recipes/impl/apply.ts",
+      " M packages/agentplane/tsup.config.ts",
+      " M scripts/lib/test-route-registry.mjs",
+      " M scripts/release/check-local-tarball-install-smoke.mjs",
+      "?? .agentplane/tasks/202610052127-ZKSA87/quality/objects/sha256/cd35fbf396f0028e374b3f84595480f6edd9dcf606c23ee72655c873780bf2b2.json",
       "?? .agentplane/tmp/60QH9J-pre-fast-forward-schema.json",
       "?? .agentplane/tmp/K43XFE-pre-fast-forward/202609300615-DE9AE6.json",
       "?? .agentplane/tmp/K43XFE-pre-fast-forward/202609301727-VET3VW.json",
@@ -317,15 +399,29 @@
       "?? .agentplane/tmp/pr-integration-MP3J6N/6048-typecheck.log",
       "?? .agentplane/tmp/pr-integration-MP3J6N/6048.patch",
       "?? .agentplane/tmp/pr-integration-MP3J6N/integration-result.json",
-      "?? packages/agentplane/tsup.config.bundled_gb1x1suwt6t.mjs"
+      "?? packages/agentplane/src/commands/recipes/roadmap-installed-recipe-negotiation.test.ts",
+      "?? packages/agentplane/src/recipe-api.ts",
+      "?? packages/agentplane/tsup.config.bundled_gb1x1suwt6t.mjs",
+      "?? scripts/release/installed-recipe-matrix.mjs"
     ],
-    "introduced_after_execution_baseline": [],
+    "introduced_after_execution_baseline": [
+      "M  .agentplane/tasks/202610041748-K43XFE/pr/diffstat.txt",
+      "M  .agentplane/tasks/202610041748-K43XFE/pr/github-body.md",
+      "M  .agentplane/tasks/202610041748-K43XFE/pr/meta.json",
+      "M  .agentplane/tasks/202610041748-K43XFE/pr/review.md"
+    ],
     "removed_after_execution_baseline": [
       " M .agentplane/tasks/202610041748-K43XFE/README.md",
       " M .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json",
       " M .agentplane/tasks/202610041748-K43XFE/supervision/implementation-evidence.json"
     ],
     "unchanged_from_execution_baseline": [
+      " M packages/agentplane/package.json",
+      " M packages/agentplane/src/commands/recipes/impl/apply.ts",
+      " M packages/agentplane/tsup.config.ts",
+      " M scripts/lib/test-route-registry.mjs",
+      " M scripts/release/check-local-tarball-install-smoke.mjs",
+      "?? .agentplane/tasks/202610052127-ZKSA87/quality/objects/sha256/cd35fbf396f0028e374b3f84595480f6edd9dcf606c23ee72655c873780bf2b2.json",
       "?? .agentplane/tmp/60QH9J-pre-fast-forward-schema.json",
       "?? .agentplane/tmp/K43XFE-pre-fast-forward/202609300615-DE9AE6.json",
       "?? .agentplane/tmp/K43XFE-pre-fast-forward/202609301727-VET3VW.json",
@@ -361,7 +457,10 @@
       "?? .agentplane/tmp/pr-integration-MP3J6N/6048-typecheck.log",
       "?? .agentplane/tmp/pr-integration-MP3J6N/6048.patch",
       "?? .agentplane/tmp/pr-integration-MP3J6N/integration-result.json",
-      "?? packages/agentplane/tsup.config.bundled_gb1x1suwt6t.mjs"
+      "?? packages/agentplane/src/commands/recipes/roadmap-installed-recipe-negotiation.test.ts",
+      "?? packages/agentplane/src/recipe-api.ts",
+      "?? packages/agentplane/tsup.config.bundled_gb1x1suwt6t.mjs",
+      "?? scripts/release/installed-recipe-matrix.mjs"
     ]
   },
   "schema_version": 1,
