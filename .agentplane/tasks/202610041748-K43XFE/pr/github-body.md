@@ -16,7 +16,7 @@ User explicitly authorizes autonomous completion of all necessary development, i
 ## Verification
 
 - State: ok
-- Note: Canonical validation sha256:618a4278260b812e37b7e3e84d7fafa13d6f8ae46e23f504dfc317c1a50db9b9
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>
