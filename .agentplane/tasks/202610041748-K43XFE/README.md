@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 290
+revision: 291
 origin:
   system: "manual"
 depends_on: []
@@ -33,20 +33,34 @@ verification:
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-10-06T07:56:29.557Z"
+  updated_at: "2026-10-06T11:34:51.866Z"
   updated_by: "EVALUATOR"
-  note: "Canonical EVALUATOR review passed."
-  evaluated_sha: "c9593e7510a4f9979393a17e33ef1f8dd4d6354e"
-  review_identity_digest: "sha256:e66c00707fbb3c726a8abe097992ed94ca31cac614d52f2afa35d57669c1c9fc"
+  note: "EVALUATOR returned rework with 4 typed finding(s)."
+  evaluated_sha: "3a9b33197fea56ebc7f4510eadb5e95e5e28bbc9"
+  review_identity_digest: "sha256:cb7c00bde3d7b9e04748522b1916dc15349795a7635f1715695ed11dd30f7e97"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202610041748-K43XFE/3c3ae5437a3de6215db46e5316812f69925bab2295c5fc6234edbc24acdb7574/quality-report.json"
+    - ".agentplane/tasks/202610041748-K43XFE/quality/20261006-112959470-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202610041748-K43XFE/quality/20261006-112959470-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/2311da96a461551717d074d33ed05626fc26ef307935c7c2c8e83190b30adf8f.md"
+    - ".agentplane/tasks/202610041748-K43XFE/quality/20261006-112959470-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202610041748-K43XFE/quality/20261006-112959470-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202610041748-K43XFE/quality/20261006-112959470-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202610041748-K43XFE/quality/20261006-112959470-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202610041748-K43XFE/README.md"
+    - ".agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/aa80d9856cd5c49d128937031c30745f3adce79ad7fdbaf2df16d6799361100c.patch"
+    - ".agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/3eb05e8470b1506e0891fc23a26d8998e45efb9ba078dc9f93a7c2af4818c4e3.json"
+    - ".agentplane/tasks/202610041748-K43XFE/verification/20261006110300669-04d1074ff3a5534e.json"
+    - ".agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/d86c9eb64908ce9686a79a6b14fbccc29291a8495e9e5a663b86d77b77ec822a.json"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Validated all 13 required context blocks, implementation/report/repository/native-validation digests, frozen HEAD and native input bindings. Native evidence records eight passing focused tests and successful global formatting, typecheck and diff checks."
-    - "The resolver selects options.env ?? process.env once, then resolves the explicit recipesSource before that selected environment. An explicit empty or unrelated environment cannot fall through to the host; omitted env retains process.env behavior. Existing relative resolution, missing-source and invalid-checkout rejection remain unchanged."
-    - "Four added regression cases populate host state, exercise empty/unrelated explicit environments, omitted-env fallback and explicit-source precedence. The two isolation cases would fail under the previous implementation. vi.unstubAllEnvs restores inherited state before fixture cleanup; all four existing tests and assertions remain intact."
-    - "The source delta is confined to the approved resolver and test file outside native task metadata. No global environment clearing, CI exemption, catalogue validation weakening, release-artifact change or measurement authority is introduced."
+    - "The new recipes dependency on @agentplaneorg/core 0.7.12 requires Node >=20.5.0, but recipes still advertises >=20 and its hosted minimum-runtime job selects 20.0.0. Align the declared minimum, hosted matrix and generated documentation; qualify the actual packed installation on the supported minimum."
+    - "The new M05 product and offline test statically import packages/core/dist/tasks/index.js; the product also imports packages/recipes/dist/index.js. These generated files are absent in a clean checkout before the lint phase, so local validation after builds does not establish clean-checkout lint correctness. Use the established source-bundle/runtime-loading owners and test the real bundle."
+    - "The added exact recipes-to-core 0.7.12 dependency is absent from both scripts/release/version-surfaces.json and the native release apply mutation owner. A version bump updates recipes itself but leaves this runtime edge on 0.7.12, violating the existing strict workspace dependency parity gate. Update both writers and cover present and legacy-absent dependency cases without weakening parity or introducing absent optional keys."
+    - "The frozen compatibility candidate/checker still restricts the pre-release package delta to its earlier enumerated paths, which exclude the newly added recipes runtime dependencies. The capture owner also normalizes only the CLI core/recipes edges, omitting recipes-to-core. The new package surface therefore requires an exact reviewed candidate/checker update and consistent version normalization; recapturing arbitrary drift is insufficient. Preserve the immutable baseline and require unexpected-path rejection."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -899,7 +913,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-10-06T11:03:16.461Z"
+doc_updated_at: "2026-10-06T11:34:52.187Z"
 doc_updated_by: "CODER"
 description: "User explicitly authorizes autonomous completion of all necessary development, integration and release work for version 0.7.13. Implement the current agentplane-roadmap-r2/releases/0.7.13.md RC-01 through RC-18 and EXECUTION-CHARTER.md contracts against the current source. Reuse the existing Recipe package, compact Plan input, sole Task Kernel coordinator, evidence storage, approval and independent EVALUATOR. Preserve V1 compatibility with explicit negotiation, bounded typed interpolation, observed applicability, retained pinned dependency closure, shared instantiation and refinement, scoped context, offline conversion preview, and installed-package recovery qualification. Inventory existing implementations before adding code. Use sequential independently verifiable WorkItems; do not introduce a second workflow engine or implement 0.7.14. Preserve existing repair task 202610020159-60QH9J and autonomy task 202610020153-XXZXW4; integrate their accepted results through supported routes. Network reads, PR publication and main integration are authorized. Prepare the exact 0.7.13 candidate and evidence for a subsequent publication task under the same user release authorization. Preserve unrelated work, credentials and history. Do not fabricate measured savings or paid campaign authority; prepare the exact M05 campaign and explicit measurement disposition. Full validation must preserve all required tests and assertions and use realistic bounded execution budgets."
 sections:

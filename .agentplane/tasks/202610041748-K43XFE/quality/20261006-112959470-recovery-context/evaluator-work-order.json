@@ -1,0 +1,116 @@
+{
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202610041748-K43XFE-cd943870987a30941f2c9b20",
+  "prepared_at": "2026-10-06T11:29:59.470Z",
+  "task": {
+    "id": "202610041748-K43XFE",
+    "revision": 290,
+    "objective": "Implement and qualify AgentPlane 0.7.13 Scenario V2 recipes for production release\n\nUser explicitly authorizes autonomous completion of all necessary development, integration and release work for version 0.7.13. Implement the current agentplane-roadmap-r2/releases/0.7.13.md RC-01 through RC-18 and EXECUTION-CHARTER.md contracts against the current source. Reuse the existing Recipe package, compact Plan input, sole Task Kernel coordinator, evidence storage, approval and independent EVALUATOR. Preserve V1 compatibility with explicit negotiation, bounded typed interpolation, observed applicability, retained pinned dependency closure, shared instantiation and refinement, scoped context, offline conversion preview, and installed-package recovery qualification. Inventory existing implementations before adding code. Use sequential independently verifiable WorkItems; do not introduce a second workflow engine or implement 0.7.14. Preserve existing repair task 202610020159-60QH9J and autonomy task 202610020153-XXZXW4; integrate their accepted results through supported routes. Network reads, PR publication and main integration are authorized. Prepare the exact 0.7.13 candidate and evidence for a subsequent publication task under the same user release authorization. Preserve unrelated work, credentials and history. Do not fabricate measured savings or paid campaign authority; prepare the exact M05 campaign and explicit measurement disposition. Full validation must preserve all required tests and assertions and use realistic bounded execution budgets.",
+    "acceptance_criteria": [
+      "bun run schemas:check",
+      "bun run test:release:critical",
+      "bun run typecheck",
+      "- In scope: User explicitly authorizes autonomous completion of all necessary development, integration and release work for version 0.7.13. Implement the current agentplane-roadmap-r2/releases/0.7.13.md RC-01 through RC-18 and EXECUTION-CHARTER.md contracts against the current source. Reuse the existing Recipe package, compact Plan input, sole Task Kernel coordinator, evidence storage, approval and independent EVALUATOR. Preserve V1 compatibility with explicit negotiation, bounded typed interpolation, observed applicability, retained pinned dependency closure, shared instantiation and refinement, scoped context, offline conversion preview, and installed-package recovery qualification. Inventory existing implementations before adding code. Use sequential independently verifiable WorkItems; do not introduce a second workflow engine or implement 0.7.14. Preserve existing repair task 202610020159-60QH9J and autonomy task 202610020153-XXZXW4; integrate their accepted results through supported routes. Network reads, PR publication and main integration are authorized. Prepare the exact 0.7.13 candidate and evidence for a subsequent publication task under the same user release authorization. Preserve unrelated work, credentials and history. Do not fabricate measured savings or paid campaign authority; prepare the exact M05 campaign and explicit measurement disposition. Full validation must preserve all required tests and assertions and use realistic bounded execution budgets.\n- Out of scope: unrelated refactors not required for \"Implement and qualify AgentPlane 0.7.13 Scenario V2 recipes for production release\".",
+      "1. Execute approved WorkItem rc-01.\n2. Execute approved WorkItem rc-02.\n3. Execute approved WorkItem rc-03.\n4. Execute approved WorkItem rc-04.\n5. Execute approved WorkItem rc-05.\n6. Execute approved WorkItem rc-06.\n7. Execute approved WorkItem rc-07.\n8. Execute approved WorkItem rc-08.\n9. Execute approved WorkItem rc-09.\n10. Execute approved WorkItem rc-10.\n11. Execute approved WorkItem rc-11.\n12. Execute approved WorkItem rc-12.\n13. Execute approved WorkItem rc-13.\n14. Execute approved WorkItem rc-14.\n15. Execute approved WorkItem rc-15.\n16. Execute approved WorkItem rc-16.\n17. Execute approved WorkItem rc-17.\n18. Execute approved WorkItem rc-18.\n19. Execute approved WorkItem rc-supervisor-composition.\n20. Execute approved WorkItem rc-reviewed-recovery-composition.\n21. Execute approved WorkItem rc-documentation-validator-wiring.\n22. Execute approved WorkItem rc-evidence-formatting.\n23. Execute approved WorkItem rc-catalogue-environment-isolation.",
+      "PLANNER fallback scaffold for \"Implement and qualify AgentPlane 0.7.13 Scenario V2 recipes for production release\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Implement and qualify AgentPlane 0.7.13 Scenario V2 recipes for production release\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "3a9b33197fea56ebc7f4510eadb5e95e5e28bbc9",
+  "diff_base_sha": "11630ef637ac684b4470815005e1a55f25cac320",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202610041748-K43XFE/quality/20261006-112959470-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:f0a78837db57d13f7e90f21a4e1d25bae2bab74c2619c4bcc937c9ca27d7842b",
+    "prompt_path": ".agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/2311da96a461551717d074d33ed05626fc26ef307935c7c2c8e83190b30adf8f.md",
+    "result_schema_path": ".agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "schema_version": 2,
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202610041748-K43XFE",
+    "plan_digest": "sha256:f2e287a7a29376fd292c8c2f2a3707df9e95b0c61c5921f325ba0275e0a6871e",
+    "policy_digest": "sha256:649ea2aa3aa2eff9e709b3075d17deaef97f82440494ba18905f15280a598931",
+    "capability_digest": "sha256:9c954e5cb756345b8471e7c827245f46466a455f655bd8eb5841bc137bc713b0",
+    "checks_digest": "sha256:96d7c7a121a5b2c725ca2edc9adba16dda7b70fbecbfd640c209fb54e7bc2243",
+    "verification_input_digest": "sha256:6062c14b218fb0b02be12cf4a21e1847f1320df6edc88c9807d6d8c668a37674",
+    "acceptance_digest": "sha256:903a59cacc876b2f2040addbd85a495c494237a073e417e2a8e55fc5353b3437",
+    "implementation_sha": "3a9b33197fea56ebc7f4510eadb5e95e5e28bbc9",
+    "digest": "sha256:cb7c00bde3d7b9e04748522b1916dc15349795a7635f1715695ed11dd30f7e97"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202610041748-K43XFE/README.md",
+      "sha256": "sha256:75d79bdbafcbc9004ec69138747a3012e69b9fee0f97819dcff38c3db35693d8",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/aa80d9856cd5c49d128937031c30745f3adce79ad7fdbaf2df16d6799361100c.patch",
+      "sha256": "sha256:aa80d9856cd5c49d128937031c30745f3adce79ad7fdbaf2df16d6799361100c",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/3eb05e8470b1506e0891fc23a26d8998e45efb9ba078dc9f93a7c2af4818c4e3.json",
+      "sha256": "sha256:3eb05e8470b1506e0891fc23a26d8998e45efb9ba078dc9f93a7c2af4818c4e3",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202610041748-K43XFE/verification/20261006110300669-04d1074ff3a5534e.json",
+      "sha256": "sha256:fcb50a9394c37173888e7f61719389038f6c2eba411c3b7cfa17f1a9d6f0df49",
+      "required": true
+    },
+    {
+      "id": "native-identity",
+      "kind": "plan",
+      "path": ".agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/d86c9eb64908ce9686a79a6b14fbccc29291a8495e9e5a663b86d77b77ec822a.json",
+      "sha256": "sha256:d86c9eb64908ce9686a79a6b14fbccc29291a8495e9e5a663b86d77b77ec822a",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
