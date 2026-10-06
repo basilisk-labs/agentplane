@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "[P1] packages/agentplane/src/commands/task/kernel-completed-workflow.ts:23 delegates completed host branch_pr episodes to the external owner only for implementation_rework and quality_review. After a retained implementation result becomes stale, dirty-source task_worktree_resolution and committed-source verification bypass recoverPendingExternalAgentResult and can encounter the unresolved prior intent instead of retiring it. Compose the reviewed recovery repair and its dirty/committed native regressions into this release source; preserve authority, freshness, CAS and terminal history. Frozen evidence: .agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/f7d0bfa350c028f416a88e6e12fb9396f0c6dae794e9150ea958fb9f419da439.patch.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/f7d0bfa350c028f416a88e6e12fb9396f0c6dae794e9150ea958fb9f419da439.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "[P2] scripts/release/snapshot-file.test.mjs contains five useful filesystem regressions, but vitest.config.ts:102 selects only packages/**/src/**/*.test.ts and no package script, CI script or workflow references this new Node test. Consequently normal full CI does not exercise replacement/symlink/in-place mutation rejection. Connect these tests through the existing release-script Vitest convention or another existing regular CI route while preserving all five assertions. Frozen evidence: .agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/f7d0bfa350c028f416a88e6e12fb9396f0c6dae794e9150ea958fb9f419da439.patch.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/f7d0bfa350c028f416a88e6e12fb9396f0c6dae794e9150ea958fb9f419da439.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Residual risk: M05 efficiency remains NOT_ESTABLISHED; specific owner measurement disposition is still required before publication. No paid campaign authority or savings claim is established.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/f7d0bfa350c028f416a88e6e12fb9396f0c6dae794e9150ea958fb9f419da439.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Residual risk: Fresh hosted checks for the changed source, integration, candidate preparation and publication remain downstream native gates.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/f7d0bfa350c028f416a88e6e12fb9396f0c6dae794e9150ea958fb9f419da439.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Regular CI execution of all five snapshot-file filesystem regressions.",
+    "Release-source dirty and operator-committed pending-result recovery regressions from the reviewed repair."
+  ],
+  "hidden_assumptions": [
+    "Running a repaired CLI from an auxiliary checkout does not repair the source shipped by this release task.",
+    "A standalone successful Node test run does not establish that future regular CI executes that file."
+  ],
+  "recovery_context": "Reviewed exact prepared target 3ce823123476ae2bc29f491ae61b9c4c0abc5ebf at metadata HEAD db788aea2fc03ec4fba125f5ec36c04e0402df9c. All 21 context blocks (17 required), frozen evaluator WorkOrder and all nine evidence digests were verified. Native verification record .agentplane/tasks/202610041748-K43XFE/verification/20261006224556329-0ff0cbe00d765e2f.json is bound to this implementation and records successful checks. These findings concern gaps not disproved by that success. The existing authenticated pending-result recovery must be reached before completed worktree-resolution/verification dispatch. Add its missing delegation without reopening canonical task history or editing supervisor journals. Use a fresh native executor packet for repairs. Reviewer ran no checks and performed no lifecycle actions."
+}
