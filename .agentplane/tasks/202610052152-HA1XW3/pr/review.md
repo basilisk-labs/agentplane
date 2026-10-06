@@ -24,7 +24,7 @@ Created: 2026-10-05T22:09:14.395Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-10-05T22:09:14.395Z
+- Updated: 2026-10-06T00:36:09.193Z
 - Branch: task/202610052152-HA1XW3/repair-native-execution-of-approved-read-only-cl
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
