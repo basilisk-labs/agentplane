@@ -16,13 +16,13 @@ User explicitly authorizes autonomous completion of all necessary development, i
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-10-06T23:08:12.494Z
+- Updated: 2026-10-06T23:58:20.018Z
 - Branch: task/202610041748-K43XFE/implement-and-qualify-agentplane-0-7-13-scenario
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
