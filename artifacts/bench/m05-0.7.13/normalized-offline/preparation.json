@@ -1,0 +1,94 @@
+{
+  "candidate_source_sha": "3bc7288366425d87add6abf6356de836276dc8dd",
+  "cases": [
+    {
+      "assigned": 15,
+      "evidence": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario/artifacts/bench/m05-0.7.13/normalized-offline/direct-fix/evidence.json",
+      "evidence_sha256": "sha256:b3bd277c547c9888c88235831325117043ce38cd08ac9fcd2a95a0f8d3d87e0c",
+      "id": "direct-fix",
+      "manifest": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario/artifacts/bench/m05-0.7.13/normalized-offline/direct-fix/campaign.offline.lock.json",
+      "manifest_sha256": "sha256:a038f5e5c403d21d634e52aaf361de6d6ff05cc134c89dc096462e7c9d857565",
+      "provider_usage": "unavailable",
+      "verified": 15
+    },
+    {
+      "assigned": 15,
+      "evidence": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario/artifacts/bench/m05-0.7.13/normalized-offline/branch-change/evidence.json",
+      "evidence_sha256": "sha256:6f29394523de802a5c669adee5b8adfc215250fbe3141e1aa12440252b517c9e",
+      "id": "branch-change",
+      "manifest": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario/artifacts/bench/m05-0.7.13/normalized-offline/branch-change/campaign.offline.lock.json",
+      "manifest_sha256": "sha256:647c4cf820f7fff9928f57c8ff51aa53f0f599419eb5adc2cb5e9517318068d0",
+      "provider_usage": "unavailable",
+      "verified": 15
+    },
+    {
+      "assigned": 15,
+      "evidence": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario/artifacts/bench/m05-0.7.13/normalized-offline/recovery/evidence.json",
+      "evidence_sha256": "sha256:5f05c3cf9c7963524ecd75b78e6e16fdd8a1fe1e489d0c6261532fa3f4bb362b",
+      "id": "recovery",
+      "manifest": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario/artifacts/bench/m05-0.7.13/normalized-offline/recovery/campaign.offline.lock.json",
+      "manifest_sha256": "sha256:23208bb6c6299773f585fa11116f9e8eca0e6626407bd36c0618c0157ac454cf",
+      "provider_usage": "unavailable",
+      "verified": 15
+    },
+    {
+      "assigned": 15,
+      "evidence": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario/artifacts/bench/m05-0.7.13/normalized-offline/no-match/evidence.json",
+      "evidence_sha256": "sha256:800b9f99537adfc4b4c7503048850ff66b8b738f459a2c5ac83904c59d1bb150",
+      "id": "no-match",
+      "manifest": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario/artifacts/bench/m05-0.7.13/normalized-offline/no-match/campaign.offline.lock.json",
+      "manifest_sha256": "sha256:cd6c78306b493c0a8b33ae418f9f6e912d7c4b149057f69baad18135d447193f",
+      "provider_usage": "unavailable",
+      "verified": 15
+    },
+    {
+      "assigned": 15,
+      "evidence": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario/artifacts/bench/m05-0.7.13/normalized-offline/near-match/evidence.json",
+      "evidence_sha256": "sha256:953b5bd75cce42b2253d1a2eb020d79093103ec49e37b48cec3f6a54d108df40",
+      "id": "near-match",
+      "manifest": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario/artifacts/bench/m05-0.7.13/normalized-offline/near-match/campaign.offline.lock.json",
+      "manifest_sha256": "sha256:5f4fa16ae2ef43f59fd7a4fb55581c0ba852279d2823aee018396c0119171344",
+      "provider_usage": "unavailable",
+      "verified": 15
+    }
+  ],
+  "efficiency": "NOT_ESTABLISHED",
+  "kind": "agentplane.m05_offline_preparation",
+  "limitations": [
+    "Deterministic fixture specialization is not semantic model specialization.",
+    "Offline Plans are never approved or executed; product correctness evidence is separately provided by RC16.",
+    "The three normal corpus labels exercise planning structure only, not full coding/recovery workflows.",
+    "No full-host cost or latency measurement is available; fixture stage times are diagnostics only."
+  ],
+  "live_campaign_ready": false,
+  "live_requirements": [
+    "Approve exact artifact/target/oracle and randomized campaign lock.",
+    "Select and qualify provider, adapter, model, effort and sandbox; approve network scope and finite spend/retry caps.",
+    "Add an authenticated M05 live launcher and full-host attempt ledger through existing campaign owners.",
+    "Record complete selection/planning/retries/failures/review/host usage, separate setup and confirmation sample."
+  ],
+  "oracle_sha256": "sha256:ec08387f007807c459c0f9e9941c0dea3763609526a166b9ecc7e2582bd6ac8e",
+  "preparation_sources": [
+    {
+      "path": "scripts/bench/paired-production-driver.mjs",
+      "sha256": "sha256:b8cc880b40de44d7c74eb6c48160997e5435e1eca244618361577bcee2e42b56"
+    },
+    {
+      "path": "scripts/bench/paired-m05-product.mjs",
+      "sha256": "sha256:31422497541b6a203aa330601109a28702e6fe000c36bb6a3ed28e0b1c05bb11"
+    },
+    {
+      "path": "scripts/bench/paired-m05-oracle.mjs",
+      "sha256": "sha256:ec08387f007807c459c0f9e9941c0dea3763609526a166b9ecc7e2582bd6ac8e"
+    },
+    {
+      "path": "scripts/bench/paired-m05-offline.mjs",
+      "sha256": "sha256:318abb5e30802621d59150326d207430188239a4b54a637e7af2cf0937e504ed"
+    }
+  ],
+  "product_artifact_sha256": "sha256:ee00956c75f33789cb27d233b4f8344bbed58fccd7aca2ec7d386110ac7c94d1",
+  "provider_attempts_assigned": 0,
+  "release_owner_debt_acceptance": null,
+  "schema_version": 1,
+  "upstream_development_cost": null
+}
