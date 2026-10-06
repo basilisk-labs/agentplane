@@ -24,7 +24,7 @@ Created: 2026-10-04T18:13:17.876Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-10-06T20:55:57.040Z
+- Updated: 2026-10-06T21:17:58.355Z
 - Branch: task/202610041748-K43XFE/implement-and-qualify-agentplane-0-7-13-scenario
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
@@ -91,8 +91,8 @@ Created: 2026-10-04T18:13:17.876Z
  .../src/commands/branch/work-start.test.ts         |   162 +
  .../agentplane/src/commands/branch/work-start.ts   |    56 +-
  .../evaluator/evaluator-evidence-boundary.ts       |    70 +-
- .../evaluator/evaluator-evidence-store.test.ts     |   162 +-
- .../commands/evaluator/evaluator-evidence-store.ts |    71 +
+ .../evaluator/evaluator-evidence-store.test.ts     |   197 +-
+ .../commands/evaluator/evaluator-evidence-store.ts |    75 +-
  .../src/commands/pr/internal/provider-base.ts      |    16 +-
  .../commands/pr/internal/sync-frozen-base.test.ts  |   292 +
  .../src/commands/pr/internal/sync-model.ts         |     3 +-
@@ -263,9 +263,11 @@ Created: 2026-10-04T18:13:17.876Z
  .../release/check-local-tarball-install-smoke.mjs  |    71 +-
  scripts/release/check-package-node-runtime.mjs     |    72 +-
  .../release/check-package-node-runtime.test.mjs    |   148 +
- scripts/release/installed-recipe-matrix.mjs        |   790 +
+ scripts/release/installed-recipe-matrix.mjs        |   791 +
+ scripts/release/snapshot-file.mjs                  |    26 +
+ scripts/release/snapshot-file.test.mjs             |    48 +
  scripts/release/version-surfaces.json              |     7 +
- 236 files changed, 63622 insertions(+), 1282 deletions(-)
+ 238 files changed, 63735 insertions(+), 1283 deletions(-)
 ```
 
 </details>
