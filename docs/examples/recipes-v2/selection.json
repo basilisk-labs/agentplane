@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "kind": "selected_recipe",
+  "selection": {
+    "recipe_id": "docs-report",
+    "recipe_version": "1.0.0",
+    "scenario_id": "report",
+    "scenario_api_version": "2"
+  },
+  "bindings": [
+    {
+      "name": "audience",
+      "value": "maintainers"
+    },
+    {
+      "name": "source",
+      "value": "README.md"
+    }
+  ]
+}

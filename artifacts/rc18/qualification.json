@@ -1,0 +1,57 @@
+{
+  "kind": "rc18_installed_examples_qualification",
+  "candidate_head": "bd16ef7c1f0ce8a980ab52f417e5d56e76205fee",
+  "published_release_claim": false,
+  "installation": "npm install --offline --ignore-scripts --no-audit --no-fund with both local packed artifacts; repository-local verified cache copied into isolated artifacts cache",
+  "installed_packages": 29,
+  "packed_artifacts": [
+    {
+      "name": "@agentplaneorg/core",
+      "version": "0.7.12",
+      "filename": "agentplaneorg-core-0.7.12.tgz",
+      "integrity": "sha512-kYY9vdLcC0Yh2TkNAj2Iinu5GTZwYOPd6ykgSQiT0mQ0k15pL7oVRtbgHgm+ELnK2BpSV7xNc3blGaGMryn0SQ==",
+      "sha256": "sha256:7b35f0f856750499ce4bd0719e7f038b615a94c2438cd70f8938619dcd3255ac"
+    },
+    {
+      "name": "@agentplaneorg/recipes",
+      "version": "0.7.12",
+      "filename": "agentplaneorg-recipes-0.7.12.tgz",
+      "integrity": "sha512-Ouo6img+lUjS4pbpkAPVrczw/TFK2f9M0cGLfpGzZ2PApkp4Mq3RH3EWvgzIGFL5Lg7QddTPwN0ZYWMHaC6AhA==",
+      "sha256": "sha256:766f39c7882b8ac75d2ef26eecd0c29c3e9e767241d26c09b65153cef5450887"
+    }
+  ],
+  "validator": {
+    "path": "packages/recipes/scripts/validate-doc-examples.mjs",
+    "sha256": "sha256:019d2366ccb178323ccaa4f659bf66d0796a8a4f31eb5bc159ef06a7ad7b89e9"
+  },
+  "examples": [
+    {
+      "path": "docs/examples/recipes-v2/agent.md",
+      "sha256": "sha256:ea3aa97a9ed54ce47d8f80b36ba5ebe48b9b6075b5c4bab1f7557f8e045774cd"
+    },
+    {
+      "path": "docs/examples/recipes-v2/legacy-unsupported.json",
+      "sha256": "sha256:6350dc402968acbcb5a2a0ccf6e6fb50bee261afe5ba439bb17cd6197f3ab38b"
+    },
+    {
+      "path": "docs/examples/recipes-v2/manifest.json",
+      "sha256": "sha256:10f492560c7ed963fd3af11d301cd35702e1f34ffbcf37682108f383c02096cc"
+    },
+    {
+      "path": "docs/examples/recipes-v2/scenario.json",
+      "sha256": "sha256:1adda17d2ae97dbf3441018ff9fab6c2bbd022632cbf94bc53dafb7586082158"
+    },
+    {
+      "path": "docs/examples/recipes-v2/selection.json",
+      "sha256": "sha256:0320313cfc229049b7f115151a847f6f5fb03ebcc7011867e0023763fffd0542"
+    }
+  ],
+  "result": {
+    "kind": "installed_recipe_documentation_examples",
+    "assertions": 24,
+    "entry": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario/artifacts/rc18/installed/node_modules/@agentplaneorg/recipes/dist/index.js",
+    "package_version": "0.7.12",
+    "scope": "Installed public parser/parameter/V1 audit only; native retained closure and admission were qualified separately by RC16."
+  },
+  "cleanup": "Disposable installed project, pack copies and copied cache removed after successful check; no global cache, lockfile, package dependency or lifecycle script changed."
+}
