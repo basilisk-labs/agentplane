@@ -77,7 +77,7 @@ function common(): PrSyncCommonState {
     baseBranch: sha,
     headSha: "b".repeat(40),
     artifactRefresh: false,
-    renderUpdatedAt: "2026-09-29T11:00:00Z",
+    providerBaseBranch: "main",
   };
 }
 

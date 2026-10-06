@@ -124,6 +124,56 @@ describe("native task obligations", () => {
     });
   });
 
+  it("keeps security-risk code obligations and operational evidence without a profile contradiction", () => {
+    const request = input({ risk_flags: ["security"] });
+    const resolved = resolveNativeTaskObligations(request);
+    expect(request.risk_flags).toEqual(["security"]);
+    expect(resolved.task_kind).toBe("code");
+    expect(resolved.profile).toBe("code");
+    expect(resolved.policy_modules).toContain(".agentplane/policy/dod.code.md");
+    expect(resolved.policy_modules).toContain(".agentplane/policy/security.must.md");
+    expect(resolved.stop_rules.map((rule) => rule.id)).not.toContain("task_kind_incompatible");
+    expect(resolved.evidence_requirements.map((entry) => entry.id)).toEqual(
+      expect.arrayContaining([
+        "code_pr.fast_checks",
+        "code_pr.quality",
+        "ops.approval",
+        "ops.rollback",
+        "ops.action",
+        "ops.check",
+        "ops.quality",
+      ]),
+    );
+    for (const id of [
+      "user_approval",
+      "independent_evaluation",
+      "deterministic_verification",
+      "effect_in_doubt_stop",
+    ]) {
+      expect(resolved.mandatory_stages.find((entry) => entry.id === id)).toMatchObject({
+        required: true,
+        protected: true,
+      });
+    }
+    const constrained = input({ risk_flags: ["security"] });
+    constrained.execution_profile.context_budget.max_prompt_blocks = 11;
+    expect(resolveNativeTaskObligations(constrained).stop_rules.map((rule) => rule.id)).toContain(
+      "required_prompt_budget_exceeded",
+    );
+  });
+
+  it.each(["deploy", "credentials", "external_system"])(
+    "preserves controlled %s behavior for code plus security",
+    (risk) => {
+      const resolved = resolveNativeTaskObligations(input({ risk_flags: ["security", risk] }));
+      expect(resolved.profile).toBe("ops");
+      expect(resolved.stop_rules.map((rule) => rule.id)).toContain("task_kind_incompatible");
+      expect(resolved.evidence_requirements.map((entry) => entry.id)).toEqual(
+        expect.arrayContaining(["ops.approval", "ops.rollback", "ops.quality"]),
+      );
+    },
+  );
+
   it("admits semantic capabilities only from native authority inputs", () => {
     expect(
       resolveNativeSemanticToolClasses({

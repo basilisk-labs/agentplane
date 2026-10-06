@@ -18,11 +18,10 @@ function invalidBase(message: string): never {
   });
 }
 
-export async function resolveProviderBaseBranch(opts: {
+export async function resolvePrMetadataBaseBranch(opts: {
   gitRoot: string;
   baseRef: string | null;
   baseSha: string | null;
-  identity: GitHostIdentity;
 }): Promise<string | null> {
   const baseRef = opts.baseRef?.trim() ?? "";
   const exactBase = commitOid(baseRef);
@@ -42,6 +41,19 @@ export async function resolveProviderBaseBranch(opts: {
   if (!branch || commitOid(branch)) {
     return invalidBase("Exact-SHA PR base cannot resolve a configured provider base branch.");
   }
+  return branch;
+}
+
+export async function resolveProviderBaseBranch(opts: {
+  gitRoot: string;
+  baseRef: string | null;
+  baseSha: string | null;
+  identity: GitHostIdentity;
+}): Promise<string | null> {
+  const branch = await resolvePrMetadataBaseBranch(opts);
+  const baseRef = opts.baseRef?.trim() ?? "";
+  const exactBase = commitOid(baseRef);
+  if (!exactBase) return branch;
   const ref = `refs/heads/${branch}`;
   let localHead: string | null = null;
   let providerHead: string | null = null;

@@ -1,9 +1,13 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {
-  createRepositorySnapshot,
-  normalizeTaskPlanProposal,
-} from "../../packages/core/dist/tasks/index.js";
+import { execFileSync } from "node:child_process";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+// Run the existing core build before this Node test; no source-workspace fallback.
+const coreRuntime = new URL("../../packages/core/dist/tasks/index.js", import.meta.url);
+assert.ok(existsSync(coreRuntime), "Build @agentplaneorg/core before running the Node M05 tests.");
+const { createRepositorySnapshot, normalizeTaskPlanProposal } = await import(coreRuntime.href);
 import { m05Corpus, normalizeM05Bundle } from "./paired-m05-offline.mjs";
 import { verifyM05Plan } from "./paired-m05-oracle.mjs";
 
@@ -68,3 +72,57 @@ test("M05 normalizes only generated whitespace-only lines before pinning", () =>
   assert.equal(normalizeM05Bundle(normalized), normalized);
   assert.equal(/^[\t ]+$/m.test(normalized), false);
 });
+
+test(
+  "M05 bundles real source entrypoints into an independently executable product",
+  { timeout: 60_000 },
+  () => {
+    const root = fileURLToPath(new URL("../../", import.meta.url));
+    const cache = path.join(root, "node_modules", ".cache");
+    mkdirSync(cache, { recursive: true });
+    const isolated = mkdtempSync(path.join(cache, "m05-bundle-"));
+    try {
+      const product = path.join(isolated, "product.mjs");
+      execFileSync(
+        "bun",
+        ["build", "scripts/bench/paired-m05-product.mjs", "--target=node", `--outfile=${product}`],
+        { cwd: root, timeout: 30_000, stdio: "pipe" },
+      );
+      // No generated dist import may survive into this portable executable.
+      assert.doesNotMatch(
+        readFileSync(product, "utf8"),
+        /(?:from\s*|import\s*\()["'][^"']*packages\/(?:core|recipes)\/dist/u,
+      );
+      for (const task of m05Corpus()) {
+        const bound = { ...task, policy_digest: `sha256:${"a".repeat(64)}` };
+        writeFileSync(path.join(isolated, "fixture.json"), JSON.stringify(bound));
+        for (const arm of ["no_recipe", "instantiate", "specialize"]) {
+          const result = JSON.parse(
+            execFileSync(process.execPath, [product], {
+              cwd: isolated,
+              timeout: 10_000,
+              encoding: "utf8",
+              env: {
+                ...process.env,
+                AGENTPLANE_PAIRED_MODE: "offline",
+                AGENTPLANE_PAIRED_FAKE_PROVIDER: "1",
+                AGENTPLANE_PAIRED_NETWORK: "deny",
+                AGENTPLANE_PAIRED_ARM: arm,
+                AGENTPLANE_PAIRED_TARGET_COMMIT: commit,
+                AGENTPLANE_PAIRED_CHECK_IDS: "[]",
+                AGENTPLANE_PAIRED_RUNTIME_PROFILE: "{}",
+              },
+            }),
+          );
+          assert.equal(result.status, "completed");
+          assert.equal(result.token_usage.state, "unavailable");
+          const plan = JSON.parse(readFileSync(path.join(isolated, "plan.json"), "utf8"));
+          const route = JSON.parse(readFileSync(path.join(isolated, "route.json"), "utf8"));
+          assert.equal(verifyM05Plan(bound, plan, route, arm, commit), true);
+        }
+      }
+    } finally {
+      rmSync(isolated, { recursive: true, force: true });
+    }
+  },
+);

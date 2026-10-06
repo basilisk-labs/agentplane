@@ -33,7 +33,7 @@ Scoped global flags (`--json-errors`, `--allow-network`) are recognized only bef
 
 The `agentplane` CLI requires Node.js 24 or newer. The separately published library packages retain
 their wider runtime contracts: `@agentplaneorg/core` requires Node.js 20.5.0 or newer, and
-`@agentplaneorg/recipes` requires Node.js 20 or newer.
+`@agentplaneorg/recipes` requires Node.js 20.5.0 or newer because it uses the core library.
 
 CI builds and packs both library artifacts on Node.js 24, then installs and exercises every public
 export from those tarballs on both the declared minimum runtime and Node.js 24. Package manifests

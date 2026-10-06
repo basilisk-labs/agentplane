@@ -219,7 +219,7 @@ jobs:
           node-version: "24"
       - run: bun install --frozen-lockfile --ignore-scripts
       - name: Build and pack core
-        if: needs.plan.outputs.package_runtime_core == 'true'
+        if: needs.plan.outputs.package_runtime_core == 'true' || needs.plan.outputs.package_runtime_recipes == 'true'
         working-directory: packages/core
         run: |
           mkdir -p "$RUNNER_TEMP/package-node-runtime/core"
@@ -256,13 +256,14 @@ jobs:
         if: needs.plan.outputs.package_runtime_recipes == 'true'
         uses: actions/setup-node@v7
         with:
-          node-version: "20.0.0"
-      - name: Exercise recipes public API on Node 20
+          node-version: "20.5.0"
+      - name: Exercise recipes public API on Node 20.5
         if: needs.plan.outputs.package_runtime_recipes == 'true'
         run: >-
           node scripts/release/check-package-node-runtime.mjs
           --package-dir packages/recipes
           --tarball-dir "$RUNNER_TEMP/package-node-runtime/recipes"
+          --core-tarball-dir "$RUNNER_TEMP/package-node-runtime/core"
       - name: Use current recipes runtime
         if: needs.plan.outputs.package_runtime_recipes == 'true'
         uses: actions/setup-node@v7
@@ -274,6 +275,7 @@ jobs:
           node scripts/release/check-package-node-runtime.mjs
           --package-dir packages/recipes
           --tarball-dir "$RUNNER_TEMP/package-node-runtime/recipes"
+          --core-tarball-dir "$RUNNER_TEMP/package-node-runtime/core"
 
   verify-static:
     needs: plan

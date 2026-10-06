@@ -33,8 +33,9 @@ export type PrSyncCommonState = {
   now: string;
   createdAt: string;
   branch: string;
+  /** Immutable comparison basis; never replace with the provider target branch. */
   baseBranch: string | null;
+  providerBaseBranch: string | null;
   headSha: string | null;
   artifactRefresh: boolean;
-  renderUpdatedAt: string;
 };

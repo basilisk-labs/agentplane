@@ -68,12 +68,52 @@ function normalizePackageVersions(manifests, version) {
     delete normalized.path;
     delete normalized.normalized_sha256;
     normalized.version = version;
+    const internalDependencies =
+      manifest.path === "packages/agentplane/package.json"
+        ? ["@agentplaneorg/core", "@agentplaneorg/recipes"]
+        : manifest.path === "packages/recipes/package.json"
+          ? ["@agentplaneorg/core"]
+          : [];
+    for (const name of internalDependencies) {
+      if (manifest.dependencies?.[name] !== manifest.version) {
+        throw new Error(`${manifest.path}: unexpected internal dependency version for ${name}`);
+      }
+    }
     if (manifest.path === "packages/agentplane/package.json") {
       normalized.dependencies["@agentplaneorg/core"] = version;
       normalized.dependencies["@agentplaneorg/recipes"] = version;
     }
+    if (manifest.path === "packages/recipes/package.json") {
+      normalized.dependencies["@agentplaneorg/core"] = version;
+    }
     return packageSurface(manifest.path, normalized);
   });
+}
+
+function verifyInternalVersionNormalization(manifests, baselineVersion) {
+  const expected = hashJson(normalizePackageVersions(manifests, baselineVersion));
+  const release = manifests.map((manifest) => {
+    const next = structuredClone(manifest);
+    next.version = "999.0.0";
+    for (const name of ["@agentplaneorg/core", "@agentplaneorg/recipes"]) {
+      if (Object.hasOwn(next.dependencies ?? {}, name)) next.dependencies[name] = next.version;
+    }
+    return next;
+  });
+  if (hashJson(normalizePackageVersions(release, baselineVersion)) !== expected) {
+    throw new Error("Internal release version normalization drift");
+  }
+  const unexpected = structuredClone(manifests);
+  unexpected.find((manifest) => manifest.path === "packages/recipes/package.json").dependencies[
+    "@agentplaneorg/core"
+  ] = "0.0.0-unreviewed";
+  let rejected = false;
+  try {
+    normalizePackageVersions(unexpected, baselineVersion);
+  } catch {
+    rejected = true;
+  }
+  if (!rejected) throw new Error("Unexpected internal dependency version was normalized away");
 }
 
 function buildCandidate({ baseline, candidate, packageSourceTask }) {
@@ -88,6 +128,7 @@ function buildCandidate({ baseline, candidate, packageSourceTask }) {
   if (typeof releaseVersion !== "string" || releaseVersion.length === 0) {
     throw new Error("Unable to resolve the current release version from package manifests");
   }
+  verifyInternalVersionNormalization(releaseSurface.package_manifests, baseVersion);
   const preReleasePackageManifests = normalizePackageVersions(
     releaseSurface.package_manifests,
     baseVersion,

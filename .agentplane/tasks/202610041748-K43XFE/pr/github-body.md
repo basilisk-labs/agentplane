@@ -22,11 +22,12 @@ User explicitly authorizes autonomous completion of all necessary development, i
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-10-06T11:03:17.498Z
+- Updated: 2026-10-06T14:19:36.291Z
 - Branch: task/202610041748-K43XFE/implement-and-qualify-agentplane-0-7-13-scenario
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .github/workflows/ci.yml                           |     8 +-
  artifacts/bench/m05-0.7.13/catalogue-source.json   |    31 +
  .../bench/m05-0.7.13/format-qualification.json     |     9 +
  .../m05-0.7.13/formatted-no-match-replay.json      |  1220 +
@@ -61,6 +62,7 @@ User explicitly authorizes autonomous completion of all necessary development, i
  artifacts/recipes-v2-docs/installed-examples.json  |     7 +
  artifacts/recipes-v2-docs/qualification.json       |    29 +
  bun.lock                                           |     4 +
+ docs/developer/cli-contract.mdx                    |     2 +-
  docs/developer/recipes-development.mdx             |   217 +-
  docs/developer/recipes-how-it-works.mdx            |    43 +-
  docs/developer/recipes-spec.mdx                    |    69 +-
@@ -73,7 +75,7 @@ User explicitly authorizes autonomous completion of all necessary development, i
  docs/recipes/index.mdx                             |     4 +
  docs/recipes/security-review.mdx                   |    73 +-
  docs/recipes/tdd.mdx                               |    78 +-
- docs/releases/v0.7.13-m05.md                       |   150 +
+ docs/releases/v0.7.13-m05.md                       |   154 +
  docs/user/cli-reference.generated.mdx              |    26 +
  docs/user/workflow.mdx                             |    20 +
  package.json                                       |     1 +
@@ -89,6 +91,13 @@ User explicitly authorizes autonomous completion of all necessary development, i
  .../evaluator/evaluator-evidence-boundary.ts       |    70 +-
  .../evaluator/evaluator-evidence-store.test.ts     |   162 +-
  .../commands/evaluator/evaluator-evidence-store.ts |    71 +
+ .../src/commands/pr/internal/provider-base.ts      |    16 +-
+ .../commands/pr/internal/sync-frozen-base.test.ts  |   292 +
+ .../src/commands/pr/internal/sync-model.ts         |     3 +-
+ .../pr/internal/sync-open-provider-base.test.ts    |     2 +-
+ .../src/commands/pr/internal/sync-open-step.ts     |    27 +-
+ .../src/commands/pr/internal/sync-update-step.ts   |    37 +-
+ .../agentplane/src/commands/pr/internal/sync.ts    |    15 +-
  .../agentplane/src/commands/recipes/impl/apply.ts  |    13 +-
  .../commands/recipes/impl/explicit-selection.ts    |   157 +
  .../src/commands/recipes/impl/project-registry.ts  |    28 +-
@@ -99,11 +108,26 @@ User explicitly authorizes autonomous completion of all necessary development, i
  .../recipes/roadmap-explicit-selection.test.ts     |   342 +
  .../roadmap-installed-recipe-negotiation.test.ts   |   154 +
  .../recipes/roadmap-v1-v2-conversion.test.ts       |   426 +
- .../src/commands/task/advance-task-step.ts         |     6 +-
+ .../commands/release/apply.pipeline/mutation.ts    |     8 +
+ .../release/apply.version-mutation.test.ts         |    74 +
+ .../release/check-release-parity-script.test.ts    |   136 +
+ .../release/workflow-node-version-contract.test.ts |    16 +-
+ .../src/commands/task/advance-task-step.ts         |    14 +-
+ .../src/commands/task/advance.command.ts           |    27 +-
  .../src/commands/task/create-plan-input.ts         |    65 +-
  .../agentplane/src/commands/task/create.command.ts |    55 +-
+ .../task/direct-task-verification-record.ts        |     2 +
+ .../commands/task/external-agent-blocked-result.ts |    17 +
+ .../external-agent-implementation-authority.ts     |    12 +-
+ .../external-agent-implementation-finalization.ts  |     2 +
+ .../task/external-agent-result-application.ts      |    19 +
  .../commands/task/kernel-advance-network.test.ts   |   302 +
  .../src/commands/task/kernel-advance.test.ts       |     6 +-
+ .../kernel-completed-external-blocker-boundary.ts  |   111 +
+ .../task/kernel-completed-external-blocker.ts      |   128 +
+ .../task/kernel-completed-external-rework.test.ts  |   923 +
+ .../task/kernel-completed-external-rework.ts       |    36 +
+ .../src/commands/task/kernel-completed-workflow.ts |    28 +-
  .../src/commands/task/kernel-exchange.test.ts      |   716 +-
  .../src/commands/task/kernel-exchange.ts           |   260 +-
  .../task/kernel-inspection-validation.test.ts      |   103 +
@@ -126,14 +150,18 @@ User explicitly authorizes autonomous completion of all necessary development, i
  .../src/commands/task/kernel-rework-proof.ts       |   490 +
  .../src/commands/task/kernel-runtime-context.ts    |    36 +-
  .../src/commands/task/kernel-semantic-result.ts    |    42 +-
+ .../task/kernel-terminal-artifacts.test.ts         |   198 +
+ .../src/commands/task/kernel-terminal-artifacts.ts |    14 +-
  .../commands/task/kernel-work-item-resume.test.ts  |    88 +-
  .../src/commands/task/kernel-work-item-resume.ts   |    58 +-
  .../task/kernel-work-order.network.test.ts         |   191 +
  .../src/commands/task/kernel-work-order.ts         |   101 +-
+ .../src/commands/task/ordinary-advance-step.ts     |    29 +-
  .../src/commands/task/plan-set.command.ts          |    70 +-
  .../agentplane/src/commands/task/recipe-input.ts   |   116 +
  .../src/commands/task/roadmap-recipe-repin.test.ts |   476 +
- .../commands/task/roadmap-terminal-noop.test.ts    |     6 +-
+ .../commands/task/roadmap-terminal-noop.test.ts    |    95 +-
+ .../task/task-execution-contract-observation.ts    |     2 +
  packages/agentplane/src/recipe-api.ts              |    65 +
  .../src/runner/context/recipe-applicability.ts     |   371 +
  .../src/runner/context/recipe-closure.ts           |   416 +
@@ -154,6 +182,9 @@ User explicitly authorizes autonomous completion of all necessary development, i
  .../context/roadmap-recipe-retention.test.ts       |   396 +
  .../context/roadmap-recipe-shortlist.test.ts       |   331 +
  ...te-fingerprint-residual-git.integration.test.ts |     3 +-
+ .../src/runner/usecases/agent-work-order-build.ts  |    12 +-
+ .../usecases/agent-work-order-protected-paths.ts   |    61 +
+ .../usecases/agent-work-order.integration.test.ts  |   211 +
  .../src/runner/usecases/kernel-authority.ts        |     2 +-
  .../usecases/roadmap-recipe-instantiation.test.ts  |   430 +
  .../runner/usecases/scenario-explicit-selection.ts |   127 +
@@ -164,6 +195,8 @@ User explicitly authorizes autonomous completion of all necessary development, i
  .../usecases/task-run-effect-resolution.test.ts    |   159 +-
  .../usecases/task-run-lifecycle-cancel.test.ts     |     3 +-
  .../src/runner/usecases/task-run-recipe-context.ts |     4 +
+ .../src/runtime/task-obligations/resolve.test.ts   |    50 +
+ .../src/runtime/task-obligations/resolve.ts        |     9 +-
  .../agentplane/src/shared/contained-stable-file.ts |    62 +-
  packages/agentplane/tsup.config.ts                 |     1 +
  .../task/roadmap-recipe-specialization.test.ts     |   398 +
@@ -180,7 +213,7 @@ User explicitly authorizes autonomous completion of all necessary development, i
  packages/core/src/tasks/task-kernel/index.ts       |     1 +
  packages/core/src/tasks/task-kernel/kernel.ts      |    68 +-
  packages/core/src/tasks/task-kernel/model.ts       |     2 +
- packages/recipes/package.json                      |     4 +
+ packages/recipes/package.json                      |     6 +-
  packages/recipes/scripts/validate-doc-examples.mjs |   137 +
  packages/recipes/src/compiled-contracts.ts         |    75 +
  packages/recipes/src/index.ts                      |     9 +
@@ -197,19 +230,27 @@ User explicitly authorizes autonomous completion of all necessary development, i
  packages/recipes/src/scenario-v2.ts                |    70 +
  packages/recipes/src/scenario.ts                   |    15 +
  packages/recipes/tsconfig.json                     |     7 +-
+ packages/testkit/src/release.ts                    |     5 +
  schemas/agent-semantic-result.schema.json          |  2081 +-
  scripts/README.md                                  |    31 +-
+ .../baselines/v0.7-compatibility-candidate.json    |   143 +-
+ scripts/bench/capture-compatibility-candidate.mjs  |    41 +
  scripts/bench/paired-m05-offline.mjs               |   347 +
- scripts/bench/paired-m05-offline.test.mjs          |    70 +
+ scripts/bench/paired-m05-offline.test.mjs          |   128 +
  scripts/bench/paired-m05-oracle.mjs                |    98 +
  scripts/bench/paired-m05-product.mjs               |   111 +
  scripts/bench/paired-production-driver.mjs         |   135 +-
  scripts/bench/paired-production-driver.test.mjs    |   135 +
+ .../check-compatibility-contract-baseline.mjs      |   387 +-
  scripts/generate/generate-recipes-inventory.mjs    |     8 +-
+ scripts/lib/release-version-surfaces.mjs           |    13 +
  scripts/lib/test-route-registry.mjs                |    24 +
  .../release/check-local-tarball-install-smoke.mjs  |    71 +-
+ scripts/release/check-package-node-runtime.mjs     |    72 +-
+ .../release/check-package-node-runtime.test.mjs    |   148 +
  scripts/release/installed-recipe-matrix.mjs        |   790 +
- 182 files changed, 58792 insertions(+), 1057 deletions(-)
+ scripts/release/version-surfaces.json              |     7 +
+ 223 files changed, 62119 insertions(+), 1234 deletions(-)
 ```
 
 </details>

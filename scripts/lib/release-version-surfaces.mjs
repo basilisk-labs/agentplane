@@ -95,6 +95,18 @@ function getByPath(value, keys) {
   return current;
 }
 
+function optionalJsonPathAbsent(value, keys, surface) {
+  let current = value;
+  for (const key of keys) {
+    if (current === null || typeof current !== "object" || Array.isArray(current)) {
+      throw new Error(`${surface.file}: malformed parent for optional surface ${surface.id}.`);
+    }
+    if (!Object.hasOwn(current, key)) return true;
+    current = current[key];
+  }
+  return false;
+}
+
 function setByPath(value, keys, nextValue) {
   let current = value;
   for (const key of keys.slice(0, -1)) {
@@ -243,6 +255,7 @@ export function applyReleaseVersionSurfaces(rootDir, nextVersion) {
     if (surface.kind === "json") {
       const value = readJson(absPath);
       const keys = assertStringArray(surface.path, `${surface.id}.path`);
+      if (!surface.required && optionalJsonPathAbsent(value, keys, surface)) continue;
       if (getByPath(value, keys) === nextVersion) continue;
       setByPath(value, keys, nextVersion);
       writeJson(absPath, value);

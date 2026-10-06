@@ -12,6 +12,7 @@ import {
   TASK_PARENT_MAIN_SHA,
   assertGitRefMatchesSha,
   changedSurfaceSections,
+  canonicalizeJson,
   compatibilitySurfaceDigest,
   collectCompatibilitySurface,
   createGitSource,
@@ -40,6 +41,24 @@ const candidatePath = path.join(
   "baselines",
   "v0.7-compatibility-candidate.json",
 );
+
+// Exact reviewed Recipe V2 surface. Recapturing an unexpected change is not approval.
+const REVIEWED_SECTION_DIGESTS = {
+  agent_facing_context_contracts:
+    "7710a5217ea614a3da8b4e99fe61e16fb738179797eba64c75c9537bc33f7785",
+  cli_topology: "1b2e5ab4593f24b1363fee277d1f8d1efdbc78bb714dc16b518a0fbe8c3a4135",
+  exit_error_contract: "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
+  machine_output_contract: "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+  package_manifests: "ee1cec43b5f3371f7e7235f5aebd3254bcc2bedfa21d20eec8e2109d62f41faf",
+  tarball_policy: "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd",
+  workflow_schema: "dc851f68ff13c52fec5dbe522fa96cc1084771ce7e09ed0178c44f15d7c46452",
+};
+function assertReviewedSectionDigests(sectionDigests) {
+  assert(
+    hashJson(sectionDigests) === hashJson(REVIEWED_SECTION_DIGESTS),
+    "reviewed Recipe V2 section inventory drift",
+  );
+}
 
 function readBaseline() {
   return JSON.parse(readFileSync(baselinePath, "utf8"));
@@ -317,54 +336,6 @@ function validateReviewedCandidate({
     candidate.candidate_id === "agentplane.compatibility.v0.7.cumulative",
     "compatibility candidate id drift",
   );
-  const cliSourceTasks = [
-    "202609301755-N31BSK",
-    "202609292230-6GZ3RV",
-    "202609271356-4SANDJ",
-    "202609232231-BYSVV6",
-    "202607221846-4VB97J",
-    "202607221846-YGWMA2",
-    "202607230554-YFYT83",
-    "202607221846-9XC1H0",
-    "202607221848-0ZAB1F",
-    "202607221848-VC4VVS",
-    "202607221849-NWVCAG",
-    "202607221849-TBTX8X",
-    "202607221849-8YYZ9X",
-    "202607221850-8HBF4J",
-    "202607242158-QV09NA",
-    "202607260007-DQM6AW",
-    "202607260532-9M7RNH",
-    "202607281655-YMPY8Y",
-    "202607300150-MGCHE6",
-    "202607302125-Y61ZHN",
-    "202607221852-ECBY56",
-    "202608021231-PZGG3V",
-    "202608021534-YN84E1",
-    "202608022324-9VCYWG",
-    "202608021535-CNQKXP",
-    "202608061646-WCARQG",
-    "202608061646-30TKV4",
-    "202608062023-V3WHE9",
-    "202608080805-KPWPAV",
-    "202608110235-WCJJRD",
-    "202608112213-NWJCBW",
-    "202608171853-X3FD5M",
-    "202608181404-CR1F9W",
-    "202608200903-J459C2",
-    "202608211020-FGAPJC",
-    "202608212244-6XZAYD",
-    "202608291006-2A6BJC",
-    "202608291006-255K66",
-    "202608301851-5W3XW6",
-    "202609030849-925NNG",
-    "202609060720-NZXQ0E",
-    "202609130858-RMHWQ5",
-    "202609162254-YE48GC",
-    "202609230942-E6D0V4",
-    "202609241429-4WN4VX",
-    "202609261720-KKE9ZN",
-  ];
   const expectedSourceTasks = [
     "202609301755-N31BSK",
     "202609292230-6GZ3RV",
@@ -422,7 +393,10 @@ function validateReviewedCandidate({
     "202609230942-E6D0V4",
     "202609241429-4WN4VX",
     "202609261720-KKE9ZN",
+    "202610041748-K43XFE",
+    "202610060956-42J54D",
   ];
+
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
     "compatibility source task inventory drift",
@@ -451,6 +425,7 @@ function validateReviewedCandidate({
     [],
     "compatibility candidate surface",
   );
+  assertReviewedSectionDigests(candidate.candidate.section_digests);
   const preReleasePackageDelta = candidate.pre_release_package_delta;
   assertOnlyKeys(
     preReleasePackageDelta,
@@ -469,46 +444,73 @@ function validateReviewedCandidate({
   assert(
     hashJson(preReleasePackageDelta) ===
       hashJson({
-        source_tasks: [
-          "202608021231-SHYJGK",
-          "202608112259-T3ZDDM",
-          "202608171853-X3FD5M",
-          "202609211330-5A54M1",
-        ],
-        classification: "additive",
-        section: "package_manifests",
-        from_sha256: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
-        to_sha256: "8bfba4f6df0470889d90bcb234fc9ab0192a164b1f6b7644b01d5b8c0a35912a",
         allowed_json_paths: [
           "$.package_manifests[0].dependencies.@clack/prompts",
           "$.package_manifests[0].dependencies.zod",
+          "$.package_manifests[0].exports",
           "$.package_manifests[0].files[13]",
           "$.package_manifests[0].files[14]",
           "$.package_manifests[0].files[15]",
           "$.package_manifests[0].files[16]",
           "$.package_manifests[0].files[17]",
+          "$.package_manifests[0].files[18]",
+          "$.package_manifests[0].files[19]",
           "$.package_manifests[0].normalized_sha256",
           "$.package_manifests[1].dependencies.zod",
           "$.package_manifests[1].exports[10][0]",
           "$.package_manifests[1].exports[10][1]",
           "$.package_manifests[1].exports[11]",
           "$.package_manifests[1].normalized_sha256",
+          "$.package_manifests[2].dependencies",
+          "$.package_manifests[2].engines.node",
+          "$.package_manifests[2].normalized_sha256",
         ],
+        classification: "additive",
         evidence: {
-          package: "agentplane",
           added_files: [
             "dist/command-catalog.js",
             "dist/command-catalog/core-fast.js",
             "dist/command-catalog/task-read.js",
             "dist/command-help.json",
             "dist/deferred-runtime.js",
+            "dist/recipe-api.d.ts",
+            "dist/recipe-api.js",
           ],
-          removed_files: [],
           core_package: {
-            package: "@agentplaneorg/core",
             added_exports: ["./tasks/verification-contract-kernel"],
+            package: "@agentplaneorg/core",
+          },
+          package: "agentplane",
+          removed_files: [],
+          recipes_package: {
+            package: "@agentplaneorg/recipes",
+            dependencies: {
+              "@agentplaneorg/core": "0.6.24",
+              zod: "4.4.3",
+            },
+            engines: {
+              node: ">=20.5.0",
+            },
+          },
+          agentplane_exports: {
+            "./recipes": {
+              types: "./dist/recipe-api.d.ts",
+              import: "./dist/recipe-api.js",
+              default: "./dist/recipe-api.js",
+            },
           },
         },
+        from_sha256: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
+        section: "package_manifests",
+        source_tasks: [
+          "202608021231-SHYJGK",
+          "202608112259-T3ZDDM",
+          "202608171853-X3FD5M",
+          "202609211330-5A54M1",
+          "202610041748-K43XFE",
+          "202610060956-42J54D",
+        ],
+        to_sha256: "ee1cec43b5f3371f7e7235f5aebd3254bcc2bedfa21d20eec8e2109d62f41faf",
       }),
     "compatibility pre-release package delta drift",
   );
@@ -532,9 +534,23 @@ function validateReviewedCandidate({
     delete normalizedManifest.path;
     delete normalizedManifest.normalized_sha256;
     normalizedManifest.version = baselinePackageVersion;
+    const internalDependencies =
+      manifest.path === "packages/agentplane/package.json"
+        ? ["@agentplaneorg/core", "@agentplaneorg/recipes"]
+        : manifest.path === "packages/recipes/package.json"
+          ? ["@agentplaneorg/core"]
+          : [];
+    for (const name of internalDependencies) {
+      if (manifest.dependencies?.[name] !== manifest.version) {
+        throw new Error(`${manifest.path}: unexpected internal dependency version for ${name}`);
+      }
+    }
     if (manifest.path === "packages/agentplane/package.json") {
       normalizedManifest.dependencies["@agentplaneorg/core"] = baselinePackageVersion;
       normalizedManifest.dependencies["@agentplaneorg/recipes"] = baselinePackageVersion;
+    }
+    if (manifest.path === "packages/recipes/package.json") {
+      normalizedManifest.dependencies["@agentplaneorg/core"] = baselinePackageVersion;
     }
     return packageSurface(manifest.path, normalizedManifest);
   });
@@ -897,6 +913,56 @@ function validateReviewedCandidate({
     );
   }
   const expectedDeltaSources = {
+    cli_topology: [
+      "202609301755-N31BSK",
+      "202609292230-6GZ3RV",
+      "202609271356-4SANDJ",
+      "202609232231-BYSVV6",
+      "202607221846-4VB97J",
+      "202607221846-YGWMA2",
+      "202607230554-YFYT83",
+      "202607221846-9XC1H0",
+      "202607221848-0ZAB1F",
+      "202607221848-VC4VVS",
+      "202607221849-NWVCAG",
+      "202607221849-TBTX8X",
+      "202607221849-8YYZ9X",
+      "202607221850-8HBF4J",
+      "202607242158-QV09NA",
+      "202607260007-DQM6AW",
+      "202607260532-9M7RNH",
+      "202607281655-YMPY8Y",
+      "202607300150-MGCHE6",
+      "202607302125-Y61ZHN",
+      "202607221852-ECBY56",
+      "202608021231-PZGG3V",
+      "202608021534-YN84E1",
+      "202608022324-9VCYWG",
+      "202608021535-CNQKXP",
+      "202608061646-WCARQG",
+      "202608061646-30TKV4",
+      "202608062023-V3WHE9",
+      "202608080805-KPWPAV",
+      "202608110235-WCJJRD",
+      "202608112213-NWJCBW",
+      "202608171853-X3FD5M",
+      "202608181404-CR1F9W",
+      "202608200903-J459C2",
+      "202608211020-FGAPJC",
+      "202608212244-6XZAYD",
+      "202608291006-2A6BJC",
+      "202608291006-255K66",
+      "202608301851-5W3XW6",
+      "202609030849-925NNG",
+      "202609060720-NZXQ0E",
+      "202609130858-RMHWQ5",
+      "202609162254-YE48GC",
+      "202609230942-E6D0V4",
+      "202609241429-4WN4VX",
+      "202609261720-KKE9ZN",
+      "202610041748-K43XFE",
+      "202610060956-42J54D",
+    ],
     agent_facing_context_contracts: [
       "202607221848-1HWR0R",
       "202607221849-8YYZ9X",
@@ -904,14 +970,22 @@ function validateReviewedCandidate({
       "202607221852-YP9QCH",
       "202608212244-6XZAYD",
       "202609162254-YE48GC",
+      "202610041748-K43XFE",
+      "202610060956-42J54D",
     ],
-    cli_topology: cliSourceTasks,
-    machine_output_contract: ["202607221848-ABG7SD", "202608212244-6XZAYD"],
     workflow_schema: [
       "202607221846-4VB97J",
       "202608112213-NWJCBW",
       "202608171853-X3FD5M",
       "202608212244-6XZAYD",
+      "202610041748-K43XFE",
+      "202610060956-42J54D",
+    ],
+    machine_output_contract: [
+      "202607221848-ABG7SD",
+      "202608212244-6XZAYD",
+      "202610041748-K43XFE",
+      "202610060956-42J54D",
     ],
     tarball_policy: [
       "202607221846-4VB97J",
@@ -921,6 +995,8 @@ function validateReviewedCandidate({
       "202608021231-SHYJGK",
       "202608021535-CNQKXP",
       "202608212244-6XZAYD",
+      "202610041748-K43XFE",
+      "202610060956-42J54D",
     ],
   };
   for (const delta of candidate.deltas) {
@@ -3399,25 +3475,79 @@ function validateReviewedCandidate({
       ],
     },
   };
-  const activeExpectedAdditionSources = expectedAdditionSources.filter(
-    (source) =>
-      source.command !== "task supervisor budget-epoch" &&
-      !(
-        source.kind === "option" &&
-        ((source.command === "task create" && source.name === "blueprint-request") ||
-          (source.command === "task new" && source.name === "canonical"))
-      ),
-  );
+  const activeExpectedAdditionSources = [
+    ...expectedAdditionSources.filter(
+      (source) =>
+        source.command !== "task supervisor budget-epoch" &&
+        !(
+          source.kind === "option" &&
+          ((source.command === "task create" && source.name === "blueprint-request") ||
+            (source.command === "task new" && source.name === "canonical"))
+        ),
+    ),
+
+    {
+      kind: "command",
+      command: "recipes preview-v1",
+      source_task: "202610041748-K43XFE",
+    },
+    {
+      kind: "command",
+      command: "recipes preview-v2",
+      source_task: "202610041748-K43XFE",
+    },
+    {
+      kind: "option",
+      command: "task create",
+      name: "recipe-file",
+      source_task: "202610041748-K43XFE",
+    },
+    {
+      kind: "option",
+      command: "task plan set",
+      name: "recipe-file",
+      source_task: "202610041748-K43XFE",
+    },
+  ];
   const activeExpectedAddedCommandDescriptors = expectedAddedCommandDescriptors
     .filter((command) => command.id.join(" ") !== "task supervisor budget-epoch")
     .map((command) =>
       command.id.join(" ") === "task create"
         ? {
             ...command,
-            options: command.options.filter((option) => option.name !== "blueprint-request"),
+            options: [
+              { name: "recipe-file", kind: "string", valueHint: "<path>" },
+              ...command.options.filter((option) => option.name !== "blueprint-request"),
+            ],
           }
         : command,
     );
+  activeExpectedAddedCommandDescriptors.push(
+    {
+      args: [
+        {
+          name: "source",
+          required: true,
+          valueHint: "<repository-relative-file>",
+          variadic: false,
+        },
+      ],
+      group: "Recipes",
+      id: ["recipes", "preview-v1"],
+      options: [],
+      visibility: "user",
+    },
+    {
+      args: [{ name: "file", required: true, valueHint: "<recipe-input.json>", variadic: false }],
+      group: "Recipes",
+      id: ["recipes", "preview-v2"],
+      options: [],
+      visibility: "user",
+    },
+  );
+  activeExpectedAddedCommandDescriptors.sort((a, b) =>
+    a.id.join(" ").localeCompare(b.id.join(" ")),
+  );
   assert(
     cliDelta?.classification === "intentional_breaking_retirement",
     "CLI candidate delta must record the reviewed Blueprint command retirement",
@@ -3463,6 +3593,8 @@ function validateReviewedCandidate({
         "evidence stats",
         "integrate queue adopt-legacy-protected-conflict",
         "pr conflict-rework",
+        "recipes preview-v1",
+        "recipes preview-v2",
         "repair",
         "repair adopt-legacy-conflict",
         "task advance",
@@ -3485,11 +3617,29 @@ function validateReviewedCandidate({
       hashJson(activeExpectedAddedCommandDescriptors),
     "new CLI command descriptor is not in the approved delta",
   );
-  const activeExpectedAddedOptions = expectedAddedOptions.filter(
-    (option) =>
-      option.command !== "task supervisor budget-epoch" &&
-      !(option.command === "task create" && option.name === "blueprint-request") &&
-      !(option.command === "task new" && option.name === "canonical"),
+  const activeExpectedAddedOptions = [
+    ...expectedAddedOptions.filter(
+      (option) =>
+        option.command !== "task supervisor budget-epoch" &&
+        !(option.command === "task create" && option.name === "blueprint-request") &&
+        !(option.command === "task new" && option.name === "canonical"),
+    ),
+
+    {
+      command: "task create",
+      kind: "string",
+      name: "recipe-file",
+      valueHint: "<path>",
+    },
+    {
+      command: "task plan set",
+      kind: "string",
+      name: "recipe-file",
+      valueHint: "<path>",
+    },
+  ];
+  activeExpectedAddedOptions.sort((a, b) =>
+    `${a.command} --${a.name}` < `${b.command} --${b.name}` ? -1 : 1,
   );
   assert(
     hashJson(cliTopologyDelta.added_options) === hashJson(activeExpectedAddedOptions),
@@ -3791,6 +3941,86 @@ function validateReviewedCandidate({
   return reviewedSurfaceMode;
 }
 
+function verifyRejectedRecaptureDrift(currentSurface, baselinePackageVersion) {
+  const reviewed = structuredClone(currentSurface);
+  reviewed.package_manifests = reviewed.package_manifests.map((manifest) => {
+    const normalized = structuredClone(manifest);
+    delete normalized.path;
+    delete normalized.normalized_sha256;
+    normalized.version = baselinePackageVersion;
+    if (
+      ["packages/agentplane/package.json", "packages/recipes/package.json"].includes(manifest.path)
+    ) {
+      normalized.dependencies["@agentplaneorg/core"] = baselinePackageVersion;
+    }
+    if (manifest.path === "packages/agentplane/package.json")
+      normalized.dependencies["@agentplaneorg/recipes"] = baselinePackageVersion;
+    return packageSurface(manifest.path, normalized);
+  });
+  assertReviewedSectionDigests(surfaceSectionDigests(reviewed));
+  const cases = [
+    [
+      "dependency",
+      (s) => {
+        s.package_manifests[2].dependencies.unreviewed = "1.0.0";
+      },
+    ],
+    [
+      "export",
+      (s) => {
+        s.package_manifests[0].exports.push(["./unreviewed", "./dist/unreviewed.js"]);
+      },
+    ],
+    [
+      "CLI",
+      (s) => {
+        s.cli_topology.commands.push({
+          id: ["unreviewed"],
+          visibility: "user",
+          group: "Task",
+          args: [],
+          options: [],
+        });
+      },
+    ],
+    [
+      "schema",
+      (s) => {
+        const schema = JSON.parse(
+          readFileSync(path.join(repoRoot, "schemas/workflow.schema.json"), "utf8"),
+        );
+        schema.anyOf[0].properties.unreviewed = { type: "string" };
+        s.workflow_schema.normalized_sha256 = hashJson(schema);
+        s.workflow_schema.normalized_bytes = Buffer.byteLength(
+          JSON.stringify(canonicalizeJson(schema)),
+          "utf8",
+        );
+      },
+    ],
+  ];
+  for (const [label, mutate] of cases) {
+    const changed = structuredClone(reviewed);
+    mutate(changed);
+    if (label === "dependency" || label === "export") {
+      changed.package_manifests = changed.package_manifests.map((manifest) =>
+        packageSurface(manifest.path, manifest),
+      );
+    }
+    if (label === "CLI") {
+      changed.cli_topology.command_count = changed.cli_topology.commands.length;
+      changed.cli_topology.normalized_sha256 = hashJson(changed.cli_topology.commands);
+    }
+    const digests = surfaceSectionDigests(changed);
+    let rejected = false;
+    try {
+      assertReviewedSectionDigests(digests);
+    } catch {
+      rejected = true;
+    }
+    assert(rejected, `unexpected ${label} recapture was accepted`);
+  }
+}
+
 function verifyLocalReferenceIfAvailable({
   ref,
   expectedDigest,
@@ -3819,6 +4049,7 @@ try {
   const { exactMainSurface, registry } = validateBaseline(baseline);
   const currentSurface = collectCompatibilitySurface(createWorktreeSource(repoRoot));
   validateSurface(currentSurface, "working tree");
+  verifyRejectedRecaptureDrift(currentSurface, exactMainSurface.package_manifests[0].version);
   const currentSectionDigests = surfaceSectionDigests(currentSurface);
   const currentDigest = compatibilitySurfaceDigest(currentSectionDigests);
   const expectedDigest = baseline.references.exact_main.surface_sha256;

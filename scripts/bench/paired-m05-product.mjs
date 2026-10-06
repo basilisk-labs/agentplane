@@ -8,12 +8,12 @@ import { performance } from "node:perf_hooks";
 import {
   createRepositorySnapshot,
   normalizeTaskPlanProposal,
-} from "../../packages/core/dist/tasks/index.js";
+} from "../../packages/core/src/tasks/index.ts";
 import {
   MissingScenarioParametersError,
   parseScenarioV2,
   resolveScenarioParameters,
-} from "../../packages/recipes/dist/index.js";
+} from "../../packages/recipes/src/index.ts";
 
 const start = performance.now();
 assert.equal(process.env.AGENTPLANE_PAIRED_MODE, "offline");

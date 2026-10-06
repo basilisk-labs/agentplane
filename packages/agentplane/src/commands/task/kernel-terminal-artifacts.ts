@@ -27,11 +27,15 @@ function taskStatusLines(
   command: CommandContext,
   taskId: string,
   status: DirectRepositoryStatus,
+  prOwnerHandlesProjections = false,
 ): string[] {
   const prefix = `${command.config.paths.workflow_dir}/${taskId}/`;
   return status.lines.filter((line) => {
     const candidate = pathFromStatusLine(line);
-    return candidate === prefix.slice(0, -1) || candidate?.startsWith(prefix) === true;
+    // The PR owner persists and validates its own packet. Committing a refresh here
+    // after publication changes HEAD again and creates an endless publish cycle.
+    if (prOwnerHandlesProjections && candidate.startsWith(`${prefix}pr/`)) return false;
+    return candidate === prefix.slice(0, -1) || candidate.startsWith(prefix);
   });
 }
 
@@ -49,6 +53,10 @@ export async function commitCanonicalTerminalTaskArtifacts(
     loadTaskFromContext({ ctx: command, taskId }),
     currentBranch(command),
   ]);
+  const prOwnerHandlesProjections = task.execution_route?.repository_mode === "branch_pr";
+  if (taskStatusLines(command, taskId, before, prOwnerHandlesProjections).length === 0) {
+    return false;
+  }
   const onTaskBranch = parseTaskIdFromBranch(command.config.branch.task_prefix, branch) === taskId;
   const onCloseBranch =
     parseTaskIdFromCloseBranch(command.config.branch.task_close_prefix, branch) === taskId;
@@ -67,7 +75,7 @@ export async function commitCanonicalTerminalTaskArtifacts(
     }
     command.git.invalidateStatus();
     const after = await readDirectRepositoryStatus(command.resolvedProject.gitRoot);
-    if (!after || taskStatusLines(command, taskId, after).length > 0) {
+    if (!after || taskStatusLines(command, taskId, after, prOwnerHandlesProjections).length > 0) {
       throw new Error("Canonical terminal task artifacts remain dirty after close-branch commit");
     }
     return true;
@@ -96,7 +104,7 @@ export async function commitCanonicalTerminalTaskArtifacts(
 
   command.git.invalidateStatus();
   const after = await readDirectRepositoryStatus(command.resolvedProject.gitRoot);
-  if (!after || taskStatusLines(command, taskId, after).length > 0) {
+  if (!after || taskStatusLines(command, taskId, after, prOwnerHandlesProjections).length > 0) {
     throw new Error("Canonical terminal task artifacts remain dirty after commit");
   }
   return true;

@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import os from "node:os";
+import { createRequire } from "node:module";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -11,7 +12,7 @@ const SUPPORTED_PACKAGES = new Set(["packages/core", "packages/recipes"]);
 
 function parseArgs(argv) {
   const { flags, positionals } = parseScriptArgs(argv, {
-    valueFlags: ["package-dir", "tarball-dir"],
+    valueFlags: ["package-dir", "tarball-dir", "core-tarball-dir"],
   });
   if (positionals.length > 0) {
     throw new Error(`unexpected positional arguments: ${positionals.join(" ")}`);
@@ -22,10 +23,31 @@ function parseArgs(argv) {
   if (!SUPPORTED_PACKAGES.has(flags["package-dir"])) {
     throw new Error(`unsupported package directory: ${flags["package-dir"]}`);
   }
+  if (flags["core-tarball-dir"] && flags["package-dir"] !== "packages/recipes") {
+    throw new Error("--core-tarball-dir requires --package-dir packages/recipes");
+  }
   return {
+    coreTarballDir: flags["core-tarball-dir"] ? path.resolve(flags["core-tarball-dir"]) : null,
     packageDir: flags["package-dir"],
     tarballDir: path.resolve(flags["tarball-dir"]),
   };
+}
+
+function singleTarball(directory) {
+  const tarballs = readdirSync(directory)
+    .filter((entry) => entry.endsWith(".tgz"))
+    .toSorted();
+  assert.equal(tarballs.length, 1, "tarball directory must contain exactly one .tgz artifact");
+  return path.join(directory, tarballs[0]);
+}
+
+function tarballManifest(tarballPath) {
+  return JSON.parse(
+    execFileSync("tar", ["-xOf", tarballPath, "package/package.json"], {
+      encoding: "utf8",
+      timeout: 30_000,
+    }),
+  );
 }
 
 function readJson(filePath) {
@@ -120,11 +142,23 @@ const main = defineCheck({
       `Node ${process.versions.node} does not satisfy ${sourceManifest.name} engines.node=${engine}`,
     );
 
-    const tarballs = readdirSync(options.tarballDir)
-      .filter((entry) => entry.endsWith(".tgz"))
-      .toSorted();
-    assert.equal(tarballs.length, 1, "tarball directory must contain exactly one .tgz artifact");
-    const tarballPath = path.join(options.tarballDir, tarballs[0]);
+    const tarballPath = singleTarball(options.tarballDir);
+    let coreTarballPath = null;
+    let coreManifest = null;
+    if (options.coreTarballDir) {
+      coreTarballPath = singleTarball(options.coreTarballDir);
+      coreManifest = tarballManifest(coreTarballPath);
+      const recipesManifest = tarballManifest(tarballPath);
+      assert.equal(recipesManifest.name, "@agentplaneorg/recipes");
+      assert.equal(coreManifest.name, "@agentplaneorg/core");
+      assert.equal(typeof coreManifest.version, "string");
+      assert.ok(coreManifest.version.length > 0, "local core version is empty");
+      assert.equal(
+        recipesManifest.dependencies?.["@agentplaneorg/core"],
+        coreManifest.version,
+        "local core version must exactly match the recipes dependency",
+      );
+    }
     const installRoot = mkdtempSync(path.join(os.tmpdir(), "agentplane-node-runtime-"));
 
     try {
@@ -136,7 +170,15 @@ const main = defineCheck({
       const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
       execFileSync(
         npmCommand,
-        ["install", "--ignore-scripts", "--engine-strict", "--no-audit", "--no-fund", tarballPath],
+        [
+          "install",
+          "--ignore-scripts",
+          "--engine-strict",
+          "--no-audit",
+          "--no-fund",
+          tarballPath,
+          ...(coreTarballPath ? [coreTarballPath] : []),
+        ],
         {
           cwd: installRoot,
           encoding: "utf8",
@@ -158,6 +200,22 @@ const main = defineCheck({
       assert.equal(installedManifest.version, sourceManifest.version);
       assert.equal(installedManifest.engines?.node, engine);
 
+      if (coreManifest) {
+        const resolveFromRecipes = createRequire(path.join(packageRoot, "package.json"));
+        const resolvedCoreManifest = resolveFromRecipes.resolve("@agentplaneorg/core/package.json");
+        assert.equal(
+          resolvedCoreManifest,
+          path.join(installRoot, "node_modules/@agentplaneorg/core/package.json"),
+          "recipes must resolve the supplied local core, not a nested registry copy",
+        );
+        const installedCore = readJson(resolvedCoreManifest);
+        assert.equal(installedCore.name, coreManifest.name);
+        assert.equal(installedCore.version, coreManifest.version);
+        assert.equal(
+          installedCore.version,
+          installedManifest.dependencies?.["@agentplaneorg/core"],
+        );
+      }
       const publicExports = await importPublicExports(packageRoot, installedManifest);
       exercisePublicApi(installedManifest.name, publicExports.get("."), publicExports);
       stdout.write(
