@@ -1,20 +1,51 @@
 import assert from "node:assert/strict";
 import { execFileSync, spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import {
+  lstatSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  realpathSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
 import { defineScript, runScriptMain } from "../lib/script-runtime.mjs";
 import { runInstalledMigrationMatrix } from "../lib/installed-migration-matrix.mjs";
+import { runInstalledRecipeMatrix } from "./installed-recipe-matrix.mjs";
 import { runInstalledPlanningMatrix } from "../lib/installed-planning-matrix.mjs";
 
 const PACKAGES = ["core", "recipes", "agentplane"];
 const V0_6_26_ASSIMILATION_COMMIT = "13af54063ead7d2bba75b577ff93f7bf1ef76f63";
 
+function localNpmCache() {
+  const root = path.resolve(process.cwd());
+  assert.equal(realpathSync(root), root, "smoke repository root must be a real directory");
+  let directory = root;
+  for (const part of ["packages", "agentplane", "node_modules", ".cache", "npm-install-smoke"]) {
+    directory = path.join(directory, part);
+    try {
+      mkdirSync(directory);
+    } catch (error) {
+      if (error.code !== "EEXIST") throw error;
+    }
+    const stat = lstatSync(directory);
+    assert.ok(
+      stat.isDirectory() && !stat.isSymbolicLink(),
+      "npm cache parents must be real contained directories",
+    );
+    assert.equal(realpathSync(directory), directory, "npm cache must remain contained");
+  }
+  return directory;
+}
+
 function run(command, args, opts = {}) {
   return execFileSync(command, args, {
     cwd: opts.cwd ?? process.cwd(),
     encoding: "utf8",
+    timeout: opts.timeout,
     env: {
       ...process.env,
       AGENTPLANE_NO_UPDATE_CHECK: "1",
@@ -28,6 +59,7 @@ function runFailure(command, args, opts = {}) {
   const result = spawnSync(command, args, {
     cwd: opts.cwd ?? process.cwd(),
     encoding: "utf8",
+    timeout: opts.timeout,
     env: {
       ...process.env,
       AGENTPLANE_NO_UPDATE_CHECK: "1",
@@ -187,7 +219,7 @@ const main = defineScript({
     const packDir = path.join(tempRoot, "packs");
     const prefix = path.join(tempRoot, "prefix");
     const repo = path.join(tempRoot, "repo");
-    const cacheDir = path.resolve(process.cwd(), ".agentplane", ".npm-cache");
+    const cacheDir = localNpmCache();
 
     try {
       mkdirSync(packDir, { recursive: true });
@@ -199,6 +231,28 @@ const main = defineScript({
         env: { ...process.env, NPM_CONFIG_CACHE: cacheDir },
         stdio: "pipe",
       });
+
+      const installedTree = JSON.parse(
+        run("npm", ["ls", "--global", "--prefix", prefix, "--all", "--json"], {
+          env: { NPM_CONFIG_CACHE: cacheDir },
+        }),
+      );
+      const installedVersions = new Set();
+      function inventoryDependencies(dependencies) {
+        for (const [name, dependency] of Object.entries(dependencies ?? {})) {
+          assert.equal(
+            typeof dependency.version,
+            "string",
+            `installed dependency ${name} has no version`,
+          );
+          installedVersions.add(`${name}@${dependency.version}`);
+          inventoryDependencies(dependency.dependencies);
+        }
+      }
+      inventoryDependencies(installedTree.dependencies);
+      process.stdout.write(
+        `installed runtime dependencies: ${JSON.stringify([...installedVersions].toSorted())}\n`,
+      );
 
       const agentplane = binPath(prefix);
       const ap = apBinPath(prefix);
@@ -427,6 +481,19 @@ const main = defineScript({
         },
         installedJsonErrorContract,
       );
+
+      const installedModules = run("npm", ["root", "--global", "--prefix", prefix], {
+        env: { NPM_CONFIG_CACHE: cacheDir },
+      }).trim();
+      const recipeMatrix = runInstalledRecipeMatrix({
+        agentplane,
+        recipesPackageRoot: path.join(installedModules, "@agentplaneorg", "recipes"),
+        agentplanePackageRoot: path.join(installedModules, "agentplane"),
+        tempRoot: path.join(tempRoot, "recipe-matrix"),
+        run,
+        runFailure,
+      });
+      process.stdout.write(`installed Recipe matrix OK (scenarios=${recipeMatrix.count})\n`);
 
       const planningMatrix = runInstalledPlanningMatrix({
         agentplane,

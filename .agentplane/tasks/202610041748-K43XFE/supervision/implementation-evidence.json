@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 0cc00f364c7be0927047ef4ce3d066da6531482f..52ffec6aaf219d8af968e23e1b7b0767c43f60a9",
+      "command": "git diff --check 52ffec6aaf219d8af968e23e1b7b0767c43f60a9..55bdf4fb091fb15bb44e05352fd3cca135ae85b6",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,23 +13,58 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 0cc00f364c7be0927047ef4ce3d066da6531482f..52ffec6aaf219d8af968e23e1b7b0767c43f60a9",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 52ffec6aaf219d8af968e23e1b7b0767c43f60a9..55bdf4fb091fb15bb44e05352fd3cca135ae85b6",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
         "M\t.agentplane/tasks/202610041748-K43XFE/README.md",
+        "M\t.agentplane/tasks/202610041748-K43XFE/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202610041748-K43XFE/pr/github-body.md",
+        "M\t.agentplane/tasks/202610041748-K43XFE/pr/meta.json",
+        "M\t.agentplane/tasks/202610041748-K43XFE/pr/review.md",
         "M\t.agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202610041748-K43XFE/supervision/implementation-evidence.json",
-        "M\tpackages/agentplane/src/commands/shared/declared-check.test.ts",
-        "M\tpackages/agentplane/src/commands/shared/declared-check.ts",
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts",
+        "M\tpackages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts",
+        "A\tpackages/agentplane/src/commands/branch/work-start.test.ts",
+        "M\tpackages/agentplane/src/commands/branch/work-start.ts",
+        "M\tpackages/agentplane/src/commands/evaluator/evaluator-evidence-boundary.ts",
+        "M\tpackages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts",
+        "M\tpackages/agentplane/src/commands/evaluator/evaluator-evidence-store.ts",
+        "M\tpackages/agentplane/src/commands/recipes/impl/explicit-selection.ts",
         "M\tpackages/agentplane/src/commands/task/advance-task-step.ts",
-        "M\tpackages/agentplane/src/commands/task/direct-task-verification.sequence.cases.ts",
-        "M\tpackages/agentplane/src/commands/task/direct-task-verification.ts",
-        "A\tpackages/agentplane/src/commands/task/kernel-advance-network.test.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-advance-network.test.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-advance.test.ts",
         "M\tpackages/agentplane/src/commands/task/kernel-exchange.test.ts",
         "M\tpackages/agentplane/src/commands/task/kernel-exchange.ts",
-        "A\tpackages/agentplane/src/commands/task/kernel-work-order.network.test.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-work-order.ts"
+        "A\tpackages/agentplane/src/commands/task/kernel-inspection-validation.test.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-inspection-validation.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-policy-baseline.test.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-policy-baseline.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-policy-completion.test.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-recovery-evidence.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-repository-coordinator.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-rework-lineage.test.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-rework-lineage.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-rework-proof.test.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-rework-proof.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-runtime-context.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-semantic-result.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-work-item-resume.test.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-work-item-resume.ts",
+        "M\tpackages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts",
+        "M\tpackages/agentplane/src/runner/context/recipe-applicability.ts",
+        "M\tpackages/agentplane/src/runner/context/recipe-closure.ts",
+        "M\tpackages/agentplane/src/runner/context/recipe-context.ts",
+        "M\tpackages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts",
+        "M\tpackages/agentplane/src/runner/usecases/task-run-context.integration.test.ts",
+        "M\tpackages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts",
+        "M\tpackages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts",
+        "A\tpackages/core/src/tasks/task-centric/task-centric.output-dependencies.test.ts",
+        "M\tpackages/core/src/tasks/task-centric/task-centric.test.ts",
+        "M\tpackages/core/src/tasks/task-kernel/authority-delta.test.ts"
       ]
     },
     {
@@ -47,6 +82,9 @@
         " M scripts/lib/test-route-registry.mjs",
         " M scripts/release/check-local-tarball-install-smoke.mjs",
         "?? .agentplane/tasks/202610052127-ZKSA87/quality/objects/sha256/cd35fbf396f0028e374b3f84595480f6edd9dcf606c23ee72655c873780bf2b2.json",
+        "?? .agentplane/tasks/202610060111-K1VMJ8/quality/objects/sha256/3843bff288bb14b89e3366c8d7dec5532bcc3f35106b624f48f00047b3593844.json",
+        "?? .agentplane/tasks/task-1/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+        "?? .agentplane/tasks/task-1/quality/objects/sha256/cd35fbf396f0028e374b3f84595480f6edd9dcf606c23ee72655c873780bf2b2.json",
         "?? .agentplane/tmp/60QH9J-pre-fast-forward-schema.json",
         "?? .agentplane/tmp/K43XFE-pre-fast-forward/202609300615-DE9AE6.json",
         "?? .agentplane/tmp/K43XFE-pre-fast-forward/202609301727-VET3VW.json",
@@ -84,25 +122,58 @@
         "?? .agentplane/tmp/pr-integration-MP3J6N/integration-result.json",
         "?? packages/agentplane/src/commands/recipes/roadmap-installed-recipe-negotiation.test.ts",
         "?? packages/agentplane/src/recipe-api.ts",
-        "?? packages/agentplane/tsup.config.bundled_gb1x1suwt6t.mjs",
         "?? scripts/release/installed-recipe-matrix.mjs"
       ]
     }
   ],
-  "execution_base_commit": "0cc00f364c7be0927047ef4ce3d066da6531482f",
-  "implementation_commit": "52ffec6aaf219d8af968e23e1b7b0767c43f60a9",
+  "execution_base_commit": "52ffec6aaf219d8af968e23e1b7b0767c43f60a9",
+  "implementation_commit": "55bdf4fb091fb15bb44e05352fd3cca135ae85b6",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
       " M .agentplane/tasks/202610041748-K43XFE/README.md",
+      "M  .agentplane/tasks/202610041748-K43XFE/pr/diffstat.txt",
+      "M  .agentplane/tasks/202610041748-K43XFE/pr/github-body.md",
+      "M  .agentplane/tasks/202610041748-K43XFE/pr/meta.json",
+      "M  .agentplane/tasks/202610041748-K43XFE/pr/review.md",
       " M .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json",
       " M .agentplane/tasks/202610041748-K43XFE/supervision/implementation-evidence.json",
       " M packages/agentplane/package.json",
+      " M packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts",
+      " M packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts",
+      " M packages/agentplane/src/commands/branch/work-start.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-evidence-boundary.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-evidence-store.ts",
       " M packages/agentplane/src/commands/recipes/impl/apply.ts",
+      " M packages/agentplane/src/commands/task/advance-task-step.ts",
+      " M packages/agentplane/src/commands/task/kernel-advance-network.test.ts",
+      " M packages/agentplane/src/commands/task/kernel-advance.test.ts",
+      " M packages/agentplane/src/commands/task/kernel-exchange.test.ts",
+      " M packages/agentplane/src/commands/task/kernel-exchange.ts",
+      " M packages/agentplane/src/commands/task/kernel-inspection-validation.ts",
+      " M packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts",
+      " M packages/agentplane/src/commands/task/kernel-recovery-evidence.ts",
+      " M packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts",
+      " M packages/agentplane/src/commands/task/kernel-repository-coordinator.ts",
+      " M packages/agentplane/src/commands/task/kernel-runtime-context.ts",
+      " M packages/agentplane/src/commands/task/kernel-semantic-result.ts",
+      " M packages/agentplane/src/commands/task/kernel-work-item-resume.test.ts",
+      " M packages/agentplane/src/commands/task/kernel-work-item-resume.ts",
+      " M packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts",
+      " M packages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts",
+      " M packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts",
+      " M packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts",
+      " M packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts",
       " M packages/agentplane/tsup.config.ts",
+      " M packages/core/src/tasks/task-centric/task-centric.test.ts",
+      " M packages/core/src/tasks/task-kernel/authority-delta.test.ts",
       " M scripts/lib/test-route-registry.mjs",
       " M scripts/release/check-local-tarball-install-smoke.mjs",
       "?? .agentplane/tasks/202610052127-ZKSA87/quality/objects/sha256/cd35fbf396f0028e374b3f84595480f6edd9dcf606c23ee72655c873780bf2b2.json",
+      "?? .agentplane/tasks/202610060111-K1VMJ8/quality/objects/sha256/3843bff288bb14b89e3366c8d7dec5532bcc3f35106b624f48f00047b3593844.json",
+      "?? .agentplane/tasks/task-1/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+      "?? .agentplane/tasks/task-1/quality/objects/sha256/cd35fbf396f0028e374b3f84595480f6edd9dcf606c23ee72655c873780bf2b2.json",
       "?? .agentplane/tmp/60QH9J-pre-fast-forward-schema.json",
       "?? .agentplane/tmp/K43XFE-pre-fast-forward/202609300615-DE9AE6.json",
       "?? .agentplane/tmp/K43XFE-pre-fast-forward/202609301727-VET3VW.json",
@@ -138,26 +209,35 @@
       "?? .agentplane/tmp/pr-integration-MP3J6N/6048-typecheck.log",
       "?? .agentplane/tmp/pr-integration-MP3J6N/6048.patch",
       "?? .agentplane/tmp/pr-integration-MP3J6N/integration-result.json",
+      "?? packages/agentplane/src/commands/branch/work-start.test.ts",
       "?? packages/agentplane/src/commands/recipes/roadmap-installed-recipe-negotiation.test.ts",
+      "?? packages/agentplane/src/commands/task/kernel-inspection-validation.test.ts",
+      "?? packages/agentplane/src/commands/task/kernel-policy-baseline.test.ts",
+      "?? packages/agentplane/src/commands/task/kernel-policy-baseline.ts",
+      "?? packages/agentplane/src/commands/task/kernel-policy-completion.test.ts",
+      "?? packages/agentplane/src/commands/task/kernel-rework-lineage.test.ts",
+      "?? packages/agentplane/src/commands/task/kernel-rework-lineage.ts",
+      "?? packages/agentplane/src/commands/task/kernel-rework-proof.test.ts",
+      "?? packages/agentplane/src/commands/task/kernel-rework-proof.ts",
       "?? packages/agentplane/src/recipe-api.ts",
-      "?? packages/agentplane/tsup.config.bundled_gb1x1suwt6t.mjs",
+      "?? packages/core/src/tasks/task-centric/task-centric.output-dependencies.test.ts",
       "?? scripts/release/installed-recipe-matrix.mjs"
     ],
     "classification": [
       {
-        "classification": "introduced_during_execution",
+        "classification": "preexisting_before_execution",
         "line": "M  .agentplane/tasks/202610041748-K43XFE/pr/diffstat.txt"
       },
       {
-        "classification": "introduced_during_execution",
+        "classification": "preexisting_before_execution",
         "line": "M  .agentplane/tasks/202610041748-K43XFE/pr/github-body.md"
       },
       {
-        "classification": "introduced_during_execution",
+        "classification": "preexisting_before_execution",
         "line": "M  .agentplane/tasks/202610041748-K43XFE/pr/meta.json"
       },
       {
-        "classification": "introduced_during_execution",
+        "classification": "preexisting_before_execution",
         "line": "M  .agentplane/tasks/202610041748-K43XFE/pr/review.md"
       },
       {
@@ -183,6 +263,18 @@
       {
         "classification": "preexisting_before_execution",
         "line": "?? .agentplane/tasks/202610052127-ZKSA87/quality/objects/sha256/cd35fbf396f0028e374b3f84595480f6edd9dcf606c23ee72655c873780bf2b2.json"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tasks/202610060111-K1VMJ8/quality/objects/sha256/3843bff288bb14b89e3366c8d7dec5532bcc3f35106b624f48f00047b3593844.json"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tasks/task-1/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+      },
+      {
+        "classification": "preexisting_before_execution",
+        "line": "?? .agentplane/tasks/task-1/quality/objects/sha256/cd35fbf396f0028e374b3f84595480f6edd9dcf606c23ee72655c873780bf2b2.json"
       },
       {
         "classification": "preexisting_before_execution",
@@ -334,10 +426,6 @@
       },
       {
         "classification": "preexisting_before_execution",
-        "line": "?? packages/agentplane/tsup.config.bundled_gb1x1suwt6t.mjs"
-      },
-      {
-        "classification": "preexisting_before_execution",
         "line": "?? scripts/release/installed-recipe-matrix.mjs"
       },
       {
@@ -351,6 +439,154 @@
       {
         "classification": "removed_during_execution",
         "line": " M .agentplane/tasks/202610041748-K43XFE/supervision/implementation-evidence.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/branch/work-start.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/evaluator/evaluator-evidence-boundary.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/evaluator/evaluator-evidence-store.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/advance-task-step.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-advance-network.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-advance.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-exchange.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-exchange.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-inspection-validation.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-recovery-evidence.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-repository-coordinator.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-runtime-context.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-semantic-result.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-work-item-resume.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-work-item-resume.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/core/src/tasks/task-centric/task-centric.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/core/src/tasks/task-kernel/authority-delta.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/branch/work-start.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/kernel-inspection-validation.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/kernel-policy-baseline.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/kernel-policy-baseline.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/kernel-policy-completion.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/kernel-rework-lineage.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/kernel-rework-lineage.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/kernel-rework-proof.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/kernel-rework-proof.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/core/src/tasks/task-centric/task-centric.output-dependencies.test.ts"
       }
     ],
     "final": [
@@ -364,6 +600,9 @@
       " M scripts/lib/test-route-registry.mjs",
       " M scripts/release/check-local-tarball-install-smoke.mjs",
       "?? .agentplane/tasks/202610052127-ZKSA87/quality/objects/sha256/cd35fbf396f0028e374b3f84595480f6edd9dcf606c23ee72655c873780bf2b2.json",
+      "?? .agentplane/tasks/202610060111-K1VMJ8/quality/objects/sha256/3843bff288bb14b89e3366c8d7dec5532bcc3f35106b624f48f00047b3593844.json",
+      "?? .agentplane/tasks/task-1/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+      "?? .agentplane/tasks/task-1/quality/objects/sha256/cd35fbf396f0028e374b3f84595480f6edd9dcf606c23ee72655c873780bf2b2.json",
       "?? .agentplane/tmp/60QH9J-pre-fast-forward-schema.json",
       "?? .agentplane/tmp/K43XFE-pre-fast-forward/202609300615-DE9AE6.json",
       "?? .agentplane/tmp/K43XFE-pre-fast-forward/202609301727-VET3VW.json",
@@ -401,27 +640,65 @@
       "?? .agentplane/tmp/pr-integration-MP3J6N/integration-result.json",
       "?? packages/agentplane/src/commands/recipes/roadmap-installed-recipe-negotiation.test.ts",
       "?? packages/agentplane/src/recipe-api.ts",
-      "?? packages/agentplane/tsup.config.bundled_gb1x1suwt6t.mjs",
       "?? scripts/release/installed-recipe-matrix.mjs"
     ],
-    "introduced_after_execution_baseline": [
-      "M  .agentplane/tasks/202610041748-K43XFE/pr/diffstat.txt",
-      "M  .agentplane/tasks/202610041748-K43XFE/pr/github-body.md",
-      "M  .agentplane/tasks/202610041748-K43XFE/pr/meta.json",
-      "M  .agentplane/tasks/202610041748-K43XFE/pr/review.md"
-    ],
+    "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
       " M .agentplane/tasks/202610041748-K43XFE/README.md",
       " M .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json",
-      " M .agentplane/tasks/202610041748-K43XFE/supervision/implementation-evidence.json"
+      " M .agentplane/tasks/202610041748-K43XFE/supervision/implementation-evidence.json",
+      " M packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts",
+      " M packages/agentplane/src/cli/run-cli.core.roadmap-recovery.test.ts",
+      " M packages/agentplane/src/commands/branch/work-start.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-evidence-boundary.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts",
+      " M packages/agentplane/src/commands/evaluator/evaluator-evidence-store.ts",
+      " M packages/agentplane/src/commands/task/advance-task-step.ts",
+      " M packages/agentplane/src/commands/task/kernel-advance-network.test.ts",
+      " M packages/agentplane/src/commands/task/kernel-advance.test.ts",
+      " M packages/agentplane/src/commands/task/kernel-exchange.test.ts",
+      " M packages/agentplane/src/commands/task/kernel-exchange.ts",
+      " M packages/agentplane/src/commands/task/kernel-inspection-validation.ts",
+      " M packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts",
+      " M packages/agentplane/src/commands/task/kernel-recovery-evidence.ts",
+      " M packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts",
+      " M packages/agentplane/src/commands/task/kernel-repository-coordinator.ts",
+      " M packages/agentplane/src/commands/task/kernel-runtime-context.ts",
+      " M packages/agentplane/src/commands/task/kernel-semantic-result.ts",
+      " M packages/agentplane/src/commands/task/kernel-work-item-resume.test.ts",
+      " M packages/agentplane/src/commands/task/kernel-work-item-resume.ts",
+      " M packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts",
+      " M packages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts",
+      " M packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts",
+      " M packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts",
+      " M packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.test.ts",
+      " M packages/core/src/tasks/task-centric/task-centric.test.ts",
+      " M packages/core/src/tasks/task-kernel/authority-delta.test.ts",
+      "?? packages/agentplane/src/commands/branch/work-start.test.ts",
+      "?? packages/agentplane/src/commands/task/kernel-inspection-validation.test.ts",
+      "?? packages/agentplane/src/commands/task/kernel-policy-baseline.test.ts",
+      "?? packages/agentplane/src/commands/task/kernel-policy-baseline.ts",
+      "?? packages/agentplane/src/commands/task/kernel-policy-completion.test.ts",
+      "?? packages/agentplane/src/commands/task/kernel-rework-lineage.test.ts",
+      "?? packages/agentplane/src/commands/task/kernel-rework-lineage.ts",
+      "?? packages/agentplane/src/commands/task/kernel-rework-proof.test.ts",
+      "?? packages/agentplane/src/commands/task/kernel-rework-proof.ts",
+      "?? packages/core/src/tasks/task-centric/task-centric.output-dependencies.test.ts"
     ],
     "unchanged_from_execution_baseline": [
+      "M  .agentplane/tasks/202610041748-K43XFE/pr/diffstat.txt",
+      "M  .agentplane/tasks/202610041748-K43XFE/pr/github-body.md",
+      "M  .agentplane/tasks/202610041748-K43XFE/pr/meta.json",
+      "M  .agentplane/tasks/202610041748-K43XFE/pr/review.md",
       " M packages/agentplane/package.json",
       " M packages/agentplane/src/commands/recipes/impl/apply.ts",
       " M packages/agentplane/tsup.config.ts",
       " M scripts/lib/test-route-registry.mjs",
       " M scripts/release/check-local-tarball-install-smoke.mjs",
       "?? .agentplane/tasks/202610052127-ZKSA87/quality/objects/sha256/cd35fbf396f0028e374b3f84595480f6edd9dcf606c23ee72655c873780bf2b2.json",
+      "?? .agentplane/tasks/202610060111-K1VMJ8/quality/objects/sha256/3843bff288bb14b89e3366c8d7dec5532bcc3f35106b624f48f00047b3593844.json",
+      "?? .agentplane/tasks/task-1/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+      "?? .agentplane/tasks/task-1/quality/objects/sha256/cd35fbf396f0028e374b3f84595480f6edd9dcf606c23ee72655c873780bf2b2.json",
       "?? .agentplane/tmp/60QH9J-pre-fast-forward-schema.json",
       "?? .agentplane/tmp/K43XFE-pre-fast-forward/202609300615-DE9AE6.json",
       "?? .agentplane/tmp/K43XFE-pre-fast-forward/202609301727-VET3VW.json",
@@ -459,7 +736,6 @@
       "?? .agentplane/tmp/pr-integration-MP3J6N/integration-result.json",
       "?? packages/agentplane/src/commands/recipes/roadmap-installed-recipe-negotiation.test.ts",
       "?? packages/agentplane/src/recipe-api.ts",
-      "?? packages/agentplane/tsup.config.bundled_gb1x1suwt6t.mjs",
       "?? scripts/release/installed-recipe-matrix.mjs"
     ]
   },

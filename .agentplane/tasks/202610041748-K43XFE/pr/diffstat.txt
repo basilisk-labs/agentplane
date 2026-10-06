@@ -1,9 +1,16 @@
  bun.lock                                           |    4 +
+ packages/agentplane/package.json                   |   13 +-
+ .../task-backend/kernel-backend-adapter.test.ts    |  192 ++
  ...n-cli.core.roadmap-recipe-v2-entrypoint.test.ts |  377 ++++
+ .../src/cli/run-cli.core.roadmap-recovery.test.ts  |    5 +-
  .../src/cli/run-cli/command-catalog/project.ts     |   10 +
  .../src/cli/run-cli/command-loaders/project.ts     |    6 +
- .../evaluator/evaluator-evidence-boundary.ts       |   23 +-
- .../commands/evaluator/evaluator-evidence-store.ts |   69 +
+ .../src/commands/branch/work-start.test.ts         |  162 ++
+ .../agentplane/src/commands/branch/work-start.ts   |   56 +-
+ .../evaluator/evaluator-evidence-boundary.ts       |   70 +-
+ .../evaluator/evaluator-evidence-store.test.ts     |  162 +-
+ .../commands/evaluator/evaluator-evidence-store.ts |   71 +
+ .../agentplane/src/commands/recipes/impl/apply.ts  |   13 +-
  .../commands/recipes/impl/explicit-selection.ts    |  157 ++
  .../src/commands/recipes/impl/project-registry.ts  |   28 +-
  .../src/commands/recipes/impl/resolver.ts          |    2 +-
@@ -11,32 +18,51 @@
  .../src/commands/recipes/preview-v1.command.ts     |   21 +
  .../src/commands/recipes/preview-v2.command.ts     |   51 +
  .../recipes/roadmap-explicit-selection.test.ts     |  342 ++++
+ .../roadmap-installed-recipe-negotiation.test.ts   |  154 ++
  .../recipes/roadmap-v1-v2-conversion.test.ts       |  426 ++++
  .../src/commands/shared/declared-check.test.ts     |   56 +-
  .../src/commands/shared/declared-check.ts          |   31 +-
- .../src/commands/task/advance-task-step.ts         |    5 +-
+ .../src/commands/task/advance-task-step.ts         |    6 +-
  .../src/commands/task/create-plan-input.ts         |   65 +-
  .../agentplane/src/commands/task/create.command.ts |   55 +-
  .../direct-task-verification.sequence.cases.ts     |  104 +-
  .../src/commands/task/direct-task-verification.ts  |   27 +-
  .../commands/task/kernel-advance-network.test.ts   |  302 +++
- .../src/commands/task/kernel-exchange.test.ts      |  619 +++++-
- .../src/commands/task/kernel-exchange.ts           |  298 ++-
+ .../src/commands/task/kernel-advance.test.ts       |    6 +-
+ .../src/commands/task/kernel-exchange.test.ts      |  716 ++++++-
+ .../src/commands/task/kernel-exchange.ts           |  260 ++-
+ .../task/kernel-inspection-validation.test.ts      |  103 +
+ .../commands/task/kernel-inspection-validation.ts  |   34 +-
  .../src/commands/task/kernel-inspection.ts         |   27 +-
  .../task/kernel-plan-supplied-approval.test.ts     |   68 +
  .../agentplane/src/commands/task/kernel-plan.ts    |   60 +-
  .../src/commands/task/kernel-planning-view.ts      |   10 +-
+ .../commands/task/kernel-policy-baseline.test.ts   |  141 ++
+ .../src/commands/task/kernel-policy-baseline.ts    |  188 ++
+ .../commands/task/kernel-policy-completion.test.ts |  209 ++
  .../src/commands/task/kernel-recipe-admission.ts   |  106 +
- .../src/commands/task/kernel-runtime-context.ts    |    8 +
- .../src/commands/task/kernel-semantic-result.ts    |   38 +-
+ .../commands/task/kernel-recovery-evidence.test.ts |  287 +++
+ .../src/commands/task/kernel-recovery-evidence.ts  |  213 +-
+ .../task/kernel-repository-coordinator.test.ts     |   66 +-
+ .../commands/task/kernel-repository-coordinator.ts |   29 +-
+ .../commands/task/kernel-rework-lineage.test.ts    |  895 +++++++++
+ .../src/commands/task/kernel-rework-lineage.ts     |  282 +++
+ .../src/commands/task/kernel-rework-proof.test.ts  |  691 +++++++
+ .../src/commands/task/kernel-rework-proof.ts       |  490 +++++
+ .../src/commands/task/kernel-runtime-context.ts    |   36 +-
+ .../src/commands/task/kernel-semantic-result.ts    |   42 +-
+ .../commands/task/kernel-work-item-resume.test.ts  |   90 +-
+ .../src/commands/task/kernel-work-item-resume.ts   |   58 +-
  .../task/kernel-work-order.network.test.ts         |  191 ++
  .../src/commands/task/kernel-work-order.ts         |  101 +-
  .../src/commands/task/plan-set.command.ts          |   70 +-
  .../agentplane/src/commands/task/recipe-input.ts   |  116 ++
- .../src/commands/task/roadmap-recipe-repin.test.ts |  467 +++++
+ .../src/commands/task/roadmap-recipe-repin.test.ts |  476 +++++
+ .../commands/task/roadmap-terminal-noop.test.ts    |    6 +-
+ packages/agentplane/src/recipe-api.ts              |   65 +
  .../src/runner/context/recipe-applicability.ts     |  371 ++++
  .../src/runner/context/recipe-closure.ts           |  416 ++++
- .../src/runner/context/recipe-context.ts           |   29 +
+ .../src/runner/context/recipe-context.ts           |   14 +
  .../src/runner/context/recipe-native-observers.ts  |   34 +
  .../src/runner/context/recipe-plan-binding.ts      |  181 ++
  .../src/runner/context/recipe-plan-rebind.ts       |   73 +
@@ -52,14 +78,19 @@
  .../runner/context/roadmap-recipe-prompt.test.ts   |  587 ++++++
  .../context/roadmap-recipe-retention.test.ts       |  396 ++++
  .../context/roadmap-recipe-shortlist.test.ts       |  331 ++++
+ ...te-fingerprint-residual-git.integration.test.ts |    3 +-
  .../src/runner/usecases/kernel-authority.ts        |    2 +-
  .../usecases/roadmap-recipe-instantiation.test.ts  |  430 ++++
  .../runner/usecases/scenario-explicit-selection.ts |  127 ++
  .../src/runner/usecases/scenario-instantiate.ts    |  201 ++
  .../runner/usecases/scenario-materialize-task.ts   |   73 +-
  .../src/runner/usecases/task-run-bootstrap.ts      |    2 +-
+ .../usecases/task-run-context.integration.test.ts  |    2 +-
+ .../usecases/task-run-effect-resolution.test.ts    |  159 +-
+ .../usecases/task-run-lifecycle-cancel.test.ts     |    3 +-
  .../src/runner/usecases/task-run-recipe-context.ts |    4 +
  .../agentplane/src/shared/contained-stable-file.ts |   62 +-
+ packages/agentplane/tsup.config.ts                 |    1 +
  .../task/roadmap-recipe-specialization.test.ts     |  398 ++++
  packages/core/src/runner/agent-semantic-result.ts  |   16 +-
  packages/core/src/tasks/index.ts                   |   11 +
@@ -68,7 +99,8 @@
  packages/core/src/tasks/task-centric/graph.ts      |   45 +-
  packages/core/src/tasks/task-centric/model.ts      |    3 +
  packages/core/src/tasks/task-centric/schema.ts     |   42 +-
- .../src/tasks/task-centric/task-centric.test.ts    |   64 +
+ .../task-centric.output-dependencies.test.ts       |  112 ++
+ .../src/tasks/task-kernel/authority-delta.test.ts  |  158 +-
  .../src/tasks/task-kernel/authority-lineage.ts     |   40 +-
  packages/core/src/tasks/task-kernel/index.ts       |    1 +
  packages/core/src/tasks/task-kernel/kernel.ts      |   68 +-
@@ -90,4 +122,7 @@
  packages/recipes/src/scenario.ts                   |   15 +
  packages/recipes/tsconfig.json                     |    7 +-
  schemas/agent-semantic-result.schema.json          | 2081 ++++++++++++++++----
- 92 files changed, 13959 insertions(+), 580 deletions(-)
+ scripts/lib/test-route-registry.mjs                |   24 +
+ .../release/check-local-tarball-install-smoke.mjs  |   71 +-
+ scripts/release/installed-recipe-matrix.mjs        |  790 ++++++++
+ 127 files changed, 19844 insertions(+), 699 deletions(-)
