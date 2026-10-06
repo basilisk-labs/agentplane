@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:d63aa213c13a12c786a69bddf3573f735dc6ed4e063e3a61d94cf04635236b62",
   "pr_number": 6053,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6053",
+  "pre_merge_closure": {
+    "basis_commit": "ad5fe5a336b774df784af72ace93647aac7a3549",
+    "branch": "task/202610041748-K43XFE/implement-and-qualify-agentplane-0-7-13-scenario",
+    "pr_number": 6053,
+    "recorded_at": "2026-10-06T20:53:32.312Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
