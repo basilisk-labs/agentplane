@@ -1,0 +1,458 @@
+{
+  "campaign_id": "M05-0.7.13-direct-fix-offline-v1",
+  "claim_policy": {
+    "disposition": "NOT_ESTABLISHED",
+    "minimum_paired_successes": 5
+  },
+  "constants": {
+    "adapter": "deterministic_fixture",
+    "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+    "cache_policy": "fresh-target-per-attempt; no provider cache",
+    "check_ids": [
+      "independent-structural-oracle"
+    ],
+    "model": "none",
+    "network": "deny",
+    "reasoning_effort": "none",
+    "retry_limit": 0,
+    "runtime_profile": {
+      "node": "v24.21.0",
+      "platform": "linux",
+      "purpose": "offline_plan_preparation"
+    },
+    "sandbox": "disposable-local-fixture; not a certified provider sandbox",
+    "session_policy": "fresh-process-per-attempt"
+  },
+  "evidence_scope": "offline_structural",
+  "experiment": "M05",
+  "kind": "agentplane.paired_production_campaign",
+  "products": {
+    "instantiate": {
+      "artifact_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario/artifacts/bench/m05-0.7.13/offline-qualified/product.mjs",
+      "artifact_sha256": "sha256:b76b003d52eadc2e61be9e8b53da26502897e3e7348497d7561e4ce0145fc8a7",
+      "entrypoint": [
+        "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario/artifacts/bench/m05-0.7.13/offline-qualified/product.mjs"
+      ],
+      "entrypoint_sha256": "sha256:b76b003d52eadc2e61be9e8b53da26502897e3e7348497d7561e4ce0145fc8a7",
+      "source_sha": "5cb13bad9c219d23eb6a1f291a4d778cece8d862"
+    },
+    "no_recipe": {
+      "artifact_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario/artifacts/bench/m05-0.7.13/offline-qualified/product.mjs",
+      "artifact_sha256": "sha256:b76b003d52eadc2e61be9e8b53da26502897e3e7348497d7561e4ce0145fc8a7",
+      "entrypoint": [
+        "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario/artifacts/bench/m05-0.7.13/offline-qualified/product.mjs"
+      ],
+      "entrypoint_sha256": "sha256:b76b003d52eadc2e61be9e8b53da26502897e3e7348497d7561e4ce0145fc8a7",
+      "source_sha": "5cb13bad9c219d23eb6a1f291a4d778cece8d862"
+    },
+    "specialize": {
+      "artifact_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario/artifacts/bench/m05-0.7.13/offline-qualified/product.mjs",
+      "artifact_sha256": "sha256:b76b003d52eadc2e61be9e8b53da26502897e3e7348497d7561e4ce0145fc8a7",
+      "entrypoint": [
+        "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario/artifacts/bench/m05-0.7.13/offline-qualified/product.mjs"
+      ],
+      "entrypoint_sha256": "sha256:b76b003d52eadc2e61be9e8b53da26502897e3e7348497d7561e4ce0145fc8a7",
+      "source_sha": "5cb13bad9c219d23eb6a1f291a4d778cece8d862"
+    }
+  },
+  "randomization_digest": "sha256:d8ecad9b8c96e9e875d20ca404d48c99974129330c4a53e9f7c70dcf436574af",
+  "runs": [
+    {
+      "adapter": "deterministic_fixture",
+      "arm": "instantiate",
+      "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+      "check_ids": [
+        "independent-structural-oracle"
+      ],
+      "id": "direct-fix-pair-5-instantiate",
+      "model": "none",
+      "order": 1,
+      "pair_id": "pair-5",
+      "product_artifact_sha256": "sha256:b76b003d52eadc2e61be9e8b53da26502897e3e7348497d7561e4ce0145fc8a7",
+      "product_source_sha": "5cb13bad9c219d23eb6a1f291a4d778cece8d862",
+      "reasoning_effort": "none",
+      "retry_limit": 0,
+      "runtime_profile": {
+        "node": "v24.21.0",
+        "platform": "linux",
+        "purpose": "offline_plan_preparation"
+      },
+      "target_commit": "a388d59b12365d5322cd62fc4e7a3cf7f74b3cec",
+      "target_tree": "61136583e788e995178e333c459aaba3d9a0316d",
+      "transport": "external",
+      "verifier_digest": "sha256:1ff45e7d8ba2e9ffaf27c07751e93d19ac8ca58c08119d8124fffb50b9b5ec32"
+    },
+    {
+      "adapter": "deterministic_fixture",
+      "arm": "no_recipe",
+      "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+      "check_ids": [
+        "independent-structural-oracle"
+      ],
+      "id": "direct-fix-pair-3-no_recipe",
+      "model": "none",
+      "order": 2,
+      "pair_id": "pair-3",
+      "product_artifact_sha256": "sha256:b76b003d52eadc2e61be9e8b53da26502897e3e7348497d7561e4ce0145fc8a7",
+      "product_source_sha": "5cb13bad9c219d23eb6a1f291a4d778cece8d862",
+      "reasoning_effort": "none",
+      "retry_limit": 0,
+      "runtime_profile": {
+        "node": "v24.21.0",
+        "platform": "linux",
+        "purpose": "offline_plan_preparation"
+      },
+      "target_commit": "a388d59b12365d5322cd62fc4e7a3cf7f74b3cec",
+      "target_tree": "61136583e788e995178e333c459aaba3d9a0316d",
+      "transport": "external",
+      "verifier_digest": "sha256:1ff45e7d8ba2e9ffaf27c07751e93d19ac8ca58c08119d8124fffb50b9b5ec32"
+    },
+    {
+      "adapter": "deterministic_fixture",
+      "arm": "instantiate",
+      "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+      "check_ids": [
+        "independent-structural-oracle"
+      ],
+      "id": "direct-fix-pair-2-instantiate",
+      "model": "none",
+      "order": 3,
+      "pair_id": "pair-2",
+      "product_artifact_sha256": "sha256:b76b003d52eadc2e61be9e8b53da26502897e3e7348497d7561e4ce0145fc8a7",
+      "product_source_sha": "5cb13bad9c219d23eb6a1f291a4d778cece8d862",
+      "reasoning_effort": "none",
+      "retry_limit": 0,
+      "runtime_profile": {
+        "node": "v24.21.0",
+        "platform": "linux",
+        "purpose": "offline_plan_preparation"
+      },
+      "target_commit": "a388d59b12365d5322cd62fc4e7a3cf7f74b3cec",
+      "target_tree": "61136583e788e995178e333c459aaba3d9a0316d",
+      "transport": "external",
+      "verifier_digest": "sha256:1ff45e7d8ba2e9ffaf27c07751e93d19ac8ca58c08119d8124fffb50b9b5ec32"
+    },
+    {
+      "adapter": "deterministic_fixture",
+      "arm": "specialize",
+      "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+      "check_ids": [
+        "independent-structural-oracle"
+      ],
+      "id": "direct-fix-pair-4-specialize",
+      "model": "none",
+      "order": 4,
+      "pair_id": "pair-4",
+      "product_artifact_sha256": "sha256:b76b003d52eadc2e61be9e8b53da26502897e3e7348497d7561e4ce0145fc8a7",
+      "product_source_sha": "5cb13bad9c219d23eb6a1f291a4d778cece8d862",
+      "reasoning_effort": "none",
+      "retry_limit": 0,
+      "runtime_profile": {
+        "node": "v24.21.0",
+        "platform": "linux",
+        "purpose": "offline_plan_preparation"
+      },
+      "target_commit": "a388d59b12365d5322cd62fc4e7a3cf7f74b3cec",
+      "target_tree": "61136583e788e995178e333c459aaba3d9a0316d",
+      "transport": "external",
+      "verifier_digest": "sha256:1ff45e7d8ba2e9ffaf27c07751e93d19ac8ca58c08119d8124fffb50b9b5ec32"
+    },
+    {
+      "adapter": "deterministic_fixture",
+      "arm": "instantiate",
+      "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+      "check_ids": [
+        "independent-structural-oracle"
+      ],
+      "id": "direct-fix-pair-4-instantiate",
+      "model": "none",
+      "order": 5,
+      "pair_id": "pair-4",
+      "product_artifact_sha256": "sha256:b76b003d52eadc2e61be9e8b53da26502897e3e7348497d7561e4ce0145fc8a7",
+      "product_source_sha": "5cb13bad9c219d23eb6a1f291a4d778cece8d862",
+      "reasoning_effort": "none",
+      "retry_limit": 0,
+      "runtime_profile": {
+        "node": "v24.21.0",
+        "platform": "linux",
+        "purpose": "offline_plan_preparation"
+      },
+      "target_commit": "a388d59b12365d5322cd62fc4e7a3cf7f74b3cec",
+      "target_tree": "61136583e788e995178e333c459aaba3d9a0316d",
+      "transport": "external",
+      "verifier_digest": "sha256:1ff45e7d8ba2e9ffaf27c07751e93d19ac8ca58c08119d8124fffb50b9b5ec32"
+    },
+    {
+      "adapter": "deterministic_fixture",
+      "arm": "no_recipe",
+      "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+      "check_ids": [
+        "independent-structural-oracle"
+      ],
+      "id": "direct-fix-pair-4-no_recipe",
+      "model": "none",
+      "order": 6,
+      "pair_id": "pair-4",
+      "product_artifact_sha256": "sha256:b76b003d52eadc2e61be9e8b53da26502897e3e7348497d7561e4ce0145fc8a7",
+      "product_source_sha": "5cb13bad9c219d23eb6a1f291a4d778cece8d862",
+      "reasoning_effort": "none",
+      "retry_limit": 0,
+      "runtime_profile": {
+        "node": "v24.21.0",
+        "platform": "linux",
+        "purpose": "offline_plan_preparation"
+      },
+      "target_commit": "a388d59b12365d5322cd62fc4e7a3cf7f74b3cec",
+      "target_tree": "61136583e788e995178e333c459aaba3d9a0316d",
+      "transport": "external",
+      "verifier_digest": "sha256:1ff45e7d8ba2e9ffaf27c07751e93d19ac8ca58c08119d8124fffb50b9b5ec32"
+    },
+    {
+      "adapter": "deterministic_fixture",
+      "arm": "instantiate",
+      "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+      "check_ids": [
+        "independent-structural-oracle"
+      ],
+      "id": "direct-fix-pair-1-instantiate",
+      "model": "none",
+      "order": 7,
+      "pair_id": "pair-1",
+      "product_artifact_sha256": "sha256:b76b003d52eadc2e61be9e8b53da26502897e3e7348497d7561e4ce0145fc8a7",
+      "product_source_sha": "5cb13bad9c219d23eb6a1f291a4d778cece8d862",
+      "reasoning_effort": "none",
+      "retry_limit": 0,
+      "runtime_profile": {
+        "node": "v24.21.0",
+        "platform": "linux",
+        "purpose": "offline_plan_preparation"
+      },
+      "target_commit": "a388d59b12365d5322cd62fc4e7a3cf7f74b3cec",
+      "target_tree": "61136583e788e995178e333c459aaba3d9a0316d",
+      "transport": "external",
+      "verifier_digest": "sha256:1ff45e7d8ba2e9ffaf27c07751e93d19ac8ca58c08119d8124fffb50b9b5ec32"
+    },
+    {
+      "adapter": "deterministic_fixture",
+      "arm": "specialize",
+      "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+      "check_ids": [
+        "independent-structural-oracle"
+      ],
+      "id": "direct-fix-pair-3-specialize",
+      "model": "none",
+      "order": 8,
+      "pair_id": "pair-3",
+      "product_artifact_sha256": "sha256:b76b003d52eadc2e61be9e8b53da26502897e3e7348497d7561e4ce0145fc8a7",
+      "product_source_sha": "5cb13bad9c219d23eb6a1f291a4d778cece8d862",
+      "reasoning_effort": "none",
+      "retry_limit": 0,
+      "runtime_profile": {
+        "node": "v24.21.0",
+        "platform": "linux",
+        "purpose": "offline_plan_preparation"
+      },
+      "target_commit": "a388d59b12365d5322cd62fc4e7a3cf7f74b3cec",
+      "target_tree": "61136583e788e995178e333c459aaba3d9a0316d",
+      "transport": "external",
+      "verifier_digest": "sha256:1ff45e7d8ba2e9ffaf27c07751e93d19ac8ca58c08119d8124fffb50b9b5ec32"
+    },
+    {
+      "adapter": "deterministic_fixture",
+      "arm": "specialize",
+      "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+      "check_ids": [
+        "independent-structural-oracle"
+      ],
+      "id": "direct-fix-pair-5-specialize",
+      "model": "none",
+      "order": 9,
+      "pair_id": "pair-5",
+      "product_artifact_sha256": "sha256:b76b003d52eadc2e61be9e8b53da26502897e3e7348497d7561e4ce0145fc8a7",
+      "product_source_sha": "5cb13bad9c219d23eb6a1f291a4d778cece8d862",
+      "reasoning_effort": "none",
+      "retry_limit": 0,
+      "runtime_profile": {
+        "node": "v24.21.0",
+        "platform": "linux",
+        "purpose": "offline_plan_preparation"
+      },
+      "target_commit": "a388d59b12365d5322cd62fc4e7a3cf7f74b3cec",
+      "target_tree": "61136583e788e995178e333c459aaba3d9a0316d",
+      "transport": "external",
+      "verifier_digest": "sha256:1ff45e7d8ba2e9ffaf27c07751e93d19ac8ca58c08119d8124fffb50b9b5ec32"
+    },
+    {
+      "adapter": "deterministic_fixture",
+      "arm": "no_recipe",
+      "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+      "check_ids": [
+        "independent-structural-oracle"
+      ],
+      "id": "direct-fix-pair-1-no_recipe",
+      "model": "none",
+      "order": 10,
+      "pair_id": "pair-1",
+      "product_artifact_sha256": "sha256:b76b003d52eadc2e61be9e8b53da26502897e3e7348497d7561e4ce0145fc8a7",
+      "product_source_sha": "5cb13bad9c219d23eb6a1f291a4d778cece8d862",
+      "reasoning_effort": "none",
+      "retry_limit": 0,
+      "runtime_profile": {
+        "node": "v24.21.0",
+        "platform": "linux",
+        "purpose": "offline_plan_preparation"
+      },
+      "target_commit": "a388d59b12365d5322cd62fc4e7a3cf7f74b3cec",
+      "target_tree": "61136583e788e995178e333c459aaba3d9a0316d",
+      "transport": "external",
+      "verifier_digest": "sha256:1ff45e7d8ba2e9ffaf27c07751e93d19ac8ca58c08119d8124fffb50b9b5ec32"
+    },
+    {
+      "adapter": "deterministic_fixture",
+      "arm": "specialize",
+      "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+      "check_ids": [
+        "independent-structural-oracle"
+      ],
+      "id": "direct-fix-pair-2-specialize",
+      "model": "none",
+      "order": 11,
+      "pair_id": "pair-2",
+      "product_artifact_sha256": "sha256:b76b003d52eadc2e61be9e8b53da26502897e3e7348497d7561e4ce0145fc8a7",
+      "product_source_sha": "5cb13bad9c219d23eb6a1f291a4d778cece8d862",
+      "reasoning_effort": "none",
+      "retry_limit": 0,
+      "runtime_profile": {
+        "node": "v24.21.0",
+        "platform": "linux",
+        "purpose": "offline_plan_preparation"
+      },
+      "target_commit": "a388d59b12365d5322cd62fc4e7a3cf7f74b3cec",
+      "target_tree": "61136583e788e995178e333c459aaba3d9a0316d",
+      "transport": "external",
+      "verifier_digest": "sha256:1ff45e7d8ba2e9ffaf27c07751e93d19ac8ca58c08119d8124fffb50b9b5ec32"
+    },
+    {
+      "adapter": "deterministic_fixture",
+      "arm": "no_recipe",
+      "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+      "check_ids": [
+        "independent-structural-oracle"
+      ],
+      "id": "direct-fix-pair-2-no_recipe",
+      "model": "none",
+      "order": 12,
+      "pair_id": "pair-2",
+      "product_artifact_sha256": "sha256:b76b003d52eadc2e61be9e8b53da26502897e3e7348497d7561e4ce0145fc8a7",
+      "product_source_sha": "5cb13bad9c219d23eb6a1f291a4d778cece8d862",
+      "reasoning_effort": "none",
+      "retry_limit": 0,
+      "runtime_profile": {
+        "node": "v24.21.0",
+        "platform": "linux",
+        "purpose": "offline_plan_preparation"
+      },
+      "target_commit": "a388d59b12365d5322cd62fc4e7a3cf7f74b3cec",
+      "target_tree": "61136583e788e995178e333c459aaba3d9a0316d",
+      "transport": "external",
+      "verifier_digest": "sha256:1ff45e7d8ba2e9ffaf27c07751e93d19ac8ca58c08119d8124fffb50b9b5ec32"
+    },
+    {
+      "adapter": "deterministic_fixture",
+      "arm": "instantiate",
+      "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+      "check_ids": [
+        "independent-structural-oracle"
+      ],
+      "id": "direct-fix-pair-3-instantiate",
+      "model": "none",
+      "order": 13,
+      "pair_id": "pair-3",
+      "product_artifact_sha256": "sha256:b76b003d52eadc2e61be9e8b53da26502897e3e7348497d7561e4ce0145fc8a7",
+      "product_source_sha": "5cb13bad9c219d23eb6a1f291a4d778cece8d862",
+      "reasoning_effort": "none",
+      "retry_limit": 0,
+      "runtime_profile": {
+        "node": "v24.21.0",
+        "platform": "linux",
+        "purpose": "offline_plan_preparation"
+      },
+      "target_commit": "a388d59b12365d5322cd62fc4e7a3cf7f74b3cec",
+      "target_tree": "61136583e788e995178e333c459aaba3d9a0316d",
+      "transport": "external",
+      "verifier_digest": "sha256:1ff45e7d8ba2e9ffaf27c07751e93d19ac8ca58c08119d8124fffb50b9b5ec32"
+    },
+    {
+      "adapter": "deterministic_fixture",
+      "arm": "specialize",
+      "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+      "check_ids": [
+        "independent-structural-oracle"
+      ],
+      "id": "direct-fix-pair-1-specialize",
+      "model": "none",
+      "order": 14,
+      "pair_id": "pair-1",
+      "product_artifact_sha256": "sha256:b76b003d52eadc2e61be9e8b53da26502897e3e7348497d7561e4ce0145fc8a7",
+      "product_source_sha": "5cb13bad9c219d23eb6a1f291a4d778cece8d862",
+      "reasoning_effort": "none",
+      "retry_limit": 0,
+      "runtime_profile": {
+        "node": "v24.21.0",
+        "platform": "linux",
+        "purpose": "offline_plan_preparation"
+      },
+      "target_commit": "a388d59b12365d5322cd62fc4e7a3cf7f74b3cec",
+      "target_tree": "61136583e788e995178e333c459aaba3d9a0316d",
+      "transport": "external",
+      "verifier_digest": "sha256:1ff45e7d8ba2e9ffaf27c07751e93d19ac8ca58c08119d8124fffb50b9b5ec32"
+    },
+    {
+      "adapter": "deterministic_fixture",
+      "arm": "no_recipe",
+      "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+      "check_ids": [
+        "independent-structural-oracle"
+      ],
+      "id": "direct-fix-pair-5-no_recipe",
+      "model": "none",
+      "order": 15,
+      "pair_id": "pair-5",
+      "product_artifact_sha256": "sha256:b76b003d52eadc2e61be9e8b53da26502897e3e7348497d7561e4ce0145fc8a7",
+      "product_source_sha": "5cb13bad9c219d23eb6a1f291a4d778cece8d862",
+      "reasoning_effort": "none",
+      "retry_limit": 0,
+      "runtime_profile": {
+        "node": "v24.21.0",
+        "platform": "linux",
+        "purpose": "offline_plan_preparation"
+      },
+      "target_commit": "a388d59b12365d5322cd62fc4e7a3cf7f74b3cec",
+      "target_tree": "61136583e788e995178e333c459aaba3d9a0316d",
+      "transport": "external",
+      "verifier_digest": "sha256:1ff45e7d8ba2e9ffaf27c07751e93d19ac8ca58c08119d8124fffb50b9b5ec32"
+    }
+  ],
+  "schema_version": 2,
+  "target": {
+    "commit": "a388d59b12365d5322cd62fc4e7a3cf7f74b3cec",
+    "repository_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario/artifacts/bench/m05-0.7.13/offline-qualified/direct-fix/target.bundle",
+    "repository_sha256": "sha256:af5204f86ae462f8586794827c1757d3f257b87e78bd6e161dca275b2f4fe69b",
+    "tree": "61136583e788e995178e333c459aaba3d9a0316d"
+  },
+  "task": {
+    "argv": [
+      "fixture.json"
+    ],
+    "objective": "Fix the off-by-one result in the bounded fixture",
+    "objective_digest": "sha256:a155f029f5deea371cefd260d204cfb0f8c48791ce8020866fa7f3ae6864e890"
+  },
+  "verifier": {
+    "artifact_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario/artifacts/bench/m05-0.7.13/offline-qualified/oracle.mjs",
+    "artifact_sha256": "sha256:1ff45e7d8ba2e9ffaf27c07751e93d19ac8ca58c08119d8124fffb50b9b5ec32",
+    "entrypoint": [
+      "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario/artifacts/bench/m05-0.7.13/offline-qualified/oracle.mjs"
+    ],
+    "id": "independent-m05-structural-oracle"
+  }
+}

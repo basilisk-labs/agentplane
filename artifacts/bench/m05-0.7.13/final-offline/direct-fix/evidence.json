@@ -1,0 +1,1282 @@
+{
+  "attempts": [
+    {
+      "agent": {
+        "observed_identity": {
+          "adapter": "deterministic_fixture",
+          "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+          "check_ids": [
+            "independent-structural-oracle"
+          ],
+          "model": "none",
+          "reasoning_effort": "none",
+          "retry_limit": 0,
+          "runtime_profile": {
+            "node": "v24.21.0",
+            "platform": "linux",
+            "purpose": "offline_plan_preparation"
+          }
+        },
+        "result_digest": "sha256:b83ddc7f40f6d3e48419ea316c5396122e27984d1ffe6a7e864a1eba9bbdac86",
+        "stages": [
+          {
+            "duration_ms": 0.2913389999999936,
+            "id": "fixture_input"
+          },
+          {
+            "duration_ms": 4.675391000000019,
+            "id": "selection_and_fixture_planning"
+          },
+          {
+            "duration_ms": 7.033908999999994,
+            "id": "normalization_and_fixture_output"
+          }
+        ],
+        "status": "completed",
+        "violations": []
+      },
+      "arm": "instantiate",
+      "host_diagnostics": {
+        "duration_ms": 398.75681599999996,
+        "kind": "offline_fixture_only"
+      },
+      "id": "direct-fix-pair-5-instantiate",
+      "identity": {
+        "adapter": "deterministic_fixture",
+        "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+        "check_ids": [
+          "independent-structural-oracle"
+        ],
+        "model": "none",
+        "product_artifact_sha256": "sha256:d503a55c7760a2105d4f506283a8e522db147f4868d43d08d77e830c89275d7e",
+        "product_source_sha": "5cb13bad9c219d23eb6a1f291a4d778cece8d862",
+        "reasoning_effort": "none",
+        "retry_limit": 0,
+        "runtime_profile": {
+          "node": "v24.21.0",
+          "platform": "linux",
+          "purpose": "offline_plan_preparation"
+        },
+        "target_commit": "a388d59b12365d5322cd62fc4e7a3cf7f74b3cec",
+        "target_tree": "61136583e788e995178e333c459aaba3d9a0316d",
+        "verifier_digest": "sha256:bfb0d460146f82da6c953d460fd2a663389d80f608f5f1ef1c106fd0c1d278f1"
+      },
+      "oracle": {
+        "duration_ms": 5.423953999999998,
+        "outcome_digest": "sha256:7e110a4c21720f7830c63ff17bc407a74d6f7e598301760e352e7a72dd3295ef",
+        "verified": true,
+        "verifier_digest": "sha256:bfb0d460146f82da6c953d460fd2a663389d80f608f5f1ef1c106fd0c1d278f1"
+      },
+      "order": 1,
+      "pair_id": "pair-5",
+      "token_usage": {
+        "cached_input_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reason": "Deterministic offline Plan preparation; no provider usage was observed.",
+        "reasoning_tokens": null,
+        "state": "unavailable",
+        "total_tokens": null
+      },
+      "transport": "external"
+    },
+    {
+      "agent": {
+        "observed_identity": {
+          "adapter": "deterministic_fixture",
+          "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+          "check_ids": [
+            "independent-structural-oracle"
+          ],
+          "model": "none",
+          "reasoning_effort": "none",
+          "retry_limit": 0,
+          "runtime_profile": {
+            "node": "v24.21.0",
+            "platform": "linux",
+            "purpose": "offline_plan_preparation"
+          }
+        },
+        "result_digest": "sha256:b83ddc7f40f6d3e48419ea316c5396122e27984d1ffe6a7e864a1eba9bbdac86",
+        "stages": [
+          {
+            "duration_ms": 0.3483139999999878,
+            "id": "fixture_input"
+          },
+          {
+            "duration_ms": 0.012122000000005073,
+            "id": "selection_and_fixture_planning"
+          },
+          {
+            "duration_ms": 11.038881000000003,
+            "id": "normalization_and_fixture_output"
+          }
+        ],
+        "status": "completed",
+        "violations": []
+      },
+      "arm": "no_recipe",
+      "host_diagnostics": {
+        "duration_ms": 366.3559479999999,
+        "kind": "offline_fixture_only"
+      },
+      "id": "direct-fix-pair-3-no_recipe",
+      "identity": {
+        "adapter": "deterministic_fixture",
+        "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+        "check_ids": [
+          "independent-structural-oracle"
+        ],
+        "model": "none",
+        "product_artifact_sha256": "sha256:d503a55c7760a2105d4f506283a8e522db147f4868d43d08d77e830c89275d7e",
+        "product_source_sha": "5cb13bad9c219d23eb6a1f291a4d778cece8d862",
+        "reasoning_effort": "none",
+        "retry_limit": 0,
+        "runtime_profile": {
+          "node": "v24.21.0",
+          "platform": "linux",
+          "purpose": "offline_plan_preparation"
+        },
+        "target_commit": "a388d59b12365d5322cd62fc4e7a3cf7f74b3cec",
+        "target_tree": "61136583e788e995178e333c459aaba3d9a0316d",
+        "verifier_digest": "sha256:bfb0d460146f82da6c953d460fd2a663389d80f608f5f1ef1c106fd0c1d278f1"
+      },
+      "oracle": {
+        "duration_ms": 5.591419999999999,
+        "outcome_digest": "sha256:7e110a4c21720f7830c63ff17bc407a74d6f7e598301760e352e7a72dd3295ef",
+        "verified": true,
+        "verifier_digest": "sha256:bfb0d460146f82da6c953d460fd2a663389d80f608f5f1ef1c106fd0c1d278f1"
+      },
+      "order": 2,
+      "pair_id": "pair-3",
+      "token_usage": {
+        "cached_input_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reason": "Deterministic offline Plan preparation; no provider usage was observed.",
+        "reasoning_tokens": null,
+        "state": "unavailable",
+        "total_tokens": null
+      },
+      "transport": "external"
+    },
+    {
+      "agent": {
+        "observed_identity": {
+          "adapter": "deterministic_fixture",
+          "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+          "check_ids": [
+            "independent-structural-oracle"
+          ],
+          "model": "none",
+          "reasoning_effort": "none",
+          "retry_limit": 0,
+          "runtime_profile": {
+            "node": "v24.21.0",
+            "platform": "linux",
+            "purpose": "offline_plan_preparation"
+          }
+        },
+        "result_digest": "sha256:b83ddc7f40f6d3e48419ea316c5396122e27984d1ffe6a7e864a1eba9bbdac86",
+        "stages": [
+          {
+            "duration_ms": 0.3200039999999831,
+            "id": "fixture_input"
+          },
+          {
+            "duration_ms": 11.889949999999999,
+            "id": "selection_and_fixture_planning"
+          },
+          {
+            "duration_ms": 9.609800000000007,
+            "id": "normalization_and_fixture_output"
+          }
+        ],
+        "status": "completed",
+        "violations": []
+      },
+      "arm": "instantiate",
+      "host_diagnostics": {
+        "duration_ms": 524.8041340000001,
+        "kind": "offline_fixture_only"
+      },
+      "id": "direct-fix-pair-2-instantiate",
+      "identity": {
+        "adapter": "deterministic_fixture",
+        "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+        "check_ids": [
+          "independent-structural-oracle"
+        ],
+        "model": "none",
+        "product_artifact_sha256": "sha256:d503a55c7760a2105d4f506283a8e522db147f4868d43d08d77e830c89275d7e",
+        "product_source_sha": "5cb13bad9c219d23eb6a1f291a4d778cece8d862",
+        "reasoning_effort": "none",
+        "retry_limit": 0,
+        "runtime_profile": {
+          "node": "v24.21.0",
+          "platform": "linux",
+          "purpose": "offline_plan_preparation"
+        },
+        "target_commit": "a388d59b12365d5322cd62fc4e7a3cf7f74b3cec",
+        "target_tree": "61136583e788e995178e333c459aaba3d9a0316d",
+        "verifier_digest": "sha256:bfb0d460146f82da6c953d460fd2a663389d80f608f5f1ef1c106fd0c1d278f1"
+      },
+      "oracle": {
+        "duration_ms": 12.488633999999998,
+        "outcome_digest": "sha256:7e110a4c21720f7830c63ff17bc407a74d6f7e598301760e352e7a72dd3295ef",
+        "verified": true,
+        "verifier_digest": "sha256:bfb0d460146f82da6c953d460fd2a663389d80f608f5f1ef1c106fd0c1d278f1"
+      },
+      "order": 3,
+      "pair_id": "pair-2",
+      "token_usage": {
+        "cached_input_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reason": "Deterministic offline Plan preparation; no provider usage was observed.",
+        "reasoning_tokens": null,
+        "state": "unavailable",
+        "total_tokens": null
+      },
+      "transport": "external"
+    },
+    {
+      "agent": {
+        "observed_identity": {
+          "adapter": "deterministic_fixture",
+          "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+          "check_ids": [
+            "independent-structural-oracle"
+          ],
+          "model": "none",
+          "reasoning_effort": "none",
+          "retry_limit": 0,
+          "runtime_profile": {
+            "node": "v24.21.0",
+            "platform": "linux",
+            "purpose": "offline_plan_preparation"
+          }
+        },
+        "result_digest": "sha256:b83ddc7f40f6d3e48419ea316c5396122e27984d1ffe6a7e864a1eba9bbdac86",
+        "stages": [
+          {
+            "duration_ms": 0.29731499999999755,
+            "id": "fixture_input"
+          },
+          {
+            "duration_ms": 8.315936000000022,
+            "id": "selection_and_fixture_planning"
+          },
+          {
+            "duration_ms": 9.469288000000006,
+            "id": "normalization_and_fixture_output"
+          }
+        ],
+        "status": "completed",
+        "violations": []
+      },
+      "arm": "specialize",
+      "host_diagnostics": {
+        "duration_ms": 503.8396480000001,
+        "kind": "offline_fixture_only"
+      },
+      "id": "direct-fix-pair-4-specialize",
+      "identity": {
+        "adapter": "deterministic_fixture",
+        "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+        "check_ids": [
+          "independent-structural-oracle"
+        ],
+        "model": "none",
+        "product_artifact_sha256": "sha256:d503a55c7760a2105d4f506283a8e522db147f4868d43d08d77e830c89275d7e",
+        "product_source_sha": "5cb13bad9c219d23eb6a1f291a4d778cece8d862",
+        "reasoning_effort": "none",
+        "retry_limit": 0,
+        "runtime_profile": {
+          "node": "v24.21.0",
+          "platform": "linux",
+          "purpose": "offline_plan_preparation"
+        },
+        "target_commit": "a388d59b12365d5322cd62fc4e7a3cf7f74b3cec",
+        "target_tree": "61136583e788e995178e333c459aaba3d9a0316d",
+        "verifier_digest": "sha256:bfb0d460146f82da6c953d460fd2a663389d80f608f5f1ef1c106fd0c1d278f1"
+      },
+      "oracle": {
+        "duration_ms": 6.538536999999998,
+        "outcome_digest": "sha256:7e110a4c21720f7830c63ff17bc407a74d6f7e598301760e352e7a72dd3295ef",
+        "verified": true,
+        "verifier_digest": "sha256:bfb0d460146f82da6c953d460fd2a663389d80f608f5f1ef1c106fd0c1d278f1"
+      },
+      "order": 4,
+      "pair_id": "pair-4",
+      "token_usage": {
+        "cached_input_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reason": "Deterministic offline Plan preparation; no provider usage was observed.",
+        "reasoning_tokens": null,
+        "state": "unavailable",
+        "total_tokens": null
+      },
+      "transport": "external"
+    },
+    {
+      "agent": {
+        "observed_identity": {
+          "adapter": "deterministic_fixture",
+          "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+          "check_ids": [
+            "independent-structural-oracle"
+          ],
+          "model": "none",
+          "reasoning_effort": "none",
+          "retry_limit": 0,
+          "runtime_profile": {
+            "node": "v24.21.0",
+            "platform": "linux",
+            "purpose": "offline_plan_preparation"
+          }
+        },
+        "result_digest": "sha256:b83ddc7f40f6d3e48419ea316c5396122e27984d1ffe6a7e864a1eba9bbdac86",
+        "stages": [
+          {
+            "duration_ms": 0.4354319999999916,
+            "id": "fixture_input"
+          },
+          {
+            "duration_ms": 5.516992000000016,
+            "id": "selection_and_fixture_planning"
+          },
+          {
+            "duration_ms": 8.33491699999999,
+            "id": "normalization_and_fixture_output"
+          }
+        ],
+        "status": "completed",
+        "violations": []
+      },
+      "arm": "instantiate",
+      "host_diagnostics": {
+        "duration_ms": 414.31459500000005,
+        "kind": "offline_fixture_only"
+      },
+      "id": "direct-fix-pair-4-instantiate",
+      "identity": {
+        "adapter": "deterministic_fixture",
+        "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+        "check_ids": [
+          "independent-structural-oracle"
+        ],
+        "model": "none",
+        "product_artifact_sha256": "sha256:d503a55c7760a2105d4f506283a8e522db147f4868d43d08d77e830c89275d7e",
+        "product_source_sha": "5cb13bad9c219d23eb6a1f291a4d778cece8d862",
+        "reasoning_effort": "none",
+        "retry_limit": 0,
+        "runtime_profile": {
+          "node": "v24.21.0",
+          "platform": "linux",
+          "purpose": "offline_plan_preparation"
+        },
+        "target_commit": "a388d59b12365d5322cd62fc4e7a3cf7f74b3cec",
+        "target_tree": "61136583e788e995178e333c459aaba3d9a0316d",
+        "verifier_digest": "sha256:bfb0d460146f82da6c953d460fd2a663389d80f608f5f1ef1c106fd0c1d278f1"
+      },
+      "oracle": {
+        "duration_ms": 6.101443000000003,
+        "outcome_digest": "sha256:7e110a4c21720f7830c63ff17bc407a74d6f7e598301760e352e7a72dd3295ef",
+        "verified": true,
+        "verifier_digest": "sha256:bfb0d460146f82da6c953d460fd2a663389d80f608f5f1ef1c106fd0c1d278f1"
+      },
+      "order": 5,
+      "pair_id": "pair-4",
+      "token_usage": {
+        "cached_input_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reason": "Deterministic offline Plan preparation; no provider usage was observed.",
+        "reasoning_tokens": null,
+        "state": "unavailable",
+        "total_tokens": null
+      },
+      "transport": "external"
+    },
+    {
+      "agent": {
+        "observed_identity": {
+          "adapter": "deterministic_fixture",
+          "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+          "check_ids": [
+            "independent-structural-oracle"
+          ],
+          "model": "none",
+          "reasoning_effort": "none",
+          "retry_limit": 0,
+          "runtime_profile": {
+            "node": "v24.21.0",
+            "platform": "linux",
+            "purpose": "offline_plan_preparation"
+          }
+        },
+        "result_digest": "sha256:b83ddc7f40f6d3e48419ea316c5396122e27984d1ffe6a7e864a1eba9bbdac86",
+        "stages": [
+          {
+            "duration_ms": 0.3344889999999907,
+            "id": "fixture_input"
+          },
+          {
+            "duration_ms": 0.012031000000007452,
+            "id": "selection_and_fixture_planning"
+          },
+          {
+            "duration_ms": 11.017533999999984,
+            "id": "normalization_and_fixture_output"
+          }
+        ],
+        "status": "completed",
+        "violations": []
+      },
+      "arm": "no_recipe",
+      "host_diagnostics": {
+        "duration_ms": 374.83687899999995,
+        "kind": "offline_fixture_only"
+      },
+      "id": "direct-fix-pair-4-no_recipe",
+      "identity": {
+        "adapter": "deterministic_fixture",
+        "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+        "check_ids": [
+          "independent-structural-oracle"
+        ],
+        "model": "none",
+        "product_artifact_sha256": "sha256:d503a55c7760a2105d4f506283a8e522db147f4868d43d08d77e830c89275d7e",
+        "product_source_sha": "5cb13bad9c219d23eb6a1f291a4d778cece8d862",
+        "reasoning_effort": "none",
+        "retry_limit": 0,
+        "runtime_profile": {
+          "node": "v24.21.0",
+          "platform": "linux",
+          "purpose": "offline_plan_preparation"
+        },
+        "target_commit": "a388d59b12365d5322cd62fc4e7a3cf7f74b3cec",
+        "target_tree": "61136583e788e995178e333c459aaba3d9a0316d",
+        "verifier_digest": "sha256:bfb0d460146f82da6c953d460fd2a663389d80f608f5f1ef1c106fd0c1d278f1"
+      },
+      "oracle": {
+        "duration_ms": 6.615538000000001,
+        "outcome_digest": "sha256:7e110a4c21720f7830c63ff17bc407a74d6f7e598301760e352e7a72dd3295ef",
+        "verified": true,
+        "verifier_digest": "sha256:bfb0d460146f82da6c953d460fd2a663389d80f608f5f1ef1c106fd0c1d278f1"
+      },
+      "order": 6,
+      "pair_id": "pair-4",
+      "token_usage": {
+        "cached_input_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reason": "Deterministic offline Plan preparation; no provider usage was observed.",
+        "reasoning_tokens": null,
+        "state": "unavailable",
+        "total_tokens": null
+      },
+      "transport": "external"
+    },
+    {
+      "agent": {
+        "observed_identity": {
+          "adapter": "deterministic_fixture",
+          "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+          "check_ids": [
+            "independent-structural-oracle"
+          ],
+          "model": "none",
+          "reasoning_effort": "none",
+          "retry_limit": 0,
+          "runtime_profile": {
+            "node": "v24.21.0",
+            "platform": "linux",
+            "purpose": "offline_plan_preparation"
+          }
+        },
+        "result_digest": "sha256:b83ddc7f40f6d3e48419ea316c5396122e27984d1ffe6a7e864a1eba9bbdac86",
+        "stages": [
+          {
+            "duration_ms": 0.36517800000001444,
+            "id": "fixture_input"
+          },
+          {
+            "duration_ms": 6.573307,
+            "id": "selection_and_fixture_planning"
+          },
+          {
+            "duration_ms": 7.736798999999991,
+            "id": "normalization_and_fixture_output"
+          }
+        ],
+        "status": "completed",
+        "violations": []
+      },
+      "arm": "instantiate",
+      "host_diagnostics": {
+        "duration_ms": 434.73197500000015,
+        "kind": "offline_fixture_only"
+      },
+      "id": "direct-fix-pair-1-instantiate",
+      "identity": {
+        "adapter": "deterministic_fixture",
+        "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+        "check_ids": [
+          "independent-structural-oracle"
+        ],
+        "model": "none",
+        "product_artifact_sha256": "sha256:d503a55c7760a2105d4f506283a8e522db147f4868d43d08d77e830c89275d7e",
+        "product_source_sha": "5cb13bad9c219d23eb6a1f291a4d778cece8d862",
+        "reasoning_effort": "none",
+        "retry_limit": 0,
+        "runtime_profile": {
+          "node": "v24.21.0",
+          "platform": "linux",
+          "purpose": "offline_plan_preparation"
+        },
+        "target_commit": "a388d59b12365d5322cd62fc4e7a3cf7f74b3cec",
+        "target_tree": "61136583e788e995178e333c459aaba3d9a0316d",
+        "verifier_digest": "sha256:bfb0d460146f82da6c953d460fd2a663389d80f608f5f1ef1c106fd0c1d278f1"
+      },
+      "oracle": {
+        "duration_ms": 6.124499,
+        "outcome_digest": "sha256:7e110a4c21720f7830c63ff17bc407a74d6f7e598301760e352e7a72dd3295ef",
+        "verified": true,
+        "verifier_digest": "sha256:bfb0d460146f82da6c953d460fd2a663389d80f608f5f1ef1c106fd0c1d278f1"
+      },
+      "order": 7,
+      "pair_id": "pair-1",
+      "token_usage": {
+        "cached_input_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reason": "Deterministic offline Plan preparation; no provider usage was observed.",
+        "reasoning_tokens": null,
+        "state": "unavailable",
+        "total_tokens": null
+      },
+      "transport": "external"
+    },
+    {
+      "agent": {
+        "observed_identity": {
+          "adapter": "deterministic_fixture",
+          "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+          "check_ids": [
+            "independent-structural-oracle"
+          ],
+          "model": "none",
+          "reasoning_effort": "none",
+          "retry_limit": 0,
+          "runtime_profile": {
+            "node": "v24.21.0",
+            "platform": "linux",
+            "purpose": "offline_plan_preparation"
+          }
+        },
+        "result_digest": "sha256:b83ddc7f40f6d3e48419ea316c5396122e27984d1ffe6a7e864a1eba9bbdac86",
+        "stages": [
+          {
+            "duration_ms": 0.3193339999999978,
+            "id": "fixture_input"
+          },
+          {
+            "duration_ms": 6.1590089999999975,
+            "id": "selection_and_fixture_planning"
+          },
+          {
+            "duration_ms": 7.832875999999999,
+            "id": "normalization_and_fixture_output"
+          }
+        ],
+        "status": "completed",
+        "violations": []
+      },
+      "arm": "specialize",
+      "host_diagnostics": {
+        "duration_ms": 417.7708670000002,
+        "kind": "offline_fixture_only"
+      },
+      "id": "direct-fix-pair-3-specialize",
+      "identity": {
+        "adapter": "deterministic_fixture",
+        "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+        "check_ids": [
+          "independent-structural-oracle"
+        ],
+        "model": "none",
+        "product_artifact_sha256": "sha256:d503a55c7760a2105d4f506283a8e522db147f4868d43d08d77e830c89275d7e",
+        "product_source_sha": "5cb13bad9c219d23eb6a1f291a4d778cece8d862",
+        "reasoning_effort": "none",
+        "retry_limit": 0,
+        "runtime_profile": {
+          "node": "v24.21.0",
+          "platform": "linux",
+          "purpose": "offline_plan_preparation"
+        },
+        "target_commit": "a388d59b12365d5322cd62fc4e7a3cf7f74b3cec",
+        "target_tree": "61136583e788e995178e333c459aaba3d9a0316d",
+        "verifier_digest": "sha256:bfb0d460146f82da6c953d460fd2a663389d80f608f5f1ef1c106fd0c1d278f1"
+      },
+      "oracle": {
+        "duration_ms": 5.709645000000002,
+        "outcome_digest": "sha256:7e110a4c21720f7830c63ff17bc407a74d6f7e598301760e352e7a72dd3295ef",
+        "verified": true,
+        "verifier_digest": "sha256:bfb0d460146f82da6c953d460fd2a663389d80f608f5f1ef1c106fd0c1d278f1"
+      },
+      "order": 8,
+      "pair_id": "pair-3",
+      "token_usage": {
+        "cached_input_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reason": "Deterministic offline Plan preparation; no provider usage was observed.",
+        "reasoning_tokens": null,
+        "state": "unavailable",
+        "total_tokens": null
+      },
+      "transport": "external"
+    },
+    {
+      "agent": {
+        "observed_identity": {
+          "adapter": "deterministic_fixture",
+          "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+          "check_ids": [
+            "independent-structural-oracle"
+          ],
+          "model": "none",
+          "reasoning_effort": "none",
+          "retry_limit": 0,
+          "runtime_profile": {
+            "node": "v24.21.0",
+            "platform": "linux",
+            "purpose": "offline_plan_preparation"
+          }
+        },
+        "result_digest": "sha256:b83ddc7f40f6d3e48419ea316c5396122e27984d1ffe6a7e864a1eba9bbdac86",
+        "stages": [
+          {
+            "duration_ms": 0.29271499999998696,
+            "id": "fixture_input"
+          },
+          {
+            "duration_ms": 5.102348000000006,
+            "id": "selection_and_fixture_planning"
+          },
+          {
+            "duration_ms": 7.174216999999999,
+            "id": "normalization_and_fixture_output"
+          }
+        ],
+        "status": "completed",
+        "violations": []
+      },
+      "arm": "specialize",
+      "host_diagnostics": {
+        "duration_ms": 355.3911619999999,
+        "kind": "offline_fixture_only"
+      },
+      "id": "direct-fix-pair-5-specialize",
+      "identity": {
+        "adapter": "deterministic_fixture",
+        "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+        "check_ids": [
+          "independent-structural-oracle"
+        ],
+        "model": "none",
+        "product_artifact_sha256": "sha256:d503a55c7760a2105d4f506283a8e522db147f4868d43d08d77e830c89275d7e",
+        "product_source_sha": "5cb13bad9c219d23eb6a1f291a4d778cece8d862",
+        "reasoning_effort": "none",
+        "retry_limit": 0,
+        "runtime_profile": {
+          "node": "v24.21.0",
+          "platform": "linux",
+          "purpose": "offline_plan_preparation"
+        },
+        "target_commit": "a388d59b12365d5322cd62fc4e7a3cf7f74b3cec",
+        "target_tree": "61136583e788e995178e333c459aaba3d9a0316d",
+        "verifier_digest": "sha256:bfb0d460146f82da6c953d460fd2a663389d80f608f5f1ef1c106fd0c1d278f1"
+      },
+      "oracle": {
+        "duration_ms": 5.287060999999998,
+        "outcome_digest": "sha256:7e110a4c21720f7830c63ff17bc407a74d6f7e598301760e352e7a72dd3295ef",
+        "verified": true,
+        "verifier_digest": "sha256:bfb0d460146f82da6c953d460fd2a663389d80f608f5f1ef1c106fd0c1d278f1"
+      },
+      "order": 9,
+      "pair_id": "pair-5",
+      "token_usage": {
+        "cached_input_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reason": "Deterministic offline Plan preparation; no provider usage was observed.",
+        "reasoning_tokens": null,
+        "state": "unavailable",
+        "total_tokens": null
+      },
+      "transport": "external"
+    },
+    {
+      "agent": {
+        "observed_identity": {
+          "adapter": "deterministic_fixture",
+          "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+          "check_ids": [
+            "independent-structural-oracle"
+          ],
+          "model": "none",
+          "reasoning_effort": "none",
+          "retry_limit": 0,
+          "runtime_profile": {
+            "node": "v24.21.0",
+            "platform": "linux",
+            "purpose": "offline_plan_preparation"
+          }
+        },
+        "result_digest": "sha256:b83ddc7f40f6d3e48419ea316c5396122e27984d1ffe6a7e864a1eba9bbdac86",
+        "stages": [
+          {
+            "duration_ms": 0.32801000000000613,
+            "id": "fixture_input"
+          },
+          {
+            "duration_ms": 0.012741000000005442,
+            "id": "selection_and_fixture_planning"
+          },
+          {
+            "duration_ms": 10.517190999999997,
+            "id": "normalization_and_fixture_output"
+          }
+        ],
+        "status": "completed",
+        "violations": []
+      },
+      "arm": "no_recipe",
+      "host_diagnostics": {
+        "duration_ms": 360.780033,
+        "kind": "offline_fixture_only"
+      },
+      "id": "direct-fix-pair-1-no_recipe",
+      "identity": {
+        "adapter": "deterministic_fixture",
+        "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+        "check_ids": [
+          "independent-structural-oracle"
+        ],
+        "model": "none",
+        "product_artifact_sha256": "sha256:d503a55c7760a2105d4f506283a8e522db147f4868d43d08d77e830c89275d7e",
+        "product_source_sha": "5cb13bad9c219d23eb6a1f291a4d778cece8d862",
+        "reasoning_effort": "none",
+        "retry_limit": 0,
+        "runtime_profile": {
+          "node": "v24.21.0",
+          "platform": "linux",
+          "purpose": "offline_plan_preparation"
+        },
+        "target_commit": "a388d59b12365d5322cd62fc4e7a3cf7f74b3cec",
+        "target_tree": "61136583e788e995178e333c459aaba3d9a0316d",
+        "verifier_digest": "sha256:bfb0d460146f82da6c953d460fd2a663389d80f608f5f1ef1c106fd0c1d278f1"
+      },
+      "oracle": {
+        "duration_ms": 5.391129999999997,
+        "outcome_digest": "sha256:7e110a4c21720f7830c63ff17bc407a74d6f7e598301760e352e7a72dd3295ef",
+        "verified": true,
+        "verifier_digest": "sha256:bfb0d460146f82da6c953d460fd2a663389d80f608f5f1ef1c106fd0c1d278f1"
+      },
+      "order": 10,
+      "pair_id": "pair-1",
+      "token_usage": {
+        "cached_input_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reason": "Deterministic offline Plan preparation; no provider usage was observed.",
+        "reasoning_tokens": null,
+        "state": "unavailable",
+        "total_tokens": null
+      },
+      "transport": "external"
+    },
+    {
+      "agent": {
+        "observed_identity": {
+          "adapter": "deterministic_fixture",
+          "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+          "check_ids": [
+            "independent-structural-oracle"
+          ],
+          "model": "none",
+          "reasoning_effort": "none",
+          "retry_limit": 0,
+          "runtime_profile": {
+            "node": "v24.21.0",
+            "platform": "linux",
+            "purpose": "offline_plan_preparation"
+          }
+        },
+        "result_digest": "sha256:b83ddc7f40f6d3e48419ea316c5396122e27984d1ffe6a7e864a1eba9bbdac86",
+        "stages": [
+          {
+            "duration_ms": 0.3223600000000033,
+            "id": "fixture_input"
+          },
+          {
+            "duration_ms": 4.704194000000001,
+            "id": "selection_and_fixture_planning"
+          },
+          {
+            "duration_ms": 6.946876000000003,
+            "id": "normalization_and_fixture_output"
+          }
+        ],
+        "status": "completed",
+        "violations": []
+      },
+      "arm": "specialize",
+      "host_diagnostics": {
+        "duration_ms": 360.5596399999995,
+        "kind": "offline_fixture_only"
+      },
+      "id": "direct-fix-pair-2-specialize",
+      "identity": {
+        "adapter": "deterministic_fixture",
+        "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+        "check_ids": [
+          "independent-structural-oracle"
+        ],
+        "model": "none",
+        "product_artifact_sha256": "sha256:d503a55c7760a2105d4f506283a8e522db147f4868d43d08d77e830c89275d7e",
+        "product_source_sha": "5cb13bad9c219d23eb6a1f291a4d778cece8d862",
+        "reasoning_effort": "none",
+        "retry_limit": 0,
+        "runtime_profile": {
+          "node": "v24.21.0",
+          "platform": "linux",
+          "purpose": "offline_plan_preparation"
+        },
+        "target_commit": "a388d59b12365d5322cd62fc4e7a3cf7f74b3cec",
+        "target_tree": "61136583e788e995178e333c459aaba3d9a0316d",
+        "verifier_digest": "sha256:bfb0d460146f82da6c953d460fd2a663389d80f608f5f1ef1c106fd0c1d278f1"
+      },
+      "oracle": {
+        "duration_ms": 5.444275000000001,
+        "outcome_digest": "sha256:7e110a4c21720f7830c63ff17bc407a74d6f7e598301760e352e7a72dd3295ef",
+        "verified": true,
+        "verifier_digest": "sha256:bfb0d460146f82da6c953d460fd2a663389d80f608f5f1ef1c106fd0c1d278f1"
+      },
+      "order": 11,
+      "pair_id": "pair-2",
+      "token_usage": {
+        "cached_input_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reason": "Deterministic offline Plan preparation; no provider usage was observed.",
+        "reasoning_tokens": null,
+        "state": "unavailable",
+        "total_tokens": null
+      },
+      "transport": "external"
+    },
+    {
+      "agent": {
+        "observed_identity": {
+          "adapter": "deterministic_fixture",
+          "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+          "check_ids": [
+            "independent-structural-oracle"
+          ],
+          "model": "none",
+          "reasoning_effort": "none",
+          "retry_limit": 0,
+          "runtime_profile": {
+            "node": "v24.21.0",
+            "platform": "linux",
+            "purpose": "offline_plan_preparation"
+          }
+        },
+        "result_digest": "sha256:b83ddc7f40f6d3e48419ea316c5396122e27984d1ffe6a7e864a1eba9bbdac86",
+        "stages": [
+          {
+            "duration_ms": 0.34523699999999735,
+            "id": "fixture_input"
+          },
+          {
+            "duration_ms": 0.012284999999991442,
+            "id": "selection_and_fixture_planning"
+          },
+          {
+            "duration_ms": 10.906857000000002,
+            "id": "normalization_and_fixture_output"
+          }
+        ],
+        "status": "completed",
+        "violations": []
+      },
+      "arm": "no_recipe",
+      "host_diagnostics": {
+        "duration_ms": 349.972221,
+        "kind": "offline_fixture_only"
+      },
+      "id": "direct-fix-pair-2-no_recipe",
+      "identity": {
+        "adapter": "deterministic_fixture",
+        "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+        "check_ids": [
+          "independent-structural-oracle"
+        ],
+        "model": "none",
+        "product_artifact_sha256": "sha256:d503a55c7760a2105d4f506283a8e522db147f4868d43d08d77e830c89275d7e",
+        "product_source_sha": "5cb13bad9c219d23eb6a1f291a4d778cece8d862",
+        "reasoning_effort": "none",
+        "retry_limit": 0,
+        "runtime_profile": {
+          "node": "v24.21.0",
+          "platform": "linux",
+          "purpose": "offline_plan_preparation"
+        },
+        "target_commit": "a388d59b12365d5322cd62fc4e7a3cf7f74b3cec",
+        "target_tree": "61136583e788e995178e333c459aaba3d9a0316d",
+        "verifier_digest": "sha256:bfb0d460146f82da6c953d460fd2a663389d80f608f5f1ef1c106fd0c1d278f1"
+      },
+      "oracle": {
+        "duration_ms": 5.482681999999997,
+        "outcome_digest": "sha256:7e110a4c21720f7830c63ff17bc407a74d6f7e598301760e352e7a72dd3295ef",
+        "verified": true,
+        "verifier_digest": "sha256:bfb0d460146f82da6c953d460fd2a663389d80f608f5f1ef1c106fd0c1d278f1"
+      },
+      "order": 12,
+      "pair_id": "pair-2",
+      "token_usage": {
+        "cached_input_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reason": "Deterministic offline Plan preparation; no provider usage was observed.",
+        "reasoning_tokens": null,
+        "state": "unavailable",
+        "total_tokens": null
+      },
+      "transport": "external"
+    },
+    {
+      "agent": {
+        "observed_identity": {
+          "adapter": "deterministic_fixture",
+          "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+          "check_ids": [
+            "independent-structural-oracle"
+          ],
+          "model": "none",
+          "reasoning_effort": "none",
+          "retry_limit": 0,
+          "runtime_profile": {
+            "node": "v24.21.0",
+            "platform": "linux",
+            "purpose": "offline_plan_preparation"
+          }
+        },
+        "result_digest": "sha256:b83ddc7f40f6d3e48419ea316c5396122e27984d1ffe6a7e864a1eba9bbdac86",
+        "stages": [
+          {
+            "duration_ms": 0.306003000000004,
+            "id": "fixture_input"
+          },
+          {
+            "duration_ms": 5.03038699999999,
+            "id": "selection_and_fixture_planning"
+          },
+          {
+            "duration_ms": 7.417196999999987,
+            "id": "normalization_and_fixture_output"
+          }
+        ],
+        "status": "completed",
+        "violations": []
+      },
+      "arm": "instantiate",
+      "host_diagnostics": {
+        "duration_ms": 446.36649000000034,
+        "kind": "offline_fixture_only"
+      },
+      "id": "direct-fix-pair-3-instantiate",
+      "identity": {
+        "adapter": "deterministic_fixture",
+        "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+        "check_ids": [
+          "independent-structural-oracle"
+        ],
+        "model": "none",
+        "product_artifact_sha256": "sha256:d503a55c7760a2105d4f506283a8e522db147f4868d43d08d77e830c89275d7e",
+        "product_source_sha": "5cb13bad9c219d23eb6a1f291a4d778cece8d862",
+        "reasoning_effort": "none",
+        "retry_limit": 0,
+        "runtime_profile": {
+          "node": "v24.21.0",
+          "platform": "linux",
+          "purpose": "offline_plan_preparation"
+        },
+        "target_commit": "a388d59b12365d5322cd62fc4e7a3cf7f74b3cec",
+        "target_tree": "61136583e788e995178e333c459aaba3d9a0316d",
+        "verifier_digest": "sha256:bfb0d460146f82da6c953d460fd2a663389d80f608f5f1ef1c106fd0c1d278f1"
+      },
+      "oracle": {
+        "duration_ms": 5.385249000000002,
+        "outcome_digest": "sha256:7e110a4c21720f7830c63ff17bc407a74d6f7e598301760e352e7a72dd3295ef",
+        "verified": true,
+        "verifier_digest": "sha256:bfb0d460146f82da6c953d460fd2a663389d80f608f5f1ef1c106fd0c1d278f1"
+      },
+      "order": 13,
+      "pair_id": "pair-3",
+      "token_usage": {
+        "cached_input_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reason": "Deterministic offline Plan preparation; no provider usage was observed.",
+        "reasoning_tokens": null,
+        "state": "unavailable",
+        "total_tokens": null
+      },
+      "transport": "external"
+    },
+    {
+      "agent": {
+        "observed_identity": {
+          "adapter": "deterministic_fixture",
+          "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+          "check_ids": [
+            "independent-structural-oracle"
+          ],
+          "model": "none",
+          "reasoning_effort": "none",
+          "retry_limit": 0,
+          "runtime_profile": {
+            "node": "v24.21.0",
+            "platform": "linux",
+            "purpose": "offline_plan_preparation"
+          }
+        },
+        "result_digest": "sha256:b83ddc7f40f6d3e48419ea316c5396122e27984d1ffe6a7e864a1eba9bbdac86",
+        "stages": [
+          {
+            "duration_ms": 0.3055769999999711,
+            "id": "fixture_input"
+          },
+          {
+            "duration_ms": 7.324147000000039,
+            "id": "selection_and_fixture_planning"
+          },
+          {
+            "duration_ms": 10.259992000000011,
+            "id": "normalization_and_fixture_output"
+          }
+        ],
+        "status": "completed",
+        "violations": []
+      },
+      "arm": "specialize",
+      "host_diagnostics": {
+        "duration_ms": 528.1895779999995,
+        "kind": "offline_fixture_only"
+      },
+      "id": "direct-fix-pair-1-specialize",
+      "identity": {
+        "adapter": "deterministic_fixture",
+        "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+        "check_ids": [
+          "independent-structural-oracle"
+        ],
+        "model": "none",
+        "product_artifact_sha256": "sha256:d503a55c7760a2105d4f506283a8e522db147f4868d43d08d77e830c89275d7e",
+        "product_source_sha": "5cb13bad9c219d23eb6a1f291a4d778cece8d862",
+        "reasoning_effort": "none",
+        "retry_limit": 0,
+        "runtime_profile": {
+          "node": "v24.21.0",
+          "platform": "linux",
+          "purpose": "offline_plan_preparation"
+        },
+        "target_commit": "a388d59b12365d5322cd62fc4e7a3cf7f74b3cec",
+        "target_tree": "61136583e788e995178e333c459aaba3d9a0316d",
+        "verifier_digest": "sha256:bfb0d460146f82da6c953d460fd2a663389d80f608f5f1ef1c106fd0c1d278f1"
+      },
+      "oracle": {
+        "duration_ms": 6.0166090000000025,
+        "outcome_digest": "sha256:7e110a4c21720f7830c63ff17bc407a74d6f7e598301760e352e7a72dd3295ef",
+        "verified": true,
+        "verifier_digest": "sha256:bfb0d460146f82da6c953d460fd2a663389d80f608f5f1ef1c106fd0c1d278f1"
+      },
+      "order": 14,
+      "pair_id": "pair-1",
+      "token_usage": {
+        "cached_input_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reason": "Deterministic offline Plan preparation; no provider usage was observed.",
+        "reasoning_tokens": null,
+        "state": "unavailable",
+        "total_tokens": null
+      },
+      "transport": "external"
+    },
+    {
+      "agent": {
+        "observed_identity": {
+          "adapter": "deterministic_fixture",
+          "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+          "check_ids": [
+            "independent-structural-oracle"
+          ],
+          "model": "none",
+          "reasoning_effort": "none",
+          "retry_limit": 0,
+          "runtime_profile": {
+            "node": "v24.21.0",
+            "platform": "linux",
+            "purpose": "offline_plan_preparation"
+          }
+        },
+        "result_digest": "sha256:b83ddc7f40f6d3e48419ea316c5396122e27984d1ffe6a7e864a1eba9bbdac86",
+        "stages": [
+          {
+            "duration_ms": 0.3265969999999925,
+            "id": "fixture_input"
+          },
+          {
+            "duration_ms": 0.016562000000021726,
+            "id": "selection_and_fixture_planning"
+          },
+          {
+            "duration_ms": 14.422177999999974,
+            "id": "normalization_and_fixture_output"
+          }
+        ],
+        "status": "completed",
+        "violations": []
+      },
+      "arm": "no_recipe",
+      "host_diagnostics": {
+        "duration_ms": 607.0221769999998,
+        "kind": "offline_fixture_only"
+      },
+      "id": "direct-fix-pair-5-no_recipe",
+      "identity": {
+        "adapter": "deterministic_fixture",
+        "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+        "check_ids": [
+          "independent-structural-oracle"
+        ],
+        "model": "none",
+        "product_artifact_sha256": "sha256:d503a55c7760a2105d4f506283a8e522db147f4868d43d08d77e830c89275d7e",
+        "product_source_sha": "5cb13bad9c219d23eb6a1f291a4d778cece8d862",
+        "reasoning_effort": "none",
+        "retry_limit": 0,
+        "runtime_profile": {
+          "node": "v24.21.0",
+          "platform": "linux",
+          "purpose": "offline_plan_preparation"
+        },
+        "target_commit": "a388d59b12365d5322cd62fc4e7a3cf7f74b3cec",
+        "target_tree": "61136583e788e995178e333c459aaba3d9a0316d",
+        "verifier_digest": "sha256:bfb0d460146f82da6c953d460fd2a663389d80f608f5f1ef1c106fd0c1d278f1"
+      },
+      "oracle": {
+        "duration_ms": 6.078885,
+        "outcome_digest": "sha256:7e110a4c21720f7830c63ff17bc407a74d6f7e598301760e352e7a72dd3295ef",
+        "verified": true,
+        "verifier_digest": "sha256:bfb0d460146f82da6c953d460fd2a663389d80f608f5f1ef1c106fd0c1d278f1"
+      },
+      "order": 15,
+      "pair_id": "pair-5",
+      "token_usage": {
+        "cached_input_tokens": null,
+        "input_tokens": null,
+        "output_tokens": null,
+        "reason": "Deterministic offline Plan preparation; no provider usage was observed.",
+        "reasoning_tokens": null,
+        "state": "unavailable",
+        "total_tokens": null
+      },
+      "transport": "external"
+    }
+  ],
+  "campaign_id": "M05-0.7.13-direct-fix-offline-v1",
+  "claim_policy": {
+    "disposition": "NOT_ESTABLISHED",
+    "minimum_paired_successes": 5
+  },
+  "constants": {
+    "adapter": "deterministic_fixture",
+    "authority_digest": "sha256:b865fdd5a775cd52d77c1bccfd93e38c63cbac9788ea5e541e6858e53e81b8c8",
+    "cache_policy": "fresh-target-per-attempt; no provider cache",
+    "check_ids": [
+      "independent-structural-oracle"
+    ],
+    "model": "none",
+    "network": "deny",
+    "reasoning_effort": "none",
+    "retry_limit": 0,
+    "runtime_profile": {
+      "node": "v24.21.0",
+      "platform": "linux",
+      "purpose": "offline_plan_preparation"
+    },
+    "sandbox": "disposable-local-fixture; not a certified provider sandbox",
+    "session_policy": "fresh-process-per-attempt"
+  },
+  "digest": "sha256:f9c4302220ca2d4c3cf02538a1c34b515ae00045bbaa38c4e5745165a210f19b",
+  "efficiency": "NOT_ESTABLISHED",
+  "evidence_scope": "offline_structural",
+  "experiment": "M05",
+  "kind": "agentplane.paired_production_campaign_evidence",
+  "manifest_digest": "sha256:7714dce070decc5914263103df3aef027d855e0f75ef164ae47f04677db5120e",
+  "mode": "offline",
+  "randomized_run_ids": [
+    "direct-fix-pair-5-instantiate",
+    "direct-fix-pair-3-no_recipe",
+    "direct-fix-pair-2-instantiate",
+    "direct-fix-pair-4-specialize",
+    "direct-fix-pair-4-instantiate",
+    "direct-fix-pair-4-no_recipe",
+    "direct-fix-pair-1-instantiate",
+    "direct-fix-pair-3-specialize",
+    "direct-fix-pair-5-specialize",
+    "direct-fix-pair-1-no_recipe",
+    "direct-fix-pair-2-specialize",
+    "direct-fix-pair-2-no_recipe",
+    "direct-fix-pair-3-instantiate",
+    "direct-fix-pair-1-specialize",
+    "direct-fix-pair-5-no_recipe"
+  ],
+  "schema_version": 2,
+  "strata": {
+    "external": [
+      "direct-fix-pair-5-instantiate",
+      "direct-fix-pair-3-no_recipe",
+      "direct-fix-pair-2-instantiate",
+      "direct-fix-pair-4-specialize",
+      "direct-fix-pair-4-instantiate",
+      "direct-fix-pair-4-no_recipe",
+      "direct-fix-pair-1-instantiate",
+      "direct-fix-pair-3-specialize",
+      "direct-fix-pair-5-specialize",
+      "direct-fix-pair-1-no_recipe",
+      "direct-fix-pair-2-specialize",
+      "direct-fix-pair-2-no_recipe",
+      "direct-fix-pair-3-instantiate",
+      "direct-fix-pair-1-specialize",
+      "direct-fix-pair-5-no_recipe"
+    ]
+  },
+  "target": {
+    "commit": "a388d59b12365d5322cd62fc4e7a3cf7f74b3cec",
+    "repository_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario/artifacts/bench/m05-0.7.13/final-offline/direct-fix/target.bundle",
+    "repository_sha256": "sha256:af5204f86ae462f8586794827c1757d3f257b87e78bd6e161dca275b2f4fe69b",
+    "tree": "61136583e788e995178e333c459aaba3d9a0316d"
+  },
+  "verifier": {
+    "artifact_sha256": "sha256:bfb0d460146f82da6c953d460fd2a663389d80f608f5f1ef1c106fd0c1d278f1",
+    "id": "independent-m05-structural-oracle"
+  }
+}
