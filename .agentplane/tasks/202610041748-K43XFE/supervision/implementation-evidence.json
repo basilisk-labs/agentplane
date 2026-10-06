@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 8cd8d91c312f54e7caee1eaf47bd4f61aae3b983..d81d6062cb790cff96ad13b9d495dd6dd484f6b4",
+      "command": "git diff --check b63c34b50bb7c579727af78f776c2ca10a742773..5eb27ee1868f6622a0b6a312b9d6e300ae80df9d",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 8cd8d91c312f54e7caee1eaf47bd4f61aae3b983..d81d6062cb790cff96ad13b9d495dd6dd484f6b4",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB b63c34b50bb7c579727af78f776c2ca10a742773..5eb27ee1868f6622a0b6a312b9d6e300ae80df9d",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,12 +21,10 @@
         "M\t.agentplane/tasks/202610041748-K43XFE/pr/github-body.md",
         "M\t.agentplane/tasks/202610041748-K43XFE/pr/meta.json",
         "M\t.agentplane/tasks/202610041748-K43XFE/pr/review.md",
-        "A\tpackages/agentplane/src/commands/task/external-agent-consumed-recovery.test.ts",
-        "A\tpackages/agentplane/src/commands/task/external-agent-consumed-recovery.ts",
-        "A\tpackages/agentplane/src/commands/task/external-agent-observation.testkit.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-read-only-observation.test.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-supervisor.ts"
+        "A\tpackages/agentplane/src/commands/release/snapshot-file-script.test.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-completed-external-rework.test.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-completed-external-rework.testkit.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-completed-workflow.ts"
       ]
     },
     {
@@ -36,8 +34,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "8cd8d91c312f54e7caee1eaf47bd4f61aae3b983",
-  "implementation_commit": "d81d6062cb790cff96ad13b9d495dd6dd484f6b4",
+  "execution_base_commit": "b63c34b50bb7c579727af78f776c2ca10a742773",
+  "implementation_commit": "5eb27ee1868f6622a0b6a312b9d6e300ae80df9d",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
