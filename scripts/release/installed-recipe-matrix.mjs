@@ -11,6 +11,7 @@ import {
   writeFileSync,
 } from "node:fs";
 import path from "node:path";
+import { readSnapshotFile } from "./snapshot-file.mjs";
 
 const hash = (bytes) => `sha256:${createHash("sha256").update(bytes).digest("hex")}`;
 const canonical = (value) =>
@@ -322,13 +323,13 @@ export function runInstalledRecipeMatrix({
       .toSorted()
       .map((entry) => {
         const file = path.join(root, entry);
-        const stat = lstatSync(file);
+        const stat = lstatSync(file, { bigint: true });
         return [
           entry,
           stat.isSymbolicLink()
             ? readlinkSync(file)
             : stat.isFile()
-              ? hash(readFileSync(file))
+              ? hash(readSnapshotFile(file, stat))
               : "directory",
         ];
       });

@@ -322,7 +322,9 @@ export async function readEvaluatorEvidenceObject(opts: {
   boundaryHook?: EvaluatorEvidenceBoundaryHook;
 }): Promise<{ artifact: EvaluatorPacketArtifact; bytes: Buffer }> {
   const artifact = EVALUATOR_PACKET_ARTIFACT_SCHEMA.parse(opts.artifact);
-  const objectPrefix = `${opts.objectRoot.replaceAll(/\/+$/gu, "")}/sha256/`;
+  let end = opts.objectRoot.length;
+  while (end > 0 && opts.objectRoot[end - 1] === "/") end -= 1;
+  const objectPrefix = `${opts.objectRoot.slice(0, end)}/sha256/`;
   if (!artifact.path.startsWith(objectPrefix)) {
     throw new CliError({
       code: "E_VALIDATION",

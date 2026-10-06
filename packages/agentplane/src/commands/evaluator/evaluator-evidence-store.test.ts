@@ -24,6 +24,7 @@ import { readStableEvaluatorEvidenceFile } from "./evaluator-evidence-boundary.j
 import {
   assertEvaluatorPacketCurrent,
   putEvaluatorEvidenceObject,
+  readEvaluatorEvidenceObject,
   writeEvaluatorPacketManifest,
 } from "./evaluator-evidence-store.js";
 
@@ -87,6 +88,40 @@ function publicationGate(): { promise: Promise<void>; resolve: () => void } {
 }
 
 describe("evaluator evidence object store", () => {
+  it("preserves object-root boundaries with adversarial slash suffixes", async () => {
+    const root = await mkGitRepoRoot();
+    const objectRoot = ".agentplane/tasks/T-SLASH/quality/objects";
+    const artifact = await putEvaluatorEvidenceObject({
+      gitRoot: root,
+      taskQualityRoot: path.join(root, ".agentplane/tasks/T-SLASH/quality"),
+      logicalName: "evaluator-blueprint",
+      kind: "blueprint",
+      extension: ".json",
+      mediaType: "application/json",
+      contents: "{}\n",
+    });
+    for (const suffix of ["", "/", "/".repeat(100_000)]) {
+      const result = await readEvaluatorEvidenceObject({
+        gitRoot: root,
+        objectRoot: objectRoot + suffix,
+        artifact,
+      });
+      expect(result.bytes.toString()).toBe("{}\n");
+    }
+    for (const invalidRoot of [
+      "",
+      "/",
+      "/".repeat(100_000),
+      objectRoot + "\\",
+      objectRoot + "/".repeat(100_000) + "suffix",
+      objectRoot + "suffix///",
+    ]) {
+      await expect(
+        readEvaluatorEvidenceObject({ gitRoot: root, objectRoot: invalidRoot, artifact }),
+      ).rejects.toThrow("outside its object root");
+    }
+  });
+
   it("waits for a concurrent identical publisher to remove its staging link", async () => {
     const root = await mkGitRepoRoot();
     const opts = {
