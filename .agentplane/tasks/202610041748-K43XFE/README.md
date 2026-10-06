@@ -1,10 +1,11 @@
 ---
 id: "202610041748-K43XFE"
 title: "Implement and qualify AgentPlane 0.7.13 Scenario V2 recipes for production release"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 288
+revision: 289
 origin:
   system: "manual"
 depends_on: []
@@ -46,6 +47,22 @@ quality_review:
     - "The resolver selects options.env ?? process.env once, then resolves the explicit recipesSource before that selected environment. An explicit empty or unrelated environment cannot fall through to the host; omitted env retains process.env behavior. Existing relative resolution, missing-source and invalid-checkout rejection remain unchanged."
     - "Four added regression cases populate host state, exercise empty/unrelated explicit environments, omitted-env fallback and explicit-source precedence. The two isolation cases would fail under the previous implementation. vi.unstubAllEnvs restores inherited state before fixture cleanup; all four existing tests and assertions remain intact."
     - "The source delta is confined to the approved resolver and test file outside native task metadata. No global environment clearing, CI exemption, catalogue validation weakening, release-artifact change or measurement authority is introduced."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:a2ab37ca1642d963b60798ce256f81457d0f77529c20fad3b5946720a391a89f"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-10-06T09:03:53.967Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -1363,9 +1380,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "c9593e7510a4f9979393a17e33ef1f8dd4d6354e"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "ee558123ceee443190cf96abe00aaf83bf01a26e"
+  message: "✅ K43XFE task: persist canonical completion"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -1373,9 +1393,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-06T09:03:53.967Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "ee558123ceee443190cf96abe00aaf83bf01a26e"
 doc_version: 3
-doc_updated_at: "2026-10-06T08:54:58.436Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-06T09:03:53.967Z"
+doc_updated_by: "CODER"
 description: "User explicitly authorizes autonomous completion of all necessary development, integration and release work for version 0.7.13. Implement the current agentplane-roadmap-r2/releases/0.7.13.md RC-01 through RC-18 and EXECUTION-CHARTER.md contracts against the current source. Reuse the existing Recipe package, compact Plan input, sole Task Kernel coordinator, evidence storage, approval and independent EVALUATOR. Preserve V1 compatibility with explicit negotiation, bounded typed interpolation, observed applicability, retained pinned dependency closure, shared instantiation and refinement, scoped context, offline conversion preview, and installed-package recovery qualification. Inventory existing implementations before adding code. Use sequential independently verifiable WorkItems; do not introduce a second workflow engine or implement 0.7.14. Preserve existing repair task 202610020159-60QH9J and autonomy task 202610020153-XXZXW4; integrate their accepted results through supported routes. Network reads, PR publication and main integration are authorized. Prepare the exact 0.7.13 candidate and evidence for a subsequent publication task under the same user release authorization. Preserve unrelated work, credentials and history. Do not fabricate measured savings or paid campaign authority; prepare the exact M05 campaign and explicit measurement disposition. Full validation must preserve all required tests and assertions and use realistic bounded execution budgets."
 sections:
   Summary: |-
@@ -2705,6 +2733,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:d2b44bc83fd760b9f96610195c2172dc20fc50bdfe6f2fa30609c321fb555a18"
     work_order_id: "sha256:851e560d03888ee1ed974ae63856a80fffbbd7c19f4947c49f1c2b4ba7cc25ff"
+  implementation_commit:
+    hash: "c9593e7510a4f9979393a17e33ef1f8dd4d6354e"
+    message: "🚧 K43XFE task: apply canonical agent result"
   task_execution_context:
     base_ref: "origin/main"
     base_sha: "65696d9032b77e80e31c6bca7668a5f32c99c443"
@@ -23055,3 +23086,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:a2ab37ca1642d963b60798ce256f81457d0f77529c20fad3b5946720a391a89f`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-10-06T09:03:53.967Z`
