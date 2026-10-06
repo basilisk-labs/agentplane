@@ -16,13 +16,13 @@ User explicitly authorizes autonomous completion of all necessary development, i
 ## Verification
 
 - State: ok
-- Note: Verified: canonical Task Kernel final checks passed.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-10-06T09:43:12.137Z
+- Updated: 2026-10-06T11:03:17.498Z
 - Branch: task/202610041748-K43XFE/implement-and-qualify-agentplane-0-7-13-scenario
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
@@ -99,13 +99,9 @@ User explicitly authorizes autonomous completion of all necessary development, i
  .../recipes/roadmap-explicit-selection.test.ts     |   342 +
  .../roadmap-installed-recipe-negotiation.test.ts   |   154 +
  .../recipes/roadmap-v1-v2-conversion.test.ts       |   426 +
- .../src/commands/shared/declared-check.test.ts     |    56 +-
- .../src/commands/shared/declared-check.ts          |    31 +-
  .../src/commands/task/advance-task-step.ts         |     6 +-
  .../src/commands/task/create-plan-input.ts         |    65 +-
  .../agentplane/src/commands/task/create.command.ts |    55 +-
- .../direct-task-verification.sequence.cases.ts     |   104 +-
- .../src/commands/task/direct-task-verification.ts  |    27 +-
  .../commands/task/kernel-advance-network.test.ts   |   302 +
  .../src/commands/task/kernel-advance.test.ts       |     6 +-
  .../src/commands/task/kernel-exchange.test.ts      |   716 +-
@@ -213,7 +209,7 @@ User explicitly authorizes autonomous completion of all necessary development, i
  scripts/lib/test-route-registry.mjs                |    24 +
  .../release/check-local-tarball-install-smoke.mjs  |    71 +-
  scripts/release/installed-recipe-matrix.mjs        |   790 +
- 186 files changed, 59001 insertions(+), 1066 deletions(-)
+ 182 files changed, 58792 insertions(+), 1057 deletions(-)
 ```
 
 </details>
