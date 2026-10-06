@@ -81,6 +81,7 @@ Created: 2026-10-04T18:13:17.876Z
  package.json                                       |     1 +
  packages/agentplane/package.json                   |    13 +-
  .../task-backend/kernel-backend-adapter.test.ts    |   192 +
+ .../cli/generate-recipes-inventory-script.test.ts  |    44 +-
  ...n-cli.core.roadmap-recipe-v2-entrypoint.test.ts |   377 +
  .../src/cli/run-cli.core.roadmap-recovery.test.ts  |     5 +-
  .../src/cli/run-cli/command-catalog/project.ts     |    10 +
@@ -210,10 +211,11 @@ Created: 2026-10-04T18:13:17.876Z
  scripts/bench/paired-m05-product.mjs               |   111 +
  scripts/bench/paired-production-driver.mjs         |   135 +-
  scripts/bench/paired-production-driver.test.mjs    |   135 +
+ scripts/generate/generate-recipes-inventory.mjs    |     8 +-
  scripts/lib/test-route-registry.mjs                |    24 +
  .../release/check-local-tarball-install-smoke.mjs  |    71 +-
  scripts/release/installed-recipe-matrix.mjs        |   790 +
- 184 files changed, 58956 insertions(+), 1059 deletions(-)
+ 186 files changed, 59001 insertions(+), 1066 deletions(-)
 ```
 
 </details>
