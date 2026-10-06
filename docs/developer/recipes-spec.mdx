@@ -5,7 +5,7 @@ description: "Contract for recipe archives, manifests, and CLI behavior."
 
 Recipes are optional extensions. Core workflow must remain usable with zero installed recipes.
 
-Recipes v1 use a vendor-based lifecycle:
+Recipe distribution uses a vendor-based storage flow:
 
 1. remote catalog for discovery and distribution;
 2. global cache for download and import;
@@ -14,7 +14,7 @@ Recipes v1 use a vendor-based lifecycle:
 
 After vendoring, runtime reads recipes only from the project-local vendor store.
 
-This page documents the active recipe v1 contract for the current `0.4` line.
+This page describes package distribution and compatibility. For the 0.7.13 Scenario V2 authoring contract, use [Recipes development](recipes-development). Manifest API and Scenario API are negotiated separately; V1 historical assets remain readable.
 
 The public docs describe starter recipes as local workflow overlays. Keep implementation catalog
 details out of the public happy path unless the catalog is actively maintained.
@@ -42,12 +42,13 @@ Manifest is validated against the recipe manifest schema in runtime code.
 
 Minimum required fields:
 
-- `schema_version` (`"1"`)
+- `schema_version` (`"1"` or `"2"`, explicitly negotiated)
 - `id`
 - `version`
 - `name`
 - `summary`
-- `description`
+
+`description` is optional.
 
 First-class sections include `compatibility`, `overlay`, `skills`, `tools`, `agents`, `scenarios`,
 `prompt_modules`, `prompt_mutation_sets`, and `blueprint_extensions`.
@@ -140,11 +141,7 @@ Project vendoring commands:
 - `agentplane recipes update <id>`
 - `agentplane recipes detach <id>`
 
-Recipe-owned scenario assets remain internal to vendored packages; they are no longer part of the
-public CLI command surface.
-
-There is no public runner entrypoint in the current release. Recipe-owned task materialization
-creates normal tasks for repository agents.
+Scenario preview uses `recipes preview-v1 <repository-relative-file>` or `recipes preview-v2 <recipe-input.json>`. Preview has no task, retention or execution effects. V2 task intake uses `task create --recipe-file` or `task plan set --recipe-file`, then the common native approval and advance path. See the [generated CLI reference](../user/cli-reference.generated).
 
 ## Install sources
 
@@ -279,17 +276,7 @@ Authority rules:
 - `.agentplane/generated/prompt-graph.json` is the compiled prompt module graph for the current
   active recipe set. Treat it as inspectable derived state, not as the place to edit modules.
 
-Runtime execution artifacts are deferred to the v0.7 runner surface. Current recipe docs should
-describe task materialization, provenance, and agent-facing instructions only.
-
-## Agent execution workflow
-
-Recipe scenarios and generated tasks should be inspectable through their task README, plan, Verify
-Steps, ACR, and PR artifacts. If work stalls or ownership changes, record a task handoff with the
-current status, changed files, verification state, and next action before another agent resumes.
-
-Live runtime smoke probes remain internal v0.7 work and are not part of the current public recipe
-contract.
+Scenario V2 produces a normal Kernel Plan. The Kernel owns execution and mandatory independent review; Recipe guidance does not create a second coordinator.
 
 ## Resolver contract
 
@@ -318,47 +305,11 @@ guarantee.
 The same rule now applies to `run_profile.expected_exit_contract`: the field has been removed from
 the accepted main-repo recipe contract after the bundled catalog was cleaned, because current values
 are recipe-specific labels without deterministic shared semantics.
-`run_profile.writes_artifacts_to` remains advisory until the v0.7 runner surface reintroduces
-enforcement.
+`run_profile.writes_artifacts_to` does not replace the issued WorkOrder scope or native artifact admission checks.
 
-## Recipe scenario preview and execution contract
+## Scenario format boundary
 
-`recipes scenario run` resolves a scenario definition, validates recipe-local file references, and
-prints a prepared run plan. It is preview-only: no task is created and no runner artifacts are written.
-
-`recipes scenario execute` uses the same resolver and validation path, then:
-
-1. materializes a normal task from the scenario's explicit `task_template`;
-2. records recipe provenance on that task (`recipe_id`, `scenario_id`, `recipe_version`, `run_id`);
-3. writes the recipe context into the generated task for the assigned agent.
-
-Required scenario definition support:
-
-- manifest-level scenario selection
-- recipe-local file validation (`agents`, `skills`, `tools`, `scenarios`)
-- internal scenario definition validation (`goal`, `inputs`, `outputs`, `steps`, `task_template`)
-- compatibility failure reporting before preview or execution
-
-`task_template` is required in every executable scenario definition. It must provide:
-
-- `title`
-- `description`
-- `owner`
-- optional `priority`
-- optional `tags`
-- optional `verify`
-- optional `doc` seeds for task README sections
-
-Runtime adapter execution is deferred to the v0.7 runner surface. Until then, keep adapter-specific
-requirements in task evidence and recipe metadata rather than exposing execution commands.
-
-Scenario definitions can declare evidence requirements:
-
-- `evidence.required` (boolean)
-- `evidence.files` (string array, defaults to `["evidence.json"]` when required)
-
-Evidence declarations are bundled into recipe context for the assigned agent and can seed
-verification expectations, but they are not a separate CLI orchestration DSL.
+Scenario V2 uses the strict typed contract in [Recipes development](recipes-development), including `plan_template`, explicit parameters, supervisor applicability observations and retained pinned closure. It does not accept a `steps` execution language. Legacy V1 `task_template`, untyped inputs/outputs and ordered custom steps remain historical source data. `recipes preview-v1` audits exact bytes without effects; semantic conversion requires bounded native drafting and independent review. Overlay-only V1 packages remain overlays. A prepared or converted proposal never grants USER approval.
 
 ## Security model
 

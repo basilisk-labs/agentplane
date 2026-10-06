@@ -1,67 +1,32 @@
 ---
 title: "Security review recipe"
-description: "Use a security review workflow recipe for scoped inspection, evidence, checks, and trace export."
+description: "Use Recipe guidance with a normal native Plan."
 ---
 
 # Security review recipe
 
-## What does it do?
+A security-review Recipe can contribute guidance for scoped findings with evidence and explicit stop conditions. It does not execute arbitrary YAML
+`steps`, run commands on installation, or own a separate workflow lifecycle.
 
-The security review recipe structures an agent run around scoped inspection, threat notes,
-verification checks, and trace export.
+Use the [Scenario V2 authoring contract](../developer/recipes-development) and its validated
+[read-only example](../examples/recipes-v2/scenario.json) as a structural starting point. Adapt the
+objective, mandatory criteria, checks and exact writable scope to the actual repository. A TDD,
+docs or security scenario must not borrow approval from that example or assume tools exist.
 
-## When should I use it?
-
-- You need a focused review of an auth, input validation, dependency, or data-handling change.
-- You want findings tied to files, checks, and trace evidence.
-
-## When should I not use it?
-
-- The task requires a formal penetration test.
-- The repository contains secrets that should not be loaded into agent context.
-- The review scope is not defined.
-
-## YAML example
-
-```yaml
-name: security-review
-steps:
-  - id: load-policy
-    type: context.load
-  - id: inspect-risk
-    type: agent.review
-  - id: run-checks
-    type: check.run
-    command: npm audit --audit-level=high
-  - id: export-trace
-    type: trace.export
-```
-
-## Command to apply
+Review the actual package/version before local installation and vendoring:
 
 ```bash
-agentplane recipes install security-review
-agentplane run ./agentplane.yaml --recipe security-review
+agentplane recipes install --path ./reviewed-recipe.tar.gz
+agentplane recipes add <recipe-id>@<version>
+agentplane recipes explain <recipe-id>
+agentplane recipes preview-v2 selection.json
 ```
 
-## Expected trace events
+For approved task intake, supply explicit selection through `task create --recipe-file` or
+`task plan set --recipe-file`. Follow native preparation/retention instructions and the ordinary
+USER approval boundary. Continue via `task advance --agent-json` or a configured `task run`.
+The required independent EVALUATOR, verification and task evidence owners remain unchanged.
 
-```text
-context.load
-agent.review
-tool.call
-verification.check
-trace.export
-```
-
-## Expected artifacts
-
-```text
-.agentplane/traces/<run-id>.json
-.agentplane/exports/<run-id>.otel.json
-```
-
-## Troubleshooting
-
-If the review expands into security-sensitive implementation changes, stop and create a separate
-approved implementation task.
+Legacy V1 steps are source context, not an imperative DSL. Audit them with `recipes preview-v1`
+and preserve unsupported obligations during bounded conversion. Stop when evidence or authority
+is insufficient. No recipe removes the normal no-Recipe route or establishes measured savings.

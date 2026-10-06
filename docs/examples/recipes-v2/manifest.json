@@ -1,0 +1,65 @@
+{
+  "schema_version": "2",
+  "kind": "project_overlay",
+  "id": "docs-report",
+  "version": "1.0.0",
+  "name": "Read-only source report",
+  "summary": "Prepare a normal read-only report Plan",
+  "compatibility": {
+    "manifest_api_version": "2",
+    "scenario_api_version": "2",
+    "runtime_api_version": "1"
+  },
+  "agents": [
+    {
+      "id": "reporter",
+      "display_name": "Reporter",
+      "role": "EXECUTOR",
+      "summary": "Preserve source facts",
+      "file": "agent.md"
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "report",
+      "name": "Report",
+      "summary": "Read-only report",
+      "use_when": ["An exact read-only source report is requested"],
+      "required_inputs": ["audience", "source"],
+      "outputs": ["report"],
+      "permissions": [],
+      "artifacts": [],
+      "agents_involved": ["reporter"],
+      "skills_used": [],
+      "tools_used": [],
+      "run_profile": {
+        "mode": "analysis"
+      },
+      "file": "scenario.json"
+    }
+  ],
+  "dependency_closure": {
+    "schema_version": 1,
+    "files": [
+      {
+        "source": "recipe",
+        "path": "scenario.json",
+        "dependencies": []
+      },
+      {
+        "source": "recipe",
+        "path": "agent.md",
+        "dependencies": []
+      }
+    ],
+    "packages": [],
+    "tools": [],
+    "capabilities": [
+      {
+        "id": "task.verify",
+        "dependencies": []
+      }
+    ],
+    "commands": []
+  }
+}

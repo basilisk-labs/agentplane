@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 55bdf4fb091fb15bb44e05352fd3cca135ae85b6..5cb13bad9c219d23eb6a1f291a4d778cece8d862",
+      "command": "git diff --check 3bc7288366425d87add6abf6356de836276dc8dd..bd16ef7c1f0ce8a980ab52f417e5d56e76205fee",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 55bdf4fb091fb15bb44e05352fd3cca135ae85b6..5cb13bad9c219d23eb6a1f291a4d778cece8d862",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 3bc7288366425d87add6abf6356de836276dc8dd..bd16ef7c1f0ce8a980ab52f417e5d56e76205fee",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -22,17 +22,81 @@
         "M\t.agentplane/tasks/202610041748-K43XFE/pr/github-body.md",
         "M\t.agentplane/tasks/202610041748-K43XFE/pr/meta.json",
         "M\t.agentplane/tasks/202610041748-K43XFE/pr/review.md",
-        "M\t.agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json",
-        "M\t.agentplane/tasks/202610041748-K43XFE/supervision/implementation-evidence.json",
-        "M\tpackages/agentplane/package.json",
-        "M\tpackages/agentplane/src/commands/recipes/impl/apply.ts",
-        "A\tpackages/agentplane/src/commands/recipes/roadmap-installed-recipe-negotiation.test.ts",
-        "M\tpackages/agentplane/src/commands/task/roadmap-recipe-repin.test.ts",
-        "A\tpackages/agentplane/src/recipe-api.ts",
-        "M\tpackages/agentplane/tsup.config.ts",
-        "M\tscripts/lib/test-route-registry.mjs",
-        "M\tscripts/release/check-local-tarball-install-smoke.mjs",
-        "A\tscripts/release/installed-recipe-matrix.mjs"
+        "D\tartifacts/bench/m05-0.7.13/final-offline/branch-change/campaign.offline.lock.json",
+        "D\tartifacts/bench/m05-0.7.13/final-offline/branch-change/evidence.json",
+        "D\tartifacts/bench/m05-0.7.13/final-offline/branch-change/target.bundle",
+        "D\tartifacts/bench/m05-0.7.13/final-offline/direct-fix/campaign.offline.lock.json",
+        "D\tartifacts/bench/m05-0.7.13/final-offline/direct-fix/evidence.json",
+        "D\tartifacts/bench/m05-0.7.13/final-offline/direct-fix/target.bundle",
+        "D\tartifacts/bench/m05-0.7.13/final-offline/fixture-policy.json",
+        "D\tartifacts/bench/m05-0.7.13/final-offline/near-match/campaign.offline.lock.json",
+        "D\tartifacts/bench/m05-0.7.13/final-offline/near-match/evidence.json",
+        "D\tartifacts/bench/m05-0.7.13/final-offline/near-match/target.bundle",
+        "D\tartifacts/bench/m05-0.7.13/final-offline/no-match/campaign.offline.lock.json",
+        "D\tartifacts/bench/m05-0.7.13/final-offline/no-match/evidence.json",
+        "D\tartifacts/bench/m05-0.7.13/final-offline/no-match/target.bundle",
+        "D\tartifacts/bench/m05-0.7.13/final-offline/oracle.mjs",
+        "D\tartifacts/bench/m05-0.7.13/final-offline/preparation.json",
+        "D\tartifacts/bench/m05-0.7.13/final-offline/product.mjs",
+        "D\tartifacts/bench/m05-0.7.13/final-offline/recovery/campaign.offline.lock.json",
+        "D\tartifacts/bench/m05-0.7.13/final-offline/recovery/evidence.json",
+        "D\tartifacts/bench/m05-0.7.13/final-offline/recovery/target.bundle",
+        "A\tartifacts/bench/m05-0.7.13/historical-corpora.inventory.json",
+        "A\tartifacts/bench/m05-0.7.13/historical-corpora.tar",
+        "R078\tartifacts/bench/m05-0.7.13/checked-offline/branch-change/campaign.offline.lock.json\tartifacts/bench/m05-0.7.13/normalized-offline/branch-change/campaign.offline.lock.json",
+        "R086\tartifacts/bench/m05-0.7.13/checked-offline/branch-change/evidence.json\tartifacts/bench/m05-0.7.13/normalized-offline/branch-change/evidence.json",
+        "R100\tartifacts/bench/m05-0.7.13/checked-offline/branch-change/target.bundle\tartifacts/bench/m05-0.7.13/normalized-offline/branch-change/target.bundle",
+        "R078\tartifacts/bench/m05-0.7.13/checked-offline/direct-fix/campaign.offline.lock.json\tartifacts/bench/m05-0.7.13/normalized-offline/direct-fix/campaign.offline.lock.json",
+        "R086\tartifacts/bench/m05-0.7.13/checked-offline/direct-fix/evidence.json\tartifacts/bench/m05-0.7.13/normalized-offline/direct-fix/evidence.json",
+        "R100\tartifacts/bench/m05-0.7.13/checked-offline/direct-fix/target.bundle\tartifacts/bench/m05-0.7.13/normalized-offline/direct-fix/target.bundle",
+        "R100\tartifacts/bench/m05-0.7.13/checked-offline/fixture-policy.json\tartifacts/bench/m05-0.7.13/normalized-offline/fixture-policy.json",
+        "R078\tartifacts/bench/m05-0.7.13/checked-offline/near-match/campaign.offline.lock.json\tartifacts/bench/m05-0.7.13/normalized-offline/near-match/campaign.offline.lock.json",
+        "R086\tartifacts/bench/m05-0.7.13/checked-offline/near-match/evidence.json\tartifacts/bench/m05-0.7.13/normalized-offline/near-match/evidence.json",
+        "R100\tartifacts/bench/m05-0.7.13/checked-offline/near-match/target.bundle\tartifacts/bench/m05-0.7.13/normalized-offline/near-match/target.bundle",
+        "R078\tartifacts/bench/m05-0.7.13/checked-offline/no-match/campaign.offline.lock.json\tartifacts/bench/m05-0.7.13/normalized-offline/no-match/campaign.offline.lock.json",
+        "R086\tartifacts/bench/m05-0.7.13/checked-offline/no-match/evidence.json\tartifacts/bench/m05-0.7.13/normalized-offline/no-match/evidence.json",
+        "R100\tartifacts/bench/m05-0.7.13/checked-offline/no-match/target.bundle\tartifacts/bench/m05-0.7.13/normalized-offline/no-match/target.bundle",
+        "R100\tartifacts/bench/m05-0.7.13/checked-offline/oracle.mjs\tartifacts/bench/m05-0.7.13/normalized-offline/oracle.mjs",
+        "R062\tartifacts/bench/m05-0.7.13/checked-offline/preparation.json\tartifacts/bench/m05-0.7.13/normalized-offline/preparation.json",
+        "R099\tartifacts/bench/m05-0.7.13/checked-offline/product.mjs\tartifacts/bench/m05-0.7.13/normalized-offline/product.mjs",
+        "R078\tartifacts/bench/m05-0.7.13/checked-offline/recovery/campaign.offline.lock.json\tartifacts/bench/m05-0.7.13/normalized-offline/recovery/campaign.offline.lock.json",
+        "R086\tartifacts/bench/m05-0.7.13/checked-offline/recovery/evidence.json\tartifacts/bench/m05-0.7.13/normalized-offline/recovery/evidence.json",
+        "R100\tartifacts/bench/m05-0.7.13/checked-offline/recovery/target.bundle\tartifacts/bench/m05-0.7.13/normalized-offline/recovery/target.bundle",
+        "D\tartifacts/bench/m05-0.7.13/offline-qualified/branch-change/campaign.offline.lock.json",
+        "D\tartifacts/bench/m05-0.7.13/offline-qualified/branch-change/evidence.json",
+        "D\tartifacts/bench/m05-0.7.13/offline-qualified/branch-change/target.bundle",
+        "D\tartifacts/bench/m05-0.7.13/offline-qualified/direct-fix/campaign.offline.lock.json",
+        "D\tartifacts/bench/m05-0.7.13/offline-qualified/direct-fix/evidence.json",
+        "D\tartifacts/bench/m05-0.7.13/offline-qualified/direct-fix/target.bundle",
+        "D\tartifacts/bench/m05-0.7.13/offline-qualified/fixture-policy.json",
+        "D\tartifacts/bench/m05-0.7.13/offline-qualified/near-match/campaign.offline.lock.json",
+        "D\tartifacts/bench/m05-0.7.13/offline-qualified/near-match/evidence.json",
+        "D\tartifacts/bench/m05-0.7.13/offline-qualified/near-match/target.bundle",
+        "D\tartifacts/bench/m05-0.7.13/offline-qualified/no-match/campaign.offline.lock.json",
+        "D\tartifacts/bench/m05-0.7.13/offline-qualified/no-match/evidence.json",
+        "D\tartifacts/bench/m05-0.7.13/offline-qualified/no-match/target.bundle",
+        "D\tartifacts/bench/m05-0.7.13/offline-qualified/oracle.mjs",
+        "D\tartifacts/bench/m05-0.7.13/offline-qualified/preparation.json",
+        "D\tartifacts/bench/m05-0.7.13/offline-qualified/product.mjs",
+        "D\tartifacts/bench/m05-0.7.13/offline-qualified/recovery/campaign.offline.lock.json",
+        "D\tartifacts/bench/m05-0.7.13/offline-qualified/recovery/evidence.json",
+        "D\tartifacts/bench/m05-0.7.13/offline-qualified/recovery/target.bundle",
+        "D\tartifacts/bench/m05-0.7.13/offline/branch-change/campaign.offline.lock.json",
+        "D\tartifacts/bench/m05-0.7.13/offline/branch-change/diagnostic-git-evidence/git-directory.tar",
+        "D\tartifacts/bench/m05-0.7.13/offline/branch-change/diagnostic-git-evidence/inventory.json",
+        "D\tartifacts/bench/m05-0.7.13/offline/branch-change/diagnostic-git-evidence/repository.bundle",
+        "D\tartifacts/bench/m05-0.7.13/offline/branch-change/diagnostic/fixture.json",
+        "D\tartifacts/bench/m05-0.7.13/offline/branch-change/target.bundle",
+        "D\tartifacts/bench/m05-0.7.13/offline/direct-fix/campaign.offline.lock.json",
+        "D\tartifacts/bench/m05-0.7.13/offline/direct-fix/evidence.json",
+        "D\tartifacts/bench/m05-0.7.13/offline/direct-fix/target.bundle",
+        "D\tartifacts/bench/m05-0.7.13/offline/fixture-policy.json",
+        "D\tartifacts/bench/m05-0.7.13/offline/oracle.mjs",
+        "D\tartifacts/bench/m05-0.7.13/offline/product.mjs",
+        "M\tartifacts/bench/m05-0.7.13/release-disposition.request.json",
+        "M\tdocs/releases/v0.7.13-m05.md",
+        "M\tscripts/bench/paired-m05-offline.mjs",
+        "M\tscripts/bench/paired-m05-offline.test.mjs"
       ]
     },
     {
@@ -82,23 +146,12 @@
       ]
     }
   ],
-  "execution_base_commit": "55bdf4fb091fb15bb44e05352fd3cca135ae85b6",
-  "implementation_commit": "5cb13bad9c219d23eb6a1f291a4d778cece8d862",
+  "execution_base_commit": "3bc7288366425d87add6abf6356de836276dc8dd",
+  "implementation_commit": "bd16ef7c1f0ce8a980ab52f417e5d56e76205fee",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
       " M .agentplane/tasks/202610041748-K43XFE/README.md",
-      "M  .agentplane/tasks/202610041748-K43XFE/pr/diffstat.txt",
-      "M  .agentplane/tasks/202610041748-K43XFE/pr/github-body.md",
-      "M  .agentplane/tasks/202610041748-K43XFE/pr/meta.json",
-      "M  .agentplane/tasks/202610041748-K43XFE/pr/review.md",
-      " M .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json",
-      " M .agentplane/tasks/202610041748-K43XFE/supervision/implementation-evidence.json",
-      " M packages/agentplane/package.json",
-      " M packages/agentplane/src/commands/recipes/impl/apply.ts",
-      " M packages/agentplane/tsup.config.ts",
-      " M scripts/lib/test-route-registry.mjs",
-      " M scripts/release/check-local-tarball-install-smoke.mjs",
       "?? .agentplane/tasks/202610052127-ZKSA87/quality/objects/sha256/cd35fbf396f0028e374b3f84595480f6edd9dcf606c23ee72655c873780bf2b2.json",
       "?? .agentplane/tasks/202610060111-K1VMJ8/quality/objects/sha256/3843bff288bb14b89e3366c8d7dec5532bcc3f35106b624f48f00047b3593844.json",
       "?? .agentplane/tasks/task-1/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
@@ -137,10 +190,7 @@
       "?? .agentplane/tmp/pr-integration-MP3J6N/6048-reviewed.patch",
       "?? .agentplane/tmp/pr-integration-MP3J6N/6048-typecheck.log",
       "?? .agentplane/tmp/pr-integration-MP3J6N/6048.patch",
-      "?? .agentplane/tmp/pr-integration-MP3J6N/integration-result.json",
-      "?? packages/agentplane/src/commands/recipes/roadmap-installed-recipe-negotiation.test.ts",
-      "?? packages/agentplane/src/recipe-api.ts",
-      "?? scripts/release/installed-recipe-matrix.mjs"
+      "?? .agentplane/tmp/pr-integration-MP3J6N/integration-result.json"
     ],
     "classification": [
       {
@@ -302,62 +352,6 @@
       {
         "classification": "removed_during_execution",
         "line": " M .agentplane/tasks/202610041748-K43XFE/README.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "M  .agentplane/tasks/202610041748-K43XFE/pr/diffstat.txt"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "M  .agentplane/tasks/202610041748-K43XFE/pr/github-body.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "M  .agentplane/tasks/202610041748-K43XFE/pr/meta.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "M  .agentplane/tasks/202610041748-K43XFE/pr/review.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M .agentplane/tasks/202610041748-K43XFE/supervision/implementation-evidence.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/package.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/recipes/impl/apply.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/tsup.config.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M scripts/lib/test-route-registry.mjs"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M scripts/release/check-local-tarball-install-smoke.mjs"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? packages/agentplane/src/commands/recipes/roadmap-installed-recipe-negotiation.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? packages/agentplane/src/recipe-api.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? scripts/release/installed-recipe-matrix.mjs"
       }
     ],
     "final": [
@@ -403,21 +397,7 @@
     ],
     "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
-      " M .agentplane/tasks/202610041748-K43XFE/README.md",
-      "M  .agentplane/tasks/202610041748-K43XFE/pr/diffstat.txt",
-      "M  .agentplane/tasks/202610041748-K43XFE/pr/github-body.md",
-      "M  .agentplane/tasks/202610041748-K43XFE/pr/meta.json",
-      "M  .agentplane/tasks/202610041748-K43XFE/pr/review.md",
-      " M .agentplane/tasks/202610041748-K43XFE/supervision/declared-checks.json",
-      " M .agentplane/tasks/202610041748-K43XFE/supervision/implementation-evidence.json",
-      " M packages/agentplane/package.json",
-      " M packages/agentplane/src/commands/recipes/impl/apply.ts",
-      " M packages/agentplane/tsup.config.ts",
-      " M scripts/lib/test-route-registry.mjs",
-      " M scripts/release/check-local-tarball-install-smoke.mjs",
-      "?? packages/agentplane/src/commands/recipes/roadmap-installed-recipe-negotiation.test.ts",
-      "?? packages/agentplane/src/recipe-api.ts",
-      "?? scripts/release/installed-recipe-matrix.mjs"
+      " M .agentplane/tasks/202610041748-K43XFE/README.md"
     ],
     "unchanged_from_execution_baseline": [
       "?? .agentplane/tasks/202610052127-ZKSA87/quality/objects/sha256/cd35fbf396f0028e374b3f84595480f6edd9dcf606c23ee72655c873780bf2b2.json",

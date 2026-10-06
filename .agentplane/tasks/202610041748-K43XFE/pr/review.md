@@ -55,8 +55,24 @@ Created: 2026-10-04T18:13:17.876Z
  .../normalized-offline/recovery/target.bundle      |   Bin 0 -> 1288 bytes
  .../m05-0.7.13/omitted-historical-fixtures.json    |    43 +
  .../m05-0.7.13/release-disposition.request.json    |    48 +
+ artifacts/rc18/installed-examples.json             |     7 +
+ artifacts/rc18/qualification.json                  |    57 +
  bun.lock                                           |     4 +
+ docs/developer/recipes-development.mdx             |   217 +-
+ docs/developer/recipes-how-it-works.mdx            |    43 +-
+ docs/developer/recipes-spec.mdx                    |    69 +-
+ docs/examples/recipes-v2/agent.md                  |     4 +
+ docs/examples/recipes-v2/legacy-unsupported.json   |    21 +
+ docs/examples/recipes-v2/manifest.json             |    65 +
+ docs/examples/recipes-v2/scenario.json             |    84 +
+ docs/examples/recipes-v2/selection.json            |    20 +
+ docs/recipes/docs-update.mdx                       |    72 +-
+ docs/recipes/index.mdx                             |     4 +
+ docs/recipes/security-review.mdx                   |    73 +-
+ docs/recipes/tdd.mdx                               |    78 +-
  docs/releases/v0.7.13-m05.md                       |   140 +
+ docs/user/cli-reference.generated.mdx              |    26 +
+ docs/user/workflow.mdx                             |    20 +
  packages/agentplane/package.json                   |    13 +-
  .../task-backend/kernel-backend-adapter.test.ts    |   192 +
  ...n-cli.core.roadmap-recipe-v2-entrypoint.test.ts |   377 +
@@ -164,6 +180,7 @@ Created: 2026-10-04T18:13:17.876Z
  packages/core/src/tasks/task-kernel/kernel.ts      |    68 +-
  packages/core/src/tasks/task-kernel/model.ts       |     2 +
  packages/recipes/package.json                      |     4 +
+ packages/recipes/scripts/validate-doc-examples.mjs |   137 +
  packages/recipes/src/compiled-contracts.ts         |    75 +
  packages/recipes/src/index.ts                      |     9 +
  packages/recipes/src/internal-utils.ts             |    14 +
@@ -189,7 +206,7 @@ Created: 2026-10-04T18:13:17.876Z
  scripts/lib/test-route-registry.mjs                |    24 +
  .../release/check-local-tarball-install-smoke.mjs  |    71 +-
  scripts/release/installed-recipe-matrix.mjs        |   790 +
- 160 files changed, 56906 insertions(+), 714 deletions(-)
+ 177 files changed, 57574 insertions(+), 1043 deletions(-)
 ```
 
 </details>

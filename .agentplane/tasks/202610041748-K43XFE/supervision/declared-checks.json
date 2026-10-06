@@ -2,8 +2,8 @@
   "checks": [
     {
       "check_ids": [],
-      "command": "bun run package:install-smoke",
-      "duration_ms": 345563,
+      "command": "bun run bench:agent-efficiency:check",
+      "duration_ms": 1012,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
@@ -12,14 +12,14 @@
         "status": "resolved",
         "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
       },
-      "script": "package:install-smoke",
-      "stderr_tail": "$ node scripts/release/check-local-tarball-install-smoke.mjs\n",
-      "stdout_tail": "installed runtime dependencies: [\"@agentplaneorg/core@0.7.12\",\"@agentplaneorg/recipes@0.7.12\",\"@clack/core@1.5.1\",\"@clack/prompts@1.8.1\",\"@sec-ant/readable-stream@0.4.1\",\"@sindresorhus/merge-streams@4.0.0\",\"agentplane@0.7.12\",\"canonicalize@3.0.0\",\"cross-spawn@7.0.6\",\"execa@9.6.1\",\"fast-string-truncated-width@3.0.3\",\"fast-string-width@3.0.2\",\"fast-wrap-ansi@0.2.2\",\"figures@6.1.0\",\"get-stream@9.0.1\",\"human-signals@8.0.1\",\"is-plain-obj@4.1.0\",\"is-stream@4.0.1\",\"is-unicode-supported@2.1.0\",\"isexe@2.0.0\",\"npm-run-path@6.0.0\",\"parse-ms@4.0.0\",\"path-key@3.1.1\",\"path-key@4.0.0\",\"pend@1.2.0\",\"pretty-ms@9.3.1\",\"shebang-command@2.0.0\",\"shebang-regex@3.0.0\",\"signal-exit@4.1.0\",\"sisteransi@1.0.5\",\"strip-final-newline@4.0.0\",\"unicorn-magic@0.3.0\",\"which@2.0.2\",\"yaml@2.9.1\",\"yauzl@3.4.0\",\"yoctocolors@2.2.0\",\"zod-validation-error@5.0.0\",\"zod@4.4.3\"]\ninstalled Recipe matrix OK (scenarios=6)\ninstalled planning matrix OK (scenarios=6)\ninstalled migration matrix OK (scenarios=8)\nlocal tarball install smoke OK (202609170001-TRB1)\n"
+      "script": "bench:agent-efficiency:check",
+      "stderr_tail": "$ node scripts/checks/check-agent-efficiency-baseline.mjs\n",
+      "stdout_tail": "Agent-efficiency baseline OK (10 RF-04 scenarios; 10 measured cost metrics; structural_sha256=sha256:a9b855c5887f697c21690d7386c627c555f8d46d7b083cab8c54636411e47351; timing_compared=false; summaries=0)\n"
     },
     {
       "check_ids": [],
-      "command": "bun run schemas:check",
-      "duration_ms": 2017,
+      "command": "bun run bench:agent-efficiency:replay:check",
+      "duration_ms": 1078,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
@@ -28,30 +28,14 @@
         "status": "resolved",
         "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
       },
-      "script": "schemas:check",
-      "stderr_tail": "$ bun scripts/generate/sync-schemas.mjs check\n",
-      "stdout_tail": "schemas OK\n"
-    },
-    {
-      "check_ids": [],
-      "command": "bun run test:release:critical",
-      "duration_ms": 188050,
-      "exit_code": 0,
-      "runtime": {
-        "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
-        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
-        "kind": "local_runtime_resolution",
-        "status": "resolved",
-        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
-      },
-      "script": "test:release:critical",
-      "stderr_tail": "$ node scripts/checks/run-vitest-suite.mjs release-critical\n⚠️ task requires Verify Steps by primary tag; seeded a PLANNER fallback ## Verify Steps scaffold in README (replace with task-specific acceptance coverage when available)\n",
-      "stdout_tail": "\n RUN  v4.1.11 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario\n\n\n Test Files  35 passed (35)\n      Tests  425 passed (425)\n   Start at  06:44:05\n   Duration  185.79s (transform 85.46s, setup 2.12s, import 127.03s, tests 554.59s, environment 6ms)\n\n"
+      "script": "bench:agent-efficiency:replay:check",
+      "stderr_tail": "$ node scripts/checks/check-agent-efficiency-replay.mjs\n",
+      "stdout_tail": "RF-04 replay baseline OK (50 runs; 70/70 outcomes; 27/27 provider token cells; 170/170 scalar cells; structural_sha256=sha256:006ddc6d2b8e8c350a879edeb7140d36dbbd31c0c745b96f57792871b9099ee4; diagnostics_sha256=sha256:01c7b81828826b44d18d0b6a26288ac62b031cf4e30242a421f77ec37b2ca44e)\n"
     },
     {
       "check_ids": [],
       "command": "bun run typecheck",
-      "duration_ms": 2495,
+      "duration_ms": 1100,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
