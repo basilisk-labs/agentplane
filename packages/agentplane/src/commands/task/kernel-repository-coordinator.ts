@@ -1,3 +1,4 @@
+import { protectedPathKindForFile } from "../../shared/protected-paths.js";
 import path from "node:path";
 import { mkdir } from "node:fs/promises";
 import { parseTaskIdFromBranch } from "@agentplaneorg/core/git";
@@ -269,6 +270,7 @@ export async function commitCanonicalImplementation(opts: {
   directory: string;
   work_order: AgentWorkOrderV2;
   changed_paths: readonly string[];
+  repository_effects?: readonly string[];
 }): Promise<KernelRepositoryEvidence | null> {
   const baseline = await readKernelRepositoryBaseline(opts.directory);
   if (
@@ -373,6 +375,29 @@ export async function commitCanonicalImplementation(opts: {
     // A rejected hook can leave an older version of an authorized path staged.
     // Refresh the implementation paths before the guarded commit retries them.
     await opts.command.git.stage([...paths]);
+    const protectedKinds = new Set(
+      paths.map((filePath) =>
+        protectedPathKindForFile({
+          filePath,
+          tasksPath: opts.command.config.paths.tasks_path,
+          workflowDir: opts.command.config.paths.workflow_dir,
+          taskId: baseline.task_id,
+        }),
+      ),
+    );
+    const policyAuthority = opts.repository_effects?.includes("security_boundary") === true;
+    const allowPolicy = policyAuthority && protectedKinds.has("policy");
+    const allowConfig = policyAuthority && protectedKinds.has("config");
+    if (allowPolicy || allowConfig) {
+      const staged = await opts.command.git.statusStagedPaths();
+      if (
+        staged.some(
+          (file) =>
+            !paths.includes(file) && !taskArtifactPath(opts.command, baseline.task_id, file),
+        )
+      )
+        throw new Error("Canonical policy commit includes unrelated staged paths");
+    }
     const exitCode = await cmdCommit({
       ctx: opts.command,
       cwd: baseline.checkout,
@@ -383,8 +408,8 @@ export async function commitCanonicalImplementation(opts: {
       autoAllow: false,
       allowTasks: true,
       allowBase: false,
-      allowPolicy: false,
-      allowConfig: false,
+      allowPolicy,
+      allowConfig,
       allowHooks: false,
       allowCI: false,
       requireClean: false,

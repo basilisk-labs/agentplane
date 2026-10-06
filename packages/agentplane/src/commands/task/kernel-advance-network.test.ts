@@ -210,19 +210,19 @@ async function fixture(role: "EXECUTOR" | "CURATOR" = "EXECUTOR") {
       }),
     ),
   ).toMatchObject({ kind: "committed" });
-  const runtime = { adapter, lifecycle, authority, native, input };
-  mocks.runtime.mockResolvedValue(runtime);
-  const orders: AgentWorkOrderV2[] = [];
-  mocks.issue.mockImplementation((_command: unknown, order: AgentWorkOrderV2) => {
-    orders.push(order);
-    return { kind: "agent_episode", work_order_id: order.work_order_id };
-  });
   const command = {
     backendId: "local",
     taskBackend: backend,
     resolvedProject: { gitRoot: process.cwd() },
     config: { paths: { workflow_dir: ".agentplane/tasks", tasks_path: ".agentplane/tasks.json" } },
   } as CommandContext;
+  const runtime = { adapter, lifecycle, authority, native, input, command };
+  mocks.runtime.mockResolvedValue(runtime);
+  const orders: AgentWorkOrderV2[] = [];
+  mocks.issue.mockImplementation((_command: unknown, order: AgentWorkOrderV2) => {
+    orders.push(order);
+    return { kind: "agent_episode", work_order_id: order.work_order_id };
+  });
   const advance = () => advanceTaskStep({ command, task_id: journey.task.id, transport: "host" });
   return { runtime, values, orders, advance, taskId: journey.task.id };
 }

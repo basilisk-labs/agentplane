@@ -90,7 +90,199 @@ async function fixture() {
   return { root, backend, adapter: new KernelBackendAdapter(backend, identity) };
 }
 
+function approvedMaterialLineage(state: "ACTIVE" | "COMPLETED"): taskKernel.TaskAggregate {
+  const digest = taskKernel.kernelDigest;
+  const requirements = {
+    scope_roots: ["src"],
+    repository_effects: ["repository_write"],
+    external_effects: [],
+    capabilities: ["repository_write"],
+    resources: [],
+  };
+  const definitions: taskKernel.WorkItemDefinition[] = [1, 2, 3].map((n) => ({
+    id: `work-${n}`,
+    depends_on: n === 1 ? [] : [`work-${n - 1}`],
+    required_inputs: [],
+    expected_outputs: [`output-${n}`],
+    execution_requirements: requirements,
+    optional: false,
+  }));
+  const plans: taskKernel.PlanRecord[] = [];
+  const lineage: taskKernel.CanonicalAuthorityRecord[] = [];
+  for (const revision of [1, 2, 3]) {
+    const workItems = definitions.slice(0, revision);
+    const planDigest = digest({ revision, work_items: workItems });
+    const approval =
+      revision === 1
+        ? digest("initial-user-approval")
+        : taskKernel.planScopeExpansionApprovalDigest({
+            task_id: taskId,
+            current_plan_digest: plans.at(-1)!.digest,
+            amended_plan_digest: planDigest,
+            actor_id: "USER",
+          });
+    plans.push({
+      revision,
+      digest: planDigest,
+      state: revision === 3 ? "APPROVED" : "SUPERSEDED",
+      approval_actor_id: "USER",
+      approval_evidence_digest: approval,
+      work_items: workItems,
+    });
+    const parent = lineage.at(-1)?.authority;
+    const contents = {
+      ...input().authority!,
+      scope_roots: requirements.scope_roots,
+      plan_revision: revision,
+      plan_digest: planDigest,
+      provenance: {
+        kind: parent ? ("SYSTEM" as const) : ("USER" as const),
+        actor_id: parent ? "kernel" : "USER",
+        evidence_digest: parent?.provenance.evidence_digest ?? approval,
+        parent_authority_digest: parent?.digest ?? null,
+      },
+    };
+    lineage.push({
+      authority: { ...contents, digest: taskKernel.authorityDigest(contents) },
+      approval_mode: parent ? null : "manual_operator",
+      observation: parent
+        ? {
+            kind: "plan_amendment",
+            evidence_digest: digest(`amend-${revision}`),
+            previous_fingerprint: parent.repository_fingerprint,
+            changed_paths: [],
+            added_scope_roots: [],
+          }
+        : null,
+    });
+  }
+  const parent = lineage.at(-1)!.authority;
+  const continued = {
+    ...parent,
+    repository_fingerprint: digest("implementation-after-amendments"),
+    provenance: { ...parent.provenance, parent_authority_digest: parent.digest },
+  };
+  lineage.push({
+    authority: { ...continued, digest: taskKernel.authorityDigest(continued) },
+    approval_mode: null,
+    observation: {
+      kind: "repository_implementation",
+      evidence_digest: digest("implementation-observation"),
+      previous_fingerprint: parent.repository_fingerprint,
+      changed_paths: ["src/repair.ts"],
+    },
+  });
+  const validation = (identity: taskKernel.Sha256Digest): taskKernel.ValidationRecord => ({
+    status: "PASSED",
+    identity: {
+      implementation_identity: identity,
+      check_id: "reviewed-tests",
+      command_digest: digest("test-command"),
+      toolchain_digest: digest("toolchain"),
+      environment_digest: digest("environment"),
+    },
+    evidence_digests: [digest("preserved-review-evidence")],
+    observed_at: "2026-10-05T00:00:00.000Z",
+  });
+  return {
+    schema_version: 1,
+    id: taskId,
+    revision: 20,
+    state,
+    intent_digest: digest("intent"),
+    current_plan: plans[2]!,
+    plan_history: plans.slice(0, 2),
+    authority_lineage: lineage,
+    work_items: Object.fromEntries(
+      definitions.map((definition, index) => {
+        const result = digest(`result-${definition.id}`);
+        return [
+          definition.id,
+          {
+            definition,
+            state: "COMPLETED" as const,
+            revision: index + 1,
+            attempt: 1,
+            claim_id: `claim-${definition.id}`,
+            result_digest: result,
+            output_manifests: [
+              {
+                id: definition.expected_outputs[0]!,
+                kind: "report",
+                digest: digest(`output-${definition.id}`),
+                task_id: taskId,
+                plan_revision: index + 1,
+                work_item_id: definition.id,
+                attempt: 1,
+                repository_fingerprint: fingerprint,
+              },
+            ],
+            validation: validation(result),
+          },
+        ];
+      }),
+    ),
+    final_validation: state === "COMPLETED" ? validation(continued.repository_fingerprint) : null,
+    effects: [],
+    mutation_receipts: {},
+    controller_transfer: null,
+    migration_receipts: [],
+  };
+}
+
 describe("canonical kernel persistence boundary", () => {
+  it.each(["ACTIVE", "COMPLETED"] as const)(
+    "roundtrips %s material-amendment lineage without losing completed work or review evidence",
+    async (state) => {
+      const { backend, adapter } = await fixture();
+      const aggregate = approvedMaterialLineage(state);
+      const record = makeKernelRecord(identity, aggregate, []);
+      const original = structuredClone(record);
+      await backend.writeTask({
+        ...task(),
+        status: projectKernelTask(aggregate).status,
+        extensions: { [TASK_KERNEL_EXTENSION]: record },
+      });
+      const loaded = await adapter.read(taskId);
+      expect(loaded.kind).toBe("canonical");
+      if (loaded.kind !== "canonical") throw new Error(JSON.stringify(loaded));
+      expect(loaded.record).toEqual(original);
+      expect(loaded.record.aggregate.plan_history.map((entry) => entry.work_items.length)).toEqual([
+        1, 2,
+      ]);
+      expect(loaded.record.aggregate.work_items["work-1"]).toEqual(aggregate.work_items["work-1"]);
+      expect(loaded.record.aggregate.work_items["work-1"]!.output_manifests[0]!.plan_revision).toBe(
+        1,
+      );
+      expect(loaded.record.aggregate.authority_lineage).toHaveLength(4);
+      expect(record).toEqual(original);
+
+      // Recompute transport integrity: the reader must reject invalid historical approval itself.
+      const tampered = {
+        ...aggregate,
+        plan_history: aggregate.plan_history.map((plan, index) =>
+          index === 1
+            ? {
+                ...plan,
+                approval_evidence_digest: taskKernel.kernelDigest("wrong-history-approval"),
+              }
+            : plan,
+        ),
+      };
+      const corruptRecord = makeKernelRecord(identity, tampered, []);
+      const corruptRead = readKernelRecord(
+        { ...loaded.task, extensions: { [TASK_KERNEL_EXTENSION]: corruptRecord } },
+        identity,
+      );
+      expect(corruptRead).toMatchObject({
+        kind: "malformed",
+        reason: "canonical_invariant_violation",
+      });
+      if (corruptRead.kind !== "malformed") throw new Error("Expected malformed record");
+      expect(corruptRead.fields).toContain("authority_plan");
+    },
+  );
+
   it("retains accepted outputs when USER rejection reopens an approved plan", () => {
     const resultDigest = taskKernel.kernelDigest("accepted-result");
     const definition = {

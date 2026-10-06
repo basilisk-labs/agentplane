@@ -24,6 +24,8 @@ import {
   prepareInfrastructureVerificationForCheckout,
 } from "./verification-infrastructure.js";
 
+import { assertWorkItemResume, workItemResumeOperatorAction } from "./kernel-work-item-resume.js";
+
 type Runtime = Awaited<ReturnType<typeof createKernelRuntime>>;
 export type KernelValidationEvidence = {
   task_id: string;
@@ -341,8 +343,36 @@ export async function resolveRecordedNativeValidation(
   binding: InspectionBinding,
   validation: k.ValidationRecord,
 ) {
-  if (validation.status === "BLOCKED")
-    return { kind: "human_required" as const, reason: "canonical_validation_infrastructure" };
+  if (validation.status === "BLOCKED") {
+    const read = await runtime.adapter.read(binding.task_id);
+    if (
+      read.kind !== "canonical" ||
+      k.kernelDigest(read.record.aggregate.work_items[binding.work_item_id]?.validation) !==
+        k.kernelDigest(validation) ||
+      read.record.aggregate.work_items[binding.work_item_id]?.claim_id !== binding.claim_id ||
+      read.record.aggregate.work_items[binding.work_item_id]?.attempt !== binding.attempt ||
+      read.record.aggregate.work_items[binding.work_item_id]?.result_digest !==
+        binding.result_digest ||
+      read.record.aggregate.current_plan?.digest !== binding.plan_digest ||
+      read.record.aggregate.current_plan.revision !== binding.plan_revision ||
+      read.record.repository_identity !== binding.repository_identity ||
+      read.record.aggregate.work_items[binding.work_item_id]?.definition.contract_digest !==
+        binding.contract_digest
+    )
+      throw new Error("Canonical blocked validation recovery binding is stale");
+    assertWorkItemResume(read.record, {
+      taskId: binding.task_id,
+      workItemId: binding.work_item_id,
+      stateDigest: read.record.digest,
+      by: "USER",
+      note: "Emit the operator recovery boundary.",
+    });
+    return {
+      kind: "human_required" as const,
+      reason: "canonical_validation_infrastructure",
+      operator_action: workItemResumeOperatorAction(read.record, binding.work_item_id),
+    };
+  }
   requireKernelCommit(
     await runtime.lifecycle.apply(
       await runtime.input(

@@ -25,7 +25,7 @@ export const explicitRecipeSelectionSchema = z.strictObject({
   scenario_id: text,
   scenario_api_version: z.literal("2"),
 });
-export class ExplicitRecipeSelectionError extends Error {
+class ExplicitRecipeSelectionError extends Error {
   constructor(
     readonly code: string,
     readonly facts: string[],

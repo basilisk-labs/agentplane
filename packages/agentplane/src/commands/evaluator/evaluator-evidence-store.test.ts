@@ -3,10 +3,23 @@ import {
   renderAgentSemanticResultSchemaJson,
 } from "@agentplaneorg/core/schemas";
 import { issueKernelExchange } from "../task/kernel-exchange.js";
-import { mkdir, readFile, readdir, rename, rm, symlink, writeFile } from "node:fs/promises";
+import {
+  link,
+  mkdir,
+  readFile,
+  readdir,
+  rename,
+  rm,
+  symlink,
+  utimes,
+  writeFile,
+} from "node:fs/promises";
 import path from "node:path";
 import { mkGitRepoRoot } from "@agentplane/testkit";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
+import { readStableEvaluatorEvidenceFile } from "./evaluator-evidence-boundary.js";
 
 import {
   assertEvaluatorPacketCurrent,
@@ -61,7 +74,152 @@ async function createCompletePacket(root: string, taskId: string) {
   return { qualityRoot, reviewRoot, manifestPath, artifacts, written };
 }
 
+function uninitializedPublicationGate(): never {
+  throw new Error("Publication gate was not initialized");
+}
+
+function publicationGate(): { promise: Promise<void>; resolve: () => void } {
+  let complete: () => void = uninitializedPublicationGate;
+  const promise = new Promise<void>((resolve) => {
+    complete = resolve;
+  });
+  return { promise, resolve: complete };
+}
+
 describe("evaluator evidence object store", () => {
+  it("waits for a concurrent identical publisher to remove its staging link", async () => {
+    const root = await mkGitRepoRoot();
+    const opts = {
+      gitRoot: root,
+      taskQualityRoot: path.join(root, ".agentplane", "tasks", "T-PUBLISH-RACE", "quality"),
+      logicalName: "evaluator-blueprint",
+      kind: "blueprint" as const,
+      extension: ".json",
+      mediaType: "application/json",
+      contents: "{}\n",
+    };
+    const linked = publicationGate();
+    const release = publicationGate();
+    const winner = putEvaluatorEvidenceObject({
+      ...opts,
+      boundaryHook: async (phase) => {
+        if (phase !== "before_object_staging_cleanup") return;
+        linked.resolve();
+        await release.promise;
+      },
+    });
+    await linked.promise;
+    let waited = false;
+    try {
+      const loser = await putEvaluatorEvidenceObject({
+        ...opts,
+        boundaryHook: async (phase) => {
+          if (phase === "before_object_finalization_wait") waited = true;
+          // The old reader reaches before_artifact_open with a two-link snapshot.
+          // Removing staging here deterministically exposes its ctime mismatch.
+          if (phase !== "before_object_finalization_wait" && phase !== "before_artifact_open")
+            return;
+          release.resolve();
+          await winner;
+        },
+      });
+      expect(waited).toBe(true);
+      expect(loser).toEqual(await winner);
+      expect(await readFile(path.join(root, loser.path), "utf8")).toBe(opts.contents);
+    } finally {
+      release.resolve();
+      await winner;
+    }
+  });
+
+  it.each(["external cleanup", "replacement", "write", "abandoned"] as const)(
+    "handles %s while awaiting publication without retrying a stable read",
+    async (action) => {
+      const root = await mkGitRepoRoot();
+      const directory = path.join(root, "objects");
+      await mkdir(directory);
+      const staging = path.join(directory, "staging");
+      const object = path.join(directory, "object");
+      await writeFile(staging, "original");
+      await utimes(staging, 0, 0);
+      await link(staging, object);
+      let entered = false;
+      let clock: { mockRestore: () => void } | undefined;
+      try {
+        const reading = readStableEvaluatorEvidenceFile({
+          gitRoot: root,
+          filePath: object,
+          label: "Evaluator evidence object",
+          waitForObjectFinalization: true,
+          hook: async (phase) => {
+            if (phase !== "before_object_finalization_wait" || entered) return;
+            entered = true;
+            switch (action) {
+              case "external cleanup": {
+                // A separate process completes publication; no process-local lock is involved.
+                await promisify(execFile)(process.execPath, [
+                  "-e",
+                  "require('node:fs').unlinkSync(process.argv[1])",
+                  staging,
+                ]);
+                break;
+              }
+              case "replacement": {
+                await rename(object, `${object}.old`);
+                await writeFile(object, "original");
+                break;
+              }
+              case "write": {
+                await writeFile(object, "modified");
+                break;
+              }
+              case "abandoned": {
+                clock = vi.spyOn(performance, "now").mockReturnValue(Number.MAX_SAFE_INTEGER);
+                break;
+              }
+            }
+          },
+        });
+        if (action === "external cleanup") {
+          const contents = await reading;
+          expect(contents.toString()).toBe("original");
+        } else {
+          await expect(reading).rejects.toThrow(
+            action === "abandoned"
+              ? /publication did not finalize/u
+              : /changed during publication/u,
+          );
+        }
+        expect(entered).toBe(true);
+      } finally {
+        clock?.mockRestore();
+      }
+    },
+  );
+
+  it.each(["before_artifact_open", "after_artifact_open"] as const)(
+    "rejects in-place writes at %s after publication finalized",
+    async (phaseToMutate) => {
+      const root = await mkGitRepoRoot();
+      const directory = path.join(root, "objects");
+      await mkdir(directory);
+      const object = path.join(directory, "object");
+      await writeFile(object, "original");
+      await utimes(object, 0, 0);
+      await expect(
+        readStableEvaluatorEvidenceFile({
+          gitRoot: root,
+          filePath: object,
+          label: "Evaluator evidence object",
+          waitForObjectFinalization: true,
+          hook: async (phase) => {
+            if (phase === phaseToMutate) await writeFile(object, "modified");
+          },
+        }),
+      ).rejects.toThrow(/changed (before it could be|while it was) read/u);
+    },
+  );
+
   it("reuses immutable content by digest and verifies the compact packet manifest", async () => {
     const root = await mkGitRepoRoot();
     const taskId = "202608030000-EVSTORE";

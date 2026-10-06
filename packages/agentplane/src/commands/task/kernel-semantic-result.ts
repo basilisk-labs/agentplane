@@ -278,11 +278,13 @@ export async function acceptKernelSemanticResult(
         continueAuthority = true;
       }
       await writeKernelArtifact(directory, "received-result.json", semantic);
+      await runtime.native.readContext(taskId);
       const evidence = await commitCanonicalImplementation({
-        command,
+        command: runtime.command,
         directory,
         work_order: workOrder,
         changed_paths: changedPaths,
+        repository_effects: item.definition.execution_requirements.repository_effects,
       });
       if (evidence) await writeKernelArtifact(directory, "repository-evidence.json", evidence);
       if (continueAuthority) requireKernelCommit(await runtime.authority.continue(taskId));

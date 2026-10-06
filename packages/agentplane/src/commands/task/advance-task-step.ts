@@ -93,6 +93,7 @@ async function advanceCanonicalRoute(opts: {
     transport: opts.transport,
     operation_id: `continuation:${opts.task_id}`,
   });
+  opts = { ...opts, command: runtime.command };
   const planningCheckout = await canonicalPlanningCheckoutBoundary({
     command: opts.command,
     read: await runtime.adapter.read(opts.task_id),

@@ -1,3 +1,4 @@
+import type { CommandContext } from "../shared/task-backend.js";
 import { execFile } from "node:child_process";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
@@ -28,7 +29,10 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock("./kernel-runtime-context.js", () => ({
-  createKernelRuntime: mocks.createKernelRuntime,
+  createKernelRuntime: async (options: { command: CommandContext }) => ({
+    ...((await mocks.createKernelRuntime(options)) as Record<string, unknown>),
+    command: options.command,
+  }),
   requireKernelCommit: vi.fn((value: unknown) => value),
 }));
 vi.mock("./kernel-effect-coordinator.js", () => ({

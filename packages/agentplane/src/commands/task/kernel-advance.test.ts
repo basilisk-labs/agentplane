@@ -1,3 +1,4 @@
+import type { CommandContext } from "../shared/task-backend.js";
 import { describe, expect, it, vi } from "vitest";
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
 import { execFile } from "node:child_process";
@@ -15,7 +16,10 @@ const advanceMocks = vi.hoisted(() => ({
 }));
 
 vi.mock("./kernel-runtime-context.js", () => ({
-  createKernelRuntime: advanceMocks.createKernelRuntime,
+  createKernelRuntime: async (options: { command: CommandContext }) => ({
+    ...((await advanceMocks.createKernelRuntime(options)) as Record<string, unknown>),
+    command: options.command,
+  }),
   requireKernelCommit: vi.fn(),
 }));
 vi.mock("./kernel-final-validation.js", () => ({

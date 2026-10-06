@@ -12,8 +12,16 @@
  .../src/commands/recipes/preview-v2.command.ts     |   51 +
  .../recipes/roadmap-explicit-selection.test.ts     |  342 ++++
  .../recipes/roadmap-v1-v2-conversion.test.ts       |  426 ++++
+ .../src/commands/shared/declared-check.test.ts     |   56 +-
+ .../src/commands/shared/declared-check.ts          |   31 +-
+ .../src/commands/task/advance-task-step.ts         |    5 +-
  .../src/commands/task/create-plan-input.ts         |   65 +-
  .../agentplane/src/commands/task/create.command.ts |   55 +-
+ .../direct-task-verification.sequence.cases.ts     |  104 +-
+ .../src/commands/task/direct-task-verification.ts  |   27 +-
+ .../commands/task/kernel-advance-network.test.ts   |  302 +++
+ .../src/commands/task/kernel-exchange.test.ts      |  619 +++++-
+ .../src/commands/task/kernel-exchange.ts           |  298 ++-
  .../src/commands/task/kernel-inspection.ts         |   27 +-
  .../task/kernel-plan-supplied-approval.test.ts     |   68 +
  .../agentplane/src/commands/task/kernel-plan.ts    |   60 +-
@@ -21,7 +29,8 @@
  .../src/commands/task/kernel-recipe-admission.ts   |  106 +
  .../src/commands/task/kernel-runtime-context.ts    |    8 +
  .../src/commands/task/kernel-semantic-result.ts    |   38 +-
- .../src/commands/task/kernel-work-order.ts         |   58 +-
+ .../task/kernel-work-order.network.test.ts         |  191 ++
+ .../src/commands/task/kernel-work-order.ts         |  101 +-
  .../src/commands/task/plan-set.command.ts          |   70 +-
  .../agentplane/src/commands/task/recipe-input.ts   |  116 ++
  .../src/commands/task/roadmap-recipe-repin.test.ts |  467 +++++
@@ -81,4 +90,4 @@
  packages/recipes/src/scenario.ts                   |   15 +
  packages/recipes/tsconfig.json                     |    7 +-
  schemas/agent-semantic-result.schema.json          | 2081 ++++++++++++++++----
- 83 files changed, 12422 insertions(+), 441 deletions(-)
+ 92 files changed, 13959 insertions(+), 580 deletions(-)

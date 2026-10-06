@@ -569,3 +569,100 @@ describe("canonical exchange scope recovery", () => {
     },
   );
 });
+
+describe("compact packet network authority", () => {
+  it.each(["allowed", "narrowed-ceiling", "planning"] as const)(
+    "mirrors the native WorkOrder for %s",
+    async (mode) => {
+      const root = await mkdtemp(path.join(os.tmpdir(), "network-exchange-"));
+      try {
+        const contract = {
+          role: "EXECUTOR" as const,
+          objective: "Read the authorized registry",
+          acceptance_criteria: ["No publication"],
+          verification_commands: [],
+        };
+        const item = runtime("EXECUTING");
+        const definition = {
+          ...item.definition,
+          contract_digest: k.kernelDigest(contract),
+          execution_requirements: {
+            ...item.definition.execution_requirements,
+            external_effects: ["network_read"],
+          },
+        };
+        const workItems = [definition];
+        const plan = {
+          ...aggregate().current_plan!,
+          work_items: workItems,
+          digest: k.kernelDigest({ revision: 1, work_items: workItems }),
+        };
+        const intent = {
+          objective: contract.objective,
+          context: "Exact native network projection",
+        };
+        const record = makeKernelRecord(
+          rootAuthority.repository_identity,
+          aggregate({
+            intent_digest: k.kernelDigest(intent),
+            current_plan: plan,
+            work_items: { kernel: { ...item, definition } },
+          }),
+          [],
+          { intent, contracts: { [String(k.kernelDigest(contract))]: contract } },
+        );
+        const authority = {
+          ...rootAuthority,
+          plan_digest: plan.digest,
+          work_item_id: "kernel",
+          external_effects: ["network_read"],
+        };
+        authority.digest = k.authorityDigest(authority);
+        const context = {
+          task_id: record.aggregate.id,
+          task_revision: record.aggregate.revision,
+          repository_identity: authority.repository_identity,
+          repository_fingerprint: authority.repository_fingerprint,
+          ceiling: {
+            ...authority,
+            external_effects: mode === "narrowed-ceiling" ? [] : ["network_read"],
+          },
+        };
+        const implementation = resumeKernelWorkOrder({
+          record,
+          work_item_id: "kernel",
+          authority,
+          repository_fingerprint: authority.repository_fingerprint,
+        });
+        if (!implementation) throw new Error("Expected native implementation");
+        const command = {
+          backendId: "local",
+          resolvedProject: { gitRoot: process.cwd() },
+          config: {
+            paths: { workflow_dir: ".agentplane/tasks", tasks_path: ".agentplane/tasks.json" },
+          },
+        } as never;
+        const order = await buildKernelAgentWorkOrder({
+          command,
+          record,
+          context: context as never,
+          ...(mode === "planning" ? {} : { implementation }),
+        });
+        const before = structuredClone(order.authority);
+        exchangeMocks.commonDir.mockResolvedValue(root);
+        const packet = await issueKernelExchange(command, order, "host", record);
+        const delivered = JSON.parse(
+          await readFile(path.join(packet.exchange.directory, "work-order.json"), "utf8"),
+        ) as AgentWorkOrderV2;
+        expect(order.authority.network).toBe(mode === "allowed" ? "allowed" : "deny");
+        expect(packet.authority.network).toBe(order.authority.network);
+        expect(delivered.authority).toEqual(before);
+        expect(order.authority).toEqual(before);
+        expect(order.authority.allowed_tool_classes).not.toContain("network_read");
+        expect(order.authority.external_side_effects).toEqual([]);
+      } finally {
+        await rm(root, { recursive: true, force: true });
+      }
+    },
+  );
+});

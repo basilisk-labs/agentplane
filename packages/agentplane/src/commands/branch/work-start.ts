@@ -12,6 +12,9 @@ import {
   parseTaskIdFromBranch,
   taskBranchName,
 } from "@agentplaneorg/core/git";
+import { taskExecutionBaseFromExtensions } from "@agentplaneorg/core/tasks";
+import type { TaskData } from "../../backends/task-backend.js";
+import { resolveLogicalRepositoryIdentity } from "../task/execution-authority-context.js";
 import { PolicyEngine } from "../../policy/engine.js";
 import { gitBranchExists, gitCurrentBranch } from "../shared/git-ops.js";
 import { throwIfPolicyDecisionDenied } from "../shared/policy-deny.js";
@@ -67,6 +70,43 @@ async function ensureSingleTaskBranchOwnership(opts: {
       `Task ${opts.taskId} already has active branch ownership: ${ownedBranches.join(", ")}. ` +
       "Finish or clean up that branch before starting another worktree for the same task.",
   });
+}
+
+/** A stored native base permits primary-checkout preparation without checking it out. */
+async function hasAdmittedFrozenBase(opts: {
+  gitRoot: string;
+  task: TaskData;
+  baseBranch: string;
+  baseSha?: string;
+}): Promise<boolean> {
+  const frozen = taskExecutionBaseFromExtensions(opts.task.extensions);
+  if (!frozen || frozen.source === "legacy" || !frozen.repository_identity) return false;
+  if (frozen.base_ref !== opts.baseBranch || frozen.base_sha !== opts.baseSha) {
+    throw new CliError({
+      code: "E_GIT",
+      message: "Worktree preparation must use the exact admitted task execution base.",
+    });
+  }
+  await resolveLogicalRepositoryIdentity({
+    git_root: opts.gitRoot,
+    task: opts.task,
+    create_if_missing: false,
+  });
+  // Verify both commit type and ancestry. A moving base may advance, but must not
+  // silently substitute a rewritten or unrelated history for the admitted base.
+  await execFileAsync(
+    "git",
+    ["rev-parse", "--verify", "--end-of-options", `${frozen.base_sha}^{commit}`],
+    {
+      cwd: opts.gitRoot,
+      env: gitEnv(),
+    },
+  );
+  await execFileAsync("git", ["merge-base", "--is-ancestor", frozen.base_sha, opts.baseBranch], {
+    cwd: opts.gitRoot,
+    env: gitEnv(),
+  });
+  return true;
 }
 
 export async function cmdWorkStart(opts: {
@@ -177,12 +217,20 @@ export async function cmdWorkStart(opts: {
         gitRoot: resolved.gitRoot,
         baseBranch,
       });
-      await ensureBranchPrBaseCheckout({
-        context: lifecycleContext,
+      const admittedFrozenBase = await hasAdmittedFrozenBase({
         gitRoot: resolved.gitRoot,
-        command: "work start",
-        mismatchMessage: `work start must be run on base branch ${baseBranch} (current: ${currentBranch})`,
+        task,
+        baseBranch,
+        baseSha: opts.baseSha,
       });
+      if (!admittedFrozenBase) {
+        await ensureBranchPrBaseCheckout({
+          context: lifecycleContext,
+          gitRoot: resolved.gitRoot,
+          command: "work start",
+          mismatchMessage: `work start must be run on base branch ${baseBranch} (current: ${currentBranch})`,
+        });
+      }
       await ensureCurrentBaseBranch(resolved.gitRoot, baseBranch);
       baseRef = opts.baseSha ?? baseBranch;
     }

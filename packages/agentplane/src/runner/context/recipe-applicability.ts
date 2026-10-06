@@ -20,7 +20,7 @@ import {
 } from "../../shared/contained-stable-file.js";
 
 export type RecipeObservedValue = string | number | boolean | null;
-export type RecipePredicateState = "true" | "false" | "unknown";
+type RecipePredicateState = "true" | "false" | "unknown";
 /** Native application callbacks only. Never populate these from agent results or Recipe data. */
 export type RecipeApplicabilityObservers = {
   capabilities?: () => AgentplaneCapabilityRegistry | Promise<AgentplaneCapabilityRegistry>;
@@ -30,7 +30,7 @@ export type RecipeApplicabilityObservers = {
     { source: string; read: () => RecipeObservedValue | Promise<RecipeObservedValue> }
   >;
 };
-export type RecipePredicateObservation = {
+type RecipePredicateObservation = {
   ref: string;
   predicate: ScenarioPredicate;
   state: RecipePredicateState;

@@ -49,7 +49,8 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe("task-run lifecycle cancellation", () => {
+// Real Git and child-process fixtures need headroom without changing cancellation deadlines.
+describe("task-run lifecycle cancellation", { timeout: 120_000 }, () => {
   it("does not orphan a live prepared owner when ps identity fields are unavailable", async () => {
     vi.spyOn(processSupervision, "readObservedProcessIdentity").mockResolvedValue({
       pid: process.pid,
