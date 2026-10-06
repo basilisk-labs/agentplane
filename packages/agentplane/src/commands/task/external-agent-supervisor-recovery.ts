@@ -54,6 +54,7 @@ export async function failRejectedExternalAgentResult(opts: {
       classification: "external_agent_result_application_rejected",
       transition_id: opts.exchange.transition_id,
       result_digest: opts.exchange.result_digest,
+      observed_state_fingerprint: opts.state_fingerprint_digest,
       error_code: opts.error.code,
       error_message: opts.error.message,
     },
@@ -102,6 +103,31 @@ export function requiresPlanningRecoveryReplacement(opts: {
     step.episode.purpose === "planning" &&
     (opts.exchange.purpose !== "planning" || opts.exchange.status === "result_received") &&
     step.preconditionFingerprint.digest !== opts.exchange.state_fingerprint
+  );
+}
+
+/** Only an observation with no mutation authority can retire without applying its report. */
+export function isReadOnlyWorktreeObservation(opts: {
+  exchange: ExternalAgentExchange;
+  work_order: AgentWorkOrderV2;
+}): boolean {
+  const authority = opts.work_order.authority;
+  return (
+    opts.exchange.purpose === "task_worktree_resolution" &&
+    authority.sandbox === "read-only" &&
+    authority.writable_roots.length === 0 &&
+    authority.external_side_effects.length === 0 &&
+    authority.allowed_tool_classes.every((tool) =>
+      [
+        "repository_read",
+        "git_read",
+        "run_checks",
+        "knowledge_read",
+        "knowledge_request",
+        "report_result",
+        "report_blocker",
+      ].includes(tool),
+    )
   );
 }
 
@@ -460,6 +486,7 @@ export async function recoverPendingExternalAgentResult(opts: {
     journal_path: journalPath,
   });
   const implementationRecoveryRequired =
+    !isReadOnlyWorktreeObservation({ exchange, work_order: workOrder }) &&
     !refinementApplied &&
     requiresImplementationRecoveryReplacement({
       decision: opts.current_decision,

@@ -1,3 +1,4 @@
+import { completedBranchRequiresImplementationRework } from "./route-decision-verification.js";
 import { describe, expect, it, vi } from "vitest";
 
 import type { TaskData } from "../../backends/task-backend.js";
@@ -678,5 +679,44 @@ describe("DONE route quality-review target", () => {
     expect(blockers).not.toEqual(
       expect.arrayContaining([expect.objectContaining({ code: "implementation_rework_required" })]),
     );
+  });
+});
+
+describe("completed verification rework terminal boundaries", () => {
+  it("does not reopen merged tasks with close tail recorded on base", async () => {
+    const task = verificationReworkTask(false);
+    task.status = "DONE";
+    const open = openPrFlow();
+    const blockers = await blockersFor(
+      headSha,
+      undefined,
+      {
+        ...open,
+        pr: { ...open.pr, state: "MERGED" },
+        closeTail: { state: "recorded_on_base", base: "main" },
+      },
+      task,
+    );
+    expect(
+      blockers.some(
+        (blocker) =>
+          blocker.code === "implementation_rework_required" ||
+          blocker.code === "verification_required",
+      ),
+    ).toBe(false);
+  });
+  it("leaves direct-mode completed tasks outside branch rework", async () => {
+    const task = verificationReworkTask(false);
+    task.status = "DONE";
+    await expect(
+      completedBranchRequiresImplementationRework({
+        ctx,
+        task,
+        resume,
+        workflowMode: "direct",
+        prFlow: null,
+        batchOwnership: { role: "none" },
+      }),
+    ).resolves.toBe(false);
   });
 });

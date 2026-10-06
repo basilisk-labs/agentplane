@@ -94,6 +94,7 @@ export async function applyAcceptedExternalAgentResult(opts: {
   }
   if (opts.exchange.purpose === "task_worktree_resolution") {
     await applyExternalReadOnlyWorktreeObservation({
+      work_order: opts.work_order,
       command: opts.command,
       exchange: opts.exchange,
       envelope: opts.envelope,
