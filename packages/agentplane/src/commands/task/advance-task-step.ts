@@ -219,12 +219,12 @@ async function advanceCanonicalRoute(opts: {
         };
       }
       const localProgress = await executeCanonicalCompletedWorkflowLocally({
-        command: opts.command,
+        ...opts,
         decision: localWorkflow,
-        task_id: opts.task_id,
         replace_failed_operation: replaceFailedOperation,
       });
       if (localProgress) {
+        if (typeof localProgress === "object") return localProgress.packet;
         anomalyTracker.reset();
         if (localProgress === "agent") replaceFailedOperation = false;
         continue;
@@ -267,12 +267,12 @@ async function advanceCanonicalRoute(opts: {
         };
       }
       const providerProgress = await executeCanonicalCompletedWorkflowLocally({
-        command: opts.command,
+        ...opts,
         decision: workflow,
-        task_id: opts.task_id,
         replace_failed_operation: replaceFailedOperation,
       });
       if (providerProgress) {
+        if (typeof providerProgress === "object") return providerProgress.packet;
         anomalyTracker.reset();
         if (providerProgress === "agent") replaceFailedOperation = false;
         continue;

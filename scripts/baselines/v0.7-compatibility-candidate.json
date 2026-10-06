@@ -8,14 +8,14 @@
   "candidate": {
     "section_digests": {
       "agent_facing_context_contracts": "7710a5217ea614a3da8b4e99fe61e16fb738179797eba64c75c9537bc33f7785",
-      "cli_topology": "89c74acf70c054fbaf57ae104129c5d8a091c8d5b41ed17ea074a62f1c9f6339",
+      "cli_topology": "1b2e5ab4593f24b1363fee277d1f8d1efdbc78bb714dc16b518a0fbe8c3a4135",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
-      "package_manifests": "8bfba4f6df0470889d90bcb234fc9ab0192a164b1f6b7644b01d5b8c0a35912a",
+      "package_manifests": "ee1cec43b5f3371f7e7235f5aebd3254bcc2bedfa21d20eec8e2109d62f41faf",
       "tarball_policy": "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd",
       "workflow_schema": "dc851f68ff13c52fec5dbe522fa96cc1084771ce7e09ed0178c44f15d7c46452"
     },
-    "surface_sha256": "abb89e576e2d741c8b40794771d63e417759bb819e8ada82f006c5079b48fd7c"
+    "surface_sha256": "5dc975eb54828eab8fa9e6a89434c8542a3e91ad8a0b40f3fcf7bd17ac982c49"
   },
   "candidate_id": "agentplane.compatibility.v0.7.cumulative",
   "contract_artifacts": {
@@ -470,6 +470,34 @@
             "visibility": "user"
           },
           {
+            "args": [
+              {
+                "name": "source",
+                "required": true,
+                "valueHint": "<repository-relative-file>",
+                "variadic": false
+              }
+            ],
+            "group": "Recipes",
+            "id": ["recipes", "preview-v1"],
+            "options": [],
+            "visibility": "user"
+          },
+          {
+            "args": [
+              {
+                "name": "file",
+                "required": true,
+                "valueHint": "<recipe-input.json>",
+                "variadic": false
+              }
+            ],
+            "group": "Recipes",
+            "id": ["recipes", "preview-v2"],
+            "options": [],
+            "visibility": "user"
+          },
+          {
             "args": [{ "name": "cmd", "required": false, "valueHint": "<cmd>", "variadic": true }],
             "group": "Maintenance",
             "id": ["repair"],
@@ -547,6 +575,7 @@
             "group": "Task",
             "id": ["task", "create"],
             "options": [
+              { "kind": "string", "name": "recipe-file", "valueHint": "<path>" },
               { "kind": "string", "name": "plan-file", "valueHint": "<path>" },
               { "kind": "string", "name": "description", "valueHint": "<text>" },
               { "default": "CODER", "kind": "string", "name": "owner", "valueHint": "<id>" },
@@ -880,6 +909,8 @@
           "evidence stats",
           "integrate queue adopt-legacy-protected-conflict",
           "pr conflict-rework",
+          "recipes preview-v1",
+          "recipes preview-v2",
           "repair",
           "repair adopt-legacy-conflict",
           "task advance",
@@ -1304,6 +1335,12 @@
             "valueHint": "<low|normal|med|high>"
           },
           {
+            "command": "task create",
+            "kind": "string",
+            "name": "recipe-file",
+            "valueHint": "<path>"
+          },
+          {
             "choices": [
               "repository_write",
               "documentation",
@@ -1536,6 +1573,12 @@
             "name": "rejected-plan-digest",
             "required": true,
             "valueHint": "<sha256>"
+          },
+          {
+            "command": "task plan set",
+            "kind": "string",
+            "name": "recipe-file",
+            "valueHint": "<path>"
           },
           {
             "command": "task plan set",
@@ -2631,9 +2674,31 @@
             "kind": "option",
             "name": "workflow-recovery",
             "source_task": "202609060720-NZXQ0E"
+          },
+          {
+            "command": "recipes preview-v1",
+            "kind": "command",
+            "source_task": "202610041748-K43XFE"
+          },
+          {
+            "command": "recipes preview-v2",
+            "kind": "command",
+            "source_task": "202610041748-K43XFE"
+          },
+          {
+            "command": "task create",
+            "kind": "option",
+            "name": "recipe-file",
+            "source_task": "202610041748-K43XFE"
+          },
+          {
+            "command": "task plan set",
+            "kind": "option",
+            "name": "recipe-file",
+            "source_task": "202610041748-K43XFE"
           }
         ],
-        "command_count": { "from": 243, "to": 253 },
+        "command_count": { "from": 243, "to": 255 },
         "mutated_command_shells": [
           {
             "after": {
@@ -2830,8 +2895,8 @@
             "identity": "task plan approve --by"
           }
         ],
-        "option_count": { "from": 767, "to": 855 },
-        "positional_count": { "from": 165, "to": 174 },
+        "option_count": { "from": 767, "to": 857 },
+        "positional_count": { "from": 165, "to": 176 },
         "removed_command_descriptors": [
           {
             "args": [{ "name": "cmd", "required": false, "valueHint": "<cmd>", "variadic": true }],
@@ -3347,10 +3412,12 @@
         "202609162254-YE48GC",
         "202609230942-E6D0V4",
         "202609241429-4WN4VX",
-        "202609261720-KKE9ZN"
+        "202609261720-KKE9ZN",
+        "202610041748-K43XFE",
+        "202610060956-42J54D"
       ],
       "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with caller-supplied structured semantic intent and neutral planner intake, including bounded scope, effect, capability, and resource declarations, explainable per-task workflow routing, signed dialogue approval receipts, compatibility retirement diagnostics, safe local evidence statistics, compaction, garbage collection, and a state-bound USER-approved blocked-task scope extension; promotes the managed task runner; moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces; canonicalizes setup and execution profile selection to standard while retaining legacy init aliases; and makes auto the task route default while retiring repository as a user-facing route. Adds exact-intent operator reconciliation for interrupted integration workflow effects. Retires the active supervisor budget-epoch command after spend limits became telemetry-only. Retires the active Blueprint command surface after Task Kernel replacement proof while preserving cold compatibility readers.",
-      "to_sha256": "89c74acf70c054fbaf57ae104129c5d8a091c8d5b41ed17ea074a62f1c9f6339"
+      "to_sha256": "1b2e5ab4593f24b1363fee277d1f8d1efdbc78bb714dc16b518a0fbe8c3a4135"
     },
     {
       "classification": "intentional_breaking_retirement",
@@ -3416,7 +3483,9 @@
         "202607291449-FTHNAR",
         "202607221852-YP9QCH",
         "202608212244-6XZAYD",
-        "202609162254-YE48GC"
+        "202609162254-YE48GC",
+        "202610041748-K43XFE",
+        "202610060956-42J54D"
       ],
       "summary": "Adds a CLI-owned immutable task-creation receipt, typed EVALUATOR human-review escalation, bounded deterministic-evidence recovery classification, and source-driven canonical reconciliation candidates; retires Blueprint route-decision contracts after Task Kernel replacement proof.",
       "to_sha256": "7710a5217ea614a3da8b4e99fe61e16fb738179797eba64c75c9537bc33f7785"
@@ -3436,7 +3505,9 @@
         "202607221846-4VB97J",
         "202608112213-NWJCBW",
         "202608171853-X3FD5M",
-        "202608212244-6XZAYD"
+        "202608212244-6XZAYD",
+        "202610041748-K43XFE",
+        "202610060956-42J54D"
       ],
       "summary": "Replaces the v1-only schema with a v1-or-v2 input union, retaining the finite typed legacy v1 sections, requiring explicit v2 approval flags, adding trusted signed approval receipt configuration, preserving the public schema identity, and canonicalizing both versions on the standard execution profile while accepting legacy profile aliases during migration.",
       "to_sha256": "dc851f68ff13c52fec5dbe522fa96cc1084771ce7e09ed0178c44f15d7c46452"
@@ -3458,7 +3529,12 @@
       },
       "from_sha256": "4b5a62135ada227eca13961e1ef3fbaaae269eea082375539a5c9fa085b9a613",
       "section": "machine_output_contract",
-      "source_tasks": ["202607221848-ABG7SD", "202608212244-6XZAYD"],
+      "source_tasks": [
+        "202607221848-ABG7SD",
+        "202608212244-6XZAYD",
+        "202610041748-K43XFE",
+        "202610060956-42J54D"
+      ],
       "summary": "Projects next_action and reason_decode onto their documented keys so structurally compatible objects cannot leak undeclared fields; the published envelope schema and current payloads are unchanged.",
       "to_sha256": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1"
     },
@@ -3503,7 +3579,9 @@
         "202607221849-8YYZ9X",
         "202608021231-SHYJGK",
         "202608021535-CNQKXP",
-        "202608212244-6XZAYD"
+        "202608212244-6XZAYD",
+        "202610041748-K43XFE",
+        "202610060956-42J54D"
       ],
       "summary": "Publishes the generated workflow, KnowledgeRef, and AgentWorkOrder v2 schemas from the core package, requires the compatibility retirement manifest, and explicitly permits and requires the split AgentPlane runtime artifacts; no package source file is removed.",
       "to_sha256": "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd"
@@ -3513,17 +3591,23 @@
     "allowed_json_paths": [
       "$.package_manifests[0].dependencies.@clack/prompts",
       "$.package_manifests[0].dependencies.zod",
+      "$.package_manifests[0].exports",
       "$.package_manifests[0].files[13]",
       "$.package_manifests[0].files[14]",
       "$.package_manifests[0].files[15]",
       "$.package_manifests[0].files[16]",
       "$.package_manifests[0].files[17]",
+      "$.package_manifests[0].files[18]",
+      "$.package_manifests[0].files[19]",
       "$.package_manifests[0].normalized_sha256",
       "$.package_manifests[1].dependencies.zod",
       "$.package_manifests[1].exports[10][0]",
       "$.package_manifests[1].exports[10][1]",
       "$.package_manifests[1].exports[11]",
-      "$.package_manifests[1].normalized_sha256"
+      "$.package_manifests[1].normalized_sha256",
+      "$.package_manifests[2].dependencies",
+      "$.package_manifests[2].engines.node",
+      "$.package_manifests[2].normalized_sha256"
     ],
     "classification": "additive",
     "evidence": {
@@ -3532,13 +3616,27 @@
         "dist/command-catalog/core-fast.js",
         "dist/command-catalog/task-read.js",
         "dist/command-help.json",
-        "dist/deferred-runtime.js"
+        "dist/deferred-runtime.js",
+        "dist/recipe-api.d.ts",
+        "dist/recipe-api.js"
       ],
+      "agentplane_exports": {
+        "./recipes": {
+          "default": "./dist/recipe-api.js",
+          "import": "./dist/recipe-api.js",
+          "types": "./dist/recipe-api.d.ts"
+        }
+      },
       "core_package": {
         "added_exports": ["./tasks/verification-contract-kernel"],
         "package": "@agentplaneorg/core"
       },
       "package": "agentplane",
+      "recipes_package": {
+        "dependencies": { "@agentplaneorg/core": "0.6.24", "zod": "4.4.3" },
+        "engines": { "node": ">=20.5.0" },
+        "package": "@agentplaneorg/recipes"
+      },
       "removed_files": []
     },
     "from_sha256": "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
@@ -3547,9 +3645,11 @@
       "202608021231-SHYJGK",
       "202608112259-T3ZDDM",
       "202608171853-X3FD5M",
-      "202609211330-5A54M1"
+      "202609211330-5A54M1",
+      "202610041748-K43XFE",
+      "202610060956-42J54D"
     ],
-    "to_sha256": "8bfba4f6df0470889d90bcb234fc9ab0192a164b1f6b7644b01d5b8c0a35912a"
+    "to_sha256": "ee1cec43b5f3371f7e7235f5aebd3254bcc2bedfa21d20eec8e2109d62f41faf"
   },
   "release_version_delta": {
     "allowed_json_paths": [
@@ -3559,16 +3659,17 @@
       "$.package_manifests[0].version",
       "$.package_manifests[1].normalized_sha256",
       "$.package_manifests[1].version",
+      "$.package_manifests[2].dependencies.@agentplaneorg/core",
       "$.package_manifests[2].normalized_sha256",
       "$.package_manifests[2].version"
     ],
     "classification": "planned_version_parity",
-    "from_sha256": "8bfba4f6df0470889d90bcb234fc9ab0192a164b1f6b7644b01d5b8c0a35912a",
+    "from_sha256": "ee1cec43b5f3371f7e7235f5aebd3254bcc2bedfa21d20eec8e2109d62f41faf",
     "from_version": "0.6.24",
     "section": "package_manifests",
     "source_task": "202608082119-P6SHBN",
-    "surface_sha256": "9998b8943a58123062824cf44172f5e56f7ac4802600a838164be526f0b52056",
-    "to_sha256": "3a60ec08e552ad801665bc09ba3d0ff94f4c86911e985b1b01408a66f9c0b203",
+    "surface_sha256": "f387d8edce110783292230e3996fcbb8ae67d7c7735a9c88671b623d2d76abb0",
+    "to_sha256": "5181e197bcb2007bf582098724eac351ee528640a26e0283b51ccca567690919",
     "to_version": "0.7.12"
   },
   "review": {
@@ -3638,6 +3739,8 @@
     "202609211330-5A54M1",
     "202609230942-E6D0V4",
     "202609241429-4WN4VX",
-    "202609261720-KKE9ZN"
+    "202609261720-KKE9ZN",
+    "202610041748-K43XFE",
+    "202610060956-42J54D"
   ]
 }

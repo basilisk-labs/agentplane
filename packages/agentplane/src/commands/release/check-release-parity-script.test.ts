@@ -31,6 +31,33 @@ async function runParity(root: string): Promise<{ ok: boolean; stderr: string }>
   );
 }
 
+type VersionSurfaces = {
+  applyReleaseVersionSurfaces(rootDir: string, nextVersion: string): string[];
+};
+
+async function optionalSurfaceFixture(value: unknown, required = false) {
+  const root = await initReleaseWorkspace({ prefix: "agentplane-optional-surface-" });
+  await mkdir(path.join(root, "scripts/release"), { recursive: true });
+  await writeFile(path.join(root, "surface.json"), `${JSON.stringify(value)}\n`);
+  await writeFile(
+    path.join(root, "scripts/release/version-surfaces.json"),
+    JSON.stringify({
+      schema_version: 1,
+      version_surfaces: [
+        {
+          id: "optional.edge",
+          file: "surface.json",
+          kind: "json",
+          path: ["dependencies", "core"],
+          required,
+        },
+      ],
+    }),
+  );
+  const writer = (await import(VERSION_SURFACES_MODULE_PATH)) as VersionSurfaces;
+  return { root, writer, file: path.join(root, "surface.json") };
+}
+
 describe("check-release-parity script", () => {
   it("passes when package versions and core dependency are aligned", async () => {
     const root = await initReleaseWorkspace({
@@ -353,5 +380,114 @@ describe("check-release-parity script", () => {
     expect(result.ok).toBe(false);
     expect(result.stderr).toContain("unsupported workspace protocol");
     expect(result.stderr).toContain("@agentplane/recipes=workspace:packages/recipes");
+  });
+  it.each([true, false])(
+    "writes declared recipes core edge when present=%s without changing legacy absence",
+    async (present) => {
+      const root = await initReleaseWorkspace({
+        coreVersion: "0.7.12",
+        recipesCoreDependencyVersion: present ? "0.7.12" : undefined,
+      });
+      const file = path.join(root, "packages/recipes/package.json");
+      const original = JSON.parse(await readFile(file, "utf8")) as {
+        version: string;
+        dependencies?: Record<string, string>;
+      };
+      original.dependencies = { ...original.dependencies, zod: "^4.0.0" };
+      await writeFile(file, `${JSON.stringify(original, null, 2)}\n`);
+      const before = await readFile(file, "utf8");
+      const bumpScript = path.resolve(process.cwd(), "scripts/release/version-bump.mjs");
+      const dryRun = await execFileAsync(
+        "node",
+        [bumpScript, "--version", "0.7.13", "--skip-install", "--json"],
+        { cwd: root },
+      );
+      expect(JSON.parse(dryRun.stdout)).toMatchObject({ dry_run: true, next_version: "0.7.13" });
+      expect(await readFile(file, "utf8")).toBe(before);
+      const writer = (await import(VERSION_SURFACES_MODULE_PATH)) as VersionSurfaces;
+      expect(writer.applyReleaseVersionSurfaces(root, "0.7.13")).toContain(
+        "packages/recipes/package.json",
+      );
+      const after = await readFile(file, "utf8");
+      const recipes = JSON.parse(after) as typeof original;
+      expect(recipes.version).toBe("0.7.13");
+      expect(recipes.dependencies).toEqual({
+        ...(present ? { "@agentplaneorg/core": "0.7.13" } : {}),
+        zod: "^4.0.0",
+      });
+      expect(await runParity(root)).toEqual({ ok: true, stderr: "" });
+      expect(writer.applyReleaseVersionSurfaces(root, "0.7.13")).toEqual([]);
+      expect(await readFile(file, "utf8")).toBe(after);
+      if (present) {
+        recipes.dependencies!["@agentplaneorg/core"] = "0.7.12";
+        await writeFile(file, JSON.stringify(recipes));
+        const stale = await runParity(root);
+        expect(stale.ok).toBe(false);
+        expect(stale.stderr).toContain(
+          "packages/recipes/package.json dependencies @agentplaneorg/core=0.7.12 does not match workspace version 0.7.13",
+        );
+      }
+    },
+  );
+
+  it.each([{}, { dependencies: {} }, { dependencies: { other: "keep" } }])(
+    "skips truly absent optional JSON keys: %j",
+    async (value) => {
+      const f = await optionalSurfaceFixture(value);
+      const before = await readFile(f.file, "utf8");
+      expect(f.writer.applyReleaseVersionSurfaces(f.root, "0.7.13")).toEqual([]);
+      expect(await readFile(f.file, "utf8")).toBe(before);
+    },
+  );
+
+  it.each([null, [], "invalid", { dependencies: null }, { dependencies: [] }, { dependencies: 3 }])(
+    "rejects malformed optional traversed parents: %j",
+    async (value) => {
+      const f = await optionalSurfaceFixture(value);
+      const before = await readFile(f.file, "utf8");
+      expect(() => f.writer.applyReleaseVersionSurfaces(f.root, "0.7.13")).toThrow(
+        "malformed parent",
+      );
+      expect(await readFile(f.file, "utf8")).toBe(before);
+    },
+  );
+
+  it.each(["0.7.12", null, 7, {}, []])(
+    "preserves present optional leaf rewrite behavior: %j",
+    async (core) => {
+      const f = await optionalSurfaceFixture({ dependencies: { core } });
+      expect(f.writer.applyReleaseVersionSurfaces(f.root, "0.7.13")).toEqual(["surface.json"]);
+      expect(JSON.parse(await readFile(f.file, "utf8"))).toEqual({
+        dependencies: { core: "0.7.13" },
+      });
+    },
+  );
+
+  it("preserves required missing-key creation and strict required-surface parity", async () => {
+    const f = await optionalSurfaceFixture({}, true);
+    expect(f.writer.applyReleaseVersionSurfaces(f.root, "0.7.13")).toEqual(["surface.json"]);
+    expect(JSON.parse(await readFile(f.file, "utf8"))).toEqual({
+      dependencies: { core: "0.7.13" },
+    });
+    const root = await initReleaseWorkspace({ coreVersion: "0.7.12" });
+    await writePackageJson(root, "packages/core", { name: "@agentplaneorg/core" });
+    const result = await runParity(root);
+    expect(result.ok).toBe(false);
+  });
+
+  it("preserves optional missing-file skipping and required missing-file rejection", async () => {
+    const f = await optionalSurfaceFixture({});
+    const manifestPath = path.join(f.root, "scripts/release/version-surfaces.json");
+    const manifest = JSON.parse(await readFile(manifestPath, "utf8")) as {
+      version_surfaces: { file: string; required: boolean }[];
+    };
+    manifest.version_surfaces[0]!.file = "missing.json";
+    await writeFile(manifestPath, JSON.stringify(manifest));
+    expect(f.writer.applyReleaseVersionSurfaces(f.root, "0.7.13")).toEqual([]);
+    manifest.version_surfaces[0]!.required = true;
+    await writeFile(manifestPath, JSON.stringify(manifest));
+    expect(() => f.writer.applyReleaseVersionSurfaces(f.root, "0.7.13")).toThrow(
+      "required release version surface is missing",
+    );
   });
 });

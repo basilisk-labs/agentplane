@@ -1,3 +1,15 @@
+import {
+  taskCentricAggregateFromExtensions,
+  createTaskPlanRevision,
+  approveTaskPlan,
+  materializeApprovedWorkItems,
+  withTaskCentricAggregate,
+} from "@agentplaneorg/core/tasks";
+import { makeReadOnlyExecutionContext } from "../../runtime/execution-context.js";
+import { workOrderProtectedPaths } from "./agent-work-order-protected-paths.js";
+import { implementationCommitAllowsCi } from "../../commands/task/external-agent-implementation-authority.js";
+import { evaluateRunnerWriteScope } from "../write-scope.js";
+import { EXECUTION_RECEIPT_V2_VALID_FIXTURE } from "@agentplaneorg/core/schemas";
 import { execFile } from "node:child_process";
 import { access, mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -237,6 +249,205 @@ describe("AgentWorkOrder v2 surface integration", () => {
       expect.arrayContaining(["deploy", "external_write", "publish", "destructive_git"]),
     );
   });
+
+  it.each([".github/workflows/ci.yml", ".github"])(
+    "projects scoped CI authority for %s with downstream protected-path rejection",
+    async (scope) => {
+      const root = await mkGitRepoRootWithCommit();
+      const taskId = await createPreparedTask(root, "branch_pr");
+      const command = await loadCommandContext({ cwd: root, rootOverride: root });
+      const task = await loadTaskFromContext({ ctx: command, taskId });
+      const workflow = ".github/workflows/ci.yml";
+      const executionContract = resolveTaskExecutionContract({
+        config: command.config,
+        task,
+        declaration: {
+          schema_version: 1,
+          preferred_mode: "direct",
+          scope_roots: [scope],
+          repository_effects: ["ci"],
+          external_effects: [],
+          uncertainty: "bounded",
+          reversibility: "reversible",
+          rationale: ["explicit bounded CI repair"],
+        },
+      });
+      await command.taskBackend.writeTask(
+        { ...task, execution_contract: executionContract },
+        task.revision ? { expectedRevision: task.revision } : undefined,
+      );
+      const worktree = await createBranchPrTaskWorktree(root, taskId);
+      const branchCommand = await loadCommandContext({ cwd: worktree, rootOverride: worktree });
+      const branchTask = await loadTaskFromContext({ ctx: branchCommand, taskId });
+      const aggregate = taskCentricAggregateFromExtensions(branchTask.extensions);
+      if (!aggregate?.current_plan) throw new Error("Expected native fixture Plan");
+      const proposal = structuredClone(aggregate.current_plan.proposal);
+      for (const item of proposal.work_items.work_items) item.scope_roots = [scope];
+      const pending = createTaskPlanRevision({
+        proposal,
+        revision: aggregate.current_plan.revision + 1,
+        created_at: "2026-10-06T00:00:00Z",
+      });
+      const approved = approveTaskPlan({
+        plan: pending,
+        expected_digest: pending.digest,
+        actor: "USER",
+        approved_at: "2026-10-06T00:00:00Z",
+      });
+      const scoped = materializeApprovedWorkItems({
+        task: { ...aggregate, current_plan: approved },
+        plan: approved,
+        now: "2026-10-06T00:00:00Z",
+      });
+      branchTask.extensions = withTaskCentricAggregate(branchTask.extensions, scoped);
+
+      await branchCommand.taskBackend.writeTask(
+        { ...branchTask, execution_contract: executionContract },
+        branchTask.revision ? { expectedRevision: branchTask.revision } : undefined,
+      );
+      const prepared = await prepareTaskRunnerExecution({
+        ctx: branchCommand,
+        cwd: worktree,
+        rootOverride: worktree,
+        task_id: taskId,
+        mode: "dry_run",
+      });
+      const persistedScopedTask = await loadTaskFromContext({ ctx: branchCommand, taskId });
+      expect(persistedScopedTask.execution_contract?.authority.writable_roots).toEqual([scope]);
+      expect(prepared.bundle.task?.metadata.execution_contract?.authority.writable_roots).toEqual([
+        scope,
+      ]);
+      const authority = prepared.bundle.work_order.authority;
+      expect(authority.writable_roots).toEqual([path.join(worktree, scope)]);
+      expect(authority.protected_paths).not.toContain(".github/workflows");
+      expect(authority.protected_paths).toEqual(
+        expect.arrayContaining(["AGENTS.md", ".agentplane/config.json", "lefthook.yml"]),
+      );
+      const bundle = prepared.bundle;
+      bundle.execution.write_scope = {
+        mutation_scope: "code",
+        writable_roots: [scope],
+        protected_paths: authority.protected_paths,
+      };
+      for (const [file, kind] of [
+        [workflow, null],
+        [
+          scope === ".github"
+            ? ".github-sibling/workflows/ci.yml"
+            : ".github/workflows/sibling.yml",
+          "out_of_scope",
+        ],
+        ["AGENTS.md", "protected_path"],
+        [".agentplane/config.json", "protected_path"],
+      ] as const) {
+        const git = structuredClone(EXECUTION_RECEIPT_V2_VALID_FIXTURE.git);
+        if (git.state !== "observed") throw new Error("Expected observed Git fixture");
+        git.delta.changed_paths = [file];
+        const result = evaluateRunnerWriteScope({
+          bundle,
+          git,
+          protected_filesystem: { state: "observed", changed_paths: [], errors: [] },
+        });
+        expect(result).toMatchObject(
+          kind
+            ? { state: "rejected", violations: [{ path: file, kind }] }
+            : { state: "passed", violations: [] },
+        );
+      }
+      const context = await makeReadOnlyExecutionContext(command);
+      const project = (contract: typeof executionContract, roots = [path.join(root, scope)]) =>
+        workOrderProtectedPaths({ context, contract, repositoryRoot: root, writableRoots: roots });
+      for (const mutate of [
+        (contract: typeof executionContract) => {
+          contract.authority.allowed_repository_effects = [];
+        },
+        (contract: typeof executionContract) => {
+          contract.declaration.repository_effects = [];
+        },
+        (contract: typeof executionContract) => {
+          contract.authority.forbidden_repository_effects.push("ci");
+        },
+        (contract: typeof executionContract) => {
+          contract.authority.writable_roots = ["src"];
+        },
+        (contract: typeof executionContract) => {
+          contract.declaration.scope_roots = ["src"];
+        },
+      ]) {
+        const denied = structuredClone(executionContract);
+        mutate(denied);
+        expect(project(denied)).toContain(".github/workflows");
+      }
+      expect(project(executionContract, [path.resolve(root, "../foreign")])).toContain(
+        ".github/workflows",
+      );
+      expect(project(executionContract, [])).toContain(".github/workflows");
+      context.harness.policy.protected_paths.ci.push(".github/workflows/custom.yml");
+      context.harness.policy.protected_paths.policy.push(".github/workflows");
+      expect(project(executionContract)).toEqual(
+        expect.arrayContaining([
+          ".github/workflows/custom.yml",
+          ".github/workflows",
+          "AGENTS.md",
+          ".agentplane/config.json",
+          "lefthook.yml",
+        ]),
+      );
+      expect(implementationCommitAllowsCi(executionContract, [workflow], [workflow])).toBe(true);
+      expect(
+        implementationCommitAllowsCi(
+          executionContract,
+          [workflow],
+          [workflow, ".github/workflows/sibling.yml"],
+        ),
+      ).toBe(false);
+      const preparedNative = requirePreparedAgentWorkOrder(
+        await prepareAgentWorkOrder({
+          command_ctx: branchCommand,
+          cwd: worktree,
+          root_override: worktree,
+          task_id: taskId,
+          include_remote: false,
+          include_runner_state: false,
+        }),
+      );
+      const current = await loadTaskFromContext({ ctx: branchCommand, taskId });
+      const malformed = structuredClone(executionContract);
+      Object.assign(malformed.authority, {
+        allowed_repository_effects: ["not-a-repository-effect"],
+      });
+      const invalidRejected = await (async () => {
+        await branchCommand.taskBackend.writeTask({ ...current, execution_contract: malformed });
+        const freshCommand = await loadCommandContext({ cwd: worktree, rootOverride: worktree });
+        await prepareTaskRunnerExecution({
+          ctx: freshCommand,
+          cwd: worktree,
+          rootOverride: worktree,
+          task_id: taskId,
+          mode: "dry_run",
+        });
+      })().then(
+        () => false,
+        () => true,
+      );
+      expect(invalidRejected).toBe(true);
+      await branchCommand.taskBackend.writeTask(current);
+      const revoked = structuredClone(executionContract);
+      revoked.authority.allowed_repository_effects = [];
+      await branchCommand.taskBackend.writeTask({ ...current, execution_contract: revoked });
+      const readiness = await evaluatePreparedAgentWorkOrderReadiness({
+        command_ctx: await loadCommandContext({ cwd: worktree, rootOverride: worktree }),
+        cwd: worktree,
+        root_override: worktree,
+        prepared: preparedNative,
+      });
+      expect(readiness).toMatchObject({
+        status: "rejected",
+        rejection: { code: "work_order_stale" },
+      });
+    },
+    60_000,
+  );
 
   it("prepares deterministic bounded knowledge through exact, FTS, alias, and graph adapters", async () => {
     const root = await mkGitRepoRootWithCommit();
