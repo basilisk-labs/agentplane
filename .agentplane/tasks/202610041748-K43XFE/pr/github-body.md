@@ -27,32 +27,35 @@ User explicitly authorizes autonomous completion of all necessary development, i
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../bench/m05-0.7.13/checked-no-match-replay.json  |  1282 +
+ artifacts/bench/m05-0.7.13/catalogue-source.json   |    31 +
+ .../bench/m05-0.7.13/format-qualification.json     |     9 +
+ .../m05-0.7.13/formatted-no-match-replay.json      |  1220 +
+ .../branch-change/campaign.offline.lock.json       |   424 +
+ .../formatted-offline/branch-change/evidence.json  |  1220 +
+ .../formatted-offline/branch-change/target.bundle  |   Bin 0 -> 1228 bytes
+ .../direct-fix/campaign.offline.lock.json          |   424 +
+ .../formatted-offline/direct-fix/evidence.json     |  1220 +
+ .../formatted-offline/direct-fix/target.bundle     |   Bin 0 -> 1146 bytes
+ .../formatted-offline/fixture-policy.json          |     8 +
+ .../near-match/campaign.offline.lock.json          |   424 +
+ .../formatted-offline/near-match/evidence.json     |  1220 +
+ .../formatted-offline/near-match/target.bundle     |   Bin 0 -> 1135 bytes
+ .../no-match/campaign.offline.lock.json            |   424 +
+ .../formatted-offline/no-match/evidence.json       |  1220 +
+ .../formatted-offline/no-match/target.bundle       |   Bin 0 -> 1152 bytes
+ .../bench/m05-0.7.13/formatted-offline/oracle.mjs  |    98 +
+ .../m05-0.7.13/formatted-offline/preparation.json  |    94 +
+ .../bench/m05-0.7.13/formatted-offline/product.mjs | 27120 +++++++++++++++++++
+ .../recovery/campaign.offline.lock.json            |   424 +
+ .../formatted-offline/recovery/evidence.json       |  1220 +
+ .../formatted-offline/recovery/target.bundle       |   Bin 0 -> 1226 bytes
  .../m05-0.7.13/historical-corpora.inventory.json   |   355 +
  artifacts/bench/m05-0.7.13/historical-corpora.tar  |   Bin 0 -> 4567040 bytes
  .../m05-0.7.13/historical-fixture-recovery.json    |    10 +
- artifacts/bench/m05-0.7.13/no-match-replay.json    |  1282 +
- .../branch-change/campaign.offline.lock.json       |   458 +
- .../normalized-offline/branch-change/evidence.json |  1282 +
- .../normalized-offline/branch-change/target.bundle |   Bin 0 -> 1285 bytes
- .../direct-fix/campaign.offline.lock.json          |   458 +
- .../normalized-offline/direct-fix/evidence.json    |  1282 +
- .../normalized-offline/direct-fix/target.bundle    |   Bin 0 -> 1202 bytes
- .../normalized-offline/fixture-policy.json         |    11 +
- .../near-match/campaign.offline.lock.json          |   458 +
- .../normalized-offline/near-match/evidence.json    |  1282 +
- .../normalized-offline/near-match/target.bundle    |   Bin 0 -> 1184 bytes
- .../no-match/campaign.offline.lock.json            |   458 +
- .../normalized-offline/no-match/evidence.json      |  1282 +
- .../normalized-offline/no-match/target.bundle      |   Bin 0 -> 1206 bytes
- .../bench/m05-0.7.13/normalized-offline/oracle.mjs |    98 +
- .../m05-0.7.13/normalized-offline/preparation.json |    94 +
- .../m05-0.7.13/normalized-offline/product.mjs      | 24136 +++++++++++++++++++
- .../recovery/campaign.offline.lock.json            |   458 +
- .../normalized-offline/recovery/evidence.json      |  1282 +
- .../normalized-offline/recovery/target.bundle      |   Bin 0 -> 1288 bytes
  .../m05-0.7.13/omitted-historical-fixtures.json    |    43 +
- .../m05-0.7.13/release-disposition.request.json    |    48 +
+ .../m05-0.7.13/pre-format-evidence.inventory.json  |   118 +
+ artifacts/bench/m05-0.7.13/pre-format-evidence.tar |   Bin 0 -> 1280000 bytes
+ .../m05-0.7.13/release-disposition.request.json    |    37 +
  artifacts/rc18/installed-examples.json             |     7 +
  artifacts/rc18/qualification.json                  |    57 +
  artifacts/recipes-v2-docs/installed-examples.json  |     7 +
@@ -70,7 +73,7 @@ User explicitly authorizes autonomous completion of all necessary development, i
  docs/recipes/index.mdx                             |     4 +
  docs/recipes/security-review.mdx                   |    73 +-
  docs/recipes/tdd.mdx                               |    78 +-
- docs/releases/v0.7.13-m05.md                       |   140 +
+ docs/releases/v0.7.13-m05.md                       |   150 +
  docs/user/cli-reference.generated.mdx              |    26 +
  docs/user/workflow.mdx                             |    20 +
  package.json                                       |     1 +
@@ -126,7 +129,7 @@ User explicitly authorizes autonomous completion of all necessary development, i
  .../src/commands/task/kernel-rework-proof.ts       |   490 +
  .../src/commands/task/kernel-runtime-context.ts    |    36 +-
  .../src/commands/task/kernel-semantic-result.ts    |    42 +-
- .../commands/task/kernel-work-item-resume.test.ts  |    90 +-
+ .../commands/task/kernel-work-item-resume.test.ts  |    88 +-
  .../src/commands/task/kernel-work-item-resume.ts   |    58 +-
  .../task/kernel-work-order.network.test.ts         |   191 +
  .../src/commands/task/kernel-work-order.ts         |   101 +-
@@ -198,16 +201,17 @@ User explicitly authorizes autonomous completion of all necessary development, i
  packages/recipes/src/scenario.ts                   |    15 +
  packages/recipes/tsconfig.json                     |     7 +-
  schemas/agent-semantic-result.schema.json          |  2081 +-
- scripts/bench/paired-m05-offline.mjs               |   339 +
+ scripts/README.md                                  |    31 +-
+ scripts/bench/paired-m05-offline.mjs               |   347 +
  scripts/bench/paired-m05-offline.test.mjs          |    70 +
  scripts/bench/paired-m05-oracle.mjs                |    98 +
  scripts/bench/paired-m05-product.mjs               |   111 +
- scripts/bench/paired-production-driver.mjs         |   125 +-
+ scripts/bench/paired-production-driver.mjs         |   135 +-
  scripts/bench/paired-production-driver.test.mjs    |   135 +
  scripts/lib/test-route-registry.mjs                |    24 +
  .../release/check-local-tarball-install-smoke.mjs  |    71 +-
  scripts/release/installed-recipe-matrix.mjs        |   790 +
- 180 files changed, 57611 insertions(+), 1043 deletions(-)
+ 184 files changed, 58956 insertions(+), 1059 deletions(-)
 ```
 
 </details>

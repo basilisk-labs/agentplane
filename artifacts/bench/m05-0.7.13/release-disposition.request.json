@@ -4,8 +4,8 @@
   "experiment": "M05",
   "status": "UNRESOLVED",
   "efficiency": "NOT_ESTABLISHED",
-  "offline_preparation_sha256": "sha256:72961eea610715270312a6ceaa5b351acbdb9e24bacb214cf61cf0b4e92d3558",
-  "candidate_native_source_sha": "3bc7288366425d87add6abf6356de836276dc8dd",
+  "offline_preparation_sha256": "sha256:c731d2221f5aeecfc9804c3319b1b0e49ec06b84566ade905756bd6e804a6c5f",
+  "candidate_native_source_sha": "de67c508f74309c745341a241d984529818c9e88",
   "live_campaign_lock": null,
   "approved_model": null,
   "approved_effort": null,
@@ -15,21 +15,10 @@
   "maximum_authorized_spend": null,
   "live_authority": null,
   "proposed_live_pilot": {
-    "arms": [
-      "no_recipe",
-      "instantiate",
-      "specialize"
-    ],
+    "arms": ["no_recipe", "instantiate", "specialize"],
     "minimum_matched_repetitions_per_task_arm": 5,
-    "normal_workflow_strata": [
-      "direct_fix",
-      "branch_pr_change",
-      "recoverable_check_failure"
-    ],
-    "negative_strata": [
-      "no_match",
-      "near_match"
-    ],
+    "normal_workflow_strata": ["direct_fix", "branch_pr_change", "recoverable_check_failure"],
+    "negative_strata": ["no_match", "near_match"],
     "transport_and_cache_strata": "must be selected and pinned separately before approval",
     "confirmation_sample": "must be registered independently after pilot; never sample until favorable"
   },

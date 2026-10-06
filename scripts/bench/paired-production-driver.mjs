@@ -744,7 +744,15 @@ async function main() {
   }
   const manifest = JSON.parse(readFileSync(options.manifestPath, "utf8"));
   const evidence = await runPairedProductionCampaign(manifest, options);
-  writeFileSync(options.outputPath, canonicalBytes(evidence), { encoding: "utf8", mode: 0o600 });
+  let serialized = canonicalBytes(evidence);
+  if (evidence.schema_version === 2) {
+    const { format, resolveConfig } = await import("prettier");
+    serialized = await format(serialized, {
+      ...(await resolveConfig(options.outputPath)),
+      filepath: options.outputPath,
+    });
+  }
+  writeFileSync(options.outputPath, serialized, { encoding: "utf8", mode: 0o600 });
   process.stdout.write(`${evidence.digest}\n`);
 }
 

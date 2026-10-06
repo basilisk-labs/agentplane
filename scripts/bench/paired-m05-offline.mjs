@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { format, resolveConfig } from "prettier";
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import {
@@ -32,8 +33,9 @@ const git = (cwd, args) =>
       GIT_COMMITTER_DATE: "2026-10-06T00:00:00Z",
     },
   }).trim();
-function writeJson(file, value) {
-  writeFileSync(file, bytes(value));
+async function writeJson(file, value) {
+  const formatted = await format(bytes(value), { ...(await resolveConfig(file)), filepath: file });
+  writeFileSync(file, formatted);
   return fileHash(file);
 }
 
@@ -152,7 +154,13 @@ export async function prepareM05Offline(outputRoot) {
     { cwd: root, stdio: "pipe" },
   );
   // Normalize newly generated blank lines before any artifact identity is pinned.
-  writeFileSync(product, normalizeM05Bundle(readFileSync(product, "utf8")));
+  writeFileSync(
+    product,
+    await format(normalizeM05Bundle(readFileSync(product, "utf8")), {
+      ...(await resolveConfig(product)),
+      filepath: product,
+    }),
+  );
   chmodSync(product, 0o700);
   const oracle = path.join(output, "oracle.mjs");
   copyFileSync(path.join(root, "scripts/bench/paired-m05-oracle.mjs"), oracle);
@@ -165,7 +173,7 @@ export async function prepareM05Offline(outputRoot) {
     native_approval: false,
     independent_oracle_required: true,
   };
-  const policyDigest = writeJson(path.join(output, "fixture-policy.json"), policy);
+  const policyDigest = await writeJson(path.join(output, "fixture-policy.json"), policy);
   const constants = {
     adapter: "deterministic_fixture",
     model: "none",
@@ -197,7 +205,7 @@ export async function prepareM05Offline(outputRoot) {
     const target = path.join(directory, "target");
     rmSync(target, { recursive: true, force: true });
     mkdirSync(target);
-    writeJson(path.join(target, "fixture.json"), { ...task, policy_digest: policyDigest });
+    await writeJson(path.join(target, "fixture.json"), { ...task, policy_digest: policyDigest });
     git(target, ["init", "-q", "-b", "main"]);
     git(target, ["config", "user.name", "M05 Offline Fixture"]);
     git(target, ["config", "user.email", "m05-offline@invalid.local"]);
@@ -266,14 +274,14 @@ export async function prepareM05Offline(outputRoot) {
       randomization_digest: hash(bytes(runs.map((run) => run.id))),
     };
     const manifestPath = path.join(directory, "campaign.offline.lock.json");
-    writeJson(manifestPath, manifest);
+    await writeJson(manifestPath, manifest);
     const evidence = await runPairedProductionCampaign(manifest, {
       mode: "offline",
       concurrency: 1,
       temporaryRoot: path.join(directory, "attempts"),
     });
     const evidencePath = path.join(directory, "evidence.json");
-    writeJson(evidencePath, evidence);
+    await writeJson(evidencePath, evidence);
     assert.equal(evidence.attempts.length, 15);
     assert.ok(evidence.attempts.every((attempt) => attempt.oracle.verified));
     cases.push({
@@ -324,7 +332,7 @@ export async function prepareM05Offline(outputRoot) {
       "Record complete selection/planning/retries/failures/review/host usage, separate setup and confirmation sample.",
     ],
   };
-  writeJson(path.join(output, "preparation.json"), report);
+  await writeJson(path.join(output, "preparation.json"), report);
   return report;
 }
 
