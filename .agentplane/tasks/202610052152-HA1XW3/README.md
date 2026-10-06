@@ -1,10 +1,11 @@
 ---
 id: "202610052152-HA1XW3"
 title: "Repair native execution of approved read-only CLI and bounded Node heap checks"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 30
+revision: 31
 origin:
   system: "manual"
 depends_on: []
@@ -43,6 +44,22 @@ quality_review:
     - "The parent still imports the sequence module. Its existing environment restoration hook and both modules temporary-root cleanup remain active. Existing sequence cases are unchanged; no skips, retries, timeout changes, baseline changes or production edits were introduced."
     - "The parent now has 993 lines and the sequence module 287. Native validation records all 108 tests passing, scoped ESLint passing, hotspots and the unchanged eight-entry oversized-test baseline passing, typecheck passing and diff check passing."
     - "No source edits, tests or lifecycle operations were performed during this independent review. The original production implementation remains unchanged by this WorkItem."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:b78569285f7a08ff0f60ee42e4cb67eae3446494bb3eae9451c9dbd4b5d36aff"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-10-06T00:41:39.345Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -284,9 +301,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "be77e7f8fcf7dd993d85236368f80914eb999ea8"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "70f3d5df16f11bf9ba0337922169e6b806aa60eb"
+  message: "✅ HA1XW3 task: persist canonical completion"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -294,9 +314,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-06T00:41:39.345Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "70f3d5df16f11bf9ba0337922169e6b806aa60eb"
 doc_version: 3
-doc_updated_at: "2026-10-06T00:27:49.058Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-06T00:41:39.345Z"
+doc_updated_by: "CODER"
 description: "Release recovery is blocked because native verification rejects ap config show although the executor passes it, and rejects an approved NODE_OPTIONS=--max-old-space-size=4096 bunx --no-install eslint command. Plan obligations correctly cannot be dropped. Preserve those checks and repair native argv execution: resolve exact ap/agentplane config show through the known repository CLI, and admit only a bounded numeric Node heap option without shell evaluation or arbitrary environment/Node options. Keep environment scoped per check, reject injected code, wrappers, unrelated variables and mutation commands. Add parser and real verification regressions, then independent review. No allowlist broadening or skipped checks."
 sections:
   Summary: |-
@@ -502,6 +530,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:96b32b82ea89253f7eb36286da441327a2c1235d81fd3780983576b6d5cd1115"
     work_order_id: "sha256:17e56a0efbad496aa5fd972ccc4a1330264f521db7b3a5fee04cde4a9fe2a8a2"
+  implementation_commit:
+    hash: "be77e7f8fcf7dd993d85236368f80914eb999ea8"
+    message: "🚧 HA1XW3 task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "65696d9032b77e80e31c6bca7668a5f32c99c443"
@@ -1639,3 +1670,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:b78569285f7a08ff0f60ee42e4cb67eae3446494bb3eae9451c9dbd4b5d36aff`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-10-06T00:41:39.345Z`
