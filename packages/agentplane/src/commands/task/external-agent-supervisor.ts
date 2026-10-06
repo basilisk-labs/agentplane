@@ -1,3 +1,4 @@
+import { assertExternalAgentExchangeNotConsumed } from "./external-agent-consumed-recovery.js";
 import { assertReadOnlyReturnFresh } from "./external-agent-read-only-observation.js";
 import { captureExternalTaskArtifacts } from "./external-agent-task-artifact-baseline.js";
 import { readFile } from "node:fs/promises";
@@ -156,6 +157,7 @@ async function issueExternalAgentExchangeUnlocked(opts: {
   const checkout =
     opts.decision.executionPacket.mustRunFrom ?? opts.command.resolvedProject.gitRoot;
   if (existing) {
+    assertExternalAgentExchangeNotConsumed(existing);
     const workOrder = await readExternalAgentWorkOrder(paths.work_order);
     assertExternalAgentExchangeIdentity({
       exchange: existing,

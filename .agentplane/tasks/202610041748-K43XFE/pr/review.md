@@ -24,7 +24,7 @@ Created: 2026-10-04T18:13:17.876Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-10-06T18:55:49.851Z
+- Updated: 2026-10-06T19:51:56.026Z
 - Branch: task/202610041748-K43XFE/implement-and-qualify-agentplane-0-7-13-scenario
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
@@ -125,14 +125,17 @@ Created: 2026-10-04T18:13:17.876Z
  .../task/direct-task-verification-record.ts        |     2 +
  .../commands/task/direct-task-verification.test.ts |     3 +-
  .../commands/task/external-agent-blocked-result.ts |    17 +
+ .../task/external-agent-consumed-recovery.test.ts  |   240 +
+ .../task/external-agent-consumed-recovery.ts       |   194 +
  .../external-agent-implementation-authority.ts     |    12 +-
  .../external-agent-implementation-finalization.ts  |     2 +
- .../external-agent-read-only-observation.test.ts   |   441 +
+ .../task/external-agent-observation.testkit.ts     |   209 +
+ .../external-agent-read-only-observation.test.ts   |   240 +
  .../task/external-agent-read-only-observation.ts   |    54 +
  .../task/external-agent-result-application.ts      |    20 +
  .../external-agent-supervisor-recovery.test.ts     |    40 +
- .../task/external-agent-supervisor-recovery.ts     |    27 +
- .../src/commands/task/external-agent-supervisor.ts |    76 +-
+ .../task/external-agent-supervisor-recovery.ts     |    20 +-
+ .../src/commands/task/external-agent-supervisor.ts |    78 +-
  .../commands/task/kernel-advance-network.test.ts   |   302 +
  .../src/commands/task/kernel-advance.test.ts       |     6 +-
  .../kernel-completed-external-blocker-boundary.ts  |   111 +
@@ -262,7 +265,7 @@ Created: 2026-10-04T18:13:17.876Z
  .../release/check-package-node-runtime.test.mjs    |   148 +
  scripts/release/installed-recipe-matrix.mjs        |   790 +
  scripts/release/version-surfaces.json              |     7 +
- 233 files changed, 63186 insertions(+), 1281 deletions(-)
+ 236 files changed, 63622 insertions(+), 1282 deletions(-)
 ```
 
 </details>
