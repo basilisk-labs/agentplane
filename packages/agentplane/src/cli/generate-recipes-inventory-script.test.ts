@@ -2,7 +2,7 @@ import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 type ScriptModule = {
   resolveRecipesSourceRoot: (
@@ -24,6 +24,7 @@ async function makeTempRoot(prefix: string) {
 }
 
 afterEach(async () => {
+  vi.unstubAllEnvs();
   while (tempRoots.length > 0) {
     const root = tempRoots.pop();
     if (!root) continue;
@@ -66,6 +67,47 @@ describe("generate-recipes-inventory script", () => {
     expect(() => resolveRecipesSourceRoot(worktreeRoot, { env: {} })).toThrow(
       /recipes source is required/,
     );
+  });
+
+  it.each([{}, { UNRELATED_SETTING: "value" }])(
+    "does not inherit the populated host when an environment is supplied: %j",
+    async (env) => {
+      const { resolveRecipesSourceRoot } = await loadScriptModule();
+      const root = await makeTempRoot("agentplane-recipes-host-");
+      await mkdir(path.join(root, "recipes"));
+      await writeFile(path.join(root, "index.json"), "{}\n");
+      vi.stubEnv("AGENTPLANE_RECIPES_SOURCE", root);
+
+      expect(() => resolveRecipesSourceRoot(root, { env })).toThrow(/recipes source is required/);
+      expect(process.env.AGENTPLANE_RECIPES_SOURCE).toBe(root);
+    },
+  );
+
+  it("uses the populated host only when environment is omitted", async () => {
+    const { resolveRecipesSourceRoot } = await loadScriptModule();
+    const root = await makeTempRoot("agentplane-recipes-host-");
+    await mkdir(path.join(root, "recipes"));
+    await writeFile(path.join(root, "index.json"), "{}\n");
+    vi.stubEnv("AGENTPLANE_RECIPES_SOURCE", root);
+
+    expect(resolveRecipesSourceRoot(root)).toBe(root);
+    expect(resolveRecipesSourceRoot(root, {})).toBe(root);
+  });
+
+  it("keeps explicit source precedence over supplied and host environments", async () => {
+    const { resolveRecipesSourceRoot } = await loadScriptModule();
+    const root = await makeTempRoot("agentplane-recipes-explicit-");
+    await mkdir(path.join(root, "recipes"));
+    await writeFile(path.join(root, "index.json"), "{}\n");
+    vi.stubEnv("AGENTPLANE_RECIPES_SOURCE", "/invalid-host-source");
+
+    expect(
+      resolveRecipesSourceRoot(root, {
+        recipesSource: ".",
+        env: { AGENTPLANE_RECIPES_SOURCE: "/invalid-supplied-source" },
+      }),
+    ).toBe(root);
+    expect(resolveRecipesSourceRoot(root, { recipesSource: "." })).toBe(root);
   });
 
   it("surfaces a precise error for an invalid external checkout", async () => {
