@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 310
+revision: 311
 origin:
   system: "manual"
 depends_on: []
@@ -33,35 +33,36 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-10-06T22:59:27.165Z"
+  updated_at: "2026-10-07T00:03:06.938Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 4 typed finding(s)."
-  evaluated_sha: "3ce823123476ae2bc29f491ae61b9c4c0abc5ebf"
-  review_identity_digest: "sha256:68772a1b0f5180475526317b3cebee9102659f692f748f68261136440682332f"
+  note: "EVALUATOR returned pass with 6 typed finding(s)."
+  evaluated_sha: "5eb27ee1868f6622a0b6a312b9d6e300ae80df9d"
+  review_identity_digest: "sha256:6bbe894a9811834d739797b18485d8c36d2198d6fb024a3a7b31f6c858d43a71"
   evidence_refs:
-    - ".agentplane/tasks/202610041748-K43XFE/quality/20261006-225802630-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202610041748-K43XFE/quality/20261006-225802630-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/c738372f2c6350ffc4a1aa320c6596a65bf63328be0020ef3d8134abb52d4f78.md"
-    - ".agentplane/tasks/202610041748-K43XFE/quality/20261006-225802630-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202610041748-K43XFE/quality/20261006-225802630-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202610041748-K43XFE/quality/20261006-225802630-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202610041748-K43XFE/quality/20261006-225802630-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202610041748-K43XFE/quality/20261007-000118501-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202610041748-K43XFE/quality/20261007-000118501-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/8645e6fee6e2052427da316abd5080e703869180213653f53469a722ea53a97a.md"
+    - ".agentplane/tasks/202610041748-K43XFE/quality/20261007-000118501-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202610041748-K43XFE/quality/20261007-000118501-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202610041748-K43XFE/quality/20261007-000118501-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202610041748-K43XFE/README.md"
-    - ".agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/f7d0bfa350c028f416a88e6e12fb9396f0c6dae794e9150ea958fb9f419da439.patch"
-    - ".agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/0e1be0295f0d23fa8e245340e09d162fe98bcde3f0e3e604a030652c6e447d6d.json"
-    - ".agentplane/tasks/202610041748-K43XFE/verification/20261006224556329-0ff0cbe00d765e2f.json"
-    - ".agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/96d39f7562ea1eada067e1ac549e66212c0a0b1008dec4ee4183928fbbdd540b.json"
+    - ".agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/b328a60f1ba802fda1ceb68b329935715c47b001613c5d4abcd3ab3dd6523bb2.patch"
+    - ".agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/9b15daa69a2a32d541719b9db8818e22df128eaa540aec2489fef8a431a63a4d.json"
+    - ".agentplane/tasks/202610041748-K43XFE/verification/20261006235804223-f404b4ba623febdc.json"
+    - ".agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/5b54944ac20952163400462a42e0bcfde76e439a9905d7dc48257c53397369e7.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "[P1] packages/agentplane/src/commands/task/kernel-completed-workflow.ts:23 delegates completed host branch_pr episodes to the external owner only for implementation_rework and quality_review. After a retained implementation result becomes stale, dirty-source task_worktree_resolution and committed-source verification bypass recoverPendingExternalAgentResult and can encounter the unresolved prior intent instead of retiring it. Compose the reviewed recovery repair and its dirty/committed native regressions into this release source; preserve authority, freshness, CAS and terminal history. Frozen evidence: .agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/f7d0bfa350c028f416a88e6e12fb9396f0c6dae794e9150ea958fb9f419da439.patch."
-    - "[P2] scripts/release/snapshot-file.test.mjs contains five useful filesystem regressions, but vitest.config.ts:102 selects only packages/**/src/**/*.test.ts and no package script, CI script or workflow references this new Node test. Consequently normal full CI does not exercise replacement/symlink/in-place mutation rejection. Connect these tests through the existing release-script Vitest convention or another existing regular CI route while preserving all five assertions. Frozen evidence: .agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/f7d0bfa350c028f416a88e6e12fb9396f0c6dae794e9150ea958fb9f419da439.patch."
-    - "Residual risk: M05 efficiency remains NOT_ESTABLISHED; specific owner measurement disposition is still required before publication. No paid campaign authority or savings claim is established."
-    - "Residual risk: Fresh hosted checks for the changed source, integration, candidate preparation and publication remain downstream native gates."
+    - "Prior pending-result recovery finding is closed: completed host branch_pr verification and task_worktree_resolution now route through the existing external owner before successor dispatch. Dirty and operator-committed native regressions preserve terminal kernel history, retained result, authenticated stale retirement, stable retry and exact replacement. All three composed repair files match the independently reviewed source. Evidence: .agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/b328a60f1ba802fda1ceb68b329935715c47b001613c5d4abcd3ab3dd6523bb2.patch."
+    - "Prior snapshot-test CI gap is closed: packages/agentplane/src/commands/release/snapshot-file-script.test.ts matches both regular Vitest and agentplane project selection. It runs the five real Node filesystem tests and rejects failure, skips or cancellation. The final wrapper matches the reviewed frozen source. Evidence: .agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/b328a60f1ba802fda1ceb68b329935715c47b001613c5d4abcd3ab3dd6523bb2.patch."
+    - "Linear object-root trimming and descriptor-based snapshot hardening remain present. The reviewed repair composition preserves freshness, authority and native receipt ownership without reopening canonical task history. Evidence: .agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/b328a60f1ba802fda1ceb68b329935715c47b001613c5d4abcd3ab3dd6523bb2.patch."
+    - "Fresh native verification is bound to implementation 5eb27ee1868f6622a0b6a312b9d6e300ae80df9d and records all six checks passing, including full local CI. This corroborates independent source review rather than substituting for it. Evidence: .agentplane/tasks/202610041748-K43XFE/verification/20261006235804223-f404b4ba623febdc.json; .agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/9b15daa69a2a32d541719b9db8818e22df128eaa540aec2489fef8a431a63a4d.json."
+    - "Residual risk: M05 efficiency remains NOT_ESTABLISHED and the specific owner measurement-debt disposition remains UNRESOLVED. No paid campaign authority or measured savings claim is established; this correctness verdict does not satisfy that publication gate."
+    - "Residual risk: Exact-source hosted checks, native integration, candidate preparation and publication remain downstream gates. This verdict does not claim a published release."
 token_usage:
   agent_runs: 14
   input_tokens: 104217
@@ -1100,7 +1101,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-10-06T23:58:18.000Z"
+doc_updated_at: "2026-10-07T00:03:07.279Z"
 doc_updated_by: "CODER"
 description: "User explicitly authorizes autonomous completion of all necessary development, integration and release work for version 0.7.13. Implement the current agentplane-roadmap-r2/releases/0.7.13.md RC-01 through RC-18 and EXECUTION-CHARTER.md contracts against the current source. Reuse the existing Recipe package, compact Plan input, sole Task Kernel coordinator, evidence storage, approval and independent EVALUATOR. Preserve V1 compatibility with explicit negotiation, bounded typed interpolation, observed applicability, retained pinned dependency closure, shared instantiation and refinement, scoped context, offline conversion preview, and installed-package recovery qualification. Inventory existing implementations before adding code. Use sequential independently verifiable WorkItems; do not introduce a second workflow engine or implement 0.7.14. Preserve existing repair task 202610020159-60QH9J and autonomy task 202610020153-XXZXW4; integrate their accepted results through supported routes. Network reads, PR publication and main integration are authorized. Prepare the exact 0.7.13 candidate and evidence for a subsequent publication task under the same user release authorization. Preserve unrelated work, credentials and history. Do not fabricate measured savings or paid campaign authority; prepare the exact M05 campaign and explicit measurement disposition. Full validation must preserve all required tests and assertions and use realistic bounded execution budgets."
 sections:
