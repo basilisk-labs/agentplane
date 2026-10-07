@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "Prior pending-result recovery finding is closed: completed host branch_pr verification and task_worktree_resolution now route through the existing external owner before successor dispatch. Dirty and operator-committed native regressions preserve terminal kernel history, retained result, authenticated stale retirement, stable retry and exact replacement. All three composed repair files match the independently reviewed source. Evidence: .agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/b328a60f1ba802fda1ceb68b329935715c47b001613c5d4abcd3ab3dd6523bb2.patch.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/b328a60f1ba802fda1ceb68b329935715c47b001613c5d4abcd3ab3dd6523bb2.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Prior snapshot-test CI gap is closed: packages/agentplane/src/commands/release/snapshot-file-script.test.ts matches both regular Vitest and agentplane project selection. It runs the five real Node filesystem tests and rejects failure, skips or cancellation. The final wrapper matches the reviewed frozen source. Evidence: .agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/b328a60f1ba802fda1ceb68b329935715c47b001613c5d4abcd3ab3dd6523bb2.patch.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/b328a60f1ba802fda1ceb68b329935715c47b001613c5d4abcd3ab3dd6523bb2.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Linear object-root trimming and descriptor-based snapshot hardening remain present. The reviewed repair composition preserves freshness, authority and native receipt ownership without reopening canonical task history. Evidence: .agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/b328a60f1ba802fda1ceb68b329935715c47b001613c5d4abcd3ab3dd6523bb2.patch.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/b328a60f1ba802fda1ceb68b329935715c47b001613c5d4abcd3ab3dd6523bb2.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Fresh native verification is bound to implementation 5eb27ee1868f6622a0b6a312b9d6e300ae80df9d and records all six checks passing, including full local CI. This corroborates independent source review rather than substituting for it. Evidence: .agentplane/tasks/202610041748-K43XFE/verification/20261006235804223-f404b4ba623febdc.json; .agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/9b15daa69a2a32d541719b9db8818e22df128eaa540aec2489fef8a431a63a4d.json.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/b328a60f1ba802fda1ceb68b329935715c47b001613c5d4abcd3ab3dd6523bb2.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: M05 efficiency remains NOT_ESTABLISHED and the specific owner measurement-debt disposition remains UNRESOLVED. No paid campaign authority or measured savings claim is established; this correctness verdict does not satisfy that publication gate.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/b328a60f1ba802fda1ceb68b329935715c47b001613c5d4abcd3ab3dd6523bb2.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Residual risk: Exact-source hosted checks, native integration, candidate preparation and publication remain downstream gates. This verdict does not claim a published release.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/b328a60f1ba802fda1ceb68b329935715c47b001613c5d4abcd3ab3dd6523bb2.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
