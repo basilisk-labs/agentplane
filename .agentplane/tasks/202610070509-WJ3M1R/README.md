@@ -1,10 +1,11 @@
 ---
 id: "202610070509-WJ3M1R"
 title: "Repair Recipe API release packaging and Blueprint guards for 0.7.13"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -46,6 +47,22 @@ quality_review:
     - "Cold-reader exception names only recipe-api.ts. The added TypeScript AST assertion requires exactly one blueprint literal in a union inside RecipeV1SourceReference and rejects mentions outside that type. Existing active-engine and generated-schema prohibitions remain."
     - "Compatibility change adds explicit source-task provenance and exact allowed/required arrays, updates only the reviewed tarball section and derived candidate hashes. Historical v0.6.24 baseline hash29fa03085735dd881e7f2101a84766169c43f1397fd3fff1134a61fe30ff913b remains unchanged."
     - "Native validation records seven assigned checks passed, including release:check, four Blueprint guard tests and ten tarball-policy Vitest cases. Frozen supplementary log and artifact hashes verified. No checks were rerun by this evaluator."
+token_usage:
+  agent_runs: 4
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:3e05229919a54971bae390b60862a072f8a24ada4444bc21c94536487076a283"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-07T06:36:57.885Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -343,9 +360,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "81ac172b48636eaa9f22811010fe5b75cb1800d8"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "2113e549043c4c6ca8c6583588e9133db4797e8f"
+  message: "🧩 WJ3M1R task: persist published PR identity"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -353,9 +373,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-07T06:36:57.885Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "2113e549043c4c6ca8c6583588e9133db4797e8f"
 doc_version: 3
-doc_updated_at: "2026-10-07T06:18:11.182Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-07T06:36:57.885Z"
+doc_updated_by: "CODER"
 description: "Repair release blockers observed on native candidate 202610070445-2MV36M commit 3dc39b85e8101ef798864e54a31e4d102dbf48d4. Admit exactly dist/recipe-api.js and dist/recipe-api.d.ts as allowed and required CLI tarball files already declared by package exports. Add only the recipe-api.ts historical artifact-kind type-union cold-reader exception. Preserve all active Blueprint deletion checks, arbitrary-dist/source/test-file rejection, immutable v0.6.24 compatibility baseline, no-Recipe operation, independent EVALUATOR and all release gates. Update only explicit reviewed compatibility delta/candidate snapshot; add regular-CI positive and negative regression tests and verify actual packed exports. Five exact writable paths. Integrate through native branch_pr under existing user release authorization, then resume the separately blocked release candidate with fresh evidence. Do not change versions, publish, infer efficiency savings or resolve M05 measurement debt."
 sections:
   Summary: |-
@@ -625,6 +653,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:cabf909cc2bbdf74b613cbcad73f805dc06cdff069f04fde6481dfc88a67a521"
     work_order_id: "sha256:3962812730e39beda8929a1861052789ea94c45afe23c325abe3a196623b8a7f"
+  implementation_commit:
+    hash: "81ac172b48636eaa9f22811010fe5b75cb1800d8"
+    message: "🚧 WJ3M1R task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "79709e67da0b41ab9650700769a48e2a4d406d5b"
@@ -1602,3 +1633,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/4` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:3e05229919a54971bae390b60862a072f8a24ada4444bc21c94536487076a283`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-07T06:36:57.885Z`
