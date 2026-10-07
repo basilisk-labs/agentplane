@@ -192,7 +192,7 @@
     "tsup": "^8.5.1",
     "turbo": "^2.11.4",
     "@typescript/native": "npm:typescript@7.0.2",
-    "typescript": "6.0.3",
+    "typescript": "7.0.2",
     "vitest": "4.1.11"
   }
 }
