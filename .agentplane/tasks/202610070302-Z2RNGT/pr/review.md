@@ -6,14 +6,14 @@ Created: 2026-10-07T03:24:48.007Z
 
 - Task: `202610070302-Z2RNGT`
 - Title: Finalize AgentPlane 0.7.13 release documents after autonomy integration
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610070302-Z2RNGT/finalize-agentplane-0-7-13-release-documents-aft`
 - Canonical task record: `.agentplane/tasks/202610070302-Z2RNGT/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
