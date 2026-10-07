@@ -1,10 +1,11 @@
 ---
 id: "202610070801-91ZH0N"
 title: "Remove duplicated release and benchmark script logic for 0.7.13"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -47,6 +48,22 @@ quality_review:
     - "Shared baseline helper retains mode-specific flags/defaults/schema versions, strict integer validation, subprocess argv/environment/JSON recovery, comparison diagnostics and cold timeout versus walltime p95 behavior. Retry and fixture ownership remain in existing entrypoints. Benchmark production timing and aggregation owners are unchanged."
     - "Three renderers now use the existing distribution owner for identical argument parsing; render bodies, required asset validation and generated templates are unchanged. Tests cover argument defaults/errors and retain existing renderer behavior assertions."
     - "No baseline, scanner configuration/input exclusions, performance evidence or version changes occur in the source diff. Native clone guard reports 1660 sources, 90 clones, 1467 duplicated lines and 9859 tokens against unchanged limits 95/1482/10417. All five assigned native checks passed, including 15 Vitest and 9 Node tests. Evaluator read evidence and did not rerun checks."
+token_usage:
+  agent_runs: 4
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:8218f140ef12d9e05082ac59eae3fd003cdf725ca29579390f28edfb0e2914de"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-07T09:27:19.672Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -352,9 +369,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "1806a183188c97ff4368df7ec942963afcde8abb"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "6cc6d23f86c8c0147a35e832a1432b301a068d41"
+  message: "🧩 91ZH0N task: persist published PR identity"
+comments:
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -362,9 +382,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-07T09:27:19.672Z"
+    author: "ORCHESTRATOR"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "6cc6d23f86c8c0147a35e832a1432b301a068d41"
 doc_version: 3
-doc_updated_at: "2026-10-07T09:10:43.853Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-07T09:27:19.672Z"
+doc_updated_by: "ORCHESTRATOR"
 description: "Repair the real unchanged clone ratchet failure blocking release 0.7.13. Retained candidate report has 97 clones, 1610 duplicated lines, 10683 duplicated tokens against maxima 95,1482,10417. Extract genuine shared behavior from CLI baseline checks, distribution renderer argument handling, and only if needed CLI benchmark runners. Preserve exact public behavior, diagnostics, measurement semantics and distribution output. Do not increase or rewrite any baseline, exclude scanned sources, suppress failures, or alter measurement evidence. Add focused behavior tests where shared logic changes. Achieve all unchanged clone thresholds and affected tests. Failure report retained at .git/agentplane/recovery/2MV36M-clone-regression-20261007. Separate branch PR, independent evaluation, native full verification and integration required before candidate requalification."
 sections:
   Summary: |-
@@ -589,6 +617,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:decd41bc44d4623f8ef683e58462f43cae38d215d4e4a4453903c98a6ed79989"
     work_order_id: "sha256:48c2164a85f030b5ce4e276e76056e018737bd24425885f71e11afe60c6c54a8"
+  implementation_commit:
+    hash: "1806a183188c97ff4368df7ec942963afcde8abb"
+    message: "🚧 91ZH0N task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "b50f9b74f16d1bd5bc5e632fe218f93bcae57398"
@@ -1572,3 +1603,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/4` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:8218f140ef12d9e05082ac59eae3fd003cdf725ca29579390f28edfb0e2914de`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-07T09:27:19.672Z`
