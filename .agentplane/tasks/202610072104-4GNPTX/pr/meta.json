@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:ad7ff2794b0c2911d5fa3623e8d0e056ad1c08726fc3c6c53f52a54c8c41b4d8",
   "pr_number": 6062,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6062",
+  "pre_merge_closure": {
+    "basis_commit": "f1e4f1098050f620da20483e1e2ddd190bfb7730",
+    "branch": "task/202610072104-4GNPTX/align-canonical-cli-regression-fixtures-with-cur",
+    "pr_number": 6062,
+    "recorded_at": "2026-10-07T23:59:36.061Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",

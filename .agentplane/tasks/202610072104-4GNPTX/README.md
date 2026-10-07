@@ -1,10 +1,11 @@
 ---
 id: "202610072104-4GNPTX"
 title: "Align canonical CLI regression fixtures with current task contracts"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -47,6 +48,22 @@ quality_review:
     - "Adapter and lifecycle reads share the evolving canonical record and real backend task. Completion becomes visible only after the backend write. Public terminal result, persisted DONE/COMPLETED, clean task Git state and committed README assertions remain. The recovery spy isolates the pre-existing synthetic evidence prerequisite; it does not replace the completion write or Git assertions."
     - "Exact sorted routing reasons and persisted declaration effects/reversibility are asserted; auto, branch_pr, direct and frozen route assertions remain. No production edits, skips, relaxed deadlines or baseline changes were introduced."
     - "Native validation canonical digest 55575fb0c795ec8f10ad93200f34a7d21c926f02399efe26ac0633af9af0378d records all four approved checks passed, including both complete test files with 25 tests. Report 89468a0162809fd9d0faa1c0869c82bf0e9da33cfb7023f9077a00b4fa95c436 and its source/log hashes were verified, including retained failed attempts. Tests and checks were read, not rerun."
+token_usage:
+  agent_runs: 4
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:cc8b29db5a3e5768f30cd8b4a7d4b4d1f9235ebc206d14b12a03d3d7e2e63fe4"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-07T23:59:35.833Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -270,9 +287,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "a9d381763f1f155756f389c37a28a6cbdeb955dc"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "f1e4f1098050f620da20483e1e2ddd190bfb7730"
+  message: "🧩 4GNPTX task: persist published PR identity"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -280,9 +300,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-07T23:59:35.833Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "f1e4f1098050f620da20483e1e2ddd190bfb7730"
 doc_version: 3
-doc_updated_at: "2026-10-07T23:38:23.954Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-07T23:59:35.833Z"
+doc_updated_by: "CODER"
 description: "Repair stale CLI test fixtures exposed by v0.7.13 qualification. Candidate 7d0f69fd7a980eebed6a6c88accd94a622b9880e passed release:check and release CI chunks 1-50, then chunk51 failed two tests. The public completion runtime double lacks command and adapter.read required by the current native owner. The task-new fixture expects legacy routing reasons instead of persisted effect and reversibility reasons. Preserve all completion, committed README, clean Git, frozen route and isolation assertions. Use exact canonical reason assertions and validate their declaration inputs. Initial semantic repair is bounded to the two identified test files. The intake ceiling admits CLI test-fixture repair only; any additional observed fixture failures require a fresh bounded native Plan amendment and independent review. No production behavior changes, test skipping, baseline weakening, release version changes or paid measurements. Existing user authorization covers necessary release repairs, verification and main integration. Original candidate failure evidence remains at .git/agentplane/kernel/exchanges/202610070445-2MV36M/15d0b7ae94e8d1027115eae80b7a2e58455a0a3f15ecc261777d8575dab997bc/native-validation-b7be5bb97b573c1a3e9ab200538657887d48df2177fa157616a833a3f16c42ac.json."
 sections:
   Summary: |-
@@ -483,6 +511,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:301c327df7b3d644736d6f8c888eb10ea8160677c87e39214f2eb63d3fe1b9c3"
     work_order_id: "sha256:6219c383170ccaf3c9eca1dc35befc820f3687579a7e7b0b3c540a33c6d57942"
+  implementation_commit:
+    hash: "a9d381763f1f155756f389c37a28a6cbdeb955dc"
+    message: "🚧 4GNPTX task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "63343f7622ea8a7224d02c1f9437c833113a998c"
@@ -1362,3 +1393,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/4` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:cc8b29db5a3e5768f30cd8b4a7d4b4d1f9235ebc206d14b12a03d3d7e2e63fe4`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-07T23:59:35.833Z`
