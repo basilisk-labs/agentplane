@@ -28,10 +28,10 @@ Fix the v0.7.13 release qualification failure in PR hydration. Candidate task 20
 
 ```text
  ...re.pr-flow.pr-validation.open-hydration.test.ts | 66 +++++++++++++++++++++-
- .../commands/pr/internal/review-template.test.ts   | 58 +++++++++++++++++++
- .../src/commands/pr/internal/review-template.ts    | 28 +++++++++
- .../src/commands/pr/internal/sync-open-step.ts     | 13 ++++-
- 4 files changed, 159 insertions(+), 6 deletions(-)
+ .../commands/pr/internal/review-template.test.ts   | 55 ++++++++++++++++++
+ .../src/commands/pr/internal/review-template.ts    | 29 +++++++++-
+ .../src/commands/pr/internal/sync-open-step.ts     |  7 +++
+ 4 files changed, 153 insertions(+), 4 deletions(-)
 ```
 
 </details>

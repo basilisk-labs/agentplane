@@ -16,7 +16,7 @@ import {
 import {
   buildGithubPrTitle,
   renderGithubPrBody,
-  renderStablePrAutoSummary,
+  renderPrAutoSummary,
   renderPrReviewDocument,
   validateArtifactsLanguage,
 } from "./review-template.js";
@@ -104,7 +104,7 @@ export async function runPrOpenSync(
     task: common.task,
     relatedTaskIds: resolvePrBatchIncludedTaskIds(nextMeta),
     handoffNotes: common.handoffNotes,
-    autoSummary: renderStablePrAutoSummary({
+    autoSummary: renderPrAutoSummary({
       previousDocument,
       updatedAt: nextMeta.updated_at,
       branch: common.branch,
@@ -192,7 +192,7 @@ export async function runPrOpenSync(
       };
     }
   }
-  const nextAutoSummary = renderStablePrAutoSummary({
+  const nextAutoSummary = renderPrAutoSummary({
     previousDocument,
     updatedAt: nextMeta.updated_at,
     branch: common.branch,

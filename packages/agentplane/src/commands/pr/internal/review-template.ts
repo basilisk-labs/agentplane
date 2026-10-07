@@ -141,7 +141,7 @@ export function buildGithubPrTitle(task: TaskData): string {
   return `${defaultPrTitleEmojiForStatus(task.status)} ${suffix || task.id} task: ${title} [${task.id}]`;
 }
 
-export function renderPrAutoSummary(opts: {
+function renderPrAutoSummaryText(opts: {
   updatedAt: string;
   branch: string;
   diffstat: string;
@@ -162,18 +162,17 @@ export function renderPrAutoSummary(opts: {
   ].join("\n");
 }
 
-export function renderStablePrAutoSummary(opts: {
+export function renderPrAutoSummary(opts: {
   updatedAt: string;
   branch: string;
   diffstat: string;
-  previousDocument: string | null;
+  previousDocument?: string | null;
 }): string {
   const uniqueBlock =
-    opts.previousDocument !== null &&
-    opts.previousDocument.split(AUTO_SUMMARY_START).length === 2 &&
+    opts.previousDocument?.split(AUTO_SUMMARY_START).length === 2 &&
     opts.previousDocument.split(AUTO_SUMMARY_END).length === 2;
   const previous =
-    !uniqueBlock || opts.previousDocument === null
+    !uniqueBlock || opts.previousDocument == null
       ? null
       : extractAutoSummaryBlock(opts.previousDocument);
   const timestamp = previous
@@ -184,10 +183,10 @@ export function renderStablePrAutoSummary(opts: {
     Number.isFinite(Date.parse(timestamp)) &&
     new Date(timestamp).toISOString() === timestamp
   ) {
-    const unchanged = renderPrAutoSummary({ ...opts, updatedAt: timestamp });
+    const unchanged = renderPrAutoSummaryText({ ...opts, updatedAt: timestamp });
     if (previous === unchanged) return unchanged;
   }
-  return renderPrAutoSummary(opts);
+  return renderPrAutoSummaryText(opts);
 }
 
 export function extractAutoSummaryBlock(text: string): string | null {
