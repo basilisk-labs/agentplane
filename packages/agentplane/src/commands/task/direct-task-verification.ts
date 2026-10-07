@@ -36,6 +36,7 @@ const CHECK_TIMEOUT_MS_BY_SCRIPT: Readonly<Record<string, number>> = Object.free
   "ci:local:full": 90 * 60_000,
   // Prepublish also runs release-wide suites, coverage, and installed-package smoke checks.
   "release:prepublish": 150 * 60_000,
+  "release:ci-check": 150 * 60_000,
   "e2e:v0.7.1:gate": 150 * 60_000,
 });
 const CHECK_OUTPUT_LIMIT = 4000;

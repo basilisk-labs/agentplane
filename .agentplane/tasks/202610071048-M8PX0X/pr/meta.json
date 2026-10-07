@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202610071048-M8PX0X/give-native-release-ci-verification-its-bounded",
+  "created_at": "2026-10-07T11:05:04.537Z",
+  "diffstat_sha256": "sha256:17a0c35c54cd5fae7d90c85fa9a3c533405d19bb783c662a29a266adb85bb7f8",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610071048-M8PX0X",
+  "updated_at": "2026-10-07T11:05:04.537Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
