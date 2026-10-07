@@ -1,0 +1,85 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check c6c773f6c2a9bf830b544327fd1369f275ecd5c3..35aca2115fb1a781725e18cc6bd93de38d8af55d",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB c6c773f6c2a9bf830b544327fd1369f275ecd5c3..35aca2115fb1a781725e18cc6bd93de38d8af55d",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202610071048-M8PX0X/README.md",
+        "A\t.agentplane/tasks/202610071048-M8PX0X/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202610071048-M8PX0X/pr/github-body.md",
+        "A\t.agentplane/tasks/202610071048-M8PX0X/pr/github-title.txt",
+        "A\t.agentplane/tasks/202610071048-M8PX0X/pr/meta.json",
+        "A\t.agentplane/tasks/202610071048-M8PX0X/pr/review.md",
+        "A\t.agentplane/tasks/202610071048-M8PX0X/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+        "A\t.agentplane/tasks/202610071048-M8PX0X/quality/objects/sha256/cd35fbf396f0028e374b3f84595480f6edd9dcf606c23ee72655c873780bf2b2.json",
+        "M\tpackages/agentplane/src/commands/task/direct-task-verification.qualification.test.ts",
+        "M\tpackages/agentplane/src/commands/task/direct-task-verification.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "c6c773f6c2a9bf830b544327fd1369f275ecd5c3",
+  "implementation_commit": "35aca2115fb1a781725e18cc6bd93de38d8af55d",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      "AM .agentplane/tasks/202610071048-M8PX0X/README.md",
+      "A  .agentplane/tasks/202610071048-M8PX0X/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+      "A  .agentplane/tasks/202610071048-M8PX0X/quality/objects/sha256/cd35fbf396f0028e374b3f84595480f6edd9dcf606c23ee72655c873780bf2b2.json",
+      "M  packages/agentplane/src/commands/task/direct-task-verification.qualification.test.ts",
+      "M  packages/agentplane/src/commands/task/direct-task-verification.ts"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": "AM .agentplane/tasks/202610071048-M8PX0X/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "A  .agentplane/tasks/202610071048-M8PX0X/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "A  .agentplane/tasks/202610071048-M8PX0X/quality/objects/sha256/cd35fbf396f0028e374b3f84595480f6edd9dcf606c23ee72655c873780bf2b2.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/commands/task/direct-task-verification.qualification.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/commands/task/direct-task-verification.ts"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      "AM .agentplane/tasks/202610071048-M8PX0X/README.md",
+      "A  .agentplane/tasks/202610071048-M8PX0X/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+      "A  .agentplane/tasks/202610071048-M8PX0X/quality/objects/sha256/cd35fbf396f0028e374b3f84595480f6edd9dcf606c23ee72655c873780bf2b2.json",
+      "M  packages/agentplane/src/commands/task/direct-task-verification.qualification.test.ts",
+      "M  packages/agentplane/src/commands/task/direct-task-verification.ts"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202610071048-M8PX0X"
+}
