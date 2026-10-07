@@ -12,7 +12,11 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { stableJson } from "../../lib/agent-efficiency-baseline.mjs";
-import { parseReplayJsonc } from "./agent-efficiency-dependency-manifest.mjs";
+import { prepareIsolatedAnchorDependencies } from "./agent-efficiency-anchor-dependencies.mjs";
+import {
+  assertReplayDependencyClaim,
+  parseReplayJsonc,
+} from "./agent-efficiency-dependency-manifest.mjs";
 import {
   buildCodexReplayEnvironment,
   fail,
@@ -329,7 +333,12 @@ function assertAnchorBuildManifest(subjectRoot, packageRelative, packageName, ex
   }
 }
 
-export function buildAnchorRuntime(subjectRoot, expectedAnchor, expectedDependencyClaim) {
+export function buildAnchorRuntime(
+  subjectRoot,
+  expectedAnchor,
+  expectedDependencyClaim,
+  dependencyMode = "isolated_frozen_lock_v1",
+) {
   if (!/^[a-f0-9]{40}$/.test(expectedAnchor)) fail("ANCHOR_COMMIT");
   if (
     !/^sha256:[a-f0-9]{64}$/.test(expectedDependencyClaim?.capture_executable_sha256) ||
@@ -359,7 +368,23 @@ export function buildAnchorRuntime(subjectRoot, expectedAnchor, expectedDependen
   ) {
     fail("ANCHOR_DIRTY");
   }
-  linkAnchorDependencies(subjectRoot);
+  assertReplayDependencyClaim(DRIVER_REPO_ROOT, expectedDependencyClaim);
+  let isolated;
+  if (dependencyMode === "isolated_frozen_lock_v1") {
+    const common = runSanitizedCommand(
+      "/usr/bin/git",
+      ["rev-parse", "--path-format=absolute", "--git-common-dir"],
+      { code: "ANCHOR_DRIVER_ROOT", cwd: DRIVER_REPO_ROOT, env: buildAnchorGitEnvironment() },
+    ).trim();
+    isolated = prepareIsolatedAnchorDependencies(
+      subjectRoot,
+      DRIVER_REPO_ROOT,
+      path.dirname(common),
+    );
+    isolated.assertUnchanged();
+  } else if (dependencyMode === "shared_driver_v1") {
+    linkAnchorDependencies(subjectRoot);
+  } else fail("ANCHOR_DEPENDENCY_MODE");
   const environment = prepareAnchorProcessEnvironment(subjectRoot);
   runSanitizedCommand(process.execPath, ["scripts/checks/run-typescript-build.mjs"], {
     code: "ANCHOR_BUILD",
@@ -396,10 +421,19 @@ export function buildAnchorRuntime(subjectRoot, expectedAnchor, expectedDependen
   if (afterHead !== localHead || afterTree !== localTree || trackedStatus !== "") {
     fail("ANCHOR_TRACKED_DRIFT_AFTER_BUILD");
   }
+  isolated?.assertUnchanged();
+  assertReplayDependencyClaim(DRIVER_REPO_ROOT, expectedDependencyClaim);
   return {
     cliPath,
     receipt: {
       dependency_claim: expectedDependencyClaim,
+      dependency_mode: dependencyMode,
+      ...(isolated
+        ? {
+            anchor_dependency_claim: isolated.anchor_dependency_claim,
+            anchor_dependency_capture_stage: "before_and_after_compilation",
+          }
+        : {}),
       head_verified_after_build: true,
       tracked_status_clean_after_build: true,
       tree_verified_after_build: true,
