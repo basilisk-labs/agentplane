@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:17a0c35c54cd5fae7d90c85fa9a3c533405d19bb783c662a29a266adb85bb7f8",
   "pr_number": 6060,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6060",
+  "pre_merge_closure": {
+    "basis_commit": "55b02e7fa77680af98935b24f5ddd3f42887a9df",
+    "branch": "task/202610071048-M8PX0X/give-native-release-ci-verification-its-bounded",
+    "pr_number": 6060,
+    "recorded_at": "2026-10-07T12:19:29.012Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",

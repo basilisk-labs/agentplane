@@ -1,10 +1,11 @@
 ---
 id: "202610071048-M8PX0X"
 title: "Give native release CI verification its bounded release timeout"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -46,6 +47,22 @@ quality_review:
     - "Production diff adds exactly one release:ci-check entry at 150 * 60000. Default 30-minute and existing script budgets are unchanged. Explicit additional timeout precedence, minimum duplicate timeout, sequence deadline, process termination and evidence admission logic remain unchanged."
     - "Three new parameterized cases execute runDirectTaskVerification and inspect the captured command, argv, cwd, invocation count and timeout: 9000000ms for declared release:ci-check, 1000ms explicit override, 1800000ms unrelated release:check. Existing assertions remain intact."
     - "Native validation independently records all three assigned checks passed, including 46 tests across two files, formatting and diff. Prior author logs were retained with explicit provenance and their hashes verified; they are distinct from fresh native checks. No checks were rerun by this evaluator."
+token_usage:
+  agent_runs: 4
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:f33e91d2915199aa2b65f068fa84eefac2c816aadb55747297ad2d3ad26e4d9b"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-07T12:19:28.859Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -260,9 +277,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "35aca2115fb1a781725e18cc6bd93de38d8af55d"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "55b02e7fa77680af98935b24f5ddd3f42887a9df"
+  message: "🧩 M8PX0X task: persist published PR identity"
+comments:
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -270,9 +290,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-07T12:19:28.859Z"
+    author: "ORCHESTRATOR"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "55b02e7fa77680af98935b24f5ddd3f42887a9df"
 doc_version: 3
-doc_updated_at: "2026-10-07T12:00:54.779Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-07T12:19:28.859Z"
+doc_updated_by: "ORCHESTRATOR"
 description: "Release 0.7.13 candidate qualification reached release:ci-check extras after contract, clone and package installation passed, but native direct verification killed its parent at the default 30-minute deadline. The bounded release suite needs the existing 150-minute release budget. Add only release:ci-check to the script-specific timeout map, matching release:prepublish. Preserve all commands, assertions, default timeout for unrelated scripts, and explicit timeout_ms precedence. Add focused tests of the actual verifier invocation for the declared command, a shorter explicit timeout, and unrelated command default. Do not bypass checks, import manual PASS evidence, increase global timeouts, or change process lifecycle behavior. Native evaluator, full verification and branch PR integration required; candidate is requalified afterward."
 sections:
   Summary: |-
@@ -448,6 +476,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:4e802c28762195096a83cc7df18c9cbda7dcc40bc67a3e6a6defbfa043851557"
     work_order_id: "sha256:031c562311f79bce655be9efc96977055e1fd67f5154c31c9fbb32973640f5cc"
+  implementation_commit:
+    hash: "35aca2115fb1a781725e18cc6bd93de38d8af55d"
+    message: "🚧 M8PX0X task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "c6c773f6c2a9bf830b544327fd1369f275ecd5c3"
@@ -1307,3 +1338,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/4` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:f33e91d2915199aa2b65f068fa84eefac2c816aadb55747297ad2d3ad26e4d9b`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-07T12:19:28.859Z`
