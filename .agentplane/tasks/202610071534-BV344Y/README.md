@@ -1,10 +1,11 @@
 ---
 id: "202610071534-BV344Y"
 title: "Preserve unchanged PR review artifacts during provider hydration"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 48
+revision: 49
 origin:
   system: "manual"
 depends_on: []
@@ -46,6 +47,22 @@ quality_review:
     - "Both sync call sites use the existing export. Strict unique markers, valid canonical ISO timestamp and exact current branch/diff evidence comparison remain. Current task/handoff content still renders independently; provider identity and metadata timestamps remain truthful."
     - "Stable-summary tests now call the public entrypoint with all assertions preserved. Hydration tests including typed parsePrMeta reads, third reruns, only-metadata dirt and genuine content refresh are byte-identical to the prior reviewed source. Provider-base test is also unchanged. Only the three approved files changed in this recovery."
     - "All five fresh native checks passed: 27 tests across three suites, two ESLint commands, full formatting and diff. Five author logs hash-verified. Prior failed final validation 03d66f50018178167734772eb71b897d3c447afc75d2c6926ec8600ba7d8d09e and superseded scope-blocker d8578124f2dc08f0a0d311b89f276e42fecaac4d38eb2ac464a361a8a4a1edaf remain preserved and hash-verified."
+token_usage:
+  agent_runs: 4
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:a9b9414d7dc33fd761df3c0e39ec8d8338c397c9a4fe123574a9751a16154432"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-07T19:04:47.039Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -296,9 +313,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "fe654fc121f6510c50c52ac769f6ea73f415ebf2"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "e88b3610c2e7030c0b54892485a7804cae2be096"
+  message: "🧩 BV344Y task: persist published PR identity"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -306,9 +326,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-07T19:04:47.039Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "e88b3610c2e7030c0b54892485a7804cae2be096"
 doc_version: 3
-doc_updated_at: "2026-10-07T18:38:45.202Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-07T19:04:47.039Z"
+doc_updated_by: "CODER"
 description: "Fix the v0.7.13 release qualification failure in PR hydration. Candidate task 202610070445-2MV36M release CI reached chunk 43 and failed two existing open-hydration tests because linking a newly created remote PR advances metadata.updated_at and rewrites unchanged review/body AUTO SUMMARY timestamps. Keep provider metadata freshness and identity intact. Preserve rendered timestamps only when summary evidence is unchanged. Cover a third rerun, genuine diff/content changes and malformed blocks. Do not weaken tests, baselines, review requirements or gates. Native task protocol, independent evaluation, full verification and hosted integration are required. User authorizes necessary release repairs and main integration. Candidate failure evidence remains retained at .git/agentplane/kernel/exchanges/202610070445-2MV36M/9b109fab2b9197a91cfb6d791b0969cb72e516dd7b8819b13b49b76e9b6d2c33/native-validation-6b153127c1625b6773a89ee0cd50c891a4c0f399170b620f258305a1c76741fd.json. No release version changes or paid measurements."
 sections:
   Summary: |-
@@ -532,6 +560,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:3973405fdadca728ac583b000af09005003c8f6e9f2e3c430aa5546bb6a1ef4c"
     work_order_id: "sha256:653d99a4dce8f549491f3b15c22729a26f915b3fd116e4130ddc67eeac5fbb4a"
+  implementation_commit:
+    hash: "fe654fc121f6510c50c52ac769f6ea73f415ebf2"
+    message: "🚧 BV344Y task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "f285c23ba586c2ffeda7346cfbf9e9081c3f4f71"
@@ -2470,3 +2501,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/4` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:a9b9414d7dc33fd761df3c0e39ec8d8338c397c9a4fe123574a9751a16154432`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-07T19:04:47.039Z`

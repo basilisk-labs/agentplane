@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:325d567f213d99c7b9b86f282ce6615069ff59ca71c9dec65a1ab021875555b8",
   "pr_number": 6061,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6061",
+  "pre_merge_closure": {
+    "basis_commit": "e88b3610c2e7030c0b54892485a7804cae2be096",
+    "branch": "task/202610071534-BV344Y/preserve-unchanged-pr-review-artifacts-during-pr",
+    "pr_number": 6061,
+    "recorded_at": "2026-10-07T19:04:47.276Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
