@@ -1,10 +1,11 @@
 ---
 id: "202610070302-Z2RNGT"
 title: "Finalize AgentPlane 0.7.13 release documents after autonomy integration"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -44,6 +45,22 @@ quality_review:
     - "All four historical exclusion additions have matching task identity and ancestry, with exact published-tag binding; prior exclusions and blocked predecessor history remain preserved. The incident archive records the exact unchanged registry hash, zero entries, actual source baseline and both review records without invented resolution."
     - "Complete 3454-file tracked README projection was independently hash-checked against the retained exact-baseline inventory. Fresh native evidence now records all five mandatory checks passing, including the preparatory registry check exempting only this task ID. This does not waive final unexempted readiness."
     - "M05 economic benefit remains NOT ESTABLISHED; no paid authority, measurement-debt acceptance, future evaluator activation or release publication is inferred. The report canonical output resolves to retained release-preparation-evidence.json bytes."
+token_usage:
+  agent_runs: 4
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:534a5539c05fb04e95163406d40d1e0bbac713eebac99dc84b0d64f0a1cbafbc"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-07T04:26:04.840Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -376,9 +393,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "d5ae62e218f9da625464e27fa37370d8e3d453fc"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "31df458700eda08493bdb7a34fbfa3a0a99beec7"
+  message: "🧩 Z2RNGT task: persist published PR identity"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -386,9 +406,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-07T04:26:04.840Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "31df458700eda08493bdb7a34fbfa3a0a99beec7"
 doc_version: 3
-doc_updated_at: "2026-10-07T04:14:02.262Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-07T04:26:04.840Z"
+doc_updated_by: "CODER"
 description: "Prepare the release notes, historical release scope exclusions, and incident archive for v0.7.13 on main after PR6056. Replace preparation task 202610070209-FZ1T6W, preserving its blocked verification history. Reuse its reviewed three-file draft under a fresh WorkOrder. The preparatory task-registry check must transparently exclude only this new active preparation task by exact ID; final candidate gates remain unexempted after integration. Materialize historical tracked task README evidence from the exact checkout HEAD before validating the complete registry. Refresh notes coverage for PR6053 and PR6056 and preserve M05 NOT ESTABLISHED without inferring measurement-debt acceptance. Complete independent review and native integration under existing user release authorization."
 sections:
   Summary: |-
@@ -706,6 +734,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:6a55b15271ad2269601ab1f27a382ac665d6a8cee9ecd6860ce56088591fc929"
     work_order_id: "sha256:3694764a547154b9e3891e4b62f2273f48863a7f60003827f595ed7fb54e0c96"
+  implementation_commit:
+    hash: "d5ae62e218f9da625464e27fa37370d8e3d453fc"
+    message: "🚧 Z2RNGT task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "84215f5045cb211b62069ef55281b6671bbc51cb"
@@ -1720,3 +1751,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/4` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:534a5539c05fb04e95163406d40d1e0bbac713eebac99dc84b0d64f0a1cbafbc`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-07T04:26:04.840Z`
