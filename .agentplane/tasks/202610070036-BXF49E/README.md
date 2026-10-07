@@ -1,10 +1,11 @@
 ---
 id: "202610070036-BXF49E"
 title: "Activate maximum supported repository autonomy without canonical policy drift"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -47,6 +48,22 @@ quality_review:
     - "WORKFLOW matches the previously reviewed configuration exactly: authority.mode=all with POLICY:repository, empty operation lists and 15-minute TTL; status commits off; Codex runner limits 3600000/600000/1500ms. branch_pr, standard profile, manual commits and existing approval flags remain unchanged."
     - "Gateway-loaded standing instructions preserve current WorkOrder scope, mandatory verification, independent review and matching explicit irreversible-action approval. They do not impersonate USER, manufacture receipts, grant credentials or external access, authorize paid M05 measurement, or claim measured efficiency. Canonical policy counterparts remain byte-identical to packaged files."
     - "AgentPlane native evidence records all four required checks passing. The canonical report digest 45d4d19f307caa67a5dac364d341ac4ecae7af2a44136b4f1f5645f2fa7e9eba resolves to the exact retained evidence-report.json bytes, containing source hashes, configuration, check evidence and limitations; it is not merely an unsupported summary claim."
+token_usage:
+  agent_runs: 4
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:c9433579f26b0b148fd846e8f1ce03b1d278db1f3fb7dce2619acc012a72b6dd"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-07T03:00:09.156Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -320,9 +337,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "0bf08808e5384b7d8802dcf578d9ac70536e3cb0"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "3a1e47a8d299db0ec9e00af8253ecbaa78170cf0"
+  message: "🧩 BXF49E task: persist published PR identity"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -330,9 +350,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-07T03:00:09.156Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "3a1e47a8d299db0ec9e00af8253ecbaa78170cf0"
 doc_version: 3
-doc_updated_at: "2026-10-07T02:39:06.226Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-07T03:00:09.156Z"
+doc_updated_by: "CODER"
 description: "Continue the user-authorized autonomy task 202610020153-XXZXW4 on current main after release implementation PR6053 merged. Reuse its reviewed WORKFLOW authority.mode=all configuration, actor POLICY:repository, status_commit_policy=off and bounded runner settings. Preserve branch_pr, verification and explicit protected operator boundaries. Place repository-specific standing user authorization in .agentplane/user-instructions.md, which AGENTS.md explicitly loads. Keep canonical policy templates and local copies identical. The previous A final checks failed because local dod.core.md diverged from its canonical template and old CI hit a 2GiB heap limit; preserve that failure history. Implement and independently qualify the bounded configuration, publish and integrate through native routes under the existing explicit user permission. Do not claim A DONE or edit kernel journals. Do not infer M05 paid measurement authority or measurement-debt disposition."
 sections:
   Summary: |-
@@ -589,6 +617,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:20ae2ea3fbc969abf7f251704242ff5a3f359c3ab7ffa40d18398c3f1e8a6b5e"
     work_order_id: "sha256:c4cd651d596a67e9c84e6c46e4a802869a02aaa69ba13507bfb90af9db887458"
+  implementation_commit:
+    hash: "0bf08808e5384b7d8802dcf578d9ac70536e3cb0"
+    message: "🚧 BXF49E task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "84215f5045cb211b62069ef55281b6671bbc51cb"
@@ -1537,3 +1568,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/4` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:c9433579f26b0b148fd846e8f1ce03b1d278db1f3fb7dce2619acc012a72b6dd`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-07T03:00:09.156Z`
