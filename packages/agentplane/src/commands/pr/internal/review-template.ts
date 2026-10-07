@@ -162,6 +162,34 @@ export function renderPrAutoSummary(opts: {
   ].join("\n");
 }
 
+export function renderStablePrAutoSummary(opts: {
+  updatedAt: string;
+  branch: string;
+  diffstat: string;
+  previousDocument: string | null;
+}): string {
+  const uniqueBlock =
+    opts.previousDocument !== null &&
+    opts.previousDocument.split(AUTO_SUMMARY_START).length === 2 &&
+    opts.previousDocument.split(AUTO_SUMMARY_END).length === 2;
+  const previous =
+    !uniqueBlock || opts.previousDocument === null
+      ? null
+      : extractAutoSummaryBlock(opts.previousDocument);
+  const timestamp = previous
+    ?.split("\n")[3]
+    ?.match(/^- Updated: (\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z)$/u)?.[1];
+  if (
+    timestamp &&
+    Number.isFinite(Date.parse(timestamp)) &&
+    new Date(timestamp).toISOString() === timestamp
+  ) {
+    const unchanged = renderPrAutoSummary({ ...opts, updatedAt: timestamp });
+    if (previous === unchanged) return unchanged;
+  }
+  return renderPrAutoSummary(opts);
+}
+
 export function extractAutoSummaryBlock(text: string): string | null {
   const startIdx = text.indexOf(AUTO_SUMMARY_START);
   const endIdx = text.indexOf(AUTO_SUMMARY_END);
