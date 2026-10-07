@@ -22,7 +22,7 @@ Release 0.7.13 candidate qualification reached release:ci-check extras after con
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-10-07T11:05:04.537Z
+- Updated: 2026-10-07T12:07:05.005Z
 - Branch: task/202610071048-M8PX0X/give-native-release-ci-verification-its-bounded
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
