@@ -12,8 +12,8 @@ Created: 2026-10-07T15:54:41.605Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:b2b1501e61357d5b7c693037f2eaacbe6d303576019eb85894cda81f78d398e7
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,11 +29,11 @@ Created: 2026-10-07T15:54:41.605Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- ...re.pr-flow.pr-validation.open-hydration.test.ts | 65 +++++++++++++++++++++-
+ ...re.pr-flow.pr-validation.open-hydration.test.ts | 66 +++++++++++++++++++++-
  .../commands/pr/internal/review-template.test.ts   | 58 +++++++++++++++++++
- .../src/commands/pr/internal/review-template.ts    | 28 ++++++++++
+ .../src/commands/pr/internal/review-template.ts    | 28 +++++++++
  .../src/commands/pr/internal/sync-open-step.ts     | 13 ++++-
- 4 files changed, 158 insertions(+), 6 deletions(-)
+ 4 files changed, 159 insertions(+), 6 deletions(-)
 ```
 
 </details>

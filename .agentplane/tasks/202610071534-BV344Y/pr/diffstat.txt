@@ -1,5 +1,5 @@
- ...re.pr-flow.pr-validation.open-hydration.test.ts | 65 +++++++++++++++++++++-
+ ...re.pr-flow.pr-validation.open-hydration.test.ts | 66 +++++++++++++++++++++-
  .../commands/pr/internal/review-template.test.ts   | 58 +++++++++++++++++++
- .../src/commands/pr/internal/review-template.ts    | 28 ++++++++++
+ .../src/commands/pr/internal/review-template.ts    | 28 +++++++++
  .../src/commands/pr/internal/sync-open-step.ts     | 13 ++++-
- 4 files changed, 158 insertions(+), 6 deletions(-)
+ 4 files changed, 159 insertions(+), 6 deletions(-)
