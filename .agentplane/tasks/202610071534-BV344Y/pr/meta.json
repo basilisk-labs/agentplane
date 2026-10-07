@@ -3,7 +3,8 @@
   "branch": "task/202610071534-BV344Y/preserve-unchanged-pr-review-artifacts-during-pr",
   "created_at": "2026-10-07T15:54:41.605Z",
   "diffstat_sha256": "sha256:325d567f213d99c7b9b86f282ce6615069ff59ca71c9dec65a1ab021875555b8",
-  "last_verified_at": null,
+  "last_verified_at": "2026-10-07T18:38:42.873Z",
+  "last_verified_diffstat_sha256": "sha256:325d567f213d99c7b9b86f282ce6615069ff59ca71c9dec65a1ab021875555b8",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202610071534-BV344Y",
   "updated_at": "2026-10-07T15:54:41.605Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
