@@ -6,14 +6,14 @@ Created: 2026-10-07T11:05:04.537Z
 
 - Task: `202610071048-M8PX0X`
 - Title: Give native release CI verification its bounded release timeout
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610071048-M8PX0X/give-native-release-ci-verification-its-bounded`
 - Canonical task record: `.agentplane/tasks/202610071048-M8PX0X/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
