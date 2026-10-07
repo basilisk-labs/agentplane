@@ -50,7 +50,7 @@ const REVIEWED_SECTION_DIGESTS = {
   exit_error_contract: "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
   machine_output_contract: "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
   package_manifests: "ee1cec43b5f3371f7e7235f5aebd3254bcc2bedfa21d20eec8e2109d62f41faf",
-  tarball_policy: "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd",
+  tarball_policy: "10e8c7b78d3166955320b6fa787d7564b5bba1f67b3ce1736dca46673528716d",
   workflow_schema: "dc851f68ff13c52fec5dbe522fa96cc1084771ce7e09ed0178c44f15d7c46452",
 };
 function assertReviewedSectionDigests(sectionDigests) {
@@ -997,6 +997,7 @@ function validateReviewedCandidate({
       "202608212244-6XZAYD",
       "202610041748-K43XFE",
       "202610060956-42J54D",
+      "202610070509-WJ3M1R",
     ],
   };
   for (const delta of candidate.deltas) {
@@ -3909,6 +3910,34 @@ function validateReviewedCandidate({
   const allowedAgentplaneFilesAdded = afterAllowedAgentplaneFiles
     .filter((file) => !beforeAllowedAgentplaneFiles.includes(file))
     .toSorted();
+  assert(
+    hashJson(allowedAgentplaneFilesAdded) ===
+      hashJson([
+        "dist/command-catalog.js",
+        "dist/command-catalog/core-fast.js",
+        "dist/command-catalog/task-read.js",
+        "dist/command-help.json",
+        "dist/deferred-runtime.js",
+        "dist/recipe-api.d.ts",
+        "dist/recipe-api.js",
+      ]),
+    "unexpected CLI tarball allowlist addition",
+  );
+  assert(
+    hashJson(currentSurface.tarball_policy.policy.required_agentplane_files) ===
+      hashJson([
+        "assets/compatibility-retirement-manifest.json",
+        "dist/cli.js",
+        "dist/command-catalog.js",
+        "dist/command-catalog/core-fast.js",
+        "dist/command-catalog/task-read.js",
+        "dist/command-help.json",
+        "dist/deferred-runtime.js",
+        "dist/recipe-api.d.ts",
+        "dist/recipe-api.js",
+      ]),
+    "unexpected CLI tarball required-file drift",
+  );
   assert(
     hashJson(tarballDelta.evidence) ===
       hashJson({

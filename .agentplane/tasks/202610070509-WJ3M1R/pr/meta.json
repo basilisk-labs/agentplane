@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202610070509-WJ3M1R/repair-recipe-api-release-packaging-and-blueprin",
+  "created_at": "2026-10-07T05:22:19.073Z",
+  "diffstat_sha256": "sha256:0b68a5bb0e381d81885f8224658670d90cc34e6168af46bb3c428932867278a8",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610070509-WJ3M1R",
+  "updated_at": "2026-10-07T05:22:19.073Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

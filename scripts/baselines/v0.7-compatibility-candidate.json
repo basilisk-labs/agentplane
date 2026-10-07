@@ -12,10 +12,10 @@
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
       "package_manifests": "ee1cec43b5f3371f7e7235f5aebd3254bcc2bedfa21d20eec8e2109d62f41faf",
-      "tarball_policy": "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd",
+      "tarball_policy": "10e8c7b78d3166955320b6fa787d7564b5bba1f67b3ce1736dca46673528716d",
       "workflow_schema": "dc851f68ff13c52fec5dbe522fa96cc1084771ce7e09ed0178c44f15d7c46452"
     },
-    "surface_sha256": "5dc975eb54828eab8fa9e6a89434c8542a3e91ad8a0b40f3fcf7bd17ac982c49"
+    "surface_sha256": "d35e7cdd8f0a9e2c4361f43fdbcb8f2ff2f4ceec90b9390cf990b9daeb0b76f1"
   },
   "candidate_id": "agentplane.compatibility.v0.7.cumulative",
   "contract_artifacts": {
@@ -3547,7 +3547,9 @@
             "dist/command-catalog/core-fast.js",
             "dist/command-catalog/task-read.js",
             "dist/command-help.json",
-            "dist/deferred-runtime.js"
+            "dist/deferred-runtime.js",
+            "dist/recipe-api.d.ts",
+            "dist/recipe-api.js"
           ],
           "required_files": [
             "assets/compatibility-retirement-manifest.json",
@@ -3556,7 +3558,9 @@
             "dist/command-catalog/core-fast.js",
             "dist/command-catalog/task-read.js",
             "dist/command-help.json",
-            "dist/deferred-runtime.js"
+            "dist/deferred-runtime.js",
+            "dist/recipe-api.d.ts",
+            "dist/recipe-api.js"
           ]
         },
         "core_package": {
@@ -3581,10 +3585,11 @@
         "202608021535-CNQKXP",
         "202608212244-6XZAYD",
         "202610041748-K43XFE",
-        "202610060956-42J54D"
+        "202610060956-42J54D",
+        "202610070509-WJ3M1R"
       ],
-      "summary": "Publishes the generated workflow, KnowledgeRef, and AgentWorkOrder v2 schemas from the core package, requires the compatibility retirement manifest, and explicitly permits and requires the split AgentPlane runtime artifacts; no package source file is removed.",
-      "to_sha256": "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd"
+      "summary": "Publishes the generated workflow, KnowledgeRef, and AgentWorkOrder v2 schemas from the core package, requires the compatibility retirement manifest, and explicitly permits and requires the split AgentPlane runtime artifacts; no package source file is removed. Requires the exact Recipe API runtime and declaration files already named by the CLI package export.",
+      "to_sha256": "10e8c7b78d3166955320b6fa787d7564b5bba1f67b3ce1736dca46673528716d"
     }
   ],
   "pre_release_package_delta": {
@@ -3668,7 +3673,7 @@
     "from_version": "0.6.24",
     "section": "package_manifests",
     "source_task": "202608082119-P6SHBN",
-    "surface_sha256": "f387d8edce110783292230e3996fcbb8ae67d7c7735a9c88671b623d2d76abb0",
+    "surface_sha256": "40466a8a690787106d097518f720ac93d360a486191f545b8c063bf93e534bd9",
     "to_sha256": "5181e197bcb2007bf582098724eac351ee528640a26e0283b51ccca567690919",
     "to_version": "0.7.12"
   },
