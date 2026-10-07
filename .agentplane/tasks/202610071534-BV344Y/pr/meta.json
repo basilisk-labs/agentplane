@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202610071534-BV344Y/preserve-unchanged-pr-review-artifacts-during-pr",
+  "created_at": "2026-10-07T15:54:41.605Z",
+  "diffstat_sha256": "sha256:fdce88c7a3357f8cfa95897366dbe313b779bb81a0baa22b85569b1bdc04ca93",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610071534-BV344Y",
+  "updated_at": "2026-10-07T15:54:41.605Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
