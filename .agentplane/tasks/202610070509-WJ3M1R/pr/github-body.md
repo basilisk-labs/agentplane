@@ -15,8 +15,8 @@ Repair release blockers observed on native candidate 202610070445-2MV36M commit 
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>
