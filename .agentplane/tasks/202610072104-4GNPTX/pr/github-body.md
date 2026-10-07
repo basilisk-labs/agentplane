@@ -15,8 +15,8 @@ Repair stale CLI test fixtures exposed by v0.7.13 qualification. Candidate 7d0f6
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>
