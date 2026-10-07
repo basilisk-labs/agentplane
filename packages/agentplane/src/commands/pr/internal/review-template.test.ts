@@ -4,7 +4,6 @@ import type { TaskData } from "../../../backends/task-backend.js";
 import {
   renderGithubPrBody,
   renderPrAutoSummary,
-  renderStablePrAutoSummary,
   renderPrReviewDocument,
   validateGithubPrBodyContents,
   validateReviewContents,
@@ -215,14 +214,14 @@ describe("stable PR summary evidence", () => {
   const document = `<!-- BEGIN AUTO SUMMARY -->\n${summary}\n<!-- END AUTO SUMMARY -->`;
   it("preserves evidence through distinct later provider timestamps", () => {
     for (const updatedAt of ["2026-01-02T00:00:00.000Z", "2026-01-03T00:00:00.000Z"]) {
-      expect(
-        renderStablePrAutoSummary({ ...original, updatedAt, previousDocument: document }),
-      ).toBe(summary);
+      expect(renderPrAutoSummary({ ...original, updatedAt, previousDocument: document })).toBe(
+        summary,
+      );
     }
   });
   it("regenerates task content while preserving unchanged raw evidence", () => {
     const task = makeTask();
-    const autoSummary = renderStablePrAutoSummary({
+    const autoSummary = renderPrAutoSummary({
       ...original,
       updatedAt: "2026-01-03T00:00:00.000Z",
       previousDocument: document,
@@ -240,7 +239,7 @@ describe("stable PR summary evidence", () => {
     "refreshes changed evidence %j",
     (change) => {
       const next = { ...original, ...change, updatedAt: "2026-01-02T00:00:00.000Z" };
-      expect(renderStablePrAutoSummary({ ...next, previousDocument: document })).toBe(
+      expect(renderPrAutoSummary({ ...next, previousDocument: document })).toBe(
         renderPrAutoSummary(next),
       );
     },
@@ -255,8 +254,6 @@ describe("stable PR summary evidence", () => {
     document.replace("Raw evidence", "unexpected"),
   ])("regenerates missing or malformed evidence %s", (previousDocument) => {
     const next = { ...original, updatedAt: "2026-01-02T00:00:00.000Z" };
-    expect(renderStablePrAutoSummary({ ...next, previousDocument })).toBe(
-      renderPrAutoSummary(next),
-    );
+    expect(renderPrAutoSummary({ ...next, previousDocument })).toBe(renderPrAutoSummary(next));
   });
 });
