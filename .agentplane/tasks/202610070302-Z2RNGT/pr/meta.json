@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202610070302-Z2RNGT/finalize-agentplane-0-7-13-release-documents-aft",
+  "created_at": "2026-10-07T03:24:48.007Z",
+  "diffstat_sha256": "sha256:19d56c97e06ee1d81a8bbfeaa63222a8eef41decb9378f4e146d29933f2ce8d4",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610070302-Z2RNGT",
+  "updated_at": "2026-10-07T03:24:48.007Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

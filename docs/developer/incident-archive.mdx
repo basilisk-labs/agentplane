@@ -4,6 +4,30 @@ Historical registry for workflow incidents that are no longer active.
 
 Active incidents live in `.agentplane/policy/incidents.md`. Move entries here once the repo has a durable mitigation, a shipped repo fix, or an external constraint has been reduced to a documented fallback instead of an active blocker.
 
+## 2026-10-07 0.7.13 Integrated Source Incident Review
+
+Release documentation task `202610070302-Z2RNGT` reviewed the active registry at source baseline
+`681d93e8af468339ef100b251671566103a1f4ce` after autonomy integration.
+The registry contained its header and field contract, with no active incident entries.
+Its exact SHA-256 was `cd38073ec68cdff269d0ec9fb16213d7c0ef919ea7c5c85a4368e682fa587361`.
+
+`node scripts/release/check-release-incidents.mjs` exited successfully on 2026-10-07:
+`Release incident gate passed: incidents.md has no active entries.`
+The registry and prior review history were preserved. No resolved incident or publication result is claimed.
+Final candidate and publication gates remain pending.
+
+## 2026-10-07 0.7.13 Release Preparation Incident Review
+
+Release preparation task `202610070209-FZ1T6W` reviewed the active registry at source baseline
+`84215f5045cb211b62069ef55281b6671bbc51cb`.
+The registry contained its header and field contract, with no active incident entries.
+Its exact SHA-256 was `cd38073ec68cdff269d0ec9fb16213d7c0ef919ea7c5c85a4368e682fa587361`.
+
+`node scripts/release/check-release-incidents.mjs` exited successfully on 2026-10-07:
+`Release incident gate passed: incidents.md has no active entries.`
+No incident was resolved, removed, or transferred by this review. The active registry was not modified.
+This records the preparation-time gate only; it does not establish final candidate validation or publication.
+
 ## 2026-09-28 0.7.12 Release Incident Review
 
 - Review owner: task `202609261720-KKE9ZN`, as part of the user-authorized 0.7.12 release preparation.
