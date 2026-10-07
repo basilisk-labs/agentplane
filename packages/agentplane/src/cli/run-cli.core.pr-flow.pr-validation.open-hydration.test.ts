@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe } from "vitest";
+import { parsePrMeta } from "../commands/shared/pr-meta.js";
 
 import {
   PR_FLOW_INTEGRATION_TIMEOUT_MS,
@@ -331,7 +332,7 @@ describe(
         ]);
         expect(code).toBe(0);
         expect(io.stdout).toContain("created GitHub PR #654");
-        const hydrated = JSON.parse(await readFile(path.join(prDir, "meta.json"), "utf8"));
+        const hydrated = parsePrMeta(await readFile(path.join(prDir, "meta.json"), "utf8"), taskId);
         expect(hydrated.pr_number).toBe(654);
         expect(Date.parse(hydrated.updated_at)).toBeGreaterThan(
           Date.parse("2020-01-01T00:00:00.000Z"),
@@ -349,7 +350,7 @@ describe(
           "--root",
           root,
         ]);
-        const third = JSON.parse(await readFile(path.join(prDir, "meta.json"), "utf8"));
+        const third = parsePrMeta(await readFile(path.join(prDir, "meta.json"), "utf8"), taskId);
         expect(third.pr_number).toBe(654);
         expect(third.updated_at).toBe(hydrated.updated_at);
       } finally {
