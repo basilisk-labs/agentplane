@@ -6,14 +6,14 @@ Created: 2026-10-07T08:17:00.443Z
 
 - Task: `202610070801-91ZH0N`
 - Title: Remove duplicated release and benchmark script logic for 0.7.13
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610070801-91ZH0N/remove-duplicated-release-and-benchmark-script-l`
 - Canonical task record: `.agentplane/tasks/202610070801-91ZH0N/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

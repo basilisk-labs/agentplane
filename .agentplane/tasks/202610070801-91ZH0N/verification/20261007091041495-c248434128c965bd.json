@@ -1,0 +1,294 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run clone:check\nResult: pass\nEvidence: .agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610070801-91ZH0N Verification Contract check affected_unit_integration (1/6)\n\nCheck: affected_unit_integration\nCommand: bun run format:check\nResult: pass\nEvidence: .agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610070801-91ZH0N Verification Contract check affected_unit_integration (2/6)\n\nCheck: affected_unit_integration\nCommand: bun x vitest run packages/agentplane/src/cli/check-cli-cold-baseline-script.test.ts packages/agentplane/src/commands/release/render-homebrew-formula-script.test.ts packages/agentplane/src/commands/release/render-scoop-and-setup-standalone-script.test.ts --maxWorkers=2\nResult: pass\nEvidence: .agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610070801-91ZH0N Verification Contract check affected_unit_integration (3/6)\n\nCheck: affected_unit_integration\nCommand: git diff --check\nResult: pass\nEvidence: .agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610070801-91ZH0N Verification Contract check affected_unit_integration (4/6)\n\nCheck: affected_unit_integration\nCommand: node --test scripts/lib/cli-baseline-check.test.mjs scripts/lib/cli-benchmark-shared.test.mjs\nResult: pass\nEvidence: .agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json#check-5\nScope: branch_pr task 202610070801-91ZH0N Verification Contract check affected_unit_integration (5/6)\n\nCheck: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json#check-6\nScope: branch_pr task 202610070801-91ZH0N Verification Contract check affected_unit_integration (6/6)\n\nCheck: critical_paths\nCommand: bun run clone:check\nResult: pass\nEvidence: .agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610070801-91ZH0N Verification Contract check critical_paths (1/6)\n\nCheck: critical_paths\nCommand: bun run format:check\nResult: pass\nEvidence: .agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610070801-91ZH0N Verification Contract check critical_paths (2/6)\n\nCheck: critical_paths\nCommand: bun x vitest run packages/agentplane/src/cli/check-cli-cold-baseline-script.test.ts packages/agentplane/src/commands/release/render-homebrew-formula-script.test.ts packages/agentplane/src/commands/release/render-scoop-and-setup-standalone-script.test.ts --maxWorkers=2\nResult: pass\nEvidence: .agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610070801-91ZH0N Verification Contract check critical_paths (3/6)\n\nCheck: critical_paths\nCommand: git diff --check\nResult: pass\nEvidence: .agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610070801-91ZH0N Verification Contract check critical_paths (4/6)\n\nCheck: critical_paths\nCommand: node --test scripts/lib/cli-baseline-check.test.mjs scripts/lib/cli-benchmark-shared.test.mjs\nResult: pass\nEvidence: .agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json#check-5\nScope: branch_pr task 202610070801-91ZH0N Verification Contract check critical_paths (5/6)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json#check-6\nScope: branch_pr task 202610070801-91ZH0N Verification Contract check critical_paths (6/6)\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json#check-6\nScope: branch_pr task 202610070801-91ZH0N Verification Contract check full_regression\n\nCheck: real_e2e\nCommand: bun run clone:check\nResult: pass\nEvidence: .agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610070801-91ZH0N Verification Contract check real_e2e (1/6)\n\nCheck: real_e2e\nCommand: bun run format:check\nResult: pass\nEvidence: .agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610070801-91ZH0N Verification Contract check real_e2e (2/6)\n\nCheck: real_e2e\nCommand: bun x vitest run packages/agentplane/src/cli/check-cli-cold-baseline-script.test.ts packages/agentplane/src/commands/release/render-homebrew-formula-script.test.ts packages/agentplane/src/commands/release/render-scoop-and-setup-standalone-script.test.ts --maxWorkers=2\nResult: pass\nEvidence: .agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610070801-91ZH0N Verification Contract check real_e2e (3/6)\n\nCheck: real_e2e\nCommand: git diff --check\nResult: pass\nEvidence: .agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610070801-91ZH0N Verification Contract check real_e2e (4/6)\n\nCheck: real_e2e\nCommand: node --test scripts/lib/cli-baseline-check.test.mjs scripts/lib/cli-benchmark-shared.test.mjs\nResult: pass\nEvidence: .agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json#check-5\nScope: branch_pr task 202610070801-91ZH0N Verification Contract check real_e2e (5/6)\n\nCheck: real_e2e\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json#check-6\nScope: branch_pr task 202610070801-91ZH0N Verification Contract check real_e2e (6/6)\n\nCheck: task_outcome\nCommand: bun run clone:check\nResult: pass\nEvidence: .agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610070801-91ZH0N Verification Contract check task_outcome (1/6)\n\nCheck: task_outcome\nCommand: bun run format:check\nResult: pass\nEvidence: .agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610070801-91ZH0N Verification Contract check task_outcome (2/6)\n\nCheck: task_outcome\nCommand: bun x vitest run packages/agentplane/src/cli/check-cli-cold-baseline-script.test.ts packages/agentplane/src/commands/release/render-homebrew-formula-script.test.ts packages/agentplane/src/commands/release/render-scoop-and-setup-standalone-script.test.ts --maxWorkers=2\nResult: pass\nEvidence: .agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610070801-91ZH0N Verification Contract check task_outcome (3/6)\n\nCheck: task_outcome\nCommand: git diff --check\nResult: pass\nEvidence: .agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610070801-91ZH0N Verification Contract check task_outcome (4/6)\n\nCheck: task_outcome\nCommand: node --test scripts/lib/cli-baseline-check.test.mjs scripts/lib/cli-benchmark-shared.test.mjs\nResult: pass\nEvidence: .agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json#check-5\nScope: branch_pr task 202610070801-91ZH0N Verification Contract check task_outcome (5/6)\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json#check-6\nScope: branch_pr task 202610070801-91ZH0N Verification Contract check task_outcome (6/6)",
+  "digest": "sha256:c248434128c965bd434d82b18095f814e379be44af2c322fb07fc0ed95de37bb",
+  "implementation_sha": "1806a183188c97ff4368df7ec942963afcde8abb",
+  "input": {
+    "checked_input": {
+      "commands": {
+        "digest": "sha256:e32d35fabaf1e9000c94c8557994d60bb43c1c3f7e2ee696234c222391fc4e20",
+        "entries": [
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run clone:check"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run format:check"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun x vitest run packages/agentplane/src/cli/check-cli-cold-baseline-script.test.ts packages/agentplane/src/commands/release/render-homebrew-formula-script.test.ts packages/agentplane/src/commands/release/render-scoop-and-setup-standalone-script.test.ts --maxWorkers=2"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "git diff --check"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "node --test scripts/lib/cli-baseline-check.test.mjs scripts/lib/cli-benchmark-shared.test.mjs"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run clone:check"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run format:check"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun x vitest run packages/agentplane/src/cli/check-cli-cold-baseline-script.test.ts packages/agentplane/src/commands/release/render-homebrew-formula-script.test.ts packages/agentplane/src/commands/release/render-scoop-and-setup-standalone-script.test.ts --maxWorkers=2"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "git diff --check"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "node --test scripts/lib/cli-baseline-check.test.mjs scripts/lib/cli-benchmark-shared.test.mjs"
+          },
+          {
+            "check_id": "full_regression",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "real_e2e",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "real_e2e",
+            "command": "bun run clone:check"
+          },
+          {
+            "check_id": "real_e2e",
+            "command": "bun run format:check"
+          },
+          {
+            "check_id": "real_e2e",
+            "command": "bun x vitest run packages/agentplane/src/cli/check-cli-cold-baseline-script.test.ts packages/agentplane/src/commands/release/render-homebrew-formula-script.test.ts packages/agentplane/src/commands/release/render-scoop-and-setup-standalone-script.test.ts --maxWorkers=2"
+          },
+          {
+            "check_id": "real_e2e",
+            "command": "git diff --check"
+          },
+          {
+            "check_id": "real_e2e",
+            "command": "node --test scripts/lib/cli-baseline-check.test.mjs scripts/lib/cli-benchmark-shared.test.mjs"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run clone:check"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run format:check"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun x vitest run packages/agentplane/src/cli/check-cli-cold-baseline-script.test.ts packages/agentplane/src/commands/release/render-homebrew-formula-script.test.ts packages/agentplane/src/commands/release/render-scoop-and-setup-standalone-script.test.ts --maxWorkers=2"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "git diff --check"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "node --test scripts/lib/cli-baseline-check.test.mjs scripts/lib/cli-benchmark-shared.test.mjs"
+          }
+        ]
+      },
+      "context": {
+        "digest": "sha256:fd898f41467c148006e8375fb63a142259e1a43efe931f911f7082d97e38ffd2",
+        "paths": [
+          ".agentplane/WORKFLOW.md",
+          ".github/ISSUE_TEMPLATE/config.yml",
+          "bun.lock",
+          "depcruise.config.cjs",
+          "eslint.config.cjs",
+          "knip.json",
+          "package.json",
+          "packages/agentplane/package.json",
+          "packages/agentplane/src/cli/run-cli/commands/config.ts",
+          "packages/agentplane/src/runner/config.test.ts",
+          "packages/agentplane/src/runner/config.ts",
+          "packages/agentplane/tsconfig.json",
+          "packages/agentplane/tsup.config.ts",
+          "packages/core/package.json",
+          "packages/core/schemas/config.schema.json",
+          "packages/core/src/config/config.test.ts",
+          "packages/core/src/config/config.ts",
+          "packages/core/tsconfig.json",
+          "packages/core/tsup.config.ts",
+          "packages/recipes/package.json",
+          "packages/recipes/tsconfig.json",
+          "packages/recipes/tsup.config.ts",
+          "packages/spec/examples/config.json",
+          "packages/spec/package.json",
+          "packages/spec/schemas/config.schema.json",
+          "packages/testkit/package.json",
+          "packages/testkit/tsconfig.json",
+          "schemas/config.schema.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package-lock.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package.json",
+          "tsconfig.json",
+          "turbo.json",
+          "vitest.config.ts",
+          "vitest.workspace.ts"
+        ]
+      },
+      "digest": "sha256:bfc73fe0ad9d6d0a75f485efd8dbc671976b526a21f29a1ee30c034517eb3f6f",
+      "environment": {
+        "digest": "sha256:9ec5bf2323cd53a84a354760f7a2e04adc570a2f8a0452d4311892dcb83d880b",
+        "runtime": {
+          "architecture": "x64",
+          "bun_major": null,
+          "node_major": "24",
+          "platform": "linux"
+        }
+      },
+      "evidence": {
+        "details_digest": "sha256:4a5db65833f8c7e35567645d31bf811ca156f159edd950e238397be2d39a5fb4",
+        "digest": "sha256:7598ad587de78df893c9a5eeaf676569c65502fa07e128b08470ceb9700d7a3f",
+        "references": [
+          {
+            "digest": "sha256:8286e8637cce390b3c5250af56301c88ddfd6c64eb98e57e74702bf59ee2bf79",
+            "fragment": "check-1",
+            "path": ".agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json#check-1",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:8286e8637cce390b3c5250af56301c88ddfd6c64eb98e57e74702bf59ee2bf79",
+            "fragment": "check-2",
+            "path": ".agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json#check-2",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:8286e8637cce390b3c5250af56301c88ddfd6c64eb98e57e74702bf59ee2bf79",
+            "fragment": "check-3",
+            "path": ".agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json#check-3",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:8286e8637cce390b3c5250af56301c88ddfd6c64eb98e57e74702bf59ee2bf79",
+            "fragment": "check-4",
+            "path": ".agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json#check-4",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:8286e8637cce390b3c5250af56301c88ddfd6c64eb98e57e74702bf59ee2bf79",
+            "fragment": "check-5",
+            "path": ".agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json#check-5",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:8286e8637cce390b3c5250af56301c88ddfd6c64eb98e57e74702bf59ee2bf79",
+            "fragment": "check-6",
+            "path": ".agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610070801-91ZH0N/supervision/declared-checks.json#check-6",
+            "source": "filesystem"
+          }
+        ]
+      },
+      "implementation": {
+        "base_sha": "b50f9b74f16d1bd5bc5e632fe218f93bcae57398",
+        "digest": "sha256:db4a8ad0333d37772cadcffc3d2eac9fcfb6ceed3d169290ba30ed120cc50f46",
+        "strategy": "branch_diff",
+        "target_sha": "1806a183188c97ff4368df7ec942963afcde8abb"
+      }
+    },
+    "concurrency": {
+      "digest": "sha256:f96e05054a829ad2cf4fd5ea4895317c21beb84954cfc8b73a7fe987bca43f9b",
+      "execution": {
+        "authoritative_task_source": "task_worktree",
+        "base_ref": "main",
+        "base_sha": "b50f9b74f16d1bd5bc5e632fe218f93bcae57398",
+        "digest": "sha256:513eed57456607ec71431c2de75f29a90fa1a7b86c28fd69df485abea8a22f32",
+        "primary_task_id": "202610070801-91ZH0N",
+        "reason_codes": [
+          "agent_preferred_branch_pr",
+          "effect_release_metadata",
+          "repository_branch_pr_floor",
+          "reversibility_recovery_required"
+        ],
+        "repository_mode": "branch_pr",
+        "requested_mode": "branch_pr",
+        "route_source": "execution_contract",
+        "selected_mode": "branch_pr",
+        "task_ids": [
+          "202610070801-91ZH0N"
+        ]
+      },
+      "task": {
+        "capability": {
+          "digest": "sha256:9254da7bb97233dde1a5fd122593666a5c95238b092560c233c205d9d300a80b"
+        },
+        "checks": {
+          "digest": "sha256:b7062f936fa510015286b447a3d7f00cce5aea6bdb2d324ba53b1e7325369535",
+          "required_check_ids": [
+            "affected_unit_integration",
+            "critical_paths",
+            "full_regression",
+            "real_e2e",
+            "task_outcome"
+          ],
+          "verification_contract_digest": "sha256:e2573a532ca9aaed83afb118eaf24dc10170076c6cb31299702ce699f9be0ce6"
+        },
+        "digest": "sha256:cadb467a763ef3b991d7486a2868c25800f2ff7a82a97d4a9620fcdd09005515",
+        "kind": "agentplane.native_task_identity",
+        "plan": {
+          "approval_state": "approved",
+          "approved_digest": "sha256:ca9fcee6abe5a8aed04f56f75c1c39c8f47f38a66fdd6cc1d812d56229421e9d",
+          "digest": "sha256:ca9fcee6abe5a8aed04f56f75c1c39c8f47f38a66fdd6cc1d812d56229421e9d",
+          "revision": 1
+        },
+        "policy": {
+          "digest": "sha256:26cbf60e57ff6118b5cdcfaa5b7bbd07e2f7c8f2e02112dc5e98fe4437e2fe64"
+        },
+        "schema_version": 1,
+        "task_id": "202610070801-91ZH0N"
+      }
+    },
+    "digest": "sha256:dde1c616b635ae7a94a85f6d25fc6d9f59677a7e4d5661d6075da61fa487e4d3",
+    "kind": "task_verification_input",
+    "obligations": {
+      "digest": "sha256:54cca47cdeee2b129cd75d858f33f098a67656ee04059114c38f9119f0461f10",
+      "required_check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "full_regression",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "verification_contract_digest": "sha256:e2573a532ca9aaed83afb118eaf24dc10170076c6cb31299702ce699f9be0ce6",
+      "verify_steps_digest": "sha256:ffd5ff2e233f17bcf9f4a8109141f76bed352324992965bea2f3d2066eae76dd"
+    },
+    "schema_version": 5
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: canonical Task Kernel final checks passed.",
+  "recorded_at": "2026-10-07T09:10:41.495Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun run clone:check`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run format:check`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Run `bun x vitest run packages/agentplane/src/cli/check-cli-cold-baseline-script.test.ts packages/agentplane/src/commands/release/render-homebrew-formula-script.test.ts packages/agentplane/src/commands/release/render-scoop-and-setup-standalone-script.test.ts --maxWorkers=2`. Expected: it succeeds and confirms the requested outcome for this task.\n4. Run `git diff --check`. Expected: it succeeds and confirms the requested outcome for this task.\n5. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n6. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.",
+  "scope_digest": "sha256:ffd5ff2e233f17bcf9f4a8109141f76bed352324992965bea2f3d2066eae76dd",
+  "task_id": "202610070801-91ZH0N",
+  "verification_command": "agentplane verify 202610070801-91ZH0N --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

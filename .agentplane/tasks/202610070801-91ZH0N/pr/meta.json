@@ -3,7 +3,8 @@
   "branch": "task/202610070801-91ZH0N/remove-duplicated-release-and-benchmark-script-l",
   "created_at": "2026-10-07T08:17:00.443Z",
   "diffstat_sha256": "sha256:1a9c2ea4cee4e9be90918c2ad713378b2d932370a16dac4092b121caad46f1a8",
-  "last_verified_at": null,
+  "last_verified_at": "2026-10-07T09:10:41.495Z",
+  "last_verified_diffstat_sha256": "sha256:1a9c2ea4cee4e9be90918c2ad713378b2d932370a16dac4092b121caad46f1a8",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202610070801-91ZH0N",
   "updated_at": "2026-10-07T08:17:00.443Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
