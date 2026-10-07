@@ -1,1 +1,1 @@
-🚧 4GNPTX task: Align canonical CLI regression fixtures with current task contracts [202610072104-4GNPTX]
+✅ 4GNPTX task: Align canonical CLI regression fixtures with current task contracts [202610072104-4GNPTX]

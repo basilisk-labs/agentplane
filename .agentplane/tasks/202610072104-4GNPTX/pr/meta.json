@@ -3,7 +3,8 @@
   "branch": "task/202610072104-4GNPTX/align-canonical-cli-regression-fixtures-with-cur",
   "created_at": "2026-10-07T21:29:53.371Z",
   "diffstat_sha256": "sha256:ad7ff2794b0c2911d5fa3623e8d0e056ad1c08726fc3c6c53f52a54c8c41b4d8",
-  "last_verified_at": null,
+  "last_verified_at": "2026-10-07T23:38:22.078Z",
+  "last_verified_diffstat_sha256": "sha256:ad7ff2794b0c2911d5fa3623e8d0e056ad1c08726fc3c6c53f52a54c8c41b4d8",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202610072104-4GNPTX",
   "updated_at": "2026-10-07T21:29:53.371Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

@@ -6,14 +6,14 @@ Created: 2026-10-07T21:29:53.371Z
 
 - Task: `202610072104-4GNPTX`
 - Title: Align canonical CLI regression fixtures with current task contracts
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610072104-4GNPTX/align-canonical-cli-regression-fixtures-with-cur`
 - Canonical task record: `.agentplane/tasks/202610072104-4GNPTX/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
