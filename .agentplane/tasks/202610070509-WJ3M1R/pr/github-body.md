@@ -22,7 +22,7 @@ Repair release blockers observed on native candidate 202610070445-2MV36M commit 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-10-07T05:22:19.073Z
+- Updated: 2026-10-07T06:27:28.545Z
 - Branch: task/202610070509-WJ3M1R/repair-recipe-api-release-packaging-and-blueprin
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
