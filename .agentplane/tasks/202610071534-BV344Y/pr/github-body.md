@@ -16,7 +16,7 @@ Fix the v0.7.13 release qualification failure in PR hydration. Candidate task 20
 ## Verification
 
 - State: ok
-- Note: Canonical validation sha256:b2b1501e61357d5b7c693037f2eaacbe6d303576019eb85894cda81f78d398e7
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>

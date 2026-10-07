@@ -6,14 +6,14 @@ Created: 2026-10-07T15:54:41.605Z
 
 - Task: `202610071534-BV344Y`
 - Title: Preserve unchanged PR review artifacts during provider hydration
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610071534-BV344Y/preserve-unchanged-pr-review-artifacts-during-pr`
 - Canonical task record: `.agentplane/tasks/202610071534-BV344Y/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Canonical validation sha256:b2b1501e61357d5b7c693037f2eaacbe6d303576019eb85894cda81f78d398e7
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
