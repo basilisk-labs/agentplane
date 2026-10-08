@@ -16,7 +16,7 @@ Resolve the broader release qualification defect diagnosed in SGYZBH without adm
 ## Verification
 
 - State: ok
-- Note: Verified: canonical Task Kernel final checks passed.
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
