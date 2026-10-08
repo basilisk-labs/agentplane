@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -32,19 +32,35 @@ verification:
   note: "Verified: canonical Task Kernel final checks passed."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-10-08T07:51:13.868Z"
+  updated_at: "2026-10-08T15:47:07.858Z"
   updated_by: "EVALUATOR"
-  note: "Canonical EVALUATOR review passed."
-  evaluated_sha: "ce13404f1d1c562ffce9f80cb091b934231df9a9"
-  review_identity_digest: "sha256:ae5dd8bd72696e8e9223fa9625f1e665544b8775c69de771c81d8accace87d24"
+  note: "EVALUATOR returned rework with 4 typed finding(s)."
+  evaluated_sha: "1be739306b37fa8f219b1e56246aebebe9e108b3"
+  review_identity_digest: "sha256:493b20e5c583768fded5f64c1bb9e5dbf3ecb08afc51536d7f36809e4be2faae"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202610080726-0JHB26/89fdfbb941524ff2d97f898da79629603f49e10f8e73cdd3148d8aa66bb7766f/quality-report.json"
+    - ".agentplane/tasks/202610080726-0JHB26/quality/20261008-154206362-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202610080726-0JHB26/quality/20261008-154206362-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202610080726-0JHB26/quality/objects/sha256/872fdcf271df312c7037ea4134f47b6ac3f50e6d686fc1ada29a5d67c5f0c5c0.md"
+    - ".agentplane/tasks/202610080726-0JHB26/quality/20261008-154206362-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202610080726-0JHB26/quality/20261008-154206362-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202610080726-0JHB26/quality/20261008-154206362-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202610080726-0JHB26/quality/20261008-154206362-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202610080726-0JHB26/README.md"
+    - ".agentplane/tasks/202610080726-0JHB26/quality/objects/sha256/feed3ea63a7331cb8756f8d6ce742330d25c8dbedffa8826f001840f3ef63f80.patch"
+    - ".agentplane/tasks/202610080726-0JHB26/quality/objects/sha256/e01436d9127d88f273b2a19d4bb25a98a66b5273b579be373fc8a5cb2b6ddd89.json"
+    - ".agentplane/tasks/202610080726-0JHB26/verification/20261008084315402-354e1fad3c69fd76.json"
+    - ".agentplane/tasks/202610080726-0JHB26/quality/objects/sha256/6b013e24f814eba6b8136e36997905960dda4fb7e22682171c0b484688bc0977.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Reviewed committed target ce13404f1d1c562ffce9f80cb091b934231df9a9 against base 3dbcbad442bbeaadd73e6e698180c8cbaad55b30. The only source change is kernel-exchange.test.ts, SHA256 378eeeca9569e09b757b78f39a57a50e4e255cbc03bd79c99555c7965c7211d1. Production writers, registry rules, and baselines are unchanged."
-    - "All allowed, narrowed-ceiling, and planning cases still issue the native exchange and retain their authority assertions. gitRoot now uses the temporary fixture. Schema path containment, descriptor path, byte count, and SHA256 are checked while the file exists. The real task-1 inventory is compared before and after, including absence; cleanup removes only the temporary root."
-    - "Verified the fresh context manifest c57cfe064b4d50bdfebfe64250948573f8e20fdc4b6e1692f9a6bfd4112c06a7 and all 13 required context blocks and supplied inputs. Native validation 1d61dc60a6b00e8437c43184c581c709c138a13ed390ea09e291e624c0cc77af records all four checks passed, including 52 tests across both required files. Evidence was read, not rerun."
+    - "P1: The evaluated source at 1be739306b37fa8f219b1e56246aebebe9e108b3 still retries only the ELOOP replacement case in KernelBackendAdapter.read. The retained task document records the hosted stable-snapshot contention failure and its required two-file repair. Passing the earlier local run does not close that known failure. Evidence: .agentplane/tasks/202610080726-0JHB26/README.md (sha256:f05c30220ca94dd148ba3896bdc37a3d6495c85dcdbcd094012aebf539f104e8); .agentplane/tasks/202610080726-0JHB26/quality/objects/sha256/e01436d9127d88f273b2a19d4bb25a98a66b5273b579be373fc8a5cb2b6ddd89.json."
+    - "The approved one-file fixture change preserves all three network-authority modes, confines emitted schemas to the temporary root, checks descriptor digest and byte length, compares the real task-1 inventory, and removes only its temporary root. The frozen diff contains no production retry repair. Evidence: .agentplane/tasks/202610080726-0JHB26/quality/objects/sha256/feed3ea63a7331cb8756f8d6ce742330d25c8dbedffa8826f001840f3ef63f80.patch."
+    - "Historical local full CI and assigned checks remain valid evidence for the earlier implementation; no tests were rerun by this evaluator. Evidence: .agentplane/tasks/202610080726-0JHB26/verification/20261008084315402-354e1fad3c69fd76.json (sha256:f24426dce6b1ce405541ad9fa4cfc8455cf9ae90e8fe04eb799c174290968470)."
+    - "Residual risk: This read-only episode does not authorize importing main, editing adapter scope, lifecycle transitions, or claiming PR integration success."
 token_usage:
   agent_runs: 3
   input_tokens: null
@@ -314,7 +330,7 @@ events:
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
     commit: "4d4bfa3bc829e0454608b70308b755f484a47ba8"
 doc_version: 3
-doc_updated_at: "2026-10-08T09:28:05.271Z"
+doc_updated_at: "2026-10-08T15:47:08.040Z"
 doc_updated_by: "SUPERVISOR"
 description: "Repair the release 0.7.13 qualification blocker: kernel-exchange.test.ts network-authority cases create a temporary root but use process.cwd() as gitRoot, leaking task-1 schema artifacts into the real repository and failing the final task-registry gate. Bind issuance to the temporary fixture root; preserve all allowed/narrowed/planning authority assertions; verify emitted schema containment, digest and unchanged real-repository task-1 state. Keep production code and registry enforcement unchanged. User authorizes all necessary release fixes, validation and main integration. Preserve prior candidate full CI passing evidence and actual final registry failure."
 sections:
