@@ -757,3 +757,17 @@ async function main() {
 }
 
 if (isDirectRun(import.meta.url)) runScriptMain(main);
+
+// Separate from the historical paired campaign manifests and their live guard.
+// The caller supplies native role episodes; this interface does not manufacture
+// a Plan, coding task, oracle success, or assignment completion.
+export async function runM05BoundedEpisodes(boundary, reservations) {
+  const receipts = [];
+  for (const reservation of reservations) receipts.push(await boundary.execute(reservation));
+  return {
+    evidence_scope: "offline_launcher_interface",
+    efficiency: "NOT_ESTABLISHED",
+    receipts,
+    ledger: boundary.read(),
+  };
+}

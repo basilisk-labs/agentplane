@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 3dbcbad442bbeaadd73e6e698180c8cbaad55b30..66d39865812cd34e5ef3ee3dc5e45ab189160ab8",
+      "command": "git diff --check 66d39865812cd34e5ef3ee3dc5e45ab189160ab8..1ae4abf420f417ad900e379a9cae69ba3f7489e8",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,22 +13,20 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 3dbcbad442bbeaadd73e6e698180c8cbaad55b30..66d39865812cd34e5ef3ee3dc5e45ab189160ab8",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 66d39865812cd34e5ef3ee3dc5e45ab189160ab8..1ae4abf420f417ad900e379a9cae69ba3f7489e8",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "A\t.agentplane/tasks/202610080740-NDWDC5/README.md",
-        "A\t.agentplane/tasks/202610080740-NDWDC5/pr/diffstat.txt",
-        "A\t.agentplane/tasks/202610080740-NDWDC5/pr/github-body.md",
-        "A\t.agentplane/tasks/202610080740-NDWDC5/pr/github-title.txt",
-        "A\t.agentplane/tasks/202610080740-NDWDC5/pr/meta.json",
-        "A\t.agentplane/tasks/202610080740-NDWDC5/pr/review.md",
-        "A\t.agentplane/tasks/202610080740-NDWDC5/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
-        "A\t.agentplane/tasks/202610080740-NDWDC5/quality/objects/sha256/cd35fbf396f0028e374b3f84595480f6edd9dcf606c23ee72655c873780bf2b2.json",
-        "A\tscripts/bench/internal/paired-m05/contract.mjs",
-        "A\tscripts/bench/internal/paired-m05/ledger.mjs",
-        "A\tscripts/bench/internal/paired-m05/ledger.test.mjs",
-        "M\tscripts/bench/paired-production-driver.test.mjs"
+        "M\t.agentplane/tasks/202610080740-NDWDC5/README.md",
+        "M\t.agentplane/tasks/202610080740-NDWDC5/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202610080740-NDWDC5/pr/github-body.md",
+        "M\t.agentplane/tasks/202610080740-NDWDC5/pr/meta.json",
+        "M\t.agentplane/tasks/202610080740-NDWDC5/pr/review.md",
+        "A\t.agentplane/tasks/202610080740-NDWDC5/quality/objects/sha256/42b9e36673a3cc9bf23e38c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json",
+        "A\t.agentplane/tasks/202610080740-NDWDC5/supervision/declared-checks.json",
+        "A\t.agentplane/tasks/202610080740-NDWDC5/supervision/implementation-evidence.json",
+        "M\tscripts/bench/internal/paired-m05/contract.mjs",
+        "M\tscripts/bench/internal/paired-m05/ledger.test.mjs"
       ]
     },
     {
@@ -38,35 +36,41 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "3dbcbad442bbeaadd73e6e698180c8cbaad55b30",
-  "implementation_commit": "66d39865812cd34e5ef3ee3dc5e45ab189160ab8",
+  "execution_base_commit": "66d39865812cd34e5ef3ee3dc5e45ab189160ab8",
+  "implementation_commit": "1ae4abf420f417ad900e379a9cae69ba3f7489e8",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
-      "?? .agentplane/tasks/202610080740-NDWDC5/README.md",
-      "?? .agentplane/tasks/202610080740-NDWDC5/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
-      "?? .agentplane/tasks/202610080740-NDWDC5/quality/objects/sha256/cd35fbf396f0028e374b3f84595480f6edd9dcf606c23ee72655c873780bf2b2.json"
+      " M .agentplane/tasks/202610080740-NDWDC5/README.md",
+      "?? .agentplane/tasks/202610080740-NDWDC5/quality/objects/sha256/42b9e36673a3cc9bf23e38c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json",
+      "?? .agentplane/tasks/202610080740-NDWDC5/supervision/declared-checks.json",
+      "?? .agentplane/tasks/202610080740-NDWDC5/supervision/implementation-evidence.json"
     ],
     "classification": [
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202610080740-NDWDC5/README.md"
+        "line": " M .agentplane/tasks/202610080740-NDWDC5/README.md"
       },
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202610080740-NDWDC5/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+        "line": "?? .agentplane/tasks/202610080740-NDWDC5/quality/objects/sha256/42b9e36673a3cc9bf23e38c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json"
       },
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202610080740-NDWDC5/quality/objects/sha256/cd35fbf396f0028e374b3f84595480f6edd9dcf606c23ee72655c873780bf2b2.json"
+        "line": "?? .agentplane/tasks/202610080740-NDWDC5/supervision/declared-checks.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610080740-NDWDC5/supervision/implementation-evidence.json"
       }
     ],
     "final": [],
     "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
-      "?? .agentplane/tasks/202610080740-NDWDC5/README.md",
-      "?? .agentplane/tasks/202610080740-NDWDC5/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
-      "?? .agentplane/tasks/202610080740-NDWDC5/quality/objects/sha256/cd35fbf396f0028e374b3f84595480f6edd9dcf606c23ee72655c873780bf2b2.json"
+      " M .agentplane/tasks/202610080740-NDWDC5/README.md",
+      "?? .agentplane/tasks/202610080740-NDWDC5/quality/objects/sha256/42b9e36673a3cc9bf23e38c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json",
+      "?? .agentplane/tasks/202610080740-NDWDC5/supervision/declared-checks.json",
+      "?? .agentplane/tasks/202610080740-NDWDC5/supervision/implementation-evidence.json"
     ],
     "unchanged_from_execution_baseline": []
   },
