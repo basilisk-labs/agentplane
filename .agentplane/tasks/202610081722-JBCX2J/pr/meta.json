@@ -3,7 +3,8 @@
   "branch": "task/202610081722-JBCX2J/allow-bounded-full-regression-to-complete-on-con",
   "created_at": "2026-10-08T17:35:56.266Z",
   "diffstat_sha256": "sha256:36ecb1aca5ddf63e7d5e8144e3c00a38fbfcc5cbd334da5b47dc3750d794a04c",
-  "last_verified_at": null,
+  "last_verified_at": "2026-10-08T17:50:24.322Z",
+  "last_verified_diffstat_sha256": "sha256:36ecb1aca5ddf63e7d5e8144e3c00a38fbfcc5cbd334da5b47dc3750d794a04c",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202610081722-JBCX2J",
   "updated_at": "2026-10-08T17:35:56.266Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
