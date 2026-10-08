@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:36c2fde9e6ef33b8552af987088d7f19c89f58c59e95c320bd94749c9ff628a8",
   "pr_number": 6080,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6080",
+  "pre_merge_closure": {
+    "basis_commit": "ecf12bf63662cd56052d4613f801cd439dc58a59",
+    "branch": "task/202610080929-405MZ2/retry-task-local-stable-snapshot-drift-during-co",
+    "pr_number": 6080,
+    "recorded_at": "2026-10-08T14:52:12.778Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
