@@ -1,0 +1,3 @@
+ .../task-backend/kernel-backend-adapter.test.ts    | 45 ++++++++++++++++++++++
+ .../task-backend/kernel-backend-adapter.ts         | 12 +++++-
+ 2 files changed, 55 insertions(+), 2 deletions(-)
