@@ -11,7 +11,7 @@
     "scripts/bench/internal/paired-m05/coding-corpus.mjs": "sha256:cbfb8d587c717a1a88630387d6ee905e74fbd462472e6c7c04712d9711df9dbe",
     "scripts/bench/internal/paired-m05/coding-corpus.test.mjs": "sha256:c62b55ce1ca841dc33494e211737776570874a3f8d9f21cddf9ff1d9b87d6111",
     "scripts/bench/internal/paired-m05/coding-host.mjs": "sha256:56aac8a7146d1701c2b618dc161058ceb50cbec009ccd0c56c31d4a9256938a7",
-    "scripts/bench/internal/paired-m05/coding-host.test.mjs": "sha256:ff1df0ada67b41a636765bf980c38a224b81ccf5d28bdc7b6c9340b7ab0a2aa6",
+    "scripts/bench/internal/paired-m05/coding-host.test.mjs": "sha256:cdc44448e8deb9390e13d8fb72305c8e416aaec82d6fcc166cb26a2cd9a14ff0",
     "scripts/bench/internal/paired-m05/coding-recipe-package.mjs": "sha256:942f27f6a22ec914c9bc17ccce1a2822cefd687f2b7f883cd40b7d033e7f4e82",
     "scripts/bench/internal/paired-m05/coding-recipe.mjs": "sha256:2da409001f09a916afd7c87259ccd6301f38b0e5a12714254691046d168efbb6",
     "scripts/bench/internal/paired-m05/coding-recipe.test.mjs": "sha256:a1f2347d40d7a3972a7bcdbbe8fd660f74659439bb0f5e85923b48ea40ed27ba",

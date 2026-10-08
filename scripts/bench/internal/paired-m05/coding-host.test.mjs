@@ -77,6 +77,9 @@ test("concrete host wires role grants, managed boundary, final JSON and durable 
         listener({ method, params: { threadId: thread, turnId: turn, ...params } });
     };
     return {
+      // This fixture checks host wiring, not filesystem scheduling latency.
+      // Dedicated subscription boundary tests exercise real deadline behavior.
+      now: () => sequence * 100,
       subscribe(listener) {
         listeners.add(listener);
         return () => listeners.delete(listener);
@@ -140,6 +143,9 @@ test("concrete host wires role grants, managed boundary, final JSON and durable 
     const call = await host.readCall(result.call_id);
     assert.equal(call.reservation.role, role);
     assert.equal(call.receipt.usage.totalTokens, 4);
+    assert.equal(call.receipt.stop_reason, null);
+    assert.equal(call.reservation.started_ms, sequence * 100);
+    assert.equal(call.receipt.finished_ms, sequence * 100);
   }
   assert.equal(closed, 2);
   assert.ok(policies[0].writable.includes(source));
