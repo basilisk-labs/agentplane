@@ -3,7 +3,8 @@
   "branch": "task/202610080929-405MZ2/retry-task-local-stable-snapshot-drift-during-co",
   "created_at": "2026-10-08T09:42:27.858Z",
   "diffstat_sha256": "sha256:36c2fde9e6ef33b8552af987088d7f19c89f58c59e95c320bd94749c9ff628a8",
-  "last_verified_at": null,
+  "last_verified_at": "2026-10-08T14:09:30.004Z",
+  "last_verified_diffstat_sha256": "sha256:36c2fde9e6ef33b8552af987088d7f19c89f58c59e95c320bd94749c9ff628a8",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202610080929-405MZ2",
   "updated_at": "2026-10-08T09:42:27.858Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

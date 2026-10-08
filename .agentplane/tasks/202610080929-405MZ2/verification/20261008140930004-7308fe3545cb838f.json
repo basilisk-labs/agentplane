@@ -1,0 +1,272 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts --pool=forks --maxWorkers 2 --testTimeout 60000 --hookTimeout 60000\nResult: pass\nEvidence: .agentplane/tasks/202610080929-405MZ2/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610080929-405MZ2 Verification Contract check affected_unit_integration (1/5)\n\nCheck: affected_unit_integration\nCommand: node node_modules/eslint/bin/eslint.js packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610080929-405MZ2/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610080929-405MZ2 Verification Contract check affected_unit_integration (2/5)\n\nCheck: affected_unit_integration\nCommand: node node_modules/prettier/bin/prettier.cjs --check packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610080929-405MZ2/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610080929-405MZ2 Verification Contract check affected_unit_integration (3/5)\n\nCheck: affected_unit_integration\nCommand: git diff --check\nResult: pass\nEvidence: .agentplane/tasks/202610080929-405MZ2/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610080929-405MZ2 Verification Contract check affected_unit_integration (4/5)\n\nCheck: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610080929-405MZ2/supervision/declared-checks.json#check-5\nScope: branch_pr task 202610080929-405MZ2 Verification Contract check affected_unit_integration (5/5)\n\nCheck: critical_paths\nCommand: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts --pool=forks --maxWorkers 2 --testTimeout 60000 --hookTimeout 60000\nResult: pass\nEvidence: .agentplane/tasks/202610080929-405MZ2/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610080929-405MZ2 Verification Contract check critical_paths (1/5)\n\nCheck: critical_paths\nCommand: node node_modules/eslint/bin/eslint.js packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610080929-405MZ2/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610080929-405MZ2 Verification Contract check critical_paths (2/5)\n\nCheck: critical_paths\nCommand: node node_modules/prettier/bin/prettier.cjs --check packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610080929-405MZ2/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610080929-405MZ2 Verification Contract check critical_paths (3/5)\n\nCheck: critical_paths\nCommand: git diff --check\nResult: pass\nEvidence: .agentplane/tasks/202610080929-405MZ2/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610080929-405MZ2 Verification Contract check critical_paths (4/5)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610080929-405MZ2/supervision/declared-checks.json#check-5\nScope: branch_pr task 202610080929-405MZ2 Verification Contract check critical_paths (5/5)\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610080929-405MZ2/supervision/declared-checks.json#check-5\nScope: branch_pr task 202610080929-405MZ2 Verification Contract check full_regression\n\nCheck: real_e2e\nCommand: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts --pool=forks --maxWorkers 2 --testTimeout 60000 --hookTimeout 60000\nResult: pass\nEvidence: .agentplane/tasks/202610080929-405MZ2/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610080929-405MZ2 Verification Contract check real_e2e (1/5)\n\nCheck: real_e2e\nCommand: node node_modules/eslint/bin/eslint.js packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610080929-405MZ2/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610080929-405MZ2 Verification Contract check real_e2e (2/5)\n\nCheck: real_e2e\nCommand: node node_modules/prettier/bin/prettier.cjs --check packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610080929-405MZ2/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610080929-405MZ2 Verification Contract check real_e2e (3/5)\n\nCheck: real_e2e\nCommand: git diff --check\nResult: pass\nEvidence: .agentplane/tasks/202610080929-405MZ2/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610080929-405MZ2 Verification Contract check real_e2e (4/5)\n\nCheck: real_e2e\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610080929-405MZ2/supervision/declared-checks.json#check-5\nScope: branch_pr task 202610080929-405MZ2 Verification Contract check real_e2e (5/5)\n\nCheck: task_outcome\nCommand: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts --pool=forks --maxWorkers 2 --testTimeout 60000 --hookTimeout 60000\nResult: pass\nEvidence: .agentplane/tasks/202610080929-405MZ2/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610080929-405MZ2 Verification Contract check task_outcome (1/5)\n\nCheck: task_outcome\nCommand: node node_modules/eslint/bin/eslint.js packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610080929-405MZ2/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610080929-405MZ2 Verification Contract check task_outcome (2/5)\n\nCheck: task_outcome\nCommand: node node_modules/prettier/bin/prettier.cjs --check packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610080929-405MZ2/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610080929-405MZ2 Verification Contract check task_outcome (3/5)\n\nCheck: task_outcome\nCommand: git diff --check\nResult: pass\nEvidence: .agentplane/tasks/202610080929-405MZ2/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610080929-405MZ2 Verification Contract check task_outcome (4/5)\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610080929-405MZ2/supervision/declared-checks.json#check-5\nScope: branch_pr task 202610080929-405MZ2 Verification Contract check task_outcome (5/5)",
+  "digest": "sha256:7308fe3545cb838f924c77118680452865c7b187e0d64105415e0c0c2ace99f1",
+  "implementation_sha": "8d67db9887a38a070d168944bd3ecf40c77f94eb",
+  "input": {
+    "checked_input": {
+      "commands": {
+        "digest": "sha256:edcbb9fbb24fd9c71fc77e2e17539c2c5342bc42cdcb81aa686491556dc25b18",
+        "entries": [
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "git diff --check"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "node node_modules/eslint/bin/eslint.js packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "node node_modules/prettier/bin/prettier.cjs --check packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts --pool=forks --maxWorkers 2 --testTimeout 60000 --hookTimeout 60000"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "git diff --check"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "node node_modules/eslint/bin/eslint.js packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "node node_modules/prettier/bin/prettier.cjs --check packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts --pool=forks --maxWorkers 2 --testTimeout 60000 --hookTimeout 60000"
+          },
+          {
+            "check_id": "full_regression",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "real_e2e",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "real_e2e",
+            "command": "git diff --check"
+          },
+          {
+            "check_id": "real_e2e",
+            "command": "node node_modules/eslint/bin/eslint.js packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts"
+          },
+          {
+            "check_id": "real_e2e",
+            "command": "node node_modules/prettier/bin/prettier.cjs --check packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts"
+          },
+          {
+            "check_id": "real_e2e",
+            "command": "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts --pool=forks --maxWorkers 2 --testTimeout 60000 --hookTimeout 60000"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "git diff --check"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "node node_modules/eslint/bin/eslint.js packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "node node_modules/prettier/bin/prettier.cjs --check packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts --pool=forks --maxWorkers 2 --testTimeout 60000 --hookTimeout 60000"
+          }
+        ]
+      },
+      "context": {
+        "digest": "sha256:fd898f41467c148006e8375fb63a142259e1a43efe931f911f7082d97e38ffd2",
+        "paths": [
+          ".agentplane/WORKFLOW.md",
+          ".github/ISSUE_TEMPLATE/config.yml",
+          "bun.lock",
+          "depcruise.config.cjs",
+          "eslint.config.cjs",
+          "knip.json",
+          "package.json",
+          "packages/agentplane/package.json",
+          "packages/agentplane/src/cli/run-cli/commands/config.ts",
+          "packages/agentplane/src/runner/config.test.ts",
+          "packages/agentplane/src/runner/config.ts",
+          "packages/agentplane/tsconfig.json",
+          "packages/agentplane/tsup.config.ts",
+          "packages/core/package.json",
+          "packages/core/schemas/config.schema.json",
+          "packages/core/src/config/config.test.ts",
+          "packages/core/src/config/config.ts",
+          "packages/core/tsconfig.json",
+          "packages/core/tsup.config.ts",
+          "packages/recipes/package.json",
+          "packages/recipes/tsconfig.json",
+          "packages/recipes/tsup.config.ts",
+          "packages/spec/examples/config.json",
+          "packages/spec/package.json",
+          "packages/spec/schemas/config.schema.json",
+          "packages/testkit/package.json",
+          "packages/testkit/tsconfig.json",
+          "schemas/config.schema.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package-lock.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package.json",
+          "tsconfig.json",
+          "turbo.json",
+          "vitest.config.ts",
+          "vitest.workspace.ts"
+        ]
+      },
+      "digest": "sha256:a3264cc077aa46f2e89b93dc4e48115e3ca4fd24106ad5a40a956a5bfe3689b1",
+      "environment": {
+        "digest": "sha256:9ec5bf2323cd53a84a354760f7a2e04adc570a2f8a0452d4311892dcb83d880b",
+        "runtime": {
+          "architecture": "x64",
+          "bun_major": null,
+          "node_major": "24",
+          "platform": "linux"
+        }
+      },
+      "evidence": {
+        "details_digest": "sha256:f453d9dd0654ac2cc6e65380521aab8f7a31e3b21374d0a400e6504fb9a21db3",
+        "digest": "sha256:24bbe1bd88806649ec82359a63264555e574b189e028c9ba6225fc3a19deac77",
+        "references": [
+          {
+            "digest": "sha256:b9024d6771a21ea090013e264ab7e506b95d0ae71dec85f4883c4507415e0b5f",
+            "fragment": "check-1",
+            "path": ".agentplane/tasks/202610080929-405MZ2/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610080929-405MZ2/supervision/declared-checks.json#check-1",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:b9024d6771a21ea090013e264ab7e506b95d0ae71dec85f4883c4507415e0b5f",
+            "fragment": "check-2",
+            "path": ".agentplane/tasks/202610080929-405MZ2/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610080929-405MZ2/supervision/declared-checks.json#check-2",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:b9024d6771a21ea090013e264ab7e506b95d0ae71dec85f4883c4507415e0b5f",
+            "fragment": "check-3",
+            "path": ".agentplane/tasks/202610080929-405MZ2/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610080929-405MZ2/supervision/declared-checks.json#check-3",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:b9024d6771a21ea090013e264ab7e506b95d0ae71dec85f4883c4507415e0b5f",
+            "fragment": "check-4",
+            "path": ".agentplane/tasks/202610080929-405MZ2/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610080929-405MZ2/supervision/declared-checks.json#check-4",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:b9024d6771a21ea090013e264ab7e506b95d0ae71dec85f4883c4507415e0b5f",
+            "fragment": "check-5",
+            "path": ".agentplane/tasks/202610080929-405MZ2/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610080929-405MZ2/supervision/declared-checks.json#check-5",
+            "source": "filesystem"
+          }
+        ]
+      },
+      "implementation": {
+        "base_sha": "3dbcbad442bbeaadd73e6e698180c8cbaad55b30",
+        "digest": "sha256:42bd1bc766ad75c4fdfe344b88e5d074296f53973502cbeb176193e104dc638b",
+        "strategy": "branch_diff",
+        "target_sha": "8d67db9887a38a070d168944bd3ecf40c77f94eb"
+      }
+    },
+    "concurrency": {
+      "digest": "sha256:a3426b7e8044dac51a33a05c40601609f5a9630a1b9ad474af919c073abb0c3a",
+      "execution": {
+        "authoritative_task_source": "task_worktree",
+        "base_ref": "main",
+        "base_sha": "3dbcbad442bbeaadd73e6e698180c8cbaad55b30",
+        "digest": "sha256:82c27f0025def77c0464094bf46f5a869c6d8b1f6326a6da717630a645a6d1c3",
+        "primary_task_id": "202610080929-405MZ2",
+        "reason_codes": [
+          "agent_preferred_branch_pr",
+          "effect_external_write",
+          "effect_release_metadata",
+          "repository_branch_pr_floor",
+          "reversibility_recovery_required"
+        ],
+        "repository_mode": "branch_pr",
+        "requested_mode": "branch_pr",
+        "route_source": "execution_contract",
+        "selected_mode": "branch_pr",
+        "task_ids": [
+          "202610080929-405MZ2"
+        ]
+      },
+      "task": {
+        "capability": {
+          "digest": "sha256:8f41a8538cff077b8759034cc97bc7383873488ca221a2f830f09ba970af698f"
+        },
+        "checks": {
+          "digest": "sha256:a49651c46391917f80ff2f07792dc0665c1c907e9e9a699a71cefb98ce463d22",
+          "required_check_ids": [
+            "affected_unit_integration",
+            "critical_paths",
+            "full_regression",
+            "real_e2e",
+            "task_outcome"
+          ],
+          "verification_contract_digest": "sha256:2efee1ed014f922fbf88af970d4d67c86a2ef1b2197c9c43e1fd47801ae42ca9"
+        },
+        "digest": "sha256:61296093c887931a6f2ac8a524b03bb73f1214d8f461e5cace248c100cb096a3",
+        "kind": "agentplane.native_task_identity",
+        "plan": {
+          "approval_state": "approved",
+          "approved_digest": "sha256:dabdb449a96ed5560d57197a6884f968c672a25da11851380d29830d40b9832f",
+          "digest": "sha256:dabdb449a96ed5560d57197a6884f968c672a25da11851380d29830d40b9832f",
+          "revision": 1
+        },
+        "policy": {
+          "digest": "sha256:1469f9511222e1944f6256b66fc7f77bb4b75c356cb828fd2d59456cf84872e1"
+        },
+        "schema_version": 1,
+        "task_id": "202610080929-405MZ2"
+      }
+    },
+    "digest": "sha256:48f3e2df55a642672af3574fab9e8b6d375f7ee9edbf60632fa21a1bc0890801",
+    "kind": "task_verification_input",
+    "obligations": {
+      "digest": "sha256:7fdabcd06bfa0d815033a4124fee07544820f98f2944e70760574f2c917167ad",
+      "required_check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "full_regression",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "verification_contract_digest": "sha256:2efee1ed014f922fbf88af970d4d67c86a2ef1b2197c9c43e1fd47801ae42ca9",
+      "verify_steps_digest": "sha256:2b6054fed40aeabc152365a7680cd2e000e13102f3cd4dd7422bd2752c2be8c0"
+    },
+    "schema_version": 5
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: canonical Task Kernel final checks passed.",
+  "recorded_at": "2026-10-08T14:09:30.004Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `git diff --check`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts --pool=forks --maxWorkers 2 --testTimeout 60000 --hookTimeout 60000`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.",
+  "scope_digest": "sha256:2b6054fed40aeabc152365a7680cd2e000e13102f3cd4dd7422bd2752c2be8c0",
+  "task_id": "202610080929-405MZ2",
+  "verification_command": "agentplane verify 202610080929-405MZ2 --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
