@@ -1,0 +1,224 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bun run format:check",
+    "git diff --check",
+    "node node_modules/eslint/bin/eslint.js scripts/bench/internal/agent-efficiency-anchor-runtime.mjs scripts/bench/internal/agent-efficiency-anchor-dependencies.mjs packages/agentplane/src/cli/run-cli.critical.agent-efficiency-anchor-lock.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts",
+    "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.critical.agent-efficiency-anchor-lock.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-shared-worktree-dependency-manifest.test.ts --pool=forks --maxWorkers 2 --testTimeout 60000 --hookTimeout 60000"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "release_metadata",
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "components": [
+        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-anchor-lock.test.ts",
+        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts",
+        "scripts/bench/internal/agent-efficiency-anchor-dependencies.mjs",
+        "scripts/bench/internal/agent-efficiency-anchor-runtime.mjs"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "recovery_required"
+      },
+      "evidence_requirements": [
+        "hosted_integration",
+        "repository_effect:documentation",
+        "repository_effect:release_metadata",
+        "repository_effect:repository_write",
+        "repository_effect:source_code",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "documentation",
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        ".agentplane",
+        "packages/agentplane",
+        "scripts"
+      ],
+      "changed_files": [
+        ".agentplane/tasks/202610072104-4GNPTX/README.md",
+        ".agentplane/tasks/202610072104-4GNPTX/pr/diffstat.txt",
+        ".agentplane/tasks/202610072104-4GNPTX/pr/github-body.md",
+        ".agentplane/tasks/202610072104-4GNPTX/pr/github-title.txt",
+        ".agentplane/tasks/202610072104-4GNPTX/pr/meta.json",
+        ".agentplane/tasks/202610072104-4GNPTX/pr/review.md",
+        ".agentplane/tasks/202610072104-4GNPTX/quality/objects/sha256/42b9e36673a3cc9bf23e38c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json",
+        ".agentplane/tasks/202610072104-4GNPTX/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+        ".agentplane/tasks/202610072104-4GNPTX/quality/objects/sha256/cd35fbf396f0028e374b3f84595480f6edd9dcf606c23ee72655c873780bf2b2.json",
+        ".agentplane/tasks/202610072104-4GNPTX/supervision/declared-checks.json",
+        ".agentplane/tasks/202610072104-4GNPTX/supervision/implementation-evidence.json",
+        ".agentplane/tasks/202610072104-4GNPTX/verification/20261007233822078-c5f88b9116556e34.json",
+        ".agentplane/tasks/202610072147-X7DTBK/README.md",
+        ".agentplane/tasks/202610072147-X7DTBK/pr/diffstat.txt",
+        ".agentplane/tasks/202610072147-X7DTBK/pr/github-body.md",
+        ".agentplane/tasks/202610072147-X7DTBK/pr/github-title.txt",
+        ".agentplane/tasks/202610072147-X7DTBK/pr/meta.json",
+        ".agentplane/tasks/202610072147-X7DTBK/pr/review.md",
+        ".agentplane/tasks/202610072147-X7DTBK/quality/objects/sha256/42b9e36673a3cc9bf23e38c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json",
+        ".agentplane/tasks/202610072147-X7DTBK/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+        ".agentplane/tasks/202610072147-X7DTBK/quality/objects/sha256/cd35fbf396f0028e374b3f84595480f6edd9dcf606c23ee72655c873780bf2b2.json",
+        ".agentplane/tasks/202610072147-X7DTBK/supervision/declared-checks.json",
+        ".agentplane/tasks/202610072147-X7DTBK/supervision/implementation-evidence.json",
+        ".agentplane/tasks/202610072147-X7DTBK/verification/20261008003304058-2f3872158316694f.json",
+        "packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts",
+        "packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts",
+        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-anchor-lock.test.ts",
+        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
+        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts",
+        "packages/agentplane/src/commands/release/open-next-development-version-script.test.ts",
+        "scripts/bench/internal/agent-efficiency-anchor-dependencies.mjs",
+        "scripts/bench/internal/agent-efficiency-anchor-runtime.mjs"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "docs_contract",
+      "full_regression",
+      "hosted_integration",
+      "real_e2e",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "central_component:packages/agentplane/src/cli/run-cli.critical.agent-efficiency-anchor-lock.test.ts",
+      "central_component:packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts",
+      "central_path:packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts",
+      "central_path:packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts",
+      "central_path:packages/agentplane/src/cli/run-cli.critical.agent-efficiency-anchor-lock.test.ts",
+      "central_path:packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
+      "central_path:packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts",
+      "effect_release_metadata",
+      "external_effect_requires_real_e2e",
+      "reversibility_recovery_required",
+      "unknown_path:.agentplane/tasks/202610072104-4GNPTX/pr/diffstat.txt",
+      "unknown_path:.agentplane/tasks/202610072104-4GNPTX/pr/github-title.txt",
+      "unknown_path:.agentplane/tasks/202610072104-4GNPTX/pr/meta.json",
+      "unknown_path:.agentplane/tasks/202610072104-4GNPTX/quality/objects/sha256/42b9e36673a3cc9bf23e38c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json",
+      "unknown_path:.agentplane/tasks/202610072104-4GNPTX/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+      "unknown_path:.agentplane/tasks/202610072104-4GNPTX/quality/objects/sha256/cd35fbf396f0028e374b3f84595480f6edd9dcf606c23ee72655c873780bf2b2.json",
+      "unknown_path:.agentplane/tasks/202610072104-4GNPTX/supervision/declared-checks.json",
+      "unknown_path:.agentplane/tasks/202610072104-4GNPTX/supervision/implementation-evidence.json",
+      "unknown_path:.agentplane/tasks/202610072104-4GNPTX/verification/20261007233822078-c5f88b9116556e34.json",
+      "unknown_path:.agentplane/tasks/202610072147-X7DTBK/pr/diffstat.txt",
+      "unknown_path:.agentplane/tasks/202610072147-X7DTBK/pr/github-title.txt",
+      "unknown_path:.agentplane/tasks/202610072147-X7DTBK/pr/meta.json",
+      "unknown_path:.agentplane/tasks/202610072147-X7DTBK/quality/objects/sha256/42b9e36673a3cc9bf23e38c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json",
+      "unknown_path:.agentplane/tasks/202610072147-X7DTBK/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+      "unknown_path:.agentplane/tasks/202610072147-X7DTBK/quality/objects/sha256/cd35fbf396f0028e374b3f84595480f6edd9dcf606c23ee72655c873780bf2b2.json",
+      "unknown_path:.agentplane/tasks/202610072147-X7DTBK/supervision/declared-checks.json",
+      "unknown_path:.agentplane/tasks/202610072147-X7DTBK/supervision/implementation-evidence.json",
+      "unknown_path:.agentplane/tasks/202610072147-X7DTBK/verification/20261008003304058-2f3872158316694f.json"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": true,
+    "digest": "sha256:e2cea3bfb41f3b2d723c04cb7c85aa1b8ff07749aea64331661e252a1b610324"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-10-08T03:10:48.343Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202610072154-CZEYZ1/verification/20261008031048343-8c35690c88e1da90.json",
+      "sha256": "sha256:953f182a6d7884218ec7e1bf29990574a39002f7f98a9ec659c754dbd3899d0c"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check 37e1a13dda96b27067bb83e266a66df7b0080488..4fa804b831dffb5f64655e5bc69e13cf8eaead88",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB 37e1a13dda96b27067bb83e266a66df7b0080488..4fa804b831dffb5f64655e5bc69e13cf8eaead88",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "M\t.agentplane/tasks/202610072154-CZEYZ1/pr/diffstat.txt",
+          "M\t.agentplane/tasks/202610072154-CZEYZ1/pr/github-body.md",
+          "M\t.agentplane/tasks/202610072154-CZEYZ1/pr/meta.json",
+          "M\t.agentplane/tasks/202610072154-CZEYZ1/pr/review.md",
+          "M\tpackages/agentplane/src/cli/run-cli.critical.agent-efficiency-anchor-lock.test.ts",
+          "M\tscripts/bench/internal/agent-efficiency-anchor-dependencies.mjs"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "37e1a13dda96b27067bb83e266a66df7b0080488",
+    "implementation_commit": "4fa804b831dffb5f64655e5bc69e13cf8eaead88",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [],
+      "classification": [],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202610072154-CZEYZ1",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202610072154-CZEYZ1/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
