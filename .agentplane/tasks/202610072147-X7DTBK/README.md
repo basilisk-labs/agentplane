@@ -1,10 +1,11 @@
 ---
 id: "202610072147-X7DTBK"
 title: "Align release qualification fixtures with reviewed CLI surface and local formatter"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 28
+revision: 29
 origin:
   system: "manual"
 depends_on: []
@@ -47,6 +48,22 @@ quality_review:
     - "Literal normalized metadata, approved source task lists and allowed paths match the unchanged reviewed candidate. CLI counts are corrected to 255/176/857. Independent source reconstruction pins both 0.7.12 and 0.7.13 surfaces and the exact nine version paths, including Recipes core dependency. Actual current version, candidate digest equality, immutable historical assertions, capture freshness and unrelated rejection checks remain."
     - "Temporary release fixtures link the real repository-installed formatter using directory/junction conventions. Production scripts and skip-install behavior are unchanged; formatting, cleanup, version, atomicity and idempotence assertions remain."
     - "Verified native validation digest 02494955e6125ff7c66ec5cded0bfc3a3afb672b1fb568485218c9fb638dc904: both complete files passed all 16 tests with original worker/time limits; ESLint, repository formatting and diff checks passed. Reviewed retained report/log hashes and unchanged baseline hashes. No tests were rerun by this evaluator."
+token_usage:
+  agent_runs: 4
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:b094c2099ce3a97ad469851e6813d965836eaba5e599e0b4ed21b68b3d6ca18c"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-08T00:54:25.329Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -273,9 +290,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "5d90412fb0bea0d2244f0f6ff382e719f105eebf"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "426b9906b8a4c121444d249a9f58e46d69f86792"
+  message: "🧩 X7DTBK task: persist published PR identity"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -283,9 +303,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-08T00:54:25.329Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "426b9906b8a4c121444d249a9f58e46d69f86792"
 doc_version: 3
-doc_updated_at: "2026-10-08T00:33:07.064Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-08T00:54:25.329Z"
+doc_updated_by: "CODER"
 description: "Repair two independently confirmed test-fixture failures exposed by the exact v0.7.13 candidate diagnostic. Critical baseline tests still assert old CLI counts 253/174/849 instead of reviewed PR6058 snapshot counts255/176/857, and omit the Recipes core dependency from the controlled version-mutation fixture and exact nine-field assertion. The next-development-version test creates a no-install isolated workspace without Prettier, then invokes real formatting. Update only these two test files. Provision repository-installed real Prettier in the temporary fixture using a portable local-link convention, with no network install. Preserve exact allowed-field equality, immutable historical baselines, all formatting/version/idempotence assertions, no-install semantics and production behavior. No source implementation, dependency lock, benchmark baseline, version, paid measurement, or M05 disposition edits. Existing user authorization covers necessary release defect repair, independent review, mandatory validation and main integration."
 sections:
   Summary: |-
@@ -486,6 +514,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:5c4875ae4cac9bcb861c46851d005fcbbb840f8b7a52a4d3f1a30a3037d84be2"
     work_order_id: "sha256:ccaf9b6130a88388db5d6b7dea10e46ecb37a51f3de96f8346fb107fcf34d9a1"
+  implementation_commit:
+    hash: "5d90412fb0bea0d2244f0f6ff382e719f105eebf"
+    message: "🚧 X7DTBK task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "63343f7622ea8a7224d02c1f9437c833113a998c"
@@ -1770,3 +1801,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/4` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:b094c2099ce3a97ad469851e6813d965836eaba5e599e0b4ed21b68b3d6ca18c`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-08T00:54:25.329Z`
