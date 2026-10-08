@@ -4,7 +4,7 @@ title: "Adapt M05 experiment to ChatGPT subscription and token efficiency releas
 status: "DOING"
 priority: "med"
 owner: "ORCHESTRATOR"
-revision: 13
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -17,15 +17,31 @@ risk_flags:
 verify: []
 plan_approval:
   state: "approved"
-  updated_at: "2026-10-08T14:32:23.419Z"
+  updated_at: "2026-10-08T16:11:34.900Z"
   updated_by: "agentplane:kernel-controller"
-  note: null
+  note: "Projected from the approved canonical Task Kernel plan."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "ok"
+  updated_at: "2026-10-08T16:10:48.222Z"
+  updated_by: "SUPERVISOR"
+  note: "Canonical validation sha256:22e5c996738689eb7f1f660b9c70eeab3bea2135ce0ba291e9ab210900a933a4"
+  attempts: 1
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-10-08T16:10:48.222Z"
+  updated_by: "EVALUATOR"
+  note: "Canonical EVALUATOR review passed."
+  evaluated_sha: "e756be981265a3d85eb577e88f00ea046602ca83"
+  review_identity_digest: "sha256:81e96daf4b0547a0513fd49a6b2fcaa8e65cf3b646641b67df8c577e72bff8e7"
+  evidence_refs:
+    - "../../../.git/agentplane/kernel/exchanges/202610081424-21WCFZ/feeaa0c2ed432029e41e45ecd7cb4ae956f64292392ba8747cfc69c6d392163c/quality-report.json"
+  findings:
+    - "Verified all13 manifest blocks, accepted implementation result63c0afe4f03f296618a1f6fbe57cc9787fb76d96716a26a1dd23e8d45e3fab74, repository evidence13023bb9c9829e2d768e972c26356eb76c7a4405d9a73022e7d44d02451e3a11 and nine source-file hashes at e756be981265a3d85eb577e88f00ea046602ca83. Composed NDWDC5 and Z21QM3 ancestors and the native operator prerequisite resolution are retained."
+    - "The v4 boundary persists role/retry intent before turn dispatch, binds fresh thread/turn identities, rejects observed session drift and rerouting, retains unknown usage, deduplicates cumulative events, and stops further calls on unresolved effects or quota/token/deadline stops. Subscribe-time revocation and expired host preparation now prevent dispatch; deterministic regressions cover both."
+    - "Shared journal extraction preserves descriptor-bound reads, sequence CAS, interrupted-publication fail-closed behavior and legacy null-prototype call IDs. Subscription limits remain finite; token ceilings are expressly soft and observed overshoot is retained."
+    - "Sparse rate-limit handling is grounded in retained installed0.157.1 schemas: omitted entitlement retains explicit confirmed preflight provenance, explicit revocation stops, sparse window data preserves prior facts, and identifiers/balances are not recorded directly. Model/effort evidence is a server session observation, not backend attestation."
+    - "Native validation7d674df6ea5b755b4834b1055abd92613c5d728bf802843abd05453bf5fb34f0 passed all four assigned commands, including85 tests, ESLint, global format and diff. Implementation report8f2e1b78c8d85eb668656dad7e7bd432d9b175bc843a132718bcc02e564ac2b4 and its source/check-log hashes were verified. Tests were read, not rerun."
 execution_route:
   frozen: true
   reason_codes:
@@ -170,7 +186,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "e756be981265a3d85eb577e88f00ea046602ca83"
+  message: "AgentPlane-owned canonical implementation commit"
 comments: []
 events: []
 doc_version: 3
@@ -203,6 +221,24 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.kernel_operational_projection:
+    digest: "sha256:9bb14867a86a85fcc1364087e8c1af96a791e810e65a08c7d91ac95614148685"
+    evidence_refs:
+      - "../../../.git/agentplane/kernel/exchanges/202610081424-21WCFZ/feeaa0c2ed432029e41e45ecd7cb4ae956f64292392ba8747cfc69c6d392163c/quality-report.json"
+    findings:
+      - "Verified all13 manifest blocks, accepted implementation result63c0afe4f03f296618a1f6fbe57cc9787fb76d96716a26a1dd23e8d45e3fab74, repository evidence13023bb9c9829e2d768e972c26356eb76c7a4405d9a73022e7d44d02451e3a11 and nine source-file hashes at e756be981265a3d85eb577e88f00ea046602ca83. Composed NDWDC5 and Z21QM3 ancestors and the native operator prerequisite resolution are retained."
+      - "The v4 boundary persists role/retry intent before turn dispatch, binds fresh thread/turn identities, rejects observed session drift and rerouting, retains unknown usage, deduplicates cumulative events, and stops further calls on unresolved effects or quota/token/deadline stops. Subscribe-time revocation and expired host preparation now prevent dispatch; deterministic regressions cover both."
+      - "Shared journal extraction preserves descriptor-bound reads, sequence CAS, interrupted-publication fail-closed behavior and legacy null-prototype call IDs. Subscription limits remain finite; token ceilings are expressly soft and observed overshoot is retained."
+      - "Sparse rate-limit handling is grounded in retained installed0.157.1 schemas: omitted entitlement retains explicit confirmed preflight provenance, explicit revocation stops, sparse window data preserves prior facts, and identifiers/balances are not recorded directly. Model/effort evidence is a server session observation, not backend attestation."
+      - "Native validation7d674df6ea5b755b4834b1055abd92613c5d728bf802843abd05453bf5fb34f0 passed all four assigned commands, including85 tests, ESLint, global format and diff. Implementation report8f2e1b78c8d85eb668656dad7e7bd432d9b175bc843a132718bcc02e564ac2b4 and its source/check-log hashes were verified. Tests were read, not rerun."
+    implementation_commit: "e756be981265a3d85eb577e88f00ea046602ca83"
+    implementation_tree: "52cdb5b510e8add54eb840560e714a617aed148c"
+    projected_at: "2026-10-08T16:10:48.222Z"
+    review_identity_digest: "sha256:81e96daf4b0547a0513fd49a6b2fcaa8e65cf3b646641b67df8c577e72bff8e7"
+    schema_version: 1
+    source: "task_kernel"
+    verification_evidence_digest: "sha256:22e5c996738689eb7f1f660b9c70eeab3bea2135ce0ba291e9ab210900a933a4"
+    work_order_id: "sha256:553e9427e0313457667c26dfd70ad5c214f0bb98236f93a167f553a5d86ea90b"
   task_execution_context:
     base_ref: "main"
     base_sha: "3dbcbad442bbeaadd73e6e698180c8cbaad55b30"
@@ -532,6 +568,103 @@ extensions:
             evidence_digest: "sha256:db26475f699a7ac5b8d943d2e97c6f11849ce3ec1fee4a72a8e2dc3eb2f0faa8"
             kind: "repository_implementation"
             previous_fingerprint: "sha256:8183e8186c019eae128675f080b94e9b72723457f51b26c7b514f3a5713f2b8f"
+        -
+          approval_mode: null
+          authority:
+            capabilities:
+              - "repository_write"
+            completion_requirements:
+              - "work_item_validation"
+              - "final_validation"
+            digest: "sha256:4196c8018571d016e77e478f7d222e0c3ea93d3b1c34574aef8a60bc8ec29cc8"
+            expires_at: null
+            external_effects:
+              - "network_read"
+            plan_digest: "sha256:6b8a8ec59331c4ff0c3ffab7073a80676870b5e7b4d79b3dc6f913dc1984f48f"
+            plan_revision: 1
+            policy_digests:
+              - "sha256:a91910e9592eefc136734171b90572e87ed161b2792c6aad955db92404621eed"
+            provenance:
+              actor_id: "agentplane:kernel-controller"
+              evidence_digest: "sha256:e8fb2e33ce600c1f3ce79e8eda73a6bd24f402474c535ff57cfb907b33000b2c"
+              kind: "SYSTEM"
+              parent_authority_digest: "sha256:f58cf7920403325f47e2f5f8e32ccb011491cdf4261e1468d5e49948f26acbba"
+            repository_effects:
+              - "documentation"
+              - "repository_write"
+              - "source_code"
+              - "tests"
+            repository_fingerprint: "sha256:aaf054b842547de8267350285a85f388a9a84acb5d9dae01d7b2c2711091f27f"
+            repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+            resources: []
+            risk:
+              implementation: "bounded"
+              requirements: "bounded"
+              reversibility: "reversible"
+            scope_roots:
+              - ".agentplane/tmp/60QH9J-hosted-contract.log"
+              - ".agentplane/tmp/60QH9J-hosted-static.log"
+              - ".agentplane/tmp/60QH9J-pre-fast-forward-schema.json"
+              - ".agentplane/tmp/K43XFE-pre-fast-forward/202609300615-DE9AE6.json"
+              - ".agentplane/tmp/K43XFE-pre-fast-forward/202609301727-VET3VW.json"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6042-body.md"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6042-ci.log"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6042-core-retry.log"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6042-core-tests.log"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6042-lint-shards.log"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6044-body.md"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6044-bootstrap.log"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6044-build.log"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6044-coverage.log"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6044-original-body.md"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6044-replay-fixed.log"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6044-review-body.md"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6044-reviewed.patch"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6044.patch"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6045-original-body.md"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6045-review-body.md"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6048-anchor-build-debug.log"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6048-body.md"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6048-bootstrap.log"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6048-ci.log"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6048-in-progress.patch"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6048-lint-main-delta.log"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6048-lint.log"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6048-memory-install.log"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6048-original-body.md"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6048-replay-check.log"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6048-replay-fixed.log"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6048-review-body.md"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6048-reviewed.patch"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6048-typecheck.log"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6048.patch"
+              - ".agentplane/tmp/pr-integration-MP3J6N/integration-result.json"
+              - "artifacts/bench/m05-live-0.7.13"
+              - "packages/agentplane/tsup.config.bundled_gb1x1suwt6t.mjs"
+              - "scripts/bench"
+            task_id: "202610081424-21WCFZ"
+            validation_requirements:
+              - "affected_unit_integration"
+              - "critical_paths"
+              - "docs_contract"
+              - "hosted_integration"
+              - "real_e2e"
+              - "task_outcome"
+            work_item_id: null
+          observation:
+            changed_paths:
+              - "scripts/bench/internal/paired-m05/journal.mjs"
+              - "scripts/bench/internal/paired-m05/ledger.mjs"
+              - "scripts/bench/internal/paired-m05/ledger.test.mjs"
+              - "scripts/bench/internal/paired-m05/subscription-boundary.mjs"
+              - "scripts/bench/internal/paired-m05/subscription-contract.mjs"
+              - "scripts/bench/internal/paired-m05/subscription-ledger.mjs"
+              - "scripts/bench/internal/paired-m05/subscription.test.mjs"
+              - "scripts/bench/paired-live-codex-launcher.mjs"
+              - "scripts/bench/paired-live-codex-launcher.test.mjs"
+            evidence_digest: "sha256:c18d4d11417ffaee4366c877d0a1090b17f520801cd579569dc384a4a848ebea"
+            kind: "repository_implementation"
+            previous_fingerprint: "sha256:648a6c75c7a0064c79781242a5fc306a1f3d0656a6d072da57964fde7ea04adf"
       controller_transfer: null
       current_plan:
         approval_actor_id: "agentplane:kernel-controller"
@@ -622,6 +755,15 @@ extensions:
           event_digests:
             - "sha256:da0eb7b3b62914393ba14822e9fa4e3901eba17cbce930d4933b65f82994da34"
           mutation_id: "capture:202610081424-21WCFZ"
+        kernel_work_item_claim_required:sha256:01a5e7bcc31b38fcb346a4892bc53727acd0be0cb0e5734e35417c7e63e30e36:sha256:aaf054b842547de8267350285a85f388a9a84acb5d9dae01d7b2c2711091f27f:
+          after_revision: 18
+          aggregate_digest: "sha256:e82894d11b119d7fc98735b83ae3fcb27fa5e376c360e9f119a821fe1cceeeed"
+          before_revision: 17
+          command_digest: "sha256:8e58832adfe8593836e2d312ad49b50a9d5682a11c4e5e1a48986d29f05ce320"
+          effect_ids: []
+          event_digests:
+            - "sha256:e373848fc1cde83adba6e6907b3d3b753113eb052d76b4fcdd2749c3be9b9930"
+          mutation_id: "kernel_work_item_claim_required:sha256:01a5e7bcc31b38fcb346a4892bc53727acd0be0cb0e5734e35417c7e63e30e36:sha256:aaf054b842547de8267350285a85f388a9a84acb5d9dae01d7b2c2711091f27f"
         kernel_work_item_claim_required:sha256:0404119276908ed7fdc81fff1f6d92272c7dba13b8d97cc7315ea2b0973c3bd2:sha256:648a6c75c7a0064c79781242a5fc306a1f3d0656a6d072da57964fde7ea04adf:
           after_revision: 11
           aggregate_digest: "sha256:ea83d33e10d56a4607cec42f1e31be3c5e931fd1a0796df87d7a8da315b51cf1"
@@ -640,6 +782,15 @@ extensions:
           event_digests:
             - "sha256:1691cf5c8d5fe708a59005f6aa01219994f4b73d16cac55f71a37d0f90e7e1c4"
           mutation_id: "kernel_work_item_claim_required:sha256:57885f7ef73d702d9d7071ad0612d684b5246f43ae8205f3110f72318c58fe81:sha256:e7f9728974d8419bd04ca6e6458a37214ee4fe2f555e09b677197b8efa41980b"
+        kernel_work_item_execution_required:sha256:45684662acc55c110313aa2c020b342e2ba4c928634cfca8507206310de11d7c:sha256:aaf054b842547de8267350285a85f388a9a84acb5d9dae01d7b2c2711091f27f:
+          after_revision: 19
+          aggregate_digest: "sha256:bd57a7c5d99871278b1789ab55439481ac580f348f991f75435f012675268498"
+          before_revision: 18
+          command_digest: "sha256:d29b40365b9d9887ec896daaae9ba96fcbb13ba305826c1e4575917b08561369"
+          effect_ids: []
+          event_digests:
+            - "sha256:78fd41a97554fb55b6549333ff3f563ef92cbb77357d5aa9e272fb5b3f99c4db"
+          mutation_id: "kernel_work_item_execution_required:sha256:45684662acc55c110313aa2c020b342e2ba4c928634cfca8507206310de11d7c:sha256:aaf054b842547de8267350285a85f388a9a84acb5d9dae01d7b2c2711091f27f"
         kernel_work_item_execution_required:sha256:7b9579f588f8118a2925d98db08a53e10d08fa4ec4481b7bcf03c4356280b813:sha256:648a6c75c7a0064c79781242a5fc306a1f3d0656a6d072da57964fde7ea04adf:
           after_revision: 12
           aggregate_digest: "sha256:da32837a157959b61673705fa74358eb9b4c6c3994a33d000c54ee8677ad1864"
@@ -658,6 +809,15 @@ extensions:
           event_digests:
             - "sha256:01a1e4aed63f6ec678bb902a56d03da1671ed1de79a992c3e18a0ffdac656e35"
           mutation_id: "kernel_work_item_execution_required:sha256:faaf86bf92a017949659cebb85a6716af87130b7f4c47788ed7405ef014d00d5:sha256:8183e8186c019eae128675f080b94e9b72723457f51b26c7b514f3a5713f2b8f"
+        kernel_work_item_inspection_required:sha256:8fc65973d18d6bb562197454fc10695079b9f9a184ed8314ae1be75ce173d95a:sha256:aaf054b842547de8267350285a85f388a9a84acb5d9dae01d7b2c2711091f27f:
+          after_revision: 15
+          aggregate_digest: "sha256:78dd8f9468a769a725d01a4b69abe32d6070e39f48334bcb8aa996f99a924025"
+          before_revision: 14
+          command_digest: "sha256:e31fc690e221815d3028489a48a92ffd6b29452bac44161dc70e05cdefe55091"
+          effect_ids: []
+          event_digests:
+            - "sha256:bed6d5d73d3eae5590e1fecf04040b67ed3a27b582a1d026ac3a3e173b262884"
+          mutation_id: "kernel_work_item_inspection_required:sha256:8fc65973d18d6bb562197454fc10695079b9f9a184ed8314ae1be75ce173d95a:sha256:aaf054b842547de8267350285a85f388a9a84acb5d9dae01d7b2c2711091f27f"
         kernel_work_item_materialization_required:sha256:ac70708c7e0f167f70cbd39dca070ca8fbed7bbfc69485c6f982149323968c5f:sha256:e7f9728974d8419bd04ca6e6458a37214ee4fe2f555e09b677197b8efa41980b:
           after_revision: 4
           aggregate_digest: "sha256:422ba688e0d147be8b614202395bed5bf48df6ddfacc6a419f97a45098bac186"
@@ -676,6 +836,15 @@ extensions:
           event_digests:
             - "sha256:bc2ea447b43878527b8d82e1d859f61bb0cfe4abfabef651c721a4bd134a5038"
           mutation_id: "result:sha256:5481ede9aa4e117caeba18ce70b8293a4912fc76c5d0c4c2759d6b434ce497b2"
+        result:sha256:553e9427e0313457667c26dfd70ad5c214f0bb98236f93a167f553a5d86ea90b:
+          after_revision: 14
+          aggregate_digest: "sha256:a334c4853b54627ff85a90cc9033c765aa657832c2a4c9218c513c708e9390cd"
+          before_revision: 13
+          command_digest: "sha256:f9f1def5b9872aef77ac2d4a5900b907fcbb32008e24575c7960de50d0c81d83"
+          effect_ids: []
+          event_digests:
+            - "sha256:b37454dd50209f7ab8eab8266c26a0dbcb05b40ec9b4aeb86e8cb0261a59b5ca"
+          mutation_id: "result:sha256:553e9427e0313457667c26dfd70ad5c214f0bb98236f93a167f553a5d86ea90b"
         semantic-stop:sha256:503e97428d74cfe6287319fdf64a5e142cac0910c1e544f09f57b8bea8182837:
           after_revision: 8
           aggregate_digest: "sha256:257b6df0151ee416f0910619b5382a07164e5f94625143da83e661bb6b352d59"
@@ -694,6 +863,15 @@ extensions:
           event_digests:
             - "sha256:ac8f920e4733e358f644e3e01c86c5c9120bfcbc7b564f8e5deb60ac88271ae1"
           mutation_id: "sha256:3619246378e4864992a82c484cc168b0f65065956430af2deb3df3c075236872"
+        sha256:4922f95f2f08de83a5c909f478d6107bfd29b09a3d0f692287aa650b61d82e93:
+          after_revision: 13
+          aggregate_digest: "sha256:861dcd3f8bf7edd9415a3ad3a29da645cc8faec5374cdf1be3b98c9e54117554"
+          before_revision: 12
+          command_digest: "sha256:d30c1c9c885fc37b897583a9dd293f3680a0d7de7c882f333c45ace6de35d652"
+          effect_ids: []
+          event_digests:
+            - "sha256:b2fc117bb5328ffb54856aa1833966ef573daec71e5288cc791b885eab985817"
+          mutation_id: "sha256:4922f95f2f08de83a5c909f478d6107bfd29b09a3d0f692287aa650b61d82e93"
         sha256:579cbf9e6d9ab6fb8886a8957b91778996ad7d1ac16a72f2889a6dfea3632904:
           after_revision: 3
           aggregate_digest: "sha256:6e7c41372a3f520877378548ecf4842f32a6366b98f133e573b9c40ed2cbc1a5"
@@ -712,6 +890,24 @@ extensions:
           event_digests:
             - "sha256:eaa6bf89e5e2c0393b8fc411f8d03553fffb5f401346ccaf0cfd0af22aa8209f"
           mutation_id: "sha256:881648f0b52ee2b99d96ecbacfdfc798e1d5781e1b4094176e74347dc324ed68"
+        validation-resolution:sha256:5b4a539e5d5bfb9254acac230e3a0830f73fcb198a66aad9f4a8673f3e892508:
+          after_revision: 17
+          aggregate_digest: "sha256:4d17bfe26ec9c3d6040f538dae5b8bbc9f95c84f2ce587e1a1918532ace55bc7"
+          before_revision: 16
+          command_digest: "sha256:ff3695139fd79a6971afa3e3c6e424f5274f94a696be78e390a415aa1011dd63"
+          effect_ids: []
+          event_digests:
+            - "sha256:99bc42fc2ea328250e89fb9ea098914b1b0e639c639c53507fb7c947fa6235d7"
+          mutation_id: "validation-resolution:sha256:5b4a539e5d5bfb9254acac230e3a0830f73fcb198a66aad9f4a8673f3e892508"
+        validation:sha256:feeaa0c2ed432029e41e45ecd7cb4ae956f64292392ba8747cfc69c6d392163c:
+          after_revision: 16
+          aggregate_digest: "sha256:f53faac86b13a7399a5d8f718fd06312d360e1afc9ae31016ff9c6deef8dd20c"
+          before_revision: 15
+          command_digest: "sha256:8f5d9f5b538767eefb8e5f0f442a2cdbcdf946ed0ff94b31fe9a969964959366"
+          effect_ids: []
+          event_digests:
+            - "sha256:dd5bce830a74b16b5002ad762c9efa71eded13fdf0723bb7926c7212de8d122d"
+          mutation_id: "validation:sha256:feeaa0c2ed432029e41e45ecd7cb4ae956f64292392ba8747cfc69c6d392163c"
         work-item-resume:sha256:3e19708fcaf5700a943d7916a332cf980feb96191cf1ce4a20ba4f4e4fc1e51f:
           after_revision: 10
           aggregate_digest: "sha256:af909c2ddfa7c6dc304011605128a69e7c4793927e1977cda4a19bddb1408026"
@@ -722,13 +918,13 @@ extensions:
             - "sha256:3a46ba05161bcec3f0ffd4e63f6d9d7878911338c0a5392ce5da0f624e5422eb"
           mutation_id: "work-item-resume:sha256:3e19708fcaf5700a943d7916a332cf980feb96191cf1ce4a20ba4f4e4fc1e51f"
       plan_history: []
-      revision: 12
+      revision: 19
       schema_version: 1
       state: "ACTIVE"
       work_items:
         coding-corpus:
-          attempt: 0
-          claim_id: null
+          attempt: 1
+          claim_id: "sha256:edd0ba2aaeb5b1d8a057a62b8c1673683a639fe2edfe4e5afe953bf084d39ea5"
           definition:
             contract_digest: "sha256:91f0115f6bd10c031f2ca175666bf2b65499a90289f08fcc43caf365e078830c"
             depends_on:
@@ -754,8 +950,8 @@ extensions:
               - "subscription-boundary-evidence"
           output_manifests: []
           result_digest: null
-          revision: 1
-          state: "PLANNED"
+          revision: 4
+          state: "EXECUTING"
           validation: null
         subscription-boundary:
           attempt: 2
@@ -780,11 +976,31 @@ extensions:
             id: "subscription-boundary"
             optional: false
             required_inputs: []
-          output_manifests: []
-          result_digest: null
-          revision: 7
-          state: "EXECUTING"
-          validation: null
+          output_manifests:
+            -
+              attempt: 2
+              digest: "sha256:8f2e1b78c8d85eb668656dad7e7bd432d9b175bc843a132718bcc02e564ac2b4"
+              id: "subscription-boundary-evidence"
+              kind: "report"
+              plan_revision: 1
+              repository_fingerprint: "sha256:aaf054b842547de8267350285a85f388a9a84acb5d9dae01d7b2c2711091f27f"
+              task_id: "202610081424-21WCFZ"
+              work_item_id: "subscription-boundary"
+          result_digest: "sha256:63c0afe4f03f296618a1f6fbe57cc9787fb76d96716a26a1dd23e8d45e3fab74"
+          revision: 11
+          state: "COMPLETED"
+          validation:
+            evidence_digests:
+              - "sha256:7d674df6ea5b755b4834b1055abd92613c5d728bf802843abd05453bf5fb34f0"
+              - "sha256:81e96daf4b0547a0513fd49a6b2fcaa8e65cf3b646641b67df8c577e72bff8e7"
+            identity:
+              check_id: "canonical-contract-and-inspection"
+              command_digest: "sha256:de5c7b68310911f8946c06ab14ff5e9959740cd1142ffa181aba50135cdd24c4"
+              environment_digest: "sha256:656358803b29d8e8612816f60662ad9cb2902cd3d3a177f76fbe7d37f1eb8116"
+              implementation_identity: "sha256:63c0afe4f03f296618a1f6fbe57cc9787fb76d96716a26a1dd23e8d45e3fab74"
+              toolchain_digest: "sha256:97398f9060d1177dc7c1604a218cd6ba7b702d285fbdc8a1a0399f01b12330f3"
+            observed_at: "2026-10-08T16:10:48.222Z"
+            status: "PASSED"
         token-report-protocol:
           attempt: 0
           claim_id: null
@@ -817,7 +1033,7 @@ extensions:
           revision: 1
           state: "PLANNED"
           validation: null
-    digest: "sha256:e73af7e043b11e886a0757b63510a40703b46f95d7f3b41623c7e7008bce2d96"
+    digest: "sha256:f720a82c6fe22c52490da9f93982a122553dbb4b7cb7216cf064e8ee11ac80d5"
     documents:
       contracts:
         sha256:402316b0420852403ff30a00785dc5342ba75a80ed86cbc4e4839b08a0530d74:
@@ -971,6 +1187,69 @@ extensions:
         payload_digest: "sha256:b83c4c946cac7783bed014ea352f67089dcfd09b95fed414ae40f161efb9c63d"
         task_id: "202610081424-21WCFZ"
         task_revision: 12
+      -
+        command_digest: "sha256:d30c1c9c885fc37b897583a9dd293f3680a0d7de7c882f333c45ace6de35d652"
+        id: "sha256:4922f95f2f08de83a5c909f478d6107bfd29b09a3d0f692287aa650b61d82e93:authority_continued"
+        kind: "authority_continued"
+        mutation_id: "sha256:4922f95f2f08de83a5c909f478d6107bfd29b09a3d0f692287aa650b61d82e93"
+        occurred_at: "2026-10-08T15:59:27.817Z"
+        payload_digest: "sha256:5ddca350e3d922e32801a968518ee6b89afaf32271d2c1266857b9fa8c5d8c8d"
+        task_id: "202610081424-21WCFZ"
+        task_revision: 13
+      -
+        command_digest: "sha256:f9f1def5b9872aef77ac2d4a5900b907fcbb32008e24575c7960de50d0c81d83"
+        id: "result:sha256:553e9427e0313457667c26dfd70ad5c214f0bb98236f93a167f553a5d86ea90b:work_item_result_accepted"
+        kind: "work_item_result_accepted"
+        mutation_id: "result:sha256:553e9427e0313457667c26dfd70ad5c214f0bb98236f93a167f553a5d86ea90b"
+        occurred_at: "2026-10-08T16:00:01.558Z"
+        payload_digest: "sha256:547a1dee88433dc0a10215a1423f9c2097aa6d02ab6eb93b99052e464e690496"
+        task_id: "202610081424-21WCFZ"
+        task_revision: 14
+      -
+        command_digest: "sha256:e31fc690e221815d3028489a48a92ffd6b29452bac44161dc70e05cdefe55091"
+        id: "kernel_work_item_inspection_required:sha256:8fc65973d18d6bb562197454fc10695079b9f9a184ed8314ae1be75ce173d95a:sha256:aaf054b842547de8267350285a85f388a9a84acb5d9dae01d7b2c2711091f27f:work_item_transitioned"
+        kind: "work_item_transitioned"
+        mutation_id: "kernel_work_item_inspection_required:sha256:8fc65973d18d6bb562197454fc10695079b9f9a184ed8314ae1be75ce173d95a:sha256:aaf054b842547de8267350285a85f388a9a84acb5d9dae01d7b2c2711091f27f"
+        occurred_at: "2026-10-08T16:00:30.363Z"
+        payload_digest: "sha256:b2973cf58e1cfd8ba3008ad18e0038615b5d0e4b04fb94d5dc325539a2f4677e"
+        task_id: "202610081424-21WCFZ"
+        task_revision: 15
+      -
+        command_digest: "sha256:8f5d9f5b538767eefb8e5f0f442a2cdbcdf946ed0ff94b31fe9a969964959366"
+        id: "validation:sha256:feeaa0c2ed432029e41e45ecd7cb4ae956f64292392ba8747cfc69c6d392163c:work_item_validation_recorded"
+        kind: "work_item_validation_recorded"
+        mutation_id: "validation:sha256:feeaa0c2ed432029e41e45ecd7cb4ae956f64292392ba8747cfc69c6d392163c"
+        occurred_at: "2026-10-08T16:11:15.950Z"
+        payload_digest: "sha256:f24f9d65557899bc275efc46c8293dec2f2bbc34b55c1a89e414744eecc8a8c9"
+        task_id: "202610081424-21WCFZ"
+        task_revision: 16
+      -
+        command_digest: "sha256:ff3695139fd79a6971afa3e3c6e424f5274f94a696be78e390a415aa1011dd63"
+        id: "validation-resolution:sha256:5b4a539e5d5bfb9254acac230e3a0830f73fcb198a66aad9f4a8673f3e892508:work_item_transitioned"
+        kind: "work_item_transitioned"
+        mutation_id: "validation-resolution:sha256:5b4a539e5d5bfb9254acac230e3a0830f73fcb198a66aad9f4a8673f3e892508"
+        occurred_at: "2026-10-08T16:11:25.689Z"
+        payload_digest: "sha256:18c24b895f9b723740f79d3ce53d2f40555e25f522d28ca92fde718a85ea00f0"
+        task_id: "202610081424-21WCFZ"
+        task_revision: 17
+      -
+        command_digest: "sha256:8e58832adfe8593836e2d312ad49b50a9d5682a11c4e5e1a48986d29f05ce320"
+        id: "kernel_work_item_claim_required:sha256:01a5e7bcc31b38fcb346a4892bc53727acd0be0cb0e5734e35417c7e63e30e36:sha256:aaf054b842547de8267350285a85f388a9a84acb5d9dae01d7b2c2711091f27f:work_item_transitioned"
+        kind: "work_item_transitioned"
+        mutation_id: "kernel_work_item_claim_required:sha256:01a5e7bcc31b38fcb346a4892bc53727acd0be0cb0e5734e35417c7e63e30e36:sha256:aaf054b842547de8267350285a85f388a9a84acb5d9dae01d7b2c2711091f27f"
+        occurred_at: "2026-10-08T16:11:44.668Z"
+        payload_digest: "sha256:d3fdc2edbf64a9ef31cb0104aa624afc3b05ded85017b93eaa4a5dbc0d22049a"
+        task_id: "202610081424-21WCFZ"
+        task_revision: 18
+      -
+        command_digest: "sha256:d29b40365b9d9887ec896daaae9ba96fcbb13ba305826c1e4575917b08561369"
+        id: "kernel_work_item_execution_required:sha256:45684662acc55c110313aa2c020b342e2ba4c928634cfca8507206310de11d7c:sha256:aaf054b842547de8267350285a85f388a9a84acb5d9dae01d7b2c2711091f27f:work_item_transitioned"
+        kind: "work_item_transitioned"
+        mutation_id: "kernel_work_item_execution_required:sha256:45684662acc55c110313aa2c020b342e2ba4c928634cfca8507206310de11d7c:sha256:aaf054b842547de8267350285a85f388a9a84acb5d9dae01d7b2c2711091f27f"
+        occurred_at: "2026-10-08T16:11:57.561Z"
+        payload_digest: "sha256:2744e3ace0764949033fe57df4d310c43e416a288951c6d482a1900ea2202109"
+        task_id: "202610081424-21WCFZ"
+        task_revision: 19
     kind: "canonical_task"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1

@@ -458,3 +458,21 @@ test("subscription sparse quota cutoff and explicit entitlement revocation stop 
     );
   }
 });
+
+test("trusted external sandbox turn options reach the real subscription request owner", async (t) => {
+  const f = await fixture(t, {
+    host: {
+      turnOptions: async () => ({
+        sandboxPolicy: { type: "externalSandbox", networkAccess: "restricted" },
+        model: "untrusted-override",
+      }),
+    },
+  });
+  await f.boundary.execute(call(), [], {});
+  const request = f.requests.find((r) => r.method === "turn/start");
+  assert.deepEqual(request.params.sandboxPolicy, {
+    type: "externalSandbox",
+    networkAccess: "restricted",
+  });
+  assert.equal(request.params.model, contract().model);
+});

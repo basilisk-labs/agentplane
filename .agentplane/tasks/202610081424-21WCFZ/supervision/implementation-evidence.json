@@ -1,0 +1,61 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 2d250c83bd09b792f9715d6407b08ff6b914d55c..e756be981265a3d85eb577e88f00ea046602ca83",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 2d250c83bd09b792f9715d6407b08ff6b914d55c..e756be981265a3d85eb577e88f00ea046602ca83",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202610081424-21WCFZ/README.md",
+        "A\tscripts/bench/internal/paired-m05/journal.mjs",
+        "M\tscripts/bench/internal/paired-m05/ledger.mjs",
+        "M\tscripts/bench/internal/paired-m05/ledger.test.mjs",
+        "A\tscripts/bench/internal/paired-m05/subscription-boundary.mjs",
+        "A\tscripts/bench/internal/paired-m05/subscription-contract.mjs",
+        "A\tscripts/bench/internal/paired-m05/subscription-ledger.mjs",
+        "A\tscripts/bench/internal/paired-m05/subscription.test.mjs",
+        "M\tscripts/bench/paired-live-codex-launcher.mjs",
+        "M\tscripts/bench/paired-live-codex-launcher.test.mjs"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "2d250c83bd09b792f9715d6407b08ff6b914d55c",
+  "implementation_commit": "e756be981265a3d85eb577e88f00ea046602ca83",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      " M .agentplane/tasks/202610081424-21WCFZ/README.md"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202610081424-21WCFZ/README.md"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M .agentplane/tasks/202610081424-21WCFZ/README.md"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202610081424-21WCFZ"
+}

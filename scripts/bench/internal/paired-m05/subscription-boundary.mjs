@@ -32,7 +32,14 @@ export async function openSubscriptionBoundary({ contract: input, ledgerRoot }, 
   assert.equal(typeof host.authorize, "function");
   assert.equal(typeof host.request, "function");
   assert.equal(typeof host.subscribe, "function");
-  const { request, subscribe, authorize, threadOptions: qualifyThread, now = Date.now } = host;
+  const {
+    request,
+    subscribe,
+    authorize,
+    threadOptions: qualifyThread,
+    turnOptions: qualifyTurn = async () => ({}),
+    now = Date.now,
+  } = host;
   assert.equal(typeof qualifyThread, "function");
   assert.equal(
     await authorize(digest(contract), contract.authority_digest),
@@ -77,6 +84,10 @@ export async function openSubscriptionBoundary({ contract: input, ledgerRoot }, 
         // Sandbox/cwd come from the qualified host, never from a campaign manifest.
         const options = await bounded(
           Promise.resolve().then(() => qualifyThread(threadOptions)),
+          Math.max(1, deadline - now()),
+        );
+        const turnOptions = await bounded(
+          Promise.resolve().then(() => qualifyTurn()),
           Math.max(1, deadline - now()),
         );
         const thread = await rpc("thread/start", {
@@ -221,6 +232,7 @@ export async function openSubscriptionBoundary({ contract: input, ledgerRoot }, 
         deadlineTimer = setTimeout(() => interrupt("turn_deadline"), Math.max(1, deadline - now()));
         assert.equal(stopReason, null, "Subscription stopped before turn start");
         const result = await rpc("turn/start", {
+          ...turnOptions,
           threadId,
           model: contract.model,
           effort: contract.effort,
