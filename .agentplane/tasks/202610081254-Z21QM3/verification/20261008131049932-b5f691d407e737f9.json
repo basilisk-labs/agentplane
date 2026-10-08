@@ -1,0 +1,240 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: git diff --check\nResult: pass\nEvidence: .agentplane/tasks/202610081254-Z21QM3/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610081254-Z21QM3 Verification Contract check affected_unit_integration (1/4)\n\nCheck: affected_unit_integration\nCommand: node node_modules/prettier/bin/prettier.cjs --check artifacts/bench/m05-live-0.7.13/experiment-protocol.md\nResult: pass\nEvidence: .agentplane/tasks/202610081254-Z21QM3/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610081254-Z21QM3 Verification Contract check affected_unit_integration (2/4)\n\nCheck: affected_unit_integration\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: .agentplane/tasks/202610081254-Z21QM3/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610081254-Z21QM3 Verification Contract check affected_unit_integration (3/4)\n\nCheck: affected_unit_integration\nCommand: agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202610081254-Z21QM3/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610081254-Z21QM3 Verification Contract check affected_unit_integration (4/4)\n\nCheck: critical_paths\nCommand: git diff --check\nResult: pass\nEvidence: .agentplane/tasks/202610081254-Z21QM3/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610081254-Z21QM3 Verification Contract check critical_paths (1/4)\n\nCheck: critical_paths\nCommand: node node_modules/prettier/bin/prettier.cjs --check artifacts/bench/m05-live-0.7.13/experiment-protocol.md\nResult: pass\nEvidence: .agentplane/tasks/202610081254-Z21QM3/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610081254-Z21QM3 Verification Contract check critical_paths (2/4)\n\nCheck: critical_paths\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: .agentplane/tasks/202610081254-Z21QM3/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610081254-Z21QM3 Verification Contract check critical_paths (3/4)\n\nCheck: critical_paths\nCommand: agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202610081254-Z21QM3/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610081254-Z21QM3 Verification Contract check critical_paths (4/4)\n\nCheck: docs_contract\nCommand: git diff --check\nResult: pass\nEvidence: .agentplane/tasks/202610081254-Z21QM3/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610081254-Z21QM3 Verification Contract check docs_contract (1/4)\n\nCheck: docs_contract\nCommand: node node_modules/prettier/bin/prettier.cjs --check artifacts/bench/m05-live-0.7.13/experiment-protocol.md\nResult: pass\nEvidence: .agentplane/tasks/202610081254-Z21QM3/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610081254-Z21QM3 Verification Contract check docs_contract (2/4)\n\nCheck: docs_contract\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: .agentplane/tasks/202610081254-Z21QM3/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610081254-Z21QM3 Verification Contract check docs_contract (3/4)\n\nCheck: docs_contract\nCommand: agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202610081254-Z21QM3/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610081254-Z21QM3 Verification Contract check docs_contract (4/4)\n\nCheck: task_outcome\nCommand: git diff --check\nResult: pass\nEvidence: .agentplane/tasks/202610081254-Z21QM3/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610081254-Z21QM3 Verification Contract check task_outcome (1/4)\n\nCheck: task_outcome\nCommand: node node_modules/prettier/bin/prettier.cjs --check artifacts/bench/m05-live-0.7.13/experiment-protocol.md\nResult: pass\nEvidence: .agentplane/tasks/202610081254-Z21QM3/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610081254-Z21QM3 Verification Contract check task_outcome (2/4)\n\nCheck: task_outcome\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: .agentplane/tasks/202610081254-Z21QM3/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610081254-Z21QM3 Verification Contract check task_outcome (3/4)\n\nCheck: task_outcome\nCommand: agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202610081254-Z21QM3/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610081254-Z21QM3 Verification Contract check task_outcome (4/4)",
+  "digest": "sha256:b5f691d407e737f98d8ec4305d92477c3ff4f42ad1425365ac2a49fd8d0be8f3",
+  "implementation_sha": "61bf92ce321e5e340f1022c5db4c594684da1cbe",
+  "input": {
+    "checked_input": {
+      "commands": {
+        "digest": "sha256:1f31bbd77dc35ef663e4ef882989511914eb6eceacb827c38549c58317b4cc80",
+        "entries": [
+          {
+            "check_id": "affected_unit_integration",
+            "command": "agentplane doctor"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "git diff --check"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "node .agentplane/policy/check-routing.mjs"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "node node_modules/prettier/bin/prettier.cjs --check artifacts/bench/m05-live-0.7.13/experiment-protocol.md"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "agentplane doctor"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "git diff --check"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "node .agentplane/policy/check-routing.mjs"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "node node_modules/prettier/bin/prettier.cjs --check artifacts/bench/m05-live-0.7.13/experiment-protocol.md"
+          },
+          {
+            "check_id": "docs_contract",
+            "command": "agentplane doctor"
+          },
+          {
+            "check_id": "docs_contract",
+            "command": "git diff --check"
+          },
+          {
+            "check_id": "docs_contract",
+            "command": "node .agentplane/policy/check-routing.mjs"
+          },
+          {
+            "check_id": "docs_contract",
+            "command": "node node_modules/prettier/bin/prettier.cjs --check artifacts/bench/m05-live-0.7.13/experiment-protocol.md"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "agentplane doctor"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "git diff --check"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "node .agentplane/policy/check-routing.mjs"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "node node_modules/prettier/bin/prettier.cjs --check artifacts/bench/m05-live-0.7.13/experiment-protocol.md"
+          }
+        ]
+      },
+      "context": {
+        "digest": "sha256:fd898f41467c148006e8375fb63a142259e1a43efe931f911f7082d97e38ffd2",
+        "paths": [
+          ".agentplane/WORKFLOW.md",
+          ".github/ISSUE_TEMPLATE/config.yml",
+          "bun.lock",
+          "depcruise.config.cjs",
+          "eslint.config.cjs",
+          "knip.json",
+          "package.json",
+          "packages/agentplane/package.json",
+          "packages/agentplane/src/cli/run-cli/commands/config.ts",
+          "packages/agentplane/src/runner/config.test.ts",
+          "packages/agentplane/src/runner/config.ts",
+          "packages/agentplane/tsconfig.json",
+          "packages/agentplane/tsup.config.ts",
+          "packages/core/package.json",
+          "packages/core/schemas/config.schema.json",
+          "packages/core/src/config/config.test.ts",
+          "packages/core/src/config/config.ts",
+          "packages/core/tsconfig.json",
+          "packages/core/tsup.config.ts",
+          "packages/recipes/package.json",
+          "packages/recipes/tsconfig.json",
+          "packages/recipes/tsup.config.ts",
+          "packages/spec/examples/config.json",
+          "packages/spec/package.json",
+          "packages/spec/schemas/config.schema.json",
+          "packages/testkit/package.json",
+          "packages/testkit/tsconfig.json",
+          "schemas/config.schema.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package-lock.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package.json",
+          "tsconfig.json",
+          "turbo.json",
+          "vitest.config.ts",
+          "vitest.workspace.ts"
+        ]
+      },
+      "digest": "sha256:ab39810aec8bf56ddb9f33ad2145092fa326eb7a6ca584098c51f822b6dcbc78",
+      "environment": {
+        "digest": "sha256:9ec5bf2323cd53a84a354760f7a2e04adc570a2f8a0452d4311892dcb83d880b",
+        "runtime": {
+          "architecture": "x64",
+          "bun_major": null,
+          "node_major": "24",
+          "platform": "linux"
+        }
+      },
+      "evidence": {
+        "details_digest": "sha256:26b0ad3a66e6d79b295b394e0235953fdc041796fbbfe2f6c9f4752acfaf8116",
+        "digest": "sha256:e21f23f36aef234142e062b9c5bc5cae7a7fa088d7f3714c3416f403f615942f",
+        "references": [
+          {
+            "digest": "sha256:4e8e46d5e3a970504e5a1f3cb64edf26ff27c53dd310be12dac2a4b0ab6ac490",
+            "fragment": "check-1",
+            "path": ".agentplane/tasks/202610081254-Z21QM3/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610081254-Z21QM3/supervision/declared-checks.json#check-1",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:4e8e46d5e3a970504e5a1f3cb64edf26ff27c53dd310be12dac2a4b0ab6ac490",
+            "fragment": "check-2",
+            "path": ".agentplane/tasks/202610081254-Z21QM3/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610081254-Z21QM3/supervision/declared-checks.json#check-2",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:4e8e46d5e3a970504e5a1f3cb64edf26ff27c53dd310be12dac2a4b0ab6ac490",
+            "fragment": "check-3",
+            "path": ".agentplane/tasks/202610081254-Z21QM3/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610081254-Z21QM3/supervision/declared-checks.json#check-3",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:4e8e46d5e3a970504e5a1f3cb64edf26ff27c53dd310be12dac2a4b0ab6ac490",
+            "fragment": "check-4",
+            "path": ".agentplane/tasks/202610081254-Z21QM3/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610081254-Z21QM3/supervision/declared-checks.json#check-4",
+            "source": "filesystem"
+          }
+        ]
+      },
+      "implementation": {
+        "base_sha": "3dbcbad442bbeaadd73e6e698180c8cbaad55b30",
+        "digest": "sha256:baabac010b2c85c1f026b0dbafbddad4e0ae23308c06db6f282fe9a456b0da8a",
+        "strategy": "branch_diff",
+        "target_sha": "61bf92ce321e5e340f1022c5db4c594684da1cbe"
+      }
+    },
+    "concurrency": {
+      "digest": "sha256:ed8898b2e6a32bb3c68ff40300018370368f99186acf5fed1053f6f4739a91c8",
+      "execution": {
+        "authoritative_task_source": "task_worktree",
+        "base_ref": "main",
+        "base_sha": "3dbcbad442bbeaadd73e6e698180c8cbaad55b30",
+        "digest": "sha256:3cda523b5a78c9d448359a3ebfbc55d055f26fd013e75efcebfd1147b0e8808a",
+        "primary_task_id": "202610081254-Z21QM3",
+        "reason_codes": [
+          "agent_preferred_branch_pr",
+          "repository_branch_pr_floor"
+        ],
+        "repository_mode": "branch_pr",
+        "requested_mode": "branch_pr",
+        "route_source": "execution_contract",
+        "selected_mode": "branch_pr",
+        "task_ids": [
+          "202610081254-Z21QM3"
+        ]
+      },
+      "task": {
+        "capability": {
+          "digest": "sha256:2f24db149221b9d88ba224f765604b69d5053b2139d05eaad3f09a1f9e11490c"
+        },
+        "checks": {
+          "digest": "sha256:459918462ee0f43357402259a4bf919a7b4e68c8fbd72a177ec6d7e6d26ccfc9",
+          "required_check_ids": [
+            "affected_unit_integration",
+            "critical_paths",
+            "docs_contract",
+            "task_outcome"
+          ],
+          "verification_contract_digest": "sha256:794036bc1d12935ea3464b98031cb5972fc9a94d08a30bf65023dfcbeaf7c462"
+        },
+        "digest": "sha256:51f34ca16082895031d1371d2bacfb7db6a2483b8861ffe70eee7c40fe826800",
+        "kind": "agentplane.native_task_identity",
+        "plan": {
+          "approval_state": "approved",
+          "approved_digest": "sha256:4cb454b3226fedc63a60bd5b89d5d4931b36775cf5a0bb295555a49031d340e3",
+          "digest": "sha256:4cb454b3226fedc63a60bd5b89d5d4931b36775cf5a0bb295555a49031d340e3",
+          "revision": 1
+        },
+        "policy": {
+          "digest": "sha256:1150ba6caefe9e829c30b3520b9246ed1ec7ebbeedbe788c63cf7989015dbb46"
+        },
+        "schema_version": 1,
+        "task_id": "202610081254-Z21QM3"
+      }
+    },
+    "digest": "sha256:73d2c57855e9c6b180b2b12904a91687d335a1de42e573ab7aa0432d0a657698",
+    "kind": "task_verification_input",
+    "obligations": {
+      "digest": "sha256:44eb8686389cc4cbe73fb047e7c541ba044d14ae47f1fbd478d32555285dfcac",
+      "required_check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "task_outcome"
+      ],
+      "verification_contract_digest": "sha256:794036bc1d12935ea3464b98031cb5972fc9a94d08a30bf65023dfcbeaf7c462",
+      "verify_steps_digest": "sha256:368b7a384dc308af6a5cee7c4a2f07ba2b1c8f107e990967c0a1ebf299d4defc"
+    },
+    "schema_version": 5
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: canonical Task Kernel final checks passed.",
+  "recorded_at": "2026-10-08T13:10:49.932Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Preregister M05 live experiment and release decision protocol\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Preregister M05 live experiment and release decision protocol\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:368b7a384dc308af6a5cee7c4a2f07ba2b1c8f107e990967c0a1ebf299d4defc",
+  "task_id": "202610081254-Z21QM3",
+  "verification_command": "agentplane verify 202610081254-Z21QM3 --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
