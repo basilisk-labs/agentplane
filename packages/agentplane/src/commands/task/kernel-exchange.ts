@@ -7,6 +7,8 @@ import {
 } from "./kernel-rework-lineage.js";
 import { authenticatedAmendmentHistory } from "./kernel-rework-proof.js";
 import { isRecord } from "../../shared/guards.js";
+import { CliError } from "../../shared/errors.js";
+import { renderCliArgv } from "../shared/workflow-operation-projection.js";
 import { kernelRecoveryInputs } from "./kernel-recovery-evidence.js";
 import {
   putEvaluatorEvidenceObject,
@@ -424,11 +426,41 @@ export async function issueKernelExchange(
     const owner: unknown = await retainedJson(directory, "transport-owner.json");
     if (
       !isRecord(owner) ||
-      owner.transport !== transport ||
+      (owner.transport !== "host" && owner.transport !== "managed") ||
       owner.work_order_id !== order.work_order_id ||
       (owner.result_format !== undefined && owner.result_format !== "semantic_payload_v1")
     )
-      throw new Error("Canonical transport owner mismatch");
+      throw new CliError({
+        code: "E_VALIDATION",
+        message: "Invalid canonical transport ownership record.",
+        context: { work_order_id: order.work_order_id, directory },
+      });
+    if (owner.transport !== transport) {
+      const argv =
+        owner.transport === "host"
+          ? [
+              "agentplane",
+              "task",
+              "advance",
+              order.task.id,
+              "--result",
+              path.join(directory, "result.json"),
+              "--agent-json",
+            ]
+          : ["agentplane", "task", "run", order.task.id];
+      throw new CliError({
+        code: "E_HANDOFF",
+        message: `Canonical transport owner conflict: ${owner.transport} owns ${order.work_order_id}; requested ${transport}. Continue in ${order.state_fingerprint.worktree}: ${renderCliArgv(argv)}. Implicit transfer is not supported.`,
+        context: {
+          reason_code: "canonical_transport_owner_conflict",
+          owner: owner.transport,
+          requested_transport: transport,
+          work_order_id: order.work_order_id,
+          authoritative_checkout: order.state_fingerprint.worktree,
+          continuation_argv: argv,
+        },
+      });
+    }
     resultFormat = owner.result_format;
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;

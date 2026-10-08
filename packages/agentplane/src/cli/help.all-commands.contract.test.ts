@@ -17,7 +17,7 @@ describe("help output contract (all commands)", () => {
     for (const entry of COMMANDS) {
       const io = captureStdIO();
       try {
-        const code = await runCli(["help", ...entry.spec.id, "--compact", "--all"]);
+        const code = await runCli(["help", ...entry.spec.id, "--compact"]);
         expect(code).toBe(0);
 
         const out = io.stdout;
@@ -44,4 +44,18 @@ describe("help output contract (all commands)", () => {
       }
     }
   });
+
+  it.each([["task", "scope"], ["task", "authority"], ["work"]])(
+    "lists children of an explicit command namespace: %s",
+    async (...tokens) => {
+      const io = captureStdIO();
+      try {
+        expect(await runCli(["help", ...tokens])).toBe(0);
+        expect(io.stdout).toContain(tokens.join(" "));
+        expect(io.stderr).not.toContain("Unknown command");
+      } finally {
+        io.restore();
+      }
+    },
+  );
 });

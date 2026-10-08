@@ -1,4 +1,5 @@
 import { protectedPathKindForFile } from "../../shared/protected-paths.js";
+import { CliError } from "../../shared/errors.js";
 import path from "node:path";
 import { mkdir } from "node:fs/promises";
 import { parseTaskIdFromBranch } from "@agentplaneorg/core/git";
@@ -303,11 +304,33 @@ export async function commitCanonicalImplementation(opts: {
       throw new Error("Canonical repository evidence identity changed");
     return existingEvidence;
   }
+  let intent = await readCommitIntent(opts.directory);
+  if (
+    intent &&
+    (intent.task_id !== baseline.task_id ||
+      intent.work_order_id !== baseline.work_order_id ||
+      intent.base_commit !== baseline.head)
+  )
+    throw new Error("Canonical repository commit intent identity changed");
   const baselineLines = new Set(
     nonTaskStatusLines(opts.command, baseline.task_id, baseline.status),
   );
   const currentLines = new Set(nonTaskStatusLines(opts.command, baseline.task_id, status));
-  if (head === baseline.head && [...baselineLines].some((line) => !currentLines.has(line)))
+  const currentPaths = new Set([...currentLines].map(pathFromStatusLine));
+  // Native staging can change porcelain columns before a hook rejects the commit.
+  const retainedIntentPath = (line: string) => {
+    const candidate = pathFromStatusLine(line);
+    return (
+      candidate !== null &&
+      intent?.changed_paths.includes(candidate) === true &&
+      opts.changed_paths.includes(candidate) &&
+      currentPaths.has(candidate)
+    );
+  };
+  if (
+    head === baseline.head &&
+    [...baselineLines].some((line) => !currentLines.has(line) && !retainedIntentPath(line))
+  )
     throw new Error("Canonical implementation changed its dirty baseline");
   const introduced = [...currentLines]
     .filter((line) => !baselineLines.has(line))
@@ -325,16 +348,17 @@ export async function commitCanonicalImplementation(opts: {
   const adoptedBaseline = baselinePaths.filter((candidate) => authorized.has(candidate));
   const unauthorizedIntroduced = introduced.filter((candidate) => !authorized.has(candidate));
   if (unauthorizedIntroduced.length > 0)
-    throw new Error(
-      `Canonical repository delta differs from its observation: ${introduced.join(", ")}.`,
-    );
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: `Canonical repository delta differs from its observation: ${unauthorizedIntroduced.join(", ")}. Inspect these unobserved paths before retrying. Preserve approved implementation files; unrelated artifacts require separate authority or removal.`,
+      context: {
+        reason_code: "canonical_repository_delta_unobserved",
+        task_id: baseline.task_id,
+        authoritative_checkout: baseline.checkout,
+        unobserved_paths: unauthorizedIntroduced,
+      },
+    });
   const expected = [...new Set([...adoptedBaseline, ...introduced])].toSorted();
-  let intent = await readCommitIntent(opts.directory);
-  if (
-    intent &&
-    (intent.task_id !== baseline.task_id || intent.work_order_id !== baseline.work_order_id)
-  )
-    throw new Error("Canonical repository commit intent identity changed");
   if (head !== baseline.head && !intent)
     throw new Error("Canonical implementation changed Git history before commit dispatch");
   const persistedPaths = intent?.changed_paths;

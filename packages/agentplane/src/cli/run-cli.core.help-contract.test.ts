@@ -224,20 +224,20 @@ describe("cli help contract", () => {
         "adopt-legacy-protected-conflict",
         "--compact",
       ]);
-      expect(code).toBe(2);
-      expect(oldAliasIo.stderr).toContain("Unknown command");
+      expect(code).toBe(0);
+      expect(oldAliasIo.stdout).toContain("integrate queue adopt-legacy-protected-conflict");
     } finally {
       oldAliasIo.restore();
     }
   });
 
-  it("normal project help rejects explicit framework-maintainer command help", async () => {
+  it("normal project can inspect framework-maintainer help without execution authority", async () => {
     const outsideRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-help-outside-"));
     const io = captureStdIO();
     try {
       const code = await runCli(["--root", outsideRoot, "help", "release"]);
-      expect(code).toBe(2);
-      expect(io.stderr).toContain("Unknown command: release.");
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("release");
     } finally {
       io.restore();
     }

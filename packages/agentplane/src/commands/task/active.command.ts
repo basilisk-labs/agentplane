@@ -7,8 +7,8 @@ import { createCliEmitter, infoMessage } from "../../cli/output.js";
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { usageError } from "../../cli/spec/errors.js";
 import { toStringList } from "../../cli/spec/parse-utils.js";
-import { buildTaskRouteDecision } from "../shared/route-decision.js";
 import { listTaskSummariesMemo, type CommandContext } from "../shared/task-backend.js";
+import { renderCliArgv } from "../shared/workflow-operation-projection.js";
 
 import { handleTaskListWarnings, queryTaskProjection, type TaskListFilters } from "./shared.js";
 import {
@@ -178,23 +178,6 @@ function statusRank(status: string): number {
   return 4;
 }
 
-function actionRank(item: {
-  dependency: ActiveWorkItem["dependency_readiness"];
-  status: string;
-  nextCode: string;
-  blockerCount: number;
-  requiresApproval: boolean;
-}): number {
-  if (item.dependency.state !== "ready") return 80;
-  if (item.requiresApproval) return 70;
-  if (item.nextCode === "wait_runner") return 60;
-  if (item.status === "DOING" && item.blockerCount === 0) return 0;
-  if (item.nextCode === "merge_close_tail") return 5;
-  if (item.nextCode === "verify_or_update_pr" || item.nextCode === "open_pr") return 10;
-  if (item.nextCode === "start_or_recover_worktree") return 20;
-  return 30 + Math.min(item.blockerCount, 20);
-}
-
 function isActiveSelectorTask(task: TaskSummary): boolean {
   const status = taskListStatusKey(task);
   return (
@@ -216,6 +199,7 @@ function formatActiveWorkLine(item: ActiveWorkItem): string {
     ...(item.task.priority ? [`prio=${item.task.priority}`] : []),
     `deps=${formatDependencyState(item.dependency_readiness)}`,
     `next=${item.next_action.code}`,
+    ...(item.next_action.command ? [`inspect=${item.next_action.command}`] : []),
     ...(item.human_input.waiting_on_user
       ? [
           "waiting_on_user=true",
@@ -321,18 +305,21 @@ export async function buildActiveWorkItems(opts: {
     defaultStatuses: [...ACTIVE_SELECTOR_STATUSES],
   });
   const active = filtered.filter((task) => isActiveSelectorTask(task));
-  const items: ActiveWorkItem[] = await mapLimit(active, ACTIVE_ROUTE_CONCURRENCY, async (task) => {
-    const route = await buildTaskRouteDecision({
-      ctx: opts.ctx,
-      cwd: opts.cwd,
-      includeRemote: false,
-      rootOverride: opts.rootOverride ?? null,
-      taskId: task.id,
-    });
+  const items: ActiveWorkItem[] = active.map((task) => {
     const dependency = dependencyReadiness(depState.get(task.id));
     const statusKey = taskListStatusKey(task);
     const status = taskListStatusLabel(task);
-    const blockerCount = route.blockers.length;
+    const code = "kernel_migration_required";
+    const summary = "Legacy task requires explicit kernel migration before execution.";
+    const checkout = opts.ctx.resolvedProject.gitRoot;
+    const command = renderCliArgv([
+      "agentplane",
+      "--root",
+      checkout,
+      "task",
+      "kernel-migrate",
+      task.id,
+    ]);
     const priority = normalizePriority(task.priority);
     const humanInput = getHumanInputState(task);
     return {
@@ -345,13 +332,13 @@ export async function buildActiveWorkItems(opts: {
       },
       dependency_readiness: dependency,
       next_action: {
-        code: route.nextAction.code,
-        command: route.nextAction.command,
-        summary: route.nextAction.summary,
-        requires_approval: route.nextAction.requiresApproval,
+        code,
+        command,
+        summary,
+        requires_approval: true,
       },
-      blocker_count: blockerCount,
-      blockers: route.blockers.map((blocker) => ({ ...blocker })),
+      blocker_count: 1,
+      blockers: [{ code, summary }],
       human_input: {
         waiting_on_user: humanInput.openQuestion !== null,
         question: humanInput.openQuestion?.question ?? null,
@@ -359,13 +346,7 @@ export async function buildActiveWorkItems(opts: {
       },
       source_freshness: "live_local" as const,
       rank: {
-        bucket: actionRank({
-          dependency,
-          status: statusKey,
-          nextCode: route.nextAction.code,
-          blockerCount,
-          requiresApproval: route.nextAction.requiresApproval,
-        }),
+        bucket: 80,
         priority: priorityRank(priority ?? undefined),
         status: statusKey,
       },

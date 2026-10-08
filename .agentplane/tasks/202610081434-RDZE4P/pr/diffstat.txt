@@ -1,0 +1,12 @@
+ .../src/cli/help.all-commands.contract.test.ts     |  16 +-
+ .../src/cli/run-cli.core.help-contract.test.ts     |  10 +-
+ packages/agentplane/src/cli/spec/help.ts           |  15 +-
+ .../agentplane/src/commands/task/active.command.ts |  61 ++----
+ .../src/commands/task/active.command.unit.test.ts  | 120 ++++++----
+ .../src/commands/task/kernel-exchange.test.ts      |  31 ++-
+ .../src/commands/task/kernel-exchange.ts           |  36 ++-
+ .../task/kernel-repository-coordinator.test.ts     | 241 +++++++++++++++------
+ .../commands/task/kernel-repository-coordinator.ts |  44 +++-
+ .../src/commands/task/new-duplicates.test.ts       |  49 +++++
+ .../agentplane/src/commands/task/new-duplicates.ts |  28 +--
+ 11 files changed, 453 insertions(+), 198 deletions(-)
