@@ -744,7 +744,7 @@ describe("direct task verification", () => {
       expect.objectContaining({
         command: "bun",
         args: ["run", "ci:local:full"],
-        timeoutMs: 90 * 60_000,
+        timeoutMs: 150 * 60_000,
       }),
     );
     expect(mocks.runProcess).toHaveBeenNthCalledWith(
