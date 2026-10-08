@@ -6,14 +6,14 @@ Created: 2026-10-08T07:44:19.677Z
 
 - Task: `202610080726-0JHB26`
 - Title: Isolate kernel exchange network authority test artifacts
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610080726-0JHB26/isolate-kernel-exchange-network-authority-test-a`
 - Canonical task record: `.agentplane/tasks/202610080726-0JHB26/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
