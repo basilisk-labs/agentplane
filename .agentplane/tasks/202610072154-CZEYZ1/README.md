@@ -1,10 +1,11 @@
 ---
 id: "202610072154-CZEYZ1"
 title: "Build frozen replay anchors with a separately captured isolated dependency closure"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -48,6 +49,22 @@ quality_review:
     - "Existing dependency-manifest APIs bind the separate anchor receipt to actual copied bytes, resolved edges, portable graph and platform. Driver claim remains separately validated. Source and materialized closure checks surround compilation, with explicit before_and_after_compilation labeling and existing HEAD/tree/tracked-clean/build checks preserved."
     - "Prior pre-review findings are resolved: controlled coherent 0.7.13 versions and references exercise a nontrivial release projection; nested dependency and platform tests verify actual selected paths; moved guard negatives and positive assertions remain. Shared-store, receipt mutation, source/materialized/edge/lock drift and fallback regressions are present."
     - "Native validation a0f811b341273bc144f5fc77269df7884598b929c73afc6e20dbd6807a928edd records all four checks passed, including 39 tests across three files and the genuine offline exact-anchor entrypoint. Report b300ee4078c155efd61698bfeac8fd4b6b83261c39e72efb40730017ed95184f and all retained log hashes were verified. No checks were rerun by this evaluator."
+token_usage:
+  agent_runs: 4
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:60ec5421b2a1788800931e8e0deda6eece17678ac75632244038fba567054fea"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-08T01:42:45.595Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -290,9 +307,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "3729b2b7b19f7f6ce9dd72128649e2a5569a807b"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "d839eb1525124f1c56cb21008f16885e08047e3a"
+  message: "🧩 CZEYZ1 task: persist published PR identity"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -300,9 +320,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-08T01:42:45.595Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "d839eb1525124f1c56cb21008f16885e08047e3a"
 doc_version: 3
-doc_updated_at: "2026-10-08T01:28:33.367Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-08T01:42:45.595Z"
+doc_updated_by: "CODER"
 description: "Resolve the broader release qualification defect diagnosed in SGYZBH without admitting arbitrary driver lock drift. Frozen source and current driver lock differ; three reachable runtime versions changed. Existing provenance contract docs/internal/v0.7-agent-efficiency-baseline.md records actual installed bytes, lock/workspace graph, resolved edges and platform with before/after checks, not historical cross-platform byte equivalence. Keep strict shared-driver assertAnchorLockCompatible. Add a bounded isolated anchor dependency route using exact frozen lock versions and resolution edges from repository-resident installed packages; reject missing or ambiguous required packages, escapes, and silent driver fallback. Use existing manifest APIs to capture truthful separate anchor closure and recheck bytes/edges before and after build while preserving validated driver dependency_claim and existing HEAD/tree/clean checks. Replace stale current-lock positive fixtures with deterministic approved-delta positives and current unsupported-drift negatives. Exercise real offline entrypoint. No network installs in semantic tests, frozen input or baseline rewriting, unsupported historical equivalence, paid campaign, measured savings or M05 disposition. This supersedes the insufficient Recipes-only approach; preserve SGYZBH failure evidence. User authorizes necessary release repair, mandatory validation, independent review and main integration."
 sections:
   Summary: |-
@@ -504,6 +532,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:0db0bc0727eebbb682d538cf924c8d04eea3bb04ba2705fc59a549098f0bfa09"
     work_order_id: "sha256:7dfce0c74fcca8f09682a0a8c7124d5cb348fb51903d8023b35725441edcb268"
+  implementation_commit:
+    hash: "3729b2b7b19f7f6ce9dd72128649e2a5569a807b"
+    message: "🚧 CZEYZ1 task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "63343f7622ea8a7224d02c1f9437c833113a998c"
@@ -1584,3 +1615,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/4` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:60ec5421b2a1788800931e8e0deda6eece17678ac75632244038fba567054fea`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-08T01:42:45.595Z`
