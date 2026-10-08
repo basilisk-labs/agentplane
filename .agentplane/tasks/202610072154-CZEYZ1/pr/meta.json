@@ -8,10 +8,10 @@
   "pr_number": 6064,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6064",
   "pre_merge_closure": {
-    "basis_commit": "d839eb1525124f1c56cb21008f16885e08047e3a",
+    "basis_commit": "8280de97c28dd4a8171c4da1b2dbf90cc92045ff",
     "branch": "task/202610072154-CZEYZ1/build-frozen-replay-anchors-with-a-separately-ca",
     "pr_number": 6064,
-    "recorded_at": "2026-10-08T01:42:45.821Z",
+    "recorded_at": "2026-10-08T03:17:21.912Z",
     "state": "closed_before_merge"
   },
   "provider": {

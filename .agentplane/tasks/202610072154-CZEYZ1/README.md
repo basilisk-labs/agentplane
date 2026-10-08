@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 27
+revision: 28
 origin:
   system: "manual"
 depends_on: []
@@ -67,9 +67,11 @@ quality_review:
     - "Residual risk: O_NOFOLLOW support varies by platform. Descriptor and path checks do not establish atomic security for all ancestor traversal or copying. Anchor receipt assurance is before/after compilation only."
     - "Residual risk: Candidate requalification, publication gates and explicit M05 owner disposition remain outstanding. No paid campaign, historical Darwin equivalence or measured savings is claimed."
 token_usage:
-  agent_runs: 4
+  agent_runs: 10
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
   input_tokens: null
-  journal_digest: "sha256:60ec5421b2a1788800931e8e0deda6eece17678ac75632244038fba567054fea"
+  journal_digest: "sha256:2e69821332169fcc654c0afc4410388c7630ded907bae6d1467592bb5d53e299"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -79,7 +81,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "external_host_turn_unallocatable"
-  updated_at: "2026-10-08T01:42:45.595Z"
+  updated_at: "2026-10-08T03:17:21.672Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -391,9 +393,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "d839eb1525124f1c56cb21008f16885e08047e3a"
-  message: "🧩 CZEYZ1 task: persist published PR identity"
+  hash: "8280de97c28dd4a8171c4da1b2dbf90cc92045ff"
+  message: "🚧 CZEYZ1 task: record external evaluator result"
 comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -418,8 +423,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-10-08T03:17:21.672Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "8280de97c28dd4a8171c4da1b2dbf90cc92045ff"
 doc_version: 3
-doc_updated_at: "2026-10-08T03:16:54.035Z"
+doc_updated_at: "2026-10-08T03:17:21.696Z"
 doc_updated_by: "CODER"
 description: "Resolve the broader release qualification defect diagnosed in SGYZBH without admitting arbitrary driver lock drift. Frozen source and current driver lock differ; three reachable runtime versions changed. Existing provenance contract docs/internal/v0.7-agent-efficiency-baseline.md records actual installed bytes, lock/workspace graph, resolved edges and platform with before/after checks, not historical cross-platform byte equivalence. Keep strict shared-driver assertAnchorLockCompatible. Add a bounded isolated anchor dependency route using exact frozen lock versions and resolution edges from repository-resident installed packages; reject missing or ambiguous required packages, escapes, and silent driver fallback. Use existing manifest APIs to capture truthful separate anchor closure and recheck bytes/edges before and after build while preserving validated driver dependency_claim and existing HEAD/tree/clean checks. Replace stale current-lock positive fixtures with deterministic approved-delta positives and current unsupported-drift negatives. Exercise real offline entrypoint. No network installs in semantic tests, frozen input or baseline rewriting, unsupported historical equivalence, paid campaign, measured savings or M05 disposition. This supersedes the insufficient Recipes-only approach; preserve SGYZBH failure evidence. User authorizes necessary release repair, mandatory validation, independent review and main integration."
 sections:
@@ -809,6 +822,7 @@ extensions:
     work_order_id: "sha256:7dfce0c74fcca8f09682a0a8c7124d5cb348fb51903d8023b35725441edcb268"
   implementation_commit:
     hash: "4fa804b831dffb5f64655e5bc69e13cf8eaead88"
+    message: "🚧 CZEYZ1 task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "63343f7622ea8a7224d02c1f9437c833113a998c"
@@ -2078,12 +2092,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/4` agent runs
+- Completeness: `0/10` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:60ec5421b2a1788800931e8e0deda6eece17678ac75632244038fba567054fea`
+- Journal digest: `sha256:2e69821332169fcc654c0afc4410388c7630ded907bae6d1467592bb5d53e299`
 - Unavailable reason: `external_host_turn_unallocatable`
-- Updated at: `2026-10-08T01:42:45.595Z`
+- Updated at: `2026-10-08T03:17:21.672Z`
