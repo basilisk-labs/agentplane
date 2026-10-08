@@ -1,10 +1,11 @@
 ---
 id: "202610080726-0JHB26"
 title: "Isolate kernel exchange network authority test artifacts"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -44,6 +45,22 @@ quality_review:
     - "Reviewed committed target ce13404f1d1c562ffce9f80cb091b934231df9a9 against base 3dbcbad442bbeaadd73e6e698180c8cbaad55b30. The only source change is kernel-exchange.test.ts, SHA256 378eeeca9569e09b757b78f39a57a50e4e255cbc03bd79c99555c7965c7211d1. Production writers, registry rules, and baselines are unchanged."
     - "All allowed, narrowed-ceiling, and planning cases still issue the native exchange and retain their authority assertions. gitRoot now uses the temporary fixture. Schema path containment, descriptor path, byte count, and SHA256 are checked while the file exists. The real task-1 inventory is compared before and after, including absence; cleanup removes only the temporary root."
     - "Verified the fresh context manifest c57cfe064b4d50bdfebfe64250948573f8e20fdc4b6e1692f9a6bfd4112c06a7 and all 13 required context blocks and supplied inputs. Native validation 1d61dc60a6b00e8437c43184c581c709c138a13ed390ea09e291e624c0cc77af records all four checks passed, including 52 tests across both required files. Evidence was read, not rerun."
+token_usage:
+  agent_runs: 3
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:65e7c329018c5c84d25eca72e6459a162748e6d8b741ad1329862fe82fd7ab20"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-08T09:08:11.817Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -274,9 +291,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "ce13404f1d1c562ffce9f80cb091b934231df9a9"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "4d4bfa3bc829e0454608b70308b755f484a47ba8"
+  message: "🚧 0JHB26 task: preserve opened pull request identity"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -284,9 +304,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-08T09:08:11.817Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "4d4bfa3bc829e0454608b70308b755f484a47ba8"
 doc_version: 3
-doc_updated_at: "2026-10-08T08:43:19.595Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-08T09:08:11.817Z"
+doc_updated_by: "CODER"
 description: "Repair the release 0.7.13 qualification blocker: kernel-exchange.test.ts network-authority cases create a temporary root but use process.cwd() as gitRoot, leaking task-1 schema artifacts into the real repository and failing the final task-registry gate. Bind issuance to the temporary fixture root; preserve all allowed/narrowed/planning authority assertions; verify emitted schema containment, digest and unchanged real-repository task-1 state. Keep production code and registry enforcement unchanged. User authorizes all necessary release fixes, validation and main integration. Preserve prior candidate full CI passing evidence and actual final registry failure."
 sections:
   Summary: |-
@@ -485,6 +513,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:743152d501fe69e0f23c797d80fbef9044b725f9031884afb48119be231d6079"
     work_order_id: "sha256:c9316de47697ec86aed102dcac5739c05765ac3aed91e384e8a4e166aab6f05c"
+  implementation_commit:
+    hash: "ce13404f1d1c562ffce9f80cb091b934231df9a9"
+    message: "🚧 0JHB26 task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "3dbcbad442bbeaadd73e6e698180c8cbaad55b30"
@@ -1364,3 +1395,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/3` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:65e7c329018c5c84d25eca72e6459a162748e6d8b741ad1329862fe82fd7ab20`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-08T09:08:11.817Z`
