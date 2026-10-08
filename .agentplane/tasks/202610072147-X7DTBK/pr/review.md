@@ -6,14 +6,14 @@ Created: 2026-10-07T22:39:07.710Z
 
 - Task: `202610072147-X7DTBK`
 - Title: Align release qualification fixtures with reviewed CLI surface and local formatter
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610072147-X7DTBK/align-release-qualification-fixtures-with-review`
 - Canonical task record: `.agentplane/tasks/202610072147-X7DTBK/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
