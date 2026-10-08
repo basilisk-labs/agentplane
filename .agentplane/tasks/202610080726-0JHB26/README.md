@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -47,8 +47,6 @@ quality_review:
     - "Verified the fresh context manifest c57cfe064b4d50bdfebfe64250948573f8e20fdc4b6e1692f9a6bfd4112c06a7 and all 13 required context blocks and supplied inputs. Native validation 1d61dc60a6b00e8437c43184c581c709c138a13ed390ea09e291e624c0cc77af records all four checks passed, including 52 tests across both required files. Evidence was read, not rerun."
 token_usage:
   agent_runs: 3
-  cached_input_observed_agent_runs: 0
-  cached_input_tokens: null
   input_tokens: null
   journal_digest: "sha256:65e7c329018c5c84d25eca72e6459a162748e6d8b741ad1329862fe82fd7ab20"
   observed_agent_runs: 0
@@ -297,6 +295,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. Hosted contention failure requires a bounded production adapter repair outside this one-file fixture WorkOrder. Recommended action: Use native operator admission or a separate bounded repair task under existing release-fix authorization. Preserve hosted failure evidence and prior passing evidence, then issue fresh implementation authority for the exact two paths and added checks. Requested scope: roots=packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts,packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts; repository effects=repository_write,source_code,tests; request digest=sha256:19a994f58204761998bcf3f2f949ec2292e261a0c45c7047aebc0d84ed53655b. Agentplane receipt: external-agent-blocker/tr_cb3915afe572d17d63b9fea8b66a56f5/sha256:957d6c1504adaedde483e0c7c08e6dbdff0b18a601397cae63d42278dc977bd2/sha256:19a994f58204761998bcf3f2f949ec2292e261a0c45c7047aebc0d84ed53655b."
 events:
   -
     type: "verify"
@@ -313,8 +314,8 @@ events:
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
     commit: "4d4bfa3bc829e0454608b70308b755f484a47ba8"
 doc_version: 3
-doc_updated_at: "2026-10-08T09:08:11.817Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-10-08T09:28:05.271Z"
+doc_updated_by: "SUPERVISOR"
 description: "Repair the release 0.7.13 qualification blocker: kernel-exchange.test.ts network-authority cases create a temporary root but use process.cwd() as gitRoot, leaking task-1 schema artifacts into the real repository and failing the final task-registry gate. Bind issuance to the temporary fixture root; preserve all allowed/narrowed/planning authority assertions; verify emitted schema containment, digest and unchanged real-repository task-1 state. Keep production code and registry enforcement unchanged. User authorizes all necessary release fixes, validation and main integration. Preserve prior candidate full CI passing evidence and actual final registry failure."
 sections:
   Summary: |-
@@ -513,6 +514,24 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:743152d501fe69e0f23c797d80fbef9044b725f9031884afb48119be231d6079"
     work_order_id: "sha256:c9316de47697ec86aed102dcac5739c05765ac3aed91e384e8a4e166aab6f05c"
+  agentplane.scope_extension_request:
+    blocker_state_fingerprint: "sha256:957d6c1504adaedde483e0c7c08e6dbdff0b18a601397cae63d42278dc977bd2"
+    kind: "task_scope_extension_request"
+    request:
+      rationale: "Handle legitimate concurrent atomic README replacement through the existing bounded adapter retry without relaxing secure reads or hiding the hosted failure. This changes production behavior and adds verification beyond the existing fixture-only contract."
+      repository_effects:
+        - "repository_write"
+        - "source_code"
+        - "tests"
+      schema_version: 1
+      scope_roots:
+        - "packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts"
+        - "packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts"
+    request_digest: "sha256:19a994f58204761998bcf3f2f949ec2292e261a0c45c7047aebc0d84ed53655b"
+    schema_version: 1
+    status: "pending"
+    transition_id: "tr_cb3915afe572d17d63b9fea8b66a56f5"
+    work_item_id: null
   implementation_commit:
     hash: "ce13404f1d1c562ffce9f80cb091b934231df9a9"
     message: "🚧 0JHB26 task: apply canonical agent result"
