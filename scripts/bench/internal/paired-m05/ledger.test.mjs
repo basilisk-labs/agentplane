@@ -346,3 +346,13 @@ test("coherent observed and partial usage preserve subsets and null costs", (t) 
   assert.equal(ledger.read().calls["call-1"].receipt.usage.total_tokens, 32);
   assert.equal(ledger.read().reserved.max_tokens, 80);
 });
+
+test("journal extraction preserves legacy null-prototype call IDs", (t) => {
+  const root = mkdtempSync(path.join(os.tmpdir(), "m05-legacy-map-"));
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  const ledger = openM05Ledger(path.join(root, "ledger"), contract());
+  assert.equal(Object.getPrototypeOf(ledger.read().calls), null);
+  assert.equal(Object.getPrototypeOf(ledger.read().outcomes), null);
+  assert.equal(ledger.dispatch(reservation("constructor")).call_id, "constructor");
+  assert.equal(ledger.read().calls.constructor.reservation.id, "constructor");
+});

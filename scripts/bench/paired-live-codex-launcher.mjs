@@ -617,3 +617,6 @@ export async function runM05OfflineLauncher(options, host) {
   const boundary = openOfflineM05Boundary(options, host);
   return runM05BoundedEpisodes(boundary, options.reservations);
 }
+
+// Managed subscription v4 uses host-owned app-server ports; no provider is started here.
+export { openSubscriptionBoundary } from "./internal/paired-m05/subscription-boundary.mjs";

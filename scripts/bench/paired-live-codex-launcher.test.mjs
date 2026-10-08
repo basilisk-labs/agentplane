@@ -177,3 +177,5 @@ test("oracle preserves the first character of a tracked changed path", () => {
 
 // Exercise the separate offline M05 boundary through the required launcher suite.
 import "./internal/paired-m05/boundary.test.mjs";
+
+import "./internal/paired-m05/subscription.test.mjs";
