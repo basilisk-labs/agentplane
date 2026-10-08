@@ -15,8 +15,8 @@ Repair the hardcoded 90-minute ci:local:full outer timeout exposed by NDWDC5 can
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>

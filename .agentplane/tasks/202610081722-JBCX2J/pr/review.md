@@ -6,14 +6,14 @@ Created: 2026-10-08T17:35:56.266Z
 
 - Task: `202610081722-JBCX2J`
 - Title: Allow bounded full regression to complete on constrained release hosts
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610081722-JBCX2J/allow-bounded-full-regression-to-complete-on-con`
 - Canonical task record: `.agentplane/tasks/202610081722-JBCX2J/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
