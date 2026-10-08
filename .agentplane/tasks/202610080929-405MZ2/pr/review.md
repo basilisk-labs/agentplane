@@ -6,14 +6,14 @@ Created: 2026-10-08T09:42:27.858Z
 
 - Task: `202610080929-405MZ2`
 - Title: Retry task-local stable snapshot drift during competing controller reads
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610080929-405MZ2/retry-task-local-stable-snapshot-drift-during-co`
 - Canonical task record: `.agentplane/tasks/202610080929-405MZ2/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
