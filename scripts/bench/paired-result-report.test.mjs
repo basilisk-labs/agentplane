@@ -256,3 +256,5 @@ test("keeps safety, activation, and efficiency gates independent", () => {
   assert.equal(report.gates.activation.verdict, "pass");
   assert.equal(report.gates.efficiency.verdict, "fail");
 });
+
+import "./internal/paired-m05/report.test.mjs";

@@ -32,11 +32,15 @@ Latest release-owner decision for 0.7.13 is require measured savings before publ
  scripts/bench/internal/paired-m05/contract.mjs     | 140 +++++++++
  scripts/bench/internal/paired-m05/ledger.mjs       | 227 ++++++++++++++
  scripts/bench/internal/paired-m05/ledger.test.mjs  | 348 +++++++++++++++++++++
+ scripts/bench/internal/paired-m05/report.mjs       | 215 +++++++++++++
+ scripts/bench/internal/paired-m05/report.test.mjs  | 335 ++++++++++++++++++++
  scripts/bench/paired-live-codex-launcher.mjs       |  14 +
  scripts/bench/paired-live-codex-launcher.test.mjs  |   3 +
  scripts/bench/paired-production-driver.mjs         |  14 +
  scripts/bench/paired-production-driver.test.mjs    |   3 +
- 9 files changed, 1152 insertions(+)
+ scripts/bench/paired-result-report.mjs             |   3 +
+ scripts/bench/paired-result-report.test.mjs        |   2 +
+ 13 files changed, 1707 insertions(+)
 ```
 
 </details>
