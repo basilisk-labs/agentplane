@@ -1,8 +1,12 @@
 import { createHash } from "node:crypto";
 import {
+  closeSync,
+  constants,
   cpSync,
+  fstatSync,
   lstatSync,
   mkdirSync,
+  openSync,
   readFileSync,
   readdirSync,
   realpathSync,
@@ -37,11 +41,55 @@ function packageName(name) {
   return name;
 }
 
+function sameFile(left, right) {
+  return ["dev", "ino", "mode", "size", "mtimeNs", "ctimeNs", "nlink"].every(
+    (field) => left[field] === right[field],
+  );
+}
+
+function readSnapshotFile(root, file, expected, remainingBytes) {
+  // Bind the read to one descriptor, not a pathname reopened after classification.
+  const parents = [];
+  for (
+    let directory = path.dirname(file);
+    inside(root, directory);
+    directory = path.dirname(directory)
+  ) {
+    const stat = lstatSync(directory, { bigint: true });
+    if (!stat.isDirectory() || realpathSync(directory) !== directory) fail("ESCAPE");
+    parents.push([directory, stat]);
+    if (directory === root) break;
+  }
+  const unchanged = () => {
+    if (realpathSync(file) !== file || !sameFile(expected, lstatSync(file, { bigint: true })))
+      fail("CHANGED");
+    for (const [directory, stat] of parents)
+      if (!sameFile(stat, lstatSync(directory, { bigint: true }))) fail("CHANGED");
+  };
+  const fd = openSync(file, constants.O_RDONLY | constants.O_NOFOLLOW | constants.O_NONBLOCK);
+  try {
+    const before = fstatSync(fd, { bigint: true });
+    if (!before.isFile() || !sameFile(expected, before)) fail("CHANGED");
+    if (before.size > BigInt(remainingBytes)) fail("BUDGET");
+    unchanged();
+    const content = readFileSync(fd);
+    if (
+      !sameFile(before, fstatSync(fd, { bigint: true })) ||
+      BigInt(content.length) !== before.size
+    )
+      fail("CHANGED");
+    unchanged();
+    return { size: content.length, hash: digest(content) };
+  } finally {
+    closeSync(fd);
+  }
+}
+
 function snapshot(root) {
   const entries = [];
   let bytes = 0;
   function visit(file, relative) {
-    const stat = lstatSync(file);
+    const stat = lstatSync(file, { bigint: true });
     if (stat.isSymbolicLink()) {
       const target = realpathSync(file);
       if (!inside(root, target)) fail("ESCAPE");
@@ -54,8 +102,9 @@ function snapshot(root) {
         visit(path.join(file, entry), relative ? `${relative}/${entry}` : entry);
       }
     } else if (stat.isFile()) {
-      bytes += stat.size;
-      entries.push([relative, stat.mode & 0o777, digest(readFileSync(file))]);
+      const captured = readSnapshotFile(root, file, stat, MAX_BYTES - bytes);
+      bytes += captured.size;
+      entries.push([relative, Number(stat.mode & 0o777n), captured.hash]);
     } else fail("FILE_KIND");
     if (entries.length > MAX_FILES || bytes > MAX_BYTES) fail("BUDGET");
   }

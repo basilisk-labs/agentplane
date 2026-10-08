@@ -230,6 +230,84 @@ describeCritical("critical: isolated frozen anchor dependencies", () => {
     });
     expect(() => prepared.assertUnchanged()).not.toThrow();
   });
+  it.each(["unchanged", "symlink", "replacement", "parent", "mutation"])(
+    "binds snapshot reads to a descriptor during %s interleaving",
+    async (kind) => {
+      const f = await isolatedFixture();
+      const file = path.join(f.store, "example@1.0.0/node_modules/example/payload.js");
+      writeFileSync(file, "original");
+      const moduleUrl = pathToFileURL(
+        path.resolve("scripts/bench/internal/agent-efficiency-anchor-dependencies.mjs"),
+      ).href;
+      const output = execFileSync(
+        process.execPath,
+        [
+          "--input-type=module",
+          "-e",
+          `
+          import fs from 'node:fs';
+          import { syncBuiltinESMExports } from 'node:module';
+          import assert from 'node:assert/strict';
+          import path from 'node:path';
+          const [file, subject, driver, root, kind, moduleUrl] = process.argv.slice(1);
+          const open = fs.openSync, read = fs.readFileSync, close = fs.closeSync;
+          let fired = false, descriptor, closed = false, descriptorRead = false;
+          fs.openSync = function (name, ...args) {
+            if (name === file && !fired) {
+              fired = true;
+              if (kind === 'symlink' || kind === 'replacement') {
+                fs.renameSync(file, file + '.saved');
+                if (kind === 'symlink') fs.symlinkSync(file + '.saved', file);
+                else fs.writeFileSync(file, 'replaced');
+              }
+              if (kind === 'parent') {
+                fs.renameSync(path.dirname(file), path.dirname(file) + '.saved');
+                fs.symlinkSync(path.dirname(file) + '.saved', path.dirname(file));
+              }
+              descriptor = open.call(fs, name, ...args);
+              return descriptor;
+            }
+            return open.call(fs, name, ...args);
+          };
+          fs.readFileSync = function (name, ...args) {
+            if (descriptor !== undefined && name === descriptor) {
+              descriptorRead = true;
+              if (kind === 'mutation') fs.writeFileSync(file, 'mutation');
+            }
+            return read.call(fs, name, ...args);
+          };
+          fs.closeSync = function (fd) {
+            if (fd === descriptor) closed = true;
+            return close.call(fs, fd);
+          };
+          syncBuiltinESMExports();
+          const { prepareIsolatedAnchorDependencies } = await import(moduleUrl);
+          if (kind === 'unchanged') {
+            prepareIsolatedAnchorDependencies(subject, driver, root).assertUnchanged();
+            assert.equal(descriptorRead, true);
+          } else {
+            assert.throws(() => prepareIsolatedAnchorDependencies(subject, driver, root),
+              /ANCHOR_DEPENDENCY_(CHANGED|ESCAPE)|ELOOP/);
+          }
+          assert.equal(fired, true);
+          if (descriptor !== undefined) {
+            assert.equal(closed, true);
+            assert.throws(() => fs.fstatSync(descriptor), /EBADF/);
+          }
+          console.log('descriptor race assertions passed');
+        `,
+          file,
+          f.subject,
+          f.driver,
+          f.root,
+          kind,
+          moduleUrl,
+        ],
+        { encoding: "utf8", timeout: 10_000 },
+      );
+      expect(output).toContain("descriptor race assertions passed");
+    },
+  );
   it("uses nested frozen edges and skips only incompatible optional platform packages", async () => {
     const f = await isolatedFixture();
     const nested = { name: "child", version: "2.0.0", dependencies: {} };

@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202610072154-CZEYZ1/build-frozen-replay-anchors-with-a-separately-ca",
   "created_at": "2026-10-07T22:43:22.532Z",
-  "diffstat_sha256": "sha256:4b832dc3ff9a5c53569560999f99490a6ea3968de13f4517f66fb5316d493b63",
+  "diffstat_sha256": "sha256:37f59d8c3aa1d63b8b50b380050b15f189e5ae0b2dafa4d1b68d02ac9b1a2c62",
   "last_verified_at": "2026-10-08T01:28:32.243Z",
   "last_verified_diffstat_sha256": "sha256:4b832dc3ff9a5c53569560999f99490a6ea3968de13f4517f66fb5316d493b63",
   "pr_number": 6064,
