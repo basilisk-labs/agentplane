@@ -1,10 +1,11 @@
 ---
 id: "202610080929-405MZ2"
 title: "Retry task-local stable snapshot drift during competing controller reads"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -42,6 +43,22 @@ quality_review:
     - "Validated all 13 required context blocks, required input digests, frozen two-file source at 8d67db9887a38a070d168944bd3ecf40c77f94eb and issued result schema. Native retained evidence records all four mandatory checks passing, including 51 tests across both assigned files."
     - "The classifier matches only the exact task label and four actual stable-file drift messages without an errno, alongside the unchanged ELOOP atomic-replacement case. Symlink, nonregular, size, parse, foreign-task and unrelated errors retain immediate propagation. Each retry reruns backend.getTask and readKernelRecord; the three-retry ceiling, 10/20/30 ms delays and final original error propagation remain unchanged."
     - "Deterministic regressions cover successful fresh reads and four-attempt exhaustion for each drift variant, plus eight immediate-propagation negatives. The actual competing-controller suite is byte-identical to the base; secure-file, mutation, CAS, registry and release owners are unchanged."
+token_usage:
+  agent_runs: 4
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:114fc8b6f7df9da3607009fc2b470fbbfb3cb1aae259fa736ff4f59874adc659"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-08T14:52:12.432Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -279,9 +296,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "8d67db9887a38a070d168944bd3ecf40c77f94eb"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "ecf12bf63662cd56052d4613f801cd439dc58a59"
+  message: "📝 405MZ2 task: retain native PR identity"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -289,9 +309,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-08T14:52:12.432Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "ecf12bf63662cd56052d4613f801cd439dc58a59"
 doc_version: 3
-doc_updated_at: "2026-10-08T14:09:32.529Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-08T14:52:12.432Z"
+doc_updated_by: "CODER"
 description: "Repair the genuine release 0.7.13 hosted CI blocker observed in PR6065 run37754884982 at ff669b6d09067e87e98a9cfa5fad6459c281d874: kernel-task-lifecycle.test.ts grants one dispatch across competing local controllers fails when atomic README replacement occurs between lstat and open. KernelBackendAdapter.read already performs bounded retries but recognizes only the older task-specific changed-path error. Extend only the adapter retry classifier to exact task-specific stable-snapshot drift errors. Preserve full containment/no-follow/regular-file/size/parser checks on every fresh attempt and current retry bound; do not weaken stable-file security or swallow unrelated failures. Add deterministic before-read/while-read drift, exhaustion and symlink/nonregular/oversize/parser/foreign-task negative regressions in adapter tests. Keep existing real contention test unchanged and include it in focused validation. User authorizes all necessary release repairs, validation and main integration. Preserve actual hosted failure and mandatory full CI/hosted gates."
 sections:
   Summary: |-
@@ -488,6 +516,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:e814807541a75b2a6bcfb123d6eeed00494108e3a6f2aa8eda5c346b27a22196"
     work_order_id: "sha256:108bcd4c26bc5fb185baf0f96fa316c19e57d64e0a4c695118de2b83e9284948"
+  implementation_commit:
+    hash: "8d67db9887a38a070d168944bd3ecf40c77f94eb"
+    message: "🚧 405MZ2 task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "3dbcbad442bbeaadd73e6e698180c8cbaad55b30"
@@ -1372,3 +1403,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/4` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:114fc8b6f7df9da3607009fc2b470fbbfb3cb1aae259fa736ff4f59874adc659`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-08T14:52:12.432Z`
