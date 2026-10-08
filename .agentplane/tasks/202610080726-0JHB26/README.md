@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -314,6 +314,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. Hosted contention failure requires a bounded production adapter repair outside this one-file fixture WorkOrder. Recommended action: Use native operator admission or a separate bounded repair task under existing release-fix authorization. Preserve hosted failure evidence and prior passing evidence, then issue fresh implementation authority for the exact two paths and added checks. Requested scope: roots=packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts,packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts; repository effects=repository_write,source_code,tests; request digest=sha256:19a994f58204761998bcf3f2f949ec2292e261a0c45c7047aebc0d84ed53655b. Agentplane receipt: external-agent-blocker/tr_cb3915afe572d17d63b9fea8b66a56f5/sha256:957d6c1504adaedde483e0c7c08e6dbdff0b18a601397cae63d42278dc977bd2/sha256:19a994f58204761998bcf3f2f949ec2292e261a0c45c7047aebc0d84ed53655b."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The reviewed runtime repair is merged on main but outside this one-file semantic authority. Operator base composition is required. Recommended action: At the operator boundary, preserve native failure metadata and compose exact qualified main6cbd18628af1b3fc9fcb27fa9e80b45e1855f3a5 through a supported operator route. Admit any emitted authority delta before fresh semantic work. Serialize any mandatory full validation with the active NDW job. Requested scope: roots=packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts,packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts; repository effects=source_code,tests; request digest=sha256:926f28d37ef9d775991eb659aceb526e046278533edf065ae04396ca6129ff72. Agentplane receipt: external-agent-blocker/tr_58a722ef5312b050f75eaa6f5714755f/sha256:77ccbeb4836f320eab5a17722a58884e914677a27974ec6272f8857f64f61263/sha256:926f28d37ef9d775991eb659aceb526e046278533edf065ae04396ca6129ff72."
 events:
   -
     type: "verify"
@@ -330,7 +333,7 @@ events:
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
     commit: "4d4bfa3bc829e0454608b70308b755f484a47ba8"
 doc_version: 3
-doc_updated_at: "2026-10-08T15:47:08.040Z"
+doc_updated_at: "2026-10-08T15:52:07.048Z"
 doc_updated_by: "SUPERVISOR"
 description: "Repair the release 0.7.13 qualification blocker: kernel-exchange.test.ts network-authority cases create a temporary root but use process.cwd() as gitRoot, leaking task-1 schema artifacts into the real repository and failing the final task-registry gate. Bind issuance to the temporary fixture root; preserve all allowed/narrowed/planning authority assertions; verify emitted schema containment, digest and unchanged real-repository task-1 state. Keep production code and registry enforcement unchanged. User authorizes all necessary release fixes, validation and main integration. Preserve prior candidate full CI passing evidence and actual final registry failure."
 sections:
@@ -531,22 +534,21 @@ extensions:
     verification_evidence_digest: "sha256:743152d501fe69e0f23c797d80fbef9044b725f9031884afb48119be231d6079"
     work_order_id: "sha256:c9316de47697ec86aed102dcac5739c05765ac3aed91e384e8a4e166aab6f05c"
   agentplane.scope_extension_request:
-    blocker_state_fingerprint: "sha256:957d6c1504adaedde483e0c7c08e6dbdff0b18a601397cae63d42278dc977bd2"
+    blocker_state_fingerprint: "sha256:77ccbeb4836f320eab5a17722a58884e914677a27974ec6272f8857f64f61263"
     kind: "task_scope_extension_request"
     request:
-      rationale: "Handle legitimate concurrent atomic README replacement through the existing bounded adapter retry without relaxing secure reads or hiding the hosted failure. This changes production behavior and adds verification beyond the existing fixture-only contract."
+      rationale: "The retained evaluator finding requires the already qualified upstream stable-snapshot retry repair; this request does not self-grant source or lifecycle authority."
       repository_effects:
-        - "repository_write"
         - "source_code"
         - "tests"
       schema_version: 1
       scope_roots:
         - "packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts"
         - "packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts"
-    request_digest: "sha256:19a994f58204761998bcf3f2f949ec2292e261a0c45c7047aebc0d84ed53655b"
+    request_digest: "sha256:926f28d37ef9d775991eb659aceb526e046278533edf065ae04396ca6129ff72"
     schema_version: 1
     status: "pending"
-    transition_id: "tr_cb3915afe572d17d63b9fea8b66a56f5"
+    transition_id: "tr_58a722ef5312b050f75eaa6f5714755f"
     work_item_id: null
   implementation_commit:
     hash: "ce13404f1d1c562ffce9f80cb091b934231df9a9"
