@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -35,20 +35,37 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-10-08T00:34:10.074Z"
+  updated_at: "2026-10-08T03:16:53.995Z"
   updated_by: "EVALUATOR"
-  note: "Canonical EVALUATOR review passed."
-  evaluated_sha: "3729b2b7b19f7f6ce9dd72128649e2a5569a807b"
-  review_identity_digest: "sha256:3b7aced437d9534cf51253dde1796e1dd9405971b28e545fa228f408374c5dde"
+  note: "EVALUATOR returned pass with 9 typed finding(s)."
+  evaluated_sha: "4fa804b831dffb5f64655e5bc69e13cf8eaead88"
+  review_identity_digest: "sha256:3dee52f0c5160262cc8d73e946b41ff04af9d5f2e338403b0d006853965333bc"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202610072154-CZEYZ1/4bbee7a44acab96d2eea1e1e86fc6316e08e69c34a8531caacbea90920cd68f6/quality-report.json"
+    - ".agentplane/tasks/202610072154-CZEYZ1/quality/20261008-031357102-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202610072154-CZEYZ1/quality/20261008-031357102-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202610072154-CZEYZ1/quality/objects/sha256/9efa5540ce594a48a4f0e926e949cb8eed85dad3a10086b392a5c56787846436.md"
+    - ".agentplane/tasks/202610072154-CZEYZ1/quality/20261008-031357102-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202610072154-CZEYZ1/quality/20261008-031357102-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202610072154-CZEYZ1/quality/20261008-031357102-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202610072154-CZEYZ1/README.md"
+    - ".agentplane/tasks/202610072154-CZEYZ1/quality/objects/sha256/30e427df8a1a2f52605e13cc04f481ada27fbd4016bbc195c4d61206a8e832bf.patch"
+    - ".agentplane/tasks/202610072154-CZEYZ1/quality/objects/sha256/7104924c7db015c0f6eaee4dd944683fe9b4cb4200790b6e847a6d51c853f37b.json"
+    - ".agentplane/tasks/202610072154-CZEYZ1/verification/20261008031048343-8c35690c88e1da90.json"
+    - ".agentplane/tasks/202610072154-CZEYZ1/quality/objects/sha256/7847bfa1d4ac6fbabf091213812d81241d3bf41cc77dc5b2c894e75a2ddabdfe.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Validated all 13 required blocks against manifest 8775d56631f6b1d9d2fcd4f279cf7a93e5327d29a38c60fe46d3a183fb9b276f, the supplied inspection payload schema, and all four required input digests."
-    - "Reviewed target 3729b2b7b19f7f6ce9dd72128649e2a5569a807b. All four source files match inventory df5b5a29dc4baaf9d10d8e63d08cfc88ca39a2872cfb67f17112e140612c9883 and patch 963dcb7b0b99b256f7abbd06608fa1a2046837b4e255a9aac0067718c13ab624. No locks, manifests or historical baselines changed."
-    - "Strict shared-driver lock validation is preserved. Explicit isolated mode selects exact frozen identities and declared edges, materializes repository-contained packages, rejects missing required packages, incompatible ambiguity, version/edge mismatches and escaping payloads, and handles scalar/array platform metadata. Declared omitted optional/peer ancestor fallback is rejected."
-    - "Existing dependency-manifest APIs bind the separate anchor receipt to actual copied bytes, resolved edges, portable graph and platform. Driver claim remains separately validated. Source and materialized closure checks surround compilation, with explicit before_and_after_compilation labeling and existing HEAD/tree/tracked-clean/build checks preserved."
-    - "Prior pre-review findings are resolved: controlled coherent 0.7.13 versions and references exercise a nontrivial release projection; nested dependency and platform tests verify actual selected paths; moved guard negatives and positive assertions remain. Shared-store, receipt mutation, source/materialized/edge/lock drift and fallback regressions are present."
-    - "Native validation a0f811b341273bc144f5fc77269df7884598b929c73afc6e20dbd6807a928edd records all four checks passed, including 39 tests across three files and the genuine offline exact-anchor entrypoint. Report b300ee4078c155efd61698bfeac8fd4b6b83261c39e72efb40730017ed95184f and all retained log hashes were verified. No checks were rerun by this evaluator."
+    - "Validated all 22 context block digests (17 required), fresh context manifest 8090fce6f549ff15a766d7d27a6e20fc3cc608122c8277ce6eea32148e93ef3d, supplied payload schema, frozen evaluator work order and every frozen evidence object. Prepared-state digest remains the native return freshness condition."
+    - "Reviewed implementation 4fa804b831dffb5f64655e5bc69e13cf8eaead88 at metadata-only HEAD 0c42070441381f7120f0fb5076ce5905161b0f6f. Security source hashes match previously reviewed patch ac48bb624a94e1580a554a92396d1a7fd53eca24a6c9852750c0b0d4ecb6778c. Frozen diff evidence: .agentplane/tasks/202610072154-CZEYZ1/quality/objects/sha256/30e427df8a1a2f52605e13cc04f481ada27fbd4016bbc195c4d61206a8e832bf.patch."
+    - "The regular-file snapshot now reads the opened descriptor after matching bigint file identity, rejects nonregular/replaced files, checks descriptor state and pathname/parent identity before and after reading, and closes in finally. This removes the flagged classify-then-reopen read race. Five deterministic real filesystem interleavings cover unchanged, symlink, replacement, parent substitution and in-place mutation with descriptor closure assertions. Evidence: .agentplane/tasks/202610072154-CZEYZ1/quality/objects/sha256/30e427df8a1a2f52605e13cc04f481ada27fbd4016bbc195c4d61206a8e832bf.patch."
+    - "Original strict shared-driver lock checks, exact isolated dependency selection and separately labeled before/after-compilation receipt remain intact. No historical lock, baseline or measured-efficiency claim was changed. Evidence: .agentplane/tasks/202610072154-CZEYZ1/quality/objects/sha256/30e427df8a1a2f52605e13cc04f481ada27fbd4016bbc195c4d61206a8e832bf.patch."
+    - "Native verification records five commands passed including full CI in 2723254 ms, bound to implementation 4fa804b831dffb5f64655e5bc69e13cf8eaead88. Verified record SHA256 953f182a6d7884218ec7e1bf29990574a39002f7f98a9ec659c754dbd3899d0c. Evidence: .agentplane/tasks/202610072154-CZEYZ1/verification/20261008031048343-8c35690c88e1da90.json."
+    - "The historical native third Vitest path is nonexistent: that invocation reports 41 tests in two files, not three-file coverage. Separately retained corrected canonical command covers all 44 tests in three files, with checked log hash cf58596b3957c41bc264e18625ed5ad8e4506d310d02d5739f271bfdd84e7763. No unchanged checks were rerun by this evaluator."
+    - "Residual risk: Fresh hosted CodeQL and hosted integration remain pending; earlier hosted failures are preserved and are not represented as passed."
+    - "Residual risk: O_NOFOLLOW support varies by platform. Descriptor and path checks do not establish atomic security for all ancestor traversal or copying. Anchor receipt assurance is before/after compilation only."
+    - "Residual risk: Candidate requalification, publication gates and explicit M05 owner disposition remain outstanding. No paid campaign, historical Darwin equivalence or measured savings is claimed."
 token_usage:
   agent_runs: 4
   input_tokens: null
@@ -402,7 +419,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-10-08T03:10:57.162Z"
+doc_updated_at: "2026-10-08T03:16:54.035Z"
 doc_updated_by: "CODER"
 description: "Resolve the broader release qualification defect diagnosed in SGYZBH without admitting arbitrary driver lock drift. Frozen source and current driver lock differ; three reachable runtime versions changed. Existing provenance contract docs/internal/v0.7-agent-efficiency-baseline.md records actual installed bytes, lock/workspace graph, resolved edges and platform with before/after checks, not historical cross-platform byte equivalence. Keep strict shared-driver assertAnchorLockCompatible. Add a bounded isolated anchor dependency route using exact frozen lock versions and resolution edges from repository-resident installed packages; reject missing or ambiguous required packages, escapes, and silent driver fallback. Use existing manifest APIs to capture truthful separate anchor closure and recheck bytes/edges before and after build while preserving validated driver dependency_claim and existing HEAD/tree/clean checks. Replace stale current-lock positive fixtures with deterministic approved-delta positives and current unsupported-drift negatives. Exercise real offline entrypoint. No network installs in semantic tests, frozen input or baseline rewriting, unsupported historical equivalence, paid campaign, measured savings or M05 disposition. This supersedes the insufficient Recipes-only approach; preserve SGYZBH failure evidence. User authorizes necessary release repair, mandatory validation, independent review and main integration."
 sections:

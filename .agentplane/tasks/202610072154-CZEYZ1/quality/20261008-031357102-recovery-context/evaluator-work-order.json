@@ -1,0 +1,124 @@
+{
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202610072154-CZEYZ1-64d49b5d5ba53ffda5e30d93",
+  "prepared_at": "2026-10-08T03:13:57.102Z",
+  "task": {
+    "id": "202610072154-CZEYZ1",
+    "revision": 26,
+    "objective": "Build frozen replay anchors with a separately captured isolated dependency closure\n\nResolve the broader release qualification defect diagnosed in SGYZBH without admitting arbitrary driver lock drift. Frozen source and current driver lock differ; three reachable runtime versions changed. Existing provenance contract docs/internal/v0.7-agent-efficiency-baseline.md records actual installed bytes, lock/workspace graph, resolved edges and platform with before/after checks, not historical cross-platform byte equivalence. Keep strict shared-driver assertAnchorLockCompatible. Add a bounded isolated anchor dependency route using exact frozen lock versions and resolution edges from repository-resident installed packages; reject missing or ambiguous required packages, escapes, and silent driver fallback. Use existing manifest APIs to capture truthful separate anchor closure and recheck bytes/edges before and after build while preserving validated driver dependency_claim and existing HEAD/tree/clean checks. Replace stale current-lock positive fixtures with deterministic approved-delta positives and current unsupported-drift negatives. Exercise real offline entrypoint. No network installs in semantic tests, frozen input or baseline rewriting, unsupported historical equivalence, paid campaign, measured savings or M05 disposition. This supersedes the insufficient Recipes-only approach; preserve SGYZBH failure evidence. User authorizes necessary release repair, mandatory validation, independent review and main integration.",
+    "acceptance_criteria": [
+      "bun run format:check",
+      "git diff --check",
+      "node node_modules/eslint/bin/eslint.js scripts/bench/internal/agent-efficiency-anchor-runtime.mjs scripts/bench/internal/agent-efficiency-anchor-dependencies.mjs packages/agentplane/src/cli/run-cli.critical.agent-efficiency-anchor-lock.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts",
+      "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.critical.agent-efficiency-anchor-lock.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-shared-worktree-dependency-manifest.test.ts --pool=forks --maxWorkers 2 --testTimeout 60000 --hookTimeout 60000",
+      "- In scope: Resolve the broader release qualification defect diagnosed in SGYZBH without admitting arbitrary driver lock drift. Frozen source and current driver lock differ; three reachable runtime versions changed. Existing provenance contract docs/internal/v0.7-agent-efficiency-baseline.md records actual installed bytes, lock/workspace graph, resolved edges and platform with before/after checks, not historical cross-platform byte equivalence. Keep strict shared-driver assertAnchorLockCompatible. Add a bounded isolated anchor dependency route using exact frozen lock versions and resolution edges from repository-resident installed packages; reject missing or ambiguous required packages, escapes, and silent driver fallback. Use existing manifest APIs to capture truthful separate anchor closure and recheck bytes/edges before and after build while preserving validated driver dependency_claim and existing HEAD/tree/clean checks. Replace stale current-lock positive fixtures with deterministic approved-delta positives and current unsupported-drift negatives. Exercise real offline entrypoint. No network installs in semantic tests, frozen input or baseline rewriting, unsupported historical equivalence, paid campaign, measured savings or M05 disposition. This supersedes the insufficient Recipes-only approach; preserve SGYZBH failure evidence. User authorizes necessary release repair, mandatory validation, independent review and main integration.\n- Out of scope: unrelated refactors not required for \"Build frozen replay anchors with a separately captured isolated dependency closure\".",
+      "1. Execute approved WorkItem isolate-frozen-anchor-dependencies.",
+      "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.critical.agent-efficiency-anchor-lock.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-shared-worktree-dependency-manifest.test.ts --pool=forks --maxWorkers 2 --testTimeout 60000 --hookTimeout 60000`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `node node_modules/eslint/bin/eslint.js scripts/bench/internal/agent-efficiency-anchor-runtime.mjs scripts/bench/internal/agent-efficiency-anchor-dependencies.mjs packages/agentplane/src/cli/run-cli.critical.agent-efficiency-anchor-lock.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Run `bun run format:check`. Expected: it succeeds and confirms the requested outcome for this task.\n4. Run `git diff --check`. Expected: it succeeds and confirms the requested outcome for this task.\n5. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n6. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings."
+    ]
+  },
+  "evaluated_sha": "4fa804b831dffb5f64655e5bc69e13cf8eaead88",
+  "diff_base_sha": "68dafea093d58ef96a3b4c3827061aed064ccddd",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202610072154-CZEYZ1/quality/20261008-031357102-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:98b54b4ba1f8cc4a99f7ce800b45a38b7219f9a42c8eef5ba534763d4ed702df",
+    "prompt_path": ".agentplane/tasks/202610072154-CZEYZ1/quality/objects/sha256/9efa5540ce594a48a4f0e926e949cb8eed85dad3a10086b392a5c56787846436.md",
+    "result_schema_path": ".agentplane/tasks/202610072154-CZEYZ1/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "schema_version": 2,
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202610072154-CZEYZ1",
+    "plan_digest": "sha256:7b94222ca8d4722a431c7b8882102f4494fb1547444d30dd01f6c3e67579a199",
+    "policy_digest": "sha256:26cbf60e57ff6118b5cdcfaa5b7bbd07e2f7c8f2e02112dc5e98fe4437e2fe64",
+    "capability_digest": "sha256:87765a94d144029c18803e0f055d0cbe95330a626628aaf433654261232b0976",
+    "checks_digest": "sha256:617b6e601dda249e640ef8faecbd90b611f3628a697f81cc6ba2c1e917214e35",
+    "verification_input_digest": "sha256:3d71314dd422fdf322a30f639c16b34a38ca31f8547b7d62f712ceca85f3045e",
+    "acceptance_digest": "sha256:2679da3c59a7bbcd78c68e0b7a7e54926d7c944fdea160b99d43fd7dabdb15f9",
+    "implementation_sha": "4fa804b831dffb5f64655e5bc69e13cf8eaead88",
+    "digest": "sha256:3dee52f0c5160262cc8d73e946b41ff04af9d5f2e338403b0d006853965333bc"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202610072154-CZEYZ1/README.md",
+      "sha256": "sha256:4238233f46f85e59a26d6626774d9df33ec61b6eb1ce66426dac7eb2cbf75236",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202610072154-CZEYZ1/quality/objects/sha256/30e427df8a1a2f52605e13cc04f481ada27fbd4016bbc195c4d61206a8e832bf.patch",
+      "sha256": "sha256:30e427df8a1a2f52605e13cc04f481ada27fbd4016bbc195c4d61206a8e832bf",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202610072154-CZEYZ1/quality/objects/sha256/7104924c7db015c0f6eaee4dd944683fe9b4cb4200790b6e847a6d51c853f37b.json",
+      "sha256": "sha256:7104924c7db015c0f6eaee4dd944683fe9b4cb4200790b6e847a6d51c853f37b",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202610072154-CZEYZ1/verification/20261008031048343-8c35690c88e1da90.json",
+      "sha256": "sha256:953f182a6d7884218ec7e1bf29990574a39002f7f98a9ec659c754dbd3899d0c",
+      "required": true
+    },
+    {
+      "id": "native-identity",
+      "kind": "plan",
+      "path": ".agentplane/tasks/202610072154-CZEYZ1/quality/objects/sha256/7847bfa1d4ac6fbabf091213812d81241d3bf41cc77dc5b2c894e75a2ddabdfe.json",
+      "sha256": "sha256:7847bfa1d4ac6fbabf091213812d81241d3bf41cc77dc5b2c894e75a2ddabdfe",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
