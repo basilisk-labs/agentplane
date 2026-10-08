@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 2d250c83bd09b792f9715d6407b08ff6b914d55c..e756be981265a3d85eb577e88f00ea046602ca83",
+      "command": "git diff --check e756be981265a3d85eb577e88f00ea046602ca83..00c54be69cb2a9387f0af61f183ca177ef90044b",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,20 +13,37 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 2d250c83bd09b792f9715d6407b08ff6b914d55c..e756be981265a3d85eb577e88f00ea046602ca83",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB e756be981265a3d85eb577e88f00ea046602ca83..00c54be69cb2a9387f0af61f183ca177ef90044b",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
         "M\t.agentplane/tasks/202610081424-21WCFZ/README.md",
-        "A\tscripts/bench/internal/paired-m05/journal.mjs",
-        "M\tscripts/bench/internal/paired-m05/ledger.mjs",
-        "M\tscripts/bench/internal/paired-m05/ledger.test.mjs",
-        "A\tscripts/bench/internal/paired-m05/subscription-boundary.mjs",
-        "A\tscripts/bench/internal/paired-m05/subscription-contract.mjs",
-        "A\tscripts/bench/internal/paired-m05/subscription-ledger.mjs",
-        "A\tscripts/bench/internal/paired-m05/subscription.test.mjs",
-        "M\tscripts/bench/paired-live-codex-launcher.mjs",
-        "M\tscripts/bench/paired-live-codex-launcher.test.mjs"
+        "A\t.agentplane/tasks/202610081424-21WCFZ/quality/objects/sha256/42b9e36673a3cc9bf23e38c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json",
+        "A\t.agentplane/tasks/202610081424-21WCFZ/supervision/declared-checks.json",
+        "A\t.agentplane/tasks/202610081424-21WCFZ/supervision/implementation-evidence.json",
+        "A\tartifacts/bench/m05-live-0.7.13/coding-corpus-qualification.json",
+        "A\tscripts/bench/internal/paired-m05/app-server-host-probe.mjs",
+        "A\tscripts/bench/internal/paired-m05/app-server-port.mjs",
+        "A\tscripts/bench/internal/paired-m05/coding-corpus.mjs",
+        "A\tscripts/bench/internal/paired-m05/coding-corpus.test.mjs",
+        "A\tscripts/bench/internal/paired-m05/coding-host.mjs",
+        "A\tscripts/bench/internal/paired-m05/coding-host.test.mjs",
+        "A\tscripts/bench/internal/paired-m05/coding-recipe-package.mjs",
+        "A\tscripts/bench/internal/paired-m05/coding-recipe.mjs",
+        "A\tscripts/bench/internal/paired-m05/coding-recipe.test.mjs",
+        "A\tscripts/bench/internal/paired-m05/isolation.mjs",
+        "A\tscripts/bench/internal/paired-m05/isolation.test.mjs",
+        "A\tscripts/bench/internal/paired-m05/landlock-runner.py",
+        "A\tscripts/bench/internal/paired-m05/native-coding-cli.test.mjs",
+        "A\tscripts/bench/internal/paired-m05/native-coding-evidence.mjs",
+        "A\tscripts/bench/internal/paired-m05/native-coding-loop.mjs",
+        "A\tscripts/bench/internal/paired-m05/native-coding-loop.test.mjs",
+        "A\tscripts/bench/internal/paired-m05/native-coding-port.mjs",
+        "A\tscripts/bench/internal/paired-m05/semantic-coding-port.mjs",
+        "A\tscripts/bench/internal/paired-m05/semantic-coding-port.test.mjs",
+        "M\tscripts/bench/internal/paired-m05/subscription-boundary.mjs",
+        "M\tscripts/bench/internal/paired-m05/subscription.test.mjs",
+        "M\tscripts/bench/paired-m05-offline.test.mjs"
       ]
     },
     {
@@ -36,23 +53,41 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "2d250c83bd09b792f9715d6407b08ff6b914d55c",
-  "implementation_commit": "e756be981265a3d85eb577e88f00ea046602ca83",
+  "execution_base_commit": "e756be981265a3d85eb577e88f00ea046602ca83",
+  "implementation_commit": "00c54be69cb2a9387f0af61f183ca177ef90044b",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
-      " M .agentplane/tasks/202610081424-21WCFZ/README.md"
+      " M .agentplane/tasks/202610081424-21WCFZ/README.md",
+      "?? .agentplane/tasks/202610081424-21WCFZ/quality/objects/sha256/42b9e36673a3cc9bf23e38c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json",
+      "?? .agentplane/tasks/202610081424-21WCFZ/supervision/declared-checks.json",
+      "?? .agentplane/tasks/202610081424-21WCFZ/supervision/implementation-evidence.json"
     ],
     "classification": [
       {
         "classification": "removed_during_execution",
         "line": " M .agentplane/tasks/202610081424-21WCFZ/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610081424-21WCFZ/quality/objects/sha256/42b9e36673a3cc9bf23e38c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610081424-21WCFZ/supervision/declared-checks.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610081424-21WCFZ/supervision/implementation-evidence.json"
       }
     ],
     "final": [],
     "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
-      " M .agentplane/tasks/202610081424-21WCFZ/README.md"
+      " M .agentplane/tasks/202610081424-21WCFZ/README.md",
+      "?? .agentplane/tasks/202610081424-21WCFZ/quality/objects/sha256/42b9e36673a3cc9bf23e38c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json",
+      "?? .agentplane/tasks/202610081424-21WCFZ/supervision/declared-checks.json",
+      "?? .agentplane/tasks/202610081424-21WCFZ/supervision/implementation-evidence.json"
     ],
     "unchanged_from_execution_baseline": []
   },

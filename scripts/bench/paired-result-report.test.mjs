@@ -258,3 +258,4 @@ test("keeps safety, activation, and efficiency gates independent", () => {
 });
 
 import "./internal/paired-m05/report.test.mjs";
+import "./internal/paired-m05/subscription-report.test.mjs";

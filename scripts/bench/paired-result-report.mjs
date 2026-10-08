@@ -466,3 +466,6 @@ if (isDirectRun(import.meta.url)) runScriptMain(main);
 
 // Durable M05 evidence has a separate schema and does not reinterpret v1/v2 reports.
 export { buildM05DurableReport } from "./internal/paired-m05/report.mjs";
+
+// Subscription token evidence is separately versioned; legacy reports are unchanged.
+export { buildSubscriptionReport } from "./internal/paired-m05/subscription-report.mjs";
