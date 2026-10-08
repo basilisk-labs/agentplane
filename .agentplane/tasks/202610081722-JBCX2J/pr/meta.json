@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:36ecb1aca5ddf63e7d5e8144e3c00a38fbfcc5cbd334da5b47dc3750d794a04c",
   "pr_number": 6084,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6084",
+  "pre_merge_closure": {
+    "basis_commit": "5f670a8b89db4de4c66a80af81b4a4eba0eb2cf7",
+    "branch": "task/202610081722-JBCX2J/allow-bounded-full-regression-to-complete-on-con",
+    "pr_number": 6084,
+    "recorded_at": "2026-10-08T18:01:18.740Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",

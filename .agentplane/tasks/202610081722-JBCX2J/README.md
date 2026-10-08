@@ -1,10 +1,11 @@
 ---
 id: "202610081722-JBCX2J"
 title: "Allow bounded full regression to complete on constrained release hosts"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -38,6 +39,22 @@ quality_review:
     - "../../../.git/agentplane/kernel/exchanges/202610081722-JBCX2J/002bdc9459cd12fd90c1ff10c038a300877bf1526db02bce90291c4a17740e11/quality-report.json"
   findings:
     - "Verified the exact three-file diff: only ci:local:full changes from 90 to 150 minutes; runner-level tests assert executable, arguments, cwd and 9000000 ms, retain the explicit 1000 ms override and unrelated 1800000 ms default, and update the existing full-regression expectation without weakening its assertions."
+token_usage:
+  agent_runs: 1
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:bd8500008a34fd252255f61c77d94cd8dac5d0339dd2091511e03075f1fc77ca"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-08T18:01:18.456Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -227,9 +244,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "4f34362b3ad6f5dd44fb580fd0606d4d1cf7d8cc"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "5f670a8b89db4de4c66a80af81b4a4eba0eb2cf7"
+  message: "🧾 JBCX2J task: preserve native PR identity"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -237,9 +257,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-08T18:01:18.456Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "5f670a8b89db4de4c66a80af81b4a4eba0eb2cf7"
 doc_version: 3
-doc_updated_at: "2026-10-08T17:50:26.028Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-08T18:01:18.456Z"
+doc_updated_by: "CODER"
 description: "Repair the hardcoded 90-minute ci:local:full outer timeout exposed by NDWDC5 canonical final validation 115dfcedac5b9c50c1ebc25b09ef53b2b3af26652d6e3890eeceaad6b9298426 (SIGTERM after 5405721ms). Use the existing finite 150-minute qualification budget already established for release:ci-check, preserve explicit shorter timeout precedence and unrelated 30-minute defaults, and qualify actual runner invocation. This is authorized release 0.7.13 repair, not a check waiver. Preserve all failed evidence and all required checks."
 sections:
   Summary: |-
@@ -379,6 +407,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:5a7ca8d8647a9e1a4e4956efb86d8ac181647515ae8b6f4e4115439127757c9d"
     work_order_id: "sha256:67765f2720cc51ed86be32aae61a0ed1c82e262bfd1ec5e4428c7f35ebdf6a50"
+  implementation_commit:
+    hash: "4f34362b3ad6f5dd44fb580fd0606d4d1cf7d8cc"
+    message: "🚧 JBCX2J task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "6cbd18628af1b3fc9fcb27fa9e80b45e1855f3a5"
@@ -1201,3 +1232,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/1` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:bd8500008a34fd252255f61c77d94cd8dac5d0339dd2091511e03075f1fc77ca`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-08T18:01:18.456Z`
