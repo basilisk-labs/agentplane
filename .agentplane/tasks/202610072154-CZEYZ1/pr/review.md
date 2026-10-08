@@ -6,14 +6,14 @@ Created: 2026-10-07T22:43:22.532Z
 
 - Task: `202610072154-CZEYZ1`
 - Title: Build frozen replay anchors with a separately captured isolated dependency closure
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610072154-CZEYZ1/build-frozen-replay-anchors-with-a-separately-ca`
 - Canonical task record: `.agentplane/tasks/202610072154-CZEYZ1/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
