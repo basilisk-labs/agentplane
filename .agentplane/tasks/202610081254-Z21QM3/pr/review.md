@@ -6,14 +6,14 @@ Created: 2026-10-08T13:06:01.743Z
 
 - Task: `202610081254-Z21QM3`
 - Title: Preregister M05 live experiment and release decision protocol
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610081254-Z21QM3/preregister-m05-live-experiment-and-release-deci`
 - Canonical task record: `.agentplane/tasks/202610081254-Z21QM3/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
