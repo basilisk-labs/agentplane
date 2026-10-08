@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:bc97d912ee8cdb22ce3e9e4cc4c1c28c890d02ae856c2fbf0ed039a20cefe2a7",
   "pr_number": 6066,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6066",
+  "pre_merge_closure": {
+    "basis_commit": "c02c008639f43d2ac427e72d5bafe99da6ec75ff",
+    "branch": "task/202610081254-Z21QM3/preregister-m05-live-experiment-and-release-deci",
+    "pr_number": 6066,
+    "recorded_at": "2026-10-08T14:36:25.565Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",

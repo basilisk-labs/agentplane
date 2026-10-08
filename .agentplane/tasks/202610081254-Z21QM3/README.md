@@ -1,10 +1,11 @@
 ---
 id: "202610081254-Z21QM3"
 title: "Preregister M05 live experiment and release decision protocol"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -41,6 +42,22 @@ quality_review:
     - "The protocol preserves same-product three-arm coding comparisons, five genuine coding/control strata, hidden independent behavioral oracle and complete native planning/review/recovery obligations. The minimum 75-assignment pilot explicitly has only five independent task clusters; repetitions are not treated as new tasks."
     - "Independent prospective confirmation, task-clustered paired uncertainty, multiplicity across two treatment comparisons, unknown-cost and zero-success handling, setup accounting and negative-control separation satisfy the bounded contract. Observed corpus quality is explicitly distinguished from unresolved population noninferiority inference. Proposed numeric thresholds are not presented as approved or measured results."
     - "The document reflects the superseding user condition to establish savings before publication, preserves historical debt acceptance, and does not guarantee a favorable outcome. Secure credential choice, finite spend, real adapter/corpus/oracle qualification and exact campaign pins remain genuine unresolved launch prerequisites. Routine scientific design can proceed under delegated authority; this review creates no additional user approval gate."
+token_usage:
+  agent_runs: 3
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:b9fe3a28b6ba4403c1dfe258dcbd60ef23d72d03da618e4cdbfc109d44578a7b"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-08T14:36:25.272Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -232,9 +249,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "61bf92ce321e5e340f1022c5db4c594684da1cbe"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "c02c008639f43d2ac427e72d5bafe99da6ec75ff"
+  message: "📝 Z21QM3 task: preserve published PR identity"
+comments:
+  -
+    author: "DOCS"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -242,9 +262,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-08T14:36:25.272Z"
+    author: "DOCS"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "c02c008639f43d2ac427e72d5bafe99da6ec75ff"
 doc_version: 3
-doc_updated_at: "2026-10-08T13:10:50.912Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-08T14:36:25.272Z"
+doc_updated_by: "DOCS"
 description: "Plan the user-authorized real M05 experiment before AgentPlane 0.7.13 publication. Produce an English study protocol, not API implementation: same-product no_recipe/instantiate/specialize comparisons, genuine coding corpus with direct fix, branch change, recovery, no-match and near-match strata; at least five matched randomized repetitions per task and arm for pilot; independent fixed confirmation sample registered after pilot and before confirmation; exact product/corpus/oracle/policy/runtime/transport identities; all-assigned observed cost per independently verified success and quality/time uncertainty; repeated tasks clustered; unknown cost never zero; no optional stopping or fabricated savings. Preserve latest requirement to establish savings before publication. Explicitly enumerate unresolved model/effort/budget/credential/adapter/product pins and stop rules. No live calls, API-dependent implementation, credential access, release publication or efficiency claim. Existing engineering task NDWDC5 is offline-only; adapter and genuine corpus still require qualification. User asks to plan, run, obtain results, then release. Budget and secure key decision are pending; methodology work is independent."
 sections:
   Summary: |-
@@ -412,6 +440,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:e2f0970af63bd0d902ecebf80094b68af07fbe21d281c46a818b8484ac3387e4"
     work_order_id: "sha256:212a8ab4928341fdedd565dd8ea54e337044a0ea5c3e226bcb0c39cc65cc0449"
+  implementation_commit:
+    hash: "61bf92ce321e5e340f1022c5db4c594684da1cbe"
+    message: "🚧 Z21QM3 task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "3dbcbad442bbeaadd73e6e698180c8cbaad55b30"
@@ -1251,3 +1282,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/3` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:b9fe3a28b6ba4403c1dfe258dcbd60ef23d72d03da618e4cdbfc109d44578a7b`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-08T14:36:25.272Z`
