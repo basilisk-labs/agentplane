@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202610080740-NDWDC5/qualify-m05-live-campaign-contract-and-durable-a",
+  "created_at": "2026-10-08T08:48:22.477Z",
+  "diffstat_sha256": "sha256:d2330588153759c30541b22c2f2126ab0e34f8644a8331f3d5fb453586519224",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610080740-NDWDC5",
+  "updated_at": "2026-10-08T08:48:22.477Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

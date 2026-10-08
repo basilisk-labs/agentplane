@@ -463,3 +463,6 @@ async function main() {
 }
 
 if (isDirectRun(import.meta.url)) runScriptMain(main);
+
+// Durable M05 evidence has a separate schema and does not reinterpret v1/v2 reports.
+export { buildM05DurableReport } from "./internal/paired-m05/report.mjs";
