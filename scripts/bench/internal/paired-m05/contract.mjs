@@ -92,6 +92,31 @@ export function validateM05Receipt(value, reservation) {
     "cost_microunits",
   ])
     assert.ok(v.usage[key] === null || integer(v.usage[key]), `Invalid usage ${key}`);
+  const usageFields = [
+    "input_tokens",
+    "output_tokens",
+    "cached_input_tokens",
+    "reasoning_tokens",
+    "total_tokens",
+    "cost_microunits",
+  ];
+  const known = usageFields.filter((key) => v.usage[key] !== null).length;
+  if (["unavailable", "unattributable"].includes(v.usage.state))
+    assert.equal(known, 0, "Unknown usage must remain null");
+  if (v.usage.state === "partial")
+    assert.ok(known > 0 && known < usageFields.length, "Partial usage must be incomplete");
+  if (v.usage.state === "observed")
+    assert.equal(known, usageFields.length, "Observed usage must be complete");
+  // Subsets bound their parent when the parent is unknown; they are never added twice.
+  const lowerBound =
+    Math.max(v.usage.input_tokens ?? 0, v.usage.cached_input_tokens ?? 0) +
+    Math.max(v.usage.output_tokens ?? 0, v.usage.reasoning_tokens ?? 0);
+  assert.ok(
+    Number.isSafeInteger(lowerBound) && lowerBound <= reservation.max_tokens,
+    "Known token components exceed reservation",
+  );
+  if (v.usage.total_tokens !== null)
+    assert.ok(v.usage.total_tokens >= lowerBound, "Provider total contradicts known components");
   if (v.usage.state === "observed") {
     assert.ok(integer(v.usage.total_tokens) && integer(v.usage.cost_microunits));
     assert.equal(v.observed_model, reservation.model);

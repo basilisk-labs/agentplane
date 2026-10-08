@@ -271,3 +271,78 @@ test("dispatch follows the pinned assignment order", (t) => {
   ledger.outcome("task-1", { status: "blocked", verified: false, evidence_digest: hash });
   ledger.dispatch({ ...reservation(), assignment_id: "task-2" });
 });
+
+test("contradictory usage never publishes a receipt or unblocks dispatch", (t) => {
+  const ledger = openM05Ledger(fixture(t), contract());
+  ledger.dispatch(reservation());
+  const observed = {
+    ...receipt(),
+    observed_model: "test-model",
+    observed_effort: "high",
+    usage: {
+      state: "observed",
+      input_tokens: 1000,
+      output_tokens: 1000,
+      cached_input_tokens: 0,
+      reasoning_tokens: 0,
+      total_tokens: 0,
+      cost_microunits: 0,
+    },
+  };
+  const invalid = [
+    observed,
+    {
+      ...observed,
+      usage: { ...observed.usage, input_tokens: 20, output_tokens: 20, total_tokens: 39 },
+    },
+    ...["unavailable", "unattributable"].map((state) => ({
+      ...receipt(),
+      usage: { ...receipt().usage, state, total_tokens: 0 },
+    })),
+    { ...receipt(), usage: { ...receipt().usage, state: "partial" } },
+    { ...observed, usage: { ...observed.usage, input_tokens: null } },
+    { ...receipt(), usage: { ...receipt().usage, state: "partial", input_tokens: 41 } },
+    { ...receipt(), usage: { ...receipt().usage, state: "partial", cached_input_tokens: 41 } },
+  ];
+  const before = ledger.read();
+  for (const value of invalid) {
+    assert.throws(() => ledger.receipt("call-1", value));
+    assert.deepEqual(ledger.read(), before);
+    assert.throws(() => ledger.dispatch(reservation("next", "EVALUATOR")), /Unresolved/u);
+  }
+});
+test("coherent observed and partial usage preserve subsets and null costs", (t) => {
+  const ledger = openM05Ledger(fixture(t), contract());
+  ledger.dispatch(reservation());
+  const observed = {
+    ...receipt(),
+    observed_model: "test-model",
+    observed_effort: "high",
+    usage: {
+      state: "observed",
+      input_tokens: 10,
+      output_tokens: 20,
+      cached_input_tokens: 8,
+      reasoning_tokens: 15,
+      total_tokens: 32,
+      cost_microunits: 2,
+    },
+  };
+  ledger.receipt("call-1", observed);
+  ledger.dispatch(reservation("next", "EVALUATOR"));
+  const partial = {
+    ...receipt(),
+    usage: {
+      ...receipt().usage,
+      state: "partial",
+      input_tokens: 10,
+      cached_input_tokens: 8,
+      output_tokens: 20,
+      total_tokens: 32,
+    },
+  };
+  ledger.receipt("next", partial);
+  assert.deepEqual(ledger.read().calls.next.receipt.usage, partial.usage);
+  assert.equal(ledger.read().calls["call-1"].receipt.usage.total_tokens, 32);
+  assert.equal(ledger.read().reserved.max_tokens, 80);
+});

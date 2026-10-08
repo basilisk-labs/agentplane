@@ -27,11 +27,11 @@ Latest release-owner decision for 0.7.13 is require measured savings before publ
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- scripts/bench/internal/paired-m05/contract.mjs    | 115 +++++++++
- scripts/bench/internal/paired-m05/ledger.mjs      | 227 ++++++++++++++++++
- scripts/bench/internal/paired-m05/ledger.test.mjs | 273 ++++++++++++++++++++++
+ scripts/bench/internal/paired-m05/contract.mjs    | 140 +++++++++
+ scripts/bench/internal/paired-m05/ledger.mjs      | 227 ++++++++++++++
+ scripts/bench/internal/paired-m05/ledger.test.mjs | 348 ++++++++++++++++++++++
  scripts/bench/paired-production-driver.test.mjs   |   3 +
- 4 files changed, 618 insertions(+)
+ 4 files changed, 718 insertions(+)
 ```
 
 </details>
