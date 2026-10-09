@@ -5,7 +5,7 @@ import {
 import { verificationChildEnv } from "../shared/pr-meta/verify-log.js";
 import { issueKernelInspection, resumeKernelInspection } from "./kernel-inspection.js";
 import path from "node:path";
-import { repositoryEffectsForPath, taskKernel as k } from "@agentplaneorg/core/tasks";
+import { taskKernel as k } from "@agentplaneorg/core/tasks";
 import type { CommandContext } from "../shared/task-backend.js";
 import { createKernelRuntime, requireKernelCommit } from "./kernel-runtime-context.js";
 import { buildKernelAgentWorkOrder, resumeKernelWorkOrder } from "./kernel-work-order.js";
@@ -43,40 +43,9 @@ import {
 export { blockKernelSemanticEpisode } from "./kernel-semantic-result.js";
 export { kernelPlanApprovalOperatorAction } from "./kernel-plan-authority.js";
 
-type Runtime = Awaited<ReturnType<typeof createKernelRuntime>>;
-
 export { canonicalCompletionPrecedesWorkflow } from "./ordinary-advance-step.js";
 
-async function authorityDeltaStop(runtime: Runtime, taskId: string) {
-  const prepared = await runtime.authority.prepareDelta(taskId, repositoryEffectsForPath);
-  return {
-    kind: "human_required" as const,
-    reason: "canonical_authority_delta_requires_user",
-    summary: "Repository changes exceed the approved canonical scope.",
-    authority_delta: prepared,
-    operator_action: {
-      kind: "extend_scope" as const,
-      argv: [
-        "agentplane",
-        "task",
-        "scope",
-        "extend",
-        taskId,
-        ...prepared.request.added_scope_roots.flatMap((root) => ["--scope-root", root]),
-        ...prepared.request.added_repository_effects.flatMap((effect) => [
-          "--repository-effect",
-          effect,
-        ]),
-        "--request-digest",
-        prepared.request_digest,
-        "--state-scope-digest",
-        prepared.request_digest,
-        "--by",
-        "USER",
-      ],
-    },
-  };
-}
+import { authorityDeltaStop } from "./kernel-authority-delta-stop.js";
 
 async function advanceCanonicalRoute(opts: {
   command: CommandContext;

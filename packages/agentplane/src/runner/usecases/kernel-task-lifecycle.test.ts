@@ -551,9 +551,11 @@ it.each(["source", "task", "failed-check"])(
           fingerprint: scenario === "source" ? k.kernelDigest("changed source") : fingerprint,
         }),
       lifecycle: { apply },
-      input: vi.fn(async (payload: Payload) => ({
-        command: { ...payload, expected_task_revision: 1 },
-      })),
+      input: vi.fn((payload: Payload) =>
+        Promise.resolve({
+          command: { ...payload, expected_task_revision: 1 },
+        }),
+      ),
     };
     vi.spyOn(finalChecks, "runDirectTaskVerification").mockResolvedValue({
       status: scenario === "failed-check" ? "failed" : "passed",
@@ -575,14 +577,12 @@ it.each(["source", "task", "failed-check"])(
         stop: { kind: "human_required", reason: "canonical_final_checks_failed" },
       });
       expect(apply).toHaveBeenCalledOnce();
-      expect(apply).toHaveBeenCalledWith(
-        expect.objectContaining({
-          command: expect.objectContaining({
-            kind: "record_final_validation",
-            validation: expect.objectContaining({ status: "FAILED" }),
-          }),
-        }),
-      );
+      expect(apply.mock.calls[0]?.[0]).toMatchObject({
+        command: {
+          kind: "record_final_validation",
+          validation: { status: "FAILED" },
+        },
+      });
     } else {
       await expect(invocation).rejects.toThrow("inputs changed during checks");
       expect(apply).not.toHaveBeenCalled();

@@ -17,6 +17,12 @@ import {
   type KernelDocuments,
 } from "./kernel-documents.js";
 
+function errorIdentity(error: unknown) {
+  return error instanceof Error
+    ? [error.name, (error as NodeJS.ErrnoException).code].filter(Boolean).join(":")
+    : typeof error;
+}
+
 export type KernelAdapterResult =
   | {
       kind: "committed";
@@ -284,10 +290,6 @@ export class KernelBackendAdapter {
     };
     const unavailable = (code: "write_in_doubt" | "concurrent_write" | "readback_mismatch") =>
       ({ kind: "unavailable", code, facts: [], mutation: { ...mutation } }) as KernelAdapterResult;
-    const errorIdentity = (error: unknown) =>
-      error instanceof Error
-        ? [error.name, (error as NodeJS.ErrnoException).code].filter(Boolean).join(":")
-        : typeof error;
     const observe = async () => {
       const observed = await this.read(task.id);
       mutation.observed_kind = observed.kind;

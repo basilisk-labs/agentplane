@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
-import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
+import type * as SchemasModule from "@agentplaneorg/core/schemas";
+import type * as InspectionValidationModule from "./kernel-inspection-validation.js";
 
 const mocks = vi.hoisted(() => ({
   read: vi.fn(),
@@ -15,7 +16,7 @@ vi.mock("./kernel-exchange.js", () => ({
   issueKernelExchange: mocks.issue,
 }));
 vi.mock("./kernel-inspection-validation.js", async (original) => ({
-  ...(await original<typeof import("./kernel-inspection-validation.js")>()),
+  ...(await original<typeof InspectionValidationModule>()),
   resolveInspectionRepositoryEvidence: () => Promise.resolve(null),
   runKernelNativeValidation: mocks.validation,
 }));
@@ -30,7 +31,7 @@ vi.mock("./kernel-work-order.js", () => ({
   buildKernelStateFingerprint: () => Promise.resolve({ digest: "fixture-fingerprint" }),
 }));
 vi.mock("@agentplaneorg/core/schemas", async (original) => ({
-  ...(await original<typeof import("@agentplaneorg/core/schemas")>()),
+  ...(await original<typeof SchemasModule>()),
   // This suite isolates exchange identity. Schema contracts have separate coverage.
   AGENT_WORK_ORDER_V2_ZOD_SCHEMA: { parse: (order: unknown) => order },
 }));
@@ -65,7 +66,7 @@ describe("evaluator exchange identity", () => {
         },
         mutation_receipts: { [`result:${k.kernelDigest("implementation")}`]: {} },
       },
-      documents: { contracts: { [contractDigest]: contract } },
+      documents: { contracts: Object.fromEntries([[contractDigest, contract]]) },
     };
     const runtime = {
       authority: {
@@ -95,8 +96,8 @@ describe("evaluator exchange identity", () => {
       .mockResolvedValueOnce(observed("first"))
       .mockResolvedValueOnce(observed("first"))
       .mockResolvedValueOnce(observed("second"));
-    const retained = new Map<string, AgentWorkOrderV2>();
-    mocks.issue.mockImplementation((_command, order: AgentWorkOrderV2) => {
+    const retained = new Map<string, SchemasModule.AgentWorkOrderV2>();
+    mocks.issue.mockImplementation((_command, order: SchemasModule.AgentWorkOrderV2) => {
       const prior = retained.get(order.work_order_id);
       if (prior) expect(order).toEqual(prior);
       else retained.set(order.work_order_id, structuredClone(order));
@@ -109,9 +110,9 @@ describe("evaluator exchange identity", () => {
         record as never,
         "build",
       );
-    const first = (await issue()) as AgentWorkOrderV2;
+    const first = (await issue()) as SchemasModule.AgentWorkOrderV2;
     expect(await issue()).toEqual(first);
-    const second = (await issue()) as AgentWorkOrderV2;
+    const second = (await issue()) as SchemasModule.AgentWorkOrderV2;
     expect(second.work_order_id).not.toBe(first.work_order_id);
     expect(second.canonical_binding).toEqual(first.canonical_binding);
     expect(second.required_inputs.find((input) => input.id === "native-validation")?.digest).toBe(

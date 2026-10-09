@@ -5,7 +5,6 @@ import {
 } from "@agentplaneorg/core/tasks";
 import { verifyUserApprovalReceipt } from "../../adapters/authority/user-approval-receipt.js";
 import { renewKernelPolicyAuthority } from "./kernel-policy-renewal.js";
-import { CliError } from "../../shared/errors.js";
 import {
   kernelAuthorityRecordSchema,
   kernelAuthoritySchema,
@@ -20,36 +19,7 @@ import type {
   NativeAuthorityContext,
 } from "../../ports/kernel-authority.js";
 
-function invalid(reason: string, details: Record<string, unknown> = {}): never {
-  const requiredAction = [
-    "plan_exceeds_native_approval_scope",
-    "work_item_exceeds_authority",
-  ].includes(reason)
-    ? "request_authority_delta"
-    : "request_fresh_native_context";
-  throw Object.assign(
-    new CliError({
-      code: "E_VALIDATION",
-      message: `Canonical authority rejected: ${reason}. Inspect the task route and obtain the required native authority before retrying.`,
-      context: { reason_code: reason, required_action: requiredAction, ...details },
-    }),
-    {
-      reason_code: reason,
-      required_action: requiredAction,
-    },
-  );
-}
-
-function freshTime(context: NativeAuthorityContext) {
-  const now = Date.parse(context.occurred_at);
-  if (!Number.isFinite(now)) invalid("invalid_observation_time");
-  return now;
-}
-
-function assertUnexpired(authority: k.ExecutionAuthority, now: number) {
-  if (authority.expires_at !== null && Date.parse(authority.expires_at) <= now)
-    invalid("authority_expired");
-}
+import { invalid, freshTime, assertUnexpired } from "./kernel-authority-validation.js";
 
 export function kernelApprovalReference(context: NativeAuthorityContext, plan: k.PlanRecord) {
   return k.kernelDigest({

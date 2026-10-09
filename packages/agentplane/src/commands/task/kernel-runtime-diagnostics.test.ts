@@ -15,7 +15,10 @@ describe("canonical write reconciliation diagnostics", () => {
       ).toThrow(
         expect.objectContaining({
           code: "E_VALIDATION",
-          context: expect.objectContaining({ reason_code: code, facts: ["requested", "allowed"] }),
+          context: expect.objectContaining({
+            reason_code: code,
+            facts: ["requested", "allowed"],
+          }) as unknown,
         }),
       );
     },
@@ -30,7 +33,7 @@ describe("canonical write reconciliation diagnostics", () => {
     ).toThrow(
       expect.objectContaining({
         code: "E_VALIDATION",
-        context: expect.objectContaining({ reason_code: "backend_capability_missing" }),
+        context: expect.objectContaining({ reason_code: "backend_capability_missing" }) as unknown,
       }),
     );
   });

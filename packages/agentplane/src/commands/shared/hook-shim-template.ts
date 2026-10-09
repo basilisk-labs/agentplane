@@ -47,8 +47,9 @@ export async function assertHookRunnerReady(repoRoot: string): Promise<void> {
   ];
   if (commandAvailable("node", repoRoot)) {
     for (const candidate of candidates) {
-      if (candidate && (await stat(path.resolve(repoRoot, candidate)).catch(() => null))?.isFile())
-        return;
+      if (!candidate) continue;
+      const info = await stat(path.resolve(repoRoot, candidate)).catch(() => null);
+      if (info?.isFile()) return;
     }
   }
   if (process.env.AGENTPLANE_HOOK_ALLOW_GLOBAL === "1" && commandAvailable("agentplane", repoRoot))

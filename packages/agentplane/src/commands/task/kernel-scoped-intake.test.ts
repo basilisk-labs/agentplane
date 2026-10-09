@@ -7,6 +7,7 @@ import { configureGitUser, mockConfig, tempRepo } from "@agentplane/testkit";
 import { makeTaskFixture } from "@agentplane/testkit/task";
 import {
   taskKernel as k,
+  kernelPlanProposalSchema,
   createTaskExecutionBaseIdentity,
   TASK_EXECUTION_CONTEXT_EXTENSION_KEY,
 } from "@agentplaneorg/core/tasks";
@@ -69,6 +70,7 @@ describe("explicit code-and-tests intake lifecycle", { timeout: 120_000 }, () =>
     expect(contract.authority.allowed_repository_effects).toEqual(
       expect.arrayContaining(["source_code", "tests", "repository_write"]),
     );
+    const baseHead = await git("git", ["rev-parse", "HEAD"], { cwd: repo.root });
     const created = await createCanonicalTask(
       command,
       makeTaskFixture({
@@ -79,7 +81,7 @@ describe("explicit code-and-tests intake lifecycle", { timeout: 120_000 }, () =>
         extensions: {
           [TASK_EXECUTION_CONTEXT_EXTENSION_KEY]: createTaskExecutionBaseIdentity({
             base_ref: "main",
-            base_sha: (await git("git", ["rev-parse", "HEAD"], { cwd: repo.root })).stdout.trim(),
+            base_sha: baseHead.stdout.trim(),
             source: "explicit",
             repository_identity: await resolveLogicalRepositoryIdentity({
               git_root: repo.root,
@@ -264,6 +266,7 @@ describe("explicit code-and-tests intake lifecycle", { timeout: 120_000 }, () =>
       };
       const resultDigest = k.kernelDigest(implementation);
       await writeKernelArtifact(resultDirectory, "received-result.json", implementation);
+      const observation = await runtime.observe();
       const receipt = await runtime.input(
         {
           kind: "accept_work_item_result",
@@ -280,7 +283,7 @@ describe("explicit code-and-tests intake lifecycle", { timeout: 120_000 }, () =>
               plan_revision: plan.revision,
               work_item_id: workItemId,
               attempt: order.binding.attempt,
-              repository_fingerprint: (await runtime.observe()).fingerprint,
+              repository_fingerprint: observation.fingerprint,
             },
           ],
         },
@@ -356,7 +359,9 @@ describe("explicit code-and-tests intake lifecycle", { timeout: 120_000 }, () =>
     const recovery = failed.stop.recovery;
     if (!("corrective_plan" in recovery) || typeof recovery.corrective_plan !== "string")
       throw new Error("Missing corrective plan");
-    const corrective = JSON.parse(await readFile(recovery.corrective_plan, "utf8"));
+    const corrective = kernelPlanProposalSchema.parse(
+      JSON.parse(await readFile(recovery.corrective_plan, "utf8")),
+    );
     const failureEvidence = await readFile(
       path.join(failed.stop.evidence, "final-validation.json"),
       "utf8",

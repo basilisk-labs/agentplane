@@ -278,9 +278,8 @@ describe(
           const ownerCtx = await loadCommandContext({ cwd: owner, rootOverride: owner });
           await expect(listTaskSummariesMemo(ownerCtx)).rejects.toThrow();
           expect(await readFile(ownerReadme, "utf8")).toBe(original);
-          expect(
-            (await execFileAsync("git", ["status", "--porcelain"], { cwd: root })).stdout,
-          ).toBe(before.stdout);
+          const after = await execFileAsync("git", ["status", "--porcelain"], { cwd: root });
+          expect(after.stdout).toBe(before.stdout);
           return;
         }
         const tasks = await listTaskSummariesMemo(ctx);

@@ -547,10 +547,10 @@ describe("canonical exchange scope recovery", () => {
             ],
           },
         });
-        expect(
-          JSON.parse(await readFile(path.join(directory, "transport-owner.json"), "utf8"))
-            .transport,
-        ).toBe("host");
+        const owner: unknown = JSON.parse(
+          await readFile(path.join(directory, "transport-owner.json"), "utf8"),
+        );
+        expect(owner).toMatchObject({ transport: "host" });
         expect(f.record).toEqual(before);
         // A real unchanged retry cannot reuse historical approval, even if the
         // old WorkOrder attempt is rewritten to appear immediately preceding.

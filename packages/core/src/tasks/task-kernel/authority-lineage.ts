@@ -417,40 +417,49 @@ export function continuationIssues(
     !/^sha256:[0-9a-f]{64}$/u.test(observation.evidence_digest)
   )
     return ["observation_binding"];
-  if (observation.kind === "plan_amendment") {
-    const addedScopeRoots = observation.added_scope_roots ?? [];
-    if (
-      child.plan_revision !== parent.plan_revision + 1 ||
-      child.plan_digest === parent.plan_digest ||
-      child.repository_fingerprint !== parent.repository_fingerprint ||
-      observation.changed_paths.length > 0 ||
-      JSON.stringify(addedScopeRoots) !==
-        JSON.stringify([...new Set(addedScopeRoots)].toSorted()) ||
-      JSON.stringify(child.scope_roots) !==
-        JSON.stringify([...new Set([...parent.scope_roots, ...addedScopeRoots])].toSorted())
-    )
-      return ["plan_observation_binding"];
-  } else if (observation.kind === "authority_delta") {
-    return ["authority_delta_requires_user"];
-  } else if (observation.kind === "worktree_preparation") {
-    if (
-      child.plan_revision !== parent.plan_revision ||
-      child.plan_digest !== parent.plan_digest ||
-      child.repository_fingerprint === parent.repository_fingerprint ||
-      observation.changed_paths.length !== 0
-    )
-      return ["worktree_preparation_binding"];
-  } else if (
-    child.plan_revision !== parent.plan_revision ||
-    child.plan_digest !== parent.plan_digest ||
-    child.repository_fingerprint === parent.repository_fingerprint ||
-    observation.changed_paths.length === 0 ||
-    !compareExecutionAuthority(parent, {
-      ...sameContext,
-      scope_roots: observation.changed_paths,
-    }).ok
-  )
-    return ["repository_observation_scope"];
+  switch (observation.kind) {
+    case "plan_amendment": {
+      const addedScopeRoots = observation.added_scope_roots ?? [];
+      if (
+        child.plan_revision !== parent.plan_revision + 1 ||
+        child.plan_digest === parent.plan_digest ||
+        child.repository_fingerprint !== parent.repository_fingerprint ||
+        observation.changed_paths.length > 0 ||
+        JSON.stringify(addedScopeRoots) !==
+          JSON.stringify([...new Set(addedScopeRoots)].toSorted()) ||
+        JSON.stringify(child.scope_roots) !==
+          JSON.stringify([...new Set([...parent.scope_roots, ...addedScopeRoots])].toSorted())
+      )
+        return ["plan_observation_binding"];
+      break;
+    }
+    case "authority_delta": {
+      return ["authority_delta_requires_user"];
+    }
+    case "worktree_preparation": {
+      if (
+        child.plan_revision !== parent.plan_revision ||
+        child.plan_digest !== parent.plan_digest ||
+        child.repository_fingerprint === parent.repository_fingerprint ||
+        observation.changed_paths.length > 0
+      )
+        return ["worktree_preparation_binding"];
+      break;
+    }
+    default: {
+      if (
+        child.plan_revision !== parent.plan_revision ||
+        child.plan_digest !== parent.plan_digest ||
+        child.repository_fingerprint === parent.repository_fingerprint ||
+        observation.changed_paths.length === 0 ||
+        !compareExecutionAuthority(parent, {
+          ...sameContext,
+          scope_roots: observation.changed_paths,
+        }).ok
+      )
+        return ["repository_observation_scope"];
+    }
+  }
   return [];
 }
 

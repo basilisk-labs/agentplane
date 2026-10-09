@@ -3,7 +3,11 @@ import type { CommandContext } from "./task-backend.js";
 import type { TaskData } from "../../backends/task-backend.js";
 import { makeTaskFixture } from "@agentplane/testkit/task";
 
-const mocks = vi.hoisted(() => ({ load: vi.fn(), scan: vi.fn(), readKernel: vi.fn() }));
+const mocks = vi.hoisted(() => ({
+  load: vi.fn<(request: { taskId: string }) => Promise<TaskData>>(),
+  scan: vi.fn(),
+  readKernel: vi.fn(),
+}));
 vi.mock("./task-backend.js", () => ({
   backendUsesLocalTaskStore: () => true,
   loadTaskFromContext: mocks.load,
@@ -39,23 +43,27 @@ describe("canonical owner mutation reconciliation", () => {
     ]);
     if (scenario === "missing-dependency") tasks.delete("transitive");
     if (scenario === "missing-owner") tasks.delete("owner");
-    mocks.load.mockImplementation(async ({ taskId }: { taskId: string }) => {
+    mocks.load.mockImplementation(({ taskId }) => {
       if (scenario === "downgraded-dependency" && taskId === "dependency") {
-        throw new Error("Authoritative dependency is missing its known canonical record");
+        return Promise.reject(
+          new Error("Authoritative dependency is missing its known canonical record"),
+        );
       }
       const task = tasks.get(taskId);
-      if (!task) throw new Error(`Missing required task ${taskId}`);
-      return task;
+      if (!task) return Promise.reject(new Error(`Missing required task ${taskId}`));
+      return Promise.resolve(task);
     });
-    mocks.readKernel.mockImplementation(async (_ctx, taskId: string) => ({
-      kind:
-        (scenario === "malformed-dependency" && taskId === "dependency") ||
-        (scenario === "malformed-owner" && taskId === "owner")
-          ? "malformed"
-          : scenario === "legacy-dependency" && taskId !== "owner"
-            ? "legacy_unmigrated"
-            : "canonical",
-    }));
+    mocks.readKernel.mockImplementation((_ctx, taskId: string) =>
+      Promise.resolve({
+        kind:
+          (scenario === "malformed-dependency" && taskId === "dependency") ||
+          (scenario === "malformed-owner" && taskId === "owner")
+            ? "malformed"
+            : scenario === "legacy-dependency" && taskId !== "owner"
+              ? "legacy_unmigrated"
+              : "canonical",
+      }),
+    );
     mocks.scan.mockRejectedValue(new Error("Unrelated task has no README"));
     const ctx = {
       git: { statusChangedPaths: vi.fn().mockResolvedValue([]) },

@@ -27,57 +27,16 @@ import { pathFromStatusLine } from "./external-agent-implementation-finalization
 
 export { commitCanonicalTerminalTaskArtifacts } from "./kernel-terminal-artifacts.js";
 
-export type KernelRepositoryBaseline = Readonly<{
-  schema_version: 1;
-  kind: "canonical_repository_baseline";
-  task_id: string;
-  work_item_id: string;
-  task_revision: number;
-  work_order_id: string;
-  checkout: string;
-  branch: string;
-  head: string;
-  tree: string;
-  status: DirectRepositoryStatus;
-}>;
-
-export type KernelRepositoryEvidence = Readonly<{
-  schema_version: 1;
-  kind: "canonical_repository_evidence";
-  task_id: string;
-  work_item_id: string;
-  task_revision: number;
-  work_order_id: string;
-  checkout: string;
-  branch: string;
-  base_commit: string;
-  implementation_commit: string;
-  implementation_tree: string;
-  changed_paths: readonly string[];
-  evaluator_target: string;
-  implementation_evidence: DirectImplementationEvidence;
-  digest: k.Sha256Digest;
-}>;
-
-type KernelRepositoryCommitIntent = Readonly<{
-  schema_version: 1;
-  kind: "canonical_repository_commit_intent";
-  task_id: string;
-  work_order_id: string;
-  base_commit: string;
-  changed_paths: readonly string[];
-  digest: k.Sha256Digest;
-}>;
-
-type KernelRepositoryFollowupCommitIntent = Readonly<{
-  schema_version: 1;
-  kind: "canonical_repository_followup_commit_intent";
-  task_id: string;
-  work_order_id: string;
-  base_commit: string;
-  changed_paths: readonly string[];
-  digest: k.Sha256Digest;
-}>;
+import type {
+  KernelRepositoryBaseline,
+  KernelRepositoryEvidence,
+  KernelRepositoryCommitIntent,
+  KernelRepositoryFollowupCommitIntent,
+} from "./kernel-repository-types.js";
+export type {
+  KernelRepositoryBaseline,
+  KernelRepositoryEvidence,
+} from "./kernel-repository-types.js";
 
 async function gitValue(command: CommandContext, args: string[], label: string, empty = false) {
   const result = await runProcess({
@@ -317,7 +276,7 @@ export async function commitCanonicalImplementation(opts: {
     nonTaskStatusLines(opts.command, baseline.task_id, baseline.status),
   );
   const currentLines = new Set(nonTaskStatusLines(opts.command, baseline.task_id, status));
-  const currentPaths = new Set([...currentLines].map(pathFromStatusLine));
+  const currentPaths = new Set([...currentLines].map((line) => pathFromStatusLine(line)));
   // Native staging can change porcelain columns before a hook rejects the commit.
   const retainedIntentPath = (line: string) => {
     const candidate = pathFromStatusLine(line);

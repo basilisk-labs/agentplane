@@ -14,9 +14,7 @@ describe("Unicode task duplicate detection", () => {
   ])("preserves distinguishing tokens in %s", (title, other) => {
     const task = makeTaskFixture({ title, status: "TODO" });
     expect(listOpenTaskDuplicates([task], other)).toEqual([]);
-    expect(listOpenTaskDuplicates([task], title)).toMatchObject([
-      { severity: "exact", score: 1 },
-    ]);
+    expect(listOpenTaskDuplicates([task], title)).toMatchObject([{ severity: "exact", score: 1 }]);
   });
 
   it("does not discard distinct Russian intent around shared English words", () => {

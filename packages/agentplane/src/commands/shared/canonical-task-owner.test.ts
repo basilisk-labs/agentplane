@@ -80,13 +80,12 @@ describe("canonical task ownership across worktrees", { timeout: 120_000 }, () =
         } else {
           const live = await ownerCtx.taskBackend.getTask(taskId);
           expect(await loadTaskFromContext({ ctx, taskId })).toEqual(live);
-          expect(
-            (await listTaskSummariesMemo(ctx)).find((entry) => entry.id === taskId)?.extensions
-              ?.task_kernel,
-          ).toEqual(live?.extensions?.task_kernel);
-          expect(
-            (await resolveTaskOwnerCommandContext({ ctx, taskId })).resolvedProject.gitRoot,
-          ).toBe(owner);
+          const summaries = await listTaskSummariesMemo(ctx);
+          expect(summaries.find((entry) => entry.id === taskId)?.extensions?.task_kernel).toEqual(
+            live?.extensions?.task_kernel,
+          );
+          const resolvedOwner = await resolveTaskOwnerCommandContext({ ctx, taskId });
+          expect(resolvedOwner.resolvedProject.gitRoot).toBe(owner);
           await expect(
             cmdTaskScaffold({
               ctx,
@@ -165,13 +164,12 @@ describe("canonical task ownership across worktrees", { timeout: 120_000 }, () =
       const caller = await loadCommandContext({ cwd: repo.root });
       const live = await ownerCtx.taskBackend.getTask(taskId);
       expect(await loadTaskFromContext({ ctx: caller, taskId })).toEqual(live);
-      expect(
-        (await resolveTaskOwnerCommandContext({ ctx: caller, taskId })).resolvedProject.gitRoot,
-      ).toBe(owner);
-      expect(
-        (await listTaskSummariesMemo(caller)).find((task) => task.id === taskId)?.extensions
-          ?.task_kernel,
-      ).toEqual(live?.extensions?.task_kernel);
+      const resolvedOwner = await resolveTaskOwnerCommandContext({ ctx: caller, taskId });
+      expect(resolvedOwner.resolvedProject.gitRoot).toBe(owner);
+      const summaries = await listTaskSummariesMemo(caller);
+      expect(summaries.find((task) => task.id === taskId)?.extensions?.task_kernel).toEqual(
+        live?.extensions?.task_kernel,
+      );
       const filtered = await listTaskSummariesMemo(await loadCommandContext({ cwd: repo.root }), {
         projectionStatus: [live!.status],
       });

@@ -67,12 +67,13 @@ describe("native clean worktree preparation evidence", { timeout: 120_000 }, () 
     parent.digest = k.authorityDigest(parent);
     const target = path.join(repo.root, ".agentplane/worktrees/owner");
     if (scenario.startsWith("interrupted")) {
+      const baseHead = await git("git", ["rev-parse", "HEAD"], { cwd: repo.root });
       await beginKernelWorktreePreparation({
         command,
         taskId,
         parent,
         before,
-        targetHead: (await git("git", ["rev-parse", "HEAD"], { cwd: repo.root })).stdout.trim(),
+        targetHead: baseHead.stdout.trim(),
       });
     }
     await git("git", ["worktree", "add", "-b", `task/${taskId}/owner`, target], { cwd: repo.root });
@@ -98,14 +99,16 @@ describe("native clean worktree preparation evidence", { timeout: 120_000 }, () 
       expect(
         await observeKernelWorktreePreparation({ command: targetCommand, taskId, parent, current }),
       ).toBeNull();
-    if (!scenario.startsWith("interrupted"))
+    if (!scenario.startsWith("interrupted")) {
+      const baseHead = await git("git", ["rev-parse", "HEAD"], { cwd: repo.root });
       await beginKernelWorktreePreparation({
         command,
         taskId,
         parent,
         before,
-        targetHead: (await git("git", ["rev-parse", "HEAD"], { cwd: repo.root })).stdout.trim(),
+        targetHead: baseHead.stdout.trim(),
       });
+    }
     if (scenario === "target-head-changed") {
       await writeFile(path.join(target, "outside.txt"), "unauthorized committed change\n");
       await git("git", ["add", "outside.txt"], { cwd: target });

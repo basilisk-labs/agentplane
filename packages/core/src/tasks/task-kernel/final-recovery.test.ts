@@ -88,7 +88,7 @@ describe("failed final validation recovery", () => {
     };
     const amendment = {
       ...amendmentCommand(state, [definition, correction]),
-      work_contracts: { [contractDigest]: contract },
+      work_contracts: Object.fromEntries([[contractDigest, contract]]),
     };
     expect(reduceTaskCommand(input(state, amendment))).toMatchObject({
       kind: "rejected",

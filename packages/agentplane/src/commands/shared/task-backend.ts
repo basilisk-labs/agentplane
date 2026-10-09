@@ -354,14 +354,17 @@ export async function loadTaskFromContext(opts: {
     if (canonical(preferredBranchTask)) return null;
     throw error;
   });
-  const primary = await primaryCanonical().catch((error: unknown) => {
-    if (canonical(preferredBranchTask)) return null;
-    throw error;
-  });
+  const primary = canonical(task)
+    ? null
+    : await primaryCanonical().catch((error: unknown) => {
+        if (canonical(preferredBranchTask)) return null;
+        throw error;
+      });
   let authoritative = preferredBranchTask;
   if (!authoritative && backendUsesLocalTaskStore(opts.ctx)) {
     opts.ctx.memo.taskWorktreeInventory ??= listWorktrees(opts.ctx.resolvedProject.gitRoot);
-    const hasOwner = (await opts.ctx.memo.taskWorktreeInventory).some(
+    const worktrees = await opts.ctx.memo.taskWorktreeInventory;
+    const hasOwner = worktrees.some(
       (entry) =>
         entry.branch &&
         parseTaskIdFromBranch(opts.ctx.config.branch.task_prefix, entry.branch) === opts.taskId,

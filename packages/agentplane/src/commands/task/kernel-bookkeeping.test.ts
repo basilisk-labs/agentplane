@@ -1,4 +1,3 @@
-import path from "node:path";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
@@ -100,7 +99,7 @@ describe("canonical bookkeeping command routes", { timeout: 120_000 }, () => {
         context: {
           reason_code: "canonical_closure_approval_required",
           required_role: "USER",
-          recovery_argv: expect.arrayContaining(["--approved-by", "USER"]),
+          recovery_argv: expect.arrayContaining(["--approved-by", "USER"]) as unknown,
         },
       });
       read = await readTaskKernel(ctx, taskId);

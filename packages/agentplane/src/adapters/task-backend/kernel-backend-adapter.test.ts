@@ -528,7 +528,7 @@ describe("canonical kernel persistence boundary", () => {
         expected_revision: 0,
         before_digest: null,
         observed_kind: "missing",
-        intended_digest: expect.stringMatching(/^sha256:/),
+        intended_digest: expect.stringMatching(/^sha256:/) as unknown,
       },
     });
     write.mockImplementation(() => {
@@ -545,7 +545,7 @@ describe("canonical kernel persistence boundary", () => {
   it("reconciles an unreadable committed response on retry without a second write", async () => {
     const { adapter, backend } = await fixture();
     const original = backend.writeTask.bind(backend);
-    let read: ReturnType<typeof vi.spyOn> | undefined;
+    let read: { mockRestore(): void } | undefined;
     const write = vi.spyOn(backend, "writeTask").mockImplementation(async (...args) => {
       await original(...args);
       read = vi.spyOn(backend, "getTask").mockRejectedValue(new Error("read unavailable"));

@@ -5,6 +5,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { defaultConfig } from "@agentplaneorg/core/config";
 import {
   advanceSupervisorExecutionEpisodeState,
   completeSupervisorExecutionEpisode,
@@ -300,7 +301,7 @@ describe("context assimilation supervisor", () => {
     };
     const command = {
       ...input(root).command,
-      config: { paths: { workflow_dir: ".agentplane/tasks" } },
+      config: defaultConfig(),
       taskBackend: { getTask: () => Promise.resolve(profileTask) },
       backendId: "local",
       backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),

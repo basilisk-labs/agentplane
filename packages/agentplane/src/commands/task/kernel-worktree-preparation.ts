@@ -143,7 +143,8 @@ async function directory(command: CommandContext, taskId: string) {
 
 async function cleanRegisteredTarget(command: CommandContext, taskId: string, target: string) {
   const branch = await gitCurrentBranch(target);
-  const registered = (await listWorktrees(command.resolvedProject.gitRoot)).some(
+  const worktrees = await listWorktrees(command.resolvedProject.gitRoot);
+  const registered = worktrees.some(
     (entry) =>
       path.resolve(entry.path) === path.resolve(target) &&
       (entry.branch === branch || entry.branch === `refs/heads/${branch}`),
@@ -152,11 +153,10 @@ async function cleanRegisteredTarget(command: CommandContext, taskId: string, ta
   return (
     registered &&
     parseTaskIdFromBranch(command.config.branch.task_prefix, branch) === taskId &&
-    status !== null &&
-    status.lines.every((line) => {
+    status?.lines.every((line) => {
       const file = pathFromStatusLine(line);
       return operationalPaths(command).some((root) => file === root || file.startsWith(root + "/"));
-    })
+    }) === true
   );
 }
 
@@ -204,7 +204,7 @@ export async function recordKernelWorktreePreparation(opts: {
   const violations = Object.entries(checks)
     .filter(([, passed]) => !passed)
     .map(([name]) => name);
-  if (violations.length) {
+  if (violations.length > 0) {
     throw new CliError({
       code: "E_VALIDATION",
       message: `Canonical worktree preparation could not prove an unchanged base and clean registered target: ${violations.join(", ")}.`,

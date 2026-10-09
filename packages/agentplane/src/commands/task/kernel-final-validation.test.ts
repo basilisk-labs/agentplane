@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { taskKernel as k } from "@agentplaneorg/core/tasks";
+import { kernelPlanProposalSchema, taskKernel as k } from "@agentplaneorg/core/tasks";
 import type * as VerificationModule from "./direct-task-verification.js";
 
 const mocks = vi.hoisted(() => ({
@@ -262,15 +262,16 @@ describe("canonical final Verification Contract projection", () => {
       expect(f.runtime.input.mock.calls[0]?.[0].validation.evidence_digests).toHaveLength(1);
       expect(f.apply).toHaveBeenCalledOnce();
       expect(mocks.project).not.toHaveBeenCalled();
-      const corrective = mocks.write.mock.calls.find(
+      const corrective: unknown = mocks.write.mock.calls.find(
         (call) => call[1] === "corrective-plan.json",
       )?.[2];
       if (status === "failed") {
-        expect(corrective.work_items).toHaveLength(2);
-        expect(corrective.work_items[0].contract).toEqual(
+        const proposal = kernelPlanProposalSchema.parse(corrective);
+        expect(proposal.work_items).toHaveLength(2);
+        expect(proposal.work_items[0]!.contract).toEqual(
           Object.values(f.record.documents.contracts)[0],
         );
-        expect(corrective.work_items[1]).toMatchObject({
+        expect(proposal.work_items[1]).toMatchObject({
           depends_on: ["fix"],
           optional: false,
           execution_requirements: { scope_roots: ["src"], external_effects: [] },
