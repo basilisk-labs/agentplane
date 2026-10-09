@@ -27,9 +27,10 @@ The PR 6095 verify-contract job fails at reviewed Recipe V2 section inventory dr
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../baselines/v0.7-compatibility-candidate.json    | 55 ++++++++++++++++++----
- .../check-compatibility-contract-baseline.mjs      | 41 +++++++++++++++-
- 2 files changed, 87 insertions(+), 9 deletions(-)
+ .../baselines/v0.7-compatibility-candidate.json    | 55 +++++++++++--
+ scripts/baselines/v0.7-pr6095-cli-review.json      | 91 ++++++++++++++++++++++
+ .../check-compatibility-contract-baseline.mjs      | 41 +++++++++-
+ 3 files changed, 178 insertions(+), 9 deletions(-)
 ```
 
 </details>
