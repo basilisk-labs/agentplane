@@ -10,6 +10,28 @@ function appendTail(current, chunk, limit) {
   return next.length <= limit ? next : next.slice(-limit);
 }
 
+export function classifyVerificationGroupFailure(result) {
+  if (result.exit_code === 0) return null;
+  if (result.timed_out || result.exit_code === 124) return "timeout";
+  const output = `${result.stdout ?? ""}\n${result.stderr ?? ""}`;
+  if (
+    /JavaScript heap out of memory|FATAL ERROR: Ineffective mark-compacts|Allocation failed - JavaScript heap out of memory/iu.test(
+      output,
+    )
+  ) {
+    return "out_of_memory";
+  }
+  if (
+    /\b(?:AssertionError|Test Files\s+\d+ failed|Tests\s+\d+ failed)\b|^\s*FAIL\s+/imu.test(output)
+  ) {
+    return "assertion_failure";
+  }
+  if (/\b(?:EAI_AGAIN|ECONNRESET|ETIMEDOUT|ENOTFOUND|EHOSTUNREACH)\b/u.test(output)) {
+    return "infrastructure_failure";
+  }
+  return "command_failure";
+}
+
 function runOne(group, options) {
   return new Promise((resolve) => {
     const started = performance.now();
@@ -43,7 +65,7 @@ function runOne(group, options) {
       settled = true;
       clearTimeout(timeoutTimer);
       if (killTimer) clearTimeout(killTimer);
-      resolve(result);
+      resolve({ ...result, failure_kind: classifyVerificationGroupFailure(result) });
     };
     const timeoutTimer = setTimeout(() => {
       timedOut = true;
@@ -133,6 +155,21 @@ export async function writeVerificationGroupResults(results, options = {}) {
     await writeStreamChunk(stdout, `\n== ${group.id} (${group.duration_ms}ms) ==\n`);
     await writeStreamChunk(stdout, group.stdout);
     await writeStreamChunk(stderr, group.stderr);
+  }
+  const failures = results
+    .filter((result) => result.exit_code !== 0)
+    .map((result) => ({
+      id: result.id,
+      failure_kind: result.failure_kind ?? classifyVerificationGroupFailure(result),
+    }));
+  if (failures.length > 0) {
+    const details = `${JSON.stringify({
+      schema_version: 1,
+      kind: "verification_group_failure_classification",
+      groups: failures,
+    })}\n`;
+    await writeStreamChunk(stdout, details);
+    await writeStreamChunk(stderr, details);
   }
   const summary = summarizeVerificationGroupResults(results);
   const serialized = `${JSON.stringify(summary)}\n`;

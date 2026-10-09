@@ -49,6 +49,31 @@ afterEach(async () => {
 });
 
 describe("release qualification verification", () => {
+  it("passes the bounded native full-check deadline and explicit source to local CI", async () => {
+    const root = await repository();
+    const command = "bun run ci:local:full";
+    const runProcess = vi.fn().mockResolvedValue({ exitCode: 0, stdout: "ok", stderr: "" });
+    const result = await runDirectTaskVerification({
+      command: {
+        config: { paths: { workflow_dir: ".agentplane/tasks" } },
+        resolvedProject: { gitRoot: root },
+      } as never,
+      task: { verify: [command] },
+      task_id: "202609200000-QUALIFY",
+      cwd: root,
+      run_process: runProcess,
+      additional_commands: [{ command, timeout_ms: 600_000 }],
+    });
+    expect(result.status).toBe("passed");
+    expect(runProcess.mock.calls[0]?.[0]).toMatchObject({
+      timeoutMs: 600_000,
+      env: {
+        AGENTPLANE_NATIVE_CHECK_TIMEOUT_MS: "600000",
+        AGENTPLANE_NATIVE_CHECK_TIMEOUT_SOURCE: "declared_command",
+      },
+    });
+  });
+
   it.each([
     { script: "release:ci-check", explicitTimeout: undefined, expectedTimeout: 9_000_000 },
     { script: "release:ci-check", explicitTimeout: 1000, expectedTimeout: 1000 },

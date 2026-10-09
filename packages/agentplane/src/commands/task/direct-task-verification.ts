@@ -501,7 +501,18 @@ export async function runDirectTaskVerification(opts: {
           command: parsed.executable,
           args: parsed.args,
           cwd: isolatedCheckout.cwd,
-          env: { ...env, ...parsed.env },
+          env: {
+            ...env,
+            ...parsed.env,
+            ...(parsed.script === "ci:local:full"
+              ? {
+                  AGENTPLANE_NATIVE_CHECK_TIMEOUT_MS: String(remainingTimeoutMs),
+                  AGENTPLANE_NATIVE_CHECK_TIMEOUT_SOURCE: additionalTimeouts.has(declaredCommand)
+                    ? "declared_command"
+                    : "native_default",
+                }
+              : {}),
+          },
           timeoutMs: remainingTimeoutMs,
           maxBuffer: 1024 * 1024,
           reject: false,

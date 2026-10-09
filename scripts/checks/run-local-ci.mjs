@@ -1,5 +1,6 @@
 import { execFileSync } from "node:child_process";
 import { existsSync } from "node:fs";
+import { resolveFullCiResourceProfile } from "../lib/local-ci-resource-profile.mjs";
 
 import { buildLocalCiExecutionPlan, parseChangedFilesEnv } from "../lib/local-ci-selection.mjs";
 import { withFrameworkBuildLock } from "../lib/framework-build-lock.mjs";
@@ -460,6 +461,8 @@ async function runTargetedFastPath(plan) {
 
 async function runFullFastPath() {
   const startedAt = performance.now();
+  const resources = resolveFullCiResourceProfile(baseEnv);
+  process.stdout.write(`${JSON.stringify(resources)}\n`);
   const buildResult = await runVerificationGroups(
     [{ id: "build", command: "bun", args: ["run", "build"] }],
     { concurrency: 1, cwd: process.cwd(), env: baseEnv },
@@ -470,7 +473,8 @@ async function runFullFastPath() {
   const groupEnv = {
     ...testEnv,
     AGENTPLANE_LOCAL_CI_RUN_CLI_DOCS: runCliDocsCheck ? "1" : "0",
-    AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS: String(LOCAL_VITEST_SUITE_TIMEOUT_MS),
+    AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS: String(resources.group_timeout_ms),
+    AGENTPLANE_LOCAL_LINT_HEAP_MB: String(resources.lint_heap_mb),
     AGENTPLANE_FAST_VITEST_MAX_WORKERS: LOCAL_FAST_VITEST_MAX_WORKERS,
   };
   const groups = executionPlan.execution_groups.map((id) => ({
@@ -478,7 +482,7 @@ async function runFullFastPath() {
     command: process.execPath,
     args: ["scripts/checks/run-local-ci-group.mjs", id],
     env: groupEnv,
-    timeoutMs: LOCAL_VITEST_SUITE_TIMEOUT_MS,
+    timeoutMs: resources.group_timeout_ms,
   }));
   // Preserve every selected group and aggregate failure while isolating the
   // lifecycle-heavy runtime and CLI waves from the concurrent core worker pool.

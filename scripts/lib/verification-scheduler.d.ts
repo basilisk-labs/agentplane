@@ -10,6 +10,13 @@ export type VerificationGroupResult = {
   id: string;
   exit_code: number;
   timed_out: boolean;
+  failure_kind?:
+    | "timeout"
+    | "out_of_memory"
+    | "assertion_failure"
+    | "infrastructure_failure"
+    | "command_failure"
+    | null;
   duration_ms: number;
   started_at_ms: number;
   finished_at_ms: number;
@@ -23,6 +30,11 @@ export type VerificationGroupSummary = {
   ok: boolean;
   groups: Array<Pick<VerificationGroupResult, "id" | "exit_code" | "timed_out" | "duration_ms">>;
 };
+
+export function classifyVerificationGroupFailure(
+  result: Pick<VerificationGroupResult, "exit_code" | "timed_out"> &
+    Partial<Pick<VerificationGroupResult, "stdout" | "stderr">>,
+): NonNullable<VerificationGroupResult["failure_kind"]> | null;
 
 export function runVerificationGroups(
   groups: VerificationGroup[],
