@@ -6,14 +6,14 @@ Created: 2026-10-08T15:45:59.205Z
 
 - Task: `202610081434-RDZE4P`
 - Title: Resolve open consumer lifecycle defects 6054 and 6067-6079 before 0.7.13
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610081434-RDZE4P/resolve-open-consumer-lifecycle-defects-6054-and`
 - Canonical task record: `.agentplane/tasks/202610081434-RDZE4P/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Canonical validation sha256:f678b7484e5a03eadbc520d3d32f83f193d86c1f243346711dc110ee5bf8389b
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

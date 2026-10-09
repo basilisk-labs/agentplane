@@ -16,7 +16,7 @@ User requests checking current GitHub issues and fixing all defects before relea
 ## Verification
 
 - State: ok
-- Note: Canonical validation sha256:f678b7484e5a03eadbc520d3d32f83f193d86c1f243346711dc110ee5bf8389b
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>

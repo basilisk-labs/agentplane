@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 948c8e0d66f668500e4100ad1895d68f7cda11bf..ffac1358b4cd599ba45c445a9a84dd2e6060ebe7",
+      "command": "git diff --check ffac1358b4cd599ba45c445a9a84dd2e6060ebe7..22f61e1bfc78553c338c31971c464a69d671c358",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 948c8e0d66f668500e4100ad1895d68f7cda11bf..ffac1358b4cd599ba45c445a9a84dd2e6060ebe7",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB ffac1358b4cd599ba45c445a9a84dd2e6060ebe7..22f61e1bfc78553c338c31971c464a69d671c358",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -24,10 +24,7 @@
         "M\t.agentplane/tasks/202610081434-RDZE4P/pr/review.md",
         "M\t.agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202610081434-RDZE4P/supervision/implementation-evidence.json",
-        "M\tpackages/agentplane/src/commands/context/verify-task.maximum-assimilation.unit.test.ts",
-        "M\tpackages/agentplane/src/commands/evidence/evidence.command.test.ts",
-        "M\tpackages/agentplane/src/commands/task/configured-authority.test.ts",
-        "M\tpackages/agentplane/src/commands/workflow.test.ts"
+        "M\tpackages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts"
       ]
     },
     {
@@ -37,8 +34,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "948c8e0d66f668500e4100ad1895d68f7cda11bf",
-  "implementation_commit": "ffac1358b4cd599ba45c445a9a84dd2e6060ebe7",
+  "execution_base_commit": "ffac1358b4cd599ba45c445a9a84dd2e6060ebe7",
+  "implementation_commit": "22f61e1bfc78553c338c31971c464a69d671c358",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [

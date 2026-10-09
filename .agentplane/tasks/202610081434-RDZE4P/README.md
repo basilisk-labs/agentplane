@@ -1,10 +1,10 @@
 ---
 id: "202610081434-RDZE4P"
 title: "Resolve open consumer lifecycle defects 6054 and 6067-6079 before 0.7.13"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
-revision: 84
+revision: 94
 origin:
   system: "manual"
 depends_on: []
@@ -17,30 +17,30 @@ verify:
   - "bun run typecheck"
 plan_approval:
   state: "approved"
-  updated_at: "2026-10-09T17:42:13.449Z"
+  updated_at: "2026-10-09T17:52:21.952Z"
   updated_by: "USER"
   note: "Projected from the approved canonical Task Kernel plan."
 verification:
   state: "ok"
-  updated_at: "2026-10-09T05:42:27.465Z"
+  updated_at: "2026-10-09T18:37:03.521Z"
   updated_by: "SUPERVISOR"
-  note: "Canonical validation sha256:f678b7484e5a03eadbc520d3d32f83f193d86c1f243346711dc110ee5bf8389b"
-  attempts: 1
+  note: "Verified: canonical Task Kernel final checks passed."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-10-09T16:44:52.688Z"
+  updated_at: "2026-10-09T17:52:21.952Z"
   updated_by: "EVALUATOR"
   note: "Canonical EVALUATOR review passed."
-  evaluated_sha: "ffac1358b4cd599ba45c445a9a84dd2e6060ebe7"
-  review_identity_digest: "sha256:02e7f2f3a1b7c94fa46c63b15cb48675f608f14668aa295e87fdeb5cd06e8e2a"
+  evaluated_sha: "22f61e1bfc78553c338c31971c464a69d671c358"
+  review_identity_digest: "sha256:29fea8deb406a55d810e650cb2084c7ecceeef4f56ccf6b6a99584095f220935"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202610081434-RDZE4P/dc11e77e0b3a487baf2db52171f0249df66f97a138f827731870beffeb0a9949/quality-report.json"
+    - "../../../.git/agentplane/kernel/exchanges/202610081434-RDZE4P/45b7a38524d24dbf7449248cfd8dfefd13f3198d58c07778160517e4d0ff163f/quality-report.json"
   findings:
-    - "Validated the complete WorkOrder context source, all 13 context block digests and byte lengths, all four required input digests, and the unchanged result schema digest. HEAD and tree match native repository evidence."
-    - "Reviewed the complete four-file test diff against 948c8e0d66f668500e4100ad1895d68f7cda11bf. Real Git fixtures and complete default configurations satisfy canonical task discovery prerequisites while preserving receipt, authority, integrity and custom workflow-path assertions."
-    - "The workflow error expectations match the explicit production error codes and now also assert exact messages. Restoring spies after each test prevents a failed capability assertion from contaminating subsequent tests. No production guard, test selection, skip condition or validation threshold changed."
-    - "The preceding final-validation artifact records 13 failures across four files. The implementation report records their reproduction followed by 46 passing targeted tests and a final 24-test workflow rerun. Native evidence independently records successful unchanged typecheck and all 34 critical tests for this implementation."
+    - "Validated the context source digest, all 13 context block digests and byte lengths, all four required input digests and the result schema digest. Repository HEAD and tree match the native evidence."
+    - "The complete source diff against ffac1358b4cd599ba45c445a9a84dd2e6060ebe7 changes only the nested-suite wrapper timeout from 60000 to 180000 milliseconds. The nested command, its test selection and worker count, and the assertion requiring 12 passing tests remain unchanged. No product code or security guard changes."
+    - "The preceding native full-validation artifact records exactly one failure: this wrapper exceeded 60000 milliseconds under the six-worker core run, while 6802 tests passed. The implementation report records successful isolated nested and wrapper executions. A load-sensitive budget is a supported diagnosis, not proof of a product defect or of concurrent full-suite success."
+    - "Native validation for this implementation records successful unchanged typecheck and all 34 critical tests. The correction report preserves prior evidence and explicitly leaves full final validation pending."
 execution_route:
   frozen: true
   reason_codes:
@@ -101,11 +101,156 @@ execution_contract:
       - "packages/core/src"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "docs"
+      - "packages/agentplane"
+      - "packages/core"
+    changed_paths:
+      - "docs/user/task-lifecycle.mdx"
+      - "packages/agentplane/src/adapters/task-backend/kernel-authority-schema.ts"
+      - "packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts"
+      - "packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts"
+      - "packages/agentplane/src/adapters/task-backend/kernel-projector.ts"
+      - "packages/agentplane/src/adapters/task-backend/kernel-record.ts"
+      - "packages/agentplane/src/cli/error-map.ts"
+      - "packages/agentplane/src/cli/help.all-commands.contract.test.ts"
+      - "packages/agentplane/src/cli/run-cli.core.help-contract.test.ts"
+      - "packages/agentplane/src/cli/spec/help.ts"
+      - "packages/agentplane/src/commands/branch/cleanup-merged-proof.ts"
+      - "packages/agentplane/src/commands/branch/work-start.hook-shim.test.ts"
+      - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
+      - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
+      - "packages/agentplane/src/commands/context/assimilation-supervisor.unit.test.ts"
+      - "packages/agentplane/src/commands/context/verify-task.maximum-assimilation.unit.test.ts"
+      - "packages/agentplane/src/commands/evidence/evidence.command.test.ts"
+      - "packages/agentplane/src/commands/guard/impl/commands.commit-close.unit.test.ts"
+      - "packages/agentplane/src/commands/guard/impl/commands.commit-non-close.unit.test.ts"
+      - "packages/agentplane/src/commands/guard/impl/commit-close.ts"
+      - "packages/agentplane/src/commands/guard/impl/commit.ts"
+      - "packages/agentplane/src/commands/shared/canonical-task-owner.test.ts"
+      - "packages/agentplane/src/commands/shared/hook-shim-template.ts"
+      - "packages/agentplane/src/commands/shared/reconcile-canonical-scope.test.ts"
+      - "packages/agentplane/src/commands/shared/reconcile-check.ts"
+      - "packages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts"
+      - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
+      - "packages/agentplane/src/commands/shared/task-backend.test.ts"
+      - "packages/agentplane/src/commands/shared/task-backend.ts"
+      - "packages/agentplane/src/commands/shared/task-mutation.ts"
+      - "packages/agentplane/src/commands/task/active.command.ts"
+      - "packages/agentplane/src/commands/task/active.command.unit.test.ts"
+      - "packages/agentplane/src/commands/task/advance-task-step.ts"
+      - "packages/agentplane/src/commands/task/close-duplicate.command.ts"
+      - "packages/agentplane/src/commands/task/close-duplicate.ts"
+      - "packages/agentplane/src/commands/task/close-noop.command.ts"
+      - "packages/agentplane/src/commands/task/close-noop.ts"
+      - "packages/agentplane/src/commands/task/comment.ts"
+      - "packages/agentplane/src/commands/task/comment.unit.test.ts"
+      - "packages/agentplane/src/commands/task/configured-authority.test.ts"
+      - "packages/agentplane/src/commands/task/kernel-authority-delta-stop.ts"
+      - "packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts"
+      - "packages/agentplane/src/commands/task/kernel-bookkeeping.ts"
+      - "packages/agentplane/src/commands/task/kernel-exchange.test.ts"
+      - "packages/agentplane/src/commands/task/kernel-exchange.ts"
+      - "packages/agentplane/src/commands/task/kernel-final-validation.test.ts"
+      - "packages/agentplane/src/commands/task/kernel-final-validation.ts"
+      - "packages/agentplane/src/commands/task/kernel-inspection.test.ts"
+      - "packages/agentplane/src/commands/task/kernel-inspection.ts"
+      - "packages/agentplane/src/commands/task/kernel-plan-authority.ts"
+      - "packages/agentplane/src/commands/task/kernel-plan-proposal.ts"
+      - "packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts"
+      - "packages/agentplane/src/commands/task/kernel-repository-coordinator.ts"
+      - "packages/agentplane/src/commands/task/kernel-repository-types.ts"
+      - "packages/agentplane/src/commands/task/kernel-runtime-context.ts"
+      - "packages/agentplane/src/commands/task/kernel-runtime-diagnostics.test.ts"
+      - "packages/agentplane/src/commands/task/kernel-scoped-intake.test.ts"
+      - "packages/agentplane/src/commands/task/kernel-worktree-preparation.test.ts"
+      - "packages/agentplane/src/commands/task/kernel-worktree-preparation.ts"
+      - "packages/agentplane/src/commands/task/kernel-worktree-routing.ts"
+      - "packages/agentplane/src/commands/task/new-duplicates.test.ts"
+      - "packages/agentplane/src/commands/task/new-duplicates.ts"
+      - "packages/agentplane/src/commands/task/scaffold.ts"
+      - "packages/agentplane/src/commands/workflow.test.ts"
+      - "packages/agentplane/src/runner/usecases/kernel-authority-validation.ts"
+      - "packages/agentplane/src/runner/usecases/kernel-authority.ts"
+      - "packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts"
+      - "packages/core/src/tasks/task-kernel/authority-lineage.ts"
+      - "packages/core/src/tasks/task-kernel/bookkeeping.test.ts"
+      - "packages/core/src/tasks/task-kernel/final-recovery.test.ts"
+      - "packages/core/src/tasks/task-kernel/kernel.ts"
+      - "packages/core/src/tasks/task-kernel/model.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "documentation"
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-10"
+        result: "pass"
+      -
+        id: "recorded-check-11"
+        result: "pass"
+      -
+        id: "recorded-check-12"
+        result: "pass"
+      -
+        id: "recorded-check-13"
+        result: "pass"
+      -
+        id: "recorded-check-14"
+        result: "pass"
+      -
+        id: "recorded-check-15"
+        result: "pass"
+      -
+        id: "recorded-check-16"
+        result: "pass"
+      -
+        id: "recorded-check-17"
+        result: "pass"
+      -
+        id: "recorded-check-18"
+        result: "pass"
+      -
+        id: "recorded-check-19"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-20"
+        result: "pass"
+      -
+        id: "recorded-check-21"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
+      -
+        id: "verification-record"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "repository_branch_pr_floor"
@@ -142,19 +287,116 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:35901d19df31843c85da77af700d847d432d492f26ad02847fedee5aa7a02bc3"
+      digest: "sha256:ba16a91e7ce8b25ccb1a8ca77e8b88ad3e934cd6e9c331a9decf47e9624ab487"
       escalation_reasons:
         - "central_component:packages/core/src"
+        - "central_path:packages/agentplane/src/cli/error-map.ts"
+        - "central_path:packages/agentplane/src/cli/help.all-commands.contract.test.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli.core.help-contract.test.ts"
+        - "central_path:packages/agentplane/src/cli/spec/help.ts"
+        - "central_path:packages/agentplane/src/commands/shared/canonical-task-owner.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/hook-shim-template.ts"
+        - "central_path:packages/agentplane/src/commands/shared/reconcile-canonical-scope.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/reconcile-check.ts"
+        - "central_path:packages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
+        - "central_path:packages/agentplane/src/commands/shared/task-backend.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/task-backend.ts"
+        - "central_path:packages/agentplane/src/commands/shared/task-mutation.ts"
+        - "central_path:packages/core/src/tasks/task-kernel/authority-lineage.ts"
+        - "central_path:packages/core/src/tasks/task-kernel/bookkeeping.test.ts"
+        - "central_path:packages/core/src/tasks/task-kernel/final-recovery.test.ts"
+        - "central_path:packages/core/src/tasks/task-kernel/kernel.ts"
+        - "central_path:packages/core/src/tasks/task-kernel/model.ts"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "docs"
+          - "packages/agentplane"
+          - "packages/core"
+        changed_files:
+          - "docs/user/task-lifecycle.mdx"
+          - "packages/agentplane/src/adapters/task-backend/kernel-authority-schema.ts"
+          - "packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts"
+          - "packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts"
+          - "packages/agentplane/src/adapters/task-backend/kernel-projector.ts"
+          - "packages/agentplane/src/adapters/task-backend/kernel-record.ts"
+          - "packages/agentplane/src/cli/error-map.ts"
+          - "packages/agentplane/src/cli/help.all-commands.contract.test.ts"
+          - "packages/agentplane/src/cli/run-cli.core.help-contract.test.ts"
+          - "packages/agentplane/src/cli/spec/help.ts"
+          - "packages/agentplane/src/commands/branch/cleanup-merged-proof.ts"
+          - "packages/agentplane/src/commands/branch/work-start.hook-shim.test.ts"
+          - "packages/agentplane/src/commands/branch/work-start.materialize.test.ts"
+          - "packages/agentplane/src/commands/branch/work-start.materialize.ts"
+          - "packages/agentplane/src/commands/context/assimilation-supervisor.unit.test.ts"
+          - "packages/agentplane/src/commands/context/verify-task.maximum-assimilation.unit.test.ts"
+          - "packages/agentplane/src/commands/evidence/evidence.command.test.ts"
+          - "packages/agentplane/src/commands/guard/impl/commands.commit-close.unit.test.ts"
+          - "packages/agentplane/src/commands/guard/impl/commands.commit-non-close.unit.test.ts"
+          - "packages/agentplane/src/commands/guard/impl/commit-close.ts"
+          - "packages/agentplane/src/commands/guard/impl/commit.ts"
+          - "packages/agentplane/src/commands/shared/canonical-task-owner.test.ts"
+          - "packages/agentplane/src/commands/shared/hook-shim-template.ts"
+          - "packages/agentplane/src/commands/shared/reconcile-canonical-scope.test.ts"
+          - "packages/agentplane/src/commands/shared/reconcile-check.ts"
+          - "packages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts"
+          - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
+          - "packages/agentplane/src/commands/shared/task-backend.test.ts"
+          - "packages/agentplane/src/commands/shared/task-backend.ts"
+          - "packages/agentplane/src/commands/shared/task-mutation.ts"
+          - "packages/agentplane/src/commands/task/active.command.ts"
+          - "packages/agentplane/src/commands/task/active.command.unit.test.ts"
+          - "packages/agentplane/src/commands/task/advance-task-step.ts"
+          - "packages/agentplane/src/commands/task/close-duplicate.command.ts"
+          - "packages/agentplane/src/commands/task/close-duplicate.ts"
+          - "packages/agentplane/src/commands/task/close-noop.command.ts"
+          - "packages/agentplane/src/commands/task/close-noop.ts"
+          - "packages/agentplane/src/commands/task/comment.ts"
+          - "packages/agentplane/src/commands/task/comment.unit.test.ts"
+          - "packages/agentplane/src/commands/task/configured-authority.test.ts"
+          - "packages/agentplane/src/commands/task/kernel-authority-delta-stop.ts"
+          - "packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts"
+          - "packages/agentplane/src/commands/task/kernel-bookkeeping.ts"
+          - "packages/agentplane/src/commands/task/kernel-exchange.test.ts"
+          - "packages/agentplane/src/commands/task/kernel-exchange.ts"
+          - "packages/agentplane/src/commands/task/kernel-final-validation.test.ts"
+          - "packages/agentplane/src/commands/task/kernel-final-validation.ts"
+          - "packages/agentplane/src/commands/task/kernel-inspection.test.ts"
+          - "packages/agentplane/src/commands/task/kernel-inspection.ts"
+          - "packages/agentplane/src/commands/task/kernel-plan-authority.ts"
+          - "packages/agentplane/src/commands/task/kernel-plan-proposal.ts"
+          - "packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts"
+          - "packages/agentplane/src/commands/task/kernel-repository-coordinator.ts"
+          - "packages/agentplane/src/commands/task/kernel-repository-types.ts"
+          - "packages/agentplane/src/commands/task/kernel-runtime-context.ts"
+          - "packages/agentplane/src/commands/task/kernel-runtime-diagnostics.test.ts"
+          - "packages/agentplane/src/commands/task/kernel-scoped-intake.test.ts"
+          - "packages/agentplane/src/commands/task/kernel-worktree-preparation.test.ts"
+          - "packages/agentplane/src/commands/task/kernel-worktree-preparation.ts"
+          - "packages/agentplane/src/commands/task/kernel-worktree-routing.ts"
+          - "packages/agentplane/src/commands/task/new-duplicates.test.ts"
+          - "packages/agentplane/src/commands/task/new-duplicates.ts"
+          - "packages/agentplane/src/commands/task/scaffold.ts"
+          - "packages/agentplane/src/commands/workflow.test.ts"
+          - "packages/agentplane/src/runner/usecases/kernel-authority-validation.ts"
+          - "packages/agentplane/src/runner/usecases/kernel-authority.ts"
+          - "packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts"
+          - "packages/core/src/tasks/task-kernel/authority-lineage.ts"
+          - "packages/core/src/tasks/task-kernel/bookkeeping.test.ts"
+          - "packages/core/src/tasks/task-kernel/final-recovery.test.ts"
+          - "packages/core/src/tasks/task-kernel/kernel.ts"
+          - "packages/core/src/tasks/task-kernel/model.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "documentation"
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -189,13 +431,19 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "ffac1358b4cd599ba45c445a9a84dd2e6060ebe7"
+  hash: "22f61e1bfc78553c338c31971c464a69d671c358"
   message: "AgentPlane-owned canonical implementation commit"
 comments: []
-events: []
+events:
+  -
+    type: "verify"
+    at: "2026-10-09T18:37:03.521Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: canonical Task Kernel final checks passed."
 doc_version: 3
-doc_updated_at: "2026-10-08T14:34:26.721Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-10-09T18:37:05.523Z"
+doc_updated_by: "SUPERVISOR"
 description: "User requests checking current GitHub issues and fixing all defects before release 0.7.13. Reproduce and repair issues 6054 and 6067 through 6079 against current HEAD. Cover task intake scope and tests, final validation rework, dirty base versus clean worktree authority, shared canonical task read and projection consistency, uncertain write diagnostics, unrelated task scan isolation, canonical comments and duplicate/no-op closure, relocated hook runner, transport ownership diagnostics, Unicode duplicate matching, catalog help resolution, typed authority errors, mixed legacy canonical task selection, and canonical scaffold identity protection. Preserve all authority checks and user data. Add focused regression tests and complete native validation and independent review. Assess proposal 6050 separately without adding an unsolicited third-party integration. Keep package versions unchanged and do not publish the release. Preserve concurrent M05 work and existing task history."
 sections:
   Summary: |-
@@ -221,6 +469,161 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-10-09T18:37:03.521Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: canonical Task Kernel final checks passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c5b0883b87c67319d4d2505c70519d39baf7bf20e33086f5ae56ba2373d7f24f, input_digest=sha256:59f431d4d50299c0679a85295ff422ed26435c688722917dc8ffe021676608c2
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610081434-RDZE4P Verification Contract check affected_unit_integration (1/5)
+
+    Check: affected_unit_integration
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610081434-RDZE4P Verification Contract check affected_unit_integration (2/5)
+
+    Check: affected_unit_integration
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610081434-RDZE4P Verification Contract check affected_unit_integration (3/5)
+
+    Check: affected_unit_integration
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610081434-RDZE4P Verification Contract check affected_unit_integration (4/5)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202610081434-RDZE4P Verification Contract check affected_unit_integration (5/5)
+
+    Check: critical_paths
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610081434-RDZE4P Verification Contract check critical_paths (1/5)
+
+    Check: critical_paths
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610081434-RDZE4P Verification Contract check critical_paths (2/5)
+
+    Check: critical_paths
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610081434-RDZE4P Verification Contract check critical_paths (3/5)
+
+    Check: critical_paths
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610081434-RDZE4P Verification Contract check critical_paths (4/5)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202610081434-RDZE4P Verification Contract check critical_paths (5/5)
+
+    Check: docs_contract
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610081434-RDZE4P Verification Contract check docs_contract (1/5)
+
+    Check: docs_contract
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610081434-RDZE4P Verification Contract check docs_contract (2/5)
+
+    Check: docs_contract
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610081434-RDZE4P Verification Contract check docs_contract (3/5)
+
+    Check: docs_contract
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610081434-RDZE4P Verification Contract check docs_contract (4/5)
+
+    Check: docs_contract
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202610081434-RDZE4P Verification Contract check docs_contract (5/5)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202610081434-RDZE4P Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610081434-RDZE4P Verification Contract check task_outcome (1/5)
+
+    Check: task_outcome
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610081434-RDZE4P Verification Contract check task_outcome (2/5)
+
+    Check: task_outcome
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610081434-RDZE4P Verification Contract check task_outcome (3/5)
+
+    Check: task_outcome
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610081434-RDZE4P Verification Contract check task_outcome (4/5)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202610081434-RDZE4P Verification Contract check task_outcome (5/5)
+
+    NativeTaskIdentityRef:
+    - plan_digest: sha256:11bcfb155d330a8b8956150030cba825314704ef7330fcf7afee1d1fd4b69438
+    - policy_digest: sha256:1150ba6caefe9e829c30b3520b9246ed1ec7ebbeedbe788c63cf7989015dbb46
+    - capability_digest: sha256:2577b371124dff820c94819677f936375baa8941c11fa0e1214cc2637b04061a
+    - checks_digest: sha256:33095bbdc7f6937f2c658d1dc6bb5f8f1af944f2b37776fd12f3dd9afac3a4c4
+    - identity_digest: sha256:e63236c0470b212963763030a4395641542442e471b16fe19a6afea4f1d8e1b3
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -228,22 +631,22 @@ sections:
   Findings: ""
 extensions:
   agentplane.kernel_operational_projection:
-    digest: "sha256:c6f04572b36124bbd2af396811e27cc8d565edce598029d4eefa2c9573e79a98"
+    digest: "sha256:ce3818f910f88707c05d774b13a1d4926234861a0d6591ecf42dfaf7c2aa17b5"
     evidence_refs:
-      - "../../../.git/agentplane/kernel/exchanges/202610081434-RDZE4P/dc11e77e0b3a487baf2db52171f0249df66f97a138f827731870beffeb0a9949/quality-report.json"
+      - "../../../.git/agentplane/kernel/exchanges/202610081434-RDZE4P/45b7a38524d24dbf7449248cfd8dfefd13f3198d58c07778160517e4d0ff163f/quality-report.json"
     findings:
-      - "Validated the complete WorkOrder context source, all 13 context block digests and byte lengths, all four required input digests, and the unchanged result schema digest. HEAD and tree match native repository evidence."
-      - "Reviewed the complete four-file test diff against 948c8e0d66f668500e4100ad1895d68f7cda11bf. Real Git fixtures and complete default configurations satisfy canonical task discovery prerequisites while preserving receipt, authority, integrity and custom workflow-path assertions."
-      - "The workflow error expectations match the explicit production error codes and now also assert exact messages. Restoring spies after each test prevents a failed capability assertion from contaminating subsequent tests. No production guard, test selection, skip condition or validation threshold changed."
-      - "The preceding final-validation artifact records 13 failures across four files. The implementation report records their reproduction followed by 46 passing targeted tests and a final 24-test workflow rerun. Native evidence independently records successful unchanged typecheck and all 34 critical tests for this implementation."
-    implementation_commit: "ffac1358b4cd599ba45c445a9a84dd2e6060ebe7"
-    implementation_tree: "d3edf6fda730e46094cee861c69019d1cdc304d0"
-    projected_at: "2026-10-09T16:44:52.688Z"
-    review_identity_digest: "sha256:02e7f2f3a1b7c94fa46c63b15cb48675f608f14668aa295e87fdeb5cd06e8e2a"
+      - "Validated the context source digest, all 13 context block digests and byte lengths, all four required input digests and the result schema digest. Repository HEAD and tree match the native evidence."
+      - "The complete source diff against ffac1358b4cd599ba45c445a9a84dd2e6060ebe7 changes only the nested-suite wrapper timeout from 60000 to 180000 milliseconds. The nested command, its test selection and worker count, and the assertion requiring 12 passing tests remain unchanged. No product code or security guard changes."
+      - "The preceding native full-validation artifact records exactly one failure: this wrapper exceeded 60000 milliseconds under the six-worker core run, while 6802 tests passed. The implementation report records successful isolated nested and wrapper executions. A load-sensitive budget is a supported diagnosis, not proof of a product defect or of concurrent full-suite success."
+      - "Native validation for this implementation records successful unchanged typecheck and all 34 critical tests. The correction report preserves prior evidence and explicitly leaves full final validation pending."
+    implementation_commit: "22f61e1bfc78553c338c31971c464a69d671c358"
+    implementation_tree: "ecdbd1bc1b07b3846e600a4a2ce60bcbbe2b2b52"
+    projected_at: "2026-10-09T17:52:21.952Z"
+    review_identity_digest: "sha256:29fea8deb406a55d810e650cb2084c7ecceeef4f56ccf6b6a99584095f220935"
     schema_version: 1
     source: "task_kernel"
-    verification_evidence_digest: "sha256:8d2993baf05710176fae3f8131ff56695e27833ecd93d290927eb22a0dad9727"
-    work_order_id: "sha256:6801783580c8408209deb93f89ed11c1b33825f29f6517450d060e02752f6f29"
+    verification_evidence_digest: "sha256:374d56de8e8c7f5847571895cfb5ff8b05cd7d3a4fded6aaa03d266006141cf0"
+    work_order_id: "sha256:019a004d4aa08bd6bff5d311b6c6be8ee7571a574a132002b735317d70cc18ff"
   task_execution_context:
     base_ref: "main"
     base_sha: "3dbcbad442bbeaadd73e6e698180c8cbaad55b30"
@@ -1738,6 +2141,96 @@ extensions:
             evidence_digest: "sha256:5ad8d93e6ebd586dc22078d8a63bb8136858ee7b7908ea4fea2b6f4f81709a13"
             kind: "plan_amendment"
             previous_fingerprint: "sha256:0e53e7f43127583933721a42176a2aa7fde43e28b689348d1c6f2923287f4a2a"
+        -
+          approval_mode: null
+          authority:
+            capabilities:
+              - "repository_write"
+            completion_requirements:
+              - "work_item_validation"
+              - "final_validation"
+            digest: "sha256:118b009ccc5dc7de91fc8208ba5a50e4b740ddd3cff5e17a3a43383a28e7d88b"
+            expires_at: null
+            external_effects: []
+            plan_digest: "sha256:11bcfb155d330a8b8956150030cba825314704ef7330fcf7afee1d1fd4b69438"
+            plan_revision: 4
+            policy_digests:
+              - "sha256:a91910e9592eefc136734171b90572e87ed161b2792c6aad955db92404621eed"
+            provenance:
+              actor_id: "agentplane:kernel-controller"
+              evidence_digest: "sha256:9d68f54ed6aee541f66516ca180dc918f0f6d22aa3a1dec2d8c914624e4ea829"
+              kind: "SYSTEM"
+              parent_authority_digest: "sha256:9bcd493e8f3aecd163928b4b051eb25ebea4f47e3630c7be7735c77fcf78b38c"
+            repository_effects:
+              - "documentation"
+              - "repository_write"
+              - "source_code"
+              - "tests"
+            repository_fingerprint: "sha256:08aca76b5ea2fb336d34a8515562a0aaa95529c3833b319f3752c956038ead54"
+            repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+            resources: []
+            risk:
+              implementation: "bounded"
+              requirements: "bounded"
+              reversibility: "reversible"
+            scope_roots:
+              - ".agentplane/tmp/60QH9J-hosted-contract.log"
+              - ".agentplane/tmp/60QH9J-hosted-static.log"
+              - ".agentplane/tmp/60QH9J-pre-fast-forward-schema.json"
+              - ".agentplane/tmp/K43XFE-pre-fast-forward/202609300615-DE9AE6.json"
+              - ".agentplane/tmp/K43XFE-pre-fast-forward/202609301727-VET3VW.json"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6042-body.md"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6042-ci.log"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6042-core-retry.log"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6042-core-tests.log"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6042-lint-shards.log"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6044-body.md"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6044-bootstrap.log"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6044-build.log"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6044-coverage.log"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6044-original-body.md"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6044-replay-fixed.log"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6044-review-body.md"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6044-reviewed.patch"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6044.patch"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6045-original-body.md"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6045-review-body.md"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6048-anchor-build-debug.log"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6048-body.md"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6048-bootstrap.log"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6048-ci.log"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6048-in-progress.patch"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6048-lint-main-delta.log"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6048-lint.log"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6048-memory-install.log"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6048-original-body.md"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6048-replay-check.log"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6048-replay-fixed.log"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6048-review-body.md"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6048-reviewed.patch"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6048-typecheck.log"
+              - ".agentplane/tmp/pr-integration-MP3J6N/6048.patch"
+              - ".agentplane/tmp/pr-integration-MP3J6N/integration-result.json"
+              - "docs/user"
+              - "packages/agentplane/assets"
+              - "packages/agentplane/src"
+              - "packages/agentplane/tsup.config.bundled_gb1x1suwt6t.mjs"
+              - "packages/core/src"
+            task_id: "202610081434-RDZE4P"
+            validation_requirements:
+              - "affected_unit_integration"
+              - "critical_paths"
+              - "docs_contract"
+              - "full_regression"
+              - "hosted_integration"
+              - "task_outcome"
+            work_item_id: null
+          observation:
+            changed_paths:
+              - "packages/agentplane/src/commands/shared/roadmap-rework-conservation.test.ts"
+            evidence_digest: "sha256:c2b77824c87e25b0d8345f6fc4e0571ce2a81a6b99a5c8e46ddadf382a8e2f3e"
+            kind: "repository_implementation"
+            previous_fingerprint: "sha256:0e53e7f43127583933721a42176a2aa7fde43e28b689348d1c6f2923287f4a2a"
       controller_transfer: null
       current_plan:
         approval_actor_id: "USER"
@@ -1906,7 +2399,17 @@ extensions:
             optional: false
             required_inputs: []
       effects: []
-      final_validation: null
+      final_validation:
+        evidence_digests:
+          - "sha256:374d56de8e8c7f5847571895cfb5ff8b05cd7d3a4fded6aaa03d266006141cf0"
+        identity:
+          check_id: "canonical-final-contracts-v2"
+          command_digest: "sha256:9fae2547eceb99ed74a9c52f1e2f396c4c978dc24aa568bae9430a4acd2b2512"
+          environment_digest: "sha256:94f73fa4e70a1d56e236efb2c6ddf63194e15e788e7dbadda87b02fab15610b8"
+          implementation_identity: "sha256:08aca76b5ea2fb336d34a8515562a0aaa95529c3833b319f3752c956038ead54"
+          toolchain_digest: "sha256:4685ca015853100273abe7eb3393e2b7d4ec568a10ab8b17e84dd338dd045f52"
+        observed_at: "2026-10-09T17:52:59.530Z"
+        status: "PASSED"
       id: "202610081434-RDZE4P"
       intent_digest: "sha256:3ad85fa320d689fdcd8c8fc6e6623e9aa2fab47cbefa23171aebb1afa90328c7"
       migration_receipts: []
@@ -1956,6 +2459,15 @@ extensions:
           event_digests:
             - "sha256:ccfb34545441b3566af0dba2e0341b5e2793b8f414cb2c96bf44c6c8f7064f49"
           mutation_id: "final-validation:sha256:13a17d8de32957673b74f1b675f067dbaeb1bf3106154b77bc81babee68b89c2:40"
+        final-validation:sha256:374d56de8e8c7f5847571895cfb5ff8b05cd7d3a4fded6aaa03d266006141cf0:75:
+          after_revision: 76
+          aggregate_digest: "sha256:157e843c5cac5d56198792ed3af5bb59ddc8f0c3033152f8e069f5788721b6aa"
+          before_revision: 75
+          command_digest: "sha256:fc3162a5815aa75a0801cf7aa8a29833344c7e501bc7d0d3d1161329d614d172"
+          effect_ids: []
+          event_digests:
+            - "sha256:e35d310e75366ea15f6e85b273975ae17b0bddcb8032142e8ae80f983c578391"
+          mutation_id: "final-validation:sha256:374d56de8e8c7f5847571895cfb5ff8b05cd7d3a4fded6aaa03d266006141cf0:75"
         final-validation:sha256:88fded2a7f172f048bfe3c833900adfc86e4a4ad1754867a75df2fe80e6532a3:55:
           after_revision: 56
           aggregate_digest: "sha256:b470bc4357a20ba5c8bb3b92eabf1d9e662ac058fe9897c449ebc9ccd2eddf5c"
@@ -1974,6 +2486,15 @@ extensions:
           event_digests:
             - "sha256:b8dbc0fc4f5e45db6033473fa8d361a66ad16d637d893f3c1a4326d47b815f7b"
           mutation_id: "final-validation:sha256:f7ab3b27ed5be0773e12e8fa72704ade2d60a152f6ebda16c3546fec39da4fb3:65"
+        kernel_task_completion_required:sha256:3be20226fc349c28c1d0aa0e506af12f445e207f6b24472861382abc20ee34e1:sha256:08aca76b5ea2fb336d34a8515562a0aaa95529c3833b319f3752c956038ead54:
+          after_revision: 77
+          aggregate_digest: "sha256:94180eb6781c0fd48355ea9f556b87a67c489e910063227981ffb6d13dfc47a7"
+          before_revision: 76
+          command_digest: "sha256:f4d0ffdbc42ad09fbb5dc29629de9876d6e2e2d29f7c9cea75cfcd5b88d3884f"
+          effect_ids: []
+          event_digests:
+            - "sha256:41d531d4c85100da5affeb705da2ba66b3277f84cd10c227ccd8b0417d66c69f"
+          mutation_id: "kernel_task_completion_required:sha256:3be20226fc349c28c1d0aa0e506af12f445e207f6b24472861382abc20ee34e1:sha256:08aca76b5ea2fb336d34a8515562a0aaa95529c3833b319f3752c956038ead54"
         kernel_work_item_claim_required:sha256:0888c58559f9a630305206bb3ca664b8da367256554e63c7b81c94912d19de85:sha256:e7f9728974d8419bd04ca6e6458a37214ee4fe2f555e09b677197b8efa41980b:
           after_revision: 5
           aggregate_digest: "sha256:5f114d809cdeed158348ae99e140cc4a9788031833fff1b12ad9098fee22c22b"
@@ -2163,6 +2684,15 @@ extensions:
           event_digests:
             - "sha256:a957a15ea6ab0c6324a3bfe8c195b7bd7a6e24b854a6f656faf7e9ad0ad68f13"
           mutation_id: "kernel_work_item_inspection_required:sha256:4deed1e638b83c658ee508ec5f60befaf8a0d73d49cda7191a9140f5dd40281f:sha256:065649651a47a458ef29e475ec3aa897078b97d872aacda7a0864568855edba9"
+        kernel_work_item_inspection_required:sha256:ba18d3da409c0f91d5c1661dedc2d90414423896b14332b13d6f76ad23760f00:sha256:08aca76b5ea2fb336d34a8515562a0aaa95529c3833b319f3752c956038ead54:
+          after_revision: 73
+          aggregate_digest: "sha256:c4aa05ec076eae27cbb33d7893fb335e7f9325ed8e36bfb92ef7321ad44c80f3"
+          before_revision: 72
+          command_digest: "sha256:d630fe682310ebefffe891564822f966cb375029c23689a55eaf91d3b023186c"
+          effect_ids: []
+          event_digests:
+            - "sha256:c816756a4737eb356a7a9eafa650df1b3ddabac67b9318dd0354976cd0a5a8b9"
+          mutation_id: "kernel_work_item_inspection_required:sha256:ba18d3da409c0f91d5c1661dedc2d90414423896b14332b13d6f76ad23760f00:sha256:08aca76b5ea2fb336d34a8515562a0aaa95529c3833b319f3752c956038ead54"
         kernel_work_item_inspection_required:sha256:d426592230a09c6eb72387d4caefbfb86b4d1789a96041c1755020c49f99df23:sha256:94602d85400682fd4533373035cc27bb5fbc9e4db67eeb1dc30b8aded24d53ff:
           after_revision: 38
           aggregate_digest: "sha256:eb94f4d729d96f587b26cdd4a89f921718bdc193dcc7fdcdd489521d4f9475c5"
@@ -2199,6 +2729,15 @@ extensions:
           event_digests:
             - "sha256:583f630d5b8a6259eb18ca4a6f638904247db543da5ac80a0efe675873755ba0"
           mutation_id: "kernel_work_item_materialization_required:sha256:324a52f1fb024d8675cfb7d89b7083e8d460115c990adbbc690a877fa855cfad:sha256:e7f9728974d8419bd04ca6e6458a37214ee4fe2f555e09b677197b8efa41980b"
+        result:sha256:019a004d4aa08bd6bff5d311b6c6be8ee7571a574a132002b735317d70cc18ff:
+          after_revision: 72
+          aggregate_digest: "sha256:27d215fd1ad3da09e3ce5fbc0a1a0028a196a9f101027255c102b8a9305ab06c"
+          before_revision: 71
+          command_digest: "sha256:1e72a6bdb2763a88c7d5354c59256b5b4559c11468e0789dc445795da7c1aa92"
+          effect_ids: []
+          event_digests:
+            - "sha256:1efeae97f9d2f54044bf687bbb7f0e3cc351651814e30bac1dd5381b8194e209"
+          mutation_id: "result:sha256:019a004d4aa08bd6bff5d311b6c6be8ee7571a574a132002b735317d70cc18ff"
         result:sha256:18017d86b0bbc97accceeb97a7db2383cee6c227a2e919a4506f7321ebb55e80:
           after_revision: 30
           aggregate_digest: "sha256:f9a35a1c2c163f30b3057ee523130e29d4d0db57b56aba31553658a9085732ed"
@@ -2289,6 +2828,15 @@ extensions:
           event_digests:
             - "sha256:aa7252c699de2caa83f181e8033182778ceef0637290d9b6064886c2d4f142ad"
           mutation_id: "sha256:334e5b78757b531c15950b1bd32e4a325960237c803f53e5b915e0b93b82cc35"
+        sha256:3841282ee12fc7a6fff4815c387b5e1dc7fa93ed73d020a275db3657711e8166:
+          after_revision: 71
+          aggregate_digest: "sha256:3fcb5c0a951c106497cb27d1220c9bd145db59d5c65f5925483f8c4d5b4a79d4"
+          before_revision: 70
+          command_digest: "sha256:493b6fa77c3f7f5b2186b38ccbd3358a6ddc2c7e1231c5f1f64287a59112398e"
+          effect_ids: []
+          event_digests:
+            - "sha256:bc4bc358d275d39870aaa82552fbb3b30b47dab4bcb080ddaa37f6d5ab22664a"
+          mutation_id: "sha256:3841282ee12fc7a6fff4815c387b5e1dc7fa93ed73d020a275db3657711e8166"
         sha256:3ec3864295574b45f9d414f6961fdf6da8acfb7ea404ff8ffb558d5316bd7c26:
           after_revision: 6
           aggregate_digest: "sha256:ebdb00e9492b69a4334c912299fa11d3bd5fe4c6a5da9fe73c4729a7f3525a2a"
@@ -2451,6 +2999,15 @@ extensions:
           event_digests:
             - "sha256:6d40d21ded1e2c1ce1b2a81f2bf52ce90a97c89fa8480d97bcba9de870d187dd"
           mutation_id: "validation-resolution:sha256:8fd3fccc8c606c29e5b36491b91fcc9c4f95000b2692119ccf5c3efb5a3ef979"
+        validation-resolution:sha256:c5e62737051aa991ffb40bbf665799f70b68e8bbb3a70158ff60c3baeebd3f58:
+          after_revision: 75
+          aggregate_digest: "sha256:7e9ab9c6fc2364715ae0ff6be35086cea643f4789fec53b9b5facaf2c80c96ba"
+          before_revision: 74
+          command_digest: "sha256:8729e07a2dfc00650e3d602a6b1ca02eb5bf3d6fb0fd7cc3042829efd443e7ff"
+          effect_ids: []
+          event_digests:
+            - "sha256:821fec604e9ab7f81103c7f80cb6788692589dd753f0afe7bb1639b3e87145a2"
+          mutation_id: "validation-resolution:sha256:c5e62737051aa991ffb40bbf665799f70b68e8bbb3a70158ff60c3baeebd3f58"
         validation-resolution:sha256:df14480ba5c769d9455285c7d4a984399df19fba06d27ef58036dd8061c868fb:
           after_revision: 26
           aggregate_digest: "sha256:7ac7a1e38b7e43542116f653da4e2658e302ccecef3543ca75d7173507efaae1"
@@ -2487,6 +3044,15 @@ extensions:
           event_digests:
             - "sha256:2a581da5f6835e2bcf8216c3416ae06af6ad52a84d4925e1ec06d82a30aa6722"
           mutation_id: "validation:sha256:32cf3c484326c0b67e5526bcd6dd3340897b34e644e3b5ed4d66257ffefe28e0"
+        validation:sha256:45b7a38524d24dbf7449248cfd8dfefd13f3198d58c07778160517e4d0ff163f:
+          after_revision: 74
+          aggregate_digest: "sha256:236012258257e23ba8bbbe2c1888cd51bee61157382628c348c8b97efd1baf89"
+          before_revision: 73
+          command_digest: "sha256:24fd33c9d4a7d10eff8a43d207f41651326544d413ac85345ef0b781770eb7a9"
+          effect_ids: []
+          event_digests:
+            - "sha256:4234501c41f165c3ab78dfa85f02d4b9b24de398351d2258be2e6ee121f797b4"
+          mutation_id: "validation:sha256:45b7a38524d24dbf7449248cfd8dfefd13f3198d58c07778160517e4d0ff163f"
         validation:sha256:b04dfd3c09d48c154d0a6ef193e1e2ad75b1218f3c7b26dac225cf314afd5cae:
           after_revision: 18
           aggregate_digest: "sha256:9fe378fcc33b03d5319ed5a7473bf078cbd4f7babee03195214962054a6b0b38"
@@ -2882,9 +3448,9 @@ extensions:
               id: "final-correction-88fded2a7f17"
               optional: false
               required_inputs: []
-      revision: 70
+      revision: 77
       schema_version: 1
-      state: "ACTIVE"
+      state: "COMPLETED"
       work_items:
         authority-and-recovery:
           attempt: 1
@@ -3166,11 +3732,31 @@ extensions:
             id: "final-correction-f7ab3b27ed5b"
             optional: false
             required_inputs: []
-          output_manifests: []
-          result_digest: null
-          revision: 4
-          state: "EXECUTING"
-          validation: null
+          output_manifests:
+            -
+              attempt: 1
+              digest: "sha256:39fa1f7e669d7cac88ad6825dd6d607a645fa866cbb5680e5309515a40a79b2a"
+              id: "final-correction-f7ab3b27ed5b-evidence"
+              kind: "report"
+              plan_revision: 4
+              repository_fingerprint: "sha256:08aca76b5ea2fb336d34a8515562a0aaa95529c3833b319f3752c956038ead54"
+              task_id: "202610081434-RDZE4P"
+              work_item_id: "final-correction-f7ab3b27ed5b"
+          result_digest: "sha256:b8e91be80138513c967d1e8d0d0c23a354871db06ea5f59a834b0ca7a9bd08d4"
+          revision: 8
+          state: "COMPLETED"
+          validation:
+            evidence_digests:
+              - "sha256:a35dd50e6e766c02ab5fa09352ea37ec5eb354c86a45f7f147c2ab406befe1f5"
+              - "sha256:29fea8deb406a55d810e650cb2084c7ecceeef4f56ccf6b6a99584095f220935"
+            identity:
+              check_id: "canonical-contract-and-inspection"
+              command_digest: "sha256:9fae2547eceb99ed74a9c52f1e2f396c4c978dc24aa568bae9430a4acd2b2512"
+              environment_digest: "sha256:1e446ce647cd9924546d5b508f1926309556a4b8a6c9ad6b3cae9052769c662b"
+              implementation_identity: "sha256:b8e91be80138513c967d1e8d0d0c23a354871db06ea5f59a834b0ca7a9bd08d4"
+              toolchain_digest: "sha256:41f556c967f03a69c0cef4ec75be7f8d38201f5dbd7892c6be1827991efef149"
+            observed_at: "2026-10-09T17:52:21.952Z"
+            status: "PASSED"
         hook-relocation-and-documentation:
           attempt: 1
           claim_id: "sha256:a908ca0c36f32af7981c69d4a9541a7d624d1f8e443ce535f4d315865f887028"
@@ -3221,7 +3807,7 @@ extensions:
               toolchain_digest: "sha256:41f556c967f03a69c0cef4ec75be7f8d38201f5dbd7892c6be1827991efef149"
             observed_at: "2026-10-09T07:23:09.105Z"
             status: "PASSED"
-    digest: "sha256:d0045b4c38089be46423b1b25e3e00f5e2157128928c6ccbe62dcce00488b908"
+    digest: "sha256:ff6be92fd21e6314bb7dd68f0ef42015b4399fa6d6212dd9aee2e6bf2c1c9922"
     documents:
       contracts:
         sha256:4c1d8c04ec077eeeb687b7873b008326f98744310de296d024dcb0df461780b2:
@@ -3938,6 +4524,69 @@ extensions:
         payload_digest: "sha256:a2da109a8b181cb6be40337d65b7b1c1a58280bbcff3b880a0a3b52ae2157b03"
         task_id: "202610081434-RDZE4P"
         task_revision: 70
+      -
+        command_digest: "sha256:493b6fa77c3f7f5b2186b38ccbd3358a6ddc2c7e1231c5f1f64287a59112398e"
+        id: "sha256:3841282ee12fc7a6fff4815c387b5e1dc7fa93ed73d020a275db3657711e8166:authority_continued"
+        kind: "authority_continued"
+        mutation_id: "sha256:3841282ee12fc7a6fff4815c387b5e1dc7fa93ed73d020a275db3657711e8166"
+        occurred_at: "2026-10-09T17:47:26.886Z"
+        payload_digest: "sha256:add08c40161eb2107ec032405069f1dd0728f0a2802294af48c88084bce08059"
+        task_id: "202610081434-RDZE4P"
+        task_revision: 71
+      -
+        command_digest: "sha256:1e72a6bdb2763a88c7d5354c59256b5b4559c11468e0789dc445795da7c1aa92"
+        id: "result:sha256:019a004d4aa08bd6bff5d311b6c6be8ee7571a574a132002b735317d70cc18ff:work_item_result_accepted"
+        kind: "work_item_result_accepted"
+        mutation_id: "result:sha256:019a004d4aa08bd6bff5d311b6c6be8ee7571a574a132002b735317d70cc18ff"
+        occurred_at: "2026-10-09T17:47:43.823Z"
+        payload_digest: "sha256:3c09392ea792a6e6fef8799b69c5ce1f9486ab40a3aaa4cf1ddbcf1fdd83845e"
+        task_id: "202610081434-RDZE4P"
+        task_revision: 72
+      -
+        command_digest: "sha256:d630fe682310ebefffe891564822f966cb375029c23689a55eaf91d3b023186c"
+        id: "kernel_work_item_inspection_required:sha256:ba18d3da409c0f91d5c1661dedc2d90414423896b14332b13d6f76ad23760f00:sha256:08aca76b5ea2fb336d34a8515562a0aaa95529c3833b319f3752c956038ead54:work_item_transitioned"
+        kind: "work_item_transitioned"
+        mutation_id: "kernel_work_item_inspection_required:sha256:ba18d3da409c0f91d5c1661dedc2d90414423896b14332b13d6f76ad23760f00:sha256:08aca76b5ea2fb336d34a8515562a0aaa95529c3833b319f3752c956038ead54"
+        occurred_at: "2026-10-09T17:47:57.441Z"
+        payload_digest: "sha256:b5c1e3852767e763689cfdbb3420c7430ee0adbb3f76689f0637445e3fd33ed1"
+        task_id: "202610081434-RDZE4P"
+        task_revision: 73
+      -
+        command_digest: "sha256:24fd33c9d4a7d10eff8a43d207f41651326544d413ac85345ef0b781770eb7a9"
+        id: "validation:sha256:45b7a38524d24dbf7449248cfd8dfefd13f3198d58c07778160517e4d0ff163f:work_item_validation_recorded"
+        kind: "work_item_validation_recorded"
+        mutation_id: "validation:sha256:45b7a38524d24dbf7449248cfd8dfefd13f3198d58c07778160517e4d0ff163f"
+        occurred_at: "2026-10-09T17:52:35.513Z"
+        payload_digest: "sha256:b5158105fd0945de83638a8e63add32c3f25eacafdb50b42df4f0a554e7cb1da"
+        task_id: "202610081434-RDZE4P"
+        task_revision: 74
+      -
+        command_digest: "sha256:8729e07a2dfc00650e3d602a6b1ca02eb5bf3d6fb0fd7cc3042829efd443e7ff"
+        id: "validation-resolution:sha256:c5e62737051aa991ffb40bbf665799f70b68e8bbb3a70158ff60c3baeebd3f58:work_item_transitioned"
+        kind: "work_item_transitioned"
+        mutation_id: "validation-resolution:sha256:c5e62737051aa991ffb40bbf665799f70b68e8bbb3a70158ff60c3baeebd3f58"
+        occurred_at: "2026-10-09T17:52:45.579Z"
+        payload_digest: "sha256:96ca2c49c09734ae7ab2da62c677a35d0a62770b12627f74f15d72a48762c9a7"
+        task_id: "202610081434-RDZE4P"
+        task_revision: 75
+      -
+        command_digest: "sha256:fc3162a5815aa75a0801cf7aa8a29833344c7e501bc7d0d3d1161329d614d172"
+        id: "final-validation:sha256:374d56de8e8c7f5847571895cfb5ff8b05cd7d3a4fded6aaa03d266006141cf0:75:final_validation_recorded"
+        kind: "final_validation_recorded"
+        mutation_id: "final-validation:sha256:374d56de8e8c7f5847571895cfb5ff8b05cd7d3a4fded6aaa03d266006141cf0:75"
+        occurred_at: "2026-10-09T18:37:11.236Z"
+        payload_digest: "sha256:a27de079293b4f1927ea1a963bb7feae4e00410433f98024eb52482ae7b999ee"
+        task_id: "202610081434-RDZE4P"
+        task_revision: 76
+      -
+        command_digest: "sha256:f4d0ffdbc42ad09fbb5dc29629de9876d6e2e2d29f7c9cea75cfcd5b88d3884f"
+        id: "kernel_task_completion_required:sha256:3be20226fc349c28c1d0aa0e506af12f445e207f6b24472861382abc20ee34e1:sha256:08aca76b5ea2fb336d34a8515562a0aaa95529c3833b319f3752c956038ead54:task_completed"
+        kind: "task_completed"
+        mutation_id: "kernel_task_completion_required:sha256:3be20226fc349c28c1d0aa0e506af12f445e207f6b24472861382abc20ee34e1:sha256:08aca76b5ea2fb336d34a8515562a0aaa95529c3833b319f3752c956038ead54"
+        occurred_at: "2026-10-09T18:38:29.612Z"
+        payload_digest: "sha256:2086a27623e2feb773edfeb873fd743cf855801fefef53a931977d6585a3e945"
+        task_id: "202610081434-RDZE4P"
+        task_revision: 77
     kind: "canonical_task"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
@@ -3975,6 +4624,161 @@ PLANNER fallback scaffold for "Resolve open consumer lifecycle defects 6054 and 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-10-09T18:37:03.521Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: canonical Task Kernel final checks passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c5b0883b87c67319d4d2505c70519d39baf7bf20e33086f5ae56ba2373d7f24f, input_digest=sha256:59f431d4d50299c0679a85295ff422ed26435c688722917dc8ffe021676608c2
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610081434-RDZE4P Verification Contract check affected_unit_integration (1/5)
+
+Check: affected_unit_integration
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610081434-RDZE4P Verification Contract check affected_unit_integration (2/5)
+
+Check: affected_unit_integration
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610081434-RDZE4P Verification Contract check affected_unit_integration (3/5)
+
+Check: affected_unit_integration
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610081434-RDZE4P Verification Contract check affected_unit_integration (4/5)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202610081434-RDZE4P Verification Contract check affected_unit_integration (5/5)
+
+Check: critical_paths
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610081434-RDZE4P Verification Contract check critical_paths (1/5)
+
+Check: critical_paths
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610081434-RDZE4P Verification Contract check critical_paths (2/5)
+
+Check: critical_paths
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610081434-RDZE4P Verification Contract check critical_paths (3/5)
+
+Check: critical_paths
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610081434-RDZE4P Verification Contract check critical_paths (4/5)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202610081434-RDZE4P Verification Contract check critical_paths (5/5)
+
+Check: docs_contract
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610081434-RDZE4P Verification Contract check docs_contract (1/5)
+
+Check: docs_contract
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610081434-RDZE4P Verification Contract check docs_contract (2/5)
+
+Check: docs_contract
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610081434-RDZE4P Verification Contract check docs_contract (3/5)
+
+Check: docs_contract
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610081434-RDZE4P Verification Contract check docs_contract (4/5)
+
+Check: docs_contract
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202610081434-RDZE4P Verification Contract check docs_contract (5/5)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202610081434-RDZE4P Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610081434-RDZE4P Verification Contract check task_outcome (1/5)
+
+Check: task_outcome
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610081434-RDZE4P Verification Contract check task_outcome (2/5)
+
+Check: task_outcome
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610081434-RDZE4P Verification Contract check task_outcome (3/5)
+
+Check: task_outcome
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610081434-RDZE4P Verification Contract check task_outcome (4/5)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202610081434-RDZE4P Verification Contract check task_outcome (5/5)
+
+NativeTaskIdentityRef:
+- plan_digest: sha256:11bcfb155d330a8b8956150030cba825314704ef7330fcf7afee1d1fd4b69438
+- policy_digest: sha256:1150ba6caefe9e829c30b3520b9246ed1ec7ebbeedbe788c63cf7989015dbb46
+- capability_digest: sha256:2577b371124dff820c94819677f936375baa8941c11fa0e1214cc2637b04061a
+- checks_digest: sha256:33095bbdc7f6937f2c658d1dc6bb5f8f1af944f2b37776fd12f3dd9afac3a4c4
+- identity_digest: sha256:e63236c0470b212963763030a4395641542442e471b16fe19a6afea4f1d8e1b3
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
