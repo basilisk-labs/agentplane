@@ -1,6 +1,7 @@
 import { mapCoreError } from "../../../cli/error-map.js";
 import { infoMessage, successMessage } from "../../../cli/output.js";
 import { CliError } from "../../../shared/errors.js";
+import { assertHookRunnerReady } from "../../shared/hook-shim-template.js";
 import { refreshBranchPrArtifactsAfterTaskCommit } from "../../shared/post-commit-pr-artifacts.js";
 import { loadCommandContext, type CommandContext } from "../../shared/task-backend.js";
 import { ensureReconciledBeforeMutation } from "../../shared/reconcile-check.js";
@@ -41,6 +42,8 @@ export async function cmdCommit(opts: {
     const ctx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+
+    await assertHookRunnerReady(ctx.resolvedProject.gitRoot);
 
     if (opts.close) {
       return await cmdCloseCommit({ ...opts, ctx });

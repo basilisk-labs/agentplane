@@ -58,6 +58,7 @@ describe("task active route evaluation", () => {
         extensions: { task_kernel: makeKernelRecord(identity, aggregate, []) },
       });
       vi.spyOn(identityContext, "resolveLogicalRepositoryIdentity").mockResolvedValue(identity);
+      vi.spyOn(taskBackend, "loadTaskFromContext").mockResolvedValue(task);
       const route = vi.spyOn(routeDecision, "buildTaskRouteDecision");
       const backend = makeTaskBackendDouble({
         listTasks: () => Promise.resolve([task, makeTask(1)]),

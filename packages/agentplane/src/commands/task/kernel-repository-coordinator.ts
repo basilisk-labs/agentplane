@@ -1,5 +1,6 @@
 import { protectedPathKindForFile } from "../../shared/protected-paths.js";
 import { CliError } from "../../shared/errors.js";
+import { assertHookRunnerReady } from "../shared/hook-shim-template.js";
 import path from "node:path";
 import { mkdir } from "node:fs/promises";
 import { parseTaskIdFromBranch } from "@agentplaneorg/core/git";
@@ -396,6 +397,7 @@ export async function commitCanonicalImplementation(opts: {
     await writeCommitIntent(opts.directory, intent);
   }
   const commitPaths = async (paths: readonly string[]) => {
+    await assertHookRunnerReady(baseline.checkout);
     // A rejected hook can leave an older version of an authorized path staged.
     // Refresh the implementation paths before the guarded commit retries them.
     await opts.command.git.stage([...paths]);

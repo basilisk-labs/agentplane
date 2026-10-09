@@ -18,6 +18,7 @@ const mocks = vi.hoisted(() => ({
   readHead: vi.fn(),
   stage: vi.fn(),
   stagedPaths: vi.fn(),
+  hookReady: vi.fn(),
 }));
 
 vi.mock("@agentplaneorg/core/process", () => ({ runProcess: mocks.runProcess }));
@@ -26,6 +27,7 @@ vi.mock("../../shared/stable-file.js", () => ({
   writeNewStableRegularFileNoFollow: mocks.writeStable,
 }));
 vi.mock("node:fs/promises", () => ({ mkdir: mocks.mkdir }));
+vi.mock("../shared/hook-shim-template.js", () => ({ assertHookRunnerReady: mocks.hookReady }));
 vi.mock("../guard/impl/commit.js", () => ({ cmdCommit: mocks.cmdCommit }));
 vi.mock("../shared/task-backend.js", () => ({ loadTaskFromContext: mocks.loadTask }));
 vi.mock("./direct-task-supervisor-implementation.js", () => ({
@@ -95,6 +97,38 @@ describe("canonical repository coordinator", () => {
     await expect(captureKernelRepositoryBaseline(command, workOrder)).rejects.toThrow(
       "dedicated task worktree",
     );
+  });
+
+  it("rejects an unavailable hook runner before staging or committing", async () => {
+    const baseline = {
+      schema_version: 1,
+      kind: "canonical_repository_baseline",
+      task_id: taskId,
+      work_order_id: workOrderId,
+      checkout: "/repo",
+      branch: `task/${taskId}/canonical`,
+      head: "base-sha",
+      tree: "base-tree",
+      status: { command: "git status", lines: [] },
+    };
+    mocks.readStable.mockImplementation((target: string) =>
+      target.endsWith("repository-baseline.json")
+        ? Promise.resolve(JSON.stringify(baseline))
+        : Promise.reject(Object.assign(new Error("missing"), { code: "ENOENT" })),
+    );
+    mocks.readStatus.mockResolvedValue({ command: "git status", lines: [" M src/change.ts"] });
+    mocks.hookReady.mockRejectedValue(new Error("hook_runner_unavailable"));
+    await expect(
+      commitCanonicalImplementation({
+        command,
+        directory: "/exchange",
+        work_order: workOrder,
+        changed_paths: ["src/change.ts"],
+      }),
+    ).rejects.toThrow("hook_runner_unavailable");
+    expect(mocks.hookReady).toHaveBeenCalledWith("/repo");
+    expect(mocks.stage).not.toHaveBeenCalled();
+    expect(mocks.cmdCommit).not.toHaveBeenCalled();
   });
 
   it.each([

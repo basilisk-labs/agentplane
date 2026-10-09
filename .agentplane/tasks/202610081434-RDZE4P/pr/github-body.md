@@ -27,6 +27,7 @@ User requests checking current GitHub issues and fixing all defects before relea
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ docs/user/task-lifecycle.mdx                       |  92 +++++
  .../task-backend/kernel-authority-schema.ts        |   1 +
  .../task-backend/kernel-backend-adapter.test.ts    |  58 +++
  .../task-backend/kernel-backend-adapter.ts         |  88 ++++-
@@ -36,13 +37,15 @@ User requests checking current GitHub issues and fixing all defects before relea
  .../src/cli/help.all-commands.contract.test.ts     |  16 +-
  .../src/cli/run-cli.core.help-contract.test.ts     |  10 +-
  packages/agentplane/src/cli/spec/help.ts           |  15 +-
+ .../commands/branch/work-start.hook-shim.test.ts   | 120 ++++++-
  .../commands/branch/work-start.materialize.test.ts |  23 ++
  .../src/commands/branch/work-start.materialize.ts  |  22 +-
  .../guard/impl/commands.commit-close.unit.test.ts  |   1 +
  .../impl/commands.commit-non-close.unit.test.ts    |   1 +
  .../src/commands/guard/impl/commit-close.ts        |   6 +-
- .../agentplane/src/commands/guard/impl/commit.ts   |   2 +-
+ .../agentplane/src/commands/guard/impl/commit.ts   |   5 +-
  .../commands/shared/canonical-task-owner.test.ts   | 256 +++++++++++++
+ .../src/commands/shared/hook-shim-template.ts      |  66 +++-
  .../shared/reconcile-canonical-scope.test.ts       |  82 +++++
  .../src/commands/shared/reconcile-check.ts         |  31 ++
  .../shared/task-backend-branch-snapshot.ts         |  29 +-
@@ -50,7 +53,7 @@ User requests checking current GitHub issues and fixing all defects before relea
  .../agentplane/src/commands/shared/task-backend.ts |  76 +++-
  .../src/commands/shared/task-mutation.ts           |  12 +-
  .../agentplane/src/commands/task/active.command.ts |  61 ++--
- .../src/commands/task/active.command.unit.test.ts  | 120 ++++---
+ .../src/commands/task/active.command.unit.test.ts  | 121 ++++---
  .../src/commands/task/advance-task-step.ts         |   1 +
  .../src/commands/task/close-duplicate.command.ts   |  24 ++
  .../src/commands/task/close-duplicate.ts           |  15 +
@@ -68,8 +71,8 @@ User requests checking current GitHub issues and fixing all defects before relea
  .../src/commands/task/kernel-inspection.ts         |   1 +
  .../src/commands/task/kernel-plan-authority.ts     |  11 +-
  .../src/commands/task/kernel-plan-proposal.ts      |  12 +-
- .../task/kernel-repository-coordinator.test.ts     | 241 +++++++++----
- .../commands/task/kernel-repository-coordinator.ts |  44 ++-
+ .../task/kernel-repository-coordinator.test.ts     | 275 ++++++++++----
+ .../commands/task/kernel-repository-coordinator.ts |  46 ++-
  .../src/commands/task/kernel-runtime-context.ts    |  45 ++-
  .../task/kernel-runtime-diagnostics.test.ts        |  65 ++++
  .../src/commands/task/kernel-scoped-intake.test.ts | 399 +++++++++++++++++++++
@@ -86,7 +89,7 @@ User requests checking current GitHub issues and fixing all defects before relea
  .../src/tasks/task-kernel/final-recovery.test.ts   | 136 +++++++
  packages/core/src/tasks/task-kernel/kernel.ts      |  88 ++++-
  packages/core/src/tasks/task-kernel/model.ts       |  33 +-
- 59 files changed, 3311 insertions(+), 308 deletions(-)
+ 62 files changed, 3625 insertions(+), 312 deletions(-)
 ```
 
 </details>

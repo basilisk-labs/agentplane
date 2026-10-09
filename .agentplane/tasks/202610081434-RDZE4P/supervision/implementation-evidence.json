@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check f54bd712079bc7c159999e4bb6f9d4047c4451fc..953a179509f8ebaedf8f23dafc720b44c2782c9e",
+      "command": "git diff --check 953a179509f8ebaedf8f23dafc720b44c2782c9e..5e23212b1a2306b1c2c9c37cfe8794078f634a3f",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB f54bd712079bc7c159999e4bb6f9d4047c4451fc..953a179509f8ebaedf8f23dafc720b44c2782c9e",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 953a179509f8ebaedf8f23dafc720b44c2782c9e..5e23212b1a2306b1c2c9c37cfe8794078f634a3f",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -22,26 +22,42 @@
         "M\t.agentplane/tasks/202610081434-RDZE4P/pr/github-body.md",
         "M\t.agentplane/tasks/202610081434-RDZE4P/pr/meta.json",
         "M\t.agentplane/tasks/202610081434-RDZE4P/pr/review.md",
-        "A\t.agentplane/tasks/202610081434-RDZE4P/quality/objects/sha256/42b9e36673a3cc9bf23e38c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json",
-        "A\t.agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json",
-        "A\t.agentplane/tasks/202610081434-RDZE4P/supervision/implementation-evidence.json",
-        "M\tpackages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts",
+        "M\t.agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json",
+        "M\t.agentplane/tasks/202610081434-RDZE4P/supervision/implementation-evidence.json",
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-authority-schema.ts",
         "M\tpackages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts",
-        "M\tpackages/agentplane/src/commands/guard/impl/commands.commit-close.unit.test.ts",
-        "M\tpackages/agentplane/src/commands/guard/impl/commands.commit-non-close.unit.test.ts",
-        "M\tpackages/agentplane/src/commands/guard/impl/commit-close.ts",
-        "M\tpackages/agentplane/src/commands/guard/impl/commit.ts",
-        "A\tpackages/agentplane/src/commands/shared/canonical-task-owner.test.ts",
-        "A\tpackages/agentplane/src/commands/shared/reconcile-canonical-scope.test.ts",
-        "M\tpackages/agentplane/src/commands/shared/reconcile-check.ts",
-        "M\tpackages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts",
-        "M\tpackages/agentplane/src/commands/shared/task-backend.test.ts",
-        "M\tpackages/agentplane/src/commands/shared/task-backend.ts",
-        "A\tpackages/agentplane/src/commands/task/kernel-inspection.test.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-inspection.ts",
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-projector.ts",
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-record.ts",
+        "M\tpackages/agentplane/src/cli/error-map.ts",
+        "M\tpackages/agentplane/src/commands/branch/work-start.materialize.test.ts",
+        "M\tpackages/agentplane/src/commands/branch/work-start.materialize.ts",
+        "M\tpackages/agentplane/src/commands/shared/task-mutation.ts",
+        "M\tpackages/agentplane/src/commands/task/advance-task-step.ts",
+        "M\tpackages/agentplane/src/commands/task/close-duplicate.command.ts",
+        "M\tpackages/agentplane/src/commands/task/close-duplicate.ts",
+        "M\tpackages/agentplane/src/commands/task/close-noop.command.ts",
+        "M\tpackages/agentplane/src/commands/task/close-noop.ts",
+        "M\tpackages/agentplane/src/commands/task/comment.ts",
+        "M\tpackages/agentplane/src/commands/task/comment.unit.test.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-bookkeeping.test.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-bookkeeping.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-final-validation.test.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-final-validation.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-plan-authority.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-plan-proposal.ts",
         "M\tpackages/agentplane/src/commands/task/kernel-runtime-context.ts",
-        "A\tpackages/agentplane/src/commands/task/kernel-runtime-diagnostics.test.ts",
-        "M\tpackages/agentplane/src/commands/task/scaffold.ts"
+        "M\tpackages/agentplane/src/commands/task/kernel-runtime-diagnostics.test.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-scoped-intake.test.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-worktree-preparation.test.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-worktree-preparation.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-worktree-routing.ts",
+        "M\tpackages/agentplane/src/runner/usecases/kernel-authority.ts",
+        "M\tpackages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts",
+        "M\tpackages/core/src/tasks/task-kernel/authority-lineage.ts",
+        "A\tpackages/core/src/tasks/task-kernel/bookkeeping.test.ts",
+        "A\tpackages/core/src/tasks/task-kernel/final-recovery.test.ts",
+        "M\tpackages/core/src/tasks/task-kernel/kernel.ts",
+        "M\tpackages/core/src/tasks/task-kernel/model.ts"
       ]
     },
     {
@@ -51,17 +67,14 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "f54bd712079bc7c159999e4bb6f9d4047c4451fc",
-  "implementation_commit": "953a179509f8ebaedf8f23dafc720b44c2782c9e",
+  "execution_base_commit": "953a179509f8ebaedf8f23dafc720b44c2782c9e",
+  "implementation_commit": "5e23212b1a2306b1c2c9c37cfe8794078f634a3f",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
       " M .agentplane/tasks/202610081434-RDZE4P/README.md",
-      " M packages/agentplane/src/commands/task/kernel-inspection.ts",
-      "?? .agentplane/tasks/202610081434-RDZE4P/quality/objects/sha256/42b9e36673a3cc9bf23e38c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json",
-      "?? .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json",
-      "?? .agentplane/tasks/202610081434-RDZE4P/supervision/implementation-evidence.json",
-      "?? packages/agentplane/src/commands/task/kernel-inspection.test.ts"
+      " M .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json",
+      " M .agentplane/tasks/202610081434-RDZE4P/supervision/implementation-evidence.json"
     ],
     "classification": [
       {
@@ -70,34 +83,19 @@
       },
       {
         "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/kernel-inspection.ts"
+        "line": " M .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json"
       },
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202610081434-RDZE4P/quality/objects/sha256/42b9e36673a3cc9bf23e38c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202610081434-RDZE4P/supervision/implementation-evidence.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? packages/agentplane/src/commands/task/kernel-inspection.test.ts"
+        "line": " M .agentplane/tasks/202610081434-RDZE4P/supervision/implementation-evidence.json"
       }
     ],
     "final": [],
     "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
       " M .agentplane/tasks/202610081434-RDZE4P/README.md",
-      " M packages/agentplane/src/commands/task/kernel-inspection.ts",
-      "?? .agentplane/tasks/202610081434-RDZE4P/quality/objects/sha256/42b9e36673a3cc9bf23e38c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json",
-      "?? .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json",
-      "?? .agentplane/tasks/202610081434-RDZE4P/supervision/implementation-evidence.json",
-      "?? packages/agentplane/src/commands/task/kernel-inspection.test.ts"
+      " M .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json",
+      " M .agentplane/tasks/202610081434-RDZE4P/supervision/implementation-evidence.json"
     ],
     "unchanged_from_execution_baseline": []
   },

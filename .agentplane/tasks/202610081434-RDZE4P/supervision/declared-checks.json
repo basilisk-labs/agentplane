@@ -3,7 +3,7 @@
     {
       "check_ids": [],
       "command": "bun run typecheck",
-      "duration_ms": 780,
+      "duration_ms": 1287,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:72df0b1abfb0b72d32aa4bd0593103149865511bfa92ce0a2ca14ee3f6775cda",
@@ -19,7 +19,7 @@
     {
       "check_ids": [],
       "command": "bun run test:critical",
-      "duration_ms": 131064,
+      "duration_ms": 133885,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:72df0b1abfb0b72d32aa4bd0593103149865511bfa92ce0a2ca14ee3f6775cda",
@@ -30,7 +30,7 @@
       },
       "script": "test:critical",
       "stderr_tail": "$ node scripts/checks/run-vitest-suite.mjs critical-cli\n",
-      "stdout_tail": "Vitest suite critical-cli: chunk 1/5 (2 files): packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts, packages/agentplane/src/cli/run-cli.critical.exit-codes.test.ts\nVitest suite critical-cli: chunk 1/5 passed in 19775ms (Test Files  2 passed (2); Tests  3 passed (3); Duration  19.21s (transform 11.09s, setup 206ms, import 10.57s, tests 25.63s, environment 0ms))\nVitest suite critical-cli: chunk 2/5 (2 files): packages/agentplane/src/cli/run-cli.critical.git-edge.test.ts, packages/agentplane/src/cli/run-cli.critical.protected-paths.test.ts\nVitest suite critical-cli: chunk 2/5 passed in 14154ms (Test Files  2 passed (2); Tests  5 passed (5); Duration  13.72s (transform 6.42s, setup 94ms, import 9.22s, tests 16.73s, environment 0ms))\nVitest suite critical-cli: chunk 3/5 (2 files): packages/agentplane/src/cli/run-cli.critical.scope-leak.test.ts, packages/agentplane/src/cli/run-cli.critical.symlink-root.test.ts\nVitest suite critical-cli: chunk 3/5 passed in 18670ms (Test Files  2 passed (2); Tests  7 passed (7); Duration  18.14s (transform 6.31s, setup 118ms, import 9.12s, tests 21.20s, environment 0ms))\nVitest suite critical-cli: chunk 4/5 (2 files): packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts, packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet-regressions.test.ts\nVitest suite critical-cli: chunk 4/5 passed in 60348ms (Test Files  2 passed (2); Tests  7 passed (7); Duration  59.77s (transform 11.70s, setup 171ms, import 11.62s, tests 54.83s, environment 0ms))\nVitest suite critical-cli: chunk 5/5 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts\nVitest suite critical-cli: chunk 5/5 passed in 17284ms (Test Files  1 passed (1); Tests  12 passed (12); Duration  16.75s (transform 4.02s, setup 53ms, import 4.97s, tests 11.58s, environment 0ms))\n"
+      "stdout_tail": "Vitest suite critical-cli: chunk 1/5 (2 files): packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts, packages/agentplane/src/cli/run-cli.critical.exit-codes.test.ts\nVitest suite critical-cli: chunk 1/5 passed in 22272ms (Test Files  2 passed (2); Tests  3 passed (3); Duration  21.78s (transform 15.01s, setup 116ms, import 10.16s, tests 27.99s, environment 0ms))\nVitest suite critical-cli: chunk 2/5 (2 files): packages/agentplane/src/cli/run-cli.critical.git-edge.test.ts, packages/agentplane/src/cli/run-cli.critical.protected-paths.test.ts\nVitest suite critical-cli: chunk 2/5 passed in 14285ms (Test Files  2 passed (2); Tests  5 passed (5); Duration  13.85s (transform 8.23s, setup 213ms, import 12.35s, tests 13.98s, environment 0ms))\nVitest suite critical-cli: chunk 3/5 (2 files): packages/agentplane/src/cli/run-cli.critical.scope-leak.test.ts, packages/agentplane/src/cli/run-cli.critical.symlink-root.test.ts\nVitest suite critical-cli: chunk 3/5 passed in 17562ms (Test Files  2 passed (2); Tests  7 passed (7); Duration  17.07s (transform 7.98s, setup 112ms, import 11.54s, tests 18.41s, environment 0ms))\nVitest suite critical-cli: chunk 4/5 (2 files): packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts, packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet-regressions.test.ts\nVitest suite critical-cli: chunk 4/5 passed in 63322ms (Test Files  2 passed (2); Tests  7 passed (7); Duration  62.67s (transform 13.57s, setup 182ms, import 13.52s, tests 56.65s, environment 0ms))\nVitest suite critical-cli: chunk 5/5 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts\nVitest suite critical-cli: chunk 5/5 passed in 15720ms (Test Files  1 passed (1); Tests  12 passed (12); Duration  15.21s (transform 4.64s, setup 61ms, import 5.65s, tests 9.33s, environment 0ms))\n"
     }
   ],
   "kind": "direct_task_declared_checks",

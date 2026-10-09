@@ -3,7 +3,8 @@ import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import { assertHookRunnerReady, renderHookShimScript } from "../shared/hook-shim-template.js";
 
 import { LocalBackend } from "../../backends/task-backend.js";
 import { materializeHookShimForWorktree } from "./work-start.hook-shim.js";
@@ -16,6 +17,123 @@ const ACTIVE_BIN_ENV = "AGENTPLANE_RUNTIME_ACTIVE_BIN";
 const execFileNodeAsync = promisify(execFile);
 
 describe("worktree hook shim", () => {
+  it("resolves relative PATH entries from the hook checkout", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-relative-hook-path-"));
+    const shimPath = path.join(root, ".agentplane/bin/agentplane");
+    const runner = path.join(root, "runner.js");
+    await mkdir(path.dirname(shimPath), { recursive: true });
+    await mkdir(path.join(root, "tools"));
+    await writeFile(path.join(root, "tools/node"), "#!/bin/sh\nexit 0\n", { mode: 0o755 });
+    await writeFile(runner, "process.exit(0);\n");
+    await writeFile(shimPath, renderHookShimScript(runner));
+    vi.stubEnv("PATH", "tools");
+    vi.stubEnv("AGENTPLANE_HOOK_RUNNER", "");
+    try {
+      await expect(assertHookRunnerReady(root)).resolves.toBeUndefined();
+    } finally {
+      vi.unstubAllEnvs();
+    }
+  });
+  it.each(["node", "global"])("rejects unavailable %s before staging", async (mode) => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-missing-command-"));
+    const shimPath = path.join(root, ".agentplane/bin/agentplane");
+    const runner = path.join(root, "runner.js");
+    await mkdir(path.dirname(shimPath), { recursive: true });
+    await writeFile(runner, "process.exit(0);\n");
+    await writeFile(
+      shimPath,
+      renderHookShimScript(mode === "node" ? runner : "/removed/runner.js"),
+    );
+    vi.stubEnv("PATH", root);
+    vi.stubEnv(ACTIVE_BIN_ENV, "");
+    vi.stubEnv("AGENTPLANE_HOOK_RUNNER", "");
+    vi.stubEnv("AGENTPLANE_HOOK_ALLOW_GLOBAL", mode === "global" ? "1" : "0");
+    try {
+      await expect(assertHookRunnerReady(root)).rejects.toMatchObject({
+        context: { reason_code: "hook_runner_unavailable" },
+      });
+    } finally {
+      vi.unstubAllEnvs();
+    }
+  });
+  it.each(["active", "explicit", "missing"] as const)(
+    "handles a relocated installation with %s runner without disabling hooks",
+    async (mode) => {
+      const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-relocated-shim-"));
+      const activeBin = path.join(root, "active runtime", "agentplane.js");
+      const explicitBin = path.join(root, "explicit.js");
+      const shimPath = path.join(root, ".agentplane/bin/agentplane");
+      await mkdir(path.dirname(activeBin), { recursive: true });
+      await mkdir(path.dirname(shimPath), { recursive: true });
+      await writeFile(
+        activeBin,
+        'console.log("active:" + process.argv.slice(2).join(" ")); process.exit(23);\n',
+      );
+      await writeFile(
+        explicitBin,
+        'console.log("explicit:" + process.argv.slice(2).join(" ")); process.exit(24);\n',
+      );
+      await writeFile(
+        shimPath,
+        renderHookShimScript(path.join(root, "removed install", "agentplane.js")),
+        { mode: 0o755 },
+      );
+      vi.stubEnv(ACTIVE_BIN_ENV, mode === "missing" ? "" : activeBin);
+      vi.stubEnv("AGENTPLANE_HOOK_RUNNER", mode === "explicit" ? explicitBin : "");
+      vi.stubEnv("AGENTPLANE_HOOK_ALLOW_GLOBAL", "0");
+      try {
+        if (mode === "missing") {
+          await expect(assertHookRunnerReady(root)).rejects.toMatchObject({
+            code: "E_VALIDATION",
+            context: { reason_code: "hook_runner_unavailable", recovery_cwd: root },
+          });
+        } else {
+          await expect(assertHookRunnerReady(root)).resolves.toBeUndefined();
+        }
+        await expect(
+          execFileNodeAsync(shimPath, ["hooks", "run", "pre-commit"], {
+            cwd: root,
+            env: { ...process.env },
+            timeout: 5000,
+          }),
+        ).rejects.toMatchObject(
+          mode === "missing"
+            ? { code: 127 }
+            : { code: mode === "active" ? 23 : 24, stdout: `${mode}:hooks run pre-commit\n` },
+        );
+      } finally {
+        vi.unstubAllEnvs();
+      }
+    },
+  );
+
+  it("offers repair for an old shim before changing the Git index", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-old-shim-"));
+    await execFileNodeAsync("git", ["init", "-q"], { cwd: root });
+    await writeFile(path.join(root, "user.txt"), "user content\n");
+    await execFileNodeAsync("git", ["add", "user.txt"], { cwd: root });
+    const indexPath = path.join(root, ".git/index");
+    const before = await readFile(indexPath);
+    const activeBin = path.join(root, "active.js");
+    await writeFile(activeBin, "process.exit(0);\n");
+    const shimPath = path.join(root, ".agentplane/bin/agentplane");
+    await mkdir(path.dirname(shimPath), { recursive: true });
+    await writeFile(shimPath, "# agentplane-hook-shim\nINSTALL_BIN='/removed/agentplane.js'\n");
+    vi.stubEnv(ACTIVE_BIN_ENV, activeBin);
+    vi.stubEnv("AGENTPLANE_HOOK_RUNNER", "");
+    vi.stubEnv("AGENTPLANE_HOOK_ALLOW_GLOBAL", "0");
+    try {
+      await expect(assertHookRunnerReady(root)).rejects.toMatchObject({
+        context: { recovery_argv: ["agentplane", "hooks", "install", "--root", root] },
+      });
+      expect(await readFile(indexPath)).toEqual(before);
+      vi.stubEnv("AGENTPLANE_HOOK_RUNNER", activeBin);
+      await expect(assertHookRunnerReady(root)).resolves.toBeUndefined();
+    } finally {
+      vi.unstubAllEnvs();
+    }
+  });
+
   it("materializes a shim with the active installed runner before PATH fallback", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-worktree-shim-"));
     const worktreePath = path.join(root, "worktree");
