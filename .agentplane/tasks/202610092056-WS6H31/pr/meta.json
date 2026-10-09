@@ -1,0 +1,21 @@
+{
+  "base": "task/202610081434-RDZE4P/resolve-open-consumer-lifecycle-defects-6054-and",
+  "branch": "task/202610092056-WS6H31/review-and-update-compatibility-candidate-for-cl",
+  "created_at": "2026-10-09T21:18:33.454Z",
+  "diffstat_sha256": "sha256:a18e582ba0bca7adec38bcd3365335afecd7f9d3f777ddb670c195050cd6c966",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610092056-WS6H31",
+  "updated_at": "2026-10-09T21:18:33.454Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
