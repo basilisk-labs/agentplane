@@ -5,6 +5,7 @@ import {
 } from "@agentplaneorg/core/tasks";
 import { verifyUserApprovalReceipt } from "../../adapters/authority/user-approval-receipt.js";
 import { renewKernelPolicyAuthority } from "./kernel-policy-renewal.js";
+import { CliError } from "../../shared/errors.js";
 import {
   kernelAuthorityRecordSchema,
   kernelAuthoritySchema,
@@ -19,15 +20,24 @@ import type {
   NativeAuthorityContext,
 } from "../../ports/kernel-authority.js";
 
-function invalid(reason: string): never {
-  throw Object.assign(new Error(`Canonical authority rejected: ${reason}`), {
-    reason_code: reason,
-    required_action: ["plan_exceeds_native_approval_scope", "work_item_exceeds_authority"].includes(
-      reason,
-    )
-      ? "request_authority_delta"
-      : "request_fresh_native_context",
-  });
+function invalid(reason: string, details: Record<string, unknown> = {}): never {
+  const requiredAction = [
+    "plan_exceeds_native_approval_scope",
+    "work_item_exceeds_authority",
+  ].includes(reason)
+    ? "request_authority_delta"
+    : "request_fresh_native_context";
+  throw Object.assign(
+    new CliError({
+      code: "E_VALIDATION",
+      message: `Canonical authority rejected: ${reason}. Inspect the task route and obtain the required native authority before retrying.`,
+      context: { reason_code: reason, required_action: requiredAction, ...details },
+    }),
+    {
+      reason_code: reason,
+      required_action: requiredAction,
+    },
+  );
 }
 
 function freshTime(context: NativeAuthorityContext) {
@@ -235,8 +245,13 @@ export class KernelAuthorityResolver {
     assertUnexpired(authority, freshTime(context));
     for (const item of plan.work_items) {
       const delegated = this.delegate(authority, context.actor, item);
-      if (!k.compareExecutionAuthority(authority, delegated).ok)
-        invalid("plan_exceeds_native_approval_scope");
+      const comparison = k.compareExecutionAuthority(authority, delegated);
+      if (!comparison.ok)
+        invalid("plan_exceeds_native_approval_scope", {
+          task_id: taskId,
+          work_item_id: item.id,
+          violations: comparison.violations,
+        });
     }
     await this.assertFresh(context, authority.expires_at);
     return this.adapter.execute({
@@ -383,8 +398,13 @@ export class KernelAuthorityResolver {
     const item = aggregate.current_plan.work_items.find((entry) => entry.id === workItemId);
     if (!item) invalid("work_item_missing");
     const delegated = this.delegate(authority, context.actor, item);
-    if (!k.compareExecutionAuthority(authority, delegated).ok)
-      invalid("work_item_exceeds_authority");
+    const comparison = k.compareExecutionAuthority(authority, delegated);
+    if (!comparison.ok)
+      invalid("work_item_exceeds_authority", {
+        task_id: taskId,
+        work_item_id: item.id,
+        violations: comparison.violations,
+      });
     return { authority: delegated, context };
   }
 

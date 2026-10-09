@@ -432,6 +432,14 @@ export function continuationIssues(
       return ["plan_observation_binding"];
   } else if (observation.kind === "authority_delta") {
     return ["authority_delta_requires_user"];
+  } else if (observation.kind === "worktree_preparation") {
+    if (
+      child.plan_revision !== parent.plan_revision ||
+      child.plan_digest !== parent.plan_digest ||
+      child.repository_fingerprint === parent.repository_fingerprint ||
+      observation.changed_paths.length !== 0
+    )
+      return ["worktree_preparation_binding"];
   } else if (
     child.plan_revision !== parent.plan_revision ||
     child.plan_digest !== parent.plan_digest ||

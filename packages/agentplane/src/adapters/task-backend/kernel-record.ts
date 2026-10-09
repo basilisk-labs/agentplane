@@ -96,6 +96,26 @@ const kernelAggregateSchema = z.strictObject({
     }),
   ),
   final_validation: kernelValidationSchema.nullable(),
+  audit_comments: z
+    .array(
+      z.strictObject({
+        author: z.string().min(1),
+        body: z.string().min(1),
+        actor_id: z.string().min(1),
+        occurred_at: z.iso.datetime(),
+        mutation_id: z.string().min(1),
+      }),
+    )
+    .optional(),
+  administrative_closure: z
+    .strictObject({
+      kind: z.enum(["noop", "duplicate", "superseded"]),
+      note: z.string().min(1),
+      related_task_id: z.string().min(1).nullable(),
+      actor_id: z.string().min(1),
+      evidence_digest: digest,
+    })
+    .optional(),
   effects: z.array(
     z.strictObject({
       id: z.string().min(1),
@@ -130,6 +150,8 @@ const kernelAggregateSchema = z.strictObject({
 const event = z.strictObject({
   id: z.string().min(1),
   kind: z.enum([
+    "audit_comment_recorded",
+    "task_administratively_closed",
     "intent_captured",
     "task_transitioned",
     "plan_proposed",

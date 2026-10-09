@@ -511,6 +511,7 @@ async function advanceCanonicalRoute(opts: {
       taskId: opts.task_id,
       reasonCode: route.reason_code,
       hasWorkItem: route.work_item_id !== null,
+      runtime,
     });
     if (worktreeAction)
       return {

@@ -2,6 +2,38 @@ import { describe, expect, it } from "vitest";
 import { requireKernelCommit } from "./kernel-runtime-context.js";
 
 describe("canonical write reconciliation diagnostics", () => {
+  it.each(["AUTHORITY_SCOPE_EXCEEDED", "ILLEGAL_TASK_TRANSITION"] as const)(
+    "types expected kernel rejection %s",
+    (code) => {
+      expect(() =>
+        requireKernelCommit({
+          kind: "rejected",
+          code,
+          facts: ["requested", "allowed"],
+          required_action: null,
+        }),
+      ).toThrow(
+        expect.objectContaining({
+          code: "E_VALIDATION",
+          context: expect.objectContaining({ reason_code: code, facts: ["requested", "allowed"] }),
+        }),
+      );
+    },
+  );
+  it("types unsupported backend capability without inventing a successful mutation", () => {
+    expect(() =>
+      requireKernelCommit({
+        kind: "unavailable",
+        code: "backend_capability_missing",
+        facts: ["atomic_task_record"],
+      }),
+    ).toThrow(
+      expect.objectContaining({
+        code: "E_VALIDATION",
+        context: expect.objectContaining({ reason_code: "backend_capability_missing" }),
+      }),
+    );
+  });
   it.each(["write_in_doubt", "readback_mismatch", "concurrent_write"] as const)(
     "preserves mutation evidence for %s",
     (code) => {

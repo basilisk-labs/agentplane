@@ -5,6 +5,7 @@ import type { NativeAuthorityContext } from "../../ports/kernel-authority.js";
 import { kernelApprovalReference } from "../../runner/usecases/kernel-authority.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { readKernelRecord, type KernelRecord } from "../../adapters/task-backend/kernel-record.js";
+import { CliError } from "../../shared/errors.js";
 
 export async function projectCanonicalPlanApproval(
   command: CommandContext,
@@ -99,7 +100,15 @@ export function assertCanonicalPlanWithinExecutionContract(
   const violations = canonicalPlanContractViolations(task, plan);
   if (violations.length > 0) {
     throw Object.assign(
-      new Error(`Canonical Plan exceeds the trusted execution contract: ${violations.join(", ")}`),
+      new CliError({
+        code: "E_VALIDATION",
+        message: `Canonical Plan exceeds the trusted execution contract: ${violations.join(", ")}. Narrow the proposed Plan to the intake contract or request an explicitly approved scope change.`,
+        context: {
+          reason_code: "plan_exceeds_execution_contract",
+          violations,
+          allowed: task.execution_contract?.authority ?? null,
+        },
+      }),
       { reason_code: "plan_exceeds_execution_contract", violations },
     );
   }

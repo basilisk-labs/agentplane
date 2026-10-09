@@ -7,6 +7,8 @@ export type TaskCloseDuplicateParsed = {
   taskId: string;
   duplicateOf: string;
   author: string;
+  approvedBy?: string;
+  superseded?: boolean;
   note?: string;
   force: boolean;
   yes: boolean;
@@ -19,6 +21,19 @@ export const taskCloseDuplicateSpec: CommandSpec<TaskCloseDuplicateParsed> = {
   summary: "Close a task as a duplicate of another task with no-op bookkeeping metadata.",
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
   options: [
+    {
+      kind: "string",
+      name: "approved-by",
+      valueHint: "<role>",
+      description:
+        "Explicit manual USER approval for canonical closure before implementation. --author is attribution only.",
+    },
+    {
+      kind: "boolean",
+      name: "superseded",
+      default: false,
+      description: "Record that the canonical task is superseded by --of.",
+    },
     {
       kind: "string",
       name: "of",
@@ -55,6 +70,11 @@ export const taskCloseDuplicateSpec: CommandSpec<TaskCloseDuplicateParsed> = {
     },
   ],
   validateRaw: (raw) => {
+    if (raw.opts["approved-by"] !== undefined && raw.opts["approved-by"] !== "USER")
+      throw usageError({
+        spec: taskCloseDuplicateSpec,
+        message: "--approved-by requires exact USER authority.",
+      });
     const taskId = typeof raw.args["task-id"] === "string" ? raw.args["task-id"].trim() : "";
     const of = typeof raw.opts.of === "string" ? raw.opts.of.trim() : "";
     const author = typeof raw.opts.author === "string" ? raw.opts.author.trim() : "";
@@ -91,6 +111,8 @@ export const taskCloseDuplicateSpec: CommandSpec<TaskCloseDuplicateParsed> = {
     taskId: String(raw.args["task-id"]),
     duplicateOf: String(raw.opts.of),
     author: String(raw.opts.author),
+    approvedBy: typeof raw.opts["approved-by"] === "string" ? raw.opts["approved-by"] : undefined,
+    superseded: raw.opts.superseded === true,
     note: typeof raw.opts.note === "string" ? raw.opts.note : undefined,
     force: raw.opts.force === true,
     yes: raw.opts.yes === true,
@@ -107,6 +129,8 @@ export function makeRunTaskCloseDuplicateHandler(getCtx: (cmd: string) => Promis
       taskId: p.taskId,
       duplicateOf: p.duplicateOf,
       author: p.author,
+      approvedBy: p.approvedBy,
+      superseded: p.superseded,
       note: p.note,
       force: p.force,
       yes: p.yes,

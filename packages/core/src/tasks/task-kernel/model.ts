@@ -126,7 +126,12 @@ export type CanonicalApprovalMode =
   | "repository_policy";
 
 export type AuthorityObservation = Readonly<{
-  kind: "plan_amendment" | "repository_implementation" | "authority_delta" | "policy_renewal";
+  kind:
+    | "plan_amendment"
+    | "repository_implementation"
+    | "authority_delta"
+    | "policy_renewal"
+    | "worktree_preparation";
   evidence_digest: Sha256Digest;
   previous_fingerprint: Sha256Digest;
   changed_paths: readonly string[];
@@ -243,6 +248,20 @@ export type MigrationReceipt = Readonly<{
 }>;
 
 export type TaskAggregate = Readonly<{
+  audit_comments?: readonly Readonly<{
+    author: string;
+    body: string;
+    actor_id: string;
+    occurred_at: string;
+    mutation_id: string;
+  }>[];
+  administrative_closure?: Readonly<{
+    kind: "noop" | "duplicate" | "superseded";
+    note: string;
+    related_task_id: string | null;
+    actor_id: string;
+    evidence_digest: Sha256Digest;
+  }>;
   schema_version: 1;
   id: string;
   revision: number;
@@ -269,6 +288,16 @@ type CommandEnvelope<K extends string, P extends object = object> = Readonly<
 >;
 
 export type TaskCommand =
+  | CommandEnvelope<"append_audit_comment", { author: string; body: string }>
+  | CommandEnvelope<
+      "close_without_implementation",
+      {
+        closure_kind: "noop" | "duplicate" | "superseded";
+        note: string;
+        related_task_id: string | null;
+        approval_evidence_digest: Sha256Digest;
+      }
+    >
   | CommandEnvelope<"capture_intent", { intent_digest: Sha256Digest }>
   | CommandEnvelope<"transition_task", { action: "request_human" | "block" | "resume" | "cancel" }>
   | CommandEnvelope<"propose_plan", { plan: PlanRecord }>
@@ -374,6 +403,8 @@ export type TaskCommand =
 export type DomainEvent = Readonly<{
   id: string;
   kind:
+    | "audit_comment_recorded"
+    | "task_administratively_closed"
     | "intent_captured"
     | "task_transitioned"
     | "plan_proposed"

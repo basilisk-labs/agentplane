@@ -307,6 +307,14 @@ export class KernelBackendAdapter {
     const projection = projectKernelTask(record.aggregate);
     const next = {
       ...task,
+      ...(input.command.kind === "append_audit_comment"
+        ? {
+            comments: [
+              ...(task.comments ?? []),
+              { author: input.command.author, body: input.command.body },
+            ],
+          }
+        : {}),
       revision: expectedRevision + 1,
       status: projection.status,
       extensions: { ...task.extensions, [TASK_KERNEL_EXTENSION]: record },

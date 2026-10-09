@@ -142,6 +142,8 @@ const EFFECT_OBSERVE_TRANSITIONS: Readonly<
 };
 
 const EVENT_KIND: Readonly<Record<TaskCommand["kind"], DomainEvent["kind"]>> = {
+  append_audit_comment: "audit_comment_recorded",
+  close_without_implementation: "task_administratively_closed",
   capture_intent: "intent_captured",
   transition_task: "task_transitioned",
   propose_plan: "plan_proposed",
@@ -442,6 +444,58 @@ function preconditions(input: KernelInput): KernelResult | null {
   const uncertain = input.aggregate.effects.find(
     (effect) => effect.state === "IN_DOUBT" || effect.state === "PENDING",
   );
+  if (input.command.kind === "append_audit_comment") {
+    return input.actor.kind === "SYSTEM" &&
+      input.actor.capabilities.includes("task.audit") &&
+      input.command.author.trim().length > 0 &&
+      input.command.body.trim().length > 0 &&
+      Number.isFinite(Date.parse(input.occurred_at))
+      ? null
+      : rejected("AUTHORITY_SCOPE_EXCEEDED", ["native_audit_actor_required"]);
+  }
+  if (input.command.kind === "close_without_implementation") {
+    const command = input.command;
+    if (
+      input.actor.kind !== "USER" ||
+      input.actor.transport !== "manual" ||
+      !input.actor.capabilities.includes("task.close") ||
+      !/^USER(?::[A-Za-z0-9._@-]+)?$/u.test(input.actor.id) ||
+      command.approval_evidence_digest !==
+        kernelDigest({
+          kind: "canonical_administrative_closure",
+          task_id: input.aggregate.id,
+          task_revision: input.aggregate.revision,
+          fingerprint: input.repository_fingerprint,
+          closure_kind: command.closure_kind,
+          note: command.note,
+          related_task_id: command.related_task_id,
+          actor_id: input.actor.id,
+        })
+    )
+      return rejected("AUTHORITY_PROVENANCE_ESCALATION", ["explicit_closure_approval_required"]);
+    if (
+      !command.note.trim() ||
+      (command.closure_kind !== "noop" &&
+        (!command.related_task_id || command.related_task_id === input.aggregate.id))
+    )
+      return rejected("TASK_COMPLETION_INELIGIBLE", ["closure_reason_required"]);
+    const effect = input.aggregate.effects.find((entry) => entry.state !== "NOT_APPLIED");
+    if (effect) return rejected("EFFECT_RECONCILIATION_REQUIRED", [effect.id], "reconcile_effect");
+    if (
+      Object.values(input.aggregate.work_items).some(
+        (item) =>
+          item.attempt !== 0 ||
+          !["PLANNED", "READY"].includes(item.state) ||
+          item.result_digest !== null,
+      )
+    )
+      return rejected(
+        "TASK_COMPLETION_INELIGIBLE",
+        ["implementation_already_started"],
+        "request_fresh_packet",
+      );
+    return null;
+  }
   if (
     uncertain &&
     input.command.kind !== "observe_effect" &&
@@ -771,6 +825,38 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
   let next: TaskAggregate;
 
   switch (command.kind) {
+    case "append_audit_comment": {
+      next = {
+        ...aggregate,
+        revision: aggregate.revision + 1,
+        audit_comments: [
+          ...(aggregate.audit_comments ?? []),
+          {
+            author: command.author,
+            body: command.body,
+            actor_id: input.actor.id,
+            occurred_at: input.occurred_at,
+            mutation_id: input.mutation_id,
+          },
+        ],
+      };
+      break;
+    }
+    case "close_without_implementation": {
+      next = {
+        ...aggregate,
+        revision: aggregate.revision + 1,
+        state: "CANCELLED",
+        administrative_closure: {
+          kind: command.closure_kind,
+          note: command.note,
+          related_task_id: command.related_task_id,
+          actor_id: input.actor.id,
+          evidence_digest: command.approval_evidence_digest,
+        },
+      };
+      break;
+    }
     case "capture_intent": {
       if (!taskTransitionAllowed(aggregate.state, "PLANNING")) {
         return rejected("ILLEGAL_TASK_TRANSITION", [aggregate.state, "PLANNING"]);
@@ -1096,7 +1182,7 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
       if (!validationIdentityMatchesResult(command.validation, input.repository_fingerprint)) {
         return rejected("VALIDATION_IDENTITY_MISMATCH", ["final_validation"]);
       }
-      if (command.validation.status !== "PASSED") {
+      if (command.validation.status === "STALE") {
         return rejected("FINAL_VALIDATION_MISSING", [command.validation.status]);
       }
       if (aggregate.state !== "ACTIVE" && aggregate.state !== "FINAL_VALIDATION") {

@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
-import { taskKernel as k } from "@agentplaneorg/core/tasks";
+import path from "node:path";
+import { taskKernel as k, kernelPlanProposalSchema } from "@agentplaneorg/core/tasks";
 import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { verificationChildEnv } from "../shared/pr-meta/verify-log.js";
@@ -227,17 +228,9 @@ export async function runKernelFinalValidation(
     throw new Error("Canonical final validation inputs changed during checks");
   const evidence = { binding, checks };
   await writeKernelArtifact(directory, "final-validation.json", evidence);
-  if (checks.status !== "passed")
-    return {
-      stop: {
-        kind: "human_required",
-        reason: "canonical_final_checks_failed",
-        summary: checks.reason,
-        evidence: directory,
-      },
-    };
   const validation: k.ValidationRecord = {
-    status: "PASSED",
+    status:
+      checks.status === "passed" ? "PASSED" : checks.status === "failed" ? "FAILED" : "BLOCKED",
     identity: {
       implementation_identity: binding.repository_fingerprint,
       check_id: FINAL_VALIDATION_CHECK_ID,
@@ -248,6 +241,55 @@ export async function runKernelFinalValidation(
     evidence_digests: [k.kernelDigest(evidence)],
     observed_at: context.occurred_at,
   };
+  if (checks.status !== "passed") {
+    const input = await runtime.input(
+      { kind: "record_final_validation", validation },
+      `final-validation:${k.kernelDigest(evidence)}:${record.aggregate.revision}`,
+    );
+    if (input.command.expected_task_revision !== record.aggregate.revision)
+      throw new Error("Canonical final validation task changed before failure persistence");
+    await writeKernelArtifact(directory, "final-validation-command.json", input);
+    requireKernelCommit(await runtime.lifecycle.apply(input));
+    const retry = ["agentplane", "task", "advance", taskId, "--agent-json"];
+    const correction =
+      checks.status === "failed"
+        ? await writeCorrectivePlan(directory, record, commands, k.kernelDigest(evidence))
+        : null;
+    return {
+      stop: {
+        kind: "human_required",
+        reason:
+          checks.status === "failed"
+            ? "canonical_final_checks_failed"
+            : "canonical_final_checks_infrastructure_blocked",
+        summary: checks.reason,
+        evidence: directory,
+        failure_class: checks.status === "failed" ? "code_regression" : "infrastructure",
+        recovery: {
+          cwd: command.resolvedProject.gitRoot,
+          retry_argv: retry,
+          ...(correction
+            ? {
+                required_role: "USER",
+                corrective_plan: correction,
+                approval_argv: [
+                  "agentplane",
+                  "task",
+                  "plan",
+                  "set",
+                  taskId,
+                  "--file",
+                  correction,
+                  "--scope-expansion-approved-by",
+                  "USER",
+                ],
+                resume_argv: retry,
+              }
+            : {}),
+        },
+      },
+    };
+  }
   if (verification) {
     const exitCode = await cmdVerifyParsed({
       ctx: command,
@@ -294,4 +336,58 @@ export async function runKernelFinalValidation(
     evidence_digest: k.kernelDigest(evidence),
     plan_digest: plan.digest,
   };
+}
+
+async function writeCorrectivePlan(
+  directory: string,
+  record: KernelRecord,
+  commands: string[],
+  evidenceDigest: string,
+) {
+  const plan = record.aggregate.current_plan!;
+  const items = plan.work_items.map(({ contract_digest, ...definition }) => {
+    const contract = record.documents!.contracts[String(contract_digest)];
+    if (!contract) throw new Error("Corrective Plan requires every retained contract");
+    return { ...definition, contract };
+  });
+  const union = (key: keyof k.ExecutionRequirements) =>
+    [...new Set(plan.work_items.flatMap((item) => item.execution_requirements[key]))].toSorted();
+  const id = `final-correction-${evidenceDigest.slice(7, 19)}`;
+  const proposal = {
+    work_items: [
+      ...items,
+      {
+        id,
+        depends_on: plan.work_items
+          .filter((item) => record.aggregate.work_items[item.id]?.state === "COMPLETED")
+          .map((item) => item.id),
+        required_inputs: [],
+        expected_outputs: [id + "-evidence"],
+        optional: false,
+        execution_requirements: {
+          scope_roots: union("scope_roots"),
+          repository_effects: union("repository_effects"),
+          external_effects: [],
+          capabilities: union("capabilities"),
+          resources: union("resources"),
+        },
+        contract: {
+          objective: `Repair the failed final validation evidenced by ${evidenceDigest}. Read ${path.join(directory, "final-validation.json")} before edits.`,
+          acceptance_criteria: [
+            "Correct the reproduced regression within the existing approved scope. Preserve completed work and all prior evidence.",
+            "Run the unchanged required validation commands. Return implementation evidence for independent native review.",
+            "Do not bypass checks, expand authority, discard effects or claim that infrastructure failures are code defects.",
+          ],
+          verification_commands: commands,
+          role: "EXECUTOR",
+        },
+      },
+    ],
+  };
+  await writeKernelArtifact(
+    directory,
+    "corrective-plan.json",
+    kernelPlanProposalSchema.parse(proposal),
+  );
+  return path.join(directory, "corrective-plan.json");
 }

@@ -26,6 +26,7 @@ import { resolveCommandGitCommonDir, type CommandContext } from "../shared/task-
 import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
 import { executionContractCeiling } from "./kernel-plan-authority.js";
 import { CliError } from "../../shared/errors.js";
+import { observeKernelWorktreePreparation } from "./kernel-worktree-preparation.js";
 
 export function requireKernelCommit(result: KernelAdapterResult) {
   if (result.kind === "unavailable" && result.mutation) {
@@ -44,7 +45,18 @@ export function requireKernelCommit(result: KernelAdapterResult) {
   }
   if (result.kind !== "committed")
     throw Object.assign(
-      new Error(`Canonical command rejected: ${result.code} (${result.facts.join(", ")})`),
+      new CliError({
+        code: "E_VALIDATION",
+        message: `Canonical command rejected: ${result.code} (${result.facts.join(", ")}). Inspect the current task route before retrying; do not edit native records.`,
+        context: {
+          reason_code: result.code,
+          facts: result.facts,
+          required_action:
+            result.kind === "rejected"
+              ? result.required_action
+              : "inspect_backend_capabilities_and_native_state",
+        },
+      }),
       { result },
     );
   return result;
@@ -248,6 +260,13 @@ export async function createKernelRuntime(opts: {
         throw new Error("Canonical observation checkpoint is invalid");
       const changed = kernelRepositoryChangedPaths(before, current);
       await checkpoint(current);
+      const preparation = await observeKernelWorktreePreparation({
+        command: ctx,
+        taskId,
+        parent,
+        current,
+      });
+      if (preparation) return preparation;
       return {
         kind: "repository_implementation",
         evidence_digest: k.kernelDigest({

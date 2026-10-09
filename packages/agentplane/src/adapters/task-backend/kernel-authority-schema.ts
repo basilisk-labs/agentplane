@@ -48,6 +48,7 @@ export const kernelAuthorityRecordSchema = z.strictObject({
       kind: z.enum([
         "plan_amendment",
         "repository_implementation",
+        "worktree_preparation",
         "authority_delta",
         "policy_renewal",
       ]),

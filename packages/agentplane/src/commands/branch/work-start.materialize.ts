@@ -24,6 +24,19 @@ function isPresentString(value: string | null): value is string {
   return value !== null;
 }
 
+async function hasFrameworkPackage(worktreePath: string, packageName: string): Promise<boolean> {
+  const manifest = await readFile(
+    path.join(worktreePath, "packages", packageName, "package.json"),
+    "utf8",
+  )
+    .then((text) => JSON.parse(text) as { name?: unknown })
+    .catch(() => null);
+  return (
+    manifest?.name ===
+    (packageName === "agentplane" ? "agentplane" : `@agentplaneorg/${packageName}`)
+  );
+}
+
 function declaredDirectDependencies(manifest: unknown): string[] {
   if (!manifest || typeof manifest !== "object" || Array.isArray(manifest)) return [];
   const record = manifest as Record<string, unknown>;
@@ -151,8 +164,13 @@ export async function materializeRepoLocalDistForWorktree(opts: {
   ] as const;
 
   for (const [sourceRelativePath, targetRelativePath] of copyTargets) {
+    const ownsPackage = await hasFrameworkPackage(
+      opts.worktreePath,
+      sourceRelativePath.split("/")[1]!,
+    );
     let sourcePath = "";
     for (const sourceRoot of sourceRoots) {
+      if (path.resolve(sourceRoot) !== path.resolve(opts.repoRoot) && !ownsPackage) continue;
       const candidate = path.join(sourceRoot, sourceRelativePath);
       if (await fileExists(candidate)) {
         sourcePath = candidate;
@@ -291,7 +309,9 @@ export async function materializeRepoLocalInstallLayoutForWorktree(opts: {
     path.join("packages", packageName, "node_modules"),
   )) {
     await materializePackageLocalInstallLayout({
-      sourceRoots,
+      sourceRoots: (await hasFrameworkPackage(opts.worktreePath, relativePath.split(path.sep)[1]!))
+        ? sourceRoots
+        : sourceRoots.filter((root) => path.resolve(root) === path.resolve(opts.repoRoot)),
       worktreePath: opts.worktreePath,
       relativePath,
     });

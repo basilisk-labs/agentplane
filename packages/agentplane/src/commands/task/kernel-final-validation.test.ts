@@ -155,13 +155,36 @@ function fixture() {
       current_plan: {
         state: "APPROVED",
         digest: k.kernelDigest("plan"),
-        work_items: [{ id: "fix", contract_digest: contractDigest, optional: false }],
+        work_items: [
+          {
+            id: "fix",
+            contract_digest: contractDigest,
+            optional: false,
+            depends_on: [],
+            required_inputs: [],
+            expected_outputs: ["fix-evidence"],
+            execution_requirements: {
+              scope_roots: ["src"],
+              repository_effects: ["source_code", "tests"],
+              external_effects: [],
+              capabilities: ["repository_write"],
+              resources: [],
+            },
+          },
+        ],
       },
       work_items: { fix: { state: "COMPLETED", result_digest: k.kernelDigest("result") } },
       final_validation: null,
     },
     documents: {
-      contracts: { [contractDigest]: { verification_commands: ["bun run ci:local:full"] } },
+      contracts: {
+        [contractDigest]: {
+          objective: "Repair source",
+          acceptance_criteria: ["Regression passes"],
+          role: "EXECUTOR",
+          verification_commands: ["bun run ci:local:full"],
+        },
+      },
     },
   };
   const command = {
@@ -211,6 +234,69 @@ describe("canonical final Verification Contract projection", () => {
     mocks.status.mockResolvedValue({ lines: [] });
     mocks.project.mockResolvedValue(0);
   });
+
+  it.each(["failed", "unsupported"] as const)(
+    "retains %s final evidence and emits a bounded recovery route",
+    async (status) => {
+      const f = fixture();
+      mocks.checks.mockResolvedValue({
+        status,
+        reason: "check stopped",
+        checks: [],
+        artifact_path: "checks.json",
+      });
+      const result = await f.run();
+      expect(result).toMatchObject({
+        stop: {
+          kind: "human_required",
+          failure_class: status === "failed" ? "code_regression" : "infrastructure",
+          recovery: {
+            cwd: "/repo",
+            retry_argv: ["agentplane", "task", "advance", "T-1", "--agent-json"],
+          },
+        },
+      });
+      expect(f.runtime.input.mock.calls[0]?.[0].validation.status).toBe(
+        status === "failed" ? "FAILED" : "BLOCKED",
+      );
+      expect(f.runtime.input.mock.calls[0]?.[0].validation.evidence_digests).toHaveLength(1);
+      expect(f.apply).toHaveBeenCalledOnce();
+      expect(mocks.project).not.toHaveBeenCalled();
+      const corrective = mocks.write.mock.calls.find(
+        (call) => call[1] === "corrective-plan.json",
+      )?.[2];
+      if (status === "failed") {
+        expect(corrective.work_items).toHaveLength(2);
+        expect(corrective.work_items[0].contract).toEqual(
+          Object.values(f.record.documents.contracts)[0],
+        );
+        expect(corrective.work_items[1]).toMatchObject({
+          depends_on: ["fix"],
+          optional: false,
+          execution_requirements: { scope_roots: ["src"], external_effects: [] },
+          contract: { role: "EXECUTOR", verification_commands: ["bun run ci:local:full"] },
+        });
+        expect(result).toMatchObject({
+          stop: {
+            recovery: {
+              required_role: "USER",
+              approval_argv: [
+                "agentplane",
+                "task",
+                "plan",
+                "set",
+                "T-1",
+                "--file",
+                "/repo/exchange/corrective-plan.json",
+                "--scope-expansion-approved-by",
+                "USER",
+              ],
+            },
+          },
+        });
+      } else expect(corrective).toBeUndefined();
+    },
+  );
 
   it("does not run or persist final checks when projection recovery needs re-evaluation", async () => {
     const f = fixture();
