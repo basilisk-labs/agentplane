@@ -312,10 +312,16 @@ test("subscription finite call, episode and retry limits survive reopening", asy
 test("subscription deadline requests interruption but does not invent a terminal receipt", async (t) => {
   const c = contract();
   c.limits.turn_timeout_ms = 1000;
-  const f = await fixture(t, { contract: c, turn() {} });
+  // Keep filesystem/preflight latency outside this post-dispatch timer test.
+  // Real timers still exercise interruption and the unresolved-effect deadline.
+  const f = await fixture(t, { contract: c, host: { now: () => 1000 }, turn() {} });
   await assert.rejects(f.boundary.execute(call(), [], {}), /deadline/u);
   assert.equal(f.boundary.read().calls.one.receipt, null);
-  assert.ok(f.requests.some((r) => r.method === "turn/interrupt"));
+  assert.equal(f.requests.filter((r) => r.method === "turn/start").length, 1);
+  assert.deepEqual(
+    f.requests.filter((r) => r.method === "turn/interrupt"),
+    [{ method: "turn/interrupt", params: { threadId: "thread-1", turnId: "turn-1" } }],
+  );
 });
 
 test("subscription journal concurrent handles cannot issue a second uncertain permit", async (t) => {
