@@ -54,6 +54,7 @@ Created: 2026-10-08T15:45:59.205Z
  .../src/commands/shared/hook-shim-template.ts      |  67 +++-
  .../shared/reconcile-canonical-scope.test.ts       |  90 +++++
  .../src/commands/shared/reconcile-check.ts         |  31 ++
+ .../shared/roadmap-rework-conservation.test.ts     |   2 +-
  .../shared/task-backend-branch-snapshot.ts         |  29 +-
  .../src/commands/shared/task-backend.test.ts       |  30 +-
  .../agentplane/src/commands/shared/task-backend.ts |  79 +++-
@@ -100,7 +101,7 @@ Created: 2026-10-08T15:45:59.205Z
  .../src/tasks/task-kernel/final-recovery.test.ts   | 136 +++++++
  packages/core/src/tasks/task-kernel/kernel.ts      |  88 ++++-
  packages/core/src/tasks/task-kernel/model.ts       |  33 +-
- 71 files changed, 3835 insertions(+), 457 deletions(-)
+ 72 files changed, 3836 insertions(+), 458 deletions(-)
 ```
 
 </details>

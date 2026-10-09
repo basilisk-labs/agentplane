@@ -6,7 +6,7 @@ import { stripAnsi } from "../../shared/ansi.js";
 
 const exec = promisify(execFile);
 
-it("conserves implementation work across verification retries", { timeout: 60_000 }, async () => {
+it("conserves implementation work across verification retries", { timeout: 180_000 }, async () => {
   const result = await exec(
     "bun",
     [

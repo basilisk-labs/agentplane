@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 630b9fd934e29522ea2473dba1e3c5173e340585..948c8e0d66f668500e4100ad1895d68f7cda11bf",
+      "command": "git diff --check 948c8e0d66f668500e4100ad1895d68f7cda11bf..ffac1358b4cd599ba45c445a9a84dd2e6060ebe7",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 630b9fd934e29522ea2473dba1e3c5173e340585..948c8e0d66f668500e4100ad1895d68f7cda11bf",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 948c8e0d66f668500e4100ad1895d68f7cda11bf..ffac1358b4cd599ba45c445a9a84dd2e6060ebe7",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -24,33 +24,10 @@
         "M\t.agentplane/tasks/202610081434-RDZE4P/pr/review.md",
         "M\t.agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202610081434-RDZE4P/supervision/implementation-evidence.json",
-        "M\tpackages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts",
-        "M\tpackages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts",
-        "M\tpackages/agentplane/src/commands/branch/cleanup-merged-proof.ts",
-        "M\tpackages/agentplane/src/commands/context/assimilation-supervisor.unit.test.ts",
-        "M\tpackages/agentplane/src/commands/shared/canonical-task-owner.test.ts",
-        "M\tpackages/agentplane/src/commands/shared/hook-shim-template.ts",
-        "M\tpackages/agentplane/src/commands/shared/reconcile-canonical-scope.test.ts",
-        "M\tpackages/agentplane/src/commands/shared/task-backend.test.ts",
-        "M\tpackages/agentplane/src/commands/shared/task-backend.ts",
-        "M\tpackages/agentplane/src/commands/task/advance-task-step.ts",
-        "A\tpackages/agentplane/src/commands/task/kernel-authority-delta-stop.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-bookkeeping.test.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-exchange.test.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-final-validation.test.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-inspection.test.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-repository-coordinator.ts",
-        "A\tpackages/agentplane/src/commands/task/kernel-repository-types.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-runtime-diagnostics.test.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-scoped-intake.test.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-worktree-preparation.test.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-worktree-preparation.ts",
-        "M\tpackages/agentplane/src/commands/task/new-duplicates.test.ts",
-        "A\tpackages/agentplane/src/runner/usecases/kernel-authority-validation.ts",
-        "M\tpackages/agentplane/src/runner/usecases/kernel-authority.ts",
-        "M\tpackages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts",
-        "M\tpackages/core/src/tasks/task-kernel/authority-lineage.ts",
-        "M\tpackages/core/src/tasks/task-kernel/final-recovery.test.ts"
+        "M\tpackages/agentplane/src/commands/context/verify-task.maximum-assimilation.unit.test.ts",
+        "M\tpackages/agentplane/src/commands/evidence/evidence.command.test.ts",
+        "M\tpackages/agentplane/src/commands/task/configured-authority.test.ts",
+        "M\tpackages/agentplane/src/commands/workflow.test.ts"
       ]
     },
     {
@@ -60,34 +37,14 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "630b9fd934e29522ea2473dba1e3c5173e340585",
-  "implementation_commit": "948c8e0d66f668500e4100ad1895d68f7cda11bf",
+  "execution_base_commit": "948c8e0d66f668500e4100ad1895d68f7cda11bf",
+  "implementation_commit": "ffac1358b4cd599ba45c445a9a84dd2e6060ebe7",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
       " M .agentplane/tasks/202610081434-RDZE4P/README.md",
       " M .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json",
-      " M .agentplane/tasks/202610081434-RDZE4P/supervision/implementation-evidence.json",
-      " M packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts",
-      " M packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts",
-      " M packages/agentplane/src/commands/shared/canonical-task-owner.test.ts",
-      " M packages/agentplane/src/commands/shared/hook-shim-template.ts",
-      " M packages/agentplane/src/commands/shared/reconcile-canonical-scope.test.ts",
-      " M packages/agentplane/src/commands/shared/task-backend.test.ts",
-      " M packages/agentplane/src/commands/shared/task-backend.ts",
-      " M packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts",
-      " M packages/agentplane/src/commands/task/kernel-exchange.test.ts",
-      " M packages/agentplane/src/commands/task/kernel-final-validation.test.ts",
-      " M packages/agentplane/src/commands/task/kernel-inspection.test.ts",
-      " M packages/agentplane/src/commands/task/kernel-repository-coordinator.ts",
-      " M packages/agentplane/src/commands/task/kernel-runtime-diagnostics.test.ts",
-      " M packages/agentplane/src/commands/task/kernel-scoped-intake.test.ts",
-      " M packages/agentplane/src/commands/task/kernel-worktree-preparation.test.ts",
-      " M packages/agentplane/src/commands/task/kernel-worktree-preparation.ts",
-      " M packages/agentplane/src/commands/task/new-duplicates.test.ts",
-      " M packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts",
-      " M packages/core/src/tasks/task-kernel/authority-lineage.ts",
-      " M packages/core/src/tasks/task-kernel/final-recovery.test.ts"
+      " M .agentplane/tasks/202610081434-RDZE4P/supervision/implementation-evidence.json"
     ],
     "classification": [
       {
@@ -101,86 +58,6 @@
       {
         "classification": "removed_during_execution",
         "line": " M .agentplane/tasks/202610081434-RDZE4P/supervision/implementation-evidence.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/shared/canonical-task-owner.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/shared/hook-shim-template.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/shared/reconcile-canonical-scope.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/shared/task-backend.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/shared/task-backend.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/kernel-exchange.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/kernel-final-validation.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/kernel-inspection.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/kernel-repository-coordinator.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/kernel-runtime-diagnostics.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/kernel-scoped-intake.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/kernel-worktree-preparation.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/kernel-worktree-preparation.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/commands/task/new-duplicates.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/core/src/tasks/task-kernel/authority-lineage.ts"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": " M packages/core/src/tasks/task-kernel/final-recovery.test.ts"
       }
     ],
     "final": [],
@@ -188,27 +65,7 @@
     "removed_after_execution_baseline": [
       " M .agentplane/tasks/202610081434-RDZE4P/README.md",
       " M .agentplane/tasks/202610081434-RDZE4P/supervision/declared-checks.json",
-      " M .agentplane/tasks/202610081434-RDZE4P/supervision/implementation-evidence.json",
-      " M packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts",
-      " M packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.ts",
-      " M packages/agentplane/src/commands/shared/canonical-task-owner.test.ts",
-      " M packages/agentplane/src/commands/shared/hook-shim-template.ts",
-      " M packages/agentplane/src/commands/shared/reconcile-canonical-scope.test.ts",
-      " M packages/agentplane/src/commands/shared/task-backend.test.ts",
-      " M packages/agentplane/src/commands/shared/task-backend.ts",
-      " M packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts",
-      " M packages/agentplane/src/commands/task/kernel-exchange.test.ts",
-      " M packages/agentplane/src/commands/task/kernel-final-validation.test.ts",
-      " M packages/agentplane/src/commands/task/kernel-inspection.test.ts",
-      " M packages/agentplane/src/commands/task/kernel-repository-coordinator.ts",
-      " M packages/agentplane/src/commands/task/kernel-runtime-diagnostics.test.ts",
-      " M packages/agentplane/src/commands/task/kernel-scoped-intake.test.ts",
-      " M packages/agentplane/src/commands/task/kernel-worktree-preparation.test.ts",
-      " M packages/agentplane/src/commands/task/kernel-worktree-preparation.ts",
-      " M packages/agentplane/src/commands/task/new-duplicates.test.ts",
-      " M packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts",
-      " M packages/core/src/tasks/task-kernel/authority-lineage.ts",
-      " M packages/core/src/tasks/task-kernel/final-recovery.test.ts"
+      " M .agentplane/tasks/202610081434-RDZE4P/supervision/implementation-evidence.json"
     ],
     "unchanged_from_execution_baseline": []
   },
