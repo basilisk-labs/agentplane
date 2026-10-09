@@ -38,6 +38,18 @@ export type KernelAdapterResult =
         | "write_in_doubt"
         | "readback_mismatch";
       facts: string[];
+      mutation?: {
+        task_id: string;
+        mutation_id: string;
+        command_kind: string;
+        expected_revision: number;
+        before_digest: string | null;
+        intended_digest: string;
+        observed_kind: string | null;
+        observed_digest: string | null;
+        write_error: string | null;
+        read_error: string | null;
+      };
     };
 export type KernelCommandInput = Omit<taskKernel.KernelInput, "aggregate">;
 
@@ -155,6 +167,7 @@ export class KernelBackendAdapter {
       0,
       makeKernelRecord(this.repositoryIdentity, result.aggregate, result.events, documents),
       result.receipts,
+      input,
     );
   }
 
@@ -218,6 +231,7 @@ export class KernelBackendAdapter {
         retained,
       ),
       result.receipts,
+      input,
     );
   }
 
@@ -253,7 +267,43 @@ export class KernelBackendAdapter {
     expectedRevision: number,
     record: KernelRecord,
     receipts: readonly taskKernel.MutationReceipt[],
+    input: KernelCommandInput,
   ): Promise<KernelAdapterResult> {
+    const before = readKernelRecord(task, this.repositoryIdentity);
+    const mutation = {
+      task_id: task.id,
+      mutation_id: input.mutation_id,
+      command_kind: input.command.kind,
+      expected_revision: expectedRevision,
+      before_digest: before.kind === "canonical" ? before.record.digest : null,
+      intended_digest: record.digest,
+      observed_kind: null as string | null,
+      observed_digest: null as string | null,
+      write_error: null as string | null,
+      read_error: null as string | null,
+    };
+    const unavailable = (code: "write_in_doubt" | "concurrent_write" | "readback_mismatch") =>
+      ({ kind: "unavailable", code, facts: [], mutation: { ...mutation } }) as KernelAdapterResult;
+    const errorIdentity = (error: unknown) =>
+      error instanceof Error
+        ? [error.name, (error as NodeJS.ErrnoException).code].filter(Boolean).join(":")
+        : typeof error;
+    const observe = async () => {
+      const observed = await this.read(task.id);
+      mutation.observed_kind = observed.kind;
+      mutation.observed_digest = observed.kind === "canonical" ? observed.record.digest : null;
+      return observed;
+    };
+    const confirmsMutation = (observed: KernelRead) =>
+      observed.kind === "canonical" &&
+      receipts.length > 0 &&
+      receipts.every((receipt) => {
+        const retained = observed.record.aggregate.mutation_receipts[receipt.mutation_id];
+        return (
+          retained !== undefined &&
+          taskKernel.kernelDigest(retained) === taskKernel.kernelDigest(receipt)
+        );
+      });
     const projection = projectKernelTask(record.aggregate);
     const next = {
       ...task,
@@ -263,31 +313,39 @@ export class KernelBackendAdapter {
     };
     try {
       await this.backend.writeTask(next, { expectedRevision });
-    } catch {
+    } catch (error) {
+      mutation.write_error = errorIdentity(error);
       // A failed response is not proof that the atomic write did not happen.
       try {
-        const observed = await this.read(task.id);
-        if (observed.kind === "canonical" && observed.record.digest === record.digest) {
+        const observed = await observe();
+        if (
+          observed.kind === "canonical" &&
+          (observed.record.digest === record.digest || confirmsMutation(observed))
+        ) {
           // Readback proves durability, not which concurrent caller performed the write.
           // Never grant fresh dispatch ownership from an uncertain write response.
           return { kind: "committed", record: observed.record, receipts, replayed: true };
         }
         if (observed.kind === "canonical" && observed.task.revision !== expectedRevision) {
-          return this.unavailable("concurrent_write", observed.record.digest);
+          return unavailable("concurrent_write");
         }
-      } catch {
-        return this.unavailable("write_in_doubt");
+      } catch (readError) {
+        mutation.read_error = errorIdentity(readError);
+        return unavailable("write_in_doubt");
       }
-      return this.unavailable("write_in_doubt");
+      return unavailable("write_in_doubt");
     }
     try {
-      const observed = await this.read(task.id);
+      const observed = await observe();
       if (observed.kind !== "canonical" || observed.record.digest !== record.digest) {
-        return this.unavailable("readback_mismatch", observed.kind);
+        if (observed.kind === "canonical" && confirmsMutation(observed))
+          return { kind: "committed", record: observed.record, receipts, replayed: true };
+        return unavailable("readback_mismatch");
       }
       return { kind: "committed", record: observed.record, receipts, replayed: false };
-    } catch {
-      return this.unavailable("write_in_doubt");
+    } catch (error) {
+      mutation.read_error = errorIdentity(error);
+      return unavailable("write_in_doubt");
     }
   }
 }

@@ -183,6 +183,7 @@ export async function issueKernelInspection(
     work_order_id: k.kernelDigest({
       binding,
       revision: record.aggregate.revision,
+      native_validation_digest: k.kernelDigest(native.evidence),
       ...(recipeContext ? { recipe_context: recipeContext } : {}),
       ...(conversionSource ? { conversion_source: conversionSource } : {}),
     }),

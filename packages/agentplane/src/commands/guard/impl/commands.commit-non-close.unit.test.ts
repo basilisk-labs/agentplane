@@ -129,6 +129,7 @@ describe("guard command implementations: commit non-close", () => {
     expect(mocks.ensureReconciledBeforeMutation).toHaveBeenCalledWith({
       ctx,
       command: "commit",
+      taskIds: ["T-1"],
     });
     expect(mocks.guardCommitCheck).toHaveBeenCalledTimes(1);
     expect(ctx.git.commit).toHaveBeenCalledWith({

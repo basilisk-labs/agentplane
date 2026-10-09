@@ -16,6 +16,10 @@ import { KernelBackendAdapter, type KernelCommandInput } from "./kernel-backend-
 import { makeKernelRecord, readKernelRecord, TASK_KERNEL_EXTENSION } from "./kernel-record.js";
 import { projectKernelTask } from "./kernel-projector.js";
 import { kernelRecordIssues } from "./kernel-record-invariants.js";
+import {
+  kernelReplayJourney,
+  replayRepositoryIdentity,
+} from "./kernel-replay-journey.test-fixtures.js";
 
 const taskId = "202608300000-KRN001";
 const identity = taskKernel.kernelDigest("fixture-repository");
@@ -517,6 +521,15 @@ describe("canonical kernel persistence boundary", () => {
     expect(await adapter.create(task(), input())).toMatchObject({
       kind: "unavailable",
       code: "readback_mismatch",
+      mutation: {
+        task_id: taskId,
+        mutation_id: "capture-1",
+        command_kind: "capture_intent",
+        expected_revision: 0,
+        before_digest: null,
+        observed_kind: "missing",
+        intended_digest: expect.stringMatching(/^sha256:/),
+      },
     });
     write.mockImplementation(() => {
       vi.spyOn(backend, "getTask").mockRejectedValue(new Error("read unavailable"));
@@ -525,8 +538,53 @@ describe("canonical kernel persistence boundary", () => {
     expect(await adapter.create(task(), input())).toMatchObject({
       kind: "unavailable",
       code: "write_in_doubt",
+      mutation: { task_id: taskId, mutation_id: "capture-1", read_error: "Error" },
     });
   });
+
+  it("reconciles an unreadable committed response on retry without a second write", async () => {
+    const { adapter, backend } = await fixture();
+    const original = backend.writeTask.bind(backend);
+    let read: ReturnType<typeof vi.spyOn> | undefined;
+    const write = vi.spyOn(backend, "writeTask").mockImplementation(async (...args) => {
+      await original(...args);
+      read = vi.spyOn(backend, "getTask").mockRejectedValue(new Error("read unavailable"));
+      throw Object.assign(new Error("response lost"), { code: "EIO" });
+    });
+    expect(await adapter.create(task(), input())).toMatchObject({
+      kind: "unavailable",
+      code: "write_in_doubt",
+      mutation: { mutation_id: "capture-1", write_error: "Error:EIO", read_error: "Error" },
+    });
+    read!.mockRestore();
+    expect(await adapter.create(task(), input())).toMatchObject({
+      kind: "committed",
+      replayed: true,
+    });
+    expect(write).toHaveBeenCalledTimes(1);
+  });
+
+  it.each([false, true])(
+    "recognizes a retained mutation after a later writer (lost response=%s)",
+    async (lost) => {
+      const { backend } = await fixture();
+      const journey = kernelReplayJourney("direct");
+      const adapter = new KernelBackendAdapter(backend, replayRepositoryIdentity);
+      const original = backend.writeTask.bind(backend);
+      const write = vi.spyOn(backend, "writeTask").mockImplementationOnce(async (...args) => {
+        await original(...args);
+        expect(await adapter.execute(journey.steps[1]!.input)).toMatchObject({ kind: "committed" });
+        if (lost) throw new Error("response lost");
+      });
+      const result = await adapter.create(journey.task, journey.steps[0]!.input);
+      expect(result).toMatchObject({ kind: "committed", replayed: true });
+      expect(write).toHaveBeenCalledTimes(2);
+      expect(await adapter.read(journey.task.id)).toMatchObject({
+        kind: "canonical",
+        record: { aggregate: { revision: 2 } },
+      });
+    },
+  );
 
   it("serializes competing creates through the local CAS without duplicate events", async () => {
     const { adapter } = await fixture();

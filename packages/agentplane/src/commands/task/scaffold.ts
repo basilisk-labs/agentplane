@@ -6,8 +6,10 @@ import { type TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
 import { successMessage, unknownEntityMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
+import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
 import {
   loadCommandContext,
+  loadTaskFromContext,
   taskDataToFrontmatter,
   type CommandContext,
 } from "../shared/task-backend.js";
@@ -45,6 +47,26 @@ export async function cmdTaskScaffold(opts: {
     const backend = ctx.taskBackend;
     const resolved = ctx.resolvedProject;
     const config = ctx.config;
+    let authoritative: TaskData | null = null;
+    try {
+      authoritative = await loadTaskFromContext({
+        ctx,
+        taskId: opts.taskId,
+        preferBranchSnapshot: true,
+      });
+    } catch (error) {
+      if (
+        !(error instanceof CliError && error.code === "E_IO" && error.message.startsWith("ENOENT:"))
+      )
+        throw error;
+    }
+    if (authoritative && Object.hasOwn(authoritative.extensions ?? {}, TASK_KERNEL_EXTENSION)) {
+      throw new CliError({
+        code: "E_VALIDATION",
+        message: `Task ${opts.taskId} has canonical identity; scaffold cannot replace its projection, even with --force or --overwrite.`,
+        context: { task_id: opts.taskId, reason_code: "canonical_scaffold_forbidden" },
+      });
+    }
     const task = await backend.getTask(opts.taskId);
     if (!task && !opts.force) {
       throw new CliError({

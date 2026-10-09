@@ -54,7 +54,7 @@ export async function cmdCommit(opts: {
       });
     }
 
-    await ensureReconciledBeforeMutation({ ctx, command: "commit" });
+    await ensureReconciledBeforeMutation({ ctx, command: "commit", taskIds: [opts.taskId] });
 
     let autoStaged: string[] = [];
     const staged = await ctx.git.statusStagedPaths();

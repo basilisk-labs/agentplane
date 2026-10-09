@@ -2,11 +2,14 @@ import { exitCodeForError } from "../../cli/exit-codes.js";
 import { withDiagnosticContext } from "./diagnostics.js";
 import { CliError } from "../../shared/errors.js";
 import path from "node:path";
+import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
+import { readTaskKernel } from "../task/kernel-read.js";
 
 import {
   backendUsesLocalTaskStore,
   listTaskSummariesMemo,
   loadTaskFromBranchSnapshot,
+  loadTaskFromContext,
   type CommandContext,
 } from "./task-backend.js";
 
@@ -134,6 +137,34 @@ export async function ensureReconciledBeforeMutation(opts: {
   if (opts.strictTaskScan === false) return;
 
   try {
+    if (
+      opts.taskIds?.length &&
+      backendUsesLocalTaskStore(opts.ctx) &&
+      opts.ctx.taskBackend.capabilities?.atomic_task_record === true
+    ) {
+      const roots = await Promise.all(
+        opts.taskIds.map((taskId) => loadTaskFromContext({ ctx: opts.ctx, taskId })),
+      );
+      if (roots.every((task) => Object.hasOwn(task.extensions ?? {}, TASK_KERNEL_EXTENSION))) {
+        const validate = async (task: (typeof roots)[number]) => {
+          const read = await readTaskKernel(opts.ctx, task.id, task);
+          if (read.kind === "malformed" || read.kind === "missing")
+            throw new Error(`Required task ${task.id} has ${read.kind} native state`);
+        };
+        for (const task of roots) await validate(task);
+        const seen = new Set(roots.map((task) => task.id));
+        const pending = roots.flatMap((task) => task.depends_on ?? []);
+        while (pending.length > 0) {
+          const taskId = pending.pop()!;
+          if (seen.has(taskId)) continue;
+          const dependency = await loadTaskFromContext({ ctx: opts.ctx, taskId });
+          await validate(dependency);
+          seen.add(taskId);
+          pending.push(...(dependency.depends_on ?? []));
+        }
+        return;
+      }
+    }
     await listTaskSummariesMemo(opts.ctx);
   } catch (err) {
     throw new CliError({

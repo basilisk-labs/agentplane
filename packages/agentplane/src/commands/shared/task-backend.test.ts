@@ -235,7 +235,7 @@ describe(
     });
 
     it.each(["missing", "malformed", "directory_missing"])(
-      "discovers the owner task when the base projection is %s without repairing it",
+      "resolves or rejects an unavailable %s base projection without repairing it",
       async (projection) => {
         const root = await mkGitRepoRootWithBranch("main");
         await writeDefaultConfig(root);
@@ -272,6 +272,17 @@ describe(
           });
         const before = await execFileAsync("git", ["status", "--porcelain"], { cwd: root });
         const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+        if (projection === "malformed") {
+          // A legacy owner cannot prove that unreadable base bytes are not canonical.
+          await expect(listTaskSummariesMemo(ctx)).rejects.toThrow();
+          const ownerCtx = await loadCommandContext({ cwd: owner, rootOverride: owner });
+          await expect(listTaskSummariesMemo(ownerCtx)).rejects.toThrow();
+          expect(await readFile(ownerReadme, "utf8")).toBe(original);
+          expect(
+            (await execFileAsync("git", ["status", "--porcelain"], { cwd: root })).stdout,
+          ).toBe(before.stdout);
+          return;
+        }
         const tasks = await listTaskSummariesMemo(ctx);
         expect(tasks.map((task) => task.id)).toContain(created.id);
         expect(
@@ -299,16 +310,14 @@ describe(
         expect(await readFile(ownerReadme, "utf8")).toBe(original);
         const after = await execFileAsync("git", ["status", "--porcelain"], { cwd: root });
         expect(after.stdout).toBe(before.stdout);
-        if (projection === "malformed") {
-          await writeFile(ownerReadme, original.replace(created.id, "202609070000-FOREIGN"));
-          try {
-            const foreign = await loadCommandContext({ cwd: root, rootOverride: root });
-            await expect(listTaskSummariesMemo(foreign)).rejects.toThrow(
-              "does not contain a valid README",
-            );
-          } finally {
-            await writeFile(ownerReadme, original);
-          }
+        await writeFile(ownerReadme, original.replace(created.id, "202609070000-FOREIGN"));
+        try {
+          const foreign = await loadCommandContext({ cwd: root, rootOverride: root });
+          await expect(listTaskSummariesMemo(foreign)).rejects.toThrow(
+            "does not contain a valid README",
+          );
+        } finally {
+          await writeFile(ownerReadme, original);
         }
         if (projection === "missing") {
           await execFileAsync("git", ["branch", `task/${created.id}/duplicate`], { cwd: root });
