@@ -42,6 +42,8 @@ User requests checking current GitHub issues and fixing all defects before relea
  .../commands/branch/work-start.materialize.test.ts |  23 ++
  .../src/commands/branch/work-start.materialize.ts  |  22 +-
  .../context/assimilation-supervisor.unit.test.ts   |   3 +-
+ .../verify-task.maximum-assimilation.unit.test.ts  |  21 +-
+ .../src/commands/evidence/evidence.command.test.ts |  13 +-
  .../guard/impl/commands.commit-close.unit.test.ts  |   1 +
  .../impl/commands.commit-non-close.unit.test.ts    |   1 +
  .../src/commands/guard/impl/commit-close.ts        |   6 +-
@@ -63,6 +65,7 @@ User requests checking current GitHub issues and fixing all defects before relea
  .../agentplane/src/commands/task/close-noop.ts     |  13 +
  packages/agentplane/src/commands/task/comment.ts   |  31 +-
  .../src/commands/task/comment.unit.test.ts         |   3 +
+ .../src/commands/task/configured-authority.test.ts |   4 +-
  .../commands/task/kernel-authority-delta-stop.ts   |  34 ++
  .../src/commands/task/kernel-bookkeeping.test.ts   | 125 +++++++
  .../src/commands/task/kernel-bookkeeping.ts        | 159 ++++++++
@@ -86,6 +89,7 @@ User requests checking current GitHub issues and fixing all defects before relea
  .../src/commands/task/new-duplicates.test.ts       |  47 +++
  .../agentplane/src/commands/task/new-duplicates.ts |  28 +-
  packages/agentplane/src/commands/task/scaffold.ts  |  22 ++
+ packages/agentplane/src/commands/workflow.test.ts  |   9 +-
  .../runner/usecases/kernel-authority-validation.ts |  34 ++
  .../src/runner/usecases/kernel-authority.ts        |  40 +-
  .../runner/usecases/kernel-task-lifecycle.test.ts  |  25 +-
@@ -94,7 +98,7 @@ User requests checking current GitHub issues and fixing all defects before relea
  .../src/tasks/task-kernel/final-recovery.test.ts   | 136 +++++++
  packages/core/src/tasks/task-kernel/kernel.ts      |  88 ++++-
  packages/core/src/tasks/task-kernel/model.ts       |  33 +-
- 67 files changed, 3806 insertions(+), 439 deletions(-)
+ 71 files changed, 3835 insertions(+), 457 deletions(-)
 ```
 
 </details>

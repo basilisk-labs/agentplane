@@ -2,7 +2,7 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
-import type { SideEffectAuthorityConfig } from "@agentplaneorg/core/config";
+import { defaultConfig, type SideEffectAuthorityConfig } from "@agentplaneorg/core/config";
 import { buildStateFingerprint } from "@agentplaneorg/core/schemas";
 import {
   createExecutionGrant,
@@ -119,7 +119,7 @@ describe("configured repository authority", () => {
     const command = {
       resolvedProject: { gitRoot: root },
       config: {
-        paths: { workflow_dir: ".agentplane/tasks" },
+        ...defaultConfig(),
         authority: authority({ mode: "manual" }),
       },
       taskBackend: { getTask: () => Promise.resolve(task) },
