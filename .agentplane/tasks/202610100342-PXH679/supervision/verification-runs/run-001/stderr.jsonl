@@ -1,0 +1,1 @@
+"$ node scripts/checks/run-vitest-suite.mjs critical-cli"
