@@ -3,7 +3,8 @@
   "branch": "task/202610102055-4RQ362/artifact-ancestry",
   "created_at": "2026-10-10T21:15:24.856Z",
   "diffstat_sha256": "sha256:0cd3798b144de394a81c031f0d69674144de6a4bdcc4c59d57fd21b6f490177d",
-  "last_verified_at": null,
+  "last_verified_at": "2026-10-10T23:41:06.875Z",
+  "last_verified_diffstat_sha256": "sha256:0cd3798b144de394a81c031f0d69674144de6a4bdcc4c59d57fd21b6f490177d",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202610102055-4RQ362",
   "updated_at": "2026-10-10T21:15:24.856Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
