@@ -42,6 +42,10 @@ import { collectRecipePromptBlocks } from "./recipe-prompt-blocks.js";
 import { resolveTaskRunnerRecipe } from "../usecases/task-run-recipe-context.js";
 import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js";
 
+import { legacySuppliedKernelProposal } from "../../commands/task/create-plan-proposal.js";
+import { canonicalPlanFromProposal } from "../../commands/task/kernel-plan-proposal.js";
+import { validateKernelRecipeBindings } from "../../commands/task/kernel-recipe-admission.js";
+
 installRunCliIntegrationHarness();
 async function fixture(
   opts: {
@@ -565,6 +569,151 @@ describe("retained Recipe role projection and managed restart", { timeout: 180_0
     expect(
       review.required_inputs.some((input) => input.id === "native-validation" && input.required),
     ).toBe(true);
+  });
+
+  it("accepts only the exact already-retained legacy multi-item conversion", async () => {
+    const f = await fixture({ secondItem: true });
+    const task = (await f.command.taskBackend.getTask(f.id))!;
+    const record = task.extensions!.task_kernel as KernelRecord;
+    const legacy = legacySuppliedKernelProposal(f.source, task);
+    const plan = canonicalPlanFromProposal(legacy, 1);
+    const documents = {
+      ...record.documents!,
+      contracts: Object.fromEntries(
+        legacy.work_items.map((item) => [k.kernelDigest(item.contract), item.contract]),
+      ),
+    };
+    const retainedTask = {
+      ...task,
+      extensions: {
+        ...task.extensions,
+        task_kernel: {
+          ...record,
+          aggregate: { ...record.aggregate, current_plan: plan, plan_history: [] },
+          documents,
+        },
+      },
+    };
+    await expect(
+      validateKernelRecipeBindings({ command: f.command, task: retainedTask, plan, documents }),
+    ).resolves.toBeUndefined();
+    const unretainedTask = {
+      ...retainedTask,
+      extensions: {
+        ...retainedTask.extensions,
+        task_kernel: {
+          ...record,
+          aggregate: { ...record.aggregate, current_plan: null, plan_history: [] },
+          documents,
+        },
+      },
+    };
+    await expect(
+      validateKernelRecipeBindings({ command: f.command, task: unretainedTask, plan, documents }),
+    ).rejects.toThrow("complete specialized Plan");
+  });
+
+  it("requires a read-only generated aggregate inspection after local item reviews", async () => {
+    const f = await fixture({ secondItem: true });
+    let { packet, order } = await f.issue();
+    async function submit(payload: Record<string, unknown>) {
+      await writeFile(
+        packet.exchange.result_path,
+        JSON.stringify({
+          work_order_id: order.work_order_id,
+          status: "completed",
+          summary: "Public fixture evidence",
+          findings: [],
+          uncertainty: [],
+          ...payload,
+        }),
+      );
+      const next = await f.advance(packet.exchange.result_path);
+      if (!("exchange" in next)) throw new Error(JSON.stringify(next.action));
+      packet = next;
+      order = AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse(
+        JSON.parse(await readFile(path.join(packet.exchange.directory, "work-order.json"), "utf8")),
+      );
+    }
+    const seen = new Set<string>();
+    for (let index = 0; index < 2; index++) {
+      const id = order.task.work_item_id!;
+      expect(["report", "other"]).toContain(id);
+      expect(seen.has(id)).toBe(false);
+      seen.add(id);
+      await submit({
+        canonical_outputs: [
+          {
+            id: id === "report" ? "report" : "other-report",
+            kind: "report",
+            digest: taskCentricDigest(id),
+          },
+        ],
+      });
+      expect(order.role).toBe("EVALUATOR");
+      await submit({
+        findings: [
+          "The fixture report satisfies its local criterion; final aggregate acceptance remains pending.",
+        ],
+        review: { verdict: "pass", missing_tests: [], hidden_assumptions: [], residual_risks: [] },
+      });
+    }
+    expect(order.task.work_item_id).toMatch(/^aggregate-validation-/u);
+    expect(order.role).toBe("EXECUTOR");
+    expect(order.authority.mutation_scope).toBe("none");
+    expect(order.authority.writable_roots).toEqual([]);
+    expect(order.authority.allowed_tool_classes).not.toContain("workspace_write");
+    expect(order.recipe_context!.projection.current_work_items).toEqual([]);
+    expect(order.recipe_context!.projection.top_level_validation.criteria[0]!.description).toBe(
+      "The report answers the question",
+    );
+    const record = (await f.command.taskBackend.getTask(f.id))!.extensions!
+      .task_kernel as KernelRecord;
+    const output =
+      record.aggregate.work_items[order.task.work_item_id!]!.definition.expected_outputs[0]!;
+    await submit({
+      canonical_outputs: [
+        { id: output, kind: "report", digest: taskCentricDigest("aggregate report") },
+      ],
+    });
+    expect(order.role).toBe("EVALUATOR");
+    expect(order.task.acceptance_criteria).toContainEqual(
+      expect.objectContaining({ description: "The report answers the question", required: true }),
+    );
+    expect(order.recipe_context!.projection.current_work_items).toEqual([]);
+    expect(
+      renderTaskRunnerBootstrap(
+        Object.assign(makeRunnerContextBundle({ runId: "aggregate-review" }), {
+          work_order: order,
+        }),
+      ),
+    ).toContain("EVALUATOR GUIDANCE");
+    const current = (await f.command.taskBackend.getTask(f.id))!.extensions!
+      .task_kernel as KernelRecord;
+    expect(current.aggregate.work_items[order.task.work_item_id!]!.state).toBe("INSPECTING");
+    expect(current.aggregate.final_validation?.status).not.toBe("PASSED");
+    await writeFile(
+      packet.exchange.result_path,
+      JSON.stringify({
+        work_order_id: order.work_order_id,
+        status: "completed",
+        summary: "Final criterion is not satisfied",
+        findings: ["The combined fixture report does not answer the question."],
+        uncertainty: [],
+        review: {
+          verdict: "rework",
+          missing_tests: [],
+          hidden_assumptions: [],
+          residual_risks: ["Final task objective remains unmet"],
+        },
+      }),
+    );
+    const rejected = await f.advance(packet.exchange.result_path);
+    expect(rejected.action.kind).not.toBe("terminal");
+    const afterReject = (await f.command.taskBackend.getTask(f.id))!.extensions!
+      .task_kernel as KernelRecord;
+    expect(afterReject.aggregate.work_items[order.task.work_item_id!]!.state).not.toBe("COMPLETED");
+    expect(afterReject.aggregate.final_validation?.status).not.toBe("PASSED");
   });
 
   it("stops on tampered retained evidence or a changed source Plan instead of using installed/latest guidance", async () => {

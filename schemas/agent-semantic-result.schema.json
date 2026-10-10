@@ -1153,6 +1153,10 @@
                             "type": "string",
                             "enum": ["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"]
                           },
+                          "generated_origin": {
+                            "type": "string",
+                            "const": "supplied_plan_aggregate_validation"
+                          },
                           "plan_input_digest": {
                             "type": "string",
                             "pattern": "^sha256:[a-f0-9]{64}$"
@@ -1321,6 +1325,10 @@
                                     "type": "string",
                                     "enum": ["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"]
                                   },
+                                  "generated_origin": {
+                                    "type": "string",
+                                    "const": "supplied_plan_aggregate_validation"
+                                  },
                                   "plan_input_digest": {
                                     "type": "string",
                                     "pattern": "^sha256:[a-f0-9]{64}$"
@@ -1462,6 +1470,10 @@
                                   "role": {
                                     "type": "string",
                                     "enum": ["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"]
+                                  },
+                                  "generated_origin": {
+                                    "type": "string",
+                                    "const": "supplied_plan_aggregate_validation"
                                   },
                                   "plan_input_digest": {
                                     "type": "string",
@@ -2963,6 +2975,10 @@
                             "type": "string",
                             "enum": ["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"]
                           },
+                          "generated_origin": {
+                            "type": "string",
+                            "const": "supplied_plan_aggregate_validation"
+                          },
                           "plan_input_digest": {
                             "type": "string",
                             "pattern": "^sha256:[a-f0-9]{64}$"
@@ -3131,6 +3147,10 @@
                                     "type": "string",
                                     "enum": ["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"]
                                   },
+                                  "generated_origin": {
+                                    "type": "string",
+                                    "const": "supplied_plan_aggregate_validation"
+                                  },
                                   "plan_input_digest": {
                                     "type": "string",
                                     "pattern": "^sha256:[a-f0-9]{64}$"
@@ -3272,6 +3292,10 @@
                                   "role": {
                                     "type": "string",
                                     "enum": ["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"]
+                                  },
+                                  "generated_origin": {
+                                    "type": "string",
+                                    "const": "supplied_plan_aggregate_validation"
                                   },
                                   "plan_input_digest": {
                                     "type": "string",
@@ -4773,6 +4797,10 @@
                             "type": "string",
                             "enum": ["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"]
                           },
+                          "generated_origin": {
+                            "type": "string",
+                            "const": "supplied_plan_aggregate_validation"
+                          },
                           "plan_input_digest": {
                             "type": "string",
                             "pattern": "^sha256:[a-f0-9]{64}$"
@@ -4941,6 +4969,10 @@
                                     "type": "string",
                                     "enum": ["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"]
                                   },
+                                  "generated_origin": {
+                                    "type": "string",
+                                    "const": "supplied_plan_aggregate_validation"
+                                  },
                                   "plan_input_digest": {
                                     "type": "string",
                                     "pattern": "^sha256:[a-f0-9]{64}$"
@@ -5082,6 +5114,10 @@
                                   "role": {
                                     "type": "string",
                                     "enum": ["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"]
+                                  },
+                                  "generated_origin": {
+                                    "type": "string",
+                                    "const": "supplied_plan_aggregate_validation"
                                   },
                                   "plan_input_digest": {
                                     "type": "string",

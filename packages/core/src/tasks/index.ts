@@ -328,3 +328,8 @@ export {
   planObligationIssues,
   type KernelPlanRefinement,
 } from "./kernel-plan-refinement.js";
+
+export {
+  suppliedAggregateValidationItem,
+  assertSuppliedAggregateDefinition,
+} from "./supplied-plan-aggregate.js";

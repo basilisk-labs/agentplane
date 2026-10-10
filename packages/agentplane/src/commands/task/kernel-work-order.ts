@@ -177,6 +177,9 @@ export async function buildKernelAgentWorkOrder(opts: {
         plan_digest: plan?.digest ?? aggregate.intent_digest,
       };
   const authority = implementation?.authority;
+  const aggregateValidation =
+    implementation?.contract.generated_origin === "supplied_plan_aggregate_validation";
+  const writableAuthority = aggregateValidation ? undefined : authority;
   const networkRead = permitsNetworkRead(record, context, implementation);
   const policy = {
     fingerprint_schema_version: 2 as const,
@@ -253,9 +256,9 @@ export async function buildKernelAgentWorkOrder(opts: {
     state_fingerprint: fingerprint,
     state_fingerprint_policy: policy,
     authority: {
-      mutation_scope: role === "CURATOR" ? "context" : authority ? "code" : "none",
+      mutation_scope: role === "CURATOR" ? "context" : writableAuthority ? "code" : "none",
       writable_roots:
-        authority?.scope_roots.map((root) =>
+        writableAuthority?.scope_roots.map((root) =>
           path.resolve(opts.command.resolvedProject.gitRoot, root),
         ) ?? [],
       protected_paths: [
@@ -270,11 +273,12 @@ export async function buildKernelAgentWorkOrder(opts: {
         "git_read",
         "report_result",
         "report_blocker",
-        ...(authority ? ["workspace_write", "run_checks"] : []),
+        ...(writableAuthority ? ["workspace_write"] : []),
+        ...(authority ? ["run_checks"] : []),
       ],
       network: networkRead ? "allowed" : "deny",
       external_side_effects: [],
-      sandbox: authority ? "workspace-write" : "read-only",
+      sandbox: writableAuthority ? "workspace-write" : "read-only",
       expires_at: authority?.expires_at ?? null,
     },
     ...(recipeContext

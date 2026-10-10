@@ -58,6 +58,11 @@ export function planObligationIssues(
   for (const { definition, contract } of previous.filter(
     ({ definition }) => !definition.optional,
   )) {
+    if (
+      contract?.generated_origin &&
+      !after.some((candidate) => kernelDigest(candidate) === kernelDigest(definition))
+    )
+      issues.push(`generated_aggregate_obligation_changed:${definition.id}`);
     for (const output of definition.expected_outputs)
       if (!mandatory.some(({ definition }) => definition.expected_outputs.includes(output)))
         issues.push(`mandatory_output_removed:${output}`);
