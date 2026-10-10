@@ -1,3 +1,4 @@
+import { readKernelRepositoryEvidence } from "./kernel-accepted-repository-evidence.js";
 import { protectedPathKindForFile } from "../../shared/protected-paths.js";
 import { CliError } from "../../shared/errors.js";
 import { assertHookRunnerReady } from "../shared/hook-shim-template.js";
@@ -14,8 +15,7 @@ import {
 } from "../../shared/stable-file.js";
 import { cmdCommit } from "../guard/impl/commit.js";
 import type { CommandContext } from "../shared/task-backend.js";
-import { loadTaskFromContext, resolveCommandGitCommonDir } from "../shared/task-backend.js";
-import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js";
+import { loadTaskFromContext } from "../shared/task-backend.js";
 import { prepareDirectImplementationEvidence } from "./direct-task-supervisor-implementation.js";
 import {
   readDirectRepositoryStatus,
@@ -511,51 +511,7 @@ export async function commitCanonicalImplementation(opts: {
   return evidence;
 }
 
-export async function readKernelRepositoryEvidence(
-  directory: string,
-): Promise<KernelRepositoryEvidence> {
-  const evidence = JSON.parse(
-    await readStableRegularTextNoFollow(
-      path.join(directory, "repository-evidence.json"),
-      "canonical repository evidence",
-    ),
-  ) as KernelRepositoryEvidence;
-  const { digest, ...contents } = evidence;
-  if (k.kernelDigest(contents) !== digest)
-    throw new Error("Canonical repository evidence is invalid");
-  return evidence;
-}
-
-export async function listKernelRepositoryEvidence(
-  command: CommandContext,
-  record: KernelRecord,
-): Promise<KernelRepositoryEvidence[]> {
-  const root = path.join(
-    await resolveCommandGitCommonDir(command),
-    "agentplane",
-    "kernel",
-    "exchanges",
-    record.aggregate.id,
-  );
-  const evidence: KernelRepositoryEvidence[] = [];
-  for (const mutationId of Object.keys(record.aggregate.mutation_receipts ?? {}).toSorted()) {
-    const match = /^result:sha256:([a-f0-9]{64})$/u.exec(mutationId);
-    if (!match) continue;
-    try {
-      const candidate = await readKernelRepositoryEvidence(path.join(root, match[1]!));
-      if (
-        candidate.task_id !== record.aggregate.id ||
-        record.aggregate.work_items[candidate.work_item_id]?.state !== "COMPLETED"
-      )
-        continue;
-      evidence.push(candidate);
-    } catch (error) {
-      if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
-    }
-  }
-  return evidence.toSorted(
-    (left, right) =>
-      left.task_revision - right.task_revision ||
-      left.work_order_id.localeCompare(right.work_order_id),
-  );
-}
+export {
+  readKernelRepositoryEvidence,
+  listKernelRepositoryEvidence,
+} from "./kernel-accepted-repository-evidence.js";
