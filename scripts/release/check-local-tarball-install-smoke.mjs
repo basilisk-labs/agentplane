@@ -126,6 +126,7 @@ function assertJsonFailure(result, expected, contract) {
   const error = envelope[contract.rootField];
   assertOnlyContractFields(error, contract.error, contract.rootField);
   assert.equal(error.code, expected.code);
+  if (expected.reasonCode) assert.equal(error.context?.reason_code, expected.reasonCode);
   assert.equal(typeof error.message, "string");
   if (expected.messageIncludes) {
     assert.match(error.message, new RegExp(expected.messageIncludes, "u"));
@@ -374,10 +375,12 @@ const main = defineScript({
           { cwd: repo },
         ),
         {
-          exitCode: 4,
-          code: "E_IO",
+          exitCode: 3,
+          code: "E_VALIDATION",
+          reasonCode: "canonical_legacy_mutation_refused",
           messageIncludes: "Canonical Task mutations require the kernel lifecycle",
-          fields: ["code", "message", "context"],
+          fields: ["code", "message", "context", "hint", "next_action"],
+          nestedFields: { context: ["reason_code", "task_id", "recovery_argv"] },
         },
         installedJsonErrorContract,
       );

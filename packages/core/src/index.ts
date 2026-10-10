@@ -104,6 +104,7 @@ export {
   STATE_FINGERPRINT_POLICY_ZOD_SCHEMA,
   RUNNER_RESULT_MANIFEST_V1_LEGACY_FIXTURE,
   assertStateFingerprintPrecondition,
+  buildAgentSemanticPayloadSchema,
   buildAgentSemanticResultV2ValidFixtures,
   createRunnerEffectClaim,
   createRunnerEffectJournal,

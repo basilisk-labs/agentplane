@@ -28,6 +28,7 @@ export {
   AGENT_SEMANTIC_RESULT_V2_INVALID_FIXTURES,
   AGENT_SEMANTIC_RESULT_ZOD_SCHEMA,
   RUNNER_RESULT_MANIFEST_V1_LEGACY_FIXTURE,
+  buildAgentSemanticPayloadSchema,
   buildAgentSemanticResultV2ValidFixtures,
   listAgentSemanticResultSchemaErrors,
   renderAgentSemanticResultSchemaJson,

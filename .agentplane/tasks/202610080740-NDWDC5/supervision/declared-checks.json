@@ -1,0 +1,73 @@
+{
+  "checks": [
+    {
+      "check_ids": [],
+      "command": "node --test scripts/bench/paired-production-driver.test.mjs scripts/bench/paired-live-codex-launcher.test.mjs scripts/bench/paired-result-report.test.mjs scripts/bench/paired-m05-offline.test.mjs",
+      "duration_ms": 21387,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:832c2327d366e8b5ea7bbfaa3d37caa9a175a59494bb80c507a078576eb16660",
+        "executable_digest": "sha256:7fde7b8afa198da66257f42ee2001d874c7355631e6d1579a5fb5ef1f246df4c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": ".676523ms)\n✔ M05 boundary pins host trust across invocation and retains accepted signed evidence (575.693146ms)\n✔ reads all provider token fields without double-counting subsets (0.581675ms)\n✔ derives total tokens when Codex reports input and output components (0.193681ms)\n✔ keeps incomplete provider usage partial and visible (0.249849ms)\n✔ binds live authority to the exact campaign (0.842081ms)\n✔ pins the product descriptor and its runtime source identity (0.670161ms)\n✔ oracle preserves the first character of a tracked changed path (84.413114ms)\n✔ independent M05 oracle accepts the complete native normalized proposal (11.671143ms)\n✔ independent M05 oracle rejects scope widening (4.087138ms)\n✔ independent M05 oracle rejects capability widening (4.257604ms)\n✔ independent M05 oracle rejects resource claim (3.492952ms)\n✔ independent M05 oracle rejects optional work (3.151793ms)\n✔ independent M05 oracle rejects item criterion removal (2.861274ms)\n✔ independent M05 oracle rejects item check removal (2.42206ms)\n✔ independent M05 oracle rejects top-level check disconnection (2.681903ms)\n✔ independent M05 oracle rejects check capability (1.877441ms)\n✔ independent M05 oracle rejects forged approval (1.392779ms)\n✔ independent M05 oracle rejects different baseline (1.032843ms)\n✔ M05 normalizes only generated whitespace-only lines before pinning (0.252942ms)\n✔ M05 bundles real source entrypoints into an independently executable product (3968.169869ms)\n✔ M05 contract rejects absent pins and nonfinite limits without authorizing execution (5.713185ms)\n✔ durable assignments survive reopen; interrupted dispatch never returns a second permit (195.907604ms)\n✔ all failure outcomes retain reservations and finite budget rejects further work (852.442999ms)\n✔ corrupt, truncated, mismatched and symlink journals fail closed (124.140786ms)\n✔ receipt validation rejects overlaps, subset double counts and over-reservation usage (75.827473ms)\n✔ two real processes cannot obtain concurrent dispatch permits (331.175773ms)\n✔ native roles, repeated episodes and bounded retries retain distinct accounting (833.353302ms)\n✔ pre-provider cancellation remains assigned and cannot later dispatch (118.257589ms)\n✔ real process termination at publication boundaries never duplicates a launch (640.141518ms)\n✔ failure status alone never resolves unknown provider effects (117.598544ms)\n✔ dispatch follows the pinned assignment order (130.059826ms)\n✔ contradictory usage never publishes a receipt or unblocks dispatch (85.034634ms)\n✔ coherent observed and partial usage preserve subsets and null costs (190.846293ms)\n✔ M05 executes explicit same-product arms offline without provider usage or live authority (2340.55769ms)\n✔ M05 rejects different products, historical arm relabeling and incomplete pilot pairs (25.646149ms)\n✔ M05 retains every assigned crash and malformed-oracle failure with unknown usage (2956.101562ms)\n✔ runs the pinned three-arm task entrypoints offline and keeps transports stratified (964.770687ms)\n✔ rejects every mismatched run identity field (30.343007ms)\n✔ pins a product artifact separately from its executable launcher (24.952427ms)\n✔ rejects missing or malformed token usage (333.036527ms)\n✔ requires a trusted authority callback before live execution (24.430994ms)\n✔ rejects an observed execution identity that differs from the campaign (109.085211ms)\n✔ keeps failed-attempt tokens in the numerator and pairs only equivalent successes (11.240673ms)\n✔ unavailable tokens prevent a complete numeric claim (0.705784ms)\n✔ partial tokens remain visible and prevent a complete numeric claim (0.899212ms)\n✔ an all-failed arm has no finite successful-result score (0.742637ms)\n✔ rejects token subset double-counting (0.507026ms)\n✔ rejects outcome-mismatched successes from the paired population (0.690232ms)\n✔ keeps safety, activation, and efficiency gates independent (0.523843ms)\nℹ tests 55\nℹ suites 0\nℹ pass 55\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 20454.244171\n"
+    },
+    {
+      "check_ids": [],
+      "command": "node node_modules/eslint/bin/eslint.js scripts/bench/internal/paired-m05 scripts/bench/paired-production-driver.mjs scripts/bench/paired-production-driver.test.mjs scripts/bench/paired-live-codex-launcher.mjs scripts/bench/paired-live-codex-launcher.test.mjs scripts/bench/paired-result-report.mjs scripts/bench/paired-result-report.test.mjs",
+      "duration_ms": 4579,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:832c2327d366e8b5ea7bbfaa3d37caa9a175a59494bb80c507a078576eb16660",
+        "executable_digest": "sha256:7fde7b8afa198da66257f42ee2001d874c7355631e6d1579a5fb5ef1f246df4c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [],
+      "command": "bun run format:check",
+      "duration_ms": 66043,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "format:check",
+      "stderr_tail": "$ prettier . --check\n",
+      "stdout_tail": "Checking formatting...\nAll matched files use Prettier code style!\n"
+    },
+    {
+      "check_ids": [],
+      "command": "git diff --check",
+      "duration_ms": 1238,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:3af96d136a78eaa0237142d6ed294a0d3442cc679e83d5ff75cbb33af1efb54b",
+        "executable_digest": "sha256:2a8c18fbf43da9f692d75474c72bea9dfd796c260b0f3dfe456376abc3bbd668",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202610080740-NDWDC5"
+}
