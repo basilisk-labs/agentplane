@@ -308,11 +308,16 @@ export function canonicalAuthorityIssues(aggregate: TaskAggregate): string[] {
       parent?.plan_revision === authority.plan_revision &&
       parent.plan_digest === authority.plan_digest &&
       parent.provenance.evidence_digest === authority.provenance.evidence_digest;
+    const approvedPolicyRenewal =
+      record.observation?.kind === "policy_renewal" &&
+      parent !== undefined &&
+      policyRenewalIssues(parent, record).length === 0;
     if (
       record.observation?.kind !== "authority_delta" &&
       plan?.approval_evidence_digest !== authority.provenance.evidence_digest &&
       !approvedPlanAmendment &&
-      !continuedApprovedPlanAuthority
+      !continuedApprovedPlanAuthority &&
+      !approvedPolicyRenewal
     )
       issues.push("authority_plan");
     if (record.observation?.kind === "policy_renewal") {
