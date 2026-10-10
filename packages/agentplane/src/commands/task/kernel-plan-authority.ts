@@ -67,6 +67,42 @@ function scopeIsSubset(child: readonly string[], parent: readonly string[]): boo
   );
 }
 
+function canonicalPlanContractMismatches(
+  task: Pick<TaskData, "execution_contract">,
+  plan: k.PlanRecord,
+) {
+  const authority = task.execution_contract?.authority;
+  if (!authority) return [];
+  return plan.work_items.flatMap((item, index) => {
+    const requested = item.execution_requirements;
+    const fields = [
+      ["scope_roots", requested.scope_roots, authority.writable_roots, scopeIsSubset],
+      [
+        "repository_effects",
+        requested.repository_effects,
+        authority.allowed_repository_effects,
+        setIsSubset,
+      ],
+      [
+        "external_effects",
+        requested.external_effects,
+        authority.allowed_external_effects,
+        setIsSubset,
+      ],
+      ["capabilities", requested.capabilities, authority.allowed_capabilities ?? [], setIsSubset],
+      ["resources", requested.resources, authority.allowed_resources ?? [], setIsSubset],
+    ] as const;
+    return fields
+      .filter(([, values, allowed, subset]) => !subset(values, allowed))
+      .map(([field, values, allowed]) => ({
+        work_item_id: item.id,
+        path: `work_items[${index}].execution_requirements.${field}`,
+        requested: [...values],
+        allowed: [...allowed],
+      }));
+  });
+}
+
 /** Compare an agent-proposed Plan only with the trusted, intake-owned execution contract. */
 export function canonicalPlanContractViolations(
   task: Pick<TaskData, "execution_contract">,
@@ -107,6 +143,18 @@ export function assertCanonicalPlanWithinExecutionContract(
           reason_code: "plan_exceeds_execution_contract",
           violations,
           allowed: task.execution_contract?.authority ?? null,
+          mismatches: canonicalPlanContractMismatches(task, plan),
+          recovery: {
+            replan_command_template: "ap task plan set <task-id> --file <revised-plan.json>",
+            replan_condition:
+              "Narrow the proposal to the existing intake contract. Plan submission does not approve or execute it; follow the returned native approval route.",
+            broader_contract: {
+              requires: "USER",
+              help_argv: ["ap", "help", "task", "new", "--compact"],
+              instruction:
+                "If the required work exceeds the intake ceiling, request an explicitly authorized successor using task new --scope-root and the corresponding effect/capability/resource options. Existing task plan set --scope-expansion-approved-by USER admits additive Plan changes only; it does not expand the trusted intake contract. Do not infer approval or copy native records.",
+            },
+          },
         },
       }),
       { reason_code: "plan_exceeds_execution_contract", violations },
