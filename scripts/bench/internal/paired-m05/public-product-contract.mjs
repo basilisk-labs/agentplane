@@ -4,6 +4,10 @@ import { readFileSync } from "node:fs";
 import { PLAN_VALIDATION_CAPABILITIES } from "../../../../packages/agentplane/src/commands/task/planning-capabilities.ts";
 import { createNativeRecipeApplicabilityObservers } from "../../../../packages/agentplane/src/runner/context/recipe-native-observers.ts";
 const files = [
+  "packages/agentplane/src/commands/recipes/impl/apply.ts",
+  "packages/agentplane/src/commands/recipes/impl/explicit-selection.ts",
+  "packages/agentplane/src/runner/context/recipe-plan-validation.ts",
+  "packages/recipes/src/manifest.ts",
   "packages/recipes/src/scenario-parameters.ts",
   "packages/recipes/src/scenario-compiler.ts",
   "packages/agentplane/src/runner/context/recipe-native-observers.ts",
@@ -28,6 +32,9 @@ console.log(
       conditional_observed_value_keys: keys(true).filter((key) => !keys().includes(key)),
       validation_capabilities: [...PLAN_VALIDATION_CAPABILITIES],
       rules: [
+        "ScenarioV2 archives require BOTH manifest schema_version 2 and compatibility.scenario_api_version 2; otherwise installer uses ScenarioV1 reader. A manifestV2 requires explicit kind project_overlay. Individually valid manifest1 and scenario2 do not form an installable package.",
+        "Actual installer asset validation checks declared nonempty markdown agents/skills, tool entrypoint and prompt asset existence, prompt module/mutation asset contracts, scenario reader version and equality of scenario id to descriptor id. Package asset success is not installation or admission.",
+        "Native explicit selected_recipe entry requires a unique project-installed Recipe id/version and scenario id with API2, compatible actual package/runtime metadata, contained stable source files, actual context sources, computed and retained dependency closure, fresh baseline, task authority and supported declared checks. Legacy resolver defaults are not proof of explicit V2 entry compatibility.",
         "Only {{name}} tokens are substituted. ${name} is literal text. Semantic surfaces: summary, description, goal, criteria descriptions, work-item objectives/context symbol hints, assumptions, unresolved questions and applicability values.",
         "Path substitutions require repo_path parameters and are allowed only in applicability paths, work-item scope roots/context required or optional sources, and path resource claims. Declarations/defaults remain source data. Commands and other fields forbid {{name}} interpolation.",
         "Required graph inputs need actual other producing WorkItems. Public parameter bindings and prose do not create graph outputs or authority.",

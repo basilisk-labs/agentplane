@@ -2,7 +2,6 @@ import { publicInterfaceFeedback } from "./public-interface-feedback.mjs";
 import assert from "node:assert/strict";
 import { constants, openSync, closeSync, fstatSync, readSync } from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import {
   validateRecipeManifest,
   parseScenarioV2,
@@ -10,7 +9,7 @@ import {
 } from "../../../../packages/recipes/dist/index.js";
 import { createRepositorySnapshot } from "../../../../packages/core/dist/tasks/index.js";
 
-function boundedFile(file) {
+export function boundedPublicFeedbackFile(file) {
   const fd = openSync(file, constants.O_RDONLY | constants.O_NOFOLLOW | constants.O_NONBLOCK);
   try {
     const stat = fstatSync(fd);
@@ -49,12 +48,14 @@ function inspect(run) {
   }
 }
 export function publicCompilerFeedback(candidateRoot, publicCasesFile, productContractFile) {
-  const manifest = JSON.parse(boundedFile(path.join(candidateRoot, "manifest.json")));
-  const scenario = JSON.parse(boundedFile(path.join(candidateRoot, "scenario.json")));
-  boundedFile(path.join(candidateRoot, "agent.md"));
-  const cases = JSON.parse(boundedFile(publicCasesFile));
+  const manifest = JSON.parse(boundedPublicFeedbackFile(path.join(candidateRoot, "manifest.json")));
+  const scenario = JSON.parse(boundedPublicFeedbackFile(path.join(candidateRoot, "scenario.json")));
+  boundedPublicFeedbackFile(path.join(candidateRoot, "agent.md"));
+  const cases = JSON.parse(boundedPublicFeedbackFile(publicCasesFile));
   assert.ok(Array.isArray(cases) && cases.length > 0 && cases.length <= 5);
-  const contract = productContractFile ? JSON.parse(boundedFile(productContractFile)) : null;
+  const contract = productContractFile
+    ? JSON.parse(boundedPublicFeedbackFile(productContractFile))
+    : null;
   const baseline = createRepositorySnapshot({
     git: { kind: "unavailable", reason_code: "PREPARATION_ONLY" },
     dirty_paths: [],
@@ -105,9 +106,4 @@ export function publicCompilerFeedback(candidateRoot, publicCasesFile, productCo
       };
     }),
   };
-}
-if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {
-  const [candidate, cases, contract, ...extra] = process.argv.slice(2);
-  assert.equal(extra.length, 0);
-  console.log(JSON.stringify(publicCompilerFeedback(candidate, cases, contract)));
 }
