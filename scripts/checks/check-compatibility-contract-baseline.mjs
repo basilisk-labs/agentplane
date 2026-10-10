@@ -3535,48 +3535,45 @@ function validateReviewedCandidate({
       name: "approved-by",
       source_task: "202610081434-RDZE4P",
     },
+
+    { kind: "command", command: "task corrective-authority", source_task: "202610100459-0NATSS" },
+    {
+      kind: "option",
+      command: "task corrective-authority",
+      name: "action",
+      source_task: "202610100459-0NATSS",
+    },
+    {
+      kind: "option",
+      command: "task corrective-authority",
+      name: "by",
+      source_task: "202610100459-0NATSS",
+    },
+    {
+      kind: "option",
+      command: "task corrective-authority",
+      name: "expires-at",
+      source_task: "202610100459-0NATSS",
+    },
+    {
+      kind: "option",
+      command: "task corrective-authority",
+      name: "grant-digest",
+      source_task: "202610100459-0NATSS",
+    },
+    {
+      kind: "option",
+      command: "task corrective-authority",
+      name: "max-attempts",
+      source_task: "202610100459-0NATSS",
+    },
+    {
+      kind: "option",
+      command: "task corrective-authority",
+      name: "state-digest",
+      source_task: "202610100459-0NATSS",
+    },
   ];
-  activeExpectedAdditionSources.push(
-    ...[
-      { kind: "command", command: "task corrective-authority", source_task: "202610100459-0NATSS" },
-      {
-        kind: "option",
-        command: "task corrective-authority",
-        name: "action",
-        source_task: "202610100459-0NATSS",
-      },
-      {
-        kind: "option",
-        command: "task corrective-authority",
-        name: "by",
-        source_task: "202610100459-0NATSS",
-      },
-      {
-        kind: "option",
-        command: "task corrective-authority",
-        name: "expires-at",
-        source_task: "202610100459-0NATSS",
-      },
-      {
-        kind: "option",
-        command: "task corrective-authority",
-        name: "grant-digest",
-        source_task: "202610100459-0NATSS",
-      },
-      {
-        kind: "option",
-        command: "task corrective-authority",
-        name: "max-attempts",
-        source_task: "202610100459-0NATSS",
-      },
-      {
-        kind: "option",
-        command: "task corrective-authority",
-        name: "state-digest",
-        source_task: "202610100459-0NATSS",
-      },
-    ],
-  );
   const activeExpectedAddedCommandDescriptors = expectedAddedCommandDescriptors
     .filter((command) => command.id.join(" ") !== "task supervisor budget-epoch")
     .map((command) =>
@@ -3612,26 +3609,26 @@ function validateReviewedCandidate({
       options: [],
       visibility: "user",
     },
+    {
+      id: ["task", "corrective-authority"],
+      visibility: "user",
+      group: "Task",
+      args: [{ name: "task-id", required: true, variadic: false, valueHint: "<task-id>" }],
+      options: [
+        {
+          name: "action",
+          kind: "string",
+          valueHint: "<action>",
+          choices: ["inspect", "grant", "revoke"],
+        },
+        { name: "state-digest", kind: "string", valueHint: "<sha256:...>" },
+        { name: "by", kind: "string", valueHint: "<USER>" },
+        { name: "max-attempts", kind: "string", valueHint: "<1-100>" },
+        { name: "expires-at", kind: "string", valueHint: "<ISO-8601>" },
+        { name: "grant-digest", kind: "string", valueHint: "<sha256:...>" },
+      ],
+    },
   );
-  activeExpectedAddedCommandDescriptors.push({
-    id: ["task", "corrective-authority"],
-    visibility: "user",
-    group: "Task",
-    args: [{ name: "task-id", required: true, variadic: false, valueHint: "<task-id>" }],
-    options: [
-      {
-        name: "action",
-        kind: "string",
-        valueHint: "<action>",
-        choices: ["inspect", "grant", "revoke"],
-      },
-      { name: "state-digest", kind: "string", valueHint: "<sha256:...>" },
-      { name: "by", kind: "string", valueHint: "<USER>" },
-      { name: "max-attempts", kind: "string", valueHint: "<1-100>" },
-      { name: "expires-at", kind: "string", valueHint: "<ISO-8601>" },
-      { name: "grant-digest", kind: "string", valueHint: "<sha256:...>" },
-    ],
-  });
   activeExpectedAddedCommandDescriptors.sort((a, b) =>
     a.id.join(" ").localeCompare(b.id.join(" ")),
   );
@@ -3744,43 +3741,40 @@ function validateReviewedCandidate({
       name: "approved-by",
       valueHint: "<role>",
     },
+
+    {
+      command: "task corrective-authority",
+      name: "action",
+      kind: "string",
+      valueHint: "<action>",
+      choices: ["inspect", "grant", "revoke"],
+    },
+    { command: "task corrective-authority", name: "by", kind: "string", valueHint: "<USER>" },
+    {
+      command: "task corrective-authority",
+      name: "expires-at",
+      kind: "string",
+      valueHint: "<ISO-8601>",
+    },
+    {
+      command: "task corrective-authority",
+      name: "grant-digest",
+      kind: "string",
+      valueHint: "<sha256:...>",
+    },
+    {
+      command: "task corrective-authority",
+      name: "max-attempts",
+      kind: "string",
+      valueHint: "<1-100>",
+    },
+    {
+      command: "task corrective-authority",
+      name: "state-digest",
+      kind: "string",
+      valueHint: "<sha256:...>",
+    },
   ];
-  activeExpectedAddedOptions.push(
-    ...[
-      {
-        command: "task corrective-authority",
-        name: "action",
-        kind: "string",
-        valueHint: "<action>",
-        choices: ["inspect", "grant", "revoke"],
-      },
-      { command: "task corrective-authority", name: "by", kind: "string", valueHint: "<USER>" },
-      {
-        command: "task corrective-authority",
-        name: "expires-at",
-        kind: "string",
-        valueHint: "<ISO-8601>",
-      },
-      {
-        command: "task corrective-authority",
-        name: "grant-digest",
-        kind: "string",
-        valueHint: "<sha256:...>",
-      },
-      {
-        command: "task corrective-authority",
-        name: "max-attempts",
-        kind: "string",
-        valueHint: "<1-100>",
-      },
-      {
-        command: "task corrective-authority",
-        name: "state-digest",
-        kind: "string",
-        valueHint: "<sha256:...>",
-      },
-    ],
-  );
   activeExpectedAddedOptions.sort((a, b) =>
     `${a.command} --${a.name}` < `${b.command} --${b.name}` ? -1 : 1,
   );
