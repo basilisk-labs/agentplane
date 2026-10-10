@@ -637,3 +637,47 @@ describe("side-effect authority", () => {
     ).toEqual({ state: "allowed", effect_class: "external_pre_authorized" });
   });
 });
+
+describe("candidate publication authority", () => {
+  const candidate = {
+    id: "candidate.publish" as const,
+    type: "pr_sync" as const,
+    params: { taskId, requestDigest: `sha256:${"a".repeat(64)}` },
+  };
+  it("requires separate exact unexpired operator approval", () => {
+    const assess = (
+      task: ReturnType<typeof approvedTask>,
+      requested = candidate,
+      now = new Date("2026-07-26T12:01:00Z"),
+    ) =>
+      evaluateWorkflowOperationAuthority({
+        task,
+        operation: requested,
+        fingerprint: fingerprint(),
+        now,
+      });
+    expect(assess({ extensions: {} }).state).toBe("approval_required");
+    const task = approvedTask(candidate);
+    expect(assess(task).state).toBe("allowed");
+    expect(
+      assess(task, {
+        ...candidate,
+        params: { ...candidate.params, requestDigest: `sha256:${"b".repeat(64)}` },
+      }).state,
+    ).toBe("approval_required");
+    expect(assess(task, candidate, new Date("2026-07-26T12:16:00Z")).state).toBe(
+      "approval_required",
+    );
+  });
+  it("rejects semantic actors even when the operation requests publication", () => {
+    expect(() =>
+      createSideEffectAuthorityRecord({
+        actor: "EXECUTOR",
+        operation: candidate,
+        fingerprint: fingerprint(),
+        issuedAt: "2026-07-26T12:00:00Z",
+        expiresAt: "2026-07-26T12:15:00Z",
+      }),
+    ).toThrow("USER approval");
+  });
+});

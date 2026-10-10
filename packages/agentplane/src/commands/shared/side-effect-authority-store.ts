@@ -2,6 +2,8 @@ import { randomUUID } from "node:crypto";
 import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 
+import { taskKernel as k } from "@agentplaneorg/core/tasks";
+import { tryAcquireSupervisorExecutionLease } from "./supervisor-execution-lease.js";
 import { gitRevParse } from "@agentplaneorg/core/git";
 
 import { isRecord } from "../../shared/guards.js";
@@ -143,25 +145,52 @@ export async function persistSideEffectAuthorityState(opts: {
   gitRoot: string;
   taskId: string;
   state: SideEffectAuthorityState;
+  expected: SideEffectAuthorityStateLoadResult;
 }): Promise<void> {
   const target = await authorityStorePath(opts);
-  const parent = path.dirname(target);
-  const temporary = path.join(parent, `.${opts.taskId}.${process.pid}.${randomUUID()}.tmp`);
-  const payload: StoredAuthorityEnvelope = {
-    schemaVersion: 1,
-    kind: "side_effect_authority_store",
-    taskId: opts.taskId,
-    state: opts.state,
-  };
-  await mkdir(parent, { recursive: true, mode: 0o700 });
+  if (!opts.expected.state) throw new Error("Cannot update invalid authority state");
+  const lease = await tryAcquireSupervisorExecutionLease({ journal_path: target });
+  if (!lease)
+    throw new Error("Authority store update is already in progress; reload before retrying");
   try {
-    await writeFile(temporary, `${JSON.stringify(payload, null, 2)}\n`, {
-      encoding: "utf8",
-      mode: 0o600,
-      flag: "wx",
-    });
-    await rename(temporary, target);
+    const current = await readStoredAuthorityState(opts);
+    // A task-extension fallback is unchanged only while no shared store exists.
+    if (
+      opts.expected.source === "git_common_dir"
+        ? !current.exists ||
+          !current.state ||
+          k.kernelDigest(current.state) !== k.kernelDigest(opts.expected.state)
+        : current.exists
+    )
+      throw new Error(
+        "Authority store changed; reload before retrying the exact operator decision",
+      );
+    if (
+      !readSideEffectAuthorityState({
+        extensions: { [SIDE_EFFECT_AUTHORITY_EXTENSION_KEY]: opts.state },
+      })
+    )
+      throw new Error("Refusing invalid authority state");
+    const parent = path.dirname(target);
+    const temporary = path.join(parent, `.${opts.taskId}.${process.pid}.${randomUUID()}.tmp`);
+    const payload: StoredAuthorityEnvelope = {
+      schemaVersion: 1,
+      kind: "side_effect_authority_store",
+      taskId: opts.taskId,
+      state: opts.state,
+    };
+    await mkdir(parent, { recursive: true, mode: 0o700 });
+    try {
+      await writeFile(temporary, `${JSON.stringify(payload, null, 2)}\n`, {
+        encoding: "utf8",
+        mode: 0o600,
+        flag: "wx",
+      });
+      await rename(temporary, target);
+    } finally {
+      await rm(temporary, { force: true });
+    }
   } finally {
-    await rm(temporary, { force: true });
+    await lease.release();
   }
 }

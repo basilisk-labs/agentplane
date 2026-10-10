@@ -1,6 +1,7 @@
 import type { WorkflowOperationId } from "./workflow-step.js";
 
 export const WORKFLOW_OPERATION_ARGV_PREFIX = {
+  "candidate.publish": ["agentplane", "task", "candidate", "publish"],
   "batch.collect_included": ["agentplane", "task", "brief"],
   "batch.follow_primary": ["agentplane", "task", "brief"],
   "batch.reconcile_included": ["agentplane", "release", "tasks", "reconcile"],

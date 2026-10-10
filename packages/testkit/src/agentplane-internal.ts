@@ -34,3 +34,5 @@ export * as processSupervision from "../../agentplane/src/runner/process-supervi
 export { resolveUpdateCheckCachePath } from "../../agentplane/src/cli/update-check.js";
 export * as prompts from "../../agentplane/src/cli/prompts.js";
 export { VERIFY_STEPS_PLACEHOLDER } from "../../agentplane/src/commands/task/shared/docs.js";
+
+export type { KernelRecord } from "../../agentplane/src/adapters/task-backend/kernel-record.js";

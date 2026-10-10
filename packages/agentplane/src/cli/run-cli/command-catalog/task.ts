@@ -99,6 +99,7 @@ import {
   TASK_WRITE_REQUIREMENTS,
 } from "./task-capability-profiles.js";
 import { PROVIDER_WRITE_REQUIREMENTS } from "./provider-ops-capability-profiles.js";
+import { TASK_CANDIDATE_COMMANDS } from "./task-candidate.js";
 import { TASK_RECOVERY_COMMANDS } from "./task-recovery.js";
 import {
   RUNNER_EXECUTION_REQUIREMENTS,
@@ -395,6 +396,7 @@ export const TASK_COMMANDS = [
     helpGroup: "Advanced",
   }),
   ...TASK_RECOVERY_COMMANDS,
+  ...TASK_CANDIDATE_COMMANDS,
   declareSessionCommand(taskCommentSpec, {
     load: loadTaskCommentSpec,
     requirements: TASK_WRITE_REQUIREMENTS,
