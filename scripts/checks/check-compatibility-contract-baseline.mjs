@@ -46,7 +46,7 @@ const candidatePath = path.join(
 const REVIEWED_SECTION_DIGESTS = {
   agent_facing_context_contracts:
     "4926aed50aea235e24310e39404f7b939bc4caa7fc763a98387992822a2101c5",
-  cli_topology: "62577cfd16b0ee265cc5294afd801c9ab3c0a17524e0fb7d71929229934ce8b0",
+  cli_topology: "ac5cdf9d02a03424be67b5f88a74e078b1f5ade8a3c5480fd3af4b0faaa0f195",
   exit_error_contract: "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
   machine_output_contract: "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
   package_manifests: "6052feb72f5eee6eaa1a503bb10074492350a164de683adf50bf2b092ce647b9",
@@ -398,6 +398,7 @@ function validateReviewedCandidate({
     "202610011624-MP3J6N",
     "202610081434-RDZE4P",
     "202610100459-0NATSS",
+    "202610100750-36SZWD",
   ];
 
   assert(
@@ -968,6 +969,7 @@ function validateReviewedCandidate({
       "202610060956-42J54D",
       "202610081434-RDZE4P",
       "202610100459-0NATSS",
+      "202610100750-36SZWD",
     ],
     agent_facing_context_contracts: [
       "202607221848-1HWR0R",
@@ -3573,6 +3575,30 @@ function validateReviewedCandidate({
       name: "state-digest",
       source_task: "202610100459-0NATSS",
     },
+    {
+      command: "task plan approve",
+      kind: "option",
+      name: "reviewed-base-new",
+      source_task: "202610100750-36SZWD",
+    },
+    {
+      command: "task plan approve",
+      kind: "option",
+      name: "reviewed-base-old",
+      source_task: "202610100750-36SZWD",
+    },
+    {
+      command: "task plan approve",
+      kind: "option",
+      name: "reviewed-checkpoint-digest",
+      source_task: "202610100750-36SZWD",
+    },
+    {
+      command: "task plan approve",
+      kind: "option",
+      name: "reviewed-work-order-digest",
+      source_task: "202610100750-36SZWD",
+    },
   ];
   const activeExpectedAddedCommandDescriptors = expectedAddedCommandDescriptors
     .filter((command) => command.id.join(" ") !== "task supervisor budget-epoch")
@@ -3773,6 +3799,20 @@ function validateReviewedCandidate({
       name: "state-digest",
       kind: "string",
       valueHint: "<sha256:...>",
+    },
+    { command: "task plan approve", kind: "string", name: "reviewed-base-new", valueHint: "<pin>" },
+    { command: "task plan approve", kind: "string", name: "reviewed-base-old", valueHint: "<pin>" },
+    {
+      command: "task plan approve",
+      kind: "string",
+      name: "reviewed-checkpoint-digest",
+      valueHint: "<pin>",
+    },
+    {
+      command: "task plan approve",
+      kind: "string",
+      name: "reviewed-work-order-digest",
+      valueHint: "<pin>",
     },
   ];
   activeExpectedAddedOptions.sort((a, b) =>

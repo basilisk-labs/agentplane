@@ -8,14 +8,14 @@
   "candidate": {
     "section_digests": {
       "agent_facing_context_contracts": "4926aed50aea235e24310e39404f7b939bc4caa7fc763a98387992822a2101c5",
-      "cli_topology": "62577cfd16b0ee265cc5294afd801c9ab3c0a17524e0fb7d71929229934ce8b0",
+      "cli_topology": "ac5cdf9d02a03424be67b5f88a74e078b1f5ade8a3c5480fd3af4b0faaa0f195",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
       "package_manifests": "6052feb72f5eee6eaa1a503bb10074492350a164de683adf50bf2b092ce647b9",
       "tarball_policy": "10e8c7b78d3166955320b6fa787d7564b5bba1f67b3ce1736dca46673528716d",
       "workflow_schema": "1003207ce9df63cccac8761565f0d1264c094fd3fda5609012a6716c82842451"
     },
-    "surface_sha256": "96ce0b30145f13ef3a3d745bb4956eaf75250882d391a45ffe29c170c9a0bd00"
+    "surface_sha256": "eba12bf67ec0a532865ad082a669e9545db92dce4f39d81feaf84ace60b74470"
   },
   "candidate_id": "agentplane.compatibility.v0.7.cumulative",
   "contract_artifacts": {
@@ -1611,6 +1611,30 @@
             "valueHint": null
           },
           {
+            "command": "task plan approve",
+            "kind": "string",
+            "name": "reviewed-base-new",
+            "valueHint": "<pin>"
+          },
+          {
+            "command": "task plan approve",
+            "kind": "string",
+            "name": "reviewed-base-old",
+            "valueHint": "<pin>"
+          },
+          {
+            "command": "task plan approve",
+            "kind": "string",
+            "name": "reviewed-checkpoint-digest",
+            "valueHint": "<pin>"
+          },
+          {
+            "command": "task plan approve",
+            "kind": "string",
+            "name": "reviewed-work-order-digest",
+            "valueHint": "<pin>"
+          },
+          {
             "command": "task plan recover-rejection",
             "kind": "string",
             "name": "by",
@@ -2833,6 +2857,30 @@
             "kind": "option",
             "name": "state-digest",
             "source_task": "202610100459-0NATSS"
+          },
+          {
+            "command": "task plan approve",
+            "kind": "option",
+            "name": "reviewed-base-new",
+            "source_task": "202610100750-36SZWD"
+          },
+          {
+            "command": "task plan approve",
+            "kind": "option",
+            "name": "reviewed-base-old",
+            "source_task": "202610100750-36SZWD"
+          },
+          {
+            "command": "task plan approve",
+            "kind": "option",
+            "name": "reviewed-checkpoint-digest",
+            "source_task": "202610100750-36SZWD"
+          },
+          {
+            "command": "task plan approve",
+            "kind": "option",
+            "name": "reviewed-work-order-digest",
+            "source_task": "202610100750-36SZWD"
           }
         ],
         "command_count": { "from": 243, "to": 256 },
@@ -3032,7 +3080,7 @@
             "identity": "task plan approve --by"
           }
         ],
-        "option_count": { "from": 767, "to": 866 },
+        "option_count": { "from": 767, "to": 870 },
         "positional_count": { "from": 165, "to": 177 },
         "removed_command_descriptors": [
           {
@@ -3553,10 +3601,11 @@
         "202610041748-K43XFE",
         "202610060956-42J54D",
         "202610081434-RDZE4P",
-        "202610100459-0NATSS"
+        "202610100459-0NATSS",
+        "202610100750-36SZWD"
       ],
       "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with caller-supplied structured semantic intent and neutral planner intake, including bounded scope, effect, capability, and resource declarations, explainable per-task workflow routing, signed dialogue approval receipts, compatibility retirement diagnostics, safe local evidence statistics, compaction, garbage collection, and a state-bound USER-approved blocked-task scope extension; promotes the managed task runner; moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces; canonicalizes setup and execution profile selection to standard while retaining legacy init aliases; and makes auto the task route default while retiring repository as a user-facing route. Adds exact-intent operator reconciliation for interrupted integration workflow effects. Retires the active supervisor budget-epoch command after spend limits became telemetry-only. Retires the active Blueprint command surface after Task Kernel replacement proof while preserving cold compatibility readers. Adds explicit approval and supersession options to canonical duplicate and no-op closure. Add explicit bounded corrective-authority inspection, grant and revocation with finite retry and expiry limits.",
-      "to_sha256": "62577cfd16b0ee265cc5294afd801c9ab3c0a17524e0fb7d71929229934ce8b0"
+      "to_sha256": "ac5cdf9d02a03424be67b5f88a74e078b1f5ade8a3c5480fd3af4b0faaa0f195"
     },
     {
       "classification": "intentional_breaking_retirement",
@@ -3815,7 +3864,7 @@
     "from_version": "0.6.24",
     "section": "package_manifests",
     "source_task": "202608082119-P6SHBN",
-    "surface_sha256": "4dc2d8caa7afbc17454b8dd92d3f3651e1455cb2f9d1078fe7f2f2be251b1db3",
+    "surface_sha256": "19a9a1b9ed375628560d6ab329379446586be63e96daeefc493199e71778a36b",
     "to_sha256": "fcc419a72f859fb594e93e8e576c4e83f67c207a312477cdbae6994aefda8941",
     "to_version": "0.7.12"
   },
@@ -3891,6 +3940,7 @@
     "202610060956-42J54D",
     "202610011624-MP3J6N",
     "202610081434-RDZE4P",
-    "202610100459-0NATSS"
+    "202610100459-0NATSS",
+    "202610100750-36SZWD"
   ]
 }
