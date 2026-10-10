@@ -1,10 +1,11 @@
 ---
 id: "202610102009-NYTBDA"
 title: "Qualify GitLab frozen-source and logical-target publication regression"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -56,6 +57,22 @@ quality_review:
     - "All 17 required context blocks and nine prepared evidence objects were verified. Final native manifests run-003 through run-005 and all nine retained log files match their hashes. The declared 19-test regression, typecheck, and diff check passed at implementation d810023bc18457f9275adb92b440509e3a725c3e."
     - "Current source bytes equal the reviewed implementation. Merge d68a1d36645e9d0561fdc11c15ef303bbdba936f retains parents 48777f9f2310daf75e60f460db8cf3caa8d7b6a9 and af728592db8c10d2130ab714acea15a1f1656d2b, with exact tree f45c03e4af04780c02581e956c5e4845daa1b43b. The hosted ancestor remains reachable."
     - "Residual risk: Hosted verification, integration approval, and release qualification remain controller-owned gates. This review does not claim whole-repository or release PASS."
+token_usage:
+  agent_runs: 2
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:10db059501e0cf843e286bfdacf55ba164b12d53f00107088be267c555b44ac7"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-10T20:58:36.545Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -229,9 +246,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "d810023bc18457f9275adb92b440509e3a725c3e"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "807df269bee75d2b0c46c2333f42d9a6167dd0d9"
+  message: "🚧 NYTBDA task: record external evaluator result"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -239,9 +259,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-10T20:58:36.545Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "807df269bee75d2b0c46c2333f42d9a6167dd0d9"
 doc_version: 3
-doc_updated_at: "2026-10-10T20:30:47.125Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-10T20:58:36.545Z"
+doc_updated_by: "CODER"
 description: "Issue #6119 was observed with installed 0.7.12-beta.1, not qualified7b46. Add generic regression coverage of the existing provider-base separation; do not duplicate or change production implementation. Exercise legacy task_execution_context base_ref/base_sha as a frozen40-character commit with configured logicalmain through real PR synchronization and GitLab POST payload construction, mocking only external transport. Use local Git target evidence, no live GitLab writes/network/provider. Preserve frozen verification/diff base and source/task evidence. Test missing or inconsistent branch evidence refuses before provider POST; retain existing GitHub behavior. No Factory-specific adapter, lifecycle workaround, retargeting or release claim. Read existing K43XFE/RDP source coverage; report exact source/runtime/check evidence for independent review."
 sections:
   Summary: |-
@@ -375,6 +403,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:fa546a6bc3bfec24576830f69a4e98cd5f0d9f557d3293b586c9039ee34c25c0"
     work_order_id: "sha256:e23c26c0434a239c85e1ab1bb5a91436eb61c2c6c72b03078362607c618f9b90"
+  implementation_commit:
+    hash: "d68a1d36645e9d0561fdc11c15ef303bbdba936f"
+    message: "🔧 NYTBDA task: preserve published artifact ancestry"
   task_execution_context:
     base_ref: "agentplane/J8P9K9-integration"
     base_sha: "7b46bd63fa10785c36420ee627c01d814171497b"
@@ -945,3 +976,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/2` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:10db059501e0cf843e286bfdacf55ba164b12d53f00107088be267c555b44ac7`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-10T20:58:36.545Z`
