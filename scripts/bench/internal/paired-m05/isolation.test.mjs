@@ -1,7 +1,17 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, symlinkSync } from "node:fs";
+import {
+  mkdtempSync,
+  mkdirSync,
+  writeFileSync,
+  readFileSync,
+  rmSync,
+  symlinkSync,
+  openSync,
+  closeSync,
+} from "node:fs";
 import os from "node:os";
+import { createServer } from "node:net";
 import path from "node:path";
 import { runIsolated, writeIsolationPolicy } from "./isolation.mjs";
 
@@ -74,4 +84,62 @@ test("restricted children receive no ambient environment or preload options", (t
   const env = JSON.parse(result.stdout);
   assert.equal(env.M05_ORACLE_SENTINEL, undefined);
   assert.equal(env.NODE_OPTIONS, undefined);
+});
+
+test("actual descendants cannot acquire hidden descriptors, hardlinks or a listening host socket", async (t) => {
+  const root = mkdtempSync(path.join(os.tmpdir(), "m05-escape-matrix-"));
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  const subject = path.join(root, "subject");
+  mkdirSync(subject);
+  const secret = path.join(root, "hidden");
+  writeFileSync(secret, "HIDDEN_SENTINEL");
+  const socketPath = path.join(root, "host.sock");
+  const server = createServer();
+  await new Promise((resolve, reject) => {
+    server.once("error", reject);
+    server.listen(socketPath, resolve);
+  });
+  t.after(() => new Promise((resolve) => server.close(resolve)));
+  const secretFd = openSync(secret, "r");
+  t.after(() => closeSync(secretFd));
+  const policy = path.join(root, "policy.json");
+  writeIsolationPolicy(policy, { cwd: subject, readOnly: [subject], writable: [subject] });
+  const probe = `import os,socket,json,errno,subprocess,sys
+secret=${JSON.stringify(secret)}
+sock=${JSON.stringify(socketPath)}
+hostfd=${JSON.stringify(`/proc/${process.pid}/fd/`)}+str(${secretFd})
+checks={
+ 'absolute':lambda:open(secret).read(),
+ 'traversal':lambda:open('../hidden').read(),
+ 'hardlink':lambda:os.link(secret,'stolen'),
+ 'inherited_fd':lambda:os.read(3,128),
+ 'self_fd':lambda:open('/proc/self/fd/3').read(),
+ 'parent_fd':lambda:open(hostfd).read(),
+ 'host_socket':lambda:socket.socket(socket.AF_UNIX).connect(sock),
+}
+for name,action in checks.items():
+ try: action()
+ except OSError as error:
+  assert error.errno in (errno.EACCES,errno.EPERM,errno.EBADF,errno.ENOENT) or (name=='hardlink' and error.errno==errno.EXDEV), (name,error.errno)
+ else: raise RuntimeError('escape allowed: '+name)
+open('allowed','w').write('ok')
+assert open('allowed').read()=='ok'
+if len(sys.argv)>1:
+ child=subprocess.run([sys.executable,'-I','-c',sys.argv[1]],capture_output=True,text=True)
+ assert child.returncode==0,child.stderr
+print(json.dumps(sorted(checks)))`;
+  const result = runIsolated(policy, ["/usr/bin/python3", "-I", "-c", probe, probe], {
+    stdio: ["ignore", "pipe", "pipe", secretFd],
+  });
+  assert.equal(result.status, 0, result.stderr);
+  assert.deepEqual(JSON.parse(result.stdout), [
+    "absolute",
+    "hardlink",
+    "host_socket",
+    "inherited_fd",
+    "parent_fd",
+    "self_fd",
+    "traversal",
+  ]);
+  assert.equal(readFileSync(secret, "utf8"), "HIDDEN_SENTINEL");
 });

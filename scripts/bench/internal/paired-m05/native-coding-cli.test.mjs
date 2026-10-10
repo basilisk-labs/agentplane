@@ -5,6 +5,7 @@ import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { assertNativeCodingToolAuthority } from "./coding-host.mjs";
 import { codingCases, materializeCodingFixture } from "./coding-corpus.mjs";
 import { runNativeCodingLoop } from "./native-coding-loop.mjs";
 import { readNativeCodingTask, nativeCodingFacts } from "./native-coding-evidence.mjs";
@@ -106,6 +107,7 @@ test(
       {
         resumeExact,
         solve: async ({ order }) => {
+          assertNativeCodingToolAuthority(order);
           reservation = {
             assignment_id: "offline",
             role: order.role,

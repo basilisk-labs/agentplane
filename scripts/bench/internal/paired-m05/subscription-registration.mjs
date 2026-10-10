@@ -123,7 +123,9 @@ export function registerSubscriptionPilot(cases, seed = 0x07_13_20_26) {
 export function assertSubscriptionLaunchReady(registration, { phase, pilotTaskIds = [] }) {
   const { digest: expected, ...contents } = registration;
   assert.equal(digest(contents), expected, "Registration changed");
+  assert.ok(["pilot", "confirmation"].includes(phase));
   assert.equal(registration.phase, phase);
+  assert.equal(registration.analysis.phase, phase);
   for (const name of runtimePins)
     assert.match(
       registration.runtime_pins?.[name] ?? "",
@@ -157,8 +159,12 @@ export function assertSubscriptionLaunchReady(registration, { phase, pilotTaskId
     new Set(registration.assignments.map((a) => a.id)).size,
     registration.assignments.length,
   );
-  for (const [order, assignment] of registration.assignments.entries())
+  for (const [order, assignment] of registration.assignments.entries()) {
     assert.equal(assignment.order, order);
+    assert.equal(assignment.transport, "app_server");
+    assert.equal(assignment.cache, "cold");
+    assert.equal(assignment.session, "fresh");
+  }
   assert.deepEqual(
     Object.keys(registration.tasks_per_stratum).toSorted(),
     [...codingStrata].toSorted(),
@@ -229,7 +235,12 @@ export function assertSubscriptionLaunchReady(registration, { phase, pilotTaskId
       registration.assignments.every((a) => !pilotTaskIds.includes(a.task_id)),
       "Pilot data cannot enter confirmation",
     );
-  } else assert.equal(registration.assignments.length, 75);
+  } else {
+    assert.equal(registration.assignments.length, 75);
+    assert.equal(registration.independent_tasks, 5);
+    assert.equal(registration.repetitions, 5);
+    for (const stratum of codingStrata) assert.equal(registration.tasks_per_stratum[stratum], 1);
+  }
   // This validates frozen data only. It grants no native or provider authority.
   return registration;
 }

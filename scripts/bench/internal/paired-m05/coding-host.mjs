@@ -5,7 +5,7 @@ import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { digest } from "./contract.mjs";
 import { writeIsolationPolicy } from "./isolation.mjs";
-import { createIsolatedAppServer } from "./app-server-port.mjs";
+import { createBrokeredAppServer } from "./brokered-app-server.mjs";
 import { openSubscriptionBoundary } from "./subscription-boundary.mjs";
 import { openSubscriptionLedger } from "./subscription-ledger.mjs";
 import { semanticCodingPort } from "./semantic-coding-port.mjs";
@@ -13,6 +13,12 @@ import { nativeCodingPort } from "./native-coding-port.mjs";
 import { openJournal } from "./journal.mjs";
 import { readNativeCodingTask, nativeCodingFacts } from "./native-coding-evidence.mjs";
 import { runNativeCodingLoop } from "./native-coding-loop.mjs";
+
+export function assertNativeCodingToolAuthority(order) {
+  assert.equal(order.authority.network, "deny", "Coding tools require native network denial");
+  assert.ok(Array.isArray(order.authority.writable_roots));
+  if (order.role !== "EXECUTOR") assert.equal(order.authority.writable_roots.length, 0);
+}
 
 // All paths and authorize come from the native campaign operator. No values are
 // learned from candidate files. Existing managed authentication remains Codex's
@@ -32,7 +38,7 @@ export function createCodingHost(
     authorize,
     native,
   },
-  createServer = createIsolatedAppServer,
+  createServer = createBrokeredAppServer,
 ) {
   assert.ok(["deny", "provider"].includes(contract.network));
   assert.ok(oracleRoots.length > 0);
@@ -115,8 +121,7 @@ export function createCodingHost(
     assignmentId,
     openEpisode: async (order) => {
       assert.equal(order.task.id, native.taskId);
-      if (contract.network === "provider")
-        assert.equal(order.authority.network, "allow", "Native coding WorkOrder denies network");
+      assertNativeCodingToolAuthority(order);
       const allowed = order.authority.writable_roots.map((p) =>
         realpathSync(path.resolve(root, p)),
       );
@@ -140,9 +145,9 @@ export function createCodingHost(
       const policyPath = path.join(directory, "isolation.json");
       const policy = writeIsolationPolicy(policyPath, {
         cwd: root,
-        readOnly: [root, realpathSync(codexBinary), ...managedRuntime.readOnly],
-        writable: [...allowed, ...managedRuntime.writable],
-        network: contract.network === "deny" ? "deny" : "provider",
+        readOnly: [root],
+        writable: allowed,
+        network: "deny",
       });
       for (const grant of [...policy.read_only, ...policy.writable])
         assert.ok(
@@ -156,9 +161,11 @@ export function createCodingHost(
         );
       const port = await createServer({
         policyPath,
+        auditPath: path.join(directory, "tool-effects.jsonl"),
         codexBinary,
         cwd: root,
         env: managedRuntime.env,
+        approvedConfigDigests: managedRuntime.approvedConfigDigests,
         timeoutMs: contract.limits.turn_timeout_ms,
       });
       try {

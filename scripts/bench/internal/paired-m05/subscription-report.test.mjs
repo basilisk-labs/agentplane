@@ -538,3 +538,42 @@ test("fixed-corpus observed quality is distinct from finite population uncertain
     false,
   );
 });
+
+test("launch registration rejects resealed phase and transport drift", () => {
+  const base = registerSubscriptionPilot(codingStrata.map((id) => ({ id, workflow: "direct" })));
+  base.runtime_pins = Object.fromEntries(
+    Object.keys(base.runtime_pins).map((key) => [key, digest(key)]),
+  );
+  for (const mutate of [
+    (r) => {
+      r.analysis.phase = "confirmation";
+    },
+    (r) => {
+      for (const a of r.assignments) a.transport = "other";
+    },
+    (r) => {
+      for (const a of r.assignments) a.cache = "warm";
+    },
+    (r) => {
+      for (const a of r.assignments) a.session = "shared";
+    },
+    (r) => {
+      r.independent_tasks = 25;
+      r.repetitions = 1;
+      r.tasks_per_stratum = Object.fromEntries(codingStrata.map((stratum) => [stratum, 5]));
+      for (const a of r.assignments) {
+        a.task_id = a.pair_id;
+        a.repetition = 0;
+      }
+    },
+  ]) {
+    const altered = structuredClone(base);
+    mutate(altered);
+    assert.throws(() =>
+      assertSubscriptionLaunchReady(resealRegistration(altered), { phase: "pilot" }),
+    );
+  }
+  assert.doesNotThrow(() =>
+    assertSubscriptionLaunchReady(resealRegistration(base), { phase: "pilot" }),
+  );
+});

@@ -37,6 +37,23 @@ export async function createIsolatedAppServer({
     ]),
     { cwd, env: environment, stdio: ["pipe", "pipe", "pipe"], detached: true },
   );
+  return connectAppServer(child, {
+    cwd,
+    timeoutMs,
+    threadOptions: async () => ({ cwd, sandbox: "read-only" }),
+    turnOptions: async () => ({
+      sandboxPolicy: {
+        type: "externalSandbox",
+        networkAccess: isolation.network === "deny" ? "restricted" : "enabled",
+      },
+    }),
+  });
+}
+
+export async function connectAppServer(
+  child,
+  { timeoutMs, serverRequest, threadOptions, turnOptions },
+) {
   child.stderr.resume();
   const pending = new Map();
   const listeners = new Set();
@@ -61,10 +78,20 @@ export async function createIsolatedAppServer({
         for (const listener of listeners) listener(event);
       } else {
         if (event.method) {
-          send({
-            id: event.id,
-            error: { code: -32_601, message: "No host approval or tool authority on this port" },
-          });
+          if (serverRequest) {
+            Promise.resolve()
+              .then(() => serverRequest(event))
+              .then(
+                (result) => send({ id: event.id, result }),
+                () =>
+                  send({ id: event.id, error: { code: -32_601, message: "Host request denied" } }),
+              )
+              .catch(fail);
+          } else
+            send({
+              id: event.id,
+              error: { code: -32_601, message: "No host approval or tool authority on this port" },
+            });
           return;
         }
         const entry = pending.get(event.id);
@@ -123,6 +150,7 @@ export async function createIsolatedAppServer({
   try {
     await request("initialize", {
       clientInfo: { name: "agentplane_m05_subscription", version: "4" },
+      capabilities: { experimentalApi: true },
     });
     send({ method: "initialized", params: {} });
   } catch (error) {
@@ -136,12 +164,7 @@ export async function createIsolatedAppServer({
       return () => listeners.delete(listener);
     },
     close,
-    threadOptions: async () => ({ cwd, sandbox: "read-only" }),
-    turnOptions: async () => ({
-      sandboxPolicy: {
-        type: "externalSandbox",
-        networkAccess: isolation.network === "deny" ? "restricted" : "enabled",
-      },
-    }),
+    threadOptions,
+    turnOptions,
   };
 }

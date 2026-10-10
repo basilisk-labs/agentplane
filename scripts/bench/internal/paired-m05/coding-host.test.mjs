@@ -37,162 +37,179 @@ const contract = () => ({
   },
   assignments: [{ id: "a", order: 0, task_id: "direct-fix", stratum: "direct", arm: "no_recipe" }],
 });
-test("concrete host wires role grants, managed boundary, final JSON and durable accounting", async (t) => {
-  const root = mkdtempSync(path.join(os.tmpdir(), "m05-host-"));
-  t.after(() => rmSync(root, { recursive: true, force: true }));
-  const { subject, manifest } = materializeCodingFixture(root, codingCases()[0]);
-  const runtime = path.join(root, "runtime"),
-    hidden = path.join(root, "oracle");
-  mkdirSync(runtime);
-  mkdirSync(hidden);
-  const source = path.join(subject, "src/module.mjs");
-  const corpusManifest = { cases: [{ manifest }] };
-  const qualified = contract();
-  qualified.corpus_digest = digest(corpusManifest);
-  const options = {
-    contract: qualified,
-    corpusManifest,
-    assignmentId: "a",
-    subject,
-    scope: ["src/module.mjs"],
-    hostRoot: path.join(root, "host"),
-    ledgerRoot: path.join(root, "ledger"),
-    codexBinary: process.execPath,
-    managedRuntime: { readOnly: [], writable: [runtime], env: {} },
-    oracleRoots: [hidden],
-    authorize: async () => true,
-    native: { executable: process.execPath, taskId: "fixture", timeoutMs: 1000, env: {} },
-  };
-  let sequence = 0,
-    closed = 0,
-    currentOrder;
-  const policies = [];
-  const createServer = async ({ policyPath }) => {
-    policies.push(JSON.parse(readFileSync(policyPath, "utf8")));
-    const listeners = new Set();
-    const thread = `thread-${++sequence}`,
-      turn = `turn-${sequence}`;
-    const emit = (method, params) => {
-      for (const listener of listeners)
-        listener({ method, params: { threadId: thread, turnId: turn, ...params } });
+for (const network of ["deny", "provider"])
+  test(`concrete host preserves tool denial under ${network} transport and accounts each role`, async (t) => {
+    const root = mkdtempSync(path.join(os.tmpdir(), "m05-host-"));
+    t.after(() => rmSync(root, { recursive: true, force: true }));
+    const { subject, manifest } = materializeCodingFixture(root, codingCases()[0]);
+    const runtime = path.join(root, "runtime"),
+      hidden = path.join(root, "oracle");
+    mkdirSync(runtime);
+    mkdirSync(hidden);
+    const source = path.join(subject, "src/module.mjs");
+    const corpusManifest = { cases: [{ manifest }] };
+    const qualified = contract();
+    qualified.network = network;
+    qualified.corpus_digest = digest(corpusManifest);
+    const options = {
+      contract: qualified,
+      corpusManifest,
+      assignmentId: "a",
+      subject,
+      scope: ["src/module.mjs"],
+      hostRoot: path.join(root, "host"),
+      ledgerRoot: path.join(root, "ledger"),
+      codexBinary: process.execPath,
+      managedRuntime: { readOnly: [], writable: [runtime], env: {}, approvedConfigDigests: {} },
+      oracleRoots: [hidden],
+      authorize: async () => true,
+      native: { executable: process.execPath, taskId: "fixture", timeoutMs: 1000, env: {} },
     };
-    return {
-      // This fixture checks host wiring, not filesystem scheduling latency.
-      // Dedicated subscription boundary tests exercise real deadline behavior.
-      now: () => sequence * 100,
-      subscribe(listener) {
-        listeners.add(listener);
-        return () => listeners.delete(listener);
-      },
-      close: async () => {
-        closed++;
-      },
-      threadOptions: async () => ({ cwd: subject, sandbox: "read-only" }),
-      turnOptions: async () => ({
-        sandboxPolicy: { type: "externalSandbox", networkAccess: "restricted" },
-      }),
-      request: async (method) => {
-        if (method === "account/read") return { account: { type: "chatgpt" } };
-        if (method === "account/rateLimits/read")
-          return {
-            ordinaryUsageAllowed: true,
-            rateLimits: { primary: { usedPercent: 10, windowDurationMins: 10_080 } },
-          };
-        if (method === "thread/start")
-          return { thread: { id: thread }, model: "fixture-model", reasoningEffort: "medium" };
-        if (method === "turn/start") {
-          emit("item/completed", {
-            item: {
-              type: "agentMessage",
-              text: JSON.stringify({
-                work_order_id: currentOrder.work_order_id,
-                status: "failed",
-                summary: "Offline host double",
-                findings: [],
-                uncertainty: [],
-              }),
-            },
-          });
-          emit("thread/tokenUsage/updated", {
-            tokenUsage: {
-              total: {
-                inputTokens: 2,
-                outputTokens: 2,
-                cachedInputTokens: 0,
-                reasoningOutputTokens: 0,
-                totalTokens: 4,
+    let sequence = 0,
+      closed = 0,
+      currentOrder;
+    const policies = [];
+    const createServer = async ({ policyPath, approvedConfigDigests }) => {
+      assert.equal(approvedConfigDigests, options.managedRuntime.approvedConfigDigests);
+      policies.push(JSON.parse(readFileSync(policyPath, "utf8")));
+      const listeners = new Set();
+      const thread = `thread-${++sequence}`,
+        turn = `turn-${sequence}`;
+      const emit = (method, params) => {
+        for (const listener of listeners)
+          listener({ method, params: { threadId: thread, turnId: turn, ...params } });
+      };
+      return {
+        // This fixture checks host wiring, not filesystem scheduling latency.
+        // Dedicated subscription boundary tests exercise real deadline behavior.
+        now: () => sequence * 100,
+        subscribe(listener) {
+          listeners.add(listener);
+          return () => listeners.delete(listener);
+        },
+        close: async () => {
+          closed++;
+        },
+        threadOptions: async () => ({ cwd: subject, sandbox: "read-only" }),
+        turnOptions: async () => ({
+          sandboxPolicy: { type: "externalSandbox", networkAccess: "restricted" },
+        }),
+        request: async (method) => {
+          if (method === "account/read") return { account: { type: "chatgpt" } };
+          if (method === "account/rateLimits/read")
+            return {
+              ordinaryUsageAllowed: true,
+              rateLimits: { primary: { usedPercent: 10, windowDurationMins: 10_080 } },
+            };
+          if (method === "thread/start")
+            return { thread: { id: thread }, model: "fixture-model", reasoningEffort: "medium" };
+          if (method === "turn/start") {
+            emit("item/completed", {
+              item: {
+                type: "agentMessage",
+                text: JSON.stringify({
+                  work_order_id: currentOrder.work_order_id,
+                  status: "failed",
+                  summary: "Offline host double",
+                  findings: [],
+                  uncertainty: [],
+                }),
               },
-            },
-          });
-          emit("turn/completed", { turn: { id: turn, status: "completed" } });
-          return { turn: { id: turn } };
-        }
-        throw new Error(`Unexpected ${method}`);
-      },
+            });
+            emit("thread/tokenUsage/updated", {
+              tokenUsage: {
+                total: {
+                  inputTokens: 2,
+                  outputTokens: 2,
+                  cachedInputTokens: 0,
+                  reasoningOutputTokens: 0,
+                  totalTokens: 4,
+                },
+              },
+            });
+            emit("turn/completed", { turn: { id: turn, status: "completed" } });
+            return { turn: { id: turn } };
+          }
+          throw new Error(`Unexpected ${method}`);
+        },
+      };
     };
-  };
-  const host = createCodingHost(options, createServer);
-  for (const role of ["EXECUTOR", "EVALUATOR"]) {
-    currentOrder = {
-      task: { id: "fixture" },
-      role,
-      work_order_id: digest(role),
-      authority: { writable_roots: role === "EXECUTOR" ? ["src/module.mjs"] : [] },
-    };
-    const result = await host.solve({ order: currentOrder, required: [], schema: {} });
-    const call = await host.readCall(result.call_id);
-    assert.equal(call.reservation.role, role);
-    assert.equal(call.receipt.usage.totalTokens, 4);
-    assert.equal(call.receipt.stop_reason, null);
-    assert.equal(call.reservation.started_ms, sequence * 100);
-    assert.equal(call.receipt.finished_ms, sequence * 100);
-  }
-  assert.equal(closed, 2);
-  assert.ok(policies[0].writable.includes(source));
-  assert.equal(policies[1].writable.includes(source), false);
-  assert.throws(
-    () =>
-      createCodingHost(
-        { ...options, managedRuntime: { ...options.managedRuntime, writable: [subject] } },
-        createServer,
+    const host = createCodingHost(options, createServer);
+    for (const role of ["EXECUTOR", "EVALUATOR"]) {
+      currentOrder = {
+        task: { id: "fixture" },
+        role,
+        work_order_id: digest(role),
+        authority: {
+          network: "deny",
+          writable_roots: role === "EXECUTOR" ? ["src/module.mjs"] : [],
+        },
+      };
+      const result = await host.solve({ order: currentOrder, required: [], schema: {} });
+      const call = await host.readCall(result.call_id);
+      assert.equal(call.reservation.role, role);
+      assert.equal(call.receipt.usage.totalTokens, 4);
+      assert.equal(call.receipt.stop_reason, null);
+      assert.equal(call.reservation.started_ms, sequence * 100);
+      assert.equal(call.receipt.finished_ms, sequence * 100);
+    }
+    assert.equal(closed, 2);
+    assert.ok(
+      policies.every(
+        (policy) =>
+          policy.network === "deny" &&
+          !policy.read_only.includes(runtime) &&
+          !policy.writable.includes(runtime),
       ),
-    /Runtime writes/u,
-  );
-  assert.throws(
-    () =>
-      createCodingHost(
-        { ...options, managedRuntime: { ...options.managedRuntime, readOnly: [options.hostRoot] } },
-        createServer,
-      ),
-    /Oracle/u,
-  );
-  const childFile = path.join(hidden, "reference.json");
-  const childDirectory = path.join(hidden, "answers");
-  writeFileSync(childFile, "hidden");
-  mkdirSync(childDirectory);
-  for (const grant of [childFile, childDirectory])
-    for (const access of ["readOnly", "writable"])
-      assert.throws(
-        () =>
-          createCodingHost(
-            { ...options, managedRuntime: { ...options.managedRuntime, [access]: [grant] } },
-            createServer,
-          ),
-        /Oracle/u,
-      );
-  assert.throws(
-    () => createCodingHost({ ...options, corpusManifest: { cases: [] } }, createServer),
-    /Frozen corpus/u,
-  );
-  assert.throws(
-    () =>
-      createCodingHost(
-        { ...options, managedRuntime: { ...options.managedRuntime, readOnly: [root] } },
-        createServer,
-      ),
-    /Oracle/u,
-  );
-});
+    );
+    assert.ok(policies[0].writable.includes(source));
+    assert.equal(policies[1].writable.includes(source), false);
+    assert.throws(
+      () =>
+        createCodingHost(
+          { ...options, managedRuntime: { ...options.managedRuntime, writable: [subject] } },
+          createServer,
+        ),
+      /Runtime writes/u,
+    );
+    assert.throws(
+      () =>
+        createCodingHost(
+          {
+            ...options,
+            managedRuntime: { ...options.managedRuntime, readOnly: [options.hostRoot] },
+          },
+          createServer,
+        ),
+      /Oracle/u,
+    );
+    const childFile = path.join(hidden, "reference.json");
+    const childDirectory = path.join(hidden, "answers");
+    writeFileSync(childFile, "hidden");
+    mkdirSync(childDirectory);
+    for (const grant of [childFile, childDirectory])
+      for (const access of ["readOnly", "writable"])
+        assert.throws(
+          () =>
+            createCodingHost(
+              { ...options, managedRuntime: { ...options.managedRuntime, [access]: [grant] } },
+              createServer,
+            ),
+          /Oracle/u,
+        );
+    assert.throws(
+      () => createCodingHost({ ...options, corpusManifest: { cases: [] } }, createServer),
+      /Frozen corpus/u,
+    );
+    assert.throws(
+      () =>
+        createCodingHost(
+          { ...options, managedRuntime: { ...options.managedRuntime, readOnly: [root] } },
+          createServer,
+        ),
+      /Oracle/u,
+    );
+  });
 
 const episode = (role, attempt) => ({
   order: {
