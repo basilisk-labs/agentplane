@@ -245,7 +245,12 @@ export function policyRenewalIssues(
     child.provenance.evidence_digest !== parent.provenance.evidence_digest ||
     child.digest !== authorityDigest(child) ||
     kernelDigest(unchanged) !== kernelDigest(parent) ||
-    kernelDigest(child.policy_digests) === kernelDigest(parent.policy_digests) ||
+    (kernelDigest(child.policy_digests) === kernelDigest(parent.policy_digests) &&
+      !(
+        observation.reviewed_base_import &&
+        observation.reviewed_base_import.imported_paths.length > 0 &&
+        child.repository_fingerprint !== parent.repository_fingerprint
+      )) ||
     child.policy_digests.length === 0 ||
     child.policy_digests.some((value) => !/^sha256:[0-9a-f]{64}$/u.test(value)) ||
     observation.request_digest !==
