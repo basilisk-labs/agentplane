@@ -136,6 +136,10 @@ if (${JSON.stringify(scenario)} === 'symlink') {
           include: ["failure.test.mjs"],
           setupFiles: [setup],
           maxWorkers: 1,
+          // Vitest 5 otherwise stores fork transform copies in the fixture TMPDIR.
+          // Keep runner caches in a separate owned location; fixture residue must stay empty.
+          fsModuleCache: true,
+          fsModuleCachePath: path.join(root, "runner-cache"),
         },
       })};`,
     );
@@ -180,6 +184,8 @@ if (${JSON.stringify(scenario)} === 'symlink') {
     expect(outcome.code).toBe(1);
     expect(stripVTControlCharacters(outcome.stdout)).toMatch(/Tests\s+1 failed/u);
     expect(await readdir(temporary)).toEqual([]);
+    const runnerCacheEntries = await readdir(path.join(root, "runner-cache"));
+    expect(runnerCacheEntries.length).toBeGreaterThan(0);
   });
 
   it("preserves concurrent live roots and recovers only an interrupted stale worker", async () => {
