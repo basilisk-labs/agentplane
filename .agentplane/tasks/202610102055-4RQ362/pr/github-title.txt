@@ -1,1 +1,1 @@
-🚧 4RQ362 task: Preserve published ancestry during PR artifact sync and update [202610102055-4RQ362]
+✅ 4RQ362 task: Preserve published ancestry during PR artifact sync and update [202610102055-4RQ362]

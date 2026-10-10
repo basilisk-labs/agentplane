@@ -6,7 +6,7 @@ Created: 2026-10-10T21:15:24.856Z
 
 - Task: `202610102055-4RQ362`
 - Title: Preserve published ancestry during PR artifact sync and update
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610102055-4RQ362/artifact-ancestry`
 - Canonical task record: `.agentplane/tasks/202610102055-4RQ362/README.md`
 
