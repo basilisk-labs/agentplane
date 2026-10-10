@@ -1,3 +1,7 @@
+import {
+  CANDIDATE_PUBLICATION_SPEC,
+  PR_HEAD_PUBLICATION_SPEC,
+} from "./workflow-step-publication-spec.js";
 import type { StateFingerprint } from "@agentplaneorg/core/schemas";
 import type { TaskRepositoryEffect } from "@agentplaneorg/core/tasks";
 
@@ -66,6 +70,7 @@ type WorkflowOperationType =
   | "worktree_prepare";
 
 export type WorkflowOperationId =
+  | "candidate.publish"
   | "batch.collect_included"
   | "batch.follow_primary"
   | "batch.reconcile_included"
@@ -94,6 +99,7 @@ export type WorkflowOperationId =
   | "worktree.prepare";
 
 export type WorkflowOperationParams = {
+  "candidate.publish": { taskId: string; requestDigest: string };
   "batch.collect_included": { taskId: string };
   "batch.follow_primary": { taskId: string };
   "batch.reconcile_included": { taskId: string };
@@ -161,6 +167,7 @@ const PR_AUTOMATION_GUARD = [
 ] as const;
 
 export const WORKFLOW_OPERATION_REGISTRY = {
+  "candidate.publish": CANDIDATE_PUBLICATION_SPEC,
   "task.branch.sync_base": BASE_SYNC_SPEC,
   "task.artifacts.commit": {
     type: "task_record_result",
@@ -310,20 +317,7 @@ export const WORKFLOW_OPERATION_REGISTRY = {
     verificationCandidate: null,
     needsVerificationRecord: false,
   },
-  "pr.head.publish": {
-    type: "pr_sync",
-    phase: "pr_head_publication_needed",
-    checkout: "task_worktree",
-    role: "CODER",
-    expectedPostconditions: [POSTCONDITION.remotePrAligned, POSTCONDITION.routeRecomputed],
-    mustNot: [
-      "do not push or relink the hosted PR manually; agentplane pr open owns final branch publication and PR head alignment",
-      "do not rebase, merge, force-push, or select conflict hunks while publishing the guarded branch head",
-    ],
-    triggersGitHooks: true,
-    verificationCandidate: "agentplane pr flow status <task-id>",
-    needsVerificationRecord: false,
-  },
+  "pr.head.publish": PR_HEAD_PUBLICATION_SPEC,
   "provider.pr.refresh": {
     type: "provider_refresh",
     phase: "provider_state_unavailable",

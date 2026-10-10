@@ -75,6 +75,11 @@ const EXTERNAL_PRE_AUTHORIZED: AuthorityRequirement = {
  * until it is deliberately classified here.
  */
 export const WORKFLOW_OPERATION_AUTHORITY_POLICY = {
+  "candidate.publish": {
+    class: "external_reversible",
+    policyRule: "workflow.candidate_publish.user_only",
+    requiresAuthority: true,
+  },
   "task.artifacts.commit": LOCAL_REVERSIBLE,
   "task.branch.sync_base": LOCAL_REVERSIBLE,
   "task.start": LOCAL_REVERSIBLE,

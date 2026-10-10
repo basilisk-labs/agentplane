@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { AGENT_WORK_ORDER_V2_VALID_FIXTURE } from "@agentplaneorg/core/schemas";
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
 import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js";
+import { assertCandidateAttempt } from "./candidate-publication-request.js";
 import { authenticateReviewedBaseOrder } from "./kernel-reviewed-base-import.js";
 
 function fixture() {
@@ -172,4 +173,59 @@ describe("reviewed base retained evidence", () => {
       expect(() => authenticateReviewedBaseOrder(f)).toThrow();
     },
   );
+});
+
+describe("candidate current-attempt binding", () => {
+  it("authenticates native issuance and rejects a rehashed stale candidate", () => {
+    const f = fixture();
+    const binding = f.raw.canonical_binding!;
+    if (binding.phase !== "implementation") throw new Error("fixture binding");
+    const files = [
+      {
+        path: "src/file.ts",
+        mode: "100644" as const,
+        blob: "b".repeat(40),
+        content_digest: k.kernelDigest("bytes"),
+      },
+    ];
+    const contents = {
+      schema_version: 1 as const,
+      kind: "candidate_publication_request" as const,
+      task_id: f.record.aggregate.id,
+      record_digest: f.record.digest,
+      repository_identity: binding.repository_identity,
+      plan_digest: binding.plan_digest,
+      plan_revision: binding.plan_revision,
+      work_item_id: binding.work_item_id,
+      attempt: binding.attempt,
+      claim_id: binding.claim_id,
+      contract_digest: binding.contract_digest,
+      work_order_digest: f.pins.work_order_digest,
+      begin_receipt_digest: authenticateReviewedBaseOrder(f).mutation_receipt_digest,
+      review_digest: k.kernelDigest("operator review"),
+      commit: "b".repeat(40),
+      tree: "c".repeat(40),
+      base_commit: "a".repeat(40),
+      files,
+      files_digest: k.kernelDigest(files),
+      remote_url: "https://github.com/example/project.git",
+      candidate_ref: `refs/heads/agentplane-candidates/task/${"b".repeat(40)}`,
+      expected_remote_head: null,
+    };
+    const request = { ...contents, digest: k.kernelDigest(contents) };
+    expect(assertCandidateAttempt({ ...f, request }).order.work_order_id).toBe(f.raw.work_order_id);
+    for (const changed of [
+      { attempt: 9 },
+      { record_digest: k.kernelDigest("stale") },
+      { begin_receipt_digest: k.kernelDigest("other") },
+      { claim_id: "stale" },
+    ]) {
+      const altered = { ...contents, ...changed };
+      expect(() =>
+        assertCandidateAttempt({ ...f, request: { ...altered, digest: k.kernelDigest(altered) } }),
+      ).toThrow("binding changed");
+    }
+    f.record.events = [];
+    expect(() => assertCandidateAttempt({ ...f, request })).toThrow("begin mutation receipt");
+  });
 });

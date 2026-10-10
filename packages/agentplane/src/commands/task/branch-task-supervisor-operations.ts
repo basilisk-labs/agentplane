@@ -123,6 +123,9 @@ export async function executeBranchWorkflowOperation(opts: {
   let exitCode: number;
 
   switch (operation.id) {
+    case "candidate.publish": {
+      throw new Error("Candidate publication requires its dedicated operator checkpoint.");
+    }
     case "task.branch.sync_base": {
       const result = await synchronizeTaskBranchBase({
         gitRoot: command.resolvedProject.gitRoot,

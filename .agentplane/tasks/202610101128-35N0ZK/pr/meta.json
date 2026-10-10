@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202610101128-35N0ZK/candidate-publication",
+  "created_at": "2026-10-10T12:03:10.589Z",
+  "diffstat_sha256": "sha256:68c45fb33a03325e4ce419a0ad0f5212a9ee030c6b15a18bb4fadec4dbcede43",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610101128-35N0ZK",
+  "updated_at": "2026-10-10T12:03:10.589Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
