@@ -46,6 +46,7 @@ installRunCliIntegrationHarness();
 async function fixture(
   opts: {
     guidance?: string;
+    evaluatorGuidance?: string;
     source?: string;
     secondItem?: boolean;
     executorRole?: string;
@@ -131,7 +132,8 @@ async function fixture(
   });
   const files = {
     "executor.md": opts.guidance ?? "EXECUTOR GUIDANCE. Stop if the required evidence is absent.",
-    "evaluator.md": "EVALUATOR GUIDANCE. Independently challenge the accepted claims.",
+    "evaluator.md":
+      opts.evaluatorGuidance ?? "EVALUATOR GUIDANCE. Independently challenge the accepted claims.",
     "planner.md": "PLANNER GUIDANCE. Keep material questions unresolved.",
     "exec-skill.md": "EXECUTOR SKILL",
     "review-skill.md": "EVALUATOR SKILL",
@@ -366,8 +368,15 @@ describe("retained Recipe role projection and managed restart", { timeout: 180_0
   });
 
   it("delivers complete required native Recipe context to a fresh managed adapter without provider memory", async () => {
-    const f = await fixture();
+    const guidance =
+      "EXECUTOR GUIDANCE " + "retained instruction ".repeat(600) + "END OF EXECUTOR GUIDANCE";
+    const f = await fixture({ guidance });
     const { packet, order } = await f.issue();
+    expect(order.context_intent.purpose.length).toBeLessThanOrEqual(8192);
+    expect(
+      order.recipe_context!.projection.guidance.find((entry) => entry.path === "executor.md")!
+        .content,
+    ).toBe(guidance);
     expect(order.role).toBe("EXECUTOR");
     expect(order.context_intent.purpose).toContain(RECIPE_ROLE_CONTEXT_LABEL);
     expect(order.context_intent.purpose).not.toContain("Caller-supplied Plan input");
@@ -388,6 +397,12 @@ describe("retained Recipe role projection and managed restart", { timeout: 180_0
       JSON.parse(await readFile(wireBundle, "utf8")) as typeof bundle,
     );
     expect(restarted).toBe(delivered);
+    expect(delivered).toContain(guidance);
+    expect(bundle.semantic_context.blocks.find((block) => block.id === "recipe")).toMatchObject({
+      required: true,
+      pointer: "/recipe_context",
+      digest: taskCentricDigest(order.recipe_context),
+    });
     for (const required of [
       "EXECUTOR GUIDANCE",
       "SHARED CONSTRAINT",
@@ -408,6 +423,14 @@ describe("retained Recipe role projection and managed restart", { timeout: 180_0
       "Caller-supplied Plan input",
     ])
       expect(delivered).not.toContain(unrelated);
+    const missing = structuredClone(bundle);
+    missing.semantic_context!.blocks = missing.semantic_context!.blocks.filter(
+      (block) => block.id !== "recipe",
+    );
+    expect(() => renderTaskRunnerBootstrap(missing)).toThrow("incomplete or stale");
+    const changed = structuredClone(bundle);
+    changed.work_order!.recipe_context!.projection.guidance[0]!.content += "forged";
+    expect(() => renderTaskRunnerBootstrap(changed)).toThrow();
     expect(bundle.semantic_context.blocks.find((block) => block.id === "constraints")!.digest).toBe(
       taskCentricDigest(order.context_intent),
     );
@@ -435,11 +458,7 @@ describe("retained Recipe role projection and managed restart", { timeout: 180_0
       network: "deny",
       external_side_effects: [],
     });
-    const projected = JSON.parse(
-      order.context_intent.purpose
-        .split(`${RECIPE_ROLE_CONTEXT_LABEL}\n`)[1]!
-        .split("\n\nRecipe candidate advice")[0]!,
-    ) as { top_level_validation?: unknown };
+    const projected = order.recipe_context!.projection;
     expect(projected.top_level_validation).toEqual({
       schema_version: 1,
       criteria: [
@@ -471,7 +490,7 @@ describe("retained Recipe role projection and managed restart", { timeout: 180_0
       JSON.parse(await readFile(wireBundle, "utf8")) as typeof bundle,
     );
     expect(restarted).toBe(delivered);
-    for (const text of [order.context_intent.purpose, delivered, restarted]) {
+    for (const text of [JSON.stringify(order.recipe_context), delivered, restarted]) {
       for (const required of [
         "The report preserves the task-wide retention constraint.",
         "task-wide-review",
@@ -505,7 +524,11 @@ describe("retained Recipe role projection and managed restart", { timeout: 180_0
   });
 
   it("uses the same retained role owner for native independent inspection", async () => {
-    const f = await fixture();
+    const evaluatorGuidance =
+      "EVALUATOR GUIDANCE " +
+      "independent retained review ".repeat(450) +
+      "END OF EVALUATOR GUIDANCE";
+    const f = await fixture({ evaluatorGuidance });
     const { packet, order } = await f.issue();
     await writeFile(
       packet.exchange.result_path,
@@ -526,10 +549,18 @@ describe("retained Recipe role projection and managed restart", { timeout: 180_0
       ),
     );
     expect(review.role).toBe("EVALUATOR");
-    expect(review.context_intent.purpose).toContain("EVALUATOR GUIDANCE");
-    expect(review.context_intent.purpose).not.toContain("EXECUTOR GUIDANCE");
-    expect(review.context_intent.purpose).toContain("forbidden.txt");
-    expect(review.context_intent.purpose).toContain("no external writes");
+    expect(review.context_intent.purpose.length).toBeLessThanOrEqual(8192);
+    expect(
+      review.recipe_context!.projection.guidance.find((entry) => entry.path === "evaluator.md")!
+        .content,
+    ).toBe(evaluatorGuidance);
+    const bundle = makeRunnerContextBundle({ runId: "long-recipe-review" });
+    bundle.work_order = review;
+    expect(renderTaskRunnerBootstrap(bundle)).toContain(evaluatorGuidance);
+    expect(JSON.stringify(review.recipe_context)).toContain("EVALUATOR GUIDANCE");
+    expect(JSON.stringify(review.recipe_context)).not.toContain("EXECUTOR GUIDANCE");
+    expect(JSON.stringify(review.recipe_context)).toContain("forbidden.txt");
+    expect(JSON.stringify(review.recipe_context)).toContain("no external writes");
     expect(review.authority.mutation_scope).toBe("none");
     expect(
       review.required_inputs.some((input) => input.id === "native-validation" && input.required),

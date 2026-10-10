@@ -60,6 +60,7 @@ export function buildWorkOrderContextManifest(
     order.state_fingerprint_policy,
   );
   add("planning", "planning_context", "/planning_context", order.planning_context);
+  add("recipe", "recipe_role_context", "/recipe_context", order.recipe_context);
   for (const [index, input] of order.required_inputs.entries())
     add(`input:${input.id}`, input.kind, `/required_inputs/${index}`, input, input.required);
   for (const [index, input] of order.knowledge_refs.entries())

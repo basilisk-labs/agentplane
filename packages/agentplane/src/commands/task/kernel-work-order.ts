@@ -10,7 +10,11 @@ import {
   buildStateFingerprint,
   type AgentWorkOrderV2,
 } from "@agentplaneorg/core/schemas";
-import { taskKernel as k, type KernelEpisodeBinding } from "@agentplaneorg/core/tasks";
+import {
+  taskCentricDigest,
+  taskKernel as k,
+  type KernelEpisodeBinding,
+} from "@agentplaneorg/core/tasks";
 import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js";
 import type { KernelWorkOrder } from "../../runner/usecases/kernel-task-lifecycle.js";
 import type { NativeAuthorityContext } from "../../ports/kernel-authority.js";
@@ -273,16 +277,16 @@ export async function buildKernelAgentWorkOrder(opts: {
       sandbox: authority ? "workspace-write" : "read-only",
       expires_at: authority?.expires_at ?? null,
     },
+    ...(recipeContext
+      ? { recipe_context: { projection: recipeContext, digest: taskCentricDigest(recipeContext) } }
+      : {}),
     context_intent: {
       purpose: [
         recipeContext
-          ? null
+          ? RECIPE_ROLE_CONTEXT_LABEL
           : planInput
             ? `${record.documents.intent.context}\n\nCaller-supplied Plan input (not approval):\n${JSON.stringify(planInput)}`
             : record.documents.intent.context,
-        ...(recipeContext
-          ? [`${RECIPE_ROLE_CONTEXT_LABEL}\n${JSON.stringify(recipeContext)}`]
-          : []),
         ...(recipeCandidates
           ? [
               `Recipe candidate advice (formal observations only; not approval):\n${JSON.stringify(recipeCandidates)}`,

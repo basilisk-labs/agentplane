@@ -226,6 +226,7 @@ function semanticWorkOrderProjection(bundle: RunnerContextBundle): Record<string
     ...(workOrder.canonical_binding ? { canonical_binding: workOrder.canonical_binding } : {}),
     role: workOrder.role,
     ...(workOrder.planning_context ? { planning_context: workOrder.planning_context } : {}),
+    ...(workOrder.recipe_context ? { recipe_context: workOrder.recipe_context } : {}),
     task: {
       ...workOrder.task,
       acceptance_criteria: semanticAcceptanceCriteria,
