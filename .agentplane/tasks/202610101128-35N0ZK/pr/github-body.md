@@ -15,8 +15,8 @@ Add a bounded operator/controller-owned candidate publication checkpoint to brea
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:ee9e0e978e39e8f530c28fa6dc9cbccf6f9363ec48a9243849ceff45c412a22c
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -33,15 +33,21 @@ Add a bounded operator/controller-owned candidate publication checkpoint to brea
  .../commands/shared/workflow-operation-effects.ts  |   1 +
  .../commands/shared/workflow-operation-prefix.ts   |   1 +
  .../shared/workflow-operation-projection.ts        |  11 ++
- .../shared/workflow-step-publication-spec.ts       |  29 ++++
+ .../shared/workflow-step-publication-spec.ts       |  29 +++
  .../src/commands/shared/workflow-step.ts           |  22 +--
  .../task/branch-task-supervisor-operations.ts      |   3 +
- .../task/candidate-publication-admission.ts        |  91 +++++++++++
- .../task/candidate-publication-request.test.ts     | 140 ++++++++++++++++
- .../commands/task/candidate-publication-request.ts | 177 +++++++++++++++++++++
- .../commands/task/candidate-publication-tree.ts    |  86 ++++++++++
- .../task/kernel-reviewed-base-import.test.ts       |  56 +++++++
- 14 files changed, 655 insertions(+), 14 deletions(-)
+ .../task/candidate-publication-admission.ts        |  91 +++++++++
+ .../task/candidate-publication-executor.test.ts    | 204 +++++++++++++++++++
+ .../task/candidate-publication-executor.ts         | 218 +++++++++++++++++++++
+ .../task/candidate-publication-git.test.ts         |  93 +++++++++
+ .../src/commands/task/candidate-publication-git.ts | 116 +++++++++++
+ .../commands/task/candidate-publication-receipt.ts |  84 ++++++++
+ .../task/candidate-publication-request.test.ts     | 140 +++++++++++++
+ .../commands/task/candidate-publication-request.ts | 177 +++++++++++++++++
+ .../commands/task/candidate-publication-tree.ts    |  86 ++++++++
+ .../task/candidate-publication.test-helpers.ts     | 145 ++++++++++++++
+ .../task/kernel-reviewed-base-import.test.ts       |  56 ++++++
+ 20 files changed, 1515 insertions(+), 14 deletions(-)
 ```
 
 </details>

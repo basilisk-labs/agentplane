@@ -1,0 +1,30 @@
+{
+  "checks": [
+    {
+      "check_ids": [],
+      "command": "bun run typecheck",
+      "duration_ms": 1352,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:09971536ac46c837f731324420504727c692592667dc4ca1d8d6d20d8fc1a447",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610101128-35N0ZK-candidate-publication/.agentplane/tasks/202610101128-35N0ZK/supervision/verification-runs/run-000/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:72df0b1abfb0b72d32aa4bd0593103149865511bfa92ce0a2ca14ee3f6775cda",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202610101128-35N0ZK"
+}
