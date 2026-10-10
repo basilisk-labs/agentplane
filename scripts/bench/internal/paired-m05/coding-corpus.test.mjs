@@ -1,10 +1,12 @@
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
 import test from "node:test";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import {
   codingCases,
+  encodeOracleValue,
   qualifyCodingFixture,
   observeCodingBehavior,
   verifyCodingOutcome,
@@ -83,5 +85,60 @@ test("study oracle rejects changed assertions, wrong native identity, refusal an
       fallback: "refused",
     })),
     /Refusal alone/u,
+  );
+});
+
+test("oracle transport preserves values that JSON would collapse", () => {
+  const sparse = [];
+  sparse.length = 1;
+  const values = [
+    null,
+    undefined,
+    NaN,
+    Infinity,
+    -Infinity,
+    0,
+    -0,
+    "0",
+    false,
+    [],
+    [undefined],
+    [null],
+    sparse,
+    {},
+    { value: undefined },
+    { value: null },
+  ];
+  const frames = values.map((value) => JSON.stringify(encodeOracleValue(value)));
+  assert.equal(new Set(frames).size, values.length);
+  assert.deepEqual(encodeOracleValue({ b: 2, a: 1 }), encodeOracleValue({ a: 1, b: 2 }));
+  assert.throws(() => encodeOracleValue(new Map()), /Unsupported/u);
+  assert.throws(() => encodeOracleValue(new Date()), /Unsupported/u);
+  assert.throws(() => encodeOracleValue(1n), /Unsupported/u);
+});
+
+test("hidden oracle rejects nonfinite, undefined and negative-zero answers despite visible success", (t) => {
+  const root = mkdtempSync(path.join(os.tmpdir(), "m05-oracle-framing-"));
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  const spec = codingCases()[0],
+    proof = qualifyCodingFixture(root, spec);
+  for (const invalid of ["NaN", "Infinity", "-Infinity", "undefined"]) {
+    const source = `export const solve = value => value === '4x' ? null : typeof value === 'string' && /^(0|[1-9][0-9]*)$/.test(value) && Number.isSafeInteger(Number(value)) ? Number(value) : ${invalid};\n`;
+    writeFileSync(path.join(proof.subject, "src/module.mjs"), source);
+    execFileSync(process.execPath, ["visible.test.mjs"], { cwd: proof.subject, stdio: "pipe" });
+    assert.equal(
+      observeCodingBehavior(proof.subject, spec, proof.policyPath).passed,
+      false,
+      invalid,
+    );
+  }
+  writeFileSync(
+    path.join(proof.subject, "src/module.mjs"),
+    spec.reference.replace("Number(value) : null", "(value === '0' ? -0 : Number(value)) : null"),
+  );
+  assert.equal(
+    observeCodingBehavior(proof.subject, spec, proof.policyPath).passed,
+    false,
+    "negative zero",
   );
 });

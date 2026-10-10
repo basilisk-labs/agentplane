@@ -194,6 +194,38 @@ export function materializeCodingFixture(root, spec) {
   return { subject, manifest };
 }
 
+// Encode values before JSON transport so invalid candidate outputs cannot alias
+// valid expectations. This function runs in the trusted oracle process.
+export function encodeOracleValue(value) {
+  if (value === null) return ["null"];
+  if (value === undefined) return ["undefined"];
+  if (typeof value === "number") {
+    return ["number", Object.is(value, -0) ? "-0" : String(value)];
+  }
+  if (typeof value === "string" || typeof value === "boolean") return [typeof value, value];
+  if (Array.isArray(value)) {
+    return [
+      "array",
+      Array.from({ length: value.length }, (_, i) =>
+        Object.hasOwn(value, i) ? encodeOracleValue(value[i]) : ["hole"],
+      ),
+      Object.keys(value)
+        .filter((key) => !/^(0|[1-9][0-9]*)$/.test(key) || Number(key) >= value.length)
+        .toSorted()
+        .map((key) => [key, encodeOracleValue(value[key])]),
+    ];
+  }
+  if (typeof value === "object" && Object.getPrototypeOf(value) === Object.prototype) {
+    return [
+      "object",
+      Object.keys(value)
+        .toSorted()
+        .map((key) => [key, encodeOracleValue(value[key])]),
+    ];
+  }
+  throw new Error("Unsupported oracle output type");
+}
+
 export function observeCodingBehavior(subject, spec, policyPath) {
   const source = path.join(subject, "src/module.mjs");
   assert.ok(
@@ -205,6 +237,7 @@ export function observeCodingBehavior(subject, spec, policyPath) {
   // process, filesystem, stdout or evaluator expectations. VM is a framing
   // boundary only; the enclosing Landlock subprocess remains the OS boundary.
   const program = `import fs from 'node:fs'; import vm from 'node:vm';
+const encodeOracleValue=${encodeOracleValue.toString()};
 const context=vm.createContext(Object.create(null),{codeGeneration:{strings:false,wasm:false}});
 const module=new vm.SourceTextModule(fs.readFileSync('src/module.mjs','utf8'),{context});
 await module.link(()=>{throw Error('Fixture API imports are not allowed')});
@@ -212,7 +245,7 @@ await module.evaluate({timeout:1000});
 if(typeof module.namespace.solve!=='function')throw Error('Missing solve export');
 const solve=module.namespace.solve;
 const inputs=JSON.parse(fs.readFileSync(0,'utf8'));const outputs=[];
-for(const args of inputs){const values=vm.runInContext('('+JSON.stringify(args)+')',context,{timeout:1000});outputs.push(structuredClone(Reflect.apply(solve,undefined,values)));}
+for(const args of inputs){const values=vm.runInContext('('+JSON.stringify(args)+')',context,{timeout:1000});outputs.push(encodeOracleValue(structuredClone(Reflect.apply(solve,undefined,values))));}
 process.stdout.write(JSON.stringify(outputs));`;
   const result = runIsolated(
     policyPath,
@@ -230,11 +263,11 @@ process.stdout.write(JSON.stringify(outputs));`;
     passed:
       result.status === 0 &&
       before === after &&
-      digest(outputs) === digest(spec.hidden.map(([, expected]) => expected)),
+      digest(outputs) === digest(spec.hidden.map(([, expected]) => encodeOracleValue(expected))),
     source_digest: after,
     process_status: result.status,
     observed_digest: digest(outputs),
-    expected_digest: digest(spec.hidden.map(([, expected]) => expected)),
+    expected_digest: digest(spec.hidden.map(([, expected]) => encodeOracleValue(expected))),
   };
 }
 
