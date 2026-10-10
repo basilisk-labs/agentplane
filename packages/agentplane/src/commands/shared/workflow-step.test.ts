@@ -119,6 +119,9 @@ describe("typed WorkflowStep reducer", () => {
         spec.expectedPostconditions.length,
       );
     }
+    expect(WORKFLOW_OPERATION_REGISTRY["candidate.publish"].expectedPostconditions).toEqual([
+      expect.objectContaining({ id: "candidate_ref_published", subject: "provider" }),
+    ]);
     expect(WORKFLOW_OPERATION_REGISTRY["task.artifacts.commit"].triggersGitHooks).toBe(true);
     expect(WORKFLOW_OPERATION_REGISTRY["integration.enqueue"].triggersGitHooks).toBe(false);
     expect(

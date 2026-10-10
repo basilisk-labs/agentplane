@@ -6,7 +6,7 @@ export const CANDIDATE_PUBLICATION_SPEC = {
   phase: "candidate_publication",
   checkout: "current_checkout",
   role: "CODER",
-  expectedPostconditions: [],
+  expectedPostconditions: [POSTCONDITION.candidateRefPublished],
   mustNot: ["Do not commit, force-push, merge, integrate, or complete the task."],
   triggersGitHooks: true,
   verificationCandidate: null,

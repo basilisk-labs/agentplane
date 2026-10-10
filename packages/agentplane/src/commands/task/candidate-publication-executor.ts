@@ -36,7 +36,7 @@ export type CandidatePublicationContext = {
   task: Pick<TaskData, "extensions">;
 };
 
-export async function validateCandidateDispatch(opts: {
+async function validateCandidateDispatch(opts: {
   root: string;
   request: CandidatePublicationRequest;
   context: CandidatePublicationContext;

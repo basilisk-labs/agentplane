@@ -4,7 +4,7 @@ import { createKernelRuntime, requireKernelCommit } from "./kernel-runtime-conte
 import { readKernelScopeRequest } from "./kernel-scope-request-evidence.js";
 export { validateScopeRequestPaths } from "./kernel-scope-request-evidence.js";
 
-export async function prepareKernelScopeRequest(
+async function prepareKernelScopeRequest(
   command: CommandContext,
   taskId: string,
   workItemId: string,

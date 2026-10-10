@@ -37,7 +37,7 @@ afterEach(async () => {
   vi.clearAllMocks();
 });
 
-async function fixture() {
+async function fixture(nativeStop = false) {
   const root = await mkdtemp(path.join(os.tmpdir(), "kernel-recovery-"));
   roots.push(root);
   const kernelRoot = path.join(root, "agentplane", "kernel");
@@ -87,7 +87,25 @@ async function fixture() {
       canonical_binding: binding,
     }),
   );
-  const { aggregate: _state, ...saved } = stopInput;
+  const savedInput = nativeStop
+    ? {
+        ...stopInput,
+        command: {
+          ...stopInput.command,
+          semantic_result_digest: k.kernelDigest(JSON.parse(await readFile(resultPath, "utf8"))),
+        },
+      }
+    : stopInput;
+  if (nativeStop) {
+    const nativeStopped = k.reduceTaskCommand(savedInput);
+    if (nativeStopped.kind !== "accepted") throw new Error("fixture native stop failed");
+    record = makeKernelRecord(
+      record.repository_identity,
+      nativeStopped.aggregate,
+      nativeStopped.events,
+    );
+  }
+  const { aggregate: _state, ...saved } = savedInput;
   await writeFile(path.join(oldDirectory, "semantic-stop-command.json"), JSON.stringify(saved));
   mocks.commonDir.mockResolvedValue(root);
   mocks.create.mockResolvedValue({
@@ -169,25 +187,67 @@ async function fixture() {
 }
 
 describe("semantic stop recovery evidence", () => {
-  it("issues a schema-valid new WorkOrder after blocked result and real operator recovery", async () => {
-    const f = await fixture();
-    const order = await withKernelReworkEvidence(f.order, f.directory, f.record);
-    expect(order.canonical_binding).toMatchObject({
-      phase: "implementation",
-      attempt: 2,
-      claim_id: "claim-2",
-    });
-    expect(order.required_inputs.slice(-2).map((entry) => entry.path)).toEqual([
-      f.resultPath,
-      f.receiptPath,
-    ]);
-    expect(order.required_inputs.slice(-2).every((entry) => entry.required)).toBe(true);
-    expect(f.record.aggregate.work_items.kernel).toMatchObject({
-      state: "EXECUTING",
-      validation: null,
-      result_digest: null,
-    });
-  });
+  it.each([false, true])(
+    "issues a schema-valid new WorkOrder after blocked result and real operator recovery (native=%s)",
+    async (nativeStop) => {
+      const f = await fixture(nativeStop);
+      const receipt = JSON.parse(await readFile(f.receiptPath, "utf8")) as {
+        semantic_stop: { result_authentication: string };
+      };
+      expect(receipt.semantic_stop.result_authentication).toBe(
+        nativeStop ? "native_stop_receipt" : "legacy_current_retained_content",
+      );
+      const order = await withKernelReworkEvidence(f.order, f.directory, f.record);
+      expect(order.canonical_binding).toMatchObject({
+        phase: "implementation",
+        attempt: 2,
+        claim_id: "claim-2",
+      });
+      expect(order.required_inputs.slice(-2).map((entry) => entry.path)).toEqual([
+        f.resultPath,
+        f.receiptPath,
+      ]);
+      expect(order.required_inputs.slice(-2).every((entry) => entry.required)).toBe(true);
+      expect(f.record.aggregate.work_items.kernel).toMatchObject({
+        state: "EXECUTING",
+        validation: null,
+        result_digest: null,
+      });
+    },
+  );
+
+  it.each([undefined, "native_stop_receipt", "invalid"] as const)(
+    "validates recovery authentication metadata %s against retained evidence",
+    async (authentication) => {
+      const f = await fixture();
+      const receipt = JSON.parse(await readFile(f.receiptPath, "utf8")) as {
+        semantic_stop: { result_authentication?: string };
+      };
+      expect(receipt.semantic_stop.result_authentication).toBe("legacy_current_retained_content");
+      if (authentication === undefined) delete receipt.semantic_stop.result_authentication;
+      else receipt.semantic_stop.result_authentication = authentication;
+      // Rebind the fixture receipt so the schema/authentication guard, not a stale hash, is tested.
+      const digest = k.kernelDigest(receipt);
+      const id = `work-item-resume:${digest}`;
+      f.record.aggregate.mutation_receipts[id] = f.record.aggregate.mutation_receipts[f.receiptId]!;
+      delete f.record.aggregate.mutation_receipts[f.receiptId];
+      await writeFile(
+        path.join(path.dirname(f.receiptPath), `${digest.slice(7)}.json`),
+        JSON.stringify(receipt),
+      );
+      const result = withKernelReworkEvidence(f.order, f.directory, f.record);
+      if (authentication === undefined) {
+        const order = await result;
+        expect(order.required_inputs.slice(-2).every((entry) => entry.required)).toBe(true);
+      } else {
+        await expect(result).rejects.toThrow(
+          authentication === "invalid"
+            ? "Invalid operator recovery evidence"
+            : "Operator recovery does not bind the preceding semantic attempt",
+        );
+      }
+    },
+  );
 
   it("rejects unrecorded operator recovery", async () => {
     const f = await fixture();

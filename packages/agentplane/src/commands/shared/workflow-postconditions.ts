@@ -1,4 +1,5 @@
 type WorkflowPostconditionId =
+  | "candidate_ref_published"
   | "base_checkout_synced"
   | "hosted_close_pr_open"
   | "included_batch_closure_reconciled"
@@ -27,6 +28,12 @@ export type WorkflowPostcondition = {
 };
 
 export const POSTCONDITION = {
+  candidateRefPublished: {
+    id: "candidate_ref_published",
+    subject: "provider",
+    expected:
+      "the exact approved remote candidate ref is observed at the immutable candidate commit and an authenticated publication receipt is retained",
+  },
   routeRecomputed: {
     id: "route_state_recomputed",
     subject: "route",

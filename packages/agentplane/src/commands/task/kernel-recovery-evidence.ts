@@ -48,7 +48,13 @@ const transitionSchema = z.strictObject({
 const recoverySchema = z.union([
   z.strictObject({
     ...recoveryFields,
-    semantic_stop: z.strictObject({ work_order_id: digest, result_digest: digest }),
+    semantic_stop: z.strictObject({
+      work_order_id: digest,
+      result_digest: digest,
+      result_authentication: z
+        .enum(["native_stop_receipt", "legacy_current_retained_content"])
+        .optional(),
+    }),
   }),
   z.strictObject({
     ...recoveryFields,
@@ -338,6 +344,8 @@ export async function kernelRecoveryInputs(
       stop.binding.plan_revision !== binding.plan_revision ||
       stop.binding.contract_digest !== binding.contract_digest ||
       k.kernelDigest(stop.result) !== receipt.semantic_stop.result_digest ||
+      (receipt.semantic_stop.result_authentication !== undefined &&
+        receipt.semantic_stop.result_authentication !== stop.result_authentication) ||
       stop.mutation.after_revision > mutation.before_revision ||
       order.task.revision === null ||
       mutation.after_revision >= order.task.revision
