@@ -150,10 +150,10 @@ export async function runSubscriptionSetup(
       };
       const prompt = [
         `You are the ${role} for prospective reusable strategy authoring.`,
-        `Read only public inputs in ${inputs}. Generated strategies are in ${outputs}.`,
-        "Do not solve fixture tasks or access hidden tests, reference answers, prior Recipes, host configuration or credentials.",
-        "Do not run AgentPlane lifecycle commands. This is measured setup, not a native task episode.",
-        "Author reusable structural plans with parameters and verification/recovery instructions; no fixture answers or code patches.",
+        `You may read public inputs in ${inputs} and current candidate Recipe artifacts in ${outputs}, including the copied candidate from earlier measured attempts.`,
+        "Do not solve fixture tasks or access hidden tests, reference answers, unrelated historical or reference Recipes, host configuration or credentials.",
+        "Do not run AgentPlane lifecycle commands. This is measured setup, not a native task episode. m05_exec enforces these read/write scopes and grants no native authority.",
+        "Only EXECUTOR may author or correct manifest.json, scenario.json and agent.md in the output directory. Other roles inspect and report only. Do not write fixture implementations, fixture answers or fixture source patches.",
         role === "EXECUTOR"
           ? "Write only the requested Recipe artifacts inside the output directory."
           : "You have no write authority.",

@@ -41,9 +41,11 @@ function fixture(t) {
 }
 function ports(packet, { unknownRole, deniedReview = false, oversized = false } = {}) {
   const observed = [];
+  const prompts = [];
   let listener;
   return {
     observed,
+    prompts,
     createServer: async (options) => {
       const policy = JSON.parse(readFileSync(options.policyPath, "utf8"));
       observed.push(policy);
@@ -56,7 +58,8 @@ function ports(packet, { unknownRole, deniedReview = false, oversized = false } 
       };
     },
     openBoundary: async () => ({
-      execute: async (call) => {
+      execute: async (call, input) => {
+        prompts.push({ role: call.role, input });
         if (call.role === "EXECUTOR")
           writeFileSync(path.join(packet.outputs, "scenario.json"), "{}\n");
         listener({
@@ -101,6 +104,18 @@ test("prospective setup accounts distinct roles and only executor receives strat
     mocks.observed.every((p) => p.network === "deny" && !p.read_only.includes(packet.host)),
   );
   assert.equal(result.outputs[0].path, "scenario.json");
+  for (const { role, input } of mocks.prompts) {
+    const prompt = input[0].text;
+    assert.ok(
+      prompt.includes(
+        `You may read public inputs in ${packet.inputs} and current candidate Recipe artifacts in ${packet.outputs}`,
+      ),
+    );
+    assert.match(prompt, /including the copied candidate from earlier measured attempts/u);
+    assert.match(prompt, /unrelated historical or reference Recipes/u);
+    assert.match(prompt, /Do not write fixture implementations/u);
+    assert.equal(prompt.includes("You have no write authority."), role !== "EXECUTOR");
+  }
 });
 test("unknown usage and missing authority stop without unaccounted continuation", async (t) => {
   const { packet } = fixture(t);
