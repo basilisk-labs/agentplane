@@ -32,6 +32,8 @@ export {
 
 const DEFAULT_CHECK_TIMEOUT_MS = 30 * 60_000;
 const CHECK_TIMEOUT_MS_BY_SCRIPT: Readonly<Record<string, number>> = Object.freeze({
+  // The complete regression suite can exceed the default on shared development hosts.
+  "test:fast": 60 * 60_000,
   // Full CI includes four bounded verification waves and a prerequisite build.
   "ci:local:full": 150 * 60_000,
   // Prepublish also runs release-wide suites, coverage, and installed-package smoke checks.
