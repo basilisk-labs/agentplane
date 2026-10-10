@@ -10,6 +10,41 @@ function appendTail(current, chunk, limit) {
   return next.length <= limit ? next : next.slice(-limit);
 }
 
+export function classifyVerificationGroupFailures(result) {
+  if (result.exit_code === 0) return [];
+  const output = `${result.stdout ?? ""}\n${result.stderr ?? ""}`;
+  const failures = [];
+  if (
+    result.timed_out ||
+    result.exit_code === 124 ||
+    /\b(?:Test|Hook) timed out in \d+(?:\.\d+)?ms\b|\bTimeout of \d+ms exceeded\b/iu.test(output)
+  ) {
+    failures.push("timeout");
+  }
+  if (
+    /JavaScript heap out of memory|FATAL ERROR: Ineffective mark-compacts|Allocation failed - JavaScript heap out of memory/iu.test(
+      output,
+    )
+  ) {
+    failures.push("out_of_memory");
+  }
+  if (/\b(?:EAI_AGAIN|ECONNRESET|ETIMEDOUT|ENOTFOUND|EHOSTUNREACH)\b/u.test(output)) {
+    failures.push("infrastructure_failure");
+  }
+  if (
+    /\bAssertionError\b/u.test(output) ||
+    (failures.length === 0 &&
+      /\b(?:Test Files\s+\d+ failed|Tests\s+\d+ failed)\b|^\s*FAIL\s+/imu.test(output))
+  ) {
+    failures.push("assertion_failure");
+  }
+  return failures.length > 0 ? failures : ["command_failure"];
+}
+
+export function classifyVerificationGroupFailure(result) {
+  return classifyVerificationGroupFailures(result)[0] ?? null;
+}
+
 function runOne(group, options) {
   return new Promise((resolve) => {
     const started = performance.now();
@@ -43,7 +78,13 @@ function runOne(group, options) {
       settled = true;
       clearTimeout(timeoutTimer);
       if (killTimer) clearTimeout(killTimer);
-      resolve(result);
+      const failureKinds = classifyVerificationGroupFailures(result);
+      resolve({
+        ...result,
+        launched: true,
+        failure_kind: failureKinds[0] ?? null,
+        failure_kinds: failureKinds,
+      });
     };
     const timeoutTimer = setTimeout(() => {
       timedOut = true;
@@ -89,6 +130,22 @@ export async function runVerificationGroups(groups, options = {}) {
     while (cursor < groups.length) {
       const index = cursor;
       cursor += 1;
+      if (options.onGroupStart?.(groups[index]) === false) {
+        results[index] = {
+          id: groups[index].id,
+          launched: false,
+          exit_code: 124,
+          timed_out: true,
+          failure_kind: "timeout",
+          failure_kinds: ["timeout"],
+          duration_ms: 0,
+          started_at_ms: Date.now(),
+          finished_at_ms: Date.now(),
+          stdout: "",
+          stderr: "Verification deadline expired before group launch.\n",
+        };
+        continue;
+      }
       results[index] = await runOne(groups[index], {
         cwd: options.cwd ?? process.cwd(),
         env: { ...(options.env ?? process.env), ...(groups[index].env ?? {}) },
@@ -105,6 +162,10 @@ export async function runVerificationGroups(groups, options = {}) {
     ok: results.every((result) => result.exit_code === 0),
     results,
   };
+}
+
+export function countLaunchedVerificationGroups(results) {
+  return results.filter((result) => result.launched !== false).length;
 }
 
 export function summarizeVerificationGroupResults(results) {
@@ -133,6 +194,22 @@ export async function writeVerificationGroupResults(results, options = {}) {
     await writeStreamChunk(stdout, `\n== ${group.id} (${group.duration_ms}ms) ==\n`);
     await writeStreamChunk(stdout, group.stdout);
     await writeStreamChunk(stderr, group.stderr);
+  }
+  const failures = results
+    .filter((result) => result.exit_code !== 0)
+    .map((result) => ({
+      id: result.id,
+      failure_kind: result.failure_kind ?? classifyVerificationGroupFailure(result),
+      failure_kinds: result.failure_kinds ?? classifyVerificationGroupFailures(result),
+    }));
+  if (failures.length > 0) {
+    const details = `${JSON.stringify({
+      schema_version: 1,
+      kind: "verification_group_failure_classification",
+      groups: failures,
+    })}\n`;
+    await writeStreamChunk(stdout, details);
+    await writeStreamChunk(stderr, details);
   }
   const summary = summarizeVerificationGroupResults(results);
   const serialized = `${JSON.stringify(summary)}\n`;

@@ -8,8 +8,17 @@ export type VerificationGroup = {
 
 export type VerificationGroupResult = {
   id: string;
+  launched?: boolean;
   exit_code: number;
   timed_out: boolean;
+  failure_kind?:
+    | "timeout"
+    | "out_of_memory"
+    | "assertion_failure"
+    | "infrastructure_failure"
+    | "command_failure"
+    | null;
+  failure_kinds?: Array<NonNullable<VerificationGroupResult["failure_kind"]>>;
   duration_ms: number;
   started_at_ms: number;
   finished_at_ms: number;
@@ -24,6 +33,16 @@ export type VerificationGroupSummary = {
   groups: Array<Pick<VerificationGroupResult, "id" | "exit_code" | "timed_out" | "duration_ms">>;
 };
 
+export function classifyVerificationGroupFailure(
+  result: Pick<VerificationGroupResult, "exit_code" | "timed_out"> &
+    Partial<Pick<VerificationGroupResult, "stdout" | "stderr">>,
+): NonNullable<VerificationGroupResult["failure_kind"]> | null;
+
+export function classifyVerificationGroupFailures(
+  result: Pick<VerificationGroupResult, "exit_code" | "timed_out"> &
+    Partial<Pick<VerificationGroupResult, "stdout" | "stderr">>,
+): Array<NonNullable<VerificationGroupResult["failure_kind"]>>;
+
 export function runVerificationGroups(
   groups: VerificationGroup[],
   options?: {
@@ -33,6 +52,7 @@ export function runVerificationGroups(
     timeoutMs?: number;
     killGraceMs?: number;
     outputTailBytes?: number;
+    onGroupStart?: (group: VerificationGroup) => boolean | void;
   },
 ): Promise<{
   schema_version: 1;
@@ -44,6 +64,8 @@ export function runVerificationGroups(
 export function summarizeVerificationGroupResults(
   results: VerificationGroupResult[],
 ): VerificationGroupSummary;
+
+export function countLaunchedVerificationGroups(results: VerificationGroupResult[]): number;
 
 export function writeVerificationGroupResults(
   results: VerificationGroupResult[],

@@ -1,0 +1,42 @@
+Task: `202610092153-WZDW5D`
+Title: Align full CI nested timeouts and lint memory budget for issue #6093
+Canonical task record: `.agentplane/tasks/202610092153-WZDW5D/README.md`
+
+## Summary
+
+Align full CI nested timeouts and lint memory budget for issue #6093
+
+Fix #6093: provide finite aligned full-validation budgets across native verifier and local CI groups, preserve explicit shorter overrides, distinguish OOM/timeout/assertion, document bounded memory prerequisites, and add focused tests without skipping checks.
+
+## Scope
+
+- In scope: Fix #6093: provide finite aligned full-validation budgets across native verifier and local CI groups, preserve explicit shorter overrides, distinguish OOM/timeout/assertion, document bounded memory prerequisites, and add focused tests without skipping checks.
+- Out of scope: unrelated refactors not required for "Align full CI nested timeouts and lint memory budget for issue #6093".
+
+## Verification
+
+- State: pending
+- Note: Not recorded yet.
+- Canonical workflow state lives in the task README.
+
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-10-09T23:24:22.775Z
+- Branch: task/202610092153-WZDW5D/align-full-ci-nested-timeouts-and-lint-memory-bu
+- Head: computed live by `agentplane pr check` / `agentplane integrate`
+
+```text
+ docs/developer/testing-and-quality.mdx             |  27 +++
+ .../direct-task-verification.qualification.test.ts |  29 +++
+ .../src/commands/task/direct-task-verification.ts  |  14 +-
+ scripts/checks/run-local-ci-group.mjs              |  20 +-
+ scripts/checks/run-local-ci.mjs                    |  42 +++-
+ scripts/lib/local-ci-resource-profile.mjs          | 126 ++++++++++
+ scripts/lib/local-ci-resource-profile.test.mjs     | 270 +++++++++++++++++++++
+ scripts/lib/verification-scheduler.d.ts            |  22 ++
+ scripts/lib/verification-scheduler.mjs             |  79 +++++-
+ 9 files changed, 614 insertions(+), 15 deletions(-)
+```
+
+</details>
