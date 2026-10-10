@@ -1,0 +1,59 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bunx vitest run packages/agentplane/src/commands/pr/internal/git-host-identity.test.ts packages/agentplane/src/commands/pr/internal/glab-api.test.ts",
+      "duration_ms": 3932,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:a14f0ea2ae379606aa505e3efac664e6e79ab968a2aff4db953e7f7f53949aca",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610100342-PXH679-distinguish-provider-transport-outages-from-auth/.agentplane/tasks/202610100342-PXH679/supervision/verification-runs/run-002/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:0bde418b9d88895cfc084fbbcff08da82a885b8e120c55941a89cb1fe86950fe",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v5.0.2 <repo>\n\n ✓ packages/agentplane/src/commands/pr/internal/git-host-identity.test.ts (15 tests) 27ms\n ✓ packages/agentplane/src/commands/pr/internal/glab-api.test.ts (2 tests) 22ms\n\n Test Files  2 passed (2)\n      Tests  17 passed (17)\n   Start at  12:08:51\n   Duration  1.84s (import 52%, transform 37%, setup 6%, tests 4%, worker 2%)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run test:critical",
+      "duration_ms": 196284,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:fa8249341588e6a720aa97d28030c0c9f5048ffff255370bcc932dd2a9bd2aca",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610100342-PXH679-distinguish-provider-transport-outages-from-auth/.agentplane/tasks/202610100342-PXH679/supervision/verification-runs/run-003/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:0bde418b9d88895cfc084fbbcff08da82a885b8e120c55941a89cb1fe86950fe",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "test:critical",
+      "stderr_tail": "$ node scripts/checks/run-vitest-suite.mjs critical-cli\n",
+      "stdout_tail": "Vitest suite critical-cli: chunk 1/5 (2 files): packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts, packages/agentplane/src/cli/run-cli.critical.exit-codes.test.ts\nVitest suite critical-cli: chunk 1/5 passed in 38034ms (Test Files  2 passed (2); Tests  3 passed (3); Duration  36.56s (tests 59%, transform 34%, import 7%))\nVitest suite critical-cli: chunk 2/5 (2 files): packages/agentplane/src/cli/run-cli.critical.git-edge.test.ts, packages/agentplane/src/cli/run-cli.critical.protected-paths.test.ts\nVitest suite critical-cli: chunk 2/5 passed in 26284ms (Test Files  2 passed (2); Tests  5 passed (5); Duration  25.30s (tests 63%, transform 28%, import 9%))\nVitest suite critical-cli: chunk 3/5 (2 files): packages/agentplane/src/cli/run-cli.critical.scope-leak.test.ts, packages/agentplane/src/cli/run-cli.critical.symlink-root.test.ts\nVitest suite critical-cli: chunk 3/5 passed in 25564ms (Test Files  2 passed (2); Tests  7 passed (7); Duration  24.55s (tests 60%, transform 31%, import 8%))\nVitest suite critical-cli: chunk 4/5 (2 files): packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts, packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet-regressions.test.ts\nVitest suite critical-cli: chunk 4/5 passed in 87427ms (Test Files  2 passed (2); Tests  7 passed (7); Duration  86.17s (tests 74%, transform 21%, import 5%))\nVitest suite critical-cli: chunk 5/5 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts\nVitest suite critical-cli: chunk 5/5 passed in 16196ms (Test Files  1 passed (1); Tests  12 passed (12); Duration  15.51s (tests 66%, transform 26%, import 7%))\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202610100342-PXH679"
+}
