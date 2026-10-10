@@ -289,6 +289,10 @@ export const loadTaskWorkItemResumeSpec = (session: TaskLifecycleSession) =>
   import("../../../commands/task/kernel-work-item-resume.command.js").then((m) =>
     m.makeRunTaskWorkItemResumeHandler(getSessionContext(session, "git.mutate")),
   );
+export const loadTaskWorkItemRestoreCompletionSpec = (session: TaskLifecycleSession) =>
+  import("../../../commands/task/kernel-work-item-restore-completion.command.js").then((m) =>
+    m.makeRunTaskWorkItemRestoreCompletionHandler(getSessionContext(session, "git.mutate")),
+  );
 export const loadTaskCommentSpec = (session: TaskWriteSession) =>
   import("../../../commands/task/comment.command.js").then((m) =>
     m.makeRunTaskCommentHandler(getSessionContext(session, "task.write")),

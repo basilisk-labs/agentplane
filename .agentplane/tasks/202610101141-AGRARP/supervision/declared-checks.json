@@ -1,0 +1,72 @@
+{
+  "checks": [
+    {
+      "check_ids": [],
+      "command": "bun run typecheck",
+      "duration_ms": 2146,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:d0e1f666a635f25754d46cb545c171f8e8dfbbe0e0263379e2e58ee11cd61f48",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610101141-AGRARP-native-scope-request/.agentplane/tasks/202610101141-AGRARP/supervision/verification-runs/run-000/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:bfa1c329a0b3cfd6448899ea40b9b084203e8d7125eded22140aa0c146eacc3a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [],
+      "command": "bun run lint",
+      "duration_ms": 776958,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:7a46fc46323cbcbe80eb4b8f6cdb367f48edd49ad9486073cfbc6d8c57dace06",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610101141-AGRARP-native-scope-request/.agentplane/tasks/202610101141-AGRARP/supervision/verification-runs/run-001/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:bfa1c329a0b3cfd6448899ea40b9b084203e8d7125eded22140aa0c146eacc3a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "lint",
+      "stderr_tail": "$ bun run lint:core\n$ eslint packages scripts eslint.config.cjs vitest.config.ts\n",
+      "stdout_tail": "\n<repo>/packages/agentplane/src/commands/shared/reconcile-native-applicability.test.ts\n  8:35  warning  '<repo>/packages/agentplane/src/commands/shared/task-backend.ts' imported multiple times  import/no-duplicates\n  9:58  warning  '<repo>/packages/agentplane/src/commands/shared/task-backend.ts' imported multiple times  import/no-duplicates\n\n<repo>/packages/agentplane/src/commands/task/kernel-operational-projection-recovery.test.ts\n   2:41  warning  '<repo>/packages/agentplane/src/commands/shared/task-backend.ts' imported multiple times  import/no-duplicates\n  11:37  warning  '<repo>/packages/agentplane/src/commands/shared/task-backend.ts' imported multiple times  import/no-duplicates\n\n✖ 4 problems (0 errors, 4 warnings)\n\n"
+    },
+    {
+      "check_ids": [],
+      "command": "bun run format:check",
+      "duration_ms": 499353,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:03ed5fcc515e16428c257d63952f32a667fc883e0f75213d8bb6d592f6723279",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610101141-AGRARP-native-scope-request/.agentplane/tasks/202610101141-AGRARP/supervision/verification-runs/run-002/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:bfa1c329a0b3cfd6448899ea40b9b084203e8d7125eded22140aa0c146eacc3a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "format:check",
+      "stderr_tail": "$ prettier . --check\n",
+      "stdout_tail": "Checking formatting...\nAll matched files use Prettier code style!\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202610101141-AGRARP"
+}

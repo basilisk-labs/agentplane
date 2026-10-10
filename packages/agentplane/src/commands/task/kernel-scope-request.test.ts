@@ -14,13 +14,18 @@ import {
 import { runJson } from "../../cli/task-create-planner-intent.testkit.js";
 import { ensureRuntimeGitignore } from "../../runtime/shared/runtime-gitignore.js";
 
+import { scopeReplanInputs } from "./kernel-scope-replan-inputs.js";
+import { loadCommandContext } from "../shared/task-backend.js";
+import type * as ScopeIntake from "../../adapters/task-backend/kernel-scope-intake.js";
 import type * as KernelRuntimeContext from "./kernel-runtime-context.js";
 
 installRunCliIntegrationHarness();
 describe("native prospective scope request", { timeout: 180_000 }, () => {
-  it.each([false, true])(
+  it.each(["native", "legacy", "existing-effects"])(
     "requires exact scope approval and fresh planning (legacy stop: %s)",
-    async (legacyStop) => {
+    async (variant) => {
+      const legacyStop = variant === "legacy";
+      const existingEffects = variant === "existing-effects";
       const root = await mkGitRepoRootWithBranch("main");
       await configureGitUser(root);
       const config = defaultConfig();
@@ -46,6 +51,9 @@ describe("native prospective scope request", { timeout: 180_000 }, () => {
         "repository_write",
         "--repository-effect",
         "source_code",
+        ...(existingEffects
+          ? ["--repository-effect", "ci", "--repository-effect", "documentation"]
+          : []),
         "--capability",
         "repository_write",
         "--json",
@@ -129,6 +137,19 @@ describe("native prospective scope request", { timeout: 180_000 }, () => {
             return runtime;
           })
         : undefined;
+      const intake = await vi.importActual<typeof ScopeIntake>(
+        "../../adapters/task-backend/kernel-scope-intake.js",
+      );
+      const originalAmend = intake.amendedScopeIntake;
+      const oldEffectCeiling = existingEffects
+        ? vi.spyOn(intake, "amendedScopeIntake").mockImplementation((task, roots, effects) => {
+            if (effects.includes("ci"))
+              throw new Error(
+                "Scope request contains a forbidden or unsupported repository effect",
+              );
+            return originalAmend(task, roots, effects);
+          })
+        : undefined;
       const blockedExchange = await submit({
         status: "blocked",
         blocker: {
@@ -137,11 +158,24 @@ describe("native prospective scope request", { timeout: 180_000 }, () => {
             schema_version: 1,
             rationale: "Preserve the real fixture assertion",
             scope_roots: ["fixture.test.ts"],
-            repository_effects: ["repository_write", "tests"],
+            repository_effects: [
+              "repository_write",
+              "tests",
+              ...(existingEffects ? ["ci", "documentation"] : []),
+            ],
           },
         },
       });
       legacySpy?.mockRestore();
+      if (existingEffects) {
+        expect(packet.action, JSON.stringify(packet)).toMatchObject({ kind: "human_required" });
+        expect(JSON.stringify(packet.action)).toContain("unsupported repository effect");
+        const resultPath = path.join(blockedExchange.directory, "received-result.json");
+        const bytes = await readFile(resultPath, "utf8");
+        oldEffectCeiling?.mockRestore();
+        packet = await runJson(root, ["task", "advance", id, "--agent-json"]);
+        expect(await readFile(resultPath, "utf8")).toBe(bytes);
+      }
       const action = packet.action as {
         kind: string;
         reason: string;
@@ -149,7 +183,9 @@ describe("native prospective scope request", { timeout: 180_000 }, () => {
       };
       expect(action, JSON.stringify(packet)).toMatchObject({
         kind: "human_required",
-        reason: "canonical_scope_request_requires_user",
+        reason: existingEffects
+          ? "kernel_work_item_blocked"
+          : "canonical_scope_request_requires_user",
       });
       expect(
         (packet.action as { operator_action: { request: { result_authentication: string } } })
@@ -207,7 +243,42 @@ describe("native prospective scope request", { timeout: 180_000 }, () => {
         ),
       );
       expect(nextOrder.authority.writable_roots).toContain(path.join(root, "fixture.test.ts"));
+      expect(
+        nextOrder.required_inputs.some(
+          (entry) => entry.id === "approved-scope-replan" && entry.required,
+        ),
+      ).toBe(true);
       expect(await readFile(path.join(root, "fixture.test.ts"), "utf8")).toBe(unchanged);
+      if (variant === "native") {
+        const context = await loadCommandContext({ cwd: root, rootOverride: root });
+        const nativeRuntime = await createRuntime({
+          command: context,
+          task_id: id,
+          transport: "host",
+          operation_id: "inspect-scope-context",
+        });
+        const current = await nativeRuntime.adapter.read(id);
+        if (current.kind !== "canonical") throw new Error("Expected canonical scope fixture");
+        const directory = (packet.exchange as { directory: string }).directory;
+        const noGrant = {
+          ...current.record,
+          aggregate: {
+            ...current.record.aggregate,
+            authority_lineage: current.record.aggregate.authority_lineage?.filter(
+              (entry) => entry.observation?.kind !== "prospective_scope_request",
+            ),
+          },
+        };
+        expect(await scopeReplanInputs(nextOrder, directory, noGrant)).toEqual([]);
+        await writeFile(
+          retainedPath,
+          JSON.stringify({ ...JSON.parse(retainedResult), summary: "Forged retained scope stop" }),
+        );
+        await expect(scopeReplanInputs(nextOrder, directory, current.record)).rejects.toThrow(
+          "preceding attempt",
+        );
+        await writeFile(retainedPath, retainedResult);
+      }
       if (!legacyStop) {
         await submit({
           status: "blocked",

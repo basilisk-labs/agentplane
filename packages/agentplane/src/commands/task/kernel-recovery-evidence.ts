@@ -63,7 +63,62 @@ const recoverySchema = z.union([
   }),
 ]);
 
-async function readStop(kernelRoot: string, record: KernelRecord, orderId: string) {
+export function semanticStopPlanMatches(
+  record: KernelRecord,
+  binding: NonNullable<AgentWorkOrderV2["canonical_binding"]>,
+  orderId: string,
+  resultDigest: string,
+  precedingAttempt = false,
+) {
+  const aggregate = record.aggregate;
+  const current = aggregate.current_plan;
+  if (binding.plan_digest === current?.digest && binding.plan_revision === current.revision)
+    return true;
+  if (
+    binding.phase !== "implementation" ||
+    current?.state !== "APPROVED" ||
+    current.revision <= binding.plan_revision
+  )
+    return false;
+  const previous = aggregate.plan_history.find(
+    (plan) => plan.digest === binding.plan_digest && plan.revision === binding.plan_revision,
+  );
+  const definition = previous?.work_items.find((item) => item.id === binding.work_item_id);
+  const runtime = aggregate.work_items[binding.work_item_id];
+  if (
+    !definition ||
+    runtime?.attempt !== binding.attempt + (precedingAttempt ? 1 : 0) ||
+    (!precedingAttempt && runtime.claim_id !== binding.claim_id) ||
+    k.kernelDigest(definition) !== k.kernelDigest(runtime.definition)
+  )
+    return false;
+  return (
+    aggregate.authority_lineage?.some((entry) => {
+      const request =
+        entry.observation?.kind === "prospective_scope_request"
+          ? entry.observation.scope_request
+          : undefined;
+      return (
+        request?.task_id === aggregate.id &&
+        request.plan_digest === binding.plan_digest &&
+        request.plan_revision === binding.plan_revision &&
+        request.work_item_id === binding.work_item_id &&
+        request.attempt === binding.attempt &&
+        request.claim_id === binding.claim_id &&
+        request.contract_digest === binding.contract_digest &&
+        request.work_order_id === orderId &&
+        request.result_digest === resultDigest
+      );
+    }) ?? false
+  );
+}
+
+async function readStop(
+  kernelRoot: string,
+  record: KernelRecord,
+  orderId: string,
+  precedingAttempt = false,
+) {
   const mutationId = `semantic-stop:${orderId}`;
   const mutation = record.aggregate.mutation_receipts[mutationId];
   if (!mutation || !/^sha256:[a-f0-9]{64}$/u.test(orderId))
@@ -96,8 +151,7 @@ async function readStop(kernelRoot: string, record: KernelRecord, orderId: strin
     saved.command.claim_id !== binding.claim_id ||
     binding.task_id !== record.aggregate.id ||
     binding.repository_identity !== record.repository_identity ||
-    binding.plan_digest !== record.aggregate.current_plan?.digest ||
-    binding.plan_revision !== record.aggregate.current_plan.revision ||
+    !semanticStopPlanMatches(record, binding, orderId, k.kernelDigest(result), precedingAttempt) ||
     binding.contract_digest !==
       record.aggregate.work_items[binding.work_item_id]?.definition.contract_digest
   )
@@ -335,13 +389,18 @@ export async function kernelRecoveryInputs(
         },
       ];
     }
-    const stop = await readStop(kernelRoot, record, receipt.semantic_stop.work_order_id);
+    const stop = await readStop(kernelRoot, record, receipt.semantic_stop.work_order_id, true);
     if (stop.binding.attempt !== binding.attempt - 1) continue;
     if (
       stop.binding.work_item_id !== binding.work_item_id ||
       stop.binding.repository_identity !== binding.repository_identity ||
-      stop.binding.plan_digest !== binding.plan_digest ||
-      stop.binding.plan_revision !== binding.plan_revision ||
+      !semanticStopPlanMatches(
+        record,
+        stop.binding,
+        receipt.semantic_stop.work_order_id,
+        k.kernelDigest(stop.result),
+        true,
+      ) ||
       stop.binding.contract_digest !== binding.contract_digest ||
       k.kernelDigest(stop.result) !== receipt.semantic_stop.result_digest ||
       (receipt.semantic_stop.result_authentication !== undefined &&

@@ -8,14 +8,14 @@
   "candidate": {
     "section_digests": {
       "agent_facing_context_contracts": "4926aed50aea235e24310e39404f7b939bc4caa7fc763a98387992822a2101c5",
-      "cli_topology": "728360d5889df8ae191d4e6262feaba9d5d455070053130b45d28e1a379cc3ff",
+      "cli_topology": "e987ad41e02d4f00dcc5b858a960adee4c57c6715a57241111d9ac2859d59200",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
       "package_manifests": "6052feb72f5eee6eaa1a503bb10074492350a164de683adf50bf2b092ce647b9",
       "tarball_policy": "10e8c7b78d3166955320b6fa787d7564b5bba1f67b3ce1736dca46673528716d",
       "workflow_schema": "1003207ce9df63cccac8761565f0d1264c094fd3fda5609012a6716c82842451"
     },
-    "surface_sha256": "e525fcdd15259f8b2a10a13a29b78404386fa8f2992ca537cf5998ca9a0c11e3"
+    "surface_sha256": "749a04b0c91cf2d6a36601975adcdaa77060df835d8f9a21c7bb4dd541650af7"
   },
   "candidate_id": "agentplane.compatibility.v0.7.cumulative",
   "contract_artifacts": {
@@ -980,6 +980,28 @@
               { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
             ],
             "group": "Task",
+            "id": ["task", "work-item", "restore-completion"],
+            "options": [
+              { "kind": "string", "name": "work-item", "required": true, "valueHint": "<id>" },
+              {
+                "kind": "string",
+                "name": "inspection-work-order",
+                "required": true,
+                "valueHint": "<sha256:...>"
+              },
+              { "kind": "string", "name": "state-digest", "valueHint": "<sha256:...>" },
+              { "kind": "string", "name": "proof-digest", "valueHint": "<sha256:...>" },
+              { "choices": ["USER"], "kind": "string", "name": "by", "valueHint": "<role>" },
+              { "kind": "string", "name": "note", "valueHint": "<text>" },
+              { "kind": "boolean", "name": "dry-run", "valueHint": null }
+            ],
+            "visibility": "advanced"
+          },
+          {
+            "args": [
+              { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+            ],
+            "group": "Task",
             "id": ["task", "work-item", "resume"],
             "options": [
               { "kind": "string", "name": "work-item", "required": true, "valueHint": "<id>" },
@@ -1043,6 +1065,7 @@
           "task run tool",
           "task scope approve-request",
           "task scope extend",
+          "task work-item restore-completion",
           "task work-item resume",
           "workflow migrate"
         ],
@@ -2061,6 +2084,51 @@
             "kind": "string",
             "name": "state-scope-digest",
             "valueHint": "<sha256:...>"
+          },
+          {
+            "choices": ["USER"],
+            "command": "task work-item restore-completion",
+            "kind": "string",
+            "name": "by",
+            "valueHint": "<role>"
+          },
+          {
+            "command": "task work-item restore-completion",
+            "kind": "boolean",
+            "name": "dry-run",
+            "valueHint": null
+          },
+          {
+            "command": "task work-item restore-completion",
+            "kind": "string",
+            "name": "inspection-work-order",
+            "required": true,
+            "valueHint": "<sha256:...>"
+          },
+          {
+            "command": "task work-item restore-completion",
+            "kind": "string",
+            "name": "note",
+            "valueHint": "<text>"
+          },
+          {
+            "command": "task work-item restore-completion",
+            "kind": "string",
+            "name": "proof-digest",
+            "valueHint": "<sha256:...>"
+          },
+          {
+            "command": "task work-item restore-completion",
+            "kind": "string",
+            "name": "state-digest",
+            "valueHint": "<sha256:...>"
+          },
+          {
+            "command": "task work-item restore-completion",
+            "kind": "string",
+            "name": "work-item",
+            "required": true,
+            "valueHint": "<id>"
           },
           {
             "choices": ["USER"],
@@ -3160,9 +3228,56 @@
             "kind": "option",
             "name": "work-item",
             "source_task": "202610101141-AGRARP"
+          },
+          {
+            "command": "task work-item restore-completion",
+            "kind": "command",
+            "source_task": "202610101141-AGRARP"
+          },
+          {
+            "command": "task work-item restore-completion",
+            "kind": "option",
+            "name": "by",
+            "source_task": "202610101141-AGRARP"
+          },
+          {
+            "command": "task work-item restore-completion",
+            "kind": "option",
+            "name": "dry-run",
+            "source_task": "202610101141-AGRARP"
+          },
+          {
+            "command": "task work-item restore-completion",
+            "kind": "option",
+            "name": "inspection-work-order",
+            "source_task": "202610101141-AGRARP"
+          },
+          {
+            "command": "task work-item restore-completion",
+            "kind": "option",
+            "name": "note",
+            "source_task": "202610101141-AGRARP"
+          },
+          {
+            "command": "task work-item restore-completion",
+            "kind": "option",
+            "name": "proof-digest",
+            "source_task": "202610101141-AGRARP"
+          },
+          {
+            "command": "task work-item restore-completion",
+            "kind": "option",
+            "name": "state-digest",
+            "source_task": "202610101141-AGRARP"
+          },
+          {
+            "command": "task work-item restore-completion",
+            "kind": "option",
+            "name": "work-item",
+            "source_task": "202610101141-AGRARP"
           }
         ],
-        "command_count": { "from": 243, "to": 261 },
+        "command_count": { "from": 243, "to": 262 },
         "mutated_command_shells": [
           {
             "after": {
@@ -3359,8 +3474,8 @@
             "identity": "task plan approve --by"
           }
         ],
-        "option_count": { "from": 767, "to": 882 },
-        "positional_count": { "from": 165, "to": 182 },
+        "option_count": { "from": 767, "to": 889 },
+        "positional_count": { "from": 165, "to": 183 },
         "removed_command_descriptors": [
           {
             "args": [{ "name": "cmd", "required": false, "valueHint": "<cmd>", "variadic": true }],
@@ -3886,7 +4001,7 @@
         "202610101141-AGRARP"
       ],
       "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with caller-supplied structured semantic intent and neutral planner intake, including bounded scope, effect, capability, and resource declarations, explainable per-task workflow routing, signed dialogue approval receipts, compatibility retirement diagnostics, safe local evidence statistics, compaction, garbage collection, and a state-bound USER-approved blocked-task scope extension; promotes the managed task runner; moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces; canonicalizes setup and execution profile selection to standard while retaining legacy init aliases; and makes auto the task route default while retiring repository as a user-facing route. Adds exact-intent operator reconciliation for interrupted integration workflow effects. Retires the active supervisor budget-epoch command after spend limits became telemetry-only. Retires the active Blueprint command surface after Task Kernel replacement proof while preserving cold compatibility readers. Adds explicit approval and supersession options to canonical duplicate and no-op closure. Add explicit bounded corrective-authority inspection, grant and revocation with finite retry and expiry limits. Adds separately USER-approved immutable candidate preparation, publication, reconciliation and revocation before final acceptance; does not complete the task or establish remote qualification.",
-      "to_sha256": "728360d5889df8ae191d4e6262feaba9d5d455070053130b45d28e1a379cc3ff"
+      "to_sha256": "e987ad41e02d4f00dcc5b858a960adee4c57c6715a57241111d9ac2859d59200"
     },
     {
       "classification": "intentional_breaking_retirement",
@@ -4145,7 +4260,7 @@
     "from_version": "0.6.24",
     "section": "package_manifests",
     "source_task": "202608082119-P6SHBN",
-    "surface_sha256": "fb423e8575665b4b32cc3d1bfe19c68e3d5232672996eaab7d70053034e032cc",
+    "surface_sha256": "438cebbede20d65d056671f03dcf3407f2e6fe4d80d1f34c9fc24364448b61f0",
     "to_sha256": "fcc419a72f859fb594e93e8e576c4e83f67c207a312477cdbae6994aefda8941",
     "to_version": "0.7.12"
   },
