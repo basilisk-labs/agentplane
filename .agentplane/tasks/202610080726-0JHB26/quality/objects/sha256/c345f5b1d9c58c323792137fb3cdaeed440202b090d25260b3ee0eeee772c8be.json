@@ -1,0 +1,44 @@
+{
+  "native_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_task_identity",
+    "task_id": "202610080726-0JHB26",
+    "plan": {
+      "revision": 1,
+      "digest": "sha256:bba9c8161b30fb64e6d21660ab7420b84f966c0d4420f572647c371ce91a290e",
+      "approval_state": "approved",
+      "approved_digest": "sha256:bba9c8161b30fb64e6d21660ab7420b84f966c0d4420f572647c371ce91a290e"
+    },
+    "policy": {
+      "digest": "sha256:1469f9511222e1944f6256b66fc7f77bb4b75c356cb828fd2d59456cf84872e1"
+    },
+    "capability": {
+      "digest": "sha256:d2ac97b79ff29323299b20f167b9f5156e602e4411c37893213c143a9443aeb6"
+    },
+    "checks": {
+      "verification_contract_digest": "sha256:83becc73a564f99a4bf7b08bd7728b9645185a51d24faddc2d99ab161e600484",
+      "required_check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "full_regression",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "digest": "sha256:11ec7f1ac21832fbbc049d7739a12042227d179816e33c347c72f4d0b2478c0c"
+    },
+    "digest": "sha256:67d09c3c489ad7d044a059a6ec390e002ba812cb36f128ab48871d8ea2ca3170"
+  },
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202610080726-0JHB26",
+    "plan_digest": "sha256:bba9c8161b30fb64e6d21660ab7420b84f966c0d4420f572647c371ce91a290e",
+    "policy_digest": "sha256:1469f9511222e1944f6256b66fc7f77bb4b75c356cb828fd2d59456cf84872e1",
+    "capability_digest": "sha256:d2ac97b79ff29323299b20f167b9f5156e602e4411c37893213c143a9443aeb6",
+    "checks_digest": "sha256:11ec7f1ac21832fbbc049d7739a12042227d179816e33c347c72f4d0b2478c0c",
+    "verification_input_digest": "sha256:39e4bfb951f21686be531d27739f7dea2f9e58854fcd101cff5fa4f4fe771e2e",
+    "acceptance_digest": "sha256:1b6e99bcf6e7b5c3f2056c443b3cda0e27e17688a5bf35cd455e47544e0e5670",
+    "implementation_sha": "d06d5cd179ac0898c2de85bfbc0e4209cc11ee0c",
+    "digest": "sha256:23911875c168c2515a73eb643ea0297b5454952344e271d450a744369ae39e90"
+  }
+}

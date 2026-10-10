@@ -228,4 +228,5 @@ A task is done only when approved scope, loaded DoD modules, security gates, tas
 - Follow incident-log, immutability, and policy-budget rules in `.agentplane/policy/governance.md`.
 - Record situational incident rules only in `.agentplane/policy/incidents.md`; use CLI-owned targeted lookup/promotion instead of bulk-loading it during normal semantic episodes.
 - Keep `AGENTS.md` as a gateway; move detailed procedures to canonical modules.
+
 <!-- /ap:fragment -->

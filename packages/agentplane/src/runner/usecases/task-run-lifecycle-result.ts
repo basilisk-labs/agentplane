@@ -13,10 +13,7 @@ import type {
 const TASK_RUNNER_LIFECYCLE_RESULT_SCHEMA = "agentplane.task_runner_lifecycle_result.v1" as const;
 
 type TaskRunnerLifecycleEffectState =
-  | "not_recorded"
-  | "effect_in_doubt"
-  | "applied"
-  | "not_applied";
+  "not_recorded" | "effect_in_doubt" | "applied" | "not_applied";
 
 export type TaskRunnerLifecycleResult = {
   schema: typeof TASK_RUNNER_LIFECYCLE_RESULT_SCHEMA;

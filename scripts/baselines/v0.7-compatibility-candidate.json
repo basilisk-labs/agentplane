@@ -7,22 +7,22 @@
   },
   "candidate": {
     "section_digests": {
-      "agent_facing_context_contracts": "7710a5217ea614a3da8b4e99fe61e16fb738179797eba64c75c9537bc33f7785",
+      "agent_facing_context_contracts": "4926aed50aea235e24310e39404f7b939bc4caa7fc763a98387992822a2101c5",
       "cli_topology": "1b2e5ab4593f24b1363fee277d1f8d1efdbc78bb714dc16b518a0fbe8c3a4135",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
-      "package_manifests": "ee1cec43b5f3371f7e7235f5aebd3254bcc2bedfa21d20eec8e2109d62f41faf",
+      "package_manifests": "6052feb72f5eee6eaa1a503bb10074492350a164de683adf50bf2b092ce647b9",
       "tarball_policy": "10e8c7b78d3166955320b6fa787d7564b5bba1f67b3ce1736dca46673528716d",
-      "workflow_schema": "dc851f68ff13c52fec5dbe522fa96cc1084771ce7e09ed0178c44f15d7c46452"
+      "workflow_schema": "1003207ce9df63cccac8761565f0d1264c094fd3fda5609012a6716c82842451"
     },
-    "surface_sha256": "d35e7cdd8f0a9e2c4361f43fdbcb8f2ff2f4ceec90b9390cf990b9daeb0b76f1"
+    "surface_sha256": "71f4f9e47bc5e31280e9c1a07446fbdc00be8e7ce5061ae71fdf6f663ada3441"
   },
   "candidate_id": "agentplane.compatibility.v0.7.cumulative",
   "contract_artifacts": {
     "agent_work_order_schema": {
       "comparison": "canonical_json_exact",
       "path": "schemas/agent-work-order-v2.schema.json",
-      "sha256": "901bf3d2c40447b953a5f750cd02db64f21d860083668121f68ca2de43747660",
+      "sha256": "6be6676eba2129f9f52b79d78af44d246e4a42286733035e8564680744df5501",
       "source_task": "202609162254-YE48GC"
     },
     "core_agent_work_order_exports": {
@@ -308,7 +308,7 @@
     "execution_receipt_schema": {
       "comparison": "canonical_json_exact",
       "path": "schemas/execution-receipt.schema.json",
-      "sha256": "ebcdcda6d38e1b399696add88587e3a2a1a84246beebc656feccdfb357dfbddf",
+      "sha256": "16380c75b048492cc4f3c7f6826bd9d66522e59edc276642c5c6be0a1c989e75",
       "source_task": "202607221849-NWVCAG"
     },
     "knowledge_ref_schema": {
@@ -3425,8 +3425,8 @@
         "changed_contracts": [
           {
             "after": {
-              "normalized_bytes": 5574,
-              "normalized_sha256": "b8560ef31029531a559a986af7778353a72f8104b70cc7c36aadec01e21eb757"
+              "normalized_bytes": 5550,
+              "normalized_sha256": "23779fea4d6e88fbe7086f7f729db74a1ee3ece9edc209b2a4b3dbbbaeca562e"
             },
             "before": {
               "normalized_bytes": 6471,
@@ -3485,10 +3485,11 @@
         "202608212244-6XZAYD",
         "202609162254-YE48GC",
         "202610041748-K43XFE",
-        "202610060956-42J54D"
+        "202610060956-42J54D",
+        "202610011624-MP3J6N"
       ],
-      "summary": "Adds a CLI-owned immutable task-creation receipt, typed EVALUATOR human-review escalation, bounded deterministic-evidence recovery classification, and source-driven canonical reconciliation candidates; retires Blueprint route-decision contracts after Task Kernel replacement proof.",
-      "to_sha256": "7710a5217ea614a3da8b4e99fe61e16fb738179797eba64c75c9537bc33f7785"
+      "summary": "Adds a CLI-owned immutable task-creation receipt, typed EVALUATOR human-review escalation, bounded deterministic-evidence recovery classification, and source-driven canonical reconciliation candidates; retires Blueprint route-decision contracts after Task Kernel replacement proof. Applies Prettier 3.9.9 formatting to existing context source; semantic behavior is unchanged.",
+      "to_sha256": "4926aed50aea235e24310e39404f7b939bc4caa7fc763a98387992822a2101c5"
     },
     {
       "classification": "backward_compatible",
@@ -3507,10 +3508,11 @@
         "202608171853-X3FD5M",
         "202608212244-6XZAYD",
         "202610041748-K43XFE",
-        "202610060956-42J54D"
+        "202610060956-42J54D",
+        "202610011624-MP3J6N"
       ],
-      "summary": "Replaces the v1-only schema with a v1-or-v2 input union, retaining the finite typed legacy v1 sections, requiring explicit v2 approval flags, adding trusted signed approval receipt configuration, preserving the public schema identity, and canonicalizing both versions on the standard execution profile while accepting legacy profile aliases during migration.",
-      "to_sha256": "dc851f68ff13c52fec5dbe522fa96cc1084771ce7e09ed0178c44f15d7c46452"
+      "summary": "Replaces the v1-only schema with a v1-or-v2 input union, retaining the finite typed legacy v1 sections, requiring explicit v2 approval flags, adding trusted signed approval receipt configuration, preserving the public schema identity, and canonicalizing both versions on the standard execution profile while accepting legacy profile aliases during migration. Updates Zod-generated nullable representation without changing accepted null values, preserves all prior timestamp patterns including minute precision, and aligns emitted nonnegative count bounds with existing runtime validation.",
+      "to_sha256": "1003207ce9df63cccac8761565f0d1264c094fd3fda5609012a6716c82842451"
     },
     {
       "classification": "behavior_preserving_hardening",
@@ -3652,9 +3654,10 @@
       "202608171853-X3FD5M",
       "202609211330-5A54M1",
       "202610041748-K43XFE",
-      "202610060956-42J54D"
+      "202610060956-42J54D",
+      "202610011624-MP3J6N"
     ],
-    "to_sha256": "ee1cec43b5f3371f7e7235f5aebd3254bcc2bedfa21d20eec8e2109d62f41faf"
+    "to_sha256": "6052feb72f5eee6eaa1a503bb10074492350a164de683adf50bf2b092ce647b9"
   },
   "release_version_delta": {
     "allowed_json_paths": [
@@ -3669,12 +3672,12 @@
       "$.package_manifests[2].version"
     ],
     "classification": "planned_version_parity",
-    "from_sha256": "ee1cec43b5f3371f7e7235f5aebd3254bcc2bedfa21d20eec8e2109d62f41faf",
+    "from_sha256": "6052feb72f5eee6eaa1a503bb10074492350a164de683adf50bf2b092ce647b9",
     "from_version": "0.6.24",
     "section": "package_manifests",
     "source_task": "202608082119-P6SHBN",
-    "surface_sha256": "40466a8a690787106d097518f720ac93d360a486191f545b8c063bf93e534bd9",
-    "to_sha256": "5181e197bcb2007bf582098724eac351ee528640a26e0283b51ccca567690919",
+    "surface_sha256": "f6367b1f30d8b0d841070ba0fe65ed86291ce7e1ed68f379f8adfc0ca9b08710",
+    "to_sha256": "fcc419a72f859fb594e93e8e576c4e83f67c207a312477cdbae6994aefda8941",
     "to_version": "0.7.12"
   },
   "review": {
@@ -3746,6 +3749,7 @@
     "202609241429-4WN4VX",
     "202609261720-KKE9ZN",
     "202610041748-K43XFE",
-    "202610060956-42J54D"
+    "202610060956-42J54D",
+    "202610011624-MP3J6N"
   ]
 }

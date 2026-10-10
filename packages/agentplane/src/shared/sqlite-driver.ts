@@ -32,8 +32,7 @@ type BunSqliteModule = {
 };
 
 type SqliteModule =
-  | { kind: "node"; module: NodeSqliteModule }
-  | { kind: "bun"; module: BunSqliteModule };
+  { kind: "node"; module: NodeSqliteModule } | { kind: "bun"; module: BunSqliteModule };
 
 const NODE_SQLITE_SPECIFIER = "node:sqlite";
 const BUN_SQLITE_SPECIFIER = "bun:sqlite";

@@ -2,8 +2,7 @@ export const SGR_CONTRACT_SCHEMA_VERSION = 1 as const;
 export const CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION = 2 as const;
 
 export type SgrContractSchemaVersion =
-  | typeof SGR_CONTRACT_SCHEMA_VERSION
-  | typeof CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION;
+  typeof SGR_CONTRACT_SCHEMA_VERSION | typeof CONTEXT_EXTRACTION_SGR_CONTRACT_SCHEMA_VERSION;
 
 export type SgrSourceRef = {
   path: string;
@@ -20,11 +19,7 @@ export type SgrReasoningStep = {
 };
 
 export type ContextExtractionItemStatus =
-  | "proposed"
-  | "accepted"
-  | "stale"
-  | "conflict"
-  | "unresolved";
+  "proposed" | "accepted" | "stale" | "conflict" | "unresolved";
 export type ContextExtractionItemKind =
   | "wiki_update"
   | "claim"
@@ -102,11 +97,7 @@ export type ContextExtractionCandidateEntity = {
 };
 
 type ContextExtractionEntityResolutionDecision =
-  | "same_as"
-  | "alias_of"
-  | "distinct_entity"
-  | "possibly_same_as"
-  | "new_entity_proposal";
+  "same_as" | "alias_of" | "distinct_entity" | "possibly_same_as" | "new_entity_proposal";
 
 export type ContextExtractionEntityResolutionRow = Record<string, unknown> & {
   source_term: string;

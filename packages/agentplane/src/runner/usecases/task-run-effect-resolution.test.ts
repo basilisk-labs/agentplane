@@ -184,8 +184,7 @@ describe("task runner effect resolution", () => {
       // Attach a rejection handler before the competing operation can settle.
       const firstSettled = Promise.allSettled([first]);
       let second:
-        | PromiseSettledResult<Awaited<ReturnType<typeof resolveTaskRunnerEffect>>>[]
-        | undefined;
+        PromiseSettledResult<Awaited<ReturnType<typeof resolveTaskRunnerEffect>>>[] | undefined;
       try {
         await opened;
         second = await Promise.allSettled([resolveTaskRunnerEffect(input)]);

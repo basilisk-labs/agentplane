@@ -2,9 +2,7 @@ import { normalizeTaskStatus, readTask, type TaskStatus } from "@agentplaneorg/c
 
 type TaskArtifactKind = "task_readme" | "handoff" | "pr_artifact" | "unknown";
 type TaskArtifactClassification =
-  | "active_parallel_task_artifact"
-  | "stale_done_handoff"
-  | "unknown_task_artifact";
+  "active_parallel_task_artifact" | "stale_done_handoff" | "unknown_task_artifact";
 type TaskArtifactAction = "ignore_parallel_agent" | "cleanup_candidate" | "inspect";
 type TaskArtifactDriftItem = {
   path: string;

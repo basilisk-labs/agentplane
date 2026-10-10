@@ -3,9 +3,7 @@ import { execFileAsync } from "@agentplaneorg/core/process";
 import { shouldAutoBootstrapAfterIntegrate } from "./bootstrap-guidance.js";
 
 type PostIntegrateBootstrapResult =
-  | { status: "skipped" }
-  | { status: "ran" }
-  | { status: "failed"; error: string };
+  { status: "skipped" } | { status: "ran" } | { status: "failed"; error: string };
 
 function compactError(err: unknown): string {
   if (err instanceof Error) {

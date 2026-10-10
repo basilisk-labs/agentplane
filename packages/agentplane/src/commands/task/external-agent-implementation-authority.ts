@@ -419,8 +419,7 @@ export async function applyExternalImplementationResult(opts: {
   if (conflictContext)
     implementationCommit = await applyExternalConflictResolution(opts, conflictContext);
   const executionContext = taskAtReturn.extensions?.task_execution_context as
-    | { base_sha?: unknown }
-    | undefined;
+    { base_sha?: unknown } | undefined;
   const recordedExecutionBase =
     recoveredExecutionBase ??
     (typeof executionContext?.base_sha === "string" ? executionContext.base_sha.trim() : null);

@@ -31,8 +31,8 @@ type ProjectedTask = {
 };
 
 function taskWriter() {
-  return vi.fn(
-    (_task: ProjectedTask, _options?: TaskWriteOptions): Promise<void> => Promise.resolve(),
+  return vi.fn((_task: ProjectedTask, _options?: TaskWriteOptions): Promise<void> =>
+    Promise.resolve(),
   );
 }
 

@@ -84,8 +84,7 @@ export async function projectKernelOperationalEvidence(opts: {
   };
   const projection: Projection = { ...contents, digest: k.kernelDigest(contents) };
   const existing = task.extensions[KERNEL_OPERATIONAL_PROJECTION] as
-    | Partial<Projection>
-    | undefined;
+    Partial<Projection> | undefined;
   if (existing?.digest === projection.digest && kernelProjectedReviewMatches(task, projection))
     return;
   const revision = task.revision ?? 0;

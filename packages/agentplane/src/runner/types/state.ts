@@ -27,11 +27,7 @@ export type RunnerProcessSignal = NodeJS.Signals;
 type RunnerProcessTreeScope = "posix_process_group" | "direct_child_only";
 
 type RunnerProcessTreeCleanupState =
-  | "not_needed"
-  | "terminated"
-  | "force_killed"
-  | "unsupported"
-  | "failed";
+  "not_needed" | "terminated" | "force_killed" | "unsupported" | "failed";
 
 type RunnerProcessContainmentState = "bounded" | "limited";
 

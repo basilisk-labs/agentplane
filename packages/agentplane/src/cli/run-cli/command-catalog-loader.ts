@@ -131,8 +131,7 @@ async function loadCatalogGroup(group: CatalogGroup): Promise<readonly CommandEn
   let cached = catalogCache.get(group);
   if (!cached) {
     const embedded = (globalThis as Record<string, unknown>).__AGENTPLANE_COMMAND_CATALOGS__ as
-      | Partial<Record<CatalogGroup, readonly CommandEntry[]>>
-      | undefined;
+      Partial<Record<CatalogGroup, readonly CommandEntry[]>> | undefined;
     cached = embedded?.[group]
       ? Promise.resolve(embedded[group])
       : import(catalogPaths[group]).then((module: CatalogModule) => {
@@ -162,8 +161,7 @@ export async function loadCommandEntriesForTokens(
 export async function loadAllCommandEntries(): Promise<readonly CommandEntry[]> {
   if (completeCatalogCache) return completeCatalogCache;
   const embedded = (globalThis as Record<string, unknown>).__AGENTPLANE_COMMAND_CATALOGS__ as
-    | Partial<Record<CatalogGroup, readonly CommandEntry[]>>
-    | undefined;
+    Partial<Record<CatalogGroup, readonly CommandEntry[]>> | undefined;
   if (embedded?.core && embedded.task && embedded.project && embedded.lifecycle) {
     completeCatalogCache = [
       ...embedded.core,

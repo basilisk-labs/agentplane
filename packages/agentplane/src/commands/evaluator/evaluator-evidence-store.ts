@@ -1,3 +1,4 @@
+import { isoTimestampSchema } from "@agentplaneorg/core/schemas";
 import { gitProofEnv } from "@agentplaneorg/core/git";
 import { execFileAsync } from "@agentplaneorg/core/process";
 import { canonicalizeJson } from "@agentplaneorg/core/tasks";
@@ -42,7 +43,7 @@ const EVALUATOR_PACKET_MANIFEST_SCHEMA = z
     kind: z.literal("evaluator_evidence_packet"),
     task_id: z.string().trim().min(1),
     work_order_id: z.string().trim().min(1),
-    created_at: z.string().datetime({ offset: true }),
+    created_at: isoTimestampSchema({ offset: true }),
     object_root: z.string().trim().min(1),
     artifacts: z.array(EVALUATOR_PACKET_ARTIFACT_SCHEMA).min(1),
     integrity: z

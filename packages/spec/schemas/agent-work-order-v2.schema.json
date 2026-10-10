@@ -816,14 +816,7 @@
                       "pattern": "^[0-9a-f]{40}$|^[0-9a-f]{64}$"
                     },
                     "ref": {
-                      "anyOf": [
-                        {
-                          "type": "string"
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
+                      "type": ["string", "null"]
                     }
                   },
                   "required": ["kind", "sha", "ref"],
@@ -837,14 +830,7 @@
                       "const": "unborn"
                     },
                     "ref": {
-                      "anyOf": [
-                        {
-                          "type": "string"
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
+                      "type": ["string", "null"]
                     }
                   },
                   "required": ["kind", "ref"],
@@ -901,14 +887,7 @@
               ]
             },
             "task_history_cursor": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ]
+              "type": ["string", "null"]
             },
             "captured_at": {
               "type": "string",
@@ -1370,22 +1349,22 @@
                     "properties": {
                       "original_bytes": {
                         "type": "integer",
-                        "minimum": -9007199254740991,
+                        "minimum": 0,
                         "maximum": 9007199254740991
                       },
                       "emitted_bytes": {
                         "type": "integer",
-                        "minimum": -9007199254740991,
+                        "minimum": 0,
                         "maximum": 9007199254740991
                       },
                       "original_lines": {
                         "type": "integer",
-                        "minimum": -9007199254740991,
+                        "minimum": 0,
                         "maximum": 9007199254740991
                       },
                       "emitted_lines": {
                         "type": "integer",
-                        "minimum": -9007199254740991,
+                        "minimum": 0,
                         "maximum": 9007199254740991
                       }
                     },
@@ -1478,12 +1457,12 @@
                       },
                       "content_bytes": {
                         "type": "integer",
-                        "minimum": -9007199254740991,
+                        "minimum": 0,
                         "maximum": 9007199254740991
                       },
                       "content_lines": {
                         "type": "integer",
-                        "minimum": -9007199254740991,
+                        "minimum": 0,
                         "maximum": 9007199254740991
                       }
                     },
@@ -1665,22 +1644,22 @@
                     "properties": {
                       "original_bytes": {
                         "type": "integer",
-                        "minimum": -9007199254740991,
+                        "minimum": 0,
                         "maximum": 9007199254740991
                       },
                       "emitted_bytes": {
                         "type": "integer",
-                        "minimum": -9007199254740991,
+                        "minimum": 0,
                         "maximum": 9007199254740991
                       },
                       "original_lines": {
                         "type": "integer",
-                        "minimum": -9007199254740991,
+                        "minimum": 0,
                         "maximum": 9007199254740991
                       },
                       "emitted_lines": {
                         "type": "integer",
-                        "minimum": -9007199254740991,
+                        "minimum": 0,
                         "maximum": 9007199254740991
                       }
                     },
@@ -1773,12 +1752,12 @@
                       },
                       "content_bytes": {
                         "type": "integer",
-                        "minimum": -9007199254740991,
+                        "minimum": 0,
                         "maximum": 9007199254740991
                       },
                       "content_lines": {
                         "type": "integer",
-                        "minimum": -9007199254740991,
+                        "minimum": 0,
                         "maximum": 9007199254740991
                       }
                     },
@@ -1956,22 +1935,22 @@
                     "properties": {
                       "original_bytes": {
                         "type": "integer",
-                        "minimum": -9007199254740991,
+                        "minimum": 0,
                         "maximum": 9007199254740991
                       },
                       "emitted_bytes": {
                         "type": "integer",
-                        "minimum": -9007199254740991,
+                        "minimum": 0,
                         "maximum": 9007199254740991
                       },
                       "original_lines": {
                         "type": "integer",
-                        "minimum": -9007199254740991,
+                        "minimum": 0,
                         "maximum": 9007199254740991
                       },
                       "emitted_lines": {
                         "type": "integer",
-                        "minimum": -9007199254740991,
+                        "minimum": 0,
                         "maximum": 9007199254740991
                       }
                     },
@@ -2155,22 +2134,22 @@
                     "properties": {
                       "original_bytes": {
                         "type": "integer",
-                        "minimum": -9007199254740991,
+                        "minimum": 0,
                         "maximum": 9007199254740991
                       },
                       "emitted_bytes": {
                         "type": "integer",
-                        "minimum": -9007199254740991,
+                        "minimum": 0,
                         "maximum": 9007199254740991
                       },
                       "original_lines": {
                         "type": "integer",
-                        "minimum": -9007199254740991,
+                        "minimum": 0,
                         "maximum": 9007199254740991
                       },
                       "emitted_lines": {
                         "type": "integer",
-                        "minimum": -9007199254740991,
+                        "minimum": 0,
                         "maximum": 9007199254740991
                       }
                     },
@@ -2268,12 +2247,12 @@
                       },
                       "content_bytes": {
                         "type": "integer",
-                        "minimum": -9007199254740991,
+                        "minimum": 0,
                         "maximum": 9007199254740991
                       },
                       "content_lines": {
                         "type": "integer",
-                        "minimum": -9007199254740991,
+                        "minimum": 0,
                         "maximum": 9007199254740991
                       }
                     },
