@@ -14,8 +14,10 @@ import {
 import { runJson } from "../../cli/task-create-planner-intent.testkit.js";
 import { ensureRuntimeGitignore } from "../../runtime/shared/runtime-gitignore.js";
 
+import { retainedIssuanceAuthority } from "./kernel-rework-lineage.js";
 import { scopeReplanInputs } from "./kernel-scope-replan-inputs.js";
 import { loadCommandContext } from "../shared/task-backend.js";
+import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js";
 import type * as ScopeIntake from "../../adapters/task-backend/kernel-scope-intake.js";
 import type * as KernelRuntimeContext from "./kernel-runtime-context.js";
 
@@ -298,6 +300,96 @@ describe("native prospective scope request", { timeout: 180_000 }, () => {
         ).toBe(0);
         packet = await runJson(root, ["task", "advance", id, "--agent-json"]);
         expect(packet.authority, JSON.stringify(packet)).toMatchObject({ role: "PLANNER" });
+        if (variant === "native") {
+          const secondExpanded = structuredClone(expanded);
+          secondExpanded.work_items[0]!.execution_requirements.scope_roots.push("second.test.ts");
+          await submit({ canonical_plan: secondExpanded });
+          expect(packet.action, JSON.stringify(packet)).toMatchObject({
+            kind: "approval_required",
+          });
+          expect(
+            await runCliSilent(["task", "plan", "approve", id, "--by", "USER", "--root", root]),
+          ).toBe(0);
+          packet = await runJson(root, ["task", "advance", id, "--agent-json"]);
+          expect(packet.authority, JSON.stringify(packet)).toMatchObject({ role: "EXECUTOR" });
+          const thirdOrder = AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse(
+            JSON.parse(
+              await readFile(
+                path.join((packet.exchange as { directory: string }).directory, "work-order.json"),
+                "utf8",
+              ),
+            ),
+          );
+          expect(thirdOrder.canonical_binding).toMatchObject({ plan_revision: 3, attempt: 3 });
+          expect(thirdOrder.authority.writable_roots).toContain(path.join(root, "second.test.ts"));
+          expect(
+            thirdOrder.required_inputs.some(
+              (entry) => entry.id === "approved-scope-replan" && entry.required,
+            ),
+          ).toBe(true);
+          expect(await readFile(retainedPath, "utf8")).toBe(retainedResult);
+          expect(await readFile(path.join(root, "fixture.test.ts"), "utf8")).toBe(unchanged);
+          const inspectionRuntime = await createRuntime({
+            command: await loadCommandContext({ cwd: root, rootOverride: root }),
+            task_id: id,
+            transport: "host",
+            operation_id: "inspect-second-scope-issuance",
+          });
+          const final = await inspectionRuntime.adapter.read(id);
+          if (final.kind !== "canonical") throw new Error("Missing second replan record");
+          expect(retainedIssuanceAuthority(final.record, nextOrder)).toBe(true);
+          const approval = final.record.events.findLast(
+            (event) =>
+              event.kind === "plan_approved" && event.task_revision <= nextOrder.task.revision!,
+          );
+          const lineage = final.record.aggregate.authority_lineage!;
+          const rootIndex = lineage.findIndex(
+            (entry) =>
+              entry.observation === null &&
+              entry.authority.plan_digest === nextOrder.canonical_binding?.plan_digest,
+          );
+          if (!approval || rootIndex < 1) throw new Error("Missing native later Plan approval");
+          const mutate = (change: (record: KernelRecord) => void) => {
+            const record = structuredClone(final.record);
+            change(record);
+            expect(retainedIssuanceAuthority(record, nextOrder)).toBe(false);
+          };
+          mutate((record) => {
+            record.events = record.events.filter((event) => event.id !== approval.id);
+          });
+          mutate((record) => {
+            delete record.aggregate.mutation_receipts[approval.mutation_id];
+          });
+          mutate((record) => {
+            record.aggregate.mutation_receipts[approval.mutation_id]!.event_digests = [
+              `sha256:${"0".repeat(64)}`,
+            ];
+          });
+          mutate((record) => {
+            record.events.push(structuredClone(approval));
+          });
+          mutate((record) => {
+            record.aggregate.authority_lineage!.splice(rootIndex, 1);
+          });
+          mutate((record) => {
+            record.aggregate.authority_lineage!.push(structuredClone(lineage[rootIndex]!));
+          });
+          mutate((record) => {
+            record.aggregate.authority_lineage![
+              rootIndex
+            ]!.authority.provenance.parent_authority_digest = lineage[0]!.authority.digest;
+          });
+          const firstApproval = final.record.events.find((event) => event.kind === "plan_approved");
+          if (!firstApproval || firstApproval.id === approval.id)
+            throw new Error("Missing preceding Plan approval");
+          mutate((record) => {
+            record.aggregate.mutation_receipts[approval.mutation_id]!.command_digest =
+              firstApproval.command_digest;
+          });
+          const staleOrder = structuredClone(nextOrder);
+          staleOrder.task.revision = approval.task_revision - 1;
+          expect(retainedIssuanceAuthority(final.record, staleOrder)).toBe(false);
+        }
       }
     },
   );

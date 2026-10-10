@@ -1,0 +1,3 @@
+ .../src/commands/task/kernel-rework-lineage.ts     | 74 +++++++++++++++--
+ .../src/commands/task/kernel-scope-request.test.ts | 92 ++++++++++++++++++++++
+ 2 files changed, 161 insertions(+), 5 deletions(-)

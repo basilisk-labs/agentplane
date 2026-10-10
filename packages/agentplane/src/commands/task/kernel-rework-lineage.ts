@@ -171,6 +171,65 @@ export async function retainedPrerequisiteStops(
   return stops;
 }
 
+/** Authenticate the issuance candidate's actual root before inspecting its Plan epoch. */
+function retainedApprovalRevision(
+  record: KernelRecord,
+  candidateIndex: number,
+  issuedRevision: number,
+): { rootIndex: number; revision: number } | null {
+  const lineage = record.aggregate.authority_lineage ?? [];
+  let index = candidateIndex;
+  for (;;) {
+    const entry = lineage[index];
+    if (
+      !entry ||
+      lineage.filter((value) => value.authority.digest === entry.authority.digest).length !== 1
+    )
+      return null;
+    const parent = entry.authority.provenance.parent_authority_digest;
+    if (parent === null) break;
+    const parentIndex = lineage.findIndex((value) => value.authority.digest === parent);
+    if (parentIndex === -1 || parentIndex >= index) return null;
+    index = parentIndex;
+  }
+  const entry = lineage[index]!;
+  // Preserve the original initial-root contract for retained legacy histories.
+  if (index === 0) return { rootIndex: index, revision: 0 };
+  const plan = [...record.aggregate.plan_history, record.aggregate.current_plan].find(
+    (value) =>
+      value?.digest === entry.authority.plan_digest &&
+      value.revision === entry.authority.plan_revision,
+  );
+  if (
+    !plan?.approval_evidence_digest ||
+    entry.observation !== null ||
+    !entry.approval_mode ||
+    entry.authority.provenance.actor_id !== plan.approval_actor_id ||
+    entry.authority.provenance.evidence_digest !== plan.approval_evidence_digest
+  )
+    return null;
+  const evidence = plan.approval_evidence_digest;
+  const mode = entry.approval_mode;
+  const approvals = record.events.filter(
+    (event) =>
+      event.kind === "plan_approved" &&
+      event.task_revision <= issuedRevision &&
+      authenticReworkEvent(record, event, {
+        kind: "approve_plan",
+        task_id: record.aggregate.id,
+        expected_task_revision: event.task_revision - 1,
+        expected_state_fingerprint: entry.authority.repository_fingerprint,
+        plan_revision: plan.revision,
+        plan_digest: plan.digest,
+        approval_evidence_digest: evidence,
+        authority_mode: mode,
+      }),
+  );
+  return approvals.length === 1
+    ? { rootIndex: index, revision: approvals[0]!.task_revision }
+    : null;
+}
+
 /** Bind retained issuance authority to native lineage, including the real delegated projection. */
 export function retainedIssuanceAuthority(record: KernelRecord, order: AgentWorkOrderV2): boolean {
   const binding = order.canonical_binding;
@@ -179,10 +238,7 @@ export function retainedIssuanceAuthority(record: KernelRecord, order: AgentWork
     (entry) => entry?.digest === binding.plan_digest,
   );
   const definition = plan?.work_items.find((item) => item.id === binding.work_item_id);
-  if (!definition) return false;
-  const latest = record.events.findLast(
-    (event) => event.kind === "authority_continued" && event.task_revision <= order.task.revision!,
-  );
+  if (!definition || !plan) return false;
   return (record.aggregate.authority_lineage ?? []).some((entry, index) => {
     const parent = entry.authority;
     if (
@@ -191,6 +247,14 @@ export function retainedIssuanceAuthority(record: KernelRecord, order: AgentWork
       parent.repository_fingerprint !== binding.repository_fingerprint
     )
       return false;
+    const approval = retainedApprovalRevision(record, index, order.task.revision!);
+    if (!approval) return false;
+    const latest = record.events.findLast(
+      (event) =>
+        event.kind === "authority_continued" &&
+        event.task_revision > approval.revision &&
+        event.task_revision <= order.task.revision!,
+    );
     if (
       latest
         ? !authenticReworkEvent(record, latest, {
@@ -200,7 +264,7 @@ export function retainedIssuanceAuthority(record: KernelRecord, order: AgentWork
             expected_state_fingerprint: parent.repository_fingerprint,
             record: entry,
           })
-        : index !== 0
+        : index !== approval.rootIndex
     )
       return false;
     const delegated = {

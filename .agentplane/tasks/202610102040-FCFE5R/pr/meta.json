@@ -1,0 +1,21 @@
+{
+  "base": "task/202610101141-AGRARP/native-scope-request",
+  "branch": "task/202610102040-FCFE5R/retained-scope-issuance",
+  "created_at": "2026-10-10T21:10:37.020Z",
+  "diffstat_sha256": "sha256:f4f6c9f5371320fde863cf8ec7709cdaa66e91a1bd842e6fad16d08c9020064b",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610102040-FCFE5R",
+  "updated_at": "2026-10-10T21:10:37.020Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
