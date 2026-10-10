@@ -417,3 +417,8 @@ export const loadTaskCandidateWriteSpec = (session: TaskWriteSession) =>
   import("../../../commands/task/candidate-publication.command.js").then((m) =>
     m.makeRunTaskCandidateHandler(getSessionContext(session, "task.write")),
   );
+
+export const loadTaskScopeApproveRequestSpec = (session: TaskLifecycleSession) =>
+  import("../../../commands/task/scope-approve-request.command.js").then((m) =>
+    m.makeRunTaskScopeApproveRequestHandler(getSessionContext(session, "git.mutate")),
+  );

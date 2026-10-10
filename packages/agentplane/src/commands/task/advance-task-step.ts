@@ -1,3 +1,4 @@
+import { pendingScopeRequestAction } from "./kernel-scope-request.js";
 import { tryApplyBoundedFinalCorrection } from "./kernel-corrective-authority.js";
 import {
   restoreKernelFinalValidation,
@@ -543,11 +544,17 @@ async function advanceCanonicalRoute(opts: {
       task_id: opts.task_id,
       action: {
         ...(route.reason_code === "kernel_work_item_blocked" && route.work_item_id
-          ? { operator_action: workItemResumeOperatorAction(record, route.work_item_id) }
+          ? {
+              operator_action:
+                (await pendingScopeRequestAction(opts.command, opts.task_id, route.work_item_id)) ??
+                workItemResumeOperatorAction(record, route.work_item_id),
+            }
           : {}),
         kind: ["kernel_task_completed", "kernel_task_cancelled"].includes(route.reason_code)
           ? "terminal"
-          : "external_wait",
+          : route.reason_code === "kernel_work_item_blocked"
+            ? "human_required"
+            : "external_wait",
         reason: route.reason_code,
       },
       canonical_revision: record.aggregate.revision,
