@@ -3,7 +3,10 @@
   "branch": "task/202610102009-NYTBDA/gitlab-frozen-base-regression",
   "created_at": "2026-10-10T20:23:08.421Z",
   "diffstat_sha256": "sha256:1e66cbb1844a421999b395f54a050686dbc0f5f455696ce045fc50c3e0f8b722",
-  "last_verified_at": null,
+  "last_verified_at": "2026-10-10T20:30:41.219Z",
+  "last_verified_diffstat_sha256": "sha256:1e66cbb1844a421999b395f54a050686dbc0f5f455696ce045fc50c3e0f8b722",
+  "pr_number": 6120,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6120",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -13,9 +16,10 @@
     "target_project": "basilisk-labs/agentplane"
   },
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202610102009-NYTBDA",
-  "updated_at": "2026-10-10T20:23:08.421Z",
+  "updated_at": "2026-10-10T20:42:36.127Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

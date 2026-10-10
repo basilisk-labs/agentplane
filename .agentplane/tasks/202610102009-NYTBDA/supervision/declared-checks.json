@@ -1,0 +1,84 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run test:project agentplane packages/agentplane/src/commands/pr/internal/sync-gitlab-frozen-base.test.ts packages/agentplane/src/commands/pr/internal/provider-base.test.ts packages/agentplane/src/commands/pr/internal/sync-frozen-base.test.ts --maxWorkers=2",
+      "duration_ms": 62041,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:6c3746c07662c076350a64a1df0baa90c6e911f97e1853b9a598beab8dbf8fe9",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610102009-NYTBDA-gitlab-frozen-base-regression/.agentplane/tasks/202610102009-NYTBDA/supervision/verification-runs/run-003/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:bfa1c329a0b3cfd6448899ea40b9b084203e8d7125eded22140aa0c146eacc3a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/pr/internal/sync-gitlab-frozen-base.test.ts packages/agentplane/src/commands/pr/internal/provider-base.test.ts packages/agentplane/src/commands/pr/internal/sync-frozen-base.test.ts \"--maxWorkers=2\"\n",
+      "stdout_tail": "\n RUN  v5.0.2 <repo>\n\n\n Test Files  3 passed (3)\n      Tests  19 passed (19)\n   Start at  23:29:04\n   Duration  51.39s (transform 42%, tests 42%, import 15%)\n\n  Transform  |agentplane| transforming modules took 39.32s · 42% of tracked time, re-done on every run\n             persist transforms across runs with fsModuleCache: true\n             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run typecheck",
+      "duration_ms": 4991,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:e740bdb513a8fadafd7670a2c151117dbca70c15ffdd8c3d9cc6d3ebf8208b08",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610102009-NYTBDA-gitlab-frozen-base-regression/.agentplane/tasks/202610102009-NYTBDA/supervision/verification-runs/run-004/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:bfa1c329a0b3cfd6448899ea40b9b084203e8d7125eded22140aa0c146eacc3a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "git diff --check",
+      "duration_ms": 3397,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:38bb6a36d77733a7c4581e1d5e06c1935f8b8c0119179d6a573e2b9e8df40434",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610102009-NYTBDA-gitlab-frozen-base-regression/.agentplane/tasks/202610102009-NYTBDA/supervision/verification-runs/run-005/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:fc7aadeb66326ae2e4a20a12e972fb02cf22ccf50a8f783036c59d76a5353d31",
+        "executable_digest": "sha256:2a8c18fbf43da9f692d75474c72bea9dfd796c260b0f3dfe456376abc3bbd668",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202610102009-NYTBDA"
+}

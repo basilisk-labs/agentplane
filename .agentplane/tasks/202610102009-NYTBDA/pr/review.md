@@ -6,14 +6,14 @@ Created: 2026-10-10T20:23:08.421Z
 
 - Task: `202610102009-NYTBDA`
 - Title: Qualify GitLab frozen-source and logical-target publication regression
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610102009-NYTBDA/gitlab-frozen-base-regression`
 - Canonical task record: `.agentplane/tasks/202610102009-NYTBDA/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
