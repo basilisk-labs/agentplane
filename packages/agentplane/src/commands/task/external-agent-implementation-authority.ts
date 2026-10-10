@@ -1,3 +1,4 @@
+import { readCompletedReworkRecord } from "./kernel-completed-external-rework.js";
 import {
   externalReportResultPath,
   materializeExternalReportResult,
@@ -253,6 +254,11 @@ export async function applyExternalImplementationResult(opts: {
     ctx: opts.command,
     taskId: opts.exchange.task_id,
   });
+  const completedRework = await readCompletedReworkRecord({
+    command: opts.command,
+    task: taskAtReturn,
+    work_order: opts.work_order,
+  });
   const admittedAggregate = taskCentricAggregateFromExtensions(taskAtReturn.extensions);
   if (
     admittedAggregate?.current_plan &&
@@ -494,7 +500,10 @@ export async function applyExternalImplementationResult(opts: {
     work_item_id: workItemId,
     work_item_is_required: workItemIsRequired,
   });
-  if (opts.decision.task.commit !== implementation.evidence.implementation_commit) {
+  if (
+    !completedRework &&
+    opts.decision.task.commit !== implementation.evidence.implementation_commit
+  ) {
     await cmdTaskSetStatus({
       ctx: opts.command,
       cwd: opts.exchange.checkout,
@@ -526,6 +535,7 @@ export async function applyExternalImplementationResult(opts: {
     primaryTaskId: currentTask.id,
   });
   const reconciliation = await recordObservedTaskExecutionContract({
+    allowCanonicalProjection: Boolean(completedRework),
     command: opts.command,
     execution,
     task: currentTask,

@@ -1,4 +1,5 @@
 import path from "node:path";
+import { readFile } from "node:fs/promises";
 
 import { taskExecutionBaseFromExtensions } from "@agentplaneorg/core/tasks";
 
@@ -48,15 +49,6 @@ export async function runPrOpenSync(
         tasksPath: common.tasksPath,
       })
     : "";
-  let nextMeta: PrMeta = buildOpenedPrMeta({
-    taskId: common.task.id,
-    relatedTaskIds: common.relatedTaskIds,
-    branch: common.branch,
-    at: common.now,
-    previousMeta: common.existingMeta,
-    base: common.baseBranch,
-    diffstatDigest: digestPrDiffstatText(diffstat ? `${diffstat}\n` : ""),
-  });
   let identity: GitHostIdentity | null = null;
   let identityFailure: string | null = null;
   try {
@@ -65,8 +57,8 @@ export async function runPrOpenSync(
       branch: common.branch,
       recorded: common.existingMeta?.provider ?? null,
     });
-    nextMeta.provider = toRecordedGitHostIdentity(identity);
   } catch (error) {
+    if (common.existingMeta?.provider) throw error;
     identityFailure = error instanceof Error ? error.message : String(error);
   }
   const providerBase =
@@ -77,7 +69,17 @@ export async function runPrOpenSync(
           baseSha: taskExecutionBaseFromExtensions(common.task.extensions)?.base_sha ?? null,
           identity,
         })
-      : common.baseBranch;
+      : common.providerBaseBranch;
+  let nextMeta: PrMeta = buildOpenedPrMeta({
+    taskId: common.task.id,
+    relatedTaskIds: common.relatedTaskIds,
+    branch: common.branch,
+    at: common.now,
+    previousMeta: common.existingMeta,
+    base: providerBase,
+    diffstatDigest: digestPrDiffstatText(diffstat ? `${diffstat}\n` : ""),
+  });
+  if (identity) nextMeta.provider = toRecordedGitHostIdentity(identity);
   const linkedExistingOutcome =
     typeof nextMeta.pr_number === "number" && nextMeta.pr_number > 0
       ? {
@@ -93,13 +95,18 @@ export async function runPrOpenSync(
         }
       : null;
   let openOutcome: PrOpenOutcome | undefined;
+  const previousDocument = await readFile(common.reviewPath, "utf8").catch((error: unknown) => {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return null;
+    throw error;
+  });
   const githubTitle = buildGithubPrTitle(common.task);
   const githubBody = renderGithubPrBody({
     task: common.task,
     relatedTaskIds: resolvePrBatchIncludedTaskIds(nextMeta),
     handoffNotes: common.handoffNotes,
     autoSummary: renderPrAutoSummary({
-      updatedAt: common.renderUpdatedAt,
+      previousDocument,
+      updatedAt: nextMeta.updated_at,
       branch: common.branch,
       diffstat,
     }),
@@ -186,7 +193,8 @@ export async function runPrOpenSync(
     }
   }
   const nextAutoSummary = renderPrAutoSummary({
-    updatedAt: common.renderUpdatedAt,
+    previousDocument,
+    updatedAt: nextMeta.updated_at,
     branch: common.branch,
     diffstat,
   });

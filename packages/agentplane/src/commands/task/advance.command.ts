@@ -119,12 +119,30 @@ export function makeRunTaskAdvanceHandler(deps: {
         message: "Canonical tasks do not use integration supervisor effect recovery.",
       });
     }
-    const externalConflictResult =
+    const controllerRecord = readKernelRecord(source, repositoryIdentity);
+    const completed =
+      controllerRecord.kind === "canonical" &&
+      controllerRecord.record.aggregate.state === "COMPLETED";
+    const externalResult =
       parsed.result?.replaceAll("\\", "/").includes("/agentplane/external-agent/") === true;
     const workflow =
-      (parsed.remote || parsed.replacement) && !parsed.result
+      (parsed.remote || parsed.replacement || completed) && !parsed.result
         ? await decideCanonicalWorkflowEffect(command, parsed.taskId, parsed.remote)
         : null;
+    const completedExternalRework =
+      completed &&
+      workflow?.workflowMode === "branch_pr" &&
+      workflow?.workflowStep.kind === "agent_episode" &&
+      ["implementation_rework", "quality_review"].includes(workflow.workflowStep.episode.purpose);
+    if (
+      externalResult ||
+      completedExternalRework ||
+      workflow?.workflowStep.id === "agent.provider_conflict_rework"
+    ) {
+      const compatibility = await advanceOrdinaryRoute({ ctx, parsed, command });
+      createCliEmitter().json(compatibility.packet);
+      return 0;
+    }
     const branchEpisodeReplacement =
       parsed.replacement && workflow?.workflowStep.kind === "agent_episode";
     if (parsed.replacement && !branchEpisodeReplacement) {
@@ -140,11 +158,6 @@ export function makeRunTaskAdvanceHandler(deps: {
             "task advance --replacement requires a terminal failed canonical supervisor operation.",
         });
       }
-    }
-    if (externalConflictResult || workflow?.workflowStep.id === "agent.provider_conflict_rework") {
-      const compatibility = await advanceOrdinaryRoute({ ctx, parsed, command });
-      createCliEmitter().json(compatibility.packet);
-      return 0;
     }
     const packet = await advanceTaskStep({
       command,

@@ -221,12 +221,12 @@ async function advanceCanonicalRoute(opts: {
         };
       }
       const localProgress = await executeCanonicalCompletedWorkflowLocally({
-        command: opts.command,
+        ...opts,
         decision: localWorkflow,
-        task_id: opts.task_id,
         replace_failed_operation: replaceFailedOperation,
       });
       if (localProgress) {
+        if (typeof localProgress === "object") return localProgress.packet;
         anomalyTracker.reset();
         if (localProgress === "agent") replaceFailedOperation = false;
         continue;
@@ -269,12 +269,12 @@ async function advanceCanonicalRoute(opts: {
         };
       }
       const providerProgress = await executeCanonicalCompletedWorkflowLocally({
-        command: opts.command,
+        ...opts,
         decision: workflow,
-        task_id: opts.task_id,
         replace_failed_operation: replaceFailedOperation,
       });
       if (providerProgress) {
+        if (typeof providerProgress === "object") return providerProgress.packet;
         anomalyTracker.reset();
         if (providerProgress === "agent") replaceFailedOperation = false;
         continue;
@@ -540,10 +540,13 @@ async function advanceCanonicalRoute(opts: {
           task_id: opts.task_id,
           action: { kind: "human_required", reason: "canonical_begin_dispatch_uncertain" },
         };
+      const dispatch = await runtime.authority.resolve(opts.task_id, route.work_item_id);
+      if (dispatch.authority.digest !== begun.work_order.authority.digest)
+        throw new Error("Canonical authority changed after begin");
       const order = await buildKernelAgentWorkOrder({
         command: opts.command,
         record: result.record,
-        context,
+        context: dispatch.context,
         implementation: begun.work_order,
       });
       return issueKernelExchange(opts.command, order, opts.transport, result.record);

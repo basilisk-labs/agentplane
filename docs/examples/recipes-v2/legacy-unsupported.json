@@ -1,0 +1,21 @@
+{
+  "schema_version": "1",
+  "id": "legacy-report",
+  "goal": "Preserve ordered source obligations",
+  "inputs": {},
+  "outputs": ["report"],
+  "steps": [
+    "Inspect",
+    {
+      "custom_mandatory": "Do not publish source",
+      "command": "MUST_NOT_EXECUTE"
+    },
+    "Report"
+  ],
+  "custom_stop": "Missing provenance blocks reporting",
+  "task_template": {
+    "title": "Legacy report",
+    "description": "Preserve source obligations",
+    "owner": "CODER"
+  }
+}

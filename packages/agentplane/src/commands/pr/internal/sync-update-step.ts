@@ -48,7 +48,7 @@ export async function runPrUpdateSync(common: PrSyncCommonState): Promise<{ meta
     relatedTaskIds: common.relatedTaskIds,
     branch: common.branch,
     at: common.now,
-    base: common.baseBranch,
+    base: common.providerBaseBranch,
     diffstatDigest: digestPrDiffstatText(diffstat ? `${diffstat}\n` : ""),
   });
   let identity: GitHostIdentity | null = null;
@@ -68,7 +68,7 @@ export async function runPrUpdateSync(common: PrSyncCommonState): Promise<{ meta
     ? await tryLookupExistingChangeRequestByBranch({
         gitRoot: common.resolved.gitRoot,
         branch: common.branch,
-        baseBranch: common.baseBranch,
+        baseBranch: common.providerBaseBranch,
         identity,
       })
     : null;
@@ -86,14 +86,6 @@ export async function runPrUpdateSync(common: PrSyncCommonState): Promise<{ meta
     updatedAt: nextMeta.updated_at,
     branch: common.branch,
     diffstat,
-  });
-  const nextReview = renderPrReviewDocument({
-    task: common.task,
-    createdAt: common.createdAt,
-    branch: common.branch,
-    relatedTaskIds: resolvePrBatchIncludedTaskIds(nextMeta),
-    handoffNotes: common.handoffNotes,
-    autoSummary: nextAutoSummary,
   });
   const githubTitle = buildGithubPrTitle(common.task);
   const githubBody = renderGithubPrBody({
@@ -131,12 +123,33 @@ export async function runPrUpdateSync(common: PrSyncCommonState): Promise<{ meta
       );
     }
   }
+  // A provider update may change status/link/lifecycle after the outgoing body was
+  // rendered. Persist all local projections from the final metadata observation.
+  const finalAutoSummary = renderPrAutoSummary({
+    updatedAt: nextMeta.updated_at,
+    branch: common.branch,
+    diffstat,
+  });
+  const nextReview = renderPrReviewDocument({
+    task: common.task,
+    createdAt: common.createdAt,
+    branch: common.branch,
+    relatedTaskIds: resolvePrBatchIncludedTaskIds(nextMeta),
+    handoffNotes: common.handoffNotes,
+    autoSummary: finalAutoSummary,
+  });
+  const finalGithubBody = renderGithubPrBody({
+    task: common.task,
+    relatedTaskIds: resolvePrBatchIncludedTaskIds(nextMeta),
+    handoffNotes: common.handoffNotes,
+    autoSummary: finalAutoSummary,
+  });
   const errors: string[] = [];
   validateArtifactsLanguage({
     texts: {
       reviewText: nextReview,
       githubTitleText: githubTitle,
-      githubBodyText: githubBody,
+      githubBodyText: finalGithubBody,
     },
     relReviewPath: path.relative(common.resolved.gitRoot, common.reviewPath),
     relGithubTitlePath: path.relative(common.resolved.gitRoot, common.githubTitlePath),
@@ -155,7 +168,7 @@ export async function runPrUpdateSync(common: PrSyncCommonState): Promise<{ meta
   await writeTextIfChanged(common.diffstatPath, diffstat ? `${diffstat}\n` : "");
   await writeTextIfChanged(common.reviewPath, nextReview);
   await writeTextIfChanged(common.githubTitlePath, `${githubTitle}\n`);
-  await writeTextIfChanged(common.githubBodyPath, githubBody);
+  await writeTextIfChanged(common.githubBodyPath, finalGithubBody);
   await writeJsonStableIfChanged(common.metaPath, nextMeta);
   return { meta: nextMeta };
 }

@@ -1,10 +1,11 @@
+import { planObligationIssues } from "../kernel-plan-refinement.js";
 import {
   authorityDeltaApprovalEvidence,
   policyRenewalIssues,
   authorityDigest,
   canonicalAuthorityIssues,
   continuationAdmissionIssues,
-  isAdditivePlanScopeExpansion,
+  planAmendmentScopeRoots,
   planScopeExpansionApprovalDigest,
 } from "./authority-lineage.js";
 import { kernelDigest } from "./digest.js";
@@ -603,6 +604,25 @@ function amendPlan(
   const issues = validateWorkItemDefinitions(proposed.work_items);
   if (issues.length > 0) return rejected("WORK_ITEM_DEPENDENCY_INCOMPLETE", issues);
   const originals = new Map(current.work_items.map((item) => [item.id, item]));
+  const material =
+    proposed.work_items.length !== current.work_items.length ||
+    proposed.work_items.some(
+      (item) =>
+        originals.get(item.id)?.contract_digest !== item.contract_digest || !originals.has(item.id),
+    );
+  if (material) {
+    const obligationIssues = planObligationIssues(
+      current.work_items,
+      proposed.work_items,
+      command.work_contracts ?? {},
+    );
+    if (obligationIssues.length > 0)
+      return rejected(
+        "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
+        obligationIssues,
+        "request_authority_delta",
+      );
+  }
   const scopeExpansions = proposed.work_items.filter((item) => {
     const original = originals.get(item.id);
     return (
@@ -618,27 +638,31 @@ function amendPlan(
     actor_id: input.actor.id,
   });
   const scopeExpansionApproved =
-    scopeExpansions.length > 0 &&
+    (material || scopeExpansions.length > 0) &&
     input.actor.kind === "USER" &&
     command.authority_delta_digest === scopeExpansionApprovalDigest &&
     input.authority !== null &&
-    isAdditivePlanScopeExpansion({
+    input.authority.work_item_id === null &&
+    planAmendmentScopeRoots({
       current,
       amended: proposed,
       authority: input.authority,
-    });
+    }) !== null;
   if (
     (command.authority_delta_digest !== null && !scopeExpansionApproved) ||
-    proposed.work_items.length !== current.work_items.length ||
+    (material && !scopeExpansionApproved) ||
     proposed.work_items.some((item) => {
       const original = originals.get(item.id);
+      if (!original) return !scopeExpansionApproved;
       return (
-        !original ||
-        original.contract_digest !== item.contract_digest ||
+        (!scopeExpansionApproved && original.contract_digest !== item.contract_digest) ||
         (!original.optional && item.optional) ||
-        !original.expected_outputs.every((id) => item.expected_outputs.includes(id)) ||
-        !original.required_inputs.every((id) => item.required_inputs.includes(id)) ||
-        !original.depends_on.every((id) => item.depends_on.includes(id)) ||
+        (!scopeExpansionApproved &&
+          !original.expected_outputs.every((id) => item.expected_outputs.includes(id))) ||
+        (!scopeExpansionApproved &&
+          !original.required_inputs.every((id) => item.required_inputs.includes(id))) ||
+        (!scopeExpansionApproved &&
+          !original.depends_on.every((id) => item.depends_on.includes(id))) ||
         !item.execution_requirements ||
         !original.execution_requirements ||
         (!executionRequirementsAreSubset(
@@ -667,8 +691,17 @@ function amendPlan(
   for (const [id, runtime] of Object.entries(aggregate.work_items)) {
     const original = originals.get(id);
     const definition = definitions.get(id);
-    if (!original || !definition || kernelDigest(runtime.definition) !== kernelDigest(original)) {
+    if (!original || kernelDigest(runtime.definition) !== kernelDigest(original)) {
       return rejected("PLAN_DIGEST_MISMATCH", [id, "runtime_definition_mismatch"]);
+    }
+    if (!definition) {
+      if (
+        !scopeExpansionApproved ||
+        !["PLANNED", "READY"].includes(runtime.state) ||
+        runtime.attempt !== 0
+      )
+        return rejected("ILLEGAL_WORK_ITEM_TRANSITION", [id, runtime.state, "remove_work_item"]);
+      continue;
     }
     const changed = kernelDigest(definition) !== kernelDigest(original);
     if (
@@ -695,6 +728,19 @@ function amendPlan(
           validation: null,
         }
       : runtime;
+  }
+  for (const definition of proposed.work_items) {
+    if (!originals.has(definition.id))
+      workItems[definition.id] = {
+        definition,
+        state: "PLANNED",
+        revision: 1,
+        attempt: 0,
+        claim_id: null,
+        result_digest: null,
+        output_manifests: [],
+        validation: null,
+      };
   }
   return accept(input, {
     ...aggregate,

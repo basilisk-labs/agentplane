@@ -1,3 +1,5 @@
+import { readCompletedReworkRecord } from "./kernel-completed-external-rework.js";
+import { loadTaskFromContext } from "../shared/task-backend.js";
 import {
   applyExternalPlanRefinement,
   isExternalPlanRefinementApplied,
@@ -50,6 +52,23 @@ export async function applyAcceptedExternalAgentResult(opts: {
   if (
     usesExternalImplementationAuthority(opts.exchange.purpose, opts.work_order.authority.sandbox)
   ) {
+    const completed = await readCompletedReworkRecord({
+      command: opts.command,
+      task: await loadTaskFromContext({ ctx: opts.command, taskId: opts.exchange.task_id }),
+      work_order: opts.work_order,
+    });
+    if (
+      completed &&
+      (opts.exchange.purpose !== "implementation_rework" ||
+        opts.envelope.result.plan_refinement ||
+        opts.envelope.result.canonical_plan ||
+        opts.envelope.result.canonical_binding)
+    ) {
+      throw new CliError({
+        code: "E_VALIDATION",
+        message: "Completed task rework cannot amend or replay the canonical Plan or WorkItems.",
+      });
+    }
     if (await applyExternalPlanRefinement(opts)) return;
     await applyExternalImplementationResult(opts);
     if (
@@ -75,6 +94,7 @@ export async function applyAcceptedExternalAgentResult(opts: {
   }
   if (opts.exchange.purpose === "task_worktree_resolution") {
     await applyExternalReadOnlyWorktreeObservation({
+      work_order: opts.work_order,
       command: opts.command,
       exchange: opts.exchange,
       envelope: opts.envelope,

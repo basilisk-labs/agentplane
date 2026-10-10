@@ -1,7 +1,11 @@
 import { cp, mkdir, readFile, rename, rm } from "node:fs/promises";
 import path from "node:path";
 
-import { readScenarioDefinition, type RecipeManifest } from "@agentplaneorg/recipes";
+import {
+  parseScenarioDefinition,
+  readScenarioDefinition,
+  type RecipeManifest,
+} from "@agentplaneorg/recipes";
 
 import { fileExists } from "../../../cli/fs-utils.js";
 import { invalidFieldMessage, missingFileMessage } from "../../../cli/output.js";
@@ -92,7 +96,12 @@ export async function validateRecipeAssets(opts: {
     if (!(await fileExists(sourcePath))) {
       throw new Error(missingFileMessage("recipe scenario file", scenario.file));
     }
-    const definition = await readScenarioDefinition(sourcePath);
+    // V2 archives opt in through their manifest. Legacy installs keep the V1 reader contract.
+    const definition =
+      opts.manifest.schema_version === "2" &&
+      opts.manifest.compatibility?.scenario_api_version === "2"
+        ? parseScenarioDefinition(JSON.parse(await readFile(sourcePath, "utf8")), ["2"])
+        : await readScenarioDefinition(sourcePath);
     if (definition.id !== scenario.id) {
       throw new Error(
         invalidFieldMessage("recipe scenario file", `scenario.id=${scenario.id}`, scenario.file),

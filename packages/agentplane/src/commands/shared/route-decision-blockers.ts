@@ -29,6 +29,7 @@ import {
   qualityReviewReworkIsFreshForHead,
 } from "./quality-review-retirement.js";
 import {
+  completedBranchRequiresImplementationRework,
   hasAcceptedVerificationForCurrentImplementation,
   qualityReviewPredatesTaskDocument,
   qualityReviewRequiresImplementationRework,
@@ -396,18 +397,11 @@ export async function deriveBlockers(opts: {
     }
   }
   if (opts.task.status === "DONE") {
-    if (
-      opts.workflowMode === "branch_pr" &&
-      qualityReviewRequiresImplementationRework(opts.task) &&
-      (await qualityReviewReworkIsFreshForHead({
-        ...opts,
-        headSha: opts.prFlow?.branch.headSha ?? opts.resume.head_sha,
-      }))
-    )
+    if (await completedBranchRequiresImplementationRework(opts))
       addBlocker(
         blockers,
         "implementation_rework_required",
-        "latest EVALUATOR result requires implementation rework before integration",
+        "current verification or EVALUATOR result requires implementation rework before integration",
       );
     if (opts.workflowMode === "branch_pr" && opts.cleanupProbe.state === "blocked") {
       addBlocker(

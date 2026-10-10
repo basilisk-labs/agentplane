@@ -37,6 +37,13 @@
       "required": true
     },
     {
+      "id": "recipes.dep.core",
+      "file": "packages/recipes/package.json",
+      "kind": "json",
+      "path": ["dependencies", "@agentplaneorg/core"],
+      "required": false
+    },
+    {
       "id": "testkit.dep.core",
       "file": "packages/testkit/package.json",
       "kind": "json",

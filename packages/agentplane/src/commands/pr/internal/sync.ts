@@ -37,6 +37,7 @@ import type {
   PrSyncCommonState,
   PrSyncResolved,
 } from "./sync-model.js";
+import { resolvePrMetadataBaseBranch } from "./provider-base.js";
 import { runPrOpenSync } from "./sync-open-step.js";
 import { nowIso, readTextIfExists, restoreIncidentRegistryIfNeeded } from "./sync-support.js";
 import { runPrUpdateSync } from "./sync-update-step.js";
@@ -72,13 +73,11 @@ async function buildPrSyncCommonState(opts: {
     taskId: opts.task.id,
     branch: opts.branch,
   });
-  const preservedRenderUpdatedAt =
-    opts.existingMeta &&
-    (opts.existingMeta.branch ?? null) === opts.branch &&
-    (opts.existingMeta.base ?? null) === (opts.baseBranch ?? null)
-      ? opts.existingMeta.updated_at
-      : null;
-  const renderUpdatedAt = preservedRenderUpdatedAt ?? now;
+  const providerBaseBranch = await resolvePrMetadataBaseBranch({
+    gitRoot: opts.resolved.gitRoot,
+    baseRef: opts.baseBranch,
+    baseSha: taskExecutionBaseFromExtensions(opts.task.extensions)?.base_sha ?? null,
+  });
   return {
     task: opts.task,
     resolved: opts.resolved,
@@ -102,7 +101,7 @@ async function buildPrSyncCommonState(opts: {
     baseBranch: opts.baseBranch,
     headSha,
     artifactRefresh,
-    renderUpdatedAt,
+    providerBaseBranch,
   };
 }
 

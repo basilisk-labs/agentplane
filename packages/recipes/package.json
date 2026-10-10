@@ -24,7 +24,7 @@
   },
   "type": "module",
   "engines": {
-    "node": ">=20"
+    "node": ">=20.5.0"
   },
   "exports": {
     ".": {
@@ -53,5 +53,9 @@
     "postpack": "node ../../scripts/release/manifest.mjs build .",
     "prepublishOnly": "node ../../scripts/release/enforce-github-publish.mjs && npm run prepack",
     "test": "cd ../.. && vitest --config vitest.workspace.ts run --project recipes"
+  },
+  "dependencies": {
+    "@agentplaneorg/core": "0.7.12",
+    "zod": "4.4.3"
   }
 }

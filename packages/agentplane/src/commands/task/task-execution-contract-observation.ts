@@ -111,6 +111,7 @@ export async function recordObservedTaskExecutionContract(opts: {
   observed_external_effects?: readonly TaskExternalEffect[];
   verification_results?: readonly TaskVerificationObservation[];
   preserved_commit?: string;
+  allowCanonicalProjection?: boolean;
 }): Promise<{ task: TaskData; escalated: boolean; episodeAuthorityViolations: string[] }> {
   if (!opts.execution.task_ids.includes(opts.task.id)) {
     throw new Error(`Execution context does not authorize task ${opts.task.id}.`);
@@ -120,6 +121,7 @@ export async function recordObservedTaskExecutionContract(opts: {
   const mutation = await applyTaskMutation({
     ctx: opts.command,
     taskId: opts.task.id,
+    allowCanonicalProjection: opts.allowCanonicalProjection,
     build: (currentTask) => {
       const projection = projectObservedTaskExecutionContract({
         ...opts,

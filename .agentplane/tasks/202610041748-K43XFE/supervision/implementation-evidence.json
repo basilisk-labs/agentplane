@@ -1,0 +1,50 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check b63c34b50bb7c579727af78f776c2ca10a742773..5eb27ee1868f6622a0b6a312b9d6e300ae80df9d",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB b63c34b50bb7c579727af78f776c2ca10a742773..5eb27ee1868f6622a0b6a312b9d6e300ae80df9d",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202610041748-K43XFE/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202610041748-K43XFE/pr/github-body.md",
+        "M\t.agentplane/tasks/202610041748-K43XFE/pr/meta.json",
+        "M\t.agentplane/tasks/202610041748-K43XFE/pr/review.md",
+        "A\tpackages/agentplane/src/commands/release/snapshot-file-script.test.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-completed-external-rework.test.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-completed-external-rework.testkit.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-completed-workflow.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "b63c34b50bb7c579727af78f776c2ca10a742773",
+  "implementation_commit": "5eb27ee1868f6622a0b6a312b9d6e300ae80df9d",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [],
+    "classification": [],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202610041748-K43XFE"
+}

@@ -4,14 +4,14 @@ import os from "node:os";
 import path from "node:path";
 
 import {
+  parseDistributionArgs,
   findPlatformAsset,
   readJson,
   requireString,
   runDistributionGenerator,
 } from "../lib/release-distribution-render.mjs";
-import { defineScript, parseScriptArgs, runScriptMain } from "../lib/script-runtime.mjs";
+import { defineScript, runScriptMain } from "../lib/script-runtime.mjs";
 
-const DEFAULT_MANIFEST_PATH = ".agentplane/.release/publish/distribution/release-distribution.json";
 const DEFAULT_OUT_DIR = ".agentplane/.release/publish/scoop";
 const SCOOP_MANIFEST_NAME = "agentplane.json";
 
@@ -30,19 +30,7 @@ function usage() {
   ].join("\n");
 }
 
-function parseArgs(argv, repoRoot) {
-  const { flags } = parseScriptArgs(argv, {
-    valueFlags: ["manifest", "out"],
-    booleanFlags: ["check", "json", "help"],
-  });
-  return {
-    manifestPath: path.resolve(repoRoot, flags.manifest ?? DEFAULT_MANIFEST_PATH),
-    outDir: path.resolve(repoRoot, flags.out ?? DEFAULT_OUT_DIR),
-    check: Boolean(flags.check),
-    json: Boolean(flags.json),
-    help: Boolean(flags.help),
-  };
-}
+const parseArgs = (argv, repoRoot) => parseDistributionArgs(argv, repoRoot, DEFAULT_OUT_DIR);
 
 function renderScoopManifest(manifest) {
   const version = requireString(manifest.version, "release version");

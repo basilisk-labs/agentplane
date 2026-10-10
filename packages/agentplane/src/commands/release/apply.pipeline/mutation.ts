@@ -51,6 +51,14 @@ async function applyReleaseMutation(opts: {
       ? replaceAcrExampleVersionInFile(acrExamplePath, opts.nextVersion)
       : Promise.resolve(),
   ]);
+  // Serialize edits to recipes/package.json after its version write above.
+  if (await packageDependencyExists(opts.recipesPkgPath, "@agentplaneorg/core")) {
+    await replacePackageDependencyVersion(
+      opts.recipesPkgPath,
+      "@agentplaneorg/core",
+      opts.nextVersion,
+    );
+  }
   const shouldUpdateTestkitAgentplaneDependency =
     (await fileExists(opts.testkitPkgPath)) &&
     (await packageDependencyExists(opts.testkitPkgPath, "agentplane"));

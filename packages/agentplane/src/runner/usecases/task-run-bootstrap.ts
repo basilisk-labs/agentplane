@@ -237,7 +237,7 @@ function semanticWorkOrderProjection(bundle: RunnerContextBundle): Record<string
       sandbox: effectiveSandbox,
     },
     context_intent: {
-      purpose: "Provide the minimum semantic context required for this bounded episode.",
+      purpose: workOrder.context_intent.purpose,
       required_knowledge_ref_digests: workOrder.context_intent.required_knowledge_ref_digests,
       require_prepared_evidence: workOrder.context_intent.require_prepared_evidence,
     },

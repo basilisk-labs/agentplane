@@ -1,3 +1,4 @@
+import { readCompletedReworkRecord } from "./kernel-completed-external-rework.js";
 import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
 import { CliError } from "../../shared/errors.js";
@@ -99,6 +100,7 @@ export async function recordDirectTaskVerification(opts: {
     incidentMatch: [],
     quiet: true,
     verificationSnapshot: verification.snapshot,
+    allowCanonicalProjection: Boolean(await readCompletedReworkRecord(opts)),
     beforePersist: opts.beforePersist
       ? (mutation) => opts.beforePersist!(mutation, checks)
       : undefined,

@@ -1,0 +1,5 @@
+ .../src/commands/shared/declared-check.test.ts     |  56 ++++++++++-
+ .../src/commands/shared/declared-check.ts          |  31 +++++-
+ .../direct-task-verification.sequence.cases.ts     | 104 ++++++++++++++++++++-
+ .../src/commands/task/direct-task-verification.ts  |  27 +++++-
+ 4 files changed, 209 insertions(+), 9 deletions(-)

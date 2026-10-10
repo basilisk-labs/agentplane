@@ -731,6 +731,144 @@
               },
               "required": ["schema_version", "criteria", "checks", "evidence_fingerprint"],
               "additionalProperties": false
+            },
+            "recipe_provenance": {
+              "type": "object",
+              "properties": {
+                "schema_version": {
+                  "type": "number",
+                  "const": 1
+                },
+                "package": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "version": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": ["id", "version"],
+                  "additionalProperties": false
+                },
+                "scenario": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "api_version": {
+                      "type": "string",
+                      "const": "2"
+                    },
+                    "digest": {}
+                  },
+                  "required": ["id", "api_version", "digest"],
+                  "additionalProperties": false
+                },
+                "compiler": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "const": "agentplane.scenario"
+                    },
+                    "version": {
+                      "type": "number",
+                      "const": 1
+                    }
+                  },
+                  "required": ["id", "version"],
+                  "additionalProperties": false
+                },
+                "source_plan_semantics_digest": {},
+                "parameters": {
+                  "maxItems": 256,
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "value": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "maxLength": 8192
+                          },
+                          {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          {
+                            "type": "boolean"
+                          }
+                        ]
+                      }
+                    },
+                    "required": ["name", "value"],
+                    "additionalProperties": false
+                  }
+                },
+                "applicability": {
+                  "type": "object",
+                  "properties": {
+                    "observed_by": {
+                      "type": "string",
+                      "const": "agentplane"
+                    },
+                    "evidence_digest": {}
+                  },
+                  "required": ["observed_by", "evidence_digest"],
+                  "additionalProperties": false
+                },
+                "closure": {
+                  "type": "object",
+                  "properties": {
+                    "digest": {},
+                    "artifact_digest": {},
+                    "artifact_path": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "artifact_size_bytes": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "task_quality_root": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "digest",
+                    "artifact_digest",
+                    "artifact_path",
+                    "artifact_size_bytes",
+                    "task_quality_root"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "schema_version",
+                "package",
+                "scenario",
+                "compiler",
+                "source_plan_semantics_digest",
+                "parameters",
+                "applicability",
+                "closure"
+              ],
+              "additionalProperties": false
             }
           },
           "required": [
@@ -923,99 +1061,35 @@
           ]
         },
         "canonical_plan": {
-          "type": "object",
-          "properties": {
-            "work_items": {
-              "minItems": 1,
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "string",
-                    "minLength": 1
-                  },
-                  "depends_on": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "minLength": 1
-                    }
-                  },
-                  "required_inputs": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "minLength": 1
-                    }
-                  },
-                  "expected_outputs": {
-                    "minItems": 1,
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "minLength": 1
-                    }
-                  },
-                  "execution_requirements": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "work_items": {
+                  "minItems": 1,
+                  "type": "array",
+                  "items": {
                     "type": "object",
                     "properties": {
-                      "scope_roots": {
-                        "type": "array",
-                        "items": {
-                          "type": "string",
-                          "minLength": 1
-                        }
-                      },
-                      "repository_effects": {
-                        "type": "array",
-                        "items": {
-                          "type": "string",
-                          "minLength": 1
-                        }
-                      },
-                      "external_effects": {
-                        "type": "array",
-                        "items": {
-                          "type": "string",
-                          "minLength": 1
-                        }
-                      },
-                      "capabilities": {
-                        "type": "array",
-                        "items": {
-                          "type": "string",
-                          "minLength": 1
-                        }
-                      },
-                      "resources": {
-                        "type": "array",
-                        "items": {
-                          "type": "string",
-                          "minLength": 1
-                        }
-                      }
-                    },
-                    "required": [
-                      "scope_roots",
-                      "repository_effects",
-                      "external_effects",
-                      "capabilities",
-                      "resources"
-                    ],
-                    "additionalProperties": false
-                  },
-                  "optional": {
-                    "type": "boolean"
-                  },
-                  "contract": {
-                    "type": "object",
-                    "properties": {
-                      "objective": {
+                      "id": {
                         "type": "string",
                         "minLength": 1
                       },
-                      "acceptance_criteria": {
+                      "depends_on": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "required_inputs": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "expected_outputs": {
                         "minItems": 1,
                         "type": "array",
                         "items": {
@@ -1023,46 +1097,445 @@
                           "minLength": 1
                         }
                       },
-                      "verification_commands": {
-                        "type": "array",
-                        "items": {
-                          "type": "string",
-                          "minLength": 1
-                        }
+                      "execution_requirements": {
+                        "type": "object",
+                        "properties": {
+                          "scope_roots": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "repository_effects": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "external_effects": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "capabilities": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "resources": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          }
+                        },
+                        "required": [
+                          "scope_roots",
+                          "repository_effects",
+                          "external_effects",
+                          "capabilities",
+                          "resources"
+                        ],
+                        "additionalProperties": false
                       },
-                      "role": {
-                        "type": "string",
-                        "enum": ["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"]
+                      "optional": {
+                        "type": "boolean"
                       },
-                      "plan_input_digest": {
-                        "type": "string",
-                        "pattern": "^sha256:[a-f0-9]{64}$"
+                      "contract": {
+                        "type": "object",
+                        "properties": {
+                          "objective": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "acceptance_criteria": {
+                            "minItems": 1,
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "verification_commands": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "role": {
+                            "type": "string",
+                            "enum": ["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"]
+                          },
+                          "plan_input_digest": {
+                            "type": "string",
+                            "pattern": "^sha256:[a-f0-9]{64}$"
+                          }
+                        },
+                        "required": [
+                          "objective",
+                          "acceptance_criteria",
+                          "verification_commands",
+                          "role"
+                        ],
+                        "additionalProperties": false
                       }
                     },
                     "required": [
-                      "objective",
-                      "acceptance_criteria",
-                      "verification_commands",
-                      "role"
+                      "id",
+                      "depends_on",
+                      "required_inputs",
+                      "expected_outputs",
+                      "execution_requirements",
+                      "optional",
+                      "contract"
                     ],
                     "additionalProperties": false
                   }
+                }
+              },
+              "required": ["work_items"],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "schema_version": {
+                  "type": "number",
+                  "const": 1
                 },
-                "required": [
-                  "id",
-                  "depends_on",
-                  "required_inputs",
-                  "expected_outputs",
-                  "execution_requirements",
-                  "optional",
-                  "contract"
-                ],
-                "additionalProperties": false
-              }
+                "kind": {
+                  "type": "string",
+                  "const": "plan_refinement"
+                },
+                "task_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "base_plan_digest": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "operations": {
+                  "minItems": 1,
+                  "maxItems": 256,
+                  "type": "array",
+                  "items": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "kind": {
+                            "type": "string",
+                            "const": "add"
+                          },
+                          "work_item": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "minLength": 1
+                              },
+                              "depends_on": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              },
+                              "required_inputs": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              },
+                              "expected_outputs": {
+                                "minItems": 1,
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              },
+                              "execution_requirements": {
+                                "type": "object",
+                                "properties": {
+                                  "scope_roots": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "repository_effects": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "external_effects": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "capabilities": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "resources": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  }
+                                },
+                                "required": [
+                                  "scope_roots",
+                                  "repository_effects",
+                                  "external_effects",
+                                  "capabilities",
+                                  "resources"
+                                ],
+                                "additionalProperties": false
+                              },
+                              "optional": {
+                                "type": "boolean"
+                              },
+                              "contract": {
+                                "type": "object",
+                                "properties": {
+                                  "objective": {
+                                    "type": "string",
+                                    "minLength": 1
+                                  },
+                                  "acceptance_criteria": {
+                                    "minItems": 1,
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "verification_commands": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "role": {
+                                    "type": "string",
+                                    "enum": ["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"]
+                                  },
+                                  "plan_input_digest": {
+                                    "type": "string",
+                                    "pattern": "^sha256:[a-f0-9]{64}$"
+                                  }
+                                },
+                                "required": [
+                                  "objective",
+                                  "acceptance_criteria",
+                                  "verification_commands",
+                                  "role"
+                                ],
+                                "additionalProperties": false
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "depends_on",
+                              "required_inputs",
+                              "expected_outputs",
+                              "execution_requirements",
+                              "optional",
+                              "contract"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": ["kind", "work_item"],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "kind": {
+                            "type": "string",
+                            "const": "replace"
+                          },
+                          "work_item": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "minLength": 1
+                              },
+                              "depends_on": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              },
+                              "required_inputs": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              },
+                              "expected_outputs": {
+                                "minItems": 1,
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              },
+                              "execution_requirements": {
+                                "type": "object",
+                                "properties": {
+                                  "scope_roots": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "repository_effects": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "external_effects": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "capabilities": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "resources": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  }
+                                },
+                                "required": [
+                                  "scope_roots",
+                                  "repository_effects",
+                                  "external_effects",
+                                  "capabilities",
+                                  "resources"
+                                ],
+                                "additionalProperties": false
+                              },
+                              "optional": {
+                                "type": "boolean"
+                              },
+                              "contract": {
+                                "type": "object",
+                                "properties": {
+                                  "objective": {
+                                    "type": "string",
+                                    "minLength": 1
+                                  },
+                                  "acceptance_criteria": {
+                                    "minItems": 1,
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "verification_commands": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "role": {
+                                    "type": "string",
+                                    "enum": ["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"]
+                                  },
+                                  "plan_input_digest": {
+                                    "type": "string",
+                                    "pattern": "^sha256:[a-f0-9]{64}$"
+                                  }
+                                },
+                                "required": [
+                                  "objective",
+                                  "acceptance_criteria",
+                                  "verification_commands",
+                                  "role"
+                                ],
+                                "additionalProperties": false
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "depends_on",
+                              "required_inputs",
+                              "expected_outputs",
+                              "execution_requirements",
+                              "optional",
+                              "contract"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": ["kind", "work_item"],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "kind": {
+                            "type": "string",
+                            "const": "remove"
+                          },
+                          "work_item_id": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "required": ["kind", "work_item_id"],
+                        "additionalProperties": false
+                      }
+                    ]
+                  }
+                }
+              },
+              "required": ["schema_version", "kind", "task_id", "base_plan_digest", "operations"],
+              "additionalProperties": false
             }
-          },
-          "required": ["work_items"],
-          "additionalProperties": false
+          ]
         },
         "canonical_outputs": {
           "type": "array",
@@ -2089,6 +2562,144 @@
               },
               "required": ["schema_version", "criteria", "checks", "evidence_fingerprint"],
               "additionalProperties": false
+            },
+            "recipe_provenance": {
+              "type": "object",
+              "properties": {
+                "schema_version": {
+                  "type": "number",
+                  "const": 1
+                },
+                "package": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "version": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": ["id", "version"],
+                  "additionalProperties": false
+                },
+                "scenario": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "api_version": {
+                      "type": "string",
+                      "const": "2"
+                    },
+                    "digest": {}
+                  },
+                  "required": ["id", "api_version", "digest"],
+                  "additionalProperties": false
+                },
+                "compiler": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "const": "agentplane.scenario"
+                    },
+                    "version": {
+                      "type": "number",
+                      "const": 1
+                    }
+                  },
+                  "required": ["id", "version"],
+                  "additionalProperties": false
+                },
+                "source_plan_semantics_digest": {},
+                "parameters": {
+                  "maxItems": 256,
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "value": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "maxLength": 8192
+                          },
+                          {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          {
+                            "type": "boolean"
+                          }
+                        ]
+                      }
+                    },
+                    "required": ["name", "value"],
+                    "additionalProperties": false
+                  }
+                },
+                "applicability": {
+                  "type": "object",
+                  "properties": {
+                    "observed_by": {
+                      "type": "string",
+                      "const": "agentplane"
+                    },
+                    "evidence_digest": {}
+                  },
+                  "required": ["observed_by", "evidence_digest"],
+                  "additionalProperties": false
+                },
+                "closure": {
+                  "type": "object",
+                  "properties": {
+                    "digest": {},
+                    "artifact_digest": {},
+                    "artifact_path": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "artifact_size_bytes": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "task_quality_root": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "digest",
+                    "artifact_digest",
+                    "artifact_path",
+                    "artifact_size_bytes",
+                    "task_quality_root"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "schema_version",
+                "package",
+                "scenario",
+                "compiler",
+                "source_plan_semantics_digest",
+                "parameters",
+                "applicability",
+                "closure"
+              ],
+              "additionalProperties": false
             }
           },
           "required": [
@@ -2281,99 +2892,35 @@
           ]
         },
         "canonical_plan": {
-          "type": "object",
-          "properties": {
-            "work_items": {
-              "minItems": 1,
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "string",
-                    "minLength": 1
-                  },
-                  "depends_on": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "minLength": 1
-                    }
-                  },
-                  "required_inputs": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "minLength": 1
-                    }
-                  },
-                  "expected_outputs": {
-                    "minItems": 1,
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "minLength": 1
-                    }
-                  },
-                  "execution_requirements": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "work_items": {
+                  "minItems": 1,
+                  "type": "array",
+                  "items": {
                     "type": "object",
                     "properties": {
-                      "scope_roots": {
-                        "type": "array",
-                        "items": {
-                          "type": "string",
-                          "minLength": 1
-                        }
-                      },
-                      "repository_effects": {
-                        "type": "array",
-                        "items": {
-                          "type": "string",
-                          "minLength": 1
-                        }
-                      },
-                      "external_effects": {
-                        "type": "array",
-                        "items": {
-                          "type": "string",
-                          "minLength": 1
-                        }
-                      },
-                      "capabilities": {
-                        "type": "array",
-                        "items": {
-                          "type": "string",
-                          "minLength": 1
-                        }
-                      },
-                      "resources": {
-                        "type": "array",
-                        "items": {
-                          "type": "string",
-                          "minLength": 1
-                        }
-                      }
-                    },
-                    "required": [
-                      "scope_roots",
-                      "repository_effects",
-                      "external_effects",
-                      "capabilities",
-                      "resources"
-                    ],
-                    "additionalProperties": false
-                  },
-                  "optional": {
-                    "type": "boolean"
-                  },
-                  "contract": {
-                    "type": "object",
-                    "properties": {
-                      "objective": {
+                      "id": {
                         "type": "string",
                         "minLength": 1
                       },
-                      "acceptance_criteria": {
+                      "depends_on": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "required_inputs": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "expected_outputs": {
                         "minItems": 1,
                         "type": "array",
                         "items": {
@@ -2381,46 +2928,445 @@
                           "minLength": 1
                         }
                       },
-                      "verification_commands": {
-                        "type": "array",
-                        "items": {
-                          "type": "string",
-                          "minLength": 1
-                        }
+                      "execution_requirements": {
+                        "type": "object",
+                        "properties": {
+                          "scope_roots": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "repository_effects": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "external_effects": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "capabilities": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "resources": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          }
+                        },
+                        "required": [
+                          "scope_roots",
+                          "repository_effects",
+                          "external_effects",
+                          "capabilities",
+                          "resources"
+                        ],
+                        "additionalProperties": false
                       },
-                      "role": {
-                        "type": "string",
-                        "enum": ["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"]
+                      "optional": {
+                        "type": "boolean"
                       },
-                      "plan_input_digest": {
-                        "type": "string",
-                        "pattern": "^sha256:[a-f0-9]{64}$"
+                      "contract": {
+                        "type": "object",
+                        "properties": {
+                          "objective": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "acceptance_criteria": {
+                            "minItems": 1,
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "verification_commands": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "role": {
+                            "type": "string",
+                            "enum": ["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"]
+                          },
+                          "plan_input_digest": {
+                            "type": "string",
+                            "pattern": "^sha256:[a-f0-9]{64}$"
+                          }
+                        },
+                        "required": [
+                          "objective",
+                          "acceptance_criteria",
+                          "verification_commands",
+                          "role"
+                        ],
+                        "additionalProperties": false
                       }
                     },
                     "required": [
-                      "objective",
-                      "acceptance_criteria",
-                      "verification_commands",
-                      "role"
+                      "id",
+                      "depends_on",
+                      "required_inputs",
+                      "expected_outputs",
+                      "execution_requirements",
+                      "optional",
+                      "contract"
                     ],
                     "additionalProperties": false
                   }
+                }
+              },
+              "required": ["work_items"],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "schema_version": {
+                  "type": "number",
+                  "const": 1
                 },
-                "required": [
-                  "id",
-                  "depends_on",
-                  "required_inputs",
-                  "expected_outputs",
-                  "execution_requirements",
-                  "optional",
-                  "contract"
-                ],
-                "additionalProperties": false
-              }
+                "kind": {
+                  "type": "string",
+                  "const": "plan_refinement"
+                },
+                "task_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "base_plan_digest": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "operations": {
+                  "minItems": 1,
+                  "maxItems": 256,
+                  "type": "array",
+                  "items": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "kind": {
+                            "type": "string",
+                            "const": "add"
+                          },
+                          "work_item": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "minLength": 1
+                              },
+                              "depends_on": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              },
+                              "required_inputs": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              },
+                              "expected_outputs": {
+                                "minItems": 1,
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              },
+                              "execution_requirements": {
+                                "type": "object",
+                                "properties": {
+                                  "scope_roots": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "repository_effects": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "external_effects": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "capabilities": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "resources": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  }
+                                },
+                                "required": [
+                                  "scope_roots",
+                                  "repository_effects",
+                                  "external_effects",
+                                  "capabilities",
+                                  "resources"
+                                ],
+                                "additionalProperties": false
+                              },
+                              "optional": {
+                                "type": "boolean"
+                              },
+                              "contract": {
+                                "type": "object",
+                                "properties": {
+                                  "objective": {
+                                    "type": "string",
+                                    "minLength": 1
+                                  },
+                                  "acceptance_criteria": {
+                                    "minItems": 1,
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "verification_commands": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "role": {
+                                    "type": "string",
+                                    "enum": ["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"]
+                                  },
+                                  "plan_input_digest": {
+                                    "type": "string",
+                                    "pattern": "^sha256:[a-f0-9]{64}$"
+                                  }
+                                },
+                                "required": [
+                                  "objective",
+                                  "acceptance_criteria",
+                                  "verification_commands",
+                                  "role"
+                                ],
+                                "additionalProperties": false
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "depends_on",
+                              "required_inputs",
+                              "expected_outputs",
+                              "execution_requirements",
+                              "optional",
+                              "contract"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": ["kind", "work_item"],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "kind": {
+                            "type": "string",
+                            "const": "replace"
+                          },
+                          "work_item": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "minLength": 1
+                              },
+                              "depends_on": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              },
+                              "required_inputs": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              },
+                              "expected_outputs": {
+                                "minItems": 1,
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              },
+                              "execution_requirements": {
+                                "type": "object",
+                                "properties": {
+                                  "scope_roots": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "repository_effects": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "external_effects": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "capabilities": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "resources": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  }
+                                },
+                                "required": [
+                                  "scope_roots",
+                                  "repository_effects",
+                                  "external_effects",
+                                  "capabilities",
+                                  "resources"
+                                ],
+                                "additionalProperties": false
+                              },
+                              "optional": {
+                                "type": "boolean"
+                              },
+                              "contract": {
+                                "type": "object",
+                                "properties": {
+                                  "objective": {
+                                    "type": "string",
+                                    "minLength": 1
+                                  },
+                                  "acceptance_criteria": {
+                                    "minItems": 1,
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "verification_commands": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "role": {
+                                    "type": "string",
+                                    "enum": ["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"]
+                                  },
+                                  "plan_input_digest": {
+                                    "type": "string",
+                                    "pattern": "^sha256:[a-f0-9]{64}$"
+                                  }
+                                },
+                                "required": [
+                                  "objective",
+                                  "acceptance_criteria",
+                                  "verification_commands",
+                                  "role"
+                                ],
+                                "additionalProperties": false
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "depends_on",
+                              "required_inputs",
+                              "expected_outputs",
+                              "execution_requirements",
+                              "optional",
+                              "contract"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": ["kind", "work_item"],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "kind": {
+                            "type": "string",
+                            "const": "remove"
+                          },
+                          "work_item_id": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "required": ["kind", "work_item_id"],
+                        "additionalProperties": false
+                      }
+                    ]
+                  }
+                }
+              },
+              "required": ["schema_version", "kind", "task_id", "base_plan_digest", "operations"],
+              "additionalProperties": false
             }
-          },
-          "required": ["work_items"],
-          "additionalProperties": false
+          ]
         },
         "canonical_outputs": {
           "type": "array",
@@ -3447,6 +4393,144 @@
               },
               "required": ["schema_version", "criteria", "checks", "evidence_fingerprint"],
               "additionalProperties": false
+            },
+            "recipe_provenance": {
+              "type": "object",
+              "properties": {
+                "schema_version": {
+                  "type": "number",
+                  "const": 1
+                },
+                "package": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "version": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": ["id", "version"],
+                  "additionalProperties": false
+                },
+                "scenario": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "api_version": {
+                      "type": "string",
+                      "const": "2"
+                    },
+                    "digest": {}
+                  },
+                  "required": ["id", "api_version", "digest"],
+                  "additionalProperties": false
+                },
+                "compiler": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "const": "agentplane.scenario"
+                    },
+                    "version": {
+                      "type": "number",
+                      "const": 1
+                    }
+                  },
+                  "required": ["id", "version"],
+                  "additionalProperties": false
+                },
+                "source_plan_semantics_digest": {},
+                "parameters": {
+                  "maxItems": 256,
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "value": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "maxLength": 8192
+                          },
+                          {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          {
+                            "type": "boolean"
+                          }
+                        ]
+                      }
+                    },
+                    "required": ["name", "value"],
+                    "additionalProperties": false
+                  }
+                },
+                "applicability": {
+                  "type": "object",
+                  "properties": {
+                    "observed_by": {
+                      "type": "string",
+                      "const": "agentplane"
+                    },
+                    "evidence_digest": {}
+                  },
+                  "required": ["observed_by", "evidence_digest"],
+                  "additionalProperties": false
+                },
+                "closure": {
+                  "type": "object",
+                  "properties": {
+                    "digest": {},
+                    "artifact_digest": {},
+                    "artifact_path": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "artifact_size_bytes": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "task_quality_root": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "digest",
+                    "artifact_digest",
+                    "artifact_path",
+                    "artifact_size_bytes",
+                    "task_quality_root"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "schema_version",
+                "package",
+                "scenario",
+                "compiler",
+                "source_plan_semantics_digest",
+                "parameters",
+                "applicability",
+                "closure"
+              ],
+              "additionalProperties": false
             }
           },
           "required": [
@@ -3639,99 +4723,35 @@
           ]
         },
         "canonical_plan": {
-          "type": "object",
-          "properties": {
-            "work_items": {
-              "minItems": 1,
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "string",
-                    "minLength": 1
-                  },
-                  "depends_on": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "minLength": 1
-                    }
-                  },
-                  "required_inputs": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "minLength": 1
-                    }
-                  },
-                  "expected_outputs": {
-                    "minItems": 1,
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "minLength": 1
-                    }
-                  },
-                  "execution_requirements": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "work_items": {
+                  "minItems": 1,
+                  "type": "array",
+                  "items": {
                     "type": "object",
                     "properties": {
-                      "scope_roots": {
-                        "type": "array",
-                        "items": {
-                          "type": "string",
-                          "minLength": 1
-                        }
-                      },
-                      "repository_effects": {
-                        "type": "array",
-                        "items": {
-                          "type": "string",
-                          "minLength": 1
-                        }
-                      },
-                      "external_effects": {
-                        "type": "array",
-                        "items": {
-                          "type": "string",
-                          "minLength": 1
-                        }
-                      },
-                      "capabilities": {
-                        "type": "array",
-                        "items": {
-                          "type": "string",
-                          "minLength": 1
-                        }
-                      },
-                      "resources": {
-                        "type": "array",
-                        "items": {
-                          "type": "string",
-                          "minLength": 1
-                        }
-                      }
-                    },
-                    "required": [
-                      "scope_roots",
-                      "repository_effects",
-                      "external_effects",
-                      "capabilities",
-                      "resources"
-                    ],
-                    "additionalProperties": false
-                  },
-                  "optional": {
-                    "type": "boolean"
-                  },
-                  "contract": {
-                    "type": "object",
-                    "properties": {
-                      "objective": {
+                      "id": {
                         "type": "string",
                         "minLength": 1
                       },
-                      "acceptance_criteria": {
+                      "depends_on": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "required_inputs": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "expected_outputs": {
                         "minItems": 1,
                         "type": "array",
                         "items": {
@@ -3739,46 +4759,445 @@
                           "minLength": 1
                         }
                       },
-                      "verification_commands": {
-                        "type": "array",
-                        "items": {
-                          "type": "string",
-                          "minLength": 1
-                        }
+                      "execution_requirements": {
+                        "type": "object",
+                        "properties": {
+                          "scope_roots": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "repository_effects": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "external_effects": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "capabilities": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "resources": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          }
+                        },
+                        "required": [
+                          "scope_roots",
+                          "repository_effects",
+                          "external_effects",
+                          "capabilities",
+                          "resources"
+                        ],
+                        "additionalProperties": false
                       },
-                      "role": {
-                        "type": "string",
-                        "enum": ["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"]
+                      "optional": {
+                        "type": "boolean"
                       },
-                      "plan_input_digest": {
-                        "type": "string",
-                        "pattern": "^sha256:[a-f0-9]{64}$"
+                      "contract": {
+                        "type": "object",
+                        "properties": {
+                          "objective": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "acceptance_criteria": {
+                            "minItems": 1,
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "verification_commands": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "role": {
+                            "type": "string",
+                            "enum": ["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"]
+                          },
+                          "plan_input_digest": {
+                            "type": "string",
+                            "pattern": "^sha256:[a-f0-9]{64}$"
+                          }
+                        },
+                        "required": [
+                          "objective",
+                          "acceptance_criteria",
+                          "verification_commands",
+                          "role"
+                        ],
+                        "additionalProperties": false
                       }
                     },
                     "required": [
-                      "objective",
-                      "acceptance_criteria",
-                      "verification_commands",
-                      "role"
+                      "id",
+                      "depends_on",
+                      "required_inputs",
+                      "expected_outputs",
+                      "execution_requirements",
+                      "optional",
+                      "contract"
                     ],
                     "additionalProperties": false
                   }
+                }
+              },
+              "required": ["work_items"],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "schema_version": {
+                  "type": "number",
+                  "const": 1
                 },
-                "required": [
-                  "id",
-                  "depends_on",
-                  "required_inputs",
-                  "expected_outputs",
-                  "execution_requirements",
-                  "optional",
-                  "contract"
-                ],
-                "additionalProperties": false
-              }
+                "kind": {
+                  "type": "string",
+                  "const": "plan_refinement"
+                },
+                "task_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "base_plan_digest": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                },
+                "operations": {
+                  "minItems": 1,
+                  "maxItems": 256,
+                  "type": "array",
+                  "items": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "kind": {
+                            "type": "string",
+                            "const": "add"
+                          },
+                          "work_item": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "minLength": 1
+                              },
+                              "depends_on": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              },
+                              "required_inputs": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              },
+                              "expected_outputs": {
+                                "minItems": 1,
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              },
+                              "execution_requirements": {
+                                "type": "object",
+                                "properties": {
+                                  "scope_roots": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "repository_effects": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "external_effects": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "capabilities": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "resources": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  }
+                                },
+                                "required": [
+                                  "scope_roots",
+                                  "repository_effects",
+                                  "external_effects",
+                                  "capabilities",
+                                  "resources"
+                                ],
+                                "additionalProperties": false
+                              },
+                              "optional": {
+                                "type": "boolean"
+                              },
+                              "contract": {
+                                "type": "object",
+                                "properties": {
+                                  "objective": {
+                                    "type": "string",
+                                    "minLength": 1
+                                  },
+                                  "acceptance_criteria": {
+                                    "minItems": 1,
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "verification_commands": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "role": {
+                                    "type": "string",
+                                    "enum": ["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"]
+                                  },
+                                  "plan_input_digest": {
+                                    "type": "string",
+                                    "pattern": "^sha256:[a-f0-9]{64}$"
+                                  }
+                                },
+                                "required": [
+                                  "objective",
+                                  "acceptance_criteria",
+                                  "verification_commands",
+                                  "role"
+                                ],
+                                "additionalProperties": false
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "depends_on",
+                              "required_inputs",
+                              "expected_outputs",
+                              "execution_requirements",
+                              "optional",
+                              "contract"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": ["kind", "work_item"],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "kind": {
+                            "type": "string",
+                            "const": "replace"
+                          },
+                          "work_item": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "minLength": 1
+                              },
+                              "depends_on": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              },
+                              "required_inputs": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              },
+                              "expected_outputs": {
+                                "minItems": 1,
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              },
+                              "execution_requirements": {
+                                "type": "object",
+                                "properties": {
+                                  "scope_roots": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "repository_effects": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "external_effects": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "capabilities": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "resources": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  }
+                                },
+                                "required": [
+                                  "scope_roots",
+                                  "repository_effects",
+                                  "external_effects",
+                                  "capabilities",
+                                  "resources"
+                                ],
+                                "additionalProperties": false
+                              },
+                              "optional": {
+                                "type": "boolean"
+                              },
+                              "contract": {
+                                "type": "object",
+                                "properties": {
+                                  "objective": {
+                                    "type": "string",
+                                    "minLength": 1
+                                  },
+                                  "acceptance_criteria": {
+                                    "minItems": 1,
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "verification_commands": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "role": {
+                                    "type": "string",
+                                    "enum": ["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"]
+                                  },
+                                  "plan_input_digest": {
+                                    "type": "string",
+                                    "pattern": "^sha256:[a-f0-9]{64}$"
+                                  }
+                                },
+                                "required": [
+                                  "objective",
+                                  "acceptance_criteria",
+                                  "verification_commands",
+                                  "role"
+                                ],
+                                "additionalProperties": false
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "depends_on",
+                              "required_inputs",
+                              "expected_outputs",
+                              "execution_requirements",
+                              "optional",
+                              "contract"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": ["kind", "work_item"],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "kind": {
+                            "type": "string",
+                            "const": "remove"
+                          },
+                          "work_item_id": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "required": ["kind", "work_item_id"],
+                        "additionalProperties": false
+                      }
+                    ]
+                  }
+                }
+              },
+              "required": ["schema_version", "kind", "task_id", "base_plan_digest", "operations"],
+              "additionalProperties": false
             }
-          },
-          "required": ["work_items"],
-          "additionalProperties": false
+          ]
         },
         "canonical_outputs": {
           "type": "array",

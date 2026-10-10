@@ -1,0 +1,6 @@
+ .../release/package-tarball-policy.test.ts         | 123 +++++++++++++++++++++
+ .../baselines/v0.7-compatibility-candidate.json    |  21 ++--
+ .../check-compatibility-contract-baseline.mjs      |  31 +++++-
+ scripts/checks/no-blueprint-engine.test.mjs        |  28 +++++
+ scripts/lib/package-tarball-policy.mjs             |   4 +
+ 5 files changed, 198 insertions(+), 9 deletions(-)

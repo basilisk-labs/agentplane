@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202610041748-K43XFE-81b203e055cc29e95f3645fe",
+  "task_id": "202610041748-K43XFE",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Read-only file access failed before execution with 'bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted', including a retry without a login shell. The work order, acceptance criteria, frozen evidence list, diff, and verification evidence could not be inspected. Restore sandbox file access and rerun this evaluator against the frozen work order. No implementation assessment was completed.",
+  "findings": [
+    {
+      "id": "x",
+      "summary": "x",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610041748-K43XFE/README.md"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202610041748-K43XFE/quality/20261006-114026902-recovery-context/evaluator-result.json"
+}

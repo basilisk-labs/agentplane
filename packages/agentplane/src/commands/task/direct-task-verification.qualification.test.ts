@@ -49,6 +49,44 @@ afterEach(async () => {
 });
 
 describe("release qualification verification", () => {
+  it.each([
+    { script: "ci:local:full", explicitTimeout: undefined, expectedTimeout: 9_000_000 },
+    { script: "ci:local:full", explicitTimeout: 1000, expectedTimeout: 1000 },
+    { script: "release:ci-check", explicitTimeout: undefined, expectedTimeout: 9_000_000 },
+    { script: "release:ci-check", explicitTimeout: 1000, expectedTimeout: 1000 },
+    { script: "release:check", explicitTimeout: undefined, expectedTimeout: 1_800_000 },
+  ])(
+    "executes $script with bounded timeout $expectedTimeout",
+    async ({ script, explicitTimeout, expectedTimeout }) => {
+      const root = await repository();
+      const check = `bun run ${script}`;
+      const runProcess = vi.fn().mockResolvedValue({ exitCode: 0, stdout: "ok", stderr: "" });
+      const result = await runDirectTaskVerification({
+        command: {
+          config: { paths: { workflow_dir: ".agentplane/tasks" } },
+          resolvedProject: { gitRoot: root },
+        } as never,
+        task: { verify: [check] },
+        task_id: "202609200000-QUALIFY",
+        cwd: root,
+        run_process: runProcess,
+        ...(explicitTimeout === undefined
+          ? {}
+          : {
+              additional_commands: [{ command: check, timeout_ms: explicitTimeout }],
+            }),
+      });
+      expect(result.status).toBe("passed");
+      expect(runProcess).toHaveBeenCalledOnce();
+      expect(runProcess.mock.calls[0]?.[0]).toMatchObject({
+        command: "bun",
+        args: ["run", script],
+        cwd: root,
+        timeoutMs: expectedTimeout,
+      });
+    },
+  );
+
   it("recognizes the versioned gate alias and gives it an isolated bounded run", async () => {
     const root = await repository();
     const runProcess = vi.fn().mockResolvedValue({ exitCode: 0, stdout: "ok", stderr: "" });

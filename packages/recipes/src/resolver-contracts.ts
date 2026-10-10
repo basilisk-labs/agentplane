@@ -3,7 +3,7 @@ import type { RecipeTaskTemplate } from "./manifest-contracts.js";
 export type RecipeResolverContext = {
   agentplane_version: string;
   manifest_api_version: "1" | "2";
-  scenario_api_version: "1";
+  scenario_api_version: "1" | "2";
   runtime_api_version: "1";
   platform: string;
   repo_types: string[];
@@ -71,4 +71,26 @@ export type ResolveRecipeScenarioSelectionFlags = {
 
 export type ResolvedRecipeScenarioSelection = ResolvedRecipeScenario & {
   selection_reasons: string[];
+};
+
+/** Explicit strategy identity. Omitting the version is allowed only for one installed match. */
+export type ExplicitRecipeScenarioSelection = {
+  recipe_id: string;
+  recipe_version?: string;
+  scenario_id: string;
+  scenario_api_version: "2";
+};
+
+/** Formal discovery only. These observations do not assert semantic suitability or approval. */
+export type RecipeCandidateSummary = {
+  schema_version: 1;
+  purpose: "planning_advice_only";
+  semantic_applicability: "not_assessed";
+  status: "complete" | "bounded" | "unavailable";
+  candidates: {
+    selection: Required<ExplicitRecipeScenarioSelection>;
+    reasons: string[];
+  }[];
+  omitted: number;
+  unavailable: number;
 };

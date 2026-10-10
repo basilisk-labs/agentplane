@@ -307,8 +307,9 @@ export async function readStableEvaluatorEvidenceFile(opts: {
   gitRoot: string;
   filePath: string;
   label: string;
-  waitForObjectFinalization?: boolean;
   hook?: EvaluatorEvidenceBoundaryHook;
+  maxBytes?: number;
+  waitForObjectFinalization?: boolean;
 }): Promise<Buffer> {
   const boundary = await captureDirectoryBoundary({
     gitRoot: opts.gitRoot,
@@ -341,7 +342,27 @@ export async function readStableEvaluatorEvidenceFile(opts: {
       hook: opts.hook,
       boundaries: [boundary],
     });
-    const contents = await handle.readFile();
+    let contents: Buffer;
+    if (opts.maxBytes === undefined) contents = await handle.readFile();
+    else {
+      if (
+        !Number.isSafeInteger(opts.maxBytes) ||
+        opts.maxBytes < 0 ||
+        before.size > BigInt(opts.maxBytes)
+      )
+        throw boundaryError(`${opts.label} exceeds its read budget.`);
+      const chunks: Buffer[] = [];
+      let size = 0;
+      for (;;) {
+        const chunk = Buffer.allocUnsafe(Math.min(64 * 1024, opts.maxBytes - size + 1));
+        const { bytesRead } = await handle.read(chunk, 0, chunk.length, null);
+        if (bytesRead === 0) break;
+        size += bytesRead;
+        if (size > opts.maxBytes) throw boundaryError(`${opts.label} exceeds its read budget.`);
+        chunks.push(chunk.subarray(0, bytesRead));
+      }
+      contents = Buffer.concat(chunks, size);
+    }
     const after = await handle.stat({ bigint: true });
     if (!sameSnapshot(snapshot(before), snapshot(after))) {
       throw boundaryError(`${opts.label} changed while it was read: ${opts.filePath}`);

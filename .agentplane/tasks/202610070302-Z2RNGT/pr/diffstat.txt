@@ -1,0 +1,4 @@
+ docs/developer/incident-archive.mdx           |  24 ++++
+ docs/releases/v0.7.13.md                      | 191 ++++++++++++++++++++++++++
+ scripts/release/release-scope-exclusions.json |  25 ++++
+ 3 files changed, 240 insertions(+)

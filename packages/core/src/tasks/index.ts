@@ -229,6 +229,7 @@ export {
   isGitObjectId,
   isSha256Digest,
   taskCentricDigest,
+  recipeSourcePlanSemanticDigest,
 } from "./task-centric/digest.js";
 export {
   belongsInLiveTaskIndex,
@@ -298,9 +299,11 @@ export {
   parseTaskPlanProposal,
   normalizeTaskPlanProposal,
   TASK_PLAN_PROPOSAL_INPUT_ZOD_SCHEMA,
+  COMPACT_TASK_PLAN_PROPOSAL_ZOD_SCHEMA,
   REPOSITORY_SNAPSHOT_ZOD_SCHEMA,
   TASK_PLAN_PROPOSAL_ZOD_SCHEMA,
   type ParsedTaskPlanProposal,
+  type RecipePlanProvenance,
 } from "./task-centric/schema.js";
 export type * from "./task-centric/model.js";
 
@@ -317,3 +320,11 @@ export {
   type KernelMigrationSemanticAssessment,
   type KernelMigrationSemanticAssessmentRequest,
 } from "./kernel-semantic.js";
+
+export {
+  kernelPlanRefinementSchema,
+  kernelPlanInputSchema,
+  resolveKernelPlanInput,
+  planObligationIssues,
+  type KernelPlanRefinement,
+} from "./kernel-plan-refinement.js";

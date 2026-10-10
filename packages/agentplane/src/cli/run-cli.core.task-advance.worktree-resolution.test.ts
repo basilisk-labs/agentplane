@@ -252,32 +252,21 @@ async function publicCompletionRegression() {
     ...completionRecord,
     aggregate: { ...completionRecord.aggregate, state: "COMPLETED", revision: 2 },
   };
-  const read = vi
-    .fn()
-    .mockResolvedValueOnce({
-      read: {
-        kind: "canonical",
-        task,
-        record: completionRecord,
-      },
-      next_action: {
-        reason_code: "kernel_task_completion_required",
-        work_item_id: null,
-        effect_id: null,
-      },
-    })
-    .mockResolvedValue({
-      read: {
-        kind: "canonical",
-        task: { ...task, status: "DONE" },
-        record: completedRecord,
-      },
-      next_action: {
-        reason_code: "kernel_task_completed",
-        work_item_id: null,
-        effect_id: null,
-      },
-    });
+  let completed = false;
+  const readCanonical = async () => ({
+    kind: "canonical" as const,
+    task: (await command.taskBackend.getTask(taskId))!,
+    record: completed ? completedRecord : completionRecord,
+  });
+  const adapterRead = vi.fn(readCanonical);
+  const read = vi.fn(async () => ({
+    read: await readCanonical(),
+    next_action: {
+      reason_code: completed ? "kernel_task_completed" : "kernel_task_completion_required",
+      work_item_id: null,
+      effect_id: null,
+    },
+  }));
   const apply = vi.fn().mockImplementation(async () => {
     const current = (await command.taskBackend.getTask(taskId))!;
     const currentKernel = current.extensions!.task_kernel as {
@@ -299,9 +288,12 @@ async function publicCompletionRegression() {
       },
       { expectedRevision: current.revision },
     );
+    completed = true;
     return { kind: "committed", record: completedRecord, receipts: [], replayed: false };
   });
   const runtime = {
+    command,
+    adapter: { read: adapterRead },
     native: {
       readContext: vi.fn().mockResolvedValue({ repository_fingerprint: "sha256:repo" }),
     },
@@ -309,14 +301,28 @@ async function publicCompletionRegression() {
     input: vi.fn().mockResolvedValue({ command: { expected_task_revision: task.revision } }),
     checkpoint: vi.fn(),
   };
-  const [kernelRuntime, kernelFinalValidation, kernelProjection, kernelProviderEffects, verifyLog] =
-    await Promise.all([
-      import("../commands/task/kernel-runtime-context.js"),
-      import("../commands/task/kernel-final-validation.js"),
-      import("../commands/task/kernel-operational-projection.js"),
-      import("../commands/task/kernel-provider-effect-coordinator.js"),
-      import("../commands/shared/pr-meta/verify-log.js"),
-    ]);
+  const [
+    kernelRuntime,
+    kernelFinalValidation,
+    kernelProjection,
+    kernelProviderEffects,
+    verifyLog,
+    kernelProjectionRecovery,
+  ] = await Promise.all([
+    import("../commands/task/kernel-runtime-context.js"),
+    import("../commands/task/kernel-final-validation.js"),
+    import("../commands/task/kernel-operational-projection.js"),
+    import("../commands/task/kernel-provider-effect-coordinator.js"),
+    import("../commands/shared/pr-meta/verify-log.js"),
+    import("../commands/task/kernel-operational-projection-recovery.js"),
+  ]);
+  const originalRecoverKernelOperationalProjection =
+    kernelProjectionRecovery.recoverKernelOperationalProjection;
+  // This completion-persistence fixture supplies synthetic validation and projection evidence.
+  // Recovery is a separate boundary; keep the actual completion write and Git commit below.
+  const recoverySpy = vi
+    .spyOn(kernelProjectionRecovery, "recoverKernelOperationalProjection")
+    .mockResolvedValue({ kind: "unchanged" });
   const originalCreateKernelRuntime = kernelRuntime.createKernelRuntime;
   const originalRestoreKernelFinalValidation = kernelFinalValidation.restoreKernelFinalValidation;
   const originalEnsureKernelOperationalProjectionEvidence =
@@ -360,12 +366,16 @@ async function publicCompletionRegression() {
     });
   } finally {
     io.restore();
+    recoverySpy.mockImplementation(originalRecoverKernelOperationalProjection);
     workflowSpy.mockImplementation(originalDecideCanonicalWorkflowEffect);
     projectionSpy.mockImplementation(originalEnsureKernelOperationalProjectionEvidence);
     validationSpy.mockImplementation(originalRestoreKernelFinalValidation);
     runtimeSpy.mockImplementation(originalCreateKernelRuntime);
   }
 
+  expect(adapterRead).toHaveBeenCalledWith(taskId);
+  expect(apply).toHaveBeenCalledTimes(1);
+  expect(recoverySpy).toHaveBeenCalled();
   const persisted = (await command.taskBackend.getTask(taskId))!;
   expect(persisted.status).toBe("DONE");
   expect(

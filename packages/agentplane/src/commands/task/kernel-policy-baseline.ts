@@ -92,7 +92,7 @@ async function recoverSnapshot(opts: {
 const contains = (roots: readonly string[], file: string) =>
   roots.some((root) => root === "." || file === root || file.startsWith(`${root}/`));
 
-export function assertAuthorizedPolicyDelta(opts: {
+function assertAuthorizedPolicyDelta(opts: {
   baseline: KernelRepositoryObservation;
   current: KernelRepositoryObservation;
   snapshot: PolicySnapshot;

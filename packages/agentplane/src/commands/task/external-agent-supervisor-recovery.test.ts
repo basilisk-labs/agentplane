@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 import type { ExternalAgentExchange } from "./external-agent-exchange.js";
 import {
+  isReadOnlyWorktreeObservation,
   requiresImplementationRecoveryReplacement,
   requiresPlanningRecoveryReplacement,
 } from "./external-agent-supervisor-recovery.js";
@@ -123,4 +124,43 @@ describe("external agent recovery authority", () => {
       }),
     ).toBe(true);
   });
+});
+
+describe("read-only observation retirement authority", () => {
+  const exchange = { purpose: "task_worktree_resolution" } as ExternalAgentExchange;
+  const work_order = {
+    authority: {
+      sandbox: "read-only",
+      writable_roots: [],
+      external_side_effects: [],
+      allowed_tool_classes: ["repository_read", "run_checks", "report_result"],
+    },
+  } as unknown as AgentWorkOrderV2;
+  it("recognizes only native bounded observation authority", () => {
+    expect(isReadOnlyWorktreeObservation({ exchange, work_order })).toBe(true);
+  });
+  it.each([
+    { sandbox: "workspace-write" },
+    { writable_roots: ["/repo/source"] },
+    { external_side_effects: ["external_write"] },
+    { allowed_tool_classes: ["workspace_write"] },
+  ])("does not retire an observation with mutation authority %j", (authority) => {
+    expect(
+      isReadOnlyWorktreeObservation({
+        exchange,
+        work_order: {
+          ...work_order,
+          authority: { ...work_order.authority, ...authority },
+        } as AgentWorkOrderV2,
+      }),
+    ).toBe(false);
+  });
+  it.each(["implementation", "implementation_rework", "quality_review", "planning"] as const)(
+    "preserves %s ownership",
+    (purpose) => {
+      expect(
+        isReadOnlyWorktreeObservation({ exchange: { ...exchange, purpose }, work_order }),
+      ).toBe(false);
+    },
+  );
 });

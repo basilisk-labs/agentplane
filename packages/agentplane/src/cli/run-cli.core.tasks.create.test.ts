@@ -433,8 +433,17 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
       requested_mode: "auto",
       selected_mode: "branch_pr",
       repository_mode: "direct",
-      reason_codes: ["mutation_requires_isolation", "risk_publish"],
+      reason_codes: [
+        "effect_publish",
+        "effect_release_metadata",
+        "reversibility_recovery_required",
+      ],
       frozen: true,
+    });
+    expect(task.frontmatter.execution_contract?.declaration).toMatchObject({
+      repository_effects: ["release_metadata", "repository_write"],
+      external_effects: ["publish"],
+      reversibility: "recovery_required",
     });
   });
 

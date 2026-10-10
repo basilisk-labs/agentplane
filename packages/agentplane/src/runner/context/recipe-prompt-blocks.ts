@@ -97,6 +97,8 @@ export async function collectRecipePromptBlocks(opts: {
   task?: RunnerTaskContext;
   command?: string;
 }): Promise<RunnerPromptBlock[]> {
+  if (opts.recipe.scenario?.schema_version === "2")
+    throw new Error("Scenario V2 guidance requires a retained native WorkOrder projection.");
   const recipeDir = opts.recipe.recipe_dir?.trim();
   if (!recipeDir) return [];
 

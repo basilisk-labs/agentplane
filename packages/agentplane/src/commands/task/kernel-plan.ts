@@ -1,4 +1,12 @@
-import { taskKernel as k, kernelPlanProposalSchema } from "@agentplaneorg/core/tasks";
+import {
+  preserveCompletedRecipeContracts,
+  validateKernelRecipeBindings,
+} from "./kernel-recipe-admission.js";
+import {
+  taskKernel as k,
+  kernelPlanInputSchema,
+  resolveKernelPlanInput,
+} from "@agentplaneorg/core/tasks";
 import type { CommandContext } from "../shared/task-backend.js";
 import { createKernelRuntime, requireKernelCommit } from "./kernel-runtime-context.js";
 import { assertCanonicalPlanWithinExecutionContract } from "./kernel-plan-authority.js";
@@ -15,10 +23,13 @@ export async function setCanonicalPlan(
   options: { scopeExpansionApprovedBy?: string; expectedSuppliedInputDigest?: string } = {},
 ) {
   const supplied =
-    typeof value === "object" && value !== null && "schema_version" in value
+    typeof value === "object" &&
+    value !== null &&
+    "schema_version" in value &&
+    !("kind" in value && value.kind === "plan_refinement")
       ? parseSuppliedPlanInput(value)
       : undefined;
-  const direct = supplied ? undefined : kernelPlanProposalSchema.parse(value);
+  const direct = supplied ? undefined : kernelPlanInputSchema.parse(value);
   const runtime = await createKernelRuntime({
     command,
     task_id: taskId,
@@ -38,13 +49,47 @@ export async function setCanonicalPlan(
   const input = supplied
     ? await prepareSuppliedPlan(command, taskId, supplied, previousInput)
     : undefined;
-  const proposal = input ? suppliedKernelProposal(input, read.task) : direct!;
+  const candidate = input
+    ? suppliedKernelProposal(input, read.task)
+    : resolveKernelPlanInput({
+        task_id: taskId,
+        value: direct,
+        current: current ?? null,
+        contracts: read.record.documents?.contracts ?? {},
+      });
+  const proposal = input?.recipe_provenance
+    ? preserveCompletedRecipeContracts({
+        proposal: candidate,
+        aggregate: read.record.aggregate,
+        documents: read.record.documents,
+      })
+    : candidate;
   if (
     options.expectedSuppliedInputDigest !== undefined &&
     (!input || k.kernelDigest(input) !== options.expectedSuppliedInputDigest)
   )
     throw new Error("Supplied Plan observation changed before proposal admission");
   const planInputs = input ? { [String(k.kernelDigest(input))]: input } : undefined;
+  const plan = canonicalPlanFromProposal(proposal, (current?.revision ?? 0) + 1);
+  assertCanonicalPlanWithinExecutionContract(read.task, plan);
+  const contracts = proposal.work_items.map((item) => item.contract);
+  await validateKernelRecipeBindings({
+    command,
+    task: read.task,
+    plan,
+    documents: read.record.documents
+      ? {
+          ...read.record.documents,
+          plan_inputs: { ...read.record.documents.plan_inputs, ...planInputs },
+          contracts: {
+            ...read.record.documents.contracts,
+            ...Object.fromEntries(
+              contracts.map((contract) => [k.kernelDigest(contract), contract]),
+            ),
+          },
+        }
+      : undefined,
+  });
   if (
     current &&
     k.kernelDigest(canonicalPlanFromProposal(proposal, current.revision).work_items) ===
@@ -55,9 +100,6 @@ export async function setCanonicalPlan(
       return requireKernelCommit(await runtime.authority.continue(taskId));
     return { kind: "committed" as const, record: read.record, receipts: [], replayed: true };
   }
-  const plan = canonicalPlanFromProposal(proposal, (current?.revision ?? 0) + 1);
-  assertCanonicalPlanWithinExecutionContract(read.task, plan);
-  const contracts = proposal.work_items.map((item) => item.contract);
   if (current?.state !== "APPROVED") {
     return requireKernelCommit(
       await runtime.lifecycle.apply(
@@ -97,6 +139,10 @@ export async function setCanonicalPlan(
       amended_plan: amended,
       amendment_digest: k.kernelDigest(amended),
       authority_delta_digest: approvalDigest,
+      work_contracts: {
+        ...read.record.documents?.contracts,
+        ...Object.fromEntries(contracts.map((contract) => [k.kernelDigest(contract), contract])),
+      },
     },
     `amend:${plan.digest}`,
   );

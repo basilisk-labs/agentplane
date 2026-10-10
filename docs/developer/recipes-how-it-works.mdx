@@ -3,8 +3,7 @@ title: "How recipes work"
 description: "Cache, vendor, and inspect recipes in the current CLI runtime."
 ---
 
-This page describes runtime behavior behind the public `recipes` surface and the internal
-recipe-owned scenario assets it still compiles.
+This page describes package storage and Scenario V2 preparation through the native Task Kernel.
 
 ## Cache flow
 
@@ -50,8 +49,7 @@ not erase the core task lifecycle, workflow routing, git hygiene, or safety inva
 - `recipes list` scans the global cache and prints cached entries.
 - `recipes info` reads cached recipe metadata.
 - `recipes active` and `recipes explain` read project-local vendored state from `registry.json`.
-- Recipe-owned scenario assets still live in vendored packages, but they are no longer exposed as a
-  first-class public CLI namespace.
+- `recipes preview-v1` audits exact legacy bytes; `recipes preview-v2` previews explicit installed V2 selection without creating a task or approving work.
 
 ## Prompt module assets
 
@@ -72,29 +70,28 @@ framework prompt module registry. The derived prompt graph is published to
 registry, and project recipe registry. If prompt graph compilation fails, the previously published
 generated artifacts remain unchanged.
 
-## Scenario asset preparation
+## Scenario V2 preparation and native admission
 
-Internal scenario preparation still:
+1. Resolve the exact installed recipe/version/scenario with explicit API negotiation.
+2. Validate strict typed parameters and expand supported fields once.
+3. Obtain applicability facts from native observation owners; unknown evidence blocks.
+4. Compile the existing compact Plan and shared dependency graph.
+5. Pin and retain the declared transitive closure, including helper/package bytes.
+6. Return native evidence needs, a portable retention commit boundary, a proposal, or bounded specialization needs.
+7. Admit through the same task proposal, approval, advance and independent review owners.
 
-1. Parses `<recipe:scenario>` id.
-2. Resolves the scenario through the deterministic recipe resolver.
-3. Validates compatibility, recipe-local files, and the internal `scenario.json` contract, including `task_template`.
-4. Prints a prepared run plan with selection reasons, normalized `run_profile`, and task-template data.
-5. Stops without executing tools or creating `runs/` artifacts.
+`task create --recipe-file` and `task plan set --recipe-file` use this common path. Preview stops
+before retention or task effects. Neither a prepared Plan nor a model-generated draft authorizes
+execution. Missing or incompatible explicit selection fails without choosing a near match.
 
-## Scenario asset materialization
+Committed retained closure is portable to a fresh offline clone. Catalogue removal or update does
+not substitute newer helper bytes. Missing/tampered retained artifacts and revoked trust stop
+native continuation. Retained role guidance remains advisory and survives restart alongside the
+native mandatory criteria, applicability, stop rules and deviations.
 
-Internal scenario materialization still:
-
-1. Parses `<recipe:scenario>` id.
-2. Resolves and validates the scenario through the same deterministic resolver used during internal
-   scenario preparation.
-3. Materializes a task from the scenario's explicit `task_template` and records recipe provenance on that task.
-4. Assembles the deferred execution bundle from base prompts, repository context, task context, and recipe context.
-5. Stops at task-local preparation until the v0.7 runtime adapter work is reopened.
-
-Direct CLI execution for ordinary tasks is deferred to v0.7. Current tasks are picked up by agents
-working in the project folder through an IDE, Codex App, or another human-assisted local workflow.
+V1 preview preserves ordered custom source and source digest. Unsupported semantics require native
+CURATOR drafting and independent EVALUATOR before a candidate can enter ordinary Plan intake.
+See [the authoring contract and fixtures](recipes-development).
 
 ## Environment behavior
 

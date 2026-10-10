@@ -1,3 +1,7 @@
+import { gitIsAncestor } from "@agentplaneorg/core/git";
+import { readStableRegularTextNoFollow } from "../../shared/stable-file.js";
+import { hasValidRecordDigest, parseVerificationInput } from "./task-verification-record-parser.js";
+import { qualityReviewReworkIsFreshForHead } from "./quality-review-retirement.js";
 import path from "node:path";
 
 import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
@@ -163,4 +167,62 @@ export async function hasAcceptedVerificationForCurrentImplementation(opts: {
   };
   if (opts.onAssessment) recordOptions.onAssessment = opts.onAssessment;
   return await hasAcceptedVerificationRecord(recordOptions).catch(() => false);
+}
+
+/** Completed kernel tasks can need source repair without reopening their lifecycle. */
+export async function completedBranchRequiresImplementationRework(
+  opts: Parameters<typeof hasAcceptedVerificationForCurrentImplementation>[0] & {
+    workflowMode: "direct" | "branch_pr";
+  },
+): Promise<boolean> {
+  if (
+    opts.workflowMode !== "branch_pr" ||
+    opts.task.status !== "DONE" ||
+    (opts.prFlow?.pr.state === "MERGED" && opts.prFlow.closeTail.state === "recorded_on_base")
+  )
+    return false;
+  if (opts.task.verification?.state === "needs_rework") {
+    const assessments: VerificationRecordAssessment[] = [];
+    // A failed record remains failure evidence. Only the existing authenticated
+    // input comparison can establish that different source now needs checking.
+    // Missing or invalid evidence never substitutes for implementation work.
+    await hasAcceptedVerificationForCurrentImplementation({
+      ...opts,
+      onAssessment: (assessment) => {
+        assessments.push(assessment);
+      },
+    });
+    const assessment = assessments.at(-1);
+    const head = opts.prFlow?.branch.headSha ?? opts.resume.head_sha;
+    if (
+      assessment?.reason !== "verification_implementation_changed" ||
+      !assessment.recordPath ||
+      !head
+    )
+      return true;
+    try {
+      const record = JSON.parse(
+        await readStableRegularTextNoFollow(assessment.recordPath, "failed verification record"),
+      ) as Record<string, unknown>;
+      const input = parseVerificationInput(record.input);
+      if (!hasValidRecordDigest(record) || input?.digest !== assessment.recordedInputDigest)
+        return true;
+      const failedTarget =
+        input.schema_version === 5
+          ? input.checked_input.implementation.target_sha
+          : input.implementation.target_sha;
+      // A different checkout or rewritten failure target cannot establish a newer
+      // implementation. Keep such ambiguous recovery on the bounded semantic path.
+      if (!(await gitIsAncestor(opts.ctx.resolvedProject.gitRoot, failedTarget, head))) return true;
+    } catch {
+      return true;
+    }
+  }
+  return (
+    qualityReviewRequiresImplementationRework(opts.task) &&
+    (await qualityReviewReworkIsFreshForHead({
+      ...opts,
+      headSha: opts.prFlow?.branch.headSha ?? opts.resume.head_sha,
+    }))
+  );
 }

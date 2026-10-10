@@ -120,18 +120,7 @@ export async function readProjectRecipesRegistry(opts: {
     const raw = JSON.parse(
       await readFile(resolveProjectRecipesRegistryPath(opts), "utf8"),
     ) as unknown;
-    if (!isRecord(raw)) throw new Error(invalidFieldMessage("recipes registry", "object"));
-    if (raw.schema_version !== 1) {
-      throw new Error(invalidFieldMessage("recipes registry.schema_version", "1"));
-    }
-    if (!Array.isArray(raw.recipes)) {
-      throw new Error(invalidFieldMessage("recipes registry.recipes", "array"));
-    }
-    return sortRegistry({
-      schema_version: 1,
-      updated_at: typeof raw.updated_at === "string" ? raw.updated_at : "",
-      recipes: raw.recipes.map((entry) => validateRegistryEntry(entry)),
-    });
+    return parseProjectRecipesRegistry(raw);
   } catch (err) {
     const code = (err as { code?: string } | null)?.code;
     if (code === "ENOENT") {
@@ -139,4 +128,19 @@ export async function readProjectRecipesRegistry(opts: {
     }
     throw err;
   }
+}
+
+export function parseProjectRecipesRegistry(raw: unknown): ProjectRecipesRegistryFile {
+  if (!isRecord(raw)) throw new Error(invalidFieldMessage("recipes registry", "object"));
+  if (raw.schema_version !== 1) {
+    throw new Error(invalidFieldMessage("recipes registry.schema_version", "1"));
+  }
+  if (!Array.isArray(raw.recipes)) {
+    throw new Error(invalidFieldMessage("recipes registry.recipes", "array"));
+  }
+  return sortRegistry({
+    schema_version: 1,
+    updated_at: typeof raw.updated_at === "string" ? raw.updated_at : "",
+    recipes: raw.recipes.map((entry) => validateRegistryEntry(entry)),
+  });
 }

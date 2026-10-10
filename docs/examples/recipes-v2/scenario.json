@@ -1,0 +1,84 @@
+{
+  "schema_version": "2",
+  "id": "report",
+  "goal": "Report source facts for {{audience}}",
+  "parameters": [
+    {
+      "name": "audience",
+      "type": "string",
+      "required": true
+    },
+    {
+      "name": "source",
+      "type": "repo_path",
+      "required": true
+    },
+    {
+      "name": "limit",
+      "type": "integer",
+      "required": false,
+      "default": 5
+    },
+    {
+      "name": "include_notes",
+      "type": "boolean",
+      "required": false,
+      "default": false
+    }
+  ],
+  "applicability": {
+    "required": [
+      {
+        "kind": "path_exists",
+        "path": "{{source}}"
+      },
+      {
+        "kind": "capability_available",
+        "capability": "task.verify"
+      }
+    ],
+    "excluded": []
+  },
+  "plan_template": {
+    "schema_version": 2,
+    "criteria": [
+      {
+        "id": "facts",
+        "description": "Report for {{audience}} preserves source facts; maximum {{limit}} findings; notes={{include_notes}}.",
+        "required": true,
+        "check_ids": ["review"]
+      }
+    ],
+    "checks": [
+      {
+        "id": "review",
+        "kind": "semantic",
+        "required": true,
+        "capability": "task.verify"
+      }
+    ],
+    "work_items": [
+      {
+        "id": "report",
+        "objective": "Inspect {{source}} and report to {{audience}}.",
+        "depends_on": [],
+        "required_inputs": [],
+        "expected_outputs": ["report"],
+        "scope_roots": [],
+        "context": {
+          "required_sources": ["{{source}}"],
+          "optional_sources": [],
+          "symbol_hints": [],
+          "max_bytes": 8192
+        },
+        "risk": "low",
+        "capabilities": [],
+        "resource_claims": [],
+        "optional": false,
+        "priority": 1
+      }
+    ],
+    "assumptions": [],
+    "unresolved_questions": []
+  }
+}

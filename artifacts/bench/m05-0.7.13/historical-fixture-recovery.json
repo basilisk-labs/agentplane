@@ -1,0 +1,10 @@
+{
+  "status": "RECOVERED",
+  "head": "5cb13bad9c219d23eb6a1f291a4d778cece8d862",
+  "files_verified": 6,
+  "operator_receipt_digest": "sha256:929683bc090bc8aba3c4057916b6b50c97ef91d14fc238be1281b9b6a2393b70",
+  "check": "bun run bench:agent-efficiency:check",
+  "result": "passed",
+  "structural_sha256": "sha256:a9b855c5887f697c21690d7386c627c555f8d46d7b083cab8c54636411e47351",
+  "prior_failure_retained_in": "omitted-historical-fixtures.json"
+}

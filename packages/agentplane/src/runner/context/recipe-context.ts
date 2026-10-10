@@ -122,3 +122,17 @@ export async function assembleRunnerRecipeContext(opts: {
     recipe: toRecipeContext({ entry, selection, scenario, assets }),
   };
 }
+
+export { validateRecipeScenarioPlan } from "./recipe-plan-validation.js";
+export { observeRecipeApplicability } from "./recipe-applicability.js";
+export { computeRecipeDependencyClosure } from "./recipe-closure.js";
+export {
+  prepareRecipeClosureRetention,
+  readRetainedRecipeClosure,
+  type RecipeClosureReference,
+} from "./recipe-retention.js";
+export {
+  bindRecipePlanProvenance,
+  readBoundRecipePlanClosure,
+  validateRecipePlanForAdmission,
+} from "./recipe-plan-binding.js";

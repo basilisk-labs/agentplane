@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { test } from "node:test";
+import ts from "typescript";
 
 const ROOT = process.cwd();
 const PRODUCTION_ROOTS = [
@@ -22,6 +23,10 @@ const RETIRED_PATHS = [
   "packages/recipes/src/blueprint-extensions.ts",
 ];
 const COLD_READER_ALLOWLIST = new Map([
+  [
+    "packages/agentplane/src/recipe-api.ts",
+    "historical artifact-kind type union in the V1 source reference; no runtime Blueprint API",
+  ],
   [
     "packages/agentplane/src/commands/blueprint/historical-audit.ts",
     "bounded decoder for a retired task-local snapshot",
@@ -117,4 +122,27 @@ test("generated live schemas expose no Blueprint inputs", () => {
     [],
     `generated Blueprint schema surfaces:\n${violations.join("\n")}`,
   );
+});
+
+test("Recipe API Blueprint mention is confined to the historical source-reference type", () => {
+  const file = "packages/agentplane/src/recipe-api.ts";
+  const text = readFileSync(path.join(ROOT, file), "utf8");
+  const source = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true);
+  const reference = source.statements.find(
+    (node) => ts.isTypeAliasDeclaration(node) && node.name.text === "RecipeV1SourceReference",
+  );
+  assert.ok(reference, "historical source-reference type missing");
+  const mentions = [];
+  function visit(node) {
+    if (ts.isStringLiteral(node) && node.text === "blueprint") mentions.push(node);
+    ts.forEachChild(node, visit);
+  }
+  visit(source);
+  assert.equal(mentions.length, 1);
+  const mention = mentions[0];
+  assert.ok(ts.isLiteralTypeNode(mention.parent));
+  assert.ok(ts.isUnionTypeNode(mention.parent.parent));
+  assert.ok(mention.pos >= reference.pos && mention.end <= reference.end);
+  const outsideReference = text.slice(0, reference.pos) + text.slice(reference.end);
+  assert.equal(/blueprint/iu.test(outsideReference), false);
 });

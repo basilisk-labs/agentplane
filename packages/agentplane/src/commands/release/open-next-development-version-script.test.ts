@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rm, symlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 
@@ -25,6 +25,12 @@ async function workspace(version: string) {
     recipesDependencyVersion: version,
   });
   roots.push(root);
+  // Keep --skip-install isolated while using the repository's real installed formatter.
+  await symlink(
+    path.resolve(process.cwd(), "node_modules"),
+    path.join(root, "node_modules"),
+    process.platform === "win32" ? "junction" : "dir",
+  );
   return root;
 }
 

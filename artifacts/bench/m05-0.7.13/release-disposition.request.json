@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "kind": "agentplane.m05_release_disposition_request",
+  "experiment": "M05",
+  "status": "UNRESOLVED",
+  "efficiency": "NOT_ESTABLISHED",
+  "offline_preparation_sha256": "sha256:c731d2221f5aeecfc9804c3319b1b0e49ec06b84566ade905756bd6e804a6c5f",
+  "candidate_native_source_sha": "de67c508f74309c745341a241d984529818c9e88",
+  "live_campaign_lock": null,
+  "approved_model": null,
+  "approved_effort": null,
+  "approved_adapter": null,
+  "approved_runtime_sandbox": null,
+  "approved_network_scope": null,
+  "maximum_authorized_spend": null,
+  "live_authority": null,
+  "proposed_live_pilot": {
+    "arms": ["no_recipe", "instantiate", "specialize"],
+    "minimum_matched_repetitions_per_task_arm": 5,
+    "normal_workflow_strata": ["direct_fix", "branch_pr_change", "recoverable_check_failure"],
+    "negative_strata": ["no_match", "near_match"],
+    "transport_and_cache_strata": "must be selected and pinned separately before approval",
+    "confirmation_sample": "must be registered independently after pilot; never sample until favorable"
+  },
+  "choices": [
+    {
+      "id": "accept_measurement_debt",
+      "decision_text": "Accept M05 measurement debt for the 0.7.13 correctness release with Q02 NOT ESTABLISHED. Make no Recipe efficiency claim, keep the no-Recipe fallback and all native approval/independent-review requirements, and track a separately approved future M05 live campaign.",
+      "grants_paid_authority": false
+    },
+    {
+      "id": "require_live_measurement",
+      "decision_text": "Keep release efficiency qualification pending. Complete and qualify the M05 live launcher, coding corpus and full-host ledger through existing owners, then obtain USER approval of an exact immutable campaign lock including artifact/oracle pins, model/effort, runtime/sandbox/network and finite spend/retry caps before any provider call.",
+      "grants_paid_authority": false
+    }
+  ]
+}

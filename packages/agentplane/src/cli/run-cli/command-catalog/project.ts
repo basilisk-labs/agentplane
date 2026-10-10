@@ -1,3 +1,4 @@
+import { recipesPreviewV2Spec } from "../../../commands/recipes/preview-v2.command.js";
 import { syncSpec } from "../../../commands/sync.command.js";
 import {
   acrCheckSpec,
@@ -58,6 +59,7 @@ import { recipesDisableSpec } from "../../../commands/recipes/disable.command.js
 import { recipesExplainSpec } from "../../../commands/recipes/explain.command.js";
 import { recipesExplainActiveSpec } from "../../../commands/recipes/explain-active.command.js";
 import { recipesEnableSpec } from "../../../commands/recipes/enable.command.js";
+import { recipesPreviewV1Spec } from "../../../commands/recipes/preview-v1.command.js";
 import { recipesInfoSpec } from "../../../commands/recipes/info.command.js";
 import { recipesInstallSpec } from "../../../commands/recipes/install.spec.js";
 import { recipesListRemoteSpec } from "../../../commands/recipes/list-remote.command.js";
@@ -100,6 +102,8 @@ import {
   loadWorkStartSpec,
   loadWorkResumeSpec,
   fromRecipesActiveSpec,
+  fromRecipesPreviewV1Spec,
+  fromRecipesPreviewV2Spec,
   fromRecipesInfoSpec,
   loadRecipesExplainActiveSpec,
   fromRecipesDisableSpec,
@@ -222,6 +226,12 @@ export const PROJECT_COMMANDS = [
   }),
   fromCommandsRecipesListRemoteCommand(recipesListRemoteSpec, "runRecipesListRemote", {
     requirements: PROJECT_CONFIG_REQUIREMENTS,
+  }),
+  fromRecipesPreviewV2Spec(recipesPreviewV2Spec, "runRecipesPreviewV2", {
+    requirements: NO_CONTEXT_REQUIREMENTS,
+  }),
+  fromRecipesPreviewV1Spec(recipesPreviewV1Spec, "runRecipesPreviewV1", {
+    requirements: NO_CONTEXT_REQUIREMENTS,
   }),
   fromRecipesInfoSpec(recipesInfoSpec, "runRecipesInfo", {
     requirements: NO_CONTEXT_REQUIREMENTS,

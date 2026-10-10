@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_provider_failure_receipt",
+  "work_order_id": "evaluator-work-order-202610041748-K43XFE-cd943870987a30941f2c9b20",
+  "provider": "codex",
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": []
+  },
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--ignore-user-config",
+    "--strict-config",
+    "--disable",
+    "hooks",
+    "--ephemeral",
+    "--json",
+    "-C",
+    "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario",
+    "-s",
+    "read-only",
+    "--output-schema",
+    "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610041748-K43XFE-implement-and-qualify-agentplane-0-7-13-scenario/.agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json",
+    "-"
+  ],
+  "started_at": "2026-10-06T11:06:25.329Z",
+  "ended_at": "2026-10-06T11:21:25.448Z",
+  "stdout_bytes": 51815,
+  "stderr_bytes": 0,
+  "provider_usage_status": "partial",
+  "provider_usage": null,
+  "provider_thread_id": "01a110e4-b3cf-7dd2-951a-a1de0d09d555",
+  "provider_turn_id": null,
+  "workspace_state": "unchanged",
+  "failure": {
+    "kind": "evaluator_provider_failure",
+    "classification": "timeout",
+    "exit_code": null,
+    "signal": null
+  }
+}

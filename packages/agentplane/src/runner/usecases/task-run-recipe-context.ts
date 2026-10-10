@@ -8,6 +8,10 @@ export async function resolveTaskRunnerRecipe(opts: {
   command: CommandContext;
   recipe?: RunnerRecipeContext;
 }): Promise<RunnerRecipeContext | undefined> {
+  if (opts.recipe?.scenario?.schema_version === "2")
+    throw new Error(
+      "Scenario V2 context requires its retained native WorkOrder, not an installed Recipe lookup.",
+    );
   const recipeDirectory = opts.recipe?.recipe_dir;
   const recipeDirectoryRelative = recipeDirectory
     ? path.relative(opts.command.resolvedProject.gitRoot, path.resolve(recipeDirectory))

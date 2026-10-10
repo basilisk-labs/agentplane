@@ -1,3 +1,4 @@
+import { readCompletedReworkRecord } from "./kernel-completed-external-rework.js";
 import { conflictEvidenceAuthority } from "./external-agent-conflict-application.js";
 import type { AgentSemanticResult, AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
@@ -61,6 +62,7 @@ export async function finishExternalImplementationVerification(opts: {
   const postVerificationHead = await readDirectTaskHead(opts.exchange.checkout);
   const postVerificationStatus = await readDirectRepositoryStatus(opts.exchange.checkout);
   const canonicalProjection: TaskCentricExternalResultProjection | null =
+    Boolean(await readCompletedReworkRecord(opts)) ||
     isTaskLevelVerificationRework({
       task: opts.task,
       work_order: opts.work_order,

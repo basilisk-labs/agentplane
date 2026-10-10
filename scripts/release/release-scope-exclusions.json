@@ -71,6 +71,31 @@
       "evidence_kind": "merged_commit",
       "reason": "This task was integrated by PR 6017; the exact merge commit is present on the release ancestry.",
       "git_ref": "cc0516672e107f63083aa97aa4d8a8509e19d169"
+    },
+    {
+      "task_id": "202609071123-3B0812",
+      "evidence_kind": "merged_commit",
+      "reason": "Homebrew executable-link work is already present in the merged source history.",
+      "git_ref": "f1e100ce09ef7e9f1886f053df7410542148ae2a"
+    },
+    {
+      "task_id": "202609111340-MGB383",
+      "evidence_kind": "merged_commit",
+      "reason": "Post-release evidence close-tail hardening is already merged.",
+      "git_ref": "85c12c212e98645ce0d00d369b0d27e5ad5f43a7"
+    },
+    {
+      "task_id": "202609301755-N31BSK",
+      "evidence_kind": "merged_commit",
+      "reason": "Explicit user-approved policy authority renewal is already merged.",
+      "git_ref": "65696d9032b77e80e31c6bca7668a5f32c99c443"
+    },
+    {
+      "task_id": "202609282003-E81FJR",
+      "evidence_kind": "published_tag",
+      "reason": "The historical release projection is covered by the published v0.7.12 tag.",
+      "git_ref": "c0cf289ed677063ddf74a78e13ff81da1b154b7b",
+      "tag": "v0.7.12"
     }
   ]
 }
