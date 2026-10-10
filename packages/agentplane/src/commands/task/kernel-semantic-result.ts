@@ -1,3 +1,4 @@
+import { scopeRequestOperatorAction } from "./kernel-scope-request.js";
 import { assertRecipeV1ConversionResultClaim } from "../recipes/impl/v1-conversion.js";
 import { validateKernelRecipeBindings } from "./kernel-recipe-admission.js";
 import path from "node:path";
@@ -67,6 +68,7 @@ export async function blockKernelSemanticEpisode(opts: {
   work_order_id: string;
   work_item_id: string;
   claim_id: string | null;
+  semantic_result_digest?: k.Sha256Digest;
 }) {
   const stopInputPath = path.join(opts.directory, "semantic-stop-command.json");
   let stopInput: KernelCommandInput;
@@ -82,6 +84,9 @@ export async function blockKernelSemanticEpisode(opts: {
         action: "block",
         work_item_id: opts.work_item_id,
         claim_id: opts.claim_id,
+        ...(opts.semantic_result_digest
+          ? { semantic_result_digest: opts.semantic_result_digest }
+          : {}),
       },
       `semantic-stop:${opts.work_order_id}`,
     );
@@ -131,7 +136,28 @@ export async function acceptKernelSemanticResult(
         work_order_id: semantic.work_order_id,
         work_item_id: binding.work_item_id,
         claim_id: binding.claim_id,
+        semantic_result_digest: k.kernelDigest(semantic),
       });
+    }
+    if (
+      semantic.status === "blocked" &&
+      binding?.phase === "implementation" &&
+      semantic.blocker?.scope_extension_request
+    ) {
+      try {
+        return {
+          kind: "human_required" as const,
+          reason: "canonical_scope_request_requires_user",
+          summary: semantic.summary,
+          operator_action: await scopeRequestOperatorAction(command, taskId, binding.work_item_id),
+        };
+      } catch (error) {
+        return {
+          kind: "human_required" as const,
+          reason: "canonical_scope_request_unavailable",
+          summary: `Scope request retained but cannot be admitted: ${error instanceof Error ? error.message : String(error)}`,
+        };
+      }
     }
     return {
       kind: "human_required" as const,

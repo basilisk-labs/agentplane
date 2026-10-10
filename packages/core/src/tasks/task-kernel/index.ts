@@ -41,3 +41,9 @@ export {
   correctiveRequirements,
   correctiveVerificationCommands,
 } from "./corrective-authority.js";
+
+export {
+  prospectiveScopeApprovalEvidence,
+  prospectiveScopeLineageIssues,
+} from "./prospective-scope.js";
+export type { ProspectiveScopeRequest } from "./prospective-scope.js";

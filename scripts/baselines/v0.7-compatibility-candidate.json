@@ -8,14 +8,14 @@
   "candidate": {
     "section_digests": {
       "agent_facing_context_contracts": "4926aed50aea235e24310e39404f7b939bc4caa7fc763a98387992822a2101c5",
-      "cli_topology": "ac5cdf9d02a03424be67b5f88a74e078b1f5ade8a3c5480fd3af4b0faaa0f195",
+      "cli_topology": "00f6df256a01ef04cc5f9899790ce9c941b954aef09a9f56acb8ddd3da94c332",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
       "package_manifests": "6052feb72f5eee6eaa1a503bb10074492350a164de683adf50bf2b092ce647b9",
       "tarball_policy": "10e8c7b78d3166955320b6fa787d7564b5bba1f67b3ce1736dca46673528716d",
       "workflow_schema": "1003207ce9df63cccac8761565f0d1264c094fd3fda5609012a6716c82842451"
     },
-    "surface_sha256": "eba12bf67ec0a532865ad082a669e9545db92dce4f39d81feaf84ace60b74470"
+    "surface_sha256": "276b158154ea26435f94c265f76cbab05faafaba1f60fde6c6c1e2cb30f5f506"
   },
   "candidate_id": "agentplane.compatibility.v0.7.cumulative",
   "contract_artifacts": {
@@ -849,6 +849,36 @@
               { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
             ],
             "group": "Task",
+            "id": ["task", "scope", "approve-request"],
+            "options": [
+              { "kind": "string", "name": "work-item", "required": true, "valueHint": "<id>" },
+              {
+                "kind": "string",
+                "name": "request-digest",
+                "required": true,
+                "valueHint": "<sha256:...>"
+              },
+              {
+                "kind": "string",
+                "name": "state-digest",
+                "required": true,
+                "valueHint": "<sha256:...>"
+              },
+              {
+                "choices": ["USER"],
+                "kind": "string",
+                "name": "by",
+                "required": true,
+                "valueHint": "USER"
+              }
+            ],
+            "visibility": "advanced"
+          },
+          {
+            "args": [
+              { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+            ],
+            "group": "Task",
             "id": ["task", "scope", "extend"],
             "options": [
               { "kind": "string", "name": "scope-root", "repeatable": true, "valueHint": "<path>" },
@@ -944,6 +974,7 @@
           "task run resolve-effect",
           "task run resume-effect",
           "task run tool",
+          "task scope approve-request",
           "task scope extend",
           "task work-item resume",
           "workflow migrate"
@@ -1827,6 +1858,35 @@
             "name": "run-id",
             "required": true,
             "valueHint": "<run-id>"
+          },
+          {
+            "choices": ["USER"],
+            "command": "task scope approve-request",
+            "kind": "string",
+            "name": "by",
+            "required": true,
+            "valueHint": "USER"
+          },
+          {
+            "command": "task scope approve-request",
+            "kind": "string",
+            "name": "request-digest",
+            "required": true,
+            "valueHint": "<sha256:...>"
+          },
+          {
+            "command": "task scope approve-request",
+            "kind": "string",
+            "name": "state-digest",
+            "required": true,
+            "valueHint": "<sha256:...>"
+          },
+          {
+            "command": "task scope approve-request",
+            "kind": "string",
+            "name": "work-item",
+            "required": true,
+            "valueHint": "<id>"
           },
           {
             "command": "task scope extend",
@@ -2881,9 +2941,38 @@
             "kind": "option",
             "name": "reviewed-work-order-digest",
             "source_task": "202610100750-36SZWD"
+          },
+          {
+            "command": "task scope approve-request",
+            "kind": "command",
+            "source_task": "202610101141-AGRARP"
+          },
+          {
+            "command": "task scope approve-request",
+            "kind": "option",
+            "name": "by",
+            "source_task": "202610101141-AGRARP"
+          },
+          {
+            "command": "task scope approve-request",
+            "kind": "option",
+            "name": "request-digest",
+            "source_task": "202610101141-AGRARP"
+          },
+          {
+            "command": "task scope approve-request",
+            "kind": "option",
+            "name": "state-digest",
+            "source_task": "202610101141-AGRARP"
+          },
+          {
+            "command": "task scope approve-request",
+            "kind": "option",
+            "name": "work-item",
+            "source_task": "202610101141-AGRARP"
           }
         ],
-        "command_count": { "from": 243, "to": 256 },
+        "command_count": { "from": 243, "to": 257 },
         "mutated_command_shells": [
           {
             "after": {
@@ -3080,8 +3169,8 @@
             "identity": "task plan approve --by"
           }
         ],
-        "option_count": { "from": 767, "to": 870 },
-        "positional_count": { "from": 165, "to": 177 },
+        "option_count": { "from": 767, "to": 874 },
+        "positional_count": { "from": 165, "to": 178 },
         "removed_command_descriptors": [
           {
             "args": [{ "name": "cmd", "required": false, "valueHint": "<cmd>", "variadic": true }],
@@ -3602,10 +3691,11 @@
         "202610060956-42J54D",
         "202610081434-RDZE4P",
         "202610100459-0NATSS",
-        "202610100750-36SZWD"
+        "202610100750-36SZWD",
+        "202610101141-AGRARP"
       ],
       "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with caller-supplied structured semantic intent and neutral planner intake, including bounded scope, effect, capability, and resource declarations, explainable per-task workflow routing, signed dialogue approval receipts, compatibility retirement diagnostics, safe local evidence statistics, compaction, garbage collection, and a state-bound USER-approved blocked-task scope extension; promotes the managed task runner; moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces; canonicalizes setup and execution profile selection to standard while retaining legacy init aliases; and makes auto the task route default while retiring repository as a user-facing route. Adds exact-intent operator reconciliation for interrupted integration workflow effects. Retires the active supervisor budget-epoch command after spend limits became telemetry-only. Retires the active Blueprint command surface after Task Kernel replacement proof while preserving cold compatibility readers. Adds explicit approval and supersession options to canonical duplicate and no-op closure. Add explicit bounded corrective-authority inspection, grant and revocation with finite retry and expiry limits.",
-      "to_sha256": "ac5cdf9d02a03424be67b5f88a74e078b1f5ade8a3c5480fd3af4b0faaa0f195"
+      "to_sha256": "00f6df256a01ef04cc5f9899790ce9c941b954aef09a9f56acb8ddd3da94c332"
     },
     {
       "classification": "intentional_breaking_retirement",
@@ -3864,7 +3954,7 @@
     "from_version": "0.6.24",
     "section": "package_manifests",
     "source_task": "202608082119-P6SHBN",
-    "surface_sha256": "19a9a1b9ed375628560d6ab329379446586be63e96daeefc493199e71778a36b",
+    "surface_sha256": "c0b57774f9e0b429e601c9af1710037744d081845d355595b780679821e63058",
     "to_sha256": "fcc419a72f859fb594e93e8e576c4e83f67c207a312477cdbae6994aefda8941",
     "to_version": "0.7.12"
   },
@@ -3942,6 +4032,7 @@
     "202610081434-RDZE4P",
     "202610100459-0NATSS",
     "202610100750-36SZWD",
-    "202610100756-0Y9HMG"
+    "202610100756-0Y9HMG",
+    "202610101141-AGRARP"
   ]
 }

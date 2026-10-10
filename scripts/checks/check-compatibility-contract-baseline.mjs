@@ -46,7 +46,7 @@ const candidatePath = path.join(
 const REVIEWED_SECTION_DIGESTS = {
   agent_facing_context_contracts:
     "4926aed50aea235e24310e39404f7b939bc4caa7fc763a98387992822a2101c5",
-  cli_topology: "ac5cdf9d02a03424be67b5f88a74e078b1f5ade8a3c5480fd3af4b0faaa0f195",
+  cli_topology: "00f6df256a01ef04cc5f9899790ce9c941b954aef09a9f56acb8ddd3da94c332",
   exit_error_contract: "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
   machine_output_contract: "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
   package_manifests: "6052feb72f5eee6eaa1a503bb10074492350a164de683adf50bf2b092ce647b9",
@@ -400,6 +400,7 @@ function validateReviewedCandidate({
     "202610100459-0NATSS",
     "202610100750-36SZWD",
     "202610100756-0Y9HMG",
+    "202610101141-AGRARP",
   ];
 
   assert(
@@ -971,6 +972,7 @@ function validateReviewedCandidate({
       "202610081434-RDZE4P",
       "202610100459-0NATSS",
       "202610100750-36SZWD",
+      "202610101141-AGRARP",
     ],
     agent_facing_context_contracts: [
       "202607221848-1HWR0R",
@@ -3600,6 +3602,36 @@ function validateReviewedCandidate({
       name: "reviewed-work-order-digest",
       source_task: "202610100750-36SZWD",
     },
+
+    {
+      command: "task scope approve-request",
+      kind: "command",
+      source_task: "202610101141-AGRARP",
+    },
+    {
+      command: "task scope approve-request",
+      kind: "option",
+      name: "by",
+      source_task: "202610101141-AGRARP",
+    },
+    {
+      command: "task scope approve-request",
+      kind: "option",
+      name: "request-digest",
+      source_task: "202610101141-AGRARP",
+    },
+    {
+      command: "task scope approve-request",
+      kind: "option",
+      name: "state-digest",
+      source_task: "202610101141-AGRARP",
+    },
+    {
+      command: "task scope approve-request",
+      kind: "option",
+      name: "work-item",
+      source_task: "202610101141-AGRARP",
+    },
   ];
   const activeExpectedAddedCommandDescriptors = expectedAddedCommandDescriptors
     .filter((command) => command.id.join(" ") !== "task supervisor budget-epoch")
@@ -3654,6 +3686,46 @@ function validateReviewedCandidate({
         { name: "expires-at", kind: "string", valueHint: "<ISO-8601>" },
         { name: "grant-digest", kind: "string", valueHint: "<sha256:...>" },
       ],
+    },
+    {
+      args: [
+        {
+          name: "task-id",
+          required: true,
+          valueHint: "<task-id>",
+          variadic: false,
+        },
+      ],
+      group: "Task",
+      id: ["task", "scope", "approve-request"],
+      options: [
+        {
+          kind: "string",
+          name: "work-item",
+          required: true,
+          valueHint: "<id>",
+        },
+        {
+          kind: "string",
+          name: "request-digest",
+          required: true,
+          valueHint: "<sha256:...>",
+        },
+        {
+          kind: "string",
+          name: "state-digest",
+          required: true,
+          valueHint: "<sha256:...>",
+        },
+        {
+          choices: ["USER"],
+          kind: "string",
+          name: "by",
+          required: true,
+          valueHint: "USER",
+        },
+      ],
+      visibility: "advanced",
     },
   );
   activeExpectedAddedCommandDescriptors.sort((a, b) =>
@@ -3718,6 +3790,7 @@ function validateReviewedCandidate({
         "task run resolve-effect",
         "task run resume-effect",
         "task run tool",
+        "task scope approve-request",
         "task scope extend",
         "task work-item resume",
         "workflow migrate",
@@ -3814,6 +3887,36 @@ function validateReviewedCandidate({
       kind: "string",
       name: "reviewed-work-order-digest",
       valueHint: "<pin>",
+    },
+
+    {
+      choices: ["USER"],
+      command: "task scope approve-request",
+      kind: "string",
+      name: "by",
+      required: true,
+      valueHint: "USER",
+    },
+    {
+      command: "task scope approve-request",
+      kind: "string",
+      name: "request-digest",
+      required: true,
+      valueHint: "<sha256:...>",
+    },
+    {
+      command: "task scope approve-request",
+      kind: "string",
+      name: "state-digest",
+      required: true,
+      valueHint: "<sha256:...>",
+    },
+    {
+      command: "task scope approve-request",
+      kind: "string",
+      name: "work-item",
+      required: true,
+      valueHint: "<id>",
     },
   ];
   activeExpectedAddedOptions.sort((a, b) =>
