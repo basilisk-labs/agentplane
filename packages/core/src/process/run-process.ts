@@ -36,6 +36,8 @@ export type RunProcessOptions = {
   windowsHide?: boolean;
   detached?: boolean;
   buffer?: boolean;
+  onStdout?: (chunk: string | Buffer) => void;
+  onStderr?: (chunk: string | Buffer) => void;
 };
 
 export type RunProcessResult<TOutput extends string | Buffer = string | Buffer> = {
@@ -394,12 +396,14 @@ const runProcessImpl = async (
   opts: RunProcessOptions,
 ): Promise<RunProcessResult<string | Buffer>> => {
   const binaryOutput = opts.encoding === null;
-  const result = await runExeca(
+  const child = runExeca(
     normalizeSupportedExecutable(opts.command),
     opts.args ?? [],
     buildProcessOptions(opts) as never,
   );
-  return normalizeProcessResult<string | Buffer>(result, binaryOutput);
+  if (opts.onStdout) child.stdout?.on("data", opts.onStdout);
+  if (opts.onStderr) child.stderr?.on("data", opts.onStderr);
+  return normalizeProcessResult<string | Buffer>(await child, binaryOutput);
 };
 export const runProcess = runProcessImpl as RunProcessFn;
 
@@ -424,6 +428,8 @@ const startProcessImpl = (opts: RunProcessOptions): ManagedProcess => {
       buffer: opts.buffer ?? false,
     }) as never,
   ) as ManagedProcess;
+  if (opts.onStdout) child.stdout?.on("data", opts.onStdout);
+  if (opts.onStderr) child.stderr?.on("data", opts.onStderr);
   void child.catch(() => null);
   return child;
 };
