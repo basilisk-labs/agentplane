@@ -1,3 +1,4 @@
+import type { ReviewedBasePins } from "./kernel-reviewed-base-import.js";
 import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
 import { createKernelRuntime, requireKernelCommit } from "./kernel-runtime-context.js";
 import { projectCanonicalPlanApproval } from "./kernel-plan-authority.js";
@@ -30,6 +31,7 @@ export type TaskPlanApproveParsed = {
   hostUserDecision?: string;
   note?: string;
   renewAuthority?: boolean;
+  reviewedBase?: ReviewedBasePins;
 };
 
 export const taskPlanApproveSpec: CommandSpec<TaskPlanApproveParsed> = {
@@ -38,6 +40,18 @@ export const taskPlanApproveSpec: CommandSpec<TaskPlanApproveParsed> = {
   summary: "Approve the current task plan (enforces Verify Steps gating when configured).",
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
   options: [
+    ...[
+      "reviewed-base-old",
+      "reviewed-base-new",
+      "reviewed-work-order-digest",
+      "reviewed-checkpoint-digest",
+    ].map((name) => ({
+      kind: "string" as const,
+      name,
+      valueHint: "<pin>",
+      description:
+        "Explicit reviewed-base renewal pin. Requires all four pins, --renew-authority and --by USER. Selects retained evidence; does not attest historical dispatch.",
+    })),
     {
       kind: "boolean",
       name: "renew-authority",
@@ -77,6 +91,26 @@ export const taskPlanApproveSpec: CommandSpec<TaskPlanApproveParsed> = {
     },
   ],
   validateRaw: (raw) => {
+    const pins = [
+      "reviewed-base-old",
+      "reviewed-base-new",
+      "reviewed-work-order-digest",
+      "reviewed-checkpoint-digest",
+    ].map((name) => raw.opts[name]);
+    if (
+      pins.some((pin) => pin !== undefined) &&
+      (raw.opts["renew-authority"] !== true ||
+        pins.some(
+          (pin, index) =>
+            typeof pin !== "string" ||
+            !(index < 2 ? /^[a-f0-9]{40}$/u : /^sha256:[a-f0-9]{64}$/u).test(pin),
+        ))
+    )
+      throw usageError({
+        spec: taskPlanApproveSpec,
+        message:
+          "Reviewed-base renewal requires all four full evidence pins and --renew-authority.",
+      });
     const by = raw.opts.by;
     const receipt = raw.opts["approval-receipt"];
     const hostDecision = raw.opts["host-user-decision"];
@@ -103,6 +137,20 @@ export const taskPlanApproveSpec: CommandSpec<TaskPlanApproveParsed> = {
     return {
       taskId: String(raw.args["task-id"]),
       renewAuthority: raw.opts["renew-authority"] === true,
+      ...(raw.opts["reviewed-base-old"]
+        ? {
+            reviewedBase: {
+              old_commit: raw.opts["reviewed-base-old"] as string,
+              new_commit: String(raw.opts["reviewed-base-new"]),
+              work_order_digest: String(
+                raw.opts["reviewed-work-order-digest"],
+              ) as ReviewedBasePins["work_order_digest"],
+              checkpoint_digest: String(
+                raw.opts["reviewed-checkpoint-digest"],
+              ) as ReviewedBasePins["checkpoint_digest"],
+            },
+          }
+        : {}),
       by: typeof raw.opts.by === "string" ? raw.opts.by.trim() : undefined,
       approvalReceipt:
         typeof raw.opts["approval-receipt"] === "string"
@@ -131,6 +179,7 @@ export function makeRunTaskPlanApproveHandler(getCtx: (cmd: string) => Promise<C
         task_id: p.taskId,
         transport: "manual",
         operation_id: `approve:${p.taskId}`,
+        ...(p.reviewedBase ? { reviewed_base: p.reviewedBase } : {}),
         approval: p.approvalReceipt
           ? { kind: "signed_user_receipt", encoded: p.approvalReceipt }
           : {
