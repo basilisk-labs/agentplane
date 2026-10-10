@@ -15,8 +15,8 @@ Issue #6119 was observed with installed 0.7.12-beta.1, not qualified7b46. Add ge
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>
