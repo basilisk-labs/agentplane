@@ -538,3 +538,31 @@ test("fixed-corpus observed quality is distinct from finite population uncertain
     false,
   );
 });
+
+test("prospective supplementary fallback totals retain all assigned primary costs and failures", (t) => {
+  const analysisOverride = {
+    ...analysis,
+    primary_estimand: "overall_deployment_policy",
+    supplementary_strata: {
+      positive_applicability: ["direct-fix", "branch-change", "recoverable-failure"],
+      fallback: ["no-match", "near-match"],
+    },
+  };
+  const f = fixture(t, {
+    fail: "instantiate",
+    extra: true,
+    analysisOverride,
+    assignmentMutation: (assignments) => {
+      for (const assignment of assignments) assignment.stratum = "no-match";
+    },
+  });
+  const report = buildSubscriptionReport(f.input, f.host);
+  assert.equal(report.primary_estimand, "overall_deployment_policy");
+  assert.equal(report.assignments.length, 3);
+  assert.equal(report.arms.no_recipe.setup_inclusive_tokens, 40);
+  assert.equal(report.arms.instantiate.verified_successes, 0);
+  assert.deepEqual(report.supplementary[1].arms, report.arms);
+  assert.equal(report.supplementary[0].arms.instantiate.assigned, 0);
+  assert.equal(report.supplementary[1].descriptive_only, true);
+  assert.equal(report.efficiency, "NOT_ESTABLISHED");
+});
