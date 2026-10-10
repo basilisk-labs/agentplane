@@ -1,3 +1,4 @@
+import { publicInterfaceFeedback } from "./public-interface-feedback.mjs";
 import assert from "node:assert/strict";
 import { constants, openSync, closeSync, fstatSync, readSync } from "node:fs";
 import path from "node:path";
@@ -47,12 +48,13 @@ function inspect(run) {
     };
   }
 }
-export function publicCompilerFeedback(candidateRoot, publicCasesFile) {
+export function publicCompilerFeedback(candidateRoot, publicCasesFile, productContractFile) {
   const manifest = JSON.parse(boundedFile(path.join(candidateRoot, "manifest.json")));
   const scenario = JSON.parse(boundedFile(path.join(candidateRoot, "scenario.json")));
   boundedFile(path.join(candidateRoot, "agent.md"));
   const cases = JSON.parse(boundedFile(publicCasesFile));
   assert.ok(Array.isArray(cases) && cases.length > 0 && cases.length <= 5);
+  const contract = productContractFile ? JSON.parse(boundedFile(productContractFile)) : null;
   const baseline = createRepositorySnapshot({
     git: { kind: "unavailable", reason_code: "PREPARATION_ONLY" },
     dirty_paths: [],
@@ -76,13 +78,26 @@ export function publicCompilerFeedback(candidateRoot, publicCasesFile) {
         allowed_write_paths: JSON.stringify(spec.allowed_write_paths),
         workflow: spec.workflow,
       };
+      const bindings = Object.entries(values).map(([name, value]) => ({ name, value }));
+      let compatibility;
+      if (contract) {
+        try {
+          compatibility = publicInterfaceFeedback(scenario, bindings, manifest, contract);
+        } catch (error) {
+          compatibility = {
+            scope: "static interface only",
+            error: String(error.message).slice(0, 1024),
+          };
+        }
+      }
       return {
         id: spec.id,
+        ...(compatibility ? { compatibility } : {}),
         ...inspect(() =>
           compileScenarioInstantiation({
             mode: "instantiate",
             scenario,
-            bindings: Object.entries(values).map(([name, value]) => ({ name, value })),
+            bindings,
             task_id: "public-compiler-feedback",
             planning_baseline: baseline,
           }),
@@ -92,7 +107,7 @@ export function publicCompilerFeedback(candidateRoot, publicCasesFile) {
   };
 }
 if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {
-  const [candidate, cases, ...extra] = process.argv.slice(2);
+  const [candidate, cases, contract, ...extra] = process.argv.slice(2);
   assert.equal(extra.length, 0);
-  console.log(JSON.stringify(publicCompilerFeedback(candidate, cases)));
+  console.log(JSON.stringify(publicCompilerFeedback(candidate, cases, contract)));
 }
