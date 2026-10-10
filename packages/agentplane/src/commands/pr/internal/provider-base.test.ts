@@ -16,7 +16,7 @@ afterEach(async () => {
   for (const root of roots.splice(0)) await rm(root, { recursive: true, force: true });
 });
 
-async function fixture() {
+async function fixture(provider: "github" | "gitlab" = "github") {
   const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-exact-base-"));
   roots.push(root);
   const git = async (...args: string[]) => {
@@ -34,8 +34,8 @@ async function fixture() {
   await git("remote", "add", "upstream", target);
   await git("push", "upstream", "main");
   const identity: GitHostIdentity = {
-    provider: "github",
-    hostname: "github.com",
+    provider,
+    hostname: provider === "github" ? "github.com" : "gitlab.com",
     remote: "upstream",
     sourceProject: "fork/project",
     targetProject: "owner/project",
@@ -47,20 +47,23 @@ async function fixture() {
 }
 
 describe("exact-SHA provider base", () => {
-  it("maps only matching local and live target heads without changing the frozen base", async () => {
-    const { git, sha, opts } = await fixture();
-    await git("update-ref", "-d", "refs/remotes/upstream/main");
-    await expect(resolveProviderBaseBranch(opts)).resolves.toBe("main");
-    expect(opts.baseRef).toBe(sha);
-    expect(opts.baseSha).toBe(sha);
-    await expect(
-      resolveProviderBaseBranch({
-        ...opts,
-        baseRef: sha.toUpperCase(),
-        baseSha: sha.toUpperCase(),
-      }),
-    ).resolves.toBe("main");
-  });
+  it.each(["github", "gitlab"] as const)(
+    "maps matching %s heads without changing the frozen base",
+    async (provider) => {
+      const { git, sha, opts } = await fixture(provider);
+      await git("update-ref", "-d", "refs/remotes/upstream/main");
+      await expect(resolveProviderBaseBranch(opts)).resolves.toBe("main");
+      expect(opts.baseRef).toBe(sha);
+      expect(opts.baseSha).toBe(sha);
+      await expect(
+        resolveProviderBaseBranch({
+          ...opts,
+          baseRef: sha.toUpperCase(),
+          baseSha: sha.toUpperCase(),
+        }),
+      ).resolves.toBe("main");
+    },
+  );
 
   it("leaves named and empty bases unchanged without looking up any remote", async () => {
     const { opts } = await fixture();
