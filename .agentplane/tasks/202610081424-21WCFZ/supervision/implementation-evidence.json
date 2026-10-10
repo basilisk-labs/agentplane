@@ -1,0 +1,69 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 86c8fca083199ef556cdc62d35b6566e67ce9258..524e967aa23ca39e41746aee2552998eb2009887",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 86c8fca083199ef556cdc62d35b6566e67ce9258..524e967aa23ca39e41746aee2552998eb2009887",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202610081424-21WCFZ/README.md",
+        "M\t.agentplane/tasks/202610081424-21WCFZ/supervision/declared-checks.json",
+        "M\t.agentplane/tasks/202610081424-21WCFZ/supervision/implementation-evidence.json",
+        "M\tartifacts/bench/m05-live-0.7.13/coding-corpus-qualification.json",
+        "M\tartifacts/bench/m05-live-0.7.13/subscription-registration.json",
+        "M\tscripts/bench/internal/paired-m05/coding-host.test.mjs"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "86c8fca083199ef556cdc62d35b6566e67ce9258",
+  "implementation_commit": "524e967aa23ca39e41746aee2552998eb2009887",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      " M .agentplane/tasks/202610081424-21WCFZ/README.md",
+      " M .agentplane/tasks/202610081424-21WCFZ/supervision/declared-checks.json",
+      " M .agentplane/tasks/202610081424-21WCFZ/supervision/implementation-evidence.json"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202610081424-21WCFZ/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202610081424-21WCFZ/supervision/declared-checks.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202610081424-21WCFZ/supervision/implementation-evidence.json"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M .agentplane/tasks/202610081424-21WCFZ/README.md",
+      " M .agentplane/tasks/202610081424-21WCFZ/supervision/declared-checks.json",
+      " M .agentplane/tasks/202610081424-21WCFZ/supervision/implementation-evidence.json"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202610081424-21WCFZ"
+}

@@ -126,3 +126,12 @@ test(
     }
   },
 );
+
+// Version 4 mechanics are offline fixtures, never economic measurements.
+import "./internal/paired-m05/isolation.test.mjs";
+import "./internal/paired-m05/coding-corpus.test.mjs";
+import "./internal/paired-m05/coding-recipe.test.mjs";
+import "./internal/paired-m05/native-coding-loop.test.mjs";
+import "./internal/paired-m05/semantic-coding-port.test.mjs";
+import "./internal/paired-m05/native-coding-cli.test.mjs";
+import "./internal/paired-m05/coding-host.test.mjs";

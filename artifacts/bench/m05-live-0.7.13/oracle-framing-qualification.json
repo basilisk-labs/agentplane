@@ -1,0 +1,265 @@
+{
+  "schema_version": 1,
+  "kind": "agentplane.m05_oracle_framing_qualification",
+  "task_id": "202610100510-X193M6",
+  "mode": "offline",
+  "economic_measurement": false,
+  "source_base": "54512a1e74e4586ee2692ae7ce42076cb02237b0",
+  "historical_artifact": {
+    "path": "artifacts/bench/m05-live-0.7.13/coding-corpus-qualification.json",
+    "digest": "sha256:13c2e903bc846f86ae757d28dc008d8d116371f7cd6dfad9a1a8cce207914c22",
+    "superseded_claim": "Lossy JSON output comparison is not sufficient behavioral qualification."
+  },
+  "provenance": {
+    "scripts/bench/internal/paired-m05/coding-corpus.mjs": "sha256:f89fd0be5bd1cc6f92af4debd07d277c5d9ede12a6fefe6de3c65186d8f4f541",
+    "scripts/bench/internal/paired-m05/coding-corpus.test.mjs": "sha256:318809fd54221e1a5e32a2d2354626ad1c3096a88651af5657f0768db18a5267",
+    "scripts/bench/internal/paired-m05/qualify-oracle-framing.mjs": "sha256:e1c347a3b2db35d54d76a74b7118cafae32c174fba08026531d55d5de8a2eb25",
+    "scripts/bench/internal/paired-m05/isolation.mjs": "sha256:6eeb26d3db6bcd6f3ecfe028d3685babe2cc3c745a6f698a25e773dde53e1433",
+    "scripts/bench/internal/paired-m05/landlock-runner.py": "sha256:f472e8e226b1f88f250151fb7dbb530c50f2a0680d78ef195284ed71ed15fa11"
+  },
+  "cases": [
+    {
+      "manifest": {
+        "schema_version": 4,
+        "id": "direct-fix",
+        "workflow": "direct",
+        "selection": "exact",
+        "objective": "Return a safe nonnegative integer for canonical decimal strings (0 or a nonzero digit followed by digits); return null for other values.",
+        "initial_commit": "4819ed3452919d7aa5ef3b5e36725e6dce0247ed",
+        "initial_tree": "1dc28690eef1b1d8d33650c58ce90c94893bc0e8",
+        "source_digest": "sha256:fcf6648284e497efc621015cf57cb211e8581f1f2a257d10fb306e2a8b6acf9b",
+        "visible_digest": "sha256:c0407d2cc994ec4290efee7d31e2b169a2ca7f74656b7b0c6cf44485925c35fd",
+        "readme_digest": "sha256:d9a0d745504f62f43dbbd233f1734952bc85c7339f5bc36246a676b8051f3c2b",
+        "reference_digest": "sha256:4dcfc058ae1a595258d017ee20add12c4a0a5154559e78818c5ff79445124b59",
+        "hidden_oracle_digest": "sha256:3e13998d700e18a68cdfce957cafa4bfad1fe4db244788735ab901577972cf6d",
+        "scope": ["src/module.mjs"],
+        "check": "node visible.test.mjs"
+      },
+      "qualification": {
+        "initial": {
+          "passed": false,
+          "source_digest": "sha256:fcf6648284e497efc621015cf57cb211e8581f1f2a257d10fb306e2a8b6acf9b",
+          "process_status": 0,
+          "observed_digest": "sha256:aa24613384d64d5b9faeae3a4d4829d0164c10ddc5665f858758cbe9a34e1d78",
+          "expected_digest": "sha256:ca9040ecf3fe63de942522fea50eb4d39160851bffd22a40ba8be8d4f7b67049"
+        },
+        "reference": {
+          "passed": true,
+          "source_digest": "sha256:4dcfc058ae1a595258d017ee20add12c4a0a5154559e78818c5ff79445124b59",
+          "process_status": 0,
+          "observed_digest": "sha256:ca9040ecf3fe63de942522fea50eb4d39160851bffd22a40ba8be8d4f7b67049",
+          "expected_digest": "sha256:ca9040ecf3fe63de942522fea50eb4d39160851bffd22a40ba8be8d4f7b67049"
+        },
+        "initial_visible_status": 1,
+        "reference_visible_status": 0
+      }
+    },
+    {
+      "manifest": {
+        "schema_version": 4,
+        "id": "branch-change",
+        "workflow": "branch_pr",
+        "selection": "exact",
+        "objective": "Group rows by category, sum numeric amounts and return category/total objects sorted by category using code-point order.",
+        "initial_commit": "00529f9d6b45fcbe84c62952a2c98c271231608f",
+        "initial_tree": "a53931d0c45f30bb3cbd802d65260248807292f1",
+        "source_digest": "sha256:f868f9778654e74480810938099c7d5b89e64f0936942f49df6cdc89f15b7e49",
+        "visible_digest": "sha256:d645144d3efc664a6e6ab9f083ded5748a4cd35ad667ecbbb23a7881791e38f7",
+        "readme_digest": "sha256:5f1a54e0e6f333f8af30ac440daaf12dac93a53026fcd67e1e97bf5bbb875e2b",
+        "reference_digest": "sha256:024b0d29a65fe289020d226099649cf45ad89f99a4706304eefdd59bb775cccd",
+        "hidden_oracle_digest": "sha256:e55992a1f299c0696caed4f937f859dedbdcb2d1a6b3c84f35e4c667b09f009f",
+        "scope": ["src/module.mjs"],
+        "check": "node visible.test.mjs"
+      },
+      "qualification": {
+        "initial": {
+          "passed": false,
+          "source_digest": "sha256:f868f9778654e74480810938099c7d5b89e64f0936942f49df6cdc89f15b7e49",
+          "process_status": 0,
+          "observed_digest": "sha256:21b8aa1e70d50598ba0c0fb3d8e01ce16524fdb64be9be87b0e8f29d91528271",
+          "expected_digest": "sha256:61c0b25bc83a8d05e53516902e99620bfccd6c67cd4f7ddabbd31d9c20f26ff3"
+        },
+        "reference": {
+          "passed": true,
+          "source_digest": "sha256:024b0d29a65fe289020d226099649cf45ad89f99a4706304eefdd59bb775cccd",
+          "process_status": 0,
+          "observed_digest": "sha256:61c0b25bc83a8d05e53516902e99620bfccd6c67cd4f7ddabbd31d9c20f26ff3",
+          "expected_digest": "sha256:61c0b25bc83a8d05e53516902e99620bfccd6c67cd4f7ddabbd31d9c20f26ff3"
+        },
+        "initial_visible_status": 1,
+        "reference_visible_status": 0
+      }
+    },
+    {
+      "manifest": {
+        "schema_version": 4,
+        "id": "recoverable-failure",
+        "workflow": "direct",
+        "selection": "exact",
+        "objective": "Compute exponential retry delay min(cap, base * 2 ** attempt) for nonnegative integer attempts and positive base/cap. Preserve the original failed validation in native rework history.",
+        "initial_commit": "4b90be6b236cd06ec021d1106334bebd5c21e687",
+        "initial_tree": "e3cf2a644c94f520553da6949bec35b9c30816c9",
+        "source_digest": "sha256:9504719247e297f1abc9ce17c41115f130c948b055c8841cec121b78ce87fbce",
+        "visible_digest": "sha256:d3921ca65b7c85aea25af7b5fdb279421cbef6c27ff151a8cbb9f6edcf76e9ad",
+        "readme_digest": "sha256:d036f4093412c50af0e8a9e7ab9582b51222f5e5bd0f624aef07d451a0ed923d",
+        "reference_digest": "sha256:d127100a713a6554eeda5b0107be898cba276fe82b64050dc625f0f518efbc16",
+        "hidden_oracle_digest": "sha256:aca3095f52520694f45ca669b82e9f722742c9a0393ee3683629aba032ceb244",
+        "scope": ["src/module.mjs"],
+        "check": "node visible.test.mjs"
+      },
+      "qualification": {
+        "initial": {
+          "passed": false,
+          "source_digest": "sha256:9504719247e297f1abc9ce17c41115f130c948b055c8841cec121b78ce87fbce",
+          "process_status": 0,
+          "observed_digest": "sha256:1c0ab22744d30178123a22161116fe849fe4382f1241a274cc67b534f7360cfa",
+          "expected_digest": "sha256:65e4acbf7b9c80caf492c607947609ad648d8a4c9bd640a9a860cdfc02edbf37"
+        },
+        "reference": {
+          "passed": true,
+          "source_digest": "sha256:d127100a713a6554eeda5b0107be898cba276fe82b64050dc625f0f518efbc16",
+          "process_status": 0,
+          "observed_digest": "sha256:65e4acbf7b9c80caf492c607947609ad648d8a4c9bd640a9a860cdfc02edbf37",
+          "expected_digest": "sha256:65e4acbf7b9c80caf492c607947609ad648d8a4c9bd640a9a860cdfc02edbf37"
+        },
+        "initial_visible_status": 1,
+        "reference_visible_status": 0
+      }
+    },
+    {
+      "manifest": {
+        "schema_version": 4,
+        "id": "no-match",
+        "workflow": "direct",
+        "selection": "no_match",
+        "objective": "Encode a query component with the encodeURIComponent contract, including spaces, ampersands and Unicode. No exact installed Recipe matches. Only a registered ordinary-planning fallback may complete coding.",
+        "initial_commit": "fa446025b6776a266ab8cb48381f5ddf642c5f69",
+        "initial_tree": "84595b21439183999ba0cd5f3f70c7fc07513208",
+        "source_digest": "sha256:fe30b43cfd13688104b5a3ed32fb530999d47e71a1149ee6d32da076f8b8a527",
+        "visible_digest": "sha256:f586c5b305b880396d34ef629ce404cb9626f5dc850b5bdae5378c42e1aaac06",
+        "readme_digest": "sha256:8674e5df91aa535467d7f37615273c35dff0b2ab6c005a1a5f37e0b952c84b67",
+        "reference_digest": "sha256:285d42e0eca0c6ed6d065fa2a9c411fe4fef76d8464d04b1dab04f22a58384d0",
+        "hidden_oracle_digest": "sha256:36136ea7a064359b0b8ed07a308fd284085bf03904200cffc76390bdbce44b64",
+        "scope": ["src/module.mjs"],
+        "check": "node visible.test.mjs"
+      },
+      "qualification": {
+        "initial": {
+          "passed": false,
+          "source_digest": "sha256:fe30b43cfd13688104b5a3ed32fb530999d47e71a1149ee6d32da076f8b8a527",
+          "process_status": 0,
+          "observed_digest": "sha256:06d91f8089a83aa0af47d4acf67a19dd3ff8d5d9c24cd1d7ddc30de79f526041",
+          "expected_digest": "sha256:a9eaa82291bb74375fbcfa204ff3735a90962d88e38f640e41f42481e9528146"
+        },
+        "reference": {
+          "passed": true,
+          "source_digest": "sha256:285d42e0eca0c6ed6d065fa2a9c411fe4fef76d8464d04b1dab04f22a58384d0",
+          "process_status": 0,
+          "observed_digest": "sha256:a9eaa82291bb74375fbcfa204ff3735a90962d88e38f640e41f42481e9528146",
+          "expected_digest": "sha256:a9eaa82291bb74375fbcfa204ff3735a90962d88e38f640e41f42481e9528146"
+        },
+        "initial_visible_status": 1,
+        "reference_visible_status": 0
+      }
+    },
+    {
+      "manifest": {
+        "schema_version": 4,
+        "id": "near-match",
+        "workflow": "direct",
+        "selection": "near_match",
+        "objective": "Split a line by its supplied nonempty delimiter, trim each field and preserve empty fields. The Recipe's delimiter binding is absent; request evidence or use the registered fallback without inventing it.",
+        "initial_commit": "9afc3b9183455c3d80855c682192509d0063e436",
+        "initial_tree": "d166556869e9739460c03c8648a203b2f7fbe986",
+        "source_digest": "sha256:c91c9d1732258269470af745aff0f9a862feab1da34701bb053d1dee81ddc097",
+        "visible_digest": "sha256:1ec7742f73bb277227ff1e290dd8af74451f5f8d6dad460907c0e8205c7e602a",
+        "readme_digest": "sha256:43df2a6e75331abde3e3d7bcc50d9ad1dd689c06109d9ef86b1613f3e480c302",
+        "reference_digest": "sha256:a2761000b14c13648e07adfc7a6dc615a3b46452c49641eeb06571062de789c9",
+        "hidden_oracle_digest": "sha256:5086948069d85799a076c3dff601927ac9eef879da474129804e3e6ca6b07c06",
+        "scope": ["src/module.mjs"],
+        "check": "node visible.test.mjs"
+      },
+      "qualification": {
+        "initial": {
+          "passed": false,
+          "source_digest": "sha256:c91c9d1732258269470af745aff0f9a862feab1da34701bb053d1dee81ddc097",
+          "process_status": 0,
+          "observed_digest": "sha256:b56c73faae24374c36c78bb0e1feafdba251e6d0a3e827f8dff4623417758ef0",
+          "expected_digest": "sha256:229e5b4d5ac9bce54c57baab6bf9c44cf026b847c5f4e78877ddd7fc45f54112"
+        },
+        "reference": {
+          "passed": true,
+          "source_digest": "sha256:a2761000b14c13648e07adfc7a6dc615a3b46452c49641eeb06571062de789c9",
+          "process_status": 0,
+          "observed_digest": "sha256:229e5b4d5ac9bce54c57baab6bf9c44cf026b847c5f4e78877ddd7fc45f54112",
+          "expected_digest": "sha256:229e5b4d5ac9bce54c57baab6bf9c44cf026b847c5f4e78877ddd7fc45f54112"
+        },
+        "initial_visible_status": 1,
+        "reference_visible_status": 0
+      }
+    }
+  ],
+  "negative_controls": [
+    {
+      "kind": "NaN",
+      "visible_status": 0,
+      "observation": {
+        "passed": false,
+        "source_digest": "sha256:7fb4182185971e304296ec48d4ac0df1844109d2dd669c9487837e7bd82c5514",
+        "process_status": 0,
+        "observed_digest": "sha256:d2d7c551b094eced08eb03c46f560bc756f822ff0140352ec91a981af080cf85",
+        "expected_digest": "sha256:ca9040ecf3fe63de942522fea50eb4d39160851bffd22a40ba8be8d4f7b67049"
+      }
+    },
+    {
+      "kind": "Infinity",
+      "visible_status": 0,
+      "observation": {
+        "passed": false,
+        "source_digest": "sha256:6a1d3e1b0dc685b4aeb86ff8de1a5670c7d0e232423fa2b660ffbd67955f9288",
+        "process_status": 0,
+        "observed_digest": "sha256:6c3ef7745bf01bcf5657b9e099693e807e0f9f684b59a008fa5896a742229625",
+        "expected_digest": "sha256:ca9040ecf3fe63de942522fea50eb4d39160851bffd22a40ba8be8d4f7b67049"
+      }
+    },
+    {
+      "kind": "-Infinity",
+      "visible_status": 0,
+      "observation": {
+        "passed": false,
+        "source_digest": "sha256:8c453a72f8cd431231f2ab6b1685a7cd0b1c3bfa4f3b3d8bfdbd100dddbd9d61",
+        "process_status": 0,
+        "observed_digest": "sha256:3eaafd719cf0e3acf25b353b709b4a151eda83c9fa11eb543419416c364d151d",
+        "expected_digest": "sha256:ca9040ecf3fe63de942522fea50eb4d39160851bffd22a40ba8be8d4f7b67049"
+      }
+    },
+    {
+      "kind": "undefined",
+      "visible_status": 0,
+      "observation": {
+        "passed": false,
+        "source_digest": "sha256:5b8488b458bec40041a2149e0f4accf4ef779ac59901e0964c21debfbbaa1689",
+        "process_status": 0,
+        "observed_digest": "sha256:58e6c434776a28fae7d61658e66d7b99fdef5554a1dadd9c2814067839d24573",
+        "expected_digest": "sha256:ca9040ecf3fe63de942522fea50eb4d39160851bffd22a40ba8be8d4f7b67049"
+      }
+    },
+    {
+      "kind": "negative_zero",
+      "visible_status": 0,
+      "observation": {
+        "passed": false,
+        "source_digest": "sha256:a20d2d2bb9146ea76e6c1174ab3647278ed66705839a0cc61e207a6c6e7430c1",
+        "process_status": 0,
+        "observed_digest": "sha256:1ed1656c90289c296dfc937ae6d14b66ec8b6fe2809566bcfdb95447d7f33bcf",
+        "expected_digest": "sha256:ca9040ecf3fe63de942522fea50eb4d39160851bffd22a40ba8be8d4f7b67049"
+      }
+    }
+  ],
+  "launch_gaps": [
+    "Independent review pending for this exact framing implementation.",
+    "Full broker/tool/read isolation is a separate qualification owned by CT33WV.",
+    "Historical Recipe setup token usage is unknown; no zero-cost or efficiency claim.",
+    "Product/model/strategy freeze and prospectively measured setup remain campaign requirements."
+  ]
+}
