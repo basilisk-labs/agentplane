@@ -3,7 +3,8 @@
   "branch": "task/202610102331-Z9KEV4/github-unprotected",
   "created_at": "2026-10-10T23:42:53.480Z",
   "diffstat_sha256": "sha256:bdcc7fcf22229b626e6c01b66d00d6d5ffd15d86b063ad01c5b67952765ddbeb",
-  "last_verified_at": null,
+  "last_verified_at": "2026-10-10T23:49:24.077Z",
+  "last_verified_diffstat_sha256": "sha256:bdcc7fcf22229b626e6c01b66d00d6d5ffd15d86b063ad01c5b67952765ddbeb",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202610102331-Z9KEV4",
   "updated_at": "2026-10-10T23:42:53.480Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
