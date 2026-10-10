@@ -250,3 +250,46 @@ test("compiler exception is pinned input-only and preserves individual and total
   writeFileSync(compiler, "x".repeat(524_289));
   assert.throws(() => setupInventory(packet.inputs, { publicCompiler: true }));
 });
+
+test("evaluator-only continuation pins existing candidate and has no writes", async (t) => {
+  const { packet } = fixture(t);
+  writeFileSync(path.join(packet.outputs, "scenario.json"), "{}\n");
+  packet.role_sequence = ["EVALUATOR"];
+  packet.contract.limits.max_calls = 1;
+  packet.contract.limits.max_episodes = 1;
+  packet.initial_output_inventory = setupInventory(packet.outputs);
+  const mocks = ports(packet);
+  const result = await runSubscriptionSetup({ packet, authorize: async () => true }, mocks);
+  assert.deepEqual(
+    result.results.map((r) => r.role),
+    ["EVALUATOR"],
+  );
+  assert.deepEqual(mocks.observed[0].writable, []);
+  assert.deepEqual(result.outputs, packet.initial_output_inventory);
+  await assert.rejects(runSubscriptionSetup({ packet, authorize: async () => true }, mocks));
+});
+
+test("read-only review rejects candidate mutation even if transport reports completion", async (t) => {
+  const { packet } = fixture(t);
+  writeFileSync(path.join(packet.outputs, "scenario.json"), "{}\n");
+  packet.role_sequence = ["EVALUATOR"];
+  packet.contract.limits.max_calls = 1;
+  packet.contract.limits.max_episodes = 1;
+  packet.initial_output_inventory = setupInventory(packet.outputs);
+  const mocks = ports(packet);
+  const open = mocks.openBoundary;
+  mocks.openBoundary = async (...args) => {
+    const boundary = await open(...args);
+    return {
+      execute: async (...input) => {
+        const receipt = await boundary.execute(...input);
+        writeFileSync(path.join(packet.outputs, "scenario.json"), '{"changed":true}\n');
+        return receipt;
+      },
+    };
+  };
+  await assert.rejects(
+    runSubscriptionSetup({ packet, authorize: async () => true }, mocks),
+    /Read-only role changed candidate/u,
+  );
+});

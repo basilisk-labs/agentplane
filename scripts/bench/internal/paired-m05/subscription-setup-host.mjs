@@ -57,7 +57,8 @@ export async function runSubscriptionSetup(
   const roles = packet.role_sequence ?? ["PLANNER", "EXECUTOR", "EVALUATOR"];
   assert.ok(
     JSON.stringify(roles) === JSON.stringify(["PLANNER", "EXECUTOR", "EVALUATOR"]) ||
-      JSON.stringify(roles) === JSON.stringify(["EXECUTOR", "EVALUATOR"]),
+      JSON.stringify(roles) === JSON.stringify(["EXECUTOR", "EVALUATOR"]) ||
+      JSON.stringify(roles) === JSON.stringify(["EVALUATOR"]),
     "Unsupported setup role sequence",
   );
   assert.equal(contract.limits.max_calls, roles.length);
@@ -84,8 +85,8 @@ export async function runSubscriptionSetup(
     );
   }
   assert.deepEqual(readInputs(), packet.input_inventory, "Public inputs changed");
-  const initialOutputs = roles.length === 2 ? packet.initial_output_inventory : [];
-  if (roles.length === 2)
+  const initialOutputs = roles.length < 3 ? packet.initial_output_inventory : [];
+  if (roles.length < 3)
     assert.ok(
       Array.isArray(initialOutputs) && initialOutputs.length > 0,
       "Correction candidate inventory required",
@@ -93,6 +94,7 @@ export async function runSubscriptionSetup(
   assert.deepEqual(setupInventory(outputs), initialOutputs, "Initial strategy changed");
   const results = [];
   for (const role of roles) {
+    const beforeRoleOutputs = setupInventory(outputs);
     const directory = path.join(host, role.toLowerCase());
     mkdirSync(directory, { recursive: false });
     const policyPath = path.join(directory, "policy.json");
@@ -177,6 +179,12 @@ export async function runSubscriptionSetup(
       )?.item.text;
       assert.equal(typeof message, "string", "Bound setup result required");
       assert.deepEqual(readInputs(), packet.input_inventory, "Public inputs changed");
+      if (role !== "EXECUTOR")
+        assert.deepEqual(
+          setupInventory(outputs),
+          beforeRoleOutputs,
+          "Read-only role changed candidate",
+        );
       const result = { role, call_id: call.id, receipt, message, outputs: setupInventory(outputs) };
       writeFileSync(path.join(directory, "result.json"), JSON.stringify(result, null, 2) + "\n", {
         flag: "wx",
