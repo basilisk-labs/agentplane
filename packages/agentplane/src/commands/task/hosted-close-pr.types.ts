@@ -83,8 +83,7 @@ export type HostedClosePrOutcome =
     };
 
 export type HostedClosePrPrecheckResult =
-  | { kind: "skip"; outcome: HostedClosePrOutcome }
-  | { kind: "ready"; plan: HostedClosePrPlan };
+  { kind: "skip"; outcome: HostedClosePrOutcome } | { kind: "ready"; plan: HostedClosePrPlan };
 
 export type HostedClosePrNotice = {
   level: "info" | "warn";

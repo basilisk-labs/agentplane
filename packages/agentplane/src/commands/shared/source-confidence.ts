@@ -8,12 +8,7 @@ type SourceConfidenceSource =
   | "remote_provider";
 
 type SourceConfidenceFreshness =
-  | "static"
-  | "live_local"
-  | "computed_local"
-  | "cached_artifact"
-  | "remote_live"
-  | "remote_skipped";
+  "static" | "live_local" | "computed_local" | "cached_artifact" | "remote_live" | "remote_skipped";
 
 type SourceConfidenceLevel = "high" | "medium" | "low" | "skipped";
 

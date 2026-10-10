@@ -334,9 +334,7 @@ export class KernelAuthorityResolver {
       !k.compareExecutionAuthority(limit, candidate).ok ||
       ["policy_digests", "validation_requirements", "completion_requirements"].some((key) => {
         const field = key as
-          | "policy_digests"
-          | "validation_requirements"
-          | "completion_requirements";
+          "policy_digests" | "validation_requirements" | "completion_requirements";
         return (
           k.kernelDigest(authority[field].toSorted()) !==
           k.kernelDigest(context.ceiling[field].toSorted())

@@ -54,13 +54,7 @@ export type WorkItemState =
   | "CANCELLED";
 
 export type SemanticWorkKind =
-  | "plan"
-  | "execute"
-  | "diagnose"
-  | "repair"
-  | "review"
-  | "clarify"
-  | "replan";
+  "plan" | "execute" | "diagnose" | "repair" | "review" | "clarify" | "replan";
 
 export type AcceptanceCriterion = Readonly<{
   id: string;

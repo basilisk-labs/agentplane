@@ -282,8 +282,7 @@ function normalizeOverlayWhen(raw: unknown, field: string): OverlayWhen | undefi
   if (!isRecord(raw)) throw new Error(invalidFieldMessage(field, "object"));
   return {
     task_kinds: normalizeOptionalStringList(raw.task_kinds, `${field}.task_kinds`) as
-      | OverlayWhen["task_kinds"]
-      | undefined,
+      OverlayWhen["task_kinds"] | undefined,
     commands: normalizeOptionalStringList(raw.commands, `${field}.commands`),
     tags_any: normalizeOptionalStringList(raw.tags_any, `${field}.tags_any`),
     repo_types: normalizeOptionalStringList(raw.repo_types, `${field}.repo_types`),

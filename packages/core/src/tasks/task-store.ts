@@ -86,12 +86,7 @@ export type TaskOrigin = {
 };
 
 export type TaskRunnerOutcomeStatus =
-  | "prepared"
-  | "running"
-  | "success"
-  | "failed"
-  | "blocked"
-  | "cancelled";
+  "prepared" | "running" | "success" | "failed" | "blocked" | "cancelled";
 
 export type TaskRunnerExecutionMetrics = {
   duration_ms?: number;
@@ -194,12 +189,7 @@ export type TaskRepositoryEffect =
   | "security_boundary";
 
 export type TaskExternalEffect =
-  | "network_read"
-  | "external_write"
-  | "credentials"
-  | "publish"
-  | "deploy"
-  | "destructive_git";
+  "network_read" | "external_write" | "credentials" | "publish" | "deploy" | "destructive_git";
 
 export type TaskExecutionUncertainty = "bounded" | "material";
 
@@ -368,11 +358,7 @@ export type TaskSyncExternalRef = {
 };
 
 export type TaskSyncFieldAuthority =
-  | "agentplane"
-  | "provider"
-  | "bidirectional"
-  | "derived"
-  | "ignored";
+  "agentplane" | "provider" | "bidirectional" | "derived" | "ignored";
 
 export type TaskSyncConflictPolicy = "record" | "manual" | "agentplane_wins" | "provider_wins";
 

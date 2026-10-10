@@ -67,12 +67,8 @@ export const contextInitSpec: CommandSpec<{
   parse: (raw) => ({
     profile:
       (raw.opts.profile as
-        | "adaptive"
-        | "minimal"
-        | "wiki"
-        | "codebase"
-        | "research"
-        | "maximum-assimilation") ?? "maximum-assimilation",
+        "adaptive" | "minimal" | "wiki" | "codebase" | "research" | "maximum-assimilation") ??
+      "maximum-assimilation",
     profileProvided: typeof raw.opts.profile === "string",
     rawGitignore: (raw.opts["raw-gitignore"] as "none" | "all") ?? "none",
     derivedGitignore: (raw.opts["derived-gitignore"] as "none" | "all") ?? "none",

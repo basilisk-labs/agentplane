@@ -42,4 +42,5 @@ agentplane task run <task-id>
 - MUST NOT infer a version, tag, publish authority, or hosted success from prose or agent output.
 - MUST return control when required evidence or authority is absent.
 - MUST stop and request re-approval if release scope/tag/version changes.
+
 <!-- /ap:fragment -->

@@ -33,12 +33,7 @@ const RUNNER_NEXT_ACTION_VALUES = [
 ] as const;
 
 export type TaskHandoffRunnerNextAction =
-  | "run"
-  | "resume"
-  | "retry"
-  | "wait"
-  | "cancel_then_resume"
-  | "none";
+  "run" | "resume" | "retry" | "wait" | "cancel_then_resume" | "none";
 
 export const TASK_HANDOFF_ROUTE_ZOD_SCHEMA = z
   .object({

@@ -14,12 +14,7 @@ type AgentWorkContextSourceKind =
   | "remote_provider";
 
 type AgentWorkContextFreshness =
-  | "static"
-  | "live_local"
-  | "computed_local"
-  | "cached_artifact"
-  | "remote_live"
-  | "remote_skipped";
+  "static" | "live_local" | "computed_local" | "cached_artifact" | "remote_live" | "remote_skipped";
 
 type AgentWorkContextConfidence = "high" | "medium" | "low" | "skipped";
 

@@ -142,8 +142,7 @@ function indexFreshness(opts: {
     };
   }
   const indexed = snapshot.rows.find((row) => isRecord(row) && row.path === opts.ref) as
-    | Record<string, unknown>
-    | undefined;
+    Record<string, unknown> | undefined;
   if (!indexed) {
     return {
       status: "missing",

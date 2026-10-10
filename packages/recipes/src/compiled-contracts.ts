@@ -50,13 +50,7 @@ export type CompiledOverlayBundle = {
 };
 
 export type CompiledRecipeAssetKind =
-  | "agent"
-  | "skill"
-  | "tool"
-  | "scenario"
-  | "template"
-  | "prompt_module"
-  | "prompt_mutation_set";
+  "agent" | "skill" | "tool" | "scenario" | "template" | "prompt_module" | "prompt_mutation_set";
 
 export type CompiledRecipeAssetBase = {
   id: string;
@@ -192,6 +186,5 @@ export type CompiledRecipeDependencyClosure = {
   secret_refs: { id: string; version: string }[];
   digest: string;
 } & (
-  | { schema_version: 1; plan_digest: string }
-  | { schema_version: 2; plan_semantics_digest: string }
+  { schema_version: 1; plan_digest: string } | { schema_version: 2; plan_semantics_digest: string }
 );
