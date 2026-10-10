@@ -13,33 +13,37 @@ export type CandidateGitIdentity = Pick<
 
 /** The caller authenticates the request and authority. This port never selects or creates a commit. */
 export function createCandidateGitPort(root: string) {
-  const git = async (args: string[]) =>
-    (
-      await run("git", args, {
-        cwd: root,
-        encoding: "utf8",
-        timeout: 120_000,
-        maxBuffer: 1024 * 1024,
-        env: {
-          ...process.env,
-          GIT_TERMINAL_PROMPT: "0",
-          GIT_NO_REPLACE_OBJECTS: "1",
-          GIT_OPTIONAL_LOCKS: "0",
-        },
-      })
-    ).stdout;
+  const git = async (args: string[]) => {
+    const result = await run("git", args, {
+      cwd: root,
+      encoding: "utf8",
+      timeout: 120_000,
+      maxBuffer: 1024 * 1024,
+      env: {
+        ...process.env,
+        GIT_TERMINAL_PROMPT: "0",
+        GIT_NO_REPLACE_OBJECTS: "1",
+        GIT_OPTIONAL_LOCKS: "0",
+      },
+    });
+    return result.stdout;
+  };
   const validateRemote = async (identity: CandidateGitIdentity) => {
-    const resolved = (await git(["ls-remote", "--get-url", identity.remote_url])).trim();
+    const remoteUrl = await git(["ls-remote", "--get-url", identity.remote_url]);
+    const resolved = remoteUrl.trim();
     if (resolved !== identity.remote_url)
       throw new Error("Candidate remote URL is rewritten by Git configuration");
   };
   return {
     async read(identity: CandidateGitIdentity): Promise<string | null> {
       await validateRemote(identity);
-      const rows = (await git(["ls-remote", "--refs", identity.remote_url, identity.candidate_ref]))
-        .trim()
-        .split("\n")
-        .filter(Boolean);
+      const advertised = await git([
+        "ls-remote",
+        "--refs",
+        identity.remote_url,
+        identity.candidate_ref,
+      ]);
+      const rows = advertised.trim().split("\n").filter(Boolean);
       if (rows.length === 0) return null;
       if (rows.length !== 1) throw new Error("Candidate remote returned ambiguous ref identity");
       const [head, ref] = rows[0]!.split(/\s+/u);
@@ -57,10 +61,8 @@ export function createCandidateGitPort(root: string) {
         !identity.candidate_ref.endsWith(`/${identity.commit}`)
       )
         throw new Error("Invalid immutable candidate ref");
-      const hook = path.resolve(
-        root,
-        (await git(["rev-parse", "--git-path", "hooks/pre-push"])).trim(),
-      );
+      const hookPath = await git(["rev-parse", "--git-path", "hooks/pre-push"]);
+      const hook = path.resolve(root, hookPath.trim());
       let original: string | null = null;
       try {
         const handle = await open(hook, constants.O_RDONLY | constants.O_NOFOLLOW);
@@ -74,7 +76,8 @@ export function createCandidateGitPort(root: string) {
       } catch (error) {
         if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
       }
-      const common = path.resolve(root, (await git(["rev-parse", "--git-common-dir"])).trim());
+      const commonPath = await git(["rev-parse", "--git-common-dir"]);
+      const common = path.resolve(root, commonPath.trim());
       const directory = await mkdtemp(path.join(common, "candidate-push-"));
       const receipt = path.join(directory, "guard.json");
       const guard = path.join(directory, "pre-push");

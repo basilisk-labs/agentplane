@@ -61,8 +61,7 @@ export async function validateCandidateDispatch(opts: {
   });
   if (
     decision.state !== "allowed" ||
-    !decision.authority ||
-    decision.authority.actor !== "USER" ||
+    decision.authority?.actor !== "USER" ||
     decision.authority.evidenceDigest !==
       candidatePublicationApprovalRequest(opts.request).approval_digest
   )
