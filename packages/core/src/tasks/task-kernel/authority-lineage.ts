@@ -1,3 +1,4 @@
+import { isCorrectivePlanContinuation } from "./corrective-authority.js";
 import { compareExecutionAuthority, executionRequirementsAreSubset } from "./invariants.js";
 import { kernelDigest } from "./digest.js";
 import type {
@@ -272,10 +273,11 @@ export function canonicalAuthorityIssues(aggregate: TaskAggregate): string[] {
           })
         : null;
     const approvedPlanAmendment =
-      approvedExpansionRoots !== null &&
+      (approvedExpansionRoots !== null ||
+        (plan && isCorrectivePlanContinuation(aggregate, source ?? undefined, plan))) &&
       authority.provenance.evidence_digest === parent?.provenance.evidence_digest &&
       JSON.stringify(record.observation?.added_scope_roots ?? []) ===
-        JSON.stringify(approvedExpansionRoots);
+        JSON.stringify(approvedExpansionRoots ?? []);
     const continuedApprovedPlanAuthority =
       record.approval_mode === null &&
       parent?.plan_revision === authority.plan_revision &&
@@ -505,9 +507,10 @@ export function continuationAdmissionIssues(
         })
       : null;
     const approvedScopeExpansion =
-      addedAuthorityRoots !== null &&
+      (addedAuthorityRoots !== null ||
+        isCorrectivePlanContinuation(input.aggregate, source, plan)) &&
       JSON.stringify(record.observation.added_scope_roots ?? []) ===
-        JSON.stringify(addedAuthorityRoots);
+        JSON.stringify(addedAuthorityRoots ?? []);
     if (
       (!unchangedApproval && !approvedScopeExpansion) ||
       (!approvedScopeExpansion &&

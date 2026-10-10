@@ -195,6 +195,12 @@ export function authorityBindsCurrentState(
   );
 }
 
+export function isSupervisorOwnedRequirement(value: string): boolean {
+  return /^(?:external_write|publish|deploy|destructive_git|pull_request|integration|hosted_ci|pr\.(?:open|merge|head\.publish|sync_or_verify|artifacts\.update)|provider(?:_write|\.(?:merge|pr(?:\.(?:refresh|update_branch))?))|integration\.(?:enqueue|run_next)|task\.(?:hosted_close\.(?:open|finalize)|worktree\.cleanup)|hosted\.close|publish_pr|merge_pr|hosted_close|cleanup_worktree|merged-worktree-cleanup)$/u.test(
+    value,
+  );
+}
+
 export function validateWorkItemDefinitions(
   definitions: readonly WorkItemDefinition[],
 ): readonly string[] {
@@ -205,11 +211,7 @@ export function validateWorkItemDefinitions(
     const supervisorOwnedRequirement = [
       ...definition.execution_requirements.external_effects,
       ...definition.execution_requirements.capabilities,
-    ].find((value) =>
-      /^(?:external_write|publish|deploy|destructive_git|pull_request|integration|hosted_ci|pr\.(?:open|merge|head\.publish|sync_or_verify|artifacts\.update)|provider(?:_write|\.(?:merge|pr(?:\.(?:refresh|update_branch))?))|integration\.(?:enqueue|run_next)|task\.(?:hosted_close\.(?:open|finalize)|worktree\.cleanup)|hosted\.close|publish_pr|merge_pr|hosted_close|cleanup_worktree|merged-worktree-cleanup)$/u.test(
-        value,
-      ),
-    );
+    ].find((requirement) => isSupervisorOwnedRequirement(requirement));
     if (supervisorOwnedRequirement) {
       issues.push(`supervisor_owned_lifecycle:${definition.id}:${supervisorOwnedRequirement}`);
     }

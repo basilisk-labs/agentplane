@@ -1,3 +1,4 @@
+import { tryApplyBoundedFinalCorrection } from "./kernel-corrective-authority.js";
 import {
   restoreKernelFinalValidation,
   runKernelFinalValidation,
@@ -389,6 +390,11 @@ async function advanceCanonicalRoute(opts: {
         }
       } else {
         const checked = await runKernelFinalValidation(opts.command, runtime, record);
+        if (
+          checked.stop &&
+          (await tryApplyBoundedFinalCorrection(opts.command, opts.task_id, checked.stop))
+        )
+          continue;
         if (checked.stop) return { schema_version: 1, task_id: opts.task_id, action: checked.stop };
         finalValidation = {
           fingerprint: checked.fingerprint,

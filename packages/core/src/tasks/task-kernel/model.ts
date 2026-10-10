@@ -247,6 +247,27 @@ export type MigrationReceipt = Readonly<{
   backup_digest: Sha256Digest;
 }>;
 
+export type CorrectiveAuthorityGrant = Readonly<{
+  digest: Sha256Digest;
+  task_id: string;
+  initial_plan_digest: Sha256Digest;
+  actor_id: string;
+  issued_at: string;
+  expires_at: string;
+  max_attempts: number;
+  requirements: ExecutionRequirements;
+  verification_commands: readonly string[];
+  verification_contract_digest: Sha256Digest;
+  policy_digest: Sha256Digest;
+  revoked_at: string | null;
+  uses: readonly Readonly<{
+    from_plan_digest: Sha256Digest;
+    to_plan_digest: Sha256Digest;
+    failure_digest: Sha256Digest;
+    consumed_at: string;
+  }>[];
+}>;
+
 export type TaskAggregate = Readonly<{
   audit_comments?: readonly Readonly<{
     author: string;
@@ -276,6 +297,7 @@ export type TaskAggregate = Readonly<{
   controller_transfer: ControllerTransferReceipt | null;
   migration_receipts: readonly MigrationReceipt[];
   authority_lineage?: readonly CanonicalAuthorityRecord[];
+  corrective_authority?: readonly CorrectiveAuthorityGrant[];
 }>;
 
 type CommandEnvelope<K extends string, P extends object = object> = Readonly<
@@ -318,6 +340,14 @@ export type TaskCommand =
         authority_mode?: CanonicalApprovalMode;
       }
     >
+  | CommandEnvelope<
+      "grant_corrective_authority",
+      {
+        grant: CorrectiveAuthorityGrant;
+        work_contracts: Readonly<Record<string, KernelWorkContract>>;
+      }
+    >
+  | CommandEnvelope<"revoke_corrective_authority", { grant_digest: Sha256Digest }>
   | CommandEnvelope<"continue_authority", { record: CanonicalAuthorityRecord }>
   | CommandEnvelope<"renew_policy_authority", { record: CanonicalAuthorityRecord }>
   | CommandEnvelope<
@@ -390,6 +420,8 @@ export type TaskCommand =
         amended_plan: Pick<PlanRecord, "revision" | "digest" | "work_items">;
         work_contracts?: Readonly<Record<string, KernelWorkContract>>;
         authority_delta_digest: Sha256Digest | null;
+        corrective_grant_digest?: Sha256Digest;
+        verification_contract_digest?: Sha256Digest;
       }
     >
   | CommandEnvelope<
@@ -410,6 +442,8 @@ export type DomainEvent = Readonly<{
     | "plan_proposed"
     | "plan_rejected"
     | "plan_approved"
+    | "corrective_authority_granted"
+    | "corrective_authority_revoked"
     | "work_items_materialized"
     | "work_item_transitioned"
     | "work_item_result_accepted"

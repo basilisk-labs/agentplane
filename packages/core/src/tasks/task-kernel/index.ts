@@ -35,3 +35,9 @@ export {
   policyRenewalIssues,
   policyRenewalRequestDigest,
 } from "./authority-lineage.js";
+
+export {
+  correctiveGrantDigest,
+  correctiveRequirements,
+  correctiveVerificationCommands,
+} from "./corrective-authority.js";
