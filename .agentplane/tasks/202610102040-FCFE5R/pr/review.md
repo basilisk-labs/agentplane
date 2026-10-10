@@ -6,14 +6,14 @@ Created: 2026-10-10T21:10:37.020Z
 
 - Task: `202610102040-FCFE5R`
 - Title: Authenticate retained issuance across repeated approved scope replans
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610102040-FCFE5R/retained-scope-issuance`
 - Canonical task record: `.agentplane/tasks/202610102040-FCFE5R/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
