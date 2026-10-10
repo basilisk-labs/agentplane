@@ -146,13 +146,11 @@ function buildReadmeStatEntry(opts: {
 
 function buildReadmeFingerprint(entries: ReadmeStatEntry[]): TaskIndexReadmeFingerprint {
   return {
-    entries: entries.map(
-      (entry): TaskIndexReadmeFingerprintEntry => ({
-        path: entry.readmePath,
-        mtimeMs: entry.mtimeMs,
-        size: entry.size,
-      }),
-    ),
+    entries: entries.map((entry): TaskIndexReadmeFingerprintEntry => ({
+      path: entry.readmePath,
+      mtimeMs: entry.mtimeMs,
+      size: entry.size,
+    })),
   };
 }
 

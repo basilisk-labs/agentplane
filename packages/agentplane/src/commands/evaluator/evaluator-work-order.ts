@@ -1,3 +1,4 @@
+import { isoTimestampSchema } from "@agentplaneorg/core/schemas";
 import { createHash } from "node:crypto";
 import { z } from "zod";
 
@@ -17,7 +18,7 @@ const EVALUATOR_WORK_ORDER_V1_SCHEMA = z
     schema_version: z.literal(1),
     kind: z.literal("evaluator_work_order"),
     work_order_id: z.string().trim().min(1),
-    prepared_at: z.string().datetime({ offset: true }),
+    prepared_at: isoTimestampSchema({ offset: true }),
     task: z
       .object({
         id: z.string().trim().min(1),

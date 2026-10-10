@@ -428,8 +428,7 @@ describe("pr/integrate/cmd", () => {
     );
     expect(mocks.buildTaskHandoffArtifact).toHaveBeenCalled();
     const handoffCall = mocks.buildTaskHandoffArtifact.mock.calls[0]?.[0] as
-      | { reason?: string; route?: Record<string, unknown> }
-      | undefined;
+      { reason?: string; route?: Record<string, unknown> } | undefined;
     expect(handoffCall?.reason).toBe(
       "branch_pr integration is waiting for the GitHub PR merge into main.",
     );

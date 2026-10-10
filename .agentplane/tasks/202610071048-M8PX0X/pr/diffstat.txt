@@ -1,0 +1,3 @@
+ .../direct-task-verification.qualification.test.ts | 36 ++++++++++++++++++++++
+ .../src/commands/task/direct-task-verification.ts  |  1 +
+ 2 files changed, 37 insertions(+)

@@ -1,3 +1,4 @@
+import { isoTimestampSchema } from "@agentplaneorg/core/schemas";
 import { kernelAuthorityRecordSchema } from "./kernel-authority-schema.js";
 import { kernelRecordIssues } from "./kernel-record-invariants.js";
 import { projectKernelTask } from "./kernel-projector.js";
@@ -52,7 +53,7 @@ export const kernelValidationSchema = z.strictObject({
     environment_digest: digest,
   }),
   evidence_digests: z.array(digest),
-  observed_at: z.iso.datetime(),
+  observed_at: isoTimestampSchema(),
 });
 const output = z.strictObject({
   id: z.string().min(1),
@@ -155,7 +156,7 @@ const event = z.strictObject({
   task_id: z.string().min(1),
   task_revision: revision,
   mutation_id: z.string().min(1),
-  occurred_at: z.iso.datetime(),
+  occurred_at: isoTimestampSchema(),
   command_digest: digest,
   payload_digest: digest,
 });

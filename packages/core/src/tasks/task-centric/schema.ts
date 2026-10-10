@@ -1,3 +1,4 @@
+import { isoTimestampSchema } from "../../schemas/iso-timestamp.js";
 import { z } from "zod";
 import { recipeSourcePlanSemanticDigest, taskCentricDigest } from "./digest.js";
 import { validateWorkItemGraph } from "./graph.js";
@@ -8,7 +9,7 @@ const DIGEST = z.custom<Sha256Digest>(
   (value) => typeof value === "string" && /^sha256:[0-9a-f]{64}$/u.test(value),
   "Expected a SHA-256 digest.",
 );
-const ISO_DATE = z.string().datetime({ offset: true });
+const ISO_DATE = isoTimestampSchema({ offset: true });
 
 const ACCEPTANCE_CRITERION = z
   .object({

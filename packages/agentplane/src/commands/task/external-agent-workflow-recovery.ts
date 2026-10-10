@@ -1,3 +1,4 @@
+import { isoTimestampSchema } from "@agentplaneorg/core/schemas";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { z } from "zod";
@@ -69,7 +70,7 @@ const resolutionSchema = z
             !/^(agent|planner|executor|evaluator|coder|tester|orchestrator)$/iu.test(value),
         ),
         decision_ref: text,
-        observed_at: z.string().datetime(),
+        observed_at: isoTimestampSchema(),
       })
       .strict(),
     evidence: z

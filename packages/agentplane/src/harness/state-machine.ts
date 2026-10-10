@@ -1,12 +1,7 @@
 export type OrchestrationState = "unclaimed" | "claimed" | "running" | "retry_queued" | "released";
 
 export type OrchestrationEvent =
-  | "claim"
-  | "start"
-  | "queue_retry"
-  | "release"
-  | "mark_released"
-  | "reset";
+  "claim" | "start" | "queue_retry" | "release" | "mark_released" | "reset";
 
 export type TransitionResult =
   | { ok: true; next: OrchestrationState }

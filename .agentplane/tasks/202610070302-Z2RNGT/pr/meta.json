@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202610070302-Z2RNGT/finalize-agentplane-0-7-13-release-documents-aft",
+  "created_at": "2026-10-07T03:24:48.007Z",
+  "diffstat_sha256": "sha256:19d56c97e06ee1d81a8bbfeaa63222a8eef41decb9378f4e146d29933f2ce8d4",
+  "last_verified_at": "2026-10-07T04:14:00.553Z",
+  "last_verified_diffstat_sha256": "sha256:19d56c97e06ee1d81a8bbfeaa63222a8eef41decb9378f4e146d29933f2ce8d4",
+  "pr_number": 6057,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6057",
+  "pre_merge_closure": {
+    "basis_commit": "31df458700eda08493bdb7a34fbfa3a0a99beec7",
+    "branch": "task/202610070302-Z2RNGT/finalize-agentplane-0-7-13-release-documents-aft",
+    "pr_number": 6057,
+    "recorded_at": "2026-10-07T04:26:05.023Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202610070302-Z2RNGT",
+  "updated_at": "2026-10-07T04:18:59.009Z",
+  "verify": {
+    "status": "pass"
+  }
+}

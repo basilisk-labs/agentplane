@@ -61,8 +61,7 @@ export async function resolveVerifiedEvidenceOnlyReworkCommit(opts: {
   changed_paths: readonly string[];
 }): Promise<string | null> {
   const extensionCommit = opts.task.extensions?.implementation_commit as
-    | { hash?: unknown }
-    | undefined;
+    { hash?: unknown } | undefined;
   const eventCommit = (opts.task.events ?? [])
     .toReversed()
     .map((event) => (event as unknown as { commit?: unknown }).commit)

@@ -665,14 +665,7 @@
           "properties": {
             "expected_version": {
               "default": null,
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ]
+              "type": ["string", "null"]
             }
           },
           "additionalProperties": {}

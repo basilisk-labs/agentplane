@@ -19,13 +19,7 @@ import * as kernelConflict from "../commands/task/kernel-conflict-rework.js";
 import type { ExternalAgentResultEnvelope } from "../commands/task/external-agent-exchange.js";
 
 export type ConflictVerificationDrift =
-  | "workspace"
-  | "task"
-  | "result"
-  | "policy"
-  | "base"
-  | "provider"
-  | "diffstat";
+  "workspace" | "task" | "result" | "policy" | "base" | "provider" | "diffstat";
 
 export async function withFakeConflictGh<T>(
   root: string,

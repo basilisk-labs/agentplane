@@ -26,8 +26,7 @@ export type AuthoritySubsetViolation =
   | "provenance";
 
 export type AuthoritySubsetResult =
-  | Readonly<{ ok: true }>
-  | Readonly<{ ok: false; violations: readonly AuthoritySubsetViolation[] }>;
+  Readonly<{ ok: true }> | Readonly<{ ok: false; violations: readonly AuthoritySubsetViolation[] }>;
 
 export const PROJECTION_SOURCES = [
   "document",

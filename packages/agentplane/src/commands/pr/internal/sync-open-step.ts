@@ -1,4 +1,5 @@
 import path from "node:path";
+import { readFile } from "node:fs/promises";
 
 import { taskExecutionBaseFromExtensions } from "@agentplaneorg/core/tasks";
 
@@ -94,12 +95,17 @@ export async function runPrOpenSync(
         }
       : null;
   let openOutcome: PrOpenOutcome | undefined;
+  const previousDocument = await readFile(common.reviewPath, "utf8").catch((error: unknown) => {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return null;
+    throw error;
+  });
   const githubTitle = buildGithubPrTitle(common.task);
   const githubBody = renderGithubPrBody({
     task: common.task,
     relatedTaskIds: resolvePrBatchIncludedTaskIds(nextMeta),
     handoffNotes: common.handoffNotes,
     autoSummary: renderPrAutoSummary({
+      previousDocument,
       updatedAt: nextMeta.updated_at,
       branch: common.branch,
       diffstat,
@@ -187,6 +193,7 @@ export async function runPrOpenSync(
     }
   }
   const nextAutoSummary = renderPrAutoSummary({
+    previousDocument,
     updatedAt: nextMeta.updated_at,
     branch: common.branch,
     diffstat,

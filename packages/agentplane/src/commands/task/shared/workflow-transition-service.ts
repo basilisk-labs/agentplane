@@ -91,8 +91,7 @@ export type TaskTransitionWrite = {
 };
 
 type TaskStatusTransitionDependencyPolicy =
-  | { kind: "none" }
-  | { kind: "require-ready"; failureMessage?: string };
+  { kind: "none" } | { kind: "require-ready"; failureMessage?: string };
 
 type TaskStatusTransitionCommentCommitPolicy = {
   enabled: boolean;
@@ -146,8 +145,7 @@ function buildStatusTaskPatch(opts: BuildTaskStatusTransitionOptions): TaskStore
     const task = opts.task;
     const grant = executionGrantFromExtensions(task.extensions);
     const context = task.extensions?.task_execution_context as
-      | { repository_identity?: string }
-      | undefined;
+      { repository_identity?: string } | undefined;
     const plan = aggregate.current_plan;
     // Recover only the first start immediately following the old split approval write.
     // The existing grant binds the approved document, scope, repository and prior revision.

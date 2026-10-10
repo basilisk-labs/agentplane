@@ -224,8 +224,7 @@ describe("guard command implementations: commit non-close", () => {
 
     expect(rc).toBe(0);
     const envCall = mocks.buildGitCommitEnv.mock.calls.at(-1)?.[0] as
-      | { taskId: string; allowStaleDist?: boolean }
-      | undefined;
+      { taskId: string; allowStaleDist?: boolean } | undefined;
     expect(envCall).toMatchObject({ taskId: "T-1" });
     expect(envCall).not.toHaveProperty("allowStaleDist");
   });

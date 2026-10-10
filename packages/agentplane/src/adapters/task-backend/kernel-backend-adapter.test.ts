@@ -428,6 +428,51 @@ describe("canonical kernel persistence boundary", () => {
     await expect(adapter.read(taskId)).rejects.toBe(unsafeSymlink);
   });
 
+  it.each([
+    "changed before it could be read",
+    "changed while it was being read",
+    "path changed before it could be read",
+    "path changed while it was being read",
+  ])("retries a fresh secure task read after snapshot drift: %s", async (reason) => {
+    const { adapter, backend } = await fixture();
+    await adapter.create(task(), input());
+    const original = backend.getTask.bind(backend);
+    const drift = new Error(`task README ${taskId} ${reason}: /fixture/README.md`);
+    const read = vi
+      .spyOn(backend, "getTask")
+      .mockRejectedValueOnce(drift)
+      .mockImplementation(original);
+    expect(await adapter.read(taskId)).toMatchObject({ kind: "canonical" });
+    expect(read).toHaveBeenCalledTimes(2);
+    expect(read).toHaveBeenNthCalledWith(1, taskId);
+    expect(read).toHaveBeenNthCalledWith(2, taskId);
+
+    read.mockClear().mockRejectedValue(drift);
+    await expect(adapter.read(taskId)).rejects.toBe(drift);
+    expect(read).toHaveBeenCalledTimes(4);
+  });
+
+  it.each([
+    Object.assign(new Error(`Refusing symlinked task README ${taskId} path: /fixture/README.md`), {
+      code: "ELOOP",
+    }),
+    new Error(`Refusing non-regular task README ${taskId}: /fixture/README.md`),
+    new Error(`task README ${taskId} exceeds the 10-byte observation budget: /fixture/README.md`),
+    new SyntaxError("Invalid task README frontmatter"),
+    new Error("task README other-task changed before it could be read: /fixture/README.md"),
+    new Error(`task README ${taskId}-other changed while it was being read: /fixture/README.md`),
+    new Error(`task README ${taskId} changed for an unrelated reason: /fixture/README.md`),
+    Object.assign(
+      new Error(`task README ${taskId} changed before it could be read: /fixture/README.md`),
+      { code: "EACCES" },
+    ),
+  ])("propagates non-transient task read failure without retry: %s", async (failure) => {
+    const { adapter, backend } = await fixture();
+    const read = vi.spyOn(backend, "getTask").mockRejectedValue(failure);
+    await expect(adapter.read(taskId)).rejects.toBe(failure);
+    expect(read).toHaveBeenCalledTimes(1);
+  });
+
   it("does not turn legacy status, approval or verification into a canonical record", async () => {
     const { adapter, backend } = await fixture();
     await backend.writeTask({ ...task(), status: "DONE" });

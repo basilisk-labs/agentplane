@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202610070801-91ZH0N/remove-duplicated-release-and-benchmark-script-l",
+  "created_at": "2026-10-07T08:17:00.443Z",
+  "diffstat_sha256": "sha256:1a9c2ea4cee4e9be90918c2ad713378b2d932370a16dac4092b121caad46f1a8",
+  "last_verified_at": "2026-10-07T09:10:41.495Z",
+  "last_verified_diffstat_sha256": "sha256:1a9c2ea4cee4e9be90918c2ad713378b2d932370a16dac4092b121caad46f1a8",
+  "pr_number": 6059,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6059",
+  "pre_merge_closure": {
+    "basis_commit": "6cc6d23f86c8c0147a35e832a1432b301a068d41",
+    "branch": "task/202610070801-91ZH0N/remove-duplicated-release-and-benchmark-script-l",
+    "pr_number": 6059,
+    "recorded_at": "2026-10-07T09:27:19.890Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202610070801-91ZH0N",
+  "updated_at": "2026-10-07T09:17:47.195Z",
+  "verify": {
+    "status": "pass"
+  }
+}

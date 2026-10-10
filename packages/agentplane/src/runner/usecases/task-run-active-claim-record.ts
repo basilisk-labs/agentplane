@@ -9,11 +9,7 @@ import type { RunnerLifecycleStatus } from "../types.js";
 import type { TaskRunnerSupervisorHistoryAnchor } from "./task-run-supervisor-history-anchor.js";
 
 export type TaskRunnerActiveClaimOperation =
-  | "execute"
-  | "resume"
-  | "retry"
-  | "resume_effect"
-  | "effect_in_doubt";
+  "execute" | "resume" | "retry" | "resume_effect" | "effect_in_doubt";
 
 export type TaskRunnerActiveClaimOwnerIdentity = {
   owner_pid: number;

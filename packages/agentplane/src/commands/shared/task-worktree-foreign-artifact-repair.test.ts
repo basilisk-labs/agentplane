@@ -32,13 +32,7 @@ const DONE_AT = "2026-07-26T00:03:00.000Z";
 const DONE_COMMENT = "Verified: close the guarded repair history fixture.";
 
 type ReplicaMode =
-  | "start_ready"
-  | "byte_identical"
-  | "modified"
-  | "missing"
-  | "active"
-  | "mixed"
-  | "symlink";
+  "start_ready" | "byte_identical" | "modified" | "missing" | "active" | "mixed" | "symlink";
 
 function taskReadme(opts: {
   taskId: string;

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe } from "vitest";
+import { parsePrMeta } from "../commands/shared/pr-meta.js";
 
 import {
   PR_FLOW_INTEGRATION_TIMEOUT_MS,
@@ -128,8 +129,9 @@ describe(
           "--root",
           root,
         ]);
-        expect(code).toBe(0);
+        expect(code, io.stderr).toBe(0);
         expect(io.stdout).toContain("linked to GitHub PR #321");
+
         expect(io.stdout).toContain("https://github.com/example/repo/pull/321");
       } finally {
         io.restore();
@@ -201,8 +203,9 @@ describe(
           "--root",
           root,
         ]);
-        expect(code).toBe(0);
+        expect(code, io.stderr).toBe(0);
         expect(io.stdout).toContain("linked to GitHub PR #321");
+
         expect(io.stdout).not.toContain("GitHub PR not created");
       } finally {
         io.restore();
@@ -285,6 +288,15 @@ describe(
       ]);
 
       const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+      // Seed distinct historical evidence time without freezing the provider clock.
+      for (const file of ["review.md", "github-body.md"]) {
+        const filePath = path.join(prDir, file);
+        const content = await readFile(filePath, "utf8");
+        await writeFile(
+          filePath,
+          content.replace(/^- Updated: .+$/mu, "- Updated: 2020-01-01T00:00:00.000Z"),
+        );
+      }
       const reviewBefore = await readFile(path.join(prDir, "review.md"), "utf8");
       const githubBodyBefore = await readFile(path.join(prDir, "github-body.md"), "utf8");
 
@@ -320,6 +332,27 @@ describe(
         ]);
         expect(code).toBe(0);
         expect(io.stdout).toContain("created GitHub PR #654");
+        const hydrated = parsePrMeta(await readFile(path.join(prDir, "meta.json"), "utf8"), taskId);
+        expect(hydrated.pr_number).toBe(654);
+        expect(Date.parse(hydrated.updated_at)).toBeGreaterThan(
+          Date.parse("2020-01-01T00:00:00.000Z"),
+        );
+        expect(await readFile(path.join(prDir, "review.md"), "utf8")).toBe(reviewBefore);
+        await runCliSilent([
+          "pr",
+          "open",
+          taskId,
+          "--author",
+          "CODER",
+          "--branch",
+          branch,
+          "--sync-only",
+          "--root",
+          root,
+        ]);
+        const third = parsePrMeta(await readFile(path.join(prDir, "meta.json"), "utf8"), taskId);
+        expect(third.pr_number).toBe(654);
+        expect(third.updated_at).toBe(hydrated.updated_at);
       } finally {
         io.restore();
         process.env.PATH = originalPath;
@@ -520,6 +553,17 @@ describe(
       const reviewBefore = await readFile(path.join(prDir, "review.md"), "utf8");
       const githubBodyBefore = await readFile(path.join(prDir, "github-body.md"), "utf8");
 
+      // A genuine task content change must refresh the rendered documents.
+      const taskReadme = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+      const taskContent = await readFile(taskReadme, "utf8");
+      await writeFile(
+        taskReadme,
+        taskContent.replaceAll(
+          "PR open preserves rendered packet on existing PR hydration",
+          "Changed hydration task summary",
+        ),
+      );
+
       const { fakeBin, logPath } = await installFakeGhPrLookup({
         scenarioName: "open-existing-second-pass",
         branch,
@@ -541,8 +585,23 @@ describe(
           "--root",
           root,
         ]);
-        expect(code).toBe(0);
+        expect(code, io.stderr).toBe(0);
         expect(io.stdout).toContain("linked to GitHub PR #321");
+        const linkedReview = await readFile(path.join(prDir, "review.md"), "utf8");
+        const linkedBody = await readFile(path.join(prDir, "github-body.md"), "utf8");
+        await runCliSilent([
+          "pr",
+          "open",
+          taskId,
+          "--author",
+          "CODER",
+          "--branch",
+          branch,
+          "--root",
+          root,
+        ]);
+        expect(await readFile(path.join(prDir, "review.md"), "utf8")).toBe(linkedReview);
+        expect(await readFile(path.join(prDir, "github-body.md"), "utf8")).toBe(linkedBody);
       } finally {
         io.restore();
         process.env.PATH = originalPath;
@@ -552,6 +611,7 @@ describe(
       const reviewAfter = await readFile(path.join(prDir, "review.md"), "utf8");
       const githubBodyAfter = await readFile(path.join(prDir, "github-body.md"), "utf8");
       expect(reviewAfter).not.toBe(reviewBefore);
+      expect(reviewAfter).toContain("Changed hydration task summary");
       expect(githubBodyAfter).not.toBe(githubBodyBefore);
       expect(reviewAfter).toMatch(/Updated: .+Z/);
       expect(githubBodyAfter).toMatch(/Updated: .+Z/);

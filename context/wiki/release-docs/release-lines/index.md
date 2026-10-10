@@ -31,4 +31,5 @@ agentplane_context:
 - [v0.4 release line](v0-4.md)
 - [v0.5 release line](v0-5.md)
 - [v0.6 release line](v0-6.md)
+
 <!-- agentplane-context-wiki-index:end -->

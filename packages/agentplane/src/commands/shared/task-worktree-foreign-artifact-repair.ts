@@ -51,8 +51,7 @@ type ForeignTaskReadmeReplicaRepairNotApplicable = {
 };
 
 export type ForeignTaskReadmeReplicaRepair =
-  | ForeignTaskReadmeReplicaRepairEligible
-  | ForeignTaskReadmeReplicaRepairNotApplicable;
+  ForeignTaskReadmeReplicaRepairEligible | ForeignTaskReadmeReplicaRepairNotApplicable;
 
 type InspectedForeignTaskReadmeReplicaRepair =
   | (ForeignTaskReadmeReplicaRepairEligible & {

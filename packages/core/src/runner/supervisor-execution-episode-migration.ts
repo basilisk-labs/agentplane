@@ -1,3 +1,4 @@
+import { isoTimestampSchema } from "../schemas/iso-timestamp.js";
 import { z } from "zod";
 
 import {
@@ -12,7 +13,7 @@ export const SUPERVISOR_EXECUTION_EPISODE_LEGACY_SCHEMA_VERSION = 0 as const;
 
 const SHA256_DIGEST_SCHEMA = z.string().regex(/^sha256:[0-9a-f]{64}$/u);
 const NON_EMPTY_STRING = z.string().trim().min(1).max(4096);
-const ISO_UTC_TIMESTAMP_SCHEMA = z.string().datetime({ offset: true });
+const ISO_UTC_TIMESTAMP_SCHEMA = isoTimestampSchema({ offset: true });
 
 const LEGACY_EMPTY_JOURNAL_ZOD_SCHEMA = z
   .object({
@@ -27,10 +28,7 @@ const LEGACY_EMPTY_JOURNAL_ZOD_SCHEMA = z
   .strict();
 
 export type SupervisorExecutionEpisodeMigrationSource =
-  | "absent"
-  | "legacy_v0"
-  | "legacy_budget_v1"
-  | "current";
+  "absent" | "legacy_v0" | "legacy_budget_v1" | "current";
 
 export type SupervisorExecutionEpisodeMigrationResult = {
   journal: SupervisorExecutionEpisodeJournal;

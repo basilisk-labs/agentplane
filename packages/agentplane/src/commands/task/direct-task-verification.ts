@@ -33,9 +33,10 @@ export {
 const DEFAULT_CHECK_TIMEOUT_MS = 30 * 60_000;
 const CHECK_TIMEOUT_MS_BY_SCRIPT: Readonly<Record<string, number>> = Object.freeze({
   // Full CI includes four bounded verification waves and a prerequisite build.
-  "ci:local:full": 90 * 60_000,
+  "ci:local:full": 150 * 60_000,
   // Prepublish also runs release-wide suites, coverage, and installed-package smoke checks.
   "release:prepublish": 150 * 60_000,
+  "release:ci-check": 150 * 60_000,
   "e2e:v0.7.1:gate": 150 * 60_000,
 });
 const CHECK_OUTPUT_LIMIT = 4000;

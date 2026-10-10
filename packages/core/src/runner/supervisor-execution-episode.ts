@@ -1,3 +1,4 @@
+import { isoTimestampSchema } from "../schemas/iso-timestamp.js";
 import canonicalize from "canonicalize";
 import { createHash } from "node:crypto";
 import { z } from "zod";
@@ -58,7 +59,7 @@ export const SUPERVISOR_EPISODE_STOP_REASON_VALUES = [
 
 const SHA256_DIGEST_SCHEMA = z.string().regex(/^sha256:[0-9a-f]{64}$/u);
 const NON_EMPTY_STRING = z.string().trim().min(1).max(4096);
-const ISO_UTC_TIMESTAMP_SCHEMA = z.string().datetime({ offset: true });
+const ISO_UTC_TIMESTAMP_SCHEMA = isoTimestampSchema({ offset: true });
 const NON_NEGATIVE_INTEGER = z.number().int().min(0);
 const POSITIVE_INTEGER = z.number().int().positive();
 
