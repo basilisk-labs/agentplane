@@ -62,11 +62,15 @@ export async function verificationImplementationIdentity(cwd: string, workflowDi
       const absolute = path.resolve(cwd, relative);
       if (!absolute.startsWith(`${path.resolve(cwd)}${path.sep}`))
         throw new Error("untracked path outside checkout");
-      const pathStat = await lstat(absolute);
-      if (!pathStat.isFile() || pathStat.isSymbolicLink()) throw new Error("unsafe untracked file");
-      const handle = await open(absolute, constants.O_RDONLY | constants.O_NOFOLLOW);
+      const handle = await open(
+        absolute,
+        constants.O_RDONLY | constants.O_NOFOLLOW | constants.O_NONBLOCK,
+      );
       try {
         const before = await handle.stat();
+        const pathStat = await lstat(absolute);
+        if (!pathStat.isFile() || pathStat.isSymbolicLink())
+          throw new Error("unsafe untracked file");
         if (before.ino !== pathStat.ino || before.dev !== pathStat.dev)
           throw new Error("untracked file replaced");
         if (!before.isFile() || before.size > Math.min(1024 * 1024, remainingBytes))

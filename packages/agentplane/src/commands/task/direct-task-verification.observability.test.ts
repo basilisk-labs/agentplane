@@ -1,12 +1,30 @@
+import type * as FsPromises from "node:fs/promises";
 import { mkGitRepoRoot } from "@agentplane/testkit";
-import { readFile, rm, writeFile } from "node:fs/promises";
+import { readFile, rename, rm, symlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { afterEach, expect, it, vi } from "vitest";
 import { runDirectTaskVerification } from "./direct-task-verification.js";
+import { verificationImplementationIdentity } from "./direct-task-verification-observation.js";
 import { observationDigest } from "./verification-observation.js";
+
+const opening = vi.hoisted(() => ({
+  afterOpen: undefined as undefined | ((file: unknown) => Promise<void>),
+}));
+vi.mock("node:fs/promises", async (importOriginal) => {
+  const original = await importOriginal<typeof FsPromises>();
+  return {
+    ...original,
+    open: async (...args: Parameters<typeof original.open>) => {
+      const handle = await original.open(...args);
+      await opening.afterOpen?.(args[0]);
+      return handle;
+    },
+  };
+});
 
 const roots: string[] = [];
 afterEach(async () => {
+  opening.afterOpen = undefined;
   for (const root of roots.splice(0)) await rm(root, { recursive: true, force: true });
 });
 
@@ -111,4 +129,21 @@ it("exposes a silent native child before completion without a second validation"
   }
   const result = await running;
   expect(result.status).toBe("passed");
+});
+
+it("does not bind symlinks or files replaced after descriptor acquisition", async () => {
+  const root = await mkGitRepoRoot();
+  roots.push(root);
+  const candidate = path.join(root, "candidate.txt");
+  await writeFile(candidate, "original");
+  await symlink(candidate, path.join(root, "alias.txt"), "file");
+  opening.afterOpen = async (file) => {
+    if (file !== candidate) return;
+    opening.afterOpen = undefined;
+    await rename(candidate, path.join(root, "displaced.txt"));
+    await writeFile(candidate, "replacement");
+  };
+  const identity = await verificationImplementationIdentity(root, ".agentplane/tasks");
+  expect(identity.untracked_inventory).toContainEqual({ path: "candidate.txt", unavailable: true });
+  expect(identity.untracked_inventory).toContainEqual({ path: "alias.txt", unavailable: true });
 });
