@@ -2,6 +2,7 @@ import { isCorrectivePlanContinuation } from "./corrective-authority.js";
 import { compareExecutionAuthority, executionRequirementsAreSubset } from "./invariants.js";
 import { kernelDigest } from "./digest.js";
 import type {
+  AuthorityObservation,
   CanonicalAuthorityRecord,
   ExecutionAuthority,
   KernelInput,
@@ -152,6 +153,7 @@ export function policyRenewalRequestDigest(input: {
   policy_digests: readonly Sha256Digest[];
   changed_paths?: readonly string[];
   repository_evidence_digest?: Sha256Digest;
+  reviewed_base_import?: AuthorityObservation["reviewed_base_import"];
 }) {
   return kernelDigest({
     kind: "canonical_policy_authority_renewal",
@@ -162,6 +164,7 @@ export function policyRenewalRequestDigest(input: {
     policy_digests: input.policy_digests,
     changed_paths: input.changed_paths ?? [],
     repository_evidence_digest: input.repository_evidence_digest ?? null,
+    ...(input.reviewed_base_import ? { reviewed_base_import: input.reviewed_base_import } : {}),
   });
 }
 
@@ -208,9 +211,30 @@ export function policyRenewalIssues(
         changed.startsWith(".agentplane/policy/");
       return (
         !executionRequirementsAreSubset({ ...parent, scope_roots: ["."] }, requirements) ||
-        (!policyPath && !executionRequirementsAreSubset(parent, requirements))
+        (!policyPath &&
+          !observation.reviewed_base_import?.imported_paths.includes(changed) &&
+          !executionRequirementsAreSubset(parent, requirements))
       );
     }) ||
+    (observation.reviewed_base_import !== undefined &&
+      (!/^[a-f0-9]{40}$/u.test(observation.reviewed_base_import.old_commit) ||
+        !/^[a-f0-9]{40}$/u.test(observation.reviewed_base_import.new_commit) ||
+        observation.reviewed_base_import.old_commit ===
+          observation.reviewed_base_import.new_commit ||
+        observation.reviewed_base_import.checkpoint_digest !== parent.repository_fingerprint ||
+        [
+          observation.reviewed_base_import.work_order_digest,
+          observation.reviewed_base_import.canonical_record_digest,
+          observation.reviewed_base_import.mutation_receipt_digest,
+          observation.reviewed_base_import.overlay_digest,
+        ].some((value) => !/^sha256:[0-9a-f]{64}$/u.test(value)) ||
+        observation.reviewed_base_import.imported_paths.some(
+          (entry) => !observation.changed_paths.includes(entry),
+        ) ||
+        JSON.stringify(observation.reviewed_base_import.imported_paths) !==
+          JSON.stringify(
+            [...new Set(observation.reviewed_base_import.imported_paths)].toSorted(),
+          ))) ||
     observation.added_scope_roots !== undefined ||
     observation.added_repository_effects !== undefined ||
     (observation.changed_paths.length > 0 &&
@@ -232,6 +256,7 @@ export function policyRenewalIssues(
         policy_digests: child.policy_digests,
         changed_paths: observation.changed_paths,
         repository_evidence_digest: observation.repository_evidence_digest,
+        reviewed_base_import: observation.reviewed_base_import,
       }) ||
     observation.evidence_digest !==
       policyRenewalApprovalEvidence({

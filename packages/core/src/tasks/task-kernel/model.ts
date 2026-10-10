@@ -122,6 +122,18 @@ export type ExecutionAuthority = Readonly<{
 export type CanonicalApprovalMode =
   "manual_operator" | "signed_user_receipt" | "host_user_decision" | "repository_policy";
 
+/** Explicit operator pins select retained evidence; they do not attest historical dispatch. */
+export type ReviewedBaseImport = Readonly<{
+  old_commit: string;
+  new_commit: string;
+  work_order_digest: Sha256Digest;
+  checkpoint_digest: Sha256Digest;
+  canonical_record_digest: Sha256Digest;
+  mutation_receipt_digest: Sha256Digest;
+  overlay_digest: Sha256Digest;
+  imported_paths: readonly string[];
+}>;
+
 export type AuthorityObservation = Readonly<{
   kind:
     | "plan_amendment"
@@ -137,6 +149,7 @@ export type AuthorityObservation = Readonly<{
   added_repository_effects?: readonly string[];
   request_task_revision?: number;
   repository_evidence_digest?: Sha256Digest;
+  reviewed_base_import?: ReviewedBaseImport;
 }>;
 
 /** Ordered authority lineage inside the same atomic aggregate as lifecycle state. */
