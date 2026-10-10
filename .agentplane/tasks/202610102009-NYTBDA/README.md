@@ -4,7 +4,7 @@ title: "Qualify GitLab frozen-source and logical-target publication regression"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -30,19 +30,32 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-10-10T20:27:26.310Z"
+  updated_at: "2026-10-10T20:57:20.029Z"
   updated_by: "EVALUATOR"
-  note: "Canonical EVALUATOR review passed."
-  evaluated_sha: "d810023bc18457f9275adb92b440509e3a725c3e"
-  review_identity_digest: "sha256:6c20b43644010c88e43781cecd46f63baa4aa17a4006dae3bf9c109fd1e638b9"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "d68a1d36645e9d0561fdc11c15ef303bbdba936f"
+  review_identity_digest: "sha256:ed5a11bee7ac4ce5970c20535a8d46aaab5bdd2e09e049e45995fe9a3d7bfbd5"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202610102009-NYTBDA/2ce18f8e7637737433519aaea16733c44fabcdbe462738f3b1bdb33685cc08f5/quality-report.json"
+    - ".agentplane/tasks/202610102009-NYTBDA/quality/20261010-205234700-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202610102009-NYTBDA/quality/20261010-205234700-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202610102009-NYTBDA/quality/objects/sha256/edab7fe6d931ebd14c450c728e3cdada4061f8b10217f3a5b312b52c3ecf6b33.md"
+    - ".agentplane/tasks/202610102009-NYTBDA/quality/20261010-205234700-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202610102009-NYTBDA/quality/20261010-205234700-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202610102009-NYTBDA/quality/20261010-205234700-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202610102009-NYTBDA/README.md"
+    - ".agentplane/tasks/202610102009-NYTBDA/quality/objects/sha256/2d4bd3bf8c47fc0491ff73a7856ef971f9bc50a9aa69b6706d66e1756eb5165f.patch"
+    - ".agentplane/tasks/202610102009-NYTBDA/quality/objects/sha256/eadf6d6cf9486d582ebe61130cbdb94c38bc72b8c193e76ed7d51c22348e7e75.json"
+    - ".agentplane/tasks/202610102009-NYTBDA/verification/20261010203041219-35f1c4567798c83a.json"
+    - ".agentplane/tasks/202610102009-NYTBDA/quality/objects/sha256/b01c64475965cfb55bd36975df71aad70136793632f5b231b22e15b9878a80f3.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "All13 required context blocks and accepted result72977c8f/native validation8899274c bindings were verified. Current HEAD is the controller evaluator target d810023bc18457f9275adb92b440509e3a725c3e. Only the two admitted test files differ from7b46 in packages."
-    - "The real runPrOpenSync calls the existing provider-base resolver and actual GitLab payload construction. The test substitutes only external HTTP and hosted ls-remote transport; local bare refs supply real target evidence. Positive assertions bind source branch and unchanged source HEAD, logical main publication target, frozen legacy base_ref/base_sha, unchanged task/source bytes and exact frozen-base diffstat."
-    - "Missing target, moved remote main and inconsistent frozen base_sha each reject before any GitLab API call. The GitHub base test remains covered through the provider matrix. Sync-only refresh after moving local main still preserves the original frozen diff base."
-    - "Three native checks actually passed:19 tests across3 files, typecheck and git diff --check. Verified all three native manifest hashes and nine raw observation files. Report raw SHA256d24b13e1a5990b3e2a129b8bb649027b1909bdd04c473ab090e6daa1c0b9860a and all16 referenced source/runtime/log artifacts match. Scoped lint/format evidence and initial fixture/lint failures are retained."
-    - "No actionable defect found within this test-only contract. The tests explicitly preserve skipped verification and null last_verified_at; they do not turn a mocked MR response into hosted validation."
+    - "The real publication and sync-only journeys preserve the logical target branch and frozen comparison SHA. Missing, moved, and inconsistent remote-base fixtures reject before provider API calls. Existing GitHub coverage remains intact."
+    - "All 17 required context blocks and nine prepared evidence objects were verified. Final native manifests run-003 through run-005 and all nine retained log files match their hashes. The declared 19-test regression, typecheck, and diff check passed at implementation d810023bc18457f9275adb92b440509e3a725c3e."
+    - "Current source bytes equal the reviewed implementation. Merge d68a1d36645e9d0561fdc11c15ef303bbdba936f retains parents 48777f9f2310daf75e60f460db8cf3caa8d7b6a9 and af728592db8c10d2130ab714acea15a1f1656d2b, with exact tree f45c03e4af04780c02581e956c5e4845daa1b43b. The hosted ancestor remains reachable."
+    - "Residual risk: Hosted verification, integration approval, and release qualification remain controller-owned gates. This review does not claim whole-repository or release PASS."
 execution_route:
   frozen: true
   reason_codes:
@@ -336,6 +349,14 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.completed_native_review:
+    applied_at: "2026-10-10T20:57:20.029Z"
+    kernel_digest: "sha256:743196177553385f0717442bdc55901f7601370663d5d0b9da3fba29273959b5"
+    quality_digest: "sha256:3926a4a4b2ca43d64d7dfc23a2fc6356cc6a66766c09e7cad8e0346ac40456f6"
+    result_digest: "sha256:7953f30fdab3e24b416805732420b8dcf462d90aa8d80bc1cabb444af3067cf7"
+    schema_version: 1
+    state_fingerprint: "sha256:abd74b6b9bceaea8adb2013c5b29cfe13fe77d5693de2d1bbb921c3d8b417b0b"
+    transition_id: "tr_2b6971497279dfb1863820f3704989f4"
   agentplane.kernel_operational_projection:
     digest: "sha256:dd41121d640992b6b16f36b9850a32e4df608dcc55a03dbda4bfa83a3f0e1089"
     evidence_refs:

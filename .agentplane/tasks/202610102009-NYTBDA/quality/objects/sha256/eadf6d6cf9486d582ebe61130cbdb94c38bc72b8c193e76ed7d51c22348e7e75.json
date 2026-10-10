@@ -1,0 +1,168 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bun run test:project agentplane packages/agentplane/src/commands/pr/internal/sync-gitlab-frozen-base.test.ts packages/agentplane/src/commands/pr/internal/provider-base.test.ts packages/agentplane/src/commands/pr/internal/sync-frozen-base.test.ts --maxWorkers=2",
+    "bun run typecheck",
+    "git diff --check"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "components": [
+        "packages/agentplane/src/commands/pr/internal/provider-base.test.ts",
+        "packages/agentplane/src/commands/pr/internal/sync-gitlab-frozen-base.test.ts"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "reversible"
+      },
+      "evidence_requirements": [
+        "hosted_integration",
+        "repository_effect:repository_write",
+        "repository_effect:source_code",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "repository_write",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        "packages/agentplane"
+      ],
+      "changed_files": [
+        "packages/agentplane/src/commands/pr/internal/provider-base.test.ts",
+        "packages/agentplane/src/commands/pr/internal/sync-gitlab-frozen-base.test.ts"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "hosted_integration",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "core",
+      "cli"
+    ],
+    "escalation_reasons": [],
+    "requires_full_regression": false,
+    "requires_real_e2e": false,
+    "digest": "sha256:2d15de2cd284109686330d8505d01b635374a8b05eb1269a16977524091b9337"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-10-10T20:30:41.219Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: canonical Task Kernel final checks passed."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202610102009-NYTBDA/verification/20261010203041219-35f1c4567798c83a.json",
+      "sha256": "sha256:403b2ba9ec11b969b96c3b0aee525fbcc3d8261fd0b7db7014a1386d7f05dade"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check 7b46bd63fa10785c36420ee627c01d814171497b..d810023bc18457f9275adb92b440509e3a725c3e",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB 7b46bd63fa10785c36420ee627c01d814171497b..d810023bc18457f9275adb92b440509e3a725c3e",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "A\t.agentplane/tasks/202610102009-NYTBDA/README.md",
+          "A\t.agentplane/tasks/202610102009-NYTBDA/pr/diffstat.txt",
+          "A\t.agentplane/tasks/202610102009-NYTBDA/pr/github-body.md",
+          "A\t.agentplane/tasks/202610102009-NYTBDA/pr/github-title.txt",
+          "A\t.agentplane/tasks/202610102009-NYTBDA/pr/meta.json",
+          "A\t.agentplane/tasks/202610102009-NYTBDA/pr/review.md",
+          "A\t.agentplane/tasks/202610102009-NYTBDA/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+          "M\tpackages/agentplane/src/commands/pr/internal/provider-base.test.ts",
+          "A\tpackages/agentplane/src/commands/pr/internal/sync-gitlab-frozen-base.test.ts"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "7b46bd63fa10785c36420ee627c01d814171497b",
+    "implementation_commit": "d810023bc18457f9275adb92b440509e3a725c3e",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [
+        "?? .agentplane/tasks/202610102009-NYTBDA/README.md",
+        "?? .agentplane/tasks/202610102009-NYTBDA/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+      ],
+      "classification": [
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202610102009-NYTBDA/README.md"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202610102009-NYTBDA/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+        }
+      ],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [
+        "?? .agentplane/tasks/202610102009-NYTBDA/README.md",
+        "?? .agentplane/tasks/202610102009-NYTBDA/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+      ],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202610102009-NYTBDA",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202610102009-NYTBDA/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

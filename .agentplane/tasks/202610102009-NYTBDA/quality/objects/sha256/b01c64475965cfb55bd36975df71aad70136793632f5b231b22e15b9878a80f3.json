@@ -1,0 +1,42 @@
+{
+  "native_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_task_identity",
+    "task_id": "202610102009-NYTBDA",
+    "plan": {
+      "revision": 1,
+      "digest": "sha256:6759087e995be9683191635af864dfd47e6c7d1ee1d44446a6ff15d88993e29c",
+      "approval_state": "approved",
+      "approved_digest": "sha256:6759087e995be9683191635af864dfd47e6c7d1ee1d44446a6ff15d88993e29c"
+    },
+    "policy": {
+      "digest": "sha256:1150ba6caefe9e829c30b3520b9246ed1ec7ebbeedbe788c63cf7989015dbb46"
+    },
+    "capability": {
+      "digest": "sha256:370622d8bba586806df96cbc5aa0007e6251156e317ac4cd8dc08b2aa37a94b6"
+    },
+    "checks": {
+      "verification_contract_digest": "sha256:2d15de2cd284109686330d8505d01b635374a8b05eb1269a16977524091b9337",
+      "required_check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "digest": "sha256:3a024c630359518fbfa7b7743470bf39ddf2332894b09e705a3ed9d436f16869"
+    },
+    "digest": "sha256:c5b4d14ba0e3ebbb9e44efc314aa8f9c65d82c6e47d35a92c7902b574dad0ae9"
+  },
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202610102009-NYTBDA",
+    "plan_digest": "sha256:6759087e995be9683191635af864dfd47e6c7d1ee1d44446a6ff15d88993e29c",
+    "policy_digest": "sha256:1150ba6caefe9e829c30b3520b9246ed1ec7ebbeedbe788c63cf7989015dbb46",
+    "capability_digest": "sha256:370622d8bba586806df96cbc5aa0007e6251156e317ac4cd8dc08b2aa37a94b6",
+    "checks_digest": "sha256:3a024c630359518fbfa7b7743470bf39ddf2332894b09e705a3ed9d436f16869",
+    "verification_input_digest": "sha256:80e8a4bcbc047ce09b5d0b17a9ce01056af9a568c0f7d88a3a5f4308bfe8845b",
+    "acceptance_digest": "sha256:225bf23bef7c52cf15aab3a0857b8fa50d6e79abb4d503451710fa571cafa73c",
+    "implementation_sha": "d68a1d36645e9d0561fdc11c15ef303bbdba936f",
+    "digest": "sha256:ed5a11bee7ac4ce5970c20535a8d46aaab5bdd2e09e049e45995fe9a3d7bfbd5"
+  }
+}
