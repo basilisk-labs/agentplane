@@ -22,8 +22,8 @@
     "agent_work_order_schema": {
       "comparison": "canonical_json_exact",
       "path": "schemas/agent-work-order-v2.schema.json",
-      "sha256": "6be6676eba2129f9f52b79d78af44d246e4a42286733035e8564680744df5501",
-      "source_task": "202609162254-YE48GC"
+      "sha256": "423b520ced196be0aa41fbcb9418c2052c1d3aa46ada0ccb02fb7b0827cce3d2",
+      "source_task": "202610100756-0Y9HMG"
     },
     "core_agent_work_order_exports": {
       "comparison": "required_named_reexports",
@@ -3891,6 +3891,7 @@
     "202610060956-42J54D",
     "202610011624-MP3J6N",
     "202610081434-RDZE4P",
-    "202610100459-0NATSS"
+    "202610100459-0NATSS",
+    "202610100756-0Y9HMG"
   ]
 }
