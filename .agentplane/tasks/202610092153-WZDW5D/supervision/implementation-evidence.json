@@ -1,0 +1,76 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check aafa78c69270359130c170efa75e253a70cd84d6..adecd45b887f2c138fbbed706d57b23beed89d92",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB aafa78c69270359130c170efa75e253a70cd84d6..adecd45b887f2c138fbbed706d57b23beed89d92",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202610092153-WZDW5D/README.md",
+        "M\t.agentplane/tasks/202610092153-WZDW5D/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202610092153-WZDW5D/pr/github-body.md",
+        "M\t.agentplane/tasks/202610092153-WZDW5D/pr/meta.json",
+        "M\t.agentplane/tasks/202610092153-WZDW5D/pr/review.md",
+        "M\t.agentplane/tasks/202610092153-WZDW5D/supervision/declared-checks.json",
+        "M\t.agentplane/tasks/202610092153-WZDW5D/supervision/implementation-evidence.json",
+        "M\tdocs/developer/testing-and-quality.mdx",
+        "M\tscripts/checks/run-local-ci-group.mjs",
+        "M\tscripts/checks/run-local-ci.mjs",
+        "M\tscripts/lib/local-ci-resource-profile.test.mjs",
+        "M\tscripts/lib/verification-scheduler.d.ts",
+        "M\tscripts/lib/verification-scheduler.mjs"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "aafa78c69270359130c170efa75e253a70cd84d6",
+  "implementation_commit": "adecd45b887f2c138fbbed706d57b23beed89d92",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      " M .agentplane/tasks/202610092153-WZDW5D/README.md",
+      " M .agentplane/tasks/202610092153-WZDW5D/supervision/declared-checks.json",
+      " M .agentplane/tasks/202610092153-WZDW5D/supervision/implementation-evidence.json"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202610092153-WZDW5D/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202610092153-WZDW5D/supervision/declared-checks.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202610092153-WZDW5D/supervision/implementation-evidence.json"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M .agentplane/tasks/202610092153-WZDW5D/README.md",
+      " M .agentplane/tasks/202610092153-WZDW5D/supervision/declared-checks.json",
+      " M .agentplane/tasks/202610092153-WZDW5D/supervision/implementation-evidence.json"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202610092153-WZDW5D"
+}

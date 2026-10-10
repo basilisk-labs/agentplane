@@ -1,4 +1,6 @@
 import { protectedPathKindForFile } from "../../shared/protected-paths.js";
+import { CliError } from "../../shared/errors.js";
+import { assertHookRunnerReady } from "../shared/hook-shim-template.js";
 import path from "node:path";
 import { mkdir } from "node:fs/promises";
 import { parseTaskIdFromBranch } from "@agentplaneorg/core/git";
@@ -25,57 +27,16 @@ import { pathFromStatusLine } from "./external-agent-implementation-finalization
 
 export { commitCanonicalTerminalTaskArtifacts } from "./kernel-terminal-artifacts.js";
 
-export type KernelRepositoryBaseline = Readonly<{
-  schema_version: 1;
-  kind: "canonical_repository_baseline";
-  task_id: string;
-  work_item_id: string;
-  task_revision: number;
-  work_order_id: string;
-  checkout: string;
-  branch: string;
-  head: string;
-  tree: string;
-  status: DirectRepositoryStatus;
-}>;
-
-export type KernelRepositoryEvidence = Readonly<{
-  schema_version: 1;
-  kind: "canonical_repository_evidence";
-  task_id: string;
-  work_item_id: string;
-  task_revision: number;
-  work_order_id: string;
-  checkout: string;
-  branch: string;
-  base_commit: string;
-  implementation_commit: string;
-  implementation_tree: string;
-  changed_paths: readonly string[];
-  evaluator_target: string;
-  implementation_evidence: DirectImplementationEvidence;
-  digest: k.Sha256Digest;
-}>;
-
-type KernelRepositoryCommitIntent = Readonly<{
-  schema_version: 1;
-  kind: "canonical_repository_commit_intent";
-  task_id: string;
-  work_order_id: string;
-  base_commit: string;
-  changed_paths: readonly string[];
-  digest: k.Sha256Digest;
-}>;
-
-type KernelRepositoryFollowupCommitIntent = Readonly<{
-  schema_version: 1;
-  kind: "canonical_repository_followup_commit_intent";
-  task_id: string;
-  work_order_id: string;
-  base_commit: string;
-  changed_paths: readonly string[];
-  digest: k.Sha256Digest;
-}>;
+import type {
+  KernelRepositoryBaseline,
+  KernelRepositoryEvidence,
+  KernelRepositoryCommitIntent,
+  KernelRepositoryFollowupCommitIntent,
+} from "./kernel-repository-types.js";
+export type {
+  KernelRepositoryBaseline,
+  KernelRepositoryEvidence,
+} from "./kernel-repository-types.js";
 
 async function gitValue(command: CommandContext, args: string[], label: string, empty = false) {
   const result = await runProcess({
@@ -303,11 +264,33 @@ export async function commitCanonicalImplementation(opts: {
       throw new Error("Canonical repository evidence identity changed");
     return existingEvidence;
   }
+  let intent = await readCommitIntent(opts.directory);
+  if (
+    intent &&
+    (intent.task_id !== baseline.task_id ||
+      intent.work_order_id !== baseline.work_order_id ||
+      intent.base_commit !== baseline.head)
+  )
+    throw new Error("Canonical repository commit intent identity changed");
   const baselineLines = new Set(
     nonTaskStatusLines(opts.command, baseline.task_id, baseline.status),
   );
   const currentLines = new Set(nonTaskStatusLines(opts.command, baseline.task_id, status));
-  if (head === baseline.head && [...baselineLines].some((line) => !currentLines.has(line)))
+  const currentPaths = new Set([...currentLines].map((line) => pathFromStatusLine(line)));
+  // Native staging can change porcelain columns before a hook rejects the commit.
+  const retainedIntentPath = (line: string) => {
+    const candidate = pathFromStatusLine(line);
+    return (
+      candidate !== null &&
+      intent?.changed_paths.includes(candidate) === true &&
+      opts.changed_paths.includes(candidate) &&
+      currentPaths.has(candidate)
+    );
+  };
+  if (
+    head === baseline.head &&
+    [...baselineLines].some((line) => !currentLines.has(line) && !retainedIntentPath(line))
+  )
     throw new Error("Canonical implementation changed its dirty baseline");
   const introduced = [...currentLines]
     .filter((line) => !baselineLines.has(line))
@@ -325,16 +308,17 @@ export async function commitCanonicalImplementation(opts: {
   const adoptedBaseline = baselinePaths.filter((candidate) => authorized.has(candidate));
   const unauthorizedIntroduced = introduced.filter((candidate) => !authorized.has(candidate));
   if (unauthorizedIntroduced.length > 0)
-    throw new Error(
-      `Canonical repository delta differs from its observation: ${introduced.join(", ")}.`,
-    );
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: `Canonical repository delta differs from its observation: ${unauthorizedIntroduced.join(", ")}. Inspect these unobserved paths before retrying. Preserve approved implementation files; unrelated artifacts require separate authority or removal.`,
+      context: {
+        reason_code: "canonical_repository_delta_unobserved",
+        task_id: baseline.task_id,
+        authoritative_checkout: baseline.checkout,
+        unobserved_paths: unauthorizedIntroduced,
+      },
+    });
   const expected = [...new Set([...adoptedBaseline, ...introduced])].toSorted();
-  let intent = await readCommitIntent(opts.directory);
-  if (
-    intent &&
-    (intent.task_id !== baseline.task_id || intent.work_order_id !== baseline.work_order_id)
-  )
-    throw new Error("Canonical repository commit intent identity changed");
   if (head !== baseline.head && !intent)
     throw new Error("Canonical implementation changed Git history before commit dispatch");
   const persistedPaths = intent?.changed_paths;
@@ -372,6 +356,7 @@ export async function commitCanonicalImplementation(opts: {
     await writeCommitIntent(opts.directory, intent);
   }
   const commitPaths = async (paths: readonly string[]) => {
+    await assertHookRunnerReady(baseline.checkout);
     // A rejected hook can leave an older version of an authorized path staged.
     // Refresh the implementation paths before the guarded commit retries them.
     await opts.command.git.stage([...paths]);

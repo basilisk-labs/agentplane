@@ -31,6 +31,10 @@ export function projectKernelTask(aggregate: taskKernel.TaskAggregate) {
       })),
     validation: aggregate.final_validation,
     effects: aggregate.effects.map(({ id, kind, state }) => ({ id, kind, state })),
+    ...(aggregate.audit_comments ? { audit_comments: aggregate.audit_comments } : {}),
+    ...(aggregate.administrative_closure
+      ? { administrative_closure: aggregate.administrative_closure }
+      : {}),
   };
   return { ...projection, digest: taskKernel.kernelDigest(projection) };
 }

@@ -1,3 +1,4 @@
+import { authorizeCompletedNativeReviewResult } from "./kernel-completed-native-review.js";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -59,7 +60,14 @@ export async function applyExternalEvaluatorResult(opts: {
   const normalizedFindings = findings.length > 0 ? findings : [opts.semantic.summary];
   if (!(await isExternalEvaluatorResultApplied(opts))) {
     const task = await loadTaskFromContext({ ctx: opts.command, taskId: opts.exchange.task_id });
+    const nativePermit = await authorizeCompletedNativeReviewResult(
+      opts.command,
+      task,
+      opts.exchange,
+      opts.semantic,
+    );
     await applyEvaluatorSgrReview({
+      nativePermit,
       ctx: opts.command,
       task,
       workOrderPath: opts.exchange.evaluator_work_order_ref,

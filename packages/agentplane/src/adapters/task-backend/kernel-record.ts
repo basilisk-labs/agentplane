@@ -81,6 +81,32 @@ const kernelAggregateSchema = z.strictObject({
   state: z.enum(taskKernel.TASK_STATES),
   intent_digest: digest,
   authority_lineage: z.array(kernelAuthorityRecordSchema).optional(),
+  corrective_authority: z
+    .array(
+      z.strictObject({
+        digest,
+        task_id: z.string().min(1),
+        initial_plan_digest: digest,
+        actor_id: z.string().min(1),
+        issued_at: z.string(),
+        expires_at: z.string(),
+        max_attempts: z.number().int().min(1).max(100),
+        requirements,
+        verification_commands: z.array(z.string()),
+        verification_contract_digest: digest,
+        policy_digest: digest,
+        revoked_at: z.string().nullable(),
+        uses: z.array(
+          z.strictObject({
+            from_plan_digest: digest,
+            to_plan_digest: digest,
+            failure_digest: digest,
+            consumed_at: z.string(),
+          }),
+        ),
+      }),
+    )
+    .optional(),
   current_plan: plan.nullable(),
   plan_history: z.array(plan),
   work_items: z.record(
@@ -97,6 +123,26 @@ const kernelAggregateSchema = z.strictObject({
     }),
   ),
   final_validation: kernelValidationSchema.nullable(),
+  audit_comments: z
+    .array(
+      z.strictObject({
+        author: z.string().min(1),
+        body: z.string().min(1),
+        actor_id: z.string().min(1),
+        occurred_at: z.iso.datetime(),
+        mutation_id: z.string().min(1),
+      }),
+    )
+    .optional(),
+  administrative_closure: z
+    .strictObject({
+      kind: z.enum(["noop", "duplicate", "superseded"]),
+      note: z.string().min(1),
+      related_task_id: z.string().min(1).nullable(),
+      actor_id: z.string().min(1),
+      evidence_digest: digest,
+    })
+    .optional(),
   effects: z.array(
     z.strictObject({
       id: z.string().min(1),
@@ -131,11 +177,15 @@ const kernelAggregateSchema = z.strictObject({
 const event = z.strictObject({
   id: z.string().min(1),
   kind: z.enum([
+    "audit_comment_recorded",
+    "task_administratively_closed",
     "intent_captured",
     "task_transitioned",
     "plan_proposed",
     "plan_rejected",
     "plan_approved",
+    "corrective_authority_granted",
+    "corrective_authority_revoked",
     "work_items_materialized",
     "work_item_transitioned",
     "work_item_result_accepted",

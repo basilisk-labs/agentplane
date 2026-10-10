@@ -3,6 +3,7 @@ import { CliError } from "../../shared/errors.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { ensureLocalTaskReadmeHydrated, recordVerifiedNoopClosure } from "./close-shared.js";
+import { closeCanonicalWithoutImplementation } from "./kernel-bookkeeping.js";
 
 export async function cmdTaskCloseNoop(opts: {
   ctx?: CommandContext;
@@ -10,6 +11,7 @@ export async function cmdTaskCloseNoop(opts: {
   rootOverride?: string;
   taskId: string;
   author: string;
+  approvedBy?: string;
   note?: string;
   force: boolean;
   yes: boolean;
@@ -31,6 +33,17 @@ export async function cmdTaskCloseNoop(opts: {
     const baseBody =
       "Verified: no implementation changes were required; closure is recorded as no-op bookkeeping.";
     const body = normalizedNote ? `${baseBody}\n\nNote: ${normalizedNote}` : baseBody;
+    if (
+      await closeCanonicalWithoutImplementation({
+        command: ctx,
+        taskId: opts.taskId,
+        author: opts.author,
+        note: normalizedNote ?? "No implementation required.",
+        kind: "noop",
+        approvedBy: opts.approvedBy,
+      })
+    )
+      return 0;
     await ensureLocalTaskReadmeHydrated({ ctx, taskId: opts.taskId });
     await recordVerifiedNoopClosure({
       ctx,

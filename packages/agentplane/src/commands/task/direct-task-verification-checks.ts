@@ -1,4 +1,5 @@
 import path from "node:path";
+import type { ObservationReference } from "./verification-observation.js";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import { localRuntimeEvidence, type LocalRuntimeEvidence } from "../../shared/runtime-env.js";
@@ -10,6 +11,7 @@ import { verificationChildEnv } from "../shared/pr-meta/verify-log.js";
 
 export type DirectTaskCheck = {
   runtime?: LocalRuntimeEvidence;
+  observation?: ObservationReference;
   failure_kind?: "infrastructure";
   command: string;
   declared_command?: string;

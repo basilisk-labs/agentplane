@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "review_task": "202610092056-WS6H31",
+  "source_task": "202610081434-RDZE4P",
+  "comparison": {
+    "base_ref": "main",
+    "base_sha": "3147d4ac685e60d4c93f1519f8b3825d3de5d7b1",
+    "pr_source_sha": "f8df44c021e8cdfe38aa4eaedf9d8f86d441cad8",
+    "method": "collectCompatibilitySurface and diffCliTopology",
+    "before": {
+      "command_count": 255,
+      "positional_count": 176,
+      "option_count": 857,
+      "cli_topology_sha256": "1b2e5ab4593f24b1363fee277d1f8d1efdbc78bb714dc16b518a0fbe8c3a4135"
+    },
+    "after": {
+      "command_count": 255,
+      "positional_count": 176,
+      "option_count": 860,
+      "cli_topology_sha256": "d14dab09035292441f43b3426e994790ff9806db22a1d6bf264ec97fac6c2248"
+    },
+    "added_options": [
+      {
+        "command": "task close-duplicate",
+        "name": "approved-by",
+        "kind": "string",
+        "value_hint": "<role>"
+      },
+      {
+        "command": "task close-duplicate",
+        "name": "superseded",
+        "kind": "boolean",
+        "default": false
+      },
+      {
+        "command": "task close-noop",
+        "name": "approved-by",
+        "kind": "string",
+        "value_hint": "<role>"
+      }
+    ],
+    "added_commands": [],
+    "removed_commands": [],
+    "removed_options": [],
+    "mutated_command_shells": [],
+    "mutated_options": []
+  },
+  "candidate": {
+    "path": "scripts/baselines/v0.7-compatibility-candidate.json",
+    "sha256": "9c88b40001ed86918bfc67e20e17389136a1224d9dd5da6412060a082e473490",
+    "allowed_json_paths": [
+      "$.candidate.section_digests.cli_topology",
+      "$.candidate.surface_sha256",
+      "$.deltas[0].evidence.added_options[49]",
+      "$.deltas[0].evidence.added_options[50]",
+      "$.deltas[0].evidence.added_options[51]",
+      "$.deltas[0].evidence.addition_sources[153]",
+      "$.deltas[0].evidence.addition_sources[154]",
+      "$.deltas[0].evidence.addition_sources[155]",
+      "$.deltas[0].evidence.option_count.to",
+      "$.deltas[0].source_tasks[48]",
+      "$.deltas[0].summary",
+      "$.deltas[0].to_sha256",
+      "$.release_version_delta.surface_sha256",
+      "$.source_tasks[58]"
+    ]
+  },
+  "guard": {
+    "path": "scripts/checks/check-compatibility-contract-baseline.mjs",
+    "sha256": "6e64407a425a69b9216355f74ced974c4ed7d17b315459651a52800cb123b487",
+    "reviewed_fields": [
+      "REVIEWED_SECTION_DIGESTS.cli_topology",
+      "expectedSourceTasks",
+      "expectedDeltaSources.cli_topology",
+      "activeExpectedAdditionSources",
+      "activeExpectedAddedOptions"
+    ],
+    "rejected_recapture_checks_preserved": true
+  },
+  "immutable_baseline": {
+    "path": "scripts/baselines/v0.6.24-compatibility-contract.json",
+    "sha256": "29fa03085735dd881e7f2101a84766169c43f1397fd3fff1134a61fe30ff913b",
+    "modified": false
+  },
+  "validation": [
+    "bun run bench:compatibility:candidate:check",
+    "bun run bench:compatibility:check",
+    "bun run format:check",
+    "git diff --check"
+  ]
+}

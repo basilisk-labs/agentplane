@@ -3,13 +3,13 @@ import { fromZodError, isZodErrorLike, type ZodError } from "zod-validation-erro
 import { readDiagnosticContext } from "../commands/shared/diagnostics.js";
 import {
   BackendCliError,
+  CliError,
   GitError,
   IoError,
   NetworkError,
   ValidationError,
   formatJsonError,
 } from "../shared/errors.js";
-import type { CliError } from "../shared/errors.js";
 import { BackendError } from "../backends/task-backend.js";
 import { getReasonCodeMeta } from "./reason-codes.js";
 import { renderRemediationLines } from "../shared/diagnostic-remediation.js";
@@ -48,6 +48,7 @@ function formatZodErrorForCli(err: ZodError): string {
 }
 
 export function mapCoreError(err: unknown, context: Record<string, unknown>): CliError {
+  if (err instanceof CliError) return err;
   const message = err instanceof Error ? err.message : String(err);
   const zodError = findZodError(err);
 

@@ -19,27 +19,7 @@ import type {
   NativeAuthorityContext,
 } from "../../ports/kernel-authority.js";
 
-function invalid(reason: string): never {
-  throw Object.assign(new Error(`Canonical authority rejected: ${reason}`), {
-    reason_code: reason,
-    required_action: ["plan_exceeds_native_approval_scope", "work_item_exceeds_authority"].includes(
-      reason,
-    )
-      ? "request_authority_delta"
-      : "request_fresh_native_context",
-  });
-}
-
-function freshTime(context: NativeAuthorityContext) {
-  const now = Date.parse(context.occurred_at);
-  if (!Number.isFinite(now)) invalid("invalid_observation_time");
-  return now;
-}
-
-function assertUnexpired(authority: k.ExecutionAuthority, now: number) {
-  if (authority.expires_at !== null && Date.parse(authority.expires_at) <= now)
-    invalid("authority_expired");
-}
+import { invalid, freshTime, assertUnexpired } from "./kernel-authority-validation.js";
 
 export function kernelApprovalReference(context: NativeAuthorityContext, plan: k.PlanRecord) {
   return k.kernelDigest({
@@ -235,8 +215,13 @@ export class KernelAuthorityResolver {
     assertUnexpired(authority, freshTime(context));
     for (const item of plan.work_items) {
       const delegated = this.delegate(authority, context.actor, item);
-      if (!k.compareExecutionAuthority(authority, delegated).ok)
-        invalid("plan_exceeds_native_approval_scope");
+      const comparison = k.compareExecutionAuthority(authority, delegated);
+      if (!comparison.ok)
+        invalid("plan_exceeds_native_approval_scope", {
+          task_id: taskId,
+          work_item_id: item.id,
+          violations: comparison.violations,
+        });
     }
     await this.assertFresh(context, authority.expires_at);
     return this.adapter.execute({
@@ -381,8 +366,13 @@ export class KernelAuthorityResolver {
     const item = aggregate.current_plan.work_items.find((entry) => entry.id === workItemId);
     if (!item) invalid("work_item_missing");
     const delegated = this.delegate(authority, context.actor, item);
-    if (!k.compareExecutionAuthority(authority, delegated).ok)
-      invalid("work_item_exceeds_authority");
+    const comparison = k.compareExecutionAuthority(authority, delegated);
+    if (!comparison.ok)
+      invalid("work_item_exceeds_authority", {
+        task_id: taskId,
+        work_item_id: item.id,
+        violations: comparison.violations,
+      });
     return { authority: delegated, context };
   }
 

@@ -65,6 +65,15 @@ The external loop stops at one of these boundaries:
 - stale state or effect-in-doubt recovery;
 - terminal completion.
 
+## Transport ownership recovery
+
+An issued exchange has one transport owner. Switching from external `task advance` to managed
+`task run`, or back, does not transfer that ownership. A conflict reports
+`canonical_transport_owner_conflict`, the owner, requested transport, authoritative checkout,
+WorkOrder ID and exact `continuation_argv`. Resume the owning transport in that checkout.
+For an external exchange, complete its typed result before using the emitted result command.
+Do not delete `transport-owner.json` or synthesize a result to change owners.
+
 ## Managed-runner route
 
 With a configured runner, the normal path is:
@@ -83,6 +92,112 @@ launch, and an unverified runtime receipt cannot admit a planning result. Use th
 
 The managed runner also stops at human approval, hosted/external, stale-state, effect-in-doubt, and
 terminal boundaries. Rerun `task run` only after the returned boundary has been resolved.
+
+## Consumer recovery
+
+### Explicit implementation intake
+
+Declare writable paths and effects when creating a code task. For example:
+
+```bash
+agentplane task create "Repair parser and regression tests" \
+  --scope-root src --scope-root tests \
+  --repository-effect source_code --repository-effect tests \
+  --capability repository_write
+```
+
+The intake contract is a ceiling, not a substitute for Plan approval or the current WorkOrder.
+The Plan must include the intended work, required checks and matching execution requirements.
+A code change also needs the tests effect when it modifies tests. Do not expand authority by
+editing native task files. Follow the returned operator approval route for an actual scope change.
+
+### Canonical recovery
+
+Use `agentplane task status <task-id> --route` for operator inspection. Shared canonical reads
+resolve the owning task checkout even when invoked from the base checkout. Keep unrelated
+dirty-base edits in place; native preparation records their unchanged fingerprint and admits
+only the registered clean task checkout at its expected commit.
+
+After a failed final check, AgentPlane retains the failed evidence and returns either an
+infrastructure retry or a bounded corrective Plan. Inspect the supplied proposal and use its
+exact `approval_argv` only with explicit USER approval. Corrective work must pass implementation,
+checks and independent review again. Previously completed work and failed evidence remain recorded.
+An infrastructure failure is not permission to rewrite source or skip the check.
+
+An operator can opt in to a finite number of automatic corrective Plan admissions:
+
+```bash
+ap task corrective-authority <task-id>
+ap task corrective-authority <task-id> --action grant --state-digest <exact-state-digest> --by USER --max-attempts 2 --expires-at <ISO-8601-instant>
+```
+
+Inspect the displayed scope, checks, effects and current grants before issuing the explicit grant.
+General conversation permission does not create a grant. Each admitted corrective Plan consumes one
+attempt atomically. The grant keeps the original scope, verification contract, policy and security
+boundaries. External or destructive actions require a fresh user decision, even if the original task
+permitted them. Expiry, revocation, exhaustion or a changed verification contract restores the normal
+operator boundary. Infrastructure failures never consume an implementation correction attempt.
+
+Use a fresh inspection digest and the retained grant digest to revoke further corrections:
+
+```bash
+ap task corrective-authority <task-id> --action revoke --state-digest <exact-state-digest> --grant-digest <grant-digest> --by USER
+```
+
+Revocation prevents new admissions. It preserves previously admitted work, its authority history,
+and evidence. Every correction still requires native checks and independent review.
+
+An uncertain write is an `E_HANDOFF` boundary, not proof of success or a legacy migration request.
+Preserve its evidence and follow the returned recovery route. For a genuinely legacy task,
+`agentplane task kernel-migrate <task-id>` performs read-only inspection. Applying a migration
+requires the exact source digest and explicit operator admission. It cannot repair a missing,
+quarantined or effect-in-doubt canonical record.
+
+Canonical comments use native audit metadata. Administrative duplicate, superseded and no-op
+closure requires the explicit `--approved-by USER` option on the returned operator command;
+an author named USER, `--force`, or a comment is not approval. Administrative closure records
+cancellation, not verified implementation success. Begun work and unresolved effects block it.
+`task scaffold --force` cannot overwrite canonical identity.
+
+### Relocated hook installations
+
+Managed consumer shims prefer an explicit `AGENTPLANE_HOOK_RUNNER`, then repository-local and
+pinned installed runners. Current shims can use `AGENTPLANE_RUNTIME_ACTIVE_BIN` when the pinned
+installation is gone. Global PATH fallback still requires `AGENTPLANE_HOOK_ALLOW_GLOBAL=1`.
+Hook failures remain failures; runner selection does not bypass hooks.
+
+Native implementation commits and guarded commits check managed shim readiness before staging.
+An older shim without an available runner returns `hook_runner_unavailable` with a checkout-bound
+repair command. Run `agentplane hooks install --root <checkout>` from the active installation,
+then retry the original operation. Keep hooks enabled and preserve existing staged user files.
+
+### Consumer regression coverage
+
+The following source tests document the repaired behavior. Paths are relative to
+`packages/agentplane/src` unless stated otherwise. Passing fixtures do not replace the current
+task's native checks, independent review, integration or release gates.
+
+| Issue | Behavior                                                         | Regression test                                                                                            |
+| ----- | ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| #6054 | Explicit code/tests intake through native lifecycle              | `commands/task/kernel-scoped-intake.test.ts`                                                               |
+| #6067 | Retained final failure and approved corrective cycle             | `commands/task/kernel-final-validation.test.ts`, `commands/task/kernel-scoped-intake.test.ts`              |
+| #6068 | Dirty-base preservation and exact clean-worktree receipt         | `commands/task/kernel-worktree-preparation.test.ts`, `commands/branch/work-start.materialize.test.ts`      |
+| #6069 | Shared canonical owner read/projection consistency               | `commands/shared/canonical-task-owner.test.ts`                                                             |
+| #6070 | Uncertain write and canonical-state diagnostics                  | `commands/task/kernel-runtime-diagnostics.test.ts`, `adapters/task-backend/kernel-backend-adapter.test.ts` |
+| #6071 | Unrelated missing task README does not block target mutation     | `commands/shared/reconcile-canonical-scope.test.ts`                                                        |
+| #6072 | Native audit and authorized administrative closure               | `commands/task/kernel-bookkeeping.test.ts`, core `src/tasks/task-kernel/bookkeeping.test.ts`               |
+| #6073 | Missing pinned installation, active runner, override and failure | `commands/branch/work-start.hook-shim.test.ts`                                                             |
+| #6074 | Transport conflict includes owning continuation                  | `commands/task/kernel-exchange.test.ts`                                                                    |
+| #6075 | Unicode duplicate matching                                       | `commands/task/new-duplicates.test.ts`                                                                     |
+| #6076 | Direct full-catalog help without `--all`                         | `cli/help.all-commands.contract.test.ts`, `cli/run-cli.core.help-contract.test.ts`                         |
+| #6077 | Typed expected authority/lifecycle rejections                    | `commands/task/kernel-runtime-diagnostics.test.ts`, `runner/usecases/kernel-authority.test.ts`             |
+| #6078 | Mixed legacy/canonical active-task selection                     | `commands/task/active.command.unit.test.ts`                                                                |
+| #6079 | Canonical identity survives forced scaffold attempts             | `commands/shared/canonical-task-owner.test.ts`                                                             |
+
+Issue #6050 is an optional third-party integration proposal, not a required lifecycle defect fix.
+It needs a separate product decision, endpoint and data-disclosure review, dependency assessment
+and explicit integration scope. This repair work neither contacts that endpoint nor adds its
+dependency. Package versions and release metadata are unchanged.
 
 ## First complete workflow
 

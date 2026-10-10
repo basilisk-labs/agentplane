@@ -1,3 +1,4 @@
+import { tryApplyBoundedFinalCorrection } from "./kernel-corrective-authority.js";
 import {
   restoreKernelFinalValidation,
   runKernelFinalValidation,
@@ -5,7 +6,7 @@ import {
 import { verificationChildEnv } from "../shared/pr-meta/verify-log.js";
 import { issueKernelInspection, resumeKernelInspection } from "./kernel-inspection.js";
 import path from "node:path";
-import { repositoryEffectsForPath, taskKernel as k } from "@agentplaneorg/core/tasks";
+import { taskKernel as k } from "@agentplaneorg/core/tasks";
 import type { CommandContext } from "../shared/task-backend.js";
 import { createKernelRuntime, requireKernelCommit } from "./kernel-runtime-context.js";
 import { buildKernelAgentWorkOrder, resumeKernelWorkOrder } from "./kernel-work-order.js";
@@ -43,40 +44,9 @@ import {
 export { blockKernelSemanticEpisode } from "./kernel-semantic-result.js";
 export { kernelPlanApprovalOperatorAction } from "./kernel-plan-authority.js";
 
-type Runtime = Awaited<ReturnType<typeof createKernelRuntime>>;
-
 export { canonicalCompletionPrecedesWorkflow } from "./ordinary-advance-step.js";
 
-async function authorityDeltaStop(runtime: Runtime, taskId: string) {
-  const prepared = await runtime.authority.prepareDelta(taskId, repositoryEffectsForPath);
-  return {
-    kind: "human_required" as const,
-    reason: "canonical_authority_delta_requires_user",
-    summary: "Repository changes exceed the approved canonical scope.",
-    authority_delta: prepared,
-    operator_action: {
-      kind: "extend_scope" as const,
-      argv: [
-        "agentplane",
-        "task",
-        "scope",
-        "extend",
-        taskId,
-        ...prepared.request.added_scope_roots.flatMap((root) => ["--scope-root", root]),
-        ...prepared.request.added_repository_effects.flatMap((effect) => [
-          "--repository-effect",
-          effect,
-        ]),
-        "--request-digest",
-        prepared.request_digest,
-        "--state-scope-digest",
-        prepared.request_digest,
-        "--by",
-        "USER",
-      ],
-    },
-  };
-}
+import { authorityDeltaStop } from "./kernel-authority-delta-stop.js";
 
 async function advanceCanonicalRoute(opts: {
   command: CommandContext;
@@ -145,22 +115,18 @@ async function advanceCanonicalRoute(opts: {
         action: anomaly.action,
       };
     }
-    if (
-      [
-        "kernel_final_validation_required",
-        "kernel_task_completion_required",
-        "kernel_task_completed",
-      ].includes(route.reason_code)
-    ) {
-      const recovery = await recoverKernelOperationalProjection(
-        opts.command,
-        record,
-        current.read.task,
-      );
-      if (recovery.kind === "stop")
-        return { schema_version: 1, task_id: opts.task_id, action: recovery.action };
-      if (recovery.kind === "restored") continue;
-    }
+    const recovery = await recoverKernelOperationalProjection(
+      opts.command,
+      record,
+      current.read.task,
+      route.reason_code,
+    );
+    if (recovery.kind === "stop")
+      return { schema_version: 1, task_id: opts.task_id, action: recovery.action };
+    if (recovery.kind === "restored") continue;
+    const reportOnlyCompletion = recovery.kind === "report_only";
+    const needsPullRequest =
+      !reportOnlyCompletion && current.read.task.execution_route?.repository_mode === "branch_pr";
     finalValidation ??= await restoreKernelFinalValidation(
       opts.command,
       record,
@@ -171,7 +137,7 @@ async function advanceCanonicalRoute(opts: {
         ? record.aggregate.final_validation.evidence_digests.at(-1)
         : undefined;
     if (
-      current.read.task.execution_route?.repository_mode === "branch_pr" &&
+      needsPullRequest &&
       !finalValidation &&
       persistedValidationEvidence &&
       ["kernel_final_validation_required", "kernel_task_completion_required"].includes(
@@ -189,11 +155,9 @@ async function advanceCanonicalRoute(opts: {
       requireKernelCommit(await runtime.lifecycle.apply(completion));
       continue;
     }
-    if (
-      route.reason_code === "kernel_task_completed" &&
-      current.read.task.execution_route?.repository_mode !== "branch_pr"
-    ) {
-      await commitCanonicalTerminalTaskArtifacts(opts.command, opts.task_id);
+    if (route.reason_code === "kernel_task_completed" && !needsPullRequest) {
+      if (!reportOnlyCompletion)
+        await commitCanonicalTerminalTaskArtifacts(opts.command, opts.task_id);
       return {
         schema_version: 1,
         task_id: opts.task_id,
@@ -201,10 +165,7 @@ async function advanceCanonicalRoute(opts: {
         canonical_revision: record.aggregate.revision,
       };
     }
-    if (
-      route.reason_code === "kernel_task_completed" &&
-      current.read.task.execution_route?.repository_mode === "branch_pr"
-    ) {
+    if (route.reason_code === "kernel_task_completed" && needsPullRequest) {
       await commitCanonicalTerminalTaskArtifacts(opts.command, opts.task_id);
       const localWorkflow = await decideCanonicalWorkflowEffect(opts.command, opts.task_id, false);
       const localTerminal =
@@ -394,7 +355,7 @@ async function advanceCanonicalRoute(opts: {
           finalValidation.evidence_digest,
         )
       ) {
-        if (current.read.task.execution_route?.repository_mode === "branch_pr") {
+        if (needsPullRequest) {
           if (!opts.allow_provider_effects) {
             return {
               schema_version: 1,
@@ -415,11 +376,16 @@ async function advanceCanonicalRoute(opts: {
         if (completion.command.expected_task_revision !== record.aggregate.revision)
           throw new Error("Canonical task changed before completion");
         requireKernelCommit(await runtime.lifecycle.apply(completion));
-        if (current.read.task.execution_route?.repository_mode === "branch_pr") {
+        if (needsPullRequest) {
           await commitCanonicalTerminalTaskArtifacts(opts.command, opts.task_id);
         }
       } else {
         const checked = await runKernelFinalValidation(opts.command, runtime, record);
+        if (
+          checked.stop &&
+          (await tryApplyBoundedFinalCorrection(opts.command, opts.task_id, checked.stop))
+        )
+          continue;
         if (checked.stop) return { schema_version: 1, task_id: opts.task_id, action: checked.stop };
         finalValidation = {
           fingerprint: checked.fingerprint,
@@ -511,6 +477,7 @@ async function advanceCanonicalRoute(opts: {
       taskId: opts.task_id,
       reasonCode: route.reason_code,
       hasWorkItem: route.work_item_id !== null,
+      runtime,
     });
     if (worktreeAction)
       return {

@@ -1,7 +1,8 @@
-import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
-import os from "node:os";
+import { mkdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { defaultConfig } from "@agentplaneorg/core/config";
+import { mkGitRepoRoot } from "@agentplane/testkit";
 
 import type { CommandContext } from "../shared/task-backend.js";
 import { projectEvaluatorQualityReportToContext } from "../../context/evaluator-projection.js";
@@ -15,7 +16,7 @@ import { cmdContextVerifyTask } from "./verify-task.js";
 let tempRoots: string[] = [];
 
 async function tempRoot(): Promise<string> {
-  const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-context-verify-"));
+  const root = await mkGitRepoRoot();
   tempRoots.push(root);
   return root;
 }
@@ -56,9 +57,11 @@ function contextForReceiptBinding(
   task: ReturnType<typeof receiptBindingTask>,
   workflowDir = ".agentplane/tasks",
 ): CommandContext {
+  const config = defaultConfig();
+  config.paths.workflow_dir = workflowDir;
   return {
     resolvedProject: { gitRoot: root },
-    config: { paths: { workflow_dir: workflowDir } },
+    config,
     taskBackend: { getTask: () => Promise.resolve(task) },
     backendId: "local",
     backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
@@ -79,7 +82,7 @@ describe("maximum-assimilation task verification", () => {
     };
     const ctx = {
       resolvedProject: { gitRoot: root },
-      config: { paths: { workflow_dir: ".agentplane/tasks" } },
+      config: defaultConfig(),
       taskBackend: { getTask: () => Promise.resolve(task) },
       backendId: "local",
       backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
@@ -113,7 +116,7 @@ describe("maximum-assimilation task verification", () => {
     };
     const ctx = {
       resolvedProject: { gitRoot: root },
-      config: { paths: { workflow_dir: ".agentplane/tasks" } },
+      config: defaultConfig(),
       taskBackend: { getTask: () => Promise.resolve(task) },
       backendId: "local",
       backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
@@ -147,7 +150,7 @@ describe("maximum-assimilation task verification", () => {
     };
     const ctx = {
       resolvedProject: { gitRoot: root },
-      config: { paths: { workflow_dir: ".agentplane/tasks" } },
+      config: defaultConfig(),
       taskBackend: { getTask: () => Promise.resolve(task) },
       backendId: "local",
       backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
@@ -190,7 +193,7 @@ describe("maximum-assimilation task verification", () => {
     });
     const ctx = {
       resolvedProject: { gitRoot: root },
-      config: { paths: { workflow_dir: ".agentplane/tasks" } },
+      config: defaultConfig(),
       taskBackend: { getTask: () => Promise.resolve(task) },
       backendId: "local",
       backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
@@ -329,7 +332,7 @@ Canonical terms will be added later.
     });
     const ctx = {
       resolvedProject: { gitRoot: root },
-      config: { paths: { workflow_dir: ".agentplane/tasks" } },
+      config: defaultConfig(),
       taskBackend: { getTask: () => Promise.resolve(task) },
       backendId: "local",
       backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),

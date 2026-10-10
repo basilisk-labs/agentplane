@@ -538,6 +538,29 @@ describe("canonical exchange scope recovery", () => {
           issued,
         );
         expect(await issueKernelExchange(context, f.order, "host", f.record)).toEqual(packet);
+        await expect(
+          issueKernelExchange(context, f.order, "managed", f.record),
+        ).rejects.toMatchObject({
+          code: "E_HANDOFF",
+          context: {
+            owner: "host",
+            requested_transport: "managed",
+            work_order_id: f.order.work_order_id,
+            continuation_argv: [
+              "agentplane",
+              "task",
+              "advance",
+              f.order.task.id,
+              "--result",
+              path.join(directory, "result.json"),
+              "--agent-json",
+            ],
+          },
+        });
+        const owner: unknown = JSON.parse(
+          await readFile(path.join(directory, "transport-owner.json"), "utf8"),
+        );
+        expect(owner).toMatchObject({ transport: "host" });
         expect(f.record).toEqual(before);
         // A real unchanged retry cannot reuse historical approval, even if the
         // old WorkOrder attempt is rewritten to appear immediately preceding.
@@ -708,6 +731,7 @@ describe("compact packet network authority", () => {
           `sha256:${createHash("sha256").update(schema).digest("hex")}`,
         );
         expect(descriptor.size_bytes).toBe(schema.length);
+        expect(JSON.parse(schema.toString())).toHaveProperty("$schema");
         const delivered = JSON.parse(
           await readFile(path.join(packet.exchange.directory, "work-order.json"), "utf8"),
         ) as AgentWorkOrderV2;

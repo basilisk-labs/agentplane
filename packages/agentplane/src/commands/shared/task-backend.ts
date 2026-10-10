@@ -24,7 +24,12 @@ import {
   type TaskData,
   type TaskSummary,
 } from "../../backends/task-backend.js";
-import { GitContext, gitConfigGet, listWorktrees } from "@agentplaneorg/core/git";
+import {
+  GitContext,
+  gitConfigGet,
+  listWorktrees,
+  parseTaskIdFromBranch,
+} from "@agentplaneorg/core/git";
 import { resolveCommonGitDirectory } from "../../shared/env.js";
 import { findRouteWorktreePath } from "./route-decision-workspace.js";
 import {
@@ -253,10 +258,6 @@ export async function resolveTaskOwnerCommandContext(opts: {
         dir: path.join(opts.ctx.resolvedProject.gitRoot, ".agentplane/tasks"),
       }).getTask(opts.taskId)
     : await backend.getTask(opts.taskId);
-  // Canonical tasks bind observations and WorkOrders to the invocation checkout.
-  // They have no legacy task branch; their kernel validates state and authority.
-  if (localTask?.extensions && Object.hasOwn(localTask.extensions, TASK_KERNEL_EXTENSION))
-    return opts.ctx;
   const taskBranch = await resolveTaskBranchFromContext({ ctx: opts.ctx, taskId: opts.taskId });
   if (taskBranch) {
     const owner = await resolveAuthoritativeTaskWorktree({
@@ -309,6 +310,8 @@ export async function resolveTaskOwnerCommandContext(opts: {
     }
     return primaryCtx;
   }
+  if (localTask && Object.hasOwn(localTask.extensions ?? {}, TASK_KERNEL_EXTENSION))
+    return opts.ctx;
   if (
     primaryCtx !== opts.ctx &&
     opts.ctx.config.workflow_mode !== "branch_pr" &&
@@ -336,13 +339,50 @@ export async function loadTaskFromContext(opts: {
       branch: opts.branchSnapshotBranch ?? null,
       requireWorktree: opts.requireBranchWorktree,
     });
+  const primaryCanonical = async () => {
+    if (!backendUsesLocalTaskStore(opts.ctx)) return null;
+    const primary = await resolvePrimaryCheckoutCommandContext(opts.ctx);
+    if (primary === opts.ctx) return null;
+    const task = await primary.taskBackend.getTask(opts.taskId);
+    return task && Object.hasOwn(task.extensions ?? {}, TASK_KERNEL_EXTENSION) ? task : null;
+  };
 
-  if (opts.preferBranchSnapshot) {
-    const preferredBranchTask = await branchFallback();
-    if (preferredBranchTask) return preferredBranchTask;
+  const preferredBranchTask = opts.preferBranchSnapshot ? await branchFallback() : null;
+  const canonical = (candidate: TaskData | null) =>
+    candidate && Object.hasOwn(candidate.extensions ?? {}, TASK_KERNEL_EXTENSION);
+  const task = await opts.ctx.taskBackend.getTask(opts.taskId).catch((error: unknown) => {
+    if (canonical(preferredBranchTask)) return null;
+    throw error;
+  });
+  const primary = canonical(task)
+    ? null
+    : await primaryCanonical().catch((error: unknown) => {
+        if (canonical(preferredBranchTask)) return null;
+        throw error;
+      });
+  let authoritative = preferredBranchTask;
+  if (!authoritative && backendUsesLocalTaskStore(opts.ctx)) {
+    opts.ctx.memo.taskWorktreeInventory ??= listWorktrees(opts.ctx.resolvedProject.gitRoot);
+    const worktrees = await opts.ctx.memo.taskWorktreeInventory;
+    const hasOwner = worktrees.some(
+      (entry) =>
+        entry.branch &&
+        parseTaskIdFromBranch(opts.ctx.config.branch.task_prefix, entry.branch) === opts.taskId,
+    );
+    if (!task || canonical(task) || primary || hasOwner) authoritative = await branchFallback();
   }
-
-  const task = await opts.ctx.taskBackend.getTask(opts.taskId);
+  if (authoritative) {
+    if ((canonical(task) || primary) && !canonical(authoritative)) {
+      throw new CliError({
+        exitCode: 3,
+        code: "E_VALIDATION",
+        message: `Authoritative task ${opts.taskId} is missing its known canonical record. Restore the native record before continuing; do not migrate or scaffold this task.`,
+        context: { reason_code: "canonical_owner_record_missing", task_id: opts.taskId },
+      });
+    }
+    if (opts.preferBranchSnapshot || !task || canonical(authoritative)) return authoritative;
+  }
+  if (primary) return primary;
   if (task) {
     emitTraceEvent({
       component: "backend-ops",
@@ -361,7 +401,6 @@ export async function loadTaskFromContext(opts: {
     });
     return fallbackTask;
   }
-
   throw new CliError({
     exitCode: 4,
     code: "E_IO",
@@ -447,6 +486,13 @@ export async function listTaskSummariesMemo(
     const tasks = await ctx.taskBackend.listTasks();
     return tasks.map((task) => toTaskSummary(task));
   };
+  const loadTask = (taskId: string, branch: string) =>
+    loadTaskFromContext({
+      ctx,
+      taskId,
+      branchSnapshotBranch: branch,
+      preferBranchSnapshot: true,
+    });
   if (
     opts.projectionStatus &&
     opts.projectionStatus.length > 0 &&
@@ -464,7 +510,9 @@ export async function listTaskSummariesMemo(
       projected.length > 0 || opts.fallbackToCanonicalOnEmpty !== true
         ? projected
         : await canonicalSummaries();
-    return filterByProjectionStatus(await supplementTaskProjectionFromWorktrees({ ctx, tasks }));
+    return filterByProjectionStatus(
+      await supplementTaskProjectionFromWorktrees({ ctx, tasks, loadTask }),
+    );
   }
   ctx.memo.taskProjection ??= (async () => {
     if (ctx.taskBackend.capabilities?.projection_read_mode === "native") {
@@ -477,10 +525,15 @@ export async function listTaskSummariesMemo(
       }
       return await supplementTaskProjectionFromWorktrees({
         ctx,
+        loadTask,
         tasks: await ctx.taskBackend.listProjectionTasks(),
       });
     }
-    return await supplementTaskProjectionFromWorktrees({ ctx, tasks: await canonicalSummaries() });
+    return await supplementTaskProjectionFromWorktrees({
+      ctx,
+      tasks: await canonicalSummaries(),
+      loadTask,
+    });
   })();
   return filterByProjectionStatus(await ctx.memo.taskProjection);
 }

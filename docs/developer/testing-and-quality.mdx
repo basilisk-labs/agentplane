@@ -17,6 +17,33 @@ bun run typecheck
 bun run test:fast
 ```
 
+## Full CI resource profile
+
+`bun run ci:local:full` keeps every selected verification group. Its default per-group deadline is
+60 minutes, below the native task verifier's 90-minute full-check default. The command prints a
+`full_ci_resource_profile` JSON record before launching checks. It identifies the effective local
+and native deadlines and their configuration sources. Every selected wave, including the build,
+prints a `full_ci_group_launch` record when each group actually starts, with the remaining native
+whole-command time and the limiting deadline at that launch. A shorter declared task timeout or
+`AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS` remains authoritative; neither is silently extended.
+The latter name is retained for compatibility although it limits the whole group, including lint.
+The core test pool uses four workers and a finite 120-second per-test and hook timeout by default.
+`AGENTPLANE_FAST_VITEST_MAX_WORKERS` still overrides its worker count.
+Groups skipped after the native deadline count as selected but not executed in verification metrics.
+
+The core group gives ESLint a 4096 MiB Node heap by default. Preflight requires at least 5632 MiB
+of reported memory capacity for that profile and stops with an actionable error on smaller hosts.
+Set `AGENTPLANE_LOCAL_LINT_HEAP_MB` to a positive integer for a smaller bounded lint heap, or set
+an explicit `--max-old-space-size` in `NODE_OPTIONS`; conflicting settings are rejected. A smaller
+heap may still fail on this repository, so use a host with sufficient memory when possible. Quoted
+and underscore spellings in `NODE_OPTIONS` are honored; the last heap setting is effective. The
+heap setting applies to core lint only, not every group or subprocess.
+
+Separate group-failure diagnostics distinguish deadline expiry, V8 heap exhaustion, test
+assertions, infrastructure errors, and other command failures. Mixed failures retain every
+recognized kind. The existing group-summary schema remains unchanged. A resource failure does not
+waive any checks or count as a passing verification result.
+
 ## TypeScript 7 typecheck boundary
 
 `bun run typecheck` uses the pinned native TypeScript 7.0.2 compiler through
@@ -456,3 +483,34 @@ On PRs and on pushes to `main`, GitHub runs:
 - Workflow/harness coverage policy is checked by:
   - `node scripts/check-workflow-harness-coverage.mjs`
 - Release-time local parity checks are enforced by `bun run release:prepublish`.
+
+## Observing native verification
+
+Native declared checks write a separate status channel under
+`.agentplane/tasks/<task-id>/supervision/verification-runs/run-*/status.json`.
+Read these files without starting another validation. Each snapshot includes its run ID,
+check or group binding, start time, elapsed time, configured deadline, last output activity,
+and heartbeat time. Group and reporter observations appear under the check's `children/`
+directory. A heartbeat means the supervisor is alive; it does not mean tests passed.
+A stale `running` snapshot after interruption remains evidence of an unfinished run.
+The final `--agent-json` response remains a single JSON packet.
+
+Completed check records contain an `observation` reference with a manifest path and SHA-256
+digest. The manifest binds sanitized command text, its exact digest, Git HEAD and tracked
+working-diff digest, runtime identity, timestamps, output-file digests, and child manifests.
+Untracked implementation files are bound by a content inventory (at most 256 files, 1 MiB
+per file and 8 MiB total). Identity is explicitly incomplete when a file cannot be safely
+read or a bound is exceeded. Task artifacts, temporary files and nested worktrees are
+excluded and those exclusions are listed. Previous run directories are retained across retries.
+
+Each observation retains up to 256 KiB per output stream and 256 KiB of structured failures
+(up to 1,024 records). Lines above 16 KiB are omitted as whole lines. Manifests record
+truncation, oversized lines, omitted failures and unsupported structured reporting.
+The task admits at most 256 observations across checks, groups and reporters, without
+silently deleting prior evidence. Once storage admission fails, checks still run and their
+canonical result reports unavailable observation evidence. Retained logs are redacted
+before writing; raw output and environment variables are not copied into the agent packet.
+
+The repository Vitest reporter preserves failed cases, assertions, collection/hook errors
+and unhandled errors separately from compact output tails. A capped, cancelled or incomplete
+report is never labeled complete. Runner caches are not the source of this evidence.

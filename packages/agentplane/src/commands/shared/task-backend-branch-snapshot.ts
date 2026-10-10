@@ -24,6 +24,7 @@ import {
   type TaskSummary,
 } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
+import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
 import type { CommandContext } from "./task-backend.js";
 
 function backendSupportsTaskBranchSnapshots(ctx: CommandContext): boolean {
@@ -308,10 +309,11 @@ export async function loadTaskFromBranchSnapshot(opts: {
   return null;
 }
 
-/** Supplement missing local projections without copying task truth between checkouts. */
+/** Resolve canonical owner state and missing projections without copying task truth. */
 export async function supplementTaskProjectionFromWorktrees(opts: {
   ctx: CommandContext;
   tasks: TaskSummary[];
+  loadTask: (taskId: string, branch: string) => Promise<TaskData>;
 }): Promise<TaskSummary[]> {
   if (!backendSupportsTaskBranchSnapshots(opts.ctx)) return opts.tasks;
   opts.ctx.memo.taskWorktreeInventory ??= listWorktrees(opts.ctx.resolvedProject.gitRoot);
@@ -324,16 +326,9 @@ export async function supplementTaskProjectionFromWorktrees(opts: {
       return id ? [id] : [];
     }),
   );
-  const known = new Set(opts.tasks.map((task) => task.id));
-  const tasks = [...opts.tasks];
+  const tasks = new Map(opts.tasks.map((task) => [task.id, task]));
   for (const taskId of [...ids].toSorted()) {
-    if (known.has(taskId)) continue;
-    try {
-      // A healthy local record can be absent because the caller requested a status filter.
-      if (await opts.ctx.taskBackend.getTask(taskId)) continue;
-    } catch {
-      // A malformed local projection can still have a valid authoritative owner.
-    }
+    const known = tasks.get(taskId);
     const branch = await resolveTaskBranchFromContext({ ctx: opts.ctx, taskId });
     if (!branch) continue;
     const owner = await resolveAuthoritativeTaskWorktree({
@@ -344,23 +339,19 @@ export async function supplementTaskProjectionFromWorktrees(opts: {
     });
     if (!owner) continue;
     const relativeReadme = path.join(opts.ctx.config.paths.workflow_dir, taskId, "README.md");
-    const task = await loadTaskFromBranchSnapshot({
-      ctx: opts.ctx,
-      taskId,
-      branch,
-      readmePath: path.join(opts.ctx.resolvedProject.gitRoot, relativeReadme),
-    });
+    const task = await opts.loadTask(taskId, branch);
     if (!task) continue;
-    tasks.push({
+    if (known && !Object.hasOwn(task.extensions ?? {}, TASK_KERNEL_EXTENSION)) continue;
+    tasks.set(taskId, {
       ...toTaskSummary(task),
       extensions: {
         ...task.extensions,
         "agentplane.task_projection_source": {
-          state: "local_projection_unavailable",
+          state: known ? "authoritative_worktree" : "local_projection_unavailable",
           readme_path: path.join(owner.path, relativeReadme),
         },
       },
     });
   }
-  return tasks;
+  return [...tasks.values()];
 }

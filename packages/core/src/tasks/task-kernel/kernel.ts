@@ -1,3 +1,4 @@
+import { correctiveAmendmentGrant, correctiveGrantIssues } from "./corrective-authority.js";
 import { planObligationIssues } from "../kernel-plan-refinement.js";
 import {
   authorityDeltaApprovalEvidence,
@@ -142,11 +143,15 @@ const EFFECT_OBSERVE_TRANSITIONS: Readonly<
 };
 
 const EVENT_KIND: Readonly<Record<TaskCommand["kind"], DomainEvent["kind"]>> = {
+  append_audit_comment: "audit_comment_recorded",
+  close_without_implementation: "task_administratively_closed",
   capture_intent: "intent_captured",
   transition_task: "task_transitioned",
   propose_plan: "plan_proposed",
   reject_plan: "plan_rejected",
   approve_plan: "plan_approved",
+  grant_corrective_authority: "corrective_authority_granted",
+  revoke_corrective_authority: "corrective_authority_revoked",
   continue_authority: "authority_continued",
   renew_policy_authority: "authority_continued",
   approve_authority_delta: "authority_continued",
@@ -442,6 +447,58 @@ function preconditions(input: KernelInput): KernelResult | null {
   const uncertain = input.aggregate.effects.find(
     (effect) => effect.state === "IN_DOUBT" || effect.state === "PENDING",
   );
+  if (input.command.kind === "append_audit_comment") {
+    return input.actor.kind === "SYSTEM" &&
+      input.actor.capabilities.includes("task.audit") &&
+      input.command.author.trim().length > 0 &&
+      input.command.body.trim().length > 0 &&
+      Number.isFinite(Date.parse(input.occurred_at))
+      ? null
+      : rejected("AUTHORITY_SCOPE_EXCEEDED", ["native_audit_actor_required"]);
+  }
+  if (input.command.kind === "close_without_implementation") {
+    const command = input.command;
+    if (
+      input.actor.kind !== "USER" ||
+      input.actor.transport !== "manual" ||
+      !input.actor.capabilities.includes("task.close") ||
+      !/^USER(?::[A-Za-z0-9._@-]+)?$/u.test(input.actor.id) ||
+      command.approval_evidence_digest !==
+        kernelDigest({
+          kind: "canonical_administrative_closure",
+          task_id: input.aggregate.id,
+          task_revision: input.aggregate.revision,
+          fingerprint: input.repository_fingerprint,
+          closure_kind: command.closure_kind,
+          note: command.note,
+          related_task_id: command.related_task_id,
+          actor_id: input.actor.id,
+        })
+    )
+      return rejected("AUTHORITY_PROVENANCE_ESCALATION", ["explicit_closure_approval_required"]);
+    if (
+      !command.note.trim() ||
+      (command.closure_kind !== "noop" &&
+        (!command.related_task_id || command.related_task_id === input.aggregate.id))
+    )
+      return rejected("TASK_COMPLETION_INELIGIBLE", ["closure_reason_required"]);
+    const effect = input.aggregate.effects.find((entry) => entry.state !== "NOT_APPLIED");
+    if (effect) return rejected("EFFECT_RECONCILIATION_REQUIRED", [effect.id], "reconcile_effect");
+    if (
+      Object.values(input.aggregate.work_items).some(
+        (item) =>
+          item.attempt !== 0 ||
+          !["PLANNED", "READY"].includes(item.state) ||
+          item.result_digest !== null,
+      )
+    )
+      return rejected(
+        "TASK_COMPLETION_INELIGIBLE",
+        ["implementation_already_started"],
+        "request_fresh_packet",
+      );
+    return null;
+  }
   if (
     uncertain &&
     input.command.kind !== "observe_effect" &&
@@ -648,30 +705,33 @@ function amendPlan(
       amended: proposed,
       authority: input.authority,
     }) !== null;
+  const correctiveGrant = correctiveAmendmentGrant(input, command);
+  if (command.corrective_grant_digest && !correctiveGrant)
+    return rejected("AUTHORITY_SCOPE_EXCEEDED", ["corrective_grant_not_applicable"]);
+  const amendmentApproved = scopeExpansionApproved || correctiveGrant !== null;
   if (
-    (command.authority_delta_digest !== null && !scopeExpansionApproved) ||
-    (material && !scopeExpansionApproved) ||
+    (command.authority_delta_digest !== null && !amendmentApproved) ||
+    (material && !amendmentApproved) ||
     proposed.work_items.some((item) => {
       const original = originals.get(item.id);
-      if (!original) return !scopeExpansionApproved;
+      if (!original) return !amendmentApproved;
       return (
-        (!scopeExpansionApproved && original.contract_digest !== item.contract_digest) ||
+        (!amendmentApproved && original.contract_digest !== item.contract_digest) ||
         (!original.optional && item.optional) ||
-        (!scopeExpansionApproved &&
+        (!amendmentApproved &&
           !original.expected_outputs.every((id) => item.expected_outputs.includes(id))) ||
-        (!scopeExpansionApproved &&
+        (!amendmentApproved &&
           !original.required_inputs.every((id) => item.required_inputs.includes(id))) ||
-        (!scopeExpansionApproved &&
-          !original.depends_on.every((id) => item.depends_on.includes(id))) ||
+        (!amendmentApproved && !original.depends_on.every((id) => item.depends_on.includes(id))) ||
         !item.execution_requirements ||
         !original.execution_requirements ||
         (!executionRequirementsAreSubset(
           original.execution_requirements,
           item.execution_requirements,
         ) &&
-          !scopeExpansionApproved) ||
+          !amendmentApproved) ||
         input.authority?.work_item_id !== null ||
-        (!scopeExpansionApproved &&
+        (!amendmentApproved &&
           !executionRequirementsAreSubset(input.authority, item.execution_requirements))
       );
     })
@@ -696,7 +756,7 @@ function amendPlan(
     }
     if (!definition) {
       if (
-        !scopeExpansionApproved ||
+        !amendmentApproved ||
         !["PLANNED", "READY"].includes(runtime.state) ||
         runtime.attempt !== 0
       )
@@ -758,6 +818,24 @@ function amendPlan(
     },
     plan_history: [...aggregate.plan_history, { ...current, state: "SUPERSEDED" }],
     work_items: refreshReadyItems(workItems),
+    corrective_authority: correctiveGrant
+      ? aggregate.corrective_authority!.map((grant) =>
+          grant.digest === correctiveGrant.digest
+            ? {
+                ...grant,
+                uses: [
+                  ...grant.uses,
+                  {
+                    from_plan_digest: current.digest,
+                    to_plan_digest: proposed.digest,
+                    failure_digest: aggregate.final_validation!.evidence_digests[0]!,
+                    consumed_at: input.occurred_at,
+                  },
+                ],
+              }
+            : grant,
+        )
+      : aggregate.corrective_authority,
     final_validation: null,
   });
 }
@@ -771,6 +849,38 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
   let next: TaskAggregate;
 
   switch (command.kind) {
+    case "append_audit_comment": {
+      next = {
+        ...aggregate,
+        revision: aggregate.revision + 1,
+        audit_comments: [
+          ...(aggregate.audit_comments ?? []),
+          {
+            author: command.author,
+            body: command.body,
+            actor_id: input.actor.id,
+            occurred_at: input.occurred_at,
+            mutation_id: input.mutation_id,
+          },
+        ],
+      };
+      break;
+    }
+    case "close_without_implementation": {
+      next = {
+        ...aggregate,
+        revision: aggregate.revision + 1,
+        state: "CANCELLED",
+        administrative_closure: {
+          kind: command.closure_kind,
+          note: command.note,
+          related_task_id: command.related_task_id,
+          actor_id: input.actor.id,
+          evidence_digest: command.approval_evidence_digest,
+        },
+      };
+      break;
+    }
     case "capture_intent": {
       if (!taskTransitionAllowed(aggregate.state, "PLANNING")) {
         return rejected("ILLEGAL_TASK_TRANSITION", [aggregate.state, "PLANNING"]);
@@ -1096,7 +1206,7 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
       if (!validationIdentityMatchesResult(command.validation, input.repository_fingerprint)) {
         return rejected("VALIDATION_IDENTITY_MISMATCH", ["final_validation"]);
       }
-      if (command.validation.status !== "PASSED") {
+      if (command.validation.status === "STALE") {
         return rejected("FINAL_VALIDATION_MISSING", [command.validation.status]);
       }
       if (aggregate.state !== "ACTIVE" && aggregate.state !== "FINAL_VALIDATION") {
@@ -1239,6 +1349,36 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
         revision: aggregate.revision + 1,
         state: taskStateAfterEffect(aggregate.state, effects),
         effects,
+      };
+      break;
+    }
+    case "grant_corrective_authority": {
+      const issues = correctiveGrantIssues(input, command.grant, command.work_contracts);
+      if (issues.length > 0) return rejected("AUTHORITY_SCOPE_EXCEEDED", issues);
+      next = {
+        ...aggregate,
+        revision: aggregate.revision + 1,
+        corrective_authority: [...(aggregate.corrective_authority ?? []), command.grant],
+      };
+      break;
+    }
+    case "revoke_corrective_authority": {
+      if (
+        input.actor.kind !== "USER" ||
+        input.actor.transport !== "manual" ||
+        !aggregate.corrective_authority?.some((grant) => grant.digest === command.grant_digest)
+      )
+        return rejected("AUTHORITY_SCOPE_EXCEEDED", [
+          "explicit_manual_corrective_revocation_required",
+        ]);
+      next = {
+        ...aggregate,
+        revision: aggregate.revision + 1,
+        corrective_authority: aggregate.corrective_authority.map((grant) =>
+          grant.digest === command.grant_digest
+            ? { ...grant, revoked_at: grant.revoked_at ?? input.occurred_at }
+            : grant,
+        ),
       };
       break;
     }

@@ -530,7 +530,7 @@ it.each(["source", "task", "failed-check"])(
       },
       documents: { contracts: {} },
     };
-    const apply = vi.fn();
+    const apply = vi.fn().mockResolvedValue({ kind: "committed" });
     const runtime = {
       native: { readContext: () => Promise.resolve({ repository_fingerprint: fingerprint }) },
       authority: {
@@ -551,7 +551,11 @@ it.each(["source", "task", "failed-check"])(
           fingerprint: scenario === "source" ? k.kernelDigest("changed source") : fingerprint,
         }),
       lifecycle: { apply },
-      input: vi.fn(),
+      input: vi.fn((payload: Payload) =>
+        Promise.resolve({
+          command: { ...payload, expected_task_revision: 1 },
+        }),
+      ),
     };
     vi.spyOn(finalChecks, "runDirectTaskVerification").mockResolvedValue({
       status: scenario === "failed-check" ? "failed" : "passed",
@@ -568,12 +572,21 @@ it.each(["source", "task", "failed-check"])(
       runtime as never,
       record as never,
     );
-    if (scenario === "failed-check")
+    if (scenario === "failed-check") {
       await expect(invocation).resolves.toMatchObject({
         stop: { kind: "human_required", reason: "canonical_final_checks_failed" },
       });
-    else await expect(invocation).rejects.toThrow("inputs changed during checks");
-    expect(apply).not.toHaveBeenCalled();
-    expect(runtime.input).not.toHaveBeenCalled();
+      expect(apply).toHaveBeenCalledOnce();
+      expect(apply.mock.calls[0]?.[0]).toMatchObject({
+        command: {
+          kind: "record_final_validation",
+          validation: { status: "FAILED" },
+        },
+      });
+    } else {
+      await expect(invocation).rejects.toThrow("inputs changed during checks");
+      expect(apply).not.toHaveBeenCalled();
+      expect(runtime.input).not.toHaveBeenCalled();
+    }
   },
 );
