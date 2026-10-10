@@ -81,6 +81,32 @@ const kernelAggregateSchema = z.strictObject({
   state: z.enum(taskKernel.TASK_STATES),
   intent_digest: digest,
   authority_lineage: z.array(kernelAuthorityRecordSchema).optional(),
+  corrective_authority: z
+    .array(
+      z.strictObject({
+        digest,
+        task_id: z.string().min(1),
+        initial_plan_digest: digest,
+        actor_id: z.string().min(1),
+        issued_at: z.string(),
+        expires_at: z.string(),
+        max_attempts: z.number().int().min(1).max(100),
+        requirements,
+        verification_commands: z.array(z.string()),
+        verification_contract_digest: digest,
+        policy_digest: digest,
+        revoked_at: z.string().nullable(),
+        uses: z.array(
+          z.strictObject({
+            from_plan_digest: digest,
+            to_plan_digest: digest,
+            failure_digest: digest,
+            consumed_at: z.string(),
+          }),
+        ),
+      }),
+    )
+    .optional(),
   current_plan: plan.nullable(),
   plan_history: z.array(plan),
   work_items: z.record(
@@ -158,6 +184,8 @@ const event = z.strictObject({
     "plan_proposed",
     "plan_rejected",
     "plan_approved",
+    "corrective_authority_granted",
+    "corrective_authority_revoked",
     "work_items_materialized",
     "work_item_transitioned",
     "work_item_result_accepted",

@@ -46,7 +46,7 @@ const candidatePath = path.join(
 const REVIEWED_SECTION_DIGESTS = {
   agent_facing_context_contracts:
     "4926aed50aea235e24310e39404f7b939bc4caa7fc763a98387992822a2101c5",
-  cli_topology: "d14dab09035292441f43b3426e994790ff9806db22a1d6bf264ec97fac6c2248",
+  cli_topology: "62577cfd16b0ee265cc5294afd801c9ab3c0a17524e0fb7d71929229934ce8b0",
   exit_error_contract: "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
   machine_output_contract: "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
   package_manifests: "6052feb72f5eee6eaa1a503bb10074492350a164de683adf50bf2b092ce647b9",
@@ -397,6 +397,7 @@ function validateReviewedCandidate({
     "202610060956-42J54D",
     "202610011624-MP3J6N",
     "202610081434-RDZE4P",
+    "202610100459-0NATSS",
   ];
 
   assert(
@@ -966,6 +967,7 @@ function validateReviewedCandidate({
       "202610041748-K43XFE",
       "202610060956-42J54D",
       "202610081434-RDZE4P",
+      "202610100459-0NATSS",
     ],
     agent_facing_context_contracts: [
       "202607221848-1HWR0R",
@@ -3534,6 +3536,47 @@ function validateReviewedCandidate({
       source_task: "202610081434-RDZE4P",
     },
   ];
+  activeExpectedAdditionSources.push(
+    ...[
+      { kind: "command", command: "task corrective-authority", source_task: "202610100459-0NATSS" },
+      {
+        kind: "option",
+        command: "task corrective-authority",
+        name: "action",
+        source_task: "202610100459-0NATSS",
+      },
+      {
+        kind: "option",
+        command: "task corrective-authority",
+        name: "by",
+        source_task: "202610100459-0NATSS",
+      },
+      {
+        kind: "option",
+        command: "task corrective-authority",
+        name: "expires-at",
+        source_task: "202610100459-0NATSS",
+      },
+      {
+        kind: "option",
+        command: "task corrective-authority",
+        name: "grant-digest",
+        source_task: "202610100459-0NATSS",
+      },
+      {
+        kind: "option",
+        command: "task corrective-authority",
+        name: "max-attempts",
+        source_task: "202610100459-0NATSS",
+      },
+      {
+        kind: "option",
+        command: "task corrective-authority",
+        name: "state-digest",
+        source_task: "202610100459-0NATSS",
+      },
+    ],
+  );
   const activeExpectedAddedCommandDescriptors = expectedAddedCommandDescriptors
     .filter((command) => command.id.join(" ") !== "task supervisor budget-epoch")
     .map((command) =>
@@ -3570,6 +3613,25 @@ function validateReviewedCandidate({
       visibility: "user",
     },
   );
+  activeExpectedAddedCommandDescriptors.push({
+    id: ["task", "corrective-authority"],
+    visibility: "user",
+    group: "Task",
+    args: [{ name: "task-id", required: true, variadic: false, valueHint: "<task-id>" }],
+    options: [
+      {
+        name: "action",
+        kind: "string",
+        valueHint: "<action>",
+        choices: ["inspect", "grant", "revoke"],
+      },
+      { name: "state-digest", kind: "string", valueHint: "<sha256:...>" },
+      { name: "by", kind: "string", valueHint: "<USER>" },
+      { name: "max-attempts", kind: "string", valueHint: "<1-100>" },
+      { name: "expires-at", kind: "string", valueHint: "<ISO-8601>" },
+      { name: "grant-digest", kind: "string", valueHint: "<sha256:...>" },
+    ],
+  });
   activeExpectedAddedCommandDescriptors.sort((a, b) =>
     a.id.join(" ").localeCompare(b.id.join(" ")),
   );
@@ -3624,6 +3686,7 @@ function validateReviewedCandidate({
         "repair adopt-legacy-conflict",
         "task advance",
         "task authority grant",
+        "task corrective-authority",
         "task create",
         "task kernel-migrate",
         "task plan recover-rejection",
@@ -3682,6 +3745,42 @@ function validateReviewedCandidate({
       valueHint: "<role>",
     },
   ];
+  activeExpectedAddedOptions.push(
+    ...[
+      {
+        command: "task corrective-authority",
+        name: "action",
+        kind: "string",
+        valueHint: "<action>",
+        choices: ["inspect", "grant", "revoke"],
+      },
+      { command: "task corrective-authority", name: "by", kind: "string", valueHint: "<USER>" },
+      {
+        command: "task corrective-authority",
+        name: "expires-at",
+        kind: "string",
+        valueHint: "<ISO-8601>",
+      },
+      {
+        command: "task corrective-authority",
+        name: "grant-digest",
+        kind: "string",
+        valueHint: "<sha256:...>",
+      },
+      {
+        command: "task corrective-authority",
+        name: "max-attempts",
+        kind: "string",
+        valueHint: "<1-100>",
+      },
+      {
+        command: "task corrective-authority",
+        name: "state-digest",
+        kind: "string",
+        valueHint: "<sha256:...>",
+      },
+    ],
+  );
   activeExpectedAddedOptions.sort((a, b) =>
     `${a.command} --${a.name}` < `${b.command} --${b.name}` ? -1 : 1,
   );

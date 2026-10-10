@@ -1,3 +1,4 @@
+import { correctiveAmendmentGrant, correctiveGrantIssues } from "./corrective-authority.js";
 import { planObligationIssues } from "../kernel-plan-refinement.js";
 import {
   authorityDeltaApprovalEvidence,
@@ -149,6 +150,8 @@ const EVENT_KIND: Readonly<Record<TaskCommand["kind"], DomainEvent["kind"]>> = {
   propose_plan: "plan_proposed",
   reject_plan: "plan_rejected",
   approve_plan: "plan_approved",
+  grant_corrective_authority: "corrective_authority_granted",
+  revoke_corrective_authority: "corrective_authority_revoked",
   continue_authority: "authority_continued",
   renew_policy_authority: "authority_continued",
   approve_authority_delta: "authority_continued",
@@ -702,30 +705,33 @@ function amendPlan(
       amended: proposed,
       authority: input.authority,
     }) !== null;
+  const correctiveGrant = correctiveAmendmentGrant(input, command);
+  if (command.corrective_grant_digest && !correctiveGrant)
+    return rejected("AUTHORITY_SCOPE_EXCEEDED", ["corrective_grant_not_applicable"]);
+  const amendmentApproved = scopeExpansionApproved || correctiveGrant !== null;
   if (
-    (command.authority_delta_digest !== null && !scopeExpansionApproved) ||
-    (material && !scopeExpansionApproved) ||
+    (command.authority_delta_digest !== null && !amendmentApproved) ||
+    (material && !amendmentApproved) ||
     proposed.work_items.some((item) => {
       const original = originals.get(item.id);
-      if (!original) return !scopeExpansionApproved;
+      if (!original) return !amendmentApproved;
       return (
-        (!scopeExpansionApproved && original.contract_digest !== item.contract_digest) ||
+        (!amendmentApproved && original.contract_digest !== item.contract_digest) ||
         (!original.optional && item.optional) ||
-        (!scopeExpansionApproved &&
+        (!amendmentApproved &&
           !original.expected_outputs.every((id) => item.expected_outputs.includes(id))) ||
-        (!scopeExpansionApproved &&
+        (!amendmentApproved &&
           !original.required_inputs.every((id) => item.required_inputs.includes(id))) ||
-        (!scopeExpansionApproved &&
-          !original.depends_on.every((id) => item.depends_on.includes(id))) ||
+        (!amendmentApproved && !original.depends_on.every((id) => item.depends_on.includes(id))) ||
         !item.execution_requirements ||
         !original.execution_requirements ||
         (!executionRequirementsAreSubset(
           original.execution_requirements,
           item.execution_requirements,
         ) &&
-          !scopeExpansionApproved) ||
+          !amendmentApproved) ||
         input.authority?.work_item_id !== null ||
-        (!scopeExpansionApproved &&
+        (!amendmentApproved &&
           !executionRequirementsAreSubset(input.authority, item.execution_requirements))
       );
     })
@@ -750,7 +756,7 @@ function amendPlan(
     }
     if (!definition) {
       if (
-        !scopeExpansionApproved ||
+        !amendmentApproved ||
         !["PLANNED", "READY"].includes(runtime.state) ||
         runtime.attempt !== 0
       )
@@ -812,6 +818,24 @@ function amendPlan(
     },
     plan_history: [...aggregate.plan_history, { ...current, state: "SUPERSEDED" }],
     work_items: refreshReadyItems(workItems),
+    corrective_authority: correctiveGrant
+      ? aggregate.corrective_authority!.map((grant) =>
+          grant.digest === correctiveGrant.digest
+            ? {
+                ...grant,
+                uses: [
+                  ...grant.uses,
+                  {
+                    from_plan_digest: current.digest,
+                    to_plan_digest: proposed.digest,
+                    failure_digest: aggregate.final_validation!.evidence_digests[0]!,
+                    consumed_at: input.occurred_at,
+                  },
+                ],
+              }
+            : grant,
+        )
+      : aggregate.corrective_authority,
     final_validation: null,
   });
 }
@@ -1325,6 +1349,36 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
         revision: aggregate.revision + 1,
         state: taskStateAfterEffect(aggregate.state, effects),
         effects,
+      };
+      break;
+    }
+    case "grant_corrective_authority": {
+      const issues = correctiveGrantIssues(input, command.grant, command.work_contracts);
+      if (issues.length > 0) return rejected("AUTHORITY_SCOPE_EXCEEDED", issues);
+      next = {
+        ...aggregate,
+        revision: aggregate.revision + 1,
+        corrective_authority: [...(aggregate.corrective_authority ?? []), command.grant],
+      };
+      break;
+    }
+    case "revoke_corrective_authority": {
+      if (
+        input.actor.kind !== "USER" ||
+        input.actor.transport !== "manual" ||
+        !aggregate.corrective_authority?.some((grant) => grant.digest === command.grant_digest)
+      )
+        return rejected("AUTHORITY_SCOPE_EXCEEDED", [
+          "explicit_manual_corrective_revocation_required",
+        ]);
+      next = {
+        ...aggregate,
+        revision: aggregate.revision + 1,
+        corrective_authority: aggregate.corrective_authority.map((grant) =>
+          grant.digest === command.grant_digest
+            ? { ...grant, revoked_at: grant.revoked_at ?? input.occurred_at }
+            : grant,
+        ),
       };
       break;
     }

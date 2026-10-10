@@ -124,6 +124,29 @@ exact `approval_argv` only with explicit USER approval. Corrective work must pas
 checks and independent review again. Previously completed work and failed evidence remain recorded.
 An infrastructure failure is not permission to rewrite source or skip the check.
 
+An operator can opt in to a finite number of automatic corrective Plan admissions:
+
+```bash
+ap task corrective-authority <task-id>
+ap task corrective-authority <task-id> --action grant --state-digest <exact-state-digest> --by USER --max-attempts 2 --expires-at <ISO-8601-instant>
+```
+
+Inspect the displayed scope, checks, effects and current grants before issuing the explicit grant.
+General conversation permission does not create a grant. Each admitted corrective Plan consumes one
+attempt atomically. The grant keeps the original scope, verification contract, policy and security
+boundaries. External or destructive actions require a fresh user decision, even if the original task
+permitted them. Expiry, revocation, exhaustion or a changed verification contract restores the normal
+operator boundary. Infrastructure failures never consume an implementation correction attempt.
+
+Use a fresh inspection digest and the retained grant digest to revoke further corrections:
+
+```bash
+ap task corrective-authority <task-id> --action revoke --state-digest <exact-state-digest> --grant-digest <grant-digest> --by USER
+```
+
+Revocation prevents new admissions. It preserves previously admitted work, its authority history,
+and evidence. Every correction still requires native checks and independent review.
+
 An uncertain write is an `E_HANDOFF` boundary, not proof of success or a legacy migration request.
 Preserve its evidence and follow the returned recovery route. For a genuinely legacy task,
 `agentplane task kernel-migrate <task-id>` performs read-only inspection. Applying a migration

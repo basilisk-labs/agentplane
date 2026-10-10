@@ -68,6 +68,7 @@ Field names and casing are exact. Optional fields are omitted when no value is a
   - [task ask](#task-ask)
   - [task brief](#task-brief)
   - [task comment](#task-comment)
+  - [task corrective-authority](#task-corrective-authority)
   - [task create](#task-create)
   - [task doc set](#task-doc-set)
   - [task doc show](#task-doc-show)
@@ -594,6 +595,25 @@ agentplane task comment 202602030608-F1Q8AB --author CODER --body "Investigated 
 ```
 
 - Add a comment and bump doc metadata.
+
+### task corrective-authority
+
+Inspect, explicitly grant, or revoke bounded native final-check correction authority.
+
+Usage:
+
+```text
+agentplane task corrective-authority <task-id> [options]
+```
+
+Options:
+
+- `--action <action>`: Defaults to inspect. Mutation requires explicit USER decision and exact state digest. (choices=inspect|grant|revoke)
+- `--state-digest <sha256:...>`: Exact canonical record digest returned by inspect.
+- `--by <USER>`: Explicit operator decision. Standing conversational intent is not a grant.
+- `--max-attempts <1-100>`: Finite correction admission budget. Required for grant.
+- `--expires-at <ISO-8601>`: Explicit expiry instant. Required for grant.
+- `--grant-digest <sha256:...>`: Exact retained grant to revoke.
 
 ### task create
 

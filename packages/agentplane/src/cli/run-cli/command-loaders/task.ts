@@ -403,3 +403,8 @@ export const loadTaskRebuildIndexSpec = (session: TaskWriteSession) =>
 export const fromTaskReclaimSpec = commandModule(
   () => import("../../../commands/task/reclaim.command.js"),
 );
+
+export const loadTaskCorrectiveAuthoritySpec = (session: TaskWriteSession) =>
+  import("../../../commands/task/corrective-authority.command.js").then((m) =>
+    m.makeRunTaskCorrectiveAuthorityHandler(getSessionContext(session, "task.write")),
+  );

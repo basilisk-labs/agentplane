@@ -49,6 +49,8 @@ const lifecycleCommands = new Set<taskKernel.TaskCommand["kind"]>([
   "approve_plan",
   "materialize_work_items",
   "amend_plan",
+  "grant_corrective_authority",
+  "revoke_corrective_authority",
   "transition_work_item",
   "accept_work_item_result",
   "record_work_item_validation",
