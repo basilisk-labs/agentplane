@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202610100342-PXH679/distinguish-provider-transport-outages-from-auth",
+  "created_at": "2026-10-10T04:21:05.883Z",
+  "diffstat_sha256": "sha256:63f170181f053d5fe9475b4a29ef15e54805269857a372f148ec79986cf05b8b",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610100342-PXH679",
+  "updated_at": "2026-10-10T04:21:05.883Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
