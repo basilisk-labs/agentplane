@@ -210,6 +210,34 @@ export function buildSubscriptionReport(
     analysis,
     Object.fromEntries(subscriptionArms.map((arm) => [arm, setupTotals[arm].totalTokens])),
   );
+  const supplementary = [];
+  if (analysis.supplementary_strata) {
+    assert.equal(analysis.primary_estimand, "overall_deployment_policy");
+    assert.deepEqual(analysis.supplementary_strata, {
+      positive_applicability: ["direct-fix", "branch-change", "recoverable-failure"],
+      fallback: ["no-match", "near-match"],
+    });
+    const registered = Object.values(analysis.supplementary_strata).flat();
+    assert.ok(
+      rows.every((row) => registered.includes(row.stratum)),
+      "Unregistered stratum",
+    );
+    for (const [name, strata] of Object.entries(analysis.supplementary_strata)) {
+      const selected = rows.filter((row) => strata.includes(row.stratum));
+      supplementary.push({
+        name,
+        strata,
+        descriptive_only: true,
+        setup_scope: "allocated_shares_of_overall_setup_not_standalone_deployment_cost",
+        arms: Object.fromEntries(
+          subscriptionArms.map((arm) => [
+            arm,
+            tokenTotals(selected.filter((row) => row.arm === arm)),
+          ]),
+        ),
+      });
+    }
+  }
   const margins = analysis.margins;
   const ratified =
     margins &&
@@ -287,6 +315,8 @@ export function buildSubscriptionReport(
       "Offline report qualification cannot establish subscription savings or reduced fixed subscription charges. Live confirmation requires separately authenticated frozen campaign evidence and independent review.",
     arms,
     external_setup: setupTotals,
+    primary_estimand: "overall_deployment_policy",
+    supplementary,
     strata: Object.entries(Object.groupBy(rows, (r) => r.stratum)).map(([stratum, selected]) => ({
       stratum,
       arms: Object.fromEntries(
