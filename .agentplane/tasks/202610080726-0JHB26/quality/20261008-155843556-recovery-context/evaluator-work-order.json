@@ -1,0 +1,124 @@
+{
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202610080726-0JHB26-c23da22fa1f1e47b004d4cb6",
+  "prepared_at": "2026-10-08T15:58:43.556Z",
+  "task": {
+    "id": "202610080726-0JHB26",
+    "revision": 22,
+    "objective": "Isolate kernel exchange network authority test artifacts\n\nRepair the release 0.7.13 qualification blocker: kernel-exchange.test.ts network-authority cases create a temporary root but use process.cwd() as gitRoot, leaking task-1 schema artifacts into the real repository and failing the final task-registry gate. Bind issuance to the temporary fixture root; preserve all allowed/narrowed/planning authority assertions; verify emitted schema containment, digest and unchanged real-repository task-1 state. Keep production code and registry enforcement unchanged. User authorizes all necessary release fixes, validation and main integration. Preserve prior candidate full CI passing evidence and actual final registry failure.",
+    "acceptance_criteria": [
+      "git diff --check",
+      "node node_modules/eslint/bin/eslint.js packages/agentplane/src/commands/task/kernel-exchange.test.ts",
+      "node node_modules/prettier/bin/prettier.cjs --check packages/agentplane/src/commands/task/kernel-exchange.test.ts",
+      "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts --pool=forks --maxWorkers 2 --testTimeout 60000 --hookTimeout 60000",
+      "- In scope: Repair the release 0.7.13 qualification blocker: kernel-exchange.test.ts network-authority cases create a temporary root but use process.cwd() as gitRoot, leaking task-1 schema artifacts into the real repository and failing the final task-registry gate. Bind issuance to the temporary fixture root; preserve all allowed/narrowed/planning authority assertions; verify emitted schema containment, digest and unchanged real-repository task-1 state. Keep production code and registry enforcement unchanged. User authorizes all necessary release fixes, validation and main integration. Preserve prior candidate full CI passing evidence and actual final registry failure.\n- Out of scope: unrelated refactors not required for \"Isolate kernel exchange network authority test artifacts\".",
+      "1. Execute approved WorkItem isolate-network-authority-fixture.",
+      "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts --pool=forks --maxWorkers 2 --testTimeout 60000 --hookTimeout 60000`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `node node_modules/eslint/bin/eslint.js packages/agentplane/src/commands/task/kernel-exchange.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Run `node node_modules/prettier/bin/prettier.cjs --check packages/agentplane/src/commands/task/kernel-exchange.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.\n4. Run `git diff --check`. Expected: it succeeds and confirms the requested outcome for this task.\n5. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n6. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings."
+    ]
+  },
+  "evaluated_sha": "d06d5cd179ac0898c2de85bfbc0e4209cc11ee0c",
+  "diff_base_sha": "3dbcbad442bbeaadd73e6e698180c8cbaad55b30",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202610080726-0JHB26/quality/20261008-155843556-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:fe375bdb1d9626bb0f261d2fe34bd33552d3b6ca04f9083744831eb8c1675044",
+    "prompt_path": ".agentplane/tasks/202610080726-0JHB26/quality/objects/sha256/8d9959fee0db986395d856f24ff509d4eb7ba9af18c76949c095fce62c59bebd.md",
+    "result_schema_path": ".agentplane/tasks/202610080726-0JHB26/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "schema_version": 2,
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202610080726-0JHB26",
+    "plan_digest": "sha256:bba9c8161b30fb64e6d21660ab7420b84f966c0d4420f572647c371ce91a290e",
+    "policy_digest": "sha256:1469f9511222e1944f6256b66fc7f77bb4b75c356cb828fd2d59456cf84872e1",
+    "capability_digest": "sha256:d2ac97b79ff29323299b20f167b9f5156e602e4411c37893213c143a9443aeb6",
+    "checks_digest": "sha256:11ec7f1ac21832fbbc049d7739a12042227d179816e33c347c72f4d0b2478c0c",
+    "verification_input_digest": "sha256:39e4bfb951f21686be531d27739f7dea2f9e58854fcd101cff5fa4f4fe771e2e",
+    "acceptance_digest": "sha256:1b6e99bcf6e7b5c3f2056c443b3cda0e27e17688a5bf35cd455e47544e0e5670",
+    "implementation_sha": "d06d5cd179ac0898c2de85bfbc0e4209cc11ee0c",
+    "digest": "sha256:23911875c168c2515a73eb643ea0297b5454952344e271d450a744369ae39e90"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202610080726-0JHB26/README.md",
+      "sha256": "sha256:ccd4a3a0bdbcdbde1c95d3e7a61fefe409343a199c505220bd7ffa126c9362da",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202610080726-0JHB26/quality/objects/sha256/feed3ea63a7331cb8756f8d6ce742330d25c8dbedffa8826f001840f3ef63f80.patch",
+      "sha256": "sha256:feed3ea63a7331cb8756f8d6ce742330d25c8dbedffa8826f001840f3ef63f80",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202610080726-0JHB26/quality/objects/sha256/e01436d9127d88f273b2a19d4bb25a98a66b5273b579be373fc8a5cb2b6ddd89.json",
+      "sha256": "sha256:e01436d9127d88f273b2a19d4bb25a98a66b5273b579be373fc8a5cb2b6ddd89",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202610080726-0JHB26/verification/20261008084315402-354e1fad3c69fd76.json",
+      "sha256": "sha256:f24426dce6b1ce405541ad9fa4cfc8455cf9ae90e8fe04eb799c174290968470",
+      "required": true
+    },
+    {
+      "id": "native-identity",
+      "kind": "plan",
+      "path": ".agentplane/tasks/202610080726-0JHB26/quality/objects/sha256/c345f5b1d9c58c323792137fb3cdaeed440202b090d25260b3ee0eeee772c8be.json",
+      "sha256": "sha256:c345f5b1d9c58c323792137fb3cdaeed440202b090d25260b3ee0eeee772c8be",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:9d59f3dac3c54ed9efc05441af0e47a43b471b629b62a02a359ad3fd86a67d89",
+      "required": true
+    }
+  ]
+}
