@@ -1,0 +1,123 @@
+{
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202610102009-NYTBDA-378f396371fa2a27f5e0652e",
+  "prepared_at": "2026-10-10T20:52:34.700Z",
+  "task": {
+    "id": "202610102009-NYTBDA",
+    "revision": 18,
+    "objective": "Qualify GitLab frozen-source and logical-target publication regression\n\nIssue #6119 was observed with installed 0.7.12-beta.1, not qualified7b46. Add generic regression coverage of the existing provider-base separation; do not duplicate or change production implementation. Exercise legacy task_execution_context base_ref/base_sha as a frozen40-character commit with configured logicalmain through real PR synchronization and GitLab POST payload construction, mocking only external transport. Use local Git target evidence, no live GitLab writes/network/provider. Preserve frozen verification/diff base and source/task evidence. Test missing or inconsistent branch evidence refuses before provider POST; retain existing GitHub behavior. No Factory-specific adapter, lifecycle workaround, retargeting or release claim. Read existing K43XFE/RDP source coverage; report exact source/runtime/check evidence for independent review.",
+    "acceptance_criteria": [
+      "bun run test:project agentplane packages/agentplane/src/commands/pr/internal/sync-gitlab-frozen-base.test.ts packages/agentplane/src/commands/pr/internal/provider-base.test.ts packages/agentplane/src/commands/pr/internal/sync-frozen-base.test.ts --maxWorkers=2",
+      "bun run typecheck",
+      "git diff --check",
+      "- In scope: Issue #6119 was observed with installed 0.7.12-beta.1, not qualified7b46. Add generic regression coverage of the existing provider-base separation; do not duplicate or change production implementation. Exercise legacy task_execution_context base_ref/base_sha as a frozen40-character commit with configured logicalmain through real PR synchronization and GitLab POST payload construction, mocking only external transport. Use local Git target evidence, no live GitLab writes/network/provider. Preserve frozen verification/diff base and source/task evidence. Test missing or inconsistent branch evidence refuses before provider POST; retain existing GitHub behavior. No Factory-specific adapter, lifecycle workaround, retargeting or release claim. Read existing K43XFE/RDP source coverage; report exact source/runtime/check evidence for independent review.\n- Out of scope: unrelated refactors not required for \"Qualify GitLab frozen-source and logical-target publication regression\".",
+      "1. Execute approved WorkItem qualify-gitlab-frozen-base.",
+      "PLANNER fallback scaffold for \"Qualify GitLab frozen-source and logical-target publication regression\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Qualify GitLab frozen-source and logical-target publication regression\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "d68a1d36645e9d0561fdc11c15ef303bbdba936f",
+  "diff_base_sha": "7b46bd63fa10785c36420ee627c01d814171497b",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202610102009-NYTBDA/quality/20261010-205234700-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:a9000ceb147c5a7ea39c544dbc8a5895304b29e78e0d125e48c521842a737fce",
+    "prompt_path": ".agentplane/tasks/202610102009-NYTBDA/quality/objects/sha256/edab7fe6d931ebd14c450c728e3cdada4061f8b10217f3a5b312b52c3ecf6b33.md",
+    "result_schema_path": ".agentplane/tasks/202610102009-NYTBDA/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "schema_version": 2,
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202610102009-NYTBDA",
+    "plan_digest": "sha256:6759087e995be9683191635af864dfd47e6c7d1ee1d44446a6ff15d88993e29c",
+    "policy_digest": "sha256:1150ba6caefe9e829c30b3520b9246ed1ec7ebbeedbe788c63cf7989015dbb46",
+    "capability_digest": "sha256:370622d8bba586806df96cbc5aa0007e6251156e317ac4cd8dc08b2aa37a94b6",
+    "checks_digest": "sha256:3a024c630359518fbfa7b7743470bf39ddf2332894b09e705a3ed9d436f16869",
+    "verification_input_digest": "sha256:80e8a4bcbc047ce09b5d0b17a9ce01056af9a568c0f7d88a3a5f4308bfe8845b",
+    "acceptance_digest": "sha256:225bf23bef7c52cf15aab3a0857b8fa50d6e79abb4d503451710fa571cafa73c",
+    "implementation_sha": "d68a1d36645e9d0561fdc11c15ef303bbdba936f",
+    "digest": "sha256:ed5a11bee7ac4ce5970c20535a8d46aaab5bdd2e09e049e45995fe9a3d7bfbd5"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202610102009-NYTBDA/README.md",
+      "sha256": "sha256:d47e2a693da95a6f2e1a88656b184ae094ffae9f7202a1924bf277a118336c26",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202610102009-NYTBDA/quality/objects/sha256/2d4bd3bf8c47fc0491ff73a7856ef971f9bc50a9aa69b6706d66e1756eb5165f.patch",
+      "sha256": "sha256:2d4bd3bf8c47fc0491ff73a7856ef971f9bc50a9aa69b6706d66e1756eb5165f",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202610102009-NYTBDA/quality/objects/sha256/eadf6d6cf9486d582ebe61130cbdb94c38bc72b8c193e76ed7d51c22348e7e75.json",
+      "sha256": "sha256:eadf6d6cf9486d582ebe61130cbdb94c38bc72b8c193e76ed7d51c22348e7e75",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202610102009-NYTBDA/verification/20261010203041219-35f1c4567798c83a.json",
+      "sha256": "sha256:403b2ba9ec11b969b96c3b0aee525fbcc3d8261fd0b7db7014a1386d7f05dade",
+      "required": true
+    },
+    {
+      "id": "native-identity",
+      "kind": "plan",
+      "path": ".agentplane/tasks/202610102009-NYTBDA/quality/objects/sha256/b01c64475965cfb55bd36975df71aad70136793632f5b231b22e15b9878a80f3.json",
+      "sha256": "sha256:b01c64475965cfb55bd36975df71aad70136793632f5b231b22e15b9878a80f3",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:35a4c7a567a9b658a31feed9e096276ede95ad0c82198f362c302fe7bd20b612",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:6e5cb34ada84017778c43c3d057edcc68d3ccb60840c805e412f7dc6781070ee",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:d3dfd4eb0293213ab49d32c6f199066f2bc7c954cada6465aab458b1a9c7ee25",
+      "required": true
+    }
+  ]
+}
