@@ -9,6 +9,7 @@ const run = (command, args, env = process.env) =>
   execFileSync(command, args, { env, stdio: "inherit" });
 const bunScript = (name, env) => run("bun", ["run", name], env);
 const timeout = "60000";
+const coreTimeout = "120000";
 const maxWorkers = process.env.AGENTPLANE_FAST_VITEST_MAX_WORKERS || "4";
 
 const groups = {
@@ -54,9 +55,9 @@ const groups = {
       "--maxWorkers",
       maxWorkers,
       "--testTimeout",
-      timeout,
+      coreTimeout,
       "--hookTimeout",
-      timeout,
+      coreTimeout,
     ]);
   },
   runtime: () =>

@@ -10,6 +10,7 @@ import {
 import {
   classifyVerificationGroupFailure,
   classifyVerificationGroupFailures,
+  runVerificationGroups,
   summarizeVerificationGroupResults,
   writeVerificationGroupResults,
 } from "./verification-scheduler.mjs";
@@ -80,6 +81,46 @@ test("later sequential waves report the remaining native deadline rather than th
   assert.equal(expired.limiting_deadline, "native_check");
 });
 
+test("queued groups report the deadline when each group actually starts", async () => {
+  const startedAt = 1_000_000;
+  const profile = resolveFullCiResourceProfile(
+    { AGENTPLANE_NATIVE_CHECK_TIMEOUT_MS: String(90 * 60_000) },
+    12 * GIB,
+    startedAt,
+  );
+  const launches = [];
+  const result = await runVerificationGroups(
+    [
+      { id: "docs-schema", command: process.execPath, args: ["-e", ""] },
+      { id: "core", command: process.execPath, args: ["-e", ""] },
+    ],
+    {
+      concurrency: 1,
+      onGroupStart: (group) => {
+        const elapsedMs = launches.length === 0 ? 0 : 40 * 60_000;
+        launches.push(describeFullCiGroupLaunch(profile, [group.id], startedAt + elapsedMs));
+      },
+    },
+  );
+  assert.equal(result.ok, true);
+  assert.deepEqual(
+    launches.map((launch) => [launch.groups[0], launch.limiting_deadline]),
+    [
+      ["docs-schema", "local_group"],
+      ["core", "native_check"],
+    ],
+  );
+});
+
+test("expired deadline skips the group and records a timeout", async () => {
+  const result = await runVerificationGroups([{ id: "expired", command: "does-not-exist" }], {
+    onGroupStart: () => false,
+  });
+  assert.equal(result.ok, false);
+  assert.deepEqual(result.results[0].failure_kinds, ["timeout"]);
+  assert.equal(result.results[0].timed_out, true);
+});
+
 test("lint heap respects an explicit Node limit and rejects insufficient capacity", () => {
   const env = { NODE_OPTIONS: "--trace-warnings --max-old-space-size=3072" };
   const profile = resolveFullCiResourceProfile(env, 8 * GIB);
@@ -146,7 +187,7 @@ test("group summaries distinguish timeout, heap exhaustion, assertion, infrastru
     classifyVerificationGroupFailures({
       exit_code: 1,
       timed_out: false,
-      stderr: "Test timed out in 60000ms",
+      stderr: "FAIL example.test.ts\nTest timed out in 60000ms\nTests 1 failed",
     }),
     ["timeout"],
   );
@@ -199,7 +240,7 @@ test("mixed timeout and assertion diagnostics retain every failed group", async 
         timed_out: false,
         duration_ms: 1,
         stdout: "",
-        stderr: "Test timed out in 60000ms\n FAIL example.test.ts",
+        stderr: "Test timed out in 60000ms\n FAIL example.test.ts\n AssertionError",
       },
       {
         id: "cli",

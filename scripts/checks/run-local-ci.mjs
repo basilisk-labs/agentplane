@@ -60,7 +60,7 @@ const LOCAL_VITEST_SUITE_TIMEOUT_MS = parsePositiveIntegerEnv(
   DEFAULT_LOCAL_VITEST_SUITE_TIMEOUT_MS,
 );
 const LOCAL_FAST_VITEST_MAX_WORKERS =
-  String(baseEnv.AGENTPLANE_FAST_VITEST_MAX_WORKERS ?? "").trim() || "6";
+  String(baseEnv.AGENTPLANE_FAST_VITEST_MAX_WORKERS ?? "").trim() || "4";
 const LOCAL_CI_GROUP_CONCURRENCY = parsePositiveIntegerEnv(
   baseEnv.AGENTPLANE_LOCAL_CI_GROUP_CONCURRENCY,
   1,
@@ -466,15 +466,10 @@ async function runFullFastPath() {
   const startedAt = performance.now();
   const resources = resolveFullCiResourceProfile(baseEnv);
   process.stdout.write(`${JSON.stringify(resources)}\n`);
-  const reportLaunch = (groups) => {
-    const launch = describeFullCiGroupLaunch(
-      resources,
-      groups.map((group) => group.id),
-    );
+  const reportLaunch = (group) => {
+    const launch = describeFullCiGroupLaunch(resources, [group.id]);
     process.stdout.write(`${JSON.stringify(launch)}\n`);
-    if (launch.outer_remaining_ms === 0) {
-      throw new Error("Native full-check deadline expired before the next verification group.");
-    }
+    return launch.outer_remaining_ms !== 0;
   };
   const buildGroups = [
     {
@@ -484,11 +479,11 @@ async function runFullFastPath() {
       timeoutMs: resources.group_timeout_ms,
     },
   ];
-  reportLaunch(buildGroups);
   const buildResult = await runVerificationGroups(buildGroups, {
     concurrency: 1,
     cwd: process.cwd(),
     env: baseEnv,
+    onGroupStart: reportLaunch,
   });
   await writeVerificationGroupResults(buildResult.results);
   if (!buildResult.ok) throw new Error("Full verification build prerequisite failed.");
@@ -515,23 +510,23 @@ async function runFullFastPath() {
   const runtimeConcurrency = Math.min(LOCAL_CI_GROUP_CONCURRENCY, runtimeWave.length);
   const coreConcurrency = Math.min(LOCAL_CI_GROUP_CONCURRENCY, coreWave.length);
   const cliConcurrency = Math.min(LOCAL_CI_GROUP_CONCURRENCY, cliWave.length);
-  reportLaunch(runtimeWave);
   const runtimeResult = await runVerificationGroups(runtimeWave, {
     concurrency: runtimeConcurrency,
     cwd: process.cwd(),
     env: baseEnv,
+    onGroupStart: reportLaunch,
   });
-  reportLaunch(coreWave);
   const coreResult = await runVerificationGroups(coreWave, {
     concurrency: coreConcurrency,
     cwd: process.cwd(),
     env: baseEnv,
+    onGroupStart: reportLaunch,
   });
-  reportLaunch(cliWave);
   const cliResult = await runVerificationGroups(cliWave, {
     concurrency: cliConcurrency,
     cwd: process.cwd(),
     env: baseEnv,
+    onGroupStart: reportLaunch,
   });
   const results = [...runtimeResult.results, ...coreResult.results, ...cliResult.results];
   const ok = runtimeResult.ok && coreResult.ok && cliResult.ok;

@@ -51,6 +51,7 @@ export function runVerificationGroups(
     timeoutMs?: number;
     killGraceMs?: number;
     outputTailBytes?: number;
+    onGroupStart?: (group: VerificationGroup) => boolean | void;
   },
 ): Promise<{
   schema_version: 1;

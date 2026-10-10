@@ -28,13 +28,15 @@ export function classifyVerificationGroupFailures(result) {
   ) {
     failures.push("out_of_memory");
   }
-  if (
-    /\b(?:AssertionError|Test Files\s+\d+ failed|Tests\s+\d+ failed)\b|^\s*FAIL\s+/imu.test(output)
-  ) {
-    failures.push("assertion_failure");
-  }
   if (/\b(?:EAI_AGAIN|ECONNRESET|ETIMEDOUT|ENOTFOUND|EHOSTUNREACH)\b/u.test(output)) {
     failures.push("infrastructure_failure");
+  }
+  if (
+    /\bAssertionError\b/u.test(output) ||
+    (failures.length === 0 &&
+      /\b(?:Test Files\s+\d+ failed|Tests\s+\d+ failed)\b|^\s*FAIL\s+/imu.test(output))
+  ) {
+    failures.push("assertion_failure");
   }
   return failures.length > 0 ? failures : ["command_failure"];
 }
@@ -127,6 +129,21 @@ export async function runVerificationGroups(groups, options = {}) {
     while (cursor < groups.length) {
       const index = cursor;
       cursor += 1;
+      if (options.onGroupStart?.(groups[index]) === false) {
+        results[index] = {
+          id: groups[index].id,
+          exit_code: 124,
+          timed_out: true,
+          failure_kind: "timeout",
+          failure_kinds: ["timeout"],
+          duration_ms: 0,
+          started_at_ms: Date.now(),
+          finished_at_ms: Date.now(),
+          stdout: "",
+          stderr: "Verification deadline expired before group launch.\n",
+        };
+        continue;
+      }
       results[index] = await runOne(groups[index], {
         cwd: options.cwd ?? process.cwd(),
         env: { ...(options.env ?? process.env), ...(groups[index].env ?? {}) },
