@@ -183,8 +183,7 @@ async function retainedReview(
         `external-agent-issue:${externalAgentIssueDigest({ exchange, work_order: order })}`,
   );
   if (
-    !operation ||
-    operation.role !== "EVALUATOR" ||
+    operation?.role !== "EVALUATOR" ||
     operation.precondition_fingerprint_digest !== exchange.state_fingerprint ||
     !["completed", "intent"].includes(operation.status)
   )
@@ -283,8 +282,7 @@ export async function hasAuthenticatedCompletedNativeReview(
   const normalized = findings.length > 0 ? findings : [semantic.summary];
   const quality = task.quality_review;
   if (
-    !quality ||
-    quality.state !== review.verdict ||
+    quality?.state !== review.verdict ||
     quality.provenance !== "evaluator_supplied" ||
     quality.updated_by !== "EVALUATOR" ||
     quality.evaluated_sha !== frozen.evaluated_sha ||

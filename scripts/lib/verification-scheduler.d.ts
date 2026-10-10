@@ -10,6 +10,13 @@ export type VerificationGroupResult = {
   id: string;
   exit_code: number;
   timed_out: boolean;
+  cancelled?: boolean;
+  observation?: {
+    status: "retained" | "unavailable";
+    manifest_path?: string;
+    digest?: string;
+    reason?: string;
+  };
   duration_ms: number;
   started_at_ms: number;
   finished_at_ms: number;
@@ -33,6 +40,9 @@ export function runVerificationGroups(
     timeoutMs?: number;
     killGraceMs?: number;
     outputTailBytes?: number;
+    observationDirectory?: string;
+    heartbeatMs?: number;
+    signal?: AbortSignal;
   },
 ): Promise<{
   schema_version: 1;
