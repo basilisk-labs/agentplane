@@ -136,16 +136,35 @@ export async function ensureReconciledBeforeMutation(opts: {
 
   if (opts.strictTaskScan === false) return;
 
+  let rootReadFailure: { error: unknown } | undefined;
   try {
     if (
       opts.taskIds?.length &&
       backendUsesLocalTaskStore(opts.ctx) &&
       opts.ctx.taskBackend.capabilities?.atomic_task_record === true
     ) {
-      const roots = await Promise.all(
-        opts.taskIds.map((taskId) => loadTaskFromContext({ ctx: opts.ctx, taskId })),
-      );
-      if (roots.every((task) => Object.hasOwn(task.extensions ?? {}, TASK_KERNEL_EXTENSION))) {
+      const roots: Awaited<ReturnType<typeof loadTaskFromContext>>[] = [];
+      for (const taskId of opts.taskIds) {
+        try {
+          roots.push(await loadTaskFromContext({ ctx: opts.ctx, taskId }));
+        } catch (error) {
+          const readmePath = path.join(
+            opts.ctx.resolvedProject.gitRoot,
+            opts.ctx.config.paths.workflow_dir,
+            taskId,
+            "README.md",
+          );
+          const absentRoot =
+            error instanceof CliError &&
+            error.code === "E_IO" &&
+            error.message === `ENOENT: no such file or directory, open '${readmePath}'`;
+          if (!absentRoot) rootReadFailure ??= { error };
+        }
+      }
+      if (
+        roots.length === opts.taskIds.length &&
+        roots.every((task) => Object.hasOwn(task.extensions ?? {}, TASK_KERNEL_EXTENSION))
+      ) {
         const validate = async (task: (typeof roots)[number]) => {
           const read = await readTaskKernel(opts.ctx, task.id, task);
           if (read.kind === "malformed" || read.kind === "missing")
@@ -188,7 +207,10 @@ export async function ensureReconciledBeforeMutation(opts: {
     stableReadWarnings,
   );
   const warnings = filterWarningsOutsideTaskScope(branchFilteredWarnings, opts.taskIds);
-  if (warnings.length === 0) return;
+  if (warnings.length === 0) {
+    if (rootReadFailure) throw rootReadFailure.error;
+    return;
+  }
 
   throw new CliError({
     exitCode: exitCodeForError("E_VALIDATION"),
