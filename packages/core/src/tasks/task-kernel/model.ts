@@ -120,10 +120,7 @@ export type ExecutionAuthority = Readonly<{
 }>;
 
 export type CanonicalApprovalMode =
-  | "manual_operator"
-  | "signed_user_receipt"
-  | "host_user_decision"
-  | "repository_policy";
+  "manual_operator" | "signed_user_receipt" | "host_user_decision" | "repository_policy";
 
 export type AuthorityObservation = Readonly<{
   kind:

@@ -18,13 +18,7 @@ export const RETRIEVAL_LIMITS = {
 
 export type RetrievalAdapter = "exact" | "fts" | "alias" | "graph";
 export type RetrievalSignal =
-  | "task_intent"
-  | "acceptance"
-  | "path"
-  | "symbol"
-  | "tag"
-  | "dependency"
-  | "finding";
+  "task_intent" | "acceptance" | "path" | "symbol" | "tag" | "dependency" | "finding";
 
 export type QueryTerm = {
   query: string;

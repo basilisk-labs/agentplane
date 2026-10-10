@@ -1,3 +1,4 @@
+import { isoTimestampSchema } from "@agentplaneorg/core/schemas";
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
 import { z } from "zod";
 
@@ -34,7 +35,7 @@ export const kernelAuthoritySchema = z
       evidence_digest: digest,
       parent_authority_digest: digest.nullable(),
     }),
-    expires_at: z.iso.datetime().nullable(),
+    expires_at: isoTimestampSchema().nullable(),
   })
   .refine((authority) => authority.digest === k.authorityDigest(authority), "authority_digest");
 

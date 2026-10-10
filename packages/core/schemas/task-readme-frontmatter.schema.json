@@ -141,24 +141,10 @@
           ]
         },
         "updated_by": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "type": ["string", "null"]
         },
         "note": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "type": ["string", "null"]
         }
       },
       "required": ["state", "updated_at", "updated_by", "note"],
@@ -189,24 +175,10 @@
           ]
         },
         "updated_by": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "type": ["string", "null"]
         },
         "note": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "type": ["string", "null"]
         }
       },
       "required": ["state", "updated_at", "updated_by", "note"],
@@ -236,44 +208,16 @@
           ]
         },
         "updated_by": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "type": ["string", "null"]
         },
         "note": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "type": ["string", "null"]
         },
         "evaluated_sha": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "type": ["string", "null"]
         },
         "review_identity_digest": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "type": ["string", "null"]
         },
         "evidence_refs": {
           "default": [],
@@ -403,14 +347,7 @@
               "type": "number"
             },
             "output_last_message_bytes": {
-              "anyOf": [
-                {
-                  "type": "number"
-                },
-                {
-                  "type": "null"
-                }
-              ]
+              "type": ["number", "null"]
             }
           },
           "additionalProperties": {}
@@ -586,14 +523,7 @@
                     "type": "number"
                   },
                   "output_last_message_bytes": {
-                    "anyOf": [
-                      {
-                        "type": "number"
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ]
+                    "type": ["number", "null"]
                   }
                 },
                 "additionalProperties": {}

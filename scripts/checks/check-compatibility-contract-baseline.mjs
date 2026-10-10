@@ -45,13 +45,13 @@ const candidatePath = path.join(
 // Exact reviewed Recipe V2 surface. Recapturing an unexpected change is not approval.
 const REVIEWED_SECTION_DIGESTS = {
   agent_facing_context_contracts:
-    "7710a5217ea614a3da8b4e99fe61e16fb738179797eba64c75c9537bc33f7785",
+    "4926aed50aea235e24310e39404f7b939bc4caa7fc763a98387992822a2101c5",
   cli_topology: "d14dab09035292441f43b3426e994790ff9806db22a1d6bf264ec97fac6c2248",
   exit_error_contract: "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
   machine_output_contract: "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
-  package_manifests: "ee1cec43b5f3371f7e7235f5aebd3254bcc2bedfa21d20eec8e2109d62f41faf",
+  package_manifests: "6052feb72f5eee6eaa1a503bb10074492350a164de683adf50bf2b092ce647b9",
   tarball_policy: "10e8c7b78d3166955320b6fa787d7564b5bba1f67b3ce1736dca46673528716d",
-  workflow_schema: "dc851f68ff13c52fec5dbe522fa96cc1084771ce7e09ed0178c44f15d7c46452",
+  workflow_schema: "1003207ce9df63cccac8761565f0d1264c094fd3fda5609012a6716c82842451",
 };
 function assertReviewedSectionDigests(sectionDigests) {
   assert(
@@ -395,6 +395,7 @@ function validateReviewedCandidate({
     "202609261720-KKE9ZN",
     "202610041748-K43XFE",
     "202610060956-42J54D",
+    "202610011624-MP3J6N",
     "202610081434-RDZE4P",
   ];
 
@@ -510,8 +511,9 @@ function validateReviewedCandidate({
           "202609211330-5A54M1",
           "202610041748-K43XFE",
           "202610060956-42J54D",
+          "202610011624-MP3J6N",
         ],
-        to_sha256: "ee1cec43b5f3371f7e7235f5aebd3254bcc2bedfa21d20eec8e2109d62f41faf",
+        to_sha256: "6052feb72f5eee6eaa1a503bb10074492350a164de683adf50bf2b092ce647b9",
       }),
     "compatibility pre-release package delta drift",
   );
@@ -974,6 +976,7 @@ function validateReviewedCandidate({
       "202609162254-YE48GC",
       "202610041748-K43XFE",
       "202610060956-42J54D",
+      "202610011624-MP3J6N",
     ],
     workflow_schema: [
       "202607221846-4VB97J",
@@ -982,6 +985,7 @@ function validateReviewedCandidate({
       "202608212244-6XZAYD",
       "202610041748-K43XFE",
       "202610060956-42J54D",
+      "202610011624-MP3J6N",
     ],
     machine_output_contract: [
       "202607221848-ABG7SD",

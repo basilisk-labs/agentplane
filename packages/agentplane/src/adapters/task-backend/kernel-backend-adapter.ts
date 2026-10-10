@@ -71,10 +71,18 @@ export class KernelBackendAdapter {
       try {
         return readKernelRecord(await this.backend.getTask(taskId), this.repositoryIdentity);
       } catch (error) {
+        const code = (error as NodeJS.ErrnoException | null)?.code;
         const transientReplacement =
-          (error as NodeJS.ErrnoException | null)?.code === "ELOOP" &&
           error instanceof Error &&
-          error.message.startsWith(`Refusing changed task README ${taskId} path:`);
+          ((code === "ELOOP" &&
+            error.message.startsWith(`Refusing changed task README ${taskId} path:`)) ||
+            (code === undefined &&
+              [
+                "changed before it could be read",
+                "changed while it was being read",
+                "path changed before it could be read",
+                "path changed while it was being read",
+              ].some((reason) => error.message.startsWith(`task README ${taskId} ${reason}: `))));
         if (!transientReplacement || attempt >= 3) throw error;
         await new Promise<void>((resolve) => setTimeout(resolve, 10 * (attempt + 1)));
       }

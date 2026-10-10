@@ -107,8 +107,7 @@ describe("context ingest task pack", () => {
     let parsedTaskDocSections: TaskNewParsed["taskDocSections"];
     const createTask = vi.fn(({ parsed }: { parsed: TaskNewParsed }) => {
       const contextExtension = parsed.extensions?.["agentplane.context"] as
-        | { allowed_outputs?: string[] }
-        | undefined;
+        { allowed_outputs?: string[] } | undefined;
       parsedAllowedOutputs = contextExtension?.allowed_outputs ?? [];
       parsedTaskDocSections = parsed.taskDocSections;
       const taskId = "202607021200-CTXPACK";

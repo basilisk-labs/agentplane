@@ -1,0 +1,1 @@
+🚧 PXH679 task: Distinguish provider transport outages from authentication failures for issue 6088 [202610100342-PXH679]

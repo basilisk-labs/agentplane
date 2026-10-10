@@ -1,3 +1,5 @@
+export { isoTimestampSchema } from "./iso-timestamp.js";
+
 export {
   AGENTPLANE_CONFIG_SCHEMA,
   AgentplaneConfigSchema,

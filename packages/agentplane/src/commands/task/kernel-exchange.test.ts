@@ -1,6 +1,16 @@
+import { createHash } from "node:crypto";
 import type * as TaskBackend from "../shared/task-backend.js";
 import type * as RepositoryCoordinator from "./kernel-repository-coordinator.js";
-import { mkdtemp, mkdir, writeFile, readFile, rm } from "node:fs/promises";
+import {
+  mkdtemp,
+  mkdir,
+  writeFile,
+  readFile,
+  rm,
+  readdir,
+  lstat,
+  readlink,
+} from "node:fs/promises";
 import path from "node:path";
 import os from "node:os";
 import { describe, expect, it, vi } from "vitest";
@@ -593,11 +603,41 @@ describe("canonical exchange scope recovery", () => {
   );
 });
 
+async function artifactInventory(root: string): Promise<unknown> {
+  let stat;
+  try {
+    stat = await lstat(root);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return null;
+    throw error;
+  }
+  if (stat.isSymbolicLink()) return { mode: stat.mode, link: await readlink(root) };
+  if (stat.isDirectory()) {
+    const entries = await readdir(root);
+    return {
+      mode: stat.mode,
+      entries: await Promise.all(
+        entries
+          .toSorted()
+          .map(async (name) => [name, await artifactInventory(path.join(root, name))]),
+      ),
+    };
+  }
+  return {
+    mode: stat.mode,
+    digest: createHash("sha256")
+      .update(await readFile(root))
+      .digest("hex"),
+  };
+}
+
 describe("compact packet network authority", () => {
   it.each(["allowed", "narrowed-ceiling", "planning"] as const)(
     "mirrors the native WorkOrder for %s",
     async (mode) => {
       const root = await mkdtemp(path.join(os.tmpdir(), "network-exchange-"));
+      const realArtifacts = path.join(process.cwd(), ".agentplane/tasks/task-1");
+      const originalInventory = await artifactInventory(realArtifacts);
       try {
         const contract = {
           role: "EXECUTOR" as const,
@@ -678,8 +718,20 @@ describe("compact packet network authority", () => {
           packet.exchange.directory,
           packet.exchange.result_schema_ref,
         );
-        expect(path.relative(root, schemaPath).startsWith("..")).toBe(false);
-        expect(JSON.parse(await readFile(schemaPath, "utf8"))).toHaveProperty("$schema");
+        const relativeSchemaPath = path.relative(root, schemaPath);
+        expect(relativeSchemaPath).not.toBe("");
+        expect(path.isAbsolute(relativeSchemaPath)).toBe(false);
+        expect(relativeSchemaPath.split(path.sep)).not.toContain("..");
+        const schema = await readFile(schemaPath);
+        const descriptor = JSON.parse(
+          await readFile(path.join(packet.exchange.directory, "result-schema-object.json"), "utf8"),
+        ) as { path: string; sha256: string; size_bytes: number };
+        expect(path.resolve(root, descriptor.path)).toBe(schemaPath);
+        expect(descriptor.sha256).toBe(
+          `sha256:${createHash("sha256").update(schema).digest("hex")}`,
+        );
+        expect(descriptor.size_bytes).toBe(schema.length);
+        expect(JSON.parse(schema.toString())).toHaveProperty("$schema");
         const delivered = JSON.parse(
           await readFile(path.join(packet.exchange.directory, "work-order.json"), "utf8"),
         ) as AgentWorkOrderV2;
@@ -689,6 +741,7 @@ describe("compact packet network authority", () => {
         expect(order.authority).toEqual(before);
         expect(order.authority.allowed_tool_classes).not.toContain("network_read");
         expect(order.authority.external_side_effects).toEqual([]);
+        expect(await artifactInventory(realArtifacts)).toEqual(originalInventory);
       } finally {
         await rm(root, { recursive: true, force: true });
       }

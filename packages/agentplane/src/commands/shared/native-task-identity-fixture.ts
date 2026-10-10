@@ -24,8 +24,7 @@ import { loadCommandContext, type CommandContext } from "./task-backend.js";
 import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
 
 type FixtureGitIdentity =
-  | { kind: "commit"; sha: string; ref: string | null }
-  | { kind: "unborn"; ref: string | null };
+  { kind: "commit"; sha: string; ref: string | null } | { kind: "unborn"; ref: string | null };
 
 /** Add current plan, capability, and check identity without transferring ownership to Task Kernel. */
 export function withLegacyDrainIdentityFixture(opts: {

@@ -1,3 +1,4 @@
+import { isoTimestampSchema } from "../schemas/iso-timestamp.js";
 import { z, type ZodIssue } from "zod";
 
 import { formatZodIssues } from "../schemas/zod-error-format.js";
@@ -444,7 +445,7 @@ export const AgentplaneConfigSchema = z
     framework: z
       .object({
         source: nonEmptyString().default("https://github.com/basilisk-labs/agentplane"),
-        last_update: z.string().datetime({ offset: true }).nullable().default(null),
+        last_update: isoTimestampSchema({ offset: true }).nullable().default(null),
         cli: z
           .object({
             expected_version: z.string().nullable().default(null),

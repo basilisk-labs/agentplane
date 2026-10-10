@@ -76,9 +76,7 @@ type RouteRunnerContext = {
   runnerIsAllowedNow: boolean;
   localWorkAllowedIfRunnerFails: boolean;
   runnerFailureMeans:
-    | "not_runner_route"
-    | "inspect_runner_artifacts"
-    | "runner_infrastructure_or_task_unknown";
+    "not_runner_route" | "inspect_runner_artifacts" | "runner_infrastructure_or_task_unknown";
   returnControlWhen: string;
 };
 

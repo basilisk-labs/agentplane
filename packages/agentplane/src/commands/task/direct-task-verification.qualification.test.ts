@@ -79,6 +79,8 @@ describe("release qualification verification", () => {
   });
 
   it.each([
+    { script: "ci:local:full", explicitTimeout: undefined, expectedTimeout: 9_000_000 },
+    { script: "ci:local:full", explicitTimeout: 1000, expectedTimeout: 1000 },
     { script: "release:ci-check", explicitTimeout: undefined, expectedTimeout: 9_000_000 },
     { script: "release:ci-check", explicitTimeout: 1000, expectedTimeout: 1000 },
     { script: "release:check", explicitTimeout: undefined, expectedTimeout: 1_800_000 },

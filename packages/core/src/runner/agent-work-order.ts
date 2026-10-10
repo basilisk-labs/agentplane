@@ -1,3 +1,4 @@
+import { isoTimestampSchema } from "../schemas/iso-timestamp.js";
 import { z } from "zod";
 import { kernelEpisodeBindingSchema } from "../tasks/kernel-semantic.js";
 
@@ -61,7 +62,7 @@ const SHA256_DIGEST_SCHEMA = z.string().regex(/^sha256:[0-9a-f]{64}$/u);
 const IDENTIFIER_SCHEMA = z.string().trim().min(1).max(160);
 const DESCRIPTION_SCHEMA = z.string().trim().min(1).max(8192);
 const PATH_SCHEMA = z.string().trim().min(1).max(4096);
-const ISO_UTC_TIMESTAMP_SCHEMA = z.string().datetime({ offset: true });
+const ISO_UTC_TIMESTAMP_SCHEMA = isoTimestampSchema({ offset: true });
 
 const ACCEPTANCE_CRITERION_ZOD_SCHEMA = z
   .object({

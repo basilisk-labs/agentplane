@@ -25,9 +25,7 @@ function invalidRunStateError(opts: {
   task_id: string;
   run_id: string;
   reason:
-    | "runner_run_state_identity_mismatch"
-    | "runner_run_state_invalid"
-    | "runner_run_state_missing";
+    "runner_run_state_identity_mismatch" | "runner_run_state_invalid" | "runner_run_state_missing";
 }): CliError {
   return new CliError({
     exitCode: 4,
