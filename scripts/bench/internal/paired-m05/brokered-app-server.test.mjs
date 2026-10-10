@@ -147,8 +147,11 @@ test(
     });
     await completed;
     assert.equal(requests, 2);
-    assert.ok(developerInstructions.includes("permissions instructions"));
-    assert.doesNotMatch(developerInstructions, /sandbox_mode is `read-only`/u);
+    const permissions = developerInstructions.match(
+      /<permissions instructions>([\s\S]*?)<\/permissions instructions>/u,
+    )?.[1];
+    assert.equal(typeof permissions, "string");
+    assert.doesNotMatch(permissions, /read.only/iu);
     const turnOptions = await port.turnOptions();
     assert.deepEqual(turnOptions.sandboxPolicy, {
       type: "externalSandbox",
