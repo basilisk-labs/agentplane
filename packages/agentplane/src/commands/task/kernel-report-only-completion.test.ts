@@ -34,11 +34,13 @@ installRunCliIntegrationHarness();
 afterEach(() => vi.restoreAllMocks());
 
 describe("report-only canonical completion", { timeout: 180_000 }, () => {
-  it.each(["ops", "code"])(
-    "completes %s report outputs without a source commit and survives restart",
-    async (taskKind) => {
+  it.each(["ops", "code", "history"])(
+    "preserves %s report completion and accepted repository provenance",
+    async (variant) => {
+      const taskKind = variant === "history" ? "code" : variant;
       const root = await mkGitRepoRootWithBranch("main");
       await configureGitUser(root);
+      execFileSync("git", ["config", "agentplane.baseBranch", "main"], { cwd: root });
       const config = defaultConfig();
       config.workflow_mode = "branch_pr";
       await writeConfig(root, config);
@@ -71,6 +73,7 @@ describe("report-only canonical completion", { timeout: 180_000 }, () => {
         ...(taskKind === "ops" ? ["--risk", "security"] : []),
         "--scope-root",
         ".agentplane/tmp/report.json",
+        ...(variant === "history" ? ["--scope-root", "source with spaces.ts"] : []),
         "--repository-effect",
         "source_code",
         "--capability",
@@ -127,7 +130,10 @@ describe("report-only canonical completion", { timeout: 180_000 }, () => {
               expected_outputs: ["report"],
               optional: false,
               execution_requirements: {
-                scope_roots: [".agentplane/tmp/report.json"],
+                scope_roots: [
+                  ".agentplane/tmp/report.json",
+                  ...(variant === "history" ? ["source with spaces.ts"] : []),
+                ],
                 repository_effects: ["source_code"],
                 external_effects: [],
                 capabilities: ["repository_write"],
@@ -152,10 +158,26 @@ describe("report-only canonical completion", { timeout: 180_000 }, () => {
       ).toBe(0);
       packet = await runJson(cwd, ["task", "advance", id, "--agent-json"]);
       await followCheckout();
-      const initialHead = execFileSync("git", ["rev-parse", "HEAD"], {
+      let initialHead = execFileSync("git", ["rev-parse", "HEAD"], {
         cwd,
         encoding: "utf8",
       }).trim();
+      let historicalReceipt: { path: string; contents: string } | null = null;
+      if (variant === "history") {
+        await writeFile(path.join(cwd, "source with spaces.ts"), "export const fixture = false;\n");
+        const failed = await submit({
+          canonical_outputs: [
+            { id: "report", kind: "report", digest: k.kernelDigest("first attempt") },
+          ],
+        });
+        const receiptPath = path.join(failed.exchange.directory, "repository-evidence.json");
+        historicalReceipt = { path: receiptPath, contents: await readFile(receiptPath, "utf8") };
+        // The missing report fails the actual declared native check. The next attempt does
+        // not edit source; a later passing review must not inherit the failed check result.
+        expect(packet.action, packetMessage(packet)).toMatchObject({ kind: "agent_episode" });
+        expect(packet.authority).toMatchObject({ role: "EXECUTOR" });
+        initialHead = execFileSync("git", ["rev-parse", "HEAD"], { cwd, encoding: "utf8" }).trim();
+      }
       const output = { summary: "Reviewed current repository" };
       if (taskKind === "code") {
         await mkdir(path.join(cwd, ".agentplane/tmp"), { recursive: true });
@@ -168,6 +190,36 @@ describe("report-only canonical completion", { timeout: 180_000 }, () => {
         findings: ["The report satisfies its contract and native checks passed."],
         review: { verdict: "pass", missing_tests: [], hidden_assumptions: [], residual_risks: [] },
       });
+      if (historicalReceipt) {
+        expect(await readFile(historicalReceipt.path, "utf8")).toBe(historicalReceipt.contents);
+        // Fresh native checks and review may reuse that exact unchanged commit. A real
+        // commit still requires provider integration; this is not report-only completion.
+        expect(packet.action, packetMessage(packet)).toMatchObject({
+          kind: "external_wait",
+          reason: "canonical_provider_access_required",
+        });
+        const command = await loadCommandContext({ cwd, rootOverride: cwd });
+        const runtime = await createKernelRuntime({
+          command,
+          task_id: id,
+          transport: "host",
+          operation_id: "inspect-current-history",
+        });
+        const current = await runtime.adapter.read(id);
+        if (current.kind !== "canonical") throw new Error("Missing history task");
+        expect(current.record.aggregate.work_items.report?.attempt).toBe(2);
+        expect(current.record.aggregate.work_items.report?.validation?.status).toBe("PASSED");
+        const nativeInput = inspection.order.required_inputs.find(
+          (entry) => entry.id === "native-validation",
+        )!;
+        const native = JSON.parse(await readFile(nativeInput.path!, "utf8")) as {
+          repository_evidence: { implementation_commit: string };
+          checks: { status: string };
+        };
+        expect(native.checks.status).toBe("passed");
+        expect(native.repository_evidence.implementation_commit).toBe(initialHead);
+        return;
+      }
       expect(packet.action, packetMessage(packet)).toMatchObject({
         kind: "terminal",
         reason: "kernel_task_completed",

@@ -119,6 +119,32 @@ export function authenticateReviewedBaseOrder(opts: {
   };
 }
 
+export async function readPinnedReviewedBaseOrder(directory: string, digest: k.Sha256Digest) {
+  let raw: unknown;
+  let selectedPath: string | undefined;
+  for (const entry of await readdir(directory, { withFileTypes: true })) {
+    if (!entry.isDirectory() || !/^[a-f0-9]{64}$/u.test(entry.name)) continue;
+    let text: string;
+    try {
+      text = await readStableRegularTextNoFollow(
+        path.join(directory, entry.name, "work-order.json"),
+        "retained reviewed-base WorkOrder",
+      );
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === "ENOENT") continue;
+      throw error;
+    }
+    const candidate = JSON.parse(text) as unknown;
+    if (k.kernelDigest(candidate) === digest) {
+      raw = candidate;
+      selectedPath = path.join(directory, entry.name, "work-order.json");
+      break;
+    }
+  }
+  if (!raw) throw new Error("Reviewed base pinned WorkOrder is unavailable");
+  return { raw, selectedPath };
+}
+
 export async function observeReviewedBaseImport(opts: {
   root: string;
   common: string;
@@ -128,23 +154,10 @@ export async function observeReviewedBaseImport(opts: {
   current: KernelRepositoryObservation;
 }): Promise<k.ReviewedBaseImport> {
   const directory = path.join(opts.common, "agentplane/kernel/exchanges", opts.record.aggregate.id);
-  let raw: unknown;
-  let selectedPath: string | undefined;
-  for (const entry of await readdir(directory, { withFileTypes: true })) {
-    if (!entry.isDirectory() || !/^[a-f0-9]{64}$/u.test(entry.name)) continue;
-    const candidate = JSON.parse(
-      await readStableRegularTextNoFollow(
-        path.join(directory, entry.name, "work-order.json"),
-        "retained reviewed-base WorkOrder",
-      ),
-    ) as unknown;
-    if (k.kernelDigest(candidate) === opts.pins.work_order_digest) {
-      raw = candidate;
-      selectedPath = path.join(directory, entry.name, "work-order.json");
-      break;
-    }
-  }
-  if (!raw) throw new Error("Reviewed base pinned WorkOrder is unavailable");
+  const { raw, selectedPath } = await readPinnedReviewedBaseOrder(
+    directory,
+    opts.pins.work_order_digest,
+  );
   const proof = authenticateReviewedBaseOrder({ ...opts, raw });
   const before = JSON.parse(
     await readStableRegularTextNoFollow(

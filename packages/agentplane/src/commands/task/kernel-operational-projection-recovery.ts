@@ -86,11 +86,22 @@ export async function recoverableInspection(
     if (!/^validation:sha256:[a-f0-9]{64}$/u.test(mutationId)) continue;
     const orderId = mutationId.slice("validation:".length);
     const directory = await kernelExchangeDirectory(command, record.aggregate.id, orderId);
-    const review = AGENT_SEMANTIC_RESULT_ZOD_SCHEMA.parse(
-      await artifact(directory, "inspection-result.json"),
-    );
+    let retainedReview: unknown;
+    try {
+      retainedReview = await artifact(directory, "inspection-result.json");
+    } catch (error) {
+      // A failed native check has a validation receipt but no independent review.
+      if ((error as NodeJS.ErrnoException).code === "ENOENT") continue;
+      throw error;
+    }
+    const review = AGENT_SEMANTIC_RESULT_ZOD_SCHEMA.parse(retainedReview);
     const binding = review.canonical_binding;
-    if (binding?.phase !== "inspection" || binding.work_item_id !== item.definition.id) continue;
+    if (
+      binding?.phase !== "inspection" ||
+      binding.work_item_id !== item.definition.id ||
+      !item.validation.evidence_digests.includes(k.kernelDigest(review))
+    )
+      continue;
     if (
       review.work_order_id !== orderId ||
       review.status !== "completed" ||
