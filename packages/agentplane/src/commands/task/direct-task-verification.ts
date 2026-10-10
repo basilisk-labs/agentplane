@@ -507,6 +507,7 @@ export async function runDirectTaskVerification(opts: {
             ...(parsed.script === "ci:local:full"
               ? {
                   AGENTPLANE_NATIVE_CHECK_TIMEOUT_MS: String(remainingTimeoutMs),
+                  AGENTPLANE_NATIVE_CHECK_DEADLINE_EPOCH_MS: String(deadline),
                   AGENTPLANE_NATIVE_CHECK_TIMEOUT_SOURCE: additionalTimeouts.has(declaredCommand)
                     ? "declared_command"
                     : "native_default",

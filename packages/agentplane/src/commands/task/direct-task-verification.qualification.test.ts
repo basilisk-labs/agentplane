@@ -72,6 +72,10 @@ describe("release qualification verification", () => {
         AGENTPLANE_NATIVE_CHECK_TIMEOUT_SOURCE: "declared_command",
       },
     });
+    const processInput = runProcess.mock.calls[0]?.[0] as { env: NodeJS.ProcessEnv } | undefined;
+    expect(Number(processInput?.env.AGENTPLANE_NATIVE_CHECK_DEADLINE_EPOCH_MS)).toBeGreaterThan(
+      Date.now() - 600_000,
+    );
   });
 
   it.each([

@@ -2,9 +2,14 @@ import assert from "node:assert/strict";
 import { PassThrough } from "node:stream";
 import { test } from "node:test";
 
-import { lintNodeOptions, resolveFullCiResourceProfile } from "./local-ci-resource-profile.mjs";
+import {
+  describeFullCiGroupLaunch,
+  lintNodeOptions,
+  resolveFullCiResourceProfile,
+} from "./local-ci-resource-profile.mjs";
 import {
   classifyVerificationGroupFailure,
+  classifyVerificationGroupFailures,
   summarizeVerificationGroupResults,
   writeVerificationGroupResults,
 } from "./verification-scheduler.mjs";
@@ -55,6 +60,26 @@ test("explicit shorter local and native deadlines retain precedence and provenan
   );
 });
 
+test("later sequential waves report the remaining native deadline rather than the original budget", () => {
+  const startedAt = 1_000_000;
+  const profile = resolveFullCiResourceProfile(
+    { AGENTPLANE_NATIVE_CHECK_TIMEOUT_MS: String(90 * 60_000) },
+    12 * GIB,
+    startedAt,
+  );
+  const build = describeFullCiGroupLaunch(profile, ["build"], startedAt);
+  assert.equal(build.group_timeout_ms, 60 * 60_000);
+  assert.equal(build.outer_remaining_ms, 90 * 60_000);
+  assert.equal(build.limiting_deadline, "local_group");
+
+  const core = describeFullCiGroupLaunch(profile, ["docs-schema", "core"], startedAt + 40 * 60_000);
+  assert.equal(core.outer_remaining_ms, 50 * 60_000);
+  assert.equal(core.limiting_deadline, "native_check");
+  const expired = describeFullCiGroupLaunch(profile, ["cli"], startedAt + 91 * 60_000);
+  assert.equal(expired.outer_remaining_ms, 0);
+  assert.equal(expired.limiting_deadline, "native_check");
+});
+
 test("lint heap respects an explicit Node limit and rejects insufficient capacity", () => {
   const env = { NODE_OPTIONS: "--trace-warnings --max-old-space-size=3072" };
   const profile = resolveFullCiResourceProfile(env, 8 * GIB);
@@ -69,6 +94,20 @@ test("lint heap respects an explicit Node limit and rejects insufficient capacit
   assert.throws(
     () => resolveFullCiResourceProfile({ ...env, AGENTPLANE_LOCAL_LINT_HEAP_MB: "4096" }, 8 * GIB),
     /conflicts/u,
+  );
+  const quoted = { NODE_OPTIONS: '"--max_old_space_size=2048" --trace-warnings' };
+  assert.equal(resolveFullCiResourceProfile(quoted, 8 * GIB).lint_heap_mb, 2048);
+  assert.equal(
+    lintNodeOptions(quoted, resolveFullCiResourceProfile(quoted, 8 * GIB)),
+    quoted.NODE_OPTIONS,
+  );
+  const repeated = {
+    NODE_OPTIONS: "--max-old-space-size=4096 --max_old_space_size=2048",
+  };
+  assert.equal(resolveFullCiResourceProfile(repeated, 8 * GIB).lint_heap_mb, 2048);
+  assert.throws(
+    () => resolveFullCiResourceProfile({ NODE_OPTIONS: "--max_old_space_size 2048" }, 8 * GIB),
+    /unsupported or ambiguous/u,
   );
 });
 
@@ -103,6 +142,22 @@ test("group summaries distinguish timeout, heap exhaustion, assertion, infrastru
   assert.equal(summary.groups.length, expected.length);
   assert.ok(summary.groups.every((group) => !Object.hasOwn(group, "failure_kind")));
   assert.equal(classifyVerificationGroupFailure({ exit_code: 0, timed_out: false }), null);
+  assert.deepEqual(
+    classifyVerificationGroupFailures({
+      exit_code: 1,
+      timed_out: false,
+      stderr: "Test timed out in 60000ms",
+    }),
+    ["timeout"],
+  );
+  assert.deepEqual(
+    classifyVerificationGroupFailures({
+      exit_code: 1,
+      timed_out: false,
+      stderr: "Test timed out in 60000ms\n FAIL packages/example.test.ts\n AssertionError",
+    }),
+    ["timeout", "assertion_failure"],
+  );
 });
 
 test("failure classification is emitted separately before the unchanged summary", async () => {
@@ -128,4 +183,38 @@ test("failure classification is emitted separately before the unchanged summary"
   assert.match(output, /"failure_kind":"out_of_memory"/u);
   assert.ok(output.endsWith(`${JSON.stringify(summary)}\n`));
   assert.ok(!Object.hasOwn(summary.groups[0], "failure_kind"));
+});
+
+test("mixed timeout and assertion diagnostics retain every failed group", async () => {
+  const stdout = new PassThrough();
+  const stderr = new PassThrough();
+  let output = "";
+  stdout.on("data", (chunk) => (output += chunk.toString()));
+  stderr.resume();
+  await writeVerificationGroupResults(
+    [
+      {
+        id: "core",
+        exit_code: 1,
+        timed_out: false,
+        duration_ms: 1,
+        stdout: "",
+        stderr: "Test timed out in 60000ms\n FAIL example.test.ts",
+      },
+      {
+        id: "cli",
+        exit_code: 1,
+        timed_out: false,
+        duration_ms: 1,
+        stdout: "",
+        stderr: "ECONNRESET",
+      },
+    ],
+    { stdout, stderr },
+  );
+  assert.match(
+    output,
+    /"id":"core","failure_kind":"timeout","failure_kinds":\["timeout","assertion_failure"\]/u,
+  );
+  assert.match(output, /"id":"cli","failure_kind":"infrastructure_failure"/u);
 });

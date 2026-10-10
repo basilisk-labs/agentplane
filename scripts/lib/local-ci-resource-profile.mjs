@@ -22,13 +22,21 @@ function memoryCapacityBytes() {
 }
 
 function nodeHeapLimitMb(nodeOptions) {
-  const match = /(?:^|\s)--max-old-space-size(?:=|\s+)(\d+)(?=\s|$)/u.exec(nodeOptions);
-  return match ? positiveInteger(match[1], "NODE_OPTIONS heap limit") : null;
+  const marker = /--max[-_]old[-_]space[-_]size/gu;
+  const valid = /(?:^|[\s"'])--max[-_]old[-_]space[-_]size=(\d+)(?=$|[\s"'])/gu;
+  const markers = [...nodeOptions.matchAll(marker)];
+  const matches = [...nodeOptions.matchAll(valid)];
+  if (markers.length !== matches.length) {
+    throw new Error("NODE_OPTIONS contains an unsupported or ambiguous heap limit.");
+  }
+  const effective = matches.at(-1);
+  return effective ? positiveInteger(effective[1], "NODE_OPTIONS heap limit") : null;
 }
 
 export function resolveFullCiResourceProfile(
   env = process.env,
   capacityBytes = memoryCapacityBytes(),
+  nowMs = Date.now(),
 ) {
   const configuredGroupTimeout = positiveInteger(
     env.AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS,
@@ -39,6 +47,11 @@ export function resolveFullCiResourceProfile(
     env.AGENTPLANE_NATIVE_CHECK_TIMEOUT_MS,
     "AGENTPLANE_NATIVE_CHECK_TIMEOUT_MS",
   );
+  const outerDeadlineEpochMs =
+    positiveInteger(
+      env.AGENTPLANE_NATIVE_CHECK_DEADLINE_EPOCH_MS,
+      "AGENTPLANE_NATIVE_CHECK_DEADLINE_EPOCH_MS",
+    ) ?? (outerTimeoutMs === null ? null : nowMs + outerTimeoutMs);
   const configuredHeap = positiveInteger(
     env.AGENTPLANE_LOCAL_LINT_HEAP_MB,
     "AGENTPLANE_LOCAL_LINT_HEAP_MB",
@@ -63,15 +76,15 @@ export function resolveFullCiResourceProfile(
       ? "AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS"
       : "default",
     outer_timeout_ms: outerTimeoutMs,
+    outer_deadline_epoch_ms: outerDeadlineEpochMs,
+    observed_at_epoch_ms: nowMs,
     outer_timeout_source: outerTimeoutMs
       ? env.AGENTPLANE_NATIVE_CHECK_TIMEOUT_SOURCE || "AGENTPLANE_NATIVE_CHECK_TIMEOUT_MS"
       : "not_applicable",
-    limiting_deadline:
-      outerTimeoutMs === null || groupTimeoutMs < outerTimeoutMs
-        ? "local_group"
-        : outerTimeoutMs < groupTimeoutMs
-          ? "native_check"
-          : "both",
+    limiting_deadline: limitingDeadline(
+      groupTimeoutMs,
+      outerDeadlineEpochMs === null ? null : Math.max(0, outerDeadlineEpochMs - nowMs),
+    ),
     lint_heap_mb: lintHeapMb,
     lint_heap_source: configuredHeap
       ? "AGENTPLANE_LOCAL_LINT_HEAP_MB"
@@ -80,6 +93,28 @@ export function resolveFullCiResourceProfile(
         : "default",
     memory_capacity_mb: capacityMb,
     minimum_memory_mb: minimumMemoryMb,
+  };
+}
+
+function limitingDeadline(groupTimeoutMs, outerRemainingMs) {
+  if (outerRemainingMs === null || groupTimeoutMs < outerRemainingMs) return "local_group";
+  return outerRemainingMs < groupTimeoutMs ? "native_check" : "both";
+}
+
+export function describeFullCiGroupLaunch(profile, groupIds, nowMs = Date.now()) {
+  const outerRemainingMs =
+    profile.outer_deadline_epoch_ms === null
+      ? null
+      : Math.max(0, profile.outer_deadline_epoch_ms - nowMs);
+  return {
+    schema_version: 1,
+    kind: "full_ci_group_launch",
+    groups: [...groupIds],
+    group_timeout_ms: profile.group_timeout_ms,
+    group_timeout_source: profile.group_timeout_source,
+    outer_remaining_ms: outerRemainingMs,
+    outer_timeout_source: profile.outer_timeout_source,
+    limiting_deadline: limitingDeadline(profile.group_timeout_ms, outerRemainingMs),
   };
 }
 

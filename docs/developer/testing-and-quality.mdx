@@ -22,22 +22,24 @@ bun run test:fast
 `bun run ci:local:full` keeps every selected verification group. Its default per-group deadline is
 60 minutes, below the native task verifier's 90-minute full-check default. The command prints a
 `full_ci_resource_profile` JSON record before launching checks. It identifies the effective local
-and native deadlines, their configuration sources, and the limiting layer. A shorter declared task
-timeout or `AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS` remains authoritative; neither is silently
-extended. The latter name is retained for compatibility although it limits the whole group,
-including lint.
+and native deadlines and their configuration sources. Every selected wave, including the build,
+prints a `full_ci_group_launch` record with the remaining native whole-command time and the
+limiting deadline at that launch. A shorter declared task timeout or
+`AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS` remains authoritative; neither is silently extended.
+The latter name is retained for compatibility although it limits the whole group, including lint.
 
 The core group gives ESLint a 4096 MiB Node heap by default. Preflight requires at least 5632 MiB
 of reported memory capacity for that profile and stops with an actionable error on smaller hosts.
 Set `AGENTPLANE_LOCAL_LINT_HEAP_MB` to a positive integer for a smaller bounded lint heap, or set
 an explicit `--max-old-space-size` in `NODE_OPTIONS`; conflicting settings are rejected. A smaller
-heap may still fail on this repository, so use a host with sufficient memory when possible. The
+heap may still fail on this repository, so use a host with sufficient memory when possible. Quoted
+and underscore spellings in `NODE_OPTIONS` are honored; the last heap setting is effective. The
 heap setting applies to core lint only, not every group or subprocess.
 
 Separate group-failure diagnostics distinguish deadline expiry, V8 heap exhaustion, test
-assertions, infrastructure errors, and other command failures. The existing group-summary schema
-remains unchanged. A resource failure does not waive any checks or count as a passing verification
-result.
+assertions, infrastructure errors, and other command failures. Mixed failures retain every
+recognized kind. The existing group-summary schema remains unchanged. A resource failure does not
+waive any checks or count as a passing verification result.
 
 ## TypeScript 7 typecheck boundary
 

@@ -29,16 +29,16 @@ Created: 2026-10-09T23:24:22.775Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/developer/testing-and-quality.mdx             |  22 ++++
- .../direct-task-verification.qualification.test.ts |  25 ++++
- .../src/commands/task/direct-task-verification.ts  |  13 +-
- scripts/checks/run-local-ci-group.mjs              |  15 ++-
- scripts/checks/run-local-ci.mjs                    |   8 +-
- scripts/lib/local-ci-resource-profile.mjs          |  91 ++++++++++++++
- scripts/lib/local-ci-resource-profile.test.mjs     | 131 +++++++++++++++++++++
- scripts/lib/verification-scheduler.d.ts            |  12 ++
- scripts/lib/verification-scheduler.mjs             |  39 +++++-
- 9 files changed, 349 insertions(+), 7 deletions(-)
+ docs/developer/testing-and-quality.mdx             |  24 +++
+ .../direct-task-verification.qualification.test.ts |  29 +++
+ .../src/commands/task/direct-task-verification.ts  |  14 +-
+ scripts/checks/run-local-ci-group.mjs              |  15 +-
+ scripts/checks/run-local-ci.mjs                    |  42 +++-
+ scripts/lib/local-ci-resource-profile.mjs          | 126 ++++++++++++
+ scripts/lib/local-ci-resource-profile.test.mjs     | 220 +++++++++++++++++++++
+ scripts/lib/verification-scheduler.d.ts            |  18 ++
+ scripts/lib/verification-scheduler.mjs             |  56 +++++-
+ 9 files changed, 533 insertions(+), 11 deletions(-)
 ```
 
 </details>

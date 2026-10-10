@@ -10,26 +10,37 @@ function appendTail(current, chunk, limit) {
   return next.length <= limit ? next : next.slice(-limit);
 }
 
-export function classifyVerificationGroupFailure(result) {
-  if (result.exit_code === 0) return null;
-  if (result.timed_out || result.exit_code === 124) return "timeout";
+export function classifyVerificationGroupFailures(result) {
+  if (result.exit_code === 0) return [];
   const output = `${result.stdout ?? ""}\n${result.stderr ?? ""}`;
+  const failures = [];
+  if (
+    result.timed_out ||
+    result.exit_code === 124 ||
+    /\b(?:Test|Hook) timed out in \d+(?:\.\d+)?ms\b|\bTimeout of \d+ms exceeded\b/iu.test(output)
+  ) {
+    failures.push("timeout");
+  }
   if (
     /JavaScript heap out of memory|FATAL ERROR: Ineffective mark-compacts|Allocation failed - JavaScript heap out of memory/iu.test(
       output,
     )
   ) {
-    return "out_of_memory";
+    failures.push("out_of_memory");
   }
   if (
     /\b(?:AssertionError|Test Files\s+\d+ failed|Tests\s+\d+ failed)\b|^\s*FAIL\s+/imu.test(output)
   ) {
-    return "assertion_failure";
+    failures.push("assertion_failure");
   }
   if (/\b(?:EAI_AGAIN|ECONNRESET|ETIMEDOUT|ENOTFOUND|EHOSTUNREACH)\b/u.test(output)) {
-    return "infrastructure_failure";
+    failures.push("infrastructure_failure");
   }
-  return "command_failure";
+  return failures.length > 0 ? failures : ["command_failure"];
+}
+
+export function classifyVerificationGroupFailure(result) {
+  return classifyVerificationGroupFailures(result)[0] ?? null;
 }
 
 function runOne(group, options) {
@@ -65,7 +76,12 @@ function runOne(group, options) {
       settled = true;
       clearTimeout(timeoutTimer);
       if (killTimer) clearTimeout(killTimer);
-      resolve({ ...result, failure_kind: classifyVerificationGroupFailure(result) });
+      const failureKinds = classifyVerificationGroupFailures(result);
+      resolve({
+        ...result,
+        failure_kind: failureKinds[0] ?? null,
+        failure_kinds: failureKinds,
+      });
     };
     const timeoutTimer = setTimeout(() => {
       timedOut = true;
@@ -161,6 +177,7 @@ export async function writeVerificationGroupResults(results, options = {}) {
     .map((result) => ({
       id: result.id,
       failure_kind: result.failure_kind ?? classifyVerificationGroupFailure(result),
+      failure_kinds: result.failure_kinds ?? classifyVerificationGroupFailures(result),
     }));
   if (failures.length > 0) {
     const details = `${JSON.stringify({

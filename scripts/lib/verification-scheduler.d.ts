@@ -17,6 +17,7 @@ export type VerificationGroupResult = {
     | "infrastructure_failure"
     | "command_failure"
     | null;
+  failure_kinds?: Array<NonNullable<VerificationGroupResult["failure_kind"]>>;
   duration_ms: number;
   started_at_ms: number;
   finished_at_ms: number;
@@ -35,6 +36,11 @@ export function classifyVerificationGroupFailure(
   result: Pick<VerificationGroupResult, "exit_code" | "timed_out"> &
     Partial<Pick<VerificationGroupResult, "stdout" | "stderr">>,
 ): NonNullable<VerificationGroupResult["failure_kind"]> | null;
+
+export function classifyVerificationGroupFailures(
+  result: Pick<VerificationGroupResult, "exit_code" | "timed_out"> &
+    Partial<Pick<VerificationGroupResult, "stdout" | "stderr">>,
+): Array<NonNullable<VerificationGroupResult["failure_kind"]>>;
 
 export function runVerificationGroups(
   groups: VerificationGroup[],
