@@ -60,7 +60,7 @@ export function assertBrokerConfiguration({ cwd, env, approvedConfigDigests = {}
   return bindings;
 }
 
-export function assertEffectiveBrokerConfiguration(result) {
+export function assertEffectiveBrokerConfiguration(result, disabledPlugins = []) {
   const config = result.config;
   assert.ok(config && Array.isArray(result.layers), "Effective configuration evidence required");
   for (const layer of result.layers)
@@ -69,7 +69,10 @@ export function assertEffectiveBrokerConfiguration(result) {
       "Unqualified managed or project configuration layer",
     );
   assert.deepEqual(config.mcp_servers ?? {}, {}, "MCP is not allowed in the provider harness");
-  assert.deepEqual(config.plugins ?? {}, {}, "Plugins are not allowed in the provider harness");
+  for (const [name, plugin] of Object.entries(config.plugins ?? {})) {
+    assert.ok(disabledPlugins.includes(name), "Unreviewed plugin configuration");
+    assert.equal(plugin.enabled, false, "Plugin remains enabled");
+  }
   assert.ok(!config.notify || config.notify.length === 0, "Notification commands are not allowed");
   for (const feature of ["hooks", "apps", "remote_plugin", "shell_tool", "unified_exec"])
     assert.equal(config.features?.[feature], false, "Unexpected executable capability");

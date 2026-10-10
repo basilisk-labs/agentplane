@@ -92,6 +92,11 @@ export function registerSubscriptionPilot(cases, seed = 0x07_13_20_26) {
       "Native deterministic verification and independent EVALUATOR plus isolated behavioral oracle; operator waits retained separately; no external publication endpoint.",
     analysis: {
       phase: "pilot",
+      primary_estimand: "overall_deployment_policy",
+      supplementary_strata: {
+        positive_applicability: ["direct-fix", "branch-change", "recoverable-failure"],
+        fallback: ["no-match", "near-match"],
+      },
       quality_scope: "fixed_corpus",
       metric: "tokens_per_verified_success",
       seed: 0x07_13_20_28,
@@ -126,6 +131,11 @@ export function assertSubscriptionLaunchReady(registration, { phase, pilotTaskId
   assert.ok(["pilot", "confirmation"].includes(phase));
   assert.equal(registration.phase, phase);
   assert.equal(registration.analysis.phase, phase);
+  assert.equal(registration.analysis.primary_estimand, "overall_deployment_policy");
+  assert.deepEqual(registration.analysis.supplementary_strata, {
+    positive_applicability: ["direct-fix", "branch-change", "recoverable-failure"],
+    fallback: ["no-match", "near-match"],
+  });
   for (const name of runtimePins)
     assert.match(
       registration.runtime_pins?.[name] ?? "",

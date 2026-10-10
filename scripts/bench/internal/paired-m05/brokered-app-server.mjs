@@ -21,6 +21,7 @@ export async function createBrokeredAppServer({
   auditPath,
   offlineProvider,
   approvedConfigDigests,
+  disabledPlugins = [],
 }) {
   const policy = JSON.parse(readFileSync(policyPath, "utf8"));
   assert.equal(policy.network, "deny");
@@ -38,6 +39,10 @@ export async function createBrokeredAppServer({
   for (const feature of ["hooks", "apps", "remote_plugin", "shell_tool", "unified_exec"])
     args.push("--disable", feature);
   args.push("-c", 'web_search="disabled"', "-c", "mcp_servers={}", "-c", "agents.enabled=false");
+  for (const plugin of disabledPlugins) {
+    assert.match(plugin, /^[a-zA-Z0-9_@.-]+$/u);
+    args.push("-c", `plugins={${JSON.stringify(plugin)}={enabled=false}}`);
+  }
   if (offlineProvider) {
     const url = new URL(offlineProvider);
     assert.equal(url.protocol, "http:");
@@ -126,6 +131,7 @@ export async function createBrokeredAppServer({
     assertBrokerConfiguration({ cwd: harnessCwd, env, approvedConfigDigests });
     assertEffectiveBrokerConfiguration(
       await port.request("config/read", { includeLayers: true, cwd: harnessCwd }),
+      disabledPlugins,
     );
   };
   try {

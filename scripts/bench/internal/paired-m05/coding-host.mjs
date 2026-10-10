@@ -166,6 +166,7 @@ export function createCodingHost(
         cwd: root,
         env: managedRuntime.env,
         approvedConfigDigests: managedRuntime.approvedConfigDigests,
+        disabledPlugins: managedRuntime.disabledPlugins,
         timeoutMs: contract.limits.turn_timeout_ms,
       });
       try {

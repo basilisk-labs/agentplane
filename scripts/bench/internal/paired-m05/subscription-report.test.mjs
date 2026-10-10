@@ -446,6 +446,8 @@ test("confirmation requires independent tasks, fixed per-stratum allocation and 
     tasks_per_stratum: Object.fromEntries(codingStrata.map((s) => [s, 2])),
     analysis: {
       ...analysis,
+      primary_estimand: pilot.analysis.primary_estimand,
+      supplementary_strata: pilot.analysis.supplementary_strata,
       phase: "confirmation",
       margins: { token_ratio: 0.95, quality_difference: 0, time_ratio: 1.05 },
     },
@@ -545,6 +547,12 @@ test("launch registration rejects resealed phase and transport drift", () => {
     Object.keys(base.runtime_pins).map((key) => [key, digest(key)]),
   );
   for (const mutate of [
+    (r) => {
+      r.analysis.primary_estimand = "positive_only";
+    },
+    (r) => {
+      r.analysis.supplementary_strata.fallback = [];
+    },
     (r) => {
       r.analysis.phase = "confirmation";
     },

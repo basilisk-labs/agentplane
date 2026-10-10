@@ -102,7 +102,9 @@ test(
     };
     await assert.rejects(createBrokeredAppServer(options), /Unreviewed ambient configuration/u);
     assert.equal(existsSync(bypass), false);
-    const safeConfig = 'model_reasoning_effort="medium"\n';
+    const safeConfig =
+      'model_reasoning_effort="medium"\n[plugins."visualize@openai-bundled"]\nenabled=true\n';
+    options.disabledPlugins = ["visualize@openai-bundled"];
     writeFileSync(path.join(runtime, "config.toml"), safeConfig);
     options.approvedConfigDigests = {
       [path.join(runtime, "config.toml")]:
