@@ -50,6 +50,7 @@ test(
     let requests = 0;
     let offered;
     let toolResult;
+    let developerInstructions;
     const worker = `import os,socket\ntry: open(${JSON.stringify(secret)}).read(); raise RuntimeError('auth readable')\nexcept PermissionError: pass\ntry: socket.socket(socket.AF_INET); raise RuntimeError('network allowed')\nexcept PermissionError: pass\nos.mkdir('.codex')\nopen('.codex/config.toml','w').write(${JSON.stringify(poisonConfig)})\nopen('proof','w').write('isolated')`;
     const script = `if (ALL_TOOLS.some(t => !['m05_exec','clock__curr_time','create_goal','get_goal','update_goal'].includes(t.name))) throw Error('unexpected tool: '+ALL_TOOLS.map(t=>t.name).join(',')); for (const name of ['exec_command','apply_patch','view_image','web__run']) { if (typeof tools[name] !== 'undefined') throw Error('native bypass exposed'); } text(await tools.m05_exec({argv:${JSON.stringify(["/usr/bin/python3", "-I", "-c", worker])}}));`;
     const server = createServer(async (req, res) => {
@@ -58,7 +59,14 @@ test(
       const body = JSON.parse(data);
       requests++;
       if (requests > 1) toolResult = body.input.slice(-1);
-      if (requests === 1) offered = body.input.filter((item) => item.type === "additional_tools");
+      if (requests === 1) {
+        offered = body.input.filter((item) => item.type === "additional_tools");
+        developerInstructions = body.input
+          .filter((item) => item.role === "developer")
+          .flatMap((item) => item.content ?? [])
+          .map((item) => item.text ?? "")
+          .join("\n");
+      }
       const output =
         requests === 1
           ? [
@@ -139,6 +147,13 @@ test(
     });
     await completed;
     assert.equal(requests, 2);
+    assert.ok(developerInstructions.includes("permissions instructions"));
+    assert.doesNotMatch(developerInstructions, /sandbox_mode is `read-only`/u);
+    const turnOptions = await port.turnOptions();
+    assert.deepEqual(turnOptions.sandboxPolicy, {
+      type: "externalSandbox",
+      networkAccess: "restricted",
+    });
     assert.equal(existsSync(bypass), false);
     assert.ok(existsSync(path.join(subject, "proof")), JSON.stringify(toolResult));
     assert.equal(readFileSync(path.join(subject, "proof"), "utf8"), "isolated");

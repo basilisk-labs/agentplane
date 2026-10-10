@@ -88,7 +88,10 @@ export async function createBrokeredAppServer({
       ...(offlineProvider ? { modelProvider: "m05_offline" } : {}),
       config: { web_search: "disabled", mcp_servers: {}, "agents.enabled": false },
     }),
-    turnOptions: async () => ({ environments: [] }),
+    turnOptions: async () => ({
+      environments: [],
+      sandboxPolicy: { type: "externalSandbox", networkAccess: "restricted" },
+    }),
     serverRequest: async (event) => {
       assert.equal(event.method, "item/tool/call");
       assert.equal(event.params?.tool, "m05_exec");

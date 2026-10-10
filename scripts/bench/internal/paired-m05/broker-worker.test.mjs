@@ -49,3 +49,16 @@ test("worker cancellation stops execution and retains bounded output", async (t)
   assert.equal(noisy.error, "OUTPUT_LIMIT");
   assert.ok(Buffer.byteLength(noisy.stdout) + Buffer.byteLength(noisy.stderr) <= 1024 * 1024);
 });
+
+test("external broker declaration does not grant read-only workers filesystem writes", async (t) => {
+  const { root } = fixture(t);
+  const policy = path.join(root, "readonly-policy.json");
+  writeIsolationPolicy(policy, { cwd: root, readOnly: [root], writable: [], network: "deny" });
+  const denied = await runBrokerWorker(
+    policy,
+    ["/usr/bin/python3", "-I", "-c", "open('forbidden','w').write('x')"],
+    { timeout: 1000 },
+  );
+  assert.notEqual(denied.status, 0);
+  assert.equal(existsSync(path.join(root, "forbidden")), false);
+});
