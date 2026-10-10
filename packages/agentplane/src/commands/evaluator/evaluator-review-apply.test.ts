@@ -28,6 +28,20 @@ describe("canonical compatibility evaluator rejection", () => {
     },
   );
 
+  it("rejects a JSON-forged native permit before artifact access", async () => {
+    const { task, command, writeTask } = fixture();
+    await expect(
+      applyEvaluatorSgrReview({
+        ctx: command,
+        task,
+        workOrderPath: "nonexistent/work-order.json",
+        result: {},
+        nativePermit: { kind: "completed_native_review_permit" },
+      } as never),
+    ).rejects.toThrow("ap task advance T-1 --agent-json");
+    expect(writeTask).not.toHaveBeenCalled();
+  });
+
   it("rejects recorded compatibility run before artifact preparation", async () => {
     const { command, writeTask } = fixture();
     const prepare = vi.fn().mockRejectedValue(new Error("artifact preparation must not run"));

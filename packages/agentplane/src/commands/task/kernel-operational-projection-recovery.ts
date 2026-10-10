@@ -1,3 +1,4 @@
+import { hasAuthenticatedCompletedNativeReview } from "./kernel-completed-native-review.js";
 import {
   requireKernelReportOnlyCompletion,
   kernelTaskMetadataStatusOnly,
@@ -226,14 +227,17 @@ export async function recoverKernelOperationalProjection(
   )
     return { kind: "unchanged" as const };
   const projection = readKernelOperationalProjection(task.extensions);
-  if (
-    task.execution_route?.repository_mode !== "branch_pr" ||
-    (projection && kernelProjectedReviewMatches(task, projection))
-  )
-    return { kind: "unchanged" as const };
+  if (task.execution_route?.repository_mode !== "branch_pr") return { kind: "unchanged" as const };
   let recovered: Awaited<ReturnType<typeof recoverableInspection>>;
   let repository: KernelRepositoryEvidence;
   try {
+    if (
+      record.aggregate.state === "COMPLETED" &&
+      (await hasAuthenticatedCompletedNativeReview(command, task))
+    )
+      return { kind: "unchanged" as const };
+    if (projection && kernelProjectedReviewMatches(task, projection))
+      return { kind: "unchanged" as const };
     const candidates = await listKernelRepositoryEvidence(command, record);
     const candidate = candidates.at(-1);
     if (!candidate) {

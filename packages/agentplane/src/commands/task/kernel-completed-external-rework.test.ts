@@ -1,4 +1,17 @@
-import { fixture, git } from "./kernel-completed-external-rework.testkit.js";
+import {
+  authorizeCompletedNativeReviewPreparation,
+  hasAuthenticatedCompletedNativeReview,
+} from "./kernel-completed-native-review.js";
+import type * as SupervisorStoreModule from "../shared/supervisor-execution-episode.js";
+import { taskKernel as k } from "@agentplaneorg/core/tasks";
+import { readKernelRecord } from "../../adapters/task-backend/kernel-record.js";
+import { recoverKernelOperationalProjection } from "./kernel-operational-projection-recovery.js";
+import { readKernelOperationalProjection } from "./kernel-operational-projection.js";
+import {
+  fixture,
+  git,
+  recordFixtureVerification,
+} from "./kernel-completed-external-rework.testkit.js";
 import type * as BlockedResultModule from "./external-agent-blocked-result.js";
 import type * as RecoveryModule from "./external-agent-supervisor-recovery.js";
 import type * as BranchEpisodesModule from "./branch-task-supervisor-episodes.js";
@@ -27,6 +40,34 @@ import { loadCommandContext } from "../shared/task-backend.js";
 import type * as PrFlowModule from "../pr/flow-status.js";
 import type { AgentActionPacket } from "./agent-action-packet.js";
 import { runCli } from "../../cli/run-cli.js";
+
+const reviewCrash = vi.hoisted(() => ({ phase: "none" as "none" | "before" | "after" }));
+vi.mock("../shared/supervisor-execution-episode.js", async (original) => {
+  const actual = await original<typeof SupervisorStoreModule>();
+  return {
+    ...actual,
+    createSupervisorEpisodeStore: (file: string) => {
+      const store = actual.createSupervisorEpisodeStore(file);
+      return {
+        ...store,
+        compareAndSwap: async (...args: Parameters<typeof store.compareAndSwap>) => {
+          const operation = args[1].operations.at(-1);
+          if (
+            reviewCrash.phase !== "none" &&
+            operation?.role === "EVALUATOR" &&
+            operation.status === "completed"
+          ) {
+            const phase = reviewCrash.phase;
+            reviewCrash.phase = "none";
+            if (phase === "after") await store.compareAndSwap(...args);
+            throw new Error(`Injected native review interruption ${phase} journal completion`);
+          }
+          return store.compareAndSwap(...args);
+        },
+      };
+    },
+  };
+});
 
 const previousRuntime = vi.hoisted(() => ({ enabled: false }));
 const rejectedResultInterruption = vi.hoisted(() => ({ enabled: false }));
@@ -307,11 +348,11 @@ describe("completed canonical external rework", { timeout: 120_000 }, () => {
       const issued = await issue(f);
       const command = await loadCommandContext({ cwd: f.root, rootOverride: null });
       const task = (await command.taskBackend.getTask(f.id))!;
-      await command.taskBackend.writeTask({
-        ...task,
-        quality_review: { ...task.quality_review!, state: "pass", findings: [] },
-      });
+      const review = task.quality_review;
       await writeFile(path.join(f.root, "source.txt"), "after\n");
+      await recordFixtureVerification(f.root, f.id);
+      const reverified = (await command.taskBackend.getTask(f.id))!;
+      expect(reverified.quality_review).toEqual(review);
       rejectedResultInterruption.enabled = true;
       const rejected = await returnResult(f, issued);
       expect(rejected.code).not.toBe(0);
@@ -578,6 +619,57 @@ describe("completed canonical external rework", { timeout: 120_000 }, () => {
       const f = await fixture("branch_pr", false, true);
       const beforeHead = git(f.root, "rev-parse", "HEAD");
       const command = await loadCommandContext({ cwd: f.root, rootOverride: null });
+      if (!remote) {
+        const original = (await command.taskBackend.getTask(f.id))!;
+        const identity = (
+          original.extensions!.task_execution_context as { repository_identity: k.Sha256Digest }
+        ).repository_identity;
+        const record = readKernelRecord(original, identity);
+        if (record.kind !== "canonical") throw new Error("Expected completed canonical fixture");
+        const intact = await recoverKernelOperationalProjection(command, record.record, original);
+        expect(intact.kind).toBe("unchanged");
+        for (const tamper of ["verdict", "time", "historical-pass"] as const) {
+          const changed = structuredClone(original);
+          const receipt = changed.extensions!["agentplane.completed_native_review"] as Record<
+            string,
+            unknown
+          >;
+          if (tamper === "time") changed.quality_review!.updated_at = "2000-01-01T00:00:00.000Z";
+          else if (tamper === "verdict")
+            changed.quality_review = {
+              ...changed.quality_review!,
+              state: "pass",
+              note: "Forged approval",
+              findings: [],
+            };
+          else {
+            const projection = readKernelOperationalProjection(changed.extensions)!;
+            changed.quality_review = {
+              state: "pass",
+              provenance: "evaluator_supplied",
+              updated_at: projection.projected_at,
+              updated_by: "EVALUATOR",
+              note: "Canonical EVALUATOR review passed.",
+              evaluated_sha: projection.implementation_commit,
+              review_identity_digest: projection.review_identity_digest,
+              evidence_refs: [...projection.evidence_refs],
+              findings: [...projection.findings],
+            };
+          }
+          receipt.quality_digest = k.kernelDigest(changed.quality_review);
+          receipt.applied_at = changed.quality_review!.updated_at;
+          await command.taskBackend.writeTask(changed);
+          const beforeRejected = (await command.taskBackend.getTask(f.id))!;
+          const rejected = await recoverKernelOperationalProjection(
+            command,
+            record.record,
+            beforeRejected,
+          );
+          expect(rejected.kind, tamper).toBe("stop");
+          expect(await command.taskBackend.getTask(f.id)).toEqual(beforeRejected);
+          await command.taskBackend.writeTask(original);
+        }
+      }
       const before = await buildTaskRouteDecision({
         ctx: command,
         cwd: f.root,
@@ -620,78 +712,178 @@ describe("completed canonical external rework", { timeout: 120_000 }, () => {
     },
   );
 
-  it("issues a real external packet without reopening the terminal kernel", async () => {
-    const f = await fixture("direct");
-    const failed = await seedFailure(f);
-    const result = await invoke(f.root, ["task", "advance", f.id, "--replacement", "--agent-json"]);
-    expect(result.code, result.stderr + result.stdout).toBe(0);
-    const packet = parsePacket(result.stdout);
-    expect(packet.action.kind, result.stdout).toBe("agent_episode");
-    expect(packet.exchange).toBeTruthy();
-    const order = validateAgentWorkOrderV2(
-      JSON.parse(
-        await readFile(
-          path.join(packet.exchange.directory, packet.exchange.work_order_ref),
-          "utf8",
+  it.each(["none", "before", "after"] as const)(
+    "issues a real external packet without reopening the terminal kernel (%s journal interruption)",
+    async (crashPhase) => {
+      const f = await fixture("direct");
+      const failed = await seedFailure(f);
+      const result = await invoke(f.root, [
+        "task",
+        "advance",
+        f.id,
+        "--replacement",
+        "--agent-json",
+      ]);
+      expect(result.code, result.stderr + result.stdout).toBe(0);
+      const packet = parsePacket(result.stdout);
+      expect(packet.action.kind, result.stdout).toBe("agent_episode");
+      expect(packet.exchange).toBeTruthy();
+      const order = validateAgentWorkOrderV2(
+        JSON.parse(
+          await readFile(
+            path.join(packet.exchange.directory, packet.exchange.work_order_ref),
+            "utf8",
+          ),
         ),
-      ),
-    );
-    expect(order.task.work_item_id).toBeNull();
-    await writeFile(path.join(f.root, "source.txt"), "after\n");
-    await writeFile(
-      packet.exchange.result_path,
-      JSON.stringify({
-        work_order_id: order.work_order_id,
-        status: "completed",
-        summary: "Repaired source",
-        findings: [],
-        uncertainty: [],
-      }),
-    );
-    const returned = await invoke(f.root, [
-      "task",
-      "advance",
-      f.id,
-      "--result",
-      packet.exchange.result_path,
-      "--agent-json",
-    ]);
-    expect(
-      returned.code,
-      returned.stderr +
-        returned.stdout +
-        git(f.root, "diff", "--", ".gitignore") +
-        git(f.root, "status", "--short"),
-    ).toBe(0);
-    expect(parsePacket(returned.stdout).action.kind).toBe("approval_required");
-    const replay = await invoke(f.root, [
-      "task",
-      "advance",
-      f.id,
-      "--result",
-      packet.exchange.result_path,
-      "--agent-json",
-    ]);
-    expect(replay.code, replay.stderr).toBe(0);
-    // A local return does not bypass the native provider-observation boundary.
-    const reviewedRoute = await invoke(f.root, [
-      "task",
-      "advance",
-      f.id,
-      "--remote",
-      "--agent-json",
-    ]);
-    expect(reviewedRoute.code, reviewedRoute.stderr + reviewedRoute.stdout).toBe(0);
-    const next = parsePacket(reviewedRoute.stdout);
-    expect(next.action.kind, reviewedRoute.stdout).toBe("agent_episode");
-    expect(next.authority.mutation).toBe("read_only");
-    expect(next.authority.role).toBe("EVALUATOR");
-    const journal = validateSupervisorExecutionEpisodeJournal(
-      JSON.parse(await readFile(failed.journalPath, "utf8")),
-    );
-    expect(journal.operations[0]).toEqual(failed.journal.operations[0]);
-    await expectTerminalHistory(f);
-  });
+      );
+      expect(order.task.work_item_id).toBeNull();
+      await writeFile(path.join(f.root, "source.txt"), "after\n");
+      await writeFile(
+        packet.exchange.result_path,
+        JSON.stringify({
+          work_order_id: order.work_order_id,
+          status: "completed",
+          summary: "Repaired source",
+          findings: [],
+          uncertainty: [],
+        }),
+      );
+      const returned = await invoke(f.root, [
+        "task",
+        "advance",
+        f.id,
+        "--result",
+        packet.exchange.result_path,
+        "--agent-json",
+      ]);
+      expect(
+        returned.code,
+        returned.stderr +
+          returned.stdout +
+          git(f.root, "diff", "--", ".gitignore") +
+          git(f.root, "status", "--short"),
+      ).toBe(0);
+      expect(parsePacket(returned.stdout).action.kind).toBe("approval_required");
+      const replay = await invoke(f.root, [
+        "task",
+        "advance",
+        f.id,
+        "--result",
+        packet.exchange.result_path,
+        "--agent-json",
+      ]);
+      expect(replay.code, replay.stderr).toBe(0);
+      // A local return does not bypass the native provider-observation boundary.
+      const reviewedRoute = await invoke(f.root, [
+        "task",
+        "advance",
+        f.id,
+        "--remote",
+        "--agent-json",
+      ]);
+      expect(reviewedRoute.code, reviewedRoute.stderr + reviewedRoute.stdout).toBe(0);
+      const next = parsePacket(reviewedRoute.stdout);
+      expect(next.action.kind, reviewedRoute.stdout).toBe("agent_episode");
+      expect(next.authority.mutation).toBe("read_only");
+      expect(next.authority.role).toBe("EVALUATOR");
+      const reviewOrder = validateAgentWorkOrderV2(
+        JSON.parse(
+          await readFile(path.join(next.exchange.directory, next.exchange.work_order_ref), "utf8"),
+        ),
+      );
+      expect(reviewOrder.authority).toMatchObject({
+        mutation_scope: "none",
+        writable_roots: [],
+        external_side_effects: [],
+        sandbox: "read-only",
+      });
+      const reviewCommand = await loadCommandContext({ cwd: f.root, rootOverride: null });
+      const reviewTask = (await reviewCommand.taskBackend.getTask(f.id))!;
+      await expect(
+        authorizeCompletedNativeReviewPreparation(reviewCommand, reviewTask, {
+          ...reviewOrder,
+          authority: { ...reviewOrder.authority, expires_at: "2000-01-01T00:00:00.000Z" },
+        }),
+      ).rejects.toThrow("expired");
+      await expect(
+        authorizeCompletedNativeReviewPreparation(reviewCommand, reviewTask, {
+          ...reviewOrder,
+          authority: { ...reviewOrder.authority, writable_roots: [f.root] },
+        }),
+      ).rejects.toThrow("read-only");
+      await writeFile(
+        next.exchange.result_path,
+        JSON.stringify({
+          work_order_id: reviewOrder.work_order_id,
+          status: "completed",
+          summary: "Independent repair review passed",
+          findings: ["Repair verified"],
+          uncertainty: [],
+          review: {
+            verdict: "pass",
+            missing_tests: [],
+            hidden_assumptions: [],
+            residual_risks: [],
+          },
+        }),
+      );
+      reviewCrash.phase = crashPhase;
+      const acceptedReview = await invoke(f.root, [
+        "task",
+        "advance",
+        f.id,
+        "--result",
+        next.exchange.result_path,
+        "--remote",
+        "--agent-json",
+      ]);
+      if (crashPhase === "none")
+        expect(acceptedReview.code, acceptedReview.stderr + acceptedReview.stdout).toBe(0);
+      else {
+        expect(acceptedReview.code).not.toBe(0);
+        expect(acceptedReview.stderr).toContain("Injected native review interruption");
+        const currentReview = (await reviewCommand.taskBackend.getTask(f.id))!;
+        if (crashPhase === "before") {
+          await expect(
+            hasAuthenticatedCompletedNativeReview(reviewCommand, currentReview),
+          ).rejects.toThrow("completed journal receipt");
+          const pendingReplay = await invoke(f.root, [
+            "task",
+            "advance",
+            f.id,
+            "--result",
+            next.exchange.result_path,
+            "--remote",
+            "--agent-json",
+          ]);
+          expect(pendingReplay.code).not.toBe(0);
+          expect(await reviewCommand.taskBackend.getTask(f.id)).toEqual(currentReview);
+        } else {
+          const completedReplay = await invoke(f.root, [
+            "task",
+            "advance",
+            f.id,
+            "--result",
+            next.exchange.result_path,
+            "--remote",
+            "--agent-json",
+          ]);
+          expect(completedReplay.code, completedReplay.stderr + completedReplay.stdout).toBe(0);
+          expect(
+            await hasAuthenticatedCompletedNativeReview(
+              reviewCommand,
+              (await reviewCommand.taskBackend.getTask(f.id))!,
+            ),
+          ).toBe(true);
+        }
+      }
+      const journal = validateSupervisorExecutionEpisodeJournal(
+        JSON.parse(await readFile(failed.journalPath, "utf8")),
+      );
+      expect(journal.operations[0]).toEqual(failed.journal.operations[0]);
+      await expectTerminalHistory(f);
+    },
+  );
   it.each([
     ["foreign WorkOrder", { work_order_id: `sha256:${"f".repeat(64)}` }],
     ["forged WorkItem", { canonical_binding: { work_item_id: "forged" } }],

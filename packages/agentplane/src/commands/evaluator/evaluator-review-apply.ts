@@ -1,3 +1,8 @@
+import {
+  hasCompletedNativeReviewPermit,
+  completedNativeReviewReceipt,
+  type CompletedNativeReviewPermit,
+} from "../task/kernel-completed-native-review.js";
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -47,6 +52,7 @@ async function persistReview(opts: {
   workOrderPath: string;
   report: EvaluatorQualityReport;
   resultPayload: EvaluatorSgrResult | null;
+  nativePermit?: CompletedNativeReviewPermit;
 }): Promise<{
   report_path: string;
   prompt_path: string;
@@ -61,7 +67,15 @@ async function persistReview(opts: {
       context: { task_id: opts.task.id, reason_code: "evaluated_sha_missing" },
     });
   }
-  assertCompatibilityEvaluatorTask(opts.task);
+  if (
+    !hasCompletedNativeReviewPermit(
+      opts.nativePermit,
+      opts.task,
+      opts.ctx.resolvedProject.gitRoot,
+      path.resolve(opts.ctx.resolvedProject.gitRoot, opts.workOrderPath),
+    )
+  )
+    assertCompatibilityEvaluatorTask(opts.task);
   const gitRoot = opts.ctx.resolvedProject.gitRoot;
   const reviewDir = path.dirname(opts.workOrderPath);
   const paths = reportPaths(reviewDir);
@@ -121,29 +135,45 @@ async function persistReview(opts: {
           },
         })
       : null;
+  const qualityReview = {
+    state: opts.report.verdict,
+    provenance: opts.report.provenance,
+    updated_at: opts.report.generated_at,
+    updated_by: opts.report.provenance === "human_supplied" ? "HUMAN" : "EVALUATOR",
+    note: opts.report.summary,
+    evaluated_sha: opts.report.evaluated_sha,
+    review_identity_digest: opts.report.review_identity_digest,
+    evidence_refs: evidenceRefs,
+    findings: opts.report.findings,
+    ...(opts.resultPayload?.recovery_reason
+      ? { recovery_reason: opts.resultPayload.recovery_reason }
+      : {}),
+  } satisfies NonNullable<TaskData["quality_review"]>;
   await applyTaskMutation({
     ctx: opts.ctx,
     taskId: opts.task.id,
     policyAction: "task_verify",
     phase: "verify",
-    allowCanonicalProjection: false,
+    allowCanonicalProjection: hasCompletedNativeReviewPermit(
+      opts.nativePermit,
+      opts.task,
+      opts.ctx.resolvedProject.gitRoot,
+      path.resolve(opts.ctx.resolvedProject.gitRoot, opts.workOrderPath),
+    ),
     build: () => ({
       intents: setTaskFieldsIntent({
-        quality_review: {
-          state: opts.report.verdict,
-          provenance: opts.report.provenance,
-          updated_at: opts.report.generated_at,
-          updated_by: opts.report.provenance === "human_supplied" ? "HUMAN" : "EVALUATOR",
-          note: opts.report.summary,
-          evaluated_sha: opts.report.evaluated_sha,
-          review_identity_digest: opts.report.review_identity_digest,
-          evidence_refs: evidenceRefs,
-          findings: opts.report.findings,
-          ...(opts.resultPayload?.recovery_reason
-            ? { recovery_reason: opts.resultPayload.recovery_reason }
+        quality_review: qualityReview,
+        ...(opts.nativePermit
+          ? {
+              extensions: {
+                ...opts.task.extensions,
+                ...(humanInput ?? {}),
+                ...completedNativeReviewReceipt(opts.nativePermit, opts.task, qualityReview),
+              },
+            }
+          : humanInput
+            ? { extensions: humanInput }
             : {}),
-        },
-        ...(humanInput ? { extensions: humanInput } : {}),
       }),
     }),
   });
@@ -186,8 +216,17 @@ export async function applyEvaluatorSgrReview(opts: {
   task: TaskData;
   workOrderPath: string;
   result: unknown;
+  nativePermit?: CompletedNativeReviewPermit;
 }): Promise<{ work_order: EvaluatorWorkOrder; report_path: string; result_path: string }> {
-  assertCompatibilityEvaluatorTask(opts.task);
+  if (
+    !hasCompletedNativeReviewPermit(
+      opts.nativePermit,
+      opts.task,
+      opts.ctx.resolvedProject.gitRoot,
+      path.resolve(opts.ctx.resolvedProject.gitRoot, opts.workOrderPath),
+    )
+  )
+    assertCompatibilityEvaluatorTask(opts.task);
   const gitRoot = opts.ctx.resolvedProject.gitRoot;
   const workOrderPath = path.resolve(gitRoot, opts.workOrderPath);
   if (!isWithinRoot(gitRoot, workOrderPath)) {
@@ -245,6 +284,7 @@ export async function applyEvaluatorSgrReview(opts: {
     workOrderPath,
     report,
     resultPayload: result,
+    nativePermit: opts.nativePermit,
   });
   return {
     work_order: workOrder,

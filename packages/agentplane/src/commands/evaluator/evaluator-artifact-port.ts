@@ -1,3 +1,7 @@
+import {
+  hasCompletedNativeReviewPermit,
+  type CompletedNativeReviewPermit,
+} from "../task/kernel-completed-native-review.js";
 import type { CommandCtx } from "../../cli/spec/spec.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { loadTaskFromContext } from "../shared/task-backend.js";
@@ -16,6 +20,7 @@ type EvaluatorArtifactPreparationRequest = {
   taskId: string;
   evaluatorId: string;
   provenance: EvaluatorRunProvenance;
+  nativePermit?: CompletedNativeReviewPermit;
 };
 
 type PreparedEvaluatorArtifactPacket = Readonly<{
@@ -53,7 +58,10 @@ export function createEvaluatorArtifactPreparationPort(
         });
       }
       const task = await loadTaskFromContext({ ctx: command, taskId: request.taskId });
-      assertCompatibilityEvaluatorTask(task);
+      if (
+        !hasCompletedNativeReviewPermit(request.nativePermit, task, command.resolvedProject.gitRoot)
+      )
+        assertCompatibilityEvaluatorTask(task);
       const prepared = await prepareEvaluatorReview({
         ctx: command,
         task,
