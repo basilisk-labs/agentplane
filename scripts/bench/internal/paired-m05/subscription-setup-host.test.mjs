@@ -110,6 +110,8 @@ test("unknown usage and missing authority stop without unaccounted continuation"
     /Unknown setup usage/u,
   );
   assert.equal(mocks.observed.length, 1);
+  const failure = JSON.parse(readFileSync(path.join(packet.host, "planner/failure.json"), "utf8"));
+  assert.equal(failure.bounded_messages.length, 1);
   const other = fixture(t);
   const denied = ports(other.packet);
   await assert.rejects(

@@ -173,6 +173,7 @@ export async function runSubscriptionSetup(
         JSON.stringify({
           role,
           observation_failure: observationFailure,
+          bounded_messages: messages,
           disposition: "stopped; retain ledger and do not replay",
         }) + "\n",
         { flag: "wx" },
