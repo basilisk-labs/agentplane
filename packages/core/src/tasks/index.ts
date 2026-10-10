@@ -331,5 +331,6 @@ export {
 
 export {
   suppliedAggregateValidationItem,
+  requiresSuppliedAggregateValidation,
   assertSuppliedAggregateDefinition,
 } from "./supplied-plan-aggregate.js";

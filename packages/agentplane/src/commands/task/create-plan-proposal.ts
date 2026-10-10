@@ -5,7 +5,10 @@ import {
   type KernelPlanProposal,
   type ParsedTaskPlanProposal,
 } from "@agentplaneorg/core/tasks";
-import { suppliedAggregateValidationItem } from "@agentplaneorg/core/tasks";
+import {
+  suppliedAggregateValidationItem,
+  requiresSuppliedAggregateValidation,
+} from "@agentplaneorg/core/tasks";
 import type { TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { PLAN_VALIDATION_CAPABILITIES } from "./planning-capabilities.js";
@@ -98,7 +101,9 @@ export function suppliedKernelProposal(
           plan_input_digest: sourceDigest,
         },
       })),
-      ...(input.work_items.work_items.length > 1 ? [suppliedAggregateValidationItem(input)] : []),
+      ...(requiresSuppliedAggregateValidation(input)
+        ? [suppliedAggregateValidationItem(input)]
+        : []),
     ],
   });
 }

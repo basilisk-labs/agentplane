@@ -2,6 +2,7 @@ import {
   taskKernel,
   assertSuppliedAggregateDefinition,
   suppliedAggregateValidationItem,
+  requiresSuppliedAggregateValidation,
   kernelIntentSchema,
   kernelWorkContractSchema,
   TASK_PLAN_PROPOSAL_ZOD_SCHEMA,
@@ -71,7 +72,7 @@ export function kernelDocumentIssues(
         if (
           contract.generated_origin ||
           (source &&
-            source.work_items.work_items.length > 1 &&
+            requiresSuppliedAggregateValidation(source) &&
             item.id === suppliedAggregateValidationItem(source).id)
         ) {
           try {

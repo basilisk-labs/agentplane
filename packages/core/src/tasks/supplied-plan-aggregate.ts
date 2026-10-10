@@ -2,6 +2,14 @@ import * as k from "./task-kernel/index.js";
 import type { KernelPlanProposal } from "./kernel-semantic.js";
 import type { ParsedTaskPlanProposal } from "./task-centric/schema.js";
 
+export function requiresSuppliedAggregateValidation(source: ParsedTaskPlanProposal): boolean {
+  return (
+    source.work_items.work_items.length > 1 &&
+    (source.top_level_validation.criteria.length > 0 ||
+      source.top_level_validation.checks.length > 0)
+  );
+}
+
 /** A native validation stage, never an authored WorkItem or additional mutation grant. */
 export function suppliedAggregateValidationItem(
   source: ParsedTaskPlanProposal,
@@ -36,9 +44,16 @@ export function suppliedAggregateValidationItem(
     contract: {
       objective:
         "Validate the complete task against the retained top-level criteria and checks. Inspect completed required work and any completed optional work. Report unmet requirements without modifying implementation. This is a native generated aggregate validation stage, not an authored WorkItem. Independent native inspection remains mandatory.",
-      acceptance_criteria: [
-        ...new Set(source.top_level_validation.criteria.map((criterion) => criterion.description)),
-      ],
+      acceptance_criteria:
+        source.top_level_validation.criteria.length > 0
+          ? [
+              ...new Set(
+                source.top_level_validation.criteria.map((criterion) => criterion.description),
+              ),
+            ]
+          : source.top_level_validation.checks.map(
+              (check) => `Top-level validation check ${check.id} passes with retained evidence.`,
+            ),
       verification_commands: [
         ...new Set(
           source.top_level_validation.checks.flatMap((check) =>
@@ -61,7 +76,7 @@ export function assertSuppliedAggregateDefinition(
 ): void {
   const { contract: expectedContract, ...expected } = suppliedAggregateValidationItem(source);
   if (
-    source.work_items.work_items.length < 2 ||
+    !requiresSuppliedAggregateValidation(source) ||
     k.kernelDigest(contract) !== k.kernelDigest(expectedContract) ||
     k.kernelDigest(definition) !==
       k.kernelDigest({ ...expected, contract_digest: k.kernelDigest(expectedContract) })

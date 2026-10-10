@@ -9,7 +9,7 @@ import {
 } from "@agentplaneorg/core/tasks";
 import { compactPlanInput } from "./create-plan-input.testkit.js";
 import { assertCanonicalPlanWithinExecutionContract } from "./kernel-plan-authority.js";
-import { suppliedKernelProposal } from "./create-plan-proposal.js";
+import { suppliedKernelProposal, legacySuppliedKernelProposal } from "./create-plan-proposal.js";
 import { canonicalPlanFromProposal } from "./kernel-plan-proposal.js";
 import { kernelDocumentIssues } from "../../adapters/task-backend/kernel-documents.js";
 
@@ -197,6 +197,21 @@ describe("phase-local supplied Plan conversion", () => {
     expect(() =>
       assertCanonicalPlanWithinExecutionContract(admitted, canonicalPlanFromProposal(proposal, 1)),
     ).not.toThrow();
+  });
+
+  it("preserves full-form plans with no top-level obligations and retains checks-only final validation", () => {
+    const source = normalized();
+    source.top_level_validation.criteria = [];
+    source.top_level_validation.checks = [];
+    expect(suppliedKernelProposal(source, task).work_items).toHaveLength(3);
+    expect(legacySuppliedKernelProposal(source, task).work_items).toHaveLength(3);
+    source.top_level_validation.checks = normalized().top_level_validation.checks;
+    const aggregate = suppliedKernelProposal(source, task).work_items[3]!;
+    expect(aggregate.contract.acceptance_criteria).toEqual([
+      "Top-level validation check final passes with retained evidence.",
+    ]);
+    expect(aggregate.contract.verification_commands).toEqual(["node visible.test.mjs"]);
+    expect(legacySuppliedKernelProposal(source, task).work_items).toHaveLength(3);
   });
 
   it("keeps optional source items optional without making them aggregate prerequisites", () => {
