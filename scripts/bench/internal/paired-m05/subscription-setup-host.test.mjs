@@ -172,3 +172,43 @@ test("empty directory depth and breadth are bounded before provider startup", as
   for (let i = 0; i < 33; i++) mkdirSync(path.join(other.packet.inputs, String(i)));
   assert.throws(() => setupInventory(other.packet.inputs), /directory bound/u);
 });
+
+test("bounded correction executes only writer then independent reviewer and refuses replay", async (t) => {
+  const { packet } = fixture(t);
+  packet.role_sequence = ["EXECUTOR", "EVALUATOR"];
+  packet.contract.limits.max_calls = 2;
+  packet.contract.limits.max_episodes = 2;
+  writeFileSync(path.join(packet.outputs, "scenario.json"), "{}\n");
+  packet.initial_output_inventory = setupInventory(packet.outputs);
+  const mocks = ports(packet);
+  const result = await runSubscriptionSetup({ packet, authorize: async () => true }, mocks);
+  assert.deepEqual(
+    result.results.map((r) => r.role),
+    packet.role_sequence,
+  );
+  assert.deepEqual(
+    mocks.observed.map((p) => p.writable),
+    [[packet.outputs], []],
+  );
+  await assert.rejects(
+    runSubscriptionSetup({ packet, authorize: async () => true }, mocks),
+    /EEXIST/u,
+  );
+  assert.equal(mocks.observed.length, 2);
+});
+test("unsupported correction role order is rejected before effects", async (t) => {
+  for (const roles of [
+    ["EVALUATOR", "EXECUTOR"],
+    ["EXECUTOR"],
+    ["EXECUTOR", "EXECUTOR", "EVALUATOR"],
+  ]) {
+    const { packet } = fixture(t);
+    packet.role_sequence = roles;
+    const mocks = ports(packet);
+    await assert.rejects(
+      runSubscriptionSetup({ packet, authorize: async () => true }, mocks),
+      /Unsupported setup role sequence/u,
+    );
+    assert.equal(mocks.observed.length, 0);
+  }
+});

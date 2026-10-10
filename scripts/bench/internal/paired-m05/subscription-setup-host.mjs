@@ -52,8 +52,14 @@ export async function runSubscriptionSetup(
 ) {
   assert.equal(packet.kind, "agentplane.m05_prospective_setup");
   const { contract } = packet;
-  assert.equal(contract.limits.max_calls, 3);
-  assert.equal(contract.limits.max_episodes, 3);
+  const roles = packet.role_sequence ?? ["PLANNER", "EXECUTOR", "EVALUATOR"];
+  assert.ok(
+    JSON.stringify(roles) === JSON.stringify(["PLANNER", "EXECUTOR", "EVALUATOR"]) ||
+      JSON.stringify(roles) === JSON.stringify(["EXECUTOR", "EVALUATOR"]),
+    "Unsupported setup role sequence",
+  );
+  assert.equal(contract.limits.max_calls, roles.length);
+  assert.equal(contract.limits.max_episodes, roles.length);
   assert.equal(contract.limits.retry_limit, 0);
   assert.equal(contract.limits.quota_cutoff_percent, 80);
   assert.equal(contract.assignments.length, 1);
@@ -66,8 +72,13 @@ export async function runSubscriptionSetup(
   assert.ok(!inside(inputs, outputs) && !inside(outputs, inputs));
   assert.ok(!inside(host, subject) && !inside(subject, host));
   assert.deepEqual(setupInventory(inputs), packet.input_inventory, "Public inputs changed");
-  assert.deepEqual(setupInventory(outputs), [], "Authoring requires fresh output storage");
-  const roles = ["PLANNER", "EXECUTOR", "EVALUATOR"];
+  const initialOutputs = roles.length === 2 ? packet.initial_output_inventory : [];
+  if (roles.length === 2)
+    assert.ok(
+      Array.isArray(initialOutputs) && initialOutputs.length > 0,
+      "Correction candidate inventory required",
+    );
+  assert.deepEqual(setupInventory(outputs), initialOutputs, "Initial strategy changed");
   const results = [];
   for (const role of roles) {
     const directory = path.join(host, role.toLowerCase());
