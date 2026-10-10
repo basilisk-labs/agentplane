@@ -225,6 +225,17 @@ describe("canonical final Verification Contract projection", () => {
     expect(f.apply).not.toHaveBeenCalled();
   });
 
+  it("runs native final checks for report-only completion without inventing an implementation commit", async () => {
+    const f = fixture();
+    mocks.repositoryEvidence.mockResolvedValue([]);
+    mocks.recover.mockResolvedValue({ kind: "report_only" });
+    await f.run();
+    expect(mocks.resolve).not.toHaveBeenCalled();
+    expect(mocks.checks).toHaveBeenCalledOnce();
+    expect(mocks.project).not.toHaveBeenCalled();
+    expect(f.apply).toHaveBeenCalledOnce();
+  });
+
   it("executes and projects the same strengthened contract before recording final validation", async () => {
     const f = fixture();
     await f.run();

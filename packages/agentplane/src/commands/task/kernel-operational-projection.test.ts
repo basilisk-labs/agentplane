@@ -247,4 +247,42 @@ describe("canonical operational evidence projection", () => {
 
     expect(writeTask).toHaveBeenCalledTimes(1);
   });
+  it("repairs a split compatibility review from the same authenticated projection", async () => {
+    const writeTask = taskWriter();
+    const backend = { getTask: vi.fn(), writeTask };
+    const input = {
+      command: { taskBackend: backend } as never,
+      task_id: "T-1",
+      repository_evidence: {
+        task_id: "T-1",
+        work_order_id: k.kernelDigest("order"),
+        implementation_commit: "a".repeat(40),
+        implementation_tree: "b".repeat(40),
+        evaluator_target: "a".repeat(40),
+      } as never,
+      verification_evidence_digest: k.kernelDigest("validation"),
+      review_identity_digest: k.kernelDigest("native review"),
+      evidence_refs: ["native evidence"],
+      findings: ["Native review passed"],
+      projected_at: "2026-10-10T00:00:00Z",
+    };
+    backend.getTask.mockResolvedValue({
+      id: "T-1",
+      revision: 1,
+      extensions: { [TASK_KERNEL_EXTENSION]: {} },
+    });
+    await projectKernelOperationalEvidence(input);
+    const native = writeTask.mock.calls[0]![0];
+    backend.getTask.mockResolvedValue({
+      ...native,
+      quality_review: {
+        ...native.quality_review,
+        review_identity_digest: k.kernelDigest("compatibility review"),
+      },
+    });
+    await projectKernelOperationalEvidence(input);
+    expect(writeTask).toHaveBeenCalledTimes(2);
+    expect(writeTask.mock.calls[1]![0].quality_review).toEqual(native.quality_review);
+    expect(writeTask.mock.calls[1]![0].extensions).toEqual(native.extensions);
+  });
 });

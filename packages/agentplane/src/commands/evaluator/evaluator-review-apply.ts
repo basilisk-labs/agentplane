@@ -30,10 +30,14 @@ import {
 import { reportPaths, resolveEvaluatorPromptPath } from "./evaluator-review-support.js";
 import { evaluatorWorkOrderReviewDigest } from "./evaluator-work-order.js";
 
-export function evaluatorReviewAllowsCanonicalProjection(
-  task: Pick<TaskData, "extensions">,
-): boolean {
-  return Object.hasOwn(task.extensions ?? {}, TASK_KERNEL_EXTENSION);
+export function assertCompatibilityEvaluatorTask(task: Pick<TaskData, "id" | "extensions">): void {
+  if (Object.hasOwn(task.extensions ?? {}, TASK_KERNEL_EXTENSION)) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: `Canonical tasks require native EVALUATOR review. Run ap task advance ${task.id} --agent-json.`,
+      context: { task_id: task.id, reason_code: "canonical_evaluator_route_required" },
+    });
+  }
 }
 
 async function persistReview(opts: {
@@ -57,6 +61,7 @@ async function persistReview(opts: {
       context: { task_id: opts.task.id, reason_code: "evaluated_sha_missing" },
     });
   }
+  assertCompatibilityEvaluatorTask(opts.task);
   const gitRoot = opts.ctx.resolvedProject.gitRoot;
   const reviewDir = path.dirname(opts.workOrderPath);
   const paths = reportPaths(reviewDir);
@@ -121,7 +126,7 @@ async function persistReview(opts: {
     taskId: opts.task.id,
     policyAction: "task_verify",
     phase: "verify",
-    allowCanonicalProjection: evaluatorReviewAllowsCanonicalProjection(opts.task),
+    allowCanonicalProjection: false,
     build: () => ({
       intents: setTaskFieldsIntent({
         quality_review: {
@@ -182,6 +187,7 @@ export async function applyEvaluatorSgrReview(opts: {
   workOrderPath: string;
   result: unknown;
 }): Promise<{ work_order: EvaluatorWorkOrder; report_path: string; result_path: string }> {
+  assertCompatibilityEvaluatorTask(opts.task);
   const gitRoot = opts.ctx.resolvedProject.gitRoot;
   const workOrderPath = path.resolve(gitRoot, opts.workOrderPath);
   if (!isWithinRoot(gitRoot, workOrderPath)) {
@@ -253,6 +259,7 @@ export async function applyHumanEvaluatorReview(opts: {
   workOrderPath: string;
   input: HumanEvaluatorReviewInput;
 }): Promise<{ work_order: EvaluatorWorkOrder; report_path: string }> {
+  assertCompatibilityEvaluatorTask(opts.task);
   const gitRoot = opts.ctx.resolvedProject.gitRoot;
   const workOrderPath = path.resolve(gitRoot, opts.workOrderPath);
   const workOrder = readWorkOrder(JSON.parse(await readFile(workOrderPath, "utf8")));

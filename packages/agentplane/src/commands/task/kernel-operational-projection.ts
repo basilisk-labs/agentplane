@@ -28,6 +28,26 @@ type Projection = Readonly<{
   digest: k.Sha256Digest;
 }>;
 
+export function kernelProjectedReviewMatches(
+  task: Pick<TaskData, "quality_review">,
+  projection: Projection,
+): boolean {
+  return (
+    k.kernelDigest(task.quality_review ?? null) ===
+    k.kernelDigest({
+      state: "pass",
+      provenance: "evaluator_supplied",
+      updated_at: projection.projected_at,
+      updated_by: "EVALUATOR",
+      note: "Canonical EVALUATOR review passed.",
+      evaluated_sha: projection.implementation_commit,
+      review_identity_digest: projection.review_identity_digest,
+      evidence_refs: [...projection.evidence_refs],
+      findings: [...projection.findings],
+    })
+  );
+}
+
 /**
  * Compatibility fields are evidence projections only. The Task Kernel record remains the sole
  * lifecycle and authority source; mature PR/integration gates may consume these fields without
@@ -66,7 +86,8 @@ export async function projectKernelOperationalEvidence(opts: {
   const existing = task.extensions[KERNEL_OPERATIONAL_PROJECTION] as
     | Partial<Projection>
     | undefined;
-  if (existing?.digest === projection.digest) return;
+  if (existing?.digest === projection.digest && kernelProjectedReviewMatches(task, projection))
+    return;
   const revision = task.revision ?? 0;
   await opts.command.taskBackend.writeTask(
     {

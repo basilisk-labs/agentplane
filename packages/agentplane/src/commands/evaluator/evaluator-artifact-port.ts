@@ -8,6 +8,7 @@ import {
   prepareEvaluatorReview,
   type PreparedEvaluatorReview,
 } from "./evaluator-review-usecase.js";
+import { assertCompatibilityEvaluatorTask } from "./evaluator-review-apply.js";
 import type { EvaluatorRunProvenance } from "./evaluator.spec.js";
 
 type EvaluatorArtifactPreparationRequest = {
@@ -52,6 +53,7 @@ export function createEvaluatorArtifactPreparationPort(
         });
       }
       const task = await loadTaskFromContext({ ctx: command, taskId: request.taskId });
+      assertCompatibilityEvaluatorTask(task);
       const prepared = await prepareEvaluatorReview({
         ctx: command,
         task,

@@ -22,7 +22,11 @@ import {
 } from "./evaluator.spec.js";
 import { loadEvaluatorCatalogForCommand } from "./evaluator-catalog.command.js";
 import type { PreparedEvaluatorReview } from "./evaluator-review-usecase.js";
-import { applyEvaluatorSgrReview, applyHumanEvaluatorReview } from "./evaluator-review-apply.js";
+import {
+  applyEvaluatorSgrReview,
+  applyHumanEvaluatorReview,
+  assertCompatibilityEvaluatorTask,
+} from "./evaluator-review-apply.js";
 import { executeEvaluatorSupervisorEpisode } from "./evaluator-execute-supervisor.js";
 import {
   createEvaluatorArtifactPreparationPort,
@@ -128,6 +132,7 @@ async function loadEvaluatorReviewContext(opts: {
   }
   const command = await opts.deps.getCommandContext(opts.ctx, "evaluator review");
   const task = await loadTaskFromContext({ ctx: command, taskId: opts.taskId });
+  assertCompatibilityEvaluatorTask(task);
   return { command, task, evaluator };
 }
 
@@ -467,6 +472,9 @@ async function runEvaluatorCommand(
   deps: EvaluatorReviewCommandDeps,
 ): Promise<EvaluatorRunResult> {
   assertRunnableReviewInput(parsed);
+  const command = await deps.getCommandContext(ctx, "evaluator run record");
+  const task = await loadTaskFromContext({ ctx: command, taskId: parsed.taskId });
+  assertCompatibilityEvaluatorTask(task);
   const packet = await prepareEvaluatorRunArtifacts(ctx, parsed, deps);
   const { prepared } = packet;
   if (!parsed.record) {
@@ -478,8 +486,6 @@ async function runEvaluatorCommand(
       prompt: relativeToProject(packet.git_root, prepared.prompt_path),
     };
   }
-  const command = await deps.getCommandContext(ctx, "evaluator run record");
-  const task = await loadTaskFromContext({ ctx: command, taskId: parsed.taskId });
   const applied =
     parsed.provenance === "human_supplied"
       ? await applyHumanEvaluatorReview({

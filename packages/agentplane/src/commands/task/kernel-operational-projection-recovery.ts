@@ -1,3 +1,7 @@
+import {
+  requireKernelReportOnlyCompletion,
+  kernelTaskMetadataStatusOnly,
+} from "./kernel-report-only-completion.js";
 import path from "node:path";
 import {
   AGENT_SEMANTIC_RESULT_ZOD_SCHEMA,
@@ -10,7 +14,6 @@ import { readStableRegularTextNoFollow } from "../../shared/stable-file.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { resolveQualityReviewTargetSha } from "../shared/quality-review-target.js";
 import { readDirectRepositoryStatus } from "./direct-task-finalization.js";
-import { pathFromStatusLine } from "./git-status-path.js";
 import { kernelExchangeDirectory, writeKernelArtifact } from "./kernel-exchange.js";
 import {
   validationRecord,
@@ -19,6 +22,7 @@ import {
 } from "./kernel-inspection-validation.js";
 import {
   projectKernelOperationalEvidence,
+  kernelProjectedReviewMatches,
   readKernelOperationalProjection,
 } from "./kernel-operational-projection.js";
 import {
@@ -66,12 +70,13 @@ function recoveryBoundary(task: TaskData, detail: string) {
   };
 }
 
-async function recoverableInspection(
+export async function recoverableInspection(
   command: CommandContext,
   record: KernelRecord,
-  repository: KernelRepositoryEvidence,
+  repository: KernelRepositoryEvidence | null,
+  workItemId = repository?.work_item_id ?? "",
 ) {
-  const item = record.aggregate.work_items[repository.work_item_id];
+  const item = record.aggregate.work_items[workItemId];
   const plan = record.aggregate.current_plan;
   const contract = record.documents?.contracts[String(item?.definition.contract_digest ?? "")];
   if (item?.state !== "COMPLETED" || item.validation?.status !== "PASSED" || !plan || !contract)
@@ -167,7 +172,7 @@ async function recoverableInspection(
       native.input.work_item_id !== binding.work_item_id ||
       native.input.result_digest !== binding.result_digest ||
       native.input.repository_fingerprint !== binding.repository_fingerprint ||
-      native.input.repository_evidence_digest !== repository.digest ||
+      native.input.repository_evidence_digest !== (repository?.digest ?? null) ||
       k.kernelDigest(native.repository_evidence) !== k.kernelDigest(repository) ||
       evidence.status !== "PASSED" ||
       evidence.task_id !== binding.task_id ||
@@ -192,7 +197,14 @@ async function recoverableInspection(
       ) !== k.kernelDigest(item.validation)
     )
       throw new Error("Retained native validation does not match canonical evidence");
-    return { directory, review, evidence, projectedAt: item.validation.observed_at };
+    return {
+      directory,
+      review,
+      evidence,
+      order,
+      implementation,
+      projectedAt: item.validation.observed_at,
+    };
   }
   throw new Error("No retained passing inspection matches the implementation");
 }
@@ -202,10 +214,21 @@ export async function recoverKernelOperationalProjection(
   command: CommandContext,
   record: KernelRecord,
   task: TaskData,
+  reason?: string,
 ) {
   if (
+    reason &&
+    ![
+      "kernel_final_validation_required",
+      "kernel_task_completion_required",
+      "kernel_task_completed",
+    ].includes(reason)
+  )
+    return { kind: "unchanged" as const };
+  const projection = readKernelOperationalProjection(task.extensions);
+  if (
     task.execution_route?.repository_mode !== "branch_pr" ||
-    readKernelOperationalProjection(task.extensions)
+    (projection && kernelProjectedReviewMatches(task, projection))
   )
     return { kind: "unchanged" as const };
   let recovered: Awaited<ReturnType<typeof recoverableInspection>>;
@@ -213,7 +236,10 @@ export async function recoverKernelOperationalProjection(
   try {
     const candidates = await listKernelRepositoryEvidence(command, record);
     const candidate = candidates.at(-1);
-    if (!candidate) throw new Error("No commit-bound repository evidence exists");
+    if (!candidate) {
+      await requireKernelReportOnlyCompletion(command, record, recoverableInspection);
+      return { kind: "report_only" as const };
+    }
     repository = candidate;
     const target = await resolveQualityReviewTargetSha({
       gitRoot: command.resolvedProject.gitRoot,
@@ -226,7 +252,7 @@ export async function recoverKernelOperationalProjection(
     const prefix = `${command.config.paths.workflow_dir}/${task.id}/`;
     if (target !== repository.implementation_commit || repository.evaluator_target !== target)
       throw new Error("The current implementation differs from the retained evaluated commit");
-    if (!status || status.lines.some((line) => !pathFromStatusLine(line).startsWith(prefix)))
+    if (!status || status.lines.some((line) => !kernelTaskMetadataStatusOnly(line, prefix)))
       throw new Error("The worktree contains changes outside the task evidence");
     recovered = await recoverableInspection(command, record, repository);
   } catch (error) {
