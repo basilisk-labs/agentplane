@@ -1,3 +1,4 @@
+import { parseScriptArgs } from "./script-runtime.mjs";
 import { execFileSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
@@ -36,4 +37,21 @@ export function runDistributionGenerator(repoRoot, outDir) {
     },
   );
   return path.join(outDir, "release-distribution.json");
+}
+
+export function parseDistributionArgs(argv, repoRoot, defaultOutDir) {
+  const { flags } = parseScriptArgs(argv, {
+    valueFlags: ["manifest", "out"],
+    booleanFlags: ["check", "json", "help"],
+  });
+  return {
+    manifestPath: path.resolve(
+      repoRoot,
+      flags.manifest ?? ".agentplane/.release/publish/distribution/release-distribution.json",
+    ),
+    outDir: path.resolve(repoRoot, flags.out ?? defaultOutDir),
+    check: Boolean(flags.check),
+    json: Boolean(flags.json),
+    help: Boolean(flags.help),
+  };
 }

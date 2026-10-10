@@ -1,3 +1,7 @@
+import {
+  completedBlockerBoundary,
+  currentCompletedBlockerBoundary,
+} from "./kernel-completed-external-blocker-boundary.js";
 import path from "node:path";
 import { computePlanDigest, taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
 import type { CommandCtx } from "../../cli/spec/spec.js";
@@ -80,6 +84,12 @@ export async function advanceOrdinaryRoute(opts: {
       result_path: parsed.result,
       include_remote: parsed.remote,
     });
+    const blocked = await completedBlockerBoundary({
+      command,
+      result_path: parsed.result,
+      decision: accepted,
+    });
+    if (blocked) return { presentation: "json" as const, packet: blocked };
     if (accepted.workflowMode === "direct") current = accepted;
     else {
       const checkout = accepted.executionPacket.mustRunFrom ?? accepted.workspace.root;
@@ -94,21 +104,34 @@ export async function advanceOrdinaryRoute(opts: {
     }
   } else {
     const routed = await decide();
+    let recoveredResultPath: string | null = null;
     current =
       (await recoverPendingExternalAgentResult({
         command,
         task_id: parsed.taskId,
         current_decision: routed,
-        accept_result: async ({ cwd, result_path }) =>
-          await acceptExternalAgentResult({
+        accept_result: async ({ cwd, result_path }) => {
+          recoveredResultPath = result_path;
+          return await acceptExternalAgentResult({
             ctx: { cwd },
             command,
             task_id: parsed.taskId,
             result_path,
             include_remote: parsed.remote,
-          }),
+          });
+        },
       })) ?? routed;
+    if (recoveredResultPath) {
+      const blocked = await completedBlockerBoundary({
+        command,
+        result_path: recoveredResultPath,
+        decision: current,
+      });
+      if (blocked) return { presentation: "json" as const, packet: blocked };
+    }
   }
+  const currentBlocker = await currentCompletedBlockerBoundary({ command, decision: current });
+  if (currentBlocker) return { presentation: "json" as const, packet: currentBlocker };
   let replacementPrepared = false;
   if (parsed.replacement) {
     const replacement = await preparePersistedSupervisorReplacementAfterFailure({

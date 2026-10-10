@@ -1,0 +1,178 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run release:check",
+      "duration_ms": 101335,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "release:check",
+      "stderr_tail": "$ bun run release:incidents:check && bun run release:acr-example:check && bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build && bun run --filter=@agentplane/testkit build && bun run --filter=@agentplaneorg/recipes build && node scripts/release-check.mjs\n$ node scripts/check-release-incidents.mjs\n$ node scripts/checks/check-acr-example-version.mjs\n",
+      "stdout_tail": "\" but never used in \"dist/command-catalog.js\".\nagentplane build: \"gitAddPaths\", \"gitCommit\", \"gitListBranches\", \"gitStagedPaths\", \"gitInitRepo\" and \"resolveInitBaseBranch\" are imported from external module \"@agentplaneorg/core/git\" but never used in \"dist/command-catalog.js\".\nagentplane build: \"RECIPE_V1_CONVERSION_RESULT_SCHEMA\" and \"validateRecipeV1ConversionResult\" are imported from external module \"@agentplaneorg/recipes\" but never used in \"dist/command-catalog.js\".\nagentplane build: \"StringDecoder\" is imported from external module \"string_decoder\" but never used in \"dist/command-catalog.js\".\nagentplane build: \"performance\" is imported from external module \"perf_hooks\" but never used in \"dist/command-catalog.js\".\nagentplane build: \"kernelMigrationSemanticAssessmentRequestSchema\", \"mapTaskCentricKernelMigration\", \"recipeSourcePlanSemanticDigest\", \"createExecutionGrant\", \"createPlanProposal\", \"lintTaskVerifyStepsSection\", \"lintTasksSnapshot\" and \"parseDocSections\" are imported from external module \"@agentplaneorg/core/tasks\" but never used in \"dist/deferred-runtime.js\".\nagentplane build: \"validateTasksExportSnapshot\", \"renderAcrSchemaJson\" and \"assertAgentWorkOrderReadyForInvocation\" are imported from external module \"@agentplaneorg/core/schemas\" but never used in \"dist/deferred-runtime.js\".\nagentplane build: \"parseWorkflowFrontMatter\" is imported from external module \"@agentplaneorg/core/config\" but never used in \"dist/deferred-runtime.js\".\nagentplane build: \"DEFAULT_TASK_BRANCH_PREFIX\", \"clearPinnedBaseBranch\" and \"getPinnedBaseBranch\" are imported from external module \"@agentplaneorg/core/git\" but never used in \"dist/deferred-runtime.js\".\nagentplane build: \"runProcessSync\" is imported from external module \"@agentplaneorg/core/process\" but never used in \"dist/deferred-runtime.js\".\nagentplane build: ESM dist/command-catalog/core-fast.js 173.13 KB\nagentplane build: ESM dist/recipe-api.js                269.03 KB\nagentplane build: ESM dist/cli.js                       358.44 KB\nagentplane build: ESM dist/command-catalog/task-read.js 186.84 KB\nagentplane build: ESM dist/command-catalog.js           2.37 MB\nagentplane build: ESM dist/deferred-runtime.js          2.53 MB\nagentplane build: ESM dist/cli-bun.js                   3.86 MB\nagentplane build: ESM ⚡️ Build success in 15336ms\nagentplane build: generated dist/command-help.json (254 commands)\nagentplane build: Exited with code 0\n@agentplane/testkit build: Exited with code 0\n@agentplaneorg/recipes build: $ node ../../scripts/release/prune-package-js.mjs dist && node ../../scripts/checks/run-tsup-build.mjs && node ../../scripts/release/manifest.mjs build .\n@agentplaneorg/recipes build: CLI Building entry: {\"index\":\"src/index.ts\"}\n@agentplaneorg/recipes build: CLI Using tsconfig: tsconfig.tsup.json\n@agentplaneorg/recipes build: CLI tsup v8.5.1\n@agentplaneorg/recipes build: CLI Using tsup config: /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610070509-WJ3M1R-repair-recipe-api-release-packaging-and-blueprin/packages/recipes/tsup.config.ts\n@agentplaneorg/recipes build: CLI Target: node20\n@agentplaneorg/recipes build: ESM Build start\n@agentplaneorg/recipes build: ESM dist/index.js 35.22 KB\n@agentplaneorg/recipes build: ESM ⚡️ Build success in 334ms\n@agentplaneorg/recipes build: Exited with code 0\npackage tarball policy OK (@agentplaneorg/core=126, @agentplaneorg/recipes=24, agentplane=61)\n✔ production code has no active Blueprint cursor, plan, snapshot, or state (194.440329ms)\n✔ runner artifact contract has no retired Blueprint paths (0.351747ms)\n✔ active Blueprint engine and mutation surfaces are absent (95.157527ms)\n✔ remaining production Blueprint mentions are explicit cold-reader exceptions (56.936858ms)\n✔ generated live schemas expose no Blueprint inputs (61.7025ms)\n✔ Recipe API Blueprint mention is confined to the historical source-reference type (25.23084ms)\nℹ tests 6\nℹ suites 0\nℹ pass 6\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 1037.813567\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "git diff --check",
+      "duration_ms": 1124,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:3af96d136a78eaa0237142d6ed294a0d3442cc679e83d5ff75cbb33af1efb54b",
+        "executable_digest": "sha256:2a8c18fbf43da9f692d75474c72bea9dfd796c260b0f3dfe456376abc3bbd668",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "node --test scripts/checks/no-blueprint-engine.test.mjs",
+      "duration_ms": 1454,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:832c2327d366e8b5ea7bbfaa3d37caa9a175a59494bb80c507a078576eb16660",
+        "executable_digest": "sha256:7fde7b8afa198da66257f42ee2001d874c7355631e6d1579a5fb5ef1f246df4c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "✔ active Blueprint engine and mutation surfaces are absent (62.573199ms)\n✔ remaining production Blueprint mentions are explicit cold-reader exceptions (42.78421ms)\n✔ generated live schemas expose no Blueprint inputs (1.146187ms)\n✔ Recipe API Blueprint mention is confined to the historical source-reference type (19.268062ms)\nℹ tests 4\nℹ suites 0\nℹ pass 4\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 516.586461\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "node scripts/checks/check-compatibility-contract-baseline.mjs",
+      "duration_ms": 20800,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:832c2327d366e8b5ea7bbfaa3d37caa9a175a59494bb80c507a078576eb16660",
+        "executable_digest": "sha256:7fde7b8afa198da66257f42ee2001d874c7355631e6d1579a5fb5ef1f246df4c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "compatibility contract baseline OK current=40466a8a690787106d097518f720ac93d360a486191f545b8c063bf93e534bd9 candidate=approved:agentplane.compatibility.v0.7.cumulative:release_version published_tag=verified-local exact_main=verified-local preexisting_drift=surface:agent_facing_context_contracts cli=255commands/176args/857options npm_registry=offline-frozen:3packages/162files\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bunx --no-install vitest run packages/agentplane/src/commands/release/package-tarball-policy.test.ts --maxWorkers=1 --testTimeout=60000 --hookTimeout=60000",
+      "duration_ms": 8272,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v4.1.11 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610070509-WJ3M1R-repair-recipe-api-release-packaging-and-blueprin\n\n\n Test Files  1 passed (1)\n      Tests  10 passed (10)\n   Start at  08:30:19\n   Duration  6.77s (transform 231ms, setup 198ms, import 115ms, tests 6.17s, environment 0ms)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "node scripts/bench/capture-compatibility-candidate.mjs --check",
+      "duration_ms": 8461,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:832c2327d366e8b5ea7bbfaa3d37caa9a175a59494bb80c507a078576eb16660",
+        "executable_digest": "sha256:7fde7b8afa198da66257f42ee2001d874c7355631e6d1579a5fb5ef1f246df4c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "compatibility candidate is current\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bunx --no-install prettier --check scripts/checks/no-blueprint-engine.test.mjs scripts/lib/package-tarball-policy.mjs scripts/checks/check-compatibility-contract-baseline.mjs scripts/baselines/v0.7-compatibility-candidate.json packages/agentplane/src/commands/release/package-tarball-policy.test.ts",
+      "duration_ms": 1524,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "Checking formatting...\nAll matched files use Prettier code style!\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "full_regression",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run ci:local:full",
+      "duration_ms": 2822709,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:9df37618bb2ca57ef61471cc98929912db64f3354ab43867978ac865d95df35a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "ci:local:full",
+      "stderr_tail": "te may be incomplete\n- 202601010101-ABCDE: task README frontmatter schema validation failed: Invalid input: expected string, received number at \"title\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"tags[1]\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"verify[1]\"; task README frontmatter schema validation failed: Too small: expected string to have >=1 characters at \"commit.hash\"; task README frontmatter schema validation failed: Too small: expected string to have >=1 characters at \"commit.message\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"description\"\nℹ️ task doc set outcome=section-updated section=Summary\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Summary\nℹ️ task doc set outcome=full-doc-updated section=Summary\n{\"ts\":\"2026-10-07T06:10:14.402Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-Ei6QkI/agentplane-workflow-7eq2Gg/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/tmp/agentplane-vitest-run-Ei6QkI/agentplane-workflow-7eq2Gg/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-07T06:10:14.417Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-Ei6QkI/agentplane-workflow-MSZhlz/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/tmp/agentplane-vitest-run-Ei6QkI/agentplane-workflow-MSZhlz/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-07T06:10:14.437Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-Ei6QkI/agentplane-workflow-MSZhlz/.agentplane/WORKFLOW.md\",\"from\":\"/tmp/agentplane-vitest-run-Ei6QkI/agentplane-workflow-MSZhlz/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-07T06:10:14.452Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-Ei6QkI/agentplane-workflow-tlvpAb/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/tmp/agentplane-vitest-run-Ei6QkI/agentplane-workflow-tlvpAb/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-07T06:10:14.468Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_failed\",\"code\":\"WF_UNSUPPORTED_VERSION\",\"details\":{\"reason\":\"Unsupported WORKFLOW version 3; supported versions: 1, 2.\"}}\n{\"ts\":\"2026-10-07T06:11:29.776Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-10-07T06:11:29.809Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":1}}\n{\"ts\":\"2026-10-07T06:11:29.812Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-10-07T06:11:29.830Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":2}}\n{\"ts\":\"2026-10-07T06:11:29.832Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-10-07T06:11:29.843Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_completed\",\"details\":{\"diagnostics\":0}}\n$ node scripts/checks/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 3 --fixture local-basic --timeout-ms 10000\n$ node scripts/checks/run-vitest-suite.mjs critical-cli\n$ bun run docs:ia:check && bun run docs:reference:check && bun run docs:onboarding:check\n$ node scripts/checks/check-docs-ia.mjs\n$ node scripts/generate/generate-package-reference.mjs --check\n$ node scripts/checks/check-agent-onboarding-scenario.mjs\n$ node scripts/workflow/run-workflows-lint.mjs && node scripts/checks/check-workflow-command-contract.mjs && bun scripts/checks/check-lifecycle-parity.ts && node scripts/checks/check-critical-test-route.mjs\n$ node scripts/checks/run-vitest-suite.mjs platform-critical\n$ node scripts/checks/check-significant-coverage.mjs\n",
+      "stdout_tail": "ment 136ms)\n\n\n== cli (143263ms) ==\nCLI cold-start baseline OK using fixture local-basic (quickstart median=565.467ms (threshold=5000ms, p95=565.467ms); task_list median=690.249ms (threshold=10000ms, p95=690.249ms); task_search median=553.756ms (threshold=6000ms, p95=553.756ms); task_next median=720.164ms (threshold=8000ms, p95=720.164ms); preflight_quick median=777.958ms (threshold=6000ms, p95=777.958ms))\nVitest suite critical-cli: chunk 1/5 (2 files): packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts, packages/agentplane/src/cli/run-cli.critical.exit-codes.test.ts\nVitest suite critical-cli: chunk 1/5 passed in 23868ms (Test Files  2 passed (2); Tests  3 passed (3); Duration  22.99s (transform 17.19s, setup 123ms, import 15.14s, tests 25.32s, environment 0ms))\nVitest suite critical-cli: chunk 2/5 (2 files): packages/agentplane/src/cli/run-cli.critical.git-edge.test.ts, packages/agentplane/src/cli/run-cli.critical.protected-paths.test.ts\nVitest suite critical-cli: chunk 2/5 passed in 18463ms (Test Files  2 passed (2); Tests  5 passed (5); Duration  17.92s (transform 12.51s, setup 239ms, import 16.95s, tests 15.97s, environment 0ms))\nVitest suite critical-cli: chunk 3/5 (2 files): packages/agentplane/src/cli/run-cli.critical.scope-leak.test.ts, packages/agentplane/src/cli/run-cli.critical.symlink-root.test.ts\nVitest suite critical-cli: chunk 3/5 passed in 19488ms (Test Files  2 passed (2); Tests  7 passed (7); Duration  18.94s (transform 9.51s, setup 244ms, import 14.22s, tests 17.89s, environment 0ms))\nVitest suite critical-cli: chunk 4/5 (2 files): packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts, packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet-regressions.test.ts\nVitest suite critical-cli: chunk 4/5 passed in 59495ms (Test Files  2 passed (2); Tests  7 passed (7); Duration  58.80s (transform 14.59s, setup 316ms, import 15.02s, tests 51.83s, environment 4ms))\nVitest suite critical-cli: chunk 5/5 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts\nVitest suite critical-cli: chunk 5/5 passed in 16801ms (Test Files  1 passed (1); Tests  12 passed (12); Duration  16.24s (transform 3.79s, setup 59ms, import 4.56s, tests 11.40s, environment 0ms))\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":true,\"groups\":[{\"id\":\"runtime\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":137126},{\"id\":\"docs-schema\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":82649},{\"id\":\"core\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":2336694},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":143263}]}\n{\"schema_version\":1,\"kind\":\"verification_metrics\",\"route\":\"full-fast\",\"wall_clock_ms\":2720517,\"selected_groups\":5,\"executed_groups\":5,\"parallel_group_concurrency\":1,\"build_invocations\":1,\"ok\":true}\n\n== Documentation contracts ==\nok: docs index and current path references are aligned\nok: docs/reference/generated-reference.mdx is fresh\nok: agent onboarding scenario surfaces are aligned\n\n== Workflows lint (actionlint) ==\nworkflow and command guidance contract OK\nworkflow lifecycle parity OK\ncritical Vitest route OK\n\n== Windows platform-critical tests ==\n\n RUN  v4.1.11 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610070509-WJ3M1R-repair-recipe-api-release-packaging-and-blueprin\n\n\n Test Files  7 passed (7)\n      Tests  98 passed (98)\n   Start at  09:15:59\n   Duration  79.69s (transform 52.61s, setup 504ms, import 52.47s, tests 199.41s, environment 1ms)\n\n\n== Significant file coverage (guard) ==\n\n RUN  v4.1.11 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610070509-WJ3M1R-repair-recipe-api-release-packaging-and-blueprin\n      Coverage enabled with v8\n\n\n Test Files  8 passed (8)\n      Tests  101 passed (101)\n   Start at  09:17:19\n   Duration  18.62s (transform 6.93s, setup 226ms, import 9.25s, tests 6.66s, environment 1ms)\n\n\n== Coverage threshold (significant) ==\nSignificant suite contract OK (17 source targets).\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202610070509-WJ3M1R"
+}

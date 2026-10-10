@@ -1,66 +1,32 @@
 ---
 title: "Docs update recipe"
-description: "Use a documentation workflow recipe for source inspection, docs edits, link checks, and trace export."
+description: "Use Recipe guidance with a normal native Plan."
 ---
 
 # Docs update recipe
 
-## What does it do?
+A docs-update Recipe can contribute guidance for source-backed documentation edits and required link/schema checks. It does not execute arbitrary YAML
+`steps`, run commands on installation, or own a separate workflow lifecycle.
 
-The docs update recipe structures an agent run around source inspection, targeted docs edits,
-verification, and trace export.
+Use the [Scenario V2 authoring contract](../developer/recipes-development) and its validated
+[read-only example](../examples/recipes-v2/scenario.json) as a structural starting point. Adapt the
+objective, mandatory criteria, checks and exact writable scope to the actual repository. A TDD,
+docs or security scenario must not borrow approval from that example or assume tools exist.
 
-## When should I use it?
-
-- A code change needs matching docs.
-- A concept page needs references and runnable commands.
-- Internal links should be checked before review.
-
-## When should I not use it?
-
-- The task is a product positioning rewrite with no source evidence.
-- The docs need a full IA redesign rather than a local update.
-
-## YAML example
-
-```yaml
-name: docs-update
-steps:
-  - id: inspect-source
-    type: context.load
-  - id: edit-docs
-    type: agent.run
-  - id: verify-links
-    type: check.run
-    command: bun run docs:check
-  - id: export-trace
-    type: trace.export
-```
-
-## Command to apply
+Review the actual package/version before local installation and vendoring:
 
 ```bash
-agentplane recipes install docs-update
-agentplane run ./agentplane.yaml --recipe docs-update
+agentplane recipes install --path ./reviewed-recipe.tar.gz
+agentplane recipes add <recipe-id>@<version>
+agentplane recipes explain <recipe-id>
+agentplane recipes preview-v2 selection.json
 ```
 
-## Expected trace events
+For approved task intake, supply explicit selection through `task create --recipe-file` or
+`task plan set --recipe-file`. Follow native preparation/retention instructions and the ordinary
+USER approval boundary. Continue via `task advance --agent-json` or a configured `task run`.
+The required independent EVALUATOR, verification and task evidence owners remain unchanged.
 
-```text
-context.load
-agent.run
-verification.check
-trace.export
-```
-
-## Expected artifacts
-
-```text
-.agentplane/traces/<run-id>.json
-.agentplane/exports/<run-id>.otel.json
-```
-
-## Troubleshooting
-
-If the docs page cites an external source, prefer the central reference registry and a Further
-Reading block rather than one-off link lists.
+Legacy V1 steps are source context, not an imperative DSL. Audit them with `recipes preview-v1`
+and preserve unsupported obligations during bounded conversion. Stop when evidence or authority
+is insufficient. No recipe removes the normal no-Recipe route or establishes measured savings.

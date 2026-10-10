@@ -1,3 +1,5 @@
+import type { RecipePlanProvenance } from "./schema.js";
+
 export type Sha256Digest = `sha256:${string}`;
 
 export type GitBaseIdentity =
@@ -178,6 +180,7 @@ export type WorkItemGraph = Readonly<{
 }>;
 
 export type TaskPlanProposal = Readonly<{
+  recipe_provenance?: RecipePlanProvenance;
   schema_version: 1;
   task_id: string;
   planning_baseline: RepositorySnapshot;

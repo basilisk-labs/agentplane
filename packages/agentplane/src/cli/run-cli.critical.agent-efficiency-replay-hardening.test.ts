@@ -720,51 +720,6 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
     ).toThrow("does not link");
   });
 
-  it("accepts only the frozen toolchain and coherent workspace release lock deltas", async () => {
-    const replay = await importModule<{
-      REPLAY_ANCHOR_COMMIT: string;
-    }>("scripts/lib/agent-efficiency-replay.mjs");
-    const anchorRuntime = await importModule<{
-      assertAnchorLockCompatible(subject: Buffer, driver: Buffer): void;
-    }>("scripts/bench/internal/agent-efficiency-anchor-runtime.mjs");
-    const subjectLock = execFileSync(
-      "/usr/bin/git",
-      ["show", `${replay.REPLAY_ANCHOR_COMMIT}:bun.lock`],
-      { cwd: REPO_ROOT },
-    );
-    const driverLock = readFileSync(path.join(REPO_ROOT, "bun.lock"));
-
-    expect(() => anchorRuntime.assertAnchorLockCompatible(subjectLock, driverLock)).not.toThrow();
-
-    const tampered = Buffer.from(
-      driverLock
-        .toString("utf8")
-        .replace(
-          '"@typescript/native": "npm:typescript@7.0.2"',
-          '"@typescript/native": "npm:typescript@7.0.1"',
-        ),
-    );
-    expect(() => anchorRuntime.assertAnchorLockCompatible(subjectLock, tampered)).toThrow(
-      "ANCHOR_LOCK_MISMATCH",
-    );
-
-    const { parseReplayJsonc } = await importModule<{
-      parseReplayJsonc: (input: string) => {
-        workspaces: Record<string, { version: string; dependencies: Record<string, string> }>;
-      };
-    }>("scripts/bench/internal/agent-efficiency-dependency-manifest.mjs");
-    const incoherentLock = parseReplayJsonc(driverLock.toString("utf8"));
-    const dependencies = incoherentLock.workspaces["packages/agentplane"].dependencies;
-    expect(dependencies["@agentplaneorg/core"]).toBe(
-      incoherentLock.workspaces["packages/core"].version,
-    );
-    dependencies["@agentplaneorg/core"] = "0.0.0-incoherent";
-    const incoherentRelease = Buffer.from(JSON.stringify(incoherentLock));
-    expect(() => anchorRuntime.assertAnchorLockCompatible(subjectLock, incoherentRelease)).toThrow(
-      "ANCHOR_LOCK_MISMATCH",
-    );
-  });
-
   it("runs the real exact-anchor CURRENT_AGENT adapter-failure entrypoint offline", async () => {
     const baseline = await importModule<{
       stableJson(value: unknown, spaces?: number): string;
@@ -970,7 +925,14 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
         payload: {
           episode_ledger: { role: string }[];
           provider_usage_by_role: Record<string, unknown>;
-          supervisor_receipt: { anchor_preparation_cli_calls: number };
+          supervisor_receipt: {
+            anchor_preparation_cli_calls: number;
+            anchor_runtime_integrity: {
+              dependency_claim: unknown;
+              dependency_mode: string;
+              anchor_dependency_claim: { capture_receipt_sha256: string; portable_sha256: string };
+            };
+          };
         };
       }[];
     };
@@ -994,5 +956,16 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
       "CURRENT_AGENT",
     ]);
     expect(evidence.artifacts[0]?.payload.supervisor_receipt.anchor_preparation_cli_calls).toBe(6);
+    const integrity = evidence.artifacts[0]?.payload.supervisor_receipt.anchor_runtime_integrity;
+    expect(integrity).toMatchObject({
+      dependency_mode: "isolated_frozen_lock_v1",
+      dependency_claim: dependencyClaim,
+    });
+    expect(integrity?.anchor_dependency_claim.capture_receipt_sha256).toMatch(
+      /^sha256:[a-f0-9]{64}$/,
+    );
+    expect(integrity?.anchor_dependency_claim.portable_sha256).not.toBe(
+      dependencyClaim.portable_sha256,
+    );
   }, 120_000);
 });

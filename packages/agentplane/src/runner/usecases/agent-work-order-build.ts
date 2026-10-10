@@ -1,3 +1,4 @@
+import { workOrderProtectedPaths } from "./agent-work-order-protected-paths.js";
 import { createHash } from "node:crypto";
 import path from "node:path";
 
@@ -252,10 +253,6 @@ function deterministicWorkOrderId(opts: {
   return `work-order-${taskPart}-${opts.role.toLowerCase()}-${fingerprintPart}`;
 }
 
-function protectedPaths(executionContext: ReadOnlyExecutionContext): string[] {
-  return uniqueSorted(Object.values(executionContext.harness.policy.protected_paths).flat());
-}
-
 function requiredInputs(opts: {
   task_envelope: RunnerTaskContextEnvelope;
   source_manifest: AgentWorkOrderSourceManifest;
@@ -502,7 +499,12 @@ export function buildCanonicalAgentWorkOrder(opts: {
     authority: {
       mutation_scope: task.metadata.mutation_scope ?? "unknown",
       writable_roots: declaredWritableRoots,
-      protected_paths: protectedPaths(executionContext),
+      protected_paths: workOrderProtectedPaths({
+        context: executionContext,
+        contract: executionContract,
+        repositoryRoot: mutationPath,
+        writableRoots: declaredWritableRoots,
+      }),
       allowed_tool_classes: allowedToolClasses,
       // Hosted lifecycle evidence is collected by the CLI before delegation;
       // this does not grant an executor independent network authority.

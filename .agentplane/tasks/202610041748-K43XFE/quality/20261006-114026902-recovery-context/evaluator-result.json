@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "x",
+      "severity": "high",
+      "summary": "x",
+      "broken_invariant": "x",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610041748-K43XFE/README.md"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Evaluator identity is inferred from the supplied module; the work order could not be read."
+  ],
+  "recovery_context": "Read-only file access failed before execution with 'bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted', including a retry without a login shell. The work order, acceptance criteria, frozen evidence list, diff, and verification evidence could not be inspected. Restore sandbox file access and rerun this evaluator against the frozen work order. No implementation assessment was completed."
+}

@@ -160,6 +160,141 @@ function fixture() {
   return { manifest, root };
 }
 
+function recipeFixture() {
+  const { manifest, root } = fixture();
+  const original = manifest.products.minimal_agent;
+  const source = readFileSync(original.artifact_path, "utf8").replace(
+    'state: "observed", input_tokens: 10, cached_input_tokens: 4, output_tokens: 5, reasoning_tokens: 2, total_tokens: 15',
+    'state: "unavailable", input_tokens: null, cached_input_tokens: null, output_tokens: null, reasoning_tokens: null, total_tokens: null, reason: "offline fixture"',
+  );
+  const product = makeExecutable(root, "m05-product.mjs", source);
+  const reference = {
+    ...original,
+    artifact_path: product.path,
+    artifact_sha256: product.digest,
+    entrypoint: [product.path],
+    entrypoint_sha256: product.digest,
+  };
+  const arms = ["no_recipe", "instantiate", "specialize"];
+  manifest.schema_version = 2;
+  manifest.experiment = "M05";
+  manifest.evidence_scope = "offline_structural";
+  manifest.products = Object.fromEntries(arms.map((arm) => [arm, reference]));
+  Object.assign(manifest.constants, {
+    adapter: "deterministic_fixture",
+    model: "none",
+    reasoning_effort: "none",
+  });
+  manifest.claim_policy = { minimum_paired_successes: 5, disposition: "NOT_ESTABLISHED" };
+  const template = manifest.runs[0];
+  manifest.runs = Array.from({ length: 5 }, (_, index) =>
+    arms.map((arm) => ({
+      ...template,
+      id: `pair-${index}-${arm}`,
+      pair_id: `pair-${index}`,
+      arm,
+      transport: "external",
+      adapter: "deterministic_fixture",
+      model: "none",
+      reasoning_effort: "none",
+      product_source_sha: reference.source_sha,
+      product_artifact_sha256: reference.artifact_sha256,
+    })),
+  )
+    .flat()
+    .map((run, index) => ({ ...run, order: index + 1 }));
+  manifest.randomization_digest = sha256(canonicalBytes(manifest.runs.map((run) => run.id)));
+  return { manifest, root };
+}
+
+test("M05 executes explicit same-product arms offline without provider usage or live authority", async () => {
+  const { manifest, root } = recipeFixture();
+  const evidence = await runPairedProductionCampaign(manifest, {
+    temporaryRoot: path.join(root, "m05"),
+  });
+  assert.equal(evidence.schema_version, 2);
+  assert.equal(evidence.efficiency, "NOT_ESTABLISHED");
+  assert.equal(evidence.attempts.length, 15);
+  assert.ok(
+    evidence.attempts.every(
+      (attempt) => attempt.oracle.verified && attempt.token_usage.state === "unavailable",
+    ),
+  );
+  assert.throws(
+    () => buildPairedResultReport(evidence),
+    /schema_version|unsupported|campaign evidence/u,
+  );
+  let called = false;
+  await assert.rejects(
+    runPairedProductionCampaign(
+      manifest,
+      { mode: "live" },
+      {
+        assertLiveAuthority() {
+          called = true;
+        },
+      },
+    ),
+    /separately approved campaign/u,
+  );
+  assert.equal(called, false);
+});
+
+test("M05 rejects different products, historical arm relabeling and incomplete pilot pairs", () => {
+  const { manifest } = recipeFixture();
+  const changed = structuredClone(manifest);
+  changed.products.instantiate = { ...changed.products.instantiate, source_sha: "f".repeat(40) };
+  assert.throws(() => validatePairedCampaignManifest(changed), /same product/u);
+  const relabelled = structuredClone(manifest);
+  relabelled.runs[0].arm = "candidate";
+  assert.throws(() => validatePairedCampaignManifest(relabelled), /unsupported/u);
+  const short = structuredClone(manifest);
+  short.claim_policy.minimum_paired_successes = 1;
+  assert.throws(() => validatePairedCampaignManifest(short), /cannot claim/u);
+  const version = structuredClone(manifest);
+  version.schema_version = 1;
+  assert.throws(() => validatePairedCampaignManifest(version), /products.minimal_agent/u);
+});
+
+test("M05 retains every assigned crash and malformed-oracle failure with unknown usage", async () => {
+  const { manifest, root } = recipeFixture();
+  const crashed = await runPairedProductionCampaign(
+    manifest,
+    { temporaryRoot: path.join(root, "crashes") },
+    {
+      executeAttempt() {
+        throw new Error("fixture process crashed");
+      },
+    },
+  );
+  assert.equal(crashed.attempts.length, 15);
+  assert.ok(
+    crashed.attempts.every(
+      (attempt) =>
+        !attempt.oracle.verified &&
+        attempt.failure.detail.includes("fixture process crashed") &&
+        attempt.token_usage.total_tokens === null,
+    ),
+  );
+  const malformed = await runPairedProductionCampaign(
+    manifest,
+    { temporaryRoot: path.join(root, "oracle-errors") },
+    {
+      verifyAttempt() {
+        return { verified: true };
+      },
+    },
+  );
+  assert.equal(malformed.attempts.length, 15);
+  assert.ok(
+    malformed.attempts.every(
+      (attempt) =>
+        !attempt.oracle.verified &&
+        attempt.failure.detail.includes("invalid independent oracle evidence"),
+    ),
+  );
+});
+
 test("runs the pinned three-arm task entrypoints offline and keeps transports stratified", async () => {
   const { manifest, root } = fixture();
   const evidence = await runPairedProductionCampaign(manifest, {

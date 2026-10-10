@@ -50,12 +50,8 @@ export function resolveCommonRepoRoot(cwd = ROOT, resolveGit = gitRevParse) {
 }
 
 export function resolveRecipesSourceRoot(cwd = ROOT, options = {}) {
-  const configuredSource = String(
-    options.recipesSource ??
-      options.env?.[RECIPES_SOURCE_ENV] ??
-      process.env[RECIPES_SOURCE_ENV] ??
-      "",
-  ).trim();
+  const env = options.env ?? process.env;
+  const configuredSource = String(options.recipesSource ?? env[RECIPES_SOURCE_ENV] ?? "").trim();
   if (!configuredSource) {
     throw new Error(
       `recipes source is required; pass --recipes-source <path> or set ${RECIPES_SOURCE_ENV} to a checkout of ${RECIPES_REPOSITORY_URL}`,

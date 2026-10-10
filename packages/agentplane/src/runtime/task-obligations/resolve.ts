@@ -52,7 +52,7 @@ function resolveProfile(input: NativeTaskObligationInput, taskKind: string): Nat
   const risks = new Set(input.risk_flags);
   if (
     risks.has("credentials") ||
-    risks.has("security") ||
+    (risks.has("security") && taskKind !== "code") ||
     risks.has("external_system") ||
     risks.has("deploy")
   ) {
@@ -184,7 +184,11 @@ export function resolveNativeTaskObligations(
   const profile = resolveProfile(input, taskKind);
   const modules = uniqueSorted(policyModules({ input, profile }));
   const profileBudget = input.execution_profile.context_budget;
-  const requiredPromptBlocks = PROFILE_REQUIRED_PROMPT_BLOCKS[profile];
+  const securityCode = profile === "code" && input.risk_flags?.includes("security");
+  const requiredPromptBlocks = Math.max(
+    PROFILE_REQUIRED_PROMPT_BLOCKS[profile],
+    securityCode ? PROFILE_REQUIRED_PROMPT_BLOCKS.ops : 0,
+  );
   const rules = stopRules({ input, profile, taskKind });
   if (modules.length > profileBudget.max_policy_modules) {
     rules.push({
@@ -206,6 +210,7 @@ export function resolveNativeTaskObligations(
   }
   const requirements = [
     ...evidenceRequirements(profile, input.selected_mode),
+    ...(securityCode ? evidenceRequirements("ops", input.selected_mode) : []),
     ...contractEvidence(input),
   ];
   return {

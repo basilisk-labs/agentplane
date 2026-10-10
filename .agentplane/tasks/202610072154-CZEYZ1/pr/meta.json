@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202610072154-CZEYZ1/build-frozen-replay-anchors-with-a-separately-ca",
+  "created_at": "2026-10-07T22:43:22.532Z",
+  "diffstat_sha256": "sha256:37f59d8c3aa1d63b8b50b380050b15f189e5ae0b2dafa4d1b68d02ac9b1a2c62",
+  "last_verified_at": "2026-10-08T03:10:48.343Z",
+  "last_verified_diffstat_sha256": "sha256:37f59d8c3aa1d63b8b50b380050b15f189e5ae0b2dafa4d1b68d02ac9b1a2c62",
+  "pr_number": 6064,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6064",
+  "pre_merge_closure": {
+    "basis_commit": "8280de97c28dd4a8171c4da1b2dbf90cc92045ff",
+    "branch": "task/202610072154-CZEYZ1/build-frozen-replay-anchors-with-a-separately-ca",
+    "pr_number": 6064,
+    "recorded_at": "2026-10-08T03:17:21.912Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202610072154-CZEYZ1",
+  "updated_at": "2026-10-08T01:34:50.066Z",
+  "verify": {
+    "status": "pass"
+  }
+}

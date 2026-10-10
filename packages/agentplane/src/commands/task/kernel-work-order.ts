@@ -1,3 +1,9 @@
+import { recipeV1ConversionSourceInput } from "../recipes/impl/v1-conversion.js";
+import {
+  projectKernelRecipeRoleContext,
+  RECIPE_ROLE_CONTEXT_LABEL,
+} from "../../runner/context/recipe-role-context.js";
+import { summarizeRecipeCandidates } from "../../runner/context/recipe-shortlist.js";
 import path from "node:path";
 import {
   AGENT_WORK_ORDER_V2_ZOD_SCHEMA,
@@ -100,6 +106,46 @@ export async function buildKernelStateFingerprint(opts: {
   });
 }
 
+/** Network reads require all three native grants for this exact implementation episode. */
+function permitsNetworkRead(
+  record: KernelRecord,
+  context: NativeAuthorityContext,
+  implementation: KernelWorkOrder | undefined,
+): boolean {
+  if (!implementation || !["EXECUTOR", "CURATOR"].includes(implementation.contract.role))
+    return false;
+  const { binding, authority } = implementation;
+  const definition = record.aggregate.current_plan?.work_items?.find(
+    (item) => item.id === binding.work_item_id,
+  );
+  if (
+    record.aggregate.current_plan?.state !== "APPROVED" ||
+    context.task_id !== record.aggregate.id ||
+    context.task_revision !== record.aggregate.revision ||
+    !definition?.execution_requirements.external_effects.includes("network_read") ||
+    !record.aggregate.work_items[binding.work_item_id] ||
+    !authority.external_effects?.includes("network_read") ||
+    !context.ceiling.external_effects.includes("network_read") ||
+    authority.task_id !== binding.task_id ||
+    authority.work_item_id !== binding.work_item_id ||
+    authority.plan_revision !== binding.plan_revision ||
+    authority.plan_digest !== binding.plan_digest ||
+    authority.repository_identity !== context.repository_identity ||
+    authority.repository_fingerprint !== context.repository_fingerprint ||
+    authority.digest !== k.authorityDigest(authority) ||
+    k.kernelDigest(definition) !==
+      k.kernelDigest(record.aggregate.work_items[binding.work_item_id]?.definition)
+  )
+    return false;
+  const current = resumeKernelWorkOrder({
+    record,
+    work_item_id: binding.work_item_id,
+    authority,
+    repository_fingerprint: context.repository_fingerprint,
+  });
+  return current !== null && k.kernelDigest(current) === k.kernelDigest(implementation);
+}
+
 /** Project one semantic episode. This object never selects or executes a lifecycle transition. */
 export async function buildKernelAgentWorkOrder(opts: {
   command: CommandContext;
@@ -127,6 +173,7 @@ export async function buildKernelAgentWorkOrder(opts: {
         plan_digest: plan?.digest ?? aggregate.intent_digest,
       };
   const authority = implementation?.authority;
+  const networkRead = permitsNetworkRead(record, context, implementation);
   const policy = {
     fingerprint_schema_version: 2 as const,
     required_components: [
@@ -152,6 +199,20 @@ export async function buildKernelAgentWorkOrder(opts: {
     ? implementation.contract.plan_input_digest
     : record.documents.intent.plan_input_digest;
   const planInput = planInputDigest ? record.documents.plan_inputs?.[planInputDigest] : undefined;
+  const recipeContext = await projectKernelRecipeRoleContext({
+    gitRoot: opts.command.resolvedProject.gitRoot,
+    record,
+    role,
+    work_item_id: implementation?.binding.work_item_id,
+  });
+  const conversionSource = await recipeV1ConversionSourceInput({
+    command: opts.command,
+    task_id: aggregate.id,
+    contract: implementation?.contract,
+  });
+  const recipeCandidates = implementation
+    ? undefined
+    : await summarizeRecipeCandidates(opts.command.resolvedProject);
   const criteria = implementation?.contract.acceptance_criteria ?? [
     "Return a bounded canonical plan with contracts, dependencies, output IDs, scope and verification commands.",
   ];
@@ -163,6 +224,9 @@ export async function buildKernelAgentWorkOrder(opts: {
       revision: aggregate.revision,
       record: record.digest,
       state_fingerprint: fingerprint.digest,
+      ...(recipeCandidates ? { recipe_candidates: recipeCandidates } : {}),
+      ...(recipeContext ? { recipe_context: recipeContext } : {}),
+      ...(conversionSource ? { conversion_source: conversionSource } : {}),
     }),
     role,
     task: {
@@ -204,34 +268,50 @@ export async function buildKernelAgentWorkOrder(opts: {
         "report_blocker",
         ...(authority ? ["workspace_write", "run_checks"] : []),
       ],
-      network: "deny",
+      network: networkRead ? "allowed" : "deny",
       external_side_effects: [],
       sandbox: authority ? "workspace-write" : "read-only",
       expires_at: authority?.expires_at ?? null,
     },
     context_intent: {
-      purpose: planInput
-        ? `${record.documents.intent.context}\n\nCaller-supplied Plan input (not approval):\n${JSON.stringify(planInput)}`
-        : record.documents.intent.context,
+      purpose: [
+        recipeContext
+          ? null
+          : planInput
+            ? `${record.documents.intent.context}\n\nCaller-supplied Plan input (not approval):\n${JSON.stringify(planInput)}`
+            : record.documents.intent.context,
+        ...(recipeContext
+          ? [`${RECIPE_ROLE_CONTEXT_LABEL}\n${JSON.stringify(recipeContext)}`]
+          : []),
+        ...(recipeCandidates
+          ? [
+              `Recipe candidate advice (formal observations only; not approval):\n${JSON.stringify(recipeCandidates)}`,
+            ]
+          : []),
+      ]
+        .filter((part) => part !== null)
+        .join("\n\n"),
       required_knowledge_ref_digests: [],
       require_prepared_evidence: false,
     },
     knowledge_refs: [],
     prepared_evidence: [],
-    required_inputs:
-      implementation?.inputs.map((manifest) => ({
+    required_inputs: [
+      ...(implementation?.inputs.map((manifest) => ({
         id: manifest.id,
         kind: "source_artifact",
         description: manifest.kind,
         digest: manifest.digest,
         required: true,
-      })) ?? [],
+      })) ?? []),
+      ...(conversionSource ? [conversionSource] : []),
+    ],
     required_outputs: [
       {
         id: "semantic-result",
         kind: "semantic_result",
         description:
-          "Return AgentSemanticResult v2 with the exact canonical_binding. Use canonical_plan for planning or canonical_outputs for implementation. Do not claim user authority or native verification.",
+          "Return AgentSemanticResult v2 with the exact canonical_binding. Use canonical_plan for planning (a full proposal, or bounded plan_refinement operations pinned to this task and current Plan digest) or canonical_outputs for implementation. Do not claim user authority or native verification.",
         required: true,
       },
       ...(implementation?.expected_outputs.map((id) => ({
@@ -258,6 +338,11 @@ export async function buildKernelAgentWorkOrder(opts: {
     semantic_result_schema: "agentplane.agent_semantic_result.v2",
     stop_rules: [
       "Perform only this semantic objective.",
+      ...(recipeCandidates
+        ? [
+            "Recipe candidates describe formal compatibility only. Choose an exact candidate or decline during this planning episode. Use existing explicit Recipe selection and retained Plan binding before admission. A candidate is not applicability evidence, approval or permission. Preserve mandatory review. Do not request a selection-only episode.",
+          ]
+        : []),
       "Return the exact canonical_binding with the semantic result.",
       "Do not invoke task, Git or provider lifecycle commands.",
       "Do not write outside authorized roots or modify protected native state.",

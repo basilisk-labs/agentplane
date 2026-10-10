@@ -6,7 +6,7 @@ import {
   validateAgentSemanticResultForWorkOrder,
   validateSupervisorExecutionEpisodeJournal,
 } from "@agentplaneorg/core/schemas";
-import { taskKernel as k } from "@agentplaneorg/core/tasks";
+import { taskKernel as k, resolveKernelPlanInput } from "@agentplaneorg/core/tasks";
 import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js";
 import type { TaskData } from "../../backends/task-backend.js";
 import { readStableRegularTextNoFollow } from "../../shared/stable-file.js";
@@ -78,7 +78,13 @@ export async function readKernelPlanningEvidence(command: CommandContext, record
         if (result.status !== "completed") failed.push(digest);
         else if (result.canonical_plan && order.canonical_binding) {
           const proposed = canonicalPlanFromProposal(
-            result.canonical_plan,
+            resolveKernelPlanInput({
+              task_id: taskId,
+              value: result.canonical_plan,
+              current:
+                plans.find((plan) => plan.digest === order.canonical_binding!.plan_digest) ?? null,
+              contracts: record.documents?.contracts ?? {},
+            }),
             order.canonical_binding.plan_revision + 1,
           );
           if (plans.some((plan) => plan.digest === proposed.digest)) accepted.push(digest);

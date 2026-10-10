@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202610041748-K43XFE",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-10-06T20:52:01.051Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 6 typed finding(s).",
+  "evaluated_sha": "d81d6062cb790cff96ad13b9d495dd6dd484f6b4",
+  "review_identity_digest": "sha256:a3f6385a87c9758ef0154cc56e782b321602c52abb39f1049660a47577b2a59f",
+  "findings": [
+    "The previous review finding is resolved in the evaluated product source. All six R8 source blobs exactly match the independently reviewed inventory: consumed/retired exchange issuance stops before journal mutation; duplicate read-only recovery authenticates original WorkOrder/effect/receipt/result/postcondition/progress and fails only the redundant intent through native CAS. Original consumed evidence and canonical lifecycle remain unchanged.",
+    "The composed R6/R7/R8 behavior preserves fresh-state admission, scoped authority, independent review and exact receipt ownership. Native isolated-Git coverage includes interrupted admission, stale state, tampered identities/results, unchanged consumed boundaries, concurrent CAS failure and fresh replacements. Failed completed-task verification returns unchanged source to bounded rework; genuine descendant source returns to verification without fabricated DOING events and without suppressing fresh EVALUATOR rework.",
+    "Recipe V2 parsing and typed single-pass interpolation remain distinct from native applicability observation and authority. Plan compilation uses shared Kernel validators; retained closure and specialization use existing evidence and refinement owners. Reviewed runtime/version/compatibility repairs retain strict candidate and dependency checks, paired local core/recipes installation, scoped CI protection and declared minimum-runtime qualification. Documentation preserves V1 negotiation, ordinary fallback, required independent review and explicit economic limits.",
+    "Fresh native evidence binds the reviewed source to six successful declared checks: schemas, 425 release-critical tests, typecheck, policy routing, doctor and full local CI. The full CI record reports exit0 after2885377ms, including the significant-suite gate. All21 context block digests (17 required), nine frozen evidence references and the exact verification-record hash were checked. HEADb117e3984a5ae07e6f04cd140ef94a59b1b61fbb adds only native task evidence over evaluated sourced81d6062cb790cff96ad13b9d495dd6dd484f6b4. The evaluator inspected source and evidence; no heavy checks were rerun.",
+    "Residual risk: M05/Q02 economic benefit remains NOT_ESTABLISHED. release-disposition.request.json is UNRESOLVED; explicit release-owner measurement disposition is still required before publication. This review neither accepts measurement debt nor grants paid campaign authority.",
+    "Residual risk: Hosted qualification of the final source, main integration, autonomy-task integration, exact0.7.13 candidate/versioning and publication remain downstream native/operator gates. Local correctness PASS does not establish those actions complete."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202610041748-K43XFE/quality/objects/sha256/4870997d706c403706a3501340da9026134224a7141ef41f0fc97cfce3dd4c6b.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

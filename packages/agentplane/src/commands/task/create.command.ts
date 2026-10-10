@@ -1,3 +1,9 @@
+import {
+  readRecipeTaskInput,
+  validateRecipeCreationInput,
+  prepareRecipeTaskInput,
+  recipePreparationMessage,
+} from "./recipe-input.js";
 import path from "node:path";
 import type { CommandCtx, CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
 import { readStableRegularTextNoFollow } from "../../shared/stable-file.js";
@@ -45,6 +51,7 @@ export type TaskCreateParsed = {
   resources: string[];
   base?: string;
   planFile?: string;
+  recipeFile?: string;
   allowDuplicate: boolean;
   json: boolean;
 };
@@ -91,6 +98,13 @@ export const taskCreateSpec: CommandSpec<TaskCreateParsed> = {
     "Validates caller-supplied structured intent. Without it, creates a neutral PLANNER intake boundary without classifying title words.",
   args: [{ name: "outcome", required: true, valueHint: "<outcome>" }],
   options: [
+    {
+      kind: "string",
+      name: "recipe-file",
+      valueHint: "<path>",
+      description:
+        "Prepare an exact Scenario V2 selection through native creation. Returns a retention boundary, never approval. Mutually exclusive with --plan-file.",
+    },
     {
       kind: "string",
       name: "plan-file",
@@ -198,6 +212,16 @@ export const taskCreateSpec: CommandSpec<TaskCreateParsed> = {
     },
   ],
   validateRaw: (raw) => {
+    if (
+      raw.opts["recipe-file"] !== undefined &&
+      (typeof raw.opts["recipe-file"] !== "string" ||
+        !raw.opts["recipe-file"].trim() ||
+        raw.opts["plan-file"] !== undefined)
+    )
+      throw usageError({
+        spec: taskCreateSpec,
+        message: "--recipe-file requires a nonempty path and cannot be combined with --plan-file.",
+      });
     const outcome = typeof raw.args.outcome === "string" ? raw.args.outcome.trim() : "";
     if (!outcome) {
       throw usageError({ spec: taskCreateSpec, message: "Invalid value for outcome: empty." });
@@ -264,6 +288,8 @@ export const taskCreateSpec: CommandSpec<TaskCreateParsed> = {
     resources: Array.isArray(raw.opts.resource) ? (raw.opts.resource as string[]) : [],
     base: typeof raw.opts.base === "string" ? raw.opts.base.trim() : undefined,
     planFile: typeof raw.opts["plan-file"] === "string" ? raw.opts["plan-file"].trim() : undefined,
+    recipeFile:
+      typeof raw.opts["recipe-file"] === "string" ? raw.opts["recipe-file"].trim() : undefined,
     allowDuplicate: raw.opts["allow-duplicate"] === true,
     json: raw.opts.json === true,
   }),
@@ -284,6 +310,14 @@ export function makeRunTaskCreateHandler(
         )
       : undefined;
     const command = await getCtx("task create");
+    const recipeInput = parsed.recipeFile
+      ? await readRecipeTaskInput({
+          root: command.resolvedProject.gitRoot,
+          cwd: ctx.cwd,
+          file: parsed.recipeFile,
+        })
+      : undefined;
+    if (recipeInput) await validateRecipeCreationInput(command, recipeInput);
     const execution = await makeExecutionContext(command);
     throwIfPolicyDecisionDenied(
       execution.policy.evaluate({
@@ -358,7 +392,12 @@ export function makeRunTaskCreateHandler(
         allowDuplicate: parsed.allowDuplicate,
       },
     });
-    const nextCommand = `agentplane task advance ${created.task_id} --agent-json`;
+    const recipePreparation = recipeInput
+      ? await prepareRecipeTaskInput(command, created.task_id, recipeInput)
+      : undefined;
+    const nextCommand = recipePreparation
+      ? `agentplane task plan set ${created.task_id} --recipe-file <recipe-input.json>`
+      : `agentplane task advance ${created.task_id} --agent-json`;
     const semanticIntent = {
       source: intent.source,
       code: intent.code,
@@ -370,17 +409,25 @@ export function makeRunTaskCreateHandler(
     };
     const payload = {
       task_id: created.task_id,
-      status: suppliedPlan ? ("advance_required" as const) : ("semantic_input_required" as const),
+      status:
+        recipePreparation?.prepared.kind ??
+        (suppliedPlan ? ("advance_required" as const) : ("semantic_input_required" as const)),
+      ...(recipePreparation
+        ? {
+            ...recipePreparation,
+            guidance: recipePreparationMessage(recipePreparation.prepared.kind),
+          }
+        : {}),
       semantic_intent: semanticIntent,
       /** @deprecated Compatibility alias for pre-0.7.6 JSON consumers. */
       inferred_intent: semanticIntent,
       execution_route: route,
       execution_contract: executionContract,
-      required_role: suppliedPlan ? null : ("PLANNER" as const),
+      required_role: recipePreparation || suppliedPlan ? null : ("PLANNER" as const),
       next_command: nextCommand,
     };
 
-    if (parsed.json) {
+    if (parsed.json || recipePreparation) {
       output.json(payload);
     } else {
       output.report(

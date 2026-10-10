@@ -18,6 +18,8 @@ import {
   withDryRunReleaseMode,
   writeReleaseNotes,
 } from "@agentplane/testkit/release";
+import { runReleaseCommandExecute } from "./apply.pipeline/mutation.js";
+import type { ReleaseCommandState } from "./apply.types.js";
 import { runReleasePlan } from "./plan.command.js";
 import { runReleaseApply } from "./apply.command.js";
 
@@ -40,6 +42,7 @@ describeWhenNotHook(
           recipesVersion: "0.2.6",
           dependencyVersion: "0.2.6",
           recipesDependencyVersion: "0.2.6",
+          recipesCoreDependencyVersion: "0.2.6",
         });
         await mkdir(path.join(root, "packages", "testkit"), { recursive: true });
         await writeFile(
@@ -118,6 +121,7 @@ describeWhenNotHook(
         const workflowText = await readFile(path.join(root, ".agentplane", "WORKFLOW.md"), "utf8");
         expect(coreText).toContain('"version": "0.2.7"');
         expect(recipesText).toContain('"version": "0.2.7"');
+        expect(recipesText).toContain('"@agentplaneorg/core": "0.2.7"');
         expect(recipesRuntimeText).toContain('RECIPES_VERSION = "0.2.7"');
         expect(agentplaneText).toContain('"version": "0.2.7"');
         expect(agentplaneText).toContain('"@agentplaneorg/core": "0.2.7"');
@@ -272,6 +276,76 @@ describeWhenNotHook(
       );
       expect(committedFiles).toContain("docs/reference/generated-reference.mdx");
     }, 60_000);
+
+    it.each([true, false])(
+      "native mutation keeps recipes/core aligned when edge present=%s and is byte-stable on repeat",
+      async (present) => {
+        const root = await mkGitRepoRoot();
+        await writeDefaultConfig(root);
+        await seedReleaseWorkspace(root, {
+          coreVersion: "0.7.12",
+          recipesCoreDependencyVersion: present ? "0.7.12" : undefined,
+        });
+        const recipesPkgPath = path.join(root, "packages/recipes/package.json");
+        const original = JSON.parse(await readFile(recipesPkgPath, "utf8")) as {
+          version: string;
+          dependencies?: Record<string, string>;
+        };
+        original.dependencies = { ...original.dependencies, zod: "^4.0.0" };
+        await writeFile(recipesPkgPath, `${JSON.stringify(original, null, 2)}\n`);
+        await writeReleaseNotes(root, "0.7.13", validReleaseNotesBody("0.7.13"));
+        await commitAll(root, "seed native mutation fixture");
+        const state: ReleaseCommandState = {
+          resolved: { gitRoot: root, agentplaneDir: path.join(root, ".agentplane") },
+          gitRoot: root,
+          planDir: path.join(root, ".agentplane/.release/plan/fixture"),
+          plan: {
+            prevTag: "v0.7.12",
+            prevVersion: "0.7.12",
+            nextTag: "v0.7.13",
+            nextVersion: "0.7.13",
+            bump: "patch",
+          },
+          notesPath: path.join(root, "docs/releases/v0.7.13.md"),
+          taskBranchPrefix: "task",
+          route: {
+            kind: "direct_release",
+            workflow_mode: "direct",
+            current_branch: "main",
+            base_branch: null,
+          },
+          corePkgPath: path.join(root, "packages/core/package.json"),
+          agentplanePkgPath: path.join(root, "packages/agentplane/package.json"),
+          recipesPkgPath,
+          testkitPkgPath: path.join(root, "packages/testkit/package.json"),
+          npmVersionChecked: false,
+        };
+        const result = await withDryRunReleaseMode(() => runReleaseCommandExecute(state));
+        expect(result.releaseCommit).not.toBeNull();
+        const after = await readFile(recipesPkgPath, "utf8");
+        const recipes = JSON.parse(after) as typeof original;
+        expect(recipes.version).toBe("0.7.13");
+        expect(recipes.dependencies).toEqual({
+          ...(present ? { "@agentplaneorg/core": "0.7.13" } : {}),
+          zod: "^4.0.0",
+        });
+        const parityScript = path.resolve(process.cwd(), "scripts/check-release-parity.mjs");
+        await expect(execFileAsync("node", [parityScript], { cwd: root })).resolves.toBeDefined();
+        await withDryRunReleaseMode(() => runReleaseCommandExecute(state));
+        expect(await readFile(recipesPkgPath, "utf8")).toBe(after);
+
+        if (present) {
+          recipes.dependencies!["@agentplaneorg/core"] = "0.7.12";
+          await writeFile(recipesPkgPath, JSON.stringify(recipes));
+          await expect(execFileAsync("node", [parityScript], { cwd: root })).rejects.toMatchObject({
+            stderr: expect.stringContaining(
+              "@agentplaneorg/core=0.7.12 does not match workspace version 0.7.13",
+            ) as unknown,
+          });
+        }
+      },
+      60_000,
+    );
 
     it(
       "fails when the current package versions drift past the release-plan baseline",

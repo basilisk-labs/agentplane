@@ -10,12 +10,13 @@ const NODE_ENGINE_CONTRACTS = {
   "package.json": ">=24",
   "packages/agentplane/package.json": ">=24",
   "packages/core/package.json": ">=20.5.0",
-  "packages/recipes/package.json": ">=20",
+  "packages/recipes/package.json": ">=20.5.0",
 } as const;
 const DEPCRUISE_SCRIPT_PATH = path.resolve(process.cwd(), "scripts/checks/run-depcruise-arch.mjs");
 
 type WorkflowStep = {
   name?: string;
+  if?: string;
   uses?: string;
   env?: Record<string, unknown>;
   with?: Record<string, unknown>;
@@ -87,7 +88,18 @@ describe("workflow Node runtime contract", () => {
     const setupNodeVersions = (compatibilityJob?.steps ?? [])
       .filter((step) => step.uses?.startsWith("actions/setup-node@"))
       .map((step) => step.with?.["node-version"]);
-    expect(setupNodeVersions).toEqual(["24", "20.5.0", "24", "20.0.0", "24"]);
+    expect(setupNodeVersions).toEqual(["24", "20.5.0", "24", "20.5.0", "24"]);
+    const corePack = compatibilityJob?.steps?.find((step) => step.name === "Build and pack core");
+    expect(corePack?.if).toBe(
+      "needs.plan.outputs.package_runtime_core == 'true' || needs.plan.outputs.package_runtime_recipes == 'true'",
+    );
+    for (const version of ["20.5", "24"]) {
+      const step = compatibilityJob?.steps?.find(
+        (entry) => entry.name === `Exercise recipes public API on Node ${version}`,
+      );
+      expect(step?.if).toBe("needs.plan.outputs.package_runtime_recipes == 'true'");
+      expect(step?.run).toContain('--core-tarball-dir "$RUNNER_TEMP/package-node-runtime/core"');
+    }
     const commands = (compatibilityJob?.steps ?? []).map((step) => step.run ?? "").join("\n");
     expect(commands).toContain("npm pack --json");
     expect(commands).toContain("check-package-node-runtime.mjs");

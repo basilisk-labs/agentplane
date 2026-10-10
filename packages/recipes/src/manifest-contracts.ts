@@ -1,3 +1,4 @@
+import type { RecipeDependencyClosureDeclaration } from "./compiled-contracts.js";
 export type RecipeKind = "project_overlay";
 
 export type RecipeCompatibility = {
@@ -156,6 +157,7 @@ export type ProjectOverlayManifestV2 = {
   tags?: string[];
   compatibility?: RecipeCompatibility;
   requires?: string[];
+  dependency_closure?: RecipeDependencyClosureDeclaration;
   conflicts?: { recipe_id: string; reason: string }[];
   prompts?: OverlayPromptFragment[];
   validators?: OverlayValidator[];

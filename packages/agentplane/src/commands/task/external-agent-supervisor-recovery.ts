@@ -1,3 +1,8 @@
+export { isReadOnlyWorktreeObservation } from "./external-agent-consumed-recovery.js";
+import {
+  recoverConsumedExternalAgentDuplicate,
+  isReadOnlyWorktreeObservation,
+} from "./external-agent-consumed-recovery.js";
 import { requireIntegrationEffectResolution } from "./external-agent-workflow-recovery.js";
 import { isExternalPlanRefinementApplied } from "./external-agent-plan-refinement.js";
 import { access } from "node:fs/promises";
@@ -54,6 +59,7 @@ export async function failRejectedExternalAgentResult(opts: {
       classification: "external_agent_result_application_rejected",
       transition_id: opts.exchange.transition_id,
       result_digest: opts.exchange.result_digest,
+      observed_state_fingerprint: opts.state_fingerprint_digest,
       error_code: opts.error.code,
       error_message: opts.error.message,
     },
@@ -391,7 +397,18 @@ export async function recoverPendingExternalAgentResult(opts: {
   }
   const paths = exchangePathsFromWorkOrderRef(operation.work_order_ref);
   const exchange = await readExternalAgentExchange(paths.exchange);
-  if (exchange?.task_id !== opts.task_id || exchange.status === "consumed") return null;
+  if (exchange?.task_id !== opts.task_id) return null;
+  if (exchange.status === "consumed") {
+    await recoverConsumedExternalAgentDuplicate({
+      journal_path: journalPath,
+      paths,
+      task_id: opts.task_id,
+      checkout:
+        opts.current_decision.executionPacket.mustRunFrom ?? opts.command.resolvedProject.gitRoot,
+      observed_fingerprint: opts.current_decision.workflowStep.preconditionFingerprint.digest,
+    });
+    return null;
+  }
   if (exchange.status === "retired") {
     if (operation.status !== "intent") return null;
     const currentFingerprint = opts.current_decision.workflowStep.preconditionFingerprint.digest;
@@ -460,6 +477,7 @@ export async function recoverPendingExternalAgentResult(opts: {
     journal_path: journalPath,
   });
   const implementationRecoveryRequired =
+    !isReadOnlyWorktreeObservation({ exchange, work_order: workOrder }) &&
     !refinementApplied &&
     requiresImplementationRecoveryReplacement({
       decision: opts.current_decision,

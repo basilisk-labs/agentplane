@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   assertSupportedDeclaredTaskChecks,
   parseDeclaredTaskCheck,
+  parseDeclaredTaskCheckSequence,
   resolveDeclaredTaskCheck,
 } from "./declared-check.js";
 
@@ -67,7 +68,14 @@ describe("declared task check contract", () => {
     ).toThrow(/command 2.*inline shell evaluation/u);
   });
 
-  it.each(["agentplane doctor", "ap doctor", "agentplane task lint", "ap task lint"])(
+  it.each([
+    "agentplane doctor",
+    "ap doctor",
+    "agentplane task lint",
+    "ap task lint",
+    "ap config show",
+    "agentplane config show",
+  ])(
     "resolves the supported AgentPlane read-only alias through the repository binary: %s",
     (command) => {
       const parsed = parseDeclaredTaskCheck(command);
@@ -75,4 +83,50 @@ describe("declared task check contract", () => {
       expect(parsed?.args.slice(1)).toEqual(command.split(" ").slice(1));
     },
   );
+});
+
+describe("bounded verification heap environment", () => {
+  it.each([256, 4096, 8192])("admits heap size %i without changing argv", (size) => {
+    expect(
+      parseDeclaredTaskCheck(
+        `NODE_OPTIONS=--max-old-space-size=${String(size)} bunx --no-install eslint file.ts`,
+      ),
+    ).toEqual({
+      executable: "bun",
+      args: ["x", "--no-install", "eslint", "file.ts"],
+      script: null,
+      env: { NODE_OPTIONS: `--max-old-space-size=${String(size)}` },
+    });
+  });
+  it.each([
+    "NODE_OPTIONS=--max-old-space-size=255 node check.mjs",
+    "NODE_OPTIONS=--max-old-space-size=8193 node check.mjs",
+    "NODE_OPTIONS=--max-old-space-size=-4096 node check.mjs",
+    "NODE_OPTIONS=--max-old-space-size=4096.5 node check.mjs",
+    "NODE_OPTIONS=--max-old-space-size=Infinity node check.mjs",
+    "NODE_OPTIONS=--max-old-space-size=4096",
+    "NODE_OPTIONS='--max-old-space-size=4096 --require=evil.cjs' node check.mjs",
+    "NODE_OPTIONS=--import=evil.mjs node check.mjs",
+    "NODE_OPTIONS=--eval=evil node check.mjs",
+    "NODE_OPTIONS=--max-old-space-size=4096 NODE_OPTIONS=--max-old-space-size=512 node check.mjs",
+    "OTHER=value node check.mjs",
+    "NODE_OPTIONS=--max-old-space-size=4096 env node check.mjs",
+    "NODE_OPTIONS=--max-old-space-size=$(echo 4096) node check.mjs",
+    "NODE_OPTIONS=--max-old-space-size=4096 node check.mjs > out",
+    "NODE_OPTIONS=--max-old-space-size=4096 git reset --hard",
+    "NODE_OPTIONS=--max-old-space-size=4096 bun install",
+    "NODE_OPTIONS=--max-old-space-size=4096 ap config set foo bar",
+    "ap config show --root elsewhere",
+    "agentplane config show extra",
+    "ap task advance task-id",
+  ])("rejects unsafe check %s", (check) => {
+    expect(parseDeclaredTaskCheck(check)).toBeNull();
+  });
+  it("keeps heap overrides on their own sequence segment", () => {
+    const parsed = parseDeclaredTaskCheckSequence(
+      "NODE_OPTIONS=--max-old-space-size=4096 node first.mjs && node second.mjs",
+    );
+    expect(parsed?.[0]?.env).toEqual({ NODE_OPTIONS: "--max-old-space-size=4096" });
+    expect(parsed?.[1]?.env).toBeUndefined();
+  });
 });

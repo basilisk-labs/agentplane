@@ -18,6 +18,8 @@ export const REQUIRED_AGENTPLANE_TARBALL_FILES = Object.freeze([
   "dist/command-catalog/task-read.js",
   "dist/command-help.json",
   "dist/deferred-runtime.js",
+  "dist/recipe-api.d.ts",
+  "dist/recipe-api.js",
 ]);
 
 const DENIED_PREFIXES = Object.freeze([".agentplane/", "src/", "docs/", "scripts/", "website/"]);
@@ -45,6 +47,8 @@ const AGENTPLANE_EXACT_FILES = Object.freeze([
   "dist/command-catalog/task-read.js",
   "dist/command-help.json",
   "dist/deferred-runtime.js",
+  "dist/recipe-api.d.ts",
+  "dist/recipe-api.js",
 ]);
 const LIBRARY_EXACT_FILES = Object.freeze([
   "package.json",

@@ -16,6 +16,18 @@ export const PAIRED_CAMPAIGN_ARMS = Object.freeze([
   "candidate",
 ]);
 export const PAIRED_CAMPAIGN_TRANSPORTS = Object.freeze(["managed", "external"]);
+export const RECIPE_CAMPAIGN_ARMS = Object.freeze(["no_recipe", "instantiate", "specialize"]);
+
+function campaignArms(value) {
+  if (value.schema_version === 1) return PAIRED_CAMPAIGN_ARMS;
+  if (
+    value.schema_version === 2 &&
+    value.experiment === "M05" &&
+    value.evidence_scope === "offline_structural"
+  )
+    return RECIPE_CAMPAIGN_ARMS;
+  throw new Error("Unsupported campaign version or comparison; M05 requires explicit offline v2.");
+}
 
 const SHA_PATTERN = /^[a-f0-9]{40}$/u;
 const DIGEST_PATTERN = /^sha256:[a-f0-9]{64}$/u;
@@ -205,7 +217,7 @@ function validateProduct(product, arm) {
 function validateRunIdentity(run, index, manifest) {
   const label = `runs[${index}]`;
   if (!isRecord(run)) throw new Error(`${label} must be an object.`);
-  if (!PAIRED_CAMPAIGN_ARMS.includes(run.arm)) throw new Error(`${label}.arm is unsupported.`);
+  if (!campaignArms(manifest).includes(run.arm)) throw new Error(`${label}.arm is unsupported.`);
   if (!PAIRED_CAMPAIGN_TRANSPORTS.includes(run.transport)) {
     throw new Error(`${label}.transport is unsupported.`);
   }
@@ -240,9 +252,8 @@ function validateRunIdentity(run, index, manifest) {
 }
 
 export function validatePairedCampaignManifest(value) {
-  if (!isRecord(value) || value.schema_version !== 1) {
-    throw new Error("Paired campaign manifest must use schema_version=1.");
-  }
+  if (!isRecord(value)) throw new Error("Paired campaign manifest must be an object.");
+  const arms = campaignArms(value);
   if (value.kind !== "agentplane.paired_production_campaign") {
     throw new Error("Paired campaign manifest has an unsupported kind.");
   }
@@ -270,7 +281,7 @@ export function validatePairedCampaignManifest(value) {
   };
   if (!isRecord(value.products)) throw new Error("products must be an object.");
   const products = Object.fromEntries(
-    PAIRED_CAMPAIGN_ARMS.map((arm) => [arm, validateProduct(value.products[arm], arm)]),
+    arms.map((arm) => [arm, validateProduct(value.products[arm], arm)]),
   );
   if (!isRecord(value.constants)) throw new Error("constants must be an object.");
   const constants = {
@@ -298,6 +309,21 @@ export function validatePairedCampaignManifest(value) {
   if (constants.network !== "deny") {
     throw new Error("The offline-capable paired campaign must pin network=deny.");
   }
+  if (value.schema_version === 2) {
+    const identity = (product) =>
+      Object.fromEntries(Object.entries(product).filter(([key]) => key !== "arm"));
+    if (arms.some((arm) => !same(identity(products[arm]), identity(products.no_recipe))))
+      throw new Error("M05 treatments must execute the exact same product and entrypoint.");
+    if (
+      constants.adapter !== "deterministic_fixture" ||
+      constants.model !== "none" ||
+      constants.reasoning_effort !== "none" ||
+      value.claim_policy?.disposition !== "NOT_ESTABLISHED" ||
+      !Number.isSafeInteger(value.claim_policy.minimum_paired_successes) ||
+      value.claim_policy.minimum_paired_successes < 5
+    )
+      throw new Error("M05 offline preparation cannot claim provider execution or efficiency.");
+  }
   if (!isRecord(value.verifier)) throw new Error("verifier must be an object.");
   const verifierDigest = exactDigest(value.verifier.artifact_sha256, "verifier.artifact_sha256");
   const verifierPath = assertRegularArtifact(
@@ -323,7 +349,8 @@ export function validatePairedCampaignManifest(value) {
       objective_digest: exactDigest(value.task?.objective_digest, "task.objective_digest"),
       argv: exactStringArray(value.task?.argv, "task.argv"),
     },
-    claim_policy: validateClaimPolicy(value.claim_policy),
+    claim_policy:
+      value.schema_version === 1 ? validateClaimPolicy(value.claim_policy) : value.claim_policy,
     products,
     constants,
     verifier,
@@ -331,7 +358,7 @@ export function validatePairedCampaignManifest(value) {
   if (sha256(normalized.task.objective) !== normalized.task.objective_digest) {
     throw new Error("task.objective does not match task.objective_digest.");
   }
-  if (!Array.isArray(value.runs) || value.runs.length < PAIRED_CAMPAIGN_ARMS.length) {
+  if (!Array.isArray(value.runs) || value.runs.length < arms.length) {
     throw new Error("runs must contain the three campaign arms.");
   }
   normalized.runs = value.runs.map((run, index) => validateRunIdentity(run, index, normalized));
@@ -352,10 +379,16 @@ export function validatePairedCampaignManifest(value) {
     strata.set(key, arms);
   }
   for (const [key, arms] of strata) {
-    if (!same([...arms].toSorted(), [...PAIRED_CAMPAIGN_ARMS].toSorted())) {
+    if (!same([...arms].toSorted(), [...campaignArms(value)].toSorted())) {
       throw new Error(`Paired stratum ${JSON.stringify(key)} must contain each arm exactly once.`);
     }
   }
+  if (
+    value.schema_version === 2 &&
+    (strata.size < value.claim_policy.minimum_paired_successes ||
+      normalized.runs.some((r) => r.transport !== "external"))
+  )
+    throw new Error("M05 structural preparation requires five external fixture pairs.");
   const randomizedRunIds = normalized.runs
     .toSorted((left, right) => left.order - right.order)
     .map((run) => run.id);
@@ -409,13 +442,14 @@ function parseProcessEvidence(result, label) {
   return evidence;
 }
 
-function executeProcess(entrypoint, argv, cwd, env, label) {
+function executeProcess(entrypoint, argv, cwd, env, label, timeout) {
   return parseProcessEvidence(
     spawnSync(entrypoint[0], [...entrypoint.slice(1), ...argv], {
       cwd,
       encoding: "utf8",
       env,
       maxBuffer: 16 * 1024 * 1024,
+      timeout,
     }),
     label,
   );
@@ -510,6 +544,7 @@ async function executeOneRun(manifest, run, fixtureRoot, dependencies, mode) {
     AGENTPLANE_PAIRED_CHECK_IDS: JSON.stringify(run.check_ids),
     AGENTPLANE_PAIRED_RETRY_LIMIT: String(run.retry_limit),
     AGENTPLANE_PAIRED_RUNTIME_PROFILE: JSON.stringify(run.runtime_profile),
+    AGENTPLANE_PAIRED_TARGET_COMMIT: run.target_commit,
   };
   const { agent: agentEvidence, tokenUsage } = validateAgentEvidence(
     await (
@@ -521,10 +556,13 @@ async function executeOneRun(manifest, run, fixtureRoot, dependencies, mode) {
           opts.fixtureRoot,
           opts.env,
           `paired product ${opts.run.id}`,
+          manifest.schema_version === 2 ? 60_000 : undefined,
         ))
     )({ manifest, product, run, fixtureRoot, env }),
     run,
   );
+  if (manifest.schema_version === 2 && tokenUsage.state !== "unavailable")
+    throw new Error("M05 deterministic preparation must not invent provider usage.");
   const oracleEvidence = validateOracleEvidence(
     await (
       dependencies.verifyAttempt ??
@@ -535,6 +573,7 @@ async function executeOneRun(manifest, run, fixtureRoot, dependencies, mode) {
           opts.fixtureRoot,
           opts.env,
           `paired verifier ${opts.run.id}`,
+          manifest.schema_version === 2 ? 60_000 : undefined,
         ))
     )({ manifest, run, fixtureRoot, env, agentEvidence }),
     run,
@@ -572,6 +611,10 @@ export async function runPairedProductionCampaign(value, options = {}, dependenc
   if (!new Set(["offline", "live"]).has(mode)) {
     throw new Error("Paired campaign mode must be offline or live.");
   }
+  if (manifest.schema_version === 2 && mode !== "offline")
+    throw new Error(
+      "M05 live execution requires a separately approved campaign and qualified live owner.",
+    );
   if (mode === "live") {
     if (typeof dependencies.assertLiveAuthority !== "function") {
       throw new TypeError("Live paired campaigns require a trusted external authority check.");
@@ -581,16 +624,65 @@ export async function runPairedProductionCampaign(value, options = {}, dependenc
   assertTargetIdentity(manifest);
   const temporaryRoot = path.resolve(
     options.temporaryRoot ??
-      path.join(manifest.target.repository_path, ".agentplane", "tmp", "paired-production"),
+      path.join(
+        manifest.schema_version === 2 && manifest.target.repository_sha256 !== null
+          ? path.dirname(manifest.target.repository_path)
+          : manifest.target.repository_path,
+        ".agentplane",
+        "tmp",
+        "paired-production",
+      ),
   );
   mkdirSync(temporaryRoot, { recursive: true });
   const runs = [...manifest.runs].toSorted((left, right) => left.order - right.order);
   const attempts = await runCandidateCaptureJobs(runs, options.concurrency ?? 1, async (run) => {
     const fixtureRoot = path.join(temporaryRoot, run.id.replaceAll(/[^A-Za-z0-9_.-]/gu, "_"));
-    return await withDisposableCandidateRepository(
-      fixtureRoot,
-      async () => await executeOneRun(manifest, run, fixtureRoot, dependencies, mode),
-    );
+    const started = performance.now();
+    try {
+      const attempt = await withDisposableCandidateRepository(
+        fixtureRoot,
+        async () => await executeOneRun(manifest, run, fixtureRoot, dependencies, mode),
+      );
+      return manifest.schema_version === 1
+        ? attempt
+        : {
+            ...attempt,
+            host_diagnostics: {
+              kind: "offline_fixture_only",
+              duration_ms: performance.now() - started,
+            },
+          };
+    } catch (error) {
+      if (manifest.schema_version === 1) throw error;
+      // Assigned offline failures stay in the denominator, with unknown usage rather than zero.
+      return {
+        ...run,
+        agent: { status: "failed", stages: [], violations: ["offline_fixture_failure"] },
+        oracle: {
+          verified: false,
+          outcome_digest: null,
+          verifier_digest: run.verifier_digest,
+          duration_ms: null,
+        },
+        token_usage: {
+          state: "unavailable",
+          input_tokens: null,
+          cached_input_tokens: null,
+          output_tokens: null,
+          reasoning_tokens: null,
+          total_tokens: null,
+          reason: "Assigned fixture failed before complete evidence.",
+        },
+        failure: {
+          kind: "offline_fixture_failure",
+          detail: String(error?.message ?? error).slice(0, 2048),
+        },
+        host_diagnostics: {
+          kind: "offline_fixture_only",
+          duration_ms: performance.now() - started,
+        },
+      };
+    }
   });
   const strata = Object.fromEntries(
     PAIRED_CAMPAIGN_TRANSPORTS.flatMap((transport) => {
@@ -599,8 +691,11 @@ export async function runPairedProductionCampaign(value, options = {}, dependenc
     }),
   );
   const payload = {
-    schema_version: 1,
+    schema_version: manifest.schema_version,
     kind: "agentplane.paired_production_campaign_evidence",
+    ...(manifest.schema_version === 2
+      ? { experiment: "M05", evidence_scope: "offline_structural", efficiency: "NOT_ESTABLISHED" }
+      : {}),
     campaign_id: manifest.campaign_id,
     mode,
     manifest_digest: sha256(canonicalBytes(manifest)),
@@ -649,7 +744,15 @@ async function main() {
   }
   const manifest = JSON.parse(readFileSync(options.manifestPath, "utf8"));
   const evidence = await runPairedProductionCampaign(manifest, options);
-  writeFileSync(options.outputPath, canonicalBytes(evidence), { encoding: "utf8", mode: 0o600 });
+  let serialized = canonicalBytes(evidence);
+  if (evidence.schema_version === 2) {
+    const { format, resolveConfig } = await import("prettier");
+    serialized = await format(serialized, {
+      ...(await resolveConfig(options.outputPath)),
+      filepath: options.outputPath,
+    });
+  }
+  writeFileSync(options.outputPath, serialized, { encoding: "utf8", mode: 0o600 });
   process.stdout.write(`${evidence.digest}\n`);
 }
 

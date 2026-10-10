@@ -1,4 +1,5 @@
 import { runProcess, startProcess } from "@agentplaneorg/core/process";
+import { createHash } from "node:crypto";
 import { mkdir, mkdtemp, readFile, rm, symlink } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -32,9 +33,10 @@ export {
 const DEFAULT_CHECK_TIMEOUT_MS = 30 * 60_000;
 const CHECK_TIMEOUT_MS_BY_SCRIPT: Readonly<Record<string, number>> = Object.freeze({
   // Full CI includes four bounded verification waves and a prerequisite build.
-  "ci:local:full": 90 * 60_000,
+  "ci:local:full": 150 * 60_000,
   // Prepublish also runs release-wide suites, coverage, and installed-package smoke checks.
   "release:prepublish": 150 * 60_000,
+  "release:ci-check": 150 * 60_000,
   "e2e:v0.7.1:gate": 150 * 60_000,
 });
 const CHECK_OUTPUT_LIMIT = 4000;
@@ -437,7 +439,19 @@ export async function runDirectTaskVerification(opts: {
       Math.max(...parsedSequence.map((parsed) => directTaskCheckTimeoutMs(parsed.script)));
     const deadline = started + timeoutBudgetMs;
     const env = verificationChildEnv();
-    let runtime = localRuntimeEvidence(parsedSequence[0]!.executable, env);
+    const segmentEvidence = (parsed: (typeof parsedSequence)[number]) => {
+      const childEnv = { ...env, ...parsed.env };
+      const evidence = localRuntimeEvidence(parsed.executable, childEnv);
+      // Bind the effective heap setting as well as normal runtime selection inputs.
+      return {
+        ...evidence,
+        environment_digest: `sha256:${createHash("sha256")
+          .update(JSON.stringify([evidence.environment_digest, childEnv.NODE_OPTIONS ?? ""]))
+          .digest("hex")}`,
+      };
+    };
+    let runtime = segmentEvidence(parsedSequence[0]!);
+    const observedRuntimes: ReturnType<typeof segmentEvidence>[] = [];
     const stdout: string[] = [];
     const stderr: string[] = [];
     let exitCode: number | null = 0;
@@ -475,12 +489,19 @@ export async function runDirectTaskVerification(opts: {
             `Declared check exhausted its ${String(timeoutBudgetMs)}ms timeout budget.`,
           );
         }
-        const segmentRuntime = localRuntimeEvidence(parsed.executable, env);
+        const segmentRuntime = segmentEvidence(parsed);
+        observedRuntimes.push(segmentRuntime);
+        runtime = {
+          ...segmentRuntime,
+          environment_digest: `sha256:${createHash("sha256")
+            .update(JSON.stringify(observedRuntimes))
+            .digest("hex")}`,
+        };
         const processOptions = {
           command: parsed.executable,
           args: parsed.args,
           cwd: isolatedCheckout.cwd,
-          env,
+          env: { ...env, ...parsed.env },
           timeoutMs: remainingTimeoutMs,
           maxBuffer: 1024 * 1024,
           reject: false,
@@ -504,7 +525,6 @@ export async function runDirectTaskVerification(opts: {
         infrastructureFailure =
           segmentRuntime.status === "unavailable" || isVerificationInfrastructureError(executed);
         if (infrastructureFailure || exitCode !== 0 || zeroTests) {
-          runtime = segmentRuntime;
           break;
         }
       }

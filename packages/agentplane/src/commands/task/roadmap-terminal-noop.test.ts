@@ -1,5 +1,6 @@
+import type * as TaskBackend from "../shared/task-backend.js";
 import { execFile } from "node:child_process";
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -12,6 +13,7 @@ if (typeof vi.hoisted !== "function") {
 }
 
 const mocks = vi.hoisted(() => ({
+  loadTerminalTask: vi.fn(),
   applyKernelEffectStep: vi.fn(),
   commitCanonicalTerminalTaskArtifacts: vi.fn().mockResolvedValue(false),
   createKernelRuntime: vi.fn(),
@@ -27,8 +29,15 @@ const mocks = vi.hoisted(() => ({
   recoverKernelOperationalProjection: vi.fn().mockResolvedValue({ kind: "unchanged" }),
 }));
 
+vi.mock("../shared/task-backend.js", async (original) => ({
+  ...(await original<typeof TaskBackend>()),
+  loadTaskFromContext: mocks.loadTerminalTask,
+}));
 vi.mock("./kernel-runtime-context.js", () => ({
-  createKernelRuntime: mocks.createKernelRuntime,
+  createKernelRuntime: async (options: { command: TaskBackend.CommandContext }) => ({
+    ...((await mocks.createKernelRuntime(options)) as Record<string, unknown>),
+    command: options.command,
+  }),
   requireKernelCommit: vi.fn((value: unknown) => value),
 }));
 vi.mock("./kernel-effect-coordinator.js", () => ({
@@ -59,6 +68,8 @@ vi.mock("./kernel-operational-projection-recovery.js", () => ({
   recoverKernelOperationalProjection: mocks.recoverKernelOperationalProjection,
 }));
 
+import { commitCanonicalTerminalTaskArtifacts } from "./kernel-terminal-artifacts.js";
+
 import { advanceTaskStep } from "./advance-task-step.js";
 
 const execFileAsync = promisify(execFile);
@@ -66,7 +77,7 @@ const temporaryRoots: string[] = [];
 
 afterEach(async () => {
   vi.clearAllMocks();
-  mocks.commitCanonicalTerminalTaskArtifacts.mockResolvedValue(false);
+  mocks.commitCanonicalTerminalTaskArtifacts.mockReset().mockResolvedValue(false);
   mocks.executeCanonicalCompletedAgentEpisode.mockResolvedValue(null);
   mocks.executeCanonicalLocalWorkflowOperation.mockResolvedValue(false);
   mocks.restoreKernelFinalValidation.mockResolvedValue(null);
@@ -472,6 +483,84 @@ describe("LC-20 terminal replay", () => {
     expect(mocks.executeCanonicalLocalWorkflowOperation).toHaveBeenCalledWith(
       expect.objectContaining({ decision: localDecision, task_id: "task-1" }),
     );
+    expect(mocks.prepareCanonicalWorkflowEffect).not.toHaveBeenCalled();
+  });
+
+  it("does not stale a published head by persisting subsequent PR refreshes on repeated advances", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-published-terminal-"));
+    temporaryRoots.push(root);
+    const taskId = "202610060918-3FK38R";
+    const prDir = path.join(root, ".agentplane/tasks", taskId, "pr");
+    await mkdir(prDir, { recursive: true });
+    const evidencePath = path.join(root, "evidence.json");
+    await writeFile(evidencePath, '{"status":"accepted"}\n');
+    await writeFile(path.join(prDir, "meta.json"), '{"observed":0}\n');
+    await writeFile(path.join(prDir, "review.md"), "before publication\n");
+    await execFileAsync("git", ["init", "-b", `task/${taskId}/fixture`], { cwd: root });
+    await execFileAsync("git", ["config", "user.name", "Fixture"], { cwd: root });
+    await execFileAsync("git", ["config", "user.email", "fixture@example.com"], { cwd: root });
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "fixture"], { cwd: root });
+    const { runtime, record, apply, input } = completedRuntime();
+    mocks.createKernelRuntime.mockResolvedValue(runtime);
+    mocks.loadTerminalTask.mockResolvedValue({ execution_route: { repository_mode: "branch_pr" } });
+    mocks.commitCanonicalTerminalTaskArtifacts.mockImplementation(
+      commitCanonicalTerminalTaskArtifacts,
+    );
+    const command = {
+      resolvedProject: { gitRoot: root },
+      config: {
+        paths: { workflow_dir: ".agentplane/tasks" },
+        branch: { task_prefix: "task", task_close_prefix: "close" },
+      },
+      git: { invalidateStatus: vi.fn() },
+    } as unknown as TaskBackend.CommandContext;
+    let publishedHead: string | null = null;
+    let publications = 0;
+    mocks.decideCanonicalWorkflowEffect.mockImplementation(async (_command, _task, remote) => {
+      const observed = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+      const head = observed.stdout.trim();
+      return {
+        workspace: {},
+        workflowStep:
+          remote && head !== publishedHead
+            ? { kind: "cli_operation", operation: { id: "pr.head.publish" } }
+            : { kind: "wait", id: "hosted_checks" },
+      };
+    });
+    mocks.advanceCompletedProviderWorkflow.mockImplementation(
+      async ({ decision }: { decision: { workflowStep: { kind: string } } }) => {
+        if (decision.workflowStep.kind === "cli_operation") {
+          publications += 1;
+          const observed = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+          publishedHead = observed.stdout.trim();
+          await writeFile(path.join(prDir, "meta.json"), '{"observed":1}\n');
+          await writeFile(path.join(prDir, "review.md"), "refreshed after publication\n");
+          return { kind: "progress" };
+        }
+        return { kind: "stop", action: { kind: "external_wait", reason: "hosted_checks" } };
+      },
+    );
+    const options = {
+      command,
+      task_id: taskId,
+      transport: "host" as const,
+      allow_provider_effects: true,
+    };
+    await expect(advanceTaskStep(options)).resolves.toMatchObject({
+      action: { reason: "hosted_checks" },
+    });
+    const afterPublication = await repositorySnapshot(root, evidencePath, record);
+    await expect(advanceTaskStep(options)).resolves.toMatchObject({
+      action: { reason: "hosted_checks" },
+    });
+    expect(await repositorySnapshot(root, evidencePath, record)).toEqual(afterPublication);
+    expect(afterPublication.head).toBe(publishedHead);
+    expect(afterPublication.status).toContain("pr/meta.json");
+    expect(publications).toBe(1);
+    expect(apply).not.toHaveBeenCalled();
+    expect(input).not.toHaveBeenCalled();
+    expect(mocks.runKernelFinalValidation).not.toHaveBeenCalled();
     expect(mocks.prepareCanonicalWorkflowEffect).not.toHaveBeenCalled();
   });
 

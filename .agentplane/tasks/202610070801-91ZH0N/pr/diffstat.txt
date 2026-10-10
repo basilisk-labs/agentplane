@@ -1,0 +1,10 @@
+ scripts/checks/check-cli-cold-baseline.mjs         | 173 +++------------------
+ scripts/checks/check-cli-walltime-baseline.mjs     | 169 +++-----------------
+ scripts/generate/render-homebrew-formula.mjs       |  18 +--
+ scripts/generate/render-scoop-manifest.mjs         |  18 +--
+ .../generate/render-setup-agentplane-action.mjs    |  18 +--
+ scripts/lib/cli-baseline-check.mjs                 | 169 ++++++++++++++++++++
+ scripts/lib/cli-baseline-check.test.mjs            | 140 +++++++++++++++++
+ scripts/lib/cli-benchmark-shared.test.mjs          |  20 +++
+ scripts/lib/release-distribution-render.mjs        |  18 +++
+ 9 files changed, 397 insertions(+), 346 deletions(-)

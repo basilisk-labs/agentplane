@@ -1,3 +1,4 @@
+import { mkGitRepoRoot } from "@agentplane/testkit";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -155,7 +156,7 @@ describe("direct task verification", () => {
   );
 
   it("maps checks from the frozen verification diff before persisting their evidence", async () => {
-    const repo = await root();
+    const repo = await mkGitRepoRoot();
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     const task = {
@@ -743,7 +744,7 @@ describe("direct task verification", () => {
       expect.objectContaining({
         command: "bun",
         args: ["run", "ci:local:full"],
-        timeoutMs: 90 * 60_000,
+        timeoutMs: 150 * 60_000,
       }),
     );
     expect(mocks.runProcess).toHaveBeenNthCalledWith(

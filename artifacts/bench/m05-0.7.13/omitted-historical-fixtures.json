@@ -1,0 +1,43 @@
+{
+  "head": "5cb13bad9c219d23eb6a1f291a4d778cece8d862",
+  "mandatory_check": "bun run bench:agent-efficiency:check",
+  "status": "BLOCKED",
+  "files": [
+    {
+      "path": ".agentplane/tasks/202603240826-47V72Z/runs/2026-03-24T08-27-15-593Z/run-state.json",
+      "bytes": 4391,
+      "sha256": "sha256:7b7c93d999fd44ea2c4f4c42c7fcb811ae56d1d5d332431cde577a96764965d0",
+      "index": "S .agentplane/tasks/202603240826-47V72Z/runs/2026-03-24T08-27-15-593Z/run-state.json"
+    },
+    {
+      "path": ".agentplane/tasks/202603240826-47V72Z/runs/2026-03-24T08-27-15-593Z/bundle.json",
+      "bytes": 29148,
+      "sha256": "sha256:2f05a4715e3613b82e8193e3344343fe05bfd81c4a3a60e84d428df7335f77a7",
+      "index": "S .agentplane/tasks/202603240826-47V72Z/runs/2026-03-24T08-27-15-593Z/bundle.json"
+    },
+    {
+      "path": ".agentplane/tasks/202603240826-47V72Z/runs/2026-03-24T08-27-15-593Z/bootstrap.md",
+      "bytes": 1549,
+      "sha256": "sha256:c1057491a6fb4235acf9108cd9056ed5260a762e66f559416ef289aab6a50290",
+      "index": "S .agentplane/tasks/202603240826-47V72Z/runs/2026-03-24T08-27-15-593Z/bootstrap.md"
+    },
+    {
+      "path": ".agentplane/tasks/202603241029-4RY25C/runs/2026-03-24T11-43-02-943Z/run-state.json",
+      "bytes": 6043,
+      "sha256": "sha256:8637933c5e2b9c5301120b8ac72f321ce8f468f590ab5cf547cd1fd1d2842146",
+      "index": "S .agentplane/tasks/202603241029-4RY25C/runs/2026-03-24T11-43-02-943Z/run-state.json"
+    },
+    {
+      "path": ".agentplane/tasks/202603241029-4RY25C/runs/2026-03-24T11-43-02-943Z/bundle.json",
+      "bytes": 30251,
+      "sha256": "sha256:4bfdb081c7bb645029618fe9dd498dd29a59712a5cb2dde433d7f1b27fe04a21",
+      "index": "S .agentplane/tasks/202603241029-4RY25C/runs/2026-03-24T11-43-02-943Z/bundle.json"
+    },
+    {
+      "path": ".agentplane/tasks/202603241029-4RY25C/runs/2026-03-24T11-43-02-943Z/bootstrap.md",
+      "bytes": 1549,
+      "sha256": "sha256:f49944073177a75771b6e19550aa30951681b034d23341c46951cc9b9ab06060",
+      "index": "S .agentplane/tasks/202603241029-4RY25C/runs/2026-03-24T11-43-02-943Z/bootstrap.md"
+    }
+  ]
+}

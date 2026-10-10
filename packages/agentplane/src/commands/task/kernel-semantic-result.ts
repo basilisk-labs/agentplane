@@ -1,6 +1,8 @@
+import { assertRecipeV1ConversionResultClaim } from "../recipes/impl/v1-conversion.js";
+import { validateKernelRecipeBindings } from "./kernel-recipe-admission.js";
 import path from "node:path";
 
-import { kernelPlanProposalSchema, taskKernel as k } from "@agentplaneorg/core/tasks";
+import { resolveKernelPlanInput, taskKernel as k } from "@agentplaneorg/core/tasks";
 import type { KernelCommandInput } from "../../adapters/task-backend/kernel-backend-adapter.js";
 import type { KernelWorkBinding } from "../../runner/usecases/kernel-task-lifecycle.js";
 import { readStableRegularTextNoFollow } from "../../shared/stable-file.js";
@@ -153,7 +155,6 @@ export async function acceptKernelSemanticResult(
   if (binding.phase === "planning") {
     if (semantic.canonical_outputs)
       throw new Error("Planning cannot submit implementation outputs");
-    const proposal = kernelPlanProposalSchema.parse(semantic.canonical_plan);
     const read = await runtime.adapter.read(taskId);
     if (read.kind !== "canonical") throw new Error("Canonical Task unavailable");
     const observation = await runtime.observe();
@@ -163,8 +164,34 @@ export async function acceptKernelSemanticResult(
         observation.fingerprint !== binding.repository_fingerprint)
     )
       throw new Error("Canonical planning result is stale");
+    const proposal = resolveKernelPlanInput({
+      task_id: taskId,
+      value: semantic.canonical_plan,
+      current: saved
+        ? ([read.record.aggregate.current_plan, ...read.record.aggregate.plan_history].find(
+            (plan) => plan?.digest === binding.plan_digest,
+          ) ?? null)
+        : read.record.aggregate.current_plan,
+      contracts: read.record.documents?.contracts ?? {},
+    });
     const plan = canonicalPlanFromProposal(proposal, binding.plan_revision + 1);
     assertCanonicalPlanWithinExecutionContract(read.task, plan);
+    await validateKernelRecipeBindings({
+      command,
+      task: read.task,
+      plan,
+      documents: read.record.documents
+        ? {
+            ...read.record.documents,
+            contracts: {
+              ...read.record.documents.contracts,
+              ...Object.fromEntries(
+                proposal.work_items.map(({ contract }) => [k.kernelDigest(contract), contract]),
+              ),
+            },
+          }
+        : undefined,
+    });
     await writeKernelArtifact(directory, "received-result.json", semantic);
     const input = saved ?? (await runtime.input({ kind: "propose_plan", plan }, mutationId, true));
     await writeKernelArtifact(directory, "command-input.json", input);
@@ -177,6 +204,13 @@ export async function acceptKernelSemanticResult(
   } else {
     if (semantic.canonical_plan) throw new Error("Implementation cannot replace the approved plan");
     if (!semantic.canonical_outputs) throw new Error("Canonical outputs are required");
+    await assertRecipeV1ConversionResultClaim({
+      command,
+      task_id: taskId,
+      contract: { objective: workOrder.task.objective, role: workOrder.role },
+      summary: semantic.summary,
+      outputs: semantic.canonical_outputs,
+    });
     if (!saved) {
       let changedPaths: string[] = [];
       let continueAuthority = false;
@@ -244,11 +278,13 @@ export async function acceptKernelSemanticResult(
         continueAuthority = true;
       }
       await writeKernelArtifact(directory, "received-result.json", semantic);
+      await runtime.native.readContext(taskId);
       const evidence = await commitCanonicalImplementation({
-        command,
+        command: runtime.command,
         directory,
         work_order: workOrder,
         changed_paths: changedPaths,
+        repository_effects: item.definition.execution_requirements.repository_effects,
       });
       if (evidence) await writeKernelArtifact(directory, "repository-evidence.json", evidence);
       if (continueAuthority) requireKernelCommit(await runtime.authority.continue(taskId));

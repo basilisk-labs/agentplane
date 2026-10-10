@@ -1,3 +1,5 @@
+import { gitProofEnv } from "@agentplaneorg/core/git";
+import { execFileAsync } from "@agentplaneorg/core/process";
 import { canonicalizeJson } from "@agentplaneorg/core/tasks";
 import { createHash, randomUUID } from "node:crypto";
 import path from "node:path";
@@ -25,6 +27,7 @@ const EVALUATOR_PACKET_ARTIFACT_SCHEMA = z
       "plan",
       "prompt",
       "result_schema",
+      "recipe_closure",
     ]),
     path: z.string().trim().min(1),
     sha256: z.string().regex(SHA256_PATTERN),
@@ -149,6 +152,7 @@ export async function putEvaluatorEvidenceObject(opts: {
     gitRoot: opts.gitRoot,
     filePath: objectPath,
     label: "Evaluator evidence object",
+    waitForObjectFinalization: true,
     hook: opts.boundaryHook,
   });
   if (sha256(stored) !== digest || !stored.equals(Buffer.from(opts.contents, "utf8"))) {
@@ -314,10 +318,13 @@ export async function readEvaluatorEvidenceObject(opts: {
   gitRoot: string;
   objectRoot: string;
   artifact: unknown;
+  maxBytes?: number;
   boundaryHook?: EvaluatorEvidenceBoundaryHook;
 }): Promise<{ artifact: EvaluatorPacketArtifact; bytes: Buffer }> {
   const artifact = EVALUATOR_PACKET_ARTIFACT_SCHEMA.parse(opts.artifact);
-  const objectPrefix = `${opts.objectRoot.replaceAll(/\/+$/gu, "")}/sha256/`;
+  let end = opts.objectRoot.length;
+  while (end > 0 && opts.objectRoot[end - 1] === "/") end -= 1;
+  const objectPrefix = `${opts.objectRoot.slice(0, end)}/sha256/`;
   if (!artifact.path.startsWith(objectPrefix)) {
     throw new CliError({
       code: "E_VALIDATION",
@@ -333,6 +340,8 @@ export async function readEvaluatorEvidenceObject(opts: {
     gitRoot: opts.gitRoot,
     filePath: artifactPath,
     label: `Evaluator packet artifact ${artifact.logical_name}`,
+    waitForObjectFinalization: true,
+    maxBytes: opts.maxBytes,
     hook: opts.boundaryHook,
   });
   if (bytes.byteLength !== artifact.size_bytes || sha256(bytes) !== artifact.sha256) {
@@ -342,4 +351,68 @@ export async function readEvaluatorEvidenceObject(opts: {
     });
   }
   return { artifact, bytes };
+}
+
+/** Read-only portability proof. The lifecycle owner must commit the object before this succeeds.
+ * The exact bytes must remain in the current tree while retention obligations apply.
+ */
+export async function readCommittedEvaluatorEvidenceObject(opts: {
+  gitRoot: string;
+  objectRoot: string;
+  artifact: unknown;
+  maxBytes: number;
+}): Promise<{ artifact: EvaluatorPacketArtifact; bytes: Buffer; commit: string; blob: string }> {
+  if (!Number.isSafeInteger(opts.maxBytes) || opts.maxBytes < 1)
+    throw new Error("Invalid evidence read budget.");
+  const stored = await readEvaluatorEvidenceObject(opts);
+  const env = {
+    ...gitProofEnv(),
+    GIT_NO_LAZY_FETCH: "1",
+    GIT_TERMINAL_PROMPT: "0",
+    GIT_ALLOW_PROTOCOL: "",
+  };
+  const run = async (args: string[], maxBuffer = 1024 * 1024) => {
+    const result = await execFileAsync("git", args, {
+      cwd: opts.gitRoot,
+      env,
+      encoding: "buffer",
+      maxBuffer,
+      timeout: 30_000,
+    });
+    return result.stdout;
+  };
+  const commitBytes = await run(["rev-parse", "--verify", "HEAD^{commit}"]);
+  const commit = commitBytes.toString("utf8").trim();
+  if (!/^[a-f0-9]{40,64}$/u.test(commit))
+    throw new Error("Cannot prove committed evidence identity.");
+  const treeBytes = await run([
+    "--literal-pathspecs",
+    "ls-tree",
+    "-z",
+    commit,
+    "--",
+    stored.artifact.path,
+  ]);
+  const entries = treeBytes.toString("utf8").split("\0").filter(Boolean);
+  const match =
+    entries.length === 1
+      ? /^(100644|100755) blob ([a-f0-9]{40,64})\t([\s\S]+)$/u.exec(entries[0]!)
+      : null;
+  if (match?.[3] !== stored.artifact.path)
+    throw new Error(
+      `Evidence object is not committed for portable retention: ${stored.artifact.path}`,
+    );
+  const blob = match[2]!;
+  const sizeBytes = await run(["cat-file", "-s", blob]);
+  const size = Number(sizeBytes.toString("utf8").trim());
+  if (!Number.isSafeInteger(size) || size !== stored.bytes.length || size > opts.maxBytes)
+    throw new Error("Committed evidence object size mismatch.");
+  const bytes = await run(["cat-file", "blob", blob], opts.maxBytes);
+  if (!bytes.equals(stored.bytes))
+    throw new Error("Committed evidence object does not match retained bytes.");
+  const finalCommitBytes = await run(["rev-parse", "--verify", "HEAD^{commit}"]);
+  const finalCommit = finalCommitBytes.toString("utf8").trim();
+  if (finalCommit !== commit)
+    throw new Error("Repository changed during evidence retention proof.");
+  return { ...stored, commit, blob };
 }

@@ -1,3 +1,5 @@
+import { resolveKernelPolicyBaseline } from "./kernel-policy-baseline.js";
+import { validateKernelRecipeBindings } from "./kernel-recipe-admission.js";
 import { writeKernelArtifact } from "./kernel-exchange.js";
 import { readStableRegularTextNoFollow } from "../../shared/stable-file.js";
 import path from "node:path";
@@ -63,7 +65,8 @@ export async function createKernelRuntime(opts: {
   operation_id: string;
   approval?: NativeApprovalObservation;
 }) {
-  const ctx = opts.command;
+  const ctx = { ...opts.command, config: structuredClone(opts.command.config) };
+  const liveConfig = structuredClone(ctx.config);
   const identity = (await resolveLogicalRepositoryIdentity({
     git_root: ctx.resolvedProject.gitRoot,
     task: {},
@@ -101,6 +104,13 @@ export async function createKernelRuntime(opts: {
       if (read.kind !== "canonical" && read.kind !== "missing")
         throw new Error(`Canonical mutation requires explicit migration: ${read.kind}`);
       const aggregate = read.kind === "canonical" ? read.record.aggregate : null;
+      if (read.kind === "canonical" && aggregate?.current_plan?.state !== "REJECTED")
+        await validateKernelRecipeBindings({
+          command: ctx,
+          task: read.task,
+          plan: aggregate?.current_plan ?? null,
+          documents: read.record.documents,
+        });
       const items = aggregate?.current_plan?.work_items ?? [];
       const union = (key: keyof k.ExecutionRequirements) =>
         [...new Set(items.flatMap((item) => item.execution_requirements[key]))].toSorted();
@@ -124,9 +134,23 @@ export async function createKernelRuntime(opts: {
           ]),
         ],
       };
-      const policyFiles = repository.files.filter(
-        (file) => file.path === "AGENTS.md" || file.path.startsWith(".agentplane/policy/"),
-      );
+      // Explicit operator approval must observe current policy. This only supplies
+      // observations; the authority resolver still validates and issues the approval.
+      // In particular, the policy-renewal route must not renew the frozen digest.
+      const explicitPolicyApproval =
+        opts.transport === "manual" &&
+        opts.operation_id === `approve:${opts.task_id}` &&
+        opts.approval?.kind === "manual_operator" &&
+        /^USER(?::[A-Za-z0-9._@-]+)?$/u.test(opts.approval.actor_id);
+      const policy = await resolveKernelPolicyBaseline({
+        root: ctx.resolvedProject.gitRoot,
+        observation_directory: observationDir,
+        config: liveConfig,
+        repository,
+        approved: explicitPolicyApproval ? undefined : approved,
+        items,
+      });
+      ctx.config = policy.config;
       return {
         task_id: taskId,
         task_revision: aggregate?.revision ?? 0,
@@ -165,7 +189,7 @@ export async function createKernelRuntime(opts: {
                 ),
               ),
             ].toSorted(),
-          policy_digests: [k.kernelDigest({ config: ctx.config, files: policyFiles })],
+          policy_digests: [policy.digest],
           completion_requirements: ["work_item_validation", "final_validation"],
           risk: contractCeiling?.risk ?? {
             requirements: "bounded",
@@ -274,5 +298,5 @@ export async function createKernelRuntime(opts: {
       mutation_id: mutationId,
     };
   }
-  return { adapter, lifecycle, authority, native, observe, checkpoint, input };
+  return { command: ctx, adapter, lifecycle, authority, native, observe, checkpoint, input };
 }

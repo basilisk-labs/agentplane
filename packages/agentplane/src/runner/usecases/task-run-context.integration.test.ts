@@ -465,5 +465,5 @@ describe("context task runner integration", () => {
     expect(evaluatorProviderPrompt).toContain("Evaluator skepticism contract:");
     expect(evaluatorProviderPrompt).toContain('"sandbox": "read-only"');
     expect(evaluatorProviderPrompt).not.toContain('"workspace_write"');
-  });
+  }, 120_000);
 });

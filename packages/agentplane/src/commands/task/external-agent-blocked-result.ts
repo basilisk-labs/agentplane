@@ -1,3 +1,4 @@
+import { canonicalBlockerProjection } from "./kernel-completed-external-blocker.js";
 import { runProcess } from "@agentplaneorg/core/process";
 
 import { CliError } from "../../shared/errors.js";
@@ -78,6 +79,12 @@ export async function isExternalBlockedResultRecorded(opts: {
   exchange: ExternalAgentExchange;
   semantic: ExternalAgentResultEnvelope["result"];
 }): Promise<boolean> {
+  const canonical = await canonicalBlockerProjection({
+    ...opts,
+    body: blockedResultBody(opts),
+    pending: scopeExtensionState(opts),
+  });
+  if (canonical !== null) return canonical;
   const task = await loadTaskFromContext({ ctx: opts.command, taskId: opts.exchange.task_id });
   const receipt = externalBlockedResultReceipt(opts);
   return Boolean(
@@ -263,6 +270,16 @@ export async function recordExternalBlockedResult(opts: {
   exchange: ExternalAgentExchange;
   semantic: ExternalAgentResultEnvelope["result"];
 }): Promise<void> {
+  const canonical = await canonicalBlockerProjection({
+    ...opts,
+    body: blockedResultBody(opts),
+    pending: scopeExtensionState(opts),
+    persist: true,
+  });
+  if (canonical !== null) {
+    await commitExternalBlocker({ command: opts.command, exchange: opts.exchange });
+    return;
+  }
   if (!(await isExternalBlockedResultRecorded(opts))) {
     const task = await loadTaskFromContext({ ctx: opts.command, taskId: opts.exchange.task_id });
     const reopenDone = requiresImplementationReworkReopen({

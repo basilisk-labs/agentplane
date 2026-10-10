@@ -1,89 +1,144 @@
 ---
 title: "Recipes development"
-description: "Practical workflow for authoring and validating recipes."
+description: "Author strict Scenario V2 input for the native Task Kernel."
 ---
 
-## Authoring checklist
+## Recipe authoring contract in 0.7.13
 
-1. Create recipe directory with `manifest.json`.
-2. Add `agents/` and `skills/` as markdown-first assets; keep JSON only where structure is required.
-3. Add `tools/` and `scenarios/` only when needed.
-4. Keep ids stable (`recipe id`, `tool id`, `scenario id`).
-5. Document required env keys in recipe README.
-6. Keep outputs deterministic and machine-readable.
+A Recipe supplies reusable strategy and guidance. A Scenario V2 compiles into the existing compact
+Plan; the sole Task Kernel owns approval, scheduling, execution, evidence and completion. Recipes
+have no independent task state, retry loop, approval field or workflow engine. Ordinary tasks work
+without any Recipe.
 
-## Minimal local validation
+Use the checked-in [example package](../examples/recipes-v2/manifest.json),
+[Scenario V2](../examples/recipes-v2/scenario.json),
+[role guidance](../examples/recipes-v2/agent.md) and
+[explicit selection](../examples/recipes-v2/selection.json) together. The example requests a
+read-only source report. It does not grant `task.verify` or observe that capability itself.
 
-1. Build archive (`.tar.gz` or `.zip`).
-2. Cache locally:
-   - `agentplane recipes install --path <archive>`
-3. Verify cache visibility:
-   - `agentplane recipes list`
-4. Vendor the recipe into a project:
-   - `agentplane recipes add <id>`
-5. Inspect project-local state:
-   - `agentplane recipes active`
-   - `agentplane recipes explain <id>`
-6. Confirm recipe-owned scenario assets stay internal and are not documented as a public CLI flow.
-7. Confirm no additional runtime assumptions leaked into docs or tests.
-8. Update the relevant recipe docs when public behavior changes.
+## Strict structure and negotiation
 
-## Updating the AgentPlane inventory
+The scenario has string `schema_version: "2"`, stable `id`, `goal`, `parameters`, `applicability`
+and `plan_template`. Only `summary` and `description` are optional top-level descriptive fields.
+Unknown fields, including `steps`, `approval` and a separate lifecycle, are rejected. The nested
+compact Plan uses numeric `schema_version: 2`, criteria, checks and WorkItems; it is the shared
+Plan schema, not a Recipe-specific graph. Multiple WorkItems must retain explicit validation
+references. Producer-input edges and ordinary dependency edges share native cycle validation.
 
-The recipe catalog is maintained in the independent
-[`basilisk-labs/agentplane-recipes`](https://github.com/basilisk-labs/agentplane-recipes)
-repository. AgentPlane does not require it as a Git submodule. Use an explicit checkout when you
-regenerate or verify the documentation inventory:
+Manifest API and Scenario API are separate contracts. Declare `manifest_api_version: "2"` and
+`scenario_api_version: "2"` when using this example, with runtime API `"1"`. A reader must
+explicitly negotiate Scenario API 2. The historical default V1 parser does not reinterpret V2.
+Manifest V1 and legacy scenario records remain readable through their existing compatibility path.
+
+## Typed parameters and interpolation
+
+Declare unique names with type `string`, `repo_path`, `integer` or `boolean`, explicit `required`,
+and an optional correctly typed default. Bindings are a list of `{name, value}` pairs so duplicate
+names cannot disappear during object construction. Unknown, duplicate, missing required and
+wrong-type bindings stop preparation. Integers must be safe integers; strings are not coerced to
+booleans or numbers.
+
+`{{name}}` substitution is one pass in supported semantic and path fields. A nested or unresolved
+placeholder is rejected. Command text, check/capability IDs, WorkItem/dependency IDs and output IDs
+cannot be templated. A path field requires a `repo_path` binding. Absolute paths, drive/UNC paths,
+traversal and repository escapes are rejected. Native filesystem checks also enforce containment
+through symlink ancestors and at use time; syntactic parser success alone is not filesystem authority.
+
+For example, `source: "README.md"` is a path binding; `source: "../outside"` is invalid.
+An `audience` value containing `{{source}}` is rejected instead of recursively substituted.
+Never put secrets in parameters or retained package bytes; use references resolved by existing
+secret owners under native authority.
+
+## Applicability and formal selection
+
+Supported predicates are `path_exists`, `capability_available` and `observed_value_equals`.
+Required predicates must be true; excluded predicates must be false. Unknown observations block
+preparation and return precise evidence needs. Caller booleans and agent assertions are not
+supervisor observations. Capability/value facts come from trusted native owners; unsupported facts
+remain unknown. Serializable provenance records what was observed but does not create replay authority.
+
+Explicit selection pins installed recipe ID, version, scenario ID and negotiated API. Missing,
+ambiguous or incompatible selections fail; there is no nearest-version or model-inferred selector.
+A formal shortlist may be advisory context for an already-required PLANNER. No match does not
+create a PLANNER obligation when the ordinary supplied Plan is already sufficient. An explicit
+failed selection is not silently replaced by an inline Plan or the latest package.
+
+## Pinned closure and offline recovery
+
+Declare transitive guidance, tool, helper and asset dependencies in `dependency_closure`. Pin the
+entrypoint and its package inventory/digest, not just one script. Undeclared package files, missing
+bindings and unknown dependency closure fail closed. The compiler does not claim universal dynamic
+import analysis. It excludes unrelated catalogue assets and never runs tool entrypoints to prepare
+or preview a Plan. The example needs only its scenario, role guidance and `task.verify` binding.
+
+Retain one immutable closure through the existing task evidence owner. Commit the portable retained
+artifact at the native owner boundary before admission; an untracked Git-common-dir cache is not
+portable proof. A fresh offline clone can recover the exact old scenario, guidance, helper and
+binary bytes even after catalogue update or removal. Missing or tampered retained bytes stop
+recovery. Do not fetch latest as a substitute. Live-source `assertUnchanged` detects same-inode
+rewrites and inventory additions; legitimate retained historical bytes are a different, explicit path.
+Trust revocation still blocks native approval/dispatch even when old bytes exist. Rebind changed
+dependencies before approval through the ordinary reject/propose path; existing approval cannot be
+reused for a changed Plan or repository baseline.
+
+## Native intake and bounded specialization
+
+After explicit package review, local installation and vendoring use the existing owners:
 
 ```bash
-git clone https://github.com/basilisk-labs/agentplane-recipes.git ../agentplane-recipes
-AGENTPLANE_RECIPES_SOURCE=../agentplane-recipes bun run docs:recipes:generate
-AGENTPLANE_RECIPES_SOURCE=../agentplane-recipes bun run docs:recipes:check
+agentplane recipes install --path ./docs-report.tar.gz
+agentplane recipes add docs-report@1.0.0
+agentplane recipes active
+agentplane recipes explain docs-report
+agentplane recipes preview-v2 selection.json
 ```
 
-`--recipes-source <path>` is also accepted by the generator. The configured directory must contain
-the catalog `index.json` and `recipes/` directory. When the check command has no configured source,
-it creates a temporary read-only shallow clone and removes it after comparison. Runtime recipe
-installation remains independent: it reads the signed public catalog and verifies published recipe
-archives.
+Use the generated [CLI reference](../user/cli-reference.generated) for exact preview options.
+For task intake, [selection.json](../examples/recipes-v2/selection.json) is input, not authority:
 
-## Designing scenarios
+```bash
+agentplane task create "Report source facts" --task-kind analysis --mutation-scope none --recipe-file selection.json --json
+agentplane task plan set <task-id> --recipe-file selection.json --json
+agentplane task advance <task-id> --agent-json
+```
 
-- Keep the manifest-level descriptor self-sufficient for selection.
-- Keep internal scenario files explicit and forward-compatible with future agent execution.
-- Explicitly define expected outputs, required inputs, and failure messages.
-- Do not hide required inputs behind implicit defaults.
-- Keep `use_when` descriptive, but rely on structured fields for deterministic selection.
-- Every executable scenario must define `task_template`; do not synthesize task title, owner, or verification steps implicitly.
-- Use `task_template.doc.*` only for task seeding. Do not treat it as a second execution language.
+Creation and Plan replacement are alternative intake points, not a sequence to repeat blindly.
+The native response identifies missing bindings, observation needs or an explicit portable-retention
+commit boundary. Follow that response; do not mark a prepared Plan approved. Once admitted, the
+same 0.7.12 planning-obligation rules, USER approval and mandatory independent EVALUATOR apply.
 
-## Designing tools
+Formal instantiation is deterministic. A semantic gap requires bounded specialization through the
+existing PLANNER/result path, with exact task/base-Plan/source binding and native result admission.
+An agent cannot approve its own proposal or replace observations with booleans. Refinement preserves
+mandatory outputs, criteria and checks and completed WorkItem history. Large departures require a
+full proposal. Role-relevant retained guidance remains advisory; managed restarts preserve native
+constraints, applicability needs, stop rules and deviations rather than duplicating the full manifest.
 
-- Declare minimal permissions in manifest.
-- Keep tool side effects inside project-local directories when possible.
-- Prefer stable stdout/stderr output formats for downstream automation.
-- Exit non-zero on failures and include actionable error text.
-- Assume live execution happens through normal task materialization and a repository agent; do not promise a separate public scenario CLI.
-- Do not rely on CLI-side interpretation of recipe `steps`; the assigned agent receives them as context, not as an imperative DSL.
+## V1 audit and conversion
 
-## Distribution and upgrades
+The [unsupported V1 example](../examples/recipes-v2/legacy-unsupported.json) deliberately includes
+ordered custom steps and a mandatory stop. Preview is pure and preserves exact bytes/digest; it does
+not run the `command` value or invent WorkItems from prose. Overlay-only V1 packages remain overlays.
+Metadata with exact mappings can be audited, but untyped inputs, steps, outputs and task defaults
+require explicit semantic decisions. Unsupported semantics remain unresolved or produce a blocker.
 
-- Bump recipe version on each behavioral change.
-- Keep backward-compatible upgrades when possible.
-- Avoid removing scenario ids without migration path.
-- Keep remote catalog signatures on the production `key_id` trusted by the current Agentplane CLI.
-- Store the recipes signing private key only in the `agentplane-recipes` GitHub Actions secret
-  `RECIPES_INDEX_SIGNING_PRIVATE_KEY`; do not put it in `.env`, repository files, release assets, or
-  long-lived local key paths.
-- Rotate signing keys by adding the new public key to Agentplane, publishing a CLI release with that
-  trust-root, and only then switching the default remote catalog signature to the new `key_id`.
+Bounded conversion uses the installed `agentplane/recipes` preparation helpers, then an existing
+native CURATOR WorkItem and independent EVALUATOR. Source bytes, audit, draft and accepted result
+must bind the same task/WorkItem; a claimed review boolean or stale/cross-task result is rejected.
+A reviewed V2 candidate still enters ordinary Plan intake and approval. There is no conversion
+lifecycle or automatic execution of legacy `steps`.
 
-## Integration notes
+## Validation and measured limits
 
-- `recipes install` populates only the global cache; it does not make a recipe active for a project.
-- `recipes add` vendors a cached recipe into `.agentplane/recipes/packages/<id>/` and records authority in `.agentplane/recipes/registry.json`.
-- Recipe-local agents stay inside `.agentplane/recipes/packages/<id>/agents/`; they are not installed into `.agentplane/agents`.
-- Runtime reads vendored project-local recipes only; generated overlay/assets files are derived from the project registry.
-- Internal recipe-owned task materialization creates a normal task with recipe provenance for an assigned repository agent.
-- Validate both cache install and project vendoring flows before release.
-- Use extension recipes for non-core integrations (for example Dokploy or custom external APIs).
+Run `bun run docs:recipes:examples:check <installed-project-root>` from this repository after installing packed core and recipes artifacts into that isolated project. The validator refuses source-workspace resolution.
+
+The example validator imports the installed `@agentplaneorg/recipes` public export and checks the
+actual JSON examples, V1/V2 negotiation, parameter/path negatives and exact-byte V1 audit. Schema
+mirror checks alone do not execute those examples. Installed native retention, fresh-clone removal,
+tamper, specialization and independent-conversion flows are qualified by the RC16 installed matrix;
+they are not inferred from parser success.
+
+M05 has 75 offline structural outcomes and 21 focused tests, with **NOT ESTABLISHED** economic
+benefit. Deterministic fixture specialization is not measured semantic model work. Setup and unknown
+provider/host cost are not free. The [M05 report](../releases/v0.7.13-m05.md) preserves failed attempts
+and the unresolved release-owner measurement-debt choice. No 0.7.14 evaluator omission is enabled.

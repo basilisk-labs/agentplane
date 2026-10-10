@@ -58,7 +58,9 @@
     "dist/deferred-runtime.js",
     "assets",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "dist/recipe-api.js",
+    "dist/recipe-api.d.ts"
   ],
   "publishConfig": {
     "access": "public",
@@ -86,5 +88,14 @@
   "devDependencies": {
     "@agentplane/testkit": "0.0.0",
     "@types/yauzl": "^3.4.0"
+  },
+  "exports": {
+    "./recipes": {
+      "types": "./dist/recipe-api.d.ts",
+      "import": "./dist/recipe-api.js",
+      "default": "./dist/recipe-api.js"
+    },
+    "./package.json": "./package.json",
+    "./*": "./*"
   }
 }

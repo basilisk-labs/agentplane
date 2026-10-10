@@ -152,6 +152,8 @@ Field names and casing are exact. Optional fields are omitted when no value is a
   - [recipes install](#recipes-install)
   - [recipes list](#recipes-list)
   - [recipes list-remote](#recipes-list-remote)
+  - [recipes preview-v1](#recipes-preview-v1)
+  - [recipes preview-v2](#recipes-preview-v2)
   - [recipes remove](#recipes-remove)
   - [recipes update](#recipes-update)
 - ACR
@@ -607,6 +609,7 @@ agentplane task create <outcome> [options]
 
 Options:
 
+- `--recipe-file <path>`: Prepare an exact Scenario V2 selection through native creation. Returns a retention boundary, never approval. Mutually exclusive with --plan-file.
 - `--plan-file <path>`: Read an existing compact v2 or full v1 Plan proposal. This input never grants approval.
 - `--description <text>`: Additional task context. Defaults to the requested outcome.
 - `--owner <id>`: Task owner id. (default=CODER)
@@ -819,6 +822,7 @@ agentplane task plan set <task-id> [options]
 
 Options:
 
+- `--recipe-file <path>`: Prepare an exact V2 selection or propose its committed retained closure. Never approves or executes work. Exclusive with --file/--text.
 - `--text <text>`: Plan text to write into the task README Plan section. Literal escaped newlines (\n) are normalized for inline text.
 - `--file <path>`: Read plan text from a file path (relative to cwd).
 - `--updated-by <id>`: Optional. Sets doc_updated_by when writing the plan.
@@ -2915,6 +2919,28 @@ agentplane recipes list-remote --index ./index.json --refresh
 ```
 
 - Refresh from a local index file.
+
+### recipes preview-v1
+
+Audit exact local V1 bytes without installing, converting procedures or creating a Task.
+
+Usage:
+
+```text
+agentplane recipes preview-v1 <repository-relative-file>
+```
+
+### recipes preview-v2
+
+Preview an exact installed V2 selection without creating a Task, retaining artifacts or granting approval.
+
+Read a JSON object with schema_version 1, kind "selected_recipe", selection {recipe_id, optional recipe_version, scenario_id, scenario_api_version: "2"}, and bindings [{name, value}]. This previews formal parameter expansion only. Task intent, applicability, dependency retention, Plan validation and USER approval remain native task boundaries.
+
+Usage:
+
+```text
+agentplane recipes preview-v2 <recipe-input.json>
+```
 
 ### recipes remove
 

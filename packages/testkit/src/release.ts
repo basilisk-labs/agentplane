@@ -133,6 +133,8 @@ type ReleaseWorkspaceOptions = {
   recipesVersion?: string;
   dependencyVersion?: string;
   recipesDependencyVersion?: string;
+  /** Opt in to the Recipe V2 dependency; legacy fixtures intentionally omit it. */
+  recipesCoreDependencyVersion?: string;
   extraDependencies?: Record<string, string>;
   extraWorkspacePackages?: {
     relDir: string;
@@ -173,6 +175,9 @@ export async function seedReleaseWorkspace(
   await writePackageJson(root, "packages/recipes", {
     name: "@agentplaneorg/recipes",
     version: recipesVersion,
+    ...(opts.recipesCoreDependencyVersion === undefined
+      ? {}
+      : { dependencies: { "@agentplaneorg/core": opts.recipesCoreDependencyVersion } }),
   });
   await mkdir(path.join(root, "packages", "recipes", "src"), { recursive: true });
   await writeFile(

@@ -2,6 +2,7 @@ import { constants, type BigIntStats } from "node:fs";
 import { randomUUID } from "node:crypto";
 import { link, lstat, mkdir, open, realpath, rename, unlink } from "node:fs/promises";
 import path from "node:path";
+import { setTimeout as delay } from "node:timers/promises";
 
 import { CliError } from "../../shared/errors.js";
 
@@ -16,6 +17,7 @@ type FileSnapshot = Identity & {
 };
 
 type EvaluatorEvidenceBoundaryPhase =
+  | "before_object_finalization_wait"
   | "before_artifact_open"
   | "after_artifact_open"
   | "before_object_staging_open"
@@ -262,11 +264,52 @@ async function removeStableFile(opts: {
   await opts.boundary.assertStable("after staging cleanup");
 }
 
+// A successful hard-link publication has two names until its publisher removes staging.
+// Other processes may already see that inode. Wait before taking the read snapshot,
+// because removing the staging name changes ctime even though the bytes are immutable.
+async function awaitFinalizedObject(opts: {
+  boundary: DirectoryBoundary;
+  filePath: string;
+  label: string;
+  initial: BigIntStats;
+  hook?: EvaluatorEvidenceBoundaryHook;
+}): Promise<BigIntStats> {
+  let current = opts.initial;
+  const deadline = performance.now() + 10_000;
+  while (current.nlink !== 1n) {
+    if (current.nlink !== 2n || performance.now() >= deadline) {
+      throw boundaryError(`${opts.label} publication did not finalize: ${opts.filePath}`);
+    }
+    await checkpoint({
+      phase: "before_object_finalization_wait",
+      targetPath: opts.filePath,
+      hook: opts.hook,
+      boundaries: [opts.boundary],
+    });
+    await delay(10);
+    const next = await lstat(opts.filePath, { bigint: true });
+    assertRegular(next, opts.filePath, opts.label);
+    if (
+      !sameIdentity(identity(current), identity(next)) ||
+      current.size !== next.size ||
+      current.mtimeNs !== next.mtimeNs ||
+      (next.nlink === 2n && !sameSnapshot(snapshot(current), snapshot(next)))
+    ) {
+      throw boundaryError(`${opts.label} changed during publication: ${opts.filePath}`);
+    }
+    current = next;
+  }
+  await opts.boundary.assertStable("after object publication finalized");
+  return current;
+}
+
 export async function readStableEvaluatorEvidenceFile(opts: {
   gitRoot: string;
   filePath: string;
   label: string;
   hook?: EvaluatorEvidenceBoundaryHook;
+  maxBytes?: number;
+  waitForObjectFinalization?: boolean;
 }): Promise<Buffer> {
   const boundary = await captureDirectoryBoundary({
     gitRoot: opts.gitRoot,
@@ -274,8 +317,11 @@ export async function readStableEvaluatorEvidenceFile(opts: {
     label: `${opts.label} parent`,
     create: false,
   });
-  const pathBefore = await lstat(opts.filePath, { bigint: true });
+  let pathBefore = await lstat(opts.filePath, { bigint: true });
   assertRegular(pathBefore, opts.filePath, opts.label);
+  if (opts.waitForObjectFinalization) {
+    pathBefore = await awaitFinalizedObject({ ...opts, boundary, initial: pathBefore });
+  }
   const expected = snapshot(pathBefore);
   await checkpoint({
     phase: "before_artifact_open",
@@ -296,7 +342,27 @@ export async function readStableEvaluatorEvidenceFile(opts: {
       hook: opts.hook,
       boundaries: [boundary],
     });
-    const contents = await handle.readFile();
+    let contents: Buffer;
+    if (opts.maxBytes === undefined) contents = await handle.readFile();
+    else {
+      if (
+        !Number.isSafeInteger(opts.maxBytes) ||
+        opts.maxBytes < 0 ||
+        before.size > BigInt(opts.maxBytes)
+      )
+        throw boundaryError(`${opts.label} exceeds its read budget.`);
+      const chunks: Buffer[] = [];
+      let size = 0;
+      for (;;) {
+        const chunk = Buffer.allocUnsafe(Math.min(64 * 1024, opts.maxBytes - size + 1));
+        const { bytesRead } = await handle.read(chunk, 0, chunk.length, null);
+        if (bytesRead === 0) break;
+        size += bytesRead;
+        if (size > opts.maxBytes) throw boundaryError(`${opts.label} exceeds its read budget.`);
+        chunks.push(chunk.subarray(0, bytesRead));
+      }
+      contents = Buffer.concat(chunks, size);
+    }
     const after = await handle.stat({ bigint: true });
     if (!sameSnapshot(snapshot(before), snapshot(after))) {
       throw boundaryError(`${opts.label} changed while it was read: ${opts.filePath}`);
