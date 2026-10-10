@@ -3,10 +3,13 @@ import {
   parseTaskPlanProposal,
   taskCentricDigest,
   type ParsedTaskPlanProposal,
+  type KernelPlanProposal,
+  type taskKernel as k,
 } from "@agentplaneorg/core/tasks";
 import type { AgentWorkOrderRole } from "@agentplaneorg/core/schemas";
 import { resolveScenarioParameters } from "@agentplaneorg/recipes";
 import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js";
+import { assertSuppliedAggregateDefinition } from "@agentplaneorg/core/tasks";
 import { readBoundRecipePlanClosure } from "./recipe-plan-binding.js";
 
 export const RECIPE_ROLE_CONTEXT_LABEL =
@@ -45,6 +48,10 @@ export async function projectRecipeRoleContext(opts: {
   proposal: unknown;
   role: AgentWorkOrderRole;
   work_item_id?: string;
+  generated_aggregate?: {
+    definition: k.WorkItemDefinition;
+    contract: KernelPlanProposal["work_items"][number]["contract"];
+  };
 }) {
   const proposal = parseTaskPlanProposal(opts.proposal);
   const provenance = proposal.recipe_provenance;
@@ -55,10 +62,18 @@ export async function projectRecipeRoleContext(opts: {
     task_id: proposal.task_id,
     planning_baseline: proposal.planning_baseline,
   });
-  const items = opts.work_item_id
-    ? proposal.work_items.work_items.filter((item) => item.id === opts.work_item_id)
-    : proposal.work_items.work_items;
-  if (opts.work_item_id && items.length !== 1)
+  if (opts.generated_aggregate)
+    assertSuppliedAggregateDefinition(
+      proposal,
+      opts.generated_aggregate.definition,
+      opts.generated_aggregate.contract,
+    );
+  const items = opts.generated_aggregate
+    ? []
+    : opts.work_item_id
+      ? proposal.work_items.work_items.filter((item) => item.id === opts.work_item_id)
+      : proposal.work_items.work_items;
+  if (opts.work_item_id && !opts.generated_aggregate && items.length !== 1)
     throw new Error("Recipe role context requires the exact current WorkItem.");
   if (opts.role !== "PLANNER" && !opts.work_item_id)
     throw new Error("Recipe role context requires a WorkItem for this role.");
@@ -96,7 +111,7 @@ export async function projectRecipeRoleContext(opts: {
   }
   for (const id of [...skillIds].toSorted())
     include("recipe", object(nodes.get(`skill:${id}`)?.definition).file);
-  for (const item of items) {
+  for (const item of opts.generated_aggregate ? proposal.work_items.work_items : items) {
     let bytes = 0;
     for (const source of item.context.required_sources) {
       include("repository", source, item.context.max_bytes);
@@ -179,6 +194,14 @@ export async function projectKernelRecipeRoleContext(opts: {
     proposal: source,
     role: opts.role,
     work_item_id: opts.work_item_id,
+    ...(contract?.generated_origin
+      ? {
+          generated_aggregate: {
+            definition: opts.record.aggregate.work_items[opts.work_item_id!]!.definition,
+            contract,
+          },
+        }
+      : {}),
   });
   if (!projection) return;
   return boundedProjection({

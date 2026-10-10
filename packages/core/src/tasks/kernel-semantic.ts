@@ -21,6 +21,7 @@ export const kernelWorkContractSchema = z.strictObject({
   acceptance_criteria: z.array(text).min(1),
   verification_commands: z.array(text),
   role: z.enum(["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"]),
+  generated_origin: z.literal("supplied_plan_aggregate_validation").optional(),
   plan_input_digest: digest.optional(),
 });
 const kernelExecutionRequirementsSchema = z.strictObject({

@@ -1,3 +1,4 @@
+import { observeReviewedBaseImport, type ReviewedBasePins } from "./kernel-reviewed-base-import.js";
 import { resolveKernelPolicyBaseline } from "./kernel-policy-baseline.js";
 import { validateKernelRecipeBindings } from "./kernel-recipe-admission.js";
 import { writeKernelArtifact } from "./kernel-exchange.js";
@@ -91,6 +92,7 @@ export async function createKernelRuntime(opts: {
   transport: k.ActorIdentity["transport"];
   operation_id: string;
   approval?: NativeApprovalObservation;
+  reviewed_base?: ReviewedBasePins;
 }) {
   const ctx = { ...opts.command, config: structuredClone(opts.command.config) };
   const liveConfig = structuredClone(ctx.config);
@@ -235,6 +237,27 @@ export async function createKernelRuntime(opts: {
       } satisfies NativeAuthorityContext;
     },
     readApproval: () => Promise.resolve(opts.approval ?? null),
+    async observeReviewedBaseImport(taskId, parent) {
+      if (!opts.reviewed_base) return null;
+      if (
+        taskId !== opts.task_id ||
+        opts.transport !== "manual" ||
+        opts.operation_id !== `approve:${taskId}` ||
+        opts.approval?.kind !== "manual_operator" ||
+        !/^USER(?::[A-Za-z0-9._@-]+)?$/u.test(opts.approval.actor_id)
+      )
+        throw new Error("Reviewed base import requires explicit operator renewal");
+      const read = await adapter.read(taskId);
+      if (read.kind !== "canonical") throw new Error("Reviewed base canonical record unavailable");
+      return observeReviewedBaseImport({
+        root: ctx.resolvedProject.gitRoot,
+        common: await resolveCommandGitCommonDir(ctx),
+        pins: opts.reviewed_base,
+        parent,
+        record: read.record,
+        current: await observe(),
+      });
+    },
     async observeContinuation(taskId, parent) {
       if (taskId !== opts.task_id) throw new Error("Canonical continuation task mismatch");
       const read = await adapter.read(taskId);

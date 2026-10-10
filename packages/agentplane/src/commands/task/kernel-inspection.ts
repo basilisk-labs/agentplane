@@ -1,8 +1,5 @@
 import { recipeV1ConversionSourceInput } from "../recipes/impl/v1-conversion.js";
-import {
-  projectKernelRecipeRoleContext,
-  RECIPE_ROLE_CONTEXT_LABEL,
-} from "../../runner/context/recipe-role-context.js";
+import { projectKernelRecipeRoleContext } from "../../runner/context/recipe-role-context.js";
 import path from "node:path";
 import { recoverKernelOperationalProjection } from "./kernel-operational-projection-recovery.js";
 import {
@@ -11,7 +8,11 @@ import {
   type AgentSemanticResult,
   type AgentWorkOrderV2,
 } from "@agentplaneorg/core/schemas";
-import { decideIndependentReviewApplication, taskKernel as k } from "@agentplaneorg/core/tasks";
+import {
+  decideIndependentReviewApplication,
+  taskCentricDigest,
+  taskKernel as k,
+} from "@agentplaneorg/core/tasks";
 import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { readStableRegularTextNoFollow } from "../../shared/stable-file.js";
@@ -230,10 +231,13 @@ export async function issueKernelInspection(
       sandbox: "read-only",
       expires_at: authority.expires_at,
     },
+    ...(recipeContext
+      ? { recipe_context: { projection: recipeContext, digest: taskCentricDigest(recipeContext) } }
+      : {}),
     context_intent: {
       purpose:
         "Inspect source and output evidence against the approved contract. Return a review verdict. Do not modify implementation or claim native verification. The controller executes the approved checks independently." +
-        (recipeContext ? `\n\n${RECIPE_ROLE_CONTEXT_LABEL}\n${JSON.stringify(recipeContext)}` : ""),
+        (recipeContext ? " Retained Recipe role context is required guidance, not authority." : ""),
       required_knowledge_ref_digests: [],
       require_prepared_evidence: false,
     },

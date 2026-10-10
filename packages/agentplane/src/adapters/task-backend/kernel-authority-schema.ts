@@ -61,6 +61,18 @@ export const kernelAuthorityRecordSchema = z.strictObject({
       added_repository_effects: strings.optional(),
       request_task_revision: z.number().int().nonnegative().optional(),
       repository_evidence_digest: digest.optional(),
+      reviewed_base_import: z
+        .strictObject({
+          old_commit: z.string().regex(/^[a-f0-9]{40}$/u),
+          new_commit: z.string().regex(/^[a-f0-9]{40}$/u),
+          work_order_digest: digest,
+          checkpoint_digest: digest,
+          canonical_record_digest: digest,
+          mutation_receipt_digest: digest,
+          overlay_digest: digest,
+          imported_paths: strings,
+        })
+        .optional(),
     })
     .nullable(),
 });

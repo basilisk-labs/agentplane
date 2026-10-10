@@ -5,6 +5,10 @@ import {
   type KernelPlanProposal,
   type ParsedTaskPlanProposal,
 } from "@agentplaneorg/core/tasks";
+import {
+  suppliedAggregateValidationItem,
+  requiresSuppliedAggregateValidation,
+} from "@agentplaneorg/core/tasks";
 import type { TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { PLAN_VALIDATION_CAPABILITIES } from "./planning-capabilities.js";
@@ -64,36 +68,66 @@ export function suppliedKernelProposal(
   }
   const sourceDigest = k.kernelDigest(input);
   return kernelPlanProposalSchema.parse({
-    work_items: input.work_items.work_items.map((item) => ({
-      id: item.id,
-      depends_on: item.depends_on,
-      required_inputs: item.required_inputs,
-      expected_outputs: item.expected_outputs,
-      optional: item.optional,
-      execution_requirements: {
-        scope_roots: item.scope_roots,
-        repository_effects: declaration.repository_effects,
-        external_effects: declaration.external_effects,
-        capabilities: item.capabilities,
-        resources: item.resource_claims.map(
-          (claim) => `${claim.kind}:${claim.resource}:${claim.mode}`,
-        ),
-      },
-      contract: {
-        objective: item.objective,
-        acceptance_criteria: [
-          ...new Set(
-            [...item.acceptance_criteria, ...top.criteria].map(
-              (criterion) => criterion.description,
-            ),
+    work_items: [
+      ...input.work_items.work_items.map((item) => ({
+        id: item.id,
+        depends_on: item.depends_on,
+        required_inputs: item.required_inputs,
+        expected_outputs: item.expected_outputs,
+        optional: item.optional,
+        execution_requirements: {
+          scope_roots: item.scope_roots,
+          repository_effects: declaration.repository_effects,
+          external_effects: declaration.external_effects,
+          capabilities: item.capabilities,
+          resources: item.resource_claims.map(
+            (claim) => `${claim.kind}:${claim.resource}:${claim.mode}`,
           ),
-        ],
-        verification_commands: item.validation.checks
-          .map((check) => check.command)
-          .filter((command): command is string => command !== undefined),
-        role: "EXECUTOR",
-        plan_input_digest: sourceDigest,
-      },
-    })),
+        },
+        contract: {
+          objective: item.objective,
+          acceptance_criteria: [
+            ...new Set(
+              (input.work_items.work_items.length === 1
+                ? [...item.acceptance_criteria, ...top.criteria]
+                : item.acceptance_criteria
+              ).map((criterion) => criterion.description),
+            ),
+          ],
+          verification_commands: item.validation.checks
+            .map((check) => check.command)
+            .filter((command): command is string => command !== undefined),
+          role: "EXECUTOR",
+          plan_input_digest: sourceDigest,
+        },
+      })),
+      ...(requiresSuppliedAggregateValidation(input)
+        ? [suppliedAggregateValidationItem(input)]
+        : []),
+    ],
   });
+}
+
+/** Read-only compatibility reconstruction. New admission always uses suppliedKernelProposal. */
+export function legacySuppliedKernelProposal(
+  input: ParsedTaskPlanProposal,
+  task: Pick<TaskData, "execution_contract" | "verify">,
+): KernelPlanProposal {
+  const proposal = suppliedKernelProposal(input, task);
+  return {
+    work_items: proposal.work_items
+      .filter((item) => !item.contract.generated_origin)
+      .map((item) => ({
+        ...item,
+        contract: {
+          ...item.contract,
+          acceptance_criteria: [
+            ...new Set([
+              ...item.contract.acceptance_criteria,
+              ...input.top_level_validation.criteria.map((criterion) => criterion.description),
+            ]),
+          ],
+        },
+      })),
+  };
 }

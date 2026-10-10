@@ -1,5 +1,8 @@
 import {
   taskKernel,
+  assertSuppliedAggregateDefinition,
+  suppliedAggregateValidationItem,
+  requiresSuppliedAggregateValidation,
   kernelIntentSchema,
   kernelWorkContractSchema,
   TASK_PLAN_PROPOSAL_ZOD_SCHEMA,
@@ -62,7 +65,37 @@ export function kernelDocumentIssues(
     for (const item of plan?.work_items ?? []) {
       if (!item.contract_digest || !Object.hasOwn(documents.contracts, item.contract_digest))
         issues.push(`contract_missing:${item.id}`);
-      else referenced.add(item.contract_digest);
+      else {
+        referenced.add(item.contract_digest);
+        const contract = documents.contracts[String(item.contract_digest)]!;
+        const source = contract.plan_input_digest && inputs[contract.plan_input_digest];
+        if (
+          contract.generated_origin ||
+          (source &&
+            requiresSuppliedAggregateValidation(source) &&
+            item.id === suppliedAggregateValidationItem(source).id)
+        ) {
+          try {
+            if (!source) throw new Error("Missing aggregate source");
+            assertSuppliedAggregateDefinition(source, item, contract);
+          } catch {
+            issues.push(`generated_aggregate_binding:${item.id}`);
+          }
+        }
+      }
+    }
+  }
+  if (aggregate.current_plan) {
+    for (const historical of aggregate.plan_history.flatMap((plan) => plan.work_items)) {
+      const contract =
+        historical.contract_digest && documents.contracts[String(historical.contract_digest)];
+      if (
+        contract?.generated_origin &&
+        !aggregate.current_plan.work_items.some(
+          (current) => taskKernel.kernelDigest(current) === taskKernel.kernelDigest(historical),
+        )
+      )
+        issues.push(`generated_aggregate_obligation_changed:${historical.id}`);
     }
   }
   for (const digest of Object.keys(documents.contracts)) {

@@ -42,10 +42,15 @@ import { collectRecipePromptBlocks } from "./recipe-prompt-blocks.js";
 import { resolveTaskRunnerRecipe } from "../usecases/task-run-recipe-context.js";
 import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js";
 
+import { legacySuppliedKernelProposal } from "../../commands/task/create-plan-proposal.js";
+import { canonicalPlanFromProposal } from "../../commands/task/kernel-plan-proposal.js";
+import { validateKernelRecipeBindings } from "../../commands/task/kernel-recipe-admission.js";
+
 installRunCliIntegrationHarness();
 async function fixture(
   opts: {
     guidance?: string;
+    evaluatorGuidance?: string;
     source?: string;
     secondItem?: boolean;
     executorRole?: string;
@@ -131,7 +136,8 @@ async function fixture(
   });
   const files = {
     "executor.md": opts.guidance ?? "EXECUTOR GUIDANCE. Stop if the required evidence is absent.",
-    "evaluator.md": "EVALUATOR GUIDANCE. Independently challenge the accepted claims.",
+    "evaluator.md":
+      opts.evaluatorGuidance ?? "EVALUATOR GUIDANCE. Independently challenge the accepted claims.",
     "planner.md": "PLANNER GUIDANCE. Keep material questions unresolved.",
     "exec-skill.md": "EXECUTOR SKILL",
     "review-skill.md": "EVALUATOR SKILL",
@@ -366,8 +372,15 @@ describe("retained Recipe role projection and managed restart", { timeout: 180_0
   });
 
   it("delivers complete required native Recipe context to a fresh managed adapter without provider memory", async () => {
-    const f = await fixture();
+    const guidance =
+      "EXECUTOR GUIDANCE " + "retained instruction ".repeat(600) + "END OF EXECUTOR GUIDANCE";
+    const f = await fixture({ guidance });
     const { packet, order } = await f.issue();
+    expect(order.context_intent.purpose.length).toBeLessThanOrEqual(8192);
+    expect(
+      order.recipe_context!.projection.guidance.find((entry) => entry.path === "executor.md")!
+        .content,
+    ).toBe(guidance);
     expect(order.role).toBe("EXECUTOR");
     expect(order.context_intent.purpose).toContain(RECIPE_ROLE_CONTEXT_LABEL);
     expect(order.context_intent.purpose).not.toContain("Caller-supplied Plan input");
@@ -388,6 +401,12 @@ describe("retained Recipe role projection and managed restart", { timeout: 180_0
       JSON.parse(await readFile(wireBundle, "utf8")) as typeof bundle,
     );
     expect(restarted).toBe(delivered);
+    expect(delivered).toContain(guidance);
+    expect(bundle.semantic_context.blocks.find((block) => block.id === "recipe")).toMatchObject({
+      required: true,
+      pointer: "/recipe_context",
+      digest: taskCentricDigest(order.recipe_context),
+    });
     for (const required of [
       "EXECUTOR GUIDANCE",
       "SHARED CONSTRAINT",
@@ -408,6 +427,14 @@ describe("retained Recipe role projection and managed restart", { timeout: 180_0
       "Caller-supplied Plan input",
     ])
       expect(delivered).not.toContain(unrelated);
+    const missing = structuredClone(bundle);
+    missing.semantic_context!.blocks = missing.semantic_context!.blocks.filter(
+      (block) => block.id !== "recipe",
+    );
+    expect(() => renderTaskRunnerBootstrap(missing)).toThrow("incomplete or stale");
+    const changed = structuredClone(bundle);
+    changed.work_order!.recipe_context!.projection.guidance[0]!.content += "forged";
+    expect(() => renderTaskRunnerBootstrap(changed)).toThrow();
     expect(bundle.semantic_context.blocks.find((block) => block.id === "constraints")!.digest).toBe(
       taskCentricDigest(order.context_intent),
     );
@@ -435,11 +462,7 @@ describe("retained Recipe role projection and managed restart", { timeout: 180_0
       network: "deny",
       external_side_effects: [],
     });
-    const projected = JSON.parse(
-      order.context_intent.purpose
-        .split(`${RECIPE_ROLE_CONTEXT_LABEL}\n`)[1]!
-        .split("\n\nRecipe candidate advice")[0]!,
-    ) as { top_level_validation?: unknown };
+    const projected = order.recipe_context!.projection;
     expect(projected.top_level_validation).toEqual({
       schema_version: 1,
       criteria: [
@@ -471,7 +494,7 @@ describe("retained Recipe role projection and managed restart", { timeout: 180_0
       JSON.parse(await readFile(wireBundle, "utf8")) as typeof bundle,
     );
     expect(restarted).toBe(delivered);
-    for (const text of [order.context_intent.purpose, delivered, restarted]) {
+    for (const text of [JSON.stringify(order.recipe_context), delivered, restarted]) {
       for (const required of [
         "The report preserves the task-wide retention constraint.",
         "task-wide-review",
@@ -505,7 +528,11 @@ describe("retained Recipe role projection and managed restart", { timeout: 180_0
   });
 
   it("uses the same retained role owner for native independent inspection", async () => {
-    const f = await fixture();
+    const evaluatorGuidance =
+      "EVALUATOR GUIDANCE " +
+      "independent retained review ".repeat(450) +
+      "END OF EVALUATOR GUIDANCE";
+    const f = await fixture({ evaluatorGuidance });
     const { packet, order } = await f.issue();
     await writeFile(
       packet.exchange.result_path,
@@ -526,14 +553,167 @@ describe("retained Recipe role projection and managed restart", { timeout: 180_0
       ),
     );
     expect(review.role).toBe("EVALUATOR");
-    expect(review.context_intent.purpose).toContain("EVALUATOR GUIDANCE");
-    expect(review.context_intent.purpose).not.toContain("EXECUTOR GUIDANCE");
-    expect(review.context_intent.purpose).toContain("forbidden.txt");
-    expect(review.context_intent.purpose).toContain("no external writes");
+    expect(review.context_intent.purpose.length).toBeLessThanOrEqual(8192);
+    expect(
+      review.recipe_context!.projection.guidance.find((entry) => entry.path === "evaluator.md")!
+        .content,
+    ).toBe(evaluatorGuidance);
+    const bundle = makeRunnerContextBundle({ runId: "long-recipe-review" });
+    bundle.work_order = review;
+    expect(renderTaskRunnerBootstrap(bundle)).toContain(evaluatorGuidance);
+    expect(JSON.stringify(review.recipe_context)).toContain("EVALUATOR GUIDANCE");
+    expect(JSON.stringify(review.recipe_context)).not.toContain("EXECUTOR GUIDANCE");
+    expect(JSON.stringify(review.recipe_context)).toContain("forbidden.txt");
+    expect(JSON.stringify(review.recipe_context)).toContain("no external writes");
     expect(review.authority.mutation_scope).toBe("none");
     expect(
       review.required_inputs.some((input) => input.id === "native-validation" && input.required),
     ).toBe(true);
+  });
+
+  it("accepts only the exact already-retained legacy multi-item conversion", async () => {
+    const f = await fixture({ secondItem: true });
+    const task = (await f.command.taskBackend.getTask(f.id))!;
+    const record = task.extensions!.task_kernel as KernelRecord;
+    const legacy = legacySuppliedKernelProposal(f.source, task);
+    const plan = canonicalPlanFromProposal(legacy, 1);
+    const documents = {
+      ...record.documents!,
+      contracts: Object.fromEntries(
+        legacy.work_items.map((item) => [k.kernelDigest(item.contract), item.contract]),
+      ),
+    };
+    const retainedTask = {
+      ...task,
+      extensions: {
+        ...task.extensions,
+        task_kernel: {
+          ...record,
+          aggregate: { ...record.aggregate, current_plan: plan, plan_history: [] },
+          documents,
+        },
+      },
+    };
+    await expect(
+      validateKernelRecipeBindings({ command: f.command, task: retainedTask, plan, documents }),
+    ).resolves.toBeUndefined();
+    const unretainedTask = {
+      ...retainedTask,
+      extensions: {
+        ...retainedTask.extensions,
+        task_kernel: {
+          ...record,
+          aggregate: { ...record.aggregate, current_plan: null, plan_history: [] },
+          documents,
+        },
+      },
+    };
+    await expect(
+      validateKernelRecipeBindings({ command: f.command, task: unretainedTask, plan, documents }),
+    ).rejects.toThrow("complete specialized Plan");
+  });
+
+  it("requires a read-only generated aggregate inspection after local item reviews", async () => {
+    const f = await fixture({ secondItem: true });
+    let { packet, order } = await f.issue();
+    async function submit(payload: Record<string, unknown>) {
+      await writeFile(
+        packet.exchange.result_path,
+        JSON.stringify({
+          work_order_id: order.work_order_id,
+          status: "completed",
+          summary: "Public fixture evidence",
+          findings: [],
+          uncertainty: [],
+          ...payload,
+        }),
+      );
+      const next = await f.advance(packet.exchange.result_path);
+      if (!("exchange" in next)) throw new Error(JSON.stringify(next.action));
+      packet = next;
+      order = AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse(
+        JSON.parse(await readFile(path.join(packet.exchange.directory, "work-order.json"), "utf8")),
+      );
+    }
+    const seen = new Set<string>();
+    for (let index = 0; index < 2; index++) {
+      const id = order.task.work_item_id!;
+      expect(["report", "other"]).toContain(id);
+      expect(seen.has(id)).toBe(false);
+      seen.add(id);
+      await submit({
+        canonical_outputs: [
+          {
+            id: id === "report" ? "report" : "other-report",
+            kind: "report",
+            digest: taskCentricDigest(id),
+          },
+        ],
+      });
+      expect(order.role).toBe("EVALUATOR");
+      await submit({
+        findings: [
+          "The fixture report satisfies its local criterion; final aggregate acceptance remains pending.",
+        ],
+        review: { verdict: "pass", missing_tests: [], hidden_assumptions: [], residual_risks: [] },
+      });
+    }
+    expect(order.task.work_item_id).toMatch(/^aggregate-validation-/u);
+    expect(order.role).toBe("EXECUTOR");
+    expect(order.authority.mutation_scope).toBe("none");
+    expect(order.authority.writable_roots).toEqual([]);
+    expect(order.authority.allowed_tool_classes).not.toContain("workspace_write");
+    expect(order.recipe_context!.projection.current_work_items).toEqual([]);
+    expect(order.recipe_context!.projection.top_level_validation.criteria[0]!.description).toBe(
+      "The report answers the question",
+    );
+    const record = (await f.command.taskBackend.getTask(f.id))!.extensions!
+      .task_kernel as KernelRecord;
+    const output =
+      record.aggregate.work_items[order.task.work_item_id!]!.definition.expected_outputs[0]!;
+    await submit({
+      canonical_outputs: [
+        { id: output, kind: "report", digest: taskCentricDigest("aggregate report") },
+      ],
+    });
+    expect(order.role).toBe("EVALUATOR");
+    expect(order.task.acceptance_criteria).toContainEqual(
+      expect.objectContaining({ description: "The report answers the question", required: true }),
+    );
+    expect(order.recipe_context!.projection.current_work_items).toEqual([]);
+    expect(
+      renderTaskRunnerBootstrap(
+        Object.assign(makeRunnerContextBundle({ runId: "aggregate-review" }), {
+          work_order: order,
+        }),
+      ),
+    ).toContain("EVALUATOR GUIDANCE");
+    const current = (await f.command.taskBackend.getTask(f.id))!.extensions!
+      .task_kernel as KernelRecord;
+    expect(current.aggregate.work_items[order.task.work_item_id!]!.state).toBe("INSPECTING");
+    expect(current.aggregate.final_validation?.status).not.toBe("PASSED");
+    await writeFile(
+      packet.exchange.result_path,
+      JSON.stringify({
+        work_order_id: order.work_order_id,
+        status: "completed",
+        summary: "Final criterion is not satisfied",
+        findings: ["The combined fixture report does not answer the question."],
+        uncertainty: [],
+        review: {
+          verdict: "rework",
+          missing_tests: [],
+          hidden_assumptions: [],
+          residual_risks: ["Final task objective remains unmet"],
+        },
+      }),
+    );
+    const rejected = await f.advance(packet.exchange.result_path);
+    expect(rejected.action.kind).not.toBe("terminal");
+    const afterReject = (await f.command.taskBackend.getTask(f.id))!.extensions!
+      .task_kernel as KernelRecord;
+    expect(afterReject.aggregate.work_items[order.task.work_item_id!]!.state).not.toBe("COMPLETED");
+    expect(afterReject.aggregate.final_validation?.status).not.toBe("PASSED");
   });
 
   it("stops on tampered retained evidence or a changed source Plan instead of using installed/latest guidance", async () => {
