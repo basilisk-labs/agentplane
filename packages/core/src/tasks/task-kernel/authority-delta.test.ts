@@ -5,6 +5,8 @@ import {
   canonicalAuthorityIssues,
   continuationAdmissionIssues,
   planScopeExpansionApprovalDigest,
+  policyRenewalApprovalEvidence,
+  policyRenewalRequestDigest,
 } from "./authority-lineage.js";
 import { kernelDigest, reduceTaskCommand } from "./kernel.js";
 import type {
@@ -108,6 +110,58 @@ function materialAmendmentLineage(widened: Partial<ExecutionRequirements> = {}) 
         transport: "managed" as const,
         capabilities: ["authority.observe"],
       },
+    },
+  };
+}
+
+function amendedPolicyRenewal() {
+  const { state } = materialAmendmentLineage();
+  const parent = state.authority_lineage!.at(-1)!.authority;
+  const contents = {
+    ...parent,
+    policy_digests: [kernelDigest("renewed-policy")],
+    provenance: {
+      ...parent.provenance,
+      kind: "USER" as const,
+      actor_id: "USER",
+      parent_authority_digest: parent.digest,
+    },
+  };
+  const renewed = { ...contents, digest: authorityDigest(contents) };
+  const request = policyRenewalRequestDigest({
+    task_revision: state.revision,
+    parent,
+    repository_fingerprint: renewed.repository_fingerprint,
+    policy_digests: renewed.policy_digests,
+    changed_paths: [],
+  });
+  const record: CanonicalAuthorityRecord = {
+    authority: renewed,
+    approval_mode: "manual_operator",
+    observation: {
+      kind: "policy_renewal",
+      previous_fingerprint: parent.repository_fingerprint,
+      changed_paths: [],
+      request_task_revision: state.revision,
+      request_digest: request,
+      evidence_digest: policyRenewalApprovalEvidence({ request_digest: request, actor_id: "USER" }),
+    },
+  };
+  const command: TaskCommand = {
+    kind: "renew_policy_authority",
+    task_id: state.id,
+    expected_task_revision: state.revision,
+    expected_state_fingerprint: renewed.repository_fingerprint,
+    record,
+  };
+  return {
+    state,
+    record,
+    invocation: {
+      ...input(state, command),
+      authority: null,
+      repository_fingerprint: renewed.repository_fingerprint,
+      actor: { id: "USER", kind: "USER" as const, transport: "manual" as const, capabilities: [] },
     },
   };
 }
@@ -252,6 +306,40 @@ describe("canonical authority delta", () => {
 
     expect(canonicalAuthorityIssues(state)).toEqual([]);
   });
+
+  it("renews same-plan policy authority after approved material plan amendments", () => {
+    const f = amendedPolicyRenewal();
+    expect(canonicalAuthorityIssues(f.state)).toEqual([]);
+    const result = reduceTaskCommand(f.invocation);
+    expect(result.kind).toBe("accepted");
+    if (result.kind !== "accepted") throw new Error(result.kind);
+    expect(canonicalAuthorityIssues(result.aggregate)).toEqual([]);
+    expect(result.aggregate.current_plan).toEqual(f.state.current_plan);
+    expect(result.aggregate.work_items).toEqual(f.state.work_items);
+  });
+
+  it.each(["plan", "provenance", "parent", "scope", "actor", "transport"])(
+    "rejects amended-plan renewal with changed %s authority",
+    (field) => {
+      const f = amendedPolicyRenewal();
+      if (field === "plan") f.record.authority.plan_digest = kernelDigest("other-plan");
+      if (field === "provenance")
+        f.record.authority.provenance.evidence_digest = kernelDigest("other-evidence");
+      if (field === "parent")
+        f.record.authority.provenance.parent_authority_digest = kernelDigest("other-parent");
+      if (field === "scope") f.record.authority.scope_roots = ["."];
+      f.record.authority.digest = authorityDigest(f.record.authority);
+      const invocation = {
+        ...f.invocation,
+        ...(field === "actor" ? { actor: { ...f.invocation.actor, id: "OTHER" } } : {}),
+        ...(field === "transport"
+          ? { actor: { ...f.invocation.actor, transport: "managed" as const } }
+          : {}),
+      };
+      expect(reduceTaskCommand(invocation).kind).toBe("rejected");
+      expect(canonicalAuthorityIssues(f.state)).toEqual([]);
+    },
+  );
 
   it("applies an exact USER authority delta without changing the approved plan", () => {
     const { digest: _fixtureDigest, ...parentContents } = authority;

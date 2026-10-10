@@ -1,9 +1,14 @@
 {
   "checks": [
     {
-      "check_ids": [],
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "task_outcome"
+      ],
       "command": "node --test scripts/lib/*resource*.test.mjs",
-      "duration_ms": 913,
+      "duration_ms": 1162,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:92e16ff4ff15e93766eac4a91ab5dd5a93f6ab6c8906318e14e2362c512f11e1",
@@ -14,12 +19,17 @@
       },
       "script": null,
       "stderr_tail": "",
-      "stdout_tail": "✔ full CI has a finite inner budget above the former 15-minute limit and below native default (2.255377ms)\n✔ explicit shorter local and native deadlines retain precedence and provenance (0.541948ms)\n✔ later sequential waves report the remaining native deadline rather than the original budget (0.226603ms)\n✔ queued groups report the deadline when each group actually starts (70.409712ms)\n✔ expired deadline skips the group and records a timeout (0.403822ms)\n✔ lint heap respects an explicit Node limit and rejects insufficient capacity (2.127918ms)\n✔ group summaries distinguish timeout, heap exhaustion, assertion, infrastructure and command errors (1.546159ms)\n✔ failure classification is emitted separately before the unchanged summary (1.032856ms)\n✔ mixed timeout and assertion diagnostics retain every failed group (0.844417ms)\nℹ tests 9\nℹ suites 0\nℹ pass 9\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 154.673967\n"
+      "stdout_tail": "✔ full CI has a finite inner budget above the former 15-minute limit and below native default (1.964683ms)\n✔ explicit shorter local and native deadlines retain precedence and provenance (0.913128ms)\n✔ later sequential waves report the remaining native deadline rather than the original budget (0.229217ms)\n✔ queued groups report the deadline when each group actually starts (68.699605ms)\n✔ expired deadline skips the group and records a timeout (37.550907ms)\n✔ lint heap respects an explicit Node limit and rejects insufficient capacity (1.660598ms)\n✔ group summaries distinguish timeout, heap exhaustion, assertion, infrastructure and command errors (1.728762ms)\n✔ failure classification is emitted separately before the unchanged summary (0.874179ms)\n✔ mixed timeout and assertion diagnostics retain every failed group (2.092536ms)\nℹ tests 9\nℹ suites 0\nℹ pass 9\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 185.86984\n"
     },
     {
-      "check_ids": [],
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "task_outcome"
+      ],
       "command": "bunx vitest run packages/agentplane/src/commands/task/direct-task-verification.qualification.test.ts",
-      "duration_ms": 9295,
+      "duration_ms": 13000,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:72df0b1abfb0b72d32aa4bd0593103149865511bfa92ce0a2ca14ee3f6775cda",
@@ -30,12 +40,17 @@
       },
       "script": null,
       "stderr_tail": "",
-      "stdout_tail": "\n RUN  v4.1.11 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610092153-WZDW5D-align-full-ci-nested-timeouts-and-lint-memory-bu\n\n\n Test Files  1 passed (1)\n      Tests  7 passed (7)\n   Start at  06:17:19\n   Duration  8.05s (transform 2.05s, setup 87ms, import 2.72s, tests 5.09s, environment 0ms)\n\n"
+      "stdout_tail": "\n RUN  v4.1.11 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610092153-WZDW5D-align-full-ci-nested-timeouts-and-lint-memory-bu\n\n\n Test Files  1 passed (1)\n      Tests  7 passed (7)\n   Start at  09:58:56\n   Duration  11.70s (transform 2.71s, setup 58ms, import 3.47s, tests 8.02s, environment 0ms)\n\n"
     },
     {
-      "check_ids": [],
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "task_outcome"
+      ],
       "command": "bun run format:check",
-      "duration_ms": 62766,
+      "duration_ms": 66123,
       "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:72df0b1abfb0b72d32aa4bd0593103149865511bfa92ce0a2ca14ee3f6775cda",
@@ -49,10 +64,16 @@
       "stdout_tail": "Checking formatting...\nAll matched files use Prettier code style!\n"
     },
     {
-      "check_ids": [],
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "full_regression",
+        "task_outcome"
+      ],
       "command": "bun run ci:local:full",
-      "duration_ms": 4280904,
-      "exit_code": 1,
+      "duration_ms": 2862317,
+      "exit_code": 0,
       "runtime": {
         "environment_digest": "sha256:72df0b1abfb0b72d32aa4bd0593103149865511bfa92ce0a2ca14ee3f6775cda",
         "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
@@ -61,13 +82,55 @@
         "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
       },
       "script": "ci:local:full",
-      "stderr_tail": "/.agentplane/worktrees/202610092153-WZDW5D-align-full-ci-nested-timeouts-and-lint-memory-bu/scripts/checks/run-vitest-suite.mjs:123\n    throw new Error(\n          ^\n\nError: Vitest failed for packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts, packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet-regressions.test.ts with status=1 signal=none\n    at runVitestCaptured (file:///home/agentplane/workspace/agentplane/.agentplane/worktrees/202610092153-WZDW5D-align-full-ci-nested-timeouts-and-lint-memory-bu/scripts/checks/run-vitest-suite.mjs:123:11)\n    at main (file:///home/agentplane/workspace/agentplane/.agentplane/worktrees/202610092153-WZDW5D-align-full-ci-nested-timeouts-and-lint-memory-bu/scripts/checks/run-vitest-suite.mjs:227:24)\n    at file:///home/agentplane/workspace/agentplane/.agentplane/worktrees/202610092153-WZDW5D-align-full-ci-nested-timeouts-and-lint-memory-bu/scripts/checks/run-vitest-suite.mjs:248:9\n    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)\n    at async node:internal/modules/esm/loader:647:26\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\n\nNode.js v24.21.0\nerror: script \"test:critical\" exited with code 1\nnode:internal/errors:986\n  const err = new Error(message);\n              ^\n\nError: Command failed: bun run test:critical\n    at genericNodeError (node:internal/errors:986:15)\n    at wrappedFn (node:internal/errors:540:14)\n    at checkExecSyncError (node:child_process:942:11)\n    at execFileSync (node:child_process:978:15)\n    at run (file:///home/agentplane/workspace/agentplane/.agentplane/worktrees/202610092153-WZDW5D-align-full-ci-nested-timeouts-and-lint-memory-bu/scripts/checks/run-local-ci-group.mjs:9:3)\n    at bunScript (file:///home/agentplane/workspace/agentplane/.agentplane/worktrees/202610092153-WZDW5D-align-full-ci-nested-timeouts-and-lint-memory-bu/scripts/checks/run-local-ci-group.mjs:10:34)\n    at Object.cli (file:///home/agentplane/workspace/agentplane/.agentplane/worktrees/202610092153-WZDW5D-align-full-ci-nested-timeouts-and-lint-memory-bu/scripts/checks/run-local-ci-group.mjs:81:5)\n    at file:///home/agentplane/workspace/agentplane/.agentplane/worktrees/202610092153-WZDW5D-align-full-ci-nested-timeouts-and-lint-memory-bu/scripts/checks/run-local-ci-group.mjs:88:14\n    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)\n    at async node:internal/modules/esm/loader:647:26 {\n  status: 1,\n  signal: null,\n  output: [ null, null, null ],\n  pid: 1461998,\n  stdout: null,\n  stderr: null\n}\n\nNode.js v24.21.0\n{\"schema_version\":1,\"kind\":\"verification_group_failure_classification\",\"groups\":[{\"id\":\"core\",\"failure_kind\":\"assertion_failure\",\"failure_kinds\":[\"assertion_failure\"]},{\"id\":\"cli\",\"failure_kind\":\"timeout\",\"failure_kinds\":[\"timeout\"]}]}\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":false,\"groups\":[{\"id\":\"runtime\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":106046},{\"id\":\"docs-schema\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":71521},{\"id\":\"core\",\"exit_code\":1,\"timed_out\":false,\"duration_ms\":3575798},{\"id\":\"cli\",\"exit_code\":1,\"timed_out\":false,\"duration_ms\":506232}]}\nfile:///home/agentplane/workspace/agentplane/.agentplane/worktrees/202610092153-WZDW5D-align-full-ci-nested-timeouts-and-lint-memory-bu/scripts/checks/run-local-ci.mjs:547\n  if (!ok) throw new Error(\"Full verification group failed.\");\n                 ^\n\nError: Full verification group failed.\n    at runFullFastPath (file:///home/agentplane/workspace/agentplane/.agentplane/worktrees/202610092153-WZDW5D-align-full-ci-nested-timeouts-and-lint-memory-bu/scripts/checks/run-local-ci.mjs:547:18)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async file:///home/agentplane/workspace/agentplane/.agentplane/worktrees/202610092153-WZDW5D-align-full-ci-nested-timeouts-and-lint-memory-bu/scripts/checks/run-local-ci.mjs:622:7\n\nNode.js v24.21.0\nerror: script \"ci:local:full\" exited with code 1\n",
-      "stdout_tail": "asic (quickstart median=3199.972ms (threshold=5000ms, p95=3199.972ms); task_list median=2911.664ms (threshold=10000ms, p95=2911.664ms); task_search median=2618.756ms (threshold=6000ms, p95=2618.756ms); task_next median=2373.783ms (threshold=8000ms, p95=2373.783ms); preflight_quick median=3875.638ms (threshold=6000ms, p95=3875.638ms))\nVitest suite critical-cli: chunk 1/5 (2 files): packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts, packages/agentplane/src/cli/run-cli.critical.exit-codes.test.ts\nVitest suite critical-cli: chunk 1/5 passed in 102260ms (Test Files  2 passed (2); Tests  3 passed (3); Duration  99.05s (transform 85.62s, setup 759ms, import 69.19s, tests 93.26s, environment 0ms))\nVitest suite critical-cli: chunk 2/5 (2 files): packages/agentplane/src/cli/run-cli.critical.git-edge.test.ts, packages/agentplane/src/cli/run-cli.critical.protected-paths.test.ts\nVitest suite critical-cli: chunk 2/5 passed in 59458ms (Test Files  2 passed (2); Tests  5 passed (5); Duration  57.32s (transform 51.87s, setup 187ms, import 70.52s, tests 38.93s, environment 1ms))\nVitest suite critical-cli: chunk 3/5 (2 files): packages/agentplane/src/cli/run-cli.critical.scope-leak.test.ts, packages/agentplane/src/cli/run-cli.critical.symlink-root.test.ts\nVitest suite critical-cli: chunk 3/5 passed in 75793ms (Test Files  2 passed (2); Tests  7 passed (7); Duration  73.03s (transform 58.99s, setup 444ms, import 79.42s, tests 54.60s, environment 1ms))\nVitest suite critical-cli: chunk 4/5 (2 files): packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts, packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet-regressions.test.ts\n\n RUN  v4.1.11 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610092153-WZDW5D-align-full-ci-nested-timeouts-and-lint-memory-bu\n\n ❯ packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts (2 tests | 1 failed) 205265ms\n     × keeps one Task through exact approval, WorkItem repair, restart-safe progression, and completion 180344ms\n\n Test Files  1 failed | 1 passed (2)\n      Tests  1 failed | 6 passed (7)\n   Start at  07:25:43\n   Duration  242.03s (transform 86.93s, setup 727ms, import 71.20s, tests 209.06s, environment 1ms)\n\nerror [E_INTERNAL]: Refusing changed task README 202610100427-VN314S path: /tmp/agentplane-vitest-run-yi86Og/agentplane-cli-test-csMowE/.agentplane/tasks/202610100427-VN314S/README.md\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts > task-centric fresh repository release gate > keeps one Task through exact approval, WorkItem repair, restart-safe progression, and completion\nError: Test timed out in 180000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n ❯ packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts:210:3\n    208|\n    209| describe(\"task-centric fresh repository release gate\", { timeout: 180_…\n    210|   it(\"keeps one Task through exact approval, WorkItem repair, restart-…\n       |   ^\n    211|     const root = await mkTempDir();\n    212|     await runCommand(root, [\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\n{\"schema_version\":1,\"kind\":\"verification_group_failure_classification\",\"groups\":[{\"id\":\"core\",\"failure_kind\":\"assertion_failure\",\"failure_kinds\":[\"assertion_failure\"]},{\"id\":\"cli\",\"failure_kind\":\"timeout\",\"failure_kinds\":[\"timeout\"]}]}\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":false,\"groups\":[{\"id\":\"runtime\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":106046},{\"id\":\"docs-schema\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":71521},{\"id\":\"core\",\"exit_code\":1,\"timed_out\":false,\"duration_ms\":3575798},{\"id\":\"cli\",\"exit_code\":1,\"timed_out\":false,\"duration_ms\":506232}]}\n{\"schema_version\":1,\"kind\":\"verification_metrics\",\"route\":\"full-fast\",\"wall_clock_ms\":4278207,\"selected_groups\":5,\"executed_groups\":5,\"parallel_group_concurrency\":1,\"build_invocations\":1,\"ok\":false}\n"
+      "stderr_tail": "te may be incomplete\n- 202601010101-ABCDE: task README frontmatter schema validation failed: Invalid input: expected string, received number at \"title\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"tags[1]\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"verify[1]\"; task README frontmatter schema validation failed: Too small: expected string to have >=1 characters at \"commit.hash\"; task README frontmatter schema validation failed: Too small: expected string to have >=1 characters at \"commit.message\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"description\"\nℹ️ task doc set outcome=section-updated section=Summary\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Summary\nℹ️ task doc set outcome=full-doc-updated section=Summary\n{\"ts\":\"2026-10-10T07:37:39.476Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-PF13RB/agentplane-workflow-iJWrQp/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/tmp/agentplane-vitest-run-PF13RB/agentplane-workflow-iJWrQp/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-10T07:37:39.501Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-PF13RB/agentplane-workflow-UpA2ok/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/tmp/agentplane-vitest-run-PF13RB/agentplane-workflow-UpA2ok/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-10T07:37:39.512Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-PF13RB/agentplane-workflow-UpA2ok/.agentplane/WORKFLOW.md\",\"from\":\"/tmp/agentplane-vitest-run-PF13RB/agentplane-workflow-UpA2ok/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-10T07:37:39.525Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-PF13RB/agentplane-workflow-DS9shu/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/tmp/agentplane-vitest-run-PF13RB/agentplane-workflow-DS9shu/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-10T07:37:39.530Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_failed\",\"code\":\"WF_UNSUPPORTED_VERSION\",\"details\":{\"reason\":\"Unsupported WORKFLOW version 3; supported versions: 1, 2.\"}}\n{\"ts\":\"2026-10-10T07:39:05.063Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-10-10T07:39:05.223Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":1}}\n{\"ts\":\"2026-10-10T07:39:05.225Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-10-10T07:39:05.237Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":2}}\n{\"ts\":\"2026-10-10T07:39:05.241Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-10-10T07:39:05.249Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_completed\",\"details\":{\"diagnostics\":0}}\n$ node scripts/checks/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 3 --fixture local-basic --timeout-ms 10000\n$ node scripts/checks/run-vitest-suite.mjs critical-cli\n$ bun run docs:ia:check && bun run docs:reference:check && bun run docs:onboarding:check\n$ node scripts/checks/check-docs-ia.mjs\n$ node scripts/generate/generate-package-reference.mjs --check\n$ node scripts/checks/check-agent-onboarding-scenario.mjs\n$ node scripts/workflow/run-workflows-lint.mjs && node scripts/checks/check-workflow-command-contract.mjs && bun scripts/checks/check-lifecycle-parity.ts && node scripts/checks/check-critical-test-route.mjs\n$ node scripts/checks/run-vitest-suite.mjs platform-critical\n$ node scripts/checks/check-significant-coverage.mjs\n",
+      "stdout_tail": "\n\n== cli (233501ms) ==\nCLI cold-start baseline OK using fixture local-basic (quickstart median=1525.747ms (threshold=5000ms, p95=1525.747ms); task_list median=1613.672ms (threshold=10000ms, p95=1613.672ms); task_search median=2036.194ms (threshold=6000ms, p95=2036.194ms); task_next median=824.152ms (threshold=8000ms, p95=824.152ms); preflight_quick median=625.785ms (threshold=6000ms, p95=625.785ms))\nVitest suite critical-cli: chunk 1/5 (2 files): packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts, packages/agentplane/src/cli/run-cli.critical.exit-codes.test.ts\nVitest suite critical-cli: chunk 1/5 passed in 27480ms (Test Files  2 passed (2); Tests  3 passed (3); Duration  26.93s (transform 17.77s, setup 231ms, import 9.70s, tests 35.03s, environment 0ms))\nVitest suite critical-cli: chunk 2/5 (2 files): packages/agentplane/src/cli/run-cli.critical.git-edge.test.ts, packages/agentplane/src/cli/run-cli.critical.protected-paths.test.ts\nVitest suite critical-cli: chunk 2/5 passed in 33933ms (Test Files  2 passed (2); Tests  5 passed (5); Duration  32.67s (transform 24.35s, setup 507ms, import 31.97s, tests 31.91s, environment 0ms))\nVitest suite critical-cli: chunk 3/5 (2 files): packages/agentplane/src/cli/run-cli.critical.scope-leak.test.ts, packages/agentplane/src/cli/run-cli.critical.symlink-root.test.ts\nVitest suite critical-cli: chunk 3/5 passed in 37396ms (Test Files  2 passed (2); Tests  7 passed (7); Duration  35.67s (transform 26.61s, setup 331ms, import 35.38s, tests 28.69s, environment 0ms))\nVitest suite critical-cli: chunk 4/5 (2 files): packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts, packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet-regressions.test.ts\nVitest suite critical-cli: chunk 4/5 passed in 87816ms (Test Files  2 passed (2); Tests  7 passed (7); Duration  85.99s (transform 22.06s, setup 239ms, import 20.16s, tests 76.73s, environment 0ms))\nVitest suite critical-cli: chunk 5/5 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts\nVitest suite critical-cli: chunk 5/5 passed in 37463ms (Test Files  1 passed (1); Tests  12 passed (12); Duration  36.25s (transform 11.65s, setup 192ms, import 13.46s, tests 22.23s, environment 0ms))\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":true,\"groups\":[{\"id\":\"runtime\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":189319},{\"id\":\"docs-schema\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":81835},{\"id\":\"core\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":2215584},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":233501}]}\n{\"schema_version\":1,\"kind\":\"verification_metrics\",\"route\":\"full-fast\",\"wall_clock_ms\":2740880,\"selected_groups\":5,\"executed_groups\":5,\"parallel_group_concurrency\":1,\"build_invocations\":1,\"ok\":true}\n\n== Documentation contracts ==\nok: docs index and current path references are aligned\nok: docs/reference/generated-reference.mdx is fresh\nok: agent onboarding scenario surfaces are aligned\n\n== Workflows lint (actionlint) ==\nworkflow and command guidance contract OK\nworkflow lifecycle parity OK\ncritical Vitest route OK\n\n== Windows platform-critical tests ==\n\n RUN  v4.1.11 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610092153-WZDW5D-align-full-ci-nested-timeouts-and-lint-memory-bu\n\n\n Test Files  7 passed (7)\n      Tests  98 passed (98)\n   Start at  10:45:59\n   Duration  88.58s (transform 80.07s, setup 1.38s, import 75.27s, tests 213.43s, environment 7ms)\n\n\n== Significant file coverage (guard) ==\n\n RUN  v4.1.11 /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610092153-WZDW5D-align-full-ci-nested-timeouts-and-lint-memory-bu\n      Coverage enabled with v8\n\n\n Test Files  8 passed (8)\n      Tests  101 passed (101)\n   Start at  10:47:28\n   Duration  26.56s (transform 10.52s, setup 533ms, import 11.34s, tests 10.73s, environment 1ms)\n\n\n== Coverage threshold (significant) ==\nSignificant suite contract OK (17 source targets).\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "task_outcome"
+      ],
+      "command": "node .agentplane/policy/check-routing.mjs",
+      "duration_ms": 2389,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:92e16ff4ff15e93766eac4a91ab5dd5a93f6ab6c8906318e14e2362c512f11e1",
+        "executable_digest": "sha256:7fde7b8afa198da66257f42ee2001d874c7355631e6d1579a5fb5ef1f246df4c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "policy routing OK\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "task_outcome"
+      ],
+      "command": "agentplane doctor",
+      "duration_ms": 63455,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:92e16ff4ff15e93766eac4a91ab5dd5a93f6ab6c8906318e14e2362c512f11e1",
+        "executable_digest": "sha256:7fde7b8afa198da66257f42ee2001d874c7355631e6d1579a5fb5ef1f246df4c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "8:01.947Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_doctor_check\",\"details\":{\"ok\":true,\"findings\":0}}\nℹ️ doctor: checking workspace\nℹ️ doctor: checking branch_pr drift\nℹ️ doctor: checking runtime source\nℹ️ doctor: checking prompt graph\nℹ️ doctor: checking recent task archive\n⚠️ doctor findings: errors=0 warnings=3 info=9\n- [WARN] State: branch_pr tasks appear shipped on the base branch but remain open\nLikely cause: the verified task commit already landed on the base branch, but canonical task closure artifacts were never reconciled\nNext action: agentplane task normalize --sync-branch-pr-state (mark locally shipped branch_pr tasks as DONE in the task projection before committing the reconciled task artifacts on the base branch)\nDetails: Affected tasks: 39\n  - Examples: 202607221908-7WV0A7@main:b14fb5a94795 verified_via=task, 202607221908-RC1DX8@main:aea474462713 verified_via=task, 202607221908-YD5J89@main:d183683d77ba verified_via=task, 202607300112-48RH1X@main:d8b93f77c2cb verified_via=task, 202607300150-MGCHE6@main:2c8d47c38939 verified_via=task\n- [WARN] State: DONE branch_pr tasks still have open or unmerged PR artifacts\nLikely cause: the task was marked DONE, but its branch_pr PR artifacts were never reconciled to MERGED and the task branch still exists\nNext action: agentplane task normalize --sync-branch-pr-state --task-id <task-id> (reconcile the shipped task's local branch_pr state and PR artifacts to MERGED without scanning unrelated task history)\nDetails: Affected tasks: 2\n  - Examples: 202609300615-DE9AE6@main:56c926c7d3a0 branch=task/202609300615-DE9AE6/document-semantic-workflow-selection-and-feature, 202610081434-RDZE4P@main:22f61e1bfc78 branch=task/202610081434-RDZE4P/resolve-open-consumer-lifecycle-defects-6054-and\n- [INFO] State: local plan approval requires a host-originated user decision\nLikely cause: no trusted signed-receipt issuer is configured\nNext action: ap task advance <task-id> --agent-json (present the emitted host_user_decision request in Codex; use task plan approve --by USER only as explicit manual compatibility)\nDetails: Reason code: host_user_decision_required\n  - AgentPlane will not emit an unavailable signed_user_receipt transport.\n  - A managed runner cannot synthesize the user decision and stops at the plan boundary.\n- [INFO] Runtime mode: repo-local (repo-local framework binary)\n- [INFO] Active binary: /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610092153-WZDW5D-align-full-ci-nested-timeouts-and-lint-memory-bu/packages/agentplane/bin/agentplane.js\n- [INFO] Resolved agentplane: 0.7.12 @ /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610092153-WZDW5D-align-full-ci-nested-timeouts-and-lint-memory-bu/packages/agentplane\n- [INFO] Resolved @agentplaneorg/core: 0.7.12 @ /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610092153-WZDW5D-align-full-ci-nested-timeouts-and-lint-memory-bu/packages/core\n- [INFO] Framework repo root: /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610092153-WZDW5D-align-full-ci-nested-timeouts-and-lint-memory-bu\n- [INFO] Framework agentplane root: /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610092153-WZDW5D-align-full-ci-nested-timeouts-and-lint-memory-bu/packages/agentplane\n- [INFO] Framework core root: /home/agentplane/workspace/agentplane/.agentplane/worktrees/202610092153-WZDW5D-align-full-ci-nested-timeouts-and-lint-memory-bu/packages/core\n- [INFO] Historical task archive contains 138 DONE tasks with unknown implementation commit hashes across 138 distinct commit hashes. Examples: 042f68391d3b51915e07f648cc6f02bf54579bd6 (1 task: 202608271544-1TDVPJ); 08be56971aec26c3366d50e67b4043b47e142377 (1 task: 202609190050-3MJ7GQ); 08c437b3d19e21c6e85de277fc47ef9e269651ec (1 task: 202609111339-NGDG6V); +135 more hash groups\n- [WARN] DONE task implementation commit points to a close commit: 202609071219-QV0SX9 -> 3c45166b31d0a9960f52aa11c3259afd472dd691 (🚧 QV0SX9 task: pre-merge closure)\n",
+      "stdout_tail": "✅ doctor (OK)\n"
     }
   ],
   "kind": "direct_task_declared_checks",
-  "reason": "Declared check failed: bun run ci:local:full",
+  "reason": null,
   "schema_version": 1,
-  "status": "failed",
+  "status": "passed",
   "task_id": "202610092153-WZDW5D"
 }

@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check aafa78c69270359130c170efa75e253a70cd84d6..adecd45b887f2c138fbbed706d57b23beed89d92",
+      "command": "git diff --check adecd45b887f2c138fbbed706d57b23beed89d92..5be22c9ecf7ffa5154dae1c4ff103dbbaa3c7bcf",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB aafa78c69270359130c170efa75e253a70cd84d6..adecd45b887f2c138fbbed706d57b23beed89d92",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB adecd45b887f2c138fbbed706d57b23beed89d92..5be22c9ecf7ffa5154dae1c4ff103dbbaa3c7bcf",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -25,7 +25,6 @@
         "M\t.agentplane/tasks/202610092153-WZDW5D/supervision/declared-checks.json",
         "M\t.agentplane/tasks/202610092153-WZDW5D/supervision/implementation-evidence.json",
         "M\tdocs/developer/testing-and-quality.mdx",
-        "M\tscripts/checks/run-local-ci-group.mjs",
         "M\tscripts/checks/run-local-ci.mjs",
         "M\tscripts/lib/local-ci-resource-profile.test.mjs",
         "M\tscripts/lib/verification-scheduler.d.ts",
@@ -39,8 +38,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "aafa78c69270359130c170efa75e253a70cd84d6",
-  "implementation_commit": "adecd45b887f2c138fbbed706d57b23beed89d92",
+  "execution_base_commit": "adecd45b887f2c138fbbed706d57b23beed89d92",
+  "implementation_commit": "5be22c9ecf7ffa5154dae1c4ff103dbbaa3c7bcf",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
