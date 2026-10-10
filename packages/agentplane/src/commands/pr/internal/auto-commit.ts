@@ -1,11 +1,6 @@
 import path from "node:path";
 
-import {
-  buildTaskArtifactRefreshCommitSubject,
-  extractTaskSuffix,
-  isTaskArtifactRefreshCommitSubject,
-  parseTaskSubjectTemplate,
-} from "@agentplaneorg/core/commit";
+import { buildTaskArtifactRefreshCommitSubject } from "@agentplaneorg/core/commit";
 
 import { appendDcoSignoff } from "../../guard/impl/dco.js";
 import { buildGitCommitEnv, resolveCanonicalGitIdentity } from "../../guard/impl/env.js";
@@ -15,7 +10,7 @@ import { resolveGitCommitTimeoutMs } from "../../shared/git-timeouts.js";
 import { gitCurrentBranch } from "../../shared/git-ops.js";
 import type { CommandContext } from "../../shared/task-backend.js";
 
-type TaskPrArtifactCommitStrategy = "auto" | "commit" | "amend";
+type TaskPrArtifactCommitStrategy = "auto" | "commit";
 
 function taskPrDirPrefix(workflowDir: string, taskId: string): string {
   return `${toGitPath(path.join(workflowDir, taskId, "pr"))}/`;
@@ -58,80 +53,6 @@ async function readCachedPaths(gitRoot: string): Promise<string[]> {
     .filter((line) => line.length > 0);
 }
 
-async function readHeadSubject(gitRoot: string): Promise<string | null> {
-  try {
-    const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], {
-      cwd: gitRoot,
-      env: gitEnv(),
-    });
-    const subject = stdout.trim();
-    return subject.length > 0 ? subject : null;
-  } catch {
-    return null;
-  }
-}
-
-async function readHeadChangedPaths(gitRoot: string): Promise<string[]> {
-  try {
-    const { stdout } = await execFileAsync(
-      "git",
-      ["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"],
-      {
-        cwd: gitRoot,
-        env: gitEnv(),
-      },
-    );
-    return stdout
-      .split("\n")
-      .map((line) => line.trim())
-      .filter((line) => line.length > 0);
-  } catch {
-    return [];
-  }
-}
-
-async function headCommitIsTaskOwnedImplementation(opts: {
-  gitRoot: string;
-  workflowDir: string;
-  taskId: string;
-}): Promise<boolean> {
-  const subject = await readHeadSubject(opts.gitRoot);
-  if (!subject) return false;
-
-  const parsed = parseTaskSubjectTemplate(subject);
-  if (!parsed) return false;
-  if (parsed.suffix.toLowerCase() !== extractTaskSuffix(opts.taskId).toLowerCase()) return false;
-  if (isTaskArtifactRefreshCommitSubject({ subject, taskId: opts.taskId })) return false;
-
-  const changedPaths = await readHeadChangedPaths(opts.gitRoot);
-  return changedPaths.some(
-    (relPath) =>
-      !isTaskPacketPath({
-        workflowDir: opts.workflowDir,
-        taskId: opts.taskId,
-        relPath,
-      }),
-  );
-}
-
-async function resolveTaskPrArtifactCommitStrategy(opts: {
-  gitRoot: string;
-  workflowDir: string;
-  taskId: string;
-  strategy?: TaskPrArtifactCommitStrategy;
-  baseBranch?: string | null;
-}): Promise<"commit" | "amend"> {
-  if (opts.strategy === "commit" || opts.strategy === "amend") return opts.strategy;
-
-  return (await headCommitIsTaskOwnedImplementation({
-    gitRoot: opts.gitRoot,
-    workflowDir: opts.workflowDir,
-    taskId: opts.taskId,
-  }))
-    ? "amend"
-    : "commit";
-}
-
 export async function maybeAutoCommitTaskPrArtifacts(opts: {
   ctx: CommandContext;
   taskId: string;
@@ -172,13 +93,6 @@ export async function maybeAutoCommitTaskPrArtifacts(opts: {
   }
 
   await opts.ctx.git.stage(taskPacketPaths);
-  const strategy = await resolveTaskPrArtifactCommitStrategy({
-    gitRoot: opts.ctx.resolvedProject.gitRoot,
-    workflowDir: opts.ctx.config.paths.workflow_dir,
-    taskId: opts.taskId,
-    strategy: opts.strategy,
-    baseBranch: opts.baseBranch,
-  });
   const env = buildGitCommitEnv({
     taskId: opts.taskId,
     allowTasks: true,
@@ -190,19 +104,15 @@ export async function maybeAutoCommitTaskPrArtifacts(opts: {
     gitIdentity: await resolveCanonicalGitIdentity(),
   });
   const timeoutMs = resolveGitCommitTimeoutMs();
-  await (strategy === "amend"
-    ? opts.ctx.git.commitAmendNoEdit({
-        env,
-        timeoutMs,
-        skipHooks: true,
-      })
-    : opts.ctx.git.commit({
-        message: buildTaskArtifactRefreshCommitSubject({ taskId: opts.taskId }),
-        body: appendDcoSignoff({ config: opts.ctx.config }),
-        env,
-        timeoutMs,
-        skipHooks: true,
-      }));
+  // Artifact refreshes may follow publication. Always preserve the existing HEAD;
+  // commit subjects and local tracking refs cannot prove that it is unpublished.
+  await opts.ctx.git.commit({
+    message: buildTaskArtifactRefreshCommitSubject({ taskId: opts.taskId }),
+    body: appendDcoSignoff({ config: opts.ctx.config }),
+    env,
+    timeoutMs,
+    skipHooks: true,
+  });
   opts.ctx.git.invalidateStatus();
   return true;
 }

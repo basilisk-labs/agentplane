@@ -30,10 +30,10 @@ vi.mock("../../shared/git-ops.js", () => ({
 function mkCtx(): {
   ctx: CommandContext;
   stage: ReturnType<typeof vi.fn>;
-  commitAmendNoEdit: ReturnType<typeof vi.fn>;
+  commit: ReturnType<typeof vi.fn>;
 } {
   const stage = vi.fn(() => Promise.resolve());
-  const commitAmendNoEdit = vi.fn(() => Promise.resolve());
+  const commit = vi.fn(() => Promise.resolve());
   const ctx = {
     resolvedProject: {
       gitRoot: "/repo",
@@ -53,12 +53,11 @@ function mkCtx(): {
         ]),
       ),
       stage,
-      commitAmendNoEdit,
-      commit: vi.fn(() => Promise.resolve()),
+      commit,
       invalidateStatus: vi.fn(),
     },
   } as unknown as CommandContext;
-  return { ctx, stage, commitAmendNoEdit };
+  return { ctx, stage, commit };
 }
 
 describe("task PR artifact auto-commit", () => {
@@ -66,8 +65,8 @@ describe("task PR artifact auto-commit", () => {
     vi.clearAllMocks();
   });
 
-  it("bounds artifact amend commits so hook hangs return control", async () => {
-    const { ctx, stage, commitAmendNoEdit } = mkCtx();
+  it("bounds artifact commits so hook hangs return control", async () => {
+    const { ctx, stage, commit } = mkCtx();
     const previousTimeout = process.env.AGENTPLANE_GIT_COMMIT_TIMEOUT_MS;
     process.env.AGENTPLANE_GIT_COMMIT_TIMEOUT_MS = "123";
 
@@ -78,7 +77,7 @@ describe("task PR artifact auto-commit", () => {
           taskId: "202606042157-020DWK",
           relatedTaskIds: ["202606042204-NX58GD"],
           branch: "task/202606042157-020DWK/reduce-agent-cognitive-load",
-          strategy: "amend",
+          strategy: "commit",
         }),
       ).resolves.toBe(true);
     } finally {
@@ -86,11 +85,13 @@ describe("task PR artifact auto-commit", () => {
       else process.env.AGENTPLANE_GIT_COMMIT_TIMEOUT_MS = previousTimeout;
     }
 
-    expect(commitAmendNoEdit).toHaveBeenCalledWith({
-      env: { AGENTPLANE_TASK_ID: "202606042225-FE57GC" },
-      skipHooks: true,
-      timeoutMs: 123,
-    });
+    expect(commit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        env: { AGENTPLANE_TASK_ID: "202606042225-FE57GC" },
+        skipHooks: true,
+        timeoutMs: 123,
+      }),
+    );
     expect(stage).toHaveBeenCalledWith([
       ".agentplane/tasks/202606042157-020DWK/README.md",
       ".agentplane/tasks/202606042157-020DWK/pr/meta.json",
