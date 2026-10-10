@@ -17,7 +17,7 @@ import { writeIsolationPolicy } from "./isolation.mjs";
 const inside = (a, b) => a === b || a.startsWith(b + path.sep);
 
 // This inventory is public input/output, never authentication or oracle storage.
-export function setupInventory(root) {
+export function setupInventory(root, { publicCompiler = false } = {}) {
   const result = [];
   let total = 0;
   let directories = 0;
@@ -29,7 +29,9 @@ export function setupInventory(root) {
       assert.ok(!stat.isSymbolicLink(), "Setup symlinks are forbidden");
       if (stat.isDirectory()) visit(file, depth + 1);
       else {
-        assert.ok(stat.isFile() && stat.size <= 262_144, "Invalid setup file");
+        const maxBytes =
+          publicCompiler && file === path.join(root, "public-compiler.mjs") ? 524_288 : 262_144;
+        assert.ok(stat.isFile() && stat.size <= maxBytes, "Invalid setup file");
         total += stat.size;
         assert.ok(total <= 1_048_576 && result.length < 64, "Setup artifact bound exceeded");
         result.push({
@@ -71,7 +73,17 @@ export async function runSubscriptionSetup(
   assert.ok(inside(inputs, subject) && inside(outputs, subject));
   assert.ok(!inside(inputs, outputs) && !inside(outputs, inputs));
   assert.ok(!inside(host, subject) && !inside(subject, host));
-  assert.deepEqual(setupInventory(inputs), packet.input_inventory, "Public inputs changed");
+  const readInputs = () =>
+    setupInventory(inputs, { publicCompiler: Boolean(packet.public_compiler) });
+  if (packet.public_compiler) {
+    assert.equal(packet.public_compiler.path, "public-compiler.mjs");
+    assert.match(packet.public_compiler.sha256, /^[a-f0-9]{64}$/u);
+    assert.equal(
+      packet.input_inventory.find((file) => file.path === "public-compiler.mjs")?.sha256,
+      packet.public_compiler.sha256,
+    );
+  }
+  assert.deepEqual(readInputs(), packet.input_inventory, "Public inputs changed");
   const initialOutputs = roles.length === 2 ? packet.initial_output_inventory : [];
   if (roles.length === 2)
     assert.ok(
@@ -164,7 +176,7 @@ export async function runSubscriptionSetup(
         (m) => m.threadId === receipt.thread_id && m.turnId === receipt.turn_id,
       )?.item.text;
       assert.equal(typeof message, "string", "Bound setup result required");
-      assert.deepEqual(setupInventory(inputs), packet.input_inventory, "Public inputs changed");
+      assert.deepEqual(readInputs(), packet.input_inventory, "Public inputs changed");
       const result = { role, call_id: call.id, receipt, message, outputs: setupInventory(outputs) };
       writeFileSync(path.join(directory, "result.json"), JSON.stringify(result, null, 2) + "\n", {
         flag: "wx",

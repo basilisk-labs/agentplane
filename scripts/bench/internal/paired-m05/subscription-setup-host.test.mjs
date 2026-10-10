@@ -212,3 +212,26 @@ test("unsupported correction role order is rejected before effects", async (t) =
     assert.equal(mocks.observed.length, 0);
   }
 });
+
+test("compiler exception is pinned input-only and preserves individual and total bounds", async (t) => {
+  const { packet } = fixture(t);
+  const compiler = path.join(packet.inputs, "public-compiler.mjs");
+  writeFileSync(compiler, "x".repeat(524_288));
+  assert.throws(() => setupInventory(packet.inputs));
+  packet.input_inventory = setupInventory(packet.inputs, { publicCompiler: true });
+  packet.public_compiler = { path: "public-compiler.mjs", sha256: "0".repeat(64) };
+  await assert.rejects(
+    runSubscriptionSetup({ packet, authorize: async () => true }, ports(packet)),
+  );
+  writeFileSync(path.join(packet.outputs, "public-compiler.mjs"), "x".repeat(262_145));
+  assert.throws(() => setupInventory(packet.outputs));
+  writeFileSync(path.join(packet.inputs, "other.mjs"), "x".repeat(262_145));
+  assert.throws(() => setupInventory(packet.inputs, { publicCompiler: true }));
+  writeFileSync(path.join(packet.inputs, "other.mjs"), "x".repeat(262_144));
+  writeFileSync(path.join(packet.inputs, "third.mjs"), "x".repeat(262_144));
+  assert.throws(() => setupInventory(packet.inputs, { publicCompiler: true }));
+  rmSync(path.join(packet.inputs, "other.mjs"));
+  rmSync(path.join(packet.inputs, "third.mjs"));
+  writeFileSync(compiler, "x".repeat(524_289));
+  assert.throws(() => setupInventory(packet.inputs, { publicCompiler: true }));
+});
