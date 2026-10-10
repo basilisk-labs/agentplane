@@ -1,9 +1,13 @@
 import { AGENT_WORK_ORDER_V2_VALID_FIXTURE } from "@agentplaneorg/core/schemas";
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
-import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js";
+import type { KernelRecord } from "./agentplane-internal.js";
 
 // Uses the same authenticated begin-receipt fixture as reviewed-base evidence tests.
-export function nativeCandidateFixture(root: string, head: string) {
+export function nativeCandidateFixture(
+  root: string,
+  head: string,
+  expiresAt: string | null = null,
+) {
   const raw = structuredClone(AGENT_WORK_ORDER_V2_VALID_FIXTURE);
   const parent = {
     task_id: raw.task.id,
@@ -21,7 +25,7 @@ export function nativeCandidateFixture(root: string, head: string) {
     policy_digests: [k.kernelDigest("policy")],
     completion_requirements: [],
     risk: { requirements: "bounded", implementation: "bounded", reversibility: "reversible" },
-    expires_at: null,
+    expires_at: expiresAt,
     provenance: {
       kind: "USER",
       actor_id: "USER",

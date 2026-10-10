@@ -8,7 +8,7 @@ import {
   appendSideEffectAuthorityAudit,
   withSideEffectAuthorityState,
 } from "../shared/side-effect-authority.js";
-import { nativeCandidateFixture } from "./candidate-publication.test-helpers.js";
+import { nativeCandidateFixture } from "@agentplane/testkit/task";
 import {
   admitCandidatePublication,
   candidatePublicationOperation,
@@ -83,17 +83,18 @@ async function fixture() {
   let head: string | null = null;
   let pushes = 0;
   const port = {
-    read: async () => head,
-    create: async () => {
+    read: () => Promise.resolve(head),
+    create: () => {
       pushes += 1;
       head = commit;
+      return Promise.resolve();
     },
   };
   const options = {
     root,
     directory: path.join(root, ".git", "candidate-operation"),
     request,
-    readContext: async () => context,
+    readContext: () => Promise.resolve(context),
     port,
   };
   return {
@@ -124,7 +125,7 @@ describe("candidate supervisor publication journal", () => {
     expect(JSON.stringify(f.record)).toBe(before);
     const journal = JSON.parse(
       readFileSync(path.join(f.options.directory, "journal.json"), "utf8"),
-    );
+    ) as { operations: { status: string }[] };
     expect(journal.operations).toHaveLength(1);
     expect(journal.operations[0].status).toBe("completed");
   });
@@ -143,9 +144,9 @@ describe("candidate supervisor publication journal", () => {
   it("does not retry an unresolved intent when remote is absent", async () => {
     const f = await fixture();
     let calls = 0;
-    f.options.port.create = async () => {
+    f.options.port.create = () => {
       calls += 1;
-      throw new Error("transport interrupted");
+      return Promise.reject(new Error("transport interrupted"));
     };
     await expect(publishCandidateWithJournal(f.options)).rejects.toThrow("interrupted");
     await expect(publishCandidateWithJournal(f.options)).rejects.toThrow("will not be retried");
@@ -154,10 +155,10 @@ describe("candidate supervisor publication journal", () => {
   it("rejects revocation after journal admission before dispatch", async () => {
     const f = await fixture();
     let reads = 0;
-    f.options.readContext = async () => {
+    f.options.readContext = () => {
       reads += 1;
       if (reads === 3) f.context.task.extensions = {};
-      return f.context;
+      return Promise.resolve(f.context);
     };
     await expect(publishCandidateWithJournal(f.options)).rejects.toThrow("revoked");
     expect(f.pushes()).toBe(0);
@@ -166,7 +167,11 @@ describe("candidate supervisor publication journal", () => {
     const f = await fixture();
     await publishCandidateWithJournal(f.options);
     const file = path.join(f.options.directory, "receipt.json");
-    const value = JSON.parse(readFileSync(file, "utf8"));
+    const value = JSON.parse(readFileSync(file, "utf8")) as {
+      tree: string;
+      digest: string;
+      [key: string]: unknown;
+    };
     value.tree = "f".repeat(40);
     const { digest: _digest, ...contents } = value;
     writeFileSync(file, JSON.stringify({ ...contents, digest: k.kernelDigest(contents) }));

@@ -3,11 +3,11 @@
     {
       "check_ids": [],
       "command": "bun run typecheck",
-      "duration_ms": 1352,
+      "duration_ms": 1473,
       "exit_code": 0,
       "observation": {
-        "digest": "sha256:09971536ac46c837f731324420504727c692592667dc4ca1d8d6d20d8fc1a447",
-        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610101128-35N0ZK-candidate-publication/.agentplane/tasks/202610101128-35N0ZK/supervision/verification-runs/run-000/manifest.json",
+        "digest": "sha256:ddb1d6bb01055986c3225b4e3af237342ef0e6b739560911149f6c42c885f08b",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610101128-35N0ZK-candidate-publication/.agentplane/tasks/202610101128-35N0ZK/supervision/verification-runs/run-001/manifest.json",
         "status": "retained"
       },
       "runtime": {

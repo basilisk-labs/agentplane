@@ -46,7 +46,7 @@ const candidatePath = path.join(
 const REVIEWED_SECTION_DIGESTS = {
   agent_facing_context_contracts:
     "4926aed50aea235e24310e39404f7b939bc4caa7fc763a98387992822a2101c5",
-  cli_topology: "ac5cdf9d02a03424be67b5f88a74e078b1f5ade8a3c5480fd3af4b0faaa0f195",
+  cli_topology: "cc26a1a89b3a452cb28c9f3f7cfd31c3938dbbbc22ded24f3cd777e553d4548c",
   exit_error_contract: "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
   machine_output_contract: "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
   package_manifests: "6052feb72f5eee6eaa1a503bb10074492350a164de683adf50bf2b092ce647b9",
@@ -400,6 +400,7 @@ function validateReviewedCandidate({
     "202610100459-0NATSS",
     "202610100750-36SZWD",
     "202610100756-0Y9HMG",
+    "202610101128-35N0ZK",
   ];
 
   assert(
@@ -971,6 +972,7 @@ function validateReviewedCandidate({
       "202610081434-RDZE4P",
       "202610100459-0NATSS",
       "202610100750-36SZWD",
+      "202610101128-35N0ZK",
     ],
     agent_facing_context_contracts: [
       "202607221848-1HWR0R",
@@ -3600,6 +3602,58 @@ function validateReviewedCandidate({
       name: "reviewed-work-order-digest",
       source_task: "202610100750-36SZWD",
     },
+    { kind: "command", command: "task candidate approve", source_task: "202610101128-35N0ZK" },
+    { kind: "command", command: "task candidate prepare", source_task: "202610101128-35N0ZK" },
+    { kind: "command", command: "task candidate publish", source_task: "202610101128-35N0ZK" },
+    { kind: "command", command: "task candidate revoke", source_task: "202610101128-35N0ZK" },
+    {
+      kind: "option",
+      command: "task candidate approve",
+      name: "approval-digest",
+      source_task: "202610101128-35N0ZK",
+    },
+    {
+      kind: "option",
+      command: "task candidate approve",
+      name: "by",
+      source_task: "202610101128-35N0ZK",
+    },
+    {
+      kind: "option",
+      command: "task candidate approve",
+      name: "file",
+      source_task: "202610101128-35N0ZK",
+    },
+    {
+      kind: "option",
+      command: "task candidate approve",
+      name: "ttl-minutes",
+      source_task: "202610101128-35N0ZK",
+    },
+    {
+      kind: "option",
+      command: "task candidate prepare",
+      name: "file",
+      source_task: "202610101128-35N0ZK",
+    },
+    {
+      kind: "option",
+      command: "task candidate publish",
+      name: "request-digest",
+      source_task: "202610101128-35N0ZK",
+    },
+    {
+      kind: "option",
+      command: "task candidate revoke",
+      name: "by",
+      source_task: "202610101128-35N0ZK",
+    },
+    {
+      kind: "option",
+      command: "task candidate revoke",
+      name: "request-digest",
+      source_task: "202610101128-35N0ZK",
+    },
   ];
   const activeExpectedAddedCommandDescriptors = expectedAddedCommandDescriptors
     .filter((command) => command.id.join(" ") !== "task supervisor budget-epoch")
@@ -3654,6 +3708,42 @@ function validateReviewedCandidate({
         { name: "expires-at", kind: "string", valueHint: "<ISO-8601>" },
         { name: "grant-digest", kind: "string", valueHint: "<sha256:...>" },
       ],
+    },
+    {
+      args: [{ name: "task-id", required: true, valueHint: "<task-id>", variadic: false }],
+      group: "Task",
+      id: ["task", "candidate", "approve"],
+      options: [
+        { kind: "string", name: "file", required: true, valueHint: "<json>" },
+        { kind: "string", name: "by", required: true, valueHint: "USER" },
+        { kind: "string", name: "approval-digest", required: true, valueHint: "<sha256>" },
+        { kind: "string", name: "ttl-minutes", valueHint: "<1-60>" },
+      ],
+      visibility: "advanced",
+    },
+    {
+      args: [{ name: "task-id", required: true, valueHint: "<task-id>", variadic: false }],
+      group: "Task",
+      id: ["task", "candidate", "prepare"],
+      options: [{ kind: "string", name: "file", required: true, valueHint: "<json>" }],
+      visibility: "advanced",
+    },
+    {
+      args: [{ name: "task-id", required: true, valueHint: "<task-id>", variadic: false }],
+      group: "Task",
+      id: ["task", "candidate", "publish"],
+      options: [{ kind: "string", name: "request-digest", required: true, valueHint: "<sha256>" }],
+      visibility: "advanced",
+    },
+    {
+      args: [{ name: "task-id", required: true, valueHint: "<task-id>", variadic: false }],
+      group: "Task",
+      id: ["task", "candidate", "revoke"],
+      options: [
+        { kind: "string", name: "request-digest", required: true, valueHint: "<sha256>" },
+        { kind: "string", name: "by", required: true, valueHint: "USER" },
+      ],
+      visibility: "advanced",
     },
   );
   activeExpectedAddedCommandDescriptors.sort((a, b) =>
@@ -3710,6 +3800,10 @@ function validateReviewedCandidate({
         "repair adopt-legacy-conflict",
         "task advance",
         "task authority grant",
+        "task candidate approve",
+        "task candidate prepare",
+        "task candidate publish",
+        "task candidate revoke",
         "task corrective-authority",
         "task create",
         "task kernel-migrate",
@@ -3814,6 +3908,56 @@ function validateReviewedCandidate({
       kind: "string",
       name: "reviewed-work-order-digest",
       valueHint: "<pin>",
+    },
+    {
+      command: "task candidate approve",
+      kind: "string",
+      name: "approval-digest",
+      required: true,
+      valueHint: "<sha256>",
+    },
+    {
+      command: "task candidate approve",
+      kind: "string",
+      name: "by",
+      required: true,
+      valueHint: "USER",
+    },
+    {
+      command: "task candidate approve",
+      kind: "string",
+      name: "file",
+      required: true,
+      valueHint: "<json>",
+    },
+    { command: "task candidate approve", kind: "string", name: "ttl-minutes", valueHint: "<1-60>" },
+    {
+      command: "task candidate prepare",
+      kind: "string",
+      name: "file",
+      required: true,
+      valueHint: "<json>",
+    },
+    {
+      command: "task candidate publish",
+      kind: "string",
+      name: "request-digest",
+      required: true,
+      valueHint: "<sha256>",
+    },
+    {
+      command: "task candidate revoke",
+      kind: "string",
+      name: "by",
+      required: true,
+      valueHint: "USER",
+    },
+    {
+      command: "task candidate revoke",
+      kind: "string",
+      name: "request-digest",
+      required: true,
+      valueHint: "<sha256>",
     },
   ];
   activeExpectedAddedOptions.sort((a, b) =>
