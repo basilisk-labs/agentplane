@@ -816,6 +816,10 @@ agentplane task plan approve <task-id> [options]
 
 Options:
 
+- `--reviewed-base-old <pin>`: Explicit reviewed-base renewal pin. Requires all four pins, --renew-authority and --by USER. Selects retained evidence; does not attest historical dispatch.
+- `--reviewed-base-new <pin>`: Explicit reviewed-base renewal pin. Requires all four pins, --renew-authority and --by USER. Selects retained evidence; does not attest historical dispatch.
+- `--reviewed-work-order-digest <pin>`: Explicit reviewed-base renewal pin. Requires all four pins, --renew-authority and --by USER. Selects retained evidence; does not attest historical dispatch.
+- `--reviewed-checkpoint-digest <pin>`: Explicit reviewed-base renewal pin. Requires all four pins, --renew-authority and --by USER. Selects retained evidence; does not attest historical dispatch.
 - `--renew-authority`: Renew changed policy authority for an unchanged approved Plan. Requires --by USER. (default=false)
 - `--by <id>`: Approver id.
 - `--approval-receipt <base64url>`: Signed user approval receipt from a configured trusted bridge.
