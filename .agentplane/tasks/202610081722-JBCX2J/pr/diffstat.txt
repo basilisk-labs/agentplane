@@ -1,0 +1,4 @@
+ .../src/commands/task/direct-task-verification.qualification.test.ts    | 2 ++
+ packages/agentplane/src/commands/task/direct-task-verification.test.ts  | 2 +-
+ packages/agentplane/src/commands/task/direct-task-verification.ts       | 2 +-
+ 3 files changed, 4 insertions(+), 2 deletions(-)
