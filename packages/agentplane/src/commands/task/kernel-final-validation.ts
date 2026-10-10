@@ -174,7 +174,8 @@ export async function runKernelFinalValidation(
     if (!operationalTask) throw new Error("Recovered operational task is unavailable");
   }
   const verification =
-    operationalTask.execution_route?.repository_mode === "branch_pr"
+    operationalTask.execution_route?.repository_mode === "branch_pr" &&
+    recovery.kind !== "report_only"
       ? await resolveImplementationVerificationTask({
           command,
           checkout: command.resolvedProject.gitRoot,

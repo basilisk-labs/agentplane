@@ -19,6 +19,13 @@ export type VerificationGroupResult = {
     | "command_failure"
     | null;
   failure_kinds?: Array<NonNullable<VerificationGroupResult["failure_kind"]>>;
+  cancelled?: boolean;
+  observation?: {
+    status: "retained" | "unavailable";
+    manifest_path?: string;
+    digest?: string;
+    reason?: string;
+  };
   duration_ms: number;
   started_at_ms: number;
   finished_at_ms: number;
@@ -53,6 +60,9 @@ export function runVerificationGroups(
     killGraceMs?: number;
     outputTailBytes?: number;
     onGroupStart?: (group: VerificationGroup) => boolean | void;
+    observationDirectory?: string;
+    heartbeatMs?: number;
+    signal?: AbortSignal;
   },
 ): Promise<{
   schema_version: 1;

@@ -114,22 +114,18 @@ async function advanceCanonicalRoute(opts: {
         action: anomaly.action,
       };
     }
-    if (
-      [
-        "kernel_final_validation_required",
-        "kernel_task_completion_required",
-        "kernel_task_completed",
-      ].includes(route.reason_code)
-    ) {
-      const recovery = await recoverKernelOperationalProjection(
-        opts.command,
-        record,
-        current.read.task,
-      );
-      if (recovery.kind === "stop")
-        return { schema_version: 1, task_id: opts.task_id, action: recovery.action };
-      if (recovery.kind === "restored") continue;
-    }
+    const recovery = await recoverKernelOperationalProjection(
+      opts.command,
+      record,
+      current.read.task,
+      route.reason_code,
+    );
+    if (recovery.kind === "stop")
+      return { schema_version: 1, task_id: opts.task_id, action: recovery.action };
+    if (recovery.kind === "restored") continue;
+    const reportOnlyCompletion = recovery.kind === "report_only";
+    const needsPullRequest =
+      !reportOnlyCompletion && current.read.task.execution_route?.repository_mode === "branch_pr";
     finalValidation ??= await restoreKernelFinalValidation(
       opts.command,
       record,
@@ -140,7 +136,7 @@ async function advanceCanonicalRoute(opts: {
         ? record.aggregate.final_validation.evidence_digests.at(-1)
         : undefined;
     if (
-      current.read.task.execution_route?.repository_mode === "branch_pr" &&
+      needsPullRequest &&
       !finalValidation &&
       persistedValidationEvidence &&
       ["kernel_final_validation_required", "kernel_task_completion_required"].includes(
@@ -158,11 +154,9 @@ async function advanceCanonicalRoute(opts: {
       requireKernelCommit(await runtime.lifecycle.apply(completion));
       continue;
     }
-    if (
-      route.reason_code === "kernel_task_completed" &&
-      current.read.task.execution_route?.repository_mode !== "branch_pr"
-    ) {
-      await commitCanonicalTerminalTaskArtifacts(opts.command, opts.task_id);
+    if (route.reason_code === "kernel_task_completed" && !needsPullRequest) {
+      if (!reportOnlyCompletion)
+        await commitCanonicalTerminalTaskArtifacts(opts.command, opts.task_id);
       return {
         schema_version: 1,
         task_id: opts.task_id,
@@ -170,10 +164,7 @@ async function advanceCanonicalRoute(opts: {
         canonical_revision: record.aggregate.revision,
       };
     }
-    if (
-      route.reason_code === "kernel_task_completed" &&
-      current.read.task.execution_route?.repository_mode === "branch_pr"
-    ) {
+    if (route.reason_code === "kernel_task_completed" && needsPullRequest) {
       await commitCanonicalTerminalTaskArtifacts(opts.command, opts.task_id);
       const localWorkflow = await decideCanonicalWorkflowEffect(opts.command, opts.task_id, false);
       const localTerminal =
@@ -363,7 +354,7 @@ async function advanceCanonicalRoute(opts: {
           finalValidation.evidence_digest,
         )
       ) {
-        if (current.read.task.execution_route?.repository_mode === "branch_pr") {
+        if (needsPullRequest) {
           if (!opts.allow_provider_effects) {
             return {
               schema_version: 1,
@@ -384,7 +375,7 @@ async function advanceCanonicalRoute(opts: {
         if (completion.command.expected_task_revision !== record.aggregate.revision)
           throw new Error("Canonical task changed before completion");
         requireKernelCommit(await runtime.lifecycle.apply(completion));
-        if (current.read.task.execution_route?.repository_mode === "branch_pr") {
+        if (needsPullRequest) {
           await commitCanonicalTerminalTaskArtifacts(opts.command, opts.task_id);
         }
       } else {

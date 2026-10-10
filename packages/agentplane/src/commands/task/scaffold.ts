@@ -55,9 +55,11 @@ export async function cmdTaskScaffold(opts: {
         preferBranchSnapshot: true,
       });
     } catch (error) {
-      if (
-        !(error instanceof CliError && error.code === "E_IO" && error.message.startsWith("ENOENT:"))
-      )
+      if (!(
+        error instanceof CliError &&
+        error.code === "E_IO" &&
+        error.message.startsWith("ENOENT:")
+      ))
         throw error;
     }
     if (authoritative && Object.hasOwn(authoritative.extensions ?? {}, TASK_KERNEL_EXTENSION)) {
