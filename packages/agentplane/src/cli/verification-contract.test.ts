@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return -- TypeScript does not associate sibling declaration files with repository-root .mjs test helpers. */
+import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -229,46 +230,97 @@ describe("verification contract", () => {
     expect(runtime!.started_at_ms).toBeLessThan(core!.finished_at_ms);
   });
 
-  it("bounds a stalled group without hiding an independent failure", async () => {
-    const result = await runVerificationGroups(
-      [
-        { id: "stalled", command: process.execPath, args: ["-e", "setInterval(() => {}, 1000)"] },
-        {
-          id: "failed",
-          command: process.execPath,
-          args: ["-e", "process.exit(7)"],
-          timeoutMs: 5000,
-        },
-      ],
-      { concurrency: 2, timeoutMs: 200, killGraceMs: 25 },
-    );
+  it.each([false, true])(
+    "bounds a stalled group without hiding an independent failure (observed=%s)",
+    async (observed) => {
+      const directory = mkdtempSync(path.join(os.tmpdir(), "verification-contract-observation-"));
+      const env = Object.fromEntries(
+        Object.entries(process.env).filter(([key]) => !key.startsWith("AGENTPLANE_VERIFICATION_")),
+      );
+      // Prove that explicit unobserved mode overrides even an inherited observation directory.
+      env.AGENTPLANE_VERIFICATION_OBSERVATION_DIR = directory;
+      try {
+        const result = await runVerificationGroups(
+          [
+            {
+              id: "stalled",
+              command: process.execPath,
+              args: ["-e", "setInterval(() => {}, 1000)"],
+            },
+            {
+              id: "failed",
+              command: process.execPath,
+              args: ["-e", "process.exit(7)"],
+              timeoutMs: 5000,
+            },
+          ],
+          {
+            concurrency: 2,
+            timeoutMs: 200,
+            killGraceMs: 25,
+            observationDirectory: observed ? directory : "",
+            env,
+          },
+        );
 
-    expect(
-      result.results.map(({ id, exit_code, timed_out }) => [id, exit_code, timed_out]),
-    ).toEqual([
-      ["stalled", 124, true],
-      ["failed", 7, false],
-    ]);
-    expect(summarizeVerificationGroupResults(result.results)).toEqual({
-      schema_version: 1,
-      kind: "verification_group_summary",
-      ok: false,
-      groups: [
-        {
-          id: "stalled",
-          exit_code: 124,
-          timed_out: true,
-          duration_ms: expect.any(Number),
-        },
-        {
-          id: "failed",
-          exit_code: 7,
-          timed_out: false,
-          duration_ms: expect.any(Number),
-        },
-      ],
-    });
-  });
+        expect(
+          result.results.map(({ id, exit_code, timed_out }) => [id, exit_code, timed_out]),
+        ).toEqual([
+          ["stalled", 124, true],
+          ["failed", 7, false],
+        ]);
+        const observations = result.results.map((group) => {
+          if (!observed) {
+            expect(group.observation).toBeUndefined();
+            return {};
+          }
+          const reference = group.observation as {
+            status: string;
+            manifest_path: string;
+            digest: string;
+          };
+          expect(reference).toEqual({
+            status: "retained",
+            manifest_path: expect.any(String),
+            digest: expect.stringMatching(/^sha256:[a-f0-9]{64}$/u),
+          });
+          expect(path.dirname(path.dirname(reference.manifest_path))).toBe(directory);
+          const bytes = readFileSync(reference.manifest_path);
+          expect(reference.digest).toBe(
+            `sha256:${createHash("sha256").update(bytes).digest("hex")}`,
+          );
+          const manifest = JSON.parse(bytes.toString("utf8"));
+          expect(manifest.state).toBe(group.timed_out ? "timed_out" : "failed");
+          expect(manifest.result).toEqual({ exit_code: group.exit_code, group_id: group.id });
+          expect(manifest.io_error).toBe(false);
+          return { observation: reference };
+        });
+        expect(summarizeVerificationGroupResults(result.results)).toEqual({
+          schema_version: 1,
+          kind: "verification_group_summary",
+          ok: false,
+          groups: [
+            {
+              ...observations[0],
+              id: "stalled",
+              exit_code: 124,
+              timed_out: true,
+              duration_ms: expect.any(Number),
+            },
+            {
+              ...observations[1],
+              id: "failed",
+              exit_code: 7,
+              timed_out: false,
+              duration_ms: expect.any(Number),
+            },
+          ],
+        });
+      } finally {
+        rmSync(directory, { recursive: true, force: true });
+      }
+    },
+  );
 
   it("flushes the final group summary after large captured output applies backpressure", async () => {
     const stdout = new PassThrough({ highWaterMark: 1 });
