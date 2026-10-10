@@ -8,14 +8,14 @@
   "candidate": {
     "section_digests": {
       "agent_facing_context_contracts": "7710a5217ea614a3da8b4e99fe61e16fb738179797eba64c75c9537bc33f7785",
-      "cli_topology": "1b2e5ab4593f24b1363fee277d1f8d1efdbc78bb714dc16b518a0fbe8c3a4135",
+      "cli_topology": "d14dab09035292441f43b3426e994790ff9806db22a1d6bf264ec97fac6c2248",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
       "package_manifests": "ee1cec43b5f3371f7e7235f5aebd3254bcc2bedfa21d20eec8e2109d62f41faf",
       "tarball_policy": "10e8c7b78d3166955320b6fa787d7564b5bba1f67b3ce1736dca46673528716d",
       "workflow_schema": "dc851f68ff13c52fec5dbe522fa96cc1084771ce7e09ed0178c44f15d7c46452"
     },
-    "surface_sha256": "d35e7cdd8f0a9e2c4361f43fdbcb8f2ff2f4ceec90b9390cf990b9daeb0b76f1"
+    "surface_sha256": "c78a73acd6c7f4bbca31acea2746288f8b4145983cd561fde8ef677327320ac1"
   },
   "candidate_id": "agentplane.compatibility.v0.7.cumulative",
   "contract_artifacts": {
@@ -1250,6 +1250,25 @@
             "kind": "string",
             "name": "ttl-minutes",
             "valueHint": "<1-60>"
+          },
+          {
+            "command": "task close-duplicate",
+            "kind": "string",
+            "name": "approved-by",
+            "valueHint": "<role>"
+          },
+          {
+            "command": "task close-duplicate",
+            "default": false,
+            "kind": "boolean",
+            "name": "superseded",
+            "valueHint": null
+          },
+          {
+            "command": "task close-noop",
+            "kind": "string",
+            "name": "approved-by",
+            "valueHint": "<role>"
           },
           {
             "command": "task complete",
@@ -2696,6 +2715,24 @@
             "kind": "option",
             "name": "recipe-file",
             "source_task": "202610041748-K43XFE"
+          },
+          {
+            "command": "task close-duplicate",
+            "kind": "option",
+            "name": "approved-by",
+            "source_task": "202610081434-RDZE4P"
+          },
+          {
+            "command": "task close-duplicate",
+            "kind": "option",
+            "name": "superseded",
+            "source_task": "202610081434-RDZE4P"
+          },
+          {
+            "command": "task close-noop",
+            "kind": "option",
+            "name": "approved-by",
+            "source_task": "202610081434-RDZE4P"
           }
         ],
         "command_count": { "from": 243, "to": 255 },
@@ -2895,7 +2932,7 @@
             "identity": "task plan approve --by"
           }
         ],
-        "option_count": { "from": 767, "to": 857 },
+        "option_count": { "from": 767, "to": 860 },
         "positional_count": { "from": 165, "to": 176 },
         "removed_command_descriptors": [
           {
@@ -3414,10 +3451,11 @@
         "202609241429-4WN4VX",
         "202609261720-KKE9ZN",
         "202610041748-K43XFE",
-        "202610060956-42J54D"
+        "202610060956-42J54D",
+        "202610081434-RDZE4P"
       ],
-      "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with caller-supplied structured semantic intent and neutral planner intake, including bounded scope, effect, capability, and resource declarations, explainable per-task workflow routing, signed dialogue approval receipts, compatibility retirement diagnostics, safe local evidence statistics, compaction, garbage collection, and a state-bound USER-approved blocked-task scope extension; promotes the managed task runner; moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces; canonicalizes setup and execution profile selection to standard while retaining legacy init aliases; and makes auto the task route default while retiring repository as a user-facing route. Adds exact-intent operator reconciliation for interrupted integration workflow effects. Retires the active supervisor budget-epoch command after spend limits became telemetry-only. Retires the active Blueprint command surface after Task Kernel replacement proof while preserving cold compatibility readers.",
-      "to_sha256": "1b2e5ab4593f24b1363fee277d1f8d1efdbc78bb714dc16b518a0fbe8c3a4135"
+      "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with caller-supplied structured semantic intent and neutral planner intake, including bounded scope, effect, capability, and resource declarations, explainable per-task workflow routing, signed dialogue approval receipts, compatibility retirement diagnostics, safe local evidence statistics, compaction, garbage collection, and a state-bound USER-approved blocked-task scope extension; promotes the managed task runner; moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces; canonicalizes setup and execution profile selection to standard while retaining legacy init aliases; and makes auto the task route default while retiring repository as a user-facing route. Adds exact-intent operator reconciliation for interrupted integration workflow effects. Retires the active supervisor budget-epoch command after spend limits became telemetry-only. Retires the active Blueprint command surface after Task Kernel replacement proof while preserving cold compatibility readers. Adds explicit approval and supersession options to canonical duplicate and no-op closure.",
+      "to_sha256": "d14dab09035292441f43b3426e994790ff9806db22a1d6bf264ec97fac6c2248"
     },
     {
       "classification": "intentional_breaking_retirement",
@@ -3673,7 +3711,7 @@
     "from_version": "0.6.24",
     "section": "package_manifests",
     "source_task": "202608082119-P6SHBN",
-    "surface_sha256": "40466a8a690787106d097518f720ac93d360a486191f545b8c063bf93e534bd9",
+    "surface_sha256": "419e9f0066b11feba80350151730464316cf1d0acf3f9dc70d4153ae4e92167d",
     "to_sha256": "5181e197bcb2007bf582098724eac351ee528640a26e0283b51ccca567690919",
     "to_version": "0.7.12"
   },
@@ -3746,6 +3784,7 @@
     "202609241429-4WN4VX",
     "202609261720-KKE9ZN",
     "202610041748-K43XFE",
-    "202610060956-42J54D"
+    "202610060956-42J54D",
+    "202610081434-RDZE4P"
   ]
 }

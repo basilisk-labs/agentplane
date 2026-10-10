@@ -46,7 +46,7 @@ const candidatePath = path.join(
 const REVIEWED_SECTION_DIGESTS = {
   agent_facing_context_contracts:
     "7710a5217ea614a3da8b4e99fe61e16fb738179797eba64c75c9537bc33f7785",
-  cli_topology: "1b2e5ab4593f24b1363fee277d1f8d1efdbc78bb714dc16b518a0fbe8c3a4135",
+  cli_topology: "d14dab09035292441f43b3426e994790ff9806db22a1d6bf264ec97fac6c2248",
   exit_error_contract: "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
   machine_output_contract: "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
   package_manifests: "ee1cec43b5f3371f7e7235f5aebd3254bcc2bedfa21d20eec8e2109d62f41faf",
@@ -395,6 +395,7 @@ function validateReviewedCandidate({
     "202609261720-KKE9ZN",
     "202610041748-K43XFE",
     "202610060956-42J54D",
+    "202610081434-RDZE4P",
   ];
 
   assert(
@@ -962,6 +963,7 @@ function validateReviewedCandidate({
       "202609261720-KKE9ZN",
       "202610041748-K43XFE",
       "202610060956-42J54D",
+      "202610081434-RDZE4P",
     ],
     agent_facing_context_contracts: [
       "202607221848-1HWR0R",
@@ -3509,6 +3511,24 @@ function validateReviewedCandidate({
       name: "recipe-file",
       source_task: "202610041748-K43XFE",
     },
+    {
+      kind: "option",
+      command: "task close-duplicate",
+      name: "approved-by",
+      source_task: "202610081434-RDZE4P",
+    },
+    {
+      kind: "option",
+      command: "task close-duplicate",
+      name: "superseded",
+      source_task: "202610081434-RDZE4P",
+    },
+    {
+      kind: "option",
+      command: "task close-noop",
+      name: "approved-by",
+      source_task: "202610081434-RDZE4P",
+    },
   ];
   const activeExpectedAddedCommandDescriptors = expectedAddedCommandDescriptors
     .filter((command) => command.id.join(" ") !== "task supervisor budget-epoch")
@@ -3637,6 +3657,25 @@ function validateReviewedCandidate({
       kind: "string",
       name: "recipe-file",
       valueHint: "<path>",
+    },
+    {
+      command: "task close-duplicate",
+      kind: "string",
+      name: "approved-by",
+      valueHint: "<role>",
+    },
+    {
+      command: "task close-duplicate",
+      kind: "boolean",
+      name: "superseded",
+      valueHint: null,
+      default: false,
+    },
+    {
+      command: "task close-noop",
+      kind: "string",
+      name: "approved-by",
+      valueHint: "<role>",
     },
   ];
   activeExpectedAddedOptions.sort((a, b) =>
