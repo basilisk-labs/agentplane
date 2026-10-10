@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -32,35 +32,33 @@ verification:
   note: "Verified: canonical Task Kernel final checks passed."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-10-08T15:47:07.858Z"
+  updated_at: "2026-10-10T03:49:26.953Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 4 typed finding(s)."
-  evaluated_sha: "1be739306b37fa8f219b1e56246aebebe9e108b3"
-  review_identity_digest: "sha256:493b20e5c583768fded5f64c1bb9e5dbf3ecb08afc51536d7f36809e4be2faae"
+  note: "EVALUATOR returned pass with 3 typed finding(s)."
+  evaluated_sha: "d06d5cd179ac0898c2de85bfbc0e4209cc11ee0c"
+  review_identity_digest: "sha256:23911875c168c2515a73eb643ea0297b5454952344e271d450a744369ae39e90"
   evidence_refs:
-    - ".agentplane/tasks/202610080726-0JHB26/quality/20261008-154206362-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202610080726-0JHB26/quality/20261008-154206362-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202610080726-0JHB26/quality/objects/sha256/872fdcf271df312c7037ea4134f47b6ac3f50e6d686fc1ada29a5d67c5f0c5c0.md"
-    - ".agentplane/tasks/202610080726-0JHB26/quality/20261008-154206362-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202610080726-0JHB26/quality/20261008-154206362-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202610080726-0JHB26/quality/20261008-154206362-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202610080726-0JHB26/quality/20261008-154206362-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202610080726-0JHB26/quality/20261010-034407402-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202610080726-0JHB26/quality/20261010-034407402-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202610080726-0JHB26/quality/objects/sha256/ba40a2a38d77adb9a4ef3479e1201194dc8f3beeaf66105f085f4d1298d214aa.md"
+    - ".agentplane/tasks/202610080726-0JHB26/quality/20261010-034407402-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202610080726-0JHB26/quality/20261010-034407402-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202610080726-0JHB26/quality/20261010-034407402-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202610080726-0JHB26/README.md"
     - ".agentplane/tasks/202610080726-0JHB26/quality/objects/sha256/feed3ea63a7331cb8756f8d6ce742330d25c8dbedffa8826f001840f3ef63f80.patch"
     - ".agentplane/tasks/202610080726-0JHB26/quality/objects/sha256/e01436d9127d88f273b2a19d4bb25a98a66b5273b579be373fc8a5cb2b6ddd89.json"
     - ".agentplane/tasks/202610080726-0JHB26/verification/20261008084315402-354e1fad3c69fd76.json"
-    - ".agentplane/tasks/202610080726-0JHB26/quality/objects/sha256/6b013e24f814eba6b8136e36997905960dda4fb7e22682171c0b484688bc0977.json"
+    - ".agentplane/tasks/202610080726-0JHB26/quality/objects/sha256/c345f5b1d9c58c323792137fb3cdaeed440202b090d25260b3ee0eeee772c8be.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "P1: The evaluated source at 1be739306b37fa8f219b1e56246aebebe9e108b3 still retries only the ELOOP replacement case in KernelBackendAdapter.read. The retained task document records the hosted stable-snapshot contention failure and its required two-file repair. Passing the earlier local run does not close that known failure. Evidence: .agentplane/tasks/202610080726-0JHB26/README.md (sha256:f05c30220ca94dd148ba3896bdc37a3d6495c85dcdbcd094012aebf539f104e8); .agentplane/tasks/202610080726-0JHB26/quality/objects/sha256/e01436d9127d88f273b2a19d4bb25a98a66b5273b579be373fc8a5cb2b6ddd89.json."
-    - "The approved one-file fixture change preserves all three network-authority modes, confines emitted schemas to the temporary root, checks descriptor digest and byte length, compares the real task-1 inventory, and removes only its temporary root. The frozen diff contains no production retry repair. Evidence: .agentplane/tasks/202610080726-0JHB26/quality/objects/sha256/feed3ea63a7331cb8756f8d6ce742330d25c8dbedffa8826f001840f3ef63f80.patch."
-    - "Historical local full CI and assigned checks remain valid evidence for the earlier implementation; no tests were rerun by this evaluator. Evidence: .agentplane/tasks/202610080726-0JHB26/verification/20261008084315402-354e1fad3c69fd76.json (sha256:f24426dce6b1ce405541ad9fa4cfc8455cf9ae90e8fe04eb799c174290968470)."
-    - "Residual risk: This read-only episode does not authorize importing main, editing adapter scope, lifecycle transitions, or claiming PR integration success."
+    - "The frozen actual diff changes only kernel-exchange.test.ts. All three authority modes now issue artifacts under the temporary root and retain the original authority assertions. Schema containment, descriptor path, SHA-256, byte length, and unchanged real-repository task-1 inventory are asserted. No production or registry-enforcement change is present."
+    - "All nine frozen evidence hashes match. The scoped test implementation is unchanged between evaluated SHA d06d5cd179ac0898c2de85bfbc0e4209cc11ee0c and task HEAD ed2d1facac3982db3c24b7f1c62a3c9d37ba1101. The working tree contains only three native-generated evaluator evidence files."
+    - "Residual risk: Current hosted checks and merge eligibility remain required. This scoped semantic pass does not waive the previously failed hosted concurrency check or certify release readiness."
 token_usage:
   agent_runs: 3
   input_tokens: null
@@ -333,7 +331,7 @@ events:
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
     commit: "4d4bfa3bc829e0454608b70308b755f484a47ba8"
 doc_version: 3
-doc_updated_at: "2026-10-08T15:52:07.048Z"
+doc_updated_at: "2026-10-10T03:49:27.141Z"
 doc_updated_by: "SUPERVISOR"
 description: "Repair the release 0.7.13 qualification blocker: kernel-exchange.test.ts network-authority cases create a temporary root but use process.cwd() as gitRoot, leaking task-1 schema artifacts into the real repository and failing the final task-registry gate. Bind issuance to the temporary fixture root; preserve all allowed/narrowed/planning authority assertions; verify emitted schema containment, digest and unchanged real-repository task-1 state. Keep production code and registry enforcement unchanged. User authorizes all necessary release fixes, validation and main integration. Preserve prior candidate full CI passing evidence and actual final registry failure."
 sections:
