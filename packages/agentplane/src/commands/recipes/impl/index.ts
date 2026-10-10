@@ -21,9 +21,12 @@ type RecipesIndexSignatureVerifier = (indexText: string, signature: RecipesIndex
 
 const DEFAULT_RECIPES_INDEX_SIGNATURE_ALGORITHM = "ed25519";
 
-const recipesIndexSignatureVerifiers: Record<string, RecipesIndexSignatureVerifier> = {
-  ed25519: verifyRecipesIndexEd25519Signature,
-};
+const recipesIndexSignatureVerifiers: Readonly<Record<string, RecipesIndexSignatureVerifier>> =
+  Object.freeze(
+    Object.assign(Object.create(null) as Record<string, RecipesIndexSignatureVerifier>, {
+      ed25519: verifyRecipesIndexEd25519Signature,
+    }),
+  );
 
 function loadRecipesIndexPublicKeys(): Record<string, string> {
   const raw = process.env[RECIPES_INDEX_PUBLIC_KEYS_ENV];
@@ -57,13 +60,13 @@ function validateRecipesIndexSignature(raw: unknown): RecipesIndexSignature {
 
 function verifyRecipesIndexSignature(indexText: string, signature: RecipesIndexSignature): void {
   const algorithm = signature.algorithm ?? DEFAULT_RECIPES_INDEX_SIGNATURE_ALGORITHM;
-  const verifier = recipesIndexSignatureVerifiers[algorithm];
-  if (!verifier) {
+  if (!Object.hasOwn(recipesIndexSignatureVerifiers, algorithm)) {
     const supportedAlgorithms = Object.keys(recipesIndexSignatureVerifiers).toSorted().join(", ");
     throw new Error(
       `Unsupported recipes index signature algorithm "${algorithm}". Supported algorithms: ${supportedAlgorithms}`,
     );
   }
+  const verifier = recipesIndexSignatureVerifiers[algorithm];
   verifier(indexText, signature);
 }
 

@@ -119,7 +119,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
 
       expect(compatibility).toMatchObject({ exitCode: 0, stderr: "" });
       expect(candidateFreshness).toMatchObject({ exitCode: 0, stderr: "" });
-      expect(compatibility.stdout).toContain("253commands/174args/849options");
+      expect(compatibility.stdout).toContain("255commands/176args/857options");
       expect(compatibility.stdout).toContain(
         "candidate=approved:agentplane.compatibility.v0.7.cumulative",
       );
@@ -181,6 +181,8 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
         schema_version: 3,
         candidate_id: "agentplane.compatibility.v0.7.cumulative",
         source_tasks: [
+          "202609301755-N31BSK",
+          "202609292230-6GZ3RV",
           "202609271356-4SANDJ",
           "202609232231-BYSVV6",
           "202607221846-4VB97J",
@@ -235,50 +237,59 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           "202609230942-E6D0V4",
           "202609241429-4WN4VX",
           "202609261720-KKE9ZN",
+          "202610041748-K43XFE",
+          "202610060956-42J54D",
         ],
         candidate: {
-          surface_sha256: "a1439501160b1ecbb89901b9deee5b38a2d0dec26eb0fb9398cca8816abd834b",
           section_digests: {
             agent_facing_context_contracts:
               "7710a5217ea614a3da8b4e99fe61e16fb738179797eba64c75c9537bc33f7785",
-            cli_topology: "814f5c2558bfa2793200ecb88e6b6c4e2fb547291fb525de7683f3f0d8267905",
+            cli_topology: "1b2e5ab4593f24b1363fee277d1f8d1efdbc78bb714dc16b518a0fbe8c3a4135",
+            exit_error_contract: "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
             machine_output_contract:
               "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
-            package_manifests: "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
-            tarball_policy: "00a74ae0567df4a8ba62b9227b2b6e219fe09d71101d769912bb2bc072e20dbd",
+            package_manifests: "ee1cec43b5f3371f7e7235f5aebd3254bcc2bedfa21d20eec8e2109d62f41faf",
+            tarball_policy: "10e8c7b78d3166955320b6fa787d7564b5bba1f67b3ce1736dca46673528716d",
             workflow_schema: "dc851f68ff13c52fec5dbe522fa96cc1084771ce7e09ed0178c44f15d7c46452",
           },
+          surface_sha256: "d35e7cdd8f0a9e2c4361f43fdbcb8f2ff2f4ceec90b9390cf990b9daeb0b76f1",
         },
         pre_release_package_delta: {
-          source_tasks: [
-            "202608021231-SHYJGK",
-            "202608112259-T3ZDDM",
-            "202608171853-X3FD5M",
-            "202609211330-5A54M1",
-          ],
-          classification: "additive",
-          section: "package_manifests",
-          from_sha256: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
-          to_sha256: "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
           allowed_json_paths: [
+            "$.package_manifests[0].dependencies.@clack/prompts",
+            "$.package_manifests[0].dependencies.zod",
+            "$.package_manifests[0].exports",
             "$.package_manifests[0].files[13]",
             "$.package_manifests[0].files[14]",
             "$.package_manifests[0].files[15]",
             "$.package_manifests[0].files[16]",
             "$.package_manifests[0].files[17]",
+            "$.package_manifests[0].files[18]",
+            "$.package_manifests[0].files[19]",
             "$.package_manifests[0].normalized_sha256",
+            "$.package_manifests[1].dependencies.zod",
             "$.package_manifests[1].exports[10][0]",
             "$.package_manifests[1].exports[10][1]",
             "$.package_manifests[1].exports[11]",
             "$.package_manifests[1].normalized_sha256",
+            "$.package_manifests[2].dependencies",
+            "$.package_manifests[2].engines.node",
+            "$.package_manifests[2].normalized_sha256",
           ],
+          classification: "additive",
+          from_sha256: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
+          section: "package_manifests",
+          source_tasks: [
+            "202608021231-SHYJGK",
+            "202608112259-T3ZDDM",
+            "202608171853-X3FD5M",
+            "202609211330-5A54M1",
+            "202610041748-K43XFE",
+            "202610060956-42J54D",
+          ],
+          to_sha256: "ee1cec43b5f3371f7e7235f5aebd3254bcc2bedfa21d20eec8e2109d62f41faf",
         },
         release_version_delta: {
-          source_task: "202608082119-P6SHBN",
-          classification: "planned_version_parity",
-          from_version: "0.6.24",
-          section: "package_manifests",
-          from_sha256: "13162e113f33670d091df460126ea28117427c5ee45a94802b71ed0f650bdeff",
           allowed_json_paths: [
             "$.package_manifests[0].dependencies.@agentplaneorg/core",
             "$.package_manifests[0].dependencies.@agentplaneorg/recipes",
@@ -286,9 +297,15 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
             "$.package_manifests[0].version",
             "$.package_manifests[1].normalized_sha256",
             "$.package_manifests[1].version",
+            "$.package_manifests[2].dependencies.@agentplaneorg/core",
             "$.package_manifests[2].normalized_sha256",
             "$.package_manifests[2].version",
           ],
+          classification: "planned_version_parity",
+          from_sha256: "ee1cec43b5f3371f7e7235f5aebd3254bcc2bedfa21d20eec8e2109d62f41faf",
+          from_version: "0.6.24",
+          section: "package_manifests",
+          source_task: "202608082119-P6SHBN",
         },
         contract_artifacts: {
           execution_receipt_schema: {
@@ -567,6 +584,9 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
               manifest.dependencies["@agentplaneorg/core"] = version;
               manifest.dependencies["@agentplaneorg/recipes"] = version;
             }
+            if (relativePath === "packages/recipes/package.json") {
+              manifest.dependencies["@agentplaneorg/core"] = version;
+            }
             return JSON.stringify(manifest);
           },
         });
@@ -581,12 +601,29 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           surfaceDigest: compatibilitySurfaceDigest(sectionDigests),
           changedPaths: diffJsonPaths(before, after),
           candidateReleaseVersion: candidate.release_version_delta,
+          currentVersion: JSON.parse(baseSource.readText("packages/agentplane/package.json")).version,
+          normalizedPackageDigest: surfaceSectionDigests(before).package_manifests,
+          versionVariants: ["0.7.12", "0.7.13"].map((version) => {
+            const surface = collectCompatibilitySurface(versionedSource(version));
+            const digests = surfaceSectionDigests(surface);
+            return { version, changedPaths: diffJsonPaths(before, surface),
+              packageManifestDigest: digests.package_manifests,
+              surfaceDigest: compatibilitySurfaceDigest(digests) };
+          }),
         }));
       `;
       const result = await runNode(["--input-type=module", "--eval", source]);
       expect(result).toMatchObject({ exitCode: 0, stderr: "" });
       const reconstructed = JSON.parse(result.stdout) as {
         releaseVersion: string;
+        currentVersion: string;
+        normalizedPackageDigest: string;
+        versionVariants: {
+          version: string;
+          changedPaths: string[];
+          packageManifestDigest: string;
+          surfaceDigest: string;
+        }[];
         packageManifestDigest: string;
         surfaceDigest: string;
         changedPaths: string[];
@@ -605,6 +642,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           "$.package_manifests[0].version",
           "$.package_manifests[1].normalized_sha256",
           "$.package_manifests[1].version",
+          "$.package_manifests[2].dependencies.@agentplaneorg/core",
           "$.package_manifests[2].normalized_sha256",
           "$.package_manifests[2].version",
         ],
@@ -616,6 +654,31 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
         reconstructed.candidateReleaseVersion.surface_sha256,
       );
       expect(reconstructed.releaseVersion).toBe(reconstructed.candidateReleaseVersion.to_version);
+      expect(reconstructed.releaseVersion).toBe(reconstructed.currentVersion);
+      expect(reconstructed.normalizedPackageDigest).toBe(
+        "ee1cec43b5f3371f7e7235f5aebd3254bcc2bedfa21d20eec8e2109d62f41faf",
+      );
+      expect(
+        reconstructed.versionVariants.map(({ version, packageManifestDigest, surfaceDigest }) => ({
+          version,
+          packageManifestDigest,
+          surfaceDigest,
+        })),
+      ).toEqual([
+        {
+          version: "0.7.12",
+          packageManifestDigest: "5181e197bcb2007bf582098724eac351ee528640a26e0283b51ccca567690919",
+          surfaceDigest: "40466a8a690787106d097518f720ac93d360a486191f545b8c063bf93e534bd9",
+        },
+        {
+          version: "0.7.13",
+          packageManifestDigest: "0ec51a0e0f1c23aca31c257f26350d6a4cc763acbdffa4661d8910fefda8396d",
+          surfaceDigest: "8ebcd7d8a47d508ceaa8e08b040f4754f204d04706bc5295675545e1149a7041",
+        },
+      ]);
+      for (const variant of reconstructed.versionVariants) {
+        expect(variant.changedPaths).toEqual(reconstructed.changedPaths);
+      }
       expect(reconstructed.changedPaths).toEqual(
         reconstructed.candidateReleaseVersion.allowed_json_paths,
       );

@@ -2,13 +2,25 @@
 version: 2
 workflow:
   mode: branch_pr
-  status_commit_policy: confirm
+  status_commit_policy: off
   commit_automation: manual
   finish_auto_status_commit: false
   close_commit:
     direct_dirty_policy: allow_other_task_readmes
   artifacts_language: en
   closure_commit_requires_approval: false
+authority:
+  mode: all
+  actor: POLICY:repository
+  allow_operations: []
+  deny_operations: []
+  ttl_minutes: 15
+runner:
+  default_adapter: codex
+  timeouts:
+    wall_clock_ms: 3600000
+    idle_ms: 600000
+    terminate_grace_ms: 1500
 owners:
   orchestrator: ORCHESTRATOR
 approvals:

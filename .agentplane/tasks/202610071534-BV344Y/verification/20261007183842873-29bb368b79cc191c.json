@@ -1,0 +1,294 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts packages/agentplane/src/commands/pr/internal/review-template.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts --pool=forks --maxWorkers 2 --testTimeout 60000 --hookTimeout 60000\nResult: pass\nEvidence: .agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610071534-BV344Y Verification Contract check affected_unit_integration (1/6)\n\nCheck: affected_unit_integration\nCommand: node node_modules/eslint/bin/eslint.js packages/agentplane/src/commands/pr/internal/review-template.ts packages/agentplane/src/commands/pr/internal/review-template.test.ts packages/agentplane/src/commands/pr/internal/sync-open-step.ts\nResult: pass\nEvidence: .agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610071534-BV344Y Verification Contract check affected_unit_integration (2/6)\n\nCheck: affected_unit_integration\nCommand: node node_modules/eslint/bin/eslint.js packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts packages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610071534-BV344Y Verification Contract check affected_unit_integration (3/6)\n\nCheck: affected_unit_integration\nCommand: bun run format:check\nResult: pass\nEvidence: .agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610071534-BV344Y Verification Contract check affected_unit_integration (4/6)\n\nCheck: affected_unit_integration\nCommand: git diff --check\nResult: pass\nEvidence: .agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json#check-5\nScope: branch_pr task 202610071534-BV344Y Verification Contract check affected_unit_integration (5/6)\n\nCheck: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json#check-6\nScope: branch_pr task 202610071534-BV344Y Verification Contract check affected_unit_integration (6/6)\n\nCheck: critical_paths\nCommand: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts packages/agentplane/src/commands/pr/internal/review-template.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts --pool=forks --maxWorkers 2 --testTimeout 60000 --hookTimeout 60000\nResult: pass\nEvidence: .agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610071534-BV344Y Verification Contract check critical_paths (1/6)\n\nCheck: critical_paths\nCommand: node node_modules/eslint/bin/eslint.js packages/agentplane/src/commands/pr/internal/review-template.ts packages/agentplane/src/commands/pr/internal/review-template.test.ts packages/agentplane/src/commands/pr/internal/sync-open-step.ts\nResult: pass\nEvidence: .agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610071534-BV344Y Verification Contract check critical_paths (2/6)\n\nCheck: critical_paths\nCommand: node node_modules/eslint/bin/eslint.js packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts packages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610071534-BV344Y Verification Contract check critical_paths (3/6)\n\nCheck: critical_paths\nCommand: bun run format:check\nResult: pass\nEvidence: .agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610071534-BV344Y Verification Contract check critical_paths (4/6)\n\nCheck: critical_paths\nCommand: git diff --check\nResult: pass\nEvidence: .agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json#check-5\nScope: branch_pr task 202610071534-BV344Y Verification Contract check critical_paths (5/6)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json#check-6\nScope: branch_pr task 202610071534-BV344Y Verification Contract check critical_paths (6/6)\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json#check-6\nScope: branch_pr task 202610071534-BV344Y Verification Contract check full_regression\n\nCheck: real_e2e\nCommand: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts packages/agentplane/src/commands/pr/internal/review-template.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts --pool=forks --maxWorkers 2 --testTimeout 60000 --hookTimeout 60000\nResult: pass\nEvidence: .agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610071534-BV344Y Verification Contract check real_e2e (1/6)\n\nCheck: real_e2e\nCommand: node node_modules/eslint/bin/eslint.js packages/agentplane/src/commands/pr/internal/review-template.ts packages/agentplane/src/commands/pr/internal/review-template.test.ts packages/agentplane/src/commands/pr/internal/sync-open-step.ts\nResult: pass\nEvidence: .agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610071534-BV344Y Verification Contract check real_e2e (2/6)\n\nCheck: real_e2e\nCommand: node node_modules/eslint/bin/eslint.js packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts packages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610071534-BV344Y Verification Contract check real_e2e (3/6)\n\nCheck: real_e2e\nCommand: bun run format:check\nResult: pass\nEvidence: .agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610071534-BV344Y Verification Contract check real_e2e (4/6)\n\nCheck: real_e2e\nCommand: git diff --check\nResult: pass\nEvidence: .agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json#check-5\nScope: branch_pr task 202610071534-BV344Y Verification Contract check real_e2e (5/6)\n\nCheck: real_e2e\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json#check-6\nScope: branch_pr task 202610071534-BV344Y Verification Contract check real_e2e (6/6)\n\nCheck: task_outcome\nCommand: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts packages/agentplane/src/commands/pr/internal/review-template.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts --pool=forks --maxWorkers 2 --testTimeout 60000 --hookTimeout 60000\nResult: pass\nEvidence: .agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610071534-BV344Y Verification Contract check task_outcome (1/6)\n\nCheck: task_outcome\nCommand: node node_modules/eslint/bin/eslint.js packages/agentplane/src/commands/pr/internal/review-template.ts packages/agentplane/src/commands/pr/internal/review-template.test.ts packages/agentplane/src/commands/pr/internal/sync-open-step.ts\nResult: pass\nEvidence: .agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610071534-BV344Y Verification Contract check task_outcome (2/6)\n\nCheck: task_outcome\nCommand: node node_modules/eslint/bin/eslint.js packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts packages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610071534-BV344Y Verification Contract check task_outcome (3/6)\n\nCheck: task_outcome\nCommand: bun run format:check\nResult: pass\nEvidence: .agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610071534-BV344Y Verification Contract check task_outcome (4/6)\n\nCheck: task_outcome\nCommand: git diff --check\nResult: pass\nEvidence: .agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json#check-5\nScope: branch_pr task 202610071534-BV344Y Verification Contract check task_outcome (5/6)\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json#check-6\nScope: branch_pr task 202610071534-BV344Y Verification Contract check task_outcome (6/6)",
+  "digest": "sha256:29bb368b79cc191cd274123a78dca9584493ef0ed969c69930725e20a3262050",
+  "implementation_sha": "fe654fc121f6510c50c52ac769f6ea73f415ebf2",
+  "input": {
+    "checked_input": {
+      "commands": {
+        "digest": "sha256:9df255c2f0fc286c72619a3e446d06caeb6d67cfbcac59fafd8067e5e7e97a97",
+        "entries": [
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run format:check"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "git diff --check"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "node node_modules/eslint/bin/eslint.js packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts packages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "node node_modules/eslint/bin/eslint.js packages/agentplane/src/commands/pr/internal/review-template.ts packages/agentplane/src/commands/pr/internal/review-template.test.ts packages/agentplane/src/commands/pr/internal/sync-open-step.ts"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts packages/agentplane/src/commands/pr/internal/review-template.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts --pool=forks --maxWorkers 2 --testTimeout 60000 --hookTimeout 60000"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run format:check"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "git diff --check"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "node node_modules/eslint/bin/eslint.js packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts packages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "node node_modules/eslint/bin/eslint.js packages/agentplane/src/commands/pr/internal/review-template.ts packages/agentplane/src/commands/pr/internal/review-template.test.ts packages/agentplane/src/commands/pr/internal/sync-open-step.ts"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts packages/agentplane/src/commands/pr/internal/review-template.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts --pool=forks --maxWorkers 2 --testTimeout 60000 --hookTimeout 60000"
+          },
+          {
+            "check_id": "full_regression",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "real_e2e",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "real_e2e",
+            "command": "bun run format:check"
+          },
+          {
+            "check_id": "real_e2e",
+            "command": "git diff --check"
+          },
+          {
+            "check_id": "real_e2e",
+            "command": "node node_modules/eslint/bin/eslint.js packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts packages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts"
+          },
+          {
+            "check_id": "real_e2e",
+            "command": "node node_modules/eslint/bin/eslint.js packages/agentplane/src/commands/pr/internal/review-template.ts packages/agentplane/src/commands/pr/internal/review-template.test.ts packages/agentplane/src/commands/pr/internal/sync-open-step.ts"
+          },
+          {
+            "check_id": "real_e2e",
+            "command": "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts packages/agentplane/src/commands/pr/internal/review-template.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts --pool=forks --maxWorkers 2 --testTimeout 60000 --hookTimeout 60000"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run format:check"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "git diff --check"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "node node_modules/eslint/bin/eslint.js packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts packages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "node node_modules/eslint/bin/eslint.js packages/agentplane/src/commands/pr/internal/review-template.ts packages/agentplane/src/commands/pr/internal/review-template.test.ts packages/agentplane/src/commands/pr/internal/sync-open-step.ts"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts packages/agentplane/src/commands/pr/internal/review-template.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts --pool=forks --maxWorkers 2 --testTimeout 60000 --hookTimeout 60000"
+          }
+        ]
+      },
+      "context": {
+        "digest": "sha256:fd898f41467c148006e8375fb63a142259e1a43efe931f911f7082d97e38ffd2",
+        "paths": [
+          ".agentplane/WORKFLOW.md",
+          ".github/ISSUE_TEMPLATE/config.yml",
+          "bun.lock",
+          "depcruise.config.cjs",
+          "eslint.config.cjs",
+          "knip.json",
+          "package.json",
+          "packages/agentplane/package.json",
+          "packages/agentplane/src/cli/run-cli/commands/config.ts",
+          "packages/agentplane/src/runner/config.test.ts",
+          "packages/agentplane/src/runner/config.ts",
+          "packages/agentplane/tsconfig.json",
+          "packages/agentplane/tsup.config.ts",
+          "packages/core/package.json",
+          "packages/core/schemas/config.schema.json",
+          "packages/core/src/config/config.test.ts",
+          "packages/core/src/config/config.ts",
+          "packages/core/tsconfig.json",
+          "packages/core/tsup.config.ts",
+          "packages/recipes/package.json",
+          "packages/recipes/tsconfig.json",
+          "packages/recipes/tsup.config.ts",
+          "packages/spec/examples/config.json",
+          "packages/spec/package.json",
+          "packages/spec/schemas/config.schema.json",
+          "packages/testkit/package.json",
+          "packages/testkit/tsconfig.json",
+          "schemas/config.schema.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package-lock.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package.json",
+          "tsconfig.json",
+          "turbo.json",
+          "vitest.config.ts",
+          "vitest.workspace.ts"
+        ]
+      },
+      "digest": "sha256:c4fdeecdd990ec040579a1fcec4906ea6abe56fe3190d1d7c728c293d93268eb",
+      "environment": {
+        "digest": "sha256:9ec5bf2323cd53a84a354760f7a2e04adc570a2f8a0452d4311892dcb83d880b",
+        "runtime": {
+          "architecture": "x64",
+          "bun_major": null,
+          "node_major": "24",
+          "platform": "linux"
+        }
+      },
+      "evidence": {
+        "details_digest": "sha256:5ef1a490f3f7ba7ac764749afff6daedb241250dda9cdb17c48de4e29d3ff661",
+        "digest": "sha256:776fb7e0a8f6b32e7c64cde07099ebefee6843a537fb5e6d907f02e2f342a0dc",
+        "references": [
+          {
+            "digest": "sha256:165360005adcf7a73ecb36915479e6c1eaffae5e2f07e83436691e381f5c7828",
+            "fragment": "check-1",
+            "path": ".agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json#check-1",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:165360005adcf7a73ecb36915479e6c1eaffae5e2f07e83436691e381f5c7828",
+            "fragment": "check-2",
+            "path": ".agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json#check-2",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:165360005adcf7a73ecb36915479e6c1eaffae5e2f07e83436691e381f5c7828",
+            "fragment": "check-3",
+            "path": ".agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json#check-3",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:165360005adcf7a73ecb36915479e6c1eaffae5e2f07e83436691e381f5c7828",
+            "fragment": "check-4",
+            "path": ".agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json#check-4",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:165360005adcf7a73ecb36915479e6c1eaffae5e2f07e83436691e381f5c7828",
+            "fragment": "check-5",
+            "path": ".agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json#check-5",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:165360005adcf7a73ecb36915479e6c1eaffae5e2f07e83436691e381f5c7828",
+            "fragment": "check-6",
+            "path": ".agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610071534-BV344Y/supervision/declared-checks.json#check-6",
+            "source": "filesystem"
+          }
+        ]
+      },
+      "implementation": {
+        "base_sha": "f285c23ba586c2ffeda7346cfbf9e9081c3f4f71",
+        "digest": "sha256:651d063ce6a9fa42db3c5fc0d2dbfb241ecf629cbff522ad65011529aa130a8c",
+        "strategy": "branch_diff",
+        "target_sha": "fe654fc121f6510c50c52ac769f6ea73f415ebf2"
+      }
+    },
+    "concurrency": {
+      "digest": "sha256:d2d445eabe16a0bae9f775ce10cbac48d0f1a99eeae768a9a282ff7773ecb069",
+      "execution": {
+        "authoritative_task_source": "task_worktree",
+        "base_ref": "main",
+        "base_sha": "f285c23ba586c2ffeda7346cfbf9e9081c3f4f71",
+        "digest": "sha256:085891482f9fcfea1b6e9209ecace27a3cad0d4d1a274624bc5865edea7a0912",
+        "primary_task_id": "202610071534-BV344Y",
+        "reason_codes": [
+          "agent_preferred_branch_pr",
+          "effect_release_metadata",
+          "repository_branch_pr_floor",
+          "reversibility_recovery_required"
+        ],
+        "repository_mode": "branch_pr",
+        "requested_mode": "branch_pr",
+        "route_source": "execution_contract",
+        "selected_mode": "branch_pr",
+        "task_ids": [
+          "202610071534-BV344Y"
+        ]
+      },
+      "task": {
+        "capability": {
+          "digest": "sha256:cd42c1148982b89da40463b5daec1c01dab49b2470954c14717f431c5c91474c"
+        },
+        "checks": {
+          "digest": "sha256:884e7103cae457feda8f7cf985d17f469e9be89a24c2ffffed4befa827791a3e",
+          "required_check_ids": [
+            "affected_unit_integration",
+            "critical_paths",
+            "full_regression",
+            "real_e2e",
+            "task_outcome"
+          ],
+          "verification_contract_digest": "sha256:fcd13d61fc348c1265aed832674afaa64604cd7bb3a2a6ff00ccf02a396ee90b"
+        },
+        "digest": "sha256:4dc0769ab6b9f2897464a48c05119ff5ff0324e514b32ebd18280c3da953d12e",
+        "kind": "agentplane.native_task_identity",
+        "plan": {
+          "approval_state": "approved",
+          "approved_digest": "sha256:bc022f9641feba81dced5f59dd5c1b359f36b0d8e4ba0a415526ebc43fd30ec1",
+          "digest": "sha256:bc022f9641feba81dced5f59dd5c1b359f36b0d8e4ba0a415526ebc43fd30ec1",
+          "revision": 4
+        },
+        "policy": {
+          "digest": "sha256:26cbf60e57ff6118b5cdcfaa5b7bbd07e2f7c8f2e02112dc5e98fe4437e2fe64"
+        },
+        "schema_version": 1,
+        "task_id": "202610071534-BV344Y"
+      }
+    },
+    "digest": "sha256:54ee94ddc162bfcfee82182d5b2a2c0901dcae9318ea62374ab082e16916f3f8",
+    "kind": "task_verification_input",
+    "obligations": {
+      "digest": "sha256:ecfe8794e474100cec08e3f4a75bfe7285e52886f7660accc16a6799fb167294",
+      "required_check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "full_regression",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "verification_contract_digest": "sha256:fcd13d61fc348c1265aed832674afaa64604cd7bb3a2a6ff00ccf02a396ee90b",
+      "verify_steps_digest": "sha256:6211dd72a79d5829b1a3694d7f09d900137a5ca23914fb27a215d5241409836d"
+    },
+    "schema_version": 5
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: canonical Task Kernel final checks passed.",
+  "recorded_at": "2026-10-07T18:38:42.873Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/pr/internal/review-template.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts --pool=forks --maxWorkers 2 --testTimeout 60000 --hookTimeout 60000`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run format:check`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Run `git diff --check`. Expected: it succeeds and confirms the requested outcome for this task.\n4. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.",
+  "scope_digest": "sha256:6211dd72a79d5829b1a3694d7f09d900137a5ca23914fb27a215d5241409836d",
+  "task_id": "202610071534-BV344Y",
+  "verification_command": "agentplane verify 202610071534-BV344Y --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

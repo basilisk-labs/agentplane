@@ -1,0 +1,293 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run format:check\nResult: pass\nEvidence: .agentplane/tasks/202610072154-CZEYZ1/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610072154-CZEYZ1 Verification Contract check affected_unit_integration (1/5)\n\nCheck: affected_unit_integration\nCommand: git diff --check\nResult: pass\nEvidence: .agentplane/tasks/202610072154-CZEYZ1/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610072154-CZEYZ1 Verification Contract check affected_unit_integration (2/5)\n\nCheck: affected_unit_integration\nCommand: node node_modules/eslint/bin/eslint.js scripts/bench/internal/agent-efficiency-anchor-runtime.mjs scripts/bench/internal/agent-efficiency-anchor-dependencies.mjs packages/agentplane/src/cli/run-cli.critical.agent-efficiency-anchor-lock.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610072154-CZEYZ1/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610072154-CZEYZ1 Verification Contract check affected_unit_integration (3/5)\n\nCheck: affected_unit_integration\nCommand: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.critical.agent-efficiency-anchor-lock.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-shared-worktree-dependency-manifest.test.ts --pool=forks --maxWorkers 2 --testTimeout 60000 --hookTimeout 60000\nResult: pass\nEvidence: .agentplane/tasks/202610072154-CZEYZ1/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610072154-CZEYZ1 Verification Contract check affected_unit_integration (4/5)\n\nCheck: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610072154-CZEYZ1/supervision/declared-checks.json#check-5\nScope: branch_pr task 202610072154-CZEYZ1 Verification Contract check affected_unit_integration (5/5)\n\nCheck: critical_paths\nCommand: bun run format:check\nResult: pass\nEvidence: .agentplane/tasks/202610072154-CZEYZ1/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610072154-CZEYZ1 Verification Contract check critical_paths (1/5)\n\nCheck: critical_paths\nCommand: git diff --check\nResult: pass\nEvidence: .agentplane/tasks/202610072154-CZEYZ1/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610072154-CZEYZ1 Verification Contract check critical_paths (2/5)\n\nCheck: critical_paths\nCommand: node node_modules/eslint/bin/eslint.js scripts/bench/internal/agent-efficiency-anchor-runtime.mjs scripts/bench/internal/agent-efficiency-anchor-dependencies.mjs packages/agentplane/src/cli/run-cli.critical.agent-efficiency-anchor-lock.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610072154-CZEYZ1/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610072154-CZEYZ1 Verification Contract check critical_paths (3/5)\n\nCheck: critical_paths\nCommand: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.critical.agent-efficiency-anchor-lock.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-shared-worktree-dependency-manifest.test.ts --pool=forks --maxWorkers 2 --testTimeout 60000 --hookTimeout 60000\nResult: pass\nEvidence: .agentplane/tasks/202610072154-CZEYZ1/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610072154-CZEYZ1 Verification Contract check critical_paths (4/5)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610072154-CZEYZ1/supervision/declared-checks.json#check-5\nScope: branch_pr task 202610072154-CZEYZ1 Verification Contract check critical_paths (5/5)\n\nCheck: docs_contract\nCommand: bun run format:check\nResult: pass\nEvidence: .agentplane/tasks/202610072154-CZEYZ1/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610072154-CZEYZ1 Verification Contract check docs_contract (1/5)\n\nCheck: docs_contract\nCommand: git diff --check\nResult: pass\nEvidence: .agentplane/tasks/202610072154-CZEYZ1/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610072154-CZEYZ1 Verification Contract check docs_contract (2/5)\n\nCheck: docs_contract\nCommand: node node_modules/eslint/bin/eslint.js scripts/bench/internal/agent-efficiency-anchor-runtime.mjs scripts/bench/internal/agent-efficiency-anchor-dependencies.mjs packages/agentplane/src/cli/run-cli.critical.agent-efficiency-anchor-lock.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610072154-CZEYZ1/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610072154-CZEYZ1 Verification Contract check docs_contract (3/5)\n\nCheck: docs_contract\nCommand: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.critical.agent-efficiency-anchor-lock.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-shared-worktree-dependency-manifest.test.ts --pool=forks --maxWorkers 2 --testTimeout 60000 --hookTimeout 60000\nResult: pass\nEvidence: .agentplane/tasks/202610072154-CZEYZ1/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610072154-CZEYZ1 Verification Contract check docs_contract (4/5)\n\nCheck: docs_contract\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610072154-CZEYZ1/supervision/declared-checks.json#check-5\nScope: branch_pr task 202610072154-CZEYZ1 Verification Contract check docs_contract (5/5)\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610072154-CZEYZ1/supervision/declared-checks.json#check-5\nScope: branch_pr task 202610072154-CZEYZ1 Verification Contract check full_regression\n\nCheck: real_e2e\nCommand: bun run format:check\nResult: pass\nEvidence: .agentplane/tasks/202610072154-CZEYZ1/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610072154-CZEYZ1 Verification Contract check real_e2e (1/5)\n\nCheck: real_e2e\nCommand: git diff --check\nResult: pass\nEvidence: .agentplane/tasks/202610072154-CZEYZ1/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610072154-CZEYZ1 Verification Contract check real_e2e (2/5)\n\nCheck: real_e2e\nCommand: node node_modules/eslint/bin/eslint.js scripts/bench/internal/agent-efficiency-anchor-runtime.mjs scripts/bench/internal/agent-efficiency-anchor-dependencies.mjs packages/agentplane/src/cli/run-cli.critical.agent-efficiency-anchor-lock.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610072154-CZEYZ1/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610072154-CZEYZ1 Verification Contract check real_e2e (3/5)\n\nCheck: real_e2e\nCommand: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.critical.agent-efficiency-anchor-lock.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-shared-worktree-dependency-manifest.test.ts --pool=forks --maxWorkers 2 --testTimeout 60000 --hookTimeout 60000\nResult: pass\nEvidence: .agentplane/tasks/202610072154-CZEYZ1/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610072154-CZEYZ1 Verification Contract check real_e2e (4/5)\n\nCheck: real_e2e\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610072154-CZEYZ1/supervision/declared-checks.json#check-5\nScope: branch_pr task 202610072154-CZEYZ1 Verification Contract check real_e2e (5/5)\n\nCheck: task_outcome\nCommand: bun run format:check\nResult: pass\nEvidence: .agentplane/tasks/202610072154-CZEYZ1/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610072154-CZEYZ1 Verification Contract check task_outcome (1/5)\n\nCheck: task_outcome\nCommand: git diff --check\nResult: pass\nEvidence: .agentplane/tasks/202610072154-CZEYZ1/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610072154-CZEYZ1 Verification Contract check task_outcome (2/5)\n\nCheck: task_outcome\nCommand: node node_modules/eslint/bin/eslint.js scripts/bench/internal/agent-efficiency-anchor-runtime.mjs scripts/bench/internal/agent-efficiency-anchor-dependencies.mjs packages/agentplane/src/cli/run-cli.critical.agent-efficiency-anchor-lock.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610072154-CZEYZ1/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610072154-CZEYZ1 Verification Contract check task_outcome (3/5)\n\nCheck: task_outcome\nCommand: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.critical.agent-efficiency-anchor-lock.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-shared-worktree-dependency-manifest.test.ts --pool=forks --maxWorkers 2 --testTimeout 60000 --hookTimeout 60000\nResult: pass\nEvidence: .agentplane/tasks/202610072154-CZEYZ1/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610072154-CZEYZ1 Verification Contract check task_outcome (4/5)\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610072154-CZEYZ1/supervision/declared-checks.json#check-5\nScope: branch_pr task 202610072154-CZEYZ1 Verification Contract check task_outcome (5/5)",
+  "digest": "sha256:8c35690c88e1da90eaebf7eee707530079f4713f08812266d384a5ff1b017dc6",
+  "implementation_sha": "4fa804b831dffb5f64655e5bc69e13cf8eaead88",
+  "input": {
+    "checked_input": {
+      "commands": {
+        "digest": "sha256:875a08e4cd9d100e5ff2d50aefd847905d04bd915969398d15b7d5259826f2c2",
+        "entries": [
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run format:check"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "git diff --check"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "node node_modules/eslint/bin/eslint.js scripts/bench/internal/agent-efficiency-anchor-runtime.mjs scripts/bench/internal/agent-efficiency-anchor-dependencies.mjs packages/agentplane/src/cli/run-cli.critical.agent-efficiency-anchor-lock.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.critical.agent-efficiency-anchor-lock.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-shared-worktree-dependency-manifest.test.ts --pool=forks --maxWorkers 2 --testTimeout 60000 --hookTimeout 60000"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run format:check"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "git diff --check"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "node node_modules/eslint/bin/eslint.js scripts/bench/internal/agent-efficiency-anchor-runtime.mjs scripts/bench/internal/agent-efficiency-anchor-dependencies.mjs packages/agentplane/src/cli/run-cli.critical.agent-efficiency-anchor-lock.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.critical.agent-efficiency-anchor-lock.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-shared-worktree-dependency-manifest.test.ts --pool=forks --maxWorkers 2 --testTimeout 60000 --hookTimeout 60000"
+          },
+          {
+            "check_id": "docs_contract",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "docs_contract",
+            "command": "bun run format:check"
+          },
+          {
+            "check_id": "docs_contract",
+            "command": "git diff --check"
+          },
+          {
+            "check_id": "docs_contract",
+            "command": "node node_modules/eslint/bin/eslint.js scripts/bench/internal/agent-efficiency-anchor-runtime.mjs scripts/bench/internal/agent-efficiency-anchor-dependencies.mjs packages/agentplane/src/cli/run-cli.critical.agent-efficiency-anchor-lock.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts"
+          },
+          {
+            "check_id": "docs_contract",
+            "command": "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.critical.agent-efficiency-anchor-lock.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-shared-worktree-dependency-manifest.test.ts --pool=forks --maxWorkers 2 --testTimeout 60000 --hookTimeout 60000"
+          },
+          {
+            "check_id": "full_regression",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "real_e2e",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "real_e2e",
+            "command": "bun run format:check"
+          },
+          {
+            "check_id": "real_e2e",
+            "command": "git diff --check"
+          },
+          {
+            "check_id": "real_e2e",
+            "command": "node node_modules/eslint/bin/eslint.js scripts/bench/internal/agent-efficiency-anchor-runtime.mjs scripts/bench/internal/agent-efficiency-anchor-dependencies.mjs packages/agentplane/src/cli/run-cli.critical.agent-efficiency-anchor-lock.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts"
+          },
+          {
+            "check_id": "real_e2e",
+            "command": "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.critical.agent-efficiency-anchor-lock.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-shared-worktree-dependency-manifest.test.ts --pool=forks --maxWorkers 2 --testTimeout 60000 --hookTimeout 60000"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run format:check"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "git diff --check"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "node node_modules/eslint/bin/eslint.js scripts/bench/internal/agent-efficiency-anchor-runtime.mjs scripts/bench/internal/agent-efficiency-anchor-dependencies.mjs packages/agentplane/src/cli/run-cli.critical.agent-efficiency-anchor-lock.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.critical.agent-efficiency-anchor-lock.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-shared-worktree-dependency-manifest.test.ts --pool=forks --maxWorkers 2 --testTimeout 60000 --hookTimeout 60000"
+          }
+        ]
+      },
+      "context": {
+        "digest": "sha256:fd898f41467c148006e8375fb63a142259e1a43efe931f911f7082d97e38ffd2",
+        "paths": [
+          ".agentplane/WORKFLOW.md",
+          ".github/ISSUE_TEMPLATE/config.yml",
+          "bun.lock",
+          "depcruise.config.cjs",
+          "eslint.config.cjs",
+          "knip.json",
+          "package.json",
+          "packages/agentplane/package.json",
+          "packages/agentplane/src/cli/run-cli/commands/config.ts",
+          "packages/agentplane/src/runner/config.test.ts",
+          "packages/agentplane/src/runner/config.ts",
+          "packages/agentplane/tsconfig.json",
+          "packages/agentplane/tsup.config.ts",
+          "packages/core/package.json",
+          "packages/core/schemas/config.schema.json",
+          "packages/core/src/config/config.test.ts",
+          "packages/core/src/config/config.ts",
+          "packages/core/tsconfig.json",
+          "packages/core/tsup.config.ts",
+          "packages/recipes/package.json",
+          "packages/recipes/tsconfig.json",
+          "packages/recipes/tsup.config.ts",
+          "packages/spec/examples/config.json",
+          "packages/spec/package.json",
+          "packages/spec/schemas/config.schema.json",
+          "packages/testkit/package.json",
+          "packages/testkit/tsconfig.json",
+          "schemas/config.schema.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package-lock.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package.json",
+          "tsconfig.json",
+          "turbo.json",
+          "vitest.config.ts",
+          "vitest.workspace.ts"
+        ]
+      },
+      "digest": "sha256:78c35f5516799237a6b5f21b2500f4a4499b0f5299d455a5daf64bad28149a81",
+      "environment": {
+        "digest": "sha256:9ec5bf2323cd53a84a354760f7a2e04adc570a2f8a0452d4311892dcb83d880b",
+        "runtime": {
+          "architecture": "x64",
+          "bun_major": null,
+          "node_major": "24",
+          "platform": "linux"
+        }
+      },
+      "evidence": {
+        "details_digest": "sha256:eefa360ffce5970596e25e88b4b367ff6d8c6fb20bd56f94f8545b2b66f4e743",
+        "digest": "sha256:b6552abb3645ce84ad32805b50755c9355ed8eef78aad14fcf9e953276a56112",
+        "references": [
+          {
+            "digest": "sha256:ac563e1c2d07fa1a4b3a56ef8a96b0c4c1285cab18a93b75e978e449731475cd",
+            "fragment": "check-1",
+            "path": ".agentplane/tasks/202610072154-CZEYZ1/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610072154-CZEYZ1/supervision/declared-checks.json#check-1",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:ac563e1c2d07fa1a4b3a56ef8a96b0c4c1285cab18a93b75e978e449731475cd",
+            "fragment": "check-2",
+            "path": ".agentplane/tasks/202610072154-CZEYZ1/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610072154-CZEYZ1/supervision/declared-checks.json#check-2",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:ac563e1c2d07fa1a4b3a56ef8a96b0c4c1285cab18a93b75e978e449731475cd",
+            "fragment": "check-3",
+            "path": ".agentplane/tasks/202610072154-CZEYZ1/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610072154-CZEYZ1/supervision/declared-checks.json#check-3",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:ac563e1c2d07fa1a4b3a56ef8a96b0c4c1285cab18a93b75e978e449731475cd",
+            "fragment": "check-4",
+            "path": ".agentplane/tasks/202610072154-CZEYZ1/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610072154-CZEYZ1/supervision/declared-checks.json#check-4",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:ac563e1c2d07fa1a4b3a56ef8a96b0c4c1285cab18a93b75e978e449731475cd",
+            "fragment": "check-5",
+            "path": ".agentplane/tasks/202610072154-CZEYZ1/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610072154-CZEYZ1/supervision/declared-checks.json#check-5",
+            "source": "filesystem"
+          }
+        ]
+      },
+      "implementation": {
+        "base_sha": "63343f7622ea8a7224d02c1f9437c833113a998c",
+        "digest": "sha256:7e26dc952eadd75e84d80ea8966126c368d9810bcce81b92ebc0adcb040cb325",
+        "strategy": "branch_diff",
+        "target_sha": "4fa804b831dffb5f64655e5bc69e13cf8eaead88"
+      }
+    },
+    "concurrency": {
+      "digest": "sha256:04a5af30b52569da2570c0f0862fc558a0fe1bde5fd0fc357f480ec61599430c",
+      "execution": {
+        "authoritative_task_source": "task_worktree",
+        "base_ref": "main",
+        "base_sha": "63343f7622ea8a7224d02c1f9437c833113a998c",
+        "digest": "sha256:780098e473b2be521b46f9b1e564f69123345edccc22ee03d438363b86ceba20",
+        "primary_task_id": "202610072154-CZEYZ1",
+        "reason_codes": [
+          "agent_preferred_branch_pr",
+          "effect_release_metadata",
+          "repository_branch_pr_floor",
+          "reversibility_recovery_required"
+        ],
+        "repository_mode": "branch_pr",
+        "requested_mode": "branch_pr",
+        "route_source": "execution_contract",
+        "selected_mode": "branch_pr",
+        "task_ids": [
+          "202610072154-CZEYZ1"
+        ]
+      },
+      "task": {
+        "capability": {
+          "digest": "sha256:87765a94d144029c18803e0f055d0cbe95330a626628aaf433654261232b0976"
+        },
+        "checks": {
+          "digest": "sha256:617b6e601dda249e640ef8faecbd90b611f3628a697f81cc6ba2c1e917214e35",
+          "required_check_ids": [
+            "affected_unit_integration",
+            "critical_paths",
+            "docs_contract",
+            "full_regression",
+            "real_e2e",
+            "task_outcome"
+          ],
+          "verification_contract_digest": "sha256:e2cea3bfb41f3b2d723c04cb7c85aa1b8ff07749aea64331661e252a1b610324"
+        },
+        "digest": "sha256:d956951f56242c9e9d574cfd7f55ac657a5c107164f9c651cb348b5913a99f77",
+        "kind": "agentplane.native_task_identity",
+        "plan": {
+          "approval_state": "approved",
+          "approved_digest": "sha256:7b94222ca8d4722a431c7b8882102f4494fb1547444d30dd01f6c3e67579a199",
+          "digest": "sha256:7b94222ca8d4722a431c7b8882102f4494fb1547444d30dd01f6c3e67579a199",
+          "revision": 1
+        },
+        "policy": {
+          "digest": "sha256:26cbf60e57ff6118b5cdcfaa5b7bbd07e2f7c8f2e02112dc5e98fe4437e2fe64"
+        },
+        "schema_version": 1,
+        "task_id": "202610072154-CZEYZ1"
+      }
+    },
+    "digest": "sha256:3d71314dd422fdf322a30f639c16b34a38ca31f8547b7d62f712ceca85f3045e",
+    "kind": "task_verification_input",
+    "obligations": {
+      "digest": "sha256:b5a4594f3eaecaef8288b28b047b78f40c0059a969aae1cbd6960aef98815456",
+      "required_check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "full_regression",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "verification_contract_digest": "sha256:e2cea3bfb41f3b2d723c04cb7c85aa1b8ff07749aea64331661e252a1b610324",
+      "verify_steps_digest": "sha256:693bc7182ca595fe72ec37ad868c699849f52a8467b54e4028cacc08fa745d96"
+    },
+    "schema_version": 5
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned checks passed before independent EVALUATOR review.",
+  "recorded_at": "2026-10-08T03:10:48.343Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.critical.agent-efficiency-anchor-lock.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-shared-worktree-dependency-manifest.test.ts --pool=forks --maxWorkers 2 --testTimeout 60000 --hookTimeout 60000`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `node node_modules/eslint/bin/eslint.js scripts/bench/internal/agent-efficiency-anchor-runtime.mjs scripts/bench/internal/agent-efficiency-anchor-dependencies.mjs packages/agentplane/src/cli/run-cli.critical.agent-efficiency-anchor-lock.test.ts packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Run `bun run format:check`. Expected: it succeeds and confirms the requested outcome for this task.\n4. Run `git diff --check`. Expected: it succeeds and confirms the requested outcome for this task.\n5. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n6. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.",
+  "scope_digest": "sha256:693bc7182ca595fe72ec37ad868c699849f52a8467b54e4028cacc08fa745d96",
+  "task_id": "202610072154-CZEYZ1",
+  "verification_command": "agentplane verify 202610072154-CZEYZ1 --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

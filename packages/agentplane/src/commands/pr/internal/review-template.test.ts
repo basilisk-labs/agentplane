@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { TaskData } from "../../../backends/task-backend.js";
 import {
   renderGithubPrBody,
+  renderPrAutoSummary,
   renderPrReviewDocument,
   validateGithubPrBodyContents,
   validateReviewContents,
@@ -200,5 +201,59 @@ describe("review-template batch rendering", () => {
       expect(text).toContain("- Closure policy: `all_or_fail`");
       expect(text).toContain("- Included: `202601010102-BBBBB`");
     }
+  });
+});
+
+describe("stable PR summary evidence", () => {
+  const original = {
+    updatedAt: "2026-01-01T00:00:00.000Z",
+    branch: "task/example",
+    diffstat: "file | 1 +",
+  };
+  const summary = renderPrAutoSummary(original);
+  const document = `<!-- BEGIN AUTO SUMMARY -->\n${summary}\n<!-- END AUTO SUMMARY -->`;
+  it("preserves evidence through distinct later provider timestamps", () => {
+    for (const updatedAt of ["2026-01-02T00:00:00.000Z", "2026-01-03T00:00:00.000Z"]) {
+      expect(renderPrAutoSummary({ ...original, updatedAt, previousDocument: document })).toBe(
+        summary,
+      );
+    }
+  });
+  it("regenerates task content while preserving unchanged raw evidence", () => {
+    const task = makeTask();
+    const autoSummary = renderPrAutoSummary({
+      ...original,
+      updatedAt: "2026-01-03T00:00:00.000Z",
+      previousDocument: document,
+    });
+    const before = renderGithubPrBody({ task, autoSummary });
+    const after = renderGithubPrBody({
+      task: { ...task, title: "Changed task summary" },
+      autoSummary,
+    });
+    expect(after).not.toBe(before);
+    expect(after).toContain("Changed task summary");
+    expect(autoSummary).toBe(summary);
+  });
+  it.each([{ branch: "task/changed" }, { diffstat: "file | 2 ++" }])(
+    "refreshes changed evidence %j",
+    (change) => {
+      const next = { ...original, ...change, updatedAt: "2026-01-02T00:00:00.000Z" };
+      expect(renderPrAutoSummary({ ...next, previousDocument: document })).toBe(
+        renderPrAutoSummary(next),
+      );
+    },
+  );
+  it.each([
+    null,
+    document + document,
+    document.replace("2026-01-01T00:00:00.000Z", "2026-02-30T00:00:00.000Z"),
+    "",
+    "<!-- BEGIN AUTO SUMMARY -->broken",
+    document.replace("2026-01-01T00:00:00.000Z", "invalid"),
+    document.replace("Raw evidence", "unexpected"),
+  ])("regenerates missing or malformed evidence %s", (previousDocument) => {
+    const next = { ...original, updatedAt: "2026-01-02T00:00:00.000Z" };
+    expect(renderPrAutoSummary({ ...next, previousDocument })).toBe(renderPrAutoSummary(next));
   });
 });
