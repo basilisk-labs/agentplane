@@ -20,6 +20,8 @@ import {
   TASK_KERNEL_EXTENSION,
 } from "../../adapters/task-backend/kernel-record.js";
 import type { KernelWorkContract } from "../../adapters/task-backend/kernel-documents.js";
+import { KernelAuthorityResolver } from "./kernel-authority.js";
+import type { KernelAuthorityPort } from "../../ports/kernel-authority.js";
 import { KernelTaskLifecycle } from "./kernel-task-lifecycle.js";
 
 const roots: string[] = [];
@@ -220,6 +222,279 @@ describe("canonical lifecycle application service", () => {
 
     await expect(new KernelTaskLifecycle(adapter).read("T-1", null)).rejects.toBe(error);
     expect(read).toHaveBeenCalledTimes(1);
+  });
+
+  it.each(["none", "foreign", "authority-delta", "actor"] as const)(
+    "authenticates result binding through native authority transitions: %s",
+    async (fault) => {
+      const f = await fixture();
+      await f.create();
+      await f.propose();
+      const taskId = f.journey.task.id;
+      let fingerprint = f.seed.repository_fingerprint!;
+      let observation: k.AuthorityObservation | null = null;
+      let invocation = "initial-operator-decision";
+      let sequence = 0;
+      const actor = {
+        id: "native-controller",
+        kind: "SYSTEM" as const,
+        transport: "manual" as const,
+        capabilities: ["repository_write", "authority.observe"],
+      };
+      const root = f.seed.authority!;
+      const port: KernelAuthorityPort = {
+        readContext: async () => {
+          const current = await f.read();
+          return {
+            task_id: taskId,
+            task_revision: current.record.aggregate.revision,
+            repository_identity: replayRepositoryIdentity,
+            repository_fingerprint: fingerprint,
+            actor,
+            occurred_at: f.seed.occurred_at,
+            mutation_id: `native-${++sequence}`,
+            approval_receipts: { trusted_issuers: [], max_ttl_minutes: 15, clock_skew_seconds: 0 },
+            ceiling: {
+              scope_roots: ["src"],
+              repository_effects: root.repository_effects,
+              external_effects: root.external_effects,
+              capabilities: root.capabilities,
+              resources: root.resources,
+              validation_requirements: root.validation_requirements,
+              completion_requirements: root.completion_requirements,
+              risk: root.risk,
+              policy_digests: [k.kernelDigest("native-policy")],
+              expires_at: null,
+            },
+          };
+        },
+        readApproval: () =>
+          Promise.resolve({
+            kind: "manual_operator",
+            actor_id: "USER",
+            invocation_id: invocation,
+          }),
+        observeContinuation: () => Promise.resolve(observation),
+      };
+      const resolver = new KernelAuthorityResolver(f.adapter, port);
+      expect(await resolver.approve(taskId)).toMatchObject({ kind: "committed" });
+      const nativeInput = async (payload: Payload) => {
+        const input = await f.input(payload);
+        const current = await f.read();
+        const authority = current.record.aggregate.authority_lineage!.at(-1)!.authority;
+        return {
+          ...input,
+          actor,
+          authority,
+          repository_fingerprint: fingerprint,
+          command: { ...input.command, expected_state_fingerprint: fingerprint },
+        };
+      };
+      expect(
+        await f.service.apply(
+          await nativeInput({
+            kind: "materialize_work_items",
+            plan_revision: 1,
+            plan_digest: f.plan.digest,
+          }),
+        ),
+      ).toMatchObject({ kind: "committed" });
+      const initialFingerprint = fingerprint;
+      fingerprint = k.kernelDigest("outside-file-observation");
+      observation = {
+        kind: "repository_implementation",
+        previous_fingerprint: initialFingerprint,
+        changed_paths: ["extra.ts"],
+        evidence_digest: k.kernelDigest("outside-observation"),
+      };
+      const delta = await resolver.prepareDelta(taskId, () => ["repository_write"]);
+      invocation = delta.request_digest;
+      expect(
+        await resolver.approveDelta({
+          task_id: taskId,
+          scope_roots: ["extra.ts"],
+          repository_effects: ["repository_write"],
+          request_digest: delta.request_digest,
+          repositoryEffects: () => ["repository_write"],
+        }),
+      ).toMatchObject({ kind: "committed" });
+      observation = {
+        kind: "repository_implementation",
+        previous_fingerprint: fingerprint,
+        changed_paths: ["extra.ts"],
+        evidence_digest: k.kernelDigest("return-to-original-bytes"),
+      };
+      fingerprint = initialFingerprint;
+      expect(await resolver.continue(taskId)).toMatchObject({ kind: "committed" });
+      expect(
+        await f.service.apply(
+          await nativeInput({
+            kind: "transition_work_item",
+            action: "claim",
+            work_item_id: "build",
+            claim_id: "native-claim",
+          }),
+        ),
+      ).toMatchObject({ kind: "committed" });
+      const delegated = await resolver.resolve(taskId, "build");
+      const begun = await f.service.begin({
+        ...(await nativeInput({
+          kind: "transition_work_item",
+          action: "begin",
+          work_item_id: "build",
+          claim_id: "native-claim",
+        })),
+        authority: delegated.authority,
+      });
+      expect(begun.result).toMatchObject({ kind: "committed" });
+      const order = begun.work_order!;
+      observation = {
+        kind: "repository_implementation",
+        previous_fingerprint: fingerprint,
+        changed_paths: [fault === "foreign" ? "extra.ts" : "src/feature.ts"],
+        evidence_digest: k.kernelDigest("controller-commit"),
+      };
+      fingerprint = k.kernelDigest("committed-repository");
+      expect(await resolver.continue(taskId)).toMatchObject({ kind: "committed" });
+      if (fault === "authority-delta") {
+        observation = {
+          kind: "repository_implementation",
+          previous_fingerprint: fingerprint,
+          changed_paths: ["later.ts"],
+          evidence_digest: k.kernelDigest("later-delta"),
+        };
+        fingerprint = k.kernelDigest("later-repository");
+        const later = await resolver.prepareDelta(taskId, () => ["repository_write"]);
+        invocation = later.request_digest;
+        expect(
+          await resolver.approveDelta({
+            task_id: taskId,
+            scope_roots: ["later.ts"],
+            repository_effects: ["repository_write"],
+            request_digest: later.request_digest,
+            repositoryEffects: () => ["repository_write"],
+          }),
+        ).toMatchObject({ kind: "committed" });
+      }
+      const receipt = await nativeInput({
+        kind: "accept_work_item_result",
+        work_item_id: "build",
+        plan_revision: 1,
+        plan_digest: f.plan.digest,
+        result_digest: k.kernelDigest("unchanged-result"),
+        output_manifests: [
+          {
+            id: "built",
+            kind: "report",
+            digest: k.kernelDigest("report"),
+            task_id: taskId,
+            plan_revision: 1,
+            work_item_id: "build",
+            attempt: order.binding.attempt,
+            repository_fingerprint: fingerprint,
+          },
+        ],
+      });
+      const before = await f.read();
+      if (fault !== "none") {
+        expect(
+          await f.service.receiveResult(
+            receipt,
+            order.binding,
+            order.authority.digest,
+            fault === "actor" ? "other-controller" : actor.id,
+          ),
+        ).toMatchObject({
+          kind: "unavailable",
+          code: "malformed",
+          facts: ["result_binding_mismatch"],
+        });
+        expect(await f.read()).toEqual(before);
+        return;
+      }
+      expect(receipt.command).not.toHaveProperty("binding_digest");
+      expect(
+        await f.service.receiveResult(receipt, order.binding, order.authority.digest, actor.id),
+      ).toMatchObject({ kind: "committed", replayed: false });
+      const acceptedRecord = await f.read();
+      const accepted = acceptedRecord.record.aggregate.mutation_receipts[receipt.mutation_id];
+      expect(accepted?.command_digest).toBe(
+        k.kernelDigest({
+          ...receipt.command,
+          binding_digest: k.kernelDigest(order.binding),
+        }),
+      );
+      expect(
+        await f.service.receiveResult(receipt, order.binding, order.authority.digest, actor.id),
+      ).toMatchObject({ kind: "committed", replayed: true });
+    },
+  );
+
+  it("anchors repeated fingerprints to the exact issued bounded authority", async () => {
+    const f = await fixture();
+    await f.ready();
+    const { command, order } = await f.begin();
+    const { record } = await f.read();
+    const issued = command.authority!;
+    const originalContents = { ...issued, expires_at: "2030-01-01T00:00:00.000Z" };
+    const { digest: _digest, ...contents } = originalContents;
+    const original = { ...contents, digest: k.kernelDigest(contents) };
+    const after = k.kernelDigest("controller-scoped-commit");
+    const entry = (authority: k.ExecutionAuthority, observation: unknown = null) =>
+      ({ authority, observation }) as NonNullable<
+        typeof record.aggregate.authority_lineage
+      >[number];
+    const continuation = entry(
+      { ...issued, repository_fingerprint: after },
+      {
+        kind: "repository_implementation",
+        previous_fingerprint: order.binding.repository_fingerprint,
+        changed_paths: ["src/feature.ts"],
+      },
+    );
+    record.aggregate.authority_lineage = [entry(original), entry(issued), continuation];
+    const matches = (anchor = order.authority.digest) =>
+      f.service.resultFingerprintMatches(record, order.binding, after, anchor);
+    expect(matches()).toBe(true);
+    expect(f.service.resultFingerprintMatches(record, order.binding, after)).toBe(false);
+    expect(matches(k.kernelDigest("unissued-authority"))).toBe(false);
+    const baseline = structuredClone(record.aggregate.authority_lineage);
+    for (const invalid of [
+      [...baseline, entry(issued)],
+      [entry(issued), entry(issued), continuation],
+      [entry(original), continuation],
+      [entry(issued), entry(issued, { kind: "authority_delta" }), continuation],
+      [
+        entry(issued),
+        entry(continuation.authority, {
+          kind: "repository_implementation",
+          previous_fingerprint: order.binding.repository_fingerprint,
+          changed_paths: ["outside/feature.ts"],
+        }),
+      ],
+    ]) {
+      record.aggregate.authority_lineage = invalid;
+      expect(matches()).toBe(false);
+    }
+    record.aggregate.authority_lineage = baseline;
+    expect(
+      f.service.resultFingerprintMatches(
+        record,
+        {
+          ...order.binding,
+          plan_digest: k.kernelDigest("other-plan"),
+        },
+        after,
+        order.authority.digest,
+      ),
+    ).toBe(false);
+    expect(
+      f.service.resultFingerprintMatches(
+        record,
+        order.binding,
+        order.binding.repository_fingerprint,
+      ),
+    ).toBe(true);
   });
 
   it.each(["local", "cloud"] as const)(
