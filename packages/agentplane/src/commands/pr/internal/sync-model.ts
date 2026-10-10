@@ -36,6 +36,8 @@ export type PrSyncCommonState = {
   /** Immutable comparison basis; never replace with the provider target branch. */
   baseBranch: string | null;
   providerBaseBranch: string | null;
+  /** Internal projection authenticated from native final validation and reviewed import lineage. */
+  reviewedPublicationBase?: { comparisonBase: string; providerBase: string } | null;
   headSha: string | null;
   artifactRefresh: boolean;
 };

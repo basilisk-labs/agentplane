@@ -62,14 +62,15 @@ export async function runPrOpenSync(
     identityFailure = error instanceof Error ? error.message : String(error);
   }
   const providerBase =
-    identity && opts.remoteMode !== "sync-only"
+    common.reviewedPublicationBase?.providerBase ??
+    (identity && opts.remoteMode !== "sync-only"
       ? await resolveProviderBaseBranch({
           gitRoot: common.resolved.gitRoot,
           baseRef: common.baseBranch,
           baseSha: taskExecutionBaseFromExtensions(common.task.extensions)?.base_sha ?? null,
           identity,
         })
-      : common.providerBaseBranch;
+      : common.providerBaseBranch);
   let nextMeta: PrMeta = buildOpenedPrMeta({
     taskId: common.task.id,
     relatedTaskIds: common.relatedTaskIds,
