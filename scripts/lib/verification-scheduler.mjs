@@ -81,6 +81,7 @@ function runOne(group, options) {
       const failureKinds = classifyVerificationGroupFailures(result);
       resolve({
         ...result,
+        launched: true,
         failure_kind: failureKinds[0] ?? null,
         failure_kinds: failureKinds,
       });
@@ -132,6 +133,7 @@ export async function runVerificationGroups(groups, options = {}) {
       if (options.onGroupStart?.(groups[index]) === false) {
         results[index] = {
           id: groups[index].id,
+          launched: false,
           exit_code: 124,
           timed_out: true,
           failure_kind: "timeout",
@@ -160,6 +162,10 @@ export async function runVerificationGroups(groups, options = {}) {
     ok: results.every((result) => result.exit_code === 0),
     results,
   };
+}
+
+export function countLaunchedVerificationGroups(results) {
+  return results.filter((result) => result.launched !== false).length;
 }
 
 export function summarizeVerificationGroupResults(results) {

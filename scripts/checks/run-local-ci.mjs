@@ -9,6 +9,7 @@ import { buildLocalCiExecutionPlan, parseChangedFilesEnv } from "../lib/local-ci
 import { withFrameworkBuildLock } from "../lib/framework-build-lock.mjs";
 import { assertPinnedBunRuntime } from "../lib/bun-runtime.mjs";
 import {
+  countLaunchedVerificationGroups,
   runVerificationGroups,
   writeVerificationGroupResults,
 } from "../lib/verification-scheduler.mjs";
@@ -538,7 +539,7 @@ async function runFullFastPath() {
       route: "full-fast",
       wall_clock_ms: Math.round(performance.now() - startedAt),
       selected_groups: groups.length + 1,
-      executed_groups: results.length + buildResult.results.length,
+      executed_groups: countLaunchedVerificationGroups([...buildResult.results, ...results]),
       parallel_group_concurrency: Math.max(runtimeConcurrency, coreConcurrency, cliConcurrency),
       build_invocations: 1,
       ok,

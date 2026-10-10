@@ -27,16 +27,16 @@ Fix #6093: provide finite aligned full-validation budgets across native verifier
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- docs/developer/testing-and-quality.mdx             |  26 ++
+ docs/developer/testing-and-quality.mdx             |  27 +++
  .../direct-task-verification.qualification.test.ts |  29 +++
  .../src/commands/task/direct-task-verification.ts  |  14 +-
  scripts/checks/run-local-ci-group.mjs              |  20 +-
- scripts/checks/run-local-ci.mjs                    |  39 ++-
+ scripts/checks/run-local-ci.mjs                    |  42 +++-
  scripts/lib/local-ci-resource-profile.mjs          | 126 ++++++++++
- scripts/lib/local-ci-resource-profile.test.mjs     | 261 +++++++++++++++++++++
- scripts/lib/verification-scheduler.d.ts            |  19 ++
- scripts/lib/verification-scheduler.mjs             |  73 +++++-
- 9 files changed, 593 insertions(+), 14 deletions(-)
+ scripts/lib/local-ci-resource-profile.test.mjs     | 270 +++++++++++++++++++++
+ scripts/lib/verification-scheduler.d.ts            |  22 ++
+ scripts/lib/verification-scheduler.mjs             |  79 +++++-
+ 9 files changed, 614 insertions(+), 15 deletions(-)
 ```
 
 </details>

@@ -8,6 +8,7 @@ export type VerificationGroup = {
 
 export type VerificationGroupResult = {
   id: string;
+  launched?: boolean;
   exit_code: number;
   timed_out: boolean;
   failure_kind?:
@@ -63,6 +64,8 @@ export function runVerificationGroups(
 export function summarizeVerificationGroupResults(
   results: VerificationGroupResult[],
 ): VerificationGroupSummary;
+
+export function countLaunchedVerificationGroups(results: VerificationGroupResult[]): number;
 
 export function writeVerificationGroupResults(
   results: VerificationGroupResult[],

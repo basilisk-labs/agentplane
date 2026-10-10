@@ -10,6 +10,7 @@ import {
 import {
   classifyVerificationGroupFailure,
   classifyVerificationGroupFailures,
+  countLaunchedVerificationGroups,
   runVerificationGroups,
   summarizeVerificationGroupResults,
   writeVerificationGroupResults,
@@ -103,6 +104,7 @@ test("queued groups report the deadline when each group actually starts", async 
     },
   );
   assert.equal(result.ok, true);
+  assert.equal(countLaunchedVerificationGroups(result.results), 2);
   assert.deepEqual(
     launches.map((launch) => [launch.groups[0], launch.limiting_deadline]),
     [
@@ -113,12 +115,19 @@ test("queued groups report the deadline when each group actually starts", async 
 });
 
 test("expired deadline skips the group and records a timeout", async () => {
-  const result = await runVerificationGroups([{ id: "expired", command: "does-not-exist" }], {
-    onGroupStart: () => false,
-  });
+  const result = await runVerificationGroups(
+    [
+      { id: "started", command: process.execPath, args: ["-e", ""] },
+      { id: "expired", command: "does-not-exist" },
+    ],
+    { concurrency: 1, onGroupStart: (group) => group.id !== "expired" },
+  );
   assert.equal(result.ok, false);
-  assert.deepEqual(result.results[0].failure_kinds, ["timeout"]);
-  assert.equal(result.results[0].timed_out, true);
+  assert.equal(result.results[1].launched, false);
+  assert.equal(countLaunchedVerificationGroups(result.results), 1);
+  assert.ok(result.results.length > countLaunchedVerificationGroups(result.results));
+  assert.deepEqual(result.results[1].failure_kinds, ["timeout"]);
+  assert.equal(result.results[1].timed_out, true);
 });
 
 test("lint heap respects an explicit Node limit and rejects insufficient capacity", () => {

@@ -29,6 +29,7 @@ whole-command time and the limiting deadline at that launch. A shorter declared 
 The latter name is retained for compatibility although it limits the whole group, including lint.
 The core test pool uses four workers and a finite 120-second per-test and hook timeout by default.
 `AGENTPLANE_FAST_VITEST_MAX_WORKERS` still overrides its worker count.
+Groups skipped after the native deadline count as selected but not executed in verification metrics.
 
 The core group gives ESLint a 4096 MiB Node heap by default. Preflight requires at least 5632 MiB
 of reported memory capacity for that profile and stops with an actionable error on smaller hosts.
