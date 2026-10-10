@@ -48,7 +48,13 @@ const transitionSchema = z.strictObject({
 const recoverySchema = z.union([
   z.strictObject({
     ...recoveryFields,
-    semantic_stop: z.strictObject({ work_order_id: digest, result_digest: digest }),
+    semantic_stop: z.strictObject({
+      work_order_id: digest,
+      result_digest: digest,
+      result_authentication: z
+        .enum(["native_stop_receipt", "legacy_current_retained_content"])
+        .optional(),
+    }),
   }),
   z.strictObject({
     ...recoveryFields,
@@ -80,6 +86,8 @@ async function readStop(kernelRoot: string, record: KernelRecord, orderId: strin
     k.kernelDigest(saved.command) !== mutation.command_digest ||
     saved.command.kind !== "transition_work_item" ||
     saved.command.action !== "block" ||
+    (saved.command.semantic_result_digest !== undefined &&
+      saved.command.semantic_result_digest !== k.kernelDigest(result)) ||
     binding?.phase !== "implementation" ||
     result.status === "completed" ||
     result.work_order_id !== orderId ||
@@ -94,7 +102,16 @@ async function readStop(kernelRoot: string, record: KernelRecord, orderId: strin
       record.aggregate.work_items[binding.work_item_id]?.definition.contract_digest
   )
     throw new Error("Semantic stop evidence does not match the canonical Task");
-  return { result, binding, resultPath, mutation };
+  return {
+    result,
+    binding,
+    resultPath,
+    mutation,
+    result_authentication:
+      saved.command.semantic_result_digest === undefined
+        ? ("legacy_current_retained_content" as const)
+        : ("native_stop_receipt" as const),
+  };
 }
 
 export async function captureKernelSemanticStop(
@@ -113,7 +130,11 @@ export async function captureKernelSemanticStop(
       continue;
     if (item.state !== "BLOCKED" || stop.binding.claim_id !== item.claim_id)
       throw new Error("Semantic stop claim is stale");
-    return { work_order_id: orderId, result_digest: k.kernelDigest(stop.result) };
+    return {
+      work_order_id: orderId,
+      result_digest: k.kernelDigest(stop.result),
+      result_authentication: stop.result_authentication,
+    };
   }
   throw new Error("Recovery requires a retained semantic stop for this WorkItem attempt");
 }
@@ -323,6 +344,8 @@ export async function kernelRecoveryInputs(
       stop.binding.plan_revision !== binding.plan_revision ||
       stop.binding.contract_digest !== binding.contract_digest ||
       k.kernelDigest(stop.result) !== receipt.semantic_stop.result_digest ||
+      (receipt.semantic_stop.result_authentication !== undefined &&
+        receipt.semantic_stop.result_authentication !== stop.result_authentication) ||
       stop.mutation.after_revision > mutation.before_revision ||
       order.task.revision === null ||
       mutation.after_revision >= order.task.revision

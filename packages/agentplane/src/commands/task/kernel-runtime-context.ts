@@ -1,3 +1,4 @@
+import { readKernelScopeRequest } from "./kernel-scope-request-evidence.js";
 import { observeReviewedBaseImport, type ReviewedBasePins } from "./kernel-reviewed-base-import.js";
 import { resolveKernelPolicyBaseline } from "./kernel-policy-baseline.js";
 import { validateKernelRecipeBindings } from "./kernel-recipe-admission.js";
@@ -101,7 +102,15 @@ export async function createKernelRuntime(opts: {
     task: {},
     create_if_missing: false,
   })) as k.Sha256Digest;
-  const adapter = new KernelBackendAdapter(ctx.taskBackend, identity);
+  const adapter = new KernelBackendAdapter(ctx.taskBackend, identity, async (request) => {
+    const retained = await readKernelScopeRequest(ctx, request.task_id, request.work_item_id, {
+      read: (id) => adapter.read(id),
+      observe,
+      readContext: (id) => native.readContext(id),
+    });
+    if (k.kernelDigest(retained.request) !== k.kernelDigest(request))
+      throw new Error("Scope request does not match authenticated native stop evidence");
+  });
   const lifecycle = new KernelTaskLifecycle(adapter);
   const observationDir = path.join(
     await resolveCommandGitCommonDir(ctx),

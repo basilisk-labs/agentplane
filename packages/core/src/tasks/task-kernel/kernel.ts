@@ -1,3 +1,4 @@
+import { prospectiveScopeAdmissionIssues } from "./prospective-scope.js";
 import { correctiveAmendmentGrant, correctiveGrantIssues } from "./corrective-authority.js";
 import { planObligationIssues } from "../kernel-plan-refinement.js";
 import {
@@ -155,6 +156,7 @@ const EVENT_KIND: Readonly<Record<TaskCommand["kind"], DomainEvent["kind"]>> = {
   continue_authority: "authority_continued",
   renew_policy_authority: "authority_continued",
   approve_authority_delta: "authority_continued",
+  approve_scope_request: "authority_continued",
   materialize_work_items: "work_items_materialized",
   transition_work_item: "work_item_transitioned",
   accept_work_item_result: "work_item_result_accepted",
@@ -532,6 +534,10 @@ function preconditions(input: KernelInput): KernelResult | null {
   }
   if (input.command.kind === "continue_authority") {
     const issues = continuationAdmissionIssues(input, input.command.record);
+    return issues.length > 0 ? rejected("AUTHORITY_SCOPE_EXCEEDED", issues) : null;
+  }
+  if (input.command.kind === "approve_scope_request") {
+    const issues = prospectiveScopeAdmissionIssues(input, input.command.record);
     return issues.length > 0 ? rejected("AUTHORITY_SCOPE_EXCEEDED", issues) : null;
   }
   if (input.command.kind === "approve_authority_delta") {
@@ -1028,6 +1034,18 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
       next = {
         ...aggregate,
         revision: aggregate.revision + 1,
+        authority_lineage: [...(aggregate.authority_lineage ?? []), command.record],
+      };
+      break;
+    }
+    case "approve_scope_request": {
+      next = {
+        ...aggregate,
+        revision: aggregate.revision + 1,
+        state: "PLANNING",
+        current_plan: aggregate.current_plan
+          ? { ...aggregate.current_plan, state: "REJECTED" }
+          : null,
         authority_lineage: [...(aggregate.authority_lineage ?? []), command.record],
       };
       break;

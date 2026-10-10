@@ -1,3 +1,4 @@
+import { scopeIntakeDigest } from "./kernel-scope-intake.js";
 import { isoTimestampSchema } from "@agentplaneorg/core/schemas";
 import { kernelAuthorityRecordSchema } from "./kernel-authority-schema.js";
 import { kernelRecordIssues } from "./kernel-record-invariants.js";
@@ -310,6 +311,18 @@ export function readKernelRecord(
       fields: ["status"],
     };
   }
+  const lastScopeRequest = aggregate.authority_lineage?.findLast(
+    (entry) => entry.observation?.kind === "prospective_scope_request",
+  )?.observation?.scope_request;
+  if (
+    lastScopeRequest &&
+    scopeIntakeDigest(task.execution_contract) !== lastScopeRequest.intake_after_digest
+  )
+    return {
+      kind: "malformed",
+      reason: "scope_request_intake_projection",
+      fields: ["execution_contract"],
+    };
   const persistedIssues = [
     ...kernelRecordIssues(aggregate, contents.events),
     ...kernelDocumentIssues(aggregate, contents.documents),

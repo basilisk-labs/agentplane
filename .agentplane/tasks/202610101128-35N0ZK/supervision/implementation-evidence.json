@@ -1,0 +1,118 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 81e66f582cd81fc32907efd441c53433ca2717ac..10a10cb82afdc23b1d0ebbe6f7df1b6f365850a7",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 81e66f582cd81fc32907efd441c53433ca2717ac..10a10cb82afdc23b1d0ebbe6f7df1b6f365850a7",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202610101128-35N0ZK/README.md",
+        "M\t.agentplane/tasks/202610101128-35N0ZK/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202610101128-35N0ZK/pr/github-body.md",
+        "M\t.agentplane/tasks/202610101128-35N0ZK/pr/meta.json",
+        "M\t.agentplane/tasks/202610101128-35N0ZK/pr/review.md",
+        "A\t.agentplane/tasks/202610101128-35N0ZK/quality/objects/sha256/42b9e36673a3cc9bf23e38c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json",
+        "A\t.agentplane/tasks/202610101128-35N0ZK/supervision/declared-checks.json",
+        "A\t.agentplane/tasks/202610101128-35N0ZK/supervision/implementation-evidence.json",
+        "A\t.agentplane/tasks/202610101128-35N0ZK/supervision/verification-runs/run-000/failures.jsonl",
+        "A\t.agentplane/tasks/202610101128-35N0ZK/supervision/verification-runs/run-000/manifest.json",
+        "A\t.agentplane/tasks/202610101128-35N0ZK/supervision/verification-runs/run-000/status.json",
+        "A\t.agentplane/tasks/202610101128-35N0ZK/supervision/verification-runs/run-000/stderr.jsonl",
+        "A\t.agentplane/tasks/202610101128-35N0ZK/supervision/verification-runs/run-000/stdout.jsonl",
+        "A\tpackages/agentplane/src/commands/task/candidate-publication-executor.test.ts",
+        "A\tpackages/agentplane/src/commands/task/candidate-publication-executor.ts",
+        "A\tpackages/agentplane/src/commands/task/candidate-publication-git.test.ts",
+        "A\tpackages/agentplane/src/commands/task/candidate-publication-git.ts",
+        "A\tpackages/agentplane/src/commands/task/candidate-publication-receipt.ts",
+        "A\tpackages/agentplane/src/commands/task/candidate-publication.test-helpers.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "81e66f582cd81fc32907efd441c53433ca2717ac",
+  "implementation_commit": "10a10cb82afdc23b1d0ebbe6f7df1b6f365850a7",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      " M .agentplane/tasks/202610101128-35N0ZK/README.md",
+      "?? .agentplane/tasks/202610101128-35N0ZK/quality/objects/sha256/42b9e36673a3cc9bf23e38c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json",
+      "?? .agentplane/tasks/202610101128-35N0ZK/supervision/declared-checks.json",
+      "?? .agentplane/tasks/202610101128-35N0ZK/supervision/implementation-evidence.json",
+      "?? .agentplane/tasks/202610101128-35N0ZK/supervision/verification-runs/run-000/failures.jsonl",
+      "?? .agentplane/tasks/202610101128-35N0ZK/supervision/verification-runs/run-000/manifest.json",
+      "?? .agentplane/tasks/202610101128-35N0ZK/supervision/verification-runs/run-000/status.json",
+      "?? .agentplane/tasks/202610101128-35N0ZK/supervision/verification-runs/run-000/stderr.jsonl",
+      "?? .agentplane/tasks/202610101128-35N0ZK/supervision/verification-runs/run-000/stdout.jsonl"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202610101128-35N0ZK/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610101128-35N0ZK/quality/objects/sha256/42b9e36673a3cc9bf23e38c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610101128-35N0ZK/supervision/declared-checks.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610101128-35N0ZK/supervision/implementation-evidence.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610101128-35N0ZK/supervision/verification-runs/run-000/failures.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610101128-35N0ZK/supervision/verification-runs/run-000/manifest.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610101128-35N0ZK/supervision/verification-runs/run-000/status.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610101128-35N0ZK/supervision/verification-runs/run-000/stderr.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610101128-35N0ZK/supervision/verification-runs/run-000/stdout.jsonl"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M .agentplane/tasks/202610101128-35N0ZK/README.md",
+      "?? .agentplane/tasks/202610101128-35N0ZK/quality/objects/sha256/42b9e36673a3cc9bf23e38c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json",
+      "?? .agentplane/tasks/202610101128-35N0ZK/supervision/declared-checks.json",
+      "?? .agentplane/tasks/202610101128-35N0ZK/supervision/implementation-evidence.json",
+      "?? .agentplane/tasks/202610101128-35N0ZK/supervision/verification-runs/run-000/failures.jsonl",
+      "?? .agentplane/tasks/202610101128-35N0ZK/supervision/verification-runs/run-000/manifest.json",
+      "?? .agentplane/tasks/202610101128-35N0ZK/supervision/verification-runs/run-000/status.json",
+      "?? .agentplane/tasks/202610101128-35N0ZK/supervision/verification-runs/run-000/stderr.jsonl",
+      "?? .agentplane/tasks/202610101128-35N0ZK/supervision/verification-runs/run-000/stdout.jsonl"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202610101128-35N0ZK"
+}

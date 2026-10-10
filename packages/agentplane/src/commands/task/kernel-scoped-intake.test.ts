@@ -321,7 +321,19 @@ describe("explicit code-and-tests intake lifecycle", { timeout: 120_000 }, () =>
             },
             `result:${agentOrder.work_order_id}`,
           );
-          requireKernelCommit(await runtime.lifecycle.receiveResult(receipt, order.binding));
+          const issuedBinding = agentOrder.canonical_binding;
+          if (!issuedBinding || !("authority_digest" in issuedBinding))
+            throw new Error("Missing issued implementation authority");
+          const issuedAuthority = issuedBinding.authority_digest;
+          expect(issuedAuthority).toMatch(/^sha256:[a-f0-9]{64}$/u);
+          requireKernelCommit(
+            await runtime.lifecycle.receiveResult(
+              receipt,
+              order.binding,
+              issuedAuthority as k.Sha256Digest,
+              receipt.actor.id,
+            ),
+          );
           await apply({
             kind: "transition_work_item",
             action: "inspect",

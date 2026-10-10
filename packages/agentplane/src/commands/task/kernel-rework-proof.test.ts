@@ -29,12 +29,20 @@ async function nativeOrder(
   authority: k.ExecutionAuthority,
   workItem = "kernel",
 ) {
-  const implementation = resumeKernelWorkOrder({
-    record,
-    work_item_id: workItem,
-    authority,
-    repository_fingerprint: authority.repository_fingerprint,
-  });
+  const implementation =
+    workItem === "prerequisite"
+      ? new KernelTaskLifecycle({} as never).workOrder(
+          record,
+          workItem,
+          authority,
+          authority.repository_fingerprint,
+        )
+      : resumeKernelWorkOrder({
+          record,
+          work_item_id: workItem,
+          authority,
+          repository_fingerprint: authority.repository_fingerprint,
+        });
   if (!implementation) throw new Error("Expected native implementation WorkOrder");
   return buildKernelAgentWorkOrder({
     command: {
@@ -289,6 +297,12 @@ async function fixture(directory: string, sourceChange = true, targetRetry = fal
     });
   transition("claim");
   transition("begin");
+  const prerequisiteActor = {
+    id: root.provenance.actor_id,
+    kind: "SYSTEM" as const,
+    transport: "host" as const,
+    capabilities: root.capabilities,
+  };
   const prerequisiteOrder = await nativeOrder(
     makeKernelRecord(root.repository_identity, state, events, documents),
     root,
@@ -375,6 +389,7 @@ async function fixture(directory: string, sourceChange = true, targetRetry = fal
       `result:${prerequisiteOrder.work_order_id}`,
     ),
     authority: root,
+    actor: prerequisiteActor,
   };
   const {
     phase: _phase,
@@ -402,6 +417,8 @@ async function fixture(directory: string, sourceChange = true, targetRetry = fal
     await lifecycle.receiveResult(
       { ...result, repository_fingerprint: root.repository_fingerprint },
       workBinding as KernelWorkBinding,
+      _authority as k.Sha256Digest,
+      result.actor.id,
     ),
   ).toMatchObject({ kind: "committed" });
   await write(sourceDirectory, "command-input.json", result);

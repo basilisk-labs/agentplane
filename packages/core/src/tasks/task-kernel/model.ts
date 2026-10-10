@@ -1,3 +1,4 @@
+import type { ProspectiveScopeRequest } from "./prospective-scope.js";
 import type { KernelWorkContract } from "../kernel-plan-refinement.js";
 export type Sha256Digest = `sha256:${string}`;
 
@@ -139,6 +140,7 @@ export type AuthorityObservation = Readonly<{
     | "plan_amendment"
     | "repository_implementation"
     | "authority_delta"
+    | "prospective_scope_request"
     | "policy_renewal"
     | "worktree_preparation";
   evidence_digest: Sha256Digest;
@@ -150,6 +152,7 @@ export type AuthorityObservation = Readonly<{
   request_task_revision?: number;
   repository_evidence_digest?: Sha256Digest;
   reviewed_base_import?: ReviewedBaseImport;
+  scope_request?: ProspectiveScopeRequest;
 }>;
 
 /** Ordered authority lineage inside the same atomic aggregate as lifecycle state. */
@@ -368,6 +371,7 @@ export type TaskCommand =
         record: CanonicalAuthorityRecord;
       }
     >
+  | CommandEnvelope<"approve_scope_request", { record: CanonicalAuthorityRecord }>
   | CommandEnvelope<"materialize_work_items", { plan_revision: number; plan_digest: Sha256Digest }>
   | CommandEnvelope<
       "transition_work_item",
@@ -384,6 +388,8 @@ export type TaskCommand =
           | "complete"
           | "cancel";
         claim_id: string | null;
+        /** Optional for backward-compatible authenticated semantic-stop receipts. */
+        semantic_result_digest?: Sha256Digest;
       }
     >
   | CommandEnvelope<

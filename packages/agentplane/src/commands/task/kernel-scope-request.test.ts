@@ -1,0 +1,233 @@
+import { readFile, writeFile } from "node:fs/promises";
+import path from "node:path";
+import { describe, expect, it, vi } from "vitest";
+import { defaultConfig } from "@agentplaneorg/core/config";
+import { AGENT_WORK_ORDER_V2_ZOD_SCHEMA } from "@agentplaneorg/core/schemas";
+import {
+  commitAll,
+  configureGitUser,
+  installRunCliIntegrationHarness,
+  mkGitRepoRootWithBranch,
+  runCliSilent,
+  writeConfig,
+} from "@agentplane/testkit";
+import { runJson } from "../../cli/task-create-planner-intent.testkit.js";
+import { ensureRuntimeGitignore } from "../../runtime/shared/runtime-gitignore.js";
+
+import type * as KernelRuntimeContext from "./kernel-runtime-context.js";
+
+installRunCliIntegrationHarness();
+describe("native prospective scope request", { timeout: 180_000 }, () => {
+  it.each([false, true])(
+    "requires exact scope approval and fresh planning (legacy stop: %s)",
+    async (legacyStop) => {
+      const root = await mkGitRepoRootWithBranch("main");
+      await configureGitUser(root);
+      const config = defaultConfig();
+      config.workflow_mode = "direct";
+      await writeConfig(root, config);
+      await ensureRuntimeGitignore({ gitRoot: root });
+      await writeFile(path.join(root, "source.ts"), "export const value = 1;\n");
+      await writeFile(path.join(root, "fixture.test.ts"), "export const unchanged = true;\n");
+      await commitAll(root, "scope fixture");
+      const created = await runJson(root, [
+        "task",
+        "create",
+        "Repair fixture",
+        "--route",
+        "direct",
+        "--task-kind",
+        "code",
+        "--mutation-scope",
+        "code",
+        "--scope-root",
+        "source.ts",
+        "--repository-effect",
+        "repository_write",
+        "--repository-effect",
+        "source_code",
+        "--capability",
+        "repository_write",
+        "--json",
+      ]);
+      const id = String(created.task_id);
+      let packet = await runJson(root, ["task", "advance", id, "--agent-json"]);
+      const submit = async (fields: Record<string, unknown>) => {
+        const exchange = packet.exchange as { directory: string; result_path: string };
+        const order = AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse(
+          JSON.parse(await readFile(path.join(exchange.directory, "work-order.json"), "utf8")),
+        );
+        await writeFile(
+          exchange.result_path,
+          JSON.stringify({
+            work_order_id: order.work_order_id,
+            status: "completed",
+            summary: "Fixture scope episode",
+            findings: [],
+            uncertainty: [],
+            ...fields,
+          }),
+        );
+        packet = await runJson(root, [
+          "task",
+          "advance",
+          id,
+          "--result",
+          exchange.result_path,
+          "--agent-json",
+        ]);
+        return exchange;
+      };
+      const proposal = {
+        work_items: [
+          {
+            id: "repair",
+            depends_on: [],
+            required_inputs: [],
+            expected_outputs: ["report"],
+            optional: false,
+            execution_requirements: {
+              scope_roots: ["source.ts"],
+              repository_effects: ["repository_write", "source_code"],
+              external_effects: [],
+              capabilities: ["repository_write"],
+              resources: [],
+            },
+            contract: {
+              role: "EXECUTOR",
+              objective: "Inspect and repair fixture",
+              acceptance_criteria: ["Fixture repaired"],
+              verification_commands: ["node --version"],
+            },
+          },
+        ],
+      };
+      await submit({ canonical_plan: proposal });
+      expect(packet.action).toMatchObject({ kind: "approval_required" });
+      expect(
+        await runCliSilent(["task", "plan", "approve", id, "--by", "USER", "--root", root]),
+      ).toBe(0);
+      packet = await runJson(root, ["task", "advance", id, "--agent-json"]);
+      expect(packet.authority).toMatchObject({ role: "EXECUTOR" });
+      const unchanged = await readFile(path.join(root, "fixture.test.ts"), "utf8");
+      // Emit the historical command shape through the real kernel. Do not rewrite its receipt.
+      const runtimeContext = await vi.importActual<typeof KernelRuntimeContext>(
+        "./kernel-runtime-context.js",
+      );
+      const createRuntime = runtimeContext.createKernelRuntime;
+      const legacySpy = legacyStop
+        ? vi.spyOn(runtimeContext, "createKernelRuntime").mockImplementation(async (...args) => {
+            const runtime = await createRuntime(...args);
+            const input = runtime.input.bind(runtime);
+            runtime.input = async (...inputArgs) => {
+              if (inputArgs[0].kind === "transition_work_item" && inputArgs[0].action === "block") {
+                const { semantic_result_digest: _removed, ...historicalCommand } = inputArgs[0];
+                inputArgs[0] = historicalCommand;
+              }
+              return input(...inputArgs);
+            };
+            return runtime;
+          })
+        : undefined;
+      const blockedExchange = await submit({
+        status: "blocked",
+        blocker: {
+          summary: "Fixture needs an additional path",
+          scope_extension_request: {
+            schema_version: 1,
+            rationale: "Preserve the real fixture assertion",
+            scope_roots: ["fixture.test.ts"],
+            repository_effects: ["repository_write", "tests"],
+          },
+        },
+      });
+      legacySpy?.mockRestore();
+      const action = packet.action as {
+        kind: string;
+        reason: string;
+        operator_action: { argv: string[] };
+      };
+      expect(action, JSON.stringify(packet)).toMatchObject({
+        kind: "human_required",
+        reason: "canonical_scope_request_requires_user",
+      });
+      expect(
+        (packet.action as { operator_action: { request: { result_authentication: string } } })
+          .operator_action.request.result_authentication,
+      ).toBe(legacyStop ? "legacy_current_retained_content" : "native_stop_receipt");
+      const freshBlocked = await runJson(root, ["task", "advance", id, "--agent-json"]);
+      expect(freshBlocked.action, JSON.stringify(freshBlocked)).toMatchObject({
+        kind: "human_required",
+        operator_action: { kind: "approve_scope_request", argv: action.operator_action.argv },
+      });
+      const argv = action.operator_action.argv.slice(1);
+      const stale = [...argv];
+      stale[stale.indexOf("--request-digest") + 1] = `sha256:${"0".repeat(64)}`;
+      expect(await runCliSilent([...stale, "--root", root])).not.toBe(0);
+      expect(await readFile(path.join(root, "fixture.test.ts"), "utf8")).toBe(unchanged);
+      const retainedPath = path.join(blockedExchange.directory, "received-result.json");
+      const retainedResult = await readFile(retainedPath, "utf8");
+      const tampered = JSON.parse(retainedResult) as { summary: string };
+      tampered.summary = "Unbound substituted result";
+      await writeFile(retainedPath, JSON.stringify(tampered));
+      expect(await runCliSilent([...argv, "--root", root])).not.toBe(0);
+      const diagnostic = await runJson(root, ["task", "advance", id, "--agent-json"]);
+      expect(diagnostic.action, JSON.stringify(diagnostic)).toMatchObject({
+        kind: "human_required",
+        operator_action: {
+          kind: legacyStop ? "approve_scope_request" : "scope_request_unavailable",
+        },
+      });
+      await writeFile(retainedPath, retainedResult);
+      const nonUser = [...argv];
+      nonUser[nonUser.indexOf("--by") + 1] = "EXECUTOR";
+      expect(await runCliSilent([...nonUser, "--root", root])).not.toBe(0);
+      expect(await runCliSilent([...argv, "--root", root])).toBe(0);
+      // Approval cannot immediately reuse the previously approved execution plan.
+      packet = await runJson(root, ["task", "advance", id, "--agent-json"]);
+      expect(packet.authority, JSON.stringify(packet)).toMatchObject({ role: "PLANNER" });
+      expect(await runCliSilent([...argv, "--root", root])).not.toBe(0);
+      expect(await readFile(path.join(root, "fixture.test.ts"), "utf8")).toBe(unchanged);
+      const expanded = structuredClone(proposal);
+      expanded.work_items[0]!.execution_requirements.scope_roots.push("fixture.test.ts");
+      expanded.work_items[0]!.execution_requirements.repository_effects.push("tests");
+      await submit({ canonical_plan: expanded });
+      expect(packet.action, JSON.stringify(packet)).toMatchObject({ kind: "approval_required" });
+      expect(
+        await runCliSilent(["task", "plan", "approve", id, "--by", "USER", "--root", root]),
+      ).toBe(0);
+      packet = await runJson(root, ["task", "advance", id, "--agent-json"]);
+      expect(packet.authority, JSON.stringify(packet)).toMatchObject({ role: "EXECUTOR" });
+      const nextOrder = AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse(
+        JSON.parse(
+          await readFile(
+            path.join((packet.exchange as { directory: string }).directory, "work-order.json"),
+            "utf8",
+          ),
+        ),
+      );
+      expect(nextOrder.authority.writable_roots).toContain(path.join(root, "fixture.test.ts"));
+      expect(await readFile(path.join(root, "fixture.test.ts"), "utf8")).toBe(unchanged);
+      if (!legacyStop) {
+        await submit({
+          status: "blocked",
+          blocker: {
+            summary: "Additional independent fixture needed",
+            scope_extension_request: {
+              schema_version: 1,
+              rationale: "Exercise a second exact intake amendment",
+              scope_roots: ["second.test.ts"],
+              repository_effects: ["tests"],
+            },
+          },
+        });
+        const secondAction = packet.action as { operator_action: { argv: string[] } };
+        expect(
+          await runCliSilent([...secondAction.operator_action.argv.slice(1), "--root", root]),
+        ).toBe(0);
+        packet = await runJson(root, ["task", "advance", id, "--agent-json"]);
+        expect(packet.authority, JSON.stringify(packet)).toMatchObject({ role: "PLANNER" });
+      }
+    },
+  );
+});

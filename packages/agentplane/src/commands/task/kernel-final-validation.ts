@@ -11,6 +11,7 @@ import {
 import { resolveImplementationVerificationTask } from "./external-agent-implementation-recovery.js";
 import { readDirectRepositoryStatus } from "./direct-task-finalization.js";
 import { pathFromStatusLine } from "./git-status-path.js";
+import { verificationContractEvidenceCoverage } from "../shared/task-verification-records.js";
 import { cmdVerifyParsed } from "./verify-record.js";
 import { kernelExchangeDirectory, writeKernelArtifact } from "./kernel-exchange.js";
 import type { createKernelRuntime } from "./kernel-runtime-context.js";
@@ -291,6 +292,30 @@ export async function runKernelFinalValidation(
       },
     };
   }
+  const details = verification
+    ? renderDirectTaskVerificationDetails({
+        task: verification.task,
+        taskId,
+        workflow: "branch_pr",
+        result: checks,
+      })
+    : null;
+  if (verification && details) {
+    const coverage = verificationContractEvidenceCoverage(verification.task, details);
+    if (!coverage.accepted)
+      throw new Error(
+        `Canonical final verification evidence is incomplete: ${coverage.missingChecks.join(",")}`,
+      );
+  }
+  // Persist native checks before fallible artifact projection. Completion still requires projection.
+  const input = await runtime.input(
+    { kind: "record_final_validation", validation },
+    `final-validation:${k.kernelDigest(evidence)}:${record.aggregate.revision}`,
+  );
+  if (input.command.expected_task_revision !== record.aggregate.revision)
+    throw new Error("Canonical final validation task changed before persistence");
+  await writeKernelArtifact(directory, "final-validation-command.json", input);
+  requireKernelCommit(await runtime.lifecycle.apply(input));
   if (verification) {
     const exitCode = await cmdVerifyParsed({
       ctx: command,
@@ -300,12 +325,7 @@ export async function runKernelFinalValidation(
       state: "ok",
       by: "SUPERVISOR",
       note: "Verified: canonical Task Kernel final checks passed.",
-      details: renderDirectTaskVerificationDetails({
-        task: verification.task,
-        taskId,
-        workflow: "branch_pr",
-        result: checks,
-      }),
+      details: details!,
       localOnly: false,
       repoFixable: false,
       incidentTags: [],
@@ -322,15 +342,6 @@ export async function runKernelFinalValidation(
     )
       throw new Error("Canonical final validation inputs changed during projection");
   }
-  // Only a successful projection may make final validation reusable.
-  const input = await runtime.input(
-    { kind: "record_final_validation", validation },
-    `final-validation:${k.kernelDigest(evidence)}:${record.aggregate.revision}`,
-  );
-  if (input.command.expected_task_revision !== record.aggregate.revision)
-    throw new Error("Canonical final validation task changed before persistence");
-  await writeKernelArtifact(directory, "final-validation-command.json", input);
-  requireKernelCommit(await runtime.lifecycle.apply(input));
   return {
     fingerprint: binding.repository_fingerprint,
     environment_digest: environmentDigest,

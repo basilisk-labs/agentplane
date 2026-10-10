@@ -1,3 +1,4 @@
+import { projectApprovedScopeIntake } from "./kernel-scope-intake.js";
 import { kernelAuthorityRecordSchema } from "./kernel-authority-schema.js";
 import { taskKernel } from "@agentplaneorg/core/tasks";
 
@@ -64,6 +65,7 @@ export class KernelBackendAdapter {
   constructor(
     readonly backend: TaskBackend,
     readonly repositoryIdentity: taskKernel.Sha256Digest,
+    readonly verifyScopeRequest?: (request: taskKernel.ProspectiveScopeRequest) => Promise<void>,
   ) {}
 
   async read(taskId: string): Promise<KernelRead> {
@@ -195,6 +197,15 @@ export class KernelBackendAdapter {
     const current = await this.read(input.command.task_id);
     if (current.kind !== "canonical")
       return this.unavailable(current.kind, ...("reason" in current ? [current.reason] : []));
+    if (input.command.kind === "approve_scope_request") {
+      const request = input.command.record.observation?.scope_request;
+      if (request?.record_digest !== current.record.digest)
+        return this.unavailable("malformed", "scope_request_record");
+      if (!this.verifyScopeRequest)
+        return this.unavailable("backend_capability_missing", "scope_request_evidence_verifier");
+      await this.verifyScopeRequest(request);
+      projectApprovedScopeIntake(current.task, request);
+    }
     const result = taskKernel.reduceTaskCommand({ ...input, aggregate: current.record.aggregate });
     if (result.kind === "rejected") return result;
     const retained = documents ?? current.record.documents;
@@ -317,6 +328,14 @@ export class KernelBackendAdapter {
     const projection = projectKernelTask(record.aggregate);
     const next = {
       ...task,
+      ...(input.command.kind === "approve_scope_request"
+        ? {
+            execution_contract: projectApprovedScopeIntake(
+              task,
+              input.command.record.observation!.scope_request!,
+            ),
+          }
+        : {}),
       ...(input.command.kind === "append_audit_comment"
         ? {
             comments: [

@@ -323,7 +323,7 @@ describe("canonical final Verification Contract projection", () => {
     expect(f.apply).toHaveBeenCalledOnce();
   });
 
-  it("executes and projects the same strengthened contract before recording final validation", async () => {
+  it("records native strengthened checks before projecting the same contract", async () => {
     const f = fixture();
     await f.run();
     expect(mocks.resolve).toHaveBeenCalledOnce();
@@ -332,8 +332,8 @@ describe("canonical final Verification Contract projection", () => {
     expect(mocks.project.mock.calls[0]?.[0].details).toContain(
       "Check: full_regression\nCommand: bun run ci:local:full",
     );
-    expect(mocks.project.mock.invocationCallOrder[0]).toBeLessThan(
-      f.apply.mock.invocationCallOrder[0]!,
+    expect(f.apply.mock.invocationCallOrder[0]).toBeLessThan(
+      mocks.project.mock.invocationCallOrder[0]!,
     );
     expect(f.runtime.input.mock.calls[0]?.[0].validation.identity.check_id).toBe(
       "canonical-final-contracts-v2",
@@ -344,19 +344,36 @@ describe("canonical final Verification Contract projection", () => {
   });
 
   it.each(["throw", "exit"] as const)(
-    "does not persist final success after projection %s and retries checks",
+    "retains native success after projection %s so fresh recovery does not execute checks again",
     async (failure) => {
       const f = fixture();
       if (failure === "throw") mocks.project.mockRejectedValueOnce(new Error("projection failed"));
       else mocks.project.mockResolvedValueOnce(3);
       await expect(f.run()).rejects.toThrow();
-      expect(f.apply).not.toHaveBeenCalled();
-      expect(f.runtime.input).not.toHaveBeenCalled();
-      await f.run();
-      expect(mocks.checks).toHaveBeenCalledTimes(2);
       expect(f.apply).toHaveBeenCalledOnce();
+      const validation = f.runtime.input.mock.calls[0]![0].validation;
+      const persisted = {
+        ...f.record,
+        aggregate: { ...f.record.aggregate, final_validation: validation },
+      };
+      const restored = await restoreKernelFinalValidation(
+        f.command as never,
+        persisted as never,
+        storedIdentity,
+      );
+      expect(restored).toMatchObject({ evidence_digest: validation.evidence_digests[0] });
+      // The restored controller route retries projection, not runKernelFinalValidation.
+      await expect(mocks.project({ verificationSnapshot: f.snapshot })).resolves.toBe(0);
+      expect(mocks.checks).toHaveBeenCalledOnce();
     },
   );
+
+  it("never projects when native validation persistence is rejected", async () => {
+    const f = fixture();
+    f.apply.mockRejectedValueOnce(new Error("CAS rejected"));
+    await expect(f.run()).rejects.toThrow("CAS rejected");
+    expect(mocks.project).not.toHaveBeenCalled();
+  });
 
   it("does not relabel a narrow command as full regression", async () => {
     const f = fixture();
@@ -370,7 +387,7 @@ describe("canonical final Verification Contract projection", () => {
       expect(details).not.toContain("Check: full_regression");
       return Promise.reject(new Error("missing full_regression"));
     });
-    await expect(f.run()).rejects.toThrow("missing full_regression");
+    await expect(f.run()).rejects.toThrow("full_regression");
     expect(f.apply).not.toHaveBeenCalled();
   });
 

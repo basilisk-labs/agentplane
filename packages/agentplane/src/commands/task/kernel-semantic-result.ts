@@ -1,3 +1,4 @@
+import { scopeRequestOperatorAction } from "./kernel-scope-request.js";
 import { assertRecipeV1ConversionResultClaim } from "../recipes/impl/v1-conversion.js";
 import { validateKernelRecipeBindings } from "./kernel-recipe-admission.js";
 import path from "node:path";
@@ -22,9 +23,13 @@ export async function continueKernelSemanticStopAuthority(opts: {
   runtime: Runtime;
   task_id: string;
   binding: KernelWorkBinding;
+  issued_authority_digest?: k.Sha256Digest;
 }) {
   const read = await opts.runtime.adapter.read(opts.task_id);
   if (read.kind !== "canonical") throw new Error("Canonical Task unavailable");
+  const nativeContext = opts.issued_authority_digest
+    ? await opts.runtime.native.readContext(opts.task_id)
+    : null;
   const aggregate = read.record.aggregate;
   const item = aggregate.work_items[opts.binding.work_item_id];
   const plan = aggregate.current_plan;
@@ -42,6 +47,8 @@ export async function continueKernelSemanticStopAuthority(opts: {
       read.record,
       opts.binding,
       parent.repository_fingerprint,
+      opts.issued_authority_digest,
+      nativeContext?.actor.id,
     )
   )
     throw new Error("Canonical implementation result is stale");
@@ -67,6 +74,7 @@ export async function blockKernelSemanticEpisode(opts: {
   work_order_id: string;
   work_item_id: string;
   claim_id: string | null;
+  semantic_result_digest?: k.Sha256Digest;
 }) {
   const stopInputPath = path.join(opts.directory, "semantic-stop-command.json");
   let stopInput: KernelCommandInput;
@@ -82,6 +90,9 @@ export async function blockKernelSemanticEpisode(opts: {
         action: "block",
         work_item_id: opts.work_item_id,
         claim_id: opts.claim_id,
+        ...(opts.semantic_result_digest
+          ? { semantic_result_digest: opts.semantic_result_digest }
+          : {}),
       },
       `semantic-stop:${opts.work_order_id}`,
     );
@@ -124,6 +135,7 @@ export async function acceptKernelSemanticResult(
         runtime,
         task_id: taskId,
         binding: binding as KernelWorkBinding,
+        issued_authority_digest: binding.authority_digest as k.Sha256Digest,
       });
       await blockKernelSemanticEpisode({
         runtime,
@@ -131,7 +143,28 @@ export async function acceptKernelSemanticResult(
         work_order_id: semantic.work_order_id,
         work_item_id: binding.work_item_id,
         claim_id: binding.claim_id,
+        semantic_result_digest: k.kernelDigest(semantic),
       });
+    }
+    if (
+      semantic.status === "blocked" &&
+      binding?.phase === "implementation" &&
+      semantic.blocker?.scope_extension_request
+    ) {
+      try {
+        return {
+          kind: "human_required" as const,
+          reason: "canonical_scope_request_requires_user",
+          summary: semantic.summary,
+          operator_action: await scopeRequestOperatorAction(command, taskId, binding.work_item_id),
+        };
+      } catch (error) {
+        return {
+          kind: "human_required" as const,
+          reason: "canonical_scope_request_unavailable",
+          summary: `Scope request retained but cannot be admitted: ${error instanceof Error ? error.message : String(error)}`,
+        };
+      }
     }
     return {
       kind: "human_required" as const,
@@ -212,6 +245,7 @@ export async function acceptKernelSemanticResult(
       outputs: semantic.canonical_outputs,
     });
     if (!saved) {
+      const issuedContext = await runtime.native.readContext(taskId);
       let changedPaths: string[] = [];
       let continueAuthority = false;
       const read = await runtime.adapter.read(taskId);
@@ -250,6 +284,8 @@ export async function acceptKernelSemanticResult(
           read.record,
           binding as KernelWorkBinding,
           parent.repository_fingerprint,
+          binding.authority_digest as k.Sha256Digest,
+          issuedContext.actor.id,
         )
       )
         throw new Error("Canonical implementation result is stale");
@@ -319,7 +355,12 @@ export async function acceptKernelSemanticResult(
       ...workBinding
     } = binding;
     requireKernelCommit(
-      await runtime.lifecycle.receiveResult(input, workBinding as KernelWorkBinding),
+      await runtime.lifecycle.receiveResult(
+        input,
+        workBinding as KernelWorkBinding,
+        _authority as k.Sha256Digest,
+        input.actor.id,
+      ),
     );
   }
   await writeKernelArtifact(directory, "accepted-result.json", {
