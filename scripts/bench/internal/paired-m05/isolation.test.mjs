@@ -1,3 +1,4 @@
+import { readStableFile } from "./stable-file.mjs";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
@@ -141,5 +142,5 @@ print(json.dumps(sorted(checks)))`;
     "self_fd",
     "traversal",
   ]);
-  assert.equal(readFileSync(secret, "utf8"), "HIDDEN_SENTINEL");
+  assert.equal(readStableFile(secret).toString("utf8"), "HIDDEN_SENTINEL");
 });

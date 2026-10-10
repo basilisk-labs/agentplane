@@ -1,13 +1,12 @@
+import {
+  descriptorPath,
+  openStableDirectory,
+  openChildDirectory,
+  readStableFileAt,
+} from "./stable-file.mjs";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import {
-  lstatSync,
-  mkdirSync,
-  readFileSync,
-  readdirSync,
-  realpathSync,
-  writeFileSync,
-} from "node:fs";
+import { closeSync, mkdirSync, readdirSync, realpathSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { digest } from "./contract.mjs";
 import { createBrokeredAppServer } from "./brokered-app-server.mjs";
@@ -21,28 +20,44 @@ export function setupInventory(root, { publicCompiler = false } = {}) {
   const result = [];
   let total = 0;
   let directories = 0;
-  function visit(directory, depth = 0) {
+  function visit(directory, relative = "", depth = 0) {
     assert.ok(depth <= 4 && ++directories <= 32, "Setup directory bound exceeded");
-    for (const name of readdirSync(directory).toSorted()) {
-      const file = path.join(directory, name);
-      const stat = lstatSync(file);
-      assert.ok(!stat.isSymbolicLink(), "Setup symlinks are forbidden");
-      if (stat.isDirectory()) visit(file, depth + 1);
-      else {
-        const maxBytes =
-          publicCompiler && file === path.join(root, "public-compiler.mjs") ? 524_288 : 262_144;
-        assert.ok(stat.isFile() && stat.size <= maxBytes, "Invalid setup file");
-        total += stat.size;
+    const entries = new Map(
+      readdirSync(descriptorPath(directory), { withFileTypes: true }).map((entry) => [
+        entry.name,
+        entry,
+      ]),
+    );
+    for (const name of [...entries.keys()].toSorted()) {
+      const entry = entries.get(name);
+      const file = path.join(relative, name);
+      assert.ok(!entry.isSymbolicLink(), "Setup symlinks are forbidden");
+      if (entry.isDirectory()) {
+        const child = openChildDirectory(directory, name);
+        try {
+          visit(child, file, depth + 1);
+        } finally {
+          closeSync(child);
+        }
+      } else {
+        const maxBytes = publicCompiler && file === "public-compiler.mjs" ? 524_288 : 262_144;
+        const bytes = readStableFileAt(directory, name, maxBytes);
+        total += bytes.length;
         assert.ok(total <= 1_048_576 && result.length < 64, "Setup artifact bound exceeded");
         result.push({
-          path: path.relative(root, file),
-          bytes: stat.size,
-          sha256: createHash("sha256").update(readFileSync(file)).digest("hex"),
+          path: file,
+          bytes: bytes.length,
+          sha256: createHash("sha256").update(bytes).digest("hex"),
         });
       }
     }
   }
-  visit(root);
+  const directory = openStableDirectory(root);
+  try {
+    visit(directory);
+  } finally {
+    closeSync(directory);
+  }
   return result;
 }
 

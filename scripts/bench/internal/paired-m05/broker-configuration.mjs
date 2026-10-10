@@ -1,13 +1,5 @@
 import assert from "node:assert/strict";
-import {
-  constants,
-  closeSync,
-  existsSync,
-  fstatSync,
-  openSync,
-  readSync,
-  realpathSync,
-} from "node:fs";
+import { constants, closeSync, fstatSync, openSync, readSync, realpathSync } from "node:fs";
 import path from "node:path";
 import { createHash } from "node:crypto";
 
@@ -28,14 +20,17 @@ export function assertBrokerConfiguration({ cwd, env, approvedConfigDigests = {}
   }
   const bindings = [];
   for (const file of files) {
-    if (!existsSync(file)) {
+    let fd;
+    try {
+      fd = openSync(file, constants.O_RDONLY | constants.O_NOFOLLOW | constants.O_NONBLOCK);
+    } catch (error) {
+      if (error.code !== "ENOENT") throw error;
       assert.ok(!Object.hasOwn(approvedConfigDigests, file), "Reviewed configuration missing");
       continue;
     }
-    assert.ok(Object.hasOwn(approvedConfigDigests, file), "Unreviewed ambient configuration");
-    const fd = openSync(file, constants.O_RDONLY | constants.O_NOFOLLOW | constants.O_NONBLOCK);
     let actual;
     try {
+      assert.ok(Object.hasOwn(approvedConfigDigests, file), "Unreviewed ambient configuration");
       const stat = fstatSync(fd);
       assert.ok(stat.isFile() && stat.size <= 1024 * 1024, "Invalid configuration file");
       const bytes = Buffer.alloc(stat.size + 1);

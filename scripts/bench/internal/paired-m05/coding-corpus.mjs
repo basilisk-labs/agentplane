@@ -1,7 +1,8 @@
+import { readStableFile } from "./stable-file.mjs";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
-import { mkdirSync, readFileSync, writeFileSync, lstatSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { digest } from "./contract.mjs";
 import { runIsolated, writeIsolationPolicy } from "./isolation.mjs";
@@ -228,31 +229,35 @@ export function encodeOracleValue(value) {
 
 export function observeCodingBehavior(subject, spec, policyPath) {
   const source = path.join(subject, "src/module.mjs");
-  assert.ok(
-    lstatSync(source).isFile() && !lstatSync(source).isSymbolicLink(),
-    "Source must be regular",
-  );
-  const before = sha(readFileSync(source));
+  const sourceBytes = readStableFile(source);
+  const before = sha(sourceBytes);
   // The fixture API is a pure ES module. It receives no host objects, imports,
   // process, filesystem, stdout or evaluator expectations. VM is a framing
   // boundary only; the enclosing Landlock subprocess remains the OS boundary.
   const program = `import fs from 'node:fs'; import vm from 'node:vm';
 const encodeOracleValue=${encodeOracleValue.toString()};
 const context=vm.createContext(Object.create(null),{codeGeneration:{strings:false,wasm:false}});
-const module=new vm.SourceTextModule(fs.readFileSync('src/module.mjs','utf8'),{context});
+const input=JSON.parse(fs.readFileSync(0,'utf8'));
+const module=new vm.SourceTextModule(input.source,{context});
 await module.link(()=>{throw Error('Fixture API imports are not allowed')});
 await module.evaluate({timeout:1000});
 if(typeof module.namespace.solve!=='function')throw Error('Missing solve export');
 const solve=module.namespace.solve;
-const inputs=JSON.parse(fs.readFileSync(0,'utf8'));const outputs=[];
+const inputs=input.inputs;const outputs=[];
 for(const args of inputs){const values=vm.runInContext('('+JSON.stringify(args)+')',context,{timeout:1000});outputs.push(encodeOracleValue(structuredClone(Reflect.apply(solve,undefined,values))));}
 process.stdout.write(JSON.stringify(outputs));`;
   const result = runIsolated(
     policyPath,
     [process.execPath, "--experimental-vm-modules", "--input-type=module", "-e", program],
-    { input: JSON.stringify(spec.hidden.map(([args]) => args)), cwd: subject },
+    {
+      input: JSON.stringify({
+        source: sourceBytes.toString("utf8"),
+        inputs: spec.hidden.map(([args]) => args),
+      }),
+      cwd: subject,
+    },
   );
-  const after = sha(readFileSync(source));
+  const after = sha(readStableFile(source));
   let outputs = null;
   try {
     outputs = JSON.parse(result.stdout);
@@ -313,8 +318,7 @@ export async function verifyCodingOutcome({ subject, spec, manifest, policyPath 
     ["visible.test.mjs", manifest.visible_digest],
   ]) {
     const absolute = path.join(subject, file);
-    assert.ok(lstatSync(absolute).isFile() && !lstatSync(absolute).isSymbolicLink());
-    assert.equal(sha(readFileSync(absolute)), expected, "Public assertions or objective changed");
+    assert.equal(sha(readStableFile(absolute)), expected, "Public assertions or objective changed");
   }
   const before = git(subject, ["rev-parse", "HEAD"]);
   const native = await nativeFacts({

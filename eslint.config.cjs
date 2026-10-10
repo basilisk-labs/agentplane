@@ -1,4 +1,5 @@
 const js = require("@eslint/js");
+const path = require("node:path");
 const globals = require("globals");
 
 const tsParser = require("@typescript-eslint/parser");
@@ -522,6 +523,52 @@ module.exports = [
         "error",
         { object: "process", property: "env", message: "Use injected context instead of env." },
         { object: "process", property: "cwd", message: "Use injected context instead of cwd." },
+      ],
+    },
+  },
+  // These exact generated entrypoints are validated by clean build/bundle tests.
+  // Resolve their existing source barrels for cold lint only; runtime stays built-only.
+  {
+    files: [
+      "scripts/bench/internal/paired-m05/coding-recipe.mjs",
+      "scripts/bench/internal/paired-m05/coding-recipe.test.mjs",
+      "scripts/bench/internal/paired-m05/native-coding-loop.mjs",
+      "scripts/bench/internal/paired-m05/native-coding-loop.test.mjs",
+      "scripts/bench/internal/paired-m05/public-compiler-feedback.mjs",
+      "scripts/bench/internal/paired-m05/public-interface-feedback.mjs",
+      "scripts/bench/internal/paired-m05/public-package-feedback.mjs",
+    ],
+    rules: {
+      "import/no-unresolved": [
+        "error",
+        {
+          ignore: [
+            "^\\.\\./\\.\\./\\.\\./\\.\\./packages/core/dist/index\\.js$",
+            "^\\.\\./\\.\\./\\.\\./\\.\\./packages/core/dist/tasks/index\\.js$",
+            "^\\.\\./\\.\\./\\.\\./\\.\\./packages/recipes/dist/index\\.js$",
+          ],
+        },
+      ],
+      "n/no-missing-import": [
+        "error",
+        {
+          resolverConfig: {
+            alias: {
+              "../../../../packages/core/dist/index.js$": path.join(
+                __dirname,
+                "packages/core/src/index.ts",
+              ),
+              "../../../../packages/core/dist/tasks/index.js$": path.join(
+                __dirname,
+                "packages/core/src/tasks/index.ts",
+              ),
+              "../../../../packages/recipes/dist/index.js$": path.join(
+                __dirname,
+                "packages/recipes/src/index.ts",
+              ),
+            },
+          },
+        },
       ],
     },
   },
