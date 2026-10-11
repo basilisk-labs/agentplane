@@ -954,19 +954,25 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
       const issues = validateWorkItemDefinitions(command.plan.work_items);
       if (issues.length > 0) return rejected("WORK_ITEM_DEPENDENCY_INCOMPLETE", issues);
       const scopeReplan = authenticatedScopeReplanHistory(aggregate);
-      if (Object.keys(aggregate.work_items).length > 0 && !scopeReplan)
+      const rejectedApprovedPlan =
+        aggregate.current_plan?.state === "REJECTED" &&
+        aggregate.current_plan.approval_actor_id !== null &&
+        aggregate.current_plan.approval_evidence_digest !== null &&
+        Object.values(aggregate.work_items).some((item) => item.state === "BLOCKED");
+      if (Object.keys(aggregate.work_items).length > 0 && !scopeReplan && !rejectedApprovedPlan)
         return rejected(
           "ILLEGAL_WORK_ITEM_TRANSITION",
           ["retained_work_requires_bound_replan"],
           "wait_or_replan",
         );
-      const reconciled = scopeReplan
-        ? reconcileReplannedWorkItems(aggregate, command.plan)
-        : { workItems: {}, issues: [] };
+      const reconciled =
+        scopeReplan || rejectedApprovedPlan
+          ? reconcileReplannedWorkItems(aggregate, command.plan)
+          : { workItems: {}, issues: [] };
       if (reconciled.issues.length > 0)
         return rejected("ILLEGAL_WORK_ITEM_TRANSITION", reconciled.issues, "wait_or_replan");
       if (
-        scopeReplan &&
+        (scopeReplan || rejectedApprovedPlan) &&
         aggregate.effects.some((effect) =>
           ["PREPARED", "PENDING", "IN_DOUBT"].includes(effect.state),
         )

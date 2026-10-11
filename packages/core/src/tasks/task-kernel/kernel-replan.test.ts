@@ -3,7 +3,15 @@ import { describe, expect, it } from "vitest";
 import { authorityDigest } from "./authority-lineage.js";
 import { kernelDigest, reduceTaskCommand } from "./kernel.js";
 import type { TaskCommand } from "./model.js";
-import { aggregate, authority, fingerprint, input, plan, runtime } from "./kernel.test-fixtures.js";
+import {
+  aggregate,
+  authority,
+  effect,
+  fingerprint,
+  input,
+  plan,
+  runtime,
+} from "./kernel.test-fixtures.js";
 
 function rejection(state: ReturnType<typeof aggregate>, withEvidence: boolean): TaskCommand {
   return {
@@ -154,8 +162,47 @@ describe("canonical blocked-plan replanning", () => {
       }),
     ).toMatchObject({
       kind: "accepted",
-      aggregate: { state: "AWAITING_PLAN_APPROVAL", current_plan: proposal },
+      aggregate: {
+        state: "AWAITING_PLAN_APPROVAL",
+        current_plan: proposal,
+        work_items: { kernel: runtime("BLOCKED") },
+      },
     });
+
+    const pendingEffect = aggregate({ ...state, effects: [effect("pending", "PENDING")] });
+    expect(
+      reduceTaskCommand({
+        ...input(pendingEffect, command),
+        actor: {
+          id: "agentplane:kernel-controller",
+          kind: "SYSTEM",
+          transport: "managed",
+          capabilities: [],
+        },
+        authority: freshPlanningAuthority,
+      }),
+    ).toMatchObject({ kind: "rejected", code: "EFFECT_RECONCILIATION_REQUIRED" });
+
+    const unapprovedRejection = aggregate({
+      ...state,
+      current_plan: {
+        ...rejectedPlan,
+        approval_actor_id: null,
+        approval_evidence_digest: null,
+      },
+    });
+    expect(
+      reduceTaskCommand({
+        ...input(unapprovedRejection, command),
+        actor: {
+          id: "agentplane:kernel-controller",
+          kind: "SYSTEM",
+          transport: "managed",
+          capabilities: [],
+        },
+        authority: freshPlanningAuthority,
+      }),
+    ).toMatchObject({ kind: "rejected", code: "ILLEGAL_WORK_ITEM_TRANSITION" });
 
     expect(
       reduceTaskCommand({

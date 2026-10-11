@@ -325,6 +325,13 @@ export async function kernelRecoveryInputs(
 ): Promise<AgentWorkOrderV2["required_inputs"]> {
   const binding = order.canonical_binding;
   if (!record || binding?.phase !== "implementation" || binding.attempt < 2) return [];
+  const currentPlan = record.aggregate.current_plan;
+  if (
+    currentPlan?.state !== "APPROVED" ||
+    binding.plan_digest !== currentPlan.digest ||
+    binding.plan_revision !== currentPlan.revision
+  )
+    throw new Error("Recovery WorkOrder does not bind the current approved Plan");
   const kernelRoot = path.resolve(directory, "../../..");
   for (const [id, mutation] of Object.entries(record.aggregate.mutation_receipts)) {
     if (!/^work-item-resume:sha256:[a-f0-9]{64}$/u.test(id)) continue;
