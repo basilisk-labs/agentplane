@@ -1,0 +1,30 @@
+{
+  "checks": [
+    {
+      "check_ids": [],
+      "command": "bun run test:project agentplane packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts --maxWorkers=1",
+      "duration_ms": 64647,
+      "exit_code": 1,
+      "observation": {
+        "digest": "sha256:f4075e165dea360676283d230336fe0d4dd4c2f09c7a87eeafbde40d76da6e78",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610110036-P4SP5F-evaluator-replacement-contention/.agentplane/tasks/202610110036-P4SP5F/supervision/verification-runs/run-000/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:77925fa41c94b16fb1b2a5661aec967bd4782d91eddd45705726a8ef6cc1dae3",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts \"--maxWorkers=1\"\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  |agentplane| packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts > evaluator execute supervisor episode > allows exactly one provider start across independent replacement CLI processes\nAssertionError: [\n  {\n    \"code\": 0,\n    \"stdout\": \"{\\n  \\\"work_order_id\\\": \\\"evaluator-work-order-202607280000-EE08-831c437e012cd892369017a2\\\",\\n  \\\"evaluator\\\": \\\"recovery-context\\\",\\n  \\\"provider\\\": \\\"codex\\\",\\n  \\\"sandbox\\\": \\\"read-only\\\",\\n  \\\"verdict\\\": \\\"pass\\\",\\n  \\\"report\\\": \\\".agentplane/tasks/202607280000-EE08/quality/20261011-010718599-recovery-context/quality-report.json\\\",\\n  \\\"result\\\": \\\".agentplane/tasks/202607280000-EE08/quality/20261011-010718599-recovery-context/evaluator-result.json\\\",\\n  \\\"receipt\\\": \\\".agentplane/tasks/202607280000-EE08/quality/20261011-010718599-recovery-context/evaluator-episode.json\\\",\\n  \\\"supervisor_episode\\\": {\\n    \\\"status\\\": \\\"running\\\",\\n    \\\"cursor\\\": {\\n      \\\"episode\\\": 2,\\n      \\\"phase\\\": \\\"ready\\\",\\n      \\\"operation_key\\\": null\\n    },\\n    \\\"usage\\\": {\\n      \\\"episodes\\\": 2,\\n      \\\"agent_runs\\\": 2,\\n      \\\"input_tokens\\\": 100,\\n      \\\"output_tokens\\\": 50,\\n      \\\"total_tokens\\\": 150,\\n      \\\"cached_input_tokens\\\": 0,\\n      \\\"cached_input_observed_agent_runs\\\": 0,\\n      \\\"prepared_context_bytes\\\": 0,\\n      \\\"prepared_context_observed_agent_runs\\\": 0,\\n      \\\"visible_output_tokens\\\": 30,\\n      \\\"reasoning_tokens\\\": 20,\\n      \\\"token_observed_agent_runs\\\": 2,\\n      \\\"output_breakdown_observed_agent_runs\\\": 2,\\n      \\\"wall_time_ms\\\": 2156,\\n      \\\"changed_files\\\": 0,\\n      \\\"diff_lines\\\": 0,\\n      \\\"no_progress_episodes\\\": 0\\n    },\\n    \\\"stop\\\": null,\\n    \\\"digest\\\": \\\"sha256:517acae135e6193ea7d4c7fe6af7fa87ebbcd8259e210c16b51919ef6aa2ea0c\\\"\\n  },\\n  \\\"recorded\\\": true\\n}\\n\",\n    \"stderr\": \"\"\n  },\n  {\n    \"code\": 1,\n    \"stdout\": \"\",\n    \"stderr\": \"error [E_INTERNAL]: task README 202607280000-EE08 changed while it was being read: /tmp/agentplane-vitest-run-UHf5KP/agentplane-cli-test-nURAFE/.agentplane/tasks/202607280000-EE08/README.md\\n\"\n  }\n]: expected [ +0, 1 ] to deeply equal [ +0, 2 ]\n\n- Expected\n+ Received\n\n  [\n    0,\n-   2,\n+   1,\n  ]\n\n ❯ packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts:896:7\n    894|       executions.map((execution) => execution.code).toSorted(),\n    895|       JSON.stringify(executions, null, 2),\n    896|     ).toEqual([0, 2]);\n       |       ^\n    897|     const invocationContents = await readFile(invocationLog, \"utf8\");\n    898|     const invocationLines = invocationContents.trim().split(\"\\n\");\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\nerror: script \"test:project\" exited with code 1\n",
+      "stdout_tail": "\n RUN  v5.0.2 <repo>\n\n202609280000-EE18\n202609280000-EE18\n202607280000-EE01\n202607280000-EE13\n202607280000-EE11\n202607280000-EE02\n202607280000-EE05\n202607280000-EE03\n202607280000-EE12\n202607280000-EE04\n202607280000-EE09\n202607280000-EE10\n202607280000-EE06\n202607280000-EE07\n202607280000-EE08\n ❯ |agentplane| packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts (15 tests | 1 failed) 49831ms\n   ❯ evaluator execute supervisor episode (15)\n     × allows exactly one provider start across independent replacement CLI processes 6230ms\n\n Test Files  1 failed (1)\n      Tests  1 failed | 14 passed (15)\n   Start at  04:06:20\n   Duration  61.24s (tests 82%, transform 15%, import 3%)\n\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": "Declared check failed: bun run test:project agentplane packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts --maxWorkers=1",
+  "schema_version": 1,
+  "status": "failed",
+  "task_id": "202610110036-P4SP5F"
+}

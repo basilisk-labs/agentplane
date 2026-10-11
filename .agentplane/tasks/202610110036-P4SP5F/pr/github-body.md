@@ -27,8 +27,9 @@ Reproduce the retained 9R7G0P run-022 failure: two independent replacement CLI p
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/evaluator/evaluator-execute.command.test.ts         | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ .../evaluator-execute-subprocess.testkit.ts        | 11 +++++++
+ .../evaluator/evaluator-execute.command.test.ts    | 36 ++++++++++++++--------
+ 2 files changed, 35 insertions(+), 12 deletions(-)
 ```
 
 </details>
