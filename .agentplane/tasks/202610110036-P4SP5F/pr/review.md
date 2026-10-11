@@ -6,7 +6,7 @@ Created: 2026-10-11T01:05:20.953Z
 
 - Task: `202610110036-P4SP5F`
 - Title: Diagnose evaluator replacement CLI contention failure
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610110036-P4SP5F/evaluator-replacement-contention`
 - Canonical task record: `.agentplane/tasks/202610110036-P4SP5F/README.md`
 
