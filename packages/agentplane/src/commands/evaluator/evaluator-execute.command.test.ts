@@ -890,7 +890,10 @@ describe("evaluator execute supervisor episode", () => {
     });
     const executions = await Promise.all([winner, loser]);
 
-    expect(executions.map((execution) => execution.code).toSorted()).toEqual([0, 2]);
+    expect(
+      executions.map((execution) => execution.code).toSorted(),
+      JSON.stringify(executions, null, 2),
+    ).toEqual([0, 2]);
     const invocationContents = await readFile(invocationLog, "utf8");
     const invocationLines = invocationContents.trim().split("\n");
     expect(invocationLines).toEqual(["provider-started"]);
