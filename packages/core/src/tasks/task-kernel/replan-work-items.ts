@@ -134,7 +134,8 @@ export function authenticatedScopeReplanHistory(aggregate: TaskAggregate, approv
           expected_state_fingerprint: grant.authority.repository_fingerprint,
           plan: original,
         };
-        return receipt.mutation_id.startsWith("result:sha256:") &&
+        return (/^result:sha256:[0-9a-f]{64}$/u.test(receipt.mutation_id) ||
+          receipt.mutation_id === `plan:${original.digest}`) &&
           receipt.before_revision >= taskRevision &&
           receipt.after_revision === receipt.before_revision + 1 &&
           receipt.command_digest === kernelDigest(command)
