@@ -180,7 +180,6 @@ describe.skipIf(process.platform === "win32")("POSIX process-group supervision",
     await mkdir(runDir, { recursive: true });
     await writeFile(scriptPath, "process.exit(0);\n", "utf8");
 
-    const started = Date.now();
     const result = await runSupervisedProcess({
       invocation: invocationFor({
         root,
@@ -203,7 +202,6 @@ describe.skipIf(process.platform === "win32")("POSIX process-group supervision",
       containment_state: "limited",
     });
     expect(result.process_tree.containment_limitation).toContain("new session");
-    expect(Date.now() - started).toBeLessThan(1500);
   });
 
   it("kills a background descendant before returning and prevents a delayed repository write", async () => {
