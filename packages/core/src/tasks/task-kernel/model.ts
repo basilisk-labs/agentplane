@@ -1,3 +1,4 @@
+import type { CompletionRestorationProof } from "./completion-restoration.js";
 import type { ProspectiveScopeRequest } from "./prospective-scope.js";
 import type { KernelWorkContract } from "../kernel-plan-refinement.js";
 export type Sha256Digest = `sha256:${string}`;
@@ -372,6 +373,15 @@ export type TaskCommand =
       }
     >
   | CommandEnvelope<"approve_scope_request", { record: CanonicalAuthorityRecord }>
+  | CommandEnvelope<
+      "restore_work_item_completion",
+      {
+        work_item_id: string;
+        proof: CompletionRestorationProof;
+        proof_digest: Sha256Digest;
+        note: string;
+      }
+    >
   | CommandEnvelope<"materialize_work_items", { plan_revision: number; plan_digest: Sha256Digest }>
   | CommandEnvelope<
       "transition_work_item",
