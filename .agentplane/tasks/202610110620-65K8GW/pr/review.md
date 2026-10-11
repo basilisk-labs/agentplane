@@ -33,9 +33,10 @@ Created: 2026-10-11T06:38:47.169Z
  .../commands/release/ci-workflow-contract.test.ts  | 15 ++++-
  .../commands/release/github-ci-aggregate.test.ts   | 78 ++++++++++++++++++++++
  .../src/commands/release/github-ci-plan.test.ts    | 49 +++++++++++++-
+ .../release/workflow-node-version-contract.test.ts |  3 +-
  scripts/checks/evaluate-github-ci.mjs              | 15 ++++-
  scripts/checks/plan-github-ci.mjs                  | 15 ++++-
- 6 files changed, 182 insertions(+), 9 deletions(-)
+ 7 files changed, 184 insertions(+), 10 deletions(-)
 ```
 
 </details>
