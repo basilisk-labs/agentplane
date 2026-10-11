@@ -1,0 +1,21 @@
+{
+  "base": "task/202610102344-1WXGZ1/completed-review-base",
+  "branch": "task/202610110405-9MNFYJ/testkit-extraction",
+  "created_at": "2026-10-11T11:59:28.856Z",
+  "diffstat_sha256": "sha256:a2e42b8c85e02caaee4ba58f939c1726561d6376701e909784e7e2cb4f738ef7",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610110405-9MNFYJ",
+  "updated_at": "2026-10-11T11:59:28.856Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

@@ -1,4 +1,10 @@
 import {
+  authorizeCompletedNativeReviewPreparation,
+  authorizeCompletedNativeReviewResult,
+  hasAuthenticatedCompletedNativeReview,
+} from "./kernel-completed-native-review.js";
+import type { ExternalAgentExchange } from "./external-agent-exchange.js";
+import {
   prepareAgentWorkOrder,
   requirePreparedAgentWorkOrder,
 } from "../../runner/usecases/agent-work-order.js";
@@ -6,7 +12,7 @@ import {
   issueExternalAgentExchange,
   acceptExternalAgentResult,
 } from "./external-agent-supervisor.js";
-import { writeFile, mkdir } from "node:fs/promises";
+import { readFile, writeFile, mkdir } from "node:fs/promises";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
 import { expect } from "vitest";
@@ -295,4 +301,44 @@ export async function recordFixtureVerification(root: string, id: string): Promi
       allowCanonicalProjection: true,
     }),
   ).toBe(0);
+}
+
+export async function expectMergedBaseReviewBindings(
+  root: string,
+  taskId: string,
+  reviewCommand: Parameters<typeof hasAuthenticatedCompletedNativeReview>[0],
+  reviewOrder: Parameters<typeof authorizeCompletedNativeReviewPreparation>[2],
+  exchangeDirectory: string,
+): Promise<void> {
+  const accepted = (await reviewCommand.taskBackend.getTask(taskId))!;
+  expect(await hasAuthenticatedCompletedNativeReview(reviewCommand, accepted)).toBe(true);
+  // Native review consumption already persists its accepted task artifacts.
+  expect(git(root, "status", "--porcelain")).toBe("");
+  const mergedBase = path.join(root, "merged-base");
+  git(root, "worktree", "add", mergedBase, "main");
+  git(mergedBase, "merge", "--ff-only", git(root, "rev-parse", "HEAD"));
+  const baseCommand = await loadCommandContext({ cwd: mergedBase, rootOverride: null });
+  const mergedTask = (await baseCommand.taskBackend.getTask(taskId))!;
+  expect(await hasAuthenticatedCompletedNativeReview(baseCommand, mergedTask)).toBe(true);
+  await expect(
+    authorizeCompletedNativeReviewPreparation(baseCommand, mergedTask, reviewOrder),
+  ).rejects.toThrow();
+  const exchangePath = path.join(exchangeDirectory, "exchange.json");
+  const retainedExchange = JSON.parse(
+    await readFile(exchangePath, "utf8"),
+  ) as ExternalAgentExchange;
+  await expect(
+    authorizeCompletedNativeReviewResult(
+      baseCommand,
+      mergedTask,
+      retainedExchange,
+      retainedExchange.result!.result,
+    ),
+  ).rejects.toThrow("exchange binding");
+  const changed = structuredClone(mergedTask);
+  changed.quality_review!.note = "unproven historical PASS";
+  await expect(hasAuthenticatedCompletedNativeReview(baseCommand, changed)).rejects.toThrow(
+    "projection binding",
+  );
+  git(root, "worktree", "remove", mergedBase);
 }
