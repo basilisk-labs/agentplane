@@ -7,11 +7,11 @@
         "task_outcome"
       ],
       "command": "bun run test:project agentplane packages/agentplane/src/commands/task/direct-task-verification-timeout.test.ts packages/agentplane/src/commands/task/direct-task-verification.qualification.test.ts packages/agentplane/src/commands/task/kernel-inspection-validation.test.ts --maxWorkers=1",
-      "duration_ms": 17092,
+      "duration_ms": 20429,
       "exit_code": 0,
       "observation": {
-        "digest": "sha256:677a2b12fe454ee3446db2633cd7e674c8dfb105ab9f9c2beececc3ff46a71f3",
-        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610111206-7Z8JRN-native-timeout-profile/.agentplane/tasks/202610111206-7Z8JRN/supervision/verification-runs/run-009/manifest.json",
+        "digest": "sha256:b062f8c7bb118b25258b675f7e51160608d46e48dba35fa4cb883d3ddecd6241",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610111206-7Z8JRN-native-timeout-profile/.agentplane/tasks/202610111206-7Z8JRN/supervision/verification-runs/run-018/manifest.json",
         "status": "retained"
       },
       "runtime": {
@@ -23,7 +23,7 @@
       },
       "script": "test:project",
       "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/direct-task-verification-timeout.test.ts packages/agentplane/src/commands/task/direct-task-verification.qualification.test.ts packages/agentplane/src/commands/task/kernel-inspection-validation.test.ts \"--maxWorkers=1\"\n",
-      "stdout_tail": "\n RUN  v5.0.2 <repo>\n\n\n Test Files  3 passed (3)\n      Tests  33 passed (33)\n   Start at  15:45:33\n   Duration  15.50s (tests 67%, transform 23%, import 10%)\n\n"
+      "stdout_tail": "\n RUN  v5.0.2 <repo>\n\n\n Test Files  3 passed (3)\n      Tests  33 passed (33)\n   Start at  15:56:26\n   Duration  18.91s (tests 64%, transform 26%, import 10%)\n\n  Transform  |agentplane| transforming modules took 4.85s · 26% of tracked time, re-done on every run\n             persist transforms across runs with fsModuleCache: true\n             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns\n\n"
     },
     {
       "check_ids": [
@@ -32,11 +32,11 @@
         "task_outcome"
       ],
       "command": "bun run typecheck",
-      "duration_ms": 787,
+      "duration_ms": 980,
       "exit_code": 0,
       "observation": {
-        "digest": "sha256:efe1049adf188a1474d1edcc6ffe36eb6ad03783be00727247e4166479ba1dcf",
-        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610111206-7Z8JRN-native-timeout-profile/.agentplane/tasks/202610111206-7Z8JRN/supervision/verification-runs/run-010/manifest.json",
+        "digest": "sha256:136c481b141a2f8a0bf72a518e3a0d5c2204b36d405a97659d15a33107759627",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610111206-7Z8JRN-native-timeout-profile/.agentplane/tasks/202610111206-7Z8JRN/supervision/verification-runs/run-019/manifest.json",
         "status": "retained"
       },
       "runtime": {
@@ -57,11 +57,11 @@
         "task_outcome"
       ],
       "command": "bun run hotspots:check",
-      "duration_ms": 986,
+      "duration_ms": 1175,
       "exit_code": 0,
       "observation": {
-        "digest": "sha256:a441c57871151fb7db375e2827383b6ecbaf326761c6e93e909a4207f70bfebe",
-        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610111206-7Z8JRN-native-timeout-profile/.agentplane/tasks/202610111206-7Z8JRN/supervision/verification-runs/run-011/manifest.json",
+        "digest": "sha256:66a8bd47a807449a11adc39c01df227f3519b6e381c360649b5c59761bea1458",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610111206-7Z8JRN-native-timeout-profile/.agentplane/tasks/202610111206-7Z8JRN/supervision/verification-runs/run-020/manifest.json",
         "status": "retained"
       },
       "runtime": {
@@ -82,11 +82,11 @@
         "task_outcome"
       ],
       "command": "git diff --check",
-      "duration_ms": 640,
+      "duration_ms": 814,
       "exit_code": 0,
       "observation": {
-        "digest": "sha256:1a571e43fe00e1171348e1f290d0d3cfb0a6abe1872517205c592ce9ac18c9bd",
-        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610111206-7Z8JRN-native-timeout-profile/.agentplane/tasks/202610111206-7Z8JRN/supervision/verification-runs/run-012/manifest.json",
+        "digest": "sha256:eb22d0079d4edcadd739ffba434024e2cf64e7914ba4f23a2f41f49030b1280a",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610111206-7Z8JRN-native-timeout-profile/.agentplane/tasks/202610111206-7Z8JRN/supervision/verification-runs/run-021/manifest.json",
         "status": "retained"
       },
       "runtime": {
@@ -108,11 +108,11 @@
         "task_outcome"
       ],
       "command": "bun run ci:local:full",
-      "duration_ms": 45211,
-      "exit_code": null,
+      "duration_ms": 2527365,
+      "exit_code": 0,
       "observation": {
-        "digest": "sha256:945def7a4f60a32ff7ddadec897323c3832c6d4437691fa6f4a4d6698a1a26b6",
-        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610111206-7Z8JRN-native-timeout-profile/.agentplane/tasks/202610111206-7Z8JRN/supervision/verification-runs/run-013/manifest.json",
+        "digest": "sha256:ecc003d4b856b5721e4e38f5a0498b81d2dadb1a769be7395b6b7755eb26e3bf",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610111206-7Z8JRN-native-timeout-profile/.agentplane/tasks/202610111206-7Z8JRN/supervision/verification-runs/run-022/manifest.json",
         "status": "retained"
       },
       "runtime": {
@@ -123,13 +123,13 @@
         "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
       },
       "script": "ci:local:full",
-      "stderr_tail": "$ node scripts/checks/run-local-ci.mjs --mode full\n$ node scripts/checks/run-typescript-build.mjs && bun run --filter=@agentplaneorg/core build:bundle && bun run --filter=@agentplaneorg/recipes build:bundle && bun run --filter=agentplane build:bundle\nerror: script \"ci:local:full\" was terminated by signal SIGTERM (Polite quit request)\n",
-      "stdout_tail": "OperationRef\", \"validateRunnerEffectClaim\", \"validateRunnerEffectJournal\", \"validateRunnerEffectOperation\", \"StateFingerprintPreconditionError\", \"assertStateFingerprintPrecondition\", \"createRunnerEffectResolution\", \"createRunnerEffectResolutionIntent\", \"createRunnerEffectResolutionLease\", \"createRunnerEffectResolutionRef\", \"validateRunnerEffectResolution\", \"validateRunnerEffectResolutionIntent\" and \"validateRunnerEffectResolutionLease\" are imported from external module \"@agentplaneorg/core/schemas\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"appendFileSync\", \"lstatSync\", \"renameSync\" and \"writeFileSync\" are imported from external module \"fs\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"stripVTControlCharacters\" is imported from external module \"util\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"gitAddPaths\", \"gitCommit\", \"gitListBranches\", \"gitStagedPaths\", \"gitInitRepo\" and \"resolveInitBaseBranch\" are imported from external module \"@agentplaneorg/core/git\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"StringDecoder\" is imported from external module \"string_decoder\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"RECIPE_V1_CONVERSION_RESULT_SCHEMA\" and \"validateRecipeV1ConversionResult\" are imported from external module \"@agentplaneorg/recipes\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"performance\" is imported from external module \"perf_hooks\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"kernelMigrationSemanticAssessmentRequestSchema\", \"mapTaskCentricKernelMigration\", \"recipeSourcePlanSemanticDigest\", \"createExecutionGrant\", \"createPlanProposal\", \"lintTaskVerifyStepsSection\", \"lintTasksSnapshot\" and \"parseDocSections\" are imported from external module \"@agentplaneorg/core/tasks\" but never used in \"dist/deferred-runtime.js\".\nagentplane build:bundle: \"validateTasksExportSnapshot\", \"renderAcrSchemaJson\" and \"assertAgentWorkOrderReadyForInvocation\" are imported from external module \"@agentplaneorg/core/schemas\" but never used in \"dist/deferred-runtime.js\".\nagentplane build:bundle: \"parseWorkflowFrontMatter\" is imported from external module \"@agentplaneorg/core/config\" but never used in \"dist/deferred-runtime.js\".\nagentplane build:bundle: \"DEFAULT_TASK_BRANCH_PREFIX\" and \"clearPinnedBaseBranch\" are imported from external module \"@agentplaneorg/core/git\" but never used in \"dist/deferred-runtime.js\".\nagentplane build:bundle: \"assertAgentWorkOrderReadyForInvocation\" is imported from external module \"@agentplaneorg/core/schemas\" but never used in \"dist/cli-bun.js\".\nagentplane build:bundle: ESM dist/command-catalog/core-fast.js 173.25 KB\nagentplane build:bundle: ESM dist/command-catalog/task-read.js 193.15 KB\nagentplane build:bundle: ESM dist/cli.js                       382.96 KB\nagentplane build:bundle: ESM dist/recipe-api.js                303.93 KB\nagentplane build:bundle: ESM dist/command-catalog.js           2.45 MB\nagentplane build:bundle: ESM dist/deferred-runtime.js          2.60 MB\nagentplane build:bundle: ESM dist/cli-bun.js                   3.98 MB\nagentplane build:bundle: ESM ⚡️ Build success in 15637ms\nagentplane build:bundle: generated dist/command-help.json (261 commands)\nagentplane build:bundle: Exited with code 0\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":true,\"groups\":[{\"id\":\"build\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":19147,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202610111206-7Z8JRN/supervision/verification-runs/run-013/children/run-000/manifest.json\",\"digest\":\"sha256:1b80897a5cadb5d258c990a7bfb6658608265d8a49a79c293bf76cb25e11c334\"}}]}\n{\"schema_version\":1,\"kind\":\"full_ci_group_launch\",\"groups\":[\"runtime\"],\"group_timeout_ms\":3600000,\"group_timeout_source\":\"default\",\"outer_remaining_ms\":7180106,\"outer_timeout_source\":\"operator_task_profile\",\"limiting_deadline\":\"local_group\"}\n"
+      "stderr_tail": "ifacts.\nSwitched to a new branch 'unrelated'\n⚠️ task requires Verify Steps by primary tag; seeded a PLANNER fallback ## Verify Steps scaffold in README (replace with task-specific acceptance coverage when available)\n{\"ts\":\"2026-10-11T13:33:03.990Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-RmC2iJ/agentplane-workflow-57qrNr/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/tmp/agentplane-vitest-run-RmC2iJ/agentplane-workflow-57qrNr/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-11T13:33:04.026Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-RmC2iJ/agentplane-workflow-GUt1Ub/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/tmp/agentplane-vitest-run-RmC2iJ/agentplane-workflow-GUt1Ub/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-11T13:33:04.056Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-RmC2iJ/agentplane-workflow-GUt1Ub/.agentplane/WORKFLOW.md\",\"from\":\"/tmp/agentplane-vitest-run-RmC2iJ/agentplane-workflow-GUt1Ub/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-11T13:33:04.091Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-RmC2iJ/agentplane-workflow-eV4YaE/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/tmp/agentplane-vitest-run-RmC2iJ/agentplane-workflow-eV4YaE/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-11T13:33:04.141Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_failed\",\"code\":\"WF_UNSUPPORTED_VERSION\",\"details\":{\"reason\":\"Unsupported WORKFLOW version 3; supported versions: 1, 2.\"}}\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\n{\"ts\":\"2026-10-11T13:34:08.054Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-10-11T13:34:08.166Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_completed\",\"details\":{\"diagnostics\":0}}\n{\"ts\":\"2026-10-11T13:34:08.229Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-bOuWVm/agentplane-cli-test-dDA713/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/tmp/agentplane-vitest-run-bOuWVm/agentplane-cli-test-dDA713/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-11T13:34:17.330Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-10-11T13:34:17.540Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":1}}\n{\"ts\":\"2026-10-11T13:34:17.543Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-10-11T13:34:17.562Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":2}}\n{\"ts\":\"2026-10-11T13:34:17.566Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-10-11T13:34:17.583Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_completed\",\"details\":{\"diagnostics\":0}}\n$ node scripts/checks/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 3 --fixture local-basic [REDACTED] 10000\n$ node scripts/checks/run-vitest-suite.mjs critical-cli\n$ bun run docs:ia:check && bun run docs:reference:check && bun run docs:onboarding:check\n$ node scripts/checks/check-docs-ia.mjs\n$ node scripts/generate/generate-package-reference.mjs --check\n$ node scripts/checks/check-agent-onboarding-scenario.mjs\n$ node scripts/workflow/run-workflows-lint.mjs && node scripts/checks/check-workflow-command-contract.mjs && bun scripts/checks/check-lifecycle-parity.ts && node scripts/checks/check-critical-test-route.mjs\n$ node scripts/checks/run-vitest-suite.mjs platform-critical\n$ node scripts/checks/check-significant-coverage.mjs\n",
+      "stdout_tail": ", transform 28%, import 7%))\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":true,\"groups\":[{\"id\":\"runtime\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":112830,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202610111206-7Z8JRN/supervision/verification-runs/run-022/children/run-001/manifest.json\",\"digest\":\"sha256:da7b9694022b86aae92890c91ee3a640ffbd43fed280bd7011b409948d6ace5e\"}},{\"id\":\"docs-schema\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":87286,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202610111206-7Z8JRN/supervision/verification-runs/run-022/children/run-002/manifest.json\",\"digest\":\"sha256:7a016c931d72801281380f9506115f67dd95a04458d65b9618d10224c64b1cff\"}},{\"id\":\"core\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":2095923,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202610111206-7Z8JRN/supervision/verification-runs/run-022/children/run-003/manifest.json\",\"digest\":\"sha256:7e4d80a2918a798b800dc64b35ff385a61c324deb5ad7aaf430ae4dcd6c461a8\"}},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":126634,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202610111206-7Z8JRN/supervision/verification-runs/run-022/children/run-004/manifest.json\",\"digest\":\"sha256:4894f93965c43a5c2fa8293ec5d7af419a3bb7097827afafd65bb797511d5948\"}}]}\n{\"schema_version\":1,\"kind\":\"verification_metrics\",\"route\":\"full-fast\",\"wall_clock_ms\":2441738,\"selected_groups\":5,\"executed_groups\":5,\"parallel_group_concurrency\":1,\"build_invocations\":1,\"ok\":true}\n\n== Documentation contracts ==\nok: docs index and current path references are aligned\nok: docs/reference/generated-reference.mdx is fresh\nok: agent onboarding scenario surfaces are aligned\n\n== Workflows lint (actionlint) ==\nworkflow and command guidance contract OK\nworkflow lifecycle parity OK\ncritical Vitest route OK\n\n== Windows platform-critical tests ==\n\n RUN  v5.0.2 <repo>\n\n\n Test Files  7 passed (7)\n      Tests  98 passed (98)\n   Start at  16:37:34\n   Duration  62.75s (tests 80%, transform 15%, import 5%)\n\n  Transform  |agentplane| transforming modules took 12.11s · 72% of tracked time, re-done on every run\n             persist transforms across runs with fsModuleCache: true\n             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns\n\n\n== Significant file coverage (guard) ==\n\n RUN  v5.0.2 <repo>\n      Coverage enabled with v8\n\n ✓ packages/agentplane/src/commands/guard/impl/close-message.test.ts (18 tests) 441ms\n ✓ packages/agentplane/src/commands/guard/impl/commands.commit-close.unit.test.ts (12 tests) 391ms\n   ✓ guard command implementations: commit close (12)\n     ✓ cmdCommit close path stages absolute README when outside gitRoot 357ms\n ✓ packages/agentplane/src/commands/guard/impl/commands.commit-non-close.unit.test.ts (15 tests) 366ms\n   ✓ guard command implementations: commit non-close (15)\n     ✓ cmdCommit non-close path commits with env and provided ctx 332ms\n ✓ packages/agentplane/src/commands/guard/impl/allow.test.ts (13 tests) 55ms\n ✓ packages/agentplane/src/cli/run-cli.core.guard.test.ts (25 tests) 4184ms\n   ✓ runCli (25)\n     ✓ guard clean succeeds when no staged files 2214ms\n ✓ packages/agentplane/src/commands/guard/impl/commands.guard.unit.test.ts (3 tests) 102ms\n ✓ packages/agentplane/src/commands/guard/impl/comment-commit.test.ts (12 tests) 88ms\n ✓ packages/agentplane/src/commands/guard/impl/policy.test.ts (3 tests) 14ms\n\n Test Files  8 passed (8)\n      Tests  101 passed (101)\n   Start at  16:38:37\n   Duration  16.04s (tests 39%, transform 36%, import 23%, setup 1%, worker 1%)\n\n  Transform  transforming modules took 5.19s · 36% of tracked time, re-done on every run\n             persist transforms across runs with fsModuleCache: true\n             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns\n\n\n== Coverage threshold (significant) ==\nSignificant suite contract OK (17 source targets).\n"
     }
   ],
   "kind": "direct_task_declared_checks",
-  "reason": "Declared check failed: bun run ci:local:full",
+  "reason": null,
   "schema_version": 1,
-  "status": "failed",
+  "status": "passed",
   "task_id": "202610111206-7Z8JRN"
 }
