@@ -6,14 +6,14 @@ Created: 2026-10-11T00:04:21.769Z
 
 - Task: `202610102351-9M0CCX`
 - Title: Honor admitted CI effect in canonical implementation commits
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610102351-9M0CCX/canonical-ci-commit`
 - Canonical task record: `.agentplane/tasks/202610102351-9M0CCX/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
