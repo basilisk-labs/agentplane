@@ -6,7 +6,7 @@ Created: 2026-10-11T02:29:04.159Z
 
 - Task: `202610110143-JSGDVH`
 - Title: Make no-grace process cleanup verification deterministic
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610110143-JSGDVH/deterministic-no-grace-proof`
 - Canonical task record: `.agentplane/tasks/202610110143-JSGDVH/README.md`
 
