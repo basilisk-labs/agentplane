@@ -1,0 +1,32 @@
+{
+  "base": "agentplane/J8P9K9-integration",
+  "branch": "task/202610111206-7Z8JRN/native-timeout-profile",
+  "created_at": "2026-10-11T12:18:50.258Z",
+  "diffstat_sha256": "sha256:8ad1c08491fc54d489aad6299c04510352f4126331dc50c7142c01e7395fd349",
+  "last_verified_at": "2026-10-11T13:39:06.669Z",
+  "last_verified_diffstat_sha256": "sha256:8ad1c08491fc54d489aad6299c04510352f4126331dc50c7142c01e7395fd349",
+  "pr_number": 6136,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6136",
+  "pre_merge_closure": {
+    "basis_commit": "1a355b44bde5345a6479cb399441b09f5b72cf88",
+    "branch": "task/202610111206-7Z8JRN/native-timeout-profile",
+    "pr_number": 6136,
+    "recorded_at": "2026-10-11T13:49:58.100Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202610111206-7Z8JRN",
+  "updated_at": "2026-10-11T12:40:23.573Z",
+  "verify": {
+    "status": "pass"
+  }
+}

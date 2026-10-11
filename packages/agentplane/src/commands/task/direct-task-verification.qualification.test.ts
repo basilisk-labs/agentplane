@@ -4,7 +4,7 @@ import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { runDirectTaskVerification } from "./direct-task-verification.js";
 
@@ -43,13 +43,74 @@ function verify(root: string, check: string, runProcess = vi.fn()) {
   };
 }
 
+beforeEach(() => {
+  vi.stubEnv("AGENTPLANE_TASK_CHECK_TIMEOUT_MS", undefined);
+});
+
 afterEach(async () => {
   vi.restoreAllMocks();
+  vi.unstubAllEnvs();
   await Promise.all(roots.splice(0).map((root) => rm(root, { recursive: true, force: true })));
 });
 
 describe("release qualification verification", () => {
+  it("uses an explicit finite task timeout for canonical command-only checks", async () => {
+    vi.stubEnv("AGENTPLANE_TASK_CHECK_TIMEOUT_MS", "7200000");
+    const root = await repository();
+    const runProcess = vi.fn().mockResolvedValue({ exitCode: 0, stdout: "ok", stderr: "" });
+    const result = await runDirectTaskVerification({
+      command: {
+        config: { paths: { workflow_dir: ".agentplane/tasks" } },
+        resolvedProject: { gitRoot: root },
+      } as never,
+      task: { verify: [] },
+      task_id: "202609200000-QUALIFY",
+      cwd: root,
+      additional_only: true,
+      additional_commands: [{ command: "bun run test:project agentplane -- example.test.ts" }],
+      run_process: runProcess,
+    });
+    expect(result.status).toBe("passed");
+    expect(runProcess.mock.calls[0]?.[0]).toMatchObject({ timeoutMs: 7_200_000 });
+    const invocation = runProcess.mock.calls[0]?.[0] as { env: NodeJS.ProcessEnv } | undefined;
+    expect(invocation?.env).not.toHaveProperty("AGENTPLANE_TASK_CHECK_TIMEOUT_MS");
+  });
+
+  it("fails invalid profiles before invoking a process", async () => {
+    const root = await repository();
+    vi.stubEnv("AGENTPLANE_TASK_CHECK_TIMEOUT_MS", "0");
+    const { result, runProcess } = verify(root, "bun run test:project agentplane");
+    await expect(result).rejects.toThrow("1 to 86400000");
+    expect(runProcess).not.toHaveBeenCalled();
+  });
+
+  it("shares the operator deadline across a declared command sequence", async () => {
+    const root = await repository();
+    vi.stubEnv("AGENTPLANE_TASK_CHECK_TIMEOUT_MS", "1000");
+    let now = 0;
+    const runProcess = vi.fn((_input: { timeoutMs?: number }) => {
+      now += 700;
+      return Promise.resolve({ exitCode: 0, stdout: "ok", stderr: "" });
+    });
+    const result = await runDirectTaskVerification({
+      command: {
+        config: { paths: { workflow_dir: ".agentplane/tasks" } },
+        resolvedProject: { gitRoot: root },
+      } as never,
+      task: { verify: ["bun run typecheck && bun run lint && bun run format:check"] },
+      task_id: "202609200000-QUALIFY",
+      cwd: root,
+      run_process: runProcess,
+      now: () => now,
+    });
+    expect(result.status).toBe("failed");
+    expect(runProcess).toHaveBeenCalledTimes(2);
+    expect(runProcess.mock.calls.map(([input]) => input.timeoutMs)).toEqual([1000, 300]);
+    expect(JSON.stringify(result)).toContain("exhausted");
+  });
+
   it("passes the bounded native full-check deadline and explicit source to local CI", async () => {
+    vi.stubEnv("AGENTPLANE_TASK_CHECK_TIMEOUT_MS", "7200000");
     const root = await repository();
     const command = "bun run ci:local:full";
     const runProcess = vi.fn().mockResolvedValue({ exitCode: 0, stdout: "ok", stderr: "" });
