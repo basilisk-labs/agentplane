@@ -72,6 +72,8 @@ describe("release qualification verification", () => {
     });
     expect(result.status).toBe("passed");
     expect(runProcess.mock.calls[0]?.[0]).toMatchObject({ timeoutMs: 7_200_000 });
+    const invocation = runProcess.mock.calls[0]?.[0] as { env: NodeJS.ProcessEnv } | undefined;
+    expect(invocation?.env).not.toHaveProperty("AGENTPLANE_TASK_CHECK_TIMEOUT_MS");
   });
 
   it("fails invalid profiles before invoking a process", async () => {

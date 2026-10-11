@@ -12,8 +12,8 @@ Created: 2026-10-11T12:18:50.258Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:1a3bafc4a36da5cd82c173e9f530e184dfb32e10d54346b7ea367e9d5d4f5b3b
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -32,10 +32,10 @@ Created: 2026-10-11T12:18:50.258Z
  .../task/direct-task-verification-checks.ts        |  4 ++
  .../task/direct-task-verification-timeout.test.ts  | 42 +++++++++++++++
  .../task/direct-task-verification-timeout.ts       | 42 +++++++++++++++
- .../direct-task-verification.qualification.test.ts | 61 +++++++++++++++++++++-
- .../src/commands/task/direct-task-verification.ts  | 43 ++++++++-------
+ .../direct-task-verification.qualification.test.ts | 63 +++++++++++++++++++++-
+ .../src/commands/task/direct-task-verification.ts  | 45 ++++++++--------
  .../task/kernel-inspection-validation.test.ts      | 30 ++++++++++-
- 6 files changed, 198 insertions(+), 24 deletions(-)
+ 6 files changed, 202 insertions(+), 24 deletions(-)
 ```
 
 </details>

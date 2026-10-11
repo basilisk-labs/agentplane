@@ -401,6 +401,8 @@ export async function runDirectTaskVerification(opts: {
     );
     const deadline = started + timeoutBudgetMs;
     const env = verificationChildEnv();
+    // The invocation profile controls this verifier, not nested child verifiers.
+    delete env.AGENTPLANE_TASK_CHECK_TIMEOUT_MS;
     const segmentEvidence = (parsed: (typeof parsedSequence)[number]) => {
       const childEnv = { ...env, ...parsed.env };
       const evidence = localRuntimeEvidence(parsed.executable, childEnv);
