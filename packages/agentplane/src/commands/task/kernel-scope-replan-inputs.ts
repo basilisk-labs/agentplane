@@ -8,13 +8,13 @@ import {
 import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js";
 import { readStableRegularTextNoFollow } from "../../shared/stable-file.js";
 import { authenticReworkEvent, retainedIssuanceAuthority } from "./kernel-rework-lineage.js";
-import { writeKernelArtifact } from "./kernel-exchange.js";
 
 /** A new approved definition continues the retained scope stop, not an invented failed review. */
 export async function scopeReplanInputs(
   order: AgentWorkOrderV2,
   directory: string,
-  record?: KernelRecord,
+  record: KernelRecord | undefined,
+  writeArtifact: (directory: string, name: string, value: unknown) => Promise<boolean>,
 ): Promise<AgentWorkOrderV2["required_inputs"]> {
   const binding = order.canonical_binding;
   if (!record || binding?.phase !== "implementation" || binding.attempt < 2) return [];
@@ -142,7 +142,7 @@ export async function scopeReplanInputs(
     result_authentication: request.result_authentication,
   };
   const filename = "scope-replan-context.json";
-  await writeKernelArtifact(directory, filename, context);
+  await writeArtifact(directory, filename, context);
   return [
     {
       id: `scope-stop:${request.work_order_id}`,

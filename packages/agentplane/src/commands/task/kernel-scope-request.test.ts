@@ -14,6 +14,7 @@ import {
 import { runJson } from "../../cli/task-create-planner-intent.testkit.js";
 import { ensureRuntimeGitignore } from "../../runtime/shared/runtime-gitignore.js";
 
+import { writeKernelArtifact } from "./kernel-exchange.js";
 import { scopeReplanInputs } from "./kernel-scope-replan-inputs.js";
 import { loadCommandContext } from "../shared/task-backend.js";
 import type * as ScopeIntake from "../../adapters/task-backend/kernel-scope-intake.js";
@@ -269,14 +270,16 @@ describe("native prospective scope request", { timeout: 180_000 }, () => {
             ),
           },
         };
-        expect(await scopeReplanInputs(nextOrder, directory, noGrant)).toEqual([]);
+        expect(await scopeReplanInputs(nextOrder, directory, noGrant, writeKernelArtifact)).toEqual(
+          [],
+        );
         await writeFile(
           retainedPath,
           JSON.stringify({ ...JSON.parse(retainedResult), summary: "Forged retained scope stop" }),
         );
-        await expect(scopeReplanInputs(nextOrder, directory, current.record)).rejects.toThrow(
-          "preceding attempt",
-        );
+        await expect(
+          scopeReplanInputs(nextOrder, directory, current.record, writeKernelArtifact),
+        ).rejects.toThrow("preceding attempt");
         await writeFile(retainedPath, retainedResult);
       }
       if (!legacyStop) {
