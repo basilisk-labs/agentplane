@@ -1,0 +1,1 @@
+"$ vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/pr/internal/auto-commit.test.ts packages/agentplane/src/commands/pr/internal/auto-commit-ancestry.test.ts \"--maxWorkers=2\""
