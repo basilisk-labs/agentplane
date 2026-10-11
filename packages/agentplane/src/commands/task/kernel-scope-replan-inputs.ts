@@ -115,11 +115,17 @@ export async function scopeReplanInputs(
     );
     if (matches.length !== 1 || !authenticReworkEvent(record, matches[0]!, proposal.command))
       throw new Error("Scope replan proposal receipt is missing or ambiguous");
-    const savedProposal = (await read(
-      path.join(root, proposal.mutation_id.slice("result:sha256:".length), "command-input.json"),
-    )) as { command: k.TaskCommand };
-    if (k.kernelDigest(savedProposal.command) !== k.kernelDigest(proposal.command))
-      throw new Error("Scope replan proposal command changed");
+    if (/^result:sha256:[0-9a-f]{64}$/u.test(proposal.mutation_id)) {
+      const savedProposal = (await read(
+        path.join(root, proposal.mutation_id.slice("result:sha256:".length), "command-input.json"),
+      )) as { command: k.TaskCommand };
+      if (k.kernelDigest(savedProposal.command) !== k.kernelDigest(proposal.command))
+        throw new Error("Scope replan proposal command changed");
+    } else if (proposal.mutation_id !== `plan:${proposal.command.plan.digest}`) {
+      throw new Error("Scope replan proposal provenance is unsupported");
+    }
+    // Operator commands are reconstructed from the retained Plan and authenticated by the
+    // unique command receipt and event above. They have no semantic result exchange file.
     proposalEvents.push(matches[0]!);
   }
   const last = history.proposals.at(-1)?.command.plan;

@@ -22,7 +22,7 @@ import type * as KernelRuntimeContext from "./kernel-runtime-context.js";
 
 installRunCliIntegrationHarness();
 describe("native prospective scope request", { timeout: 180_000 }, () => {
-  it.each(["native", "legacy", "existing-effects"])(
+  it.each(["native", "legacy", "existing-effects", "operator"])(
     "requires exact scope approval and fresh planning (legacy stop: %s)",
     async (variant) => {
       const legacyStop = variant === "legacy";
@@ -228,7 +228,16 @@ describe("native prospective scope request", { timeout: 180_000 }, () => {
       const expanded = structuredClone(proposal);
       expanded.work_items[0]!.execution_requirements.scope_roots.push("fixture.test.ts");
       expanded.work_items[0]!.execution_requirements.repository_effects.push("tests");
-      await submit({ canonical_plan: expanded });
+      if (variant === "operator") {
+        const planPath = path.join(root, ".git", "operator-scope-plan.json");
+        await writeFile(planPath, JSON.stringify(expanded));
+        expect(
+          await runCliSilent(["task", "plan", "set", id, "--file", planPath, "--root", root]),
+        ).toBe(0);
+        packet = await runJson(root, ["task", "advance", id, "--agent-json"]);
+      } else {
+        await submit({ canonical_plan: expanded });
+      }
       expect(packet.action, JSON.stringify(packet)).toMatchObject({ kind: "approval_required" });
       expect(
         await runCliSilent(["task", "plan", "approve", id, "--by", "USER", "--root", root]),
@@ -250,7 +259,7 @@ describe("native prospective scope request", { timeout: 180_000 }, () => {
         ),
       ).toBe(true);
       expect(await readFile(path.join(root, "fixture.test.ts"), "utf8")).toBe(unchanged);
-      if (variant === "native") {
+      if (variant === "native" || variant === "operator") {
         const context = await loadCommandContext({ cwd: root, rootOverride: root });
         const nativeRuntime = await createRuntime({
           command: context,
@@ -261,6 +270,31 @@ describe("native prospective scope request", { timeout: 180_000 }, () => {
         const current = await nativeRuntime.adapter.read(id);
         if (current.kind !== "canonical") throw new Error("Expected canonical scope fixture");
         const directory = (packet.exchange as { directory: string }).directory;
+        if (variant === "operator") {
+          const proposalEvent = current.record.events.find(
+            (event) => event.kind === "plan_proposed" && event.mutation_id.startsWith("plan:"),
+          );
+          expect(proposalEvent).toBeDefined();
+          if (!proposalEvent) throw new Error("Expected native operator proposal event");
+          for (const events of [
+            current.record.events.filter((event) => event !== proposalEvent),
+            [...current.record.events, proposalEvent],
+            current.record.events.map((event) =>
+              event === proposalEvent
+                ? { ...event, command_digest: nextOrder.work_order_id }
+                : event,
+            ),
+          ]) {
+            await expect(
+              scopeReplanInputs(
+                nextOrder,
+                directory,
+                { ...current.record, events },
+                writeKernelArtifact,
+              ),
+            ).rejects.toThrow("proposal receipt");
+          }
+        }
         const noGrant = {
           ...current.record,
           aggregate: {
