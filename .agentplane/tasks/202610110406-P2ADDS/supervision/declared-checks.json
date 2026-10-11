@@ -1,0 +1,59 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run test:project agentplane packages/agentplane/src/commands/task/kernel-rework-lineage.test.ts packages/agentplane/src/commands/task/kernel-rework-proof.test.ts --maxWorkers=1",
+      "duration_ms": 17115,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:5029b2561310976c439744a7dd1310d21e35d6a26910d40ce6749011ab269c15",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610110406-P2ADDS-policy-renewal-native/.agentplane/tasks/202610110406-P2ADDS/supervision/verification-runs/run-002/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:77925fa41c94b16fb1b2a5661aec967bd4782d91eddd45705726a8ef6cc1dae3",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/kernel-rework-lineage.test.ts packages/agentplane/src/commands/task/kernel-rework-proof.test.ts \"--maxWorkers=1\"\n",
+      "stdout_tail": "\n RUN  v5.0.2 <repo>\n\n\n Test Files  2 passed (2)\n      Tests  59 passed (59)\n   Start at  14:50:37\n   Duration  14.61s (transform 44%, tests 37%, import 18%)\n\n  Transform  |agentplane| transforming modules took 6.25s · 44% of tracked time, re-done on every run\n             persist transforms across runs with fsModuleCache: true\n             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run typecheck",
+      "duration_ms": 949,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:05b4bcb6d95b5ef8b1d71b21db335ef82219120472a146c0506c8a438fca0041",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610110406-P2ADDS-policy-renewal-native/.agentplane/tasks/202610110406-P2ADDS/supervision/verification-runs/run-003/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:77925fa41c94b16fb1b2a5661aec967bd4782d91eddd45705726a8ef6cc1dae3",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202610110406-P2ADDS"
+}
