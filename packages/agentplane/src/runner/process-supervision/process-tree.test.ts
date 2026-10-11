@@ -19,6 +19,50 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
+describe.skipIf(process.platform === "win32")("runner absent process-group cleanup", () => {
+  it("resolves without scheduling or spending the configured grace period", async () => {
+    const groupId = 123_456;
+    vi.useFakeTimers();
+    const schedule = vi.spyOn(globalThis, "setTimeout");
+    const kill = vi.spyOn(process, "kill").mockImplementation((pid, signal) => {
+      if (pid !== -groupId || signal !== 0) {
+        throw new Error(`Unexpected process signal: ${pid}/${signal}`);
+      }
+      throw Object.assign(new Error("No such process"), { code: "ESRCH" });
+    });
+    try {
+      let observation: Awaited<ReturnType<typeof cleanupSupervisedProcessGroup>> | undefined;
+      const completion = cleanupSupervisedProcessGroup({
+        pid: groupId,
+        terminate_grace_ms: 2000,
+      }).then((result) => {
+        observation = result;
+        return result;
+      });
+      // Flush the fulfilled cleanup promise without advancing fake time.
+      await Promise.resolve();
+      expect(observation).toMatchObject({
+        scope: "posix_process_group",
+        group_id: groupId,
+        cleanup_state: "not_needed",
+        terminate_sent_at: null,
+        kill_sent_at: null,
+        residual_alive: false,
+        error: null,
+        containment_state: "limited",
+      });
+      expect(observation?.containment_limitation).toContain("new session");
+      expect(vi.getTimerCount()).toBe(0);
+      expect(schedule).not.toHaveBeenCalled();
+      expect(kill.mock.calls).toEqual([[-groupId, 0]]);
+      await completion;
+    } finally {
+      vi.restoreAllMocks();
+      vi.useRealTimers();
+    }
+  });
+});
+
 describe("runner direct-child cleanup", () => {
   it("uses the child handle when no process-group id is available", async () => {
     const child = directChild();
