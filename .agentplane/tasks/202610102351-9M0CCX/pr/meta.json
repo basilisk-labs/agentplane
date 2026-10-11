@@ -1,0 +1,22 @@
+{
+  "base": "agentplane/J8P9K9-integration",
+  "branch": "task/202610102351-9M0CCX/canonical-ci-commit",
+  "created_at": "2026-10-11T00:04:21.769Z",
+  "diffstat_sha256": "sha256:5fc35513dc83c7a7a2e5ee250031d5a7f7f6337efa016ec85b85b8e9afac4b9e",
+  "last_verified_at": "2026-10-11T00:10:24.478Z",
+  "last_verified_diffstat_sha256": "sha256:5fc35513dc83c7a7a2e5ee250031d5a7f7f6337efa016ec85b85b8e9afac4b9e",
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610102351-9M0CCX",
+  "updated_at": "2026-10-11T00:04:21.769Z",
+  "verify": {
+    "status": "pass"
+  }
+}
