@@ -1,0 +1,21 @@
+{
+  "base": "agentplane/AGRARP-release-publication",
+  "branch": "task/202610110427-5F45G1/scope-replan-cycle",
+  "created_at": "2026-10-11T04:52:33.987Z",
+  "diffstat_sha256": "sha256:c1efe256eefc1bcdca2576772994b7dafb75e4e82e34363cc853c64b58fe7edf",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610110427-5F45G1",
+  "updated_at": "2026-10-11T04:52:33.987Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

@@ -1,5 +1,6 @@
 import { execFileSync } from "node:child_process";
-import { appendFileSync, readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { appendFileSync, readFileSync, writeFileSync } from "node:fs";
 
 import { buildGithubCiCapabilityPlan } from "../lib/github-ci-capabilities.mjs";
 import { evaluateLifecycleArtifactReuse } from "../lib/lifecycle-artifact-reuse.mjs";
@@ -149,6 +150,16 @@ appendOutput("verification_contract_digest", plan.verification_contract.digest);
 appendOutput("requires_real_e2e", plan.verification_contract.requires_real_e2e ? "true" : "false");
 const aggregatePlan = { ...plan };
 delete aggregatePlan.local_execution_plan;
-appendOutput("plan_json", JSON.stringify(aggregatePlan));
+const planPath = process.env.AGENTPLANE_CI_PLAN_FILE;
+if (!planPath) throw new Error("AGENTPLANE_CI_PLAN_FILE is empty");
+const runId = process.env.GITHUB_RUN_ID;
+const runAttempt = process.env.GITHUB_RUN_ATTEMPT;
+if (!/^\d+$/u.test(runId ?? "") || !/^\d+$/u.test(runAttempt ?? "")) {
+  throw new Error("CI plan artifact requires a valid run ID and attempt");
+}
+const planBytes = `${JSON.stringify(aggregatePlan)}\n`;
+writeFileSync(planPath, planBytes, { mode: 0o600 });
+appendOutput("plan_sha256", createHash("sha256").update(planBytes).digest("hex"));
+appendOutput("plan_artifact", `ci-plan-${runId}-${runAttempt}`);
 
 process.stdout.write(`${JSON.stringify(plan, null, 2)}\n`);

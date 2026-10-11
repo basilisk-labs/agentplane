@@ -1,0 +1,4 @@
+ packages/agentplane/src/commands/task/kernel-exchange.ts      |  3 ++-
+ .../src/commands/task/kernel-scope-replan-inputs.ts           |  6 +++---
+ .../agentplane/src/commands/task/kernel-scope-request.test.ts | 11 +++++++----
+ 3 files changed, 12 insertions(+), 8 deletions(-)
