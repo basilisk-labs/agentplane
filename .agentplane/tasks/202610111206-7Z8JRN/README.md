@@ -1,10 +1,11 @@
 ---
 id: "202610111206-7Z8JRN"
 title: "Bind finite native verification timeout profiles"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 37
+revision: 38
 origin:
   system: "manual"
 depends_on: []
@@ -43,6 +44,22 @@ quality_review:
   findings:
     - "The controller captures the operator budget before removing only the inherited timeout profile from child environment. Parsed command environment remains explicit; native evidence still binds the captured profile and effective budget. The underlying process runner defaults extendEnv to false, so deleted inherited values are not reintroduced."
     - "The added regression preserves the 7200000 budget assertion and proves child environment isolation. Authenticated all 13 context blocks, required input bindings, six source hashes, nine report logs, four native validation manifests and 12 logs. Actual bounded RED reproduces the leak; current native scoped validation records 33 passing tests and passing typecheck, hotspots and diff checks."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:31dff630a607d5f0cfc84f08730dbd5591a58bd10bb5589f385dd7fe0baa5976"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-10-11T13:49:57.598Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -269,9 +286,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "14f54cbb11cf94fa3314ad9a9965dbcd8a9fb88f"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "1a355b44bde5345a6479cb399441b09f5b72cf88"
+  message: "✅ 7Z8JRN task: persist canonical completion"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -279,9 +299,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-11T13:49:57.598Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "1a355b44bde5345a6479cb399441b09f5b72cf88"
 doc_version: 3
-doc_updated_at: "2026-10-11T13:39:08.601Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-11T13:49:57.598Z"
+doc_updated_by: "CODER"
 description: "Allow explicit finite operator timeout profiles for native canonical declared checks. Preserve default budgets and explicit per-command precedence, bind effective budgets into cache identity and evidence, reject invalid/unbounded values before execution. Preserve shared sequence deadlines, assertions and per-test timeouts. No active-run mutation or project exceptions."
 sections:
   Summary: |-
@@ -451,6 +479,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:987548313b6d5a808f5966f470e38a0741b2243a92c96cd191e19eaed810a613"
     work_order_id: "sha256:f41e983ba8dc4259cac56bcf59ad1b795dbc9ba32d8839467d52276700481fc9"
+  implementation_commit:
+    hash: "14f54cbb11cf94fa3314ad9a9965dbcd8a9fb88f"
+    message: "🚧 7Z8JRN task: apply canonical agent result"
   task_execution_context:
     base_ref: "agentplane/J8P9K9-integration"
     base_sha: "d97aaa5d53cdfed5ccfac52305ed22991caf4d73"
@@ -1676,3 +1707,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:31dff630a607d5f0cfc84f08730dbd5591a58bd10bb5589f385dd7fe0baa5976`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-10-11T13:49:57.598Z`
