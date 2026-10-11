@@ -1,0 +1,84 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run test:project agentplane packages/agentplane/src/commands/pr/integrate/internal/github-protection.test.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts --maxWorkers=2",
+      "duration_ms": 12791,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:a012a98d2d43434154d33ac16d68275a0901f5332b00817b3936062f9cf1a846",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610102331-Z9KEV4-github-unprotected/.agentplane/tasks/202610102331-Z9KEV4/supervision/verification-runs/run-003/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:bfa1c329a0b3cfd6448899ea40b9b084203e8d7125eded22140aa0c146eacc3a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/pr/integrate/internal/github-protection.test.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts \"--maxWorkers=2\"\n",
+      "stdout_tail": "\n RUN  v5.0.2 <repo>\n\n\n Test Files  2 passed (2)\n      Tests  41 passed (41)\n   Start at  02:48:58\n   Duration  6.31s (tests 72%, transform 21%, setup 3%, import 3%, worker 1%)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run typecheck",
+      "duration_ms": 3500,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:086091cb37e3b3d812b89be8186d59733596a7477c142efc5a8596fef5c31889",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610102331-Z9KEV4-github-unprotected/.agentplane/tasks/202610102331-Z9KEV4/supervision/verification-runs/run-004/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:bfa1c329a0b3cfd6448899ea40b9b084203e8d7125eded22140aa0c146eacc3a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "git diff --check",
+      "duration_ms": 1225,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:2cf68154b0461c12d4da0ce76526c2868c2345479e778bfbb81b77cbbfe5723d",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610102331-Z9KEV4-github-unprotected/.agentplane/tasks/202610102331-Z9KEV4/supervision/verification-runs/run-005/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:fc7aadeb66326ae2e4a20a12e972fb02cf22ccf50a8f783036c59d76a5353d31",
+        "executable_digest": "sha256:2a8c18fbf43da9f692d75474c72bea9dfd796c260b0f3dfe456376abc3bbd668",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202610102331-Z9KEV4"
+}
