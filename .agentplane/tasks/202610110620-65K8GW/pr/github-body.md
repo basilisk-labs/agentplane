@@ -15,8 +15,8 @@ PR6128 exact ce174 hosted38116647743 passed every substantive job but aggregate1
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>
