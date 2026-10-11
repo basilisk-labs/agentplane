@@ -3,7 +3,8 @@
   "branch": "task/202610110143-JSGDVH/deterministic-no-grace-proof",
   "created_at": "2026-10-11T02:29:04.159Z",
   "diffstat_sha256": "sha256:ae3ee4f4c88d272a67f38375b133330d65fb1fcb8e71e28fff4b60c86dfa2e5f",
-  "last_verified_at": null,
+  "last_verified_at": "2026-10-11T02:51:42.091Z",
+  "last_verified_diffstat_sha256": "sha256:ae3ee4f4c88d272a67f38375b133330d65fb1fcb8e71e28fff4b60c86dfa2e5f",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202610110143-JSGDVH",
   "updated_at": "2026-10-11T02:29:04.159Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

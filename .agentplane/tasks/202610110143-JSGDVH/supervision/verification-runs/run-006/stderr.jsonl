@@ -1,0 +1,1 @@
+"$ vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/process-supervision.process-tree.test.ts packages/agentplane/src/runner/process-supervision/process-tree.test.ts \"--maxWorkers=1\""
