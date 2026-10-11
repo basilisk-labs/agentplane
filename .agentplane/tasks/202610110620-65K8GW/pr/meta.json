@@ -1,0 +1,21 @@
+{
+  "base": "agentplane/AGRARP-release-publication",
+  "branch": "task/202610110620-65K8GW/ci-plan-artifact-transport",
+  "created_at": "2026-10-11T06:38:47.169Z",
+  "diffstat_sha256": "sha256:8f42d10285c680a7d9b241dd6dc19696aca413153b2cf3b7bd7059d2574a89c7",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610110620-65K8GW",
+  "updated_at": "2026-10-11T06:38:47.169Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

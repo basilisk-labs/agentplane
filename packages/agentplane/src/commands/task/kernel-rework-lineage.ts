@@ -194,7 +194,10 @@ export function retainedIssuanceAuthority(record: KernelRecord, order: AgentWork
     if (
       latest
         ? !authenticReworkEvent(record, latest, {
-            kind: "continue_authority",
+            kind:
+              entry.observation?.kind === "policy_renewal"
+                ? "renew_policy_authority"
+                : "continue_authority",
             task_id: binding.task_id,
             expected_task_revision: latest.task_revision - 1,
             expected_state_fingerprint: parent.repository_fingerprint,

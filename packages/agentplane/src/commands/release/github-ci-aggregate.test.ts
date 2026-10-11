@@ -1,3 +1,8 @@
+import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import * as githubCiCapabilitiesModule from "../../../../../scripts/lib/github-ci-capabilities.mjs";
@@ -90,5 +95,78 @@ describe("GitHub CI aggregate verification", () => {
     expect(evaluateGithubCiAggregate({ plan, jobResults }).ok).toBe(true);
     jobResults["release-ready"] = "skipped";
     expect(evaluateGithubCiAggregate({ plan, jobResults }).ok).toBe(false);
+  });
+});
+
+const digest = (bytes: string) => createHash("sha256").update(bytes).digest("hex");
+
+describe("GitHub CI aggregate file transport", () => {
+  const script = path.resolve("scripts/checks/evaluate-github-ci.mjs");
+  function runFile(input: {
+    bytes: string;
+    digest?: string;
+    write?: boolean;
+    results?: Record<string, string>;
+  }) {
+    const directory = mkdtempSync(path.join(os.tmpdir(), "ci-plan-transport-"));
+    try {
+      const file = path.join(directory, "plan.json");
+      if (input.write !== false) writeFileSync(file, input.bytes);
+      return spawnSync(process.execPath, [script], {
+        encoding: "utf8",
+        maxBuffer: 8 * 1024 * 1024,
+        env: {
+          ...process.env,
+          GITHUB_STEP_SUMMARY: "",
+          AGENTPLANE_CI_PLAN_JSON: "",
+          AGENTPLANE_CI_PLAN_FILE: file,
+          AGENTPLANE_CI_PLAN_SHA256: input.digest ?? digest(input.bytes),
+          AGENTPLANE_CI_RESULTS_JSON: JSON.stringify(input.results ?? {}),
+        },
+      });
+    } finally {
+      rmSync(directory, { recursive: true, force: true });
+    }
+  }
+  it("evaluates a complete genuine plan larger than128KiB through a small process environment", () => {
+    const plan = buildGithubCiCapabilityPlan({
+      changedFiles: Array.from(
+        { length: 2000 },
+        (_, i) => `packages/agentplane/src/commands/task/large-public-change-${i}.ts`,
+      ),
+      eventName: "pull_request",
+      headRef: "task/large-plan",
+    });
+    const bytes = JSON.stringify(plan);
+    expect(Buffer.byteLength(bytes)).toBeGreaterThan(128 * 1024);
+    const result = runFile({ bytes, results: resultsFor(plan.expected_jobs) });
+    expect(result.error).toBeUndefined();
+    expect(result.status, result.stderr).toBe(0);
+    const output = JSON.parse(result.stdout) as { plan: unknown; evaluation: GithubCiEvaluation };
+    expect(output.plan).toEqual(plan);
+    expect(output.evaluation).toMatchObject({ ok: true, findings: [] });
+  });
+  it.each([
+    ["missing file", { write: false }, "ENOENT"],
+    ["missing digest", { digest: "" }, "AGENTPLANE_CI_PLAN_SHA256"],
+    ["malformed digest", { digest: "not-a-digest" }, "AGENTPLANE_CI_PLAN_SHA256"],
+    ["changed bytes", { digest: "0".repeat(64) }, "digest mismatch"],
+    ["malformed JSON", { bytes: "{" }, "JSON"],
+  ] as const)("rejects %s before aggregate acceptance", (_name, override, message) => {
+    const result = runFile({ bytes: "{}", ...override });
+    expect(result.status).not.toBe(0);
+    expect(result.stderr).toContain(message);
+  });
+  it.each(["failure", "missing"])("keeps the planned-job gate for %s results", (state) => {
+    const plan = buildGithubCiCapabilityPlan({
+      changedFiles: [".github/workflows/ci.yml"],
+      eventName: "pull_request",
+    });
+    const results = resultsFor(plan.expected_jobs);
+    if (state === "missing") delete results["verify-tests"];
+    else results["verify-tests"] = state;
+    const result = runFile({ bytes: JSON.stringify(plan), results });
+    expect(result.status).not.toBe(0);
+    expect(result.stderr).toContain("PR verification failed closed");
   });
 });
