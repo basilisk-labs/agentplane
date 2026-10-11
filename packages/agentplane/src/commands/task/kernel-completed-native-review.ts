@@ -4,7 +4,9 @@ import {
 } from "../evaluator/evaluator-work-order.js";
 import path from "node:path";
 import { readFile } from "node:fs/promises";
-import { taskKernel as k } from "@agentplaneorg/core/tasks";
+import { taskKernel as k, taskExecutionBaseFromExtensions } from "@agentplaneorg/core/tasks";
+import { findWorktreeForBranch, listWorktrees } from "@agentplaneorg/core/git";
+import { readKernelRecord } from "../../adapters/task-backend/kernel-record.js";
 import {
   digestSupervisorEpisodeValue,
   validateSupervisorExecutionEpisodeJournal,
@@ -13,7 +15,7 @@ import {
 } from "@agentplaneorg/core/schemas";
 import type { TaskData } from "../../backends/task-backend.js";
 import type { CommandContext } from "../shared/task-backend.js";
-import { resolveCommandGitCommonDir } from "../shared/task-backend.js";
+import { loadCommandContext, resolveCommandGitCommonDir } from "../shared/task-backend.js";
 import {
   createSupervisorEpisodeStore,
   resolveSupervisorExecutionEpisodePath,
@@ -30,6 +32,62 @@ import {
   resolveExternalAgentExchangePaths,
   type ExternalAgentExchange,
 } from "./external-agent-exchange.js";
+
+/** Resolve retained owner evidence only for the exact registered merged-base projection. */
+export async function resolveCompletedReviewOwner(opts: {
+  command: CommandContext;
+  task: TaskData;
+  owner_checkout: string;
+}) {
+  const root = opts.command.resolvedProject.gitRoot;
+  const base = taskExecutionBaseFromExtensions(opts.task.extensions);
+  const ownerPath = path.resolve(opts.owner_checkout);
+  const registeredBase = base ? await findWorktreeForBranch(root, base.base_ref) : null;
+  const worktrees = await listWorktrees(root);
+  if (
+    !base?.repository_identity ||
+    !registeredBase ||
+    path.resolve(registeredBase) !== path.resolve(root) ||
+    !worktrees.some((entry) => path.resolve(entry.path) === ownerPath)
+  )
+    throw new Error("Completed review requires registered owner and base checkouts");
+  const owner = await loadCommandContext({ cwd: ownerPath, rootOverride: null });
+  if (
+    path.resolve(await resolveCommandGitCommonDir(owner)) !==
+    path.resolve(await resolveCommandGitCommonDir(opts.command))
+  )
+    throw new Error("Completed review owner is outside the repository");
+  const ownerTask = await owner.taskBackend.getTask(opts.task.id);
+  const current = readKernelRecord(opts.task, base.repository_identity as k.Sha256Digest);
+  const retained = ownerTask
+    ? readKernelRecord(ownerTask, base.repository_identity as k.Sha256Digest)
+    : null;
+  if (
+    current.kind !== "canonical" ||
+    retained?.kind !== "canonical" ||
+    current.record.aggregate.state !== "COMPLETED" ||
+    retained.record.digest !== current.record.digest ||
+    k.kernelDigest(ownerTask?.quality_review ?? null) !==
+      k.kernelDigest(opts.task.quality_review ?? null) ||
+    k.kernelDigest(ownerTask?.extensions?.[RECEIPT] ?? null) !==
+      k.kernelDigest(opts.task.extensions?.[RECEIPT] ?? null)
+  )
+    throw new Error("Completed review owner does not contain the exact completed Kernel record");
+  const baseTask = await opts.command.taskBackend.getTask(opts.task.id);
+  const baseRecord = baseTask
+    ? readKernelRecord(baseTask, base.repository_identity as k.Sha256Digest)
+    : null;
+  if (
+    baseRecord?.kind !== "canonical" ||
+    baseRecord.record.digest !== current.record.digest ||
+    k.kernelDigest(baseTask?.quality_review ?? null) !==
+      k.kernelDigest(opts.task.quality_review ?? null) ||
+    k.kernelDigest(baseTask?.extensions?.[RECEIPT] ?? null) !==
+      k.kernelDigest(opts.task.extensions?.[RECEIPT] ?? null)
+  )
+    throw new Error("Completed review base does not contain the exact completed Kernel record");
+  return owner;
+}
 
 const RECEIPT = "agentplane.completed_native_review";
 const permits = new WeakMap<
@@ -152,6 +210,7 @@ async function retainedReview(
     !record ||
     order.role !== "EVALUATOR" ||
     order.work_order_id !== exchange.work_order_id ||
+    path.resolve(order.state_fingerprint.worktree) !== path.resolve(exchange.checkout) ||
     order.state_fingerprint.digest !== exchange.state_fingerprint ||
     order.authority.mutation_scope !== "none" ||
     order.authority.writable_roots.length > 0 ||
@@ -257,7 +316,11 @@ export async function hasAuthenticatedCompletedNativeReview(
   const exchange = await readExternalAgentExchange(paths.exchange);
   if (!exchange || exchange.result_digest !== receipt.result_digest)
     throw new Error("Native completed review receipt is unavailable");
-  const proof = await retainedReview(command, task, exchange);
+  const evidenceCommand =
+    path.resolve(exchange.checkout) === path.resolve(command.resolvedProject.gitRoot)
+      ? command
+      : await resolveCompletedReviewOwner({ command, task, owner_checkout: exchange.checkout });
+  const proof = await retainedReview(evidenceCommand, task, exchange);
   if (
     proof.operation.status !== "completed" ||
     proof.operation.result_digest !==

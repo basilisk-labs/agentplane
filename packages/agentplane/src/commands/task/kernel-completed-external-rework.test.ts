@@ -1,5 +1,6 @@
 import {
   authorizeCompletedNativeReviewPreparation,
+  authorizeCompletedNativeReviewResult,
   hasAuthenticatedCompletedNativeReview,
 } from "./kernel-completed-native-review.js";
 import type * as SupervisorStoreModule from "../shared/supervisor-execution-episode.js";
@@ -876,6 +877,39 @@ describe("completed canonical external rework", { timeout: 120_000 }, () => {
             ),
           ).toBe(true);
         }
+      }
+      if (crashPhase === "none") {
+        const accepted = (await reviewCommand.taskBackend.getTask(f.id))!;
+        expect(await hasAuthenticatedCompletedNativeReview(reviewCommand, accepted)).toBe(true);
+        // Native review consumption already persists its accepted task artifacts.
+        expect(git(f.root, "status", "--porcelain")).toBe("");
+        const mergedBase = path.join(f.root, "merged-base");
+        git(f.root, "worktree", "add", mergedBase, "main");
+        git(mergedBase, "merge", "--ff-only", git(f.root, "rev-parse", "HEAD"));
+        const baseCommand = await loadCommandContext({ cwd: mergedBase, rootOverride: null });
+        const mergedTask = (await baseCommand.taskBackend.getTask(f.id))!;
+        expect(await hasAuthenticatedCompletedNativeReview(baseCommand, mergedTask)).toBe(true);
+        await expect(
+          authorizeCompletedNativeReviewPreparation(baseCommand, mergedTask, reviewOrder),
+        ).rejects.toThrow();
+        const exchangePath = path.join(next.exchange.directory, "exchange.json");
+        const retainedExchange = JSON.parse(
+          await readFile(exchangePath, "utf8"),
+        ) as ExternalAgentExchange;
+        await expect(
+          authorizeCompletedNativeReviewResult(
+            baseCommand,
+            mergedTask,
+            retainedExchange,
+            retainedExchange.result!.result,
+          ),
+        ).rejects.toThrow("exchange binding");
+        const changed = structuredClone(mergedTask);
+        changed.quality_review!.note = "unproven historical PASS";
+        await expect(hasAuthenticatedCompletedNativeReview(baseCommand, changed)).rejects.toThrow(
+          "projection binding",
+        );
+        git(f.root, "worktree", "remove", mergedBase);
       }
       const journal = validateSupervisorExecutionEpisodeJournal(
         JSON.parse(await readFile(failed.journalPath, "utf8")),
