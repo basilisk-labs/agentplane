@@ -62,7 +62,12 @@ async function nativeOrder(
   });
 }
 
-async function fixture(directory: string, sourceChange = true, targetRetry = false) {
+async function fixture(
+  directory: string,
+  sourceChange = true,
+  targetRetry = false,
+  policyRenewal = false,
+) {
   const material = true,
     preStopContinuation = true;
   const contract = {
@@ -135,7 +140,7 @@ async function fixture(directory: string, sourceChange = true, targetRetry = fal
   const events: k.DomainEvent[] = [];
   function apply(value: k.KernelInput) {
     const fingerprint =
-      value.command.kind === "continue_authority"
+      value.command.kind === "continue_authority" || value.command.kind === "renew_policy_authority"
         ? value.command.record.authority.repository_fingerprint
         : root.repository_fingerprint;
     value = {
@@ -147,6 +152,51 @@ async function fixture(directory: string, sourceChange = true, targetRetry = fal
     if (result.kind !== "accepted") throw new Error(JSON.stringify(result));
     state = result.aggregate;
     events.push(...result.events);
+  }
+  if (policyRenewal) {
+    const renewed = {
+      ...root,
+      policy_digests: [k.kernelDigest("renewed policy")],
+      provenance: { ...root.provenance, parent_authority_digest: root.digest },
+    };
+    renewed.digest = k.authorityDigest(renewed);
+    const requestDigest = k.policyRenewalRequestDigest({
+      task_revision: state.revision,
+      parent: root,
+      repository_fingerprint: renewed.repository_fingerprint,
+      policy_digests: renewed.policy_digests,
+      changed_paths: [],
+    });
+    apply({
+      ...input(
+        state,
+        {
+          kind: "renew_policy_authority",
+          task_id: state.id,
+          expected_task_revision: state.revision,
+          expected_state_fingerprint: renewed.repository_fingerprint,
+          record: {
+            authority: renewed,
+            approval_mode: "manual_operator",
+            observation: {
+              kind: "policy_renewal",
+              previous_fingerprint: root.repository_fingerprint,
+              changed_paths: [],
+              request_task_revision: state.revision,
+              request_digest: requestDigest,
+              evidence_digest: k.policyRenewalApprovalEvidence({
+                request_digest: requestDigest,
+                actor_id: "USER",
+              }),
+            },
+          },
+        },
+        "policy-renewal",
+      ),
+      authority: null,
+      actor: { id: "USER", kind: "USER", transport: "manual", capabilities: [] },
+    });
+    root = renewed;
   }
   const oldOrder = await nativeOrder(
     makeKernelRecord(root.repository_identity, state, events, documents),
@@ -551,6 +601,69 @@ async function fixture(directory: string, sourceChange = true, targetRetry = fal
 }
 
 describe("authenticated prerequisite rework history", () => {
+  it.each(["authentic", "command-kind", "receipt", "authority", "fingerprint"] as const)(
+    "authenticates retained policy renewal before amendment: %s",
+    async (variant) => {
+      const directory = await mkdtemp(path.join(os.tmpdir(), "kernel-renewal-rework-"));
+      try {
+        const { record, order, oldOrder, stopCommand } = await fixture(
+          directory,
+          true,
+          false,
+          true,
+        );
+        const event = record.events.find((entry) => entry.mutation_id === "policy-renewal")!;
+        expect(event.kind).toBe("authority_continued");
+        const receipt = record.aggregate.mutation_receipts[event.mutation_id]!;
+        if (variant === "command-kind") {
+          const renewal = record.aggregate.authority_lineage.find(
+            (entry) => entry.observation?.kind === "policy_renewal",
+          )!;
+          // An internally consistent receipt for the wrong command must not authenticate renewal.
+          event.command_digest = k.kernelDigest({
+            kind: "continue_authority",
+            task_id: record.aggregate.id,
+            expected_task_revision: event.task_revision - 1,
+            expected_state_fingerprint: renewal.authority.repository_fingerprint,
+            record: renewal,
+          });
+          event.payload_digest = k.kernelDigest({
+            kind: "continue_authority",
+            aggregate_revision: event.task_revision,
+          });
+          receipt.command_digest = event.command_digest;
+          receipt.event_digests = [k.kernelDigest(event)];
+        }
+        if (variant === "receipt") receipt.command_digest = k.kernelDigest("forged receipt");
+        if (oldOrder.canonical_binding?.phase !== "implementation")
+          throw new Error("Expected implementation");
+        if (variant === "authority")
+          oldOrder.canonical_binding.authority_digest = k.kernelDigest("foreign authority");
+        if (variant === "fingerprint")
+          oldOrder.state_fingerprint.components.authority.digest =
+            k.kernelDigest("foreign fingerprint");
+        const prior = path.join(directory, oldOrder.work_order_id.slice(7));
+        await mkdir(prior, { recursive: true });
+        await writeFile(path.join(prior, "work-order.json"), JSON.stringify(oldOrder));
+        await writeFile(
+          path.join(prior, "semantic-stop-command.json"),
+          JSON.stringify(stopCommand),
+        );
+        const target = path.join(directory, order.work_order_id.slice(7));
+        if (variant === "authentic") {
+          const enriched = await withKernelReworkEvidence(order, target, record);
+          expect(
+            enriched.required_inputs.some((entry) => entry.id.startsWith("previous-definition:")),
+          ).toBe(true);
+        } else {
+          await expect(withKernelReworkEvidence(order, target, record)).rejects.toThrow();
+        }
+      } finally {
+        await rm(directory, { recursive: true, force: true });
+      }
+    },
+  );
+
   it("rejects an authenticated native target retry after the closed prerequisite", async () => {
     const directory = await mkdtemp(path.join(os.tmpdir(), "kernel-prerequisite-"));
     try {
