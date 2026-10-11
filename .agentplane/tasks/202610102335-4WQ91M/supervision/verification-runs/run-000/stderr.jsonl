@@ -1,0 +1,1 @@
+"$ vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/hosted-close-workflow-contract.test.ts packages/agentplane/src/cli/prepare-hosted-task-closure-script.test.ts \"--maxWorkers=2\""

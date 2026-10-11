@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   hosted-close:
-    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.repo.full_name == github.repository
     runs-on: ubuntu-24.04
     env:
       GH_TOKEN: ${{ github.token }}
@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: refs/heads/main
+          ref: ${{ github.event.repository.default_branch }}
           fetch-depth: 0
       - uses: oven-sh/setup-bun@v2
         with:
@@ -71,6 +71,28 @@ jobs:
           }
           fs.appendFileSync(out, `${lines.join("\n")}\n`);
           EOF
+      - name: Checkout merged target as data
+        if: steps.prepare.outputs.actionable == 'true'
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ steps.prepare.outputs.base_ref }}
+          path: .agentplane/tmp/hosted-target
+          fetch-depth: 0
+      - name: Authenticate merged target checkout
+        if: steps.prepare.outputs.actionable == 'true'
+        working-directory: .agentplane/tmp/hosted-target
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          BASE_REPOSITORY: ${{ github.event.pull_request.base.repo.full_name }}
+        run: |
+          set -euo pipefail
+          test "$BASE_REPOSITORY" = "$GITHUB_REPOSITORY"
+          test -n "$BASE_REF"
+          git check-ref-format "refs/heads/$BASE_REF"
+          [[ "$MERGE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          git merge-base --is-ancestor "$MERGE_SHA" HEAD
+          mkdir -p .agentplane/tmp
       - name: Skip non-task PRs
         if: steps.prepare.outputs.actionable != 'true'
         run: |
@@ -78,6 +100,7 @@ jobs:
       - name: Check for existing hosted closure PR
         if: steps.prepare.outputs.actionable == 'true'
         id: existing
+        working-directory: .agentplane/tmp/hosted-target
         run: |
           set -euo pipefail
           pr_url="$(gh pr list \
@@ -98,10 +121,11 @@ jobs:
           steps.existing.outputs.pr_url == '' &&
           steps.existing.outputs.branch_exists != 'true'
         id: close
+        working-directory: .agentplane/tmp/hosted-target
         run: |
           set -euo pipefail
           before="$(git rev-parse HEAD)"
-          node packages/agentplane/bin/agentplane.js task hosted-close \
+          AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 node "$GITHUB_WORKSPACE/packages/agentplane/dist/cli.js" task hosted-close \
             --event-json "$GITHUB_EVENT_PATH" \
             --quiet
           after="$(git rev-parse HEAD)"
@@ -114,6 +138,7 @@ jobs:
           fi
       - name: Push hosted closure branch
         if: steps.close.outputs.created_commit == 'true'
+        working-directory: .agentplane/tmp/hosted-target
         run: |
           set -euo pipefail
           git switch -c "${{ steps.prepare.outputs.closure_branch }}"
@@ -127,6 +152,7 @@ jobs:
           PR_TITLE: ${{ steps.prepare.outputs.pr_title }}
           PR_BODY: ${{ steps.prepare.outputs.pr_body }}
           MANUAL_PR_URL: ${{ github.server_url }}/${{ github.repository }}/compare/${{ steps.prepare.outputs.base_ref }}...${{ steps.prepare.outputs.closure_branch }}?expand=1
+        working-directory: .agentplane/tmp/hosted-target
         run: |
           set -euo pipefail
           if [ "${{ steps.existing.outputs.branch_exists }}" = "true" ] || [ "${{ steps.close.outputs.created_commit }}" = "true" ]; then
@@ -154,6 +180,7 @@ jobs:
         if: steps.create-pr.outputs.manual_pr_required == 'true'
         env:
           MANUAL_PR_URL: ${{ steps.create-pr.outputs.manual_pr_url }}
+        working-directory: .agentplane/tmp/hosted-target
         run: |
           set -euo pipefail
           cat > .agentplane/tmp/hosted-task-close-comment.md <<EOF
@@ -183,6 +210,7 @@ jobs:
         if: |
           steps.prepare.outputs.actionable == 'true' &&
           (steps.existing.outputs.pr_url != '' || steps.create-pr.outputs.pr_url != '')
+        working-directory: .agentplane/tmp/hosted-target
         run: |
           set -euo pipefail
           pr_url="${{ steps.existing.outputs.pr_url }}"
@@ -215,6 +243,7 @@ jobs:
         if: |
           steps.prepare.outputs.actionable == 'true' &&
           (steps.existing.outputs.pr_url != '' || steps.create-pr.outputs.pr_url != '')
+        working-directory: .agentplane/tmp/hosted-target
         run: |
           set -euo pipefail
           pr_url="${{ steps.existing.outputs.pr_url }}"

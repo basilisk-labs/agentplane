@@ -112,6 +112,14 @@ function titleFromSourcePullTitle(value, taskId) {
   return stripMarkers(title);
 }
 
+const safeRef = (value) =>
+  /^[A-Za-z0-9_][A-Za-z0-9_./-]*$/u.test(value) &&
+  !value.includes("..") &&
+  !value.includes("//") &&
+  !value.split("/").some((part) => part.startsWith(".") || part.endsWith(".lock")) &&
+  !value.endsWith("/") &&
+  !value.endsWith(".");
+
 function buildClosureMetadata(payload, prefix, closePrefix = "task-close") {
   const pull = payload && typeof payload === "object" ? payload.pull_request : null;
   if (!pull || typeof pull !== "object") return noAction("event does not contain pull_request");
@@ -126,6 +134,15 @@ function buildClosureMetadata(payload, prefix, closePrefix = "task-close") {
       ? pull.merge_commit_sha.trim()
       : "";
   const number = typeof pull.number === "number" ? pull.number : null;
+  const repository = payload.repository?.full_name;
+  if (
+    typeof repository !== "string" ||
+    !/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/u.test(repository) ||
+    base?.repo?.full_name !== repository
+  )
+    return noAction("merged pull_request base repository does not match event repository");
+  if (!safeRef(baseRef) || !safeRef(sourceBranch) || !/^[a-f0-9]{40}$/u.test(mergeSha))
+    return noAction("merged pull_request contains an invalid base, source branch or merge SHA");
   if (!sourceBranch || !mergeSha || !number)
     return noAction("merged pull_request is missing branch or merge SHA");
 
@@ -153,7 +170,7 @@ function buildClosureMetadata(payload, prefix, closePrefix = "task-close") {
   return {
     actionable: true,
     task_id: taskId,
-    base_ref: baseRef || "main",
+    base_ref: baseRef,
     merge_sha: mergeSha,
     source_branch: sourceBranch,
     closure_branch: closureBranch,
