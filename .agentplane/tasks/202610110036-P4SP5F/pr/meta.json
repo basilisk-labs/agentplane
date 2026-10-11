@@ -1,0 +1,22 @@
+{
+  "base": "agentplane/J8P9K9-integration",
+  "branch": "task/202610110036-P4SP5F/evaluator-replacement-contention",
+  "created_at": "2026-10-11T01:05:20.953Z",
+  "diffstat_sha256": "sha256:9a70d6d54a529768ecb148b64eb03d499df0599fe14f913e7a1a84e0e93b4d73",
+  "last_verified_at": "2026-10-11T01:32:40.296Z",
+  "last_verified_diffstat_sha256": "sha256:9a70d6d54a529768ecb148b64eb03d499df0599fe14f913e7a1a84e0e93b4d73",
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610110036-P4SP5F",
+  "updated_at": "2026-10-11T01:05:20.953Z",
+  "verify": {
+    "status": "pass"
+  }
+}

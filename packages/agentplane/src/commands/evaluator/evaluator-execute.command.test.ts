@@ -869,9 +869,10 @@ describe("evaluator execute supervisor episode", () => {
       `${taskId}-${path.basename(root)}-process-provider-invocations.log`,
     );
     await writeFile(invocationLog, "", "utf8");
+    const releaseFile = `${invocationLog}.release`;
     const childEnv = {
       AGENTPLANE_FAKE_CODEX_INVOCATIONS: invocationLog,
-      AGENTPLANE_FAKE_CODEX_DELAY_MS: "2000",
+      AGENTPLANE_FAKE_CODEX_RELEASE_FILE: releaseFile,
     };
     const winner = runEvaluatorCliInSeparateProcess({
       root,
@@ -880,17 +881,28 @@ describe("evaluator execute supervisor episode", () => {
       executeArgs: ["--replacement"],
       env: childEnv,
     });
-    await waitForFileText(invocationLog, "provider-started\n");
-    const loser = runEvaluatorCliInSeparateProcess({
-      root,
-      taskId,
-      fakeBin,
-      executeArgs: ["--replacement"],
-      env: childEnv,
-    });
-    const executions = await Promise.all([winner, loser]);
+    let loser: Awaited<ReturnType<typeof runEvaluatorCliInSeparateProcess>>;
+    try {
+      await waitForFileText(invocationLog, "provider-started\n");
+      loser = await runEvaluatorCliInSeparateProcess({
+        root,
+        taskId,
+        fakeBin,
+        executeArgs: ["--replacement"],
+        env: childEnv,
+      });
+    } finally {
+      // Keep the lease held until the contender finishes its read/admission path.
+      await writeFile(releaseFile, "release\n", "utf8");
+    }
+    const executions = [await winner, loser];
 
-    expect(executions.map((execution) => execution.code).toSorted()).toEqual([0, 2]);
+    expect(
+      executions.map((execution) => execution.code).toSorted(),
+      JSON.stringify(executions, null, 2),
+    ).toEqual([0, 2]);
+    expect(loser.stderr).toContain("E_USAGE");
+    expect(loser.stderr).toContain("Another evaluator process owns this task");
     const invocationContents = await readFile(invocationLog, "utf8");
     const invocationLines = invocationContents.trim().split("\n");
     expect(invocationLines).toEqual(["provider-started"]);
