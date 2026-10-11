@@ -230,8 +230,8 @@ export async function cmdWorkStart(opts: {
           command: "work start",
           mismatchMessage: `work start must be run on base branch ${baseBranch} (current: ${currentBranch})`,
         });
+        await ensureCurrentBaseBranch(resolved.gitRoot, baseBranch);
       }
-      await ensureCurrentBaseBranch(resolved.gitRoot, baseBranch);
       baseRef = opts.baseSha ?? baseBranch;
     }
 
