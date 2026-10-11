@@ -1,3 +1,4 @@
+import { rejectedPlanInputs } from "./kernel-rejected-plan-inputs.js";
 import { scopeReplanInputs } from "./kernel-scope-replan-inputs.js";
 import {
   findReworkLineage,
@@ -203,6 +204,8 @@ export async function withKernelReworkEvidence(
     inputs.push(...(await approvedAmendmentInputs(order, directory, record)));
   if (inputs.length === 0)
     inputs.push(...(await scopeReplanInputs(order, directory, record, writeKernelArtifact)));
+  if (inputs.length === 0)
+    inputs.push(...(await rejectedPlanInputs(order, directory, record, writeKernelArtifact)));
   if (inputs.length === 0) inputs.push(...(await kernelRecoveryInputs(order, directory, record)));
   if (inputs.length === 0)
     throw new Error("Canonical rework requires retained review or failed-check evidence");
