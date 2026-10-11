@@ -373,7 +373,8 @@ export async function commitCanonicalImplementation(opts: {
     const policyAuthority = opts.repository_effects?.includes("security_boundary") === true;
     const allowPolicy = policyAuthority && protectedKinds.has("policy");
     const allowConfig = policyAuthority && protectedKinds.has("config");
-    if (allowPolicy || allowConfig) {
+    const allowCI = opts.repository_effects?.includes("ci") === true && protectedKinds.has("ci");
+    if (allowPolicy || allowConfig || allowCI) {
       const staged = await opts.command.git.statusStagedPaths();
       if (
         staged.some(
@@ -396,7 +397,7 @@ export async function commitCanonicalImplementation(opts: {
       allowPolicy,
       allowConfig,
       allowHooks: false,
-      allowCI: false,
+      allowCI,
       requireClean: false,
       quiet: true,
       closeUnstageOthers: false,
