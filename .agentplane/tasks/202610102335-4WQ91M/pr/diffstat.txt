@@ -1,0 +1,5 @@
+ .github/workflows/task-hosted-close.yml            |  35 ++++++-
+ .../cli/prepare-hosted-task-closure-script.test.ts |  55 ++++++++++
+ .../task/hosted-close-workflow-contract.test.ts    | 113 ++++++++++++++++++++-
+ scripts/workflow/prepare-hosted-task-closure.mjs   |  19 +++-
+ 4 files changed, 217 insertions(+), 5 deletions(-)
