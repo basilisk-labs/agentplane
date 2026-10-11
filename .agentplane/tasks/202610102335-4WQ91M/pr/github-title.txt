@@ -1,1 +1,1 @@
-🚧 4WQ91M task: Use the actual merged target for hosted task closure [202610102335-4WQ91M]
+✅ 4WQ91M task: Use the actual merged target for hosted task closure [202610102335-4WQ91M]

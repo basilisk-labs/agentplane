@@ -6,14 +6,14 @@ Created: 2026-10-11T00:14:44.042Z
 
 - Task: `202610102335-4WQ91M`
 - Title: Use the actual merged target for hosted task closure
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610102335-4WQ91M/hosted-close-target`
 - Canonical task record: `.agentplane/tasks/202610102335-4WQ91M/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
