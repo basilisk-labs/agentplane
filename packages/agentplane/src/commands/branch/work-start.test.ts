@@ -98,6 +98,61 @@ describe("native frozen-base worktree preparation", { timeout: 120_000 }, () => 
     expect(await f.inventory()).toBe(before);
   });
 
+  it.each(["upstream-ahead", "local-ahead"])(
+    "prepares the admitted commit with %s while preserving primary bytes",
+    async (direction) => {
+      const f = await fixture();
+      const tree = await git(f.root, "rev-parse", `${f.sha}^{tree}`);
+      const descendant = await git(f.root, "commit-tree", tree, "-p", f.sha, "-m", direction);
+      await git(f.root, "remote", "add", "origin", ".");
+      await git(
+        f.root,
+        "update-ref",
+        "refs/remotes/origin/development",
+        direction === "upstream-ahead" ? descendant : f.sha,
+      );
+      await git(f.root, "branch", "--set-upstream-to=origin/development", "development");
+      if (direction === "local-ahead")
+        await git(f.root, "update-ref", "refs/heads/development", descendant);
+      await writeFile(path.join(f.root, "source.txt"), "dirty primary\n");
+      const head = await git(f.root, "rev-parse", "HEAD");
+      const branch = await git(f.root, "branch", "--show-current");
+      const base = await git(f.root, "rev-parse", "development");
+      expect(await f.start()).toBe(0);
+      expect(await git(f.target, "rev-parse", "HEAD")).toBe(f.sha);
+      expect(await git(f.root, "rev-parse", "HEAD")).toBe(head);
+      expect(await git(f.root, "branch", "--show-current")).toBe(branch);
+      expect(await git(f.root, "rev-parse", "development")).toBe(base);
+      expect(await readFile(path.join(f.root, "source.txt"), "utf8")).toBe("dirty primary\n");
+    },
+  );
+
+  it.each(["missing", "legacy"])(
+    "retains upstream isolation for %s admission even with an explicit SHA",
+    async (admission) => {
+      const f = await fixture();
+      await git(f.root, "checkout", "development");
+      if (admission === "missing") delete f.task.extensions!.task_execution_context;
+      else
+        f.task.extensions!.task_execution_context = {
+          ...(f.task.extensions!.task_execution_context as Record<string, unknown>),
+          source: "legacy",
+        };
+      const tree = await git(f.root, "rev-parse", `${f.sha}^{tree}`);
+      const upstream = await git(f.root, "commit-tree", tree, "-p", f.sha, "-m", "upstream");
+      await git(f.root, "remote", "add", "origin", ".");
+      await git(f.root, "update-ref", "refs/remotes/origin/development", upstream);
+      await git(f.root, "branch", "--set-upstream-to=origin/development", "development");
+      const before = await f.inventory();
+      await expect(f.start()).rejects.toMatchObject({
+        code: "E_GIT",
+        context: { reason_code: "base_branch_upstream_mismatch" },
+      });
+      expect(await f.inventory()).toBe(before);
+      await expect(git(f.root, "show-ref", "--verify", `refs/heads/${f.branch}`)).rejects.toThrow();
+    },
+  );
+
   it.each(["missing", "legacy", "repository", "sha", "ref", "missing-commit", "unrelated"])(
     "rejects %s frozen evidence before creating a branch or worktree",
     async (invalid) => {

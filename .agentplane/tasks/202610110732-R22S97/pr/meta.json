@@ -1,0 +1,22 @@
+{
+  "base": "agentplane/AGRARP-release-publication",
+  "branch": "task/202610110732-R22S97/operator-scope-replan",
+  "created_at": "2026-10-11T07:46:13.985Z",
+  "diffstat_sha256": "sha256:a60a625069da6286a929e7a010b17056a4ac025e8abe98e0f113dc93ac9a0e8f",
+  "last_verified_at": "2026-10-11T08:35:09.204Z",
+  "last_verified_diffstat_sha256": "sha256:a60a625069da6286a929e7a010b17056a4ac025e8abe98e0f113dc93ac9a0e8f",
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610110732-R22S97",
+  "updated_at": "2026-10-11T07:46:13.985Z",
+  "verify": {
+    "status": "pass"
+  }
+}

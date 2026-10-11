@@ -47,3 +47,7 @@ export {
   prospectiveScopeLineageIssues,
 } from "./prospective-scope.js";
 export type { ProspectiveScopeRequest } from "./prospective-scope.js";
+export { completionRestorationIssues } from "./completion-restoration.js";
+export type { CompletionRestorationProof } from "./completion-restoration.js";
+
+export { authenticatedScopeReplanHistory } from "./replan-work-items.js";

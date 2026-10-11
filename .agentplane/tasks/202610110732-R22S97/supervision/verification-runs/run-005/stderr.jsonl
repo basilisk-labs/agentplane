@@ -1,0 +1,1 @@
+"$ vitest --config vitest.workspace.ts run --project core packages/core/src/tasks/task-kernel/replan-work-items.test.ts \"--maxWorkers=1\""

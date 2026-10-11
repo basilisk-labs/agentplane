@@ -1,0 +1,8 @@
+ .github/workflows/ci.yml                           | 19 +++++-
+ .../commands/release/ci-workflow-contract.test.ts  | 15 ++++-
+ .../commands/release/github-ci-aggregate.test.ts   | 78 ++++++++++++++++++++++
+ .../src/commands/release/github-ci-plan.test.ts    | 49 +++++++++++++-
+ .../release/workflow-node-version-contract.test.ts |  3 +-
+ scripts/checks/evaluate-github-ci.mjs              | 15 ++++-
+ scripts/checks/plan-github-ci.mjs                  | 15 ++++-
+ 7 files changed, 184 insertions(+), 10 deletions(-)
