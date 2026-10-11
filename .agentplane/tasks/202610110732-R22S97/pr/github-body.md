@@ -15,8 +15,8 @@ Repair the generic dual-provenance scope-replan reader: accept valid native oper
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>
