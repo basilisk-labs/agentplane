@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
 import {
   aggregate,
@@ -9,6 +9,7 @@ import {
 import { makeKernelRecord } from "../../adapters/task-backend/kernel-record.js";
 import {
   resolveRecordedNativeValidation,
+  nativeValidationInput,
   type InspectionBinding,
 } from "./kernel-inspection-validation.js";
 
@@ -99,5 +100,32 @@ describe("native validation operator boundary", () => {
       ),
     ).rejects.toThrow("stale");
     expect(f.apply).not.toHaveBeenCalled();
+  });
+});
+
+describe("canonical timeout profile evidence", () => {
+  afterEach(() => vi.unstubAllEnvs());
+  it("separates native cache keys when only the operator timeout changes", () => {
+    const opts = {
+      command: { resolvedProject: { gitRoot: process.cwd() } } as never,
+      binding: {
+        task_id: "task",
+        work_item_id: "item",
+        result_digest: k.kernelDigest("result"),
+        repository_fingerprint: k.kernelDigest("repo"),
+      } as InspectionBinding,
+      commands: ["bun run test:project agentplane -- example.test.ts"],
+      repositoryEvidence: null,
+    };
+    vi.stubEnv("AGENTPLANE_TASK_CHECK_TIMEOUT_MS", undefined);
+    const normal = nativeValidationInput(opts);
+    expect(normal.input.verification).not.toHaveProperty("task_timeout_ms");
+    vi.stubEnv("AGENTPLANE_TASK_CHECK_TIMEOUT_MS", "7200000");
+    const extended = nativeValidationInput(opts);
+    expect(extended.input.verification.task_timeout_ms).toBe(7_200_000);
+    expect(extended.digest).not.toBe(normal.digest);
+    expect(extended.path).not.toBe(normal.path);
+    vi.stubEnv("AGENTPLANE_TASK_CHECK_TIMEOUT_MS", "0");
+    expect(() => nativeValidationInput(opts)).toThrow("1 to 86400000");
   });
 });
