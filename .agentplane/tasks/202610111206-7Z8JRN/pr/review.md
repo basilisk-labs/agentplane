@@ -6,7 +6,7 @@ Created: 2026-10-11T12:18:50.258Z
 
 - Task: `202610111206-7Z8JRN`
 - Title: Bind finite native verification timeout profiles
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610111206-7Z8JRN/native-timeout-profile`
 - Canonical task record: `.agentplane/tasks/202610111206-7Z8JRN/README.md`
 
