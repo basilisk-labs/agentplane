@@ -1,0 +1,84 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bunx vitest run packages/agentplane/src/commands/pr/internal/reviewed-publication-base.test.ts packages/agentplane/src/commands/pr/internal/sync-frozen-base.test.ts packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts",
+      "duration_ms": 44941,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:8d2a14d34b3bad30779dc82db5fe1fe9f33c89d166ff94dc6448ff303c1acc77",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610101212-RDPWEM-reviewed-publication-base/.agentplane/tasks/202610101212-RDPWEM/supervision/verification-runs/run-003/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:72df0b1abfb0b72d32aa4bd0593103149865511bfa92ce0a2ca14ee3f6775cda",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v5.0.2 <repo>\n\n ✓ packages/agentplane/src/commands/pr/internal/sync-frozen-base.test.ts (8 tests) 19695ms\n   ✓ real frozen-base PR artifact synchronization (8)\n     ✓ keeps github open/local/update/ensure bytes and actual worktree clean 3393ms\n     ✓ keeps gitlab open/local/update/ensure bytes and actual worktree clean 3917ms\n     ✓ persists a genuine configured target and observed link change once 3391ms\n     ✓ preserves existing CLOSED handling and closure/verification evidence 1900ms\n     ✓ preserves existing MERGED handling and closure/verification evidence 1836ms\n     ✓ persists changed diffstat content against the frozen base and stabilizes again 1679ms\n     ✓ renders the final observation when the provider update itself changes state 1683ms\n     ✓ keeps a provider-free local packet stable and rejects recorded identity drift 1883ms\n ✓ packages/agentplane/src/commands/pr/internal/reviewed-publication-base.test.ts (10 tests) 7059ms\n   ✓ derives an immutable comparison from genuine renewal, retained validation and live remote while local main stays old 1038ms\n   ✓ rejects parent drift without changing task or evidence 619ms\n   ✓ rejects checkpoint drift without changing task or evidence 539ms\n   ✓ rejects head drift without changing task or evidence 661ms\n   ✓ rejects validation drift without changing task or evidence 620ms\n   ✓ rejects artifact drift without changing task or evidence 589ms\n   ✓ rejects remote drift without changing task or evidence 807ms\n   ✓ rejects source drift without changing task or evidence 498ms\n   ✓ uses the authenticated comparison in real open/update/ensure projection without rewriting frozen provenance 1492ms\n ✓ packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts (7 tests) 18ms\n\n Test Files  3 passed (3)\n      Tests  25 passed (25)\n   Start at  21:22:03\n   Duration  39.77s (tests 70%, transform 20%, import 10%)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run typecheck",
+      "duration_ms": 2273,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:ef5ca060918a50a0ec84313968bcde985ee073dce514b6efb1af6f892dedb6b8",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610101212-RDPWEM-reviewed-publication-base/.agentplane/tasks/202610101212-RDPWEM/supervision/verification-runs/run-004/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:72df0b1abfb0b72d32aa4bd0593103149865511bfa92ce0a2ca14ee3f6775cda",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run hotspots:check",
+      "duration_ms": 3342,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:7032541c70ae7492756a06982d8b0f4ce04f06a21cacf3e91e72f64f8ab70c79",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610101212-RDPWEM-reviewed-publication-base/.agentplane/tasks/202610101212-RDPWEM/supervision/verification-runs/run-005/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:72df0b1abfb0b72d32aa4bd0593103149865511bfa92ce0a2ca14ee3f6775cda",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "hotspots:check",
+      "stderr_tail": "$ node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300 && node scripts/checks/check-oversized-test-baseline.mjs --threshold-lines 1000\n",
+      "stdout_tail": "nes\n- packages/agentplane/src/commands/backend.ts: 463 lines\n- packages/agentplane/src/commands/branch/cleanup-merged.ts: 463 lines\n- packages/agentplane/src/commands/task/create.command.ts: 463 lines\n- packages/agentplane/src/commands/pr/provider-update-branch.ts: 462 lines\n- packages/agentplane/src/commands/task/migration-apply.ts: 450 lines\n- packages/agentplane/src/commands/task/kernel-run.ts: 445 lines\n- packages/agentplane/src/runner/state-fingerprint-observation.ts: 445 lines\n- packages/agentplane/src/runner/artifacts.ts: 444 lines\n- packages/agentplane/src/runner/observation/protected-filesystem-capture-support.ts: 442 lines\n- packages/agentplane/src/commands/task/next-action.command.ts: 441 lines\n- packages/agentplane/src/commands/hermes/hermes.command.ts: 439 lines\n- packages/agentplane/src/runner/usecases/task-knowledge-request.ts: 437 lines\n- packages/agentplane/src/commands/task/new.ts: 434 lines\n- packages/agentplane/src/commands/shared/declared-check.ts: 431 lines\n- packages/agentplane/src/commands/task/shared/workflow-transition-service.ts: 430 lines\n- packages/agentplane/src/backends/task-backend/shared/record.ts: 429 lines\n- packages/agentplane/src/cli/run-cli.ts: 429 lines\n- packages/agentplane/src/runner/run-state-validation.ts: 429 lines\n- packages/agentplane/src/cli/run-cli/command-loaders/task.ts: 425 lines\n- packages/agentplane/src/commands/shared/merged-branch-cleanup.ts: 424 lines\n- packages/agentplane/src/runtime/task-execution-context/resolve.ts: 424 lines\n- packages/agentplane/src/runner/usecases/task-run-inspect.ts: 423 lines\n- packages/agentplane/src/backends/task-backend/shared/normalize.ts: 422 lines\n- packages/agentplane/src/commands/evaluator/evaluator-evidence-store.ts: 420 lines\n- packages/agentplane/src/runner/state-fingerprint.testkit.ts: 418 lines\n- packages/agentplane/src/runner/context/recipe-closure.ts: 417 lines\n- packages/agentplane/src/backends/task-backend/local-backend-write.ts: 415 lines\n- packages/agentplane/src/commands/pr/integrate/internal/merge.ts: 415 lines\n- packages/agentplane/src/context/doctor.ts: 413 lines\n- packages/agentplane/src/context/extraction-writer.ts: 413 lines\n- packages/agentplane/src/runner/context/semantic-prompt-projection.ts: 413 lines\n- packages/agentplane/src/runner/usecases/agent-work-order.ts: 413 lines\n- packages/agentplane/src/commands/task/external-agent-workflow-recovery.ts: 411 lines\n- packages/agentplane/src/context/harvest-tasks-extraction.ts: 408 lines\n- packages/agentplane/src/commands/pr/internal/sync.ts: 407 lines\n- packages/agentplane/src/commands/task/active.command.ts: 407 lines\n- packages/agentplane/src/commands/task/direct-task-supervisor-closeout.ts: 407 lines\n- packages/agentplane/src/runner/usecases/task-run-lifecycle-replay.ts: 407 lines\n- packages/agentplane/src/commands/doctor/legacy-probes.ts: 406 lines\n- packages/agentplane/src/commands/task/kernel-final-validation.ts: 406 lines\n- packages/agentplane/src/commands/insights/insights-report.ts: 404 lines\n- packages/agentplane/src/commands/pr/check.ts: 403 lines\n- packages/agentplane/src/commands/task/kernel-controller-handoff.ts: 401 lines\nOversized test warning: 8 test file(s) exceed 1000 lines.\n- packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts: 1193 lines\n- packages/agentplane/src/commands/task/finish.validation.unit.test.ts: 1160 lines\n- packages/agentplane/src/commands/doctor.command.open-pr.test.ts: 1124 lines\n- packages/agentplane/src/commands/shared/task-store.test.ts: 1115 lines\n- packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts: 1102 lines\n- packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts: 1095 lines\n- packages/agentplane/src/cli/run-cli.core.test.ts: 1046 lines\n- packages/agentplane/src/commands/doctor.command.runtime.test.ts: 1037 lines\nHotspot threshold check passed (runtime: warn>400, error>600; tests: warn>1000, error>1300).\nOversized test baseline OK (8 entries, 8872 total lines, threshold>1000).\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202610101212-RDPWEM"
+}
