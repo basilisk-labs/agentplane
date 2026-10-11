@@ -22,18 +22,18 @@ Allow explicit finite operator timeout profiles for native canonical declared ch
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-10-11T12:18:50.258Z
+- Updated: 2026-10-11T12:40:23.573Z
 - Branch: task/202610111206-7Z8JRN/native-timeout-profile
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
  .../task/direct-task-verification-checks.ts        |  4 ++
- .../task/direct-task-verification-timeout.test.ts  | 42 +++++++++++++++++
- .../task/direct-task-verification-timeout.ts       | 42 +++++++++++++++++
- .../direct-task-verification.qualification.test.ts | 54 ++++++++++++++++++++++
- .../src/commands/task/direct-task-verification.ts  | 43 +++++++++--------
- .../task/kernel-inspection-validation.test.ts      | 30 +++++++++++-
- 6 files changed, 192 insertions(+), 23 deletions(-)
+ .../task/direct-task-verification-timeout.test.ts  | 42 +++++++++++++++
+ .../task/direct-task-verification-timeout.ts       | 42 +++++++++++++++
+ .../direct-task-verification.qualification.test.ts | 61 +++++++++++++++++++++-
+ .../src/commands/task/direct-task-verification.ts  | 43 ++++++++-------
+ .../task/kernel-inspection-validation.test.ts      | 30 ++++++++++-
+ 6 files changed, 198 insertions(+), 24 deletions(-)
 ```
 
 </details>

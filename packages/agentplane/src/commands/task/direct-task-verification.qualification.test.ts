@@ -4,7 +4,7 @@ import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { runDirectTaskVerification } from "./direct-task-verification.js";
 
@@ -42,6 +42,10 @@ function verify(root: string, check: string, runProcess = vi.fn()) {
     runProcess,
   };
 }
+
+beforeEach(() => {
+  vi.stubEnv("AGENTPLANE_TASK_CHECK_TIMEOUT_MS", undefined);
+});
 
 afterEach(async () => {
   vi.restoreAllMocks();
@@ -104,6 +108,7 @@ describe("release qualification verification", () => {
   });
 
   it("passes the bounded native full-check deadline and explicit source to local CI", async () => {
+    vi.stubEnv("AGENTPLANE_TASK_CHECK_TIMEOUT_MS", "7200000");
     const root = await repository();
     const command = "bun run ci:local:full";
     const runProcess = vi.fn().mockResolvedValue({ exitCode: 0, stdout: "ok", stderr: "" });
