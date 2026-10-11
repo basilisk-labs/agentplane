@@ -15,8 +15,8 @@ Reproduce the retained 9R7G0P run-022 failure: two independent replacement CLI p
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>

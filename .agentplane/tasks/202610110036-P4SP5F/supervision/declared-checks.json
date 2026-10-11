@@ -1,13 +1,17 @@
 {
   "checks": [
     {
-      "check_ids": [],
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
       "command": "bun run test:project agentplane packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts --maxWorkers=1",
-      "duration_ms": 64647,
-      "exit_code": 1,
+      "duration_ms": 79824,
+      "exit_code": 0,
       "observation": {
-        "digest": "sha256:f4075e165dea360676283d230336fe0d4dd4c2f09c7a87eeafbde40d76da6e78",
-        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610110036-P4SP5F-evaluator-replacement-contention/.agentplane/tasks/202610110036-P4SP5F/supervision/verification-runs/run-000/manifest.json",
+        "digest": "sha256:4e288ff5e8da9990c43a1518e5a7b2d4349468a5f63875058d391c78a3ed2f91",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610110036-P4SP5F-evaluator-replacement-contention/.agentplane/tasks/202610110036-P4SP5F/supervision/verification-runs/run-005/manifest.json",
         "status": "retained"
       },
       "runtime": {
@@ -18,13 +22,88 @@
         "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
       },
       "script": "test:project",
-      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts \"--maxWorkers=1\"\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  |agentplane| packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts > evaluator execute supervisor episode > allows exactly one provider start across independent replacement CLI processes\nAssertionError: [\n  {\n    \"code\": 0,\n    \"stdout\": \"{\\n  \\\"work_order_id\\\": \\\"evaluator-work-order-202607280000-EE08-831c437e012cd892369017a2\\\",\\n  \\\"evaluator\\\": \\\"recovery-context\\\",\\n  \\\"provider\\\": \\\"codex\\\",\\n  \\\"sandbox\\\": \\\"read-only\\\",\\n  \\\"verdict\\\": \\\"pass\\\",\\n  \\\"report\\\": \\\".agentplane/tasks/202607280000-EE08/quality/20261011-010718599-recovery-context/quality-report.json\\\",\\n  \\\"result\\\": \\\".agentplane/tasks/202607280000-EE08/quality/20261011-010718599-recovery-context/evaluator-result.json\\\",\\n  \\\"receipt\\\": \\\".agentplane/tasks/202607280000-EE08/quality/20261011-010718599-recovery-context/evaluator-episode.json\\\",\\n  \\\"supervisor_episode\\\": {\\n    \\\"status\\\": \\\"running\\\",\\n    \\\"cursor\\\": {\\n      \\\"episode\\\": 2,\\n      \\\"phase\\\": \\\"ready\\\",\\n      \\\"operation_key\\\": null\\n    },\\n    \\\"usage\\\": {\\n      \\\"episodes\\\": 2,\\n      \\\"agent_runs\\\": 2,\\n      \\\"input_tokens\\\": 100,\\n      \\\"output_tokens\\\": 50,\\n      \\\"total_tokens\\\": 150,\\n      \\\"cached_input_tokens\\\": 0,\\n      \\\"cached_input_observed_agent_runs\\\": 0,\\n      \\\"prepared_context_bytes\\\": 0,\\n      \\\"prepared_context_observed_agent_runs\\\": 0,\\n      \\\"visible_output_tokens\\\": 30,\\n      \\\"reasoning_tokens\\\": 20,\\n      \\\"token_observed_agent_runs\\\": 2,\\n      \\\"output_breakdown_observed_agent_runs\\\": 2,\\n      \\\"wall_time_ms\\\": 2156,\\n      \\\"changed_files\\\": 0,\\n      \\\"diff_lines\\\": 0,\\n      \\\"no_progress_episodes\\\": 0\\n    },\\n    \\\"stop\\\": null,\\n    \\\"digest\\\": \\\"sha256:517acae135e6193ea7d4c7fe6af7fa87ebbcd8259e210c16b51919ef6aa2ea0c\\\"\\n  },\\n  \\\"recorded\\\": true\\n}\\n\",\n    \"stderr\": \"\"\n  },\n  {\n    \"code\": 1,\n    \"stdout\": \"\",\n    \"stderr\": \"error [E_INTERNAL]: task README 202607280000-EE08 changed while it was being read: /tmp/agentplane-vitest-run-UHf5KP/agentplane-cli-test-nURAFE/.agentplane/tasks/202607280000-EE08/README.md\\n\"\n  }\n]: expected [ +0, 1 ] to deeply equal [ +0, 2 ]\n\n- Expected\n+ Received\n\n  [\n    0,\n-   2,\n+   1,\n  ]\n\n ❯ packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts:896:7\n    894|       executions.map((execution) => execution.code).toSorted(),\n    895|       JSON.stringify(executions, null, 2),\n    896|     ).toEqual([0, 2]);\n       |       ^\n    897|     const invocationContents = await readFile(invocationLog, \"utf8\");\n    898|     const invocationLines = invocationContents.trim().split(\"\\n\");\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\nerror: script \"test:project\" exited with code 1\n",
-      "stdout_tail": "\n RUN  v5.0.2 <repo>\n\n202609280000-EE18\n202609280000-EE18\n202607280000-EE01\n202607280000-EE13\n202607280000-EE11\n202607280000-EE02\n202607280000-EE05\n202607280000-EE03\n202607280000-EE12\n202607280000-EE04\n202607280000-EE09\n202607280000-EE10\n202607280000-EE06\n202607280000-EE07\n202607280000-EE08\n ❯ |agentplane| packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts (15 tests | 1 failed) 49831ms\n   ❯ evaluator execute supervisor episode (15)\n     × allows exactly one provider start across independent replacement CLI processes 6230ms\n\n Test Files  1 failed (1)\n      Tests  1 failed | 14 passed (15)\n   Start at  04:06:20\n   Duration  61.24s (tests 82%, transform 15%, import 3%)\n\n"
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts \"--maxWorkers=1\"\n",
+      "stdout_tail": "\n RUN  v5.0.2 <repo>\n\n202609280000-EE18\n202609280000-EE18\n202607280000-EE01\n202607280000-EE13\n202607280000-EE11\n202607280000-EE02\n202607280000-EE05\n202607280000-EE03\n202607280000-EE12\n202607280000-EE04\n202607280000-EE09\n202607280000-EE10\n202607280000-EE06\n202607280000-EE07\n202607280000-EE08\n\n Test Files  1 passed (1)\n      Tests  15 passed (15)\n   Start at  04:31:00\n   Duration  74.23s (tests 82%, transform 15%, import 3%)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run typecheck",
+      "duration_ms": 2200,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:18b5317253aa7bed6ec0dfb72f5ccf3ae279f53c571fb011b542e013e53c9b39",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610110036-P4SP5F-evaluator-replacement-contention/.agentplane/tasks/202610110036-P4SP5F/supervision/verification-runs/run-006/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:77925fa41c94b16fb1b2a5661aec967bd4782d91eddd45705726a8ef6cc1dae3",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run hotspots:check",
+      "duration_ms": 3649,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:ce9b5bc037f537cfc6b0c78eb73e257805ea95775768e8673e9a70cb3305baef",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610110036-P4SP5F-evaluator-replacement-contention/.agentplane/tasks/202610110036-P4SP5F/supervision/verification-runs/run-007/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:77925fa41c94b16fb1b2a5661aec967bd4782d91eddd45705726a8ef6cc1dae3",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "hotspots:check",
+      "stderr_tail": "$ node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300 && node scripts/checks/check-oversized-test-baseline.mjs --threshold-lines 1000\n",
+      "stdout_tail": "nes\n- packages/agentplane/src/commands/backend.ts: 463 lines\n- packages/agentplane/src/commands/branch/cleanup-merged.ts: 463 lines\n- packages/agentplane/src/commands/task/create.command.ts: 463 lines\n- packages/agentplane/src/commands/pr/provider-update-branch.ts: 462 lines\n- packages/agentplane/src/commands/task/migration-apply.ts: 450 lines\n- packages/agentplane/src/commands/task/kernel-run.ts: 445 lines\n- packages/agentplane/src/runner/state-fingerprint-observation.ts: 445 lines\n- packages/agentplane/src/runner/artifacts.ts: 444 lines\n- packages/agentplane/src/runner/observation/protected-filesystem-capture-support.ts: 442 lines\n- packages/agentplane/src/commands/task/next-action.command.ts: 441 lines\n- packages/agentplane/src/commands/hermes/hermes.command.ts: 439 lines\n- packages/agentplane/src/runner/usecases/task-knowledge-request.ts: 437 lines\n- packages/agentplane/src/commands/task/new.ts: 434 lines\n- packages/agentplane/src/commands/shared/declared-check.ts: 431 lines\n- packages/agentplane/src/commands/task/shared/workflow-transition-service.ts: 430 lines\n- packages/agentplane/src/backends/task-backend/shared/record.ts: 429 lines\n- packages/agentplane/src/cli/run-cli.ts: 429 lines\n- packages/agentplane/src/runner/run-state-validation.ts: 429 lines\n- packages/agentplane/src/cli/run-cli/command-loaders/task.ts: 425 lines\n- packages/agentplane/src/commands/shared/merged-branch-cleanup.ts: 424 lines\n- packages/agentplane/src/runtime/task-execution-context/resolve.ts: 424 lines\n- packages/agentplane/src/runner/usecases/task-run-inspect.ts: 423 lines\n- packages/agentplane/src/backends/task-backend/shared/normalize.ts: 422 lines\n- packages/agentplane/src/commands/evaluator/evaluator-evidence-store.ts: 420 lines\n- packages/agentplane/src/runner/state-fingerprint.testkit.ts: 418 lines\n- packages/agentplane/src/runner/context/recipe-closure.ts: 417 lines\n- packages/agentplane/src/backends/task-backend/local-backend-write.ts: 415 lines\n- packages/agentplane/src/commands/pr/integrate/internal/merge.ts: 415 lines\n- packages/agentplane/src/context/doctor.ts: 413 lines\n- packages/agentplane/src/context/extraction-writer.ts: 413 lines\n- packages/agentplane/src/runner/context/semantic-prompt-projection.ts: 413 lines\n- packages/agentplane/src/runner/usecases/agent-work-order.ts: 413 lines\n- packages/agentplane/src/commands/task/external-agent-workflow-recovery.ts: 411 lines\n- packages/agentplane/src/context/harvest-tasks-extraction.ts: 408 lines\n- packages/agentplane/src/commands/pr/internal/sync.ts: 407 lines\n- packages/agentplane/src/commands/task/active.command.ts: 407 lines\n- packages/agentplane/src/commands/task/direct-task-supervisor-closeout.ts: 407 lines\n- packages/agentplane/src/runner/usecases/task-run-lifecycle-replay.ts: 407 lines\n- packages/agentplane/src/commands/doctor/legacy-probes.ts: 406 lines\n- packages/agentplane/src/commands/task/kernel-final-validation.ts: 406 lines\n- packages/agentplane/src/commands/insights/insights-report.ts: 404 lines\n- packages/agentplane/src/commands/pr/check.ts: 403 lines\n- packages/agentplane/src/commands/task/kernel-controller-handoff.ts: 401 lines\nOversized test warning: 8 test file(s) exceed 1000 lines.\n- packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts: 1193 lines\n- packages/agentplane/src/commands/task/finish.validation.unit.test.ts: 1160 lines\n- packages/agentplane/src/commands/doctor.command.open-pr.test.ts: 1124 lines\n- packages/agentplane/src/commands/shared/task-store.test.ts: 1115 lines\n- packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts: 1102 lines\n- packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts: 1095 lines\n- packages/agentplane/src/cli/run-cli.core.test.ts: 1046 lines\n- packages/agentplane/src/commands/doctor.command.runtime.test.ts: 1037 lines\nHotspot threshold check passed (runtime: warn>400, error>600; tests: warn>1000, error>1300).\nOversized test baseline OK (8 entries, 8872 total lines, threshold>1000).\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "git diff --check",
+      "duration_ms": 1276,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:5297d41975ae4ae6050c6308c84df4db104ce4b45ef272fa7547c4f11b95e727",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610110036-P4SP5F-evaluator-replacement-contention/.agentplane/tasks/202610110036-P4SP5F/supervision/verification-runs/run-008/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:38277e6f1f6202b2c1a4c09df9b466fdd7eb6cee3eb613edde0799fc2750bf05",
+        "executable_digest": "sha256:2a8c18fbf43da9f692d75474c72bea9dfd796c260b0f3dfe456376abc3bbd668",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": ""
     }
   ],
   "kind": "direct_task_declared_checks",
-  "reason": "Declared check failed: bun run test:project agentplane packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts --maxWorkers=1",
+  "reason": null,
   "schema_version": 1,
-  "status": "failed",
+  "status": "passed",
   "task_id": "202610110036-P4SP5F"
 }
