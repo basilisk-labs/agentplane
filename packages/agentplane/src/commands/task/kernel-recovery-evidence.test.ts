@@ -434,11 +434,7 @@ async function unchangedHistoryFixture(amendIntermediate = false) {
     [],
     documents,
   );
-  function apply(
-    command: k.TaskCommand,
-    mutationId: string,
-    actor?: k.KernelInput["actor"],
-  ) {
+  function apply(command: k.TaskCommand, mutationId: string, actor?: k.KernelInput["actor"]) {
     const reduced = k.reduceTaskCommand({
       ...input(record.aggregate, command, mutationId),
       authority: parent,

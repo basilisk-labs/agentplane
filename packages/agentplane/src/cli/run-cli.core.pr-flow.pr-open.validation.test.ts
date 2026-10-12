@@ -4,7 +4,6 @@ import {
   authority,
   plan,
 } from "../../../core/src/tasks/task-kernel/kernel.test-fixtures.js";
-import { makeKernelRecord, readKernelRecord } from "../adapters/task-backend/kernel-record.js";
 import type { TaskData } from "../backends/task-backend.js";
 import type * as TaskBackend from "../commands/shared/task-backend.js";
 import { resolveLogicalRepositoryIdentity } from "../commands/task/execution-authority-context.js";
@@ -468,6 +467,14 @@ async function reviewedPublicationFixture() {
     evidence_digests: [k.kernelDigest(evidence)],
     observed_at: "2026-10-10T10:01:00.000Z",
   };
+  const kernelRecordContents = {
+    schema_version: 1 as const,
+    kind: "canonical_task" as const,
+    repository_identity: identity,
+    aggregate: current,
+    events: reduction.events,
+  };
+  const kernelRecord = { ...kernelRecordContents, digest: k.kernelDigest(kernelRecordContents) };
   const task: TaskData = {
     id: state.id,
     title: "Fixture",
@@ -478,11 +485,10 @@ async function reviewedPublicationFixture() {
     tags: [],
     depends_on: [],
     extensions: {
-      task_kernel: makeKernelRecord(identity, current, reduction.events),
+      task_kernel: kernelRecord,
       task_execution_context: { base_ref: old, base_sha: old },
     },
   };
-  expect(readKernelRecord(task, identity).kind).toBe("canonical");
   const directory = path.join(root, ".git/agentplane/kernel/exchanges", state.id, "a".repeat(64));
   await mkdir(directory, { recursive: true });
   const evidencePath = path.join(directory, "final-validation.json");
@@ -500,9 +506,7 @@ async function reviewedPublicationFixture() {
     evidencePath,
     options,
     persist: () => {
-      const { digest: _digest, ...stored } = task.extensions!.task_kernel as ReturnType<
-        typeof makeKernelRecord
-      >;
+      const { digest: _digest, ...stored } = task.extensions!.task_kernel as typeof kernelRecord;
       const modified = { ...stored, aggregate: current };
       task.extensions!.task_kernel = { ...modified, digest: k.kernelDigest(modified) };
     },
