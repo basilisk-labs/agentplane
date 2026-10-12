@@ -7,7 +7,11 @@ import {
 } from "@agentplaneorg/core/schemas";
 import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js";
 import { readStableRegularTextNoFollow } from "../../shared/stable-file.js";
-import { authenticReworkEvent, retainedIssuanceAuthority } from "./kernel-rework-lineage.js";
+import {
+  authenticReworkEvent,
+  historicalAmendment,
+  retainedIssuanceAuthority,
+} from "./kernel-rework-lineage.js";
 import { writeKernelArtifact } from "./kernel-exchange.js";
 
 /** A new approved definition continues the retained scope stop, not an invented failed review. */
@@ -21,6 +25,7 @@ export async function scopeReplanInputs(
   const aggregate = record.aggregate;
   const current = aggregate.current_plan;
   const runtime = aggregate.work_items[binding.work_item_id];
+  const definition = current?.work_items.find((item) => item.id === binding.work_item_id);
   if (
     current?.state !== "APPROVED" ||
     current.digest !== binding.plan_digest ||
@@ -29,16 +34,19 @@ export async function scopeReplanInputs(
     binding.task_id !== aggregate.id ||
     binding.repository_identity !== record.repository_identity ||
     runtime?.state !== "EXECUTING" ||
+    !definition ||
+    k.kernelDigest(runtime.definition) !== k.kernelDigest(definition) ||
     runtime.attempt !== binding.attempt ||
     runtime.claim_id !== binding.claim_id ||
     runtime.result_digest !== null ||
     runtime.validation !== null ||
     runtime.output_manifests.length > 0 ||
     runtime.definition.contract_digest !== binding.contract_digest ||
-    k.canonicalAuthorityIssues(aggregate).length > 0
+    k.canonicalAuthorityIssues(aggregate).length > 0 ||
+    !retainedIssuanceAuthority(record, order)
   )
     return [];
-  const history = k.authenticatedScopeReplanHistory(aggregate, true);
+  const history = k.authenticatedScopeReplanHistory(aggregate, true, binding.work_item_id);
   const source = history?.source;
   const previous = source?.work_items.find((item) => item.id === binding.work_item_id);
   if (
@@ -59,7 +67,11 @@ export async function scopeReplanInputs(
   const grantEvent = record.events.find(
     (event) => event.mutation_id === `scope-request:${k.kernelDigest(request)}`,
   );
-  if (!grantEvent || !authenticReworkEvent(record, grantEvent, history.grantCommand))
+  if (
+    !grantEvent ||
+    record.events.filter((event) => event.mutation_id === grantEvent.mutation_id).length !== 1 ||
+    !authenticReworkEvent(record, grantEvent, history.grantCommand)
+  )
     throw new Error("Scope replan grant has no authentic native receipt");
   const root = path.dirname(directory);
   const oldDirectory = path.join(root, request.work_order_id.slice(7));
@@ -113,7 +125,11 @@ export async function scopeReplanInputs(
     const matches = record.events.filter(
       (event) => event.kind === "plan_proposed" && event.mutation_id === proposal.mutation_id,
     );
-    if (matches.length !== 1 || !authenticReworkEvent(record, matches[0]!, proposal.command))
+    if (
+      matches.length !== 1 ||
+      record.events.filter((event) => event.mutation_id === matches[0]!.mutation_id).length !== 1 ||
+      !authenticReworkEvent(record, matches[0]!, proposal.command)
+    )
       throw new Error("Scope replan proposal receipt is missing or ambiguous");
     if (proposal.mutation_id !== `plan:${proposal.command.plan.digest}`) {
       const savedProposal = (await read(
@@ -124,14 +140,65 @@ export async function scopeReplanInputs(
     }
     proposalEvents.push(matches[0]!);
   }
-  const last = history.proposals.at(-1)?.command.plan;
-  if (
-    last?.digest !== current.digest ||
-    last.revision !== current.revision ||
-    !current.approval_actor_id ||
-    !current.approval_evidence_digest
-  )
-    throw new Error("Scope replan current approved Plan is not the authenticated successor");
+  const approvalEvents: k.DomainEvent[] = [];
+  for (const approval of history.approvals) {
+    const events = record.events.filter(
+      (event) => event.kind === "plan_approved" && event.mutation_id === approval.mutation_id,
+    );
+    if (
+      events.length !== 1 ||
+      record.events.filter((event) => event.mutation_id === events[0]!.mutation_id).length !== 1 ||
+      !authenticReworkEvent(record, events[0]!, approval.command)
+    )
+      throw new Error("Scope replan approval receipt is missing or ambiguous");
+    approvalEvents.push(events[0]!);
+  }
+  const amendmentEvents: k.DomainEvent[] = [];
+  const plans = [...aggregate.plan_history, current];
+  for (const amendment of history.amendments) {
+    const plan = plans.find(
+      (entry) =>
+        entry.digest === amendment.plan.digest && entry.revision === amendment.plan.revision,
+    );
+    if (!plan) throw new Error("Scope replan amendment Plan is missing");
+    const events = record.events.filter(
+      (event) =>
+        event.kind === "plan_amended" &&
+        historicalAmendment(record, plan, event, amendment.fingerprint),
+    );
+    if (
+      events.length !== 1 ||
+      record.events.filter((event) => event.mutation_id === events[0]!.mutation_id).length !== 1
+    )
+      throw new Error("Scope replan amendment receipt is missing or ambiguous");
+    amendmentEvents.push(events[0]!);
+  }
+  let revision = grantEvent.task_revision;
+  for (const plan of plans.filter((plan) => plan.revision > source.revision)) {
+    const proposal = history.proposals.find((entry) => entry.command.plan.digest === plan.digest);
+    const event = proposal
+      ? proposalEvents.find((entry) => entry.mutation_id === proposal.mutation_id)
+      : amendmentEvents.find((entry) =>
+          historicalAmendment(
+            record,
+            plan,
+            entry,
+            history.amendments.find((amendment) => amendment.plan.digest === plan.digest)!
+              .fingerprint,
+          ),
+        );
+    if (!event || event.task_revision <= revision)
+      throw new Error("Scope replan history is out of order");
+    revision = event.task_revision;
+    if (proposal) {
+      const approval = history.approvals.find((entry) => entry.command.plan_digest === plan.digest);
+      const approved = approvalEvents.find((entry) => entry.mutation_id === approval?.mutation_id);
+      if (!approved || approved.task_revision <= revision)
+        throw new Error("Scope replan approval is out of order");
+      revision = approved.task_revision;
+    }
+  }
+  if (revision > aggregate.revision) throw new Error("Scope replan history is in the future");
   const context = {
     kind: "approved_scope_replan",
     grants_authority: false,
@@ -141,6 +208,8 @@ export async function scopeReplanInputs(
     approved_plan: current,
     grant_event: grantEvent,
     proposal_events: proposalEvents,
+    approval_events: approvalEvents,
+    amendment_events: amendmentEvents,
     result_authentication: request.result_authentication,
   };
   const filename = "scope-replan-context.json";

@@ -8,6 +8,7 @@ import {
   resultDigest,
 } from "./kernel.test-fixtures.js";
 import { kernelDigest } from "./digest.js";
+import { authorityDigest } from "./authority-lineage.js";
 import {
   authenticatedScopeReplanHistory,
   reconcileReplannedWorkItems,
@@ -219,6 +220,231 @@ describe("scope replan proposal provenance", () => {
       );
     },
   );
+
+  it.each([
+    "valid",
+    "missing",
+    "tampered",
+    "ambiguous",
+    "unapproved",
+    "wrong-task",
+    "wrong-attempt",
+    "unrelated-concurrent",
+  ])("retains a formerly approved rejected replacement: %s", (kind) => {
+    const { state, command, proposalId } = historyFixture("operator");
+    const source = state.plan_history[0]!;
+    const request = state.authority_lineage[0]!.observation!.scope_request!;
+    source.work_items.find((item) => item.id === "consumer")!.contract_digest =
+      kernelDigest("source contract");
+    if (kind === "unrelated-concurrent") {
+      const producer = source.work_items.find((item) => item.id === "kernel")!;
+      producer.contract_digest = kernelDigest("producer contract");
+      producer.execution_requirements = {
+        ...producer.execution_requirements,
+        resources: ["other-work"],
+      };
+      command.plan.digest = kernelDigest({
+        revision: command.plan.revision,
+        work_items: command.plan.work_items,
+      });
+      const old = state.mutation_receipts[proposalId]!;
+      delete state.mutation_receipts[proposalId];
+      state.mutation_receipts[String(`plan:${command.plan.digest}`)] = {
+        ...old,
+        mutation_id: `plan:${command.plan.digest}`,
+        command_digest: kernelDigest(command),
+      };
+    }
+    source.digest = kernelDigest({ revision: source.revision, work_items: source.work_items });
+    request.plan_digest = source.digest;
+    request.contract_digest = kernelDigest("source contract");
+    const grantId = `scope-request:${kernelDigest(request)}`;
+    const grantCommand: TaskCommand = {
+      kind: "approve_scope_request",
+      task_id: state.id,
+      expected_task_revision: 7,
+      expected_state_fingerprint: authority.repository_fingerprint,
+      record: state.authority_lineage[0]!,
+    };
+    state.mutation_receipts = {
+      ...state.mutation_receipts,
+      [grantId]: {
+        ...state.mutation_receipts[Object.keys(state.mutation_receipts)[0]!]!,
+        mutation_id: grantId,
+        command_digest: kernelDigest(grantCommand),
+      },
+    };
+    delete state.mutation_receipts[Object.keys(state.mutation_receipts)[0]!];
+    const approved = {
+      ...command.plan,
+      state: "REJECTED" as const,
+      approval_actor_id: "USER",
+      approval_evidence_digest: kernelDigest("actual approval"),
+    };
+    const root = {
+      ...authority,
+      task_id: state.id,
+      plan_digest: approved.digest,
+      plan_revision: approved.revision,
+      provenance: {
+        kind: "USER" as const,
+        actor_id: "USER",
+        evidence_digest: approved.approval_evidence_digest,
+        parent_authority_digest: null,
+      },
+    };
+    root.digest = authorityDigest(root);
+    const approval: TaskCommand = {
+      kind: "approve_plan",
+      task_id: state.id,
+      expected_task_revision: 9,
+      expected_state_fingerprint: root.repository_fingerprint,
+      plan_revision: approved.revision,
+      plan_digest: approved.digest,
+      approval_evidence_digest: approved.approval_evidence_digest,
+      authority_mode: "manual_operator",
+    };
+    const receipt = {
+      mutation_id: "approval",
+      command_digest: kernelDigest(approval),
+      before_revision: 9,
+      after_revision: 10,
+      aggregate_digest: kernelDigest("approved"),
+      event_digests: [],
+      effect_ids: [],
+    };
+    const revision = approved.revision + 1;
+    const next = {
+      ...approved,
+      revision,
+      state: "APPROVED" as const,
+      digest: kernelDigest({ revision, work_items: approved.work_items }),
+    };
+    const nextCommand: TaskCommand = {
+      kind: "propose_plan",
+      task_id: state.id,
+      expected_task_revision: 10,
+      expected_state_fingerprint: root.repository_fingerprint,
+      plan: { ...next, state: "PROPOSED", approval_actor_id: null, approval_evidence_digest: null },
+    };
+    const nextRoot = { ...root, plan_digest: next.digest, plan_revision: next.revision };
+    nextRoot.digest = authorityDigest(nextRoot);
+    const finalApproval = {
+      ...approval,
+      expected_task_revision: 11,
+      plan_revision: revision,
+      plan_digest: next.digest,
+    };
+    const record = {
+      ...state,
+      plan_history: [source, approved],
+      current_plan: next,
+      work_items: {
+        ...state.work_items,
+        consumer: {
+          ...state.work_items.consumer!,
+          state: "EXECUTING" as const,
+          attempt: request.attempt + 1,
+          definition: next.work_items.find((item) => item.id === "consumer")!,
+        },
+      },
+      authority_lineage: [
+        ...state.authority_lineage,
+        { authority: root, observation: null, approval_mode: "manual_operator" as const },
+        { authority: nextRoot, observation: null, approval_mode: "manual_operator" as const },
+      ],
+      mutation_receipts: {
+        ...state.mutation_receipts,
+        approval: receipt,
+        [`plan:${next.digest}`]: {
+          ...receipt,
+          mutation_id: `plan:${next.digest}`,
+          before_revision: 10,
+          after_revision: 11,
+          command_digest: kernelDigest(nextCommand),
+        },
+        final: {
+          ...receipt,
+          mutation_id: "final",
+          before_revision: 11,
+          after_revision: 12,
+          command_digest: kernelDigest(finalApproval),
+        },
+      },
+    };
+    if (kind === "unrelated-concurrent") {
+      const unrelatedRequest = {
+        ...request,
+        work_item_id: "kernel",
+        task_revision: 10,
+        plan_revision: approved.revision,
+        plan_digest: approved.digest,
+        contract_digest: kernelDigest("producer contract"),
+      };
+      const unrelated = {
+        ...record.authority_lineage[0]!,
+        authority: root,
+        observation: {
+          ...record.authority_lineage[0]!.observation!,
+          scope_request: unrelatedRequest,
+        },
+      };
+      const unrelatedCommand: TaskCommand = {
+        ...grantCommand,
+        expected_task_revision: 10,
+        record: unrelated,
+      };
+      const id = `scope-request:${kernelDigest(unrelatedRequest)}`;
+      record.authority_lineage.push(unrelated);
+      Object.assign(record.mutation_receipts, {
+        [id]: {
+          ...receipt,
+          mutation_id: id,
+          before_revision: 10,
+          after_revision: 11,
+          command_digest: kernelDigest(unrelatedCommand),
+        },
+      });
+      nextCommand.expected_task_revision = 11;
+      record.mutation_receipts[String(`plan:${next.digest}`)] = {
+        ...receipt,
+        mutation_id: `plan:${next.digest}`,
+        before_revision: 11,
+        after_revision: 12,
+        command_digest: kernelDigest(nextCommand),
+      };
+      finalApproval.expected_task_revision = 12;
+      record.mutation_receipts.final = {
+        ...receipt,
+        mutation_id: "final",
+        before_revision: 12,
+        after_revision: 13,
+        command_digest: kernelDigest(finalApproval),
+      };
+      Object.assign(record.work_items, {
+        kernel: {
+          ...state.work_items.kernel!,
+          state: "EXECUTING" as const,
+          attempt: request.attempt + 1,
+        },
+      });
+      expect(authenticatedScopeReplanHistory(record, true)).toBeNull();
+    }
+    if (kind === "missing") delete (record.mutation_receipts as Record<string, unknown>).approval;
+    if (kind === "tampered")
+      receipt.command_digest = kernelDigest({ ...approval, plan_digest: source.digest });
+    if (kind === "ambiguous")
+      Object.assign(record.mutation_receipts, {
+        duplicate: { ...receipt, mutation_id: "duplicate" },
+      });
+    if (kind === "unapproved") approved.approval_evidence_digest = null as never;
+    if (kind === "wrong-task") request.task_id = "other-task";
+    if (kind === "wrong-attempt") record.work_items.consumer.attempt++;
+    expect(authenticatedScopeReplanHistory(record, true, "consumer") !== null).toBe(
+      kind === "valid" || kind === "unrelated-concurrent",
+    );
+    expect(authenticatedScopeReplanHistory(record, true, "missing")).toBeNull();
+  });
 
   it.each([
     "missing",

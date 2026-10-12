@@ -1,21 +1,21 @@
- ...run-cli.core.pr-flow.pr-open.validation.test.ts | 426 +++++++++++++++
- .../impl/commands.commit-non-close.unit.test.ts    | 161 ++++--
+ ...run-cli.core.pr-flow.pr-open.validation.test.ts | 426 ++++++++++++
+ .../impl/commands.commit-non-close.unit.test.ts    | 161 +++--
  .../src/commands/guard/impl/commit-refresh.ts      |   3 +-
  .../agentplane/src/commands/guard/impl/commit.ts   |   1 +
  packages/agentplane/src/commands/pr/open.ts        |  24 +
  .../src/commands/task/kernel-exchange.ts           |   2 +
- .../commands/task/kernel-recovery-evidence.test.ts | 598 ++++++++++++++++++++-
- .../src/commands/task/kernel-recovery-evidence.ts  | 215 +++++++-
- .../commands/task/kernel-rework-lineage.test.ts    | 419 +++++++++------
+ .../commands/task/kernel-recovery-evidence.test.ts | 598 ++++++++++++++++-
+ .../src/commands/task/kernel-recovery-evidence.ts  | 215 +++++-
+ .../commands/task/kernel-rework-lineage.test.ts    | 723 ++++++++++++++++-----
  .../src/commands/task/kernel-rework-lineage.ts     | 112 ++--
- .../commands/task/kernel-scope-replan-inputs.ts    | 168 ++++++
- .../src/runner/process-supervision.test.ts         | 151 ++++--
+ .../commands/task/kernel-scope-replan-inputs.ts    | 237 +++++++
+ .../src/runner/process-supervision.test.ts         | 151 +++--
  .../src/runner/process-supervision/process-tree.ts |  84 ++-
  .../src/runner/process-supervision/run.ts          |  57 +-
  .../process-supervision/timeout-controller.ts      |  23 +-
  packages/core/src/tasks/task-kernel/index.ts       |   1 +
- .../src/tasks/task-kernel/kernel-replan.test.ts    | 316 +++++++++--
+ .../src/tasks/task-kernel/kernel-replan.test.ts    | 316 +++++++--
  packages/core/src/tasks/task-kernel/kernel.ts      |  28 +-
- .../tasks/task-kernel/replan-work-items.test.ts    | 253 +++++++++
- .../src/tasks/task-kernel/replan-work-items.ts     | 174 ++++++
- 20 files changed, 2833 insertions(+), 383 deletions(-)
+ .../tasks/task-kernel/replan-work-items.test.ts    | 479 ++++++++++++++
+ .../src/tasks/task-kernel/replan-work-items.ts     | 300 +++++++++
+ 20 files changed, 3553 insertions(+), 388 deletions(-)
