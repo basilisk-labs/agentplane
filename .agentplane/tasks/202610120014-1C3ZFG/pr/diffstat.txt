@@ -9,4 +9,8 @@
  .../src/runner/process-supervision/process-tree.ts |  84 ++-
  .../src/runner/process-supervision/run.ts          |  57 +-
  .../process-supervision/timeout-controller.ts      |  23 +-
- 11 files changed, 1561 insertions(+), 137 deletions(-)
+ .../src/tasks/task-kernel/kernel-replan.test.ts    | 227 ++++++--
+ packages/core/src/tasks/task-kernel/kernel.ts      |  28 +-
+ .../tasks/task-kernel/replan-work-items.test.ts    | 253 +++++++++
+ .../src/tasks/task-kernel/replan-work-items.ts     | 174 ++++++
+ 15 files changed, 2189 insertions(+), 191 deletions(-)

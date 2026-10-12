@@ -1,0 +1,148 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check d886917970bc0724b419074b7d575d47d9c95c1b..32302c24113bfc2e4bff6f7861eca3c2ced90c8e",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB d886917970bc0724b419074b7d575d47d9c95c1b..32302c24113bfc2e4bff6f7861eca3c2ced90c8e",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202610120014-1C3ZFG/README.md",
+        "A\t.agentplane/tasks/202610120014-1C3ZFG/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202610120014-1C3ZFG/pr/github-body.md",
+        "A\t.agentplane/tasks/202610120014-1C3ZFG/pr/github-title.txt",
+        "A\t.agentplane/tasks/202610120014-1C3ZFG/pr/meta.json",
+        "A\t.agentplane/tasks/202610120014-1C3ZFG/pr/review.md",
+        "A\t.agentplane/tasks/202610120014-1C3ZFG/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
+        "A\t.agentplane/tasks/202610120014-1C3ZFG/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+        "M\tpackages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.validation.test.ts",
+        "M\tpackages/agentplane/src/commands/guard/impl/commands.commit-non-close.unit.test.ts",
+        "M\tpackages/agentplane/src/commands/guard/impl/commit-refresh.ts",
+        "M\tpackages/agentplane/src/commands/guard/impl/commit.ts",
+        "M\tpackages/agentplane/src/commands/pr/open.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-recovery-evidence.ts",
+        "M\tpackages/agentplane/src/runner/process-supervision.test.ts",
+        "M\tpackages/agentplane/src/runner/process-supervision/process-tree.ts",
+        "M\tpackages/agentplane/src/runner/process-supervision/run.ts",
+        "M\tpackages/agentplane/src/runner/process-supervision/timeout-controller.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "d886917970bc0724b419074b7d575d47d9c95c1b",
+  "implementation_commit": "32302c24113bfc2e4bff6f7861eca3c2ced90c8e",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      " M packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.validation.test.ts",
+      " M packages/agentplane/src/commands/guard/impl/commands.commit-non-close.unit.test.ts",
+      " M packages/agentplane/src/commands/guard/impl/commit-refresh.ts",
+      " M packages/agentplane/src/commands/guard/impl/commit.ts",
+      " M packages/agentplane/src/commands/pr/open.ts",
+      " M packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts",
+      " M packages/agentplane/src/commands/task/kernel-recovery-evidence.ts",
+      " M packages/agentplane/src/runner/process-supervision.test.ts",
+      " M packages/agentplane/src/runner/process-supervision/process-tree.ts",
+      " M packages/agentplane/src/runner/process-supervision/run.ts",
+      " M packages/agentplane/src/runner/process-supervision/timeout-controller.ts",
+      "?? .agentplane/tasks/202610120014-1C3ZFG/README.md",
+      "?? .agentplane/tasks/202610120014-1C3ZFG/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
+      "?? .agentplane/tasks/202610120014-1C3ZFG/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.validation.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/guard/impl/commands.commit-non-close.unit.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/guard/impl/commit-refresh.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/guard/impl/commit.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/pr/open.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-recovery-evidence.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/process-supervision.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/process-supervision/process-tree.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/process-supervision/run.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/runner/process-supervision/timeout-controller.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610120014-1C3ZFG/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610120014-1C3ZFG/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610120014-1C3ZFG/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.validation.test.ts",
+      " M packages/agentplane/src/commands/guard/impl/commands.commit-non-close.unit.test.ts",
+      " M packages/agentplane/src/commands/guard/impl/commit-refresh.ts",
+      " M packages/agentplane/src/commands/guard/impl/commit.ts",
+      " M packages/agentplane/src/commands/pr/open.ts",
+      " M packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts",
+      " M packages/agentplane/src/commands/task/kernel-recovery-evidence.ts",
+      " M packages/agentplane/src/runner/process-supervision.test.ts",
+      " M packages/agentplane/src/runner/process-supervision/process-tree.ts",
+      " M packages/agentplane/src/runner/process-supervision/run.ts",
+      " M packages/agentplane/src/runner/process-supervision/timeout-controller.ts",
+      "?? .agentplane/tasks/202610120014-1C3ZFG/README.md",
+      "?? .agentplane/tasks/202610120014-1C3ZFG/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
+      "?? .agentplane/tasks/202610120014-1C3ZFG/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202610120014-1C3ZFG"
+}
