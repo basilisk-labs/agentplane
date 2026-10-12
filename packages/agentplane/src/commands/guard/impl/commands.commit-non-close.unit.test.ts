@@ -139,65 +139,111 @@ describe("guard command implementations: commit non-close", () => {
     });
   });
 
-  it("cmdCommit amends task artifacts into the implementation commit when PR refresh leaves task-local drift", async () => {
-    const { cmdCommit } = await import("./commit.js");
-    const ctx = mkCtx();
-    ctx.git.statusStagedPaths.mockResolvedValue(["src/app.ts"]);
-    ctx.git.statusChangedPaths.mockResolvedValue([
-      ".agentplane/tasks/202604130818-7SRWEX/pr/meta.json",
-      ".agentplane/tasks/202604130818-7SRWEX/pr/review.md",
-    ]);
-    ctx.git.headHashSubject.mockResolvedValue({
-      hash: "feedfacecafebeef",
-      subject: "derived:202604130818-7SRWEX:🧩 7SRWEX workflow: implementation body",
-    });
-    mocks.buildGitCommitEnv
-      .mockReturnValueOnce({ AGENTPLANE_TASK_ID: "202604130818-7SRWEX" })
-      .mockReturnValueOnce({
-        AGENTPLANE_TASK_ID: "202604130818-7SRWEX",
-        AGENTPLANE_ALLOW_TASKS: "1",
+  it.each([false, true])(
+    "cmdCommit preserves requireClean=%s during task artifact amend",
+    async (requireClean) => {
+      const { cmdCommit } = await import("./commit.js");
+      const ctx = mkCtx();
+      ctx.git.statusStagedPaths.mockResolvedValue(["src/app.ts"]);
+      ctx.git.statusChangedPaths.mockResolvedValue([
+        "unrelated/baseline.ts",
+        ".agentplane/tasks/202604130818-7SRWEX/pr/meta.json",
+        ".agentplane/tasks/202604130818-7SRWEX/pr/review.md",
+      ]);
+      ctx.git.headHashSubject.mockResolvedValue({
+        hash: "feedfacecafebeef",
+        subject: "derived:202604130818-7SRWEX:🧩 7SRWEX workflow: implementation body",
+      });
+      mocks.buildGitCommitEnv
+        .mockReturnValueOnce({ AGENTPLANE_TASK_ID: "202604130818-7SRWEX" })
+        .mockReturnValueOnce({
+          AGENTPLANE_TASK_ID: "202604130818-7SRWEX",
+          AGENTPLANE_ALLOW_TASKS: "1",
+        });
+
+      const rc = await cmdCommit({
+        ctx: ctx as never,
+        cwd: "/repo",
+        taskId: "202604130818-7SRWEX",
+        message: "🧩 7SRWEX workflow: implementation body",
+        close: false,
+        allow: ["src"],
+        autoAllow: false,
+        allowTasks: false,
+        allowBase: false,
+        allowPolicy: false,
+        allowConfig: false,
+        allowHooks: false,
+        allowCI: false,
+        requireClean,
+        quiet: true,
       });
 
-    const rc = await cmdCommit({
-      ctx: ctx as never,
-      cwd: "/repo",
-      taskId: "202604130818-7SRWEX",
-      message: "🧩 7SRWEX workflow: implementation body",
-      close: false,
-      allow: ["src"],
-      autoAllow: false,
-      allowTasks: false,
-      allowBase: false,
-      allowPolicy: false,
-      allowConfig: false,
-      allowHooks: false,
-      allowCI: false,
-      requireClean: false,
-      quiet: true,
-    });
+      expect(rc).toBe(0);
+      expect(mocks.refreshBranchPrArtifactsAfterTaskCommit).toHaveBeenCalledTimes(1);
+      expect(ctx.git.invalidateStatus).toHaveBeenCalledTimes(1);
+      expect(ctx.git.stage).toHaveBeenCalledWith([
+        ".agentplane/tasks/202604130818-7SRWEX/pr/meta.json",
+        ".agentplane/tasks/202604130818-7SRWEX/pr/review.md",
+      ]);
+      expect(mocks.guardCommitCheck).toHaveBeenCalledTimes(2);
+      for (const [options] of mocks.guardCommitCheck.mock.calls) {
+        expect(options.requireClean).toBe(requireClean);
+      }
+      expect(ctx.git.stage.mock.calls.flat(2)).not.toContain("unrelated/baseline.ts");
+      expect(ctx.git.commit).toHaveBeenNthCalledWith(1, {
+        message: "🧩 7SRWEX workflow: implementation body",
+        env: { AGENTPLANE_TASK_ID: "202604130818-7SRWEX" },
+        timeoutMs: 600_000,
+      });
+      expect(ctx.git.commit).toHaveBeenCalledTimes(1);
+      expect(ctx.git.commitAmendNoEdit).toHaveBeenCalledWith({
+        env: {
+          AGENTPLANE_TASK_ID: "202604130818-7SRWEX",
+          AGENTPLANE_ALLOW_TASKS: "1",
+        },
+        timeoutMs: 600_000,
+      });
+    },
+  );
 
-    expect(rc).toBe(0);
-    expect(mocks.refreshBranchPrArtifactsAfterTaskCommit).toHaveBeenCalledTimes(1);
-    expect(ctx.git.invalidateStatus).toHaveBeenCalledTimes(1);
-    expect(ctx.git.stage).toHaveBeenCalledWith([
-      ".agentplane/tasks/202604130818-7SRWEX/pr/meta.json",
-      ".agentplane/tasks/202604130818-7SRWEX/pr/review.md",
-    ]);
-    expect(mocks.guardCommitCheck).toHaveBeenCalledTimes(2);
-    expect(ctx.git.commit).toHaveBeenNthCalledWith(1, {
-      message: "🧩 7SRWEX workflow: implementation body",
-      env: { AGENTPLANE_TASK_ID: "202604130818-7SRWEX" },
-      timeoutMs: 600_000,
-    });
-    expect(ctx.git.commit).toHaveBeenCalledTimes(1);
-    expect(ctx.git.commitAmendNoEdit).toHaveBeenCalledWith({
-      env: {
-        AGENTPLANE_TASK_ID: "202604130818-7SRWEX",
-        AGENTPLANE_ALLOW_TASKS: "1",
-      },
-      timeoutMs: 600_000,
-    });
-  });
+  it.each([undefined, true, false])(
+    "standalone task artifact refresh keeps requireClean=%s strict by default",
+    async (requireClean) => {
+      const { commitRefreshedTaskArtifacts } = await import("./commit-refresh.js");
+      const { cleanTreeRule } = await import("../../../policy/rules/clean-tree.js");
+      const ctx = mkCtx();
+      const taskPath = ".agentplane/tasks/202604130818-7SRWEX/pr/meta.json";
+      ctx.git.statusChangedPaths.mockResolvedValue([taskPath, "unrelated/baseline.ts"]);
+      mocks.guardCommitCheck.mockImplementation((options) => {
+        const policy = cleanTreeRule({
+          requireClean: options.requireClean,
+          git: { unstagedTrackedPaths: ["unrelated/baseline.ts"] },
+        } as never);
+        if (!policy.ok) throw new Error("Working tree is dirty");
+      });
+      const refresh = commitRefreshedTaskArtifacts({
+        ctx: ctx as never,
+        cwd: "/repo",
+        taskId: "202604130818-7SRWEX",
+        sourceMessage: "🧩 7SRWEX workflow: implementation body",
+        quiet: true,
+        ...(requireClean === undefined ? {} : { requireClean }),
+      });
+      if (requireClean === false) {
+        await refresh;
+        expect(ctx.git.commitAmendNoEdit).toHaveBeenCalledTimes(1);
+      } else {
+        await expect(refresh).rejects.toThrow("Working tree is dirty");
+        expect(ctx.git.commitAmendNoEdit).not.toHaveBeenCalled();
+      }
+      expect(mocks.guardCommitCheck).toHaveBeenCalledWith(
+        expect.objectContaining({ requireClean: requireClean ?? true }),
+      );
+      expect(ctx.git.stage).toHaveBeenCalledWith([taskPath]);
+      expect(ctx.git.stage.mock.calls.flat(2)).not.toContain("unrelated/baseline.ts");
+    },
+  );
 
   it("cmdCommit non-close path does not opt into stale-dist bypass", async () => {
     const { cmdCommit } = await import("./commit.js");
