@@ -4,6 +4,7 @@ import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { readDiagnosticContext } from "../../shared/diagnostics.js";
 import { CliError } from "../../../shared/errors.js";
 import { createGuardCommandContext as mkCtx } from "@agentplane/testkit/guard";
+import type { GuardCommitOptions } from "./policy.js";
 
 const mocks = vi.hoisted(() => ({
   buildTaskArtifactRefreshCommitSubject: vi.fn(),
@@ -20,7 +21,7 @@ const mocks = vi.hoisted(() => ({
   taskReadmePathForTask: vi.fn(),
   buildGitCommitEnv: vi.fn(),
   resolveCanonicalGitIdentity: vi.fn(),
-  guardCommitCheck: vi.fn(),
+  guardCommitCheck: vi.fn<(options: GuardCommitOptions) => void>(),
   resolveIgnoredDirectCloseDirtyPaths: vi.fn(),
   withGitMutationMutex: vi.fn(),
 }));
@@ -190,7 +191,7 @@ describe("guard command implementations: commit non-close", () => {
       for (const [options] of mocks.guardCommitCheck.mock.calls) {
         expect(options.requireClean).toBe(requireClean);
       }
-      expect(ctx.git.stage.mock.calls.flat(2)).not.toContain("unrelated/baseline.ts");
+      expect(ctx.git.stage.mock.calls.flat().flat()).not.toContain("unrelated/baseline.ts");
       expect(ctx.git.commit).toHaveBeenNthCalledWith(1, {
         message: "🧩 7SRWEX workflow: implementation body",
         env: { AGENTPLANE_TASK_ID: "202604130818-7SRWEX" },
@@ -241,7 +242,7 @@ describe("guard command implementations: commit non-close", () => {
         expect.objectContaining({ requireClean: requireClean ?? true }),
       );
       expect(ctx.git.stage).toHaveBeenCalledWith([taskPath]);
-      expect(ctx.git.stage.mock.calls.flat(2)).not.toContain("unrelated/baseline.ts");
+      expect(ctx.git.stage.mock.calls.flat().flat()).not.toContain("unrelated/baseline.ts");
     },
   );
 

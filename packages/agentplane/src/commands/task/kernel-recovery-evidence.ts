@@ -176,7 +176,7 @@ function unchangedApprovedPlanHistory(
   }
   const initial = authenticatedPlanApproval(record, history[0]!);
   const current = authenticatedPlanApproval(record, history.at(-1)!);
-  const stop = aggregate.mutation_receipts[`semantic-stop:${orderId}`];
+  const stop = aggregate.mutation_receipts[String(`semantic-stop:${orderId}`)];
   return (
     !!initial &&
     !!current &&

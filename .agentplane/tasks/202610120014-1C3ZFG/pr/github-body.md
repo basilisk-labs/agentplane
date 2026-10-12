@@ -15,8 +15,8 @@ Integrate only the reviewed nine source deltas from XTX5M8 commit 767e460334dd0f
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:1852371885ab3272ccd7f1a9471cdc2ac7ca5930105ea4a607ddab61ba479807
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,22 +27,22 @@ Integrate only the reviewed nine source deltas from XTX5M8 commit 767e460334dd0f
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- ...run-cli.core.pr-flow.pr-open.validation.test.ts | 400 ++++++++++++++
- .../impl/commands.commit-non-close.unit.test.ts    | 158 ++++--
+ ...run-cli.core.pr-flow.pr-open.validation.test.ts | 422 +++++++++++++++
+ .../impl/commands.commit-non-close.unit.test.ts    | 161 ++++--
  .../src/commands/guard/impl/commit-refresh.ts      |   3 +-
  .../agentplane/src/commands/guard/impl/commit.ts   |   1 +
  packages/agentplane/src/commands/pr/open.ts        |  24 +
- .../commands/task/kernel-recovery-evidence.test.ts | 582 ++++++++++++++++++++-
+ .../commands/task/kernel-recovery-evidence.test.ts | 602 ++++++++++++++++++++-
  .../src/commands/task/kernel-recovery-evidence.ts  | 215 +++++++-
  .../src/runner/process-supervision.test.ts         | 151 ++++--
  .../src/runner/process-supervision/process-tree.ts |  84 ++-
  .../src/runner/process-supervision/run.ts          |  57 +-
  .../process-supervision/timeout-controller.ts      |  23 +-
- .../src/tasks/task-kernel/kernel-replan.test.ts    | 227 ++++++--
+ .../src/tasks/task-kernel/kernel-replan.test.ts    | 316 +++++++++--
  packages/core/src/tasks/task-kernel/kernel.ts      |  28 +-
  .../tasks/task-kernel/replan-work-items.test.ts    | 253 +++++++++
  .../src/tasks/task-kernel/replan-work-items.ts     | 174 ++++++
- 15 files changed, 2189 insertions(+), 191 deletions(-)
+ 15 files changed, 2328 insertions(+), 186 deletions(-)
 ```
 
 </details>

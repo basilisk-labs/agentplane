@@ -1,5 +1,9 @@
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
-import { aggregate, authority, plan } from "../../../core/src/tasks/task-kernel/kernel.test-fixtures.js";
+import {
+  aggregate,
+  authority,
+  plan,
+} from "../../../core/src/tasks/task-kernel/kernel.test-fixtures.js";
 import { makeKernelRecord, readKernelRecord } from "../adapters/task-backend/kernel-record.js";
 import type { TaskData } from "../backends/task-backend.js";
 import type * as TaskBackend from "../commands/shared/task-backend.js";
@@ -506,76 +510,94 @@ async function reviewedPublicationFixture() {
 }
 
 describe("pr open authenticated reviewed-publication preflight", () => {
-  it.each(["reviewed", "authority-drift", "validation-drift", "remote-drift", "late-remote-drift"] as const)(
-    "preserves the genuine renewal route and rejects %s drift",
-    async (scenario) => {
-      const f = await reviewedPublicationFixture();
-      const execution = await import("../runtime/task-execution-context/index.js");
-      const sync = await import("../commands/pr/internal/sync.js");
-      const artifacts = await import("../commands/pr/internal/auto-commit.js");
-      const publication = await import("../commands/pr/branch-publication.js");
-      const provider = await import("../commands/pr/internal/change-request-provider.js");
-      const host = await import("../commands/pr/internal/git-host-identity.js");
-      const { resolveReviewedPublicationBase } = await import("../commands/pr/internal/reviewed-publication-base.js");
-      const { cmdPrOpen } = await import("../commands/pr/open.js");
-      const order: string[] = [];
-      if (scenario === "authority-drift") {
-        f.current.authority_lineage!.at(-1)!.authority.provenance.parent_authority_digest = k.kernelDigest("foreign");
-        f.persist();
-      }
-      if (scenario === "validation-drift") {
-        f.current.final_validation!.status = "FAILED";
-        f.persist();
-      }
-      if (scenario === "remote-drift") {
-        await reviewedGit(f.root, "push", "--force", f.remote, `${f.old}:refs/heads/main`);
-      }
-      const spies = [
-        vi.spyOn(execution, "loadTaskCommandContext").mockResolvedValue({
-          command: f.command,
-          primary_task: f.task,
-          execution: { selected_mode: "branch_pr", base_ref: f.old, base_sha: f.old },
-        } as never),
-        vi.spyOn(artifacts, "maybeAutoCommitTaskPrArtifacts").mockResolvedValue(undefined),
-        vi.spyOn(host, "resolveGitHostIdentity").mockResolvedValue({ targetUrl: f.remote } as never),
-        vi.spyOn(provider, "resolveChangeRequestIdentity").mockResolvedValue({ targetUrl: f.remote } as never),
-        vi.spyOn(sync, "syncPrArtifacts").mockImplementation(async (opts) => {
-          if (opts.remoteMode === "auto") {
-            await resolveReviewedPublicationBase(f.options);
-            order.push("hosted-create");
-          }
-          return {
-            meta: { branch: f.options.branch, base: f.head },
-            prDir: path.join(f.root, "pr"),
-            resolved: f.command.resolvedProject,
-          } as never;
-        }),
-      ];
-      const pushSpy = vi.spyOn(publication, "pushTaskBranchUpstreamIfConfigured").mockImplementation(async () => {
+  it.each([
+    "reviewed",
+    "authority-drift",
+    "validation-drift",
+    "remote-drift",
+    "late-remote-drift",
+  ] as const)("preserves the genuine renewal route and rejects %s drift", async (scenario) => {
+    const f = await reviewedPublicationFixture();
+    const execution = await import("../runtime/task-execution-context/index.js");
+    const sync = await import("../commands/pr/internal/sync.js");
+    const artifacts = await import("../commands/pr/internal/auto-commit.js");
+    const publication = await import("../commands/pr/branch-publication.js");
+    const provider = await import("../commands/pr/internal/change-request-provider.js");
+    const host = await import("../commands/pr/internal/git-host-identity.js");
+    const { resolveReviewedPublicationBase } =
+      await import("../commands/pr/internal/reviewed-publication-base.js");
+    const { cmdPrOpen } = await import("../commands/pr/open.js");
+    const order: string[] = [];
+    if (scenario === "authority-drift") {
+      f.current.authority_lineage!.at(-1)!.authority.provenance.parent_authority_digest =
+        k.kernelDigest("foreign");
+      f.persist();
+    }
+    if (scenario === "validation-drift") {
+      f.current.final_validation!.status = "FAILED";
+      f.persist();
+    }
+    if (scenario === "remote-drift") {
+      await reviewedGit(f.root, "push", "--force", f.remote, `${f.old}:refs/heads/main`);
+    }
+    const spies = [
+      vi.spyOn(execution, "loadTaskCommandContext").mockResolvedValue({
+        command: f.command,
+        primary_task: f.task,
+        execution: { selected_mode: "branch_pr", base_ref: f.old, base_sha: f.old },
+      } as never),
+      vi.spyOn(artifacts, "maybeAutoCommitTaskPrArtifacts").mockResolvedValue(undefined),
+      vi.spyOn(host, "resolveGitHostIdentity").mockResolvedValue({ targetUrl: f.remote } as never),
+      vi
+        .spyOn(provider, "resolveChangeRequestIdentity")
+        .mockResolvedValue({ targetUrl: f.remote } as never),
+      vi.spyOn(sync, "syncPrArtifacts").mockImplementation(async (opts) => {
+        if (opts.remoteMode === "auto") {
+          await resolveReviewedPublicationBase(f.options);
+          order.push("hosted-create");
+        }
+        return {
+          meta: { branch: f.options.branch, base: f.head },
+          prDir: path.join(f.root, "pr"),
+          resolved: f.command.resolvedProject,
+        } as never;
+      }),
+    ];
+    const pushSpy = vi
+      .spyOn(publication, "pushTaskBranchUpstreamIfConfigured")
+      .mockImplementation(async () => {
         order.push("push");
         if (scenario === "late-remote-drift") {
           await reviewedGit(f.root, "push", "--force", f.remote, `${f.old}:refs/heads/main`);
         }
         return true;
       });
-      const before = JSON.stringify(f.task);
-      try {
-        expect(await reviewedGit(f.root, "rev-parse", "main")).toBe(f.old);
-        const open = cmdPrOpen({ ctx: f.command, cwd: f.root, taskId: f.task.id, author: "CODER", quiet: true });
-        if (scenario === "reviewed") {
-          await expect(open).resolves.toBe(0);
-          expect(order).toEqual(["push", "hosted-create"]);
-        } else {
-          await expect(open).rejects.toThrow("Reviewed publication base is unavailable");
-          if (scenario === "late-remote-drift") expect(order).toEqual(["push"]);
-          else expect(pushSpy).not.toHaveBeenCalled();
-        }
-        expect(JSON.stringify(f.task)).toBe(before);
-        expect(f.task.extensions!.task_execution_context).toEqual({ base_ref: f.old, base_sha: f.old });
-      } finally {
-        for (const spy of [...spies, pushSpy]) spy.mockRestore();
-        await rm(f.root, { recursive: true, force: true });
+    const before = JSON.stringify(f.task);
+    try {
+      expect(await reviewedGit(f.root, "rev-parse", "main")).toBe(f.old);
+      const open = cmdPrOpen({
+        ctx: f.command,
+        cwd: f.root,
+        taskId: f.task.id,
+        author: "CODER",
+        quiet: true,
+      });
+      if (scenario === "reviewed") {
+        await expect(open).resolves.toBe(0);
+        expect(order).toEqual(["push", "hosted-create"]);
+      } else {
+        await expect(open).rejects.toThrow("Reviewed publication base is unavailable");
+        if (scenario === "late-remote-drift") expect(order).toEqual(["push"]);
+        else expect(pushSpy).not.toHaveBeenCalled();
       }
-    },
-  );
+      expect(JSON.stringify(f.task)).toBe(before);
+      expect(f.task.extensions!.task_execution_context).toEqual({
+        base_ref: f.old,
+        base_sha: f.old,
+      });
+    } finally {
+      for (const spy of [...spies, pushSpy]) spy.mockRestore();
+      await rm(f.root, { recursive: true, force: true });
+    }
+  });
 });

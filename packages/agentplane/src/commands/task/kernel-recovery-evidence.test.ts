@@ -387,7 +387,7 @@ async function unchangedHistoryFixture(amendIntermediate = false) {
   };
   const documents = {
     intent: { objective: "Recover work", context: "Preserve approved target history" },
-    contracts: { [k.kernelDigest(contract)]: contract },
+    contracts: { [String(k.kernelDigest(contract))]: contract },
   };
   const definition = {
     ...runtime("EXECUTING").definition,
@@ -437,17 +437,17 @@ async function unchangedHistoryFixture(amendIntermediate = false) {
   function apply(
     command: k.TaskCommand,
     mutationId: string,
-    actor: k.KernelInput["actor"] = {
-      id: "USER",
-      kind: "USER",
-      transport: "manual",
-      capabilities: ["repository_write"],
-    },
+    actor?: k.KernelInput["actor"],
   ) {
     const reduced = k.reduceTaskCommand({
       ...input(record.aggregate, command, mutationId),
       authority: parent,
-      actor,
+      actor: actor ?? {
+        id: "USER",
+        kind: "USER",
+        transport: "manual",
+        capabilities: ["repository_write"],
+      },
     });
     if (reduced.kind !== "accepted") throw new Error(`target fixture: ${JSON.stringify(reduced)}`);
     record = makeKernelRecord(
@@ -651,23 +651,43 @@ describe("target-preserving approved Plan recovery", () => {
   ])("rejects invalid %s target history", async (kind) => {
     const f = await unchangedHistoryFixture();
     const approvals = f.record.events.filter((event) => event.kind === "plan_approved");
-    if (kind === "initial" || kind === "current") {
-      const selected = kind === "initial" ? approvals[0]! : approvals.at(-1)!;
-      f.record.events = f.record.events.filter((event) => event !== selected);
-    } else if (kind === "duplicate") f.record.events.push(approvals[0]!);
-    else if (kind === "receipt")
-      f.record.aggregate.mutation_receipts[approvals[0]!.mutation_id]!.event_digests = [];
-    else if (kind === "authority")
-      f.record.aggregate.authority_lineage![0]!.authority.digest = k.kernelDigest("tampered");
-    else if (kind === "definition")
-      f.record.aggregate.plan_history[0]!.work_items[0]!.expected_outputs = ["changed"];
-    else if (kind === "missing-target")
-      f.record.aggregate.plan_history[0]!.work_items = [
-        f.record.aggregate.plan_history[0]!.work_items[1]!,
-      ];
-    else if (kind === "claim")
-      f.record.aggregate.work_items.kernel!.claim_id = k.kernelDigest("stale");
-    else f.record.aggregate.work_items.kernel!.attempt++;
+    switch (kind) {
+      case "initial":
+      case "current": {
+        const selected = kind === "initial" ? approvals[0]! : approvals.at(-1)!;
+        f.record.events = f.record.events.filter((event) => event !== selected);
+        break;
+      }
+      case "duplicate": {
+        f.record.events.push(approvals[0]!);
+        break;
+      }
+      case "receipt": {
+        f.record.aggregate.mutation_receipts[approvals[0]!.mutation_id]!.event_digests = [];
+        break;
+      }
+      case "authority": {
+        f.record.aggregate.authority_lineage![0]!.authority.digest = k.kernelDigest("tampered");
+        break;
+      }
+      case "definition": {
+        f.record.aggregate.plan_history[0]!.work_items[0]!.expected_outputs = ["changed"];
+        break;
+      }
+      case "missing-target": {
+        f.record.aggregate.plan_history[0]!.work_items = [
+          f.record.aggregate.plan_history[0]!.work_items[1]!,
+        ];
+        break;
+      }
+      case "claim": {
+        f.record.aggregate.work_items.kernel!.claim_id = k.kernelDigest("stale");
+        break;
+      }
+      default: {
+        f.record.aggregate.work_items.kernel!.attempt++;
+      }
+    }
     await expect(captureKernelSemanticStop(f.kernelRoot, f.record, "kernel")).rejects.toThrow();
   });
 
