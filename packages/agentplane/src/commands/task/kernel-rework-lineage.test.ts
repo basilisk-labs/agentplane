@@ -6,7 +6,7 @@ import type { KernelCommandInput } from "../../adapters/task-backend/kernel-back
 import { mkdtemp, mkdir, writeFile, readFile, rm } from "node:fs/promises";
 import path from "node:path";
 import os from "node:os";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
 import {
   aggregate,
@@ -25,6 +25,26 @@ import { makeKernelRecord, type KernelRecord } from "../../adapters/task-backend
 import { authenticatedAmendmentHistory } from "./kernel-rework-proof.js";
 import { retainedIssuanceAuthority } from "./kernel-rework-lineage.js";
 import { withKernelReworkEvidence } from "./kernel-exchange.js";
+function nativeCommand() {
+  return {
+    backendId: "local",
+    resolvedProject: { gitRoot: process.cwd() },
+    config: { paths: { workflow_dir: ".agentplane/tasks", tasks_path: ".agentplane/tasks.json" } },
+  } as never;
+}
+const roots: string[] = [];
+afterEach(async () => {
+  for (const root of roots.splice(0)) await rm(root, { recursive: true, force: true });
+});
+async function createDirectory(prefix: string) {
+  const dir = await mkdtemp(path.join(os.tmpdir(), prefix));
+  roots.push(dir);
+  return dir;
+}
+async function write(dir: string, name: string, value: unknown) {
+  await mkdir(dir, { recursive: true });
+  await writeFile(path.join(dir, name), JSON.stringify(value));
+}
 async function nativeOrder(
   record: KernelRecord,
   authority: k.ExecutionAuthority,
@@ -38,13 +58,7 @@ async function nativeOrder(
   });
   if (!implementation) throw new Error("Expected native implementation WorkOrder");
   return buildKernelAgentWorkOrder({
-    command: {
-      backendId: "local",
-      resolvedProject: { gitRoot: process.cwd() },
-      config: {
-        paths: { workflow_dir: ".agentplane/tasks", tasks_path: ".agentplane/tasks.json" },
-      },
-    } as never,
+    command: nativeCommand(),
     record,
     implementation,
     context: {
@@ -63,7 +77,6 @@ async function fixture(
   mixedScope = false,
 ) {
   const oldClaim = k.kernelDigest("old-claim");
-  const sourceChange = true;
   const contract = {
     role: "EXECUTOR" as const,
     objective: "Build source",
@@ -136,6 +149,7 @@ async function fixture(
     },
   });
   const events: k.DomainEvent[] = [];
+  const snapshot = () => makeKernelRecord(root.repository_identity, state, events, documents);
   const userActor = {
     id: "USER",
     kind: "USER",
@@ -163,7 +177,49 @@ async function fixture(
     state = result.aggregate;
     events.push(...result.events);
   }
-  function continueAuthority(record: k.CanonicalAuthorityRecord, mutation: string) {
+  type FixtureCommand = {
+    [Kind in k.TaskCommand["kind"]]: Omit<
+      Extract<k.TaskCommand, { kind: Kind }>,
+      "task_id" | "expected_task_revision" | "expected_state_fingerprint"
+    >;
+  }[k.TaskCommand["kind"]];
+  function commandInput(
+    command: FixtureCommand,
+    mutation: string,
+    actor?: k.KernelInput["actor"],
+    authority: k.ExecutionAuthority | null = root,
+  ) {
+    const bound = {
+      ...command,
+      task_id: state.id,
+      expected_task_revision: state.revision,
+      expected_state_fingerprint: root.repository_fingerprint,
+    };
+    return { ...input(state, bound, mutation), authority, ...(actor ? { actor } : {}) };
+  }
+  function issue(...args: Parameters<typeof commandInput>) {
+    apply(commandInput(...args));
+  }
+  function continueAuthority(
+    mutation: string,
+    observation: NonNullable<k.CanonicalAuthorityRecord["observation"]>,
+    changes: Partial<k.ExecutionAuthority> = {},
+  ) {
+    const child = {
+      ...root,
+      ...changes,
+      provenance: {
+        ...root.provenance,
+        kind: "SYSTEM" as const,
+        actor_id: "agentplane:kernel-controller",
+        parent_authority_digest: root.digest,
+      },
+    };
+    const record: k.CanonicalAuthorityRecord = {
+      authority: { ...child, digest: k.authorityDigest(child) },
+      approval_mode: null,
+      observation,
+    };
     apply({
       ...input(
         state,
@@ -181,70 +237,76 @@ async function fixture(
     });
     root = record.authority;
   }
-  function approve(mutation: string) {
-    apply({
-      ...input(
-        state,
-        {
-          kind: "approve_plan",
-          task_id: state.id,
-          expected_task_revision: state.revision,
-          expected_state_fingerprint: root.repository_fingerprint,
-          plan_revision: source.revision,
-          plan_digest: source.digest,
-          approval_evidence_digest: root.provenance.evidence_digest,
-          authority_mode: "manual_operator",
-        },
-        mutation,
-      ),
-      authority: root,
-      actor: userActor,
+  function amend(items: k.WorkItemDefinition[], mutation: string) {
+    const amendment = amendmentCommand(state, items);
+    const approval = k.planScopeExpansionApprovalDigest({
+      task_id: state.id,
+      current_plan_digest: state.current_plan!.digest,
+      amended_plan_digest: amendment.amended_plan.digest,
+      actor_id: "USER",
     });
-  }
-  approve("initial-approval");
-  if (freshSeed) {
-    const prior = await nativeOrder(
-      makeKernelRecord(root.repository_identity, state, events, documents),
-      root,
+    issue(
+      {
+        ...amendment,
+        authority_delta_digest: approval,
+        work_contracts: { ...documents.contracts },
+      },
+      mutation,
+      userActor,
     );
-    const stopId = `semantic-stop:${prior.work_order_id}`;
-    apply({
-      ...input(
-        state,
-        {
-          ...transitionCommand(state, "block"),
-          claim_id: oldClaim,
-          semantic_result_digest: k.kernelDigest("prefix-stop"),
-        },
-        stopId,
-      ),
-      authority: root,
-    });
+  }
+  function approve(mutation: string) {
+    issue(
+      {
+        kind: "approve_plan",
+        plan_revision: source.revision,
+        plan_digest: source.digest,
+        approval_evidence_digest: root.provenance.evidence_digest,
+        authority_mode: "manual_operator",
+      },
+      mutation,
+      userActor,
+    );
+  }
+  function grantScope(
+    id: string,
+    prior: typeof retainedOrder,
+    resultDigest: k.Sha256Digest,
+    boundaries = ["before", "after"],
+  ) {
     const request: k.ProspectiveScopeRequest = {
       task_id: state.id,
       record_digest: k.kernelDigest(state),
       task_revision: state.revision,
-      plan_revision: source.revision,
-      plan_digest: source.digest,
-      work_item_id: "kernel",
-      attempt: state.work_items.kernel!.attempt,
-      claim_id: oldClaim,
-      contract_digest: previous.contract_digest,
+      plan_revision: state.current_plan!.revision,
+      plan_digest: state.current_plan!.digest,
+      work_item_id: id,
+      attempt: state.work_items[id]!.attempt,
+      claim_id: state.work_items[id]!.claim_id!,
+      contract_digest: state.work_items[id]!.definition.contract_digest!,
       work_order_id: prior.work_order_id,
-      result_digest: k.kernelDigest("prefix-stop"),
+      result_digest: resultDigest,
       result_authentication: "native_stop_receipt",
-      stop_receipt_digest: k.kernelDigest(state.mutation_receipts[stopId]),
+      stop_receipt_digest: k.kernelDigest(
+        state.mutation_receipts[String(`semantic-stop:${prior.work_order_id}`)],
+      ),
       parent_authority_digest: root.digest,
       repository_fingerprint: root.repository_fingerprint,
-      intake_before_digest: k.kernelDigest("prefix-before"),
-      intake_after_digest: k.kernelDigest("prefix-after"),
+      intake_before_digest: k.kernelDigest(boundaries[0]),
+      intake_after_digest: k.kernelDigest(boundaries[1]),
       scope_roots: ["tests"],
       repository_effects: [],
     };
+    const evidence = k.prospectiveScopeApprovalEvidence(request, "USER");
     const contents = {
       ...root,
-      scope_roots: [...root.scope_roots, "tests"].toSorted(),
-      provenance: { ...root.provenance, parent_authority_digest: root.digest },
+      scope_roots: [...new Set([...root.scope_roots, "tests"])].toSorted(),
+      provenance: {
+        kind: "USER" as const,
+        actor_id: "USER",
+        evidence_digest: root.provenance.evidence_digest,
+        parent_authority_digest: root.digest,
+      },
     };
     const grant = {
       authority: { ...contents, digest: k.authorityDigest(contents) },
@@ -253,154 +315,87 @@ async function fixture(
         kind: "prospective_scope_request" as const,
         scope_request: request,
         request_digest: k.kernelDigest(request),
-        evidence_digest: k.prospectiveScopeApprovalEvidence(request, "USER"),
+        evidence_digest: evidence,
         previous_fingerprint: root.repository_fingerprint,
         changed_paths: [],
       },
     };
-    apply({
-      ...input(
-        state,
-        {
-          kind: "approve_scope_request",
-          task_id: state.id,
-          expected_task_revision: state.revision,
-          expected_state_fingerprint: root.repository_fingerprint,
-          record: grant,
-        },
-        `scope-request:${k.kernelDigest(request)}`,
-      ),
-      authority: null,
-      actor: userActor,
-    });
+    issue(
+      { kind: "approve_scope_request", record: grant },
+      `scope-request:${k.kernelDigest(request)}`,
+      userActor,
+      null,
+    );
+    root = grant.authority;
+  }
+  approve("initial-approval");
+  if (freshSeed) {
+    const prior = await nativeOrder(snapshot(), root);
+    const stopId = `semantic-stop:${prior.work_order_id}`;
+    issue(
+      {
+        ...transitionCommand(state, "block"),
+        claim_id: oldClaim,
+        semantic_result_digest: k.kernelDigest("prefix-stop"),
+      },
+      stopId,
+    );
+    const seed = root;
+    grantScope("kernel", prior, k.kernelDigest("prefix-stop"), ["prefix-before", "prefix-after"]);
+    root = seed;
     const revision = source.revision + 1;
     source = { ...source, revision, digest: k.kernelDigest({ revision, work_items: [previous] }) };
-    apply({
-      ...input(
-        state,
-        {
-          kind: "propose_plan",
-          task_id: state.id,
-          expected_task_revision: state.revision,
-          expected_state_fingerprint: root.repository_fingerprint,
-          plan: {
-            ...source,
-            state: "PROPOSED",
-            approval_actor_id: null,
-            approval_evidence_digest: null,
-          },
+    issue(
+      {
+        kind: "propose_plan",
+        plan: {
+          ...source,
+          state: "PROPOSED",
+          approval_actor_id: null,
+          approval_evidence_digest: null,
         },
-        `result:${source.digest}`,
-      ),
-      authority: root,
-      actor: systemActor,
-    });
+      },
+      `result:${source.digest}`,
+      systemActor,
+    );
     root = { ...root, plan_revision: source.revision, plan_digest: source.digest };
     root.digest = k.authorityDigest(root);
     approve("fresh-approval");
     for (const action of ["resume", "claim", "begin"] as const)
-      apply({
-        ...input(
-          state,
-          {
-            ...transitionCommand(state, action),
-            claim_id: action === "resume" ? null : oldClaim,
-          },
-          `fresh-${action}`,
-        ),
-        authority: root,
-      });
+      issue(
+        { ...transitionCommand(state, action), claim_id: action === "resume" ? null : oldClaim },
+        `fresh-${action}`,
+      );
   }
-  const oldOrder = await nativeOrder(
-    makeKernelRecord(root.repository_identity, state, events, documents),
-    root,
-  );
-  const authority = {
-    ...root,
-    repository_fingerprint: k.kernelDigest("edited source"),
-    provenance: {
-      ...root.provenance,
-      kind: "SYSTEM" as const,
-      actor_id: "agentplane:kernel-controller",
-      parent_authority_digest: root.digest,
-    },
-  };
-  authority.digest = k.authorityDigest(authority);
+  const oldOrder = await nativeOrder(snapshot(), root);
   continueAuthority(
-    {
-      authority,
-      approval_mode: null,
-      observation: {
-        kind: "repository_implementation",
-        previous_fingerprint: root.repository_fingerprint,
-        changed_paths: ["src/change.ts"],
-        evidence_digest: k.kernelDigest("native edited source observation"),
-      },
-    },
     "pre-stop-continuation",
+    {
+      kind: "repository_implementation",
+      previous_fingerprint: root.repository_fingerprint,
+      changed_paths: ["src/change.ts"],
+      evidence_digest: k.kernelDigest("native edited source observation"),
+    },
+    { repository_fingerprint: k.kernelDigest("edited source") },
   );
-  const stop = {
-    ...input(
-      state,
-      { ...transitionCommand(state, "block"), claim_id: oldClaim },
-      `semantic-stop:${oldOrder.work_order_id}`,
-    ),
-    authority: root,
-  };
+  const stop = commandInput(
+    { ...transitionCommand(state, "block"), claim_id: oldClaim },
+    `semantic-stop:${oldOrder.work_order_id}`,
+  );
   stop.command.expected_state_fingerprint = root.repository_fingerprint;
   apply(stop);
-  const amendment = amendmentCommand(state, [prerequisite, amended]);
-  const approval = k.planScopeExpansionApprovalDigest({
-    task_id: state.id,
-    current_plan_digest: source.digest,
-    amended_plan_digest: amendment.amended_plan.digest,
-    actor_id: "USER",
-  });
-  apply({
-    ...input(
-      state,
-      {
-        ...amendment,
-        authority_delta_digest: approval,
-        work_contracts: {
-          [String(k.kernelDigest(contract))]: contract,
-          [String(k.kernelDigest(nextContract))]: nextContract,
-        },
-      },
-      "amend-fixture",
-    ),
-    authority: root,
-    actor: userActor,
-  });
-  const current = state.current_plan!;
-  const child = {
-    ...root,
-    plan_revision: current.revision,
-    plan_digest: current.digest,
-    provenance: {
-      ...root.provenance,
-      kind: "SYSTEM" as const,
-      actor_id: "agentplane:kernel-controller",
-      parent_authority_digest: root.digest,
-    },
-  };
-  child.digest = k.authorityDigest(child);
-  const continued: k.CanonicalAuthorityRecord = {
-    authority: child,
-    approval_mode: null,
-    observation: {
+  amend([prerequisite, amended], "amend-fixture");
+  continueAuthority(
+    "continue-fixture",
+    {
       kind: "plan_amendment",
       previous_fingerprint: root.repository_fingerprint,
       changed_paths: [],
       added_scope_roots: [],
       evidence_digest: k.kernelDigest("native amendment observation"),
     },
-  };
-  continueAuthority(continued, "continue-fixture");
-  const write = async (dir: string, name: string, value: unknown) => {
-    await mkdir(dir, { recursive: true });
-    await writeFile(path.join(dir, name), JSON.stringify(value));
-  };
+    { plan_revision: state.current_plan!.revision, plan_digest: state.current_plan!.digest },
+  );
   let prerequisiteClaim = "prerequisite-claim";
   const transition = (
     action: "claim" | "begin" | "inspect" | "complete",
@@ -408,94 +403,50 @@ async function fixture(
     workItem = "prerequisite",
     claim = prerequisiteClaim,
   ) =>
-    apply({
-      ...input(
-        state,
-        {
-          ...transitionCommand(state, action),
-          work_item_id: workItem,
-          claim_id: claim,
-        },
-        mutation,
-      ),
-      authority: root,
-    });
+    issue(
+      { ...transitionCommand(state, action), work_item_id: workItem, claim_id: claim },
+      mutation,
+    );
   transition("claim");
   transition("begin");
-  let prerequisiteOrder = await nativeOrder(
-    makeKernelRecord(root.repository_identity, state, events, documents),
-    root,
-    "prerequisite",
-  );
+  let prerequisiteOrder = await nativeOrder(snapshot(), root, "prerequisite");
   let sourceDirectory = path.join(directory, prerequisiteOrder.work_order_id.slice(7));
   await write(sourceDirectory, "work-order.json", prerequisiteOrder);
-  if (sourceChange) {
-    const changed = {
-      ...root,
-      repository_fingerprint: k.kernelDigest("prerequisite source"),
-      provenance: {
-        ...root.provenance,
-        parent_authority_digest: root.digest,
-      },
-    };
-    changed.digest = k.authorityDigest(changed);
-    continueAuthority(
-      {
-        authority: changed,
-        approval_mode: null,
-        observation: {
-          kind: "repository_implementation",
-          previous_fingerprint: root.repository_fingerprint,
-          changed_paths: ["src/prerequisite.ts"],
-          evidence_digest: k.kernelDigest("source observation"),
-        },
-      },
-      "prerequisite-continuation",
-    );
-  }
+  continueAuthority(
+    "prerequisite-continuation",
+    {
+      kind: "repository_implementation",
+      previous_fingerprint: root.repository_fingerprint,
+      changed_paths: ["src/prerequisite.ts"],
+      evidence_digest: k.kernelDigest("source observation"),
+    },
+    { repository_fingerprint: k.kernelDigest("prerequisite source") },
+  );
   const blockedDirectory = sourceDirectory;
   const blockedOrder = prerequisiteOrder;
-  const blocked = {
-    ...input(
-      state,
-      {
-        ...transitionCommand(state, "block"),
-        work_item_id: "prerequisite",
-        claim_id: prerequisiteClaim,
-      },
-      `semantic-stop:${blockedOrder.work_order_id}`,
-    ),
-    authority: root,
-  };
+  const blocked = commandInput(
+    {
+      ...transitionCommand(state, "block"),
+      work_item_id: "prerequisite",
+      claim_id: prerequisiteClaim,
+    },
+    `semantic-stop:${blockedOrder.work_order_id}`,
+  );
   blocked.command.expected_state_fingerprint = root.repository_fingerprint;
   apply(blocked);
   const { aggregate: _blockedAggregate, ...blockCommand } = blocked;
   await write(blockedDirectory, "semantic-stop-command.json", blockCommand);
   if (postBlockObservation) {
     const before = structuredClone(state.work_items.prerequisite);
-    const observed = {
-      ...root,
-      repository_fingerprint: k.kernelDigest("post-block repository observation"),
-      provenance: {
-        ...root.provenance,
-        kind: "SYSTEM" as const,
-        actor_id: "agentplane:kernel-controller",
-        parent_authority_digest: root.digest,
-      },
-    };
-    observed.digest = k.authorityDigest(observed);
     continueAuthority(
-      {
-        authority: observed,
-        approval_mode: null,
-        observation: {
-          kind: "repository_implementation",
-          previous_fingerprint: root.repository_fingerprint,
-          changed_paths: ["shared/operator-observation.ts"],
-          evidence_digest: k.kernelDigest("native post-block observation"),
-        },
-      },
       "post-block-observation",
+      {
+        kind: "repository_implementation",
+        previous_fingerprint: root.repository_fingerprint,
+        changed_paths: ["shared/operator-observation.ts"],
+        evidence_digest: k.kernelDigest("native post-block observation"),
+      },
+      { repository_fingerprint: k.kernelDigest("post-block repository observation") },
     );
     expect(state.work_items.prerequisite).toEqual(before);
     expect(before).toMatchObject({ state: "BLOCKED", claim_id: prerequisiteClaim, attempt: 1 });
@@ -521,56 +472,22 @@ async function fixture(
   };
   documents.contracts[String(k.kernelDigest(refinedContract))] = refinedContract;
   prerequisite = { ...prerequisite, contract_digest: k.kernelDigest(refinedContract) };
-  const planTwo = state.current_plan!;
-  const secondAmendment = amendmentCommand(state, [prerequisite, amended]);
-  const secondApproval = k.planScopeExpansionApprovalDigest({
-    task_id: state.id,
-    current_plan_digest: planTwo.digest,
-    amended_plan_digest: secondAmendment.amended_plan.digest,
-    actor_id: "USER",
-  });
-  apply({
-    ...input(
-      state,
-      {
-        ...secondAmendment,
-        authority_delta_digest: secondApproval,
-        work_contracts: { ...documents.contracts },
-      },
-      "amend-prerequisite",
-    ),
-    authority: root,
-    actor: userActor,
-  });
-  const renewed = {
-    ...root,
-    plan_revision: state.current_plan!.revision,
-    plan_digest: state.current_plan!.digest,
-    provenance: { ...root.provenance, parent_authority_digest: root.digest },
-  };
-  renewed.digest = k.authorityDigest(renewed);
+  amend([prerequisite, amended], "amend-prerequisite");
   continueAuthority(
-    {
-      authority: renewed,
-      approval_mode: null,
-      observation: {
-        kind: "plan_amendment",
-        previous_fingerprint: root.repository_fingerprint,
-        changed_paths: [],
-        added_scope_roots: [],
-        evidence_digest: k.kernelDigest("native prerequisite amendment observation"),
-      },
-    },
     "continue-prerequisite-amendment",
+    {
+      kind: "plan_amendment",
+      previous_fingerprint: root.repository_fingerprint,
+      changed_paths: [],
+      added_scope_roots: [],
+      evidence_digest: k.kernelDigest("native prerequisite amendment observation"),
+    },
+    { plan_revision: state.current_plan!.revision, plan_digest: state.current_plan!.digest },
   );
   prerequisiteClaim = "prerequisite-retry-claim";
   transition("claim", "prerequisite-retry-claim");
   transition("begin", "prerequisite-retry-begin");
-  prerequisiteOrder = await nativeOrder(
-    makeKernelRecord(root.repository_identity, state, events, documents),
-    root,
-    "prerequisite",
-  );
+  prerequisiteOrder = await nativeOrder(snapshot(), root, "prerequisite");
   sourceDirectory = path.join(directory, prerequisiteOrder.work_order_id.slice(7));
   await write(sourceDirectory, "work-order.json", prerequisiteOrder);
   const semantic = {
@@ -583,35 +500,28 @@ async function fixture(
     findings: [],
     uncertainty: [],
   };
-  const result = {
-    ...input(
-      state,
-      {
-        kind: "accept_work_item_result",
-        task_id: state.id,
-        expected_task_revision: state.revision,
-        expected_state_fingerprint: root.repository_fingerprint,
-        work_item_id: "prerequisite",
-        plan_revision: state.current_plan!.revision,
-        plan_digest: state.current_plan!.digest,
-        result_digest: k.kernelDigest(semantic),
-        output_manifests: [
-          {
-            id: "prerequisite-source",
-            kind: "source",
-            digest: k.kernelDigest("source"),
-            task_id: state.id,
-            plan_revision: state.current_plan!.revision,
-            work_item_id: "prerequisite",
-            attempt: 2,
-            repository_fingerprint: root.repository_fingerprint,
-          },
-        ],
-      },
-      `result:${prerequisiteOrder.work_order_id}`,
-    ),
-    authority: root,
-  };
+  const result = commandInput(
+    {
+      kind: "accept_work_item_result",
+      work_item_id: "prerequisite",
+      plan_revision: state.current_plan!.revision,
+      plan_digest: state.current_plan!.digest,
+      result_digest: k.kernelDigest(semantic),
+      output_manifests: [
+        {
+          id: "prerequisite-source",
+          kind: "source",
+          digest: k.kernelDigest("source"),
+          task_id: state.id,
+          plan_revision: state.current_plan!.revision,
+          work_item_id: "prerequisite",
+          attempt: 2,
+          repository_fingerprint: root.repository_fingerprint,
+        },
+      ],
+    },
+    `result:${prerequisiteOrder.work_order_id}`,
+  );
   const {
     phase: _phase,
     repository_identity: _repository,
@@ -622,13 +532,13 @@ async function fixture(
     read: () =>
       Promise.resolve({
         kind: "canonical",
-        record: makeKernelRecord(root.repository_identity, state, events, documents),
+        record: snapshot(),
       }),
     execute: (value: KernelCommandInput) => {
       apply({ ...value, aggregate: state });
       return Promise.resolve({
         kind: "committed",
-        record: makeKernelRecord(root.repository_identity, state, events, documents),
+        record: snapshot(),
         receipts: [],
         replayed: false,
       });
@@ -649,14 +559,8 @@ async function fixture(
   inspection.authority.mutation_scope = "none";
   inspection.authority.writable_roots = [];
   inspection.state_fingerprint = await buildKernelStateFingerprint({
-    command: {
-      backendId: "local",
-      resolvedProject: { gitRoot: process.cwd() },
-      config: {
-        paths: { workflow_dir: ".agentplane/tasks", tasks_path: ".agentplane/tasks.json" },
-      },
-    } as never,
-    record: makeKernelRecord(root.repository_identity, state, events, documents),
+    command: nativeCommand(),
+    record: snapshot(),
     context: {
       repository_identity: root.repository_identity,
       repository_fingerprint: root.repository_fingerprint,
@@ -703,21 +607,10 @@ async function fixture(
     evidence_digests: [k.kernelDigest(native), k.kernelDigest(review)],
     observed_at: "2026-10-06T00:00:00.000Z",
   };
-  const validationInput = {
-    ...input(
-      state,
-      {
-        kind: "record_work_item_validation",
-        task_id: state.id,
-        expected_task_revision: state.revision,
-        expected_state_fingerprint: root.repository_fingerprint,
-        work_item_id: "prerequisite",
-        validation,
-      },
-      `validation:${inspection.work_order_id}`,
-    ),
-    authority: root,
-  };
+  const validationInput = commandInput(
+    { kind: "record_work_item_validation", work_item_id: "prerequisite", validation },
+    `validation:${inspection.work_order_id}`,
+  );
   apply(validationInput);
   await write(inspectionDirectory, "validation-command.json", validationInput);
   await write(inspectionDirectory, "inspection-result.json", review);
@@ -736,39 +629,29 @@ async function fixture(
   await write(sourceDirectory, `native-validation-${k.kernelDigest(native).slice(7)}.json`, native);
   transition("complete", `validation-resolution:${k.kernelDigest(validation)}`);
   for (const action of ["claim", "begin"] as const)
-    apply({
-      ...input(state, { ...transitionCommand(state, action), claim_id: "claim-2" }, action),
-      authority: root,
-    });
+    issue({ ...transitionCommand(state, action), claim_id: "claim-2" }, action);
   if (targetRetry) {
     for (const action of ["block", "resume", "claim", "begin"] as const) {
-      apply({
-        ...input(
-          state,
-          {
-            ...transitionCommand(state, action),
-            claim_id:
-              action === "block"
-                ? "claim-2"
-                : action === "resume"
-                  ? null
-                  : mixedScope
-                    ? k.kernelDigest("retry-claim")
-                    : "retry-claim",
-          },
-          `target-retry-${action}`,
-        ),
-        authority: root,
-      });
+      issue(
+        {
+          ...transitionCommand(state, action),
+          claim_id:
+            action === "block"
+              ? "claim-2"
+              : action === "resume"
+                ? null
+                : mixedScope
+                  ? k.kernelDigest("retry-claim")
+                  : "retry-claim",
+        },
+        `target-retry-${action}`,
+      );
     }
   }
   let retainedOrder = oldOrder;
   let retainedStop = stop;
   if (mixedScope) {
-    retainedOrder = await nativeOrder(
-      makeKernelRecord(root.repository_identity, state, events, documents),
-      root,
-    );
+    retainedOrder = await nativeOrder(snapshot(), root);
     const blockedResult = {
       schema_version: 2,
       kind: "agent_semantic_result",
@@ -807,70 +690,6 @@ async function fixture(
     await write(retainedDirectory, "received-result.json", blockedResult);
     const { aggregate: _prior, ...retainedCommand } = retainedStop;
     await write(retainedDirectory, "semantic-stop-command.json", retainedCommand);
-    function grantScope(id: string, prior: typeof retainedOrder, resultDigest: k.Sha256Digest) {
-      const request: k.ProspectiveScopeRequest = {
-        task_id: state.id,
-        record_digest: k.kernelDigest(state),
-        task_revision: state.revision,
-        plan_revision: state.current_plan!.revision,
-        plan_digest: state.current_plan!.digest,
-        work_item_id: id,
-        attempt: state.work_items[id]!.attempt,
-        claim_id: state.work_items[id]!.claim_id!,
-        contract_digest: state.work_items[id]!.definition.contract_digest!,
-        work_order_id: prior.work_order_id,
-        result_digest: resultDigest,
-        result_authentication: "native_stop_receipt",
-        stop_receipt_digest: k.kernelDigest(
-          state.mutation_receipts[String(`semantic-stop:${prior.work_order_id}`)],
-        ),
-        parent_authority_digest: root.digest,
-        repository_fingerprint: root.repository_fingerprint,
-        intake_before_digest: k.kernelDigest("before"),
-        intake_after_digest: k.kernelDigest("after"),
-        scope_roots: ["tests"],
-        repository_effects: [],
-      };
-      const evidence = k.prospectiveScopeApprovalEvidence(request, "USER");
-      const contents = {
-        ...root,
-        scope_roots: [...new Set([...root.scope_roots, "tests"])].toSorted(),
-        provenance: {
-          kind: "USER" as const,
-          actor_id: "USER",
-          evidence_digest: root.provenance.evidence_digest,
-          parent_authority_digest: root.digest,
-        },
-      };
-      const grant = {
-        authority: { ...contents, digest: k.authorityDigest(contents) },
-        approval_mode: "manual_operator" as const,
-        observation: {
-          kind: "prospective_scope_request" as const,
-          scope_request: request,
-          request_digest: k.kernelDigest(request),
-          evidence_digest: evidence,
-          previous_fingerprint: root.repository_fingerprint,
-          changed_paths: [],
-        },
-      };
-      apply({
-        ...input(
-          state,
-          {
-            kind: "approve_scope_request",
-            task_id: state.id,
-            expected_task_revision: state.revision,
-            expected_state_fingerprint: root.repository_fingerprint,
-            record: grant,
-          },
-          `scope-request:${k.kernelDigest(request)}`,
-        ),
-        actor: userActor,
-        authority: null,
-      });
-      root = grant.authority;
-    }
     function replacement(items: k.WorkItemDefinition[]) {
       const revision = state.current_plan!.revision + 1;
       const plan = {
@@ -881,21 +700,7 @@ async function fixture(
         approval_actor_id: null,
         approval_evidence_digest: null,
       };
-      apply({
-        ...input(
-          state,
-          {
-            kind: "propose_plan",
-            task_id: state.id,
-            expected_task_revision: state.revision,
-            expected_state_fingerprint: root.repository_fingerprint,
-            plan,
-          },
-          `plan:${plan.digest}`,
-        ),
-        actor: systemActor,
-        authority: root,
-      });
+      issue({ kind: "propose_plan", plan }, `plan:${plan.digest}`, systemActor);
       const contents = {
         ...root,
         plan_revision: revision,
@@ -920,86 +725,45 @@ async function fixture(
     replacement([prerequisite, target, other]);
     for (const action of ["claim", "begin"] as const)
       transition(action, `other-${action}`, "other", k.kernelDigest("other-claim"));
-    const otherOrder = await nativeOrder(
-      makeKernelRecord(root.repository_identity, state, events, documents),
-      root,
-      "other",
-    );
+    const otherOrder = await nativeOrder(snapshot(), root, "other");
     const otherResult = k.kernelDigest("other scope stop");
-    apply({
-      ...input(
-        state,
-        {
-          ...transitionCommand(state, "block"),
-          work_item_id: "other",
-          claim_id: k.kernelDigest("other-claim"),
-          semantic_result_digest: otherResult,
-        },
-        `semantic-stop:${otherOrder.work_order_id}`,
-      ),
-      authority: root,
-    });
+    issue(
+      {
+        ...transitionCommand(state, "block"),
+        work_item_id: "other",
+        claim_id: k.kernelDigest("other-claim"),
+        semantic_result_digest: otherResult,
+      },
+      `semantic-stop:${otherOrder.work_order_id}`,
+    );
     grantScope("other", otherOrder, otherResult);
     replacement([prerequisite, target, other]);
     other = { ...other, contract_digest: k.kernelDigest(nextContract) };
-    const previousPlan = state.current_plan!;
-    const next = amendmentCommand(state, [prerequisite, target, other]);
-    const evidence = k.planScopeExpansionApprovalDigest({
-      task_id: state.id,
-      current_plan_digest: previousPlan.digest,
-      amended_plan_digest: next.amended_plan.digest,
-      actor_id: "USER",
-    });
-    apply({
-      ...input(
-        state,
-        { ...next, authority_delta_digest: evidence, work_contracts: documents.contracts },
-        "mixed-amendment",
-      ),
-      actor: userActor,
-      authority: root,
-    });
-    const contents = {
-      ...root,
-      plan_revision: state.current_plan!.revision,
-      plan_digest: state.current_plan!.digest,
-      provenance: {
-        ...root.provenance,
-        kind: "SYSTEM" as const,
-        actor_id: "agentplane:kernel-controller",
-        parent_authority_digest: root.digest,
-      },
-    };
+    amend([prerequisite, target, other], "mixed-amendment");
     continueAuthority(
-      {
-        authority: { ...contents, digest: k.authorityDigest(contents) },
-        approval_mode: null,
-        observation: {
-          kind: "plan_amendment",
-          previous_fingerprint: root.repository_fingerprint,
-          changed_paths: [],
-          added_scope_roots: [],
-          evidence_digest: k.kernelDigest("mixed observation"),
-        },
-      },
       "mixed-continuation",
+      {
+        kind: "plan_amendment",
+        previous_fingerprint: root.repository_fingerprint,
+        changed_paths: [],
+        added_scope_roots: [],
+        evidence_digest: k.kernelDigest("mixed observation"),
+      },
+      { plan_revision: state.current_plan!.revision, plan_digest: state.current_plan!.digest },
     );
     for (const action of ["claim", "begin"] as const)
       transition(action, `mixed-target-${action}`, "kernel", "mixed-target-claim");
   }
-  const record = makeKernelRecord(root.repository_identity, state, events, documents);
+  const record = snapshot();
   const order = await nativeOrder(record, root);
   const { aggregate: _aggregate, ...stopCommand } = retainedStop;
   return {
     record,
     order,
+    target: path.join(directory, order.work_order_id.slice(7)),
     oldOrder: retainedOrder,
     stopCommand,
-    approval,
-    source: sourceDirectory,
-    inspectionDirectory,
     blockedDirectory,
-    secondApproval,
   };
 }
 
@@ -1014,157 +778,121 @@ describe("authenticated multi-Plan prerequisite lineage", () => {
     "claim",
     "authority",
   ])("admits retained scope stops through genuine mixed history: %s", async (kind) => {
-    const directory = await mkdtemp(path.join(os.tmpdir(), "kernel-mixed-scope-"));
-    try {
-      const { record, order, oldOrder } = await fixture(directory, true, false, false, true);
-      const event = record.events.find((entry) => entry.mutation_id.startsWith("mixed-approval-"))!;
-      if (kind === "approval-event") event.payload_digest = k.kernelDigest("tampered");
-      if (kind === "approval-receipt")
-        record.aggregate.mutation_receipts[event.mutation_id]!.command_digest =
-          k.kernelDigest("tampered");
-      if (kind === "unapproved")
-        record.aggregate.plan_history.find(
-          (plan) => plan.revision === 4,
-        )!.approval_evidence_digest = null;
-      if (kind === "amendment")
-        record.events.find((entry) => entry.mutation_id === "mixed-amendment")!.command_digest =
-          k.kernelDigest("tampered");
-      if (kind === "wrong-task") order.canonical_binding!.task_id = "other-task";
-      if (kind === "claim") order.canonical_binding!.claim_id = "other-claim";
-      if (kind === "authority")
-        record.aggregate.authority_lineage.at(-1)!.authority.provenance.parent_authority_digest =
-          k.kernelDigest("other");
-      const operation = withKernelReworkEvidence(
-        order,
-        path.join(directory, order.work_order_id.slice(7)),
-        record,
+    const directory = await createDirectory("kernel-mixed-scope-");
+    const { record, order, oldOrder, target } = await fixture(directory, true, false, false, true);
+    const event = record.events.find((entry) => entry.mutation_id.startsWith("mixed-approval-"))!;
+    if (kind === "approval-event") event.payload_digest = k.kernelDigest("tampered");
+    if (kind === "approval-receipt")
+      record.aggregate.mutation_receipts[event.mutation_id]!.command_digest =
+        k.kernelDigest("tampered");
+    if (kind === "unapproved")
+      record.aggregate.plan_history.find((plan) => plan.revision === 4)!.approval_evidence_digest =
+        null;
+    if (kind === "amendment")
+      record.events.find((entry) => entry.mutation_id === "mixed-amendment")!.command_digest =
+        k.kernelDigest("tampered");
+    if (kind === "wrong-task") order.canonical_binding!.task_id = "other-task";
+    if (kind === "claim") order.canonical_binding!.claim_id = "other-claim";
+    if (kind === "authority")
+      record.aggregate.authority_lineage.at(-1)!.authority.provenance.parent_authority_digest =
+        k.kernelDigest("other");
+    const operation = withKernelReworkEvidence(order, target, record);
+    if (kind === "valid") {
+      const enriched = await operation;
+      expect(enriched.required_inputs).toContainEqual(
+        expect.objectContaining({ id: `scope-stop:${oldOrder.work_order_id}` }),
       );
-      if (kind === "valid") {
-        const enriched = await operation;
-        expect(enriched.required_inputs).toEqual(
-          expect.arrayContaining([
-            expect.objectContaining({ id: `scope-stop:${oldOrder.work_order_id}` }),
-          ]),
-        );
-        const context: unknown = JSON.parse(
-          await readFile(
-            enriched.required_inputs.find((item) => item.id === "approved-scope-replan")!.path!,
-            "utf8",
-          ),
-        );
-        expect(context).toMatchObject({
-          grants_authority: false,
-          approval_events: [expect.anything(), expect.anything()],
-          amendment_events: [expect.anything()],
-        });
-      } else await expect(operation).rejects.toThrow();
-    } finally {
-      await rm(directory, { recursive: true, force: true });
-    }
+      const context: unknown = JSON.parse(
+        await readFile(
+          enriched.required_inputs.find((item) => item.id === "approved-scope-replan")!.path!,
+          "utf8",
+        ),
+      );
+      expect(context).toMatchObject({
+        grants_authority: false,
+        approval_events: [expect.anything(), expect.anything()],
+        amendment_events: [expect.anything()],
+      });
+    } else await expect(operation).rejects.toThrow();
   });
 
   it.each(["valid", "missing", "tampered", "ambiguous", "stale"])(
     "authenticates a fresh approval after an older scope grant: %s",
     async (kind) => {
-      const directory = await mkdtemp(path.join(os.tmpdir(), "kernel-fresh-seed-"));
-      try {
-        const { record, oldOrder } = await fixture(directory, false, false, true);
-        const approval = record.events.find((event) => event.mutation_id === "fresh-approval")!;
-        const oldGrant = record.events.find((event) => event.kind === "authority_continued")!;
-        expect(oldGrant.task_revision).toBeLessThan(approval.task_revision);
-        expect(approval.task_revision).toBeLessThanOrEqual(oldOrder.task.revision!);
-        expect(record.aggregate.current_plan!.revision).toBe(4);
-        expect(record.aggregate.work_items.prerequisite).toMatchObject({
-          state: "COMPLETED",
-          attempt: 2,
-        });
-        if (kind === "missing") record.events = record.events.filter((event) => event !== approval);
-        if (kind === "tampered")
-          record.aggregate.mutation_receipts[approval.mutation_id]!.before_revision--;
-        if (kind === "ambiguous") record.events.push(structuredClone(approval));
-        const retained = structuredClone(oldOrder);
-        if (kind === "stale") retained.task.revision = record.aggregate.revision;
-        expect(retainedIssuanceAuthority(record, retained)).toBe(kind === "valid");
-      } finally {
-        await rm(directory, { recursive: true, force: true });
-      }
+      const directory = await createDirectory("kernel-fresh-seed-");
+      const { record, oldOrder } = await fixture(directory, false, false, true);
+      const approval = record.events.find((event) => event.mutation_id === "fresh-approval")!;
+      const oldGrant = record.events.find((event) => event.kind === "authority_continued")!;
+      expect(oldGrant.task_revision).toBeLessThan(approval.task_revision);
+      expect(approval.task_revision).toBeLessThanOrEqual(oldOrder.task.revision!);
+      expect(record.aggregate.current_plan!.revision).toBe(4);
+      expect(record.aggregate.work_items.prerequisite).toMatchObject({
+        state: "COMPLETED",
+        attempt: 2,
+      });
+      if (kind === "missing") record.events = record.events.filter((event) => event !== approval);
+      if (kind === "tampered")
+        record.aggregate.mutation_receipts[approval.mutation_id]!.before_revision--;
+      if (kind === "ambiguous") record.events.push(structuredClone(approval));
+      const retained = structuredClone(oldOrder);
+      if (kind === "stale") retained.task.revision = record.aggregate.revision;
+      expect(retainedIssuanceAuthority(record, retained)).toBe(kind === "valid");
     },
   );
 
   it.each([
     "valid",
-    "wrong-plan",
-    "wrong-parent",
-    "wrong-fingerprint",
-    "wrong-receipt",
+    ...["plan", "parent", "fingerprint", "receipt"].map((field) => `wrong-${field}`),
     "outside-scope",
     "retry-without-amendment",
   ])("authenticates post-BLOCKED canonical repository observation: %s", async (kind) => {
-    const directory = await mkdtemp(path.join(os.tmpdir(), "kernel-observation-"));
-    try {
-      const { record, order } = await fixture(directory, false, true);
-      const event = record.events.find((e) => e.mutation_id === "post-block-observation")!;
-      const entry = record.aggregate.authority_lineage.find(
-        (e) =>
-          e.authority.repository_fingerprint ===
-          k.kernelDigest("post-block repository observation"),
-      )!;
-      if (kind === "wrong-plan") entry.authority.plan_digest = k.kernelDigest("wrong Plan");
-      if (kind === "wrong-parent")
-        entry.authority.provenance.parent_authority_digest = k.kernelDigest("wrong parent");
-      if (kind === "wrong-fingerprint" && entry.observation)
-        entry.observation.previous_fingerprint = k.kernelDigest("wrong fingerprint");
-      if (kind === "wrong-receipt")
-        record.aggregate.mutation_receipts[event.mutation_id]!.event_digests = [];
-      if (kind === "outside-scope" && entry.observation)
-        entry.observation.changed_paths = ["outside/unauthorized.ts"];
-      if (kind === "retry-without-amendment") {
-        record.events = record.events.filter((e) => e.mutation_id !== "amend-prerequisite");
-      }
-      const origin = record.events.find((e) => e.kind === "plan_amended")!;
-      expect(
-        await authenticatedAmendmentHistory(
-          order,
-          path.join(directory, order.work_order_id.slice(7)),
-          record,
-          origin,
-        ),
-      ).toBe(kind === "valid");
-    } finally {
-      await rm(directory, { recursive: true, force: true });
+    const directory = await createDirectory("kernel-observation-");
+    const { record, order, target } = await fixture(directory, false, true);
+    const event = record.events.find((e) => e.mutation_id === "post-block-observation")!;
+    const entry = record.aggregate.authority_lineage.find(
+      (e) =>
+        e.authority.repository_fingerprint === k.kernelDigest("post-block repository observation"),
+    )!;
+    if (kind === "wrong-plan") entry.authority.plan_digest = k.kernelDigest("wrong Plan");
+    if (kind === "wrong-parent")
+      entry.authority.provenance.parent_authority_digest = k.kernelDigest("wrong parent");
+    if (kind === "wrong-fingerprint" && entry.observation)
+      entry.observation.previous_fingerprint = k.kernelDigest("wrong fingerprint");
+    if (kind === "wrong-receipt")
+      record.aggregate.mutation_receipts[event.mutation_id]!.event_digests = [];
+    if (kind === "outside-scope" && entry.observation)
+      entry.observation.changed_paths = ["outside/unauthorized.ts"];
+    if (kind === "retry-without-amendment") {
+      record.events = record.events.filter((e) => e.mutation_id !== "amend-prerequisite");
     }
+    const origin = record.events.find((e) => e.kind === "plan_amended")!;
+    expect(await authenticatedAmendmentHistory(order, target, record, origin)).toBe(
+      kind === "valid",
+    );
   });
 
   it("retains the originating target stop through a prerequisite-only amendment and genuine retry", async () => {
-    const directory = await mkdtemp(path.join(os.tmpdir(), "kernel-lineage-"));
-    try {
-      const { record, order, oldOrder, stopCommand } = await fixture(directory);
-      const origin = record.events.find((event) => event.kind === "plan_amended")!;
-      const target = path.join(directory, order.work_order_id.slice(7));
-      expect(record.aggregate.current_plan!.revision).toBe(3);
-      expect(record.aggregate.work_items.prerequisite).toMatchObject({
-        state: "COMPLETED",
-        attempt: 2,
-      });
-      expect(record.aggregate.work_items.kernel).toMatchObject({ state: "EXECUTING", attempt: 3 });
-      expect(record.events.filter((event) => event.kind === "plan_amended")).toHaveLength(2);
-      expect(await authenticatedAmendmentHistory(order, target, record, origin)).toBe(true);
-      const prior = path.join(directory, oldOrder.work_order_id.slice(7));
-      await mkdir(prior, { recursive: true });
-      await writeFile(path.join(prior, "work-order.json"), JSON.stringify(oldOrder));
-      await writeFile(path.join(prior, "semantic-stop-command.json"), JSON.stringify(stopCommand));
-      const enriched = await withKernelReworkEvidence(order, target, record);
-      expect(enriched.required_inputs).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            id: `previous-definition:${oldOrder.work_order_id}`,
-            required: true,
-          }),
-        ]),
-      );
-    } finally {
-      await rm(directory, { recursive: true, force: true });
-    }
+    const directory = await createDirectory("kernel-lineage-");
+    const { record, order, oldOrder, stopCommand, target } = await fixture(directory);
+    const origin = record.events.find((event) => event.kind === "plan_amended")!;
+    expect(record.aggregate.current_plan!.revision).toBe(3);
+    expect(record.aggregate.work_items.prerequisite).toMatchObject({
+      state: "COMPLETED",
+      attempt: 2,
+    });
+    expect(record.aggregate.work_items.kernel).toMatchObject({ state: "EXECUTING", attempt: 3 });
+    expect(record.events.filter((event) => event.kind === "plan_amended")).toHaveLength(2);
+    expect(await authenticatedAmendmentHistory(order, target, record, origin)).toBe(true);
+    const prior = path.join(directory, oldOrder.work_order_id.slice(7));
+    await write(prior, "work-order.json", oldOrder);
+    await write(prior, "semantic-stop-command.json", stopCommand);
+    const enriched = await withKernelReworkEvidence(order, target, record);
+    expect(enriched.required_inputs).toContainEqual(
+      expect.objectContaining({
+        id: `previous-definition:${oldOrder.work_order_id}`,
+        required: true,
+      }),
+    );
   });
 
   it.each([
@@ -1174,121 +902,94 @@ describe("authenticated multi-Plan prerequisite lineage", () => {
     "continuation-event",
     "continuation-receipt",
   ])("rejects original target %s tampering at complete rework admission", async (kind) => {
-    const directory = await mkdtemp(path.join(os.tmpdir(), "kernel-lineage-origin-"));
-    try {
-      const { record, order, oldOrder, stopCommand } = await fixture(directory);
-      const prior = path.join(directory, oldOrder.work_order_id.slice(7));
-      await mkdir(prior, { recursive: true });
-      const stop = record.events.find(
-        (event) => event.mutation_id === `semantic-stop:${oldOrder.work_order_id}`,
-      )!;
-      const continuation = record.events.find(
-        (event) => event.mutation_id === "pre-stop-continuation",
-      )!;
-      if (kind === "authority")
-        oldOrder.canonical_binding!.authority_digest = k.kernelDigest("unissued");
-      if (kind === "missing-stop-event") record.events.splice(record.events.indexOf(stop), 1);
-      if (kind === "stop-event") stop.payload_digest = k.kernelDigest("tampered");
-      if (kind === "continuation-event") continuation.payload_digest = k.kernelDigest("tampered");
-      if (kind === "continuation-receipt")
-        record.aggregate.mutation_receipts[continuation.mutation_id]!.event_digests = [];
-      await writeFile(path.join(prior, "work-order.json"), JSON.stringify(oldOrder));
-      await writeFile(path.join(prior, "semantic-stop-command.json"), JSON.stringify(stopCommand));
-      await expect(
-        withKernelReworkEvidence(order, path.join(directory, order.work_order_id.slice(7)), record),
-      ).rejects.toThrow();
-    } finally {
-      await rm(directory, { recursive: true, force: true });
-    }
+    const directory = await createDirectory("kernel-lineage-origin-");
+    const { record, order, oldOrder, stopCommand, target } = await fixture(directory);
+    const prior = path.join(directory, oldOrder.work_order_id.slice(7));
+    const stop = record.events.find(
+      (event) => event.mutation_id === `semantic-stop:${oldOrder.work_order_id}`,
+    )!;
+    const continuation = record.events.find(
+      (event) => event.mutation_id === "pre-stop-continuation",
+    )!;
+    if (kind === "authority")
+      oldOrder.canonical_binding!.authority_digest = k.kernelDigest("unissued");
+    if (kind === "missing-stop-event") record.events.splice(record.events.indexOf(stop), 1);
+    if (kind === "stop-event") stop.payload_digest = k.kernelDigest("tampered");
+    if (kind === "continuation-event") continuation.payload_digest = k.kernelDigest("tampered");
+    if (kind === "continuation-receipt")
+      record.aggregate.mutation_receipts[continuation.mutation_id]!.event_digests = [];
+    await write(prior, "work-order.json", oldOrder);
+    await write(prior, "semantic-stop-command.json", stopCommand);
+    await expect(withKernelReworkEvidence(order, target, record)).rejects.toThrow();
   });
 
   it.each([
-    "missing-contract",
-    "tampered-contract",
-    "unknown-contract",
-    "missing-block",
-    "tampered-block",
+    ...["missing", "tampered", "unknown"].map((kind) => `${kind}-contract`),
+    ...["missing", "tampered"].map((kind) => `${kind}-block`),
     "missing-block-order",
-    "wrong-block-claim",
-    "wrong-block-attempt",
-    "wrong-block-plan",
-    "wrong-block-authority",
-    "amendment-receipt",
-    "amendment-event",
-    "missing-event",
-    "unknown-event",
-    "unrelated-event",
+    ...["claim", "attempt", "plan", "authority"].map((field) => `wrong-block-${field}`),
+    ...["receipt", "event"].map((kind) => `amendment-${kind}`),
+    ...["missing", "unknown", "unrelated"].map((kind) => `${kind}-event`),
     "target-changing-suffix",
     "unauthorized-amendment",
     "cycle",
     "target-retry",
   ])("rejects %s without accepting historical evidence", async (kind) => {
-    const directory = await mkdtemp(path.join(os.tmpdir(), "kernel-lineage-"));
-    try {
-      const { record, order, blockedDirectory } = await fixture(directory, kind === "target-retry");
-      const amendments = record.events.filter((event) => event.kind === "plan_amended");
-      const origin = amendments[0]!;
-      const latest = amendments[1]!;
-      const oldContract = record.aggregate.plan_history[0]!.work_items[0]!.contract_digest;
-      if (kind === "missing-contract") delete record.documents.contracts[String(oldContract)];
-      if (kind === "tampered-contract")
-        record.documents.contracts[String(oldContract)]!.objective = "tampered";
-      if (kind === "unknown-contract")
-        record.aggregate.plan_history[0]!.work_items[0]!.contract_digest =
-          k.kernelDigest("unknown");
-      if (kind === "missing-block")
-        await rm(path.join(blockedDirectory, "semantic-stop-command.json"));
-      if (kind === "tampered-block")
-        await writeFile(path.join(blockedDirectory, "semantic-stop-command.json"), "{}");
-      if (kind === "missing-block-order") await rm(path.join(blockedDirectory, "work-order.json"));
-      if (kind.startsWith("wrong-block-")) {
-        const retained = JSON.parse(
-          await readFile(path.join(blockedDirectory, "work-order.json"), "utf8"),
-        ) as { canonical_binding: Record<string, unknown> };
-        const field = kind.slice("wrong-block-".length);
-        const key =
-          field === "plan"
-            ? "plan_digest"
-            : field === "authority"
-              ? "authority_digest"
-              : field === "claim"
-                ? "claim_id"
-                : "attempt";
-        retained.canonical_binding[key] = field === "attempt" ? 99 : k.kernelDigest("wrong");
-        await writeFile(path.join(blockedDirectory, "work-order.json"), JSON.stringify(retained));
-      }
-      if (kind === "amendment-receipt")
-        record.aggregate.mutation_receipts[latest.mutation_id]!.command_digest =
-          k.kernelDigest("wrong");
-      if (kind === "amendment-event") latest.payload_digest = k.kernelDigest("wrong");
-      if (kind === "missing-event") record.events.splice(record.events.indexOf(latest), 1);
-      if (kind === "unknown-event") latest.kind = "final_validation_recorded";
-      if (kind === "unrelated-event")
-        record.events.find(
-          (event) =>
-            event.mutation_id.startsWith("semantic-stop:") &&
-            event.task_revision > origin.task_revision,
-        )!.task_id = "unrelated";
-      if (kind === "target-changing-suffix")
-        record.aggregate.current_plan!.work_items.find(
-          (item) => item.id === "kernel",
-        )!.expected_outputs = ["unapproved"];
-      if (kind === "unauthorized-amendment")
-        record.aggregate.current_plan!.approval_actor_id = "AGENT";
-      if (kind === "cycle")
-        record.aggregate.current_plan!.work_items.find(
-          (item) => item.id === "prerequisite",
-        )!.depends_on = ["kernel"];
-      expect(
-        await authenticatedAmendmentHistory(
-          order,
-          path.join(directory, order.work_order_id.slice(7)),
-          record,
-          origin,
-        ),
-      ).toBe(false);
-    } finally {
-      await rm(directory, { recursive: true, force: true });
+    const directory = await createDirectory("kernel-lineage-");
+    const { record, order, blockedDirectory, target } = await fixture(
+      directory,
+      kind === "target-retry",
+    );
+    const amendments = record.events.filter((event) => event.kind === "plan_amended");
+    const origin = amendments[0]!;
+    const latest = amendments[1]!;
+    const oldContract = record.aggregate.plan_history[0]!.work_items[0]!.contract_digest;
+    if (kind === "missing-contract") delete record.documents.contracts[String(oldContract)];
+    if (kind === "tampered-contract")
+      record.documents.contracts[String(oldContract)]!.objective = "tampered";
+    if (kind === "unknown-contract")
+      record.aggregate.plan_history[0]!.work_items[0]!.contract_digest = k.kernelDigest("unknown");
+    if (kind === "missing-block")
+      await rm(path.join(blockedDirectory, "semantic-stop-command.json"));
+    if (kind === "tampered-block")
+      await writeFile(path.join(blockedDirectory, "semantic-stop-command.json"), "{}");
+    if (kind === "missing-block-order") await rm(path.join(blockedDirectory, "work-order.json"));
+    if (kind.startsWith("wrong-block-")) {
+      const retained = JSON.parse(
+        await readFile(path.join(blockedDirectory, "work-order.json"), "utf8"),
+      ) as { canonical_binding: Record<string, unknown> };
+      const field = kind.slice("wrong-block-".length);
+      const bindingKeys: Record<string, string> = {
+        plan: "plan_digest",
+        authority: "authority_digest",
+        claim: "claim_id",
+      };
+      const key = bindingKeys[field] ?? "attempt";
+      retained.canonical_binding[key] = field === "attempt" ? 99 : k.kernelDigest("wrong");
+      await writeFile(path.join(blockedDirectory, "work-order.json"), JSON.stringify(retained));
     }
+    if (kind === "amendment-receipt")
+      record.aggregate.mutation_receipts[latest.mutation_id]!.command_digest =
+        k.kernelDigest("wrong");
+    if (kind === "amendment-event") latest.payload_digest = k.kernelDigest("wrong");
+    if (kind === "missing-event") record.events.splice(record.events.indexOf(latest), 1);
+    if (kind === "unknown-event") latest.kind = "final_validation_recorded";
+    if (kind === "unrelated-event")
+      record.events.find(
+        (event) =>
+          event.mutation_id.startsWith("semantic-stop:") &&
+          event.task_revision > origin.task_revision,
+      )!.task_id = "unrelated";
+    if (kind === "target-changing-suffix")
+      record.aggregate.current_plan!.work_items.find(
+        (item) => item.id === "kernel",
+      )!.expected_outputs = ["unapproved"];
+    if (kind === "unauthorized-amendment")
+      record.aggregate.current_plan!.approval_actor_id = "AGENT";
+    if (kind === "cycle")
+      record.aggregate.current_plan!.work_items.find(
+        (item) => item.id === "prerequisite",
+      )!.depends_on = ["kernel"];
+    expect(await authenticatedAmendmentHistory(order, target, record, origin)).toBe(false);
   });
 });

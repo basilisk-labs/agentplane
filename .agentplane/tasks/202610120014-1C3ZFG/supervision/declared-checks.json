@@ -3,11 +3,11 @@
     {
       "check_ids": [],
       "command": "bun run test:project agentplane packages/agentplane/src/commands/guard/impl/commands.commit-non-close.unit.test.ts packages/agentplane/src/commands/pr/internal/provider-base.test.ts packages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts packages/agentplane/src/runner/process-supervision.test.ts packages/agentplane/src/runner/process-supervision/timeout-controller.test.ts packages/agentplane/src/runner/process-supervision/process-tree.test.ts packages/agentplane/src/runner/process-supervision/termination-arbitration.test.ts",
-      "duration_ms": 10868,
+      "duration_ms": 10952,
       "exit_code": 0,
       "observation": {
-        "digest": "sha256:661ecf1bed89aff48ab42ef8edc2cfd14110cfec386d73573def7a72cd6e966a",
-        "manifest_path": "/Users/densmirnov/.codex/visualizations/2026/10/10/01a123dc-e17e-7503-9026-a0aab475e8a3/ap-report-only-runtime/component-delivery/canonical-ap-nine-integration-primary/.agentplane/worktrees/202610120014-1C3ZFG-integrate-reviewed-xtx-m2-and-s8-nine-path-corre/.agentplane/tasks/202610120014-1C3ZFG/supervision/verification-runs/run-022/manifest.json",
+        "digest": "sha256:bfd64dc7205b902eeddf670a399cf932d5471474010ae5127541c86310b1b022",
+        "manifest_path": "/Users/densmirnov/.codex/visualizations/2026/10/10/01a123dc-e17e-7503-9026-a0aab475e8a3/ap-report-only-runtime/component-delivery/canonical-ap-nine-integration-primary/.agentplane/worktrees/202610120014-1C3ZFG-integrate-reviewed-xtx-m2-and-s8-nine-path-corre/.agentplane/tasks/202610120014-1C3ZFG/supervision/verification-runs/run-026/manifest.json",
         "status": "retained"
       },
       "runtime": {
@@ -19,16 +19,16 @@
       },
       "script": "test:project",
       "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/guard/impl/commands.commit-non-close.unit.test.ts packages/agentplane/src/commands/pr/internal/provider-base.test.ts packages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts packages/agentplane/src/runner/process-supervision.test.ts packages/agentplane/src/runner/process-supervision/timeout-controller.test.ts packages/agentplane/src/runner/process-supervision/process-tree.test.ts packages/agentplane/src/runner/process-supervision/termination-arbitration.test.ts\n",
-      "stdout_tail": "\n RUN  v5.0.2 <repo>\n\n\n Test Files  7 passed (7)\n      Tests  54 passed (54)\n   Start at  06:02:24\n   Duration  10.10s (tests 68%, transform 23%, import 8%)\n\n"
+      "stdout_tail": "\n RUN  v5.0.2 <repo>\n\n\n Test Files  7 passed (7)\n      Tests  54 passed (54)\n   Start at  07:55:08\n   Duration  10.15s (tests 65%, transform 24%, import 10%, setup 1%)\n\n"
     },
     {
       "check_ids": [],
       "command": "bun run test:project cli-core packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.validation.test.ts",
-      "duration_ms": 7878,
+      "duration_ms": 6588,
       "exit_code": 0,
       "observation": {
-        "digest": "sha256:35daa4c92ddce8e1b91c29f0906e39e638c44f2a6abacbe08ce9bfba09b57927",
-        "manifest_path": "/Users/densmirnov/.codex/visualizations/2026/10/10/01a123dc-e17e-7503-9026-a0aab475e8a3/ap-report-only-runtime/component-delivery/canonical-ap-nine-integration-primary/.agentplane/worktrees/202610120014-1C3ZFG-integrate-reviewed-xtx-m2-and-s8-nine-path-corre/.agentplane/tasks/202610120014-1C3ZFG/supervision/verification-runs/run-023/manifest.json",
+        "digest": "sha256:68d0d6e7ed6c2823bf0e34b0d0e4d9364b304e019f46f2d2a0039265b5f89b82",
+        "manifest_path": "/Users/densmirnov/.codex/visualizations/2026/10/10/01a123dc-e17e-7503-9026-a0aab475e8a3/ap-report-only-runtime/component-delivery/canonical-ap-nine-integration-primary/.agentplane/worktrees/202610120014-1C3ZFG-integrate-reviewed-xtx-m2-and-s8-nine-path-corre/.agentplane/tasks/202610120014-1C3ZFG/supervision/verification-runs/run-027/manifest.json",
         "status": "retained"
       },
       "runtime": {
@@ -40,16 +40,16 @@
       },
       "script": "test:project",
       "stderr_tail": "$ vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.validation.test.ts\n",
-      "stdout_tail": "\n RUN  v5.0.2 <repo>\n\n\n Test Files  1 passed (1)\n      Tests  14 passed (14)\n   Start at  06:02:35\n   Duration  7.24s (tests 80%, transform 15%, import 4%)\n\n"
+      "stdout_tail": "\n RUN  v5.0.2 <repo>\n\n\n Test Files  1 passed (1)\n      Tests  14 passed (14)\n   Start at  07:55:19\n   Duration  5.94s (tests 73%, transform 22%, import 5%)\n\n"
     },
     {
       "check_ids": [],
       "command": "bun run typecheck",
-      "duration_ms": 372,
+      "duration_ms": 358,
       "exit_code": 0,
       "observation": {
-        "digest": "sha256:b391ecccfc27aa5c786a0d384fb2af60e7545dcb5badc50cf0ecf465d652c4b5",
-        "manifest_path": "/Users/densmirnov/.codex/visualizations/2026/10/10/01a123dc-e17e-7503-9026-a0aab475e8a3/ap-report-only-runtime/component-delivery/canonical-ap-nine-integration-primary/.agentplane/worktrees/202610120014-1C3ZFG-integrate-reviewed-xtx-m2-and-s8-nine-path-corre/.agentplane/tasks/202610120014-1C3ZFG/supervision/verification-runs/run-024/manifest.json",
+        "digest": "sha256:29d6871511a7039910125fa3ec8faee2db0add7bc756d38a54fc140ebc26b127",
+        "manifest_path": "/Users/densmirnov/.codex/visualizations/2026/10/10/01a123dc-e17e-7503-9026-a0aab475e8a3/ap-report-only-runtime/component-delivery/canonical-ap-nine-integration-primary/.agentplane/worktrees/202610120014-1C3ZFG-integrate-reviewed-xtx-m2-and-s8-nine-path-corre/.agentplane/tasks/202610120014-1C3ZFG/supervision/verification-runs/run-028/manifest.json",
         "status": "retained"
       },
       "runtime": {
@@ -66,11 +66,11 @@
     {
       "check_ids": [],
       "command": "bun run test:project agentplane packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/task/kernel-rework-lineage.test.ts",
-      "duration_ms": 4009,
+      "duration_ms": 4924,
       "exit_code": 0,
       "observation": {
-        "digest": "sha256:0285601c02b79f7f5523b8f2f3afbff78ea838bf740d68daeba4d4ce104bc287",
-        "manifest_path": "/Users/densmirnov/.codex/visualizations/2026/10/10/01a123dc-e17e-7503-9026-a0aab475e8a3/ap-report-only-runtime/component-delivery/canonical-ap-nine-integration-primary/.agentplane/worktrees/202610120014-1C3ZFG-integrate-reviewed-xtx-m2-and-s8-nine-path-corre/.agentplane/tasks/202610120014-1C3ZFG/supervision/verification-runs/run-025/manifest.json",
+        "digest": "sha256:e1ec6d9b9cbca9d8aaacac05288f42b0654af52e9e277730f12cfe351b6d6d76",
+        "manifest_path": "/Users/densmirnov/.codex/visualizations/2026/10/10/01a123dc-e17e-7503-9026-a0aab475e8a3/ap-report-only-runtime/component-delivery/canonical-ap-nine-integration-primary/.agentplane/worktrees/202610120014-1C3ZFG-integrate-reviewed-xtx-m2-and-s8-nine-path-corre/.agentplane/tasks/202610120014-1C3ZFG/supervision/verification-runs/run-029/manifest.json",
         "status": "retained"
       },
       "runtime": {
@@ -82,7 +82,7 @@
       },
       "script": "test:project",
       "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/task/kernel-rework-lineage.test.ts\n",
-      "stdout_tail": "\n RUN  v5.0.2 <repo>\n\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\n\n Test Files  2 passed (2)\n      Tests  94 passed (94)\n   Start at  06:02:43\n   Duration  3.39s (tests 52%, transform 37%, import 11%)\n\n"
+      "stdout_tail": "\n RUN  v5.0.2 <repo>\n\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\n\n Test Files  2 passed (2)\n      Tests  102 passed (102)\n   Start at  07:55:26\n   Duration  4.26s (tests 55%, transform 35%, import 10%)\n\n  Transform  |agentplane| transforming modules took 2.12s · 35% of tracked time, re-done on every run\n             persist transforms across runs with fsModuleCache: true\n             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns\n\n"
     }
   ],
   "kind": "direct_task_declared_checks",
