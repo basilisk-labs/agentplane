@@ -64,6 +64,7 @@ function requiresIsolatedQualificationCheckout(
     );
   const invokesQualificationScript = parsedSequence.some(
     ({ script }) =>
+      script === "ci:local:full" ||
       script === "qualification:gate" ||
       (script !== null && /^e2e:v\d+\.\d+\.\d+(?:-[^:]+)?:gate$/u.test(script)),
   );

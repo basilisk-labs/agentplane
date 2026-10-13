@@ -13,7 +13,7 @@ Created: 2026-10-12T15:29:25.183Z
 ## Verification
 
 - State: ok
-- Note: Canonical validation sha256:1852371885ab3272ccd7f1a9471cdc2ac7ca5930105ea4a607ddab61ba479807
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -34,6 +34,8 @@ Created: 2026-10-12T15:29:25.183Z
  .../src/commands/guard/impl/commit-refresh.ts      |    3 +-
  .../agentplane/src/commands/guard/impl/commit.ts   |    1 +
  packages/agentplane/src/commands/pr/open.ts        |   24 +
+ .../direct-task-verification.qualification.test.ts |  102 +-
+ .../src/commands/task/direct-task-verification.ts  |    1 +
  .../src/commands/task/kernel-exchange.test.ts      |   27 +-
  .../src/commands/task/kernel-exchange.ts           |    2 +
  .../commands/task/kernel-recovery-evidence.test.ts | 1116 ++++++++++++------
@@ -51,7 +53,7 @@ Created: 2026-10-12T15:29:25.183Z
  packages/core/src/tasks/task-kernel/kernel.ts      |   28 +-
  .../tasks/task-kernel/replan-work-items.test.ts    |  479 ++++++++
  .../src/tasks/task-kernel/replan-work-items.ts     |  300 +++++
- 22 files changed, 3860 insertions(+), 1110 deletions(-)
+ 24 files changed, 3949 insertions(+), 1124 deletions(-)
 ```
 
 </details>

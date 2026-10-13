@@ -1,6 +1,6 @@
 import * as processRunner from "@agentplaneorg/core/process";
 import { execFile } from "node:child_process";
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -18,7 +18,8 @@ async function repository(nodeModulesConflict = false) {
   await execFileAsync("git", ["config", "user.name", "AgentPlane Test"], { cwd: root });
   await execFileAsync("git", ["config", "user.email", "test@example.com"], { cwd: root });
   await writeFile(path.join(root, "README.md"), "fixture\n", "utf8");
-  await execFileAsync("git", ["add", "README.md"], { cwd: root });
+  await writeFile(path.join(root, ".gitignore"), "node_modules\n", "utf8");
+  await execFileAsync("git", ["add", "README.md", ".gitignore"], { cwd: root });
   if (nodeModulesConflict) {
     await writeFile(path.join(root, "node_modules"), "tracked conflict\n", "utf8");
     await execFileAsync("git", ["add", "-f", "node_modules"], { cwd: root });
@@ -110,11 +111,85 @@ describe("release qualification verification", () => {
       expect(runProcess.mock.calls[0]?.[0]).toMatchObject({
         command: "bun",
         args: ["run", script],
-        cwd: root,
         timeoutMs: expectedTimeout,
       });
+      const actualCwd = runProcess.mock.calls[0]?.[0].cwd;
+      if (script === "ci:local:full") expect(actualCwd).not.toBe(root);
+      else expect(actualCwd).toBe(root);
     },
   );
+
+  it("runs local full CI on committed HEAD without changing original dirty files or staged metadata", async () => {
+    const root = await repository();
+    const { stdout: head } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+    const report = path.join(root, ".arkady", "historical-report.json");
+    const metadata = path.join(root, ".agentplane/tasks/202609200000-QUALIFY/pr/meta.json");
+    await mkdir(path.dirname(report), { recursive: true });
+    await mkdir(path.dirname(metadata), { recursive: true });
+    await writeFile(report, '{"historical":true}\n', "utf8");
+    await writeFile(metadata, '{"staged":true}\n', "utf8");
+    await writeFile(path.join(root, "README.md"), "dirty original\n", "utf8");
+    await execFileAsync("git", ["add", metadata], { cwd: root });
+    const { stdout: status } = await execFileAsync(
+      "git",
+      ["status", "--porcelain=v1", "--untracked-files=all"],
+      {
+        cwd: root,
+      },
+    );
+    const index = await readFile(path.join(root, ".git/index"));
+    const reportBytes = await readFile(report);
+    const metadataBytes = await readFile(metadata);
+    const reportMode = (await stat(report)).mode;
+    const metadataMode = (await stat(metadata)).mode;
+    let checkout = "";
+    const runProcess = vi.fn(async (input: { cwd: string }) => {
+      checkout = input.cwd;
+      expect(checkout).not.toBe(root);
+      const current = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: checkout });
+      expect(current.stdout).toBe(head);
+      const clean = await execFileAsync(
+        "git",
+        ["status", "--porcelain=v1", "--untracked-files=all"],
+        { cwd: checkout },
+      );
+      expect(clean.stdout).toBe("");
+      await expect(readFile(path.join(checkout, "README.md"), "utf8")).resolves.toBe("fixture\n");
+      await expect(
+        readFile(path.join(checkout, ".arkady/historical-report.json")),
+      ).rejects.toMatchObject({ code: "ENOENT" });
+      await expect(
+        readFile(path.join(checkout, ".agentplane/tasks/202609200000-QUALIFY/pr/meta.json")),
+      ).rejects.toMatchObject({ code: "ENOENT" });
+      return { exitCode: 0, stdout: "ok", stderr: "" };
+    });
+    const { result } = verify(root, "bun run ci:local:full", runProcess);
+    const completed = await result;
+    expect(completed.status).toBe("passed");
+    expect(completed.checks[0]?.observation?.status).toBe("retained");
+    const observation = completed.checks[0]!.observation!.manifest_path!;
+    const observationRoot = `${path.relative(root, path.dirname(observation))}/`;
+    expect(await readFile(report)).toEqual(reportBytes);
+    expect(await readFile(metadata)).toEqual(metadataBytes);
+    expect((await stat(report)).mode).toBe(reportMode);
+    expect((await stat(metadata)).mode).toBe(metadataMode);
+    expect(await readFile(path.join(root, "README.md"), "utf8")).toBe("dirty original\n");
+    expect(await readFile(path.join(root, ".git/index"))).toEqual(index);
+    const after = await execFileAsync(
+      "git",
+      ["status", "--porcelain=v1", "--untracked-files=all"],
+      { cwd: root },
+    );
+    const preserved = after.stdout
+      .split("\n")
+      .filter(
+        (line) =>
+          line !== `?? ${completed.artifact_path}` && !line.startsWith(`?? ${observationRoot}`),
+      )
+      .join("\n");
+    expect(preserved).toBe(status);
+    await expect(readFile(path.join(checkout, ".git"))).rejects.toMatchObject({ code: "ENOENT" });
+  });
 
   it("recognizes the versioned gate alias and gives it an isolated bounded run", async () => {
     const root = await repository();
@@ -127,7 +202,10 @@ describe("release qualification verification", () => {
     expect(input?.cwd).not.toBe(root);
   });
 
-  it("removes the detached checkout after successful qualification", async () => {
+  it.each([
+    "bun run ci:local:full",
+    "node scripts/qualification/run-v0.7.10-release-qualification.mjs --mode audit --profile full",
+  ])("removes the detached checkout after successful %s", async (command) => {
     const root = await repository();
     let checkout = "";
     const runProcess = vi.fn(async (input: { cwd: string }) => {
@@ -135,11 +213,7 @@ describe("release qualification verification", () => {
       await expect(readFile(path.join(checkout, ".git"), "utf8")).resolves.toContain("gitdir:");
       return { exitCode: 0, stdout: "ok", stderr: "" };
     });
-    const { result } = verify(
-      root,
-      "node scripts/qualification/run-v0.7.10-release-qualification.mjs --mode audit --profile full",
-      runProcess,
-    );
+    const { result } = verify(root, command, runProcess);
 
     await expect(result).resolves.toMatchObject({ status: "passed" });
     await expect(readFile(path.join(checkout, ".git"), "utf8")).rejects.toMatchObject({
@@ -147,7 +221,10 @@ describe("release qualification verification", () => {
     });
   });
 
-  it("removes the detached checkout when dependency setup fails", async () => {
+  it.each([
+    "bun run ci:local:full",
+    "node scripts/qualification/run-v0.7.10-release-qualification.mjs --mode audit --profile full",
+  ])("removes the detached checkout when dependency setup fails for %s", async (command) => {
     const root = await repository(true);
     const nativeRunProcess = processRunner.runProcess;
     let checkout = "";
@@ -157,10 +234,7 @@ describe("release qualification verification", () => {
       }
       return nativeRunProcess(input);
     });
-    const { result, runProcess } = verify(
-      root,
-      "node scripts/qualification/run-v0.7.10-release-qualification.mjs --mode audit --profile full",
-    );
+    const { result, runProcess } = verify(root, command);
 
     await expect(result).resolves.toMatchObject({ status: "failed" });
     await expect(readFile(path.join(checkout, ".git"), "utf8")).rejects.toMatchObject({
