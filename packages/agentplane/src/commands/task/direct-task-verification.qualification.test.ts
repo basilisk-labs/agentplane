@@ -113,7 +113,8 @@ describe("release qualification verification", () => {
         args: ["run", script],
         timeoutMs: expectedTimeout,
       });
-      const actualCwd = runProcess.mock.calls[0]?.[0].cwd;
+      const processInput = runProcess.mock.calls[0]?.[0] as { cwd: string } | undefined;
+      const actualCwd = processInput?.cwd;
       if (script === "ci:local:full") expect(actualCwd).not.toBe(root);
       else expect(actualCwd).toBe(root);
     },
@@ -140,8 +141,8 @@ describe("release qualification verification", () => {
     const index = await readFile(path.join(root, ".git/index"));
     const reportBytes = await readFile(report);
     const metadataBytes = await readFile(metadata);
-    const reportMode = (await stat(report)).mode;
-    const metadataMode = (await stat(metadata)).mode;
+    const { mode: reportMode } = await stat(report);
+    const { mode: metadataMode } = await stat(metadata);
     let checkout = "";
     const runProcess = vi.fn(async (input: { cwd: string }) => {
       checkout = input.cwd;
@@ -171,8 +172,10 @@ describe("release qualification verification", () => {
     const observationRoot = `${path.relative(root, path.dirname(observation))}/`;
     expect(await readFile(report)).toEqual(reportBytes);
     expect(await readFile(metadata)).toEqual(metadataBytes);
-    expect((await stat(report)).mode).toBe(reportMode);
-    expect((await stat(metadata)).mode).toBe(metadataMode);
+    const { mode: currentReportMode } = await stat(report);
+    const { mode: currentMetadataMode } = await stat(metadata);
+    expect(currentReportMode).toBe(reportMode);
+    expect(currentMetadataMode).toBe(metadataMode);
     expect(await readFile(path.join(root, "README.md"), "utf8")).toBe("dirty original\n");
     expect(await readFile(path.join(root, ".git/index"))).toEqual(index);
     const after = await execFileAsync(
