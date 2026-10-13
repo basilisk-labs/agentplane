@@ -1,4 +1,4 @@
-import { mkGitRepoRoot } from "@agentplane/testkit";
+import { commitAll, mkGitRepoRoot } from "@agentplane/testkit";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -696,7 +696,7 @@ describe("direct task verification", () => {
   });
 
   it("runs and binds full regression separately without claiming hosted integration", async () => {
-    const cwd = await root();
+    const cwd = await mkGitRepoRoot();
     await writeFile(
       path.join(cwd, "package.json"),
       JSON.stringify({
@@ -705,6 +705,7 @@ describe("direct task verification", () => {
       }),
       "utf8",
     );
+    await commitAll(cwd, "test: canonical full-script fixture");
     mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "1 pass", stderr: "" });
     const task = {
       verify: ["bun test packages/agentplane/src/cli/focused.test.ts"],
@@ -780,7 +781,7 @@ describe("direct task verification", () => {
   });
 
   it("uses the configured package runner for the canonical full script", async () => {
-    const cwd = await root();
+    const cwd = await mkGitRepoRoot();
     await writeFile(
       path.join(cwd, "package.json"),
       JSON.stringify({
@@ -791,6 +792,7 @@ describe("direct task verification", () => {
       }),
       "utf8",
     );
+    await commitAll(cwd, "test: canonical full-script fixture");
     mocks.runProcess.mockResolvedValue({ exitCode: 0, stdout: "1 pass", stderr: "" });
     const contract = executionContract(["repository_write", "source_code"]);
     contract.verification.contract = { selected_checks: ["full_regression", "task_outcome"] };

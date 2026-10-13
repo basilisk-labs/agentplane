@@ -4,6 +4,7 @@
  .../agentplane/src/commands/guard/impl/commit.ts   |    1 +
  packages/agentplane/src/commands/pr/open.ts        |   24 +
  .../direct-task-verification.qualification.test.ts |  105 +-
+ .../commands/task/direct-task-verification.test.ts |    8 +-
  .../src/commands/task/direct-task-verification.ts  |    1 +
  .../src/commands/task/kernel-exchange.test.ts      |   27 +-
  .../src/commands/task/kernel-exchange.ts           |    2 +
@@ -22,4 +23,4 @@
  packages/core/src/tasks/task-kernel/kernel.ts      |   28 +-
  .../tasks/task-kernel/replan-work-items.test.ts    |  479 ++++++++
  .../src/tasks/task-kernel/replan-work-items.ts     |  300 +++++
- 24 files changed, 3952 insertions(+), 1124 deletions(-)
+ 25 files changed, 3957 insertions(+), 1127 deletions(-)
