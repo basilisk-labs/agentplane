@@ -111,6 +111,7 @@ async function verificationCheckout(
       "node_modules",
       "packages/agentplane/node_modules",
       "packages/core/node_modules",
+      "packages/recipes/node_modules",
       "packages/testkit/node_modules",
     ];
     for (const relative of dependencyRoots) {

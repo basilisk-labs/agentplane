@@ -214,10 +214,16 @@ describe("release qualification verification", () => {
     "node scripts/qualification/run-v0.7.10-release-qualification.mjs --mode audit --profile full",
   ])("removes the detached checkout after successful %s", async (command) => {
     const root = await repository();
+    const recipeDependency = "packages/recipes/node_modules/zod/index.js";
+    await mkdir(path.dirname(path.join(root, recipeDependency)), { recursive: true });
+    await writeFile(path.join(root, recipeDependency), "fixture dependency\n", "utf8");
     let checkout = "";
     const runProcess = vi.fn(async (input: { cwd: string }) => {
       checkout = input.cwd;
       await expect(readFile(path.join(checkout, ".git"), "utf8")).resolves.toContain("gitdir:");
+      await expect(readFile(path.join(checkout, recipeDependency), "utf8")).resolves.toBe(
+        "fixture dependency\n",
+      );
       return { exitCode: 0, stdout: "ok", stderr: "" };
     });
     const { result } = verify(root, command, runProcess);
