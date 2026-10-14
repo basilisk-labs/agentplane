@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202610142156-4MGWZM/bound-github-ci-aggregate-job-output-projection",
+  "created_at": "2026-10-14T22:29:05.278Z",
+  "diffstat_sha256": "sha256:962bbc3c3c0123d21ac1846a4fec7fcf46912190fdad674b6810a3a102ffe497",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610142156-4MGWZM",
+  "updated_at": "2026-10-14T22:29:05.278Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

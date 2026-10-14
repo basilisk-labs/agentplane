@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
@@ -42,25 +42,30 @@ type GithubCiPlan = {
   };
 };
 
-const { GITHUB_CI_GATE_JOBS, buildGithubCiCapabilityPlan } = githubCiCapabilitiesModule as {
-  GITHUB_CI_GATE_JOBS: readonly string[];
-  buildGithubCiCapabilityPlan: (input: {
-    changedFiles: string[];
-    eventName?: string;
-    headRef?: string;
-    ref?: string;
-    exactShaRecovery?: boolean;
-    lifecycleOnlyHead?: boolean;
-    reuseSha?: string;
-    semanticEffects?: {
-      declaredRepositoryEffects?: string[];
-      declaredExternalEffects?: string[];
-      observedRepositoryEffects?: string[];
-      observedExternalEffects?: string[];
-      parseErrors?: string[];
-    };
-  }) => GithubCiPlan;
-};
+const { GITHUB_CI_GATE_JOBS, buildGithubCiCapabilityPlan, evaluateGithubCiAggregate } =
+  githubCiCapabilitiesModule as {
+    GITHUB_CI_GATE_JOBS: readonly string[];
+    evaluateGithubCiAggregate: (input: {
+      plan: { expected_jobs: string[] };
+      jobResults: Record<string, string>;
+    }) => { ok: boolean };
+    buildGithubCiCapabilityPlan: (input: {
+      changedFiles: string[];
+      eventName?: string;
+      headRef?: string;
+      ref?: string;
+      exactShaRecovery?: boolean;
+      lifecycleOnlyHead?: boolean;
+      reuseSha?: string;
+      semanticEffects?: {
+        declaredRepositoryEffects?: string[];
+        declaredExternalEffects?: string[];
+        observedRepositoryEffects?: string[];
+        observedExternalEffects?: string[];
+        parseErrors?: string[];
+      };
+    }) => GithubCiPlan;
+  };
 const { evaluateLifecycleArtifactReuse } = lifecycleArtifactReuseModule as {
   evaluateLifecycleArtifactReuse: (input: {
     cwd: string;
@@ -183,6 +188,102 @@ function plan(changedFiles: string[], options: { headRef?: string } = {}) {
 }
 
 describe("GitHub CI capability planning", () => {
+  it("bounds job outputs for a large plan without losing aggregate gate requirements", () => {
+    const repo = mkdtempSync(path.join(os.tmpdir(), "agentplane-ci-output-"));
+    try {
+      git(repo, ["init", "-b", "main"]);
+      git(repo, ["config", "user.name", "CI Test"]);
+      git(repo, ["config", "user.email", "ci@example.com"]);
+      git(repo, ["config", "core.quotePath", "false"]);
+      git(repo, ["commit", "--allow-empty", "-m", "base"]);
+      const baseSha = git(repo, ["rev-parse", "HEAD"]);
+      const changedFiles = Array.from(
+        { length: 1316 },
+        (_, index) =>
+          `.agentplane/tasks/202608131200-ABC123/supervision/verification-runs/run-${String(index).padStart(4, "0")}/children/run-003/manifest.json`,
+      );
+      changedFiles.push(".agentplane/tasks/202608131200-ABC123/supervision/результат-🧪.json");
+      for (const file of changedFiles) {
+        mkdirSync(path.join(repo, path.dirname(file)), { recursive: true });
+        writeFileSync(path.join(repo, file), "{}\n");
+      }
+      git(repo, ["add", "."]);
+      git(repo, ["commit", "-m", "large verification history"]);
+      const headSha = git(repo, ["rev-parse", "HEAD"]);
+      const eventPath = path.join(repo, "event.json");
+      const outputPath = path.join(repo, "github-output");
+      writeFileSync(
+        eventPath,
+        JSON.stringify({ pull_request: { base: { sha: baseSha }, head: { sha: headSha } } }),
+      );
+      const stdout = execFileSync(
+        process.execPath,
+        [path.resolve(import.meta.dirname, "../../../../../scripts/checks/plan-github-ci.mjs")],
+        {
+          cwd: repo,
+          encoding: "utf8",
+          maxBuffer: 4 * 1024 * 1024,
+          env: {
+            ...process.env,
+            GITHUB_EVENT_NAME: "pull_request",
+            GITHUB_EVENT_PATH: eventPath,
+            GITHUB_OUTPUT: outputPath,
+            GITHUB_TOKEN: "",
+            GITHUB_HEAD_REF: "task/large-output",
+          },
+        },
+      );
+      const fullPlan = JSON.parse(stdout) as GithubCiPlan;
+      const lines = readFileSync(outputPath, "utf8").split("\n");
+      const outputs: Record<string, string> = {};
+      for (let index = 0; index < lines.length; index += 1) {
+        const header = /^([^<]+)<<(.+)$/u.exec(lines[index]);
+        if (!header) continue;
+        const value: string[] = [];
+        while (lines[++index] !== header[2] && index < lines.length) value.push(lines[index]);
+        outputs[header[1]] = value.join("\n");
+      }
+      const aggregatePlan = JSON.parse(outputs.plan_json) as Pick<
+        GithubCiPlan,
+        "route" | "route_reason" | "expected_jobs" | "executing_jobs_count"
+      > & {
+        schema_version: number;
+        changed_files_count: number;
+      };
+      expect(Buffer.byteLength(JSON.stringify(fullPlan), "utf16le")).toBeGreaterThan(1024 * 1024);
+      expect(
+        Object.entries(outputs).reduce(
+          (total, [name, value]) => total + Buffer.byteLength(name + value, "utf16le"),
+          0,
+        ),
+      ).toBeLessThan(1024 * 1024);
+      expect(outputs.changed_files.split("\n")).toEqual(changedFiles);
+      expect(aggregatePlan).toEqual({
+        schema_version: 1,
+        route: fullPlan.route,
+        route_reason: fullPlan.route_reason,
+        expected_jobs: fullPlan.expected_jobs,
+        executing_jobs_count: fullPlan.executing_jobs_count,
+        changed_files_count: changedFiles.length,
+      });
+      const expectedJobs = new Set(aggregatePlan.expected_jobs);
+      const jobResults = Object.fromEntries(
+        GITHUB_CI_GATE_JOBS.map((job) => [job, expectedJobs.has(job) ? "success" : "skipped"]),
+      );
+      expect(evaluateGithubCiAggregate({ plan: aggregatePlan, jobResults }).ok).toBe(true);
+      jobResults.plan = "failure";
+      expect(evaluateGithubCiAggregate({ plan: aggregatePlan, jobResults }).ok).toBe(false);
+      delete jobResults.plan;
+      expect(evaluateGithubCiAggregate({ plan: aggregatePlan, jobResults }).ok).toBe(false);
+      jobResults.plan = "success";
+      expect(expectedJobs.has("verify-real-e2e")).toBe(false);
+      jobResults["verify-real-e2e"] = "success";
+      expect(evaluateGithubCiAggregate({ plan: aggregatePlan, jobResults }).ok).toBe(false);
+    } finally {
+      rmSync(repo, { recursive: true, force: true });
+    }
+  });
+
   it("requires full regression on every PR even for localized source", () => {
     const result = plan(["packages/testkit/src/helper.test.ts"]);
     expect(result.route).toBe("full-fast");
