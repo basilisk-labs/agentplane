@@ -1,10 +1,11 @@
 ---
 id: "202610120014-1C3ZFG"
 title: "Integrate reviewed XTX M2 and S8 nine-path corrections on canonical main"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 212
+revision: 213
 origin:
   system: "manual"
 depends_on: []
@@ -43,6 +44,22 @@ quality_review:
     - "Verified all11 retained raw log references and identity-bound whole native-validation artifact1f3769445b99d7b6fd61fd6fba99b93280a09dbeca974167f3a4b5453d1878be. All7 exact required commands exited0. The first retained manifest passed; remaining6 report observation unavailable because archival admission slots are exhausted. No missing full-log or test-count claims are made."
     - "Original operational resourceSTOP and partial104-109 receipts remain unchanged. Supported continuation submitted no SOURCE result, ran all7 commands anew, and produced genuine EVALUATOR66b0. Four wrapper stages exited0/reaped/readersclosed/ownedempty,108 recorded PID/start identities absent, breach null. Continuous resource enforcement concerns owned capture only; terminal native roots recorded separately."
     - "Current Task171/Plan19/claim502c/source result9e1/native inputd685 and all13 context pointers/four required input bindings independently verified. Historical FULL docs-schema failure and old resourceSTOP retain original status. No lifecycle, checks, source or provider mutations performed by evaluator."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:a5f9a6e3bc0f3f7dedd88b80133c9b893418dcd064b6a226afcd81fb196341e7"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-10-14T20:52:43.134Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -405,9 +422,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "780a00c0814a106ff388a069c1d884296679ba54"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "8740bbfd1177e84410800af1daddb468b8060b71"
+  message: "✅ 1C3ZFG task: persist canonical completion"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -427,9 +447,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-14T20:52:43.134Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "8740bbfd1177e84410800af1daddb468b8060b71"
 doc_version: 3
-doc_updated_at: "2026-10-14T20:11:05.024Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-14T20:52:43.134Z"
+doc_updated_by: "CODER"
 description: "Integrate only the reviewed nine source deltas from XTX5M8 commit 767e460334dd0f3739bea997265c141d85d5ad74, M8349M commit 93438ee27f258e8a13c3e55207e917d465c14462 and S8V2S8 commit 99eb5f28ef4d5d24268bb3a1e2525a41be14732b onto canonical main d886917970bc0724b419074b7d575d47d9c95c1b. Use selected9-review-only-v2.patch SHA256 df0e7e7847bc31a65e3f3c6a9a299b1c6c4b2f203f4902bd02220ecabff708ef and preflight-plan-v2.json pinned in the external AP9 preparation directory. Preserve current hook readiness and taskIds reconciliation. Do not copy donor task or unrelated baseline files. Require fresh correctly routed affected suites, explicit cli-core PR-open checks, typecheck and native ci:local:full before integration; require distinct source/EVAL and hosted exact-SHA evidence before canonical delivery. Do not claim old failed component final receipts passed. Dependency installation must use own isolated aliases and frozen locks. Full outer deadline must exceed the actual native deadline (9000s currently); cap/free-floor remain bounded and heavy checks serialized. 7GA recovery-evidence two-path delivery is a separate open compatibility/admission gate; this task has only nine source roots and does not claim complete AP or Factory release readiness."
 sections:
   Summary: |-
@@ -932,6 +960,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:1b0b5ba2792b33c1684a8c78fea0639430c97fe48b9cf306a76483abf6c571c3"
     work_order_id: "sha256:3d1650a248907670ad8e96d491991e3a5f36d3ee66151bb202db3559bf3c4986"
+  implementation_commit:
+    hash: "780a00c0814a106ff388a069c1d884296679ba54"
+    message: "🚧 1C3ZFG task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "d886917970bc0724b419074b7d575d47d9c95c1b"
@@ -12270,3 +12301,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:a5f9a6e3bc0f3f7dedd88b80133c9b893418dcd064b6a226afcd81fb196341e7`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-10-14T20:52:43.134Z`

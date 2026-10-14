@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:6b90ffe53aa1d18269f3df4e91dce365d7bb89c92d35ae188aaee5d47ec1e485",
   "pr_number": 6147,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6147",
+  "pre_merge_closure": {
+    "basis_commit": "8740bbfd1177e84410800af1daddb468b8060b71",
+    "branch": "task/202610120014-1C3ZFG/integrate-reviewed-xtx-m2-and-s8-nine-path-corre",
+    "pr_number": 6147,
+    "recorded_at": "2026-10-14T20:52:43.256Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
