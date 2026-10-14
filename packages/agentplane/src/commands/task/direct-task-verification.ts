@@ -3,7 +3,6 @@ import { createHash } from "node:crypto";
 import { mkdir, mkdtemp, readFile, rm, stat, symlink } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-
 import { verificationRedactor } from "./verification-observation.js";
 
 import {

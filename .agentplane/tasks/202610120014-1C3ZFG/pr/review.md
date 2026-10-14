@@ -36,7 +36,7 @@ Created: 2026-10-12T15:29:25.183Z
  packages/agentplane/src/commands/pr/open.ts        |   24 +
  .../direct-task-verification.qualification.test.ts |  115 +-
  .../commands/task/direct-task-verification.test.ts |    8 +-
- .../src/commands/task/direct-task-verification.ts  |   10 +-
+ .../src/commands/task/direct-task-verification.ts  |   11 +-
  .../src/commands/task/kernel-exchange.test.ts      |   27 +-
  .../src/commands/task/kernel-exchange.ts           |    3 +
  .../commands/task/kernel-recovery-evidence.test.ts | 1116 ++++++++++++------
@@ -54,7 +54,7 @@ Created: 2026-10-12T15:29:25.183Z
  packages/core/src/tasks/task-kernel/kernel.ts      |   28 +-
  .../tasks/task-kernel/replan-work-items.test.ts    |  479 ++++++++
  .../src/tasks/task-kernel/replan-work-items.ts     |  300 +++++
- 25 files changed, 3976 insertions(+), 1128 deletions(-)
+ 25 files changed, 3976 insertions(+), 1129 deletions(-)
 ```
 
 </details>
