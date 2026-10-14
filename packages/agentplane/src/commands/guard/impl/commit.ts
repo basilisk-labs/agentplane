@@ -168,6 +168,7 @@ export async function cmdCommit(opts: {
       taskId: opts.taskId,
       sourceMessage: opts.message,
       quiet: opts.quiet,
+      requireClean: opts.requireClean,
     });
 
     if (!opts.quiet) {

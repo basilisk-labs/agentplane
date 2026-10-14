@@ -1,0 +1,1 @@
+"$ vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/task/kernel-rework-lineage.test.ts"

@@ -2,7 +2,8 @@ import { access, mkdir, mkdtemp, readFile, rename, rm, writeFile } from "node:fs
 import os from "node:os";
 import path from "node:path";
 
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import * as coreProcess from "@agentplaneorg/core/process";
 import { waitForCondition } from "@agentplane/testkit";
 
 import { captureRunnerArtifactDirectoryBoundary } from "./run-directory-boundary.js";
@@ -19,22 +20,44 @@ import {
 
 async function waitForTraceMatch(opts: {
   path: string;
-  timeoutMs: number;
+  timeoutMs?: number;
   matcher: (contents: string) => boolean;
 }): Promise<string> {
   return await waitForCondition({
     description: `trace match in ${opts.path}`,
-    timeoutMs: opts.timeoutMs,
+    timeoutMs: opts.timeoutMs ?? 5000,
     pollMs: 25,
     read: async () =>
       await readFile(opts.path, "utf8").catch((err: NodeJS.ErrnoException) => {
-        if (err.code === "ENOENT") {
-          return "";
-        }
+        if (err.code === "ENOENT") return "";
         throw err;
       }),
     predicate: opts.matcher,
   });
+}
+
+function wallTimeoutInvocation(tempDir: string, runDir: string, scriptPath: string) {
+  return {
+    adapter_id: "custom",
+    run_id: "run-wall-timeout",
+    work_order_id: "run-wall-timeout",
+    repository_root: tempDir,
+    run_dir: runDir,
+    bundle_path: path.join(runDir, "bundle.json"),
+    state_path: path.join(runDir, "run-state.json"),
+    events_path: path.join(runDir, "events.jsonl"),
+    result_path: path.join(runDir, "result.json"),
+    receipt_path: path.join(runDir, "execution-receipt.json"),
+    trace_path: path.join(runDir, "agent-trace.jsonl"),
+    stderr_path: path.join(runDir, "stderr.log"),
+    trace_policy: { mode: "raw", max_tail_bytes: 64 * 1024, capture_stderr: true },
+    timeout_policy: { wall_clock_ms: 120, idle_ms: 1000, terminate_grace_ms: 0 },
+    bootstrap_path: null,
+    output_last_message_path: null,
+    argv: [process.execPath, scriptPath],
+    env: {},
+    dry_run: false,
+  } as const;
 }
 
 describe("runSupervisedProcess", () => {
@@ -697,50 +720,27 @@ describe("runSupervisedProcess", () => {
     tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-process-supervision-wall-"));
     const runDir = path.join(tempDir, "run");
     const scriptPath = path.join(tempDir, "runner.mjs");
+    const readyPath = path.join(runDir, "ready");
     await mkdir(runDir, { recursive: true });
     await writeFile(
       scriptPath,
       [
+        'import { writeFileSync } from "node:fs";',
         "process.on('SIGTERM', () => {});",
+        `writeFileSync(${JSON.stringify(readyPath)}, "ready");`,
         String.raw`setInterval(() => process.stdout.write('tick\n'), 20);`,
       ].join("\n"),
       "utf8",
     );
 
-    const invocation = {
-      adapter_id: "custom",
-      run_id: "run-wall-timeout",
-      work_order_id: "run-wall-timeout",
-      repository_root: tempDir,
-      run_dir: runDir,
-      bundle_path: path.join(runDir, "bundle.json"),
-      state_path: path.join(runDir, "run-state.json"),
-      events_path: path.join(runDir, "events.jsonl"),
-      result_path: path.join(runDir, "result.json"),
-      receipt_path: path.join(runDir, "execution-receipt.json"),
-      trace_path: path.join(runDir, "agent-trace.jsonl"),
-      stderr_path: path.join(runDir, "stderr.log"),
-      trace_policy: {
-        mode: "raw",
-        max_tail_bytes: 64 * 1024,
-        capture_stderr: true,
-      },
-      timeout_policy: {
-        wall_clock_ms: 120,
-        idle_ms: 1000,
-        terminate_grace_ms: 0,
-      },
-      bootstrap_path: null,
-      output_last_message_path: null,
-      argv: [process.execPath, scriptPath],
-      env: {},
-      dry_run: false,
-    } as const;
-
     const result = await runSupervisedProcess({
-      invocation,
+      invocation: wallTimeoutInvocation(tempDir, runDir, scriptPath),
       stdin_text: "",
       start_message: "test runner started",
+      assert_artifact_boundary: async (phase) => {
+        if (phase === "before recording process start")
+          await waitForTraceMatch({ path: readyPath, matcher: (text) => text === "ready" });
+      },
     });
 
     expect(result.timeout_reason).toBe("wall_clock");
@@ -750,6 +750,83 @@ describe("runSupervisedProcess", () => {
     expect(result.force_killed).toBe(true);
     expect(["SIGTERM", "SIGKILL"]).toContain(result.exit_signal);
   });
+
+  it.skipIf(process.platform === "win32").each(["gone", "live", "unknown", "io", "ctl", "term"])(
+    "accepts timeout SIGKILL EPERM only after owned child close and group exit (%s)",
+    async (mode) => {
+      tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-process-supervision-eperm-"));
+      const runDir = path.join(tempDir, "run");
+      const scriptPath = path.join(tempDir, "runner.mjs");
+      await mkdir(runDir, { recursive: true });
+      await writeFile(
+        scriptPath,
+        String.raw`process.on('SIGTERM', () => { if (${mode !== "term"}) process.stdout.write('final tail', () => process.exit(0)); }); process.stdout.write('ready\n'); setInterval(() => {}, 1000);`,
+      );
+      const invocation = wallTimeoutInvocation(tempDir, runDir, scriptPath);
+      const signalError = Object.assign(new Error("owned group signal EPERM"), { code: "EPERM" });
+      let ownedPid: number | null = null;
+      let termCalls = 0;
+      let additionalFailureObserved = false;
+      const originalStart = coreProcess.startProcess;
+      const originalKill = Reflect.get(process, "kill") as typeof process.kill;
+      const spawn = vi.spyOn(coreProcess, "startProcess").mockImplementation((opts) => {
+        const child = originalStart(opts);
+        if (opts.cwd === tempDir && opts.args?.[0] === scriptPath) ownedPid = child.pid;
+        return child;
+      });
+      process.kill = (pid, signal) => {
+        if (ownedPid !== null && pid === -ownedPid) {
+          if (signal === "SIGKILL") throw signalError;
+          if (signal === "SIGTERM" && mode === "term" && termCalls++ > 0) throw signalError;
+          if (signal === 0 && mode === "live") return true;
+          if (signal === 0 && mode === "unknown") throw new Error("group probe unavailable");
+        }
+        return originalKill.call(process, pid, signal);
+      };
+      try {
+        const execution = runSupervisedProcess({
+          invocation,
+          stdin_text: "",
+          start_message: "owned EPERM test",
+          assert_artifact_boundary: async (phase) => {
+            if (phase === "before recording process start")
+              await waitForTraceMatch({
+                path: invocation.trace_path,
+                matcher: (text) => text.includes("ready"),
+              });
+            const failed =
+              (mode === "io" && phase === "before finalizing process artifacts") ||
+              (mode === "ctl" && phase === "before writing timeout state");
+            additionalFailureObserved ||= failed;
+            if (failed) throw new Error("control or artifact boundary rejected completion");
+          },
+        });
+        if (mode === "gone") {
+          const result = await execution;
+          expect(result.pid).toBe(ownedPid);
+          expect(result.timeout_reason).toBe("wall_clock");
+          expect(result.terminate_sent_at).toBeTruthy();
+          expect(result.kill_sent_at).toBeNull();
+          expect(result.force_killed).toBe(false);
+          expect(result.exit_code).toBe(0);
+          expect(result.stdout_tail).toContain("final tail");
+          expect(result.process_tree.residual_alive).toBe(false);
+        } else {
+          await expect(execution).rejects.toMatchObject({
+            primary_error: signalError,
+            process_result:
+              mode === "term"
+                ? { process_tree: { cleanup_state: "failed", residual_alive: false } }
+                : {},
+          });
+        }
+        expect(additionalFailureObserved).toBe(mode === "io" || mode === "ctl");
+      } finally {
+        process.kill = originalKill;
+        spawn.mockRestore();
+      }
+    },
+  );
 
   it.skipIf(process.platform === "win32")(
     "starts controls after running state and durably serializes cancellation metadata",

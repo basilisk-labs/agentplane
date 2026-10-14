@@ -101,7 +101,9 @@ async function fixture(directory: string, sourceChange = true, targetRetry = fal
   };
   const source = {
     ...aggregate().current_plan!,
-    approval_actor_id: "USER",
+    state: "PROPOSED" as const,
+    approval_actor_id: null,
+    approval_evidence_digest: null,
     work_items: [previous],
     digest: k.kernelDigest({ revision: 1, work_items: [previous] }),
   };
@@ -125,9 +127,10 @@ async function fixture(directory: string, sourceChange = true, targetRetry = fal
   };
   let state = aggregate({
     intent_digest: k.kernelDigest(documents.intent),
-    ...(preStopContinuation ? { revision: 147 } : {}),
+    state: "AWAITING_PLAN_APPROVAL",
+    revision: (preStopContinuation ? 147 : aggregate().revision) - 1,
     current_plan: source,
-    authority_lineage: [{ authority: root, approval_mode: "manual_operator", observation: null }],
+    authority_lineage: [],
     work_items: {
       kernel: { ...runtime("EXECUTING"), definition: previous, attempt: 2, claim_id: "old-claim" },
     },
@@ -148,6 +151,24 @@ async function fixture(directory: string, sourceChange = true, targetRetry = fal
     state = result.aggregate;
     events.push(...result.events);
   }
+  apply({
+    ...input(
+      state,
+      {
+        kind: "approve_plan",
+        task_id: state.id,
+        expected_task_revision: state.revision,
+        expected_state_fingerprint: root.repository_fingerprint,
+        plan_revision: source.revision,
+        plan_digest: source.digest,
+        approval_evidence_digest: root.provenance.evidence_digest,
+        authority_mode: "manual_operator",
+      },
+      "initial-plan-approval",
+    ),
+    authority: root,
+    actor: { id: "USER", kind: "USER", transport: "manual", capabilities: ["repository_write"] },
+  });
   const oldOrder = await nativeOrder(
     makeKernelRecord(root.repository_identity, state, events, documents),
     root,

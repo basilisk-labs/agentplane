@@ -1,0 +1,3 @@
+"$ bun run arch:baseline && bun run arch:deps"
+"$ node scripts/checks/check-depcruise-known-violations.mjs"
+"$ node scripts/checks/run-depcruise-arch.mjs depcruise.config.cjs"

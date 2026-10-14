@@ -47,3 +47,4 @@ export {
   prospectiveScopeLineageIssues,
 } from "./prospective-scope.js";
 export type { ProspectiveScopeRequest } from "./prospective-scope.js";
+export { authenticatedScopeReplanHistory } from "./replan-work-items.js";
