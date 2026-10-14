@@ -6,7 +6,7 @@ Created: 2026-10-12T15:29:25.183Z
 
 - Task: `202610120014-1C3ZFG`
 - Title: Integrate reviewed XTX M2 and S8 nine-path corrections on canonical main
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610120014-1C3ZFG/integrate-reviewed-xtx-m2-and-s8-nine-path-corre`
 - Canonical task record: `.agentplane/tasks/202610120014-1C3ZFG/README.md`
 
