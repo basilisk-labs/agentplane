@@ -24,7 +24,7 @@ Created: 2026-10-12T15:29:25.183Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-10-12T15:29:25.183Z
+- Updated: 2026-10-14T12:46:39.917Z
 - Branch: task/202610120014-1C3ZFG/integrate-reviewed-xtx-m2-and-s8-nine-path-corre
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
@@ -34,11 +34,11 @@ Created: 2026-10-12T15:29:25.183Z
  .../src/commands/guard/impl/commit-refresh.ts      |    3 +-
  .../agentplane/src/commands/guard/impl/commit.ts   |    1 +
  packages/agentplane/src/commands/pr/open.ts        |   24 +
- .../direct-task-verification.qualification.test.ts |  105 +-
+ .../direct-task-verification.qualification.test.ts |  109 +-
  .../commands/task/direct-task-verification.test.ts |    8 +-
- .../src/commands/task/direct-task-verification.ts  |    1 +
+ .../src/commands/task/direct-task-verification.ts  |    9 +-
  .../src/commands/task/kernel-exchange.test.ts      |   27 +-
- .../src/commands/task/kernel-exchange.ts           |    2 +
+ .../src/commands/task/kernel-exchange.ts           |    3 +
  .../commands/task/kernel-recovery-evidence.test.ts | 1116 ++++++++++++------
  .../src/commands/task/kernel-recovery-evidence.ts  |  215 +++-
  .../commands/task/kernel-rework-lineage.test.ts    | 1180 +++++++++++---------
@@ -54,7 +54,7 @@ Created: 2026-10-12T15:29:25.183Z
  packages/core/src/tasks/task-kernel/kernel.ts      |   28 +-
  .../tasks/task-kernel/replan-work-items.test.ts    |  479 ++++++++
  .../src/tasks/task-kernel/replan-work-items.ts     |  300 +++++
- 25 files changed, 3957 insertions(+), 1127 deletions(-)
+ 25 files changed, 3969 insertions(+), 1128 deletions(-)
 ```
 
 </details>

@@ -123,6 +123,7 @@ describe("release qualification verification", () => {
   it("runs local full CI on committed HEAD without changing original dirty files or staged metadata", async () => {
     const root = await repository();
     const { stdout: head } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+    await mkdir(path.join(root, "node_modules"));
     const report = path.join(root, ".arkady", "historical-report.json");
     const metadata = path.join(root, ".agentplane/tasks/202609200000-QUALIFY/pr/meta.json");
     await mkdir(path.dirname(report), { recursive: true });
@@ -155,6 +156,9 @@ describe("release qualification verification", () => {
         { cwd: checkout },
       );
       expect(clean.stdout).toBe("");
+      const borrowedModules = await stat(path.join(checkout, "node_modules"));
+      expect(borrowedModules.isDirectory()).toBe(true);
+      await expect(stat(path.join(checkout, "packages"))).rejects.toMatchObject({ code: "ENOENT" });
       await expect(readFile(path.join(checkout, "README.md"), "utf8")).resolves.toBe("fixture\n");
       await expect(
         readFile(path.join(checkout, ".arkady/historical-report.json")),

@@ -1,6 +1,6 @@
 import { runProcess } from "@agentplaneorg/core/process";
 import { createHash } from "node:crypto";
-import { mkdir, mkdtemp, readFile, rm, symlink } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, stat, symlink } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
@@ -115,6 +115,12 @@ async function verificationCheckout(
     ];
     for (const relative of dependencyRoots) {
       const target = path.join(cwd, relative);
+      try {
+        await stat(target);
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === "ENOENT") continue;
+        throw error;
+      }
       const link = path.join(checkout, relative);
       await mkdir(path.dirname(link), { recursive: true });
       await symlink(target, link, "dir");

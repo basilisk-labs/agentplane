@@ -12,12 +12,12 @@ import {
   historicalAmendment,
   retainedIssuanceAuthority,
 } from "./kernel-rework-lineage.js";
-import { writeKernelArtifact } from "./kernel-exchange.js";
 
 /** A new approved definition continues the retained scope stop, not an invented failed review. */
 export async function scopeReplanInputs(
   order: AgentWorkOrderV2,
   directory: string,
+  writeArtifact: (directory: string, name: string, value: unknown) => Promise<boolean>,
   record?: KernelRecord,
 ): Promise<AgentWorkOrderV2["required_inputs"]> {
   const binding = order.canonical_binding;
@@ -213,7 +213,7 @@ export async function scopeReplanInputs(
     result_authentication: request.result_authentication,
   };
   const filename = "scope-replan-context.json";
-  await writeKernelArtifact(directory, filename, context);
+  await writeArtifact(directory, filename, context);
   return [
     {
       id: `scope-stop:${request.work_order_id}`,
