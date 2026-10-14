@@ -697,11 +697,13 @@ describe("runSupervisedProcess", () => {
     tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-process-supervision-wall-"));
     const runDir = path.join(tempDir, "run");
     const scriptPath = path.join(tempDir, "runner.mjs");
+    const readyPath = path.join(tempDir, "ready");
     await mkdir(runDir, { recursive: true });
     await writeFile(
       scriptPath,
       [
         "process.on('SIGTERM', () => {});",
+        'await import("node:fs/promises").then(({ writeFile }) => writeFile(new URL("./ready", import.meta.url), "ready", "utf8"));',
         String.raw`setInterval(() => process.stdout.write('tick\n'), 20);`,
       ].join("\n"),
       "utf8",
@@ -741,6 +743,15 @@ describe("runSupervisedProcess", () => {
       invocation,
       stdin_text: "",
       start_message: "test runner started",
+      assert_artifact_boundary: async (phase) => {
+        if (phase === "before recording process start") {
+          await waitForTraceMatch({
+            path: readyPath,
+            timeoutMs: 2000,
+            matcher: (contents) => contents === "ready",
+          });
+        }
+      },
     });
 
     expect(result.timeout_reason).toBe("wall_clock");
