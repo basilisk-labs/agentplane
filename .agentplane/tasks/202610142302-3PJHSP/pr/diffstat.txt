@@ -1,0 +1,5 @@
+ .../src/commands/task/advance.command.ts           |  23 +-
+ .../task/external-agent-workflow-recovery.ts       | 226 ++++++++-
+ .../commands/task/roadmap-common-recovery.test.ts  | 506 ++++++++++++++++++++-
+ .../task/roadmap-integration-parity.test.ts        |  79 ++++
+ 4 files changed, 808 insertions(+), 26 deletions(-)

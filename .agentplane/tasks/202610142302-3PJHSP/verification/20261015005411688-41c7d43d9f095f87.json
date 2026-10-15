@@ -1,0 +1,211 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run test:project agentplane packages/agentplane/src/commands/task/roadmap-common-recovery.test.ts packages/agentplane/src/commands/task/roadmap-integration-parity.test.ts packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610142302-3PJHSP/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610142302-3PJHSP Verification Contract check affected_unit_integration (1/3)\n\nCheck: affected_unit_integration\nCommand: bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202610142302-3PJHSP/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610142302-3PJHSP Verification Contract check affected_unit_integration (2/3)\n\nCheck: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610142302-3PJHSP/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610142302-3PJHSP Verification Contract check affected_unit_integration (3/3)\n\nCheck: critical_paths\nCommand: bun run test:project agentplane packages/agentplane/src/commands/task/roadmap-common-recovery.test.ts packages/agentplane/src/commands/task/roadmap-integration-parity.test.ts packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610142302-3PJHSP/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610142302-3PJHSP Verification Contract check critical_paths (1/3)\n\nCheck: critical_paths\nCommand: bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202610142302-3PJHSP/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610142302-3PJHSP Verification Contract check critical_paths (2/3)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610142302-3PJHSP/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610142302-3PJHSP Verification Contract check critical_paths (3/3)\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610142302-3PJHSP/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610142302-3PJHSP Verification Contract check full_regression\n\nCheck: task_outcome\nCommand: bun run test:project agentplane packages/agentplane/src/commands/task/roadmap-common-recovery.test.ts packages/agentplane/src/commands/task/roadmap-integration-parity.test.ts packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610142302-3PJHSP/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610142302-3PJHSP Verification Contract check task_outcome (1/3)\n\nCheck: task_outcome\nCommand: bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202610142302-3PJHSP/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610142302-3PJHSP Verification Contract check task_outcome (2/3)\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610142302-3PJHSP/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610142302-3PJHSP Verification Contract check task_outcome (3/3)",
+  "digest": "sha256:41c7d43d9f095f8704df6651a660504b1168448c5b9c2764f78c6d152de0ffba",
+  "implementation_sha": "7dd6065d4a126c64df114a1a650afc69ee2a21cb",
+  "input": {
+    "checked_input": {
+      "commands": {
+        "digest": "sha256:75e1199d7d219edd3008ce24d246e1995161b0d2b3fa9db91bda318e5930dba6",
+        "entries": [
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run test:project agentplane packages/agentplane/src/commands/task/roadmap-common-recovery.test.ts packages/agentplane/src/commands/task/roadmap-integration-parity.test.ts packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run typecheck"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run test:project agentplane packages/agentplane/src/commands/task/roadmap-common-recovery.test.ts packages/agentplane/src/commands/task/roadmap-integration-parity.test.ts packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run typecheck"
+          },
+          {
+            "check_id": "full_regression",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run test:project agentplane packages/agentplane/src/commands/task/roadmap-common-recovery.test.ts packages/agentplane/src/commands/task/roadmap-integration-parity.test.ts packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run typecheck"
+          }
+        ]
+      },
+      "context": {
+        "digest": "sha256:e38f121050f953c65d536905e997e7af1b57f3182e98b8a5974154ef267ce4f4",
+        "paths": [
+          ".agentplane/WORKFLOW.md",
+          ".github/ISSUE_TEMPLATE/config.yml",
+          "bun.lock",
+          "depcruise.config.cjs",
+          "eslint.config.cjs",
+          "knip.json",
+          "package.json",
+          "packages/agentplane/package.json",
+          "packages/agentplane/src/cli/run-cli/commands/config.ts",
+          "packages/agentplane/src/runner/config.test.ts",
+          "packages/agentplane/src/runner/config.ts",
+          "packages/agentplane/tsconfig.json",
+          "packages/agentplane/tsup.config.ts",
+          "packages/core/package.json",
+          "packages/core/schemas/config.schema.json",
+          "packages/core/src/config/config.test.ts",
+          "packages/core/src/config/config.ts",
+          "packages/core/tsconfig.json",
+          "packages/core/tsup.config.ts",
+          "packages/recipes/package.json",
+          "packages/recipes/tsconfig.json",
+          "packages/recipes/tsup.config.ts",
+          "packages/spec/examples/config.json",
+          "packages/spec/package.json",
+          "packages/spec/schemas/config.schema.json",
+          "packages/testkit/package.json",
+          "packages/testkit/tsconfig.json",
+          "schemas/config.schema.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package-lock.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package.json",
+          "tsconfig.json",
+          "turbo.json",
+          "vitest.config.ts",
+          "vitest.workspace.ts"
+        ]
+      },
+      "digest": "sha256:2479724021eca3aea73b19449c3322af9c8eb0373b77aa53ff06eb84e97fe2a4",
+      "environment": {
+        "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+        "runtime": {
+          "architecture": "arm64",
+          "bun_major": null,
+          "node_major": "26",
+          "platform": "darwin"
+        }
+      },
+      "evidence": {
+        "details_digest": "sha256:bc6a84ca5e3d78c51360b63e34a418729c1840f956f65adc35a2a2a38731becd",
+        "digest": "sha256:4095cade8128b7e457c20f61b00e721685323b6abd630efb2e08586a8f1ebf8a",
+        "references": [
+          {
+            "digest": "sha256:911981b3a01694d97959f5a40d956eae1bf06f32454783093429055261e65aa4",
+            "fragment": "check-1",
+            "path": ".agentplane/tasks/202610142302-3PJHSP/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610142302-3PJHSP/supervision/declared-checks.json#check-1",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:911981b3a01694d97959f5a40d956eae1bf06f32454783093429055261e65aa4",
+            "fragment": "check-2",
+            "path": ".agentplane/tasks/202610142302-3PJHSP/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610142302-3PJHSP/supervision/declared-checks.json#check-2",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:911981b3a01694d97959f5a40d956eae1bf06f32454783093429055261e65aa4",
+            "fragment": "check-3",
+            "path": ".agentplane/tasks/202610142302-3PJHSP/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610142302-3PJHSP/supervision/declared-checks.json#check-3",
+            "source": "filesystem"
+          }
+        ]
+      },
+      "implementation": {
+        "base_sha": "d886917970bc0724b419074b7d575d47d9c95c1b",
+        "digest": "sha256:f1df228521745247e4a38e3c7fd42960ed68a52337a831802a9d745735037795",
+        "strategy": "branch_diff",
+        "target_sha": "7dd6065d4a126c64df114a1a650afc69ee2a21cb"
+      }
+    },
+    "concurrency": {
+      "digest": "sha256:f7e8ea1f8f5a61db83de33358b5265b0e2158a37fcfd231094ce77f226212d4b",
+      "execution": {
+        "authoritative_task_source": "task_worktree",
+        "base_ref": "main",
+        "base_sha": "d886917970bc0724b419074b7d575d47d9c95c1b",
+        "digest": "sha256:29f71f3310b141db5543f2186c524d7fadd03baf15edac1fbef088c8230f1095",
+        "primary_task_id": "202610142302-3PJHSP",
+        "reason_codes": [
+          "agent_preferred_branch_pr",
+          "effect_public_api",
+          "effect_security_boundary",
+          "repository_branch_pr_floor"
+        ],
+        "repository_mode": "branch_pr",
+        "requested_mode": "branch_pr",
+        "route_source": "execution_contract",
+        "selected_mode": "branch_pr",
+        "task_ids": [
+          "202610142302-3PJHSP"
+        ]
+      },
+      "task": {
+        "capability": {
+          "digest": "sha256:4d57c30a69d77eb0256f3b4281eb8ac60c655827bec8ebadc3f30af54375d7a5"
+        },
+        "checks": {
+          "digest": "sha256:177b4ece9f895a876d302282ccbbefd2d1078024ab1da27f9dac8455ab24cd18",
+          "required_check_ids": [
+            "affected_unit_integration",
+            "critical_paths",
+            "full_regression",
+            "task_outcome"
+          ],
+          "verification_contract_digest": "sha256:3676da09eacff020acce7bf2e23ec659dc962b89baeb3c22b267c17a1de34d83"
+        },
+        "digest": "sha256:ac98a5ce52f9a4a43933fdfe2d5c19618fc3cd91d2c4deae8fd3ca86c6954905",
+        "kind": "agentplane.native_task_identity",
+        "plan": {
+          "approval_state": "approved",
+          "approved_digest": "sha256:c5745cfcf4b602d381c58bc683e43fd7981ec1d1840c6344e5f958f45f87f046",
+          "digest": "sha256:c5745cfcf4b602d381c58bc683e43fd7981ec1d1840c6344e5f958f45f87f046",
+          "revision": 1
+        },
+        "policy": {
+          "digest": "sha256:19b02807e7eef1d25b39b2639cee8872937d5a851abbd369bf46a6b065629302"
+        },
+        "schema_version": 1,
+        "task_id": "202610142302-3PJHSP"
+      }
+    },
+    "digest": "sha256:d8dff141b060fad3fc4528242804457534d443d56ffb4656d3e0c36bfe88d81c",
+    "kind": "task_verification_input",
+    "obligations": {
+      "digest": "sha256:e86f8ad163b822db311a92dc8cc0f380f4b26554af95ee3ad81d5224a462adbe",
+      "required_check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "full_regression",
+        "task_outcome"
+      ],
+      "verification_contract_digest": "sha256:3676da09eacff020acce7bf2e23ec659dc962b89baeb3c22b267c17a1de34d83",
+      "verify_steps_digest": "sha256:fe603d6d4d9bfc0a59c5bbbf0b4c8c2bb8f731cda18cdae1e36bdc61a3c5c981"
+    },
+    "schema_version": 5
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: canonical Task Kernel final checks passed.",
+  "recorded_at": "2026-10-15T00:54:11.688Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun run test:project agentplane packages/agentplane/src/commands/task/roadmap-common-recovery.test.ts packages/agentplane/src/commands/task/roadmap-integration-parity.test.ts packages/agentplane/src/commands/task/roadmap-advance-one-step.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Run `npm run ci:local:full`. Expected: it succeeds and confirms the requested outcome for this task.\n4. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.",
+  "scope_digest": "sha256:fe603d6d4d9bfc0a59c5bbbf0b4c8c2bb8f731cda18cdae1e36bdc61a3c5c981",
+  "task_id": "202610142302-3PJHSP",
+  "verification_command": "agentplane verify 202610142302-3PJHSP --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
