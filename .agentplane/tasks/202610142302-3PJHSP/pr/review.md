@@ -6,14 +6,14 @@ Created: 2026-10-15T00:16:46.532Z
 
 - Task: `202610142302-3PJHSP`
 - Title: Recover interrupted integration intent for completed canonical Task (issue6152)
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610142302-3PJHSP/recover-interrupted-integration-intent-for-compl`
 - Canonical task record: `.agentplane/tasks/202610142302-3PJHSP/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

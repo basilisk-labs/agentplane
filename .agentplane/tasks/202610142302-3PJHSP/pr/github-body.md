@@ -15,8 +15,8 @@ Fix issue6152: canonical COMPLETED Task must have evidence-bound public integrat
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>
