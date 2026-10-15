@@ -14,6 +14,8 @@ const mocks = vi.hoisted(() => ({
   execute: vi.fn(),
   readEnvelope: vi.fn(),
   recoverSuspension: vi.fn(),
+  reconcile: vi.fn(),
+  kernelRead: vi.fn(),
 }));
 
 vi.mock("../shared/route-decision.js", () => ({ buildTaskRouteDecision: mocks.decide }));
@@ -29,12 +31,28 @@ vi.mock("./kernel-operational-projection.js", () => ({
 }));
 vi.mock("./kernel-controller-handoff.js", () => ({
   recoverCanonicalControllerSuspension: mocks.recoverSuspension,
+  recoverCanonicalControllerSuspensions: vi.fn(),
+  resolveCanonicalControllerCommand: ({ command }: { command: unknown }) =>
+    Promise.resolve(command),
   withCanonicalControllerSuspendedForOperation: vi.fn(),
 }));
 vi.mock("../shared/task-backend.js", async (importOriginal) => ({
   ...(await importOriginal<typeof TaskBackendModule>()),
   resolveCommandGitCommonDir: () => Promise.resolve("/repo/.git"),
+  resolveTaskOwnerCommandContext: ({ ctx }: { ctx: unknown }) => Promise.resolve(ctx),
 }));
+
+vi.mock("../../adapters/task-backend/kernel-record.js", () => ({
+  readKernelRecord: mocks.kernelRead,
+}));
+vi.mock("./execution-authority-context.js", () => ({
+  resolveLogicalRepositoryIdentity: () => Promise.resolve("repository"),
+}));
+vi.mock("./external-agent-workflow-recovery.js", () => ({
+  reconcileIntegrationEffect: mocks.reconcile,
+  requireIntegrationEffectResolution: vi.fn(),
+}));
+import { makeRunTaskAdvanceHandler } from "./advance.command.js";
 
 import { buildAgentActionPacket } from "./agent-action-packet.js";
 import {
@@ -260,5 +278,66 @@ describe("0.7.11 hosted integration parity", () => {
       state: "PREPARED",
       idempotency_key: `task.hosted_close.finalize:${TASK_ID}:exact`,
     });
+  });
+});
+
+describe("canonical completed public workflow recovery", () => {
+  it("returns the recovery boundary without advancing or mutating canonical completion", async () => {
+    const completed = { aggregate: { state: "COMPLETED" }, digest: "completed" };
+    const getTask = vi.fn().mockResolvedValue({ id: TASK_ID });
+    mocks.kernelRead.mockReturnValue({ kind: "canonical", record: completed });
+    mocks.reconcile.mockResolvedValue({ task_id: TASK_ID, verdict: "not_applied", replay: false });
+    const log = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+    try {
+      const run = makeRunTaskAdvanceHandler({
+        getContext: () =>
+          Promise.resolve({
+            resolvedProject: { gitRoot: "/repo" },
+            taskBackend: { getTask },
+          } as never),
+      });
+      await expect(
+        run(
+          {} as never,
+          {
+            taskId: TASK_ID,
+            remote: true,
+            workflowRecovery: "/reviewed.json",
+          } as never,
+        ),
+      ).resolves.toBe(0);
+      expect(mocks.reconcile).toHaveBeenCalledWith(
+        expect.objectContaining({
+          canonical_record: completed,
+          task_id: TASK_ID,
+          input_path: "/reviewed.json",
+        }),
+      );
+      expect(completed.aggregate.state).toBe("COMPLETED");
+      expect(mocks.admitted).not.toHaveBeenCalled();
+    } finally {
+      log.mockRestore();
+    }
+  });
+  it("rejects canonical active Tasks before recovery", async () => {
+    mocks.kernelRead.mockReturnValue({
+      kind: "canonical",
+      record: { aggregate: { state: "ACTIVE" } },
+    });
+    mocks.reconcile.mockClear();
+    const run = makeRunTaskAdvanceHandler({
+      getContext: () =>
+        Promise.resolve({
+          resolvedProject: { gitRoot: "/repo" },
+          taskBackend: { getTask: () => Promise.resolve({ id: TASK_ID }) },
+        } as never),
+    });
+    await expect(
+      run(
+        {} as never,
+        { taskId: TASK_ID, remote: true, workflowRecovery: "/reviewed.json" } as never,
+      ),
+    ).rejects.toThrow("already completed");
+    expect(mocks.reconcile).not.toHaveBeenCalled();
   });
 });

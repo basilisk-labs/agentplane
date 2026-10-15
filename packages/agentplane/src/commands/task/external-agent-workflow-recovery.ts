@@ -1,6 +1,8 @@
 import { isoTimestampSchema } from "@agentplaneorg/core/schemas";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import { hostname, userInfo } from "node:os";
+import { readKernelRecord, type KernelRecord } from "../../adapters/task-backend/kernel-record.js";
 import { z } from "zod";
 import { gitIsAncestor, gitRevParse } from "@agentplaneorg/core/git";
 import {
@@ -12,7 +14,13 @@ import {
   type SupervisorExecutionEpisodeJournal,
 } from "@agentplaneorg/core/schemas";
 import { CliError } from "../../shared/errors.js";
-import { readIntegrationQueue, withIntegrationQueueMutex } from "../pr/integrate/queue-state.js";
+import {
+  markQueueEntry,
+  writeIntegrationQueue,
+  readIntegrationQueue,
+  withIntegrationQueueMutex,
+  type IntegrationQueueEntry,
+} from "../pr/integrate/queue-state.js";
 import { observeExistingChangeRequestByNumber } from "../pr/internal/change-request-provider.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import {
@@ -62,6 +70,7 @@ const resolutionSchema = z
     current_state_fingerprint: digest,
     identity: identitySchema,
     verdict: z.enum(["applied", "not_applied"]),
+    execution_receipt_ref: text.optional(),
     operator: z
       .object({
         kind: z.literal("operator_decision"),
@@ -237,11 +246,117 @@ function assertOriginalIdentity(
   }
 }
 
+// Historical process identity is explicit operator evidence, not retroactively
+// native-authenticated provenance. Bind the complete retained receipt, never a
+// caller-selected PID subset, and reject any live, reused or unobservable PID.
+function assertAbandonedClaim(
+  resolution: WorkflowEffectResolution,
+  operation: Operation,
+  entry: IntegrationQueueEntry,
+): void {
+  const evidence = resolution.evidence.find(
+    (item) => item.ref === resolution.execution_receipt_ref,
+  );
+  if (!evidence || resolution.evidence.filter((item) => item.ref === evidence.ref).length !== 1)
+    reject("one digest-bound execution receipt is required.");
+  const processIdentity = z
+    .object({
+      pid: z.number().int().positive(),
+      ppid: z.number().int().nonnegative(),
+      pgid: z.number().int().positive(),
+      session: text,
+      start: text,
+    })
+    .passthrough();
+  const parsed = z
+    .object({
+      journal_after: z.unknown(),
+      queue_after: z.object({ schema_version: z.literal(1), entries: z.array(z.unknown()) }),
+      steps: z.array(
+        z
+          .object({
+            argv: z.array(text),
+            started_at: z.number().finite(),
+            finished_at: z.number().finite(),
+            pid: z.number().int().positive(),
+            root_start_identity: processIdentity,
+            owned_history: z.array(processIdentity).min(1),
+            exit_code: z.number().int(),
+            reaped: z.literal(true),
+            reader_stopped: z.literal(true),
+            remaining_owned: z.tuple([]),
+          })
+          .passthrough(),
+      ),
+    })
+    .passthrough()
+    .safeParse(JSON.parse(evidence.content));
+  if (!parsed.success) reject("the execution receipt is incomplete.");
+  const receipt = parsed.data;
+  const original = validateSupervisorExecutionEpisodeJournal(receipt.journal_after);
+  if (
+    original.digest !== resolution.journal_digest ||
+    unresolvedIntegrationIntent(original)?.operation_key !== operation.operation_key ||
+    digestSupervisorEpisodeValue(original.operations.at(-1)?.recovery) !==
+      digestSupervisorEpisodeValue(operation.recovery) ||
+    receipt.queue_after.entries.filter(
+      (item) => digestSupervisorEpisodeValue(item) === digestSupervisorEpisodeValue(entry),
+    ).length !== 1
+  )
+    reject("the receipt does not bind the original intent and exact queue claim.");
+  assertOriginalIdentity(original.operations.at(-1)!, resolution, resolution.repository_root);
+  const steps = receipt.steps.filter(
+    (step) =>
+      step.argv.length === 8 &&
+      step.argv[2] === "--no-update-check" &&
+      JSON.stringify(step.argv.slice(3)) ===
+        JSON.stringify(["task", "advance", resolution.task_id, "--remote", "--agent-json"]),
+  );
+  const step = steps[0];
+  if (
+    steps.length !== 1 ||
+    !step ||
+    step.exit_code === 0 ||
+    step.finished_at < step.started_at ||
+    Date.parse(operation.started_at) < step.started_at * 1000 ||
+    Date.parse(operation.started_at) > step.finished_at * 1000 ||
+    entry.claimed_by !== `${userInfo().username}@${hostname()}` ||
+    !entry.claim_token ||
+    !entry.claimed_at ||
+    !entry.lease_expires_at ||
+    !Number.isFinite(Date.parse(entry.claimed_at)) ||
+    !Number.isFinite(Date.parse(entry.lease_expires_at)) ||
+    Date.parse(entry.claimed_at) < Date.parse(operation.started_at) ||
+    Date.parse(entry.claimed_at) > step.finished_at * 1000 ||
+    Date.parse(entry.lease_expires_at) > Date.now() ||
+    Date.parse(entry.lease_expires_at) < Date.parse(entry.claimed_at) ||
+    step.root_start_identity.pid !== step.pid ||
+    step.root_start_identity.pgid !== step.pid ||
+    step.owned_history.filter(
+      (item) =>
+        digestSupervisorEpisodeValue(item) ===
+        digestSupervisorEpisodeValue(step.root_start_identity),
+    ).length !== 1 ||
+    new Set(step.owned_history.map((item) => item.pid)).size !== step.owned_history.length
+  )
+    reject("the receipt does not prove an expired, local, abandoned own claim.");
+  for (const item of step.owned_history) {
+    try {
+      process.kill(item.pid, 0);
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === "ESRCH") continue;
+      reject("a receipt worker cannot be observed safely.");
+    }
+    reject("a receipt worker PID is live or reused.");
+  }
+}
+
 export async function reconcileIntegrationEffect(opts: {
   command: CommandContext;
   task_id: string;
   input_path: string;
   decide: () => Promise<TaskRouteDecision>;
+  canonical_record?: KernelRecord;
 }): Promise<{
   task_id: string;
   operation_key: string;
@@ -276,14 +391,23 @@ export async function reconcileIntegrationEffect(opts: {
       verdict: resolution.verdict,
     };
     if (journal.task_id !== opts.task_id || !operation) reject("the original operation is absent.");
-    if (operation.status !== "intent") {
-      if (operation.result_digest === digestSupervisorEpisodeValue(result))
-        return { ...output, replay: true };
+    const canonical = opts.canonical_record;
+    const replay = operation.status !== "intent";
+    if (replay && operation.result_digest !== digestSupervisorEpisodeValue(result))
       reject("the operation already has a different durable outcome.");
-    }
+    if (replay && !canonical) return { ...output, replay: true };
     if (
-      journal.digest !== resolution.journal_digest ||
-      unresolvedIntegrationIntent(journal) !== operation
+      canonical &&
+      replay &&
+      (operation.status !== "failed" ||
+        journal.operations.at(-1) !== operation ||
+        journal.stop?.reason !== "operation_failed")
+    )
+      reject("only the exact terminalized integration intent may finish bookkeeping.");
+    if (
+      !replay &&
+      (journal.digest !== resolution.journal_digest ||
+        unresolvedIntegrationIntent(journal) !== operation)
     ) {
       reject("the journal changed or does not own this unresolved integration intent.");
     }
@@ -300,15 +424,36 @@ export async function reconcileIntegrationEffect(opts: {
       const current = await opts.decide();
       if (
         current.task.id !== opts.task_id ||
-        current.workflowStep.preconditionFingerprint.digest !==
-          resolution.current_state_fingerprint ||
+        (!replay &&
+          current.workflowStep.preconditionFingerprint.digest !==
+            resolution.current_state_fingerprint) ||
         path.resolve(current.workspace.baseCheckoutPath ?? opts.command.resolvedProject.gitRoot) !==
           path.resolve(baseRoot)
       ) {
         reject("the current task route changed.");
       }
+      const assertCompleted = async () => {
+        if (!canonical) return;
+        const task = await opts.command.taskBackend.getTask(opts.task_id);
+        const read = task && readKernelRecord(task, canonical.repository_identity);
+        if (
+          read?.kind !== "canonical" ||
+          read.record.aggregate.state !== "COMPLETED" ||
+          read.record.digest !== canonical.digest ||
+          resolution.verdict !== "not_applied"
+        )
+          reject("canonical recovery requires the same completed Task and not_applied only.");
+        if (!operation.recovery) reject("canonical recovery requires the original snapshot.");
+      };
+      await assertCompleted();
       const queue = await readIntegrationQueue(baseRoot);
-      if (queue.entries.some((item) => item.status === "claimed" || item.status === "handoff"))
+      if (
+        queue.entries.some(
+          (item) =>
+            (item.status === "claimed" || item.status === "handoff") &&
+            (!canonical || item.task_id !== opts.task_id),
+        )
+      )
         reject("the integration queue still has an active owner.");
       const entry = queue.entries.find((item) => item.task_id === opts.task_id);
       const expected = resolution.identity;
@@ -319,11 +464,26 @@ export async function reconcileIntegrationEffect(opts: {
         entry.base_sha !== expected.base_sha ||
         entry.pr_number !== expected.pr_number ||
         entry.pr_url !== expected.pr_url ||
-        entry.claimed_by ||
-        entry.claim_token ||
-        entry.active_operation
+        (!canonical && (entry.claimed_by || entry.claim_token || entry.active_operation))
       )
         reject("queue identity changed or retained a claim.");
+      const releaseReason = `integration_not_applied:${digestSupervisorEpisodeValue(result)}`;
+      const released =
+        canonical &&
+        replay &&
+        entry.status === "queued" &&
+        entry.reason === releaseReason &&
+        !entry.claimed_by &&
+        !entry.claim_token &&
+        !entry.active_operation;
+      if (canonical && !released) {
+        if (
+          (entry.status !== "claimed" && entry.status !== "handoff") ||
+          entry.active_operation !== "integration"
+        )
+          reject("the exact integration claim is absent.");
+        assertAbandonedClaim(resolution, operation, entry);
+      }
       const observed = await observeExistingChangeRequestByNumber({
         gitRoot: baseRoot,
         prNumber: expected.pr_number,
@@ -348,14 +508,17 @@ export async function reconcileIntegrationEffect(opts: {
           // GitHub reports a test merge SHA before an open PR is merged.
           (pr.provider !== "github" && pr.mergeCommit) ||
           pr.mergedAt ||
-          (entry.status !== "queued" && entry.status !== "rework") ||
+          (!canonical && entry.status !== "queued" && entry.status !== "rework") ||
           pr.baseSha !== expected.base_sha ||
           (await gitRevParse(baseRoot, [expected.base])) !== expected.base_sha ||
           (await gitRevParse(baseRoot, [expected.branch])) !== expected.head_sha
         )
           reject("the not_applied verdict contradicts provider, queue, or Git evidence.");
         const step = current.workflowStep;
-        if (step.kind !== "agent_episode" || step.episode.purpose !== "implementation_rework")
+        if (
+          !canonical &&
+          (step.kind !== "agent_episode" || step.episode.purpose !== "implementation_rework")
+        )
           reject("the fresh route does not authorize semantic implementation rework.");
       } else if (
         pr.status !== "MERGED" ||
@@ -374,11 +537,29 @@ export async function reconcileIntegrationEffect(opts: {
       const finalRoute = await opts.decide();
       if (
         finalRoute.workflowStep.preconditionFingerprint.digest !==
-          resolution.current_state_fingerprint ||
+          current.workflowStep.preconditionFingerprint.digest ||
+        (!replay &&
+          finalRoute.workflowStep.preconditionFingerprint.digest !==
+            resolution.current_state_fingerprint) ||
         digestSupervisorEpisodeValue(await readIntegrationQueue(baseRoot)) !==
           digestSupervisorEpisodeValue(queue)
       ) {
         reject("the task route or queue changed during provider reconciliation.");
+      }
+      await assertCompleted();
+      if (
+        replay &&
+        validateSupervisorExecutionEpisodeJournal(await store.read()).digest !== journal.digest
+      )
+        reject("the journal changed during bookkeeping recovery.");
+      if (released) return { ...output, replay: true };
+      if (canonical) assertAbandonedClaim(resolution, operation, entry);
+      if (replay) {
+        await writeIntegrationQueue(
+          baseRoot,
+          markQueueEntry(queue, opts.task_id, "queued", releaseReason),
+        );
+        return { ...output, replay: true };
       }
       const running =
         journal.status === "stopped"
@@ -394,15 +575,22 @@ export async function reconcileIntegrationEffect(opts: {
         failed: resolution.verdict === "not_applied",
       });
       const next =
-        resolution.verdict === "not_applied"
+        resolution.verdict === "not_applied" && !canonical
           ? prepareReplacementSupervisorExecutionEpisodeAfterFailure({
               journal: completed,
               state_fingerprint_digest: resolution.current_state_fingerprint,
             })
           : completed;
-      if (!(await store.compareAndSwap(journal.digest, next)))
+      if (!replay && !(await store.compareAndSwap(journal.digest, next)))
         reject("the journal changed before recovery could be committed.");
-      return { ...output, replay: false };
+      // Persist the outcome first. A failed queue write retains the blocked
+      // claim, and the same resolution may finish only this bookkeeping.
+      if (canonical)
+        await writeIntegrationQueue(
+          baseRoot,
+          markQueueEntry(queue, opts.task_id, "queued", releaseReason),
+        );
+      return { ...output, replay };
     });
   } finally {
     await lease.release();
