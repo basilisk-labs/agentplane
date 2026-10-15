@@ -253,6 +253,7 @@ function assertAbandonedClaim(
   resolution: WorkflowEffectResolution,
   operation: Operation,
   entry: IntegrationQueueEntry,
+  checkout: string,
 ): void {
   const evidence = resolution.evidence.find(
     (item) => item.ref === resolution.execution_receipt_ref,
@@ -304,7 +305,7 @@ function assertAbandonedClaim(
     ).length !== 1
   )
     reject("the receipt does not bind the original intent and exact queue claim.");
-  assertOriginalIdentity(original.operations.at(-1)!, resolution, resolution.repository_root);
+  assertOriginalIdentity(original.operations.at(-1)!, resolution, checkout);
   const steps = receipt.steps.filter(
     (step) =>
       step.argv.length === 8 &&
@@ -411,7 +412,6 @@ export async function reconcileIntegrationEffect(opts: {
     ) {
       reject("the journal changed or does not own this unresolved integration intent.");
     }
-    assertOriginalIdentity(operation, resolution, opts.command.resolvedProject.gitRoot);
     const observedAt = Date.parse(resolution.operator.observed_at);
     if (observedAt < Date.parse(operation.started_at) || observedAt > Date.now())
       reject("operator evidence predates the intent or is future-dated.");
@@ -420,8 +420,29 @@ export async function reconcileIntegrationEffect(opts: {
     const baseRoot = initial.workspace.baseCheckoutPath ?? opts.command.resolvedProject.gitRoot;
     if (path.resolve(baseRoot) !== path.resolve(resolution.repository_root))
       reject("repository ownership changed.");
+    const checkout = canonical
+      ? initial.workspace.taskWorktreePath
+      : opts.command.resolvedProject.gitRoot;
+    if (!checkout) reject("the authoritative Task checkout is unavailable.");
+    const assertWorkspace = (route: TaskRouteDecision) => {
+      if (
+        canonical &&
+        (route.task.id !== opts.task_id ||
+          !route.workspace.taskWorktreePath ||
+          path.resolve(route.workspace.taskWorktreePath) !== path.resolve(checkout) ||
+          route.workspace.prBranch !== resolution.identity.branch ||
+          path.resolve(route.workspace.baseCheckoutPath ?? opts.command.resolvedProject.gitRoot) !==
+            path.resolve(baseRoot) ||
+          (path.resolve(opts.command.resolvedProject.gitRoot) !== path.resolve(baseRoot) &&
+            path.resolve(opts.command.resolvedProject.gitRoot) !== path.resolve(checkout)))
+      )
+        reject("the authoritative Task checkout ownership changed.");
+    };
+    assertWorkspace(initial);
+    assertOriginalIdentity(operation, resolution, checkout);
     return await withIntegrationQueueMutex(baseRoot, async () => {
       const current = await opts.decide();
+      assertWorkspace(current);
       if (
         current.task.id !== opts.task_id ||
         (!replay &&
@@ -482,7 +503,7 @@ export async function reconcileIntegrationEffect(opts: {
           entry.active_operation !== "integration"
         )
           reject("the exact integration claim is absent.");
-        assertAbandonedClaim(resolution, operation, entry);
+        assertAbandonedClaim(resolution, operation, entry, checkout);
       }
       const observed = await observeExistingChangeRequestByNumber({
         gitRoot: baseRoot,
@@ -535,6 +556,7 @@ export async function reconcileIntegrationEffect(opts: {
         reject("the provider merge is not present on the local integration base.");
       }
       const finalRoute = await opts.decide();
+      assertWorkspace(finalRoute);
       if (
         finalRoute.workflowStep.preconditionFingerprint.digest !==
           current.workflowStep.preconditionFingerprint.digest ||
@@ -553,7 +575,7 @@ export async function reconcileIntegrationEffect(opts: {
       )
         reject("the journal changed during bookkeeping recovery.");
       if (released) return { ...output, replay: true };
-      if (canonical) assertAbandonedClaim(resolution, operation, entry);
+      if (canonical) assertAbandonedClaim(resolution, operation, entry, checkout);
       if (replay) {
         await writeIntegrationQueue(
           baseRoot,

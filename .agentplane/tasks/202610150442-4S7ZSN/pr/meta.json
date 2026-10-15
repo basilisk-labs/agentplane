@@ -1,0 +1,21 @@
+{
+  "base": "task/202610142302-3PJHSP/recover-interrupted-integration-intent-for-compl",
+  "branch": "task/202610150442-4S7ZSN/bind-canonical-integration-recovery-to-the-resol",
+  "created_at": "2026-10-15T06:03:34.407Z",
+  "diffstat_sha256": "sha256:3faff5e2aac7d9a35894955229957d6ccaebfa8b018464b39bd7e540cf9649c4",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610150442-4S7ZSN",
+  "updated_at": "2026-10-15T06:03:34.407Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

@@ -321,14 +321,24 @@ vi.mock("@agentplaneorg/core/git", async (original) => ({
   gitRevParse: recovery.rev,
   gitIsAncestor: vi.fn(),
 }));
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { hostname, tmpdir, userInfo } from "node:os";
 import path from "node:path";
 import { reconcileIntegrationEffect } from "./external-agent-workflow-recovery.js";
 type KernelRecord = RecordModule.KernelRecord;
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 
-async function recoveryFixture() {
+async function recoveryFixture(
+  options: {
+    splitCheckout?: boolean;
+    invocation?: "base" | "task";
+    snapshotCheckout?: string;
+  } = {},
+) {
+  const dir = await mkdtemp(path.join(tmpdir(), "ap-recovery-"));
+  const baseRoot = options.splitCheckout ? dir : "/repo";
+  const taskCheckout = options.splitCheckout ? path.join(dir, "task-checkout") : "/repo";
+  if (options.splitCheckout) await mkdir(taskCheckout);
   const taskId = "task-1";
   const fp = fingerprint("current-route");
   const before = fingerprint("original-route");
@@ -401,7 +411,7 @@ async function recoveryFixture() {
       schema_version: 1,
       kind: "integration_run_next",
       task_id: taskId,
-      repository_root: "/repo",
+      repository_root: options.snapshotCheckout ?? taskCheckout,
       queue: {
         present: true,
         branch: identity.branch,
@@ -487,7 +497,7 @@ async function recoveryFixture() {
     schema_version: 1,
     kind: "integration_effect_resolution",
     task_id: taskId,
-    repository_root: "/repo",
+    repository_root: baseRoot,
     journal_digest: original.digest,
     operation_key: operation.operation_key,
     precondition_fingerprint_digest: before,
@@ -518,10 +528,17 @@ async function recoveryFixture() {
   } as unknown as KernelRecord;
   recovery.kernel.mockImplementation(() => ({ kind: "canonical", record: canonical }));
   const getTask = vi.fn().mockResolvedValue({ id: taskId });
-  const command = { resolvedProject: { gitRoot: "/repo" }, taskBackend: { getTask } };
+  const command = {
+    resolvedProject: { gitRoot: options.invocation === "task" ? taskCheckout : baseRoot },
+    taskBackend: { getTask },
+  };
   const route = {
     task: { id: taskId },
-    workspace: { baseCheckoutPath: "/repo" },
+    workspace: {
+      baseCheckoutPath: baseRoot,
+      taskWorktreePath: taskCheckout,
+      prBranch: identity.branch,
+    },
     workflowStep: {
       kind: "wait",
       id: "wait.integration_queue",
@@ -564,7 +581,6 @@ async function recoveryFixture() {
   recovery.rev.mockImplementation((_root, refs) =>
     Promise.resolve(refs[0] === "main" ? identity.base_sha : identity.head_sha),
   );
-  const dir = await mkdtemp(path.join(tmpdir(), "ap-recovery-"));
   const input = path.join(dir, "resolution.json");
   const save = async (updateDigest = true) => {
     resolution.evidence[0]!.content = JSON.stringify(receipt);
@@ -583,6 +599,8 @@ async function recoveryFixture() {
     receipt,
     entry,
     original,
+    command,
+    route,
     decide,
     cas,
     release,
@@ -617,6 +635,48 @@ describe("completed integration intent operator reconciliation", () => {
     vi.restoreAllMocks();
   });
 
+  it.each(["base", "task"] as const)(
+    "reconciles the original Task checkout with a distinct queue base from %s",
+    async (invocation) => {
+      await fixture.cleanup();
+      fixture = await recoveryFixture({ splitCheckout: true, invocation });
+      expect(fixture.route.workspace.taskWorktreePath).not.toBe(fixture.resolution.repository_root);
+      await expect(fixture.run()).resolves.toMatchObject({ verdict: "not_applied", replay: false });
+      expect(fixture.cas).toHaveBeenCalledOnce();
+      expect(fixture.readQueue().entries[0]).not.toHaveProperty("claim_token");
+      expect(fixture.canonical.aggregate.state).toBe("COMPLETED");
+    },
+  );
+
+  it.each(["invocation", "snapshot", "missing", "checkout", "branch", "task", "locked", "final"])(
+    "rejects %s Task checkout ownership without a durable outcome",
+    async (change) => {
+      await fixture.cleanup();
+      fixture = await recoveryFixture({
+        splitCheckout: true,
+        ...(change === "snapshot" ? { snapshotCheckout: "/unrelated" } : {}),
+      });
+      const changed = structuredClone(fixture.route);
+      if (change === "invocation") fixture.command.resolvedProject.gitRoot = "/unrelated";
+      if (change === "missing") changed.workspace.taskWorktreePath = null;
+      if (["checkout", "locked", "final"].includes(change))
+        changed.workspace.taskWorktreePath = "/unrelated";
+      if (change === "branch") changed.workspace.prBranch = "task/another-task/work";
+      if (change === "task") changed.task.id = "another-task";
+      if (change === "locked")
+        fixture.decide.mockResolvedValueOnce(fixture.route).mockResolvedValueOnce(changed);
+      else if (change === "final")
+        fixture.decide
+          .mockResolvedValueOnce(fixture.route)
+          .mockResolvedValueOnce(fixture.route)
+          .mockResolvedValueOnce(changed);
+      else fixture.decide.mockResolvedValue(changed);
+      await expect(fixture.run()).rejects.toThrow();
+      expect(fixture.cas).not.toHaveBeenCalled();
+      expect(recovery.writeQueue).not.toHaveBeenCalled();
+    },
+  );
+
   it("commits the exact journal before releasing only its claim and preserves completion/history", async () => {
     recovery.writeQueue.mockImplementationOnce((_root, next) => {
       expect(fixture.readJournal().operations.at(-1)?.status).toBe("failed");
@@ -647,7 +707,7 @@ describe("completed integration intent operator reconciliation", () => {
     expect(fixture.readJournal().operations.at(-1)?.status).toBe("failed");
     fixture.decide.mockResolvedValue({
       task: { id: "task-1" },
-      workspace: { baseCheckoutPath: "/repo" },
+      workspace: { ...fixture.route.workspace },
       workflowStep: {
         kind: "wait",
         preconditionFingerprint: { digest: fingerprint("after-durable-resolution") },
@@ -725,7 +785,7 @@ describe("completed integration intent operator reconciliation", () => {
       if (change === "fingerprint")
         fixture.decide.mockResolvedValue({
           task: { id: "task-1" },
-          workspace: { baseCheckoutPath: "/repo" },
+          workspace: { ...fixture.route.workspace },
           workflowStep: { preconditionFingerprint: { digest: fingerprint("changed") } },
         });
       if (change === "busy") recovery.lease.mockResolvedValue(null);
