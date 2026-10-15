@@ -1,10 +1,11 @@
 ---
 id: "202610142156-4MGWZM"
 title: "Bound GitHub CI aggregate job-output projection"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 42
+revision: 43
 origin:
   system: "manual"
 depends_on: []
@@ -45,6 +46,22 @@ quality_review:
     - "ROOT independently rehashed148 deduplicated artifact/raw references, all25 closed zero-exit wrapper stages and50 raw wrapper files, and freshly observed all1914 retained PID/start pairs absent. There are23 recursive native manifests; four nested exit2/3 results are intentional verification-contract fixtures and their parent core group passed. Own APFSX volume was authenticated and detached, with mount absent. No evaluator tests or lifecycle actions were run."
     - "Genuine native SOURCE run009 passed38 focused checks, run010 typecheck passed, and run011 FULL passed all six groups in1132247ms. Core771 files7055PASS plus1 conditional network packaging SKIP; process-supervision all12PASS7804ms. Runtime36, five CLI chunks, critical Windows98 and coverage guard101 passed. The network packaging skip requires its existing explicit opt-in; no new skip or check omission was introduced."
     - "The corrected source and committed bytes/modes, original completed CI WorkItem, index and canonicalmain d886 were preserved. The separately qualified successor Node and linked closure were used for fresh native execution; prior dyld/missing-Node failures remain retained. Historical EPERM causality remains UNKNOWN. Passing the readiness test does not establish that historical cause."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:a2dc52b12e2e2cf96b3d2738e3402d06c069d2bed66f1428a5bd5346daf5baae"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-10-15T03:44:13.302Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -242,9 +259,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "29757addd936732c6deb10eea11a89c22147a214"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "1ba5f91889ec572fed21608451478e618fae943e"
+  message: "✅ 4MGWZM task: bound GitHub CI aggregate job-output projection"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -252,9 +272,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-15T03:44:13.302Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "1ba5f91889ec572fed21608451478e618fae943e"
 doc_version: 3
-doc_updated_at: "2026-10-15T02:08:47.522Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-15T03:44:13.302Z"
+doc_updated_by: "CODER"
 description: "Fix confirmed PR6147 CI output quota for 1316 paths: emit only six aggregate transport fields while preserving full verification/capability plan computation/stdout, full changed_files, required-job failure semantics and all floors. Add actual-producer large-input UTF16 regression. Preserve completed 1C3ZFG source25 and failures; no truncation/compression/skips/newmodule/deps/artifactlayer."
 sections:
   Summary: |-
@@ -389,6 +417,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:409b1240dfdb8900c192692e59aa595b1bf94d45bd94a76b7430ec5998fe3077"
     work_order_id: "sha256:170395fcc8102718012a3dee46ef2b527af9e018314c1ec329081f6ce8d04c3b"
+  implementation_commit:
+    hash: "29757addd936732c6deb10eea11a89c22147a214"
+    message: "🚧 4MGWZM task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "d886917970bc0724b419074b7d575d47d9c95c1b"
@@ -1762,3 +1793,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:a2dc52b12e2e2cf96b3d2738e3402d06c069d2bed66f1428a5bd5346daf5baae`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-10-15T03:44:13.302Z`
