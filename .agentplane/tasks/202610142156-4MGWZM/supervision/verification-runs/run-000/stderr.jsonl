@@ -1,0 +1,1 @@
+"$ vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/release/github-ci-plan.test.ts packages/agentplane/src/commands/release/github-ci-aggregate.test.ts packages/agentplane/src/commands/release/ci-workflow-contract.test.ts"
