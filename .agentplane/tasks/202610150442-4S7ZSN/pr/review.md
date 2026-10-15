@@ -12,8 +12,8 @@ Created: 2026-10-15T06:03:34.407Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:1b46a1689f8c6c9be1a958df84df7225bc7b096a710b939895f41df92c8319d5
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,9 +29,10 @@ Created: 2026-10-15T06:03:34.407Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../task/external-agent-workflow-recovery.ts       | 30 +++++++--
- .../commands/task/roadmap-common-recovery.test.ts  | 78 +++++++++++++++++++---
- 2 files changed, 95 insertions(+), 13 deletions(-)
+ .../task/external-agent-workflow-recovery.ts       | 258 ++++++++++-----------
+ .../commands/task/roadmap-common-recovery.test.ts  |  78 ++++++-
+ .../src/runner/process-supervision.test.ts         |  11 +
+ 3 files changed, 208 insertions(+), 139 deletions(-)
 ```
 
 </details>

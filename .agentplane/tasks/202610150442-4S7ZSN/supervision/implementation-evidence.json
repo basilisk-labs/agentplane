@@ -1,0 +1,66 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 53d9a96ecc8f688e1c83de0336624f3338bc97a8..ecf2f8bb15535da90859e16dc66fd53b72eb20eb",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 53d9a96ecc8f688e1c83de0336624f3338bc97a8..ecf2f8bb15535da90859e16dc66fd53b72eb20eb",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202610150442-4S7ZSN/README.md",
+        "A\t.agentplane/tasks/202610150442-4S7ZSN/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202610150442-4S7ZSN/pr/github-body.md",
+        "A\t.agentplane/tasks/202610150442-4S7ZSN/pr/github-title.txt",
+        "A\t.agentplane/tasks/202610150442-4S7ZSN/pr/meta.json",
+        "A\t.agentplane/tasks/202610150442-4S7ZSN/pr/review.md",
+        "A\t.agentplane/tasks/202610150442-4S7ZSN/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+        "M\tpackages/agentplane/src/commands/task/external-agent-workflow-recovery.ts",
+        "M\tpackages/agentplane/src/commands/task/roadmap-common-recovery.test.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "53d9a96ecc8f688e1c83de0336624f3338bc97a8",
+  "implementation_commit": "ecf2f8bb15535da90859e16dc66fd53b72eb20eb",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      "?? .agentplane/tasks/202610150442-4S7ZSN/README.md",
+      "?? .agentplane/tasks/202610150442-4S7ZSN/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610150442-4S7ZSN/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610150442-4S7ZSN/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      "?? .agentplane/tasks/202610150442-4S7ZSN/README.md",
+      "?? .agentplane/tasks/202610150442-4S7ZSN/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202610150442-4S7ZSN"
+}

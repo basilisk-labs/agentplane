@@ -33,68 +33,57 @@ import { resolveCommandGitCommonDir, type CommandContext } from "../shared/task-
 const text = z.string().trim().min(1);
 const digest = z.string().regex(/^sha256:[a-f0-9]{64}$/u);
 const sha = z.string().regex(/^(?:[a-f0-9]{40}|[a-f0-9]{64})$/u);
-const providerIdentity = z
-  .object({
-    provider: z.enum(["github", "gitlab"]),
-    hostname: text,
-    remote: text,
-    sourceProject: text,
-    targetProject: text,
-    sourceUrl: text,
-    targetUrl: text,
-  })
-  .strict();
-const identitySchema = z
-  .object({
-    branch: text,
-    head_sha: sha,
-    base: text,
-    base_sha: sha,
-    pr_number: z.number().int().positive(),
-    pr_url: text,
-    provider: providerIdentity,
-  })
-  .strict();
-const resolutionSchema = z
-  .object({
-    schema_version: z.literal(1),
-    kind: z.literal("integration_effect_resolution"),
-    task_id: text,
-    repository_root: text,
-    journal_digest: digest,
-    operation_key: digest,
-    precondition_fingerprint_digest: digest,
-    authority_ref: text,
-    authority_digest: digest,
-    effect_ref: text,
-    current_state_fingerprint: digest,
-    identity: identitySchema,
-    verdict: z.enum(["applied", "not_applied"]),
-    execution_receipt_ref: text.optional(),
-    operator: z
-      .object({
-        kind: z.literal("operator_decision"),
-        actor: text.refine(
-          (value) =>
-            !/^(agent|planner|executor|evaluator|coder|tester|orchestrator)$/iu.test(value),
-        ),
-        decision_ref: text,
-        observed_at: isoTimestampSchema(),
-      })
-      .strict(),
-    evidence: z
-      .array(
-        z
-          .object({
-            ref: text,
-            content: z.string().refine((value) => value.trim().length > 0),
-            digest,
-          })
-          .strict(),
-      )
-      .min(1),
-  })
-  .strict();
+const providerIdentity = z.strictObject({
+  provider: z.enum(["github", "gitlab"]),
+  hostname: text,
+  remote: text,
+  sourceProject: text,
+  targetProject: text,
+  sourceUrl: text,
+  targetUrl: text,
+});
+const identitySchema = z.strictObject({
+  branch: text,
+  head_sha: sha,
+  base: text,
+  base_sha: sha,
+  pr_number: z.number().int().positive(),
+  pr_url: text,
+  provider: providerIdentity,
+});
+const resolutionSchema = z.strictObject({
+  schema_version: z.literal(1),
+  kind: z.literal("integration_effect_resolution"),
+  task_id: text,
+  repository_root: text,
+  journal_digest: digest,
+  operation_key: digest,
+  precondition_fingerprint_digest: digest,
+  authority_ref: text,
+  authority_digest: digest,
+  effect_ref: text,
+  current_state_fingerprint: digest,
+  identity: identitySchema,
+  verdict: z.enum(["applied", "not_applied"]),
+  execution_receipt_ref: text.optional(),
+  operator: z.strictObject({
+    kind: z.literal("operator_decision"),
+    actor: text.refine(
+      (value) => !/^(agent|planner|executor|evaluator|coder|tester|orchestrator)$/iu.test(value),
+    ),
+    decision_ref: text,
+    observed_at: isoTimestampSchema(),
+  }),
+  evidence: z
+    .array(
+      z.strictObject({
+        ref: text,
+        content: z.string().refine((value) => value.trim().length > 0),
+        digest,
+      }),
+    )
+    .min(1),
+});
 type WorkflowEffectResolution = z.infer<typeof resolutionSchema>;
 type Operation = SupervisorExecutionEpisodeJournal["operations"][number];
 
@@ -175,46 +164,38 @@ function assertOriginalIdentity(
   if (!operation.recovery) return;
   const original = z
     .object({
-      operation_identity: z
-        .object({
-          id: z.literal("integration.run_next"),
-          type: z.literal("integration_run_next"),
-          params: z.object({ taskId: text }),
-          preconditionFingerprint: z.object({ digest }),
-          authorityRef: text,
-          idempotencyKey: text,
-        })
-        .passthrough(),
-      context: z
-        .object({
-          schema_version: z.literal(1),
-          kind: z.literal("integration_run_next"),
-          task_id: text,
-          repository_root: text,
-          queue: z
-            .object({
-              present: z.literal(true),
-              branch: text,
-              base: text,
-              headSha: sha,
-              baseSha: sha,
-              prNumber: z.number().int().positive(),
-            })
-            .passthrough(),
-          provider: z.object({
-            state: z.literal("found"),
-            pr: z
-              .object({
-                identity: providerIdentity,
-                prNumber: z.number().int().positive(),
-                prUrl: text,
-                headSha: sha,
-                base: text,
-              })
-              .passthrough(),
+      operation_identity: z.looseObject({
+        id: z.literal("integration.run_next"),
+        type: z.literal("integration_run_next"),
+        params: z.object({ taskId: text }),
+        preconditionFingerprint: z.object({ digest }),
+        authorityRef: text,
+        idempotencyKey: text,
+      }),
+      context: z.looseObject({
+        schema_version: z.literal(1),
+        kind: z.literal("integration_run_next"),
+        task_id: text,
+        repository_root: text,
+        queue: z.looseObject({
+          present: z.literal(true),
+          branch: text,
+          base: text,
+          headSha: sha,
+          baseSha: sha,
+          prNumber: z.number().int().positive(),
+        }),
+        provider: z.object({
+          state: z.literal("found"),
+          pr: z.looseObject({
+            identity: providerIdentity,
+            prNumber: z.number().int().positive(),
+            prUrl: text,
+            headSha: sha,
+            base: text,
           }),
-        })
-        .passthrough(),
+        }),
+      }),
     })
     .safeParse(operation.recovery);
   if (!original.success) reject("the original snapshot lacks a complete integration identity.");
@@ -260,37 +241,32 @@ function assertAbandonedClaim(
   );
   if (!evidence || resolution.evidence.filter((item) => item.ref === evidence.ref).length !== 1)
     reject("one digest-bound execution receipt is required.");
-  const processIdentity = z
-    .object({
-      pid: z.number().int().positive(),
-      ppid: z.number().int().nonnegative(),
-      pgid: z.number().int().positive(),
-      session: text,
-      start: text,
-    })
-    .passthrough();
+  const processIdentity = z.looseObject({
+    pid: z.number().int().positive(),
+    ppid: z.number().int().nonnegative(),
+    pgid: z.number().int().positive(),
+    session: text,
+    start: text,
+  });
   const parsed = z
-    .object({
+    .looseObject({
       journal_after: z.unknown(),
       queue_after: z.object({ schema_version: z.literal(1), entries: z.array(z.unknown()) }),
       steps: z.array(
-        z
-          .object({
-            argv: z.array(text),
-            started_at: z.number().finite(),
-            finished_at: z.number().finite(),
-            pid: z.number().int().positive(),
-            root_start_identity: processIdentity,
-            owned_history: z.array(processIdentity).min(1),
-            exit_code: z.number().int(),
-            reaped: z.literal(true),
-            reader_stopped: z.literal(true),
-            remaining_owned: z.tuple([]),
-          })
-          .passthrough(),
+        z.looseObject({
+          argv: z.array(text),
+          started_at: z.number().finite(),
+          finished_at: z.number().finite(),
+          pid: z.number().int().positive(),
+          root_start_identity: processIdentity,
+          owned_history: z.array(processIdentity).min(1),
+          exit_code: z.number().int(),
+          reaped: z.literal(true),
+          reader_stopped: z.literal(true),
+          remaining_owned: z.tuple([]),
+        }),
       ),
     })
-    .passthrough()
     .safeParse(JSON.parse(evidence.content));
   if (!parsed.success) reject("the execution receipt is incomplete.");
   const receipt = parsed.data;
