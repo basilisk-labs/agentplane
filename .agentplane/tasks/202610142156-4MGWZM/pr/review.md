@@ -6,14 +6,14 @@ Created: 2026-10-14T22:29:05.278Z
 
 - Task: `202610142156-4MGWZM`
 - Title: Bound GitHub CI aggregate job-output projection
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610142156-4MGWZM/bound-github-ci-aggregate-job-output-projection`
 - Canonical task record: `.agentplane/tasks/202610142156-4MGWZM/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -30,8 +30,9 @@ Created: 2026-10-14T22:29:05.278Z
 
 ```text
  .../src/commands/release/github-ci-plan.test.ts    | 141 ++++++++++++++++++---
+ .../src/runner/process-supervision.test.ts         |  11 ++
  scripts/checks/plan-github-ci.mjs                  |  10 +-
- 2 files changed, 129 insertions(+), 22 deletions(-)
+ 3 files changed, 140 insertions(+), 22 deletions(-)
 ```
 
 </details>

@@ -15,8 +15,8 @@ Fix confirmed PR6147 CI output quota for 1316 paths: emit only six aggregate tra
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -28,8 +28,9 @@ Fix confirmed PR6147 CI output quota for 1316 paths: emit only six aggregate tra
 
 ```text
  .../src/commands/release/github-ci-plan.test.ts    | 141 ++++++++++++++++++---
+ .../src/runner/process-supervision.test.ts         |  11 ++
  scripts/checks/plan-github-ci.mjs                  |  10 +-
- 2 files changed, 129 insertions(+), 22 deletions(-)
+ 3 files changed, 140 insertions(+), 22 deletions(-)
 ```
 
 </details>
