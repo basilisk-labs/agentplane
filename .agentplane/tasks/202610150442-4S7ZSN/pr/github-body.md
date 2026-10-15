@@ -16,7 +16,7 @@ Correct the published PR6153 guard for a completed canonical Task whose original
 ## Verification
 
 - State: ok
-- Note: Canonical validation sha256:1b46a1689f8c6c9be1a958df84df7225bc7b096a710b939895f41df92c8319d5
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>

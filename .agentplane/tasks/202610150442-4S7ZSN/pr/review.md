@@ -6,14 +6,14 @@ Created: 2026-10-15T06:03:34.407Z
 
 - Task: `202610150442-4S7ZSN`
 - Title: Bind canonical integration recovery to the resolved task checkout
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610150442-4S7ZSN/bind-canonical-integration-recovery-to-the-resol`
 - Canonical task record: `.agentplane/tasks/202610150442-4S7ZSN/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Canonical validation sha256:1b46a1689f8c6c9be1a958df84df7225bc7b096a710b939895f41df92c8319d5
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
