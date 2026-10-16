@@ -1,0 +1,4 @@
+ .../task/external-agent-workflow-recovery.ts       | 258 ++++++++++-----------
+ .../commands/task/roadmap-common-recovery.test.ts  |  78 ++++++-
+ .../src/runner/process-supervision.test.ts         |  11 +
+ 3 files changed, 208 insertions(+), 139 deletions(-)
