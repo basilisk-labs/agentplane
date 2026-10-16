@@ -1,1 +1,1 @@
-🚧 9MNFYJ task: Preserve merged-review assertions through a bounded testkit extraction [202610110405-9MNFYJ]
+✅ 9MNFYJ task: Preserve merged-review assertions through a bounded testkit extraction [202610110405-9MNFYJ]

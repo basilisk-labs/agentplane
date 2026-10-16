@@ -6,7 +6,7 @@ Created: 2026-10-11T11:59:28.856Z
 
 - Task: `202610110405-9MNFYJ`
 - Title: Preserve merged-review assertions through a bounded testkit extraction
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610110405-9MNFYJ/testkit-extraction`
 - Canonical task record: `.agentplane/tasks/202610110405-9MNFYJ/README.md`
 
