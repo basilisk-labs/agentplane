@@ -14,13 +14,21 @@ import {
 import { runJson } from "../../cli/task-create-planner-intent.testkit.js";
 import { ensureRuntimeGitignore } from "../../runtime/shared/runtime-gitignore.js";
 
+import { writeKernelArtifact } from "./kernel-exchange.js";
+import { retainedIssuanceAuthority } from "./kernel-rework-lineage.js";
+import { scopeReplanInputs } from "./kernel-scope-replan-inputs.js";
+import { loadCommandContext } from "../shared/task-backend.js";
+import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js";
+import type * as ScopeIntake from "../../adapters/task-backend/kernel-scope-intake.js";
 import type * as KernelRuntimeContext from "./kernel-runtime-context.js";
 
 installRunCliIntegrationHarness();
 describe("native prospective scope request", { timeout: 180_000 }, () => {
-  it.each([false, true])(
+  it.each(["native", "legacy", "existing-effects", "operator"])(
     "requires exact scope approval and fresh planning (legacy stop: %s)",
-    async (legacyStop) => {
+    async (variant) => {
+      const legacyStop = variant === "legacy";
+      const existingEffects = variant === "existing-effects";
       const root = await mkGitRepoRootWithBranch("main");
       await configureGitUser(root);
       const config = defaultConfig();
@@ -46,6 +54,9 @@ describe("native prospective scope request", { timeout: 180_000 }, () => {
         "repository_write",
         "--repository-effect",
         "source_code",
+        ...(existingEffects
+          ? ["--repository-effect", "ci", "--repository-effect", "documentation"]
+          : []),
         "--capability",
         "repository_write",
         "--json",
@@ -129,6 +140,19 @@ describe("native prospective scope request", { timeout: 180_000 }, () => {
             return runtime;
           })
         : undefined;
+      const intake = await vi.importActual<typeof ScopeIntake>(
+        "../../adapters/task-backend/kernel-scope-intake.js",
+      );
+      const originalAmend = intake.amendedScopeIntake;
+      const oldEffectCeiling = existingEffects
+        ? vi.spyOn(intake, "amendedScopeIntake").mockImplementation((task, roots, effects) => {
+            if (effects.includes("ci"))
+              throw new Error(
+                "Scope request contains a forbidden or unsupported repository effect",
+              );
+            return originalAmend(task, roots, effects);
+          })
+        : undefined;
       const blockedExchange = await submit({
         status: "blocked",
         blocker: {
@@ -137,11 +161,24 @@ describe("native prospective scope request", { timeout: 180_000 }, () => {
             schema_version: 1,
             rationale: "Preserve the real fixture assertion",
             scope_roots: ["fixture.test.ts"],
-            repository_effects: ["repository_write", "tests"],
+            repository_effects: [
+              "repository_write",
+              "tests",
+              ...(existingEffects ? ["ci", "documentation"] : []),
+            ],
           },
         },
       });
       legacySpy?.mockRestore();
+      if (existingEffects) {
+        expect(packet.action, JSON.stringify(packet)).toMatchObject({ kind: "human_required" });
+        expect(JSON.stringify(packet.action)).toContain("unsupported repository effect");
+        const resultPath = path.join(blockedExchange.directory, "received-result.json");
+        const bytes = await readFile(resultPath, "utf8");
+        oldEffectCeiling?.mockRestore();
+        packet = await runJson(root, ["task", "advance", id, "--agent-json"]);
+        expect(await readFile(resultPath, "utf8")).toBe(bytes);
+      }
       const action = packet.action as {
         kind: string;
         reason: string;
@@ -149,7 +186,9 @@ describe("native prospective scope request", { timeout: 180_000 }, () => {
       };
       expect(action, JSON.stringify(packet)).toMatchObject({
         kind: "human_required",
-        reason: "canonical_scope_request_requires_user",
+        reason: existingEffects
+          ? "kernel_work_item_blocked"
+          : "canonical_scope_request_requires_user",
       });
       expect(
         (packet.action as { operator_action: { request: { result_authentication: string } } })
@@ -191,7 +230,16 @@ describe("native prospective scope request", { timeout: 180_000 }, () => {
       const expanded = structuredClone(proposal);
       expanded.work_items[0]!.execution_requirements.scope_roots.push("fixture.test.ts");
       expanded.work_items[0]!.execution_requirements.repository_effects.push("tests");
-      await submit({ canonical_plan: expanded });
+      if (variant === "operator") {
+        const planPath = path.join(root, ".git", "operator-scope-plan.json");
+        await writeFile(planPath, JSON.stringify(expanded));
+        expect(
+          await runCliSilent(["task", "plan", "set", id, "--file", planPath, "--root", root]),
+        ).toBe(0);
+        packet = await runJson(root, ["task", "advance", id, "--agent-json"]);
+      } else {
+        await submit({ canonical_plan: expanded });
+      }
       expect(packet.action, JSON.stringify(packet)).toMatchObject({ kind: "approval_required" });
       expect(
         await runCliSilent(["task", "plan", "approve", id, "--by", "USER", "--root", root]),
@@ -207,7 +255,69 @@ describe("native prospective scope request", { timeout: 180_000 }, () => {
         ),
       );
       expect(nextOrder.authority.writable_roots).toContain(path.join(root, "fixture.test.ts"));
+      expect(
+        nextOrder.required_inputs.some(
+          (entry) => entry.id === "approved-scope-replan" && entry.required,
+        ),
+      ).toBe(true);
       expect(await readFile(path.join(root, "fixture.test.ts"), "utf8")).toBe(unchanged);
+      if (variant === "native" || variant === "operator") {
+        const context = await loadCommandContext({ cwd: root, rootOverride: root });
+        const nativeRuntime = await createRuntime({
+          command: context,
+          task_id: id,
+          transport: "host",
+          operation_id: "inspect-scope-context",
+        });
+        const current = await nativeRuntime.adapter.read(id);
+        if (current.kind !== "canonical") throw new Error("Expected canonical scope fixture");
+        const directory = (packet.exchange as { directory: string }).directory;
+        if (variant === "operator") {
+          const proposalEvent = current.record.events.find(
+            (event) => event.kind === "plan_proposed" && event.mutation_id.startsWith("plan:"),
+          );
+          expect(proposalEvent).toBeDefined();
+          if (!proposalEvent) throw new Error("Expected native operator proposal event");
+          for (const events of [
+            current.record.events.filter((event) => event !== proposalEvent),
+            [...current.record.events, proposalEvent],
+            current.record.events.map((event) =>
+              event === proposalEvent
+                ? { ...event, command_digest: nextOrder.work_order_id }
+                : event,
+            ),
+          ]) {
+            await expect(
+              scopeReplanInputs(
+                nextOrder,
+                directory,
+                { ...current.record, events },
+                writeKernelArtifact,
+              ),
+            ).rejects.toThrow("proposal receipt");
+          }
+        }
+        const noGrant = {
+          ...current.record,
+          aggregate: {
+            ...current.record.aggregate,
+            authority_lineage: current.record.aggregate.authority_lineage?.filter(
+              (entry) => entry.observation?.kind !== "prospective_scope_request",
+            ),
+          },
+        };
+        expect(await scopeReplanInputs(nextOrder, directory, noGrant, writeKernelArtifact)).toEqual(
+          [],
+        );
+        await writeFile(
+          retainedPath,
+          JSON.stringify({ ...JSON.parse(retainedResult), summary: "Forged retained scope stop" }),
+        );
+        await expect(
+          scopeReplanInputs(nextOrder, directory, current.record, writeKernelArtifact),
+        ).rejects.toThrow("preceding attempt");
+        await writeFile(retainedPath, retainedResult);
+      }
       if (!legacyStop) {
         await submit({
           status: "blocked",
@@ -227,6 +337,96 @@ describe("native prospective scope request", { timeout: 180_000 }, () => {
         ).toBe(0);
         packet = await runJson(root, ["task", "advance", id, "--agent-json"]);
         expect(packet.authority, JSON.stringify(packet)).toMatchObject({ role: "PLANNER" });
+        if (variant === "native") {
+          const secondExpanded = structuredClone(expanded);
+          secondExpanded.work_items[0]!.execution_requirements.scope_roots.push("second.test.ts");
+          await submit({ canonical_plan: secondExpanded });
+          expect(packet.action, JSON.stringify(packet)).toMatchObject({
+            kind: "approval_required",
+          });
+          expect(
+            await runCliSilent(["task", "plan", "approve", id, "--by", "USER", "--root", root]),
+          ).toBe(0);
+          packet = await runJson(root, ["task", "advance", id, "--agent-json"]);
+          expect(packet.authority, JSON.stringify(packet)).toMatchObject({ role: "EXECUTOR" });
+          const thirdOrder = AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse(
+            JSON.parse(
+              await readFile(
+                path.join((packet.exchange as { directory: string }).directory, "work-order.json"),
+                "utf8",
+              ),
+            ),
+          );
+          expect(thirdOrder.canonical_binding).toMatchObject({ plan_revision: 3, attempt: 3 });
+          expect(thirdOrder.authority.writable_roots).toContain(path.join(root, "second.test.ts"));
+          expect(
+            thirdOrder.required_inputs.some(
+              (entry) => entry.id === "approved-scope-replan" && entry.required,
+            ),
+          ).toBe(true);
+          expect(await readFile(retainedPath, "utf8")).toBe(retainedResult);
+          expect(await readFile(path.join(root, "fixture.test.ts"), "utf8")).toBe(unchanged);
+          const inspectionRuntime = await createRuntime({
+            command: await loadCommandContext({ cwd: root, rootOverride: root }),
+            task_id: id,
+            transport: "host",
+            operation_id: "inspect-second-scope-issuance",
+          });
+          const final = await inspectionRuntime.adapter.read(id);
+          if (final.kind !== "canonical") throw new Error("Missing second replan record");
+          expect(retainedIssuanceAuthority(final.record, nextOrder)).toBe(true);
+          const approval = final.record.events.findLast(
+            (event) =>
+              event.kind === "plan_approved" && event.task_revision <= nextOrder.task.revision!,
+          );
+          const lineage = final.record.aggregate.authority_lineage!;
+          const rootIndex = lineage.findIndex(
+            (entry) =>
+              entry.observation === null &&
+              entry.authority.plan_digest === nextOrder.canonical_binding?.plan_digest,
+          );
+          if (!approval || rootIndex < 1) throw new Error("Missing native later Plan approval");
+          const mutate = (change: (record: KernelRecord) => void) => {
+            const record = structuredClone(final.record);
+            change(record);
+            expect(retainedIssuanceAuthority(record, nextOrder)).toBe(false);
+          };
+          mutate((record) => {
+            record.events = record.events.filter((event) => event.id !== approval.id);
+          });
+          mutate((record) => {
+            delete record.aggregate.mutation_receipts[approval.mutation_id];
+          });
+          mutate((record) => {
+            record.aggregate.mutation_receipts[approval.mutation_id]!.event_digests = [
+              `sha256:${"0".repeat(64)}`,
+            ];
+          });
+          mutate((record) => {
+            record.events.push(structuredClone(approval));
+          });
+          mutate((record) => {
+            record.aggregate.authority_lineage!.splice(rootIndex, 1);
+          });
+          mutate((record) => {
+            record.aggregate.authority_lineage!.push(structuredClone(lineage[rootIndex]!));
+          });
+          mutate((record) => {
+            record.aggregate.authority_lineage![
+              rootIndex
+            ]!.authority.provenance.parent_authority_digest = lineage[0]!.authority.digest;
+          });
+          const firstApproval = final.record.events.find((event) => event.kind === "plan_approved");
+          if (!firstApproval || firstApproval.id === approval.id)
+            throw new Error("Missing preceding Plan approval");
+          mutate((record) => {
+            record.aggregate.mutation_receipts[approval.mutation_id]!.command_digest =
+              firstApproval.command_digest;
+          });
+          const staleOrder = structuredClone(nextOrder);
+          staleOrder.task.revision = approval.task_revision - 1;
+          expect(retainedIssuanceAuthority(final.record, staleOrder)).toBe(false);
+        }
       }
     },
   );

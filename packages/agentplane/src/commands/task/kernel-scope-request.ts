@@ -119,6 +119,7 @@ export async function pendingScopeRequestAction(
       [
         "No authenticated blocked scope request exists",
         "Recovery requires a retained semantic stop for this WorkItem attempt",
+        "Scope request is already admitted",
       ].includes(error.message)
     )
       return null;

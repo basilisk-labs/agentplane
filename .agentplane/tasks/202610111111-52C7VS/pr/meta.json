@@ -1,0 +1,21 @@
+{
+  "base": "origin/agentplane/J8P9K9-integration",
+  "branch": "task/202610111111-52C7VS/blocked-plan-rework",
+  "created_at": "2026-10-11T11:38:23.071Z",
+  "diffstat_sha256": "sha256:55f4cc25b0196cd6e7b8562e2abfe7d056dc3afb0514f726042ce2b1aa426b05",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610111111-52C7VS",
+  "updated_at": "2026-10-11T11:38:23.071Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

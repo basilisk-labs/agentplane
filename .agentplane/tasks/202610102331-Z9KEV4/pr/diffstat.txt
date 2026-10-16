@@ -1,0 +1,3 @@
+ .../integrate/internal/github-protection.test.ts   | 82 +++++++++++++++++++++-
+ .../pr/integrate/internal/github-protection.ts     | 13 +++-
+ 2 files changed, 91 insertions(+), 4 deletions(-)

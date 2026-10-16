@@ -1,4 +1,13 @@
 import { prospectiveScopeAdmissionIssues } from "./prospective-scope.js";
+import {
+  reconcileReplannedWorkItems,
+  authenticatedScopeReplanHistory,
+  isScopeProposalRejection,
+} from "./replan-work-items.js";
+import {
+  completionRestorationAdmissionIssues,
+  restoredCompletionRuntime,
+} from "./completion-restoration.js";
 import { correctiveAmendmentGrant, correctiveGrantIssues } from "./corrective-authority.js";
 import { planObligationIssues } from "../kernel-plan-refinement.js";
 import {
@@ -157,6 +166,7 @@ const EVENT_KIND: Readonly<Record<TaskCommand["kind"], DomainEvent["kind"]>> = {
   renew_policy_authority: "authority_continued",
   approve_authority_delta: "authority_continued",
   approve_scope_request: "authority_continued",
+  restore_work_item_completion: "work_item_transitioned",
   materialize_work_items: "work_items_materialized",
   transition_work_item: "work_item_transitioned",
   accept_work_item_result: "work_item_result_accepted",
@@ -230,6 +240,7 @@ function requiredAuthority(input: KernelInput, workItemId: string | null): Kerne
     if (
       !rejectedPlanReplanning &&
       !approvedBlockedPlanRejection &&
+      !isScopeProposalRejection(input) &&
       kernelDigest(authority) !== kernelDigest(persisted) &&
       !compareExecutionAuthority(persisted, authority).ok
     )
@@ -531,6 +542,10 @@ function preconditions(input: KernelInput): KernelResult | null {
         Date.parse(parent.expires_at) <= Date.parse(input.occurred_at)) ||
       policyRenewalIssues(parent, record).length > 0;
     return issues ? rejected("AUTHORITY_SCOPE_EXCEEDED", ["policy_renewal_binding"]) : null;
+  }
+  if (input.command.kind === "restore_work_item_completion") {
+    const issues = completionRestorationAdmissionIssues(input);
+    return issues.length > 0 ? rejected("AUTHORITY_SCOPE_EXCEEDED", issues) : null;
   }
   if (input.command.kind === "continue_authority") {
     const issues = continuationAdmissionIssues(input, input.command.record);
@@ -938,6 +953,31 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
       }
       const issues = validateWorkItemDefinitions(command.plan.work_items);
       if (issues.length > 0) return rejected("WORK_ITEM_DEPENDENCY_INCOMPLETE", issues);
+      const scopeReplan = authenticatedScopeReplanHistory(aggregate);
+      const rejectedApprovedPlan =
+        aggregate.current_plan?.state === "REJECTED" &&
+        aggregate.current_plan.approval_actor_id !== null &&
+        aggregate.current_plan.approval_evidence_digest !== null &&
+        Object.values(aggregate.work_items).some((item) => item.state === "BLOCKED");
+      if (Object.keys(aggregate.work_items).length > 0 && !scopeReplan && !rejectedApprovedPlan)
+        return rejected(
+          "ILLEGAL_WORK_ITEM_TRANSITION",
+          ["retained_work_requires_bound_replan"],
+          "wait_or_replan",
+        );
+      const reconciled =
+        scopeReplan || rejectedApprovedPlan
+          ? reconcileReplannedWorkItems(aggregate, command.plan)
+          : { workItems: {}, issues: [] };
+      if (reconciled.issues.length > 0)
+        return rejected("ILLEGAL_WORK_ITEM_TRANSITION", reconciled.issues, "wait_or_replan");
+      if (
+        (scopeReplan || rejectedApprovedPlan) &&
+        aggregate.effects.some((effect) =>
+          ["PREPARED", "PENDING", "IN_DOUBT"].includes(effect.state),
+        )
+      )
+        return rejected("EFFECT_RECONCILIATION_REQUIRED", ["scope_replan_pending_effect"]);
       next = {
         ...aggregate,
         revision: aggregate.revision + 1,
@@ -946,7 +986,7 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
         plan_history: aggregate.current_plan
           ? [...aggregate.plan_history, aggregate.current_plan]
           : aggregate.plan_history,
-        work_items: {},
+        work_items: reconciled.workItems,
         final_validation: null,
       };
       break;
@@ -1020,6 +1060,7 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
           : {}),
         revision: aggregate.revision + 1,
         state: "ACTIVE",
+        work_items: refreshReadyItems(aggregate.work_items),
         current_plan: {
           ...aggregate.current_plan,
           state: "APPROVED",
@@ -1047,6 +1088,21 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
           ? { ...aggregate.current_plan, state: "REJECTED" }
           : null,
         authority_lineage: [...(aggregate.authority_lineage ?? []), command.record],
+      };
+      break;
+    }
+    case "restore_work_item_completion": {
+      next = {
+        ...aggregate,
+        revision: aggregate.revision + 1,
+        final_validation: null,
+        work_items: refreshReadyItems({
+          ...aggregate.work_items,
+          [command.work_item_id]: restoredCompletionRuntime(
+            aggregate.work_items[command.work_item_id]!,
+            command.proof,
+          ),
+        }),
       };
       break;
     }

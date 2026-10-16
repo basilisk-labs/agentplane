@@ -1,0 +1,68 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 743ce58d0c7f8568adb5adf102a5fe78d27ac797..9b2ded0f10896c8e25f97954787fe4e64d325451",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 743ce58d0c7f8568adb5adf102a5fe78d27ac797..9b2ded0f10896c8e25f97954787fe4e64d325451",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202610102335-4WQ91M/README.md",
+        "A\t.agentplane/tasks/202610102335-4WQ91M/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202610102335-4WQ91M/pr/github-body.md",
+        "A\t.agentplane/tasks/202610102335-4WQ91M/pr/github-title.txt",
+        "A\t.agentplane/tasks/202610102335-4WQ91M/pr/meta.json",
+        "A\t.agentplane/tasks/202610102335-4WQ91M/pr/review.md",
+        "A\t.agentplane/tasks/202610102335-4WQ91M/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+        "M\t.github/workflows/task-hosted-close.yml",
+        "M\tpackages/agentplane/src/cli/prepare-hosted-task-closure-script.test.ts",
+        "M\tpackages/agentplane/src/commands/task/hosted-close-workflow-contract.test.ts",
+        "M\tscripts/workflow/prepare-hosted-task-closure.mjs"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "743ce58d0c7f8568adb5adf102a5fe78d27ac797",
+  "implementation_commit": "9b2ded0f10896c8e25f97954787fe4e64d325451",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      "?? .agentplane/tasks/202610102335-4WQ91M/README.md",
+      "?? .agentplane/tasks/202610102335-4WQ91M/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610102335-4WQ91M/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610102335-4WQ91M/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      "?? .agentplane/tasks/202610102335-4WQ91M/README.md",
+      "?? .agentplane/tasks/202610102335-4WQ91M/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202610102335-4WQ91M"
+}

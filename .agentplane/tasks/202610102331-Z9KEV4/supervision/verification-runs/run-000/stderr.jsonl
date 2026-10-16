@@ -1,0 +1,1 @@
+"$ vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/pr/integrate/internal/github-protection.test.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts \"--maxWorkers=2\""

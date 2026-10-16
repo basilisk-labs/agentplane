@@ -1,0 +1,3 @@
+ .../evaluator-execute-subprocess.testkit.ts        | 11 +++++++
+ .../evaluator/evaluator-execute.command.test.ts    | 36 ++++++++++++++--------
+ 2 files changed, 35 insertions(+), 12 deletions(-)
