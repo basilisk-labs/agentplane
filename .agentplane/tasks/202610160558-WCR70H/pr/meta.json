@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202610160558-WCR70H/match-operational-review-projections-to-normaliz",
+  "created_at": "2026-10-16T06:32:54.426Z",
+  "diffstat_sha256": "sha256:87fea6679dc85fd36c13b18310d84cec04617558d4a0121ac3a757fcc4516c20",
+  "last_verified_at": "2026-10-16T12:40:29.525Z",
+  "last_verified_diffstat_sha256": "sha256:87fea6679dc85fd36c13b18310d84cec04617558d4a0121ac3a757fcc4516c20",
+  "pr_number": 6158,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6158",
+  "pre_merge_closure": {
+    "basis_commit": "03f9bee7c228e1fafcbf49280c8926d1b659d699",
+    "branch": "task/202610160558-WCR70H/match-operational-review-projections-to-normaliz",
+    "pr_number": 6158,
+    "recorded_at": "2026-10-16T13:17:35.995Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202610160558-WCR70H",
+  "updated_at": "2026-10-16T10:12:17.445Z",
+  "verify": {
+    "status": "pass"
+  }
+}

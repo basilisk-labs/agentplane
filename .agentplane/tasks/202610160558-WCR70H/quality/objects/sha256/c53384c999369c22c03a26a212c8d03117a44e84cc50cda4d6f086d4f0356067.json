@@ -1,0 +1,194 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bun run arch:check",
+    "bun run ci:local:full",
+    "bun run test:project agentplane packages/agentplane/src/commands/task/kernel-operational-projection.test.ts packages/agentplane/src/commands/task/kernel-operational-projection-recovery.test.ts",
+    "bun run typecheck"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "components": [
+        "packages/agentplane/src/commands/task/kernel-operational-projection-recovery.test.ts",
+        "packages/agentplane/src/commands/task/kernel-operational-projection.test.ts",
+        "packages/agentplane/src/commands/task/kernel-operational-projection.ts"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "reversible"
+      },
+      "evidence_requirements": [
+        "hosted_integration",
+        "repository_effect:dependencies",
+        "repository_effect:repository_write",
+        "repository_effect:source_code",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "dependencies",
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        "bun.lock",
+        "package.json",
+        "packages/agentplane"
+      ],
+      "changed_files": [
+        "bun.lock",
+        "package.json",
+        "packages/agentplane/src/commands/task/kernel-operational-projection-recovery.test.ts",
+        "packages/agentplane/src/commands/task/kernel-operational-projection.test.ts",
+        "packages/agentplane/src/commands/task/kernel-operational-projection.ts"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "full_regression",
+      "hosted_integration",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "central_path:bun.lock",
+      "central_path:package.json",
+      "effect_dependencies",
+      "unknown_path:package.json"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": false,
+    "digest": "sha256:8a2ec5fd2e6897ab0834741630145275aa84100ef3277f16aaa924e1288642ae"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-10-16T12:40:29.525Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202610160558-WCR70H/verification/20261016124029525-57fc9b2b7fb39296.json",
+      "sha256": "sha256:f599a8cac970ca680bf120849559a858e0cc67ccee486631f679b2b0f28de0c3"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check 52bd7ae0b289547a5069fc1a76fa878369bd069e..73e427f22e13793e0d309eae9618ec19e39871ac",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB 52bd7ae0b289547a5069fc1a76fa878369bd069e..73e427f22e13793e0d309eae9618ec19e39871ac",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "A\t.agentplane/tasks/202610160558-WCR70H/README.md",
+          "A\t.agentplane/tasks/202610160558-WCR70H/pr/diffstat.txt",
+          "A\t.agentplane/tasks/202610160558-WCR70H/pr/github-body.md",
+          "A\t.agentplane/tasks/202610160558-WCR70H/pr/github-title.txt",
+          "A\t.agentplane/tasks/202610160558-WCR70H/pr/meta.json",
+          "A\t.agentplane/tasks/202610160558-WCR70H/pr/review.md",
+          "A\t.agentplane/tasks/202610160558-WCR70H/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
+          "A\t.agentplane/tasks/202610160558-WCR70H/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+          "M\tpackages/agentplane/src/commands/task/kernel-operational-projection-recovery.test.ts",
+          "M\tpackages/agentplane/src/commands/task/kernel-operational-projection.test.ts",
+          "M\tpackages/agentplane/src/commands/task/kernel-operational-projection.ts"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "52bd7ae0b289547a5069fc1a76fa878369bd069e",
+    "implementation_commit": "73e427f22e13793e0d309eae9618ec19e39871ac",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [
+        "?? .agentplane/tasks/202610160558-WCR70H/README.md",
+        "?? .agentplane/tasks/202610160558-WCR70H/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
+        "?? .agentplane/tasks/202610160558-WCR70H/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+      ],
+      "classification": [
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202610160558-WCR70H/README.md"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202610160558-WCR70H/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202610160558-WCR70H/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+        }
+      ],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [
+        "?? .agentplane/tasks/202610160558-WCR70H/README.md",
+        "?? .agentplane/tasks/202610160558-WCR70H/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
+        "?? .agentplane/tasks/202610160558-WCR70H/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+      ],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202610160558-WCR70H",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202610160558-WCR70H/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
