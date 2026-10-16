@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -62,9 +62,11 @@ quality_review:
     - "Residual risk: This review covers the current local WCR70H implementation and native evidence. Hosted CI on b8424fd2147831a19f77cdda24cc3a39f847d1ab is not observed. Earlier hosted CI applies only to 4259803ee74ef1cf8458c9099068fd03e4d5ab81."
     - "Residual risk: This review does not establish Factory 0.4.0 readiness or real agent recovery."
 token_usage:
-  agent_runs: 0
+  agent_runs: 1
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
   input_tokens: null
-  journal_digest: "sha256:0d004a4a25554645fe1c14f4dbe1e1e17474b090faf967ead2a254262507a6f9"
+  journal_digest: "sha256:2c452dcb404a87895fd1bde20191e9d4d26b49ff7630cca164b5664788a0d500"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -73,8 +75,8 @@ token_usage:
   source: "supervisor_journal"
   state: "unavailable"
   total_tokens: null
-  unavailable_reason: "no_supervised_agent_runs"
-  updated_at: "2026-10-16T10:54:29.344Z"
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-16T13:17:35.909Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -281,9 +283,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "0d9ea5282a47de59c4fa7b1d45103b717507b6db"
-  message: "✅ WCR70H task: persist published PR metadata"
+  hash: "03f9bee7c228e1fafcbf49280c8926d1b659d699"
+  message: "🚧 WCR70H task: record external evaluator result"
 comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -308,8 +313,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-10-16T13:17:35.909Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "03f9bee7c228e1fafcbf49280c8926d1b659d699"
 doc_version: 3
-doc_updated_at: "2026-10-16T13:16:57.640Z"
+doc_updated_at: "2026-10-16T13:17:35.925Z"
 doc_updated_by: "CODER"
 description: "Repair the reproduced recovery loop where canonical accepted evaluator findings retain trailing whitespace but Task compatibility readback trims strings. Normalize only the expected compatibility quality-review representation with the existing backend normalizer before comparison; preserve raw accepted EVAL, reports, projection and review/authority identity digests. Extend the two nearest projection/recovery tests to prove LF and whitespace readback idempotence, restored then unchanged recovery and strict changed-field rejection. Preserve existing completed source and native history. No Factory task/controller/runtime publication changes."
 sections:
@@ -553,8 +566,8 @@ extensions:
     verification_evidence_digest: "sha256:f2e5a005d0201e12f9a4a540d8685ec7fd2be68905f132206f6dcfcb5fb666c8"
     work_order_id: "sha256:350c153aeabd5482acc602519c5fbaa443b9cf4ad867f41370a9064d35236fdd"
   implementation_commit:
-    hash: "73e427f22e13793e0d309eae9618ec19e39871ac"
-    message: "🚧 WCR70H task: apply canonical agent result"
+    hash: "4259803ee74ef1cf8458c9099068fd03e4d5ab81"
+    message: "Merge branch 'main' into task/202610160558-WCR70H/match-operational-review-projections-to-normaliz"
   task_execution_context:
     base_ref: "main"
     base_sha: "52bd7ae0b289547a5069fc1a76fa878369bd069e"
@@ -1248,12 +1261,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/0` agent runs
+- Completeness: `0/1` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:0d004a4a25554645fe1c14f4dbe1e1e17474b090faf967ead2a254262507a6f9`
-- Unavailable reason: `no_supervised_agent_runs`
-- Updated at: `2026-10-16T10:54:29.344Z`
+- Journal digest: `sha256:2c452dcb404a87895fd1bde20191e9d4d26b49ff7630cca164b5664788a0d500`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-16T13:17:35.909Z`
