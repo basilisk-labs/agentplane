@@ -16,7 +16,7 @@ Resolve GitHub issue #6146 with a generic explicit public cancellation dispositi
 ## Verification
 
 - State: ok
-- Note: Canonical validation sha256:8f4ef2a650e0c623b8f889c14f978e1cb0729c8b01e5d33fc4bfc7a61fbba859
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>

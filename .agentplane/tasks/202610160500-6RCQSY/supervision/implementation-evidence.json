@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 6b0406377d78f8491ed8081aed4d2a6dc75b4418..d13b14239d68ad9fd9a95c346c88898096ed5950",
+      "command": "git diff --check d13b14239d68ad9fd9a95c346c88898096ed5950..b3f0afb0e71590208a42ec75599a538f81db3a47",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,31 +13,148 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 6b0406377d78f8491ed8081aed4d2a6dc75b4418..d13b14239d68ad9fd9a95c346c88898096ed5950",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB d13b14239d68ad9fd9a95c346c88898096ed5950..b3f0afb0e71590208a42ec75599a538f81db3a47",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "A\t.agentplane/tasks/202610160500-6RCQSY/README.md",
-        "A\t.agentplane/tasks/202610160500-6RCQSY/pr/diffstat.txt",
-        "A\t.agentplane/tasks/202610160500-6RCQSY/pr/github-body.md",
-        "A\t.agentplane/tasks/202610160500-6RCQSY/pr/github-title.txt",
-        "A\t.agentplane/tasks/202610160500-6RCQSY/pr/meta.json",
-        "A\t.agentplane/tasks/202610160500-6RCQSY/pr/review.md",
-        "A\t.agentplane/tasks/202610160500-6RCQSY/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
-        "A\t.agentplane/tasks/202610160500-6RCQSY/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
-        "M\tpackages/agentplane/src/adapters/task-backend/kernel-record.ts",
-        "M\tpackages/agentplane/src/cli/run-cli/command-catalog/task.ts",
-        "M\tpackages/agentplane/src/cli/run-cli/command-loaders/task.ts",
-        "A\tpackages/agentplane/src/commands/task/cancel.command.ts",
-        "A\tpackages/agentplane/src/commands/task/kernel-cancellation.test.ts",
-        "A\tpackages/agentplane/src/commands/task/kernel-cancellation.ts",
-        "M\tpackages/agentplane/src/runner/usecases/task-run-active-claim-record.ts",
-        "M\tpackages/agentplane/src/runner/usecases/task-run-active-claim.ts",
-        "A\tpackages/core/src/tasks/task-kernel/cancellation.test.ts",
-        "A\tpackages/core/src/tasks/task-kernel/cancellation.ts",
-        "M\tpackages/core/src/tasks/task-kernel/kernel.ts",
-        "M\tpackages/core/src/tasks/task-kernel/model.ts",
-        "M\tscripts/baselines/v0.7-compatibility-candidate.json",
+        "M\t.agentplane/tasks/202610160500-6RCQSY/README.md",
+        "M\t.agentplane/tasks/202610160500-6RCQSY/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202610160500-6RCQSY/pr/github-body.md",
+        "M\t.agentplane/tasks/202610160500-6RCQSY/pr/meta.json",
+        "M\t.agentplane/tasks/202610160500-6RCQSY/pr/review.md",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/quality/objects/sha256/42b9e36673a3cc9bf23e38c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/declared-checks.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/implementation-evidence.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-000/failures.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-000/manifest.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-000/status.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-000/stderr.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-000/stdout.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-001/failures.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-001/manifest.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-001/status.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-001/stderr.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-001/stdout.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-002/failures.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-002/manifest.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-002/status.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-002/stderr.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-002/stdout.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-003/failures.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-003/manifest.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-003/status.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-003/stderr.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-003/stdout.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-004/failures.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-004/manifest.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-004/status.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-004/stderr.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-004/stdout.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-005/failures.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-005/manifest.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-005/status.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-005/stderr.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-005/stdout.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-006/failures.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-006/manifest.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-006/status.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-006/stderr.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-006/stdout.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-007/failures.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-007/manifest.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-007/status.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-007/stderr.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-007/stdout.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-008/failures.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-008/manifest.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-008/status.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-008/stderr.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-008/stdout.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-009/failures.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-009/manifest.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-009/status.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-009/stderr.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-009/stdout.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-010/failures.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-010/manifest.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-010/status.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-010/stderr.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-010/stdout.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-011/failures.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-011/manifest.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-011/status.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-011/stderr.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-011/stdout.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-012/failures.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-012/manifest.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-012/status.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-012/stderr.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-012/stdout.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-013/failures.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-013/manifest.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-013/status.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-013/stderr.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-013/stdout.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-000/failures.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-000/manifest.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-000/status.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-000/stderr.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-000/stdout.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/children/run-000/failures.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/children/run-000/manifest.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/children/run-000/status.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/children/run-000/stderr.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/children/run-000/stdout.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/failures.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/manifest.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/status.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/stderr.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/stdout.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-002/failures.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-002/manifest.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-002/status.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-002/stderr.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-002/stdout.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-003/failures.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-003/manifest.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-003/status.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-003/stderr.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-003/stdout.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-000/failures.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-000/manifest.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-000/status.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-000/stderr.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-000/stdout.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-001/failures.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-001/manifest.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-001/status.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-001/stderr.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-001/stdout.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-002/failures.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-002/manifest.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-002/status.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-002/stderr.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-002/stdout.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-003/failures.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-003/manifest.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-003/status.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-003/stderr.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-003/stdout.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-004/failures.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-004/manifest.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-004/status.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-004/stderr.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-004/stdout.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/failures.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/manifest.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/status.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/stderr.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/stdout.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/failures.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/manifest.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/status.json",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/stderr.jsonl",
+        "A\t.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/stdout.jsonl",
         "M\tscripts/checks/check-compatibility-contract-baseline.mjs"
       ]
     },
@@ -48,35 +165,821 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "6b0406377d78f8491ed8081aed4d2a6dc75b4418",
-  "implementation_commit": "d13b14239d68ad9fd9a95c346c88898096ed5950",
+  "execution_base_commit": "d13b14239d68ad9fd9a95c346c88898096ed5950",
+  "implementation_commit": "b3f0afb0e71590208a42ec75599a538f81db3a47",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [
-      "?? .agentplane/tasks/202610160500-6RCQSY/README.md",
-      "?? .agentplane/tasks/202610160500-6RCQSY/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
-      "?? .agentplane/tasks/202610160500-6RCQSY/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+      " M .agentplane/tasks/202610160500-6RCQSY/README.md",
+      "?? .agentplane/tasks/202610160500-6RCQSY/quality/objects/sha256/42b9e36673a3cc9bf23e38c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/declared-checks.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/implementation-evidence.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-000/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-000/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-000/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-000/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-000/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-001/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-001/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-001/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-001/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-001/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-002/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-002/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-002/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-002/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-002/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-003/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-003/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-003/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-003/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-003/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-004/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-004/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-004/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-004/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-004/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-005/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-005/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-005/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-005/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-005/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-006/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-006/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-006/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-006/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-006/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-007/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-007/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-007/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-007/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-007/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-008/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-008/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-008/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-008/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-008/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-009/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-009/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-009/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-009/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-009/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-010/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-010/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-010/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-010/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-010/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-011/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-011/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-011/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-011/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-011/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-012/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-012/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-012/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-012/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-012/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-013/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-013/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-013/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-013/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-013/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-000/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-000/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-000/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-000/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-000/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/children/run-000/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/children/run-000/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/children/run-000/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/children/run-000/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/children/run-000/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-002/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-002/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-002/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-002/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-002/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-003/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-003/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-003/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-003/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-003/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-000/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-000/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-000/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-000/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-000/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-001/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-001/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-001/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-001/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-001/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-002/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-002/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-002/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-002/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-002/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-003/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-003/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-003/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-003/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-003/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-004/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-004/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-004/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-004/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-004/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/stdout.jsonl"
     ],
     "classification": [
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202610160500-6RCQSY/README.md"
+        "line": " M .agentplane/tasks/202610160500-6RCQSY/README.md"
       },
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202610160500-6RCQSY/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json"
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/quality/objects/sha256/42b9e36673a3cc9bf23e38c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json"
       },
       {
         "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202610160500-6RCQSY/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/declared-checks.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/implementation-evidence.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-000/failures.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-000/manifest.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-000/status.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-000/stderr.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-000/stdout.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-001/failures.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-001/manifest.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-001/status.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-001/stderr.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-001/stdout.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-002/failures.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-002/manifest.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-002/status.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-002/stderr.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-002/stdout.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-003/failures.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-003/manifest.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-003/status.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-003/stderr.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-003/stdout.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-004/failures.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-004/manifest.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-004/status.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-004/stderr.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-004/stdout.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-005/failures.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-005/manifest.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-005/status.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-005/stderr.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-005/stdout.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-006/failures.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-006/manifest.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-006/status.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-006/stderr.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-006/stdout.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-007/failures.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-007/manifest.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-007/status.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-007/stderr.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-007/stdout.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-008/failures.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-008/manifest.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-008/status.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-008/stderr.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-008/stdout.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-009/failures.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-009/manifest.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-009/status.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-009/stderr.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-009/stdout.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-010/failures.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-010/manifest.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-010/status.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-010/stderr.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-010/stdout.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-011/failures.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-011/manifest.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-011/status.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-011/stderr.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-011/stdout.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-012/failures.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-012/manifest.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-012/status.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-012/stderr.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-012/stdout.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-013/failures.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-013/manifest.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-013/status.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-013/stderr.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-013/stdout.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-000/failures.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-000/manifest.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-000/status.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-000/stderr.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-000/stdout.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/children/run-000/failures.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/children/run-000/manifest.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/children/run-000/status.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/children/run-000/stderr.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/children/run-000/stdout.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/failures.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/manifest.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/status.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/stderr.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/stdout.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-002/failures.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-002/manifest.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-002/status.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-002/stderr.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-002/stdout.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-003/failures.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-003/manifest.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-003/status.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-003/stderr.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-003/stdout.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-000/failures.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-000/manifest.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-000/status.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-000/stderr.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-000/stdout.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-001/failures.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-001/manifest.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-001/status.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-001/stderr.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-001/stdout.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-002/failures.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-002/manifest.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-002/status.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-002/stderr.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-002/stdout.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-003/failures.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-003/manifest.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-003/status.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-003/stderr.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-003/stdout.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-004/failures.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-004/manifest.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-004/status.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-004/stderr.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-004/stdout.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/failures.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/manifest.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/status.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/stderr.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/stdout.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/failures.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/manifest.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/status.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/stderr.jsonl"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/stdout.jsonl"
       }
     ],
     "final": [],
     "introduced_after_execution_baseline": [],
     "removed_after_execution_baseline": [
-      "?? .agentplane/tasks/202610160500-6RCQSY/README.md",
-      "?? .agentplane/tasks/202610160500-6RCQSY/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
-      "?? .agentplane/tasks/202610160500-6RCQSY/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+      " M .agentplane/tasks/202610160500-6RCQSY/README.md",
+      "?? .agentplane/tasks/202610160500-6RCQSY/quality/objects/sha256/42b9e36673a3cc9bf23e38c4d451a9668ffb475c35f74aeb00f272aa861dd9cc.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/declared-checks.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/implementation-evidence.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-000/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-000/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-000/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-000/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-000/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-001/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-001/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-001/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-001/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-001/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-002/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-002/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-002/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-002/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-002/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-003/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-003/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-003/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-003/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-003/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-004/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-004/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-004/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-004/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-004/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-005/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-005/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-005/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-005/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-005/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-006/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-006/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-006/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-006/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-006/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-007/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-007/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-007/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-007/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-007/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-008/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-008/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-008/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-008/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-008/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-009/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-009/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-009/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-009/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-009/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-010/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-010/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-010/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-010/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-010/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-011/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-011/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-011/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-011/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-011/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-012/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-012/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-012/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-012/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-012/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-013/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-013/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-013/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-013/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-013/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-000/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-000/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-000/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-000/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-000/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/children/run-000/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/children/run-000/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/children/run-000/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/children/run-000/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/children/run-000/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-002/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-002/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-002/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-002/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-002/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-003/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-003/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-003/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-003/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-003/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-000/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-000/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-000/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-000/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-000/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-001/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-001/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-001/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-001/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-001/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-002/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-002/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-002/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-002/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-002/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-003/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-003/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-003/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-003/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-003/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-004/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-004/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-004/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-004/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/children/run-004/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/stdout.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/failures.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/manifest.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/status.json",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/stderr.jsonl",
+      "?? .agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/stdout.jsonl"
     ],
     "unchanged_from_execution_baseline": []
   },
