@@ -11,5 +11,5 @@
  packages/core/src/tasks/task-kernel/kernel.ts      |  32 +++
  packages/core/src/tasks/task-kernel/model.ts       |  24 ++
  .../baselines/v0.7-compatibility-candidate.json    | 137 ++++++++++-
- .../check-compatibility-contract-baseline.mjs      |  90 ++++++-
- 14 files changed, 1166 insertions(+), 76 deletions(-)
+ .../check-compatibility-contract-baseline.mjs      |  88 ++++++-
+ 14 files changed, 1164 insertions(+), 76 deletions(-)

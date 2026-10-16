@@ -1,0 +1,210 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run test:project core packages/core/src/tasks/task-kernel/cancellation.test.ts --maxWorkers=1",
+      "duration_ms": 3420,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:1696cec58bc5d480a36a10b40cbb57403bd9f825b31fe4f8a9709991bf0ea76f",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610160500-6RCQSY-withdrawn-scope-cancellation/.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-007/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:ab24f02c2bdcd90a93f935c7f11304d61a6233451a96e3955c4103a2ba8fa20d",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project core packages/core/src/tasks/task-kernel/cancellation.test.ts \"--maxWorkers=1\"\n",
+      "stdout_tail": "\n RUN  v5.0.2 <repo>\n\n\n Test Files  1 passed (1)\n      Tests  12 passed (12)\n   Start at  08:57:17\n   Duration  1.02s (transform 57%, import 30%, tests 10%, setup 2%, worker 1%)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run test:project agentplane packages/agentplane/src/commands/task/kernel-cancellation.test.ts --maxWorkers=1",
+      "duration_ms": 26326,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:130dcf7654f8af5d6fddf1e02703a58f436c9341bae4d03540ca3c05e2483dc7",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610160500-6RCQSY-withdrawn-scope-cancellation/.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-008/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:ab24f02c2bdcd90a93f935c7f11304d61a6233451a96e3955c4103a2ba8fa20d",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/kernel-cancellation.test.ts \"--maxWorkers=1\"\n",
+      "stdout_tail": "\n RUN  v5.0.2 <repo>\n\n\n Test Files  1 passed (1)\n      Tests  5 passed (5)\n   Start at  08:57:22\n   Duration  22.59s (tests 67%, transform 26%, import 7%)\n\n  Transform  |agentplane| transforming modules took 5.87s · 26% of tracked time, re-done on every run\n             persist transforms across runs with fsModuleCache: true\n             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run typecheck",
+      "duration_ms": 895,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:48fbc3984c0030b82ca93e3811b53ae2def4a7c4ecd6dbe253e558d210089f52",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610160500-6RCQSY-withdrawn-scope-cancellation/.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-009/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:ab24f02c2bdcd90a93f935c7f11304d61a6233451a96e3955c4103a2ba8fa20d",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run hotspots:check",
+      "duration_ms": 1415,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:6316e7ff984669a9238f5a2cbc6cf05e0216d6bf3208d1ee33bd78ab6631b466",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610160500-6RCQSY-withdrawn-scope-cancellation/.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-010/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:ab24f02c2bdcd90a93f935c7f11304d61a6233451a96e3955c4103a2ba8fa20d",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "hotspots:check",
+      "stderr_tail": "$ node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300 && node scripts/checks/check-oversized-test-baseline.mjs --threshold-lines 1000\n",
+      "stdout_tail": "ane/src/commands/branch/cleanup-merged.ts: 463 lines\n- packages/agentplane/src/commands/task/create.command.ts: 463 lines\n- packages/agentplane/src/commands/pr/provider-update-branch.ts: 462 lines\n- packages/agentplane/src/commands/task/migration-apply.ts: 450 lines\n- packages/agentplane/src/commands/task/kernel-run.ts: 445 lines\n- packages/agentplane/src/runner/state-fingerprint-observation.ts: 445 lines\n- packages/agentplane/src/runner/artifacts.ts: 444 lines\n- packages/agentplane/src/commands/task/kernel-recovery-evidence.ts: 442 lines\n- packages/agentplane/src/runner/observation/protected-filesystem-capture-support.ts: 442 lines\n- packages/agentplane/src/commands/task/next-action.command.ts: 441 lines\n- packages/agentplane/src/commands/hermes/hermes.command.ts: 439 lines\n- packages/agentplane/src/runner/usecases/task-knowledge-request.ts: 437 lines\n- packages/agentplane/src/cli/run-cli/command-loaders/task.ts: 434 lines\n- packages/agentplane/src/commands/task/new.ts: 434 lines\n- packages/agentplane/src/commands/shared/declared-check.ts: 431 lines\n- packages/agentplane/src/commands/task/shared/workflow-transition-service.ts: 430 lines\n- packages/agentplane/src/backends/task-backend/shared/record.ts: 429 lines\n- packages/agentplane/src/cli/run-cli.ts: 429 lines\n- packages/agentplane/src/runner/run-state-validation.ts: 429 lines\n- packages/agentplane/src/commands/shared/merged-branch-cleanup.ts: 424 lines\n- packages/agentplane/src/runtime/task-execution-context/resolve.ts: 424 lines\n- packages/agentplane/src/runner/usecases/task-run-inspect.ts: 423 lines\n- packages/agentplane/src/backends/task-backend/shared/normalize.ts: 422 lines\n- packages/agentplane/src/commands/evaluator/evaluator-evidence-store.ts: 420 lines\n- packages/agentplane/src/runner/state-fingerprint.testkit.ts: 418 lines\n- packages/agentplane/src/runner/context/recipe-closure.ts: 417 lines\n- packages/agentplane/src/backends/task-backend/local-backend-write.ts: 415 lines\n- packages/agentplane/src/commands/pr/integrate/internal/merge.ts: 415 lines\n- packages/agentplane/src/context/doctor.ts: 413 lines\n- packages/agentplane/src/context/extraction-writer.ts: 413 lines\n- packages/agentplane/src/runner/context/semantic-prompt-projection.ts: 413 lines\n- packages/agentplane/src/runner/usecases/agent-work-order.ts: 413 lines\n- packages/agentplane/src/commands/task/external-agent-workflow-recovery.ts: 411 lines\n- packages/agentplane/src/context/harvest-tasks-extraction.ts: 408 lines\n- packages/agentplane/src/commands/pr/internal/sync.ts: 407 lines\n- packages/agentplane/src/commands/task/active.command.ts: 407 lines\n- packages/agentplane/src/commands/task/direct-task-supervisor-closeout.ts: 407 lines\n- packages/agentplane/src/runner/usecases/task-run-lifecycle-replay.ts: 407 lines\n- packages/agentplane/src/commands/doctor/legacy-probes.ts: 406 lines\n- packages/agentplane/src/commands/task/kernel-final-validation.ts: 406 lines\n- packages/agentplane/src/commands/insights/insights-report.ts: 404 lines\n- packages/agentplane/src/commands/pr/check.ts: 403 lines\n- packages/agentplane/src/commands/task/kernel-controller-handoff.ts: 401 lines\nOversized test warning: 8 test file(s) exceed 1000 lines.\n- packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts: 1193 lines\n- packages/agentplane/src/commands/task/finish.validation.unit.test.ts: 1160 lines\n- packages/agentplane/src/commands/doctor.command.open-pr.test.ts: 1124 lines\n- packages/agentplane/src/commands/shared/task-store.test.ts: 1115 lines\n- packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts: 1102 lines\n- packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts: 1095 lines\n- packages/agentplane/src/cli/run-cli.core.test.ts: 1046 lines\n- packages/agentplane/src/commands/doctor.command.runtime.test.ts: 1037 lines\nHotspot threshold check passed (runtime: warn>400, error>600; tests: warn>1000, error>1300).\nOversized test baseline OK (8 entries, 8872 total lines, threshold>1000).\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run bench:compatibility:candidate:check",
+      "duration_ms": 13991,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:aceb920e89498cbb24c225f9f332ae32ec940ae25873fcb905384e85cc1e9d30",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610160500-6RCQSY-withdrawn-scope-cancellation/.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-011/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:ab24f02c2bdcd90a93f935c7f11304d61a6233451a96e3955c4103a2ba8fa20d",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "bench:compatibility:candidate:check",
+      "stderr_tail": "$ node scripts/bench/capture-compatibility-candidate.mjs --check\n",
+      "stdout_tail": "compatibility candidate is current\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run bench:compatibility:check",
+      "duration_ms": 27652,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:9819fcee16b74ab75fa6ebc9597cd14ba72af078409f29fa771d201eb5ca844f",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610160500-6RCQSY-withdrawn-scope-cancellation/.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-012/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:ab24f02c2bdcd90a93f935c7f11304d61a6233451a96e3955c4103a2ba8fa20d",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "bench:compatibility:check",
+      "stderr_tail": "$ node scripts/checks/check-compatibility-contract-baseline.mjs\n",
+      "stdout_tail": "compatibility contract baseline OK current=d412116a41dc399e5238722d217d69f0fb717a13b653fe753e11e75bcb73fd15 candidate=approved:agentplane.compatibility.v0.7.cumulative:release_version published_tag=verified-local exact_main=verified-local preexisting_drift=surface:agent_facing_context_contracts cli=263commands/184args/897options npm_registry=offline-frozen:3packages/162files\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "git diff --check",
+      "duration_ms": 1293,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:f73bdcf82ac0da29c1c8aaa90bb0b3a4cb1e28ad699a1ece5d3feff51bbaecd9",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610160500-6RCQSY-withdrawn-scope-cancellation/.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-013/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:01c8ca02f0a09c88416cec65d1fd3512d77ef81a268371d6838cffe218b5a781",
+        "executable_digest": "sha256:2a8c18fbf43da9f692d75474c72bea9dfd796c260b0f3dfe456376abc3bbd668",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "full_regression",
+        "task_outcome"
+      ],
+      "command": "bun run ci:local:full",
+      "duration_ms": 1063932,
+      "exit_code": 1,
+      "observation": {
+        "digest": "sha256:1a7f7b83c82385f8de2d5cb9864421f603917ede19b33a65761639d49cf12ef7",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610160500-6RCQSY-withdrawn-scope-cancellation/.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:ab24f02c2bdcd90a93f935c7f11304d61a6233451a96e3955c4103a2ba8fa20d",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "ci:local:full",
+      "stderr_tail": "n run --filter=@agentplaneorg/recipes build:bundle && bun run --filter=agentplane build:bundle\n$ prettier . --check\n$ bun scripts/generate/sync-schemas.mjs check\n$ node scripts/generate/sync-agent-templates.mjs check\n$ node scripts/checks/check-policy-routing.mjs\n$ node scripts/release/check-release-parity.mjs\n$ node scripts/checks/check-cli-reference-fresh.mjs\n$ node scripts/checks/check-recipes-inventory-fresh.mjs\n$ node scripts/generate/generate-scripts-readme.mjs --check\n$ node scripts/checks/check-agent-onboarding-scenario.mjs\n$ node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300 && node scripts/checks/check-oversized-test-baseline.mjs --threshold-lines 1000\n$ node scripts/checks/check-vitest-projects.mjs\n$ eslint packages scripts eslint.config.cjs vitest.config.ts\nerror: script \"lint:core\" exited with code 1\nnode:internal/errors:986\n  const err = new Error(message);\n              ^\n\nError: Command failed: bun run lint:core\n    at genericNodeError (node:internal/errors:986:15)\n    at wrappedFn (node:internal/errors:540:14)\n    at checkExecSyncError (node:child_process:942:11)\n    at execFileSync (node:child_process:978:15)\n    at run (file://<repo>/scripts/checks/run-local-ci-group.mjs:9:3)\n    at bunScript (file://<repo>/scripts/checks/run-local-ci-group.mjs:10:34)\n    at Object.core (file://<repo>/scripts/checks/run-local-ci-group.mjs:35:5)\n    at file://<repo>/scripts/checks/run-local-ci-group.mjs:88:14\n    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)\n    at async node:internal/modules/esm/loader:647:26 {\n  status: 1,\n  signal: null,\n  output: [ null, null, null ],\n  pid: 1403505,\n  stdout: null,\n  stderr: null\n}\n\nNode.js v24.21.0\n$ node scripts/checks/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 3 --fixture local-basic [REDACTED] 10000\n$ node scripts/checks/run-vitest-suite.mjs critical-cli\n{\"schema_version\":1,\"kind\":\"verification_group_failure_classification\",\"groups\":[{\"id\":\"core\",\"failure_kind\":\"command_failure\",\"failure_kinds\":[\"command_failure\"]}]}\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":false,\"groups\":[{\"id\":\"runtime\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":195959,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/manifest.json\",\"digest\":\"sha256:21817062a265f90867c0f8d8d21df565f1932ed7336ef2bdf7ca3662fb7bfbb9\"}},{\"id\":\"docs-schema\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":139406,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-002/manifest.json\",\"digest\":\"sha256:0753b3181215d43ef9ecf6ef9377c11fa96d20ddaf3f4c62843236a4296672ca\"}},{\"id\":\"core\",\"exit_code\":1,\"timed_out\":false,\"duration_ms\":435671,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-003/manifest.json\",\"digest\":\"sha256:ac2947ca9bb6a181ca15fa304ccf57dbba199873741b444bd88b7766b9da7b96\"}},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":264467,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/manifest.json\",\"digest\":\"sha256:111fe1ca555b70286b40b069461d3d916dfa07a2237bda5630fb657ac2d2a9cc\"}}]}\nfile://<repo>/scripts/checks/run-local-ci.mjs:548\n  if (!ok) throw new Error(\"Full verification group failed.\");\n                 ^\n\nError: Full verification group failed.\n    at runFullFastPath (file://<repo>/scripts/checks/run-local-ci.mjs:548:18)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async file://<repo>/scripts/checks/run-local-ci.mjs:623:7\n\nNode.js v24.21.0\nerror: script \"ci:local:full\" exited with code 1\n",
+      "stdout_tail": "3744:33  error  Do not call `Array#push()` multiple times   unicorn/prefer-single-call\n\n✖ 6 problems (2 errors, 4 warnings)\n  2 errors and 0 warnings potentially fixable with the `--fix` option.\n\n\n== cli (264467ms) ==\nCLI cold-start baseline OK using fixture local-basic (quickstart median=755.133ms (threshold=5000ms, p95=755.133ms); task_list median=784.617ms (threshold=10000ms, p95=784.617ms); task_search median=681.246ms (threshold=6000ms, p95=681.246ms); task_next median=1152.595ms (threshold=8000ms, p95=1152.595ms); preflight_quick median=945.284ms (threshold=6000ms, p95=945.284ms))\nVitest suite critical-cli: chunk 1/5 (2 files): packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts, packages/agentplane/src/cli/run-cli.critical.exit-codes.test.ts\nVitest suite critical-cli: chunk 1/5 passed in 37645ms (Test Files  2 passed (2); Tests  3 passed (3); Duration  36.34s (tests 59%, transform 33%, import 7%))\nVitest suite critical-cli: chunk 2/5 (2 files): packages/agentplane/src/cli/run-cli.critical.git-edge.test.ts, packages/agentplane/src/cli/run-cli.critical.protected-paths.test.ts\nVitest suite critical-cli: chunk 2/5 passed in 35925ms (Test Files  2 passed (2); Tests  5 passed (5); Duration  34.31s (transform 49%, tests 40%, import 11%))\nVitest suite critical-cli: chunk 3/5 (2 files): packages/agentplane/src/cli/run-cli.critical.scope-leak.test.ts, packages/agentplane/src/cli/run-cli.critical.symlink-root.test.ts\nVitest suite critical-cli: chunk 3/5 passed in 41350ms (Test Files  2 passed (2); Tests  7 passed (7); Duration  40.06s (tests 47%, transform 46%, import 7%))\nVitest suite critical-cli: chunk 4/5 (2 files): packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts, packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet-regressions.test.ts\nVitest suite critical-cli: chunk 4/5 passed in 114903ms (Test Files  2 passed (2); Tests  7 passed (7); Duration  113.70s (tests 70%, transform 25%, import 5%))\nVitest suite critical-cli: chunk 5/5 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts\nVitest suite critical-cli: chunk 5/5 passed in 27321ms (Test Files  1 passed (1); Tests  12 passed (12); Duration  26.56s (tests 72%, transform 22%, import 5%))\n{\"schema_version\":1,\"kind\":\"verification_group_failure_classification\",\"groups\":[{\"id\":\"core\",\"failure_kind\":\"command_failure\",\"failure_kinds\":[\"command_failure\"]}]}\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":false,\"groups\":[{\"id\":\"runtime\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":195959,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-001/manifest.json\",\"digest\":\"sha256:21817062a265f90867c0f8d8d21df565f1932ed7336ef2bdf7ca3662fb7bfbb9\"}},{\"id\":\"docs-schema\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":139406,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-002/manifest.json\",\"digest\":\"sha256:0753b3181215d43ef9ecf6ef9377c11fa96d20ddaf3f4c62843236a4296672ca\"}},{\"id\":\"core\",\"exit_code\":1,\"timed_out\":false,\"duration_ms\":435671,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-003/manifest.json\",\"digest\":\"sha256:ac2947ca9bb6a181ca15fa304ccf57dbba199873741b444bd88b7766b9da7b96\"}},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":264467,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202610160500-6RCQSY/supervision/verification-runs/run-014/children/run-004/manifest.json\",\"digest\":\"sha256:111fe1ca555b70286b40b069461d3d916dfa07a2237bda5630fb657ac2d2a9cc\"}}]}\n{\"schema_version\":1,\"kind\":\"verification_metrics\",\"route\":\"full-fast\",\"wall_clock_ms\":1061521,\"selected_groups\":5,\"executed_groups\":5,\"parallel_group_concurrency\":1,\"build_invocations\":1,\"ok\":false}\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": "Declared check failed: bun run ci:local:full",
+  "schema_version": 1,
+  "status": "failed",
+  "task_id": "202610160500-6RCQSY"
+}

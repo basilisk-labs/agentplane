@@ -15,8 +15,8 @@ Resolve GitHub issue #6146 with a generic explicit public cancellation dispositi
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:8f4ef2a650e0c623b8f889c14f978e1cb0729c8b01e5d33fc4bfc7a61fbba859
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -40,8 +40,8 @@ Resolve GitHub issue #6146 with a generic explicit public cancellation dispositi
  packages/core/src/tasks/task-kernel/kernel.ts      |  32 +++
  packages/core/src/tasks/task-kernel/model.ts       |  24 ++
  .../baselines/v0.7-compatibility-candidate.json    | 137 ++++++++++-
- .../check-compatibility-contract-baseline.mjs      |  90 ++++++-
- 14 files changed, 1166 insertions(+), 76 deletions(-)
+ .../check-compatibility-contract-baseline.mjs      |  88 ++++++-
+ 14 files changed, 1164 insertions(+), 76 deletions(-)
 ```
 
 </details>

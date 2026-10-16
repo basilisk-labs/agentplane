@@ -3735,13 +3735,11 @@ function validateReviewedCandidate({
       name: "work-item",
       source_task: "202610101141-AGRARP",
     },
-  ];
-  activeExpectedAdditionSources.push({
-    kind: "command",
-    command: "task cancel",
-    source_task: "202610160500-6RCQSY",
-  });
-  activeExpectedAdditionSources.push(
+    {
+      kind: "command",
+      command: "task cancel",
+      source_task: "202610160500-6RCQSY",
+    },
     {
       kind: "option",
       command: "task cancel",
@@ -3785,7 +3783,7 @@ function validateReviewedCandidate({
       name: "revision",
       source_task: "202610160500-6RCQSY",
     },
-  );
+  ];
   const activeExpectedAddedCommandDescriptors = expectedAddedCommandDescriptors
     .filter((command) => command.id.join(" ") !== "task supervisor budget-epoch")
     .map((command) =>

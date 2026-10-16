@@ -2,7 +2,7 @@
   "base": "agentplane/J8P9K9-integration",
   "branch": "task/202610160500-6RCQSY/withdrawn-scope-cancellation",
   "created_at": "2026-10-16T05:41:13.733Z",
-  "diffstat_sha256": "sha256:61ec54f34d89deb6fc473a36f251090a96787c83e23ad32f2ec65b7d785f2c2e",
+  "diffstat_sha256": "sha256:48e74f02d844cef041515322fce4c0c6b1e1e772ffadf77b9d89ddc81c242b99",
   "last_verified_at": null,
   "provider": {
     "hostname": "github.com",
