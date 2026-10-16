@@ -1,0 +1,2 @@
+"$ vitest --config vitest.workspace.ts run --project agentplane -- packages/agentplane/src/commands/task/kernel-completed-external-rework.test.ts"
+"error: script \"test:project\" exited with code 143"
