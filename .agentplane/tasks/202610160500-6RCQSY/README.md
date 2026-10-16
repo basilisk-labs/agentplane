@@ -1,10 +1,11 @@
 ---
 id: "202610160500-6RCQSY"
 title: "Expose auditable USER cancellation for withdrawn mandatory scope on started canonical tasks"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 36
+revision: 37
 origin:
   system: "manual"
 depends_on: []
@@ -48,6 +49,22 @@ quality_review:
     - "The retained final-validation receipt shows the prior full run failed in core lint on two unicorn/prefer-single-call errors; runtime, docs-schema and critical-cli groups passed. The correction addresses that code failure without bypassing checks."
     - "The only implementation path changed since d13b14239 is scripts/checks/check-compatibility-contract-baseline.mjs. Task-cancel source descriptors moved from two push calls into the preexisting ordered array with the same entry values and sequence; cancellation API and security paths are unchanged."
     - "All seven unchanged native bounded checks passed against b3f0afb0. The compatibility check still reports the same current digest d412116a41dc399e5238722d217d69f0fb717a13b653fe753e11e75bcb73fd15. Independent scoped ESLint and Prettier reruns passed."
+token_usage:
+  agent_runs: 1
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:71fdd360d0b3ec874a684bceccec389e9086db437798e0166252d3eb11366e4c"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-10-16T07:38:13.403Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -367,9 +384,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "b3f0afb0e71590208a42ec75599a538f81db3a47"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "cd8cc259560d3fb6ab41fe281f7a841ceda66798"
+  message: "🧩 6RCQSY task: refresh task artifacts after commit"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -377,9 +397,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-16T07:38:13.403Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "cd8cc259560d3fb6ab41fe281f7a841ceda66798"
 doc_version: 3
-doc_updated_at: "2026-10-16T07:21:34.651Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-16T07:38:13.403Z"
+doc_updated_by: "CODER"
 description: "Resolve GitHub issue #6146 with a generic explicit public cancellation disposition. Keep close-noop and duplicate guards unchanged. Preserve original plans, claims, accepted and blocked results, validation history, and effect ledger; cancellation is not completion. Bind manual USER reason and approval to exact current task/plan/revision/fingerprint with native CAS and idempotent replay. Refuse active writers/claims/execution and unresolved prepared/pending/in-doubt effects; require reconciliation first. Reject forged or stale approval, missing reason, legacy/foreign state, and late results after cancellation. No consumer cancellation, external provider action, project-specific exception or verification waiver. Include real public CLI and native persistence regressions, independent evaluation, and queued mandatory full. Mutable compatibility candidate/checker may change for new command; immutable baseline must not change."
 sections:
   Summary: |-
@@ -607,6 +635,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:df3274b5e90117167663913a5a0a84039a09c24396b035e27ad1c337c700b8c6"
     work_order_id: "sha256:b01a535cb9e3db5b5151c5cfd32890985f0776d51d3dd9a2e7b15b8b02f0a710"
+  implementation_commit:
+    hash: "b3f0afb0e71590208a42ec75599a538f81db3a47"
+    message: "🚧 6RCQSY task: apply canonical agent result"
   task_execution_context:
     base_ref: "agentplane/J8P9K9-integration"
     base_sha: "6b0406377d78f8491ed8081aed4d2a6dc75b4418"
@@ -2118,3 +2149,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/1` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:71fdd360d0b3ec874a684bceccec389e9086db437798e0166252d3eb11366e4c`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-10-16T07:38:13.403Z`
