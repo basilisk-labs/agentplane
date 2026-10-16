@@ -1,0 +1,4 @@
+ .../task/kernel-completed-external-rework.test.ts  | 34 ++++++++++
+ .../task/kernel-completed-native-review.ts         | 69 +++++++++++++++++++-
+ .../kernel-completed-provider-workflow.test.ts     | 76 ++++++++++++++++++++++
+ 3 files changed, 176 insertions(+), 3 deletions(-)

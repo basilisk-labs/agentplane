@@ -10,6 +10,7 @@ import { readKernelOperationalProjection } from "./kernel-operational-projection
 import {
   fixture,
   git,
+  expectMergedBaseReviewBindings,
   recordFixtureVerification,
 } from "./kernel-completed-external-rework.testkit.js";
 import type * as BlockedResultModule from "./external-agent-blocked-result.js";
@@ -876,6 +877,15 @@ describe("completed canonical external rework", { timeout: 120_000 }, () => {
             ),
           ).toBe(true);
         }
+      }
+      if (crashPhase === "none") {
+        await expectMergedBaseReviewBindings(
+          f.root,
+          f.id,
+          reviewCommand,
+          reviewOrder,
+          next.exchange.directory,
+        );
       }
       const journal = validateSupervisorExecutionEpisodeJournal(
         JSON.parse(await readFile(failed.journalPath, "utf8")),

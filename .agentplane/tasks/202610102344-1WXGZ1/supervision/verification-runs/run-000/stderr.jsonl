@@ -1,0 +1,1 @@
+"$ vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/kernel-completed-external-rework.test.ts packages/agentplane/src/commands/task/kernel-completed-provider-workflow.test.ts \"--maxWorkers=2\""

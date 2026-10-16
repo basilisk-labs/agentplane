@@ -1,3 +1,5 @@
+import type * as CoreGit from "@agentplaneorg/core/git";
+import { resolveCompletedReviewOwner } from "./kernel-completed-native-review.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
@@ -16,6 +18,13 @@ const mocks = vi.hoisted(() => ({
   read: vi.fn(),
   recover: vi.fn(),
   suspend: vi.fn(),
+  findWorktree: vi.fn(),
+  listWorktrees: vi.fn(),
+}));
+vi.mock("@agentplaneorg/core/git", async (original) => ({
+  ...(await original<typeof CoreGit>()),
+  findWorktreeForBranch: mocks.findWorktree,
+  listWorktrees: mocks.listWorktrees,
 }));
 vi.mock("./branch-task-supervisor-operations.js", () => ({
   executeAdmittedBranchWorkflowOperation: mocks.admit,
@@ -250,4 +259,71 @@ describe("completed base checkout", () => {
       resolveCompletedWorkflowBase({ command, record, base_checkout: "/repo/base" }),
     ).rejects.toThrow("exact completed Kernel record");
   });
+});
+
+describe("completed review projection owner", () => {
+  const task = {
+    id: "T-1",
+    extensions: {
+      task_execution_context: {
+        schema_version: 1,
+        base_ref: "main",
+        base_sha: "a".repeat(40),
+        repository_identity: "sha256:" + "b".repeat(64),
+      },
+    },
+  } as Parameters<typeof resolveCompletedReviewOwner>[0]["task"];
+  const ownerGetTask = vi.fn().mockResolvedValue(task);
+  const owner = {
+    resolvedProject: { gitRoot: "/repo/task" },
+    taskBackend: { getTask: ownerGetTask },
+  } as unknown as CommandContext;
+  beforeEach(() => {
+    ownerGetTask.mockResolvedValue(task);
+    mocks.findWorktree.mockResolvedValue("/repo/base");
+    mocks.listWorktrees.mockResolvedValue([{ path: "/repo/base" }, { path: "/repo/task" }]);
+    mocks.load.mockImplementation(({ cwd }: { cwd: string }) =>
+      Promise.resolve(cwd === "/repo/task" ? owner : target),
+    );
+  });
+  it("requires registered owner/base and exact canonical record", async () => {
+    await expect(
+      resolveCompletedReviewOwner({ command: target, task, owner_checkout: "/repo/task" }),
+    ).resolves.toBe(owner);
+  });
+  it("rejects a superseded owner review even with the same canonical record", async () => {
+    ownerGetTask.mockResolvedValue({
+      ...task,
+      quality_review: { state: "rework" },
+    } as typeof task);
+    await expect(
+      resolveCompletedReviewOwner({ command: target, task, owner_checkout: "/repo/task" }),
+    ).rejects.toThrow("exact completed Kernel record");
+  });
+  it("rejects missing base registration even when the caller root is process cwd", async () => {
+    mocks.findWorktree.mockResolvedValue(null);
+    const current = { ...target, resolvedProject: { gitRoot: process.cwd() } } as CommandContext;
+    await expect(
+      resolveCompletedReviewOwner({ command: current, task, owner_checkout: "/repo/task" }),
+    ).rejects.toThrow("registered owner and base");
+  });
+  it.each(["base", "owner", "repository", "record"])(
+    "rejects mismatched %s proof",
+    async (kind) => {
+      if (kind === "base") mocks.findWorktree.mockResolvedValue("/repo/other");
+      if (kind === "owner") mocks.listWorktrees.mockResolvedValue([{ path: "/repo/base" }]);
+      if (kind === "repository")
+        mocks.common.mockImplementation((c: CommandContext) =>
+          Promise.resolve(c === owner ? "/foreign/.git" : "/repo/.git"),
+        );
+      if (kind === "record")
+        mocks.read.mockReturnValueOnce({ kind: "canonical", record }).mockReturnValueOnce({
+          kind: "canonical",
+          record: { ...record, digest: "sha256:different" },
+        });
+      await expect(
+        resolveCompletedReviewOwner({ command: target, task, owner_checkout: "/repo/task" }),
+      ).rejects.toThrow();
+    },
+  );
 });
