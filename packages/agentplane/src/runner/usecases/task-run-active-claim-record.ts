@@ -9,7 +9,7 @@ import type { RunnerLifecycleStatus } from "../types.js";
 import type { TaskRunnerSupervisorHistoryAnchor } from "./task-run-supervisor-history-anchor.js";
 
 export type TaskRunnerActiveClaimOperation =
-  "execute" | "resume" | "retry" | "resume_effect" | "effect_in_doubt";
+  "execute" | "resume" | "retry" | "resume_effect" | "effect_in_doubt" | "cancel";
 
 export type TaskRunnerActiveClaimOwnerIdentity = {
   owner_pid: number;
@@ -90,7 +90,8 @@ export function parseTaskRunnerActiveClaim(raw: string, claimPath: string): Task
     parsed.task_id.length === 0 ||
     typeof parsed.run_id !== "string" ||
     parsed.run_id.length === 0 ||
-    (parsed.operation !== "execute" &&
+    (parsed.operation !== "cancel" &&
+      parsed.operation !== "execute" &&
       parsed.operation !== "resume" &&
       parsed.operation !== "retry" &&
       parsed.operation !== "resume_effect" &&
