@@ -128,6 +128,7 @@ function unchangedApprovedPlanHistory(
   const history = plans.slice(indices[0]);
   const definition = aggregate.work_items[binding.work_item_id]?.definition;
   if (!definition) return false;
+  const authenticated: k.DomainEvent[] = [];
   for (const [index, plan] of history.entries()) {
     const historicalDefinition = plan.work_items.find((item) => item.id === binding.work_item_id);
     if (
@@ -138,8 +139,12 @@ function unchangedApprovedPlanHistory(
       k.kernelDigest(historicalDefinition) !== k.kernelDigest(definition)
     )
       return false;
-    if (index === 0 || index === history.length - 1) continue;
-    if (authenticatedPlanApproval(record, plan)) continue;
+    const approval = authenticatedPlanApproval(record, plan);
+    if (approval) {
+      authenticated.push(approval);
+      continue;
+    }
+    if (index === 0) return false;
     const amended: k.DomainEvent[] = [];
     for (const entry of aggregate.authority_lineage ?? []) {
       if (
@@ -173,9 +178,10 @@ function unchangedApprovedPlanHistory(
       record.events.filter((event) => event.mutation_id === amended[0]!.mutation_id).length !== 1
     )
       return false;
+    authenticated.push(amended[0]!);
   }
-  const initial = authenticatedPlanApproval(record, history[0]!);
-  const current = authenticatedPlanApproval(record, history.at(-1)!);
+  const initial = authenticated[0];
+  const current = authenticated.at(-1);
   const stop = aggregate.mutation_receipts[String(`semantic-stop:${orderId}`)];
   return (
     !!initial &&

@@ -459,7 +459,7 @@ function approveReplan(
   return record;
 }
 
-async function unchangedHistoryFixture(amendIntermediate = false) {
+async function unchangedHistoryFixture(amendIntermediate = false, finalAmendment = false) {
   const { kernelRoot } = await fixtureRoot("kernel-target-recovery-");
   const contract = {
     role: "EXECUTOR" as const,
@@ -509,12 +509,7 @@ async function unchangedHistoryFixture(amendIntermediate = false) {
     [],
     documents,
   );
-  const user = {
-    id: "USER",
-    kind: "USER",
-    transport: "manual",
-    capabilities: ["repository_write"],
-  } as const;
+  const user = { ...manualActor, capabilities: ["repository_write"] } as const;
   function apply(command: k.TaskCommand, mutationId: string, actor: k.KernelInput["actor"] = user) {
     record = reduceRecord(record, fixtureInput(record, command, mutationId, parent, actor));
   }
@@ -609,6 +604,7 @@ async function unchangedHistoryFixture(amendIntermediate = false) {
       ),
     );
     parent = child.authority;
+    if (finalAmendment) return { record, kernelRoot, target, unrelated: target };
     record = claimAndBegin(record, "amended-other-", parent, {
       id: "other",
       claim: hash("other-claim"),
@@ -635,11 +631,13 @@ async function unchangedHistoryFixture(amendIntermediate = false) {
 }
 
 describe("target-preserving approved Plan recovery", () => {
-  it.each([false, true])(
-    "selects the authentic target past an unrelated stale attempt (intermediate amendment=%s)",
-    async (amendIntermediate) => {
-      const f = await unchangedHistoryFixture(amendIntermediate);
-      expect(f.record.aggregate.work_items.other).toMatchObject({ state: "EXECUTING", attempt: 2 });
+  it.each(["approved", "intermediate", "final"])(
+    "selects the authentic target with %s plan history",
+    async (kind) => {
+      const f = await unchangedHistoryFixture(kind !== "approved", kind === "final");
+      expect(f.record.aggregate.work_items.other).toMatchObject(
+        kind === "final" ? { state: "READY", attempt: 0 } : { state: "EXECUTING", attempt: 2 },
+      );
       expect(f.record.aggregate.work_items.kernel).toMatchObject({ state: "BLOCKED", attempt: 1 });
       expect(await captureKernelSemanticStop(f.kernelRoot, f.record, "kernel")).toEqual({
         work_order_id: f.target.orderId,
@@ -648,26 +646,29 @@ describe("target-preserving approved Plan recovery", () => {
       });
     },
   );
-  it.each([
-    "changed-then-restored",
-    "missing-amendment",
-    "tampered-amendment",
-    "missing-intermediate",
-  ])("rejects %s intermediate history", async (kind) => {
-    const f = await unchangedHistoryFixture(true);
-    const middle = f.record.aggregate.plan_history[1]!;
-    if (kind === "changed-then-restored") {
-      middle.work_items[0]!.expected_outputs = ["changed while current target is unchanged"];
-      middle.digest = hash({ revision: middle.revision, work_items: middle.work_items });
-    } else if (kind === "missing-intermediate") f.record.aggregate.plan_history.splice(1, 1);
-    else {
-      const event = f.record.events.find((event) => event.kind === "plan_amended")!;
-      if (kind === "missing-amendment")
-        f.record.events = f.record.events.filter((entry) => entry !== event);
-      else
-        f.record.aggregate.mutation_receipts[event.mutation_id]!.command_digest =
-          hash("tampered amendment");
-    }
+  it.each(
+    [false, true].flatMap((final) =>
+      ["definition", "missing", "forged", "duplicate", "cross-plan", "history"].map((kind) => ({
+        final,
+        kind,
+      })),
+    ),
+  )("rejects $kind amendment evidence (final=$final)", async ({ final, kind }) => {
+    const f = await unchangedHistoryFixture(true, final);
+    const amended = final ? f.record.aggregate.current_plan! : f.record.aggregate.plan_history[1]!;
+    const event = f.record.events.find((entry) => entry.kind === "plan_amended")!;
+    const edits: Record<string, () => unknown> = {
+      missing: () => (f.record.events = f.record.events.filter((entry) => entry !== event)),
+      duplicate: () => f.record.events.push(event),
+      "cross-plan": () => (amended.approval_evidence_digest = hash("another plan")),
+      forged: () =>
+        (f.record.aggregate.mutation_receipts[event.mutation_id]!.command_digest = hash("forged")),
+    };
+    if (kind === "definition") {
+      amended.work_items[0]!.expected_outputs = ["changed target"];
+      amended.digest = hash({ revision: amended.revision, work_items: amended.work_items });
+    } else if (kind === "history") f.record.aggregate.plan_history.splice(final ? 0 : 1, 1);
+    else edits[kind]!();
     await expect(captureKernelSemanticStop(f.kernelRoot, f.record, "kernel")).rejects.toThrow();
   });
   const historyCases: [
