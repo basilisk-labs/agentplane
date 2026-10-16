@@ -1,1 +1,1 @@
-🚧 6RCQSY task: Expose auditable USER cancellation for withdrawn mandatory scope on started canonical tasks [202610160500-6RCQSY]
+✅ 6RCQSY task: Expose auditable USER cancellation for withdrawn mandatory scope on started canonical tasks [202610160500-6RCQSY]

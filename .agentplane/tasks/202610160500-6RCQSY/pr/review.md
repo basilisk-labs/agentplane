@@ -6,7 +6,7 @@ Created: 2026-10-16T05:41:13.733Z
 
 - Task: `202610160500-6RCQSY`
 - Title: Expose auditable USER cancellation for withdrawn mandatory scope on started canonical tasks
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610160500-6RCQSY/withdrawn-scope-cancellation`
 - Canonical task record: `.agentplane/tasks/202610160500-6RCQSY/README.md`
 
