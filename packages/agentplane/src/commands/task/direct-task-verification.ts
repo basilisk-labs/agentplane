@@ -1,3 +1,7 @@
+import {
+  taskCheckTimeoutProfile,
+  taskCheckTimeoutBudget,
+} from "./direct-task-verification-timeout.js";
 import { runProcess } from "@agentplaneorg/core/process";
 import { createHash } from "node:crypto";
 import { mkdir, mkdtemp, readFile, rm, symlink } from "node:fs/promises";
@@ -37,17 +41,6 @@ export {
   type DirectTaskVerificationResult,
 } from "./direct-task-verification-checks.js";
 
-const DEFAULT_CHECK_TIMEOUT_MS = 30 * 60_000;
-const CHECK_TIMEOUT_MS_BY_SCRIPT: Readonly<Record<string, number>> = Object.freeze({
-  // The complete regression suite can exceed the default on shared development hosts.
-  "test:fast": 60 * 60_000,
-  // Full CI includes four bounded verification waves and a prerequisite build.
-  "ci:local:full": 150 * 60_000,
-  // Prepublish also runs release-wide suites, coverage, and installed-package smoke checks.
-  "release:prepublish": 150 * 60_000,
-  "release:ci-check": 150 * 60_000,
-  "e2e:v0.7.1:gate": 150 * 60_000,
-});
 const BUN_UNMATCHED_FILTER_PATTERN = /following filters did not match any test files/iu;
 const BUN_ZERO_TEST_PATTERNS = [
   /\bno tests? (?:found|matched|ran|were run)\b/iu,
@@ -168,12 +161,6 @@ export function isTaskLevelVerificationReworkState(opts: {
     opts.has_current_plan &&
     opts.all_required_work_items_completed
   );
-}
-
-function directTaskCheckTimeoutMs(script: string | null): number {
-  return script === null
-    ? DEFAULT_CHECK_TIMEOUT_MS
-    : (CHECK_TIMEOUT_MS_BY_SCRIPT[script] ?? DEFAULT_CHECK_TIMEOUT_MS);
 }
 
 function bunTestReportedZeroTests(opts: {
@@ -338,6 +325,7 @@ export async function runDirectTaskVerification(opts: {
   run_process?: typeof runProcess;
   now?: () => number;
 }): Promise<DirectTaskVerificationResult> {
+  const profile = taskCheckTimeoutProfile(verificationChildEnv());
   const checks: DirectTaskCheck[] = [];
   const commands = opts.additional_only
     ? [...new Set((opts.additional_commands ?? []).map(({ command }) => command))]
@@ -406,11 +394,15 @@ export async function runDirectTaskVerification(opts: {
     }
     const now = opts.now ?? Date.now;
     const started = now();
-    const timeoutBudgetMs =
-      additionalTimeouts.get(declaredCommand) ??
-      Math.max(...parsedSequence.map((parsed) => directTaskCheckTimeoutMs(parsed.script)));
+    const timeoutBudgetMs = taskCheckTimeoutBudget(
+      parsedSequence,
+      additionalTimeouts.get(declaredCommand),
+      profile,
+    );
     const deadline = started + timeoutBudgetMs;
     const env = verificationChildEnv();
+    // The invocation profile controls this verifier, not nested child verifiers.
+    delete env.AGENTPLANE_TASK_CHECK_TIMEOUT_MS;
     const segmentEvidence = (parsed: (typeof parsedSequence)[number]) => {
       const childEnv = { ...env, ...parsed.env };
       const evidence = localRuntimeEvidence(parsed.executable, childEnv);
@@ -418,7 +410,14 @@ export async function runDirectTaskVerification(opts: {
       return {
         ...evidence,
         environment_digest: `sha256:${createHash("sha256")
-          .update(JSON.stringify([evidence.environment_digest, childEnv.NODE_OPTIONS ?? ""]))
+          .update(
+            JSON.stringify([
+              evidence.environment_digest,
+              childEnv.NODE_OPTIONS ?? "",
+              timeoutBudgetMs,
+              profile ?? null,
+            ]),
+          )
           .digest("hex")}`,
       };
     };
@@ -513,7 +512,9 @@ export async function runDirectTaskVerification(opts: {
                   AGENTPLANE_NATIVE_CHECK_DEADLINE_EPOCH_MS: String(deadline),
                   AGENTPLANE_NATIVE_CHECK_TIMEOUT_SOURCE: additionalTimeouts.has(declaredCommand)
                     ? "declared_command"
-                    : "native_default",
+                    : profile === undefined
+                      ? "native_default"
+                      : "operator_task_profile",
                 }
               : {}),
             ...verificationObservationEnv(observation, implementation),

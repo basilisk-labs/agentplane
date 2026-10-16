@@ -1,0 +1,1 @@
+"$ vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/release/workflow-node-version-contract.test.ts \"--maxWorkers=1\""
