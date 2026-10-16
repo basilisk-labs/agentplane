@@ -107,7 +107,7 @@
     "prepublishOnly": "node ../../scripts/release/enforce-github-publish.mjs && npm run prepack"
   },
   "dependencies": {
-    "canonicalize": "^3.0.0",
+    "canonicalize": "^5.1.0",
     "execa": "^9.6.1",
     "yaml": "^2.8.2",
     "zod": "4.6.5",
