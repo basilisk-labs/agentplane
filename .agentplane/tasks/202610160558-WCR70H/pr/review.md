@@ -6,14 +6,14 @@ Created: 2026-10-16T06:32:54.426Z
 
 - Task: `202610160558-WCR70H`
 - Title: Match operational review projections to normalized Task readback
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610160558-WCR70H/match-operational-review-projections-to-normaliz`
 - Canonical task record: `.agentplane/tasks/202610160558-WCR70H/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

@@ -1,0 +1,84 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run test:project agentplane packages/agentplane/src/commands/task/kernel-operational-projection.test.ts packages/agentplane/src/commands/task/kernel-operational-projection-recovery.test.ts",
+      "duration_ms": 2368,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:240558319b2ca3b6d2b58f141418b6e60b4e01ff0562cd59386360e76f4b307c",
+        "manifest_path": "/Users/densmirnov/Github/agentplane-issue6152-source-primary-20261015/.agentplane/worktrees/202610160558-WCR70H-match-operational-review-projections-to-normaliz/.agentplane/tasks/202610160558-WCR70H/supervision/verification-runs/run-003/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:a42db7aba930e2a111eba85465284647ab1e2e688410acb4b3b12e83e9e5ba07",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:4b3c1e1ff73596aa0359c1d8390c46480a83e2e7b79486a0abee1e37ed22e27d"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/kernel-operational-projection.test.ts packages/agentplane/src/commands/task/kernel-operational-projection-recovery.test.ts\n",
+      "stdout_tail": "\n RUN  v5.0.2 <repo>\n\n ✓  agentplane  packages/agentplane/src/commands/task/kernel-operational-projection.test.ts (9 tests) 6ms\n ✓  agentplane  packages/agentplane/src/commands/task/kernel-operational-projection-recovery.test.ts (8 tests) 114ms\n\n Test Files  2 passed (2)\n      Tests  17 passed (17)\n   Start at  15:10:51\n   Duration  1.65s (transform 70%, import 23%, tests 6%, setup 1%)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run typecheck",
+      "duration_ms": 379,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:46d74a1720199e2f45251ce2bb6b17ba796d2472faa21efe914df53eb837f42a",
+        "manifest_path": "/Users/densmirnov/Github/agentplane-issue6152-source-primary-20261015/.agentplane/worktrees/202610160558-WCR70H-match-operational-review-projections-to-normaliz/.agentplane/tasks/202610160558-WCR70H/supervision/verification-runs/run-004/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:a42db7aba930e2a111eba85465284647ab1e2e688410acb4b3b12e83e9e5ba07",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:4b3c1e1ff73596aa0359c1d8390c46480a83e2e7b79486a0abee1e37ed22e27d"
+      },
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run arch:check",
+      "duration_ms": 72594,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:ab1902e3be112bd1461d5b3eb0751b039a9be361c3067f74aec0a360722d7564",
+        "manifest_path": "/Users/densmirnov/Github/agentplane-issue6152-source-primary-20261015/.agentplane/worktrees/202610160558-WCR70H-match-operational-review-projections-to-normaliz/.agentplane/tasks/202610160558-WCR70H/supervision/verification-runs/run-005/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:a42db7aba930e2a111eba85465284647ab1e2e688410acb4b3b12e83e9e5ba07",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:4b3c1e1ff73596aa0359c1d8390c46480a83e2e7b79486a0abee1e37ed22e27d"
+      },
+      "script": "arch:check",
+      "stderr_tail": "$ bun run arch:baseline && bun run arch:deps\n$ node scripts/checks/check-depcruise-known-violations.mjs\n$ node scripts/checks/run-depcruise-arch.mjs depcruise.config.cjs\n",
+      "stdout_tail": "s cruised)\n\ndependency-cruiser: packages/agentplane/src/workflow-runtime\n\n✔ no dependency violations found (22 modules, 38 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/acr\n\n✔ no dependency violations found (120 modules, 251 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/backend\n\n✔ no dependency violations found (105 modules, 220 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/blueprint\n\n✔ no dependency violations found (4 modules, 3 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/branch\n\n✔ no dependency violations found (520 modules, 1433 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/cleanup\n\n✔ no dependency violations found (426 modules, 1165 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/codex\n\n✔ no dependency violations found (8 modules, 8 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/context\n\n✔ no dependency violations found (770 modules, 2301 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/docs\n\n✔ no dependency violations found (11 modules, 14 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/doctor\n\n✔ no dependency violations found (277 modules, 634 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/evaluator\n\n✔ no dependency violations found (596 modules, 1830 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/evidence\n\n✔ no dependency violations found (88 modules, 188 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/flow\n\n✔ no dependency violations found (416 modules, 1066 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/guard\n\n✔ no dependency violations found (242 modules, 602 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/hermes\n\n✔ no dependency violations found (628 modules, 1758 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/hooks\n\n✔ no dependency violations found (320 modules, 880 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/incidents\n\n✔ no dependency violations found (190 modules, 464 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/insights\n\n✔ no dependency violations found (84 modules, 184 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/intake\n\n✔ no dependency violations found (67 modules, 154 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/pr\n\n✔ no dependency violations found (516 modules, 1420 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/recipes\n\n✔ no dependency violations found (863 modules, 2973 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/release\n\n✔ no dependency violations found (278 modules, 590 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/scenario\n\n✔ no dependency violations found (80 modules, 175 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/shared\n\n✔ no dependency violations found (1170 modules, 3942 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/task\n\n✔ no dependency violations found (1172 modules, 3998 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/upgrade\n\n✔ no dependency violations found (29 modules, 44 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/*.ts\n\n✔ no dependency violations found (761 modules, 2292 dependencies cruised)\n\ndependency-cruiser: packages/core/src\n\n✔ no dependency violations found (145 modules, 329 dependencies cruised)\n\ndependency-cruiser: packages/recipes/src\n\n✔ no dependency violations found (23 modules, 37 dependencies cruised)\n\ndependency-cruiser: packages/testkit/src\n\n✔ no dependency violations found (686 modules, 1930 dependencies cruised)\n\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202610160558-WCR70H"
+}
