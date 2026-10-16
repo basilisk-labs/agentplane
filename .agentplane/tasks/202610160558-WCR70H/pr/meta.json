@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202610160558-WCR70H/match-operational-review-projections-to-normaliz",
+  "created_at": "2026-10-16T06:32:54.426Z",
+  "diffstat_sha256": "sha256:87fea6679dc85fd36c13b18310d84cec04617558d4a0121ac3a757fcc4516c20",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610160558-WCR70H",
+  "updated_at": "2026-10-16T06:32:54.426Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

@@ -2,6 +2,7 @@ import { taskKernel as k } from "@agentplaneorg/core/tasks";
 
 import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
 import type { TaskData } from "../../backends/task-backend.js";
+import { normalizeQualityReviewResult } from "../../backends/task-backend/shared/normalize.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import type { KernelRepositoryEvidence } from "./kernel-repository-coordinator.js";
 
@@ -34,17 +35,19 @@ export function kernelProjectedReviewMatches(
 ): boolean {
   return (
     k.kernelDigest(task.quality_review ?? null) ===
-    k.kernelDigest({
-      state: "pass",
-      provenance: "evaluator_supplied",
-      updated_at: projection.projected_at,
-      updated_by: "EVALUATOR",
-      note: "Canonical EVALUATOR review passed.",
-      evaluated_sha: projection.implementation_commit,
-      review_identity_digest: projection.review_identity_digest,
-      evidence_refs: [...projection.evidence_refs],
-      findings: [...projection.findings],
-    })
+    k.kernelDigest(
+      normalizeQualityReviewResult({
+        state: "pass",
+        provenance: "evaluator_supplied",
+        updated_at: projection.projected_at,
+        updated_by: "EVALUATOR",
+        note: "Canonical EVALUATOR review passed.",
+        evaluated_sha: projection.implementation_commit,
+        review_identity_digest: projection.review_identity_digest,
+        evidence_refs: [...projection.evidence_refs],
+        findings: [...projection.findings],
+      }),
+    )
   );
 }
 

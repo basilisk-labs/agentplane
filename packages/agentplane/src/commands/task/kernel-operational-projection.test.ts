@@ -2,11 +2,13 @@ import { describe, expect, it, vi } from "vitest";
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
 
 import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
+import { taskRecordToData } from "../../backends/task-backend/shared/record.js";
 import type { TaskWriteOptions } from "../../backends/task-backend.js";
 import {
   ensureKernelOperationalProjectionEvidence,
   projectKernelOperationalEvidence,
   readKernelOperationalProjection,
+  kernelProjectedReviewMatches,
 } from "./kernel-operational-projection.js";
 
 type ProjectedTask = {
@@ -247,6 +249,103 @@ describe("canonical operational evidence projection", () => {
 
     expect(writeTask).toHaveBeenCalledTimes(1);
   });
+  it.each([
+    ["trailing LF", ["reviewed\n"], ["evidence\n"]],
+    [
+      "CRLF and outer whitespace",
+      [" \treviewed\r\n", "second finding"],
+      [" evidence\t", "second evidence"],
+    ],
+    ["blank entries", ["reviewed", " \r\n"], ["evidence", "\t"]],
+  ])(
+    "keeps a %s projection idempotent after real Task readback",
+    async (_name, findings, evidenceRefs) => {
+      const writeTask = taskWriter();
+      const backend = { getTask: vi.fn(), writeTask };
+      backend.getTask.mockResolvedValue({
+        id: "T-1",
+        revision: 1,
+        extensions: { [TASK_KERNEL_EXTENSION]: {} },
+      });
+      const input = {
+        command: { taskBackend: backend } as never,
+        task_id: "T-1",
+        repository_evidence: {
+          task_id: "T-1",
+          work_order_id: k.kernelDigest("order"),
+          implementation_commit: "a".repeat(40),
+          implementation_tree: "b".repeat(40),
+          evaluator_target: "a".repeat(40),
+        } as never,
+        verification_evidence_digest: k.kernelDigest("validation"),
+        review_identity_digest: k.kernelDigest({ findings, evidenceRefs }),
+        evidence_refs: evidenceRefs as string[],
+        findings: findings as string[],
+        projected_at: "2026-10-10T00:00:00Z",
+      };
+      await projectKernelOperationalEvidence(input);
+      const written = writeTask.mock.calls[0]![0];
+      const projection = readKernelOperationalProjection(written.extensions)!;
+      const rawDigest = k.kernelDigest(projection);
+      const readback = taskRecordToData({ id: "T-1", frontmatter: written, body: "" } as never);
+      expect(projection.findings).toEqual(findings);
+      expect(projection.evidence_refs).toEqual(evidenceRefs);
+      expect(readback.quality_review?.findings).toEqual(
+        (findings as string[]).map((x) => x.trim()).filter(Boolean),
+      );
+      expect(kernelProjectedReviewMatches(readback, projection)).toBe(true);
+      backend.getTask.mockResolvedValue(readback);
+      await projectKernelOperationalEvidence(input);
+      expect(writeTask).toHaveBeenCalledTimes(1);
+      expect(k.kernelDigest(projection)).toBe(rawDigest);
+      expect(projection.review_identity_digest).toBe(input.review_identity_digest);
+      for (const changed of [
+        { state: "rework" },
+        { provenance: "human_supplied" },
+        { evaluated_sha: "c".repeat(40) },
+        { review_identity_digest: k.kernelDigest("foreign review") },
+        { updated_at: "2026-10-11T00:00:00Z" },
+        { updated_by: "USER" },
+        { note: "different review" },
+        { evidence_refs: ["different evidence"] },
+        { findings: ["different finding"] },
+        { findings: null },
+        { findings: [" reviewed "] },
+      ]) {
+        expect(
+          kernelProjectedReviewMatches(
+            { quality_review: { ...readback.quality_review, ...changed } } as never,
+            projection,
+          ),
+        ).toBe(false);
+      }
+      expect(kernelProjectedReviewMatches({ quality_review: null }, projection)).toBe(false);
+      if (readback.quality_review!.findings!.length > 1) {
+        expect(
+          kernelProjectedReviewMatches(
+            {
+              quality_review: {
+                ...readback.quality_review,
+                findings: readback.quality_review!.findings!.toReversed(),
+              },
+            } as never,
+            projection,
+          ),
+        ).toBe(false);
+      }
+      expect(
+        kernelProjectedReviewMatches(
+          {
+            quality_review: {
+              ...readback.quality_review,
+              findings: [...readback.quality_review!.findings!, "reviewed"],
+            },
+          } as never,
+          projection,
+        ),
+      ).toBe(false);
+    },
+  );
   it("repairs a split compatibility review from the same authenticated projection", async () => {
     const writeTask = taskWriter();
     const backend = { getTask: vi.fn(), writeTask };
