@@ -12,7 +12,7 @@ import {
 import { LocalBackend } from "../backends/task-backend.js";
 import { recoverWorkPlanningBase } from "../commands/branch/work-resume-planning-base.js";
 import { execFile, spawn } from "node:child_process";
-import { readdir, readFile, rm, writeFile } from "node:fs/promises";
+import { cp, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
@@ -25,6 +25,8 @@ import {
 } from "@agentplane/testkit";
 
 import { buildTaskRouteDecision } from "../commands/shared/route-decision.js";
+import { resolveCanonicalWorktreePreparationRoot } from "../commands/shared/worktree-topology.js";
+import { executeBranchWorkflowOperation } from "../commands/task/branch-task-supervisor-operations.js";
 import { loadCommandContext } from "../commands/shared/task-backend.js";
 import { defaultConfig } from "./core-imports.js";
 import { runCli } from "./run-cli.js";
@@ -396,6 +398,223 @@ async function publicCompletionRegression() {
 }
 
 describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => {
+  it("prepares from the primary when the admitted internal base is ahead of stale main", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    await writeHarnessGitignore(root);
+    await mkdir(path.join(root, "scripts"), { recursive: true });
+    await writeFile(path.join(root, "scripts", "check-branch.mjs"), "process.exit(0);\n");
+    await execFileAsync("git", ["add", "-A"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: seed stale primary"], { cwd: root });
+    const primaryHead = await readHead(root);
+    const baseRoot = path.join(root, ".agentplane", "worktrees", "integration-base");
+    await execFileAsync("git", ["branch", "integration"], { cwd: root });
+    await execFileAsync("git", ["worktree", "add", baseRoot, "integration"], { cwd: root });
+    await writeFile(path.join(baseRoot, "base-only.txt"), "base-only\n");
+    await execFileAsync("git", ["add", "base-only.txt"], { cwd: baseRoot });
+    await execFileAsync("git", ["commit", "-m", "test: advance registered base"], {
+      cwd: baseRoot,
+    });
+    const baseHead = await readHead(baseRoot);
+    expect(baseHead).not.toBe(primaryHead);
+
+    const runJson = async (argv: string[], checkout = root) => {
+      const io = captureStdIO();
+      try {
+        expect(await runCli([...argv, "--root", checkout]), io.stderr).toBe(0);
+        return JSON.parse(io.stdout) as Record<string, unknown>;
+      } finally {
+        io.restore();
+      }
+    };
+    const created = await runJson([
+      "task",
+      "create",
+      "Prepare from a registered base",
+      "--base",
+      "integration",
+      "--task-kind",
+      "code",
+      "--mutation-scope",
+      "code",
+      "--route",
+      "branch_pr",
+      "--scope-root",
+      "base-only.txt",
+      "--scope-root",
+      ".gitignore",
+      "--scope-root",
+      ".agentplane/cache/tasks-index.v2.json",
+      "--repository-effect",
+      "source_code",
+      "--repository-effect",
+      "repository_write",
+      "--verify",
+      "node scripts/check-branch.mjs",
+      "--json",
+    ]);
+    const taskId = String(created.task_id);
+    const planningRoute = await runJson(["task", "advance", taskId, "--agent-json"]);
+    expect(planningRoute.action).toMatchObject({
+      kind: "external_wait",
+      reason: "canonical_planning_checkout_required",
+      must_run_from: baseRoot,
+    });
+    const planning = await runJson(["task", "advance", taskId, "--agent-json"], baseRoot);
+    expect(planning.authority, JSON.stringify(planning)).toMatchObject({ role: "PLANNER" });
+    const exchange = planning.exchange as {
+      directory: string;
+      work_order_ref: string;
+      result_path: string;
+      resume_argv: string[];
+    };
+    const workOrder = JSON.parse(
+      await readFile(path.join(exchange.directory, exchange.work_order_ref), "utf8"),
+    ) as {
+      work_order_id: string;
+      canonical_binding: Record<string, unknown>;
+      state_fingerprint: { worktree: string };
+    };
+    expect(workOrder.state_fingerprint.worktree).toBe(baseRoot);
+    await writeFile(
+      exchange.result_path,
+      JSON.stringify({
+        schema_version: 2,
+        kind: "agent_semantic_result",
+        work_order_id: workOrder.work_order_id,
+        status: "completed",
+        summary: "Prepare one bounded branch artifact from the admitted base.",
+        findings: [],
+        uncertainty: [],
+        canonical_binding: workOrder.canonical_binding,
+        canonical_plan: {
+          work_items: [
+            {
+              id: "base-change",
+              depends_on: [],
+              required_inputs: [],
+              expected_outputs: ["base-output"],
+              optional: false,
+              execution_requirements: {
+                scope_roots: [
+                  "base-only.txt",
+                  ".gitignore",
+                  ".agentplane/cache/tasks-index.v2.json",
+                ],
+                repository_effects: ["source_code", "repository_write"],
+                external_effects: [],
+                capabilities: ["repository_write"],
+                resources: [],
+              },
+              contract: {
+                role: "EXECUTOR",
+                objective: "Keep the branch anchored to the registered base.",
+                acceptance_criteria: ["The task branch contains the base-only commit."],
+                verification_commands: ["node scripts/check-branch.mjs"],
+              },
+            },
+          ],
+        },
+      }),
+    );
+    const approval = await runJson(exchange.resume_argv.slice(1), baseRoot);
+    expect(approval.action).toMatchObject({ kind: "approval_required" });
+    const approveIO = captureStdIO();
+    try {
+      expect(
+        await runCli(["task", "plan", "approve", taskId, "--by", "USER", "--root", root]),
+        approveIO.stderr,
+      ).toBe(0);
+    } finally {
+      approveIO.restore();
+    }
+    await cp(
+      path.join(root, ".agentplane", "tasks", taskId),
+      path.join(baseRoot, ".agentplane", "tasks", taskId),
+      { recursive: true },
+    );
+    const baseCommand = await loadCommandContext({ cwd: baseRoot, rootOverride: null });
+    const beforePrepare = await buildTaskRouteDecision({
+      ctx: baseCommand,
+      cwd: baseRoot,
+      taskId,
+      includeRemote: false,
+    });
+    expect(beforePrepare.workflowStep.kind, JSON.stringify(beforePrepare.workflowStep)).toBe(
+      "cli_operation",
+    );
+    expect(
+      await resolveCanonicalWorktreePreparationRoot({
+        routedCheckout: baseRoot,
+        registeredBaseCheckout: beforePrepare.workspace.baseCheckoutPath,
+        baseBranch: "integration",
+      }),
+    ).toBe(root);
+    if (
+      beforePrepare.workflowStep.kind !== "cli_operation" ||
+      beforePrepare.workflowStep.operation.id !== "worktree.prepare"
+    ) {
+      throw new Error("Expected the admitted worktree.prepare operation.");
+    }
+    const journalPath = path.join(
+      root,
+      ".git",
+      "agentplane",
+      "supervisor",
+      "episodes",
+      taskId,
+      "journal.json",
+    );
+    const journalBefore = await readFile(journalPath, "utf8").catch(() => null);
+    const worktreesBefore = await execFileAsync("git", ["worktree", "list", "--porcelain"], {
+      cwd: root,
+    });
+    await expect(
+      executeBranchWorkflowOperation({
+        decision: {
+          ...beforePrepare,
+          workspace: { ...beforePrepare.workspace, baseCheckoutPath: root },
+        },
+        operation: beforePrepare.workflowStep.operation,
+      }),
+    ).rejects.toMatchObject({
+      context: { reason_code: "worktree_preparation_route_base_mismatch" },
+    });
+    expect(await readFile(journalPath, "utf8").catch(() => null)).toBe(journalBefore);
+    expect(
+      (await execFileAsync("git", ["worktree", "list", "--porcelain"], { cwd: root })).stdout,
+    ).toBe(worktreesBefore.stdout);
+    const prepared = await runJson(["task", "advance", taskId, "--agent-json"], baseRoot);
+    expect(prepared.action, JSON.stringify(prepared)).toMatchObject({
+      kind: "external_wait",
+      reason: "canonical_worktree_prepared",
+    });
+    const taskRoot = (prepared.action as { must_run_from: string }).must_run_from;
+    expect(path.dirname(taskRoot)).toBe(path.join(root, ".agentplane", "worktrees"));
+    expect(taskRoot).not.toBe(baseRoot);
+    expect(await readHead(root)).toBe(primaryHead);
+    expect(await readHead(baseRoot)).toBe(baseHead);
+    const ancestry = await execFileAsync("git", ["merge-base", "--is-ancestor", baseHead, "HEAD"], {
+      cwd: taskRoot,
+    });
+    expect(ancestry.stdout).toBe("");
+    expect(await readHead(taskRoot)).toBe(baseHead);
+    expect(await readFile(path.join(taskRoot, "base-only.txt"), "utf8")).toBe("base-only\n");
+    const journalAfter = JSON.parse(await readFile(journalPath, "utf8")) as {
+      operations: Array<{ authority_ref: string; status: string; result_digest: string | null }>;
+    };
+    expect(journalAfter.operations).toEqual([
+      expect.objectContaining({
+        authority_ref: "workflow-operation:worktree.prepare",
+        status: "completed",
+        result_digest: expect.stringMatching(/^sha256:[a-f0-9]{64}$/u),
+      }),
+    ]);
+  });
+
   it.each([false, true, "process"] as const)(
     "recovers an unstarted approved planning base (interrupted=%s)",
     async (interrupted) => {
