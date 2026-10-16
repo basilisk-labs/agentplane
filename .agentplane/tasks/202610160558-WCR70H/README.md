@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -26,9 +26,9 @@ plan_approval:
   note: "Projected from the approved canonical Task Kernel plan."
 verification:
   state: "ok"
-  updated_at: "2026-10-16T07:12:08.782Z"
+  updated_at: "2026-10-16T12:40:29.525Z"
   updated_by: "SUPERVISOR"
-  note: "Verified: canonical Task Kernel final checks passed."
+  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
   state: "pass"
@@ -46,8 +46,6 @@ quality_review:
     - "Independent report sha256:fc05e20d45294ee8a927183fe53ff45e1965aa75bc32baf8346a49e7adfacdd5: {\"canonical_binding\":{\"attempt\":1,\"authority_digest\":\"sha256:682e3330c8909f898745d71d9d8872d9921d8bf0ee427d5c0c7075e58e6b7419\",\"claim_id\":\"sha256:43fbec09a7471389b6a3976e1d0018af396daa868e73dc1a1692094f7d818def\",\"contract_digest\":\"sha256:9affe61406fd3d8f7fa6ddaa508f4588e27418a542e54ab391b0b33d5a8a3d0a\",\"phase\":\"inspection\",\"plan_digest\":\"sha256:1f3ae3c843899889331667fd02b26b6d5e843c42ee01035aeec33634c335dd28\",\"plan_revision\":1,\"repository_fingerprint\":\"sha256:411d4a72e6cadf14e0750fa7647d928249216c49c4a1cb84dc89e2d26746208e\",\"repository_identity\":\"sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b\",\"result_digest\":\"sha256:9a52ead105c0d8d7d627a21209d7cc068af4c9bca658d5ac03a0581ea3f410e6\",\"task_id\":\"202610160558-WCR70H\",\"work_item_id\":\"normalize-operational-review-readback\"},\"collector\":{\"error\":{\"message\":\"'budgets'\",\"type\":\"KeyError\"},\"foreign_worktrees_preserved\":true,\"interpretation\":\"All three wrapper stages exited0 and native checks passed; collector failed afterward on absent budgets field. No replay and no wrapper PASS.\",\"receipt\":{\"bytes\":67381,\"path\":\"/Users/densmirnov/Github/agentplane-issue6152-source-runtime-20261015/projection-normalized-readback-fix/native-source350-v2/capture-receipt.json\",\"sha256\":\"efac09e0ed025e18ae36643adba03aa8560b84195a273e6694f1cef669326a37\"},\"reconciliation\":{\"bytes\":17608,\"path\":\"/Users/densmirnov/Github/agentplane-issue6152-source-runtime-20261015/projection-normalized-readback-fix/SOURCE350-native3-terminal-readonly-reconciliation.json\",\"sha256\":\"f7d0e9d735cc9f285d3201559b4f507148bc938b4e767d5fe560c37f38253289\"},\"stages\":[{\"exit_code\":0,\"label\":\"actual-source350-before-task6\",\"reaped\":true,\"remaining_owned\":[],\"stderr\":{\"bytes\":0,\"path\":\"/Users/densmirnov/Github/agentplane-issue6152-source-runtime-20261015/projection-normalized-readback-fix/native-source350-v2/logs/actual-source350-before-task6.stderr.log\",\"sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"},\"stdout\":{\"bytes\":20441,\"path\":\"/Users/densmirnov/Github/agentplane-issue6152-source-runtime-20261015/projection-normalized-readback-fix/native-source350-v2/logs/actual-source350-before-task6.stdout.log\",\"sha256\":\"df79b306dc4d33775d6f341633d91561d3526209fce7a1c5dd71597943835b3c\"}},{\"exit_code\":0,\"label\":\"ONE-SOURCE350-intake-native3\",\"reaped\":true,\"remaining_owned\":[],\"stderr\":{\"bytes\":0,\"path\":\"/Users/densmirnov/Github/agentplane-issue6152-source-runtime-20261015/projection-normalized-readback-fix/native-source350-v2/logs/ONE-SOURCE350-intake-native3.stderr.log\",\"sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"},\"stdout\":{\"bytes\":2449,\"path\":\"/Users/densmirnov/Github/agentplane-issue6152-source-runtime-20261015/projection-normalized-readback-fix/native-source350-v2/logs/ONE-SOURCE350-intake-native3.stdout.log\",\"sha256\":\"3fa7c76d277c99f1d82ec277535f54a181dcd391660f4bf5fd4fa640e4c0be69\"}},{\"exit_code\":0,\"label\":\"actual-source350-post-task\",\"reaped\":true,\"remaining_owned\":[],\"stderr\":{\"bytes\":0,\"path\":\"/Users/densmirnov/Github/agentplane-issue6152-source-runtime-20261015/projection-normalized-readback-fix/native-source350-v2/logs/actual-source350-post-task.stderr.log\",\"sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"},\"stdout\":{\"bytes\":28065,\"path\":\"/Users/densmirnov/Github/agentplane-issue6152-source-runtime-20261015/projection-normalized-readback-fix/native-source350-v2/logs/actual-source350-post-task.stdout.log\",\"sha256\":\"27bab154fc895fad6d9276fef23307a9296a76b387ece6e08ba2ecabee6bde3e\"}}],\"status\":\"STOPPED_NO_REPLAY\"},\"context\":{\"blocks\":[{\"bytes\":2881,\"digest\":\"sha256:a7601e8b51e6e8ed71c8833421ab932701bf0ce8a9490a5f2b1d125ee8403552\",\"id\":\"objective\",\"required\":true},{\"bytes\":240,\"digest\":\"sha256:da4d8e0a3bb4e93fcd9d31b2454da03604ff97c924acf5b36f96ec195f656e97\",\"id\":\"authority\",\"required\":true},{\"bytes\":292,\"digest\":\"sha256:33bd3689a25bacdbf05f6ad69d71694e2062790ecda8697c46cae79e9d040a79\",\"id\":\"constraints\",\"required\":true},{\"bytes\":162,\"digest\":\"sha256:aa609a36bb9ccc31f0df83dda7639d1d9e411c3c1f8b6446e2acade08ebcb463\",\"id\":\"stops\",\"required\":true},{\"bytes\":3154,\"digest\":\"sha256:8142821045e95046a0c00b36b0b6a64a2ab9af120322479349e5b691b2b906f2\",\"id\":\"verification\",\"required\":true},{\"bytes\":229,\"digest\":\"sha256:ecd25327dbd91a4d4f0110c1734ee554707033f5f5515bef06f522789046e6db\",\"id\":\"outputs\",\"required\":true},{\"bytes\":782,\"digest\":\"sha256:96d91a3079a7f4b3d19e267c0e6f1bd4b6c69c43bd37aa8c2725d75b0887151a\",\"id\":\"binding\",\"required\":true},{\"bytes\":1980,\"digest\":\"sha256:85d2f0c9fbf9522c2bfe633b9eab74d1b82de256ab314ac1e77ca0096aeb274d\",\"id\":\"fingerprint\",\"required\":true},{\"bytes\":196,\"digest\":\"sha256:a8e2e9abba8aae663bd1ea49415de86cbff044170fa263a21ed70b17f3637d8d\",\"id\":\"fingerprint-policy\",\"required\":true},{\"bytes\":479,\"digest\":\"sha256:e2d23219e86b6476ecb2ede92be2fe1fe3f02ed4f50ea6fa1a56bd8bbaff0915\",\"id\":\"input:implementation-result\",\"required\":true},{\"bytes\":466,\"digest\":\"sha256:f6b205fbaa831b11d2af587c89e1da9d1e61f6e8c09cd33ad8bd2fa6a851ff46\",\"id\":\"input:repository-evidence\",\"required\":true},{\"bytes\":558,\"digest\":\"sha256:f1b0a96b3a15f07427087518793951a04e1cea79d7b2ce838016b332d5bca479\",\"id\":\"input:native-validation\",\"required\":true},{\"bytes\":191,\"digest\":\"sha256:a584f52824ca17bd6a1da9b9b512d96ac8c68e003930c9c6a5fcd78227e19d09\",\"id\":\"input:normalized-projection-source-report\",\"required\":true}],\"manifest\":{\"bytes\":6935,\"path\":\"/Users/densmirnov/Github/agentplane-issue6152-source-primary-20261015/.git/agentplane/kernel/exchanges/202610160558-WCR70H/e5c199ab61c87b782110e4ac10dd59a4f42efd3f7d70902d1b246e4f4552c055/work-order-context.json\",\"sha256\":\"ae23eee2c1165b4800bde86d05b09ab87df70a37029d1affe8f873f8df5ab41a\"},\"source_digest\":\"sha256:1dfc56e5c5bbfc940c29502fc2b679b2b952a05364d37915b92c68a832327680\",\"work_order\":{\"bytes\":14178,\"path\":\"/Users/densmirnov/Github/agentplane-issue6152-source-primary-20261015/.git/agentplane/kernel/exchanges/202610160558-WCR70H/e5c199ab61c87b782110e4ac10dd59a4f42efd3f7d70902d1b246e4f4552c055/work-order.json\",\"sha256\":\"d11ba33ec048195bbf6b4b61d5c0a3b3e2b9f959b44f962b657ed565e1c9fdf4\"}},\"criteria\":[{\"finding\":\"Existing normalizer applied only to expected compatibility object; actual operand/admission unchanged.\",\"id\":\"criterion-1\"},{\"finding\":\"Raw projection writer/EVAL/report and review/authority identity logic unchanged. Regression asserts raw findings/report/projection digest/Kernel record preservation.\",\"id\":\"criterion-2\"},{\"finding\":\"Real taskRecordToData covers LF/CRLF/outer whitespace/blank entries. Actual recovery validates retained fixture bindings, first restores and next returns unchanged, one write. No comparator/recovery/admission mock.\",\"id\":\"criterion-3\"},{\"finding\":\"Strict negatives cover verdict/provenance/evaluated SHA/review identity/date/actor/note/nonempty evidence/findings/null/ordering/duplicates and padded ACTUAL findings. Expected fixed state remains valid, so malformed actual scalars cannot normalize into a match.\",\"id\":\"criterion-4\"},{\"finding\":\"Exactly three admitted source files plus eight own native Task artifacts in actual commit; no dependency/schema/production module expansion.\",\"id\":\"criterion-5\"},{\"finding\":\"All three native commands passed on exact commit73e427f. Three manifests/nine logs independently hash-verified, no truncation/io errors. Earlier local failures remain distinct.\",\"id\":\"criterion-6\"},{\"finding\":\"Source work restricted network-deny/external-none. Native controller commit/check effects distinguished from executor activity; no evaluator lifecycle/runtime/provider effects.\",\"id\":\"criterion-7\"}],\"current_task\":{\"authority_issues\":[],\"definition_plan_and_plan_history_preserved\":true,\"digest\":\"sha256:e2d99c45fc9371ce28a7091af9f79aa79384d0993a3a9b4329fd247c0d2862ac\",\"eval_result_absent\":true,\"readme\":{\"bytes\":35646,\"path\":\"/Users/densmirnov/Github/agentplane-issue6152-source-primary-20261015/.agentplane/worktrees/202610160558-WCR70H-match-operational-review-projections-to-normaliz/.agentplane/tasks/202610160558-WCR70H/README.md\",\"sha256\":\"6cc79c0e9599c10d7db677ccd528c90ae5a9b08f7ce1f3a5a1c313f428e91e2d\"},\"revision\":9,\"state\":\"ACTIVE\",\"work_item_state\":\"INSPECTING\"},\"inputs\":[{\"bytes\":7279,\"declared_digest\":\"sha256:9a52ead105c0d8d7d627a21209d7cc068af4c9bca658d5ac03a0581ea3f410e6\",\"id\":\"implementation-result\",\"path\":\"/Users/densmirnov/Github/agentplane-issue6152-source-primary-20261015/.git/agentplane/kernel/exchanges/202610160558-WCR70H/350c153aeabd5482acc602519c5fbaa443b9cf4ad867f41370a9064d35236fdd/received-result.json\",\"sha256\":\"af59402a9dc7d1d48bd619d3dc9193b8d9fe428dfc7edb45e87e6a2be09e7029\"},{\"bytes\":2330,\"declared_digest\":\"sha256:0c160229de24bd84d1a99501bcf865e1d28636fd564d869f2a3beecaaba01cdc\",\"id\":\"repository-evidence\",\"path\":\"/Users/densmirnov/Github/agentplane-issue6152-source-primary-20261015/.git/agentplane/kernel/exchanges/202610160558-WCR70H/350c153aeabd5482acc602519c5fbaa443b9cf4ad867f41370a9064d35236fdd/repository-evidence.json\",\"sha256\":\"6861178640636199aab5aae7d63861a386407d3b265ef5e6f0252ade6b88c23e\"},{\"bytes\":14095,\"declared_digest\":\"sha256:ad480e03a178b4c99864907a8df85cffdaec92cec8eb75903ffe6f1ffb587717\",\"id\":\"native-validation\",\"path\":\"/Users/densmirnov/Github/agentplane-issue6152-source-primary-20261015/.git/agentplane/kernel/exchanges/202610160558-WCR70H/350c153aeabd5482acc602519c5fbaa443b9cf4ad867f41370a9064d35236fdd/native-validation-eba8d2e5696ab2ee1014e26866ca2a9cc9bb6fa2bb0ebe20e01bcfdc83fece01.json\",\"sha256\":\"13ca8a06be1804e682cec5b935513b4495db24eb0b6960b781722dcbcd4d01a0\"},{\"bytes\":4049,\"declared_digest\":\"sha256:2cb7a26c5a1ca0ad080e83e9f4b981015fb34ab9c7b9947da7a2f32c30281308\",\"id\":\"normalized-projection-source-report\",\"path\":\"/Users/densmirnov/Github/agentplane-issue6152-source-runtime-20261015/projection-normalized-readback-fix/source3-completion-report.canonical.json\",\"sha256\":\"2cb7a26c5a1ca0ad080e83e9f4b981015fb34ab9c7b9947da7a2f32c30281308\"}],\"kind\":\"independent_component_inspection\",\"limits\":[\"Source-component review only. Mandatory exact-SHA AP FULL, new controller build/qualification/activation, Factory MQ2VPY continuation, hosted CI/publication and host runtime acceptance NOT_RUN.\",\"Recovery test exercises production read normalizer/recovery and real temporary Git with fixture-backed artifact I/O. It does not establish physical README serialization or a live Task lifecycle.\",\"Foreign preservation is supported by retained native carrier/reconciliation receipts, not an independent exhaustive inventory of all foreign filesystem bytes.\",\"C9 default budget identity has no newer input.budgets field; the collector STOP is retained. No retry or collector PASS is asserted.\"],\"native\":{\"checks\":[{\"child_evidence_complete\":true,\"command\":\"bun run test:project agentplane packages/agentplane/src/commands/task/kernel-operational-projection.test.ts packages/agentplane/src/commands/task/kernel-operational-projection-recovery.test.ts\",\"deadline_minus_start_ms\":1799939,\"duration_ms\":10920,\"exit_code\":0,\"head\":\"73e427f22e13793e0d309eae9618ec19e39871ac\",\"io_error\":false,\"logs\":[{\"bytes\":850,\"path\":\"/Users/densmirnov/Github/agentplane-issue6152-source-primary-20261015/.agentplane/worktrees/202610160558-WCR70H-match-operational-review-projections-to-normaliz/.agentplane/tasks/202610160558-WCR70H/supervision/verification-runs/run-000/stdout.jsonl\",\"sha256\":\"98d95b68e2e56c604e9c0b876275e6dafd3f1502f733e1111761e76ef35889d0\"},{\"bytes\":226,\"path\":\"/Users/densmirnov/Github/agentplane-issue6152-source-primary-20261015/.agentplane/worktrees/202610160558-WCR70H-match-operational-review-projections-to-normaliz/.agentplane/tasks/202610160558-WCR70H/supervision/verification-runs/run-000/stderr.jsonl\",\"sha256\":\"630bbab9fd86195ae867504fd0b7b96609218633d2634082348863cb43e16dfb\"},{\"bytes\":0,\"path\":\"/Users/densmirnov/Github/agentplane-issue6152-source-primary-20261015/.agentplane/worktrees/202610160558-WCR70H-match-operational-review-projections-to-normaliz/.agentplane/tasks/202610160558-WCR70H/supervision/verification-runs/run-000/failures.jsonl\",\"sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}],\"manifest\":{\"bytes\":2424,\"path\":\"/Users/densmirnov/Github/agentplane-issue6152-source-primary-20261015/.agentplane/worktrees/202610160558-WCR70H-match-operational-review-projections-to-normaliz/.agentplane/tasks/202610160558-WCR70H/supervision/verification-runs/run-000/manifest.json\",\"sha256\":\"6c0163fced61f1fbb1f6c1d196c2c8cc6c1f929936aeaa27a7e816c266814c6f\"},\"omitted_bytes\":0},{\"child_evidence_complete\":true,\"command\":\"bun run typecheck\",\"deadline_minus_start_ms\":1799922,\"duration_ms\":909,\"exit_code\":0,\"head\":\"73e427f22e13793e0d309eae9618ec19e39871ac\",\"io_error\":false,\"logs\":[{\"bytes\":0,\"path\":\"/Users/densmirnov/Github/agentplane-issue6152-source-primary-20261015/.agentplane/worktrees/202610160558-WCR70H-match-operational-review-projections-to-normaliz/.agentplane/tasks/202610160558-WCR70H/supervision/verification-runs/run-001/stdout.jsonl\",\"sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"},{\"bytes\":49,\"path\":\"/Users/densmirnov/Github/agentplane-issue6152-source-primary-20261015/.agentplane/worktrees/202610160558-WCR70H-match-operational-review-projections-to-normaliz/.agentplane/tasks/202610160558-WCR70H/supervision/verification-runs/run-001/stderr.jsonl\",\"sha256\":\"2953dc3557fa0bfa21df65971a61106e23195518cc4167c93531d8ebcd3f413e\"},{\"bytes\":0,\"path\":\"/Users/densmirnov/Github/agentplane-issue6152-source-primary-20261015/.agentplane/worktrees/202610160558-WCR70H-match-operational-review-projections-to-normaliz/.agentplane/tasks/202610160558-WCR70H/supervision/verification-runs/run-001/failures.jsonl\",\"sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}],\"manifest\":{\"bytes\":2239,\"path\":\"/Users/densmirnov/Github/agentplane-issue6152-source-primary-20261015/.agentplane/worktrees/202610160558-WCR70H-match-operational-review-projections-to-normaliz/.agentplane/tasks/202610160558-WCR70H/supervision/verification-runs/run-001/manifest.json\",\"sha256\":\"4657296e43fee21ce7561413c7a268f9f874473abe88550f7d2f2e64e49cc661\"},\"omitted_bytes\":0},{\"child_evidence_complete\":true,\"command\":\"bun run arch:check\",\"deadline_minus_start_ms\":1799948,\"duration_ms\":234514,\"exit_code\":0,\"head\":\"73e427f22e13793e0d309eae9618ec19e39871ac\",\"io_error\":false,\"logs\":[{\"bytes\":7003,\"path\":\"/Users/densmirnov/Github/agentplane-issue6152-source-primary-20261015/.agentplane/worktrees/202610160558-WCR70H-match-operational-review-projections-to-normaliz/.agentplane/tasks/202610160558-WCR70H/supervision/verification-runs/run-002/stdout.jsonl\",\"sha256\":\"7650a8a46d74c6bb4e4d4e310a4d289664a8cbbdf50b63d9bd9844fa37cc9466\"},{\"bytes\":176,\"path\":\"/Users/densmirnov/Github/agentplane-issue6152-source-primary-20261015/.agentplane/worktrees/202610160558-WCR70H-match-operational-review-projections-to-normaliz/.agentplane/tasks/202610160558-WCR70H/supervision/verification-runs/run-002/stderr.jsonl\",\"sha256\":\"a6491c75a906895928a704dd4b6a6c6e13c6fdfacc08441b01e987b9ab6f814a\"},{\"bytes\":0,\"path\":\"/Users/densmirnov/Github/agentplane-issue6152-source-primary-20261015/.agentplane/worktrees/202610160558-WCR70H-match-operational-review-projections-to-normaliz/.agentplane/tasks/202610160558-WCR70H/supervision/verification-runs/run-002/failures.jsonl\",\"sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}],\"manifest\":{\"bytes\":2252,\"path\":\"/Users/densmirnov/Github/agentplane-issue6152-source-primary-20261015/.agentplane/worktrees/202610160558-WCR70H-match-operational-review-projections-to-normaliz/.agentplane/tasks/202610160558-WCR70H/supervision/verification-runs/run-002/manifest.json\",\"sha256\":\"e4f031ee07aa034bb6236af8b17d4641a10a65396b165546558aee2525ecc01e\"},\"omitted_bytes\":0}],\"evidence_digest\":\"sha256:ad480e03a178b4c99864907a8df85cffdaec92cec8eb75903ffe6f1ffb587717\",\"input_digest\":\"sha256:eba8d2e5696ab2ee1014e26866ca2a9cc9bb6fa2bb0ebe20e01bcfdc83fece01\",\"runtime_input\":{\"arch\":\"arm64\",\"commands\":[\"bun run test:project agentplane packages/agentplane/src/commands/task/kernel-operational-projection.test.ts packages/agentplane/src/commands/task/kernel-operational-projection-recovery.test.ts\",\"bun run typecheck\",\"bun run arch:check\"],\"cwd\":\"/Users/densmirnov/Github/agentplane-issue6152-source-primary-20261015/.agentplane/worktrees/202610160558-WCR70H-match-operational-review-projections-to-normaliz\",\"kind\":\"direct_task_verification_input\",\"node\":\"v26.11.1\",\"platform\":\"darwin\",\"runtimes\":[{\"environment_digest\":\"sha256:68d7eb52575f51f264ff4d82f69de3e764566214a1521b362b847cce35161830\",\"executable_digest\":\"sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5\",\"kind\":\"local_runtime_resolution\",\"status\":\"resolved\",\"toolchain_digest\":\"sha256:4b3c1e1ff73596aa0359c1d8390c46480a83e2e7b79486a0abee1e37ed22e27d\"},{\"environment_digest\":\"sha256:68d7eb52575f51f264ff4d82f69de3e764566214a1521b362b847cce35161830\",\"executable_digest\":\"sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5\",\"kind\":\"local_runtime_resolution\",\"status\":\"resolved\",\"toolchain_digest\":\"sha256:4b3c1e1ff73596aa0359c1d8390c46480a83e2e7b79486a0abee1e37ed22e27d\"},{\"environment_digest\":\"sha256:68d7eb52575f51f264ff4d82f69de3e764566214a1521b362b847cce35161830\",\"executable_digest\":\"sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5\",\"kind\":\"local_runtime_resolution\",\"status\":\"resolved\",\"toolchain_digest\":\"sha256:4b3c1e1ff73596aa0359c1d8390c46480a83e2e7b79486a0abee1e37ed22e27d\"}],\"schema_version\":1}},\"repository\":{\"base\":\"52bd7ae0b289547a5069fc1a76fa878369bd069e\",\"changed_source\":[{\"bytes\":7431,\"mode\":420,\"path\":\"packages/agentplane/src/commands/task/kernel-operational-projection.ts\",\"sha256\":\"536217505b382e703cb8e2b3a06bdef9e6a072fc87384e2b250194cad54a6f62\"},{\"bytes\":14281,\"mode\":420,\"path\":\"packages/agentplane/src/commands/task/kernel-operational-projection.test.ts\",\"sha256\":\"0e03abfddf86c45acb00efd720c09d5d1ece6a51ecce0406468aafabdd48056e\"},{\"bytes\":16651,\"mode\":420,\"path\":\"packages/agentplane/src/commands/task/kernel-operational-projection-recovery.test.ts\",\"sha256\":\"c90dd17144dad17eac344d131dfaca642d55f6b204e24dae403497e5fbf450ad\"}],\"commit\":\"73e427f22e13793e0d309eae9618ec19e39871ac\",\"commit_paths\":[\".agentplane/tasks/202610160558-WCR70H/README.md\",\".agentplane/tasks/202610160558-WCR70H/pr/diffstat.txt\",\".agentplane/tasks/202610160558-WCR70H/pr/github-body.md\",\".agentplane/tasks/202610160558-WCR70H/pr/github-title.txt\",\".agentplane/tasks/202610160558-WCR70H/pr/meta.json\",\".agentplane/tasks/202610160558-WCR70H/pr/review.md\",\".agentplane/tasks/202610160558-WCR70H/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json\",\".agentplane/tasks/202610160558-WCR70H/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json\",\"packages/agentplane/src/commands/task/kernel-operational-projection-recovery.test.ts\",\"packages/agentplane/src/commands/task/kernel-operational-projection.test.ts\",\"packages/agentplane/src/commands/task/kernel-operational-projection.ts\"],\"diff\":{\"bytes\":17294,\"path\":\"/Users/densmirnov/Github/agentplane-issue6152-source-runtime-20261015/projection-normalized-readback-fix/source3-final.diff\",\"sha256\":\"9e47fd82dceb02665e6c9456164871bd1a0baaa4a98436f995d6d300552bf5f1\"},\"source_freeze\":{\"bytes\":2440,\"path\":\"/Users/densmirnov/Github/agentplane-issue6152-source-runtime-20261015/projection-normalized-readback-fix/source3-final-freeze.json\",\"sha256\":\"570b746cae3841a5bbf038f8d7e298a8129f06062fbe014ce7245b33d3cbc49a\"},\"tree\":\"9679cd3361cb6e821b2f9445a62b18e08b37e3d2\"},\"reviewer\":{\"agent\":\"/root/main_ci_compatibility\",\"implementation_author\":false,\"method\":\"Independent source inspection, exact retained evidence verification and official pure validation; no tests/build/lifecycle/network executed.\"},\"schema_version\":1,\"verdict\":\"pass\",\"work_order_id\":\"sha256:e5c199ab61c87b782110e4ac10dd59a4f42efd3f7d70902d1b246e4f4552c055\"}"
 token_usage:
   agent_runs: 0
-  cached_input_observed_agent_runs: 0
-  cached_input_tokens: null
   input_tokens: null
   journal_digest: "sha256:0d004a4a25554645fe1c14f4dbe1e1e17474b090faf967ead2a254262507a6f9"
   observed_agent_runs: 0
@@ -133,6 +131,18 @@ execution_contract:
         id: "recorded-check-1"
         result: "pass"
       -
+        id: "recorded-check-10"
+        result: "pass"
+      -
+        id: "recorded-check-11"
+        result: "pass"
+      -
+        id: "recorded-check-12"
+        result: "pass"
+      -
+        id: "recorded-check-13"
+        result: "pass"
+      -
         id: "recorded-check-2"
         result: "pass"
       -
@@ -179,6 +189,7 @@ execution_contract:
           - "packages/agentplane/src/commands/task/kernel-operational-projection.ts"
         evidence_requirements:
           - "hosted_integration"
+          - "repository_effect:dependencies"
           - "repository_effect:repository_write"
           - "repository_effect:source_code"
           - "repository_effect:tests"
@@ -192,20 +203,31 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:c079199d050704c058281b46aba922a65fc22445ea751cc8d8a0dbf4a3ee5368"
-      escalation_reasons: []
+      digest: "sha256:8a2ec5fd2e6897ab0834741630145275aa84100ef3277f16aaa924e1288642ae"
+      escalation_reasons:
+        - "central_path:bun.lock"
+        - "central_path:package.json"
+        - "effect_dependencies"
+        - "unknown_path:package.json"
       execution_groups:
+        - "docs-schema"
         - "core"
+        - "runtime"
         - "cli"
       observed:
         changed_components:
+          - "bun.lock"
+          - "package.json"
           - "packages/agentplane"
         changed_files:
+          - "bun.lock"
+          - "package.json"
           - "packages/agentplane/src/commands/task/kernel-operational-projection-recovery.test.ts"
           - "packages/agentplane/src/commands/task/kernel-operational-projection.test.ts"
           - "packages/agentplane/src/commands/task/kernel-operational-projection.ts"
         external_effects: []
         repository_effects:
+          - "dependencies"
           - "repository_write"
           - "source_code"
           - "tests"
@@ -214,12 +236,13 @@ execution_contract:
         monotonic_strengthening: true
         pr_full_regression: true
         unknown_or_central_full_regression: true
-      requires_full_regression: false
+      requires_full_regression: true
       requires_real_e2e: false
       schema_version: 2
       selected_checks:
         - "affected_unit_integration"
         - "critical_paths"
+        - "full_regression"
         - "hosted_integration"
         - "task_outcome"
       selector:
@@ -235,6 +258,7 @@ execution_contract:
       source: "execution_contract"
     required_evidence:
       - "hosted_integration"
+      - "repository_effect:dependencies"
       - "repository_effect:repository_write"
       - "repository_effect:source_code"
       - "repository_effect:tests"
@@ -261,8 +285,14 @@ events:
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
     commit: "0d9ea5282a47de59c4fa7b1d45103b717507b6db"
+  -
+    type: "verify"
+    at: "2026-10-16T12:40:29.525Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-10-16T10:54:29.344Z"
+doc_updated_at: "2026-10-16T12:40:39.500Z"
 doc_updated_by: "CODER"
 description: "Repair the reproduced recovery loop where canonical accepted evaluator findings retain trailing whitespace but Task compatibility readback trims strings. Normalize only the expected compatibility quality-review representation with the existing backend normalizer before comparison; preserve raw accepted EVAL, reports, projection and review/authority identity digests. Extend the two nearest projection/recovery tests to prove LF and whitespace readback idempotence, restored then unchanged recovery and strict changed-field rejection. Preserve existing completed source and native history. No Factory task/controller/runtime publication changes."
 sections:
@@ -362,6 +392,113 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202610160558-WCR70H
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-10-16T12:40:29.525Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:56142d493a05060a2051977f28b1c22d99ab3078b24ba9e432a70bbd175079f7, input_digest=sha256:3e40f988c7f41559c8c01543dcd3ab640dcb71ec81799be66093adc7cbbb7c22
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run arch:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610160558-WCR70H/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610160558-WCR70H Verification Contract check affected_unit_integration (1/4)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610160558-WCR70H/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610160558-WCR70H Verification Contract check affected_unit_integration (2/4)
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane packages/agentplane/src/commands/task/kernel-operational-projection.test.ts packages/agentplane/src/commands/task/kernel-operational-projection-recovery.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610160558-WCR70H/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610160558-WCR70H Verification Contract check affected_unit_integration (3/4)
+
+    Check: affected_unit_integration
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202610160558-WCR70H/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610160558-WCR70H Verification Contract check affected_unit_integration (4/4)
+
+    Check: critical_paths
+    Command: bun run arch:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610160558-WCR70H/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610160558-WCR70H Verification Contract check critical_paths (1/4)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610160558-WCR70H/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610160558-WCR70H Verification Contract check critical_paths (2/4)
+
+    Check: critical_paths
+    Command: bun run test:project agentplane packages/agentplane/src/commands/task/kernel-operational-projection.test.ts packages/agentplane/src/commands/task/kernel-operational-projection-recovery.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610160558-WCR70H/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610160558-WCR70H Verification Contract check critical_paths (3/4)
+
+    Check: critical_paths
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202610160558-WCR70H/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610160558-WCR70H Verification Contract check critical_paths (4/4)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610160558-WCR70H/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610160558-WCR70H Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run arch:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610160558-WCR70H/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610160558-WCR70H Verification Contract check task_outcome (1/4)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610160558-WCR70H/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610160558-WCR70H Verification Contract check task_outcome (2/4)
+
+    Check: task_outcome
+    Command: bun run test:project agentplane packages/agentplane/src/commands/task/kernel-operational-projection.test.ts packages/agentplane/src/commands/task/kernel-operational-projection-recovery.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610160558-WCR70H/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610160558-WCR70H Verification Contract check task_outcome (3/4)
+
+    Check: task_outcome
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202610160558-WCR70H/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610160558-WCR70H Verification Contract check task_outcome (4/4)
+
+    NativeTaskIdentityRef:
+    - plan_digest: sha256:1f3ae3c843899889331667fd02b26b6d5e843c42ee01035aeec33634c335dd28
+    - policy_digest: sha256:1150ba6caefe9e829c30b3520b9246ed1ec7ebbeedbe788c63cf7989015dbb46
+    - capability_digest: sha256:c4938b6e617b86792a303ae0a23a3fa97aef72146c5a5160d4962edf29be42e2
+    - checks_digest: sha256:5a58149b1ba79da41474655fd41648dcc2543d16717ede8621011236530798b2
+    - identity_digest: sha256:d3a8135e153b44f088d9fb883f601105a63efe6c7641fa14c7cc6802766a43a5
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -961,6 +1098,113 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202610160558-WCR70H
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-10-16T12:40:29.525Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:56142d493a05060a2051977f28b1c22d99ab3078b24ba9e432a70bbd175079f7, input_digest=sha256:3e40f988c7f41559c8c01543dcd3ab640dcb71ec81799be66093adc7cbbb7c22
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run arch:check
+Result: pass
+Evidence: .agentplane/tasks/202610160558-WCR70H/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610160558-WCR70H Verification Contract check affected_unit_integration (1/4)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610160558-WCR70H/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610160558-WCR70H Verification Contract check affected_unit_integration (2/4)
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane packages/agentplane/src/commands/task/kernel-operational-projection.test.ts packages/agentplane/src/commands/task/kernel-operational-projection-recovery.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610160558-WCR70H/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610160558-WCR70H Verification Contract check affected_unit_integration (3/4)
+
+Check: affected_unit_integration
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202610160558-WCR70H/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610160558-WCR70H Verification Contract check affected_unit_integration (4/4)
+
+Check: critical_paths
+Command: bun run arch:check
+Result: pass
+Evidence: .agentplane/tasks/202610160558-WCR70H/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610160558-WCR70H Verification Contract check critical_paths (1/4)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610160558-WCR70H/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610160558-WCR70H Verification Contract check critical_paths (2/4)
+
+Check: critical_paths
+Command: bun run test:project agentplane packages/agentplane/src/commands/task/kernel-operational-projection.test.ts packages/agentplane/src/commands/task/kernel-operational-projection-recovery.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610160558-WCR70H/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610160558-WCR70H Verification Contract check critical_paths (3/4)
+
+Check: critical_paths
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202610160558-WCR70H/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610160558-WCR70H Verification Contract check critical_paths (4/4)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610160558-WCR70H/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610160558-WCR70H Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run arch:check
+Result: pass
+Evidence: .agentplane/tasks/202610160558-WCR70H/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610160558-WCR70H Verification Contract check task_outcome (1/4)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610160558-WCR70H/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610160558-WCR70H Verification Contract check task_outcome (2/4)
+
+Check: task_outcome
+Command: bun run test:project agentplane packages/agentplane/src/commands/task/kernel-operational-projection.test.ts packages/agentplane/src/commands/task/kernel-operational-projection-recovery.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610160558-WCR70H/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610160558-WCR70H Verification Contract check task_outcome (3/4)
+
+Check: task_outcome
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202610160558-WCR70H/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610160558-WCR70H Verification Contract check task_outcome (4/4)
+
+NativeTaskIdentityRef:
+- plan_digest: sha256:1f3ae3c843899889331667fd02b26b6d5e843c42ee01035aeec33634c335dd28
+- policy_digest: sha256:1150ba6caefe9e829c30b3520b9246ed1ec7ebbeedbe788c63cf7989015dbb46
+- capability_digest: sha256:c4938b6e617b86792a303ae0a23a3fa97aef72146c5a5160d4962edf29be42e2
+- checks_digest: sha256:5a58149b1ba79da41474655fd41648dcc2543d16717ede8621011236530798b2
+- identity_digest: sha256:d3a8135e153b44f088d9fb883f601105a63efe6c7641fa14c7cc6802766a43a5
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

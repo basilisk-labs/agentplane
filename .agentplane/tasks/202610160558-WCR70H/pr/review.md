@@ -13,7 +13,7 @@ Created: 2026-10-16T06:32:54.426Z
 ## Verification
 
 - State: ok
-- Note: Verified: canonical Task Kernel final checks passed.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-10-16T06:32:54.426Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-10-16T06:32:54.426Z
+- Updated: 2026-10-16T10:12:17.445Z
 - Branch: task/202610160558-WCR70H/match-operational-review-projections-to-normaliz
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
