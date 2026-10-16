@@ -426,3 +426,8 @@ export const loadTaskScopeApproveRequestSpec = (session: TaskLifecycleSession) =
   import("../../../commands/task/scope-approve-request.command.js").then((m) =>
     m.makeRunTaskScopeApproveRequestHandler(getSessionContext(session, "git.mutate")),
   );
+
+export const loadTaskCancelSpec = (session: TaskLifecycleSession) =>
+  import("../../../commands/task/cancel.command.js").then((m) =>
+    m.makeRunTaskCancelHandler(getSessionContext(session, "git.mutate")),
+  );
