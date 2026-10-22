@@ -1,0 +1,134 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run arch:check",
+      "duration_ms": 328833,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:a994be96dd005a344de91d4b140960f5d3542c9c55c3a40e948eb91913eac7af",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610110427-5F45G1-scope-replan-cycle/.agentplane/tasks/202610110427-5F45G1/supervision/verification-runs/run-005/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:bfa1c329a0b3cfd6448899ea40b9b084203e8d7125eded22140aa0c146eacc3a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "arch:check",
+      "stderr_tail": "$ bun run arch:baseline && bun run arch:deps\n$ node scripts/checks/check-depcruise-known-violations.mjs\n$ node scripts/checks/run-depcruise-arch.mjs depcruise.config.cjs\n",
+      "stdout_tail": "s cruised)\n\ndependency-cruiser: packages/agentplane/src/workflow-runtime\n\n✔ no dependency violations found (22 modules, 38 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/acr\n\n✔ no dependency violations found (120 modules, 251 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/backend\n\n✔ no dependency violations found (105 modules, 220 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/blueprint\n\n✔ no dependency violations found (4 modules, 3 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/branch\n\n✔ no dependency violations found (520 modules, 1433 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/cleanup\n\n✔ no dependency violations found (426 modules, 1165 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/codex\n\n✔ no dependency violations found (8 modules, 8 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/context\n\n✔ no dependency violations found (771 modules, 2304 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/docs\n\n✔ no dependency violations found (11 modules, 14 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/doctor\n\n✔ no dependency violations found (277 modules, 634 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/evaluator\n\n✔ no dependency violations found (597 modules, 1833 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/evidence\n\n✔ no dependency violations found (88 modules, 188 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/flow\n\n✔ no dependency violations found (416 modules, 1066 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/guard\n\n✔ no dependency violations found (242 modules, 602 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/hermes\n\n✔ no dependency violations found (628 modules, 1758 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/hooks\n\n✔ no dependency violations found (320 modules, 880 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/incidents\n\n✔ no dependency violations found (190 modules, 464 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/insights\n\n✔ no dependency violations found (84 modules, 184 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/intake\n\n✔ no dependency violations found (67 modules, 154 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/pr\n\n✔ no dependency violations found (518 modules, 1424 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/recipes\n\n✔ no dependency violations found (864 modules, 2974 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/release\n\n✔ no dependency violations found (278 modules, 590 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/scenario\n\n✔ no dependency violations found (80 modules, 175 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/shared\n\n✔ no dependency violations found (1174 modules, 3953 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/task\n\n✔ no dependency violations found (1180 modules, 4011 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/upgrade\n\n✔ no dependency violations found (29 modules, 44 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/*.ts\n\n✔ no dependency violations found (762 modules, 2295 dependencies cruised)\n\ndependency-cruiser: packages/core/src\n\n✔ no dependency violations found (148 modules, 338 dependencies cruised)\n\ndependency-cruiser: packages/recipes/src\n\n✔ no dependency violations found (23 modules, 37 dependencies cruised)\n\ndependency-cruiser: packages/testkit/src\n\n✔ no dependency violations found (686 modules, 1930 dependencies cruised)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run typecheck",
+      "duration_ms": 884,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:1e62010917a70f2226bcd743305a2a89f035ddb415c84e3bc31423088d3e930c",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610110427-5F45G1-scope-replan-cycle/.agentplane/tasks/202610110427-5F45G1/supervision/verification-runs/run-006/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:bfa1c329a0b3cfd6448899ea40b9b084203e8d7125eded22140aa0c146eacc3a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run test:project agentplane packages/agentplane/src/commands/task/kernel-scope-request.test.ts packages/agentplane/src/commands/task/kernel-scope-request-paths.test.ts --maxWorkers=1",
+      "duration_ms": 41014,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:7a72fed3d7dfdd9be4e20d73948cb20c480125da737c3152eb914c47ad8a20d2",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610110427-5F45G1-scope-replan-cycle/.agentplane/tasks/202610110427-5F45G1/supervision/verification-runs/run-007/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:bfa1c329a0b3cfd6448899ea40b9b084203e8d7125eded22140aa0c146eacc3a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/kernel-scope-request.test.ts packages/agentplane/src/commands/task/kernel-scope-request-paths.test.ts \"--maxWorkers=1\"\n",
+      "stdout_tail": "\n RUN  v5.0.2 <repo>\n\n\n Test Files  2 passed (2)\n      Tests  7 passed (7)\n   Start at  08:18:38\n   Duration  38.73s (tests 83%, transform 12%, import 5%)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bunx --no-install eslint packages/agentplane/src/commands/task/kernel-exchange.ts packages/agentplane/src/commands/task/kernel-scope-replan-inputs.ts packages/agentplane/src/commands/task/kernel-scope-request.test.ts",
+      "duration_ms": 13128,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:6515001307186a17e4ae0003ce32a584eda32f458f0fdb1729bc717b31fcefb8",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610110427-5F45G1-scope-replan-cycle/.agentplane/tasks/202610110427-5F45G1/supervision/verification-runs/run-008/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:bfa1c329a0b3cfd6448899ea40b9b084203e8d7125eded22140aa0c146eacc3a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "git diff --check",
+      "duration_ms": 819,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:cbb7cd340b6df4c7d2abae34956cc3ee1c59b63cd62c99a0301c6a1eb57b0d8b",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610110427-5F45G1-scope-replan-cycle/.agentplane/tasks/202610110427-5F45G1/supervision/verification-runs/run-009/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:fc7aadeb66326ae2e4a20a12e972fb02cf22ccf50a8f783036c59d76a5353d31",
+        "executable_digest": "sha256:2a8c18fbf43da9f692d75474c72bea9dfd796c260b0f3dfe456376abc3bbd668",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202610110427-5F45G1"
+}

@@ -171,6 +171,65 @@ export async function retainedPrerequisiteStops(
   return stops;
 }
 
+/** Authenticate the issuance candidate's actual root before inspecting its Plan epoch. */
+function retainedApprovalRevision(
+  record: KernelRecord,
+  candidateIndex: number,
+  issuedRevision: number,
+): { rootIndex: number; revision: number } | null {
+  const lineage = record.aggregate.authority_lineage ?? [];
+  let index = candidateIndex;
+  for (;;) {
+    const entry = lineage[index];
+    if (
+      !entry ||
+      lineage.filter((value) => value.authority.digest === entry.authority.digest).length !== 1
+    )
+      return null;
+    const parent = entry.authority.provenance.parent_authority_digest;
+    if (parent === null) break;
+    const parentIndex = lineage.findIndex((value) => value.authority.digest === parent);
+    if (parentIndex === -1 || parentIndex >= index) return null;
+    index = parentIndex;
+  }
+  const entry = lineage[index]!;
+  // Preserve the original initial-root contract for retained legacy histories.
+  if (index === 0) return { rootIndex: index, revision: 0 };
+  const plan = [...record.aggregate.plan_history, record.aggregate.current_plan].find(
+    (value) =>
+      value?.digest === entry.authority.plan_digest &&
+      value.revision === entry.authority.plan_revision,
+  );
+  if (
+    !plan?.approval_evidence_digest ||
+    entry.observation !== null ||
+    !entry.approval_mode ||
+    entry.authority.provenance.actor_id !== plan.approval_actor_id ||
+    entry.authority.provenance.evidence_digest !== plan.approval_evidence_digest
+  )
+    return null;
+  const evidence = plan.approval_evidence_digest;
+  const mode = entry.approval_mode;
+  const approvals = record.events.filter(
+    (event) =>
+      event.kind === "plan_approved" &&
+      event.task_revision <= issuedRevision &&
+      authenticReworkEvent(record, event, {
+        kind: "approve_plan",
+        task_id: record.aggregate.id,
+        expected_task_revision: event.task_revision - 1,
+        expected_state_fingerprint: entry.authority.repository_fingerprint,
+        plan_revision: plan.revision,
+        plan_digest: plan.digest,
+        approval_evidence_digest: evidence,
+        authority_mode: mode,
+      }),
+  );
+  return approvals.length === 1
+    ? { rootIndex: index, revision: approvals[0]!.task_revision }
+    : null;
+}
+
 /** Bind retained issuance authority to native lineage, including the real delegated projection. */
 export function retainedIssuanceAuthority(record: KernelRecord, order: AgentWorkOrderV2): boolean {
   const binding = order.canonical_binding;
@@ -196,8 +255,10 @@ export function retainedIssuanceAuthority(record: KernelRecord, order: AgentWork
     const parent = entry.authority;
     if (parent.plan_digest !== plan.digest || parent.plan_revision !== plan.revision) continue;
     const approval = entry.observation === null && entry.approval_mode !== null;
+    const renewal = entry.observation?.kind === "policy_renewal";
     if (
       !approval &&
+      !renewal &&
       !["repository_implementation", "plan_amendment"].includes(entry.observation?.kind ?? "")
     )
       continue;
@@ -214,13 +275,21 @@ export function retainedIssuanceAuthority(record: KernelRecord, order: AgentWork
             approval_evidence_digest: parent.provenance.evidence_digest,
             authority_mode: entry.approval_mode!,
           }
-        : {
-            kind: "continue_authority",
-            task_id: binding.task_id,
-            expected_task_revision: event.task_revision - 1,
-            expected_state_fingerprint: parent.repository_fingerprint,
-            record: entry,
-          };
+        : renewal
+          ? {
+              kind: "renew_policy_authority",
+              task_id: binding.task_id,
+              expected_task_revision: event.task_revision - 1,
+              expected_state_fingerprint: parent.repository_fingerprint,
+              record: entry,
+            }
+          : {
+              kind: "continue_authority",
+              task_id: binding.task_id,
+              expected_task_revision: event.task_revision - 1,
+              expected_state_fingerprint: parent.repository_fingerprint,
+              record: entry,
+            };
       return authenticReworkEvent(record, event, command);
     });
     if (

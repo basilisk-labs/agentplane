@@ -1,0 +1,254 @@
+diff --git a/packages/agentplane/src/commands/pr/internal/provider-base.test.ts b/packages/agentplane/src/commands/pr/internal/provider-base.test.ts
+index 1a8c8962d..2cca512da 100644
+--- a/packages/agentplane/src/commands/pr/internal/provider-base.test.ts
++++ b/packages/agentplane/src/commands/pr/internal/provider-base.test.ts
+@@ -16,7 +16,7 @@ afterEach(async () => {
+   for (const root of roots.splice(0)) await rm(root, { recursive: true, force: true });
+ });
+ 
+-async function fixture() {
++async function fixture(provider: "github" | "gitlab" = "github") {
+   const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-exact-base-"));
+   roots.push(root);
+   const git = async (...args: string[]) => {
+@@ -34,8 +34,8 @@ async function fixture() {
+   await git("remote", "add", "upstream", target);
+   await git("push", "upstream", "main");
+   const identity: GitHostIdentity = {
+-    provider: "github",
+-    hostname: "github.com",
++    provider,
++    hostname: provider === "github" ? "github.com" : "gitlab.com",
+     remote: "upstream",
+     sourceProject: "fork/project",
+     targetProject: "owner/project",
+@@ -47,20 +47,23 @@ async function fixture() {
+ }
+ 
+ describe("exact-SHA provider base", () => {
+-  it("maps only matching local and live target heads without changing the frozen base", async () => {
+-    const { git, sha, opts } = await fixture();
+-    await git("update-ref", "-d", "refs/remotes/upstream/main");
+-    await expect(resolveProviderBaseBranch(opts)).resolves.toBe("main");
+-    expect(opts.baseRef).toBe(sha);
+-    expect(opts.baseSha).toBe(sha);
+-    await expect(
+-      resolveProviderBaseBranch({
+-        ...opts,
+-        baseRef: sha.toUpperCase(),
+-        baseSha: sha.toUpperCase(),
+-      }),
+-    ).resolves.toBe("main");
+-  });
++  it.each(["github", "gitlab"] as const)(
++    "maps matching %s heads without changing the frozen base",
++    async (provider) => {
++      const { git, sha, opts } = await fixture(provider);
++      await git("update-ref", "-d", "refs/remotes/upstream/main");
++      await expect(resolveProviderBaseBranch(opts)).resolves.toBe("main");
++      expect(opts.baseRef).toBe(sha);
++      expect(opts.baseSha).toBe(sha);
++      await expect(
++        resolveProviderBaseBranch({
++          ...opts,
++          baseRef: sha.toUpperCase(),
++          baseSha: sha.toUpperCase(),
++        }),
++      ).resolves.toBe("main");
++    },
++  );
+ 
+   it("leaves named and empty bases unchanged without looking up any remote", async () => {
+     const { opts } = await fixture();
+diff --git a/packages/agentplane/src/commands/pr/internal/sync-gitlab-frozen-base.test.ts b/packages/agentplane/src/commands/pr/internal/sync-gitlab-frozen-base.test.ts
+new file mode 100644
+index 000000000..4f3b94179
+--- /dev/null
++++ b/packages/agentplane/src/commands/pr/internal/sync-gitlab-frozen-base.test.ts
+@@ -0,0 +1,186 @@
++import { execFile } from "node:child_process";
++import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
++import os from "node:os";
++import path from "node:path";
++import { promisify } from "node:util";
++import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
++import { cleanGitEnv } from "@agentplane/testkit/cli-core-pr-flow";
++import type * as Process from "@agentplaneorg/core/process";
++import type { PrSyncCommonState } from "./sync-model.js";
++
++const ports = vi.hoisted(() => ({ api: vi.fn(), target: "" }));
++vi.mock("./glab-api.js", async (original) => ({
++  ...(await original<Record<string, unknown>>()),
++  runGlabApiJson: ports.api,
++}));
++vi.mock("@agentplaneorg/core/process", async (original) => {
++  const actual = await original<typeof Process>();
++  return {
++    ...actual,
++    execFileAsync: ((command, args, options) => {
++      // Replace only hosted Git transport. The resolver still reads a real bare target.
++      if (command === "git" && Array.isArray(args) && args[0] === "ls-remote") {
++        const gitArgs = args as string[];
++        expect(gitArgs[3]).toBe("https://gitlab.com/group/project.git");
++        return actual.execFileAsync(
++          command,
++          [...gitArgs.slice(0, 3), ports.target, ...gitArgs.slice(4)],
++          options,
++        );
++      }
++      return actual.execFileAsync(command, args, options);
++    }) as typeof actual.execFileAsync,
++  };
++});
++
++import { runPrOpenSync } from "./sync-open-step.js";
++
++const exec = promisify(execFile);
++const roots: string[] = [];
++const taskId = "202610102009-TEST01";
++const branch = `task/${taskId}/candidate`;
++async function git(root: string, ...args: string[]) {
++  const result = await exec("git", args, { cwd: root, env: cleanGitEnv() });
++  return result.stdout.trim();
++}
++async function fixture() {
++  const root = await mkdtemp(path.join(os.tmpdir(), "gitlab-frozen-base-"));
++  roots.push(root);
++  await git(root, "init", "-b", "main");
++  await git(root, "config", "user.name", "Fixture");
++  await git(root, "config", "user.email", "fixture@example.test");
++  await git(root, "config", "agentplane.baseBranch", "main");
++  await writeFile(path.join(root, "source.ts"), "original\n");
++  await git(root, "add", ".");
++  await git(root, "commit", "-m", "frozen base");
++  const sha = await git(root, "rev-parse", "HEAD");
++  ports.target = path.join(root, "target.git");
++  await git(root, "init", "--bare", ports.target);
++  await git(root, "push", ports.target, "main");
++  await git(root, "remote", "add", "origin", "https://gitlab.com/group/project.git");
++  await git(root, "checkout", "-b", branch);
++  await writeFile(path.join(root, "source.ts"), "candidate\n");
++  await git(root, "add", "source.ts");
++  await git(root, "commit", "-m", "candidate");
++  const head = await git(root, "rev-parse", "HEAD");
++  const prDir = path.join(root, "pr");
++  await mkdir(prDir);
++  const common: PrSyncCommonState = {
++    task: {
++      id: taskId,
++      title: "Frozen GitLab target",
++      description: "Regression",
++      status: "DONE",
++      priority: "high",
++      owner: "CODER",
++      depends_on: [],
++      tags: [],
++      extensions: { task_execution_context: { base_ref: sha, base_sha: sha } },
++    },
++    resolved: { gitRoot: root },
++    workflowDir: ".agentplane/tasks",
++    tasksPath: ".agentplane/tasks.json",
++    prDir,
++    metaPath: path.join(prDir, "meta.json"),
++    diffstatPath: path.join(prDir, "diffstat.txt"),
++    notesPath: path.join(prDir, "notes.md"),
++    verifyLogPath: path.join(prDir, "verify.log"),
++    reviewPath: path.join(prDir, "review.md"),
++    githubTitlePath: path.join(prDir, "title.txt"),
++    githubBodyPath: path.join(prDir, "body.md"),
++    artifactsLanguage: "en",
++    existingMeta: null,
++    relatedTaskIds: [],
++    handoffNotes: [],
++    now: "2026-10-10T20:00:00Z",
++    createdAt: "2026-10-10T20:00:00Z",
++    branch,
++    baseBranch: sha,
++    providerBaseBranch: "main",
++    headSha: head,
++    artifactRefresh: false,
++  };
++  const payloads: Record<string, unknown>[] = [];
++  ports.api.mockImplementation(
++    async (call: { method?: string; endpoint: string; inputPath?: string }) => {
++      if (call.method === "POST") {
++        const payload = JSON.parse(await readFile(call.inputPath!, "utf8")) as Record<
++          string,
++          unknown
++        >;
++        payloads.push(payload);
++        return {
++          iid: 42,
++          web_url: "https://gitlab.com/group/project/-/merge_requests/42",
++          state: "opened",
++          source_branch: branch,
++          target_branch: payload.target_branch,
++          source_project_id: 7,
++          sha: head,
++          head_pipeline: null,
++          diff_refs: null,
++        };
++      }
++      if (call.endpoint.includes("/merge_requests?")) return [];
++      if (call.endpoint === "projects/group%2Fproject") return { id: 7 };
++      throw new Error(`Unexpected provider operation: ${call.endpoint}`);
++    },
++  );
++  return { root, sha, head, common, payloads };
++}
++beforeEach(() => vi.clearAllMocks());
++afterEach(async () => {
++  await Promise.all(roots.splice(0).map((root) => rm(root, { recursive: true, force: true })));
++});
++
++describe("GitLab publication with a legacy frozen task base", () => {
++  it("posts logical main while preserving immutable source and diff evidence", async () => {
++    const f = await fixture();
++    const beforeTask = structuredClone(f.common.task);
++    const result = await runPrOpenSync(f.common, { remoteMode: "auto" });
++    expect(result.openOutcome?.action).toBe("created");
++    expect(f.payloads).toHaveLength(1);
++    expect(f.payloads[0]).toMatchObject({ source_branch: branch, target_branch: "main" });
++    expect(result.meta.base).toBe("main");
++    expect(result.meta.verify).toEqual({ status: "skipped" });
++    expect(f.common.baseBranch).toBe(f.sha);
++    expect(f.common.task).toEqual(beforeTask);
++    expect(await git(f.root, "rev-parse", "HEAD")).toBe(f.head);
++    expect(await readFile(path.join(f.root, "source.ts"), "utf8")).toBe("candidate\n");
++    const diff = await exec("git", ["diff", "--stat", `${f.sha}...${branch}`], {
++      cwd: f.root,
++      env: cleanGitEnv(),
++    });
++    const expectedDiff = diff.stdout;
++    expect(await readFile(f.common.diffstatPath, "utf8")).toBe(expectedDiff);
++    expect(result.meta.last_verified_at).toBeNull();
++    // Local metadata refresh must not silently switch to a moving named diff base.
++    await git(f.root, "update-ref", "refs/heads/main", f.head);
++    await runPrOpenSync(f.common, { remoteMode: "sync-only" });
++    expect(await readFile(f.common.diffstatPath, "utf8")).toBe(expectedDiff);
++    expect(f.common.task).toEqual(beforeTask);
++    expect(f.payloads).toHaveLength(1);
++  });
++
++  it.each(["missing", "moved", "inconsistent"] as const)(
++    "rejects %s target evidence before POST",
++    async (kind) => {
++      const f = await fixture();
++      if (kind === "missing")
++        await git(f.root, "--git-dir", ports.target, "update-ref", "-d", "refs/heads/main");
++      if (kind === "moved") await git(f.root, "push", ports.target, `${branch}:main`);
++      if (kind === "inconsistent")
++        f.common.task.extensions!.task_execution_context = {
++          base_ref: f.sha,
++          base_sha: "f".repeat(40),
++        };
++      await expect(runPrOpenSync(f.common, { remoteMode: "auto" })).rejects.toThrow(
++        /Exact-SHA PR base/,
++      );
++      expect(f.payloads).toEqual([]);
++      expect(ports.api).not.toHaveBeenCalled();
++      expect(await git(f.root, "rev-parse", "HEAD")).toBe(f.head);
++      expect(f.common.baseBranch).toBe(f.sha);
++    },
++  );
++});

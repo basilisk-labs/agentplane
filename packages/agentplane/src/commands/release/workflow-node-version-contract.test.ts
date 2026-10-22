@@ -118,7 +118,8 @@ describe("workflow Node runtime contract", () => {
       aggregateJob?.steps?.find((step) => step.name === "Evaluate aggregate verification") ?? {};
     expect(aggregateEnv).toMatchObject({
       env: {
-        AGENTPLANE_CI_PLAN_JSON: "${{ needs.plan.outputs.plan_json }}",
+        AGENTPLANE_CI_PLAN_FILE: "${{ runner.temp }}/aggregate-ci-plan/ci-plan.json",
+        AGENTPLANE_CI_PLAN_SHA256: "${{ needs.plan.outputs.plan_sha256 }}",
       },
     });
     expect(String(aggregateEnv.env?.AGENTPLANE_CI_RESULTS_JSON)).toContain(

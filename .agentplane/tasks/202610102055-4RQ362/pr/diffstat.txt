@@ -1,0 +1,5 @@
+ .../pr/internal/auto-commit-ancestry.test.ts       | 148 +++++++++++++++++++++
+ .../src/commands/pr/internal/auto-commit.test.ts   |  27 ++--
+ .../src/commands/pr/internal/auto-commit.ts        | 112 ++--------------
+ packages/agentplane/src/commands/pr/update.ts      |   2 +-
+ 4 files changed, 174 insertions(+), 115 deletions(-)

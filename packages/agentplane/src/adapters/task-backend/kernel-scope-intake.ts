@@ -50,10 +50,12 @@ export function amendedScopeIntake(
     )
       throw new Error("Scope request contains an unsupported or protected root");
   }
-  if (effects.some((effect) => !safeEffects.has(effect)))
+  const existing = new Set<string>(contract.authority.allowed_repository_effects);
+  if (effects.some((effect) => !existing.has(effect) && !safeEffects.has(effect)))
     throw new Error("Scope request contains a forbidden or unsupported repository effect");
   if (
     effects.includes("public_api") &&
+    !existing.has("public_api") &&
     (contract.selected_mode !== "branch_pr" || !contract.safety.requires_worktree)
   )
     throw new Error("Public API scope approval requires an already isolated branch_pr task");
@@ -61,7 +63,7 @@ export function amendedScopeIntake(
   for (const root of roots) {
     if (
       repositoryEffectsForPath(root).some(
-        (effect) => !allowed.has(effect) || !safeEffects.has(effect),
+        (effect) => !allowed.has(effect) || (!existing.has(effect) && !safeEffects.has(effect)),
       )
     )
       throw new Error("Scope root requires a forbidden or unrequested repository effect");

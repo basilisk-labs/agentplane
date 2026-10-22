@@ -1,3 +1,4 @@
+import { taskCancelSpec } from "../../../commands/task/cancel.command.js";
 import { taskCorrectiveAuthoritySpec } from "../../../commands/task/corrective-authority.command.js";
 
 import { taskAddSpec } from "../../../commands/task/add.command.js";
@@ -153,6 +154,7 @@ import {
   loadTaskEvidenceCheckSpec,
   loadTaskCloseDuplicateSpec,
   loadTaskStartReadySpec,
+  loadTaskCancelSpec,
   loadTaskCloseNoopSpec,
   loadTaskAddSpec,
   loadTaskUpdateSpec,
@@ -186,6 +188,7 @@ import {
   loadTaskRebuildIndexSpec,
   fromTaskReclaimSpec,
 } from "../command-loaders/task.js";
+const advancedTaskHelp = { surface: "advanced", helpGroup: "Advanced" } as const;
 export const TASK_COMMANDS = [
   fromCommandsTaskTaskCommand(taskSpec, "runTask", {
     requirements: NO_CONTEXT_REQUIREMENTS,
@@ -193,30 +196,25 @@ export const TASK_COMMANDS = [
   }),
   fromCommandsTaskHandoffCommand(taskHandoffSpec, "runTaskHandoff", {
     requirements: NO_CONTEXT_REQUIREMENTS,
-    surface: "advanced",
-    helpGroup: "Advanced",
+    ...advancedTaskHelp,
   }),
   fromCommandsTaskHandoffRecordCommand(taskHandoffRecordSpec, "runTaskHandoffRecord", {
     requirements: NO_CONTEXT_REQUIREMENTS,
-    surface: "advanced",
-    helpGroup: "Advanced",
+    ...advancedTaskHelp,
   }),
   fromTaskHandoffShowSpec(taskHandoffShowSpec, "runTaskHandoffShow", {
     requirements: NO_CONTEXT_REQUIREMENTS,
-    surface: "advanced",
-    helpGroup: "Advanced",
+    ...advancedTaskHelp,
   }),
   declareSessionCommand(taskHostedCloseSpec, {
     load: loadTaskHostedCloseSpec,
     requirements: PROVIDER_WRITE_REQUIREMENTS,
-    surface: "advanced",
-    helpGroup: "Advanced",
+    ...advancedTaskHelp,
   }),
   declareSessionCommand(taskHostedClosePrSpec, {
     load: loadTaskHostedClosePrSpec,
     requirements: PROVIDER_WRITE_REQUIREMENTS,
-    surface: "advanced",
-    helpGroup: "Advanced",
+    ...advancedTaskHelp,
   }),
   declareSessionCommand(taskActiveSpec, {
     load: loadTaskActiveSpec,
@@ -234,8 +232,7 @@ export const TASK_COMMANDS = [
   declareSessionCommand(taskAuthorityGrantSpec, {
     load: loadTaskAuthorityGrantSpec,
     requirements: TASK_ROUTE_LIFECYCLE_REQUIREMENTS,
-    surface: "advanced",
-    helpGroup: "Advanced",
+    ...advancedTaskHelp,
   }),
   declareSessionCommand(taskListSpec, {
     load: loadTaskListSpec,
@@ -262,8 +259,7 @@ export const TASK_COMMANDS = [
   declareSessionCommand(taskNextActionSpec, {
     load: loadTaskNextActionSpec,
     requirements: TASK_ROUTE_REQUIREMENTS,
-    surface: "advanced",
-    helpGroup: "Advanced",
+    ...advancedTaskHelp,
   }),
   declareSessionCommand(taskAdvanceSpec, {
     load: loadTaskAdvanceSpec,
@@ -274,8 +270,7 @@ export const TASK_COMMANDS = [
     load: loadTaskNewSpec,
     requirements: TASK_WRITE_REQUIREMENTS,
     invocation: requireCanonicalCommandInvocation(["task", "new"]),
-    surface: "advanced",
-    helpGroup: "Advanced",
+    ...advancedTaskHelp,
   }),
   declareSessionCommand(taskCreateSpec, {
     load: loadTaskCreateSpec,
@@ -357,43 +352,42 @@ export const TASK_COMMANDS = [
   declareSessionCommand(taskDeriveSpec, {
     load: loadTaskDeriveSpec,
     requirements: TASK_WRITE_REQUIREMENTS,
-    surface: "advanced",
-    helpGroup: "Advanced",
+    ...advancedTaskHelp,
   }),
   declareSessionCommand(taskEvidenceCheckSpec, {
     load: loadTaskEvidenceCheckSpec,
     requirements: TASK_READ_REQUIREMENTS,
-    surface: "advanced",
-    helpGroup: "Advanced",
+    ...advancedTaskHelp,
   }),
   declareSessionCommand(taskCloseDuplicateSpec, {
     load: loadTaskCloseDuplicateSpec,
     requirements: TASK_LIFECYCLE_REQUIREMENTS,
-    surface: "advanced",
-    helpGroup: "Advanced",
+    ...advancedTaskHelp,
   }),
   declareSessionCommand(taskStartReadySpec, {
     load: loadTaskStartReadySpec,
     requirements: TASK_LIFECYCLE_REQUIREMENTS,
     invocation: requireCanonicalCommandInvocation(["task", "start-ready"]),
   }),
+  declareSessionCommand(taskCancelSpec, {
+    load: loadTaskCancelSpec,
+    requirements: TASK_LIFECYCLE_REQUIREMENTS,
+    ...advancedTaskHelp,
+  }),
   declareSessionCommand(taskCloseNoopSpec, {
     load: loadTaskCloseNoopSpec,
     requirements: TASK_LIFECYCLE_REQUIREMENTS,
-    surface: "advanced",
-    helpGroup: "Advanced",
+    ...advancedTaskHelp,
   }),
   declareSessionCommand(taskAddSpec, {
     load: loadTaskAddSpec,
     requirements: TASK_WRITE_REQUIREMENTS,
-    surface: "advanced",
-    helpGroup: "Advanced",
+    ...advancedTaskHelp,
   }),
   declareSessionCommand(taskUpdateSpec, {
     load: loadTaskUpdateSpec,
     requirements: TASK_WRITE_REQUIREMENTS,
-    surface: "advanced",
-    helpGroup: "Advanced",
+    ...advancedTaskHelp,
   }),
   ...TASK_RECOVERY_COMMANDS,
   ...TASK_CANDIDATE_COMMANDS,
@@ -404,54 +398,45 @@ export const TASK_COMMANDS = [
   declareSessionCommand(taskSetStatusSpec, {
     load: loadTaskSetStatusSpec,
     requirements: TASK_LIFECYCLE_REQUIREMENTS,
-    surface: "advanced",
-    helpGroup: "Advanced",
+    ...advancedTaskHelp,
   }),
   fromCommandsTaskFindingsCommand(taskFindingsSpec, "runTaskFindings", {
     requirements: NO_CONTEXT_REQUIREMENTS,
-    surface: "advanced",
-    helpGroup: "Advanced",
+    ...advancedTaskHelp,
   }),
   declareSessionCommand(taskFindingsAddSpec, {
     load: loadTaskFindingsAddSpec,
     requirements: TASK_WRITE_REQUIREMENTS,
-    surface: "advanced",
-    helpGroup: "Advanced",
+    ...advancedTaskHelp,
   }),
   fromCommandsTaskObservationsCommand(taskObservationsSpec, "runTaskObservations", {
     requirements: NO_CONTEXT_REQUIREMENTS,
-    surface: "advanced",
-    helpGroup: "Advanced",
+    ...advancedTaskHelp,
   }),
   declareSessionCommand(taskObservationsAddSpec, {
     load: loadTaskObservationsAddSpec,
     requirements: TASK_WRITE_REQUIREMENTS,
-    surface: "advanced",
-    helpGroup: "Advanced",
+    ...advancedTaskHelp,
   }),
   declareSessionCommand(taskObservationsListSpec, {
     load: loadTaskObservationsListSpec,
     requirements: TASK_READ_REQUIREMENTS,
-    surface: "advanced",
-    helpGroup: "Advanced",
+    ...advancedTaskHelp,
   }),
   declareSessionCommand(taskObservationsCheckSpec, {
     load: loadTaskObservationsCheckSpec,
     requirements: TASK_READ_REQUIREMENTS,
-    surface: "advanced",
-    helpGroup: "Advanced",
+    ...advancedTaskHelp,
   }),
   declareSessionCommand(taskObservationsTriageSpec, {
     load: loadTaskObservationsTriageSpec,
     requirements: TASK_READ_REQUIREMENTS,
-    surface: "advanced",
-    helpGroup: "Advanced",
+    ...advancedTaskHelp,
   }),
   declareSessionCommand(taskObservationsHarvestSpec, {
     load: loadTaskObservationsHarvestSpec,
     requirements: TASK_WRITE_REQUIREMENTS,
-    surface: "advanced",
-    helpGroup: "Advanced",
+    ...advancedTaskHelp,
   }),
   fromCommandsTaskDocCommand(taskDocSpec, "runTaskDoc", {
     requirements: NO_CONTEXT_REQUIREMENTS,
@@ -473,8 +458,7 @@ export const TASK_COMMANDS = [
   declareSessionCommand(taskScaffoldSpec, {
     load: loadTaskScaffoldSpec,
     requirements: TASK_WRITE_REQUIREMENTS,
-    surface: "advanced",
-    helpGroup: "Advanced",
+    ...advancedTaskHelp,
   }),
   declareMultiSessionCommand(taskNormalizeSpec, {
     default: defineCommandSessionSelection({
@@ -503,25 +487,21 @@ export const TASK_COMMANDS = [
   declareCommand(taskObsidianSpec, {
     load: loadTaskObsidianSpec,
     requirements: TASK_READ_REQUIREMENTS,
-    surface: "advanced",
-    helpGroup: "Advanced",
+    ...advancedTaskHelp,
   }),
   declareCommand(taskObsidianCleanSpec, {
     load: loadTaskObsidianCleanSpec,
     requirements: NO_CONTEXT_REQUIREMENTS,
-    surface: "advanced",
-    helpGroup: "Advanced",
+    ...advancedTaskHelp,
   }),
   fromCommandsTaskLintCommand(taskLintSpec, "runTaskLint", {
     requirements: NO_CONTEXT_REQUIREMENTS,
-    surface: "advanced",
-    helpGroup: "Advanced",
+    ...advancedTaskHelp,
   }),
   declareSessionCommand(taskKernelMigrateSpec, {
     load: loadTaskKernelMigrateSpec,
     requirements: TASK_WRITE_REQUIREMENTS,
-    surface: "advanced",
-    helpGroup: "Advanced",
+    ...advancedTaskHelp,
   }),
   declareSessionCommand(taskMigrateSpec, {
     load: loadTaskMigrateSpec,
@@ -555,8 +535,7 @@ export const TASK_COMMANDS = [
   declareSessionCommand(taskPlanRejectSpec, {
     load: loadTaskPlanRejectSpec,
     requirements: TASK_WRITE_REQUIREMENTS,
-    surface: "advanced",
-    helpGroup: "Advanced",
+    ...advancedTaskHelp,
   }),
   declareSessionCommand(taskPlanRecoverRejectionSpec, {
     load: loadTaskPlanRecoverRejectionSpec,
@@ -588,12 +567,10 @@ export const TASK_COMMANDS = [
   }),
   fromCommandsTaskResumeContextCommand(taskResumeContextSpec, "runTaskResumeContext", {
     requirements: NO_CONTEXT_REQUIREMENTS,
-    surface: "advanced",
-    helpGroup: "Advanced",
+    ...advancedTaskHelp,
   }),
   fromTaskReclaimSpec(taskReclaimSpec, "runTaskReclaim", {
     requirements: NO_CONTEXT_REQUIREMENTS,
-    surface: "advanced",
-    helpGroup: "Advanced",
+    ...advancedTaskHelp,
   }),
 ] as const satisfies readonly CommandEntry[];

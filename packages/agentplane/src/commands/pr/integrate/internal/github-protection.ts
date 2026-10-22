@@ -22,8 +22,19 @@ export async function resolveGithubBasePullRequestProtection(opts: {
 }): Promise<GithubBasePullRequestProtection> {
   try {
     const repo = await resolveDefaultGithubRepo(opts.gitRoot);
+    const branchPath = `repos/${repo}/branches/${encodeURIComponent(opts.baseBranch)}`;
+    const branch = await runGhApiJson<{ name?: unknown; protected?: unknown } | null>(
+      opts.gitRoot,
+      [branchPath],
+    );
+    if (branch?.name !== opts.baseBranch || typeof branch.protected !== "boolean") {
+      throw new Error("GitHub returned an invalid or mismatched branch protection observation.");
+    }
+    if (!branch.protected) {
+      return { state: "unprotected", baseBranch: opts.baseBranch };
+    }
     const protection = await runGhApiJson<GithubBranchProtection>(opts.gitRoot, [
-      `repos/${repo}/branches/${opts.baseBranch}/protection`,
+      `${branchPath}/protection`,
     ]);
     if (protection.required_pull_request_reviews === undefined) {
       return { state: "unprotected", baseBranch: opts.baseBranch };

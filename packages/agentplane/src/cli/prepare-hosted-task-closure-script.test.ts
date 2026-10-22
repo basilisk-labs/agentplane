@@ -18,6 +18,9 @@ async function makeTempRoot() {
 }
 
 async function writeEventFixture(root: string, payload: Record<string, unknown>) {
+  const pull = payload.pull_request as { base?: Record<string, unknown> } | undefined;
+  if (pull?.base && !("repo" in pull.base)) pull.base.repo = { full_name: "example/project" };
+  if (!("repository" in payload)) payload.repository = { full_name: "example/project" };
   const eventPath = path.join(root, "event.json");
   await writeFile(eventPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
   return eventPath;
@@ -54,6 +57,58 @@ afterEach(async () => {
 });
 
 describe("prepare-hosted-task-closure script", () => {
+  it.each([
+    [
+      "assembly",
+      "agentplane/release",
+      "example/project",
+      "1234567890abcdef1234567890abcdef12345678",
+      true,
+    ],
+    ["missing base", "", "example/project", "1234567890abcdef1234567890abcdef12345678", false],
+    [
+      "unsafe base",
+      "release/$(id)",
+      "example/project",
+      "1234567890abcdef1234567890abcdef12345678",
+      false,
+    ],
+    [
+      "invalid base",
+      "release/../main",
+      "example/project",
+      "1234567890abcdef1234567890abcdef12345678",
+      false,
+    ],
+    [
+      "foreign repository",
+      "main",
+      "foreign/project",
+      "1234567890abcdef1234567890abcdef12345678",
+      false,
+    ],
+    ["missing repository", "main", null, "1234567890abcdef1234567890abcdef12345678", false],
+    ["invalid merge", "main", "example/project", "$(id)", false],
+  ])("authenticates merged target: %s", async (_label, baseRef, repository, sha, actionable) => {
+    const root = await makeTempRoot();
+    const eventPath = await writeEventFixture(root, {
+      repository: { full_name: "example/project" },
+      pull_request: {
+        merged: true,
+        number: 31,
+        merge_commit_sha: sha,
+        head: { ref: "task/202603271940-EG3B0C/hosted-closure" },
+        base: { ref: baseRef, repo: { full_name: repository } },
+      },
+    });
+    const result = await runScript(["--event-json", eventPath]);
+    expect(result.exitCode).toBe(0);
+    const parsed = JSON.parse(result.stdout) as { actionable: boolean; base_ref?: string };
+    expect(parsed.actionable).toBe(actionable);
+    if (actionable) expect(parsed.base_ref).toBe(baseRef);
+    else expect(parsed.base_ref).toBeUndefined();
+  });
+
   it("prints help", async () => {
     const result = await runScript(["--help"]);
     expect(result.exitCode).toBe(0);

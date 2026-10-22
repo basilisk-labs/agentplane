@@ -76,6 +76,18 @@ const mutationReceipt = z.strictObject({
   effect_ids: strings,
 });
 const kernelAggregateSchema = z.strictObject({
+  cancellation: z
+    .strictObject({
+      record_digest: digest,
+      reason: z.string().min(1),
+      actor_id: z.string().min(1),
+      approval_evidence_digest: digest,
+      request_digest: digest,
+      plan_digest: digest,
+      repository_fingerprint: digest,
+      prior_revision: revision,
+    })
+    .optional(),
   schema_version: z.literal(1),
   id: z.string().min(1),
   revision,
