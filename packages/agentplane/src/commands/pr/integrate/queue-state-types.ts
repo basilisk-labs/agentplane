@@ -1,12 +1,7 @@
 import type { LegacyProtectedConflictAdoptionReceipt } from "./queue-state-legacy-adoption.js";
 
 export type IntegrationQueueStatus =
-  | "queued"
-  | "claimed"
-  | "handoff"
-  | "done"
-  | "rework"
-  | "superseded";
+  "queued" | "claimed" | "handoff" | "done" | "rework" | "superseded";
 
 export type IntegrationQueueEntry = {
   task_id: string;

@@ -302,7 +302,7 @@ describe("AgentWorkOrder v2 surface integration", () => {
       branchTask.extensions = withTaskCentricAggregate(branchTask.extensions, scoped);
 
       await branchCommand.taskBackend.writeTask(
-        { ...branchTask, execution_contract: executionContract },
+        { ...branchTask, mutation_scope: "code", execution_contract: executionContract },
         branchTask.revision ? { expectedRevision: branchTask.revision } : undefined,
       );
       const prepared = await prepareTaskRunnerExecution({
@@ -318,6 +318,8 @@ describe("AgentWorkOrder v2 surface integration", () => {
         scope,
       ]);
       const authority = prepared.bundle.work_order.authority;
+      expect(authority.mutation_scope).toBe("code");
+      expect(authority.sandbox).toBe("workspace-write");
       expect(authority.writable_roots).toEqual([path.join(worktree, scope)]);
       expect(authority.protected_paths).not.toContain(".github/workflows");
       expect(authority.protected_paths).toEqual(

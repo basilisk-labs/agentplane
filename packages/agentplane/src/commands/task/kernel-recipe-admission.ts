@@ -1,10 +1,11 @@
 import { taskKernel as k, type KernelPlanProposal } from "@agentplaneorg/core/tasks";
+import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js";
 import type { KernelDocuments } from "../../adapters/task-backend/kernel-documents.js";
 import type { TaskData } from "../../backends/task-backend.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { validateRecipePlanForAdmission } from "../../runner/context/recipe-plan-binding.js";
 import { createNativeRecipeApplicabilityObservers } from "../../runner/context/recipe-native-observers.js";
-import { suppliedKernelProposal } from "./create-plan-proposal.js";
+import { suppliedKernelProposal, legacySuppliedKernelProposal } from "./create-plan-proposal.js";
 import { canonicalPlanFromProposal } from "./kernel-plan-proposal.js";
 
 /** Current admission reads committed pinned bytes, never an installed catalogue or version label.
@@ -18,6 +19,16 @@ export async function validateKernelRecipeBindings(opts: {
 }) {
   const inputs = opts.documents?.plan_inputs ?? {};
   if (!Object.values(inputs).some((input) => input.recipe_provenance)) return;
+  const stored = opts.task.extensions?.task_kernel as KernelRecord | undefined;
+  const retainedLegacy = Boolean(
+    opts.plan &&
+    stored &&
+    [stored.aggregate.current_plan, ...stored.aggregate.plan_history].some(
+      (plan) => plan?.digest === opts.plan!.digest,
+    ) &&
+    !Object.values(opts.documents?.contracts ?? {}).some((contract) => contract.generated_origin),
+  );
+  const convert = retainedLegacy ? legacySuppliedKernelProposal : suppliedKernelProposal;
   const checked = new Map<string, k.PlanRecord>();
   for (const definition of opts.plan?.work_items ?? []) {
     const contract = opts.documents?.contracts[String(definition.contract_digest)];
@@ -39,10 +50,7 @@ export async function validateKernelRecipeBindings(opts: {
         proposal: source,
         observers: createNativeRecipeApplicabilityObservers(opts.command),
       });
-      expected = canonicalPlanFromProposal(
-        suppliedKernelProposal(source, opts.task),
-        opts.plan!.revision,
-      );
+      expected = canonicalPlanFromProposal(convert(source, opts.task), opts.plan!.revision);
       checked.set(digest, expected);
     }
     const item = expected.work_items.find((entry) => entry.id === definition.id);
@@ -55,7 +63,7 @@ export async function validateKernelRecipeBindings(opts: {
     opts.plan &&
     ![...checked.entries()].some(([digest, expected]) => {
       if (expected.work_items.length !== opts.plan!.work_items.length) return false;
-      const expectedProposal = suppliedKernelProposal(inputs[digest]!, opts.task);
+      const expectedProposal = convert(inputs[digest]!, opts.task);
       return opts.plan!.work_items.every((definition) => {
         const actual = opts.documents!.contracts[String(definition.contract_digest)]!;
         const wanted = expectedProposal.work_items.find((item) => item.id === definition.id);

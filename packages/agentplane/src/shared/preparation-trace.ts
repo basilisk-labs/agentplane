@@ -8,12 +8,7 @@ const PREPARATION_TRACE_SCHEMA_VERSION = 1 as const;
 export type PreparationCacheability = "exact" | "ttl" | "none";
 
 type PreparationTraceStatus =
-  | "resolved"
-  | "reused"
-  | "reuse_candidate"
-  | "invalidated"
-  | "denied"
-  | "failed";
+  "resolved" | "reused" | "reuse_candidate" | "invalidated" | "denied" | "failed";
 
 type PreparationFingerprintInput = {
   name: string;

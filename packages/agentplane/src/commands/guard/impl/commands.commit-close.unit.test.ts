@@ -134,6 +134,7 @@ describe("guard command implementations: commit close", () => {
     expect(mocks.ensureReconciledBeforeMutation).toHaveBeenCalledWith({
       ctx,
       command: "commit",
+      taskIds: ["T-2"],
     });
     expect(ctx.git.stage).toHaveBeenCalledWith(["/outside/README.md"]);
     expect(mocks.buildGitCommitEnv).toHaveBeenCalledWith(

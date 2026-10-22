@@ -94,5 +94,4 @@ export type VerificationInputIdentityV5 = {
 };
 
 export type VerificationInputIdentity =
-  | HistoricalVerificationInputIdentity
-  | VerificationInputIdentityV5;
+  HistoricalVerificationInputIdentity | VerificationInputIdentityV5;

@@ -1,3 +1,4 @@
+import { hasAuthenticatedCompletedNativeReview } from "./kernel-completed-native-review.js";
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
@@ -126,6 +127,9 @@ export async function isRecoverableAppliedEvaluatorResult(opts: {
 }): Promise<boolean> {
   const { exchange, work_order: order } = opts;
   if (!(await isExternalEvaluatorResultApplied(opts))) return false;
+  const projectedTask = await opts.command.taskBackend.getTask(opts.exchange.task_id);
+  if (projectedTask?.extensions?.["agentplane.completed_native_review"])
+    await hasAuthenticatedCompletedNativeReview(opts.command, projectedTask);
   if (!exchange.baseline.head || !exchange.evaluator_work_order_ref) return false;
   const current = opts.decision.workflowStep.preconditionFingerprint;
   if (current.schema_version !== 2 || order.state_fingerprint.schema_version !== 2) return false;

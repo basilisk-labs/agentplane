@@ -17,10 +17,7 @@ const SEMANTIC_RETRIEVAL_SELECTION_LIMITS = {
 } as const;
 
 export type SemanticRetrievalEscalationReason =
-  | "candidate_set_oversized"
-  | "low_confidence"
-  | "conflicting_domains"
-  | "broad_synthesis";
+  "candidate_set_oversized" | "low_confidence" | "conflicting_domains" | "broad_synthesis";
 
 export type SemanticRetrievalSelectionCandidate = {
   ref: string;

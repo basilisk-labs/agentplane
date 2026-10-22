@@ -72,8 +72,7 @@ function approvedPlanIdentity(task: TaskData) {
     };
   }
   const raw = task.extensions?.[TASK_KERNEL_EXTENSION] as
-    | { repository_identity?: unknown }
-    | undefined;
+    { repository_identity?: unknown } | undefined;
   if (!isSha256(raw?.repository_identity)) return null;
   const read = readKernelRecord(task, raw.repository_identity);
   const plan = read.kind === "canonical" ? read.record.aggregate.current_plan : null;

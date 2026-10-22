@@ -9,13 +9,7 @@ export type SetupProfilePreset = "standard";
 export type InitMode = "quick" | "guided" | "advanced" | "ci";
 export type UserFacingProfile = "solo" | "team" | "strict" | "custom";
 export type InitTool =
-  | "codex"
-  | "claude"
-  | "cursor"
-  | "windsurf"
-  | "hermes"
-  | "multiple"
-  | "manual";
+  "codex" | "claude" | "cursor" | "windsurf" | "hermes" | "multiple" | "manual";
 export type InitBackend = "local" | "cloud";
 export type InitRunnerProfile = "codex" | "hermes";
 

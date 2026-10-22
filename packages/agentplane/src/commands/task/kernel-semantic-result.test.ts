@@ -46,7 +46,10 @@ function fixture(changedPaths: string[]) {
     adapter: { read: vi.fn().mockResolvedValue({ kind: "canonical", record }) },
     lifecycle: { resultFingerprintMatches: vi.fn().mockReturnValue(true) },
     observe: vi.fn().mockResolvedValue({ fingerprint: digest("repository-after") }),
-    native: { observeContinuation: continuation },
+    native: {
+      observeContinuation: continuation,
+      readContext: vi.fn().mockResolvedValue({ actor: { id: "native-controller" } }),
+    },
     authority: { continue: continueAuthority },
   };
   return { binding, continuation, continueAuthority, parent, runtime };
@@ -60,8 +63,16 @@ describe("canonical semantic result recovery", () => {
       runtime: f.runtime as never,
       task_id: "task-1",
       binding: f.binding as never,
+      issued_authority_digest: digest("trusted-issued-authority"),
     });
 
+    expect(f.runtime.lifecycle.resultFingerprintMatches).toHaveBeenCalledWith(
+      expect.anything(),
+      f.binding,
+      f.parent.repository_fingerprint,
+      digest("trusted-issued-authority"),
+      "native-controller",
+    );
     expect(f.continuation).toHaveBeenCalledWith("task-1", f.parent);
     expect(f.continueAuthority).toHaveBeenCalledWith("task-1");
   });

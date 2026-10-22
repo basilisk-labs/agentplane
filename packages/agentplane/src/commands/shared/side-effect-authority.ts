@@ -255,6 +255,8 @@ export function createSideEffectAuthorityRecord(opts: {
   operationLease?: OperationLease;
   id?: string;
 }): SideEffectAuthorityRecord {
+  if (opts.operation.id === "candidate.publish" && opts.actor !== "USER")
+    throw new Error("Candidate publication requires a separate USER approval.");
   const requirement = workflowOperationAuthorityRequirement(opts.operation.id);
   if (!requirement.requiresAuthority) {
     throw new Error(`Operation ${opts.operation.id} does not require side-effect authority.`);
@@ -435,6 +437,7 @@ export function evaluateWorkflowOperationAuthority(opts: {
   const now = (opts.now ?? new Date()).getTime();
   const matching = state.grants.find(
     (grant) =>
+      (opts.operation.id !== "candidate.publish" || grant.actor === "USER") &&
       grant.policyRule === requirement.policyRule &&
       grant.operationId === opts.operation.id &&
       grant.operationDigest === operationDigest &&

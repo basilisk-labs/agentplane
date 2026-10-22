@@ -10,10 +10,7 @@ import type { RuntimeSourceInfo } from "./runtime-source.js";
 import { compareVersions } from "./version-compare.js";
 
 type RepoCliVersionState =
-  | "unconfigured"
-  | "satisfied"
-  | "older_than_expected"
-  | "active_version_unresolved";
+  "unconfigured" | "satisfied" | "older_than_expected" | "active_version_unresolved";
 
 export type RepoCliVersionExpectation = {
   expectedVersion: string | null;

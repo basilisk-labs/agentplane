@@ -26,4 +26,5 @@ agentplane_context:
 <!-- agentplane-context-wiki-index:start -->
 
 - [Completed task history harvest proposal](done-all-tags.md)
+
 <!-- agentplane-context-wiki-index:end -->

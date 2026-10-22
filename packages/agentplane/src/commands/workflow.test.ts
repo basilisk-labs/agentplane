@@ -99,6 +99,7 @@ describe("commands/workflow", () => {
   afterEach(() => {
     restoreStdIO?.();
     restoreStdIO = null;
+    vi.restoreAllMocks();
   });
 
   it("task new spec rejects missing required options", () => {
@@ -308,7 +309,10 @@ describe("commands/workflow", () => {
           },
         });
       })(),
-    ).rejects.toMatchObject({ code: "E_IO" });
+    ).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      message: "Backend does not support generateTaskId()",
+    });
     spy.mockRestore();
   });
 
@@ -733,7 +737,8 @@ describe("commands/workflow", () => {
   it("guard suggest-allow rejects when index is empty", async () => {
     const root = await makeRepo();
     await expect(cmdGuardSuggestAllow({ cwd: root, format: "lines" })).rejects.toMatchObject({
-      code: "E_IO",
+      code: "E_USAGE",
+      message: "No staged files (git index empty)",
     });
   });
 

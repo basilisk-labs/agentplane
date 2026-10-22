@@ -74,8 +74,21 @@ function resolveHelpResult(registry: HelpRegistryView, parsed: HelpParsed): Help
       : { kind: "text", value: renderRegistryHelpText(specs) };
   }
 
-  const match = registry.match(parsed.cmd, { all: parsed.all });
+  const match = registry.match(parsed.cmd, { all: true });
   if (match?.consumed !== parsed.cmd.length) {
+    const children = registry
+      .list({ all: true })
+      .map((entry) => entry.spec)
+      .filter(
+        (spec) =>
+          spec.id.length > parsed.cmd.length &&
+          parsed.cmd.every((token, index) => spec.id[index] === token),
+      );
+    if (children.length > 0) {
+      return parsed.json
+        ? { kind: "registry_json", value: children.map((spec) => renderCommandHelpJson(spec)) }
+        : { kind: "text", value: renderRegistryHelpText(children) };
+    }
     const input = parsed.cmd.join(" ");
     const candidates = specs.map((spec) => spec.id.join(" "));
     const suggestion = suggestOne(input, candidates);

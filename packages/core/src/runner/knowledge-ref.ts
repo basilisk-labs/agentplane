@@ -1,3 +1,4 @@
+import { isoTimestampSchema } from "../schemas/iso-timestamp.js";
 import { createHash } from "node:crypto";
 
 import { z } from "zod";
@@ -391,7 +392,7 @@ export const KNOWLEDGE_INDEX_FRESHNESS_ZOD_SCHEMA = z
   .object({
     status: z.enum(KNOWLEDGE_INDEX_FRESHNESS_VALUES),
     projection_version: SAFE_POSITIVE_INTEGER_SCHEMA.nullable(),
-    generated_at: z.string().datetime({ offset: true }).nullable(),
+    generated_at: isoTimestampSchema({ offset: true }).nullable(),
     indexed_digest: SHA256_DIGEST_SCHEMA.nullable(),
     observed_digest: SHA256_DIGEST_SCHEMA.nullable(),
   })

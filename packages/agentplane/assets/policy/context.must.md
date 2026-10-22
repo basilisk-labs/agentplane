@@ -66,4 +66,5 @@ Context work is done only when:
 3. Wiki links/indexes were refreshed when pages were added, moved, or materially renamed.
 4. Derived projection checks were run or skipped with reason and risk.
 5. `ap context verify-task <task-id>` passed for task-bound context work.
+
 <!-- /ap:fragment -->

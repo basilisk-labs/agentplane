@@ -57,4 +57,5 @@ Promotion from `incidents.md` into canonical policy modules is allowed only when
 
 - MUST rules should be enforceable by tooling where possible.
 - Non-enforceable guidance should be marked as SHOULD and kept out of hard-gate sections.
+
 <!-- /ap:fragment -->

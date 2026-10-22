@@ -253,6 +253,7 @@ export async function resolveConfiguredAuthority(opts: {
     gitRoot: opts.command.resolvedProject.gitRoot,
     taskId: step.request.taskId,
     state: audited,
+    expected: loaded,
   });
   return {
     state: "granted",

@@ -3,12 +3,7 @@ import type { PromptModuleContractSchemaVersion } from "./schema.js";
 type PromptModuleNamespace = "framework" | "project" | "runtime" | `recipe.${string}`;
 
 export type PromptModuleSurface =
-  | "gateway"
-  | "policy"
-  | "agent_profile"
-  | "runner"
-  | "validator"
-  | "template";
+  "gateway" | "policy" | "agent_profile" | "runner" | "validator" | "template";
 
 export type PromptModuleTarget =
   | "AGENTS.md"
@@ -79,18 +74,10 @@ export type PromptModuleContentKind = "markdown" | "json" | "text" | "typescript
 export type PromptModuleMutability = "locked" | "replaceable" | "extendable" | "append_only";
 
 export type PromptModuleMergeMode =
-  | "pick_one"
-  | "replace"
-  | "prepend"
-  | "append"
-  | "merge_object"
-  | "union_by_id";
+  "pick_one" | "replace" | "prepend" | "append" | "merge_object" | "union_by_id";
 
 export type PromptModuleConflictPolicy =
-  | "error"
-  | "highest_precedence"
-  | "last_writer_wins"
-  | "keep_all";
+  "error" | "highest_precedence" | "last_writer_wins" | "keep_all";
 
 export type PromptModuleMergePolicy = {
   mode: PromptModuleMergeMode;
@@ -109,11 +96,7 @@ export type PromptModuleLoadCondition = {
 };
 
 export type PromptModuleSourceKind =
-  | "framework_builtin"
-  | "project_file"
-  | "recipe_asset"
-  | "generated"
-  | "runtime";
+  "framework_builtin" | "project_file" | "recipe_asset" | "generated" | "runtime";
 
 export type PromptModuleProvenance = {
   source_kind: PromptModuleSourceKind;

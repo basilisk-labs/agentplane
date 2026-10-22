@@ -15,3 +15,6 @@ scripts/bench/agent-efficiency-replay-evidence
 # Immutable content-addressed M01 campaign captures; formatting would invalidate hashes.
 scripts/baselines/m01-0.7.9-token-pilot-v1
 scripts/baselines/m01-0.7.9-token-pilot-v2
+
+# Immutable M05 offline product bytes are pinned by campaign lock artifacts.
+artifacts/bench/m05-0.7.13/formatted-offline/product.mjs

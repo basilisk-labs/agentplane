@@ -1,8 +1,9 @@
-import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
-import os from "node:os";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { describe, expect, it } from "vitest";
+import { defaultConfig } from "@agentplaneorg/core/config";
+import { mkGitRepoRoot } from "@agentplane/testkit";
 
 import type { CommandContext } from "../shared/task-backend.js";
 import {
@@ -14,9 +15,11 @@ import {
 } from "./evidence.command.js";
 
 function fakeCommandContext(root: string, workflowDir = ".agentplane/tasks"): CommandContext {
+  const config = defaultConfig();
+  config.paths.workflow_dir = workflowDir;
   return {
     resolvedProject: { gitRoot: root },
-    config: { paths: { workflow_dir: workflowDir } },
+    config,
     taskBackend: {
       getTask: (taskId: string) =>
         Promise.resolve({
@@ -55,7 +58,7 @@ describe("evidence command specs", () => {
 
 describe("evidence bundle manifest", () => {
   it("writes and verifies deterministic task-local file hashes", async () => {
-    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-evidence-"));
+    const root = await mkGitRepoRoot();
     const taskId = "202605031625-886KZ6";
     const taskRoot = path.join(root, ".agentplane/tasks", taskId);
     await mkdir(path.join(taskRoot, "blueprint"), { recursive: true });
@@ -125,7 +128,7 @@ describe("evidence bundle manifest", () => {
   });
 
   it("uses the configured workflow directory for default evidence paths", async () => {
-    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-evidence-"));
+    const root = await mkGitRepoRoot();
     const taskId = "202605031625-886KZ6";
     const workflowDir = ".custom-agentplane/tasks";
     const taskRoot = path.join(root, workflowDir, taskId);

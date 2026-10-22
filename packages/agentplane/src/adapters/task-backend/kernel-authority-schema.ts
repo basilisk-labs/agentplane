@@ -1,3 +1,4 @@
+import { isoTimestampSchema } from "@agentplaneorg/core/schemas";
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
 import { z } from "zod";
 
@@ -34,7 +35,7 @@ export const kernelAuthoritySchema = z
       evidence_digest: digest,
       parent_authority_digest: digest.nullable(),
     }),
-    expires_at: z.iso.datetime().nullable(),
+    expires_at: isoTimestampSchema().nullable(),
   })
   .refine((authority) => authority.digest === k.authorityDigest(authority), "authority_digest");
 
@@ -48,7 +49,9 @@ export const kernelAuthorityRecordSchema = z.strictObject({
       kind: z.enum([
         "plan_amendment",
         "repository_implementation",
+        "worktree_preparation",
         "authority_delta",
+        "prospective_scope_request",
         "policy_renewal",
       ]),
       evidence_digest: digest,
@@ -59,6 +62,41 @@ export const kernelAuthorityRecordSchema = z.strictObject({
       added_repository_effects: strings.optional(),
       request_task_revision: z.number().int().nonnegative().optional(),
       repository_evidence_digest: digest.optional(),
+      scope_request: z
+        .strictObject({
+          task_id: z.string().min(1),
+          record_digest: digest,
+          task_revision: z.number().int().nonnegative(),
+          plan_revision: z.number().int().nonnegative(),
+          plan_digest: digest,
+          work_item_id: z.string().min(1),
+          attempt: z.number().int().positive(),
+          claim_id: digest,
+          contract_digest: digest,
+          work_order_id: digest,
+          result_digest: digest,
+          stop_receipt_digest: digest,
+          result_authentication: z.enum(["native_stop_receipt", "legacy_current_retained_content"]),
+          parent_authority_digest: digest,
+          repository_fingerprint: digest,
+          intake_before_digest: digest,
+          intake_after_digest: digest,
+          scope_roots: strings,
+          repository_effects: strings,
+        })
+        .optional(),
+      reviewed_base_import: z
+        .strictObject({
+          old_commit: z.string().regex(/^[a-f0-9]{40}$/u),
+          new_commit: z.string().regex(/^[a-f0-9]{40}$/u),
+          work_order_digest: digest,
+          checkpoint_digest: digest,
+          canonical_record_digest: digest,
+          mutation_receipt_digest: digest,
+          overlay_digest: digest,
+          imported_paths: strings,
+        })
+        .optional(),
     })
     .nullable(),
 });

@@ -1,9 +1,15 @@
 import { execFileSync } from "node:child_process";
+import {
+  lintNodeOptions,
+  resolveFullCiResourceProfile,
+} from "../lib/local-ci-resource-profile.mjs";
 
 const group = process.argv[2];
-const run = (command, args) => execFileSync(command, args, { env: process.env, stdio: "inherit" });
-const bunScript = (name) => run("bun", ["run", name]);
+const run = (command, args, env = process.env) =>
+  execFileSync(command, args, { env, stdio: "inherit" });
+const bunScript = (name, env) => run("bun", ["run", name], env);
 const timeout = "60000";
+const coreTimeout = "120000";
 const maxWorkers = process.env.AGENTPLANE_FAST_VITEST_MAX_WORKERS || "4";
 
 const groups = {
@@ -25,7 +31,11 @@ const groups = {
     }
   },
   core: () => {
-    bunScript("lint:core");
+    const resources = resolveFullCiResourceProfile(process.env);
+    bunScript("lint:core", {
+      ...process.env,
+      NODE_OPTIONS: lintNodeOptions(process.env, resources),
+    });
     run("bunx", [
       "vitest",
       "run",
@@ -45,9 +55,9 @@ const groups = {
       "--maxWorkers",
       maxWorkers,
       "--testTimeout",
-      timeout,
+      coreTimeout,
       "--hookTimeout",
-      timeout,
+      coreTimeout,
     ]);
   },
   runtime: () =>

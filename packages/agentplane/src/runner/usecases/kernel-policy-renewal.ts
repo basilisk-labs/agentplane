@@ -59,6 +59,7 @@ export async function renewKernelPolicyAuthority(opts: {
       observation.changed_paths.length === 0)
   )
     throw new Error("Canonical policy renewal requires a fresh native repository observation");
+  const reviewedBase = await opts.native.observeReviewedBaseImport?.(opts.task_id, parent);
   const requestDigest = k.policyRenewalRequestDigest({
     task_revision: aggregate.revision,
     parent,
@@ -66,12 +67,14 @@ export async function renewKernelPolicyAuthority(opts: {
     policy_digests: authority.policy_digests,
     changed_paths: observation?.changed_paths ?? [],
     repository_evidence_digest: observation?.evidence_digest,
+    ...(reviewedBase ? { reviewed_base_import: reviewedBase } : {}),
   });
   const record = kernelAuthorityRecordSchema.parse({
     authority,
     approval_mode: "manual_operator",
     observation: {
       kind: "policy_renewal",
+      ...(reviewedBase ? { reviewed_base_import: reviewedBase } : {}),
       previous_fingerprint: parent.repository_fingerprint,
       changed_paths: observation?.changed_paths ?? [],
       ...(observation ? { repository_evidence_digest: observation.evidence_digest } : {}),
@@ -84,6 +87,12 @@ export async function renewKernelPolicyAuthority(opts: {
     },
   });
   await opts.assertFresh(context, parent.expires_at);
+  if (
+    reviewedBase &&
+    k.kernelDigest(await opts.native.observeReviewedBaseImport?.(opts.task_id, parent)) !==
+      k.kernelDigest(reviewedBase)
+  )
+    throw new Error("Reviewed base evidence changed before renewal dispatch");
   return opts.adapter.execute({
     command: {
       kind: "renew_policy_authority",

@@ -1,3 +1,5 @@
+import { readKernelScopeRequest } from "./kernel-scope-request-evidence.js";
+import { observeReviewedBaseImport, type ReviewedBasePins } from "./kernel-reviewed-base-import.js";
 import { resolveKernelPolicyBaseline } from "./kernel-policy-baseline.js";
 import { validateKernelRecipeBindings } from "./kernel-recipe-admission.js";
 import { writeKernelArtifact } from "./kernel-exchange.js";
@@ -25,11 +27,38 @@ import type {
 import { resolveCommandGitCommonDir, type CommandContext } from "../shared/task-backend.js";
 import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
 import { executionContractCeiling } from "./kernel-plan-authority.js";
+import { CliError } from "../../shared/errors.js";
+import { observeKernelWorktreePreparation } from "./kernel-worktree-preparation.js";
 
 export function requireKernelCommit(result: KernelAdapterResult) {
+  if (result.kind === "unavailable" && result.mutation) {
+    throw Object.assign(
+      new CliError({
+        code: "E_HANDOFF",
+        message: `Canonical write requires reconciliation: ${result.code}. Preserve mutation ${result.mutation.mutation_id} for task ${result.mutation.task_id}. Restore storage reads and retry the exact original invocation; retained mutation receipts are checked before another write. Do not migrate or scaffold this task.`,
+        context: {
+          reason_code: "canonical_write_reconciliation_required",
+          backend_result: result.code,
+          ...result.mutation,
+        },
+      }),
+      { result },
+    );
+  }
   if (result.kind !== "committed")
     throw Object.assign(
-      new Error(`Canonical command rejected: ${result.code} (${result.facts.join(", ")})`),
+      new CliError({
+        code: "E_VALIDATION",
+        message: `Canonical command rejected: ${result.code} (${result.facts.join(", ")}). Inspect the current task route before retrying; do not edit native records.`,
+        context: {
+          reason_code: result.code,
+          facts: result.facts,
+          required_action:
+            result.kind === "rejected"
+              ? result.required_action
+              : "inspect_backend_capabilities_and_native_state",
+        },
+      }),
       { result },
     );
   return result;
@@ -64,6 +93,7 @@ export async function createKernelRuntime(opts: {
   transport: k.ActorIdentity["transport"];
   operation_id: string;
   approval?: NativeApprovalObservation;
+  reviewed_base?: ReviewedBasePins;
 }) {
   const ctx = { ...opts.command, config: structuredClone(opts.command.config) };
   const liveConfig = structuredClone(ctx.config);
@@ -72,7 +102,15 @@ export async function createKernelRuntime(opts: {
     task: {},
     create_if_missing: false,
   })) as k.Sha256Digest;
-  const adapter = new KernelBackendAdapter(ctx.taskBackend, identity);
+  const adapter = new KernelBackendAdapter(ctx.taskBackend, identity, async (request) => {
+    const retained = await readKernelScopeRequest(ctx, request.task_id, request.work_item_id, {
+      read: (id) => adapter.read(id),
+      observe,
+      readContext: (id) => native.readContext(id),
+    });
+    if (k.kernelDigest(retained.request) !== k.kernelDigest(request))
+      throw new Error("Scope request does not match authenticated native stop evidence");
+  });
   const lifecycle = new KernelTaskLifecycle(adapter);
   const observationDir = path.join(
     await resolveCommandGitCommonDir(ctx),
@@ -102,7 +140,14 @@ export async function createKernelRuntime(opts: {
       if (taskId !== opts.task_id) throw new Error("Canonical context task mismatch");
       const read = await adapter.read(taskId);
       if (read.kind !== "canonical" && read.kind !== "missing")
-        throw new Error(`Canonical mutation requires explicit migration: ${read.kind}`);
+        throw new CliError({
+          code: "E_VALIDATION",
+          message:
+            read.kind === "legacy_unmigrated"
+              ? "Canonical mutation requires explicit migration: legacy_unmigrated"
+              : `Canonical task ${taskId} is ${read.kind}; inspect its native record before retrying. Migration cannot repair this state.`,
+          context: { task_id: taskId, record_kind: read.kind },
+        });
       const aggregate = read.kind === "canonical" ? read.record.aggregate : null;
       if (read.kind === "canonical" && aggregate?.current_plan?.state !== "REJECTED")
         await validateKernelRecipeBindings({
@@ -201,6 +246,27 @@ export async function createKernelRuntime(opts: {
       } satisfies NativeAuthorityContext;
     },
     readApproval: () => Promise.resolve(opts.approval ?? null),
+    async observeReviewedBaseImport(taskId, parent) {
+      if (!opts.reviewed_base) return null;
+      if (
+        taskId !== opts.task_id ||
+        opts.transport !== "manual" ||
+        opts.operation_id !== `approve:${taskId}` ||
+        opts.approval?.kind !== "manual_operator" ||
+        !/^USER(?::[A-Za-z0-9._@-]+)?$/u.test(opts.approval.actor_id)
+      )
+        throw new Error("Reviewed base import requires explicit operator renewal");
+      const read = await adapter.read(taskId);
+      if (read.kind !== "canonical") throw new Error("Reviewed base canonical record unavailable");
+      return observeReviewedBaseImport({
+        root: ctx.resolvedProject.gitRoot,
+        common: await resolveCommandGitCommonDir(ctx),
+        pins: opts.reviewed_base,
+        parent,
+        record: read.record,
+        current: await observe(),
+      });
+    },
     async observeContinuation(taskId, parent) {
       if (taskId !== opts.task_id) throw new Error("Canonical continuation task mismatch");
       const read = await adapter.read(taskId);
@@ -226,6 +292,13 @@ export async function createKernelRuntime(opts: {
         throw new Error("Canonical observation checkpoint is invalid");
       const changed = kernelRepositoryChangedPaths(before, current);
       await checkpoint(current);
+      const preparation = await observeKernelWorktreePreparation({
+        command: ctx,
+        taskId,
+        parent,
+        current,
+      });
+      if (preparation) return preparation;
       return {
         kind: "repository_implementation",
         evidence_digest: k.kernelDigest({

@@ -1,0 +1,75 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 1ae4abf420f417ad900e379a9cae69ba3f7489e8..ec693e0810dd14583094c6d7422702aaf1b89691",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 1ae4abf420f417ad900e379a9cae69ba3f7489e8..ec693e0810dd14583094c6d7422702aaf1b89691",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202610080740-NDWDC5/README.md",
+        "M\t.agentplane/tasks/202610080740-NDWDC5/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202610080740-NDWDC5/pr/github-body.md",
+        "M\t.agentplane/tasks/202610080740-NDWDC5/pr/meta.json",
+        "M\t.agentplane/tasks/202610080740-NDWDC5/pr/review.md",
+        "M\t.agentplane/tasks/202610080740-NDWDC5/supervision/declared-checks.json",
+        "M\t.agentplane/tasks/202610080740-NDWDC5/supervision/implementation-evidence.json",
+        "A\tscripts/bench/internal/paired-m05/boundary.mjs",
+        "A\tscripts/bench/internal/paired-m05/boundary.test.mjs",
+        "M\tscripts/bench/paired-live-codex-launcher.mjs",
+        "M\tscripts/bench/paired-live-codex-launcher.test.mjs",
+        "M\tscripts/bench/paired-production-driver.mjs"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "1ae4abf420f417ad900e379a9cae69ba3f7489e8",
+  "implementation_commit": "ec693e0810dd14583094c6d7422702aaf1b89691",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      " M .agentplane/tasks/202610080740-NDWDC5/README.md",
+      " M .agentplane/tasks/202610080740-NDWDC5/supervision/declared-checks.json",
+      " M .agentplane/tasks/202610080740-NDWDC5/supervision/implementation-evidence.json"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202610080740-NDWDC5/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202610080740-NDWDC5/supervision/declared-checks.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M .agentplane/tasks/202610080740-NDWDC5/supervision/implementation-evidence.json"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M .agentplane/tasks/202610080740-NDWDC5/README.md",
+      " M .agentplane/tasks/202610080740-NDWDC5/supervision/declared-checks.json",
+      " M .agentplane/tasks/202610080740-NDWDC5/supervision/implementation-evidence.json"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202610080740-NDWDC5"
+}

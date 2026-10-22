@@ -27,4 +27,5 @@ Operate as the agentplane execution runner.
 - The generated bootstrap provides canonical AgentSemanticResult v2 examples bound to the current `work_order_id`; select the matching semantic outcome and do not add supervisor-owned process, Git, artifact, or check fields.
 - The current Codex adapter derives the final `agent_message` from a bounded, process-local supervisor collector before optional trace redaction or persistence; it does not read persisted trace as semantic input, expose an agent-writable result path, or replay Responses API output items. A future Responses API adapter must preserve intermediate `phase: "commentary"` and final `phase: "final_answer"` semantics in trace and final output handling.
 - When the requested task outcome is satisfied, stop immediately instead of re-running repository bootstrap or lifecycle flows.
+
 <!-- /ap:fragment -->

@@ -5,6 +5,8 @@ import {
   canonicalAuthorityIssues,
   continuationAdmissionIssues,
   planScopeExpansionApprovalDigest,
+  policyRenewalApprovalEvidence,
+  policyRenewalRequestDigest,
 } from "./authority-lineage.js";
 import { kernelDigest, reduceTaskCommand } from "./kernel.js";
 import type {
@@ -15,10 +17,14 @@ import type {
 } from "./model.js";
 import { authority, plan, aggregate, input } from "./kernel.test-fixtures.js";
 
-function materialAmendmentLineage(widened: Partial<ExecutionRequirements> = {}) {
+function materialAmendmentLineage(
+  widened: Partial<ExecutionRequirements> = {},
+  withPolicy = false,
+) {
   const original: PlanRecord = { ...plan, approval_actor_id: "USER" };
   const rootContents = {
     ...authority,
+    ...(withPolicy ? { policy_digests: [kernelDigest("current-policy")] } : {}),
     provenance: { ...authority.provenance, actor_id: "USER" },
   };
   const root = { ...rootContents, digest: authorityDigest(rootContents) };
@@ -110,6 +116,100 @@ function materialAmendmentLineage(widened: Partial<ExecutionRequirements> = {}) 
       },
     },
   };
+}
+
+function amendedPolicyRenewal(withPolicy = false) {
+  const { state } = materialAmendmentLineage({}, withPolicy);
+  const parent = state.authority_lineage!.at(-1)!.authority;
+  const contents = {
+    ...parent,
+    policy_digests: [kernelDigest("renewed-policy")],
+    provenance: {
+      ...parent.provenance,
+      kind: "USER" as const,
+      actor_id: "USER",
+      parent_authority_digest: parent.digest,
+    },
+  };
+  const renewed = { ...contents, digest: authorityDigest(contents) };
+  const request = policyRenewalRequestDigest({
+    task_revision: state.revision,
+    parent,
+    repository_fingerprint: renewed.repository_fingerprint,
+    policy_digests: renewed.policy_digests,
+    changed_paths: [],
+  });
+  const record: CanonicalAuthorityRecord = {
+    authority: renewed,
+    approval_mode: "manual_operator",
+    observation: {
+      kind: "policy_renewal",
+      previous_fingerprint: parent.repository_fingerprint,
+      changed_paths: [],
+      request_task_revision: state.revision,
+      request_digest: request,
+      evidence_digest: policyRenewalApprovalEvidence({ request_digest: request, actor_id: "USER" }),
+    },
+  };
+  const command: TaskCommand = {
+    kind: "renew_policy_authority",
+    task_id: state.id,
+    expected_task_revision: state.revision,
+    expected_state_fingerprint: renewed.repository_fingerprint,
+    record,
+  };
+  return {
+    state,
+    record,
+    invocation: {
+      ...input(state, command),
+      authority: null,
+      repository_fingerprint: renewed.repository_fingerprint,
+      actor: { id: "USER", kind: "USER" as const, transport: "manual" as const, capabilities: [] },
+    },
+  };
+}
+
+function reviewedBaseRenewal() {
+  const f = amendedPolicyRenewal(true);
+  const parent = f.state.authority_lineage!.at(-1)!.authority;
+  f.record.authority.policy_digests = parent.policy_digests;
+  f.record.authority.repository_fingerprint = kernelDigest("reviewed-new-base");
+  f.record.observation!.changed_paths = [
+    "packages/agentplane/src/cli/verification-contract.test.ts",
+  ];
+  f.record.observation!.repository_evidence_digest = kernelDigest("native-repository-evidence");
+  f.record.observation!.reviewed_base_import = {
+    old_commit: "a".repeat(40),
+    new_commit: "b".repeat(40),
+    checkpoint_digest: parent.repository_fingerprint,
+    work_order_digest: kernelDigest("authenticated-work-order"),
+    canonical_record_digest: kernelDigest("current-record"),
+    mutation_receipt_digest: kernelDigest("begin-receipt"),
+    overlay_digest: kernelDigest([]),
+    imported_paths: [...f.record.observation!.changed_paths],
+  };
+  const bind = () => {
+    f.record.authority.digest = authorityDigest(f.record.authority);
+    const observation = f.record.observation!;
+    observation.request_digest = policyRenewalRequestDigest({
+      task_revision: f.state.revision,
+      parent,
+      repository_fingerprint: f.record.authority.repository_fingerprint,
+      policy_digests: f.record.authority.policy_digests,
+      changed_paths: observation.changed_paths,
+      repository_evidence_digest: observation.repository_evidence_digest,
+      reviewed_base_import: observation.reviewed_base_import,
+    });
+    observation.evidence_digest = policyRenewalApprovalEvidence({
+      request_digest: observation.request_digest,
+      actor_id: "USER",
+    });
+    f.invocation.repository_fingerprint = f.record.authority.repository_fingerprint;
+    f.invocation.command.expected_state_fingerprint = f.record.authority.repository_fingerprint;
+  };
+  bind();
+  return { ...f, parent, bind };
 }
 
 describe("canonical authority delta", () => {
@@ -251,6 +351,91 @@ describe("canonical authority delta", () => {
     });
 
     expect(canonicalAuthorityIssues(state)).toEqual([]);
+  });
+
+  it("renews same-plan policy authority after approved material plan amendments", () => {
+    const f = amendedPolicyRenewal();
+    expect(canonicalAuthorityIssues(f.state)).toEqual([]);
+    const result = reduceTaskCommand(f.invocation);
+    expect(result.kind).toBe("accepted");
+    if (result.kind !== "accepted") throw new Error(result.kind);
+    expect(canonicalAuthorityIssues(result.aggregate)).toEqual([]);
+    expect(result.aggregate.current_plan).toEqual(f.state.current_plan);
+    expect(result.aggregate.work_items).toEqual(f.state.work_items);
+  });
+
+  it.each(["plan", "provenance", "parent", "scope", "actor", "transport"])(
+    "rejects amended-plan renewal with changed %s authority",
+    (field) => {
+      const f = amendedPolicyRenewal();
+      if (field === "plan") f.record.authority.plan_digest = kernelDigest("other-plan");
+      if (field === "provenance")
+        f.record.authority.provenance.evidence_digest = kernelDigest("other-evidence");
+      if (field === "parent")
+        f.record.authority.provenance.parent_authority_digest = kernelDigest("other-parent");
+      if (field === "scope") f.record.authority.scope_roots = ["."];
+      f.record.authority.digest = authorityDigest(f.record.authority);
+      const invocation = {
+        ...f.invocation,
+        ...(field === "actor" ? { actor: { ...f.invocation.actor, id: "OTHER" } } : {}),
+        ...(field === "transport"
+          ? { actor: { ...f.invocation.actor, transport: "managed" as const } }
+          : {}),
+      };
+      expect(reduceTaskCommand(invocation).kind).toBe("rejected");
+      expect(canonicalAuthorityIssues(f.state)).toEqual([]);
+    },
+  );
+
+  it("renews unchanged policies for a reviewed base after material plan amendments", () => {
+    const f = reviewedBaseRenewal();
+    expect(f.record.authority.policy_digests).toEqual(f.parent.policy_digests);
+    const result = reduceTaskCommand(f.invocation);
+    expect(result.kind).toBe("accepted");
+    if (result.kind !== "accepted") throw new Error(result.kind);
+    expect(canonicalAuthorityIssues(result.aggregate)).toEqual([]);
+    expect(result.aggregate.current_plan).toEqual(f.state.current_plan);
+    expect(result.aggregate.work_items).toEqual(f.state.work_items);
+    expect(result.aggregate.authority_lineage!.at(-1)!.authority.scope_roots).toEqual(
+      f.parent.scope_roots,
+    );
+  });
+
+  it.each([
+    "missing",
+    "empty",
+    "malformed",
+    "checkpoint",
+    "unlisted",
+    "scope",
+    "plan",
+    "same-fingerprint",
+    "ordinary",
+  ])("rejects unchanged-policy renewal with %s reviewed-base evidence", (fault) => {
+    const f = reviewedBaseRenewal();
+    const observation = f.record.observation!;
+    const proof = observation.reviewed_base_import!;
+    if (fault === "missing") delete observation.reviewed_base_import;
+    if (fault === "empty") {
+      proof.imported_paths = [];
+      observation.changed_paths = ["packages/core/src/tasks/task-kernel/kernel.ts"];
+    }
+    if (fault === "malformed") proof.new_commit = "invalid";
+    if (fault === "checkpoint") proof.checkpoint_digest = kernelDigest("wrong-checkpoint");
+    if (fault === "unlisted") proof.imported_paths = ["outside.ts"];
+    if (fault === "scope") f.record.authority.scope_roots = ["."];
+    if (fault === "plan") f.record.authority.plan_digest = kernelDigest("different-plan");
+    if (fault === "same-fingerprint")
+      f.record.authority.repository_fingerprint = f.parent.repository_fingerprint;
+    if (fault === "ordinary") {
+      delete observation.reviewed_base_import;
+      delete observation.repository_evidence_digest;
+      observation.changed_paths = [];
+      f.record.authority.repository_fingerprint = f.parent.repository_fingerprint;
+    }
+    f.bind();
+    expect(reduceTaskCommand(f.invocation).kind).toBe("rejected");
+    expect(canonicalAuthorityIssues(f.state)).toEqual([]);
   });
 
   it("applies an exact USER authority delta without changing the approved plan", () => {

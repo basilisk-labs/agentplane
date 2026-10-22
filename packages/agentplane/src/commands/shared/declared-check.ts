@@ -112,8 +112,7 @@ export type ParsedDeclaredTaskCheck = {
 };
 
 export type DeclaredTaskCheckResolution =
-  | { ok: true; check: ParsedDeclaredTaskCheck }
-  | { ok: false; reason: string };
+  { ok: true; check: ParsedDeclaredTaskCheck } | { ok: false; reason: string };
 
 export function resolveCommandInvocation(command: string): CommandInvocation {
   const tokens = parseCommandLine(command);

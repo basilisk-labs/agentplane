@@ -1,3 +1,4 @@
+import { isoTimestampSchema } from "@agentplaneorg/core/schemas";
 import { createHash } from "node:crypto";
 import { lstat, readFile, realpath } from "node:fs/promises";
 import path from "node:path";
@@ -22,7 +23,7 @@ const WorkflowMigrationReceiptSchema = z
     source_sha256: z.string().regex(/^[a-f0-9]{64}$/u),
     target_sha256: z.string().regex(/^[a-f0-9]{64}$/u),
     source_base64: z.string().min(1),
-    applied_at: z.string().datetime({ offset: true }),
+    applied_at: isoTimestampSchema({ offset: true }),
   })
   .strict();
 

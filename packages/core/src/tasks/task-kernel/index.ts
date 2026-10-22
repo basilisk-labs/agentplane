@@ -35,3 +35,16 @@ export {
   policyRenewalIssues,
   policyRenewalRequestDigest,
 } from "./authority-lineage.js";
+
+export {
+  correctiveGrantDigest,
+  correctiveRequirements,
+  correctiveVerificationCommands,
+} from "./corrective-authority.js";
+
+export {
+  prospectiveScopeApprovalEvidence,
+  prospectiveScopeLineageIssues,
+} from "./prospective-scope.js";
+export type { ProspectiveScopeRequest } from "./prospective-scope.js";
+export { authenticatedScopeReplanHistory } from "./replan-work-items.js";

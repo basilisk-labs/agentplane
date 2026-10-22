@@ -15,6 +15,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   isReusableWorkspaceInstallLayout,
+  materializeRepoLocalDistForWorktree,
   materializeRepoLocalInstallLayoutForWorktree,
 } from "./work-start.materialize.js";
 
@@ -174,6 +175,28 @@ describe("task-worktree install layout materialization", () => {
         await readlink(path.join(targetInstall, "@agentplaneorg", "core")),
       ),
     ).toBe(localCore);
+  });
+
+  it("does not inject framework packages or installs into a consumer worktree", async () => {
+    const repoRoot = await temporaryRepo();
+    const runtimeRoot = await temporaryRepo();
+    const worktreePath = path.join(repoRoot, ".agentplane", "worktrees", "consumer");
+    const foreignPackage = path.join(runtimeRoot, "packages", "core");
+    await mkdir(path.join(foreignPackage, "dist"), { recursive: true });
+    await mkdir(path.join(foreignPackage, "node_modules"), { recursive: true });
+    await writeFile(path.join(foreignPackage, "package.json"), '{"name":"@agentplaneorg/core"}\n');
+    await writeFile(path.join(foreignPackage, "dist", "index.js"), "export {};\n");
+    await writeFile(path.join(foreignPackage, "node_modules", "marker.txt"), "foreign\n");
+    await mkdir(worktreePath, { recursive: true });
+    vi.spyOn(process, "cwd").mockReturnValue(runtimeRoot);
+    await materializeRepoLocalDistForWorktree({ repoRoot, worktreePath });
+    await materializeRepoLocalInstallLayoutForWorktree({ repoRoot, worktreePath });
+    await expect(lstat(path.join(worktreePath, "packages"))).rejects.toMatchObject({
+      code: "ENOENT",
+    });
+    await expect(lstat(path.join(worktreePath, "node_modules"))).rejects.toMatchObject({
+      code: "ENOENT",
+    });
   });
 
   it("preserves healthy workspace and package-local reuse", async () => {

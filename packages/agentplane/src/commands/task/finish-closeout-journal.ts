@@ -9,11 +9,7 @@ import { resolveCommandGitCommonDir, type CommandContext } from "../shared/task-
 import type { FinishExecutionPlan, FinishOptions } from "./finish-types.js";
 
 export type FinishCloseoutState =
-  | "prepared"
-  | "task_state_written"
-  | "close_commit_written"
-  | "completed"
-  | "recovery_required";
+  "prepared" | "task_state_written" | "close_commit_written" | "completed" | "recovery_required";
 
 export type FinishCloseoutJournal = {
   schema_version: 1;

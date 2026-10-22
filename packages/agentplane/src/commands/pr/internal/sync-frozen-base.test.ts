@@ -121,12 +121,10 @@ async function fixture(provider: "github" | "gitlab" = "github") {
   async function bytes(): Promise<Record<string, string>> {
     return Object.fromEntries<string>(
       await Promise.all(
-        files.map(
-          async (file): Promise<[string, string]> => [
-            file,
-            await readFile(path.join(prDir, file), "utf8"),
-          ],
-        ),
+        files.map(async (file): Promise<[string, string]> => [
+          file,
+          await readFile(path.join(prDir, file), "utf8"),
+        ]),
       ),
     );
   }

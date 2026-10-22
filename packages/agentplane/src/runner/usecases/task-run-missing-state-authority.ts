@@ -5,9 +5,7 @@ import { readRunnerPreparationRecord } from "../preparation-record.js";
 import type { RunnerRunRepository } from "../run-repository.js";
 
 export type TaskRunnerMissingStateAuthority =
-  | "incomplete_pre_provider"
-  | "missing_state_unverified"
-  | "spawn_authorized_but_unconfirmed";
+  "incomplete_pre_provider" | "missing_state_unverified" | "spawn_authorized_but_unconfirmed";
 
 export async function inspectTaskRunnerMissingStateAuthority(opts: {
   repository: RunnerRunRepository;

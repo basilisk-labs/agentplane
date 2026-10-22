@@ -408,8 +408,7 @@ describe("pr/integrate/cmd protected-base", () => {
       expect.objectContaining({ cwd: "/repo" }),
     );
     const handoffCall = mocks.buildTaskHandoffArtifact.mock.calls[0]?.[0] as
-      | { route?: Record<string, unknown> }
-      | undefined;
+      { route?: Record<string, unknown> } | undefined;
     expect(handoffCall?.route).toMatchObject({
       pr_number: 339,
       pr_url: "https://github.com/example/repo/pull/339",

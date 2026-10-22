@@ -1,0 +1,223 @@
+{
+  "schema_version": 4,
+  "kind": "agentplane.m05_coding_corpus_qualification",
+  "mode": "offline",
+  "economic_measurement": false,
+  "source_base": "e756be981265a3d85eb577e88f00ea046602ca83",
+  "protocol_digest": "sha256:286a43a5d6b803903a80780707163b87fdf0d29b46b5e1bd1c3b51fc7a1fd683",
+  "provenance": {
+    "scripts/bench/internal/paired-m05/app-server-host-probe.mjs": "sha256:99e7786bc217933ff3baee182cd7403c03a69874a996d59829f7a1c0509c78ad",
+    "scripts/bench/internal/paired-m05/app-server-port.mjs": "sha256:e3fc084f081263e62efdfd30d2c277db66c350d2576396ae43806d9a1a9522a9",
+    "scripts/bench/internal/paired-m05/coding-corpus.mjs": "sha256:cbfb8d587c717a1a88630387d6ee905e74fbd462472e6c7c04712d9711df9dbe",
+    "scripts/bench/internal/paired-m05/coding-corpus.test.mjs": "sha256:c62b55ce1ca841dc33494e211737776570874a3f8d9f21cddf9ff1d9b87d6111",
+    "scripts/bench/internal/paired-m05/coding-host.mjs": "sha256:56aac8a7146d1701c2b618dc161058ceb50cbec009ccd0c56c31d4a9256938a7",
+    "scripts/bench/internal/paired-m05/coding-host.test.mjs": "sha256:cdc44448e8deb9390e13d8fb72305c8e416aaec82d6fcc166cb26a2cd9a14ff0",
+    "scripts/bench/internal/paired-m05/coding-recipe-package.mjs": "sha256:942f27f6a22ec914c9bc17ccce1a2822cefd687f2b7f883cd40b7d033e7f4e82",
+    "scripts/bench/internal/paired-m05/coding-recipe.mjs": "sha256:2da409001f09a916afd7c87259ccd6301f38b0e5a12714254691046d168efbb6",
+    "scripts/bench/internal/paired-m05/coding-recipe.test.mjs": "sha256:a1f2347d40d7a3972a7bcdbbe8fd660f74659439bb0f5e85923b48ea40ed27ba",
+    "scripts/bench/internal/paired-m05/isolation.mjs": "sha256:6eeb26d3db6bcd6f3ecfe028d3685babe2cc3c745a6f698a25e773dde53e1433",
+    "scripts/bench/internal/paired-m05/isolation.test.mjs": "sha256:94765151e4c456e7c3794128716e960fdfd5e84697bc8a79ea94b7997fd23b6a",
+    "scripts/bench/internal/paired-m05/landlock-runner.py": "sha256:f472e8e226b1f88f250151fb7dbb530c50f2a0680d78ef195284ed71ed15fa11",
+    "scripts/bench/internal/paired-m05/native-coding-cli.test.mjs": "sha256:88a3fd12f15ed223bfcabffddfa84fa0465786c489ee5cee67b45ff57250c1ac",
+    "scripts/bench/internal/paired-m05/native-coding-evidence.mjs": "sha256:11d378c82e1346e4f45e614b1536327f856260df0283235492a463fa55da3a35",
+    "scripts/bench/internal/paired-m05/native-coding-loop.mjs": "sha256:a1a670c891a882f3539b28abfadd2303bc9852f67ad12be97ab04a0eea3bb7e3",
+    "scripts/bench/internal/paired-m05/native-coding-loop.test.mjs": "sha256:7d5efd906570e76b75f642ab593e45dfacb4fbfc83404a94a924a0447c97e0c4",
+    "scripts/bench/internal/paired-m05/native-coding-port.mjs": "sha256:0df67713cca493db48e502e2d0a2090809580a4b2d876f7ce95c598166037e38",
+    "scripts/bench/internal/paired-m05/semantic-coding-port.mjs": "sha256:09488e18c7efede6d21e40c39e30b082906a908867373b892e4d49e8aa76f5fb",
+    "scripts/bench/internal/paired-m05/semantic-coding-port.test.mjs": "sha256:469950de6dba8ce334a28e03ab9d6f2cb1b1555d1f3608a5826c8bac726a34d0",
+    "scripts/bench/internal/paired-m05/subscription-boundary.mjs": "sha256:4b52a5d0cd23877976869a43e785645f3249b5805f6fb47c8d74924eb72675dd"
+  },
+  "cases": [
+    {
+      "manifest": {
+        "schema_version": 4,
+        "id": "direct-fix",
+        "workflow": "direct",
+        "selection": "exact",
+        "objective": "Return a safe nonnegative integer for canonical decimal strings (0 or a nonzero digit followed by digits); return null for other values.",
+        "initial_commit": "4819ed3452919d7aa5ef3b5e36725e6dce0247ed",
+        "initial_tree": "1dc28690eef1b1d8d33650c58ce90c94893bc0e8",
+        "source_digest": "sha256:fcf6648284e497efc621015cf57cb211e8581f1f2a257d10fb306e2a8b6acf9b",
+        "visible_digest": "sha256:c0407d2cc994ec4290efee7d31e2b169a2ca7f74656b7b0c6cf44485925c35fd",
+        "readme_digest": "sha256:d9a0d745504f62f43dbbd233f1734952bc85c7339f5bc36246a676b8051f3c2b",
+        "reference_digest": "sha256:4dcfc058ae1a595258d017ee20add12c4a0a5154559e78818c5ff79445124b59",
+        "hidden_oracle_digest": "sha256:3e13998d700e18a68cdfce957cafa4bfad1fe4db244788735ab901577972cf6d",
+        "scope": ["src/module.mjs"],
+        "check": "node visible.test.mjs"
+      },
+      "qualification": {
+        "initial": {
+          "passed": false,
+          "source_digest": "sha256:fcf6648284e497efc621015cf57cb211e8581f1f2a257d10fb306e2a8b6acf9b",
+          "process_status": 0,
+          "observed_digest": "sha256:be20c21ba1402b24c0e5a8a5a6e320f54c312de98a398acb2ce019848d2596d9",
+          "expected_digest": "sha256:02933a07432382e3089c32abb15300e11af32ff57cd4059c1210ab214c8775f2"
+        },
+        "reference": {
+          "passed": true,
+          "source_digest": "sha256:4dcfc058ae1a595258d017ee20add12c4a0a5154559e78818c5ff79445124b59",
+          "process_status": 0,
+          "observed_digest": "sha256:02933a07432382e3089c32abb15300e11af32ff57cd4059c1210ab214c8775f2",
+          "expected_digest": "sha256:02933a07432382e3089c32abb15300e11af32ff57cd4059c1210ab214c8775f2"
+        },
+        "initial_visible_status": 1,
+        "reference_visible_status": 0
+      }
+    },
+    {
+      "manifest": {
+        "schema_version": 4,
+        "id": "branch-change",
+        "workflow": "branch_pr",
+        "selection": "exact",
+        "objective": "Group rows by category, sum numeric amounts and return category/total objects sorted by category using code-point order.",
+        "initial_commit": "00529f9d6b45fcbe84c62952a2c98c271231608f",
+        "initial_tree": "a53931d0c45f30bb3cbd802d65260248807292f1",
+        "source_digest": "sha256:f868f9778654e74480810938099c7d5b89e64f0936942f49df6cdc89f15b7e49",
+        "visible_digest": "sha256:d645144d3efc664a6e6ab9f083ded5748a4cd35ad667ecbbb23a7881791e38f7",
+        "readme_digest": "sha256:5f1a54e0e6f333f8af30ac440daaf12dac93a53026fcd67e1e97bf5bbb875e2b",
+        "reference_digest": "sha256:024b0d29a65fe289020d226099649cf45ad89f99a4706304eefdd59bb775cccd",
+        "hidden_oracle_digest": "sha256:e55992a1f299c0696caed4f937f859dedbdcb2d1a6b3c84f35e4c667b09f009f",
+        "scope": ["src/module.mjs"],
+        "check": "node visible.test.mjs"
+      },
+      "qualification": {
+        "initial": {
+          "passed": false,
+          "source_digest": "sha256:f868f9778654e74480810938099c7d5b89e64f0936942f49df6cdc89f15b7e49",
+          "process_status": 0,
+          "observed_digest": "sha256:01470d9dce83e9ffe0b0da397a58094146ebe55f0bedcf0572a98e334c5e5dd8",
+          "expected_digest": "sha256:0ebd93a60016425111383649091fa7c0a6af7f625c35f392691a3e6f33627cf5"
+        },
+        "reference": {
+          "passed": true,
+          "source_digest": "sha256:024b0d29a65fe289020d226099649cf45ad89f99a4706304eefdd59bb775cccd",
+          "process_status": 0,
+          "observed_digest": "sha256:0ebd93a60016425111383649091fa7c0a6af7f625c35f392691a3e6f33627cf5",
+          "expected_digest": "sha256:0ebd93a60016425111383649091fa7c0a6af7f625c35f392691a3e6f33627cf5"
+        },
+        "initial_visible_status": 1,
+        "reference_visible_status": 0
+      }
+    },
+    {
+      "manifest": {
+        "schema_version": 4,
+        "id": "recoverable-failure",
+        "workflow": "direct",
+        "selection": "exact",
+        "objective": "Compute exponential retry delay min(cap, base * 2 ** attempt) for nonnegative integer attempts and positive base/cap. Preserve the original failed validation in native rework history.",
+        "initial_commit": "4b90be6b236cd06ec021d1106334bebd5c21e687",
+        "initial_tree": "e3cf2a644c94f520553da6949bec35b9c30816c9",
+        "source_digest": "sha256:9504719247e297f1abc9ce17c41115f130c948b055c8841cec121b78ce87fbce",
+        "visible_digest": "sha256:d3921ca65b7c85aea25af7b5fdb279421cbef6c27ff151a8cbb9f6edcf76e9ad",
+        "readme_digest": "sha256:d036f4093412c50af0e8a9e7ab9582b51222f5e5bd0f624aef07d451a0ed923d",
+        "reference_digest": "sha256:d127100a713a6554eeda5b0107be898cba276fe82b64050dc625f0f518efbc16",
+        "hidden_oracle_digest": "sha256:aca3095f52520694f45ca669b82e9f722742c9a0393ee3683629aba032ceb244",
+        "scope": ["src/module.mjs"],
+        "check": "node visible.test.mjs"
+      },
+      "qualification": {
+        "initial": {
+          "passed": false,
+          "source_digest": "sha256:9504719247e297f1abc9ce17c41115f130c948b055c8841cec121b78ce87fbce",
+          "process_status": 0,
+          "observed_digest": "sha256:6216845c6504d276a6641f084976400df85553b2b789a70cfcd05142b1caef0b",
+          "expected_digest": "sha256:99e1fd99327e8624a12b582729b30adcd6b285c42b804e4d9ba47bf87dfa3a74"
+        },
+        "reference": {
+          "passed": true,
+          "source_digest": "sha256:d127100a713a6554eeda5b0107be898cba276fe82b64050dc625f0f518efbc16",
+          "process_status": 0,
+          "observed_digest": "sha256:99e1fd99327e8624a12b582729b30adcd6b285c42b804e4d9ba47bf87dfa3a74",
+          "expected_digest": "sha256:99e1fd99327e8624a12b582729b30adcd6b285c42b804e4d9ba47bf87dfa3a74"
+        },
+        "initial_visible_status": 1,
+        "reference_visible_status": 0
+      }
+    },
+    {
+      "manifest": {
+        "schema_version": 4,
+        "id": "no-match",
+        "workflow": "direct",
+        "selection": "no_match",
+        "objective": "Encode a query component with the encodeURIComponent contract, including spaces, ampersands and Unicode. No exact installed Recipe matches. Only a registered ordinary-planning fallback may complete coding.",
+        "initial_commit": "fa446025b6776a266ab8cb48381f5ddf642c5f69",
+        "initial_tree": "84595b21439183999ba0cd5f3f70c7fc07513208",
+        "source_digest": "sha256:fe30b43cfd13688104b5a3ed32fb530999d47e71a1149ee6d32da076f8b8a527",
+        "visible_digest": "sha256:f586c5b305b880396d34ef629ce404cb9626f5dc850b5bdae5378c42e1aaac06",
+        "readme_digest": "sha256:8674e5df91aa535467d7f37615273c35dff0b2ab6c005a1a5f37e0b952c84b67",
+        "reference_digest": "sha256:285d42e0eca0c6ed6d065fa2a9c411fe4fef76d8464d04b1dab04f22a58384d0",
+        "hidden_oracle_digest": "sha256:36136ea7a064359b0b8ed07a308fd284085bf03904200cffc76390bdbce44b64",
+        "scope": ["src/module.mjs"],
+        "check": "node visible.test.mjs"
+      },
+      "qualification": {
+        "initial": {
+          "passed": false,
+          "source_digest": "sha256:fe30b43cfd13688104b5a3ed32fb530999d47e71a1149ee6d32da076f8b8a527",
+          "process_status": 0,
+          "observed_digest": "sha256:2b4b0754a79fff508816efa5fa28c4ddbb5ad9bd1efe012118babb5c85da589b",
+          "expected_digest": "sha256:cbcc36d00680beece88a2d1a102239398184692adbd317c7d1658b0e81ecbdd9"
+        },
+        "reference": {
+          "passed": true,
+          "source_digest": "sha256:285d42e0eca0c6ed6d065fa2a9c411fe4fef76d8464d04b1dab04f22a58384d0",
+          "process_status": 0,
+          "observed_digest": "sha256:cbcc36d00680beece88a2d1a102239398184692adbd317c7d1658b0e81ecbdd9",
+          "expected_digest": "sha256:cbcc36d00680beece88a2d1a102239398184692adbd317c7d1658b0e81ecbdd9"
+        },
+        "initial_visible_status": 1,
+        "reference_visible_status": 0
+      }
+    },
+    {
+      "manifest": {
+        "schema_version": 4,
+        "id": "near-match",
+        "workflow": "direct",
+        "selection": "near_match",
+        "objective": "Split a line by its supplied nonempty delimiter, trim each field and preserve empty fields. The Recipe's delimiter binding is absent; request evidence or use the registered fallback without inventing it.",
+        "initial_commit": "9afc3b9183455c3d80855c682192509d0063e436",
+        "initial_tree": "d166556869e9739460c03c8648a203b2f7fbe986",
+        "source_digest": "sha256:c91c9d1732258269470af745aff0f9a862feab1da34701bb053d1dee81ddc097",
+        "visible_digest": "sha256:1ec7742f73bb277227ff1e290dd8af74451f5f8d6dad460907c0e8205c7e602a",
+        "readme_digest": "sha256:43df2a6e75331abde3e3d7bcc50d9ad1dd689c06109d9ef86b1613f3e480c302",
+        "reference_digest": "sha256:a2761000b14c13648e07adfc7a6dc615a3b46452c49641eeb06571062de789c9",
+        "hidden_oracle_digest": "sha256:5086948069d85799a076c3dff601927ac9eef879da474129804e3e6ca6b07c06",
+        "scope": ["src/module.mjs"],
+        "check": "node visible.test.mjs"
+      },
+      "qualification": {
+        "initial": {
+          "passed": false,
+          "source_digest": "sha256:c91c9d1732258269470af745aff0f9a862feab1da34701bb053d1dee81ddc097",
+          "process_status": 0,
+          "observed_digest": "sha256:80ec4f4ccdf9eb77e5e12143aa33077e99792c83ffffd4b8567ac29ae85b0bed",
+          "expected_digest": "sha256:40838db550e164c5425d4f0570e440145b5ac175dfab485efdd06ba9abe7ada3"
+        },
+        "reference": {
+          "passed": true,
+          "source_digest": "sha256:a2761000b14c13648e07adfc7a6dc615a3b46452c49641eeb06571062de789c9",
+          "process_status": 0,
+          "observed_digest": "sha256:40838db550e164c5425d4f0570e440145b5ac175dfab485efdd06ba9abe7ada3",
+          "expected_digest": "sha256:40838db550e164c5425d4f0570e440145b5ac175dfab485efdd06ba9abe7ada3"
+        },
+        "initial_visible_status": 1,
+        "reference_visible_status": 0
+      }
+    }
+  ],
+  "endpoint": "Native coding verification and independent EVALUATOR evidence plus separate behavioral oracle; external PR/publication boundaries are operator handoffs, never automatic success.",
+  "limits": [
+    "Linux x86_64 Landlock ABI 4 is required; unsupported hosts fail closed.",
+    "Pure synchronous ES-module solve API; no imports. VM isolates invocation framing; Landlock confines the whole child.",
+    "Host callbacks authenticate native evidence and per-role writable roots; arbitrary caller JSON is not evidence.",
+    "Native approval, retention and uncertain-effect boundaries require the emitted operator route. Retained checkpoints never silently replay.",
+    "Managed app-server startup was probed without generation. Actual authenticated campaign runtime, pins and quota must be qualified in its frozen task.",
+    "Network-enabled provider mode permits IP networking; it does not enforce provider-domain-only egress.",
+    "Offline reference solutions and transport doubles are not observed model outcomes or efficiency evidence.",
+    "Canonical item attempts and all retained semantic episodes are reconciled against assignment calls. Missing execution, retries or history fail closed; externally performed episodes cannot be certified by this host."
+  ]
+}

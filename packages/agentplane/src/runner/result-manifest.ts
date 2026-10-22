@@ -184,13 +184,11 @@ function legacyWarnings(claims: AgentReportedLegacyClaim[]): RunnerResultManifes
     },
     ...claims
       .filter((claim) => isLegacyObservedClaim(claim.field))
-      .map(
-        (claim): RunnerResultManifestWarning => ({
-          code: "legacy_agent_observed_claim",
-          field: claim.field,
-          message: `Legacy agent claim ${claim.field} was retained as agent_reported and cannot override supervisor observations.`,
-        }),
-      ),
+      .map((claim): RunnerResultManifestWarning => ({
+        code: "legacy_agent_observed_claim",
+        field: claim.field,
+        message: `Legacy agent claim ${claim.field} was retained as agent_reported and cannot override supervisor observations.`,
+      })),
   ];
 }
 

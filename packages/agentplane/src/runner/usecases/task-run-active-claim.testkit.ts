@@ -239,9 +239,7 @@ export async function waitForStartedRun(markerPath: string): Promise<string> {
 }
 
 export type SettledObservation<T> =
-  | { kind: "resolved"; value: T }
-  | { kind: "rejected"; error: unknown }
-  | { kind: "timeout" };
+  { kind: "resolved"; value: T } | { kind: "rejected"; error: unknown } | { kind: "timeout" };
 
 export async function observeSettlement<T>(
   promise: Promise<T>,

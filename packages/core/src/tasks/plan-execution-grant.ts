@@ -5,9 +5,7 @@ import type { TaskExecutionContract } from "./task-store.js";
 export const EXECUTION_GRANT_EXTENSION_KEY = "agentplane.execution_grant";
 
 export type PlanApprovalEvidenceKind =
-  | "manual_operator"
-  | "signed_user_receipt"
-  | "host_user_decision";
+  "manual_operator" | "signed_user_receipt" | "host_user_decision";
 
 export type PlanProposal = Readonly<{
   schema_version: 1;

@@ -3,6 +3,7 @@ import { CliError } from "../../shared/errors.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import { ensureLocalTaskReadmeHydrated, recordVerifiedNoopClosure } from "./close-shared.js";
+import { closeCanonicalWithoutImplementation } from "./kernel-bookkeeping.js";
 
 export async function cmdTaskCloseDuplicate(opts: {
   ctx: CommandContext;
@@ -11,6 +12,8 @@ export async function cmdTaskCloseDuplicate(opts: {
   taskId: string;
   duplicateOf: string;
   author: string;
+  approvedBy?: string;
+  superseded?: boolean;
   note?: string;
   force: boolean;
   yes: boolean;
@@ -43,6 +46,18 @@ export async function cmdTaskCloseDuplicate(opts: {
     }
 
     const canonical = await loadTaskFromContext({ ctx: opts.ctx, taskId: duplicateOf });
+    if (
+      await closeCanonicalWithoutImplementation({
+        command: opts.ctx,
+        taskId: sourceId,
+        author: opts.author,
+        note: opts.note?.trim() ?? `Duplicate of ${duplicateOf}.`,
+        kind: opts.superseded ? "superseded" : "duplicate",
+        relatedTaskId: duplicateOf,
+        approvedBy: opts.approvedBy,
+      })
+    )
+      return 0;
     await ensureLocalTaskReadmeHydrated({ ctx: opts.ctx, taskId: sourceId });
     const reason = opts.note?.trim();
     const canonicalTitle = canonical.title?.trim() ? ` (${canonical.title.trim()})` : "";

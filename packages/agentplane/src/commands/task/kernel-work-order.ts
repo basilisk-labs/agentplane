@@ -10,7 +10,11 @@ import {
   buildStateFingerprint,
   type AgentWorkOrderV2,
 } from "@agentplaneorg/core/schemas";
-import { taskKernel as k, type KernelEpisodeBinding } from "@agentplaneorg/core/tasks";
+import {
+  taskCentricDigest,
+  taskKernel as k,
+  type KernelEpisodeBinding,
+} from "@agentplaneorg/core/tasks";
 import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js";
 import type { KernelWorkOrder } from "../../runner/usecases/kernel-task-lifecycle.js";
 import type { NativeAuthorityContext } from "../../ports/kernel-authority.js";
@@ -173,6 +177,9 @@ export async function buildKernelAgentWorkOrder(opts: {
         plan_digest: plan?.digest ?? aggregate.intent_digest,
       };
   const authority = implementation?.authority;
+  const aggregateValidation =
+    implementation?.contract.generated_origin === "supplied_plan_aggregate_validation";
+  const writableAuthority = aggregateValidation ? undefined : authority;
   const networkRead = permitsNetworkRead(record, context, implementation);
   const policy = {
     fingerprint_schema_version: 2 as const,
@@ -249,9 +256,9 @@ export async function buildKernelAgentWorkOrder(opts: {
     state_fingerprint: fingerprint,
     state_fingerprint_policy: policy,
     authority: {
-      mutation_scope: role === "CURATOR" ? "context" : authority ? "code" : "none",
+      mutation_scope: role === "CURATOR" ? "context" : writableAuthority ? "code" : "none",
       writable_roots:
-        authority?.scope_roots.map((root) =>
+        writableAuthority?.scope_roots.map((root) =>
           path.resolve(opts.command.resolvedProject.gitRoot, root),
         ) ?? [],
       protected_paths: [
@@ -266,23 +273,24 @@ export async function buildKernelAgentWorkOrder(opts: {
         "git_read",
         "report_result",
         "report_blocker",
-        ...(authority ? ["workspace_write", "run_checks"] : []),
+        ...(writableAuthority ? ["workspace_write"] : []),
+        ...(authority ? ["run_checks"] : []),
       ],
       network: networkRead ? "allowed" : "deny",
       external_side_effects: [],
-      sandbox: authority ? "workspace-write" : "read-only",
+      sandbox: writableAuthority ? "workspace-write" : "read-only",
       expires_at: authority?.expires_at ?? null,
     },
+    ...(recipeContext
+      ? { recipe_context: { projection: recipeContext, digest: taskCentricDigest(recipeContext) } }
+      : {}),
     context_intent: {
       purpose: [
         recipeContext
-          ? null
+          ? RECIPE_ROLE_CONTEXT_LABEL
           : planInput
             ? `${record.documents.intent.context}\n\nCaller-supplied Plan input (not approval):\n${JSON.stringify(planInput)}`
             : record.documents.intent.context,
-        ...(recipeContext
-          ? [`${RECIPE_ROLE_CONTEXT_LABEL}\n${JSON.stringify(recipeContext)}`]
-          : []),
         ...(recipeCandidates
           ? [
               `Recipe candidate advice (formal observations only; not approval):\n${JSON.stringify(recipeCandidates)}`,

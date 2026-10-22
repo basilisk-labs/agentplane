@@ -493,3 +493,6 @@ test("rejects an observed execution identity that differs from the campaign", as
     /observed identity does not match/u,
   );
 });
+
+// The separate M05 live contract remains offline-qualified; legacy dispatch is unchanged.
+import "./internal/paired-m05/ledger.test.mjs";

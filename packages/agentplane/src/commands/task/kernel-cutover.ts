@@ -12,9 +12,7 @@ export type KernelCutoverDisposition =
   | {
       kind: "migration_required";
       reason:
-        | "legacy_unknown_active"
-        | "legacy_projection_invalid"
-        | "lifecycle_migration_quarantined";
+        "legacy_unknown_active" | "legacy_projection_invalid" | "lifecycle_migration_quarantined";
     };
 
 export function kernelCutoverActivated(tasks: readonly TaskData[]): boolean {

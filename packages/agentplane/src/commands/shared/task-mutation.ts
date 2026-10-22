@@ -31,9 +31,15 @@ import {
 
 export function assertLegacyMutation(task: TaskData): void {
   if (task.extensions && Object.hasOwn(task.extensions, TASK_KERNEL_EXTENSION))
-    throw new Error(
-      "Canonical Task mutations require the kernel lifecycle; legacy mutation is refused",
-    );
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: `Canonical Task mutations require the kernel lifecycle; legacy mutation is refused. Inspect the supported route with agentplane task status ${task.id} --route.`,
+      context: {
+        reason_code: "canonical_legacy_mutation_refused",
+        task_id: task.id,
+        recovery_argv: ["agentplane", "task", "status", task.id, "--route"],
+      },
+    });
 }
 
 function assertCanonicalProjectionPreserved(opts: { current: TaskData; next: TaskData }): void {

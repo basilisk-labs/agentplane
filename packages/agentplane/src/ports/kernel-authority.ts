@@ -40,6 +40,10 @@ export type NativeApprovalObservation =
 /** The native controller implements this port. Never populate it from semantic agent output. */
 export interface KernelAuthorityPort {
   readContext(taskId: string): Promise<NativeAuthorityContext>;
+  observeReviewedBaseImport?(
+    taskId: string,
+    parent: k.ExecutionAuthority,
+  ): Promise<k.ReviewedBaseImport | null>;
   /** Manual decisions come from an explicit operator invocation; host IDs come from its channel. */
   readApproval(taskId: string): Promise<NativeApprovalObservation | null>;
   /** Read the native change checkpoint, not an agent-reported list of paths. */

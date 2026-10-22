@@ -85,3 +85,5 @@ export function makeTaskCommandContext(
 
   return { ...ctx, ...opts.overrides };
 }
+
+export { nativeCandidateFixture } from "./candidate-publication.js";

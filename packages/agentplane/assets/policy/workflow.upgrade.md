@@ -26,4 +26,5 @@ Use this module when task runs `agentplane upgrade` or touches `.agentplane/.upg
 
 - `node .agentplane/policy/check-routing.mjs`
 - `agentplane agents`
+
 <!-- /ap:fragment -->

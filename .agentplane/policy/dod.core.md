@@ -52,4 +52,5 @@ Treat drift as material and require re-approval when at least one is true:
 - Network or outside-repo access becomes necessary and was not approved.
 - Planned scope expands by more than 5 additional files versus approved plan.
 - Verification contract changes (new required checks, changed pass criteria, or skipped mandatory checks).
+
 <!-- /ap:fragment -->

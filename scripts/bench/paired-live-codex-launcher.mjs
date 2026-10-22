@@ -1,3 +1,4 @@
+import { openOfflineM05Boundary } from "./internal/paired-m05/boundary.mjs";
 import { execFileSync, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import {
@@ -17,6 +18,7 @@ import { stableJson } from "../lib/agent-efficiency-baseline.mjs";
 import { isDirectRun, parseScriptArgs, runScriptMain } from "../lib/script-runtime.mjs";
 import {
   runPairedProductionCampaign,
+  runM05BoundedEpisodes,
   validatePairedCampaignManifest,
 } from "./paired-production-driver.mjs";
 import { buildPairedResultReport } from "./paired-result-report.mjs";
@@ -603,3 +605,18 @@ async function main() {
 if (isDirectRun(import.meta.url)) runScriptMain(main);
 
 export const M01_LAUNCHER_PATH = scriptPath;
+
+// No production adapter currently proves enforceable total-token and spend caps.
+export function runM05LiveCampaign() {
+  throw new Error(
+    "M05 live adapter unsupported: enforceable finite token/spend caps and trusted campaign/corpus authority are not qualified.",
+  );
+}
+
+export async function runM05OfflineLauncher(options, host) {
+  const boundary = openOfflineM05Boundary(options, host);
+  return runM05BoundedEpisodes(boundary, options.reservations);
+}
+
+// Managed subscription v4 uses host-owned app-server ports; no provider is started here.
+export { openSubscriptionBoundary } from "./internal/paired-m05/subscription-boundary.mjs";

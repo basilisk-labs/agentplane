@@ -1,0 +1,110 @@
+import { candidatePrePushScript } from "../../shared/candidate-pre-push-script.js";
+import { execFile } from "node:child_process";
+import { constants } from "node:fs";
+import { mkdtemp, open, readFile, rm, writeFile, chmod } from "node:fs/promises";
+import path from "node:path";
+import { promisify } from "node:util";
+import type { CandidatePublicationRequest } from "./candidate-publication-request.js";
+
+const run = promisify(execFile);
+export type CandidateGitIdentity = Pick<
+  CandidatePublicationRequest,
+  "commit" | "candidate_ref" | "remote_url"
+>;
+
+/** The caller authenticates the request and authority. This port never selects or creates a commit. */
+export function createCandidateGitPort(root: string) {
+  const git = async (args: string[]) => {
+    const result = await run("git", args, {
+      cwd: root,
+      encoding: "utf8",
+      timeout: 120_000,
+      maxBuffer: 1024 * 1024,
+      env: {
+        ...process.env,
+        GIT_TERMINAL_PROMPT: "0",
+        GIT_NO_REPLACE_OBJECTS: "1",
+        GIT_OPTIONAL_LOCKS: "0",
+      },
+    });
+    return result.stdout;
+  };
+  const validateRemote = async (identity: CandidateGitIdentity) => {
+    const remoteUrl = await git(["ls-remote", "--get-url", identity.remote_url]);
+    const resolved = remoteUrl.trim();
+    if (resolved !== identity.remote_url)
+      throw new Error("Candidate remote URL is rewritten by Git configuration");
+  };
+  return {
+    async read(identity: CandidateGitIdentity): Promise<string | null> {
+      await validateRemote(identity);
+      const advertised = await git([
+        "ls-remote",
+        "--refs",
+        identity.remote_url,
+        identity.candidate_ref,
+      ]);
+      const rows = advertised.trim().split("\n").filter(Boolean);
+      if (rows.length === 0) return null;
+      if (rows.length !== 1) throw new Error("Candidate remote returned ambiguous ref identity");
+      const [head, ref] = rows[0]!.split(/\s+/u);
+      if (ref !== identity.candidate_ref || !/^[a-f0-9]{40}(?:[a-f0-9]{24})?$/u.test(head ?? ""))
+        throw new Error("Candidate remote returned invalid ref identity");
+      return head!;
+    },
+    async create(identity: CandidateGitIdentity): Promise<void> {
+      await validateRemote(identity);
+      if (
+        !/^[a-f0-9]{40}(?:[a-f0-9]{24})?$/u.test(identity.commit) ||
+        !/^refs\/heads\/agentplane-candidates\/[A-Za-z0-9_-]+\/[a-f0-9]{40}(?:[a-f0-9]{24})?$/u.test(
+          identity.candidate_ref,
+        ) ||
+        !identity.candidate_ref.endsWith(`/${identity.commit}`)
+      )
+        throw new Error("Invalid immutable candidate ref");
+      const hookPath = await git(["rev-parse", "--git-path", "hooks/pre-push"]);
+      const hook = path.resolve(root, hookPath.trim());
+      let original: string | null = null;
+      try {
+        const handle = await open(hook, constants.O_RDONLY | constants.O_NOFOLLOW);
+        try {
+          const info = await handle.stat();
+          if (!info.isFile()) throw new Error("Candidate pre-push hook must be a regular file");
+          if ((info.mode & 0o111) !== 0) original = hook;
+        } finally {
+          await handle.close();
+        }
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+      }
+      const commonPath = await git(["rev-parse", "--git-common-dir"]);
+      const common = path.resolve(root, commonPath.trim());
+      const directory = await mkdtemp(path.join(common, "candidate-push-"));
+      const receipt = path.join(directory, "guard.json");
+      const guard = path.join(directory, "pre-push");
+      if (/\s/u.test(process.execPath))
+        throw new Error("Candidate guard requires a whitespace-free Node executable path");
+      const script = candidatePrePushScript(process.execPath, identity, original, receipt);
+      try {
+        await writeFile(guard, script, { mode: 0o700, flag: "wx" });
+        await chmod(guard, 0o700);
+        await git([
+          "-c",
+          `core.hooksPath=${directory}`,
+          "-c",
+          "push.followTags=false",
+          "push",
+          "--porcelain",
+          "--no-follow-tags",
+          "--recurse-submodules=no",
+          identity.remote_url,
+          `${identity.commit}:${identity.candidate_ref}`,
+        ]);
+        if ((await readFile(receipt, "utf8")) !== JSON.stringify(identity))
+          throw new Error("Candidate push did not authenticate expected-absent remote ref");
+      } finally {
+        await rm(directory, { recursive: true, force: true });
+      }
+    },
+  };
+}

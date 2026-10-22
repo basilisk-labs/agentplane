@@ -34,7 +34,11 @@ export async function cmdCloseCommit(
   },
 ): Promise<number> {
   if (!opts.closeCheckOnly) {
-    await ensureReconciledBeforeMutation({ ctx: opts.ctx, command: "commit" });
+    await ensureReconciledBeforeMutation({
+      ctx: opts.ctx,
+      command: "commit",
+      taskIds: [opts.taskId],
+    });
     await resetRebuildableTaskIndexCache(opts.ctx);
   }
 

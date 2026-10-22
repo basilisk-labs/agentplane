@@ -3,6 +3,7 @@ import { taskKernel as k, type TaskExecutionContract } from "@agentplaneorg/core
 
 import {
   canonicalPlanContractViolations,
+  assertCanonicalPlanWithinExecutionContract,
   repositoryPolicyApprovalEligible,
   projectCanonicalPlanApproval,
 } from "./kernel-plan-authority.js";
@@ -227,6 +228,46 @@ describe("canonical Plan execution-contract admission", () => {
     expect(
       canonicalPlanContractViolations({ execution_contract: contract() }, plan(requirements)),
     ).toContain(violation);
+  });
+
+  it("reports exact rejected requirements and honest recovery without changing authority", () => {
+    const task = { execution_contract: contract() };
+    const proposal = plan({ scope_roots: ["outside"], external_effects: ["network_read"] });
+    const before = JSON.stringify({ task, proposal });
+    let error: unknown;
+    try {
+      assertCanonicalPlanWithinExecutionContract(task, proposal);
+    } catch (caught) {
+      error = caught;
+    }
+    expect(error).toMatchObject({
+      code: "E_VALIDATION",
+      context: {
+        reason_code: "plan_exceeds_execution_contract",
+        mismatches: [
+          {
+            work_item_id: proposal.work_items[0]!.id,
+            path: "work_items[0].execution_requirements.scope_roots",
+            requested: ["outside"],
+            allowed: ["src"],
+          },
+          {
+            work_item_id: proposal.work_items[0]!.id,
+            path: "work_items[0].execution_requirements.external_effects",
+            requested: ["network_read"],
+            allowed: [],
+          },
+        ],
+        recovery: {
+          replan_command_template: "ap task plan set <task-id> --file <revised-plan.json>",
+          broader_contract: {
+            requires: "USER",
+            help_argv: ["ap", "help", "task", "new", "--compact"],
+          },
+        },
+      },
+    });
+    expect(JSON.stringify({ task, proposal })).toBe(before);
   });
 
   it("keeps explicit approval and material-risk contracts at a human boundary", () => {

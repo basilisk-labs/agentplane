@@ -1,0 +1,188 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "git diff --check",
+    "node node_modules/eslint/bin/eslint.js packages/agentplane/src/commands/task/kernel-exchange.test.ts",
+    "node node_modules/prettier/bin/prettier.cjs --check packages/agentplane/src/commands/task/kernel-exchange.test.ts",
+    "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/evaluator/evaluator-evidence-store.test.ts --pool=forks --maxWorkers 2 --testTimeout 60000 --hookTimeout 60000"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "release_metadata",
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [
+        "external_write",
+        "network_read"
+      ],
+      "components": [
+        "packages/agentplane/src/commands/task/kernel-exchange.test.ts"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "recovery_required"
+      },
+      "evidence_requirements": [
+        "external_effect:external_write",
+        "external_effect:network_read",
+        "hosted_integration",
+        "repository_effect:release_metadata",
+        "repository_effect:repository_write",
+        "repository_effect:source_code",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "repository_write",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        "packages/agentplane"
+      ],
+      "changed_files": [
+        "packages/agentplane/src/commands/task/kernel-exchange.test.ts"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "full_regression",
+      "hosted_integration",
+      "real_e2e",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "docs-schema",
+      "core",
+      "runtime",
+      "cli"
+    ],
+    "escalation_reasons": [
+      "effect_release_metadata",
+      "external_effect_requires_real_e2e",
+      "reversibility_recovery_required"
+    ],
+    "requires_full_regression": true,
+    "requires_real_e2e": true,
+    "digest": "sha256:83becc73a564f99a4bf7b08bd7728b9645185a51d24faddc2d99ab161e600484"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-10-08T08:43:15.402Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: canonical Task Kernel final checks passed."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202610080726-0JHB26/verification/20261008084315402-354e1fad3c69fd76.json",
+      "sha256": "sha256:f24426dce6b1ce405541ad9fa4cfc8455cf9ae90e8fe04eb799c174290968470"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check 3dbcbad442bbeaadd73e6e698180c8cbaad55b30..ce13404f1d1c562ffce9f80cb091b934231df9a9",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB 3dbcbad442bbeaadd73e6e698180c8cbaad55b30..ce13404f1d1c562ffce9f80cb091b934231df9a9",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "A\t.agentplane/tasks/202610080726-0JHB26/README.md",
+          "A\t.agentplane/tasks/202610080726-0JHB26/pr/diffstat.txt",
+          "A\t.agentplane/tasks/202610080726-0JHB26/pr/github-body.md",
+          "A\t.agentplane/tasks/202610080726-0JHB26/pr/github-title.txt",
+          "A\t.agentplane/tasks/202610080726-0JHB26/pr/meta.json",
+          "A\t.agentplane/tasks/202610080726-0JHB26/pr/review.md",
+          "A\t.agentplane/tasks/202610080726-0JHB26/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+          "A\t.agentplane/tasks/202610080726-0JHB26/quality/objects/sha256/cd35fbf396f0028e374b3f84595480f6edd9dcf606c23ee72655c873780bf2b2.json",
+          "M\tpackages/agentplane/src/commands/task/kernel-exchange.test.ts"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "3dbcbad442bbeaadd73e6e698180c8cbaad55b30",
+    "implementation_commit": "ce13404f1d1c562ffce9f80cb091b934231df9a9",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [
+        "?? .agentplane/tasks/202610080726-0JHB26/README.md",
+        "?? .agentplane/tasks/202610080726-0JHB26/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+        "?? .agentplane/tasks/202610080726-0JHB26/quality/objects/sha256/cd35fbf396f0028e374b3f84595480f6edd9dcf606c23ee72655c873780bf2b2.json"
+      ],
+      "classification": [
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202610080726-0JHB26/README.md"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202610080726-0JHB26/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202610080726-0JHB26/quality/objects/sha256/cd35fbf396f0028e374b3f84595480f6edd9dcf606c23ee72655c873780bf2b2.json"
+        }
+      ],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [
+        "?? .agentplane/tasks/202610080726-0JHB26/README.md",
+        "?? .agentplane/tasks/202610080726-0JHB26/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+        "?? .agentplane/tasks/202610080726-0JHB26/quality/objects/sha256/cd35fbf396f0028e374b3f84595480f6edd9dcf606c23ee72655c873780bf2b2.json"
+      ],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202610080726-0JHB26",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202610080726-0JHB26/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}

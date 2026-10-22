@@ -23,8 +23,7 @@ const materializedAssets = new WeakMap<BuiltinAssetsRuntime, string>();
 
 function getBuiltinAssetsRuntime(): BuiltinAssetsRuntime {
   const runtime = (globalThis as Record<string, unknown>).__AGENTPLANE_BUILTIN_ASSETS__ as
-    | BuiltinAssetsRuntime
-    | undefined;
+    BuiltinAssetsRuntime | undefined;
   if (!runtime || !Array.isArray(runtime.assets) || typeof runtime.hash !== "string") {
     throw new Error(
       "Built-in AgentPlane assets are unavailable in this compiled runtime. Use the Bun CLI entrypoint.",

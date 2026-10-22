@@ -57,4 +57,5 @@ agentplane_context:
 - [website concept](website.md)
 - [workflow concept](workflow.md)
 - [worktrees concept](worktrees.md)
+
 <!-- agentplane-context-wiki-index:end -->

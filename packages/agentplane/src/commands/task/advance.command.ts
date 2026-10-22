@@ -18,6 +18,7 @@ import {
 import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
 import { classifyKernelCutover } from "./kernel-cutover.js";
 import { advanceOrdinaryRoute } from "./ordinary-advance-step.js";
+import { reconcileIntegrationEffect } from "./external-agent-workflow-recovery.js";
 import { preparePersistedSupervisorReplacementAfterFailure } from "../shared/supervisor-execution-episode.js";
 
 function legacyMigrationRequired(taskId: string, reason: string): CliError {
@@ -113,16 +114,26 @@ export function makeRunTaskAdvanceHandler(deps: {
         code: "E_IO",
         message: `Task ${parsed.taskId} was not found in its canonical controller checkout.`,
       });
-    if (parsed.workflowRecovery) {
-      throw new CliError({
-        code: "E_USAGE",
-        message: "Canonical tasks do not use integration supervisor effect recovery.",
-      });
-    }
     const controllerRecord = readKernelRecord(source, repositoryIdentity);
     const completed =
       controllerRecord.kind === "canonical" &&
       controllerRecord.record.aggregate.state === "COMPLETED";
+    if (parsed.workflowRecovery) {
+      if (!completed || controllerRecord.kind !== "canonical")
+        throw new CliError({
+          code: "E_USAGE",
+          message: "Canonical workflow recovery requires an already completed Task.",
+        });
+      const resolution = await reconcileIntegrationEffect({
+        command,
+        task_id: parsed.taskId,
+        input_path: parsed.workflowRecovery,
+        canonical_record: controllerRecord.record,
+        decide: () => decideCanonicalWorkflowEffect(command, parsed.taskId, true),
+      });
+      createCliEmitter().json(resolution);
+      return 0;
+    }
     const externalResult =
       parsed.result?.replaceAll("\\", "/").includes("/agentplane/external-agent/") === true;
     const workflow =

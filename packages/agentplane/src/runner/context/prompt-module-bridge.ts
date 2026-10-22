@@ -193,11 +193,9 @@ function runnerPromptBlockToModule(block: RunnerPromptBlock): RunnerPromptModule
 export function runnerPromptBlocksToModuleGraph(blocks: RunnerPromptBlock[]): PromptModuleGraph {
   return {
     schema_version: PROMPT_MODULE_CONTRACT_SCHEMA_VERSION,
-    nodes: blocks.map(
-      (block): PromptModuleGraphNode => ({
-        module: runnerPromptBlockToModule(block),
-      }),
-    ),
+    nodes: blocks.map((block): PromptModuleGraphNode => ({
+      module: runnerPromptBlockToModule(block),
+    })),
   };
 }
 

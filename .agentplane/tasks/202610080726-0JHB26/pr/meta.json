@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202610080726-0JHB26/isolate-kernel-exchange-network-authority-test-a",
+  "created_at": "2026-10-08T07:44:19.677Z",
+  "diffstat_sha256": "sha256:f682ed86c70cbc69085d7a575cff6682517bcaa758d16ab571cca76e34bef565",
+  "last_verified_at": "2026-10-08T08:43:15.402Z",
+  "last_verified_diffstat_sha256": "sha256:f682ed86c70cbc69085d7a575cff6682517bcaa758d16ab571cca76e34bef565",
+  "pr_number": 6065,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6065",
+  "pre_merge_closure": {
+    "basis_commit": "4d4bfa3bc829e0454608b70308b755f484a47ba8",
+    "branch": "task/202610080726-0JHB26/isolate-kernel-exchange-network-authority-test-a",
+    "pr_number": 6065,
+    "recorded_at": "2026-10-08T09:08:12.209Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202610080726-0JHB26",
+  "updated_at": "2026-10-08T08:47:42.001Z",
+  "verify": {
+    "status": "pass"
+  }
+}

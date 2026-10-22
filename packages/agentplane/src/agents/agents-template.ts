@@ -68,8 +68,21 @@ export function renderMarkdownPromptTemplate(
     fallback_mutability: "replaceable",
   });
 
+  // Keep fragment assembly identical to the canonical whole-template rendering.
+  for (const segment of parsed.segments.toReversed()) {
+    const text = segment.kind === "text" ? segment.text : segment.fragment.text;
+    const trimmed = text.trimEnd();
+    const normalized = trimmed ? ensureTrailingNewline(trimmed) : "";
+    if (segment.kind === "text") segment.text = normalized;
+    else segment.fragment.text = normalized;
+    if (trimmed) break;
+  }
+  if (!renderPromptMarkdownFragments(parsed)) {
+    parsed.segments.push({ kind: "text", text: "\n" });
+  }
+
   return {
-    contents: ensureTrailingNewline(renderPromptMarkdownFragments(parsed).trimEnd()),
+    contents: renderPromptMarkdownFragments(parsed),
     sourceContents: source,
     fragments: parsed.fragments,
     segments: parsed.segments,

@@ -26,9 +26,7 @@ type FirstParentCommit = {
 };
 
 type GitFileSnapshot =
-  | { state: "present"; text: string }
-  | { state: "missing" }
-  | { state: "error" };
+  { state: "present"; text: string } | { state: "missing" } | { state: "error" };
 
 function isGitObjectId(value: string): boolean {
   return /^[0-9a-f]{40,64}$/u.test(value);

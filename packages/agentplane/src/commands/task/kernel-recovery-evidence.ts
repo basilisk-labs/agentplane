@@ -12,6 +12,7 @@ import {
 } from "../../adapters/task-backend/kernel-record.js";
 import { isRecord } from "../../shared/guards.js";
 import { readStableRegularTextNoFollow } from "../../shared/stable-file.js";
+import { authenticReworkEvent, historicalAmendment } from "./kernel-rework-lineage.js";
 
 const digest = z.string().regex(/^sha256:[a-f0-9]{64}$/u);
 const recoveryFields = {
@@ -48,7 +49,13 @@ const transitionSchema = z.strictObject({
 const recoverySchema = z.union([
   z.strictObject({
     ...recoveryFields,
-    semantic_stop: z.strictObject({ work_order_id: digest, result_digest: digest }),
+    semantic_stop: z.strictObject({
+      work_order_id: digest,
+      result_digest: digest,
+      result_authentication: z
+        .enum(["native_stop_receipt", "legacy_current_retained_content"])
+        .optional(),
+    }),
   }),
   z.strictObject({
     ...recoveryFields,
@@ -56,6 +63,188 @@ const recoverySchema = z.union([
     transition: transitionSchema,
   }),
 ]);
+
+function authenticatedPlanApproval(record: KernelRecord, plan: k.PlanRecord) {
+  const matches: k.DomainEvent[] = [];
+  for (const entry of record.aggregate.authority_lineage ?? []) {
+    const parent = entry.authority;
+    if (
+      entry.observation !== null ||
+      entry.approval_mode === null ||
+      parent.plan_digest !== plan.digest ||
+      parent.plan_revision !== plan.revision ||
+      parent.provenance.kind !== "USER" ||
+      parent.provenance.actor_id !== plan.approval_actor_id ||
+      parent.provenance.evidence_digest !== plan.approval_evidence_digest
+    )
+      continue;
+    for (const event of record.events.filter((event) => event.kind === "plan_approved")) {
+      const command: k.TaskCommand = {
+        kind: "approve_plan",
+        task_id: record.aggregate.id,
+        expected_task_revision: event.task_revision - 1,
+        expected_state_fingerprint: parent.repository_fingerprint,
+        plan_revision: plan.revision,
+        plan_digest: plan.digest,
+        approval_evidence_digest: plan.approval_evidence_digest,
+        authority_mode: entry.approval_mode,
+      };
+      if (authenticReworkEvent(record, event, command)) matches.push(event);
+    }
+  }
+  return matches.length === 1 &&
+    record.events.filter((event) => event.mutation_id === matches[0]!.mutation_id).length === 1
+    ? matches[0]
+    : null;
+}
+
+function unchangedApprovedPlanHistory(
+  record: KernelRecord,
+  binding: Extract<NonNullable<AgentWorkOrderV2["canonical_binding"]>, { phase: "implementation" }>,
+  orderId: string,
+) {
+  const aggregate = record.aggregate;
+  const plans = [...aggregate.plan_history, aggregate.current_plan!];
+  const authorities = new Set<k.Sha256Digest>();
+  for (const { authority } of aggregate.authority_lineage ?? []) {
+    if (
+      authority.digest !== k.authorityDigest(authority) ||
+      authority.task_id !== aggregate.id ||
+      authority.repository_identity !== record.repository_identity ||
+      !plans.some(
+        (plan) =>
+          plan.digest === authority.plan_digest && plan.revision === authority.plan_revision,
+      ) ||
+      (authority.provenance.parent_authority_digest !== null &&
+        !authorities.has(authority.provenance.parent_authority_digest))
+    )
+      return false;
+    authorities.add(authority.digest);
+  }
+  const indices = plans.flatMap((plan, index) =>
+    plan.digest === binding.plan_digest && plan.revision === binding.plan_revision ? [index] : [],
+  );
+  if (indices.length !== 1) return false;
+  const history = plans.slice(indices[0]);
+  const definition = aggregate.work_items[binding.work_item_id]?.definition;
+  if (!definition) return false;
+  const authenticated: k.DomainEvent[] = [];
+  for (const [index, plan] of history.entries()) {
+    const historicalDefinition = plan.work_items.find((item) => item.id === binding.work_item_id);
+    if (
+      plan.revision !== binding.plan_revision + index ||
+      plan.digest !== k.kernelDigest({ revision: plan.revision, work_items: plan.work_items }) ||
+      !/^USER(?::[A-Za-z0-9._@-]+)?$/u.test(plan.approval_actor_id ?? "") ||
+      !historicalDefinition ||
+      k.kernelDigest(historicalDefinition) !== k.kernelDigest(definition)
+    )
+      return false;
+    const approval = authenticatedPlanApproval(record, plan);
+    if (approval) {
+      authenticated.push(approval);
+      continue;
+    }
+    if (index === 0) return false;
+    const amended: k.DomainEvent[] = [];
+    for (const entry of aggregate.authority_lineage ?? []) {
+      if (
+        entry.observation?.kind !== "plan_amendment" ||
+        entry.authority.plan_digest !== plan.digest
+      )
+        continue;
+      for (const event of record.events.filter((event) => event.kind === "plan_amended")) {
+        const command = historicalAmendment(
+          record,
+          plan,
+          event,
+          entry.authority.repository_fingerprint,
+        );
+        const previous = history[index - 1]!;
+        if (
+          command &&
+          plan.approval_evidence_digest ===
+            k.planScopeExpansionApprovalDigest({
+              task_id: aggregate.id,
+              current_plan_digest: previous.digest,
+              amended_plan_digest: plan.digest,
+              actor_id: plan.approval_actor_id!,
+            })
+        )
+          amended.push(event);
+      }
+    }
+    if (
+      amended.length !== 1 ||
+      record.events.filter((event) => event.mutation_id === amended[0]!.mutation_id).length !== 1
+    )
+      return false;
+    authenticated.push(amended[0]!);
+  }
+  const initial = authenticated[0];
+  const current = authenticated.at(-1);
+  const stop = aggregate.mutation_receipts[String(`semantic-stop:${orderId}`)];
+  return (
+    !!initial &&
+    !!current &&
+    !!stop &&
+    initial.task_revision <= stop.before_revision &&
+    current.task_revision > stop.after_revision &&
+    current.task_revision <= aggregate.revision
+  );
+}
+
+function semanticStopPlanMatches(
+  record: KernelRecord,
+  binding: NonNullable<AgentWorkOrderV2["canonical_binding"]>,
+  orderId: string,
+  resultDigest: string,
+  precedingAttempt = false,
+  nativeResultAuthenticated = false,
+) {
+  const aggregate = record.aggregate;
+  const current = aggregate.current_plan;
+  if (binding.plan_digest === current?.digest && binding.plan_revision === current.revision)
+    return true;
+  if (
+    binding.phase !== "implementation" ||
+    current?.state !== "APPROVED" ||
+    current.revision <= binding.plan_revision
+  )
+    return false;
+  const previous = aggregate.plan_history.find(
+    (plan) => plan.digest === binding.plan_digest && plan.revision === binding.plan_revision,
+  );
+  const definition = previous?.work_items.find((item) => item.id === binding.work_item_id);
+  const runtime = aggregate.work_items[binding.work_item_id];
+  if (
+    !definition ||
+    runtime?.attempt !== binding.attempt + (precedingAttempt ? 1 : 0) ||
+    (!precedingAttempt && runtime.claim_id !== binding.claim_id) ||
+    k.kernelDigest(definition) !== k.kernelDigest(runtime.definition)
+  )
+    return false;
+  return (
+    (aggregate.authority_lineage?.some((entry) => {
+      const request =
+        entry.observation?.kind === "prospective_scope_request"
+          ? entry.observation.scope_request
+          : undefined;
+      return (
+        request?.task_id === aggregate.id &&
+        request.plan_digest === binding.plan_digest &&
+        request.plan_revision === binding.plan_revision &&
+        request.work_item_id === binding.work_item_id &&
+        request.attempt === binding.attempt &&
+        request.claim_id === binding.claim_id &&
+        request.contract_digest === binding.contract_digest &&
+        request.work_order_id === orderId &&
+        request.result_digest === resultDigest
+      );
+    }) ??
+      false) ||
+    (nativeResultAuthenticated && unchangedApprovedPlanHistory(record, binding, orderId))
+  );
+}
 
 async function readStop(kernelRoot: string, record: KernelRecord, orderId: string) {
   const mutationId = `semantic-stop:${orderId}`;
@@ -80,6 +269,8 @@ async function readStop(kernelRoot: string, record: KernelRecord, orderId: strin
     k.kernelDigest(saved.command) !== mutation.command_digest ||
     saved.command.kind !== "transition_work_item" ||
     saved.command.action !== "block" ||
+    (saved.command.semantic_result_digest !== undefined &&
+      saved.command.semantic_result_digest !== k.kernelDigest(result)) ||
     binding?.phase !== "implementation" ||
     result.status === "completed" ||
     result.work_order_id !== orderId ||
@@ -88,13 +279,25 @@ async function readStop(kernelRoot: string, record: KernelRecord, orderId: strin
     saved.command.claim_id !== binding.claim_id ||
     binding.task_id !== record.aggregate.id ||
     binding.repository_identity !== record.repository_identity ||
-    binding.plan_digest !== record.aggregate.current_plan?.digest ||
-    binding.plan_revision !== record.aggregate.current_plan.revision ||
-    binding.contract_digest !==
-      record.aggregate.work_items[binding.work_item_id]?.definition.contract_digest
+    (saved.command.semantic_result_digest !== undefined &&
+      (record.events.filter((event) => event.mutation_id === mutationId).length !== 1 ||
+        !authenticReworkEvent(
+          record,
+          record.events.find((event) => event.mutation_id === mutationId)!,
+          saved.command as k.TaskCommand,
+        )))
   )
     throw new Error("Semantic stop evidence does not match the canonical Task");
-  return { result, binding, resultPath, mutation };
+  return {
+    result,
+    binding,
+    resultPath,
+    mutation,
+    result_authentication:
+      saved.command.semantic_result_digest === undefined
+        ? ("legacy_current_retained_content" as const)
+        : ("native_stop_receipt" as const),
+  };
 }
 
 export async function captureKernelSemanticStop(
@@ -111,9 +314,25 @@ export async function captureKernelSemanticStop(
     const stop = await readStop(kernelRoot, record, orderId);
     if (stop.binding.work_item_id !== workItemId || stop.binding.attempt !== item?.attempt)
       continue;
+    if (
+      stop.binding.contract_digest !== item.definition.contract_digest ||
+      !semanticStopPlanMatches(
+        record,
+        stop.binding,
+        orderId,
+        k.kernelDigest(stop.result),
+        false,
+        stop.result_authentication === "native_stop_receipt",
+      )
+    )
+      throw new Error("Semantic stop evidence does not match the canonical Task");
     if (item.state !== "BLOCKED" || stop.binding.claim_id !== item.claim_id)
       throw new Error("Semantic stop claim is stale");
-    return { work_order_id: orderId, result_digest: k.kernelDigest(stop.result) };
+    return {
+      work_order_id: orderId,
+      result_digest: k.kernelDigest(stop.result),
+      result_authentication: stop.result_authentication,
+    };
   }
   throw new Error("Recovery requires a retained semantic stop for this WorkItem attempt");
 }
@@ -250,6 +469,11 @@ export async function kernelRecoveryInputs(
 ): Promise<AgentWorkOrderV2["required_inputs"]> {
   const binding = order.canonical_binding;
   if (!record || binding?.phase !== "implementation" || binding.attempt < 2) return [];
+  if (
+    binding.plan_digest !== record.aggregate.current_plan?.digest ||
+    binding.plan_revision !== record.aggregate.current_plan.revision
+  )
+    throw new Error("Incoming recovery WorkOrder does not bind the current Plan");
   const kernelRoot = path.resolve(directory, "../../..");
   for (const [id, mutation] of Object.entries(record.aggregate.mutation_receipts)) {
     if (!/^work-item-resume:sha256:[a-f0-9]{64}$/u.test(id)) continue;
@@ -319,10 +543,18 @@ export async function kernelRecoveryInputs(
     if (
       stop.binding.work_item_id !== binding.work_item_id ||
       stop.binding.repository_identity !== binding.repository_identity ||
-      stop.binding.plan_digest !== binding.plan_digest ||
-      stop.binding.plan_revision !== binding.plan_revision ||
+      !semanticStopPlanMatches(
+        record,
+        stop.binding,
+        receipt.semantic_stop.work_order_id,
+        k.kernelDigest(stop.result),
+        true,
+        stop.result_authentication === "native_stop_receipt",
+      ) ||
       stop.binding.contract_digest !== binding.contract_digest ||
       k.kernelDigest(stop.result) !== receipt.semantic_stop.result_digest ||
+      (receipt.semantic_stop.result_authentication !== undefined &&
+        receipt.semantic_stop.result_authentication !== stop.result_authentication) ||
       stop.mutation.after_revision > mutation.before_revision ||
       order.task.revision === null ||
       mutation.after_revision >= order.task.revision

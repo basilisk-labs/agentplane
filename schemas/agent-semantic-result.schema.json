@@ -273,14 +273,7 @@
                           "pattern": "^[0-9a-f]{40}$|^[0-9a-f]{64}$"
                         },
                         "ref": {
-                          "anyOf": [
-                            {
-                              "type": "string"
-                            },
-                            {
-                              "type": "null"
-                            }
-                          ]
+                          "type": ["string", "null"]
                         }
                       },
                       "required": ["kind", "sha", "ref"],
@@ -294,14 +287,7 @@
                           "const": "unborn"
                         },
                         "ref": {
-                          "anyOf": [
-                            {
-                              "type": "string"
-                            },
-                            {
-                              "type": "null"
-                            }
-                          ]
+                          "type": ["string", "null"]
                         }
                       },
                       "required": ["kind", "ref"],
@@ -358,14 +344,7 @@
                   ]
                 },
                 "task_history_cursor": {
-                  "anyOf": [
-                    {
-                      "type": "string"
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
+                  "type": ["string", "null"]
                 },
                 "captured_at": {
                   "type": "string",
@@ -1174,6 +1153,10 @@
                             "type": "string",
                             "enum": ["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"]
                           },
+                          "generated_origin": {
+                            "type": "string",
+                            "const": "supplied_plan_aggregate_validation"
+                          },
                           "plan_input_digest": {
                             "type": "string",
                             "pattern": "^sha256:[a-f0-9]{64}$"
@@ -1342,6 +1325,10 @@
                                     "type": "string",
                                     "enum": ["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"]
                                   },
+                                  "generated_origin": {
+                                    "type": "string",
+                                    "const": "supplied_plan_aggregate_validation"
+                                  },
                                   "plan_input_digest": {
                                     "type": "string",
                                     "pattern": "^sha256:[a-f0-9]{64}$"
@@ -1483,6 +1470,10 @@
                                   "role": {
                                     "type": "string",
                                     "enum": ["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"]
+                                  },
+                                  "generated_origin": {
+                                    "type": "string",
+                                    "const": "supplied_plan_aggregate_validation"
                                   },
                                   "plan_input_digest": {
                                     "type": "string",
@@ -2104,14 +2095,7 @@
                           "pattern": "^[0-9a-f]{40}$|^[0-9a-f]{64}$"
                         },
                         "ref": {
-                          "anyOf": [
-                            {
-                              "type": "string"
-                            },
-                            {
-                              "type": "null"
-                            }
-                          ]
+                          "type": ["string", "null"]
                         }
                       },
                       "required": ["kind", "sha", "ref"],
@@ -2125,14 +2109,7 @@
                           "const": "unborn"
                         },
                         "ref": {
-                          "anyOf": [
-                            {
-                              "type": "string"
-                            },
-                            {
-                              "type": "null"
-                            }
-                          ]
+                          "type": ["string", "null"]
                         }
                       },
                       "required": ["kind", "ref"],
@@ -2189,14 +2166,7 @@
                   ]
                 },
                 "task_history_cursor": {
-                  "anyOf": [
-                    {
-                      "type": "string"
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
+                  "type": ["string", "null"]
                 },
                 "captured_at": {
                   "type": "string",
@@ -3005,6 +2975,10 @@
                             "type": "string",
                             "enum": ["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"]
                           },
+                          "generated_origin": {
+                            "type": "string",
+                            "const": "supplied_plan_aggregate_validation"
+                          },
                           "plan_input_digest": {
                             "type": "string",
                             "pattern": "^sha256:[a-f0-9]{64}$"
@@ -3173,6 +3147,10 @@
                                     "type": "string",
                                     "enum": ["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"]
                                   },
+                                  "generated_origin": {
+                                    "type": "string",
+                                    "const": "supplied_plan_aggregate_validation"
+                                  },
                                   "plan_input_digest": {
                                     "type": "string",
                                     "pattern": "^sha256:[a-f0-9]{64}$"
@@ -3314,6 +3292,10 @@
                                   "role": {
                                     "type": "string",
                                     "enum": ["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"]
+                                  },
+                                  "generated_origin": {
+                                    "type": "string",
+                                    "const": "supplied_plan_aggregate_validation"
                                   },
                                   "plan_input_digest": {
                                     "type": "string",
@@ -3935,14 +3917,7 @@
                           "pattern": "^[0-9a-f]{40}$|^[0-9a-f]{64}$"
                         },
                         "ref": {
-                          "anyOf": [
-                            {
-                              "type": "string"
-                            },
-                            {
-                              "type": "null"
-                            }
-                          ]
+                          "type": ["string", "null"]
                         }
                       },
                       "required": ["kind", "sha", "ref"],
@@ -3956,14 +3931,7 @@
                           "const": "unborn"
                         },
                         "ref": {
-                          "anyOf": [
-                            {
-                              "type": "string"
-                            },
-                            {
-                              "type": "null"
-                            }
-                          ]
+                          "type": ["string", "null"]
                         }
                       },
                       "required": ["kind", "ref"],
@@ -4020,14 +3988,7 @@
                   ]
                 },
                 "task_history_cursor": {
-                  "anyOf": [
-                    {
-                      "type": "string"
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
+                  "type": ["string", "null"]
                 },
                 "captured_at": {
                   "type": "string",
@@ -4836,6 +4797,10 @@
                             "type": "string",
                             "enum": ["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"]
                           },
+                          "generated_origin": {
+                            "type": "string",
+                            "const": "supplied_plan_aggregate_validation"
+                          },
                           "plan_input_digest": {
                             "type": "string",
                             "pattern": "^sha256:[a-f0-9]{64}$"
@@ -5004,6 +4969,10 @@
                                     "type": "string",
                                     "enum": ["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"]
                                   },
+                                  "generated_origin": {
+                                    "type": "string",
+                                    "const": "supplied_plan_aggregate_validation"
+                                  },
                                   "plan_input_digest": {
                                     "type": "string",
                                     "pattern": "^sha256:[a-f0-9]{64}$"
@@ -5145,6 +5114,10 @@
                                   "role": {
                                     "type": "string",
                                     "enum": ["PLANNER", "CURATOR", "EXECUTOR", "EVALUATOR"]
+                                  },
+                                  "generated_origin": {
+                                    "type": "string",
+                                    "const": "supplied_plan_aggregate_validation"
                                   },
                                   "plan_input_digest": {
                                     "type": "string",

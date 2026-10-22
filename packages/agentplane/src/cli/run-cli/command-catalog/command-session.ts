@@ -33,11 +33,7 @@ export type CommandCapability =
   | "output";
 
 export type CommandPreparationNode =
-  | "project"
-  | "config"
-  | "command_context"
-  | "evaluator_artifacts"
-  | "output";
+  "project" | "config" | "command_context" | "evaluator_artifacts" | "output";
 
 export type CommandPreparationTrace = Omit<
   PreparationTraceEvent,

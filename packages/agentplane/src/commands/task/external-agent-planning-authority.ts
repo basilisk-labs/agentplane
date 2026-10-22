@@ -326,8 +326,7 @@ export async function isExternalPlanningResultApplied(opts: {
   }
   if (opts.envelope.result.task_plan_proposal) {
     const projection = task.extensions?.[TASK_CENTRIC_EXTENSION_KEY] as
-      | { current_plan?: { proposal?: unknown } }
-      | undefined;
+      { current_plan?: { proposal?: unknown } } | undefined;
     if (!sameValue(projection?.current_plan?.proposal, opts.envelope.result.task_plan_proposal)) {
       return false;
     }

@@ -296,6 +296,7 @@ export function makeRunTaskAuthorityGrantHandler(session: {
       gitRoot: writeCommandCtx.resolvedProject.gitRoot,
       taskId: parsed.taskId,
       state: audited,
+      expected: loaded,
     });
     createCliEmitter().success(
       "task authority grant",

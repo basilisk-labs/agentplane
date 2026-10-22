@@ -1,3 +1,5 @@
+import { taskCorrectiveAuthoritySpec } from "../../../commands/task/corrective-authority.command.js";
+
 import { taskAddSpec } from "../../../commands/task/add.command.js";
 import { taskActiveSpec } from "../../../commands/task/active.command.js";
 import { taskAnswerSpec } from "../../../commands/task/answer.command.js";
@@ -97,6 +99,7 @@ import {
   TASK_WRITE_REQUIREMENTS,
 } from "./task-capability-profiles.js";
 import { PROVIDER_WRITE_REQUIREMENTS } from "./provider-ops-capability-profiles.js";
+import { TASK_CANDIDATE_COMMANDS } from "./task-candidate.js";
 import { TASK_RECOVERY_COMMANDS } from "./task-recovery.js";
 import {
   RUNNER_EXECUTION_REQUIREMENTS,
@@ -105,7 +108,9 @@ import {
   RUNNER_WRITE_REQUIREMENTS,
 } from "./runner-hermes-capability-profiles.js";
 import { NO_CONTEXT_REQUIREMENTS, PROJECT_REQUIREMENTS } from "./project-capability-profiles.js";
+
 import {
+  loadTaskCorrectiveAuthoritySpec,
   fromCommandsTaskTaskCommand,
   fromCommandsTaskHandoffCommand,
   fromCommandsTaskHandoffRecordCommand,
@@ -181,7 +186,6 @@ import {
   loadTaskRebuildIndexSpec,
   fromTaskReclaimSpec,
 } from "../command-loaders/task.js";
-
 export const TASK_COMMANDS = [
   fromCommandsTaskTaskCommand(taskSpec, "runTask", {
     requirements: NO_CONTEXT_REQUIREMENTS,
@@ -392,6 +396,7 @@ export const TASK_COMMANDS = [
     helpGroup: "Advanced",
   }),
   ...TASK_RECOVERY_COMMANDS,
+  ...TASK_CANDIDATE_COMMANDS,
   declareSessionCommand(taskCommentSpec, {
     load: loadTaskCommentSpec,
     requirements: TASK_WRITE_REQUIREMENTS,
@@ -531,6 +536,11 @@ export const TASK_COMMANDS = [
   }),
   fromTaskPlanSpec(taskPlanSpec, "runTaskPlan", {
     requirements: NO_CONTEXT_REQUIREMENTS,
+  }),
+  declareSessionCommand(taskCorrectiveAuthoritySpec, {
+    load: loadTaskCorrectiveAuthoritySpec,
+    requirements: TASK_WRITE_REQUIREMENTS,
+    invocation: requireCanonicalCommandInvocation(["task", "corrective-authority"]),
   }),
   declareSessionCommand(taskPlanSetSpec, {
     load: loadTaskPlanSetSpec,

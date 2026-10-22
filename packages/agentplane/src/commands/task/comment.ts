@@ -10,6 +10,7 @@ import {
   touchTaskDocMetaIntent,
 } from "../shared/task-store.js";
 import { appendTaskEvent, normalizeTaskDocVersion, nowIso } from "./shared.js";
+import { appendCanonicalComment } from "./kernel-bookkeeping.js";
 
 const output = createCliEmitter();
 
@@ -71,17 +72,25 @@ export async function cmdTaskComment(opts: {
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
     const at = nowIso();
-    await applyTaskMutation({
-      ctx,
-      taskId: opts.taskId,
-      build: (task) =>
-        buildCommentMutation({
-          task,
-          at,
-          author: opts.author,
-          body: opts.body,
-        }),
-    });
+    if (
+      !(await appendCanonicalComment({
+        command: ctx,
+        taskId: opts.taskId,
+        author: opts.author,
+        body: opts.body,
+      }))
+    )
+      await applyTaskMutation({
+        ctx,
+        taskId: opts.taskId,
+        build: (task) =>
+          buildCommentMutation({
+            task,
+            at,
+            author: opts.author,
+            body: opts.body,
+          }),
+      });
     if (!opts.quiet) {
       emitCommandResult(output, {
         kind: "success",

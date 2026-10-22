@@ -562,6 +562,15 @@ describe("canonical kernel persistence boundary", () => {
     expect(await adapter.create(task(), input())).toMatchObject({
       kind: "unavailable",
       code: "readback_mismatch",
+      mutation: {
+        task_id: taskId,
+        mutation_id: "capture-1",
+        command_kind: "capture_intent",
+        expected_revision: 0,
+        before_digest: null,
+        observed_kind: "missing",
+        intended_digest: expect.stringMatching(/^sha256:/) as unknown,
+      },
     });
     write.mockImplementation(() => {
       vi.spyOn(backend, "getTask").mockRejectedValue(new Error("read unavailable"));
@@ -570,7 +579,30 @@ describe("canonical kernel persistence boundary", () => {
     expect(await adapter.create(task(), input())).toMatchObject({
       kind: "unavailable",
       code: "write_in_doubt",
+      mutation: { task_id: taskId, mutation_id: "capture-1", read_error: "Error" },
     });
+  });
+
+  it("reconciles an unreadable committed response on retry without a second write", async () => {
+    const { adapter, backend } = await fixture();
+    const original = backend.writeTask.bind(backend);
+    let read: { mockRestore(): void } | undefined;
+    const write = vi.spyOn(backend, "writeTask").mockImplementation(async (...args) => {
+      await original(...args);
+      read = vi.spyOn(backend, "getTask").mockRejectedValue(new Error("read unavailable"));
+      throw Object.assign(new Error("response lost"), { code: "EIO" });
+    });
+    expect(await adapter.create(task(), input())).toMatchObject({
+      kind: "unavailable",
+      code: "write_in_doubt",
+      mutation: { mutation_id: "capture-1", write_error: "Error:EIO", read_error: "Error" },
+    });
+    read!.mockRestore();
+    expect(await adapter.create(task(), input())).toMatchObject({
+      kind: "committed",
+      replayed: true,
+    });
+    expect(write).toHaveBeenCalledTimes(1);
   });
 
   it("serializes competing creates through the local CAS without duplicate events", async () => {

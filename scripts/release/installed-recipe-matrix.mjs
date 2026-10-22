@@ -431,7 +431,21 @@ export function runInstalledRecipeMatrix({
   assert.deepEqual(order.authority.writable_roots, []);
   assert.deepEqual(order.authority.external_side_effects, []);
   assert.equal(order.authority.network, "deny");
-  assert.match(order.context_intent.purpose, /Pinned old Recipe guidance/u);
+  assert.equal(order.recipe_context.projection.role, "EXECUTOR");
+  assert.equal(order.recipe_context.digest, digest(order.recipe_context.projection));
+  assert.equal(
+    order.recipe_context.projection.guidance.some(
+      (entry) => entry.content === "Pinned old Recipe guidance. No permission is granted.\n",
+    ),
+    true,
+  );
+  const contextManifest = JSON.parse(readFileSync(execution.context_manifest.ref, "utf8"));
+  assert.equal(digest(contextManifest), execution.context_manifest.digest);
+  assert.equal(contextManifest.source_digest, digest(order));
+  const recipeBlock = contextManifest.blocks.find((block) => block.id === "recipe");
+  assert.equal(recipeBlock.required, true);
+  assert.equal(recipeBlock.pointer, "/recipe_context");
+  assert.equal(recipeBlock.digest, digest(order.recipe_context));
   assert.equal(
     orderFor(json(clone, ["task", "advance", created.task_id, "--agent-json"])).work_order_id,
     order.work_order_id,

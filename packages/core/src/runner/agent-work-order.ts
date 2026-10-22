@@ -1,4 +1,6 @@
+import { isoTimestampSchema } from "../schemas/iso-timestamp.js";
 import { z } from "zod";
+import { RECIPE_ROLE_CONTEXT_ZOD_SCHEMA } from "./recipe-role-context.js";
 import { kernelEpisodeBindingSchema } from "../tasks/kernel-semantic.js";
 
 import {
@@ -61,7 +63,7 @@ const SHA256_DIGEST_SCHEMA = z.string().regex(/^sha256:[0-9a-f]{64}$/u);
 const IDENTIFIER_SCHEMA = z.string().trim().min(1).max(160);
 const DESCRIPTION_SCHEMA = z.string().trim().min(1).max(8192);
 const PATH_SCHEMA = z.string().trim().min(1).max(4096);
-const ISO_UTC_TIMESTAMP_SCHEMA = z.string().datetime({ offset: true });
+const ISO_UTC_TIMESTAMP_SCHEMA = isoTimestampSchema({ offset: true });
 
 const ACCEPTANCE_CRITERION_ZOD_SCHEMA = z
   .object({
@@ -229,6 +231,7 @@ export const AGENT_WORK_ORDER_V2_ZOD_SCHEMA = z
     authority: AGENT_WORK_ORDER_AUTHORITY_ZOD_SCHEMA,
     context_intent: AGENT_WORK_ORDER_CONTEXT_INTENT_ZOD_SCHEMA,
     planning_context: AGENT_WORK_ORDER_PLANNING_CONTEXT_ZOD_SCHEMA.optional(),
+    recipe_context: RECIPE_ROLE_CONTEXT_ZOD_SCHEMA.optional(),
     canonical_binding: kernelEpisodeBindingSchema.optional(),
     knowledge_refs: z.array(KNOWLEDGE_REF_ZOD_SCHEMA),
     prepared_evidence: z.array(AGENT_WORK_ORDER_PREPARED_EVIDENCE_ZOD_SCHEMA),
@@ -240,6 +243,12 @@ export const AGENT_WORK_ORDER_V2_ZOD_SCHEMA = z
   })
   .strict()
   .superRefine((value, ctx) => {
+    if (value.recipe_context && value.recipe_context.projection.role !== value.role)
+      ctx.addIssue({
+        code: "custom",
+        path: ["recipe_context", "projection", "role"],
+        message: "Recipe context must match the WorkOrder role.",
+      });
     if (
       value.canonical_binding &&
       (value.canonical_binding.task_id !== value.task.id ||

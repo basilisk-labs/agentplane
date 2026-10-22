@@ -1,5 +1,10 @@
 import { spawn } from "node:child_process";
 import { once } from "node:events";
+import path from "node:path";
+import {
+  createVerificationObservation,
+  verificationRedactor,
+} from "./verification-observation.mjs";
 
 const DEFAULT_OUTPUT_TAIL_BYTES = 256 * 1024;
 const DEFAULT_GROUP_TIMEOUT_MS = 15 * 60_000;
@@ -10,13 +15,85 @@ function appendTail(current, chunk, limit) {
   return next.length <= limit ? next : next.slice(-limit);
 }
 
+export function classifyVerificationGroupFailures(result) {
+  if (result.exit_code === 0) return [];
+  const output = `${result.stdout ?? ""}\n${result.stderr ?? ""}`;
+  const failures = [];
+  if (
+    result.timed_out ||
+    result.exit_code === 124 ||
+    /\b(?:Test|Hook) timed out in \d+(?:\.\d+)?ms\b|\bTimeout of \d+ms exceeded\b/iu.test(output)
+  ) {
+    failures.push("timeout");
+  }
+  if (
+    /JavaScript heap out of memory|FATAL ERROR: Ineffective mark-compacts|Allocation failed - JavaScript heap out of memory/iu.test(
+      output,
+    )
+  ) {
+    failures.push("out_of_memory");
+  }
+  if (/\b(?:EAI_AGAIN|ECONNRESET|ETIMEDOUT|ENOTFOUND|EHOSTUNREACH)\b/u.test(output)) {
+    failures.push("infrastructure_failure");
+  }
+  if (
+    /\bAssertionError\b/u.test(output) ||
+    (failures.length === 0 &&
+      /\b(?:Test Files\s+\d+ failed|Tests\s+\d+ failed)\b|^\s*FAIL\s+/imu.test(output))
+  ) {
+    failures.push("assertion_failure");
+  }
+  return failures.length > 0 ? failures : ["command_failure"];
+}
+
+export function classifyVerificationGroupFailure(result) {
+  return classifyVerificationGroupFailures(result)[0] ?? null;
+}
+
 function runOne(group, options) {
   return new Promise((resolve) => {
     const started = performance.now();
     const startedAtMs = Date.now();
+    const timeoutMs = Math.max(1, Math.trunc(group.timeoutMs ?? options.timeoutMs));
+    const redact = verificationRedactor(options.env, options.cwd);
+    let observation;
+    let unavailable;
+    const observationDirectory =
+      options.observationDirectory ?? options.env.AGENTPLANE_VERIFICATION_OBSERVATION_DIR;
+    if (observationDirectory) {
+      try {
+        observation = createVerificationObservation({
+          directory: observationDirectory,
+          budgetDirectory: options.env.AGENTPLANE_VERIFICATION_BUDGET_DIR,
+          binding: {
+            kind: "verification_group",
+            command: JSON.stringify([group.command, ...(group.args ?? [])]),
+            deadline_ms: startedAtMs + timeoutMs,
+            implementation: options.env.AGENTPLANE_VERIFICATION_IMPLEMENTATION ?? "unavailable",
+            parent_run_id: options.env.AGENTPLANE_VERIFICATION_PARENT_RUN_ID,
+            runtime: { node: process.version, platform: process.platform, arch: process.arch },
+          },
+          env: options.env,
+          cwd: options.cwd,
+          heartbeatMs: options.heartbeatMs,
+          maxRuns: 64,
+        });
+      } catch {
+        unavailable = { status: "unavailable", reason: "observation admission failed" };
+      }
+    }
     const child = spawn(group.command, group.args ?? [], {
       cwd: options.cwd,
-      env: options.env,
+      env: {
+        ...options.env,
+        ...(observation
+          ? {
+              AGENTPLANE_VERIFICATION_OBSERVATION_DIR: path.join(observation.directory, "children"),
+              AGENTPLANE_VERIFICATION_PARENT_RUN_ID: observation.runId,
+              AGENTPLANE_VERIFICATION_BUDGET_DIR: observation.budgetDirectory,
+            }
+          : {}),
+      },
       detached: process.platform !== "win32",
       shell: false,
       stdio: ["ignore", "pipe", "pipe"],
@@ -24,10 +101,10 @@ function runOne(group, options) {
     let stdout = "";
     let stderr = "";
     let timedOut = false;
+    let cancelled = false;
     let settled = false;
     let killTimer = null;
     const outputLimit = options.outputTailBytes ?? DEFAULT_OUTPUT_TAIL_BYTES;
-    const timeoutMs = Math.max(1, Math.trunc(group.timeoutMs ?? options.timeoutMs));
     const terminate = (signal) => {
       if (!child.pid) return child.kill(signal);
       try {
@@ -43,8 +120,37 @@ function runOne(group, options) {
       settled = true;
       clearTimeout(timeoutTimer);
       if (killTimer) clearTimeout(killTimer);
-      resolve(result);
+      const failureKinds = classifyVerificationGroupFailures(result);
+      options.signal?.removeEventListener("abort", abort);
+      const evidence = observation?.finish(
+        cancelled
+          ? "cancelled"
+          : timedOut
+            ? "timed_out"
+            : result.exit_code === 0
+              ? "passed"
+              : "failed",
+        { exit_code: result.exit_code, group_id: group.id },
+      );
+      resolve({
+        ...result,
+        launched: true,
+        failure_kind: failureKinds[0] ?? null,
+        failure_kinds: failureKinds,
+        cancelled,
+        stdout: observation ? observation.tail("stdout") : redact(result.stdout),
+        stderr: observation ? observation.tail("stderr") : redact(result.stderr),
+        ...(evidence || unavailable ? { observation: evidence ?? unavailable } : {}),
+      });
     };
+    const abort = () => {
+      cancelled = true;
+      killTimer = setTimeout(() => terminate("SIGKILL"), options.killGraceMs);
+      killTimer.unref();
+      terminate("SIGTERM");
+    };
+    options.signal?.addEventListener("abort", abort, { once: true });
+    if (options.signal?.aborted) abort();
     const timeoutTimer = setTimeout(() => {
       timedOut = true;
       killTimer = setTimeout(() => terminate("SIGKILL"), options.killGraceMs);
@@ -52,9 +158,16 @@ function runOne(group, options) {
       terminate("SIGTERM");
     }, timeoutMs);
     timeoutTimer.unref();
-    child.stdout.on("data", (chunk) => (stdout = appendTail(stdout, chunk, outputLimit)));
-    child.stderr.on("data", (chunk) => (stderr = appendTail(stderr, chunk, outputLimit)));
+    child.stdout.on("data", (chunk) => {
+      observation?.write("stdout", chunk);
+      stdout = appendTail(stdout, chunk, outputLimit);
+    });
+    child.stderr.on("data", (chunk) => {
+      observation?.write("stderr", chunk);
+      stderr = appendTail(stderr, chunk, outputLimit);
+    });
     child.on("error", (error) => {
+      observation?.write("stderr", error.message);
       finish({
         id: group.id,
         exit_code: 1,
@@ -69,7 +182,7 @@ function runOne(group, options) {
     child.on("close", (code) => {
       finish({
         id: group.id,
-        exit_code: timedOut ? 124 : (code ?? 1),
+        exit_code: cancelled ? 130 : timedOut ? 124 : (code ?? 1),
         timed_out: timedOut,
         duration_ms: Math.round(performance.now() - started),
         started_at_ms: startedAtMs,
@@ -89,12 +202,31 @@ export async function runVerificationGroups(groups, options = {}) {
     while (cursor < groups.length) {
       const index = cursor;
       cursor += 1;
+      if (options.onGroupStart?.(groups[index]) === false) {
+        results[index] = {
+          id: groups[index].id,
+          launched: false,
+          exit_code: 124,
+          timed_out: true,
+          failure_kind: "timeout",
+          failure_kinds: ["timeout"],
+          duration_ms: 0,
+          started_at_ms: Date.now(),
+          finished_at_ms: Date.now(),
+          stdout: "",
+          stderr: "Verification deadline expired before group launch.\n",
+        };
+        continue;
+      }
       results[index] = await runOne(groups[index], {
         cwd: options.cwd ?? process.cwd(),
         env: { ...(options.env ?? process.env), ...(groups[index].env ?? {}) },
         timeoutMs: options.timeoutMs ?? DEFAULT_GROUP_TIMEOUT_MS,
         killGraceMs: options.killGraceMs ?? DEFAULT_KILL_GRACE_MS,
         outputTailBytes: options.outputTailBytes,
+        observationDirectory: options.observationDirectory,
+        heartbeatMs: options.heartbeatMs,
+        signal: options.signal,
       });
     }
   }
@@ -107,6 +239,10 @@ export async function runVerificationGroups(groups, options = {}) {
   };
 }
 
+export function countLaunchedVerificationGroups(results) {
+  return results.filter((result) => result.launched !== false).length;
+}
+
 export function summarizeVerificationGroupResults(results) {
   return {
     schema_version: 1,
@@ -117,6 +253,7 @@ export function summarizeVerificationGroupResults(results) {
       exit_code: result.exit_code,
       timed_out: result.timed_out,
       duration_ms: result.duration_ms,
+      ...(result.observation ? { observation: result.observation } : {}),
     })),
   };
 }
@@ -133,6 +270,22 @@ export async function writeVerificationGroupResults(results, options = {}) {
     await writeStreamChunk(stdout, `\n== ${group.id} (${group.duration_ms}ms) ==\n`);
     await writeStreamChunk(stdout, group.stdout);
     await writeStreamChunk(stderr, group.stderr);
+  }
+  const failures = results
+    .filter((result) => result.exit_code !== 0)
+    .map((result) => ({
+      id: result.id,
+      failure_kind: result.failure_kind ?? classifyVerificationGroupFailure(result),
+      failure_kinds: result.failure_kinds ?? classifyVerificationGroupFailures(result),
+    }));
+  if (failures.length > 0) {
+    const details = `${JSON.stringify({
+      schema_version: 1,
+      kind: "verification_group_failure_classification",
+      groups: failures,
+    })}\n`;
+    await writeStreamChunk(stdout, details);
+    await writeStreamChunk(stderr, details);
   }
   const summary = summarizeVerificationGroupResults(results);
   const serialized = `${JSON.stringify(summary)}\n`;

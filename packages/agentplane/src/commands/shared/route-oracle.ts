@@ -40,11 +40,7 @@ export type RouteBlocker = {
 export type RouteOracle = {
   phase: string;
   authoritativeCheckout:
-    | "base_checkout"
-    | "task_worktree"
-    | "current_checkout"
-    | "primary_task_worktree"
-    | "provider";
+    "base_checkout" | "task_worktree" | "current_checkout" | "primary_task_worktree" | "provider";
   authoritativeCheckoutPath: string | null;
   mutationPathHint: string | null;
   blocker: RouteBlocker | null;

@@ -1,19 +1,18 @@
+import { completedNativeReviewJournalResult } from "./kernel-completed-native-review.js";
+import { prepareEvaluatorInput } from "./external-agent-evaluator-input.js";
 import { assertExternalAgentExchangeNotConsumed } from "./external-agent-consumed-recovery.js";
 import { assertReadOnlyReturnFresh } from "./external-agent-read-only-observation.js";
 import { captureExternalTaskArtifacts } from "./external-agent-task-artifact-baseline.js";
-import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import {
   advanceSupervisorExecutionEpisodeState,
   completeSupervisorExecutionEpisode,
-  validateAgentWorkOrderV2,
   type AgentWorkOrderV2,
 } from "@agentplaneorg/core/schemas";
 
 import type { CommandCtx } from "../../cli/spec/spec.js";
 import { CliError } from "../../shared/errors.js";
-import { createEvaluatorArtifactPreparationPort } from "../evaluator/evaluator-artifact-port.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import {
   createSupervisorEpisodeStore,
@@ -28,7 +27,6 @@ import {
 import { agentTransitionId } from "./agent-action-packet.js";
 import {
   externalAgentIssueDigest,
-  externalAgentExchangeDigest,
   externalAgentResultDigest,
   externalAgentUsageAccounting,
   persistExternalAgentExchangeArtifacts,
@@ -79,54 +77,6 @@ async function commandContextForCheckout(opts: {
   return path.resolve(opts.checkout) === path.resolve(opts.command.resolvedProject.gitRoot)
     ? opts.command
     : await loadCommandContext({ cwd: opts.checkout, rootOverride: null });
-}
-
-function evaluatorInput(opts: {
-  work_order: AgentWorkOrderV2;
-  git_root: string;
-  work_order_path: string;
-  digest: string;
-}): AgentWorkOrderV2 {
-  const relative = path.relative(opts.git_root, opts.work_order_path).replaceAll("\\", "/");
-  return validateAgentWorkOrderV2({
-    ...opts.work_order,
-    required_inputs: [
-      ...opts.work_order.required_inputs,
-      {
-        id: "evaluator-work-order",
-        kind: "source_artifact",
-        description: "Frozen evaluator diff, checks, policy, and acceptance evidence.",
-        path: relative,
-        digest: opts.digest,
-        required: true,
-      },
-    ],
-  });
-}
-
-async function prepareEvaluatorInput(opts: {
-  ctx: CommandCtx;
-  command: CommandContext;
-  task_id: string;
-  work_order: AgentWorkOrderV2;
-}): Promise<{ work_order: AgentWorkOrderV2; evaluator_work_order_ref: string }> {
-  const packet = await createEvaluatorArtifactPreparationPort(opts.command).prepare({
-    ctx: opts.ctx,
-    taskId: opts.task_id,
-    evaluatorId: "recovery-context",
-    provenance: "evaluator_supplied",
-  });
-  const prepared = packet.prepared;
-  const serialized = await readFile(prepared.work_order_path, "utf8");
-  return {
-    work_order: evaluatorInput({
-      work_order: opts.work_order,
-      git_root: packet.git_root,
-      work_order_path: prepared.work_order_path,
-      digest: externalAgentExchangeDigest(serialized),
-    }),
-    evaluator_work_order_ref: prepared.work_order_path,
-  };
 }
 
 async function issueExternalAgentExchangeUnlocked(opts: {
@@ -468,6 +418,11 @@ export async function acceptExternalAgentResult(opts: {
         work_order_id: exchange.work_order_id,
         semantic_status: envelope.result.status,
         result_digest: resultDigest,
+        ...(exchange.purpose === "quality_review"
+          ? completedNativeReviewJournalResult(
+              await checkoutCommand.taskBackend.getTask(opts.task_id),
+            )
+          : {}),
       })
     ) {
       return current;
@@ -557,6 +512,11 @@ export async function acceptExternalAgentResult(opts: {
         work_order_id: exchange.work_order_id,
         semantic_status: envelope.result.status,
         result_digest: resultDigest,
+        ...(exchange.purpose === "quality_review"
+          ? completedNativeReviewJournalResult(
+              await checkoutCommand.taskBackend.getTask(opts.task_id),
+            )
+          : {}),
       },
       usage: accounting.usage,
       provider_usage: accounting.provider_usage,

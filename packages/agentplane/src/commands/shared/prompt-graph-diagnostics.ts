@@ -14,13 +14,7 @@ import { readActiveRecipeIdsFromRegistry } from "../recipes/impl/overlay-compile
 import { readProjectRecipesRegistry } from "../recipes/impl/project-registry.js";
 
 type PromptGraphArtifactState =
-  | "unavailable"
-  | "not_configured"
-  | "missing"
-  | "current"
-  | "stale"
-  | "invalid"
-  | "compile_error";
+  "unavailable" | "not_configured" | "missing" | "current" | "stale" | "invalid" | "compile_error";
 
 type PromptGraphModuleSummary = {
   address: string;

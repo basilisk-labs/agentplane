@@ -174,57 +174,89 @@ export async function retainedPrerequisiteStops(
 /** Bind retained issuance authority to native lineage, including the real delegated projection. */
 export function retainedIssuanceAuthority(record: KernelRecord, order: AgentWorkOrderV2): boolean {
   const binding = order.canonical_binding;
-  if (binding?.phase !== "implementation" || order.task.revision === null) return false;
-  const plan = [...record.aggregate.plan_history, record.aggregate.current_plan].find(
-    (entry) => entry?.digest === binding.plan_digest,
+  if (
+    binding?.phase !== "implementation" ||
+    order.task.revision === null ||
+    binding.task_id !== record.aggregate.id ||
+    order.task.id !== binding.task_id ||
+    binding.repository_identity !== record.repository_identity ||
+    k.canonicalAuthorityIssues(record.aggregate).length > 0
+  )
+    return false;
+  const plans = [...record.aggregate.plan_history, record.aggregate.current_plan].filter(
+    (entry) => entry?.digest === binding.plan_digest && entry.revision === binding.plan_revision,
   );
-  const definition = plan?.work_items.find((item) => item.id === binding.work_item_id);
+  if (plans.length !== 1) return false;
+  const plan = plans[0]!;
+  const definition = plan.work_items.find((item) => item.id === binding.work_item_id);
   if (!definition) return false;
-  const latest = record.events.findLast(
-    (event) => event.kind === "authority_continued" && event.task_revision <= order.task.revision!,
-  );
-  return (record.aggregate.authority_lineage ?? []).some((entry, index) => {
+  if (definition.contract_digest !== binding.contract_digest) return false;
+  const origins: { parent: k.ExecutionAuthority; revision: number }[] = [];
+  for (const entry of record.aggregate.authority_lineage ?? []) {
     const parent = entry.authority;
+    if (parent.plan_digest !== plan.digest || parent.plan_revision !== plan.revision) continue;
+    const approval = entry.observation === null && entry.approval_mode !== null;
     if (
-      parent.plan_digest !== binding.plan_digest ||
-      parent.plan_revision !== binding.plan_revision ||
-      parent.repository_fingerprint !== binding.repository_fingerprint
+      !approval &&
+      !["repository_implementation", "plan_amendment"].includes(entry.observation?.kind ?? "")
     )
-      return false;
-    if (
-      latest
-        ? !authenticReworkEvent(record, latest, {
+      continue;
+    const matches = record.events.filter((event) => {
+      if (event.kind !== (approval ? "plan_approved" : "authority_continued")) return false;
+      const command: k.TaskCommand = approval
+        ? {
+            kind: "approve_plan",
+            task_id: binding.task_id,
+            expected_task_revision: event.task_revision - 1,
+            expected_state_fingerprint: parent.repository_fingerprint,
+            plan_revision: plan.revision,
+            plan_digest: plan.digest,
+            approval_evidence_digest: parent.provenance.evidence_digest,
+            authority_mode: entry.approval_mode!,
+          }
+        : {
             kind: "continue_authority",
             task_id: binding.task_id,
-            expected_task_revision: latest.task_revision - 1,
+            expected_task_revision: event.task_revision - 1,
             expected_state_fingerprint: parent.repository_fingerprint,
             record: entry,
-          })
-        : index !== 0
+          };
+      return authenticReworkEvent(record, event, command);
+    });
+    if (
+      matches.length !== 1 ||
+      record.events.filter((event) => event.mutation_id === matches[0]!.mutation_id).length !== 1
     )
       return false;
-    const delegated = {
-      ...parent,
-      ...definition.execution_requirements,
-      work_item_id: definition.id,
-      provenance: {
-        ...parent.provenance,
-        kind: "DELEGATED" as const,
-        actor_id: "agentplane:kernel-controller",
-        parent_authority_digest: parent.digest,
-      },
-    };
-    return (
-      (binding.authority_digest === parent.digest ||
-        binding.authority_digest === k.authorityDigest(delegated)) &&
-      order.state_fingerprint.components.authority.digest ===
-        k.kernelDigest({
-          state: "present",
-          source: "canonical_authority",
-          value: { issued: binding.authority_digest, lineage: parent.digest },
-        })
-    );
-  });
+    if (matches[0]!.task_revision <= order.task.revision)
+      origins.push({ parent, revision: matches[0]!.task_revision });
+  }
+  const latest = Math.max(...origins.map((origin) => origin.revision));
+  const selected = origins.filter((origin) => origin.revision === latest);
+  if (selected.length !== 1) return false;
+  const parent = selected[0]!.parent;
+  if (parent.repository_fingerprint !== binding.repository_fingerprint) return false;
+  const delegated = {
+    ...parent,
+    ...definition.execution_requirements,
+    work_item_id: definition.id,
+    provenance: {
+      ...parent.provenance,
+      kind: "DELEGATED" as const,
+      actor_id: "agentplane:kernel-controller",
+      parent_authority_digest: parent.digest,
+    },
+  };
+  return (
+    (binding.authority_digest === parent.digest ||
+      binding.authority_digest === k.authorityDigest(delegated)) &&
+    order.state_fingerprint.components.authority.digest ===
+      k.kernelDigest({
+        state: "present",
+        source: "canonical_authority",
+        value: { issued: binding.authority_digest, lineage: parent.digest },
+      })
+  );
 }
 
 export function precedingStopContinuation(

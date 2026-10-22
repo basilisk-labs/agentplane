@@ -19,12 +19,7 @@ type PolicyActionFamily =
   | "custom";
 
 type PolicyApprovalKind =
-  | "network_access"
-  | "force_action"
-  | "policy_write"
-  | "config_write"
-  | "dangerous_fs"
-  | "git_push";
+  "network_access" | "force_action" | "policy_write" | "config_write" | "dangerous_fs" | "git_push";
 
 export type PolicyActionDescriptor = {
   id: PolicyActionId;

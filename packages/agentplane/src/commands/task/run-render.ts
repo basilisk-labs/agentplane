@@ -89,8 +89,7 @@ export function renderTaskRunnerLifecyclePayload(
 }
 
 type TaskRunRendererPayload =
-  | ReturnType<typeof renderTaskRunPayload>
-  | ReturnType<typeof renderTaskRunnerLifecyclePayload>;
+  ReturnType<typeof renderTaskRunPayload> | ReturnType<typeof renderTaskRunnerLifecyclePayload>;
 
 export function isTerminalRunnerStatus(status: RunnerLifecycleStatus): boolean {
   return (

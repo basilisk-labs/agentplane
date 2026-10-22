@@ -29,12 +29,20 @@ async function nativeOrder(
   authority: k.ExecutionAuthority,
   workItem = "kernel",
 ) {
-  const implementation = resumeKernelWorkOrder({
-    record,
-    work_item_id: workItem,
-    authority,
-    repository_fingerprint: authority.repository_fingerprint,
-  });
+  const implementation =
+    workItem === "prerequisite"
+      ? new KernelTaskLifecycle({} as never).workOrder(
+          record,
+          workItem,
+          authority,
+          authority.repository_fingerprint,
+        )
+      : resumeKernelWorkOrder({
+          record,
+          work_item_id: workItem,
+          authority,
+          repository_fingerprint: authority.repository_fingerprint,
+        });
   if (!implementation) throw new Error("Expected native implementation WorkOrder");
   return buildKernelAgentWorkOrder({
     command: {
@@ -93,7 +101,9 @@ async function fixture(directory: string, sourceChange = true, targetRetry = fal
   };
   const source = {
     ...aggregate().current_plan!,
-    approval_actor_id: "USER",
+    state: "PROPOSED" as const,
+    approval_actor_id: null,
+    approval_evidence_digest: null,
     work_items: [previous],
     digest: k.kernelDigest({ revision: 1, work_items: [previous] }),
   };
@@ -117,9 +127,10 @@ async function fixture(directory: string, sourceChange = true, targetRetry = fal
   };
   let state = aggregate({
     intent_digest: k.kernelDigest(documents.intent),
-    ...(preStopContinuation ? { revision: 147 } : {}),
+    state: "AWAITING_PLAN_APPROVAL",
+    revision: (preStopContinuation ? 147 : aggregate().revision) - 1,
     current_plan: source,
-    authority_lineage: [{ authority: root, approval_mode: "manual_operator", observation: null }],
+    authority_lineage: [],
     work_items: {
       kernel: { ...runtime("EXECUTING"), definition: previous, attempt: 2, claim_id: "old-claim" },
     },
@@ -140,6 +151,24 @@ async function fixture(directory: string, sourceChange = true, targetRetry = fal
     state = result.aggregate;
     events.push(...result.events);
   }
+  apply({
+    ...input(
+      state,
+      {
+        kind: "approve_plan",
+        task_id: state.id,
+        expected_task_revision: state.revision,
+        expected_state_fingerprint: root.repository_fingerprint,
+        plan_revision: source.revision,
+        plan_digest: source.digest,
+        approval_evidence_digest: root.provenance.evidence_digest,
+        authority_mode: "manual_operator",
+      },
+      "initial-plan-approval",
+    ),
+    authority: root,
+    actor: { id: "USER", kind: "USER", transport: "manual", capabilities: ["repository_write"] },
+  });
   const oldOrder = await nativeOrder(
     makeKernelRecord(root.repository_identity, state, events, documents),
     root,
@@ -289,6 +318,12 @@ async function fixture(directory: string, sourceChange = true, targetRetry = fal
     });
   transition("claim");
   transition("begin");
+  const prerequisiteActor = {
+    id: root.provenance.actor_id,
+    kind: "SYSTEM" as const,
+    transport: "host" as const,
+    capabilities: root.capabilities,
+  };
   const prerequisiteOrder = await nativeOrder(
     makeKernelRecord(root.repository_identity, state, events, documents),
     root,
@@ -375,6 +410,7 @@ async function fixture(directory: string, sourceChange = true, targetRetry = fal
       `result:${prerequisiteOrder.work_order_id}`,
     ),
     authority: root,
+    actor: prerequisiteActor,
   };
   const {
     phase: _phase,
@@ -402,6 +438,8 @@ async function fixture(directory: string, sourceChange = true, targetRetry = fal
     await lifecycle.receiveResult(
       { ...result, repository_fingerprint: root.repository_fingerprint },
       workBinding as KernelWorkBinding,
+      _authority as k.Sha256Digest,
+      result.actor.id,
     ),
   ).toMatchObject({ kind: "committed" });
   await write(sourceDirectory, "command-input.json", result);

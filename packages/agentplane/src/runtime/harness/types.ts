@@ -6,12 +6,7 @@ import type { ProtectedPathKind } from "../../shared/protected-paths.js";
 import type { PolicyGatewayResolution } from "../../shared/policy-gateway.js";
 
 type HarnessSourceId =
-  | "builtin"
-  | "project"
-  | "config"
-  | "execution_profile"
-  | "policy_gateway"
-  | "backend";
+  "builtin" | "project" | "config" | "execution_profile" | "policy_gateway" | "backend";
 
 export type HarnessSourceRef = {
   id: HarnessSourceId;

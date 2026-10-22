@@ -13,12 +13,7 @@ type ExecFileLikeError = Error & {
 
 export type CommitFailurePhase = "task_commit" | "close_commit";
 type CommitFailureSignal =
-  | "formatter"
-  | "eslint"
-  | "commit_subject"
-  | "dco"
-  | "hook_wrapper"
-  | null;
+  "formatter" | "eslint" | "commit_subject" | "dco" | "hook_wrapper" | null;
 
 const COMMIT_FAILURE_SIGNAL_PATTERNS = [
   /Code style issues found/i,

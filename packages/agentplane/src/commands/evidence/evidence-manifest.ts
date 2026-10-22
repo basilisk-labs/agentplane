@@ -9,11 +9,7 @@ import { sha256EvidenceFile } from "./evidence-sha256.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
 type EvidenceFileRole =
-  | "task_readme"
-  | "acr"
-  | "verification_log"
-  | "pr_artifact"
-  | "task_artifact";
+  "task_readme" | "acr" | "verification_log" | "pr_artifact" | "task_artifact";
 
 type EvidenceManifestFile = {
   path: string;

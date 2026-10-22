@@ -1,3 +1,11 @@
+import {
+  prepareAgentWorkOrder,
+  requirePreparedAgentWorkOrder,
+} from "../../runner/usecases/agent-work-order.js";
+import {
+  issueExternalAgentExchange,
+  acceptExternalAgentResult,
+} from "./external-agent-supervisor.js";
 import { writeFile, mkdir } from "node:fs/promises";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
@@ -141,7 +149,7 @@ export async function fixture(
     evidence_refs: [`.agentplane/tasks/${id}/quality/review/quality-report.json`],
     findings: ["Repair source"],
   };
-  const command = await loadCommandContext({ cwd: root, rootOverride: null });
+  let command = await loadCommandContext({ cwd: root, rootOverride: null });
   task.doc =
     "## Summary\nRepair source.\n\n## Plan\nRepair the approved source.\n\n## Verify Steps\n- git diff --check\n\n## Verification\nPrevious checks passed.\n";
   await command.taskBackend.writeTask(task);
@@ -208,30 +216,83 @@ export async function fixture(
   await command.taskBackend.writeTask({
     ...current,
     commit: { hash: implementation, message: "Fixture implementation" },
-    quality_review: { ...task.quality_review!, evaluated_sha: implementation },
+    quality_review: leaveReviewDirty
+      ? undefined
+      : { ...task.quality_review!, evaluated_sha: implementation },
   });
   if (leaveReviewDirty) {
-    git(root, "diff", "--check");
-    expect(
-      await cmdVerifyParsed({
-        ctx: command,
+    await commitAll(root, "prepare independent native review");
+    await recordFixtureVerification(root, id);
+    await commitAll(root, "record actual verification before native review");
+    command = await loadCommandContext({ cwd: root, rootOverride: null });
+    const prepared = requirePreparedAgentWorkOrder(
+      await prepareAgentWorkOrder({
+        command_ctx: command,
         cwd: root,
-        rootOverride: undefined,
-        taskId: id,
-        state: "ok",
-        by: "SUPERVISOR",
-        note: "Native fixture verification passed.",
-        details: ["affected_unit_integration", "critical_paths", "task_outcome"]
-          .map(
-            (check) =>
-              `Check: ${check}\nCommand: git diff --check\nResult: pass\nEvidence: actual fixture Git check passed\nScope: task implementation`,
-          )
-          .join("\n\n"),
-        quiet: true,
-        allowCanonicalProjection: true,
+        task_id: id,
+        include_remote: true,
       }),
-    ).toBe(0);
+    );
+    expect(prepared.work_order.role, JSON.stringify(prepared.route_decision.workflowStep)).toBe(
+      "EVALUATOR",
+    );
+    const issued = await issueExternalAgentExchange({
+      ctx: { cwd: root },
+      command,
+      decision: prepared.route_decision,
+      work_order: prepared.work_order,
+      replace_failed_operation: false,
+    });
+    if (!issued) throw new Error("Expected native independent review fixture");
+    await writeFile(
+      issued.paths.result,
+      JSON.stringify({
+        work_order_id: issued.work_order.work_order_id,
+        status: "completed",
+        summary: "Repair source",
+        findings: ["Repair source"],
+        uncertainty: [],
+        review: {
+          verdict: "rework",
+          missing_tests: [],
+          hidden_assumptions: [],
+          residual_risks: [],
+          recovery_context: "Repair source",
+        },
+      }),
+    );
+    await acceptExternalAgentResult({
+      ctx: { cwd: root },
+      command,
+      task_id: id,
+      result_path: issued.paths.result,
+      include_remote: true,
+    });
+    await recordFixtureVerification(root, id);
   } else await commitAll(root, "record review");
   const persisted = (await command.taskBackend.getTask(id))!;
   return { root, id, kernel: persisted.extensions?.task_kernel };
+}
+
+export async function recordFixtureVerification(root: string, id: string): Promise<void> {
+  git(root, "diff", "--check");
+  expect(
+    await cmdVerifyParsed({
+      ctx: await loadCommandContext({ cwd: root, rootOverride: null }),
+      cwd: root,
+      rootOverride: undefined,
+      taskId: id,
+      state: "ok",
+      by: "SUPERVISOR",
+      note: "Native fixture verification passed.",
+      details: ["affected_unit_integration", "critical_paths", "task_outcome"]
+        .map(
+          (check) =>
+            `Check: ${check}\nCommand: git diff --check\nResult: pass\nEvidence: actual fixture Git check passed\nScope: task implementation`,
+        )
+        .join("\n\n"),
+      quiet: true,
+      allowCanonicalProjection: true,
+    }),
+  ).toBe(0);
 }

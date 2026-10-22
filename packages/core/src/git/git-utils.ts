@@ -20,7 +20,7 @@ async function gitStagedPathsIncludingRenames(cwd: string): Promise<string[]> {
   // sides of renames/copies.
   const parts = await gitNullSeparatedPaths(cwd, ["diff", "--name-status", "--cached", "-z"]);
   const out: string[] = [];
-  for (let i = 0; i < parts.length; ) {
+  for (let i = 0; i < parts.length;) {
     const status = parts[i] ?? "";
     const pathA = parts[i + 1] ?? "";
     if (!status || !pathA) break;

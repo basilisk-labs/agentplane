@@ -296,7 +296,12 @@ describe("public V2 native task entrypoint", { timeout: 180_000 }, () => {
       network: "deny",
       external_side_effects: [],
     });
-    expect(order.context_intent.purpose).toContain("Guidance is not approval.");
+    expect(
+      order.recipe_context!.projection.guidance.some((entry) =>
+        entry.content.includes("Guidance is not approval."),
+      ),
+    ).toBe(true);
+    expect(order.recipe_context!.digest).toBe(k.kernelDigest(order.recipe_context!.projection));
     const replay = await readSuppliedCliOrder(
       await runJson(f.root, ["task", "advance", id, "--agent-json"]),
     );

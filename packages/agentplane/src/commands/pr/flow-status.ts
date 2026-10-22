@@ -89,8 +89,7 @@ export type PrFlowStatusReport = {
 };
 
 type ReviewThreadsStatus =
-  | { checked: true; unresolved: number }
-  | { checked: false; reason: string };
+  { checked: true; unresolved: number } | { checked: false; reason: string };
 
 function canonicalProviderReady(
   task: Awaited<ReturnType<typeof loadBackendTask>>["task"],

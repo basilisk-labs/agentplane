@@ -118,33 +118,79 @@ async function resolveSingleRemoteUrl(opts: {
   return urls[0]!;
 }
 
-async function cliSessionReady(opts: {
+type CliSessionStatus =
+  | "ready"
+  | "missing_credentials"
+  | "rejected_credentials"
+  | "dns_failure"
+  | "tls_failure"
+  | "connection_failure"
+  | "cli_unavailable"
+  | "unknown_failure";
+
+function classifySessionFailure(value: unknown): CliSessionStatus {
+  const record = value && typeof value === "object" ? (value as Record<string, unknown>) : {};
+  const text = [record.code, record.message, record.stdout, record.stderr]
+    .filter((part): part is string => typeof part === "string")
+    .join("\n");
+  // These categories are the only diagnostic output. Never forward CLI output,
+  // which can contain access tokens, private URLs or account information.
+  if (/\b(?:ENOTFOUND|EAI_AGAIN)\b|no such host|DNS|name resolution/i.test(text))
+    return "dns_failure";
+  if (/\bTLS\b|\bSSL\b|certificate|handshake/i.test(text)) return "tls_failure";
+  if (
+    /\b(?:ETIMEDOUT|ECONNRESET|ECONNREFUSED|ENETUNREACH|EHOSTUNREACH)\b|timed? out|timeout|deadline exceeded|connection (?:reset|refused)|network is unreachable/i.test(
+      text,
+    )
+  )
+    return "connection_failure";
+  if (record.code === "ENOENT") return "cli_unavailable";
+  if (
+    /\b(?:401|403)\b|invalid token|token[^\n]*invalid|authentication failed|unauthorized|forbidden/i.test(
+      text,
+    )
+  )
+    return "rejected_credentials";
+  if (
+    /not logged (?:in|into)|no (?:authentication|credentials|token)|not authenticated/i.test(text)
+  )
+    return "missing_credentials";
+  return "unknown_failure";
+}
+
+async function cliSessionStatus(opts: {
   provider: GitHostProvider;
   hostname: string;
   gitRoot: string;
-}): Promise<boolean> {
-  if (opts.provider === "github") {
-    const gh = resolveGhCommand();
-    const result = await runProcess({
-      command: gh.command,
-      args: [...gh.argsPrefix, "auth", "status", "--hostname", opts.hostname],
-      cwd: opts.gitRoot,
-      env: ghEnv(),
-      encoding: "utf8",
-      reject: false,
-    });
-    return result.exitCode === 0;
-  }
+}): Promise<CliSessionStatus> {
   try {
+    if (opts.provider === "github") {
+      const gh = resolveGhCommand();
+      const result = await runProcess({
+        command: gh.command,
+        args: [...gh.argsPrefix, "auth", "status", "--hostname", opts.hostname],
+        cwd: opts.gitRoot,
+        env: ghEnv(),
+        encoding: "utf8",
+        reject: false,
+      });
+      return result.exitCode === 0 ? "ready" : classifySessionFailure(result);
+    }
     await runGlabCommand({
       cwd: opts.gitRoot,
       args: ["auth", "status", "--hostname", opts.hostname],
     });
-    return true;
-  } catch {
-    return false;
+    return "ready";
+  } catch (error) {
+    return classifySessionFailure(error);
   }
 }
+
+const uncertain = (status: CliSessionStatus) =>
+  status === "dns_failure" ||
+  status === "tls_failure" ||
+  status === "connection_failure" ||
+  status === "unknown_failure";
 
 async function resolveProvider(opts: {
   hostname: string;
@@ -157,21 +203,39 @@ async function resolveProvider(opts: {
   const recordedKind = opts.recorded?.kind;
   if (recordedKind === "github" || recordedKind === "gitlab") return recordedKind;
 
-  const [githubReady, gitlabReady] = await Promise.all([
-    cliSessionReady({ provider: "github", hostname: opts.hostname, gitRoot: opts.gitRoot }),
-    cliSessionReady({ provider: "gitlab", hostname: opts.hostname, gitRoot: opts.gitRoot }),
+  const [github, gitlab] = await Promise.all([
+    cliSessionStatus({ provider: "github", hostname: opts.hostname, gitRoot: opts.gitRoot }),
+    cliSessionStatus({ provider: "gitlab", hostname: opts.hostname, gitRoot: opts.gitRoot }),
   ]);
-  if (githubReady !== gitlabReady) return githubReady ? "github" : "gitlab";
+  if (uncertain(github) || uncertain(gitlab)) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_NETWORK"),
+      code: "E_NETWORK",
+      message:
+        `Provider authentication could not be validated for publication host ${opts.hostname} ` +
+        `(github=${github}, gitlab=${gitlab}). Preserve the configured provider and credentials. ` +
+        "Restore CLI/connectivity availability, then retry this read once; if it still fails, inspect local CLI diagnostics before continuing hosted operations.",
+      context: {
+        reason_code: "git_host_provider_validation_unavailable",
+        hostname: opts.hostname,
+        session_status: { github, gitlab },
+      },
+    });
+  }
+  if (github === "ready" && gitlab !== "ready") return "github";
+  if (gitlab === "ready" && github !== "ready") return "gitlab";
+  const ambiguous = github === "ready" && gitlab === "ready";
   throw new CliError({
     exitCode: exitCodeForError("E_NETWORK"),
     code: "E_NETWORK",
-    message:
-      `Cannot select GitHub or GitLab for publication host ${opts.hostname}. ` +
-      `Authenticate exactly one matching CLI session with \`gh auth login --hostname ${opts.hostname}\` ` +
-      `or \`glab auth login --hostname ${opts.hostname}\`, then retry.`,
+    message: ambiguous
+      ? `Both GitHub and GitLab sessions validate for publication host ${opts.hostname}. Resolve the provider ambiguity before retrying hosted operations.`
+      : `No validated GitHub or GitLab session identifies publication host ${opts.hostname} ` +
+        `(github=${github}, gitlab=${gitlab}). Check the supported provider and the reported CLI credential state before retrying.`,
     context: {
-      reason_code: githubReady ? "git_host_provider_ambiguous" : "git_host_provider_unresolved",
+      reason_code: ambiguous ? "git_host_provider_ambiguous" : "git_host_provider_unresolved",
       hostname: opts.hostname,
+      session_status: { github, gitlab },
     },
   });
 }

@@ -147,8 +147,14 @@ appendOutput("expected_jobs", plan.expected_jobs.join(","));
 appendOutput("executing_jobs_count", String(plan.executing_jobs_count));
 appendOutput("verification_contract_digest", plan.verification_contract.digest);
 appendOutput("requires_real_e2e", plan.verification_contract.requires_real_e2e ? "true" : "false");
-const aggregatePlan = { ...plan };
-delete aggregatePlan.local_execution_plan;
+const aggregatePlan = {
+  schema_version: plan.schema_version,
+  route: plan.route,
+  route_reason: plan.route_reason,
+  expected_jobs: plan.expected_jobs,
+  executing_jobs_count: plan.executing_jobs_count,
+  changed_files_count: plan.changed_files_count,
+};
 appendOutput("plan_json", JSON.stringify(aggregatePlan));
 
 process.stdout.write(`${JSON.stringify(plan, null, 2)}\n`);

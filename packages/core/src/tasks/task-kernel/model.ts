@@ -1,3 +1,4 @@
+import type { ProspectiveScopeRequest } from "./prospective-scope.js";
 import type { KernelWorkContract } from "../kernel-plan-refinement.js";
 export type Sha256Digest = `sha256:${string}`;
 
@@ -120,13 +121,28 @@ export type ExecutionAuthority = Readonly<{
 }>;
 
 export type CanonicalApprovalMode =
-  | "manual_operator"
-  | "signed_user_receipt"
-  | "host_user_decision"
-  | "repository_policy";
+  "manual_operator" | "signed_user_receipt" | "host_user_decision" | "repository_policy";
+
+/** Explicit operator pins select retained evidence; they do not attest historical dispatch. */
+export type ReviewedBaseImport = Readonly<{
+  old_commit: string;
+  new_commit: string;
+  work_order_digest: Sha256Digest;
+  checkpoint_digest: Sha256Digest;
+  canonical_record_digest: Sha256Digest;
+  mutation_receipt_digest: Sha256Digest;
+  overlay_digest: Sha256Digest;
+  imported_paths: readonly string[];
+}>;
 
 export type AuthorityObservation = Readonly<{
-  kind: "plan_amendment" | "repository_implementation" | "authority_delta" | "policy_renewal";
+  kind:
+    | "plan_amendment"
+    | "repository_implementation"
+    | "authority_delta"
+    | "prospective_scope_request"
+    | "policy_renewal"
+    | "worktree_preparation";
   evidence_digest: Sha256Digest;
   previous_fingerprint: Sha256Digest;
   changed_paths: readonly string[];
@@ -135,6 +151,8 @@ export type AuthorityObservation = Readonly<{
   added_repository_effects?: readonly string[];
   request_task_revision?: number;
   repository_evidence_digest?: Sha256Digest;
+  reviewed_base_import?: ReviewedBaseImport;
+  scope_request?: ProspectiveScopeRequest;
 }>;
 
 /** Ordered authority lineage inside the same atomic aggregate as lifecycle state. */
@@ -242,7 +260,42 @@ export type MigrationReceipt = Readonly<{
   backup_digest: Sha256Digest;
 }>;
 
+export type CorrectiveAuthorityGrant = Readonly<{
+  digest: Sha256Digest;
+  task_id: string;
+  initial_plan_digest: Sha256Digest;
+  actor_id: string;
+  issued_at: string;
+  expires_at: string;
+  max_attempts: number;
+  requirements: ExecutionRequirements;
+  verification_commands: readonly string[];
+  verification_contract_digest: Sha256Digest;
+  policy_digest: Sha256Digest;
+  revoked_at: string | null;
+  uses: readonly Readonly<{
+    from_plan_digest: Sha256Digest;
+    to_plan_digest: Sha256Digest;
+    failure_digest: Sha256Digest;
+    consumed_at: string;
+  }>[];
+}>;
+
 export type TaskAggregate = Readonly<{
+  audit_comments?: readonly Readonly<{
+    author: string;
+    body: string;
+    actor_id: string;
+    occurred_at: string;
+    mutation_id: string;
+  }>[];
+  administrative_closure?: Readonly<{
+    kind: "noop" | "duplicate" | "superseded";
+    note: string;
+    related_task_id: string | null;
+    actor_id: string;
+    evidence_digest: Sha256Digest;
+  }>;
   schema_version: 1;
   id: string;
   revision: number;
@@ -257,6 +310,7 @@ export type TaskAggregate = Readonly<{
   controller_transfer: ControllerTransferReceipt | null;
   migration_receipts: readonly MigrationReceipt[];
   authority_lineage?: readonly CanonicalAuthorityRecord[];
+  corrective_authority?: readonly CorrectiveAuthorityGrant[];
 }>;
 
 type CommandEnvelope<K extends string, P extends object = object> = Readonly<
@@ -269,6 +323,16 @@ type CommandEnvelope<K extends string, P extends object = object> = Readonly<
 >;
 
 export type TaskCommand =
+  | CommandEnvelope<"append_audit_comment", { author: string; body: string }>
+  | CommandEnvelope<
+      "close_without_implementation",
+      {
+        closure_kind: "noop" | "duplicate" | "superseded";
+        note: string;
+        related_task_id: string | null;
+        approval_evidence_digest: Sha256Digest;
+      }
+    >
   | CommandEnvelope<"capture_intent", { intent_digest: Sha256Digest }>
   | CommandEnvelope<"transition_task", { action: "request_human" | "block" | "resume" | "cancel" }>
   | CommandEnvelope<"propose_plan", { plan: PlanRecord }>
@@ -289,6 +353,14 @@ export type TaskCommand =
         authority_mode?: CanonicalApprovalMode;
       }
     >
+  | CommandEnvelope<
+      "grant_corrective_authority",
+      {
+        grant: CorrectiveAuthorityGrant;
+        work_contracts: Readonly<Record<string, KernelWorkContract>>;
+      }
+    >
+  | CommandEnvelope<"revoke_corrective_authority", { grant_digest: Sha256Digest }>
   | CommandEnvelope<"continue_authority", { record: CanonicalAuthorityRecord }>
   | CommandEnvelope<"renew_policy_authority", { record: CanonicalAuthorityRecord }>
   | CommandEnvelope<
@@ -299,6 +371,7 @@ export type TaskCommand =
         record: CanonicalAuthorityRecord;
       }
     >
+  | CommandEnvelope<"approve_scope_request", { record: CanonicalAuthorityRecord }>
   | CommandEnvelope<"materialize_work_items", { plan_revision: number; plan_digest: Sha256Digest }>
   | CommandEnvelope<
       "transition_work_item",
@@ -315,6 +388,8 @@ export type TaskCommand =
           | "complete"
           | "cancel";
         claim_id: string | null;
+        /** Optional for backward-compatible authenticated semantic-stop receipts. */
+        semantic_result_digest?: Sha256Digest;
       }
     >
   | CommandEnvelope<
@@ -361,6 +436,8 @@ export type TaskCommand =
         amended_plan: Pick<PlanRecord, "revision" | "digest" | "work_items">;
         work_contracts?: Readonly<Record<string, KernelWorkContract>>;
         authority_delta_digest: Sha256Digest | null;
+        corrective_grant_digest?: Sha256Digest;
+        verification_contract_digest?: Sha256Digest;
       }
     >
   | CommandEnvelope<
@@ -374,11 +451,15 @@ export type TaskCommand =
 export type DomainEvent = Readonly<{
   id: string;
   kind:
+    | "audit_comment_recorded"
+    | "task_administratively_closed"
     | "intent_captured"
     | "task_transitioned"
     | "plan_proposed"
     | "plan_rejected"
     | "plan_approved"
+    | "corrective_authority_granted"
+    | "corrective_authority_revoked"
     | "work_items_materialized"
     | "work_item_transitioned"
     | "work_item_result_accepted"

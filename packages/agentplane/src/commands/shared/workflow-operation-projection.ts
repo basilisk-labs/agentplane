@@ -10,6 +10,17 @@ function includeTaskArgv(taskIds: readonly string[]): string[] {
 
 function operationArgv(operation: WorkflowOperation): string[] {
   switch (operation.id) {
+    case "candidate.publish": {
+      return [
+        "agentplane",
+        "task",
+        "candidate",
+        "publish",
+        operation.params.taskId,
+        "--request-digest",
+        operation.params.requestDigest,
+      ];
+    }
     case "batch.collect_included":
     case "batch.follow_primary": {
       return ["agentplane", "task", "brief", operation.params.taskId];

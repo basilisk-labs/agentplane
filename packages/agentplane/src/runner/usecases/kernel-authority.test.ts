@@ -343,6 +343,50 @@ describe("canonical native authority", () => {
     expect(await f.adapter.read(f.taskId)).toEqual(before);
   });
 
+  it("records native reviewed-base proof without widening authority and refuses replay", async () => {
+    const f = await fixture();
+    await f.resolver.approve(f.taskId);
+    const before = await f.adapter.read(f.taskId);
+    if (before.kind !== "canonical") throw new Error(before.kind);
+    const parent = before.record.aggregate.authority_lineage!.at(-1)!.authority;
+    f.values.ceiling = { ...f.values.ceiling, policy_digests: [k.kernelDigest("new-policy")] };
+    f.values.repository_fingerprint = k.kernelDigest("reviewed-base");
+    f.setObservation({
+      kind: "repository_implementation",
+      previous_fingerprint: parent.repository_fingerprint,
+      changed_paths: ["outside/task.ts"],
+      evidence_digest: k.kernelDigest("native-diff"),
+    });
+    const proof: k.ReviewedBaseImport = {
+      old_commit: "a".repeat(40),
+      new_commit: "b".repeat(40),
+      work_order_digest: k.kernelDigest("pinned-order"),
+      checkpoint_digest: parent.repository_fingerprint,
+      canonical_record_digest: before.record.digest,
+      mutation_receipt_digest: k.kernelDigest("native-begin"),
+      overlay_digest: k.kernelDigest([]),
+      imported_paths: ["outside/task.ts"],
+    };
+    f.port.observeReviewedBaseImport = () => Promise.resolve(proof);
+    expect(await f.resolver.renewPolicy(f.taskId)).toMatchObject({ kind: "committed" });
+    const after = await f.adapter.read(f.taskId);
+    if (after.kind !== "canonical") throw new Error(after.kind);
+    const child = after.record.aggregate.authority_lineage!.at(-1)!;
+    expect(child.observation?.reviewed_base_import).toEqual(proof);
+    expect(child.authority).toMatchObject({
+      scope_roots: parent.scope_roots,
+      repository_effects: parent.repository_effects,
+      external_effects: parent.external_effects,
+      validation_requirements: parent.validation_requirements,
+    });
+    expect(after.record.aggregate.work_items).toEqual(before.record.aggregate.work_items);
+    expect(after.record.aggregate.final_validation).toEqual(
+      before.record.aggregate.final_validation,
+    );
+    expect(await f.resolver.renewPolicy(f.taskId)).toMatchObject({ kind: "rejected" });
+    expect(await f.adapter.read(f.taskId)).toEqual(after);
+  });
+
   it("refuses terminal task and uncertain effect renewal", async () => {
     const f = await fixture();
     await f.resolver.approve(f.taskId);

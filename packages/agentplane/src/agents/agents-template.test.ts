@@ -343,3 +343,37 @@ it("keeps PLANNER scoped to a read-only proposal with internal WorkItems", async
   expect(planner.workflow.constraints).toContain("Do not mutate task lifecycle state.");
   expect(text).not.toMatch(/task.management|tasks.updated|backlog.view|ap quickstart/u);
 });
+
+describe("Markdown template terminal whitespace", () => {
+  it.each(["", "\n", "\n  "])("preserves assembly parity with trailing text %j", (suffix) => {
+    const source =
+      '<!-- ap:fragment id="test.body" slot="body" mutability="replaceable" -->\n# Title\n\nBody\n\n<!-- /ap:fragment -->' +
+      suffix;
+    const template = renderMarkdownPromptTemplate(source, { source_ref: "test.md" });
+    const assembled = template.segments
+      .map((segment) => (segment.kind === "text" ? segment.text : segment.fragment.text))
+      .join("");
+    expect(template.contents).toBe("# Title\n\nBody\n");
+    expect(assembled).toBe(template.contents);
+    expect(template.fragments[0]?.text).toBe(template.contents);
+    expect(template.sourceContents).toContain("Body\n\n<!-- /ap:fragment -->");
+  });
+});
+
+it("normalizes empty terminal fragments without changing interior spacing or provenance", () => {
+  const source =
+    '<!-- ap:fragment id="test.first" slot="body" mutability="replaceable" -->\nFirst\n\n<!-- /ap:fragment -->\n\n<!-- ap:fragment id="test.empty" slot="body" mutability="replaceable" -->\n  \n<!-- /ap:fragment -->\n';
+  const template = renderMarkdownPromptTemplate(source, { source_ref: "empty-tail.md" });
+  expect(template.contents).toBe("First\n");
+  expect(
+    template.segments
+      .map((segment) => (segment.kind === "text" ? segment.text : segment.fragment.text))
+      .join(""),
+  ).toBe(template.contents);
+  expect(template.fragments.map((fragment) => fragment.id)).toEqual(["test.first", "test.empty"]);
+  expect(template.fragments[1]?.source).toEqual({
+    kind: "markdown_marker",
+    source_ref: "empty-tail.md",
+    index: 1,
+  });
+});

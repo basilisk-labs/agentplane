@@ -19,6 +19,9 @@ const mockApplyTaskMutation =
 vi.mock("../shared/task-backend.js", () => ({
   loadCommandContext: mockLoadCommandContext,
 }));
+vi.mock("./kernel-bookkeeping.js", () => ({
+  appendCanonicalComment: () => Promise.resolve(false),
+}));
 vi.mock("../shared/task-mutation.js", () => ({
   applyTaskMutation: mockApplyTaskMutation,
 }));

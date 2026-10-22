@@ -99,6 +99,14 @@ export default defineConfig({
     ],
   },
   test: {
+    ...(process.env.AGENTPLANE_VERIFICATION_OBSERVATION_DIR
+      ? {
+          reporters: [
+            "default",
+            path.join(__dirname, "scripts/lib/verification-failures-reporter.mjs"),
+          ],
+        }
+      : {}),
     include: ["packages/**/src/**/*.test.ts"],
     environment: "node",
     setupFiles: [path.join(__dirname, "packages/testkit/src/vitest-temp-root.setup.ts")],

@@ -92,6 +92,7 @@ describe("side-effect authority store", () => {
         gitRoot: integration,
         taskId,
         state: approvedState(),
+        expected: await loadSideEffectAuthorityState({ gitRoot: integration, taskId, task: {} }),
       });
 
       expect(await git(integration, ["rev-parse", "HEAD"])).toBe(before);
@@ -148,4 +149,50 @@ describe("side-effect authority store", () => {
       await rm(root, { recursive: true, force: true });
     }
   });
+});
+
+it("rejects stale ordinary grants after candidate revocation and serializes competing writers", async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), "authority-store-cas-"));
+  try {
+    await git(root, ["init", "--quiet"]);
+    const read = () => loadSideEffectAuthorityState({ gitRoot: root, taskId, task: {} });
+    const empty = await read();
+    const first = await Promise.allSettled([
+      persistSideEffectAuthorityState({
+        gitRoot: root,
+        taskId,
+        state: approvedState(),
+        expected: empty,
+      }),
+      persistSideEffectAuthorityState({
+        gitRoot: root,
+        taskId,
+        state: approvedState(),
+        expected: empty,
+      }),
+    ]);
+    expect(first.filter((value) => value.status === "fulfilled")).toHaveLength(1);
+    expect(first.filter((value) => value.status === "rejected")).toHaveLength(1);
+    const beforeRevocation = await read();
+    if (!beforeRevocation.state) throw new Error("Expected existing grant");
+    const revoked = { ...beforeRevocation.state, grants: [] };
+    await persistSideEffectAuthorityState({
+      gitRoot: root,
+      taskId,
+      state: revoked,
+      expected: beforeRevocation,
+    });
+    await expect(
+      persistSideEffectAuthorityState({
+        gitRoot: root,
+        taskId,
+        state: approvedState(),
+        expected: beforeRevocation,
+      }),
+    ).rejects.toThrow("changed");
+    const final = await read();
+    expect(final.state).toEqual(revoked);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
 });

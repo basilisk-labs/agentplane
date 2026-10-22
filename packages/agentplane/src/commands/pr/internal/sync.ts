@@ -1,3 +1,4 @@
+import { resolveReviewedPublicationBase } from "./reviewed-publication-base.js";
 import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { resolveBaseBranch } from "@agentplaneorg/core/git";
@@ -62,6 +63,7 @@ async function buildPrSyncCommonState(opts: {
   relatedTaskIds?: string[];
   branch: string;
   baseBranch: string | null;
+  reviewedPublicationBase?: { comparisonBase: string; providerBase: string } | null;
   workflowDir: string;
   tasksPath: string;
 }): Promise<PrSyncCommonState> {
@@ -73,11 +75,13 @@ async function buildPrSyncCommonState(opts: {
     taskId: opts.task.id,
     branch: opts.branch,
   });
-  const providerBaseBranch = await resolvePrMetadataBaseBranch({
-    gitRoot: opts.resolved.gitRoot,
-    baseRef: opts.baseBranch,
-    baseSha: taskExecutionBaseFromExtensions(opts.task.extensions)?.base_sha ?? null,
-  });
+  const providerBaseBranch =
+    opts.reviewedPublicationBase?.providerBase ??
+    (await resolvePrMetadataBaseBranch({
+      gitRoot: opts.resolved.gitRoot,
+      baseRef: opts.baseBranch,
+      baseSha: taskExecutionBaseFromExtensions(opts.task.extensions)?.base_sha ?? null,
+    }));
   return {
     task: opts.task,
     resolved: opts.resolved,
@@ -102,6 +106,7 @@ async function buildPrSyncCommonState(opts: {
     headSha,
     artifactRefresh,
     providerBaseBranch,
+    reviewedPublicationBase: opts.reviewedPublicationBase ?? null,
   };
 }
 
@@ -175,7 +180,7 @@ export async function ensurePrArtifactsSynced(opts: {
       branch,
       includeTaskIds: preservedIncludedTaskIds,
       remoteMode: "sync-only",
-      base: opts.base ?? taskBase,
+      base: baseBranch ?? undefined,
     });
   }
   const result = await syncPrArtifacts({
@@ -184,7 +189,7 @@ export async function ensurePrArtifactsSynced(opts: {
     mode: "update",
     branch,
     includeTaskIds: preservedIncludedTaskIds,
-    base: opts.base ?? taskBase,
+    base: baseBranch ?? undefined,
   });
   return { ...result, branch };
 }
@@ -282,12 +287,19 @@ export async function syncPrArtifacts(opts: {
           ? parsePrMeta(await readFile(metaPath, "utf8"), task.id)
           : null;
       const taskBase = taskExecutionBaseFromExtensions(task.extensions)?.base_ref;
-      const baseBranch = await resolveBaseBranch({
+      const frozenBase = await resolveBaseBranch({
         cwd: opts.cwd,
         rootOverride: opts.rootOverride ?? null,
         cliBaseOpt: opts.base ?? taskBase ?? null,
         mode: workflowMode,
       });
+      const reviewedPublicationBase = await resolveReviewedPublicationBase({
+        command: ctx,
+        task,
+        branch,
+        fallback: frozenBase,
+      });
+      const baseBranch = reviewedPublicationBase?.comparisonBase ?? frozenBase;
       const validatedIncludedTaskIds = await validateBranchPrBatchIncludedTasks({
         ctx,
         primaryTaskId: task.id,
@@ -344,6 +356,7 @@ export async function syncPrArtifacts(opts: {
         relatedTaskIds: validatedIncludedTaskIds,
         branch,
         baseBranch,
+        reviewedPublicationBase,
       });
 
       if (opts.mode === "open") {

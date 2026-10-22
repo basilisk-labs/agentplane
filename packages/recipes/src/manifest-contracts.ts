@@ -80,14 +80,7 @@ export type RecipeScenarioDescriptor = {
 };
 
 export type OverlaySurface =
-  | "planning"
-  | "execution"
-  | "coding"
-  | "debugging"
-  | "review"
-  | "verification"
-  | "docs"
-  | "finish";
+  "planning" | "execution" | "coding" | "debugging" | "review" | "verification" | "docs" | "finish";
 
 export type OverlayStrength = "required" | "default" | "advisory";
 

@@ -4,16 +4,10 @@ import type { TaskData } from "../../backends/task-backend.js";
 import type { CommandContext } from "../../commands/shared/task-backend.js";
 
 export type AuthoritativeTaskSource =
-  | "base_checkout"
-  | "backend_projection"
-  | "task_branch_snapshot"
-  | "task_worktree";
+  "base_checkout" | "backend_projection" | "task_branch_snapshot" | "task_worktree";
 
 export type TaskExecutionRouteSource =
-  | "execution_contract"
-  | "execution_route"
-  | "legacy_migration"
-  | "repository_floor";
+  "execution_contract" | "execution_route" | "legacy_migration" | "repository_floor";
 
 export type TaskExecutionRequestedMode = TaskExecutionRouteMode | "auto";
 

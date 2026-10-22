@@ -1,10 +1,15 @@
 import { execFileSync } from "node:child_process";
 import { existsSync } from "node:fs";
+import {
+  describeFullCiGroupLaunch,
+  resolveFullCiResourceProfile,
+} from "../lib/local-ci-resource-profile.mjs";
 
 import { buildLocalCiExecutionPlan, parseChangedFilesEnv } from "../lib/local-ci-selection.mjs";
 import { withFrameworkBuildLock } from "../lib/framework-build-lock.mjs";
 import { assertPinnedBunRuntime } from "../lib/bun-runtime.mjs";
 import {
+  countLaunchedVerificationGroups,
   runVerificationGroups,
   writeVerificationGroupResults,
 } from "../lib/verification-scheduler.mjs";
@@ -56,7 +61,7 @@ const LOCAL_VITEST_SUITE_TIMEOUT_MS = parsePositiveIntegerEnv(
   DEFAULT_LOCAL_VITEST_SUITE_TIMEOUT_MS,
 );
 const LOCAL_FAST_VITEST_MAX_WORKERS =
-  String(baseEnv.AGENTPLANE_FAST_VITEST_MAX_WORKERS ?? "").trim() || "6";
+  String(baseEnv.AGENTPLANE_FAST_VITEST_MAX_WORKERS ?? "").trim() || "4";
 const LOCAL_CI_GROUP_CONCURRENCY = parsePositiveIntegerEnv(
   baseEnv.AGENTPLANE_LOCAL_CI_GROUP_CONCURRENCY,
   1,
@@ -460,17 +465,35 @@ async function runTargetedFastPath(plan) {
 
 async function runFullFastPath() {
   const startedAt = performance.now();
-  const buildResult = await runVerificationGroups(
-    [{ id: "build", command: "bun", args: ["run", "build"] }],
-    { concurrency: 1, cwd: process.cwd(), env: baseEnv },
-  );
+  const resources = resolveFullCiResourceProfile(baseEnv);
+  process.stdout.write(`${JSON.stringify(resources)}\n`);
+  const reportLaunch = (group) => {
+    const launch = describeFullCiGroupLaunch(resources, [group.id]);
+    process.stdout.write(`${JSON.stringify(launch)}\n`);
+    return launch.outer_remaining_ms !== 0;
+  };
+  const buildGroups = [
+    {
+      id: "build",
+      command: "bun",
+      args: ["run", "build"],
+      timeoutMs: resources.group_timeout_ms,
+    },
+  ];
+  const buildResult = await runVerificationGroups(buildGroups, {
+    concurrency: 1,
+    cwd: process.cwd(),
+    env: baseEnv,
+    onGroupStart: reportLaunch,
+  });
   await writeVerificationGroupResults(buildResult.results);
   if (!buildResult.ok) throw new Error("Full verification build prerequisite failed.");
 
   const groupEnv = {
     ...testEnv,
     AGENTPLANE_LOCAL_CI_RUN_CLI_DOCS: runCliDocsCheck ? "1" : "0",
-    AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS: String(LOCAL_VITEST_SUITE_TIMEOUT_MS),
+    AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS: String(resources.group_timeout_ms),
+    AGENTPLANE_LOCAL_LINT_HEAP_MB: String(resources.lint_heap_mb),
     AGENTPLANE_FAST_VITEST_MAX_WORKERS: LOCAL_FAST_VITEST_MAX_WORKERS,
   };
   const groups = executionPlan.execution_groups.map((id) => ({
@@ -478,7 +501,7 @@ async function runFullFastPath() {
     command: process.execPath,
     args: ["scripts/checks/run-local-ci-group.mjs", id],
     env: groupEnv,
-    timeoutMs: LOCAL_VITEST_SUITE_TIMEOUT_MS,
+    timeoutMs: resources.group_timeout_ms,
   }));
   // Preserve every selected group and aggregate failure while isolating the
   // lifecycle-heavy runtime and CLI waves from the concurrent core worker pool.
@@ -492,16 +515,19 @@ async function runFullFastPath() {
     concurrency: runtimeConcurrency,
     cwd: process.cwd(),
     env: baseEnv,
+    onGroupStart: reportLaunch,
   });
   const coreResult = await runVerificationGroups(coreWave, {
     concurrency: coreConcurrency,
     cwd: process.cwd(),
     env: baseEnv,
+    onGroupStart: reportLaunch,
   });
   const cliResult = await runVerificationGroups(cliWave, {
     concurrency: cliConcurrency,
     cwd: process.cwd(),
     env: baseEnv,
+    onGroupStart: reportLaunch,
   });
   const results = [...runtimeResult.results, ...coreResult.results, ...cliResult.results];
   const ok = runtimeResult.ok && coreResult.ok && cliResult.ok;
@@ -513,7 +539,7 @@ async function runFullFastPath() {
       route: "full-fast",
       wall_clock_ms: Math.round(performance.now() - startedAt),
       selected_groups: groups.length + 1,
-      executed_groups: results.length + buildResult.results.length,
+      executed_groups: countLaunchedVerificationGroups([...buildResult.results, ...results]),
       parallel_group_concurrency: Math.max(runtimeConcurrency, coreConcurrency, cliConcurrency),
       build_invocations: 1,
       ok,

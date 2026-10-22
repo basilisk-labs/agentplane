@@ -3,34 +3,15 @@ import { normalizeTaskStatus, parseTaskStatus } from "@agentplaneorg/core/tasks"
 import type { TaskData } from "../../backends/task-backend/shared/types.js";
 
 const TASK_NEW_SIMILAR_TITLE_THRESHOLD = 0.75;
-const TASK_NEW_DUPLICATE_STOPWORDS = new Set([
-  "a",
-  "an",
-  "and",
-  "for",
-  "from",
-  "in",
-  "is",
-  "of",
-  "on",
-  "the",
-  "to",
-  "when",
-  "with",
-]);
 function normalizeDuplicateTitleTokens(value: string): string[] {
   return value
+    .normalize("NFC")
     .trim()
     .toLowerCase()
-    .replaceAll(/[^a-z0-9]+/g, " ")
+    .replaceAll(/[^\p{L}\p{M}\p{N}]+/gu, " ")
     .split(/\s+/)
     .map((token) => token.trim())
-    .filter(
-      (token) =>
-        token.length > 0 &&
-        (token.length > 2 || /\d/.test(token)) &&
-        !TASK_NEW_DUPLICATE_STOPWORDS.has(token),
-    );
+    .filter((token) => token.length > 0);
 }
 
 function duplicateSimilarity(left: string, right: string): number {
@@ -48,9 +29,10 @@ function duplicateSimilarity(left: string, right: string): number {
 
 function normalizeDuplicateTitleKey(value: string): string {
   return value
+    .normalize("NFC")
     .trim()
     .toLowerCase()
-    .replaceAll(/[^a-z0-9]+/g, " ")
+    .replaceAll(/[^\p{L}\p{M}\p{N}]+/gu, " ")
     .replaceAll(/\s+/g, " ")
     .trim();
 }

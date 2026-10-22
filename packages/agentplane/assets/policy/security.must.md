@@ -7,4 +7,5 @@
 - MUST NOT perform network actions when approval is required and not granted.
 - MUST NOT modify auth/crypto/security-critical codepaths without explicit scope approval.
 - MUST report security-sensitive drift immediately and stop before mutation.
+
 <!-- /ap:fragment -->

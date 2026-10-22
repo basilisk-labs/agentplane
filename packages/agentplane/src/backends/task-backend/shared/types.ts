@@ -46,13 +46,7 @@ export type TaskData = {
   task_kind?: "analysis" | "content" | "docs" | "code" | "release" | "ops" | "context";
   mutation_scope?: "none" | "docs" | "code" | "release" | "ops" | "context" | "unknown";
   risk_flags?: (
-    | "network"
-    | "credentials"
-    | "deploy"
-    | "publish"
-    | "merge"
-    | "security"
-    | "external_system"
+    "network" | "credentials" | "deploy" | "publish" | "merge" | "security" | "external_system"
   )[];
   verify: string[];
   plan_approval?: PlanApproval;

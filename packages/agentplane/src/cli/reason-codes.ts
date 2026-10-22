@@ -1,12 +1,5 @@
 type ReasonCodeCategory =
-  | "usage"
-  | "reconcile"
-  | "git"
-  | "handoff"
-  | "network"
-  | "backend"
-  | "validation"
-  | "feedback";
+  "usage" | "reconcile" | "git" | "handoff" | "network" | "backend" | "validation" | "feedback";
 
 export type ReasonCodeMeta = {
   code: string;

@@ -13,13 +13,7 @@ type ParsedArgs = {
 };
 
 type GlobalFlagKey =
-  | "help"
-  | "version"
-  | "noUpdateCheck"
-  | "root"
-  | "jsonErrors"
-  | "allowNetwork"
-  | "outputMode";
+  "help" | "version" | "noUpdateCheck" | "root" | "jsonErrors" | "allowNetwork" | "outputMode";
 
 type GlobalFlagDef = {
   key: GlobalFlagKey;
@@ -187,8 +181,7 @@ function appendStructuredChunk(
   const encoding = typeof rest[0] === "string" ? (rest[0] as BufferEncoding) : undefined;
   store[channel].push(chunkToString(chunk, encoding));
   const callback = rest.find((item) => typeof item === "function") as
-    | ((error?: Error | null) => void)
-    | undefined;
+    ((error?: Error | null) => void) | undefined;
   callback?.(null);
   return true;
 }

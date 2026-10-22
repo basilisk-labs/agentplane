@@ -172,12 +172,14 @@ export async function finalizeCompletedExternalAgentExchange(opts: {
   work_order_id: string;
   semantic_status: string;
   result_digest: string;
+  native_review?: unknown;
 }): Promise<boolean> {
   if (opts.intent.state !== "completed_pending_exchange") return false;
   const expectedCompletionDigest = digestSupervisorEpisodeValue({
     work_order_id: opts.work_order_id,
     semantic_status: opts.semantic_status,
     result_digest: opts.result_digest,
+    ...(opts.native_review ? { native_review: opts.native_review } : {}),
   });
   if (opts.intent.operation.result_digest !== expectedCompletionDigest) {
     throw new CliError({

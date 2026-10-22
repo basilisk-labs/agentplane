@@ -53,4 +53,5 @@ returns an explicit manual-compatibility route; never derive their arguments fro
 - MUST NOT treat agent-reported checks or provider state as persisted verification or merge truth.
 - MUST return control at approval, human, hosted/external, or effect-in-doubt boundaries.
 - MUST stop and request re-approval on material drift.
+
 <!-- /ap:fragment -->

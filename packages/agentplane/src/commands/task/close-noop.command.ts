@@ -6,6 +6,7 @@ import { cmdTaskCloseNoop } from "./close-noop.js";
 type TaskCloseNoopParsed = {
   taskId: string;
   author: string;
+  approvedBy?: string;
   note?: string;
   force: boolean;
   yes: boolean;
@@ -18,6 +19,13 @@ export const taskCloseNoopSpec: CommandSpec<TaskCloseNoopParsed> = {
   summary: "Close a task as a verified no-op in one command.",
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
   options: [
+    {
+      kind: "string",
+      name: "approved-by",
+      valueHint: "<role>",
+      description:
+        "Explicit manual USER approval for canonical closure before implementation. --author is attribution only.",
+    },
     {
       kind: "string",
       name: "author",
@@ -52,6 +60,11 @@ export const taskCloseNoopSpec: CommandSpec<TaskCloseNoopParsed> = {
     },
   ],
   validateRaw: (raw) => {
+    if (raw.opts["approved-by"] !== undefined && raw.opts["approved-by"] !== "USER")
+      throw usageError({
+        spec: taskCloseNoopSpec,
+        message: "--approved-by requires exact USER authority.",
+      });
     const taskId = typeof raw.args["task-id"] === "string" ? raw.args["task-id"].trim() : "";
     const author = typeof raw.opts.author === "string" ? raw.opts.author.trim() : "";
     const note = raw.opts.note;
@@ -66,6 +79,7 @@ export const taskCloseNoopSpec: CommandSpec<TaskCloseNoopParsed> = {
   parse: (raw) => ({
     taskId: String(raw.args["task-id"]),
     author: String(raw.opts.author),
+    approvedBy: typeof raw.opts["approved-by"] === "string" ? raw.opts["approved-by"] : undefined,
     note: typeof raw.opts.note === "string" ? raw.opts.note : undefined,
     force: raw.opts.force === true,
     yes: raw.opts.yes === true,
@@ -81,6 +95,7 @@ export function makeRunTaskCloseNoopHandler(getCtx: (cmd: string) => Promise<Com
       rootOverride: ctx.rootOverride,
       taskId: p.taskId,
       author: p.author,
+      approvedBy: p.approvedBy,
       note: p.note,
       force: p.force,
       yes: p.yes,

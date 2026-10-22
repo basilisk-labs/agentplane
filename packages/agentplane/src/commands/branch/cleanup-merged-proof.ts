@@ -17,7 +17,7 @@ import {
   isCanonicalFullCommitOid,
 } from "../shared/git-ops.js";
 import { parsePrMeta } from "../shared/pr-meta.js";
-import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
+import type { CommandContext } from "../shared/task-backend.js";
 import type { ProviderReconciliationProof } from "./cleanup-merged-provider-reconciliation.js";
 import { targetedCleanupProof } from "./cleanup-merged-targeted-proof.js";
 
@@ -130,7 +130,7 @@ export async function resolveCleanupPlan(opts: {
     let task = taskCache.get(target.taskId) ?? null;
     if (!taskCache.has(target.taskId)) {
       try {
-        task = await loadTaskFromContext({ ctx: opts.ctx, taskId: target.taskId });
+        task = await opts.ctx.taskBackend.getTask(target.taskId);
       } catch {
         task = null;
       }
@@ -215,7 +215,7 @@ export async function resolveCleanupPlan(opts: {
       let task = taskCache.get(taskId) ?? null;
       if (!taskCache.has(taskId)) {
         try {
-          task = await loadTaskFromContext({ ctx: opts.ctx, taskId });
+          task = await opts.ctx.taskBackend.getTask(taskId);
         } catch {
           task = null;
         }

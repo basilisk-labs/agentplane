@@ -1,3 +1,4 @@
+import { isoTimestampSchema } from "../schemas/iso-timestamp.js";
 import { z } from "zod";
 
 import { formatZodIssues } from "../schemas/zod-error-format.js";
@@ -6,7 +7,7 @@ export { isRecord } from "../types/guards.js";
 export type JsonSchemaDocument = Record<string, unknown>;
 
 export const NON_EMPTY_STRING = z.string().min(1);
-export const ISO_UTC_TIMESTAMP = z.string().datetime({ offset: true });
+export const ISO_UTC_TIMESTAMP = isoTimestampSchema({ offset: true });
 export const NULLABLE_NON_EMPTY_STRING = NON_EMPTY_STRING.nullable();
 export const NULLABLE_ISO_UTC_TIMESTAMP = ISO_UTC_TIMESTAMP.nullable();
 

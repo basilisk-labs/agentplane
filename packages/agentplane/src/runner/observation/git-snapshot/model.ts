@@ -24,12 +24,7 @@ export type GitIndexEntry = {
 };
 
 type GitPathFingerprintKind =
-  | "file"
-  | "symlink"
-  | "directory"
-  | "missing"
-  | "other"
-  | "unavailable";
+  "file" | "symlink" | "directory" | "missing" | "other" | "unavailable";
 
 export type GitPathFingerprint = {
   path: string;
@@ -82,12 +77,7 @@ export type GitSnapshotPathState = {
 };
 
 export type GitSnapshotDeltaChange =
-  | "added"
-  | "modified"
-  | "deleted"
-  | "renamed"
-  | "index"
-  | "head";
+  "added" | "modified" | "deleted" | "renamed" | "index" | "head";
 
 export type GitSnapshotDeltaEntry = {
   path: string;

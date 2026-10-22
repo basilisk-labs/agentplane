@@ -1,20 +1,26 @@
-import { runProcess, startProcess } from "@agentplaneorg/core/process";
+import { runProcess } from "@agentplaneorg/core/process";
 import { createHash } from "node:crypto";
-import { mkdir, mkdtemp, readFile, rm, symlink } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, stat, symlink } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { verificationRedactor } from "./verification-observation.js";
+
+import {
+  verificationImplementationIdentity,
+  executeObservedCheck,
+  verificationObservationEnv,
+  writeCheckArtifact,
+  mergedOutput,
+  createDeclaredCheckObservation,
+} from "./direct-task-verification-observation.js";
 
 import type { TaskData } from "../../backends/task-backend.js";
-import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
 import { parseDeclaredTaskCheckSequence } from "../shared/declared-check.js";
 import { localRuntimeEvidence } from "../../shared/runtime-env.js";
 import { verificationChildEnv } from "../shared/pr-meta/verify-log.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
-import {
-  isInfrastructureVerification,
-  isVerificationInfrastructureError,
-} from "./verification-infrastructure.js";
+import { isVerificationInfrastructureError } from "./verification-infrastructure.js";
 import {
   parseDirectTaskCheck,
   type DirectTaskCheck,
@@ -32,6 +38,8 @@ export {
 
 const DEFAULT_CHECK_TIMEOUT_MS = 30 * 60_000;
 const CHECK_TIMEOUT_MS_BY_SCRIPT: Readonly<Record<string, number>> = Object.freeze({
+  // The complete regression suite can exceed the default on shared development hosts.
+  "test:fast": 60 * 60_000,
   // Full CI includes four bounded verification waves and a prerequisite build.
   "ci:local:full": 150 * 60_000,
   // Prepublish also runs release-wide suites, coverage, and installed-package smoke checks.
@@ -39,7 +47,6 @@ const CHECK_TIMEOUT_MS_BY_SCRIPT: Readonly<Record<string, number>> = Object.free
   "release:ci-check": 150 * 60_000,
   "e2e:v0.7.1:gate": 150 * 60_000,
 });
-const CHECK_OUTPUT_LIMIT = 4000;
 const BUN_UNMATCHED_FILTER_PATTERN = /following filters did not match any test files/iu;
 const BUN_ZERO_TEST_PATTERNS = [
   /\bno tests? (?:found|matched|ran|were run)\b/iu,
@@ -56,6 +63,7 @@ function requiresIsolatedQualificationCheckout(
     );
   const invokesQualificationScript = parsedSequence.some(
     ({ script }) =>
+      script === "ci:local:full" ||
       script === "qualification:gate" ||
       (script !== null && /^e2e:v\d+\.\d+\.\d+(?:-[^:]+)?:gate$/u.test(script)),
   );
@@ -102,10 +110,17 @@ async function verificationCheckout(
       "node_modules",
       "packages/agentplane/node_modules",
       "packages/core/node_modules",
+      "packages/recipes/node_modules",
       "packages/testkit/node_modules",
     ];
     for (const relative of dependencyRoots) {
       const target = path.join(cwd, relative);
+      try {
+        await stat(target);
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === "ENOENT") continue;
+        throw error;
+      }
       const link = path.join(checkout, relative);
       await mkdir(path.dirname(link), { recursive: true });
       await symlink(target, link, "dir");
@@ -160,14 +175,6 @@ export function isTaskLevelVerificationReworkState(opts: {
     opts.has_current_plan &&
     opts.all_required_work_items_completed
   );
-}
-
-function tail(value: string): string {
-  return value.length <= CHECK_OUTPUT_LIMIT ? value : value.slice(-CHECK_OUTPUT_LIMIT);
-}
-
-function mergedOutput(values: readonly string[]): string {
-  return tail(values.filter(Boolean).join("\n"));
 }
 
 function directTaskCheckTimeoutMs(script: string | null): number {
@@ -315,38 +322,6 @@ function resolvePlannerFallbackCommand(opts: {
   return replacement ? `bun run ${replacement}` : opts.command;
 }
 
-async function writeCheckArtifact(opts: {
-  command: CommandContext;
-  task_id: string;
-  result: Omit<DirectTaskVerificationResult, "artifact_path">;
-  retain_infrastructure_failure?: (
-    result: Omit<DirectTaskVerificationResult, "artifact_path">,
-  ) => Promise<string>;
-}): Promise<string> {
-  if (opts.retain_infrastructure_failure && isInfrastructureVerification(opts.result))
-    return opts.retain_infrastructure_failure(opts.result);
-  const relative = path.join(
-    opts.command.config.paths.workflow_dir,
-    opts.task_id,
-    "supervision",
-    "declared-checks.json",
-  );
-  const absolute = path.join(opts.command.resolvedProject.gitRoot, relative);
-  await mkdir(path.dirname(absolute), { recursive: true });
-  const artifact = {
-    schema_version: 1,
-    kind: "direct_task_declared_checks",
-    task_id: opts.task_id,
-    status: opts.result.status,
-    reason: opts.result.reason,
-    checks: opts.result.checks,
-  };
-  // Equal commands and exit codes do not identify an equal execution or implementation.
-  // Persist this run's observations. The writer already avoids byte-identical rewrites.
-  await writeJsonStableIfChanged(absolute, artifact);
-  return relative;
-}
-
 /**
  * Executes the same deterministic task-verify grammar enforced at mutation
  * boundaries. The CLI never passes task text to a shell: every command is
@@ -415,6 +390,10 @@ export async function runDirectTaskVerification(opts: {
     };
     return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };
   }
+  const implementation = await verificationImplementationIdentity(
+    opts.cwd,
+    opts.command.config.paths.workflow_dir,
+  );
   for (const declaredCommand of commands) {
     const command = hasPlannerFallbackVerifySteps(opts.task)
       ? resolvePlannerFallbackCommand({
@@ -454,17 +433,41 @@ export async function runDirectTaskVerification(opts: {
     const observedRuntimes: ReturnType<typeof segmentEvidence>[] = [];
     const stdout: string[] = [];
     const stderr: string[] = [];
+    const observedOutput = { stdout: false, stderr: false };
     let exitCode: number | null = 0;
     let zeroTests = false;
+    let timedOut = false;
+    let cancelled = false;
     let infrastructureFailure = false;
+    const { observation, reference } = createDeclaredCheckObservation({
+      root: opts.command.resolvedProject.gitRoot,
+      workflowDir: opts.command.config.paths.workflow_dir,
+      taskId: opts.task_id,
+      command,
+      deadline,
+      implementation,
+      runtime,
+      env,
+      cwd: opts.cwd,
+    });
+    let observationReference = reference;
+    const redact = verificationRedactor(env, opts.cwd);
+    const finishObservation = (state: "passed" | "failed" | "interrupted") => {
+      if (observation)
+        observationReference = observation.finish(
+          timedOut ? "timed_out" : cancelled ? "cancelled" : state,
+          { exit_code: exitCode, runtime },
+        );
+    };
     let isolatedCheckout: Awaited<ReturnType<typeof verificationCheckout>> | null = null;
     const completedCheck = (error?: unknown): DirectTaskCheck => ({
       runtime,
       ...(infrastructureFailure || (error && isVerificationInfrastructureError(error))
         ? { failure_kind: "infrastructure" as const }
         : {}),
-      command,
-      ...(command === declaredCommand ? {} : { declared_command: declaredCommand }),
+      command: redact(command),
+      observation: observationReference,
+      ...(command === declaredCommand ? {} : { declared_command: redact(declaredCommand) }),
       script: parsedSequence.length === 1 ? (parsedSequence[0]?.script ?? null) : null,
       check_ids: [
         ...new Set([
@@ -474,17 +477,24 @@ export async function runDirectTaskVerification(opts: {
       ],
       exit_code: error ? null : exitCode,
       duration_ms: Math.max(0, now() - started),
-      stdout_tail: mergedOutput(stdout),
-      stderr_tail: mergedOutput([
-        ...stderr,
-        ...(error ? [error instanceof Error ? error.message : "unknown process failure"] : []),
-      ]),
+      stdout_tail: observation ? observation.tail("stdout") : redact(mergedOutput(stdout)),
+      stderr_tail: observation
+        ? observation.tail("stderr")
+        : redact(
+            mergedOutput([
+              ...stderr,
+              ...(error
+                ? [error instanceof Error ? error.message : "unknown process failure"]
+                : []),
+            ]),
+          ),
     });
     try {
       isolatedCheckout = await verificationCheckout(opts.cwd, command, parsedSequence, env);
       for (const parsed of parsedSequence) {
         const remainingTimeoutMs = parsedSequence.length === 1 ? timeoutBudgetMs : deadline - now();
         if (remainingTimeoutMs <= 0) {
+          timedOut = true;
           throw new Error(
             `Declared check exhausted its ${String(timeoutBudgetMs)}ms timeout budget.`,
           );
@@ -501,19 +511,36 @@ export async function runDirectTaskVerification(opts: {
           command: parsed.executable,
           args: parsed.args,
           cwd: isolatedCheckout.cwd,
-          env: { ...env, ...parsed.env },
+          env: {
+            ...env,
+            ...parsed.env,
+            ...(parsed.script === "ci:local:full"
+              ? {
+                  AGENTPLANE_NATIVE_CHECK_TIMEOUT_MS: String(remainingTimeoutMs),
+                  AGENTPLANE_NATIVE_CHECK_DEADLINE_EPOCH_MS: String(deadline),
+                  AGENTPLANE_NATIVE_CHECK_TIMEOUT_SOURCE: additionalTimeouts.has(declaredCommand)
+                    ? "declared_command"
+                    : "native_default",
+                }
+              : {}),
+            ...verificationObservationEnv(observation, implementation),
+          },
           timeoutMs: remainingTimeoutMs,
           maxBuffer: 1024 * 1024,
           reject: false,
         };
-        // Python is admitted by the verifier grammar, not the generic process allowlist.
-        const executed = opts.run_process
-          ? await opts.run_process(processOptions)
-          : parsed.executable === "python" || parsed.executable === "python3"
-            ? await startProcess({ ...processOptions, buffer: true })
-            : await runProcess(processOptions);
-        const segmentStdout = String(executed.stdout ?? "");
-        const segmentStderr = String(executed.stderr ?? "");
+        const {
+          executed,
+          stdout: segmentStdout,
+          stderr: segmentStderr,
+        } = await executeObservedCheck({
+          processOptions,
+          runProcess: opts.run_process,
+          observation,
+          observedOutput,
+        });
+        timedOut = executed.timedOut === true;
+        cancelled = executed.isCanceled === true;
         stdout.push(segmentStdout);
         stderr.push(segmentStderr);
         exitCode = Number.isInteger(executed.exitCode) ? (executed.exitCode ?? null) : null;
@@ -528,6 +555,7 @@ export async function runDirectTaskVerification(opts: {
           break;
         }
       }
+      finishObservation(infrastructureFailure || exitCode !== 0 || zeroTests ? "failed" : "passed");
       checks.push(completedCheck());
       if (infrastructureFailure || exitCode !== 0 || zeroTests) {
         const result = {
@@ -540,6 +568,11 @@ export async function runDirectTaskVerification(opts: {
         return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };
       }
     } catch (error) {
+      observation?.write(
+        "stderr",
+        error instanceof Error ? error.message : "unknown process failure",
+      );
+      finishObservation("interrupted");
       checks.push(completedCheck(error));
       const result = {
         status: isVerificationInfrastructureError(error)

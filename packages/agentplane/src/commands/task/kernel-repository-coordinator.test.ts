@@ -18,6 +18,7 @@ const mocks = vi.hoisted(() => ({
   readHead: vi.fn(),
   stage: vi.fn(),
   stagedPaths: vi.fn(),
+  hookReady: vi.fn(),
 }));
 
 vi.mock("@agentplaneorg/core/process", () => ({ runProcess: mocks.runProcess }));
@@ -26,6 +27,7 @@ vi.mock("../../shared/stable-file.js", () => ({
   writeNewStableRegularFileNoFollow: mocks.writeStable,
 }));
 vi.mock("node:fs/promises", () => ({ mkdir: mocks.mkdir }));
+vi.mock("../shared/hook-shim-template.js", () => ({ assertHookRunnerReady: mocks.hookReady }));
 vi.mock("../guard/impl/commit.js", () => ({ cmdCommit: mocks.cmdCommit }));
 vi.mock("../shared/task-backend.js", () => ({ loadTaskFromContext: mocks.loadTask }));
 vi.mock("./direct-task-supervisor-implementation.js", () => ({
@@ -97,6 +99,38 @@ describe("canonical repository coordinator", () => {
     );
   });
 
+  it("rejects an unavailable hook runner before staging or committing", async () => {
+    const baseline = {
+      schema_version: 1,
+      kind: "canonical_repository_baseline",
+      task_id: taskId,
+      work_order_id: workOrderId,
+      checkout: "/repo",
+      branch: `task/${taskId}/canonical`,
+      head: "base-sha",
+      tree: "base-tree",
+      status: { command: "git status", lines: [] },
+    };
+    mocks.readStable.mockImplementation((target: string) =>
+      target.endsWith("repository-baseline.json")
+        ? Promise.resolve(JSON.stringify(baseline))
+        : Promise.reject(Object.assign(new Error("missing"), { code: "ENOENT" })),
+    );
+    mocks.readStatus.mockResolvedValue({ command: "git status", lines: [" M src/change.ts"] });
+    mocks.hookReady.mockRejectedValue(new Error("hook_runner_unavailable"));
+    await expect(
+      commitCanonicalImplementation({
+        command,
+        directory: "/exchange",
+        work_order: workOrder,
+        changed_paths: ["src/change.ts"],
+      }),
+    ).rejects.toThrow("hook_runner_unavailable");
+    expect(mocks.hookReady).toHaveBeenCalledWith("/repo");
+    expect(mocks.stage).not.toHaveBeenCalled();
+    expect(mocks.cmdCommit).not.toHaveBeenCalled();
+  });
+
   it.each([
     [".agentplane/policy/local.md", ["security_boundary"], true, false],
     [".agentplane/config.json", ["security_boundary"], false, true],
@@ -160,79 +194,175 @@ describe("canonical repository coordinator", () => {
     },
   );
 
-  it("commits the accumulated observed delta and freezes commit, tree, and evaluator identity", async () => {
-    const baseline = {
-      schema_version: 1,
-      kind: "canonical_repository_baseline",
-      task_id: taskId,
-      work_order_id: workOrderId,
-      checkout: "/repo",
-      branch: `task/${taskId}/canonical`,
-      head: "base-sha",
-      tree: "base-tree",
-      status: {
-        command: "git status --short --untracked-files=all",
-        lines: [`?? .agentplane/tasks/${taskId}/existing.json`, " M src/prior.ts"],
-      },
-    };
-    mocks.readStable.mockImplementation((target: string) =>
-      target.endsWith("repository-baseline.json")
-        ? Promise.resolve(JSON.stringify(baseline))
-        : Promise.reject(Object.assign(new Error("missing"), { code: "ENOENT" })),
-    );
-    mocks.readHead.mockResolvedValueOnce("base-sha").mockResolvedValueOnce("implementation-sha");
-    mocks.readStatus
-      .mockResolvedValueOnce({
-        command: "git status --short --untracked-files=all",
-        lines: [
-          `?? .agentplane/tasks/${taskId}/existing.json`,
-          `?? .agentplane/tasks/${taskId}/exchange.json`,
-          " M src/prior.ts",
-          " M src/change.ts",
-        ],
-      })
-      .mockResolvedValue({
-        command: "git status --short --untracked-files=all",
-        lines: [`?? .agentplane/tasks/${taskId}/exchange.json`],
+  it.each([false, true])(
+    "commits the accumulated observed delta, including a reissued dirty baseline (%s)",
+    async (reissued) => {
+      const baseline = {
+        schema_version: 1,
+        kind: "canonical_repository_baseline",
+        task_id: taskId,
+        work_order_id: workOrderId,
+        checkout: "/repo",
+        branch: `task/${taskId}/canonical`,
+        head: "base-sha",
+        tree: "base-tree",
+        status: {
+          command: "git status --short --untracked-files=all",
+          lines: [
+            `?? .agentplane/tasks/${taskId}/existing.json`,
+            " M src/prior.ts",
+            ...(reissued ? [" M src/change.ts"] : []),
+          ],
+        },
+      };
+      mocks.readStable.mockImplementation((target: string) =>
+        target.endsWith("repository-baseline.json")
+          ? Promise.resolve(JSON.stringify(baseline))
+          : Promise.reject(Object.assign(new Error("missing"), { code: "ENOENT" })),
+      );
+      mocks.readHead.mockResolvedValueOnce("base-sha").mockResolvedValueOnce("implementation-sha");
+      mocks.readStatus
+        .mockResolvedValueOnce({
+          command: "git status --short --untracked-files=all",
+          lines: [
+            `?? .agentplane/tasks/${taskId}/existing.json`,
+            `?? .agentplane/tasks/${taskId}/exchange.json`,
+            " M src/prior.ts",
+            " M src/change.ts",
+          ],
+        })
+        .mockResolvedValue({
+          command: "git status --short --untracked-files=all",
+          lines: [`?? .agentplane/tasks/${taskId}/exchange.json`],
+        });
+      mocks.cmdCommit.mockResolvedValue(0);
+      mocks.prepareEvidence.mockResolvedValue({
+        status: "ready",
+        evidence: {
+          artifact_path: `.agentplane/tasks/${taskId}/supervision/implementation-evidence.json`,
+          implementation_commit: "implementation-sha",
+          changed_paths: ["src/change.ts", "src/prior.ts"],
+        },
       });
-    mocks.cmdCommit.mockResolvedValue(0);
-    mocks.prepareEvidence.mockResolvedValue({
-      status: "ready",
-      evidence: {
-        artifact_path: `.agentplane/tasks/${taskId}/supervision/implementation-evidence.json`,
-        implementation_commit: "implementation-sha",
+
+      const result = await commitCanonicalImplementation({
+        command,
+        directory: "/exchange",
+        work_order: workOrder,
         changed_paths: ["src/change.ts", "src/prior.ts"],
-      },
-    });
+      });
 
-    const result = await commitCanonicalImplementation({
-      command,
-      directory: "/exchange",
-      work_order: workOrder,
-      changed_paths: ["src/change.ts", "src/prior.ts"],
-    });
+      expect(mocks.cmdCommit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          taskId,
+          allow: ["src/change.ts", "src/prior.ts"],
+          allowTasks: true,
+          requireClean: false,
+        }),
+      );
+      expect(mocks.stage).toHaveBeenCalledWith(["src/change.ts", "src/prior.ts"]);
+      expect(mocks.stage.mock.invocationCallOrder[0]).toBeLessThan(
+        mocks.cmdCommit.mock.invocationCallOrder[0]!,
+      );
+      expect(result).toMatchObject({
+        base_commit: "base-sha",
+        implementation_commit: "implementation-sha",
+        implementation_tree: "tree-sha",
+        evaluator_target: "implementation-sha",
+        changed_paths: ["src/change.ts", "src/prior.ts"],
+      });
+      expect(result.digest).toMatch(/^sha256:[a-f0-9]{64}$/u);
+    },
+  );
 
-    expect(mocks.cmdCommit).toHaveBeenCalledWith(
-      expect.objectContaining({
-        taskId,
-        allow: ["src/change.ts", "src/prior.ts"],
-        allowTasks: true,
-        requireClean: false,
-      }),
-    );
-    expect(mocks.stage).toHaveBeenCalledWith(["src/change.ts", "src/prior.ts"]);
-    expect(mocks.stage.mock.invocationCallOrder[0]).toBeLessThan(
-      mocks.cmdCommit.mock.invocationCallOrder[0]!,
-    );
-    expect(result).toMatchObject({
-      base_commit: "base-sha",
-      implementation_commit: "implementation-sha",
-      implementation_tree: "tree-sha",
-      evaluator_target: "implementation-sha",
-      changed_paths: ["src/change.ts", "src/prior.ts"],
-    });
-    expect(result.digest).toMatch(/^sha256:[a-f0-9]{64}$/u);
-  });
+  it.each(["retry", "unrelated", "missing", "no-intent", "wrong-base"])(
+    "handles dirty baseline staging after a rejected hook (%s)",
+    async (scenario) => {
+      const baseline = {
+        schema_version: 1,
+        kind: "canonical_repository_baseline",
+        task_id: taskId,
+        work_order_id: workOrderId,
+        checkout: "/repo",
+        branch: `task/${taskId}/canonical`,
+        head: "base-sha",
+        tree: "base-tree",
+        status: {
+          command: "git status",
+          lines: [" M src/change.ts", "?? src/new.ts", " M user.txt"],
+        },
+      };
+      let storedIntent: string | null = null;
+      mocks.readStable.mockImplementation((target: string) => {
+        if (target.endsWith("repository-baseline.json"))
+          return Promise.resolve(JSON.stringify(baseline));
+        if (target.endsWith("repository-commit-intent.json") && storedIntent)
+          return Promise.resolve(storedIntent);
+        return Promise.reject(Object.assign(new Error("missing"), { code: "ENOENT" }));
+      });
+      mocks.writeStable.mockImplementation((target: string, contents: string) => {
+        if (target.endsWith("repository-commit-intent.json")) storedIntent = contents;
+        return Promise.resolve();
+      });
+      mocks.readStatus.mockResolvedValue(baseline.status);
+      mocks.cmdCommit.mockRejectedValueOnce(new Error("hook rejected")).mockResolvedValue(0);
+      const options = {
+        command,
+        directory: "/exchange",
+        work_order: workOrder,
+        changed_paths: ["src/change.ts", "src/new.ts"],
+      };
+      await expect(commitCanonicalImplementation(options)).rejects.toThrow("hook rejected");
+      expect(mocks.stage).toHaveBeenCalledWith(options.changed_paths);
+      if (scenario === "no-intent") storedIntent = null;
+      if (scenario === "wrong-base") {
+        const contents = {
+          schema_version: 1,
+          kind: "canonical_repository_commit_intent",
+          task_id: taskId,
+          work_order_id: workOrderId,
+          base_commit: "other-base",
+          changed_paths: options.changed_paths,
+        };
+        storedIntent = JSON.stringify({ ...contents, digest: k.kernelDigest(contents) });
+      }
+      mocks.readStatus.mockResolvedValue({
+        command: "git status",
+        lines: [
+          ...(scenario === "missing" ? [] : ["M  src/change.ts"]),
+          "A  src/new.ts",
+          scenario === "unrelated" ? "M  user.txt" : " M user.txt",
+        ],
+      });
+      if (scenario !== "retry") {
+        await expect(commitCanonicalImplementation(options)).rejects.toThrow(
+          scenario === "wrong-base" ? "commit intent identity changed" : "dirty baseline",
+        );
+        expect(mocks.cmdCommit).toHaveBeenCalledTimes(1);
+        return;
+      }
+      mocks.readHead.mockResolvedValueOnce("base-sha").mockResolvedValue("implementation-sha");
+      mocks.readStatus
+        .mockResolvedValueOnce({
+          command: "git status",
+          lines: ["M  src/change.ts", "A  src/new.ts", " M user.txt"],
+        })
+        .mockResolvedValue({ command: "git status", lines: [" M user.txt"] });
+      mocks.prepareEvidence.mockResolvedValue({
+        status: "ready",
+        evidence: {
+          implementation_commit: "implementation-sha",
+          changed_paths: options.changed_paths,
+        },
+      });
+      await expect(commitCanonicalImplementation(options)).resolves.toMatchObject({
+        implementation_commit: "implementation-sha",
+        changed_paths: options.changed_paths,
+      });
+      expect(mocks.cmdCommit).toHaveBeenCalledTimes(2);
+      expect(mocks.stage).toHaveBeenLastCalledWith(options.changed_paths);
+    },
+  );
 
   it("commits an authorized followup after a partial commit dispatch", async () => {
     const baseline = {
@@ -507,7 +637,7 @@ describe("canonical repository coordinator", () => {
     );
     mocks.readStatus.mockResolvedValue({
       command: "git status --short --untracked-files=all",
-      lines: [" M src/foreign.ts"],
+      lines: [" M src/foreign.ts", " M src/change.ts"],
     });
 
     await expect(
@@ -517,7 +647,10 @@ describe("canonical repository coordinator", () => {
         work_order: workOrder,
         changed_paths: ["src/change.ts"],
       }),
-    ).rejects.toThrow("differs from its observation");
+    ).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      context: { unobserved_paths: ["src/foreign.ts"] },
+    });
     expect(mocks.cmdCommit).not.toHaveBeenCalled();
   });
 

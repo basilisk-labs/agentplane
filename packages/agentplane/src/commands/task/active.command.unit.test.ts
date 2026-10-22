@@ -33,52 +33,80 @@ describe("task active route evaluation", () => {
     vi.restoreAllMocks();
   });
 
-  it("diagnoses a contradictory outer status instead of selecting canonical work", async () => {
-    const identity = taskKernel.kernelDigest("repo");
-    const aggregate: taskKernel.TaskAggregate = {
-      schema_version: 1,
-      id: "T-1",
-      revision: 1,
-      state: "PLANNING",
-      intent_digest: taskKernel.kernelDigest("intent"),
-      current_plan: null,
-      plan_history: [],
-      work_items: {},
-      final_validation: null,
-      effects: [],
-      mutation_receipts: {},
-      controller_transfer: null,
-      migration_receipts: [],
-    };
-    const task = makeTaskFixture({
-      status: "DONE",
-      depends_on: ["LEGACY-MISSING"],
-      extensions: { task_kernel: makeKernelRecord(identity, aggregate, []) },
-    });
-    vi.spyOn(identityContext, "resolveLogicalRepositoryIdentity").mockResolvedValue(identity);
-    const route = vi.spyOn(routeDecision, "buildTaskRouteDecision");
-    const backend = makeTaskBackendDouble({
-      listTasks: () => Promise.resolve([task]),
-      getTask: () => Promise.resolve(task),
-    });
-    const result = await buildActiveWorkItems({
-      ctx: makeTaskCommandContext({
-        taskBackend: backend,
-        overrides: { memo: { taskWorktreeInventory: Promise.resolve([]) } },
+  it.each(["TODO", "DONE"])(
+    "keeps canonical reads and legacy blockers separate (outer status %s)",
+    async (status) => {
+      const identity = taskKernel.kernelDigest("repo");
+      const aggregate: taskKernel.TaskAggregate = {
+        schema_version: 1,
+        id: "T-1",
+        revision: 1,
+        state: "PLANNING",
+        intent_digest: taskKernel.kernelDigest("intent"),
+        current_plan: null,
+        plan_history: [],
+        work_items: {},
+        final_validation: null,
+        effects: [],
+        mutation_receipts: {},
+        controller_transfer: null,
+        migration_receipts: [],
+      };
+      const task = makeTaskFixture({
+        status,
+        depends_on: ["LEGACY-MISSING"],
+        extensions: { task_kernel: makeKernelRecord(identity, aggregate, []) },
+      });
+      vi.spyOn(identityContext, "resolveLogicalRepositoryIdentity").mockResolvedValue(identity);
+      vi.spyOn(taskBackend, "loadTaskFromContext").mockResolvedValue(task);
+      const route = vi.spyOn(routeDecision, "buildTaskRouteDecision");
+      const backend = makeTaskBackendDouble({
+        listTasks: () => Promise.resolve([task, makeTask(1)]),
+        getTask: () => Promise.resolve(task),
+      });
+      const result = await buildActiveWorkItems({
+        ctx: makeTaskCommandContext({
+          taskBackend: backend,
+          overrides: { memo: { taskWorktreeInventory: Promise.resolve([]) } },
+        }),
+        cwd: "/repo",
+        filters: { status: [], owner: [], tag: [], quiet: false },
+      });
+      expect(result.items).toHaveLength(2);
+      expect(result.items.find((item) => item.task.id === "T-1")).toMatchObject({
+        task: { id: "T-1", status: status === "DONE" ? "malformed" : "PLANNING" },
+        next_action: {
+          code: status === "DONE" ? "kernel_record_invalid" : "kernel_plan_required",
+          command: null,
+        },
+        kernel: { source: "task_kernel", authority: { grants_authority: false } },
+      });
+      expect(route).not.toHaveBeenCalled();
+      expect(result.items.find((item) => item.task.id === makeTask(1).id)).toMatchObject({
+        next_action: { code: "kernel_migration_required", requires_approval: true },
+        blocker_count: 1,
+      });
+    },
+  );
+
+  it("preserves strict scan failure for unreadable records", async () => {
+    vi.spyOn(taskBackend, "listTaskSummariesMemo").mockResolvedValue([]);
+    const ctx = makeTaskCommandContext({
+      taskBackend: makeTaskBackendDouble({
+        getLastListWarnings: () => ["history:skip:unreadable: missing_or_unreadable_readme"],
       }),
-      cwd: "/repo",
-      filters: { status: [], owner: [], tag: [], quiet: false },
+      overrides: { memo: { taskWorktreeInventory: Promise.resolve([]) } },
     });
-    expect(result.items).toHaveLength(1);
-    expect(result.items[0]).toMatchObject({
-      task: { id: "T-1", status: "malformed" },
-      next_action: { code: "kernel_record_invalid", command: null },
-      kernel: { source: "task_kernel", authority: { grants_authority: false } },
-    });
-    expect(route).not.toHaveBeenCalled();
+    await expect(
+      buildActiveWorkItems({
+        ctx,
+        cwd: "/repo",
+        filters: { status: [], owner: [], tag: [], quiet: false, strictRead: true },
+      }),
+    ).rejects.toMatchObject({ code: "E_VALIDATION" });
   });
 
-  it("bounds route fan-out while preserving every active item", async () => {
+  it("lists migration blockers without evaluating legacy execution routes", async () => {
     const tasks = Array.from({ length: 13 }, (_, index) => makeTask(index));
     const listTaskSummariesMemo = vi
       .spyOn(taskBackend, "listTaskSummariesMemo")
@@ -105,6 +133,7 @@ describe("task active route evaluation", () => {
       });
 
     const ctx = {
+      resolvedProject: { gitRoot: "/repo" },
       config: { workflow_mode: "direct" },
       taskBackend: { getLastListWarnings: () => [] },
       memo: {},
@@ -123,7 +152,11 @@ describe("task active route evaluation", () => {
 
     expect(result.items).toHaveLength(tasks.length);
     expect(listTaskSummariesMemo).toHaveBeenCalledTimes(1);
-    expect(buildTaskRouteDecision).toHaveBeenCalledTimes(tasks.length);
-    expect(maxInFlight).toBe(4);
+    expect(buildTaskRouteDecision).not.toHaveBeenCalled();
+    expect(maxInFlight).toBe(0);
+    expect(
+      result.items.every((item) => item.next_action.code === "kernel_migration_required"),
+    ).toBe(true);
+    expect(result.items[0]?.next_action.command).toContain("task kernel-migrate");
   });
 });

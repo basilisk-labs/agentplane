@@ -55,8 +55,7 @@ async function resolveMigrationSource(opts: {
   let extensions: Record<string, unknown> | undefined;
   try {
     extensions = parseTaskReadme(opts.current.text).frontmatter.extensions as
-      | Record<string, unknown>
-      | undefined;
+      Record<string, unknown> | undefined;
   } catch {
     return { current: opts.current, source: opts.current, marker: null };
   }
@@ -187,8 +186,7 @@ export async function inspectLifecycleOwnerMigration(opts: {
   if (!current) return { kind: "missing" };
   try {
     const extensions = parseTaskReadme(current.text).frontmatter.extensions as
-      | Record<string, unknown>
-      | undefined;
+      Record<string, unknown> | undefined;
     const applied = parseLifecycleOwnerMigrationReceipt(
       extensions?.[LIFECYCLE_OWNER_MIGRATION_RECEIPT_EXTENSION],
     );
@@ -419,8 +417,7 @@ export async function rollbackLifecycleOwnerMigration(opts: {
   let extensions: Record<string, unknown> | undefined;
   try {
     extensions = parseTaskReadme(current.text).frontmatter.extensions as
-      | Record<string, unknown>
-      | undefined;
+      Record<string, unknown> | undefined;
   } catch {
     return { kind: "refused", reason: "state_changed_after_migration" };
   }

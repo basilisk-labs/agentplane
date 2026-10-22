@@ -20,7 +20,11 @@ export async function setCanonicalPlan(
   command: CommandContext,
   taskId: string,
   value: unknown,
-  options: { scopeExpansionApprovedBy?: string; expectedSuppliedInputDigest?: string } = {},
+  options: {
+    scopeExpansionApprovedBy?: string;
+    expectedSuppliedInputDigest?: string;
+    correctiveGrantDigest?: k.Sha256Digest;
+  } = {},
 ) {
   const supplied =
     typeof value === "object" &&
@@ -139,6 +143,12 @@ export async function setCanonicalPlan(
       amended_plan: amended,
       amendment_digest: k.kernelDigest(amended),
       authority_delta_digest: approvalDigest,
+      ...(options.correctiveGrantDigest
+        ? {
+            corrective_grant_digest: options.correctiveGrantDigest,
+            verification_contract_digest: k.kernelDigest(read.task.execution_contract ?? null),
+          }
+        : {}),
       work_contracts: {
         ...read.record.documents?.contracts,
         ...Object.fromEntries(contracts.map((contract) => [k.kernelDigest(contract), contract])),

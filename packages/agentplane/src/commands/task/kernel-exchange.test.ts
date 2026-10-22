@@ -1,6 +1,16 @@
+import { createHash } from "node:crypto";
 import type * as TaskBackend from "../shared/task-backend.js";
 import type * as RepositoryCoordinator from "./kernel-repository-coordinator.js";
-import { mkdtemp, mkdir, writeFile, readFile, rm } from "node:fs/promises";
+import {
+  mkdtemp,
+  mkdir,
+  writeFile,
+  readFile,
+  rm,
+  readdir,
+  lstat,
+  readlink,
+} from "node:fs/promises";
 import path from "node:path";
 import os from "node:os";
 import { describe, expect, it, vi } from "vitest";
@@ -97,7 +107,9 @@ async function fixture(material = false, preStopContinuation = false) {
   };
   const source = {
     ...aggregate().current_plan!,
-    approval_actor_id: "USER",
+    state: "PROPOSED" as const,
+    approval_actor_id: null,
+    approval_evidence_digest: null,
     work_items: [previous],
     digest: k.kernelDigest({ revision: 1, work_items: [previous] }),
   };
@@ -121,9 +133,10 @@ async function fixture(material = false, preStopContinuation = false) {
   };
   let state = aggregate({
     intent_digest: k.kernelDigest(documents.intent),
-    ...(preStopContinuation ? { revision: 142 } : {}),
+    state: "AWAITING_PLAN_APPROVAL",
+    revision: (preStopContinuation ? 142 : aggregate().revision) - 1,
     current_plan: source,
-    authority_lineage: [{ authority: root, approval_mode: "manual_operator", observation: null }],
+    authority_lineage: [],
     work_items: {
       kernel: { ...runtime("EXECUTING"), definition: previous, attempt: 2, claim_id: "old-claim" },
     },
@@ -144,6 +157,24 @@ async function fixture(material = false, preStopContinuation = false) {
     state = result.aggregate;
     events.push(...result.events);
   }
+  apply({
+    ...input(
+      state,
+      {
+        kind: "approve_plan",
+        task_id: state.id,
+        expected_task_revision: state.revision,
+        expected_state_fingerprint: root.repository_fingerprint,
+        plan_revision: source.revision,
+        plan_digest: source.digest,
+        approval_evidence_digest: root.provenance.evidence_digest,
+        authority_mode: "manual_operator",
+      },
+      "initial-plan-approval",
+    ),
+    authority: root,
+    actor: { id: "USER", kind: "USER", transport: "manual", capabilities: ["repository_write"] },
+  });
   const oldOrder = await nativeOrder(
     makeKernelRecord(root.repository_identity, state, events, documents),
     root,
@@ -528,6 +559,29 @@ describe("canonical exchange scope recovery", () => {
           issued,
         );
         expect(await issueKernelExchange(context, f.order, "host", f.record)).toEqual(packet);
+        await expect(
+          issueKernelExchange(context, f.order, "managed", f.record),
+        ).rejects.toMatchObject({
+          code: "E_HANDOFF",
+          context: {
+            owner: "host",
+            requested_transport: "managed",
+            work_order_id: f.order.work_order_id,
+            continuation_argv: [
+              "agentplane",
+              "task",
+              "advance",
+              f.order.task.id,
+              "--result",
+              path.join(directory, "result.json"),
+              "--agent-json",
+            ],
+          },
+        });
+        const owner: unknown = JSON.parse(
+          await readFile(path.join(directory, "transport-owner.json"), "utf8"),
+        );
+        expect(owner).toMatchObject({ transport: "host" });
         expect(f.record).toEqual(before);
         // A real unchanged retry cannot reuse historical approval, even if the
         // old WorkOrder attempt is rewritten to appear immediately preceding.
@@ -570,11 +624,41 @@ describe("canonical exchange scope recovery", () => {
   );
 });
 
+async function artifactInventory(root: string): Promise<unknown> {
+  let stat;
+  try {
+    stat = await lstat(root);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return null;
+    throw error;
+  }
+  if (stat.isSymbolicLink()) return { mode: stat.mode, link: await readlink(root) };
+  if (stat.isDirectory()) {
+    const entries = await readdir(root);
+    return {
+      mode: stat.mode,
+      entries: await Promise.all(
+        entries
+          .toSorted()
+          .map(async (name) => [name, await artifactInventory(path.join(root, name))]),
+      ),
+    };
+  }
+  return {
+    mode: stat.mode,
+    digest: createHash("sha256")
+      .update(await readFile(root))
+      .digest("hex"),
+  };
+}
+
 describe("compact packet network authority", () => {
   it.each(["allowed", "narrowed-ceiling", "planning"] as const)(
     "mirrors the native WorkOrder for %s",
     async (mode) => {
       const root = await mkdtemp(path.join(os.tmpdir(), "network-exchange-"));
+      const realArtifacts = path.join(process.cwd(), ".agentplane/tasks/task-1");
+      const originalInventory = await artifactInventory(realArtifacts);
       try {
         const contract = {
           role: "EXECUTOR" as const,
@@ -637,7 +721,7 @@ describe("compact packet network authority", () => {
         if (!implementation) throw new Error("Expected native implementation");
         const command = {
           backendId: "local",
-          resolvedProject: { gitRoot: process.cwd() },
+          resolvedProject: { gitRoot: root },
           config: {
             paths: { workflow_dir: ".agentplane/tasks", tasks_path: ".agentplane/tasks.json" },
           },
@@ -651,6 +735,24 @@ describe("compact packet network authority", () => {
         const before = structuredClone(order.authority);
         exchangeMocks.commonDir.mockResolvedValue(root);
         const packet = await issueKernelExchange(command, order, "host", record);
+        const schemaPath = path.resolve(
+          packet.exchange.directory,
+          packet.exchange.result_schema_ref,
+        );
+        const relativeSchemaPath = path.relative(root, schemaPath);
+        expect(relativeSchemaPath).not.toBe("");
+        expect(path.isAbsolute(relativeSchemaPath)).toBe(false);
+        expect(relativeSchemaPath.split(path.sep)).not.toContain("..");
+        const schema = await readFile(schemaPath);
+        const descriptor = JSON.parse(
+          await readFile(path.join(packet.exchange.directory, "result-schema-object.json"), "utf8"),
+        ) as { path: string; sha256: string; size_bytes: number };
+        expect(path.resolve(root, descriptor.path)).toBe(schemaPath);
+        expect(descriptor.sha256).toBe(
+          `sha256:${createHash("sha256").update(schema).digest("hex")}`,
+        );
+        expect(descriptor.size_bytes).toBe(schema.length);
+        expect(JSON.parse(schema.toString())).toHaveProperty("$schema");
         const delivered = JSON.parse(
           await readFile(path.join(packet.exchange.directory, "work-order.json"), "utf8"),
         ) as AgentWorkOrderV2;
@@ -660,6 +762,7 @@ describe("compact packet network authority", () => {
         expect(order.authority).toEqual(before);
         expect(order.authority.allowed_tool_classes).not.toContain("network_read");
         expect(order.authority.external_side_effects).toEqual([]);
+        expect(await artifactInventory(realArtifacts)).toEqual(originalInventory);
       } finally {
         await rm(root, { recursive: true, force: true });
       }

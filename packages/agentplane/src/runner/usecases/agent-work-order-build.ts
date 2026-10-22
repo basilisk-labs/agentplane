@@ -497,7 +497,7 @@ export function buildCanonicalAgentWorkOrder(opts: {
         ? AGENT_WORK_ORDER_STATE_FINGERPRINT_V2_POLICY
         : AGENT_WORK_ORDER_STATE_FINGERPRINT_POLICY,
     authority: {
-      mutation_scope: task.metadata.mutation_scope ?? "unknown",
+      mutation_scope: canMutate ? (task.metadata.mutation_scope ?? "unknown") : "none",
       writable_roots: declaredWritableRoots,
       protected_paths: workOrderProtectedPaths({
         context: executionContext,
@@ -509,7 +509,9 @@ export function buildCanonicalAgentWorkOrder(opts: {
       // Hosted lifecycle evidence is collected by the CLI before delegation;
       // this does not grant an executor independent network authority.
       network: allowedExternalEffects.includes("network_read") ? "allowed" : "deny",
-      external_side_effects: allowedExternalEffects.filter((effect) => effect !== "network_read"),
+      external_side_effects: canMutate
+        ? allowedExternalEffects.filter((effect) => effect !== "network_read")
+        : [],
       sandbox: canMutate ? "workspace-write" : "read-only",
       expires_at: null,
     },

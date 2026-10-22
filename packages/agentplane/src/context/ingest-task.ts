@@ -6,12 +6,7 @@ import {
 } from "./ingest-task-prompt.js";
 
 export type ContextWorkspaceMode =
-  | "adaptive"
-  | "minimal"
-  | "wiki"
-  | "codebase"
-  | "research"
-  | "maximum-assimilation";
+  "adaptive" | "minimal" | "wiki" | "codebase" | "research" | "maximum-assimilation";
 
 function deprecatedModeNote(mode?: ContextWorkspaceMode): string[] {
   if (mode === undefined || mode === "maximum-assimilation") return [];

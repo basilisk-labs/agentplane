@@ -89,6 +89,16 @@ export async function assertProjectionRecovery(
     kind: "stop",
   });
   expect(await runtime.adapter.read(taskId)).toEqual(missing);
+  const movedSource = `.agentplane/tasks/${taskId}/moved result.txt`;
+  execFileSync("git", ["mv", "result.txt", movedSource], { cwd: root });
+  expect(await recover()).toMatchObject({
+    kind: "stop",
+    action: { detail: "The worktree contains changes outside the task evidence" },
+  });
+  expect(await runtime.adapter.read(taskId)).toEqual(missing);
+  execFileSync("git", ["restore", "--staged", "--", "result.txt", movedSource], { cwd: root });
+  execFileSync("git", ["restore", "--", "result.txt"], { cwd: root });
+  await rm(path.join(root, movedSource));
   await writeFile(path.join(root, "result.txt"), "unreviewed change");
   expect(await recover()).toMatchObject({ kind: "stop" });
   await writeFile(path.join(root, "result.txt"), "managed implementation");
@@ -113,4 +123,35 @@ export async function assertProjectionRecovery(
     }),
   ).toEqual({ kind: "unchanged" });
   expect(await runtime.adapter.read(taskId)).toEqual(restored);
+  await command.taskBackend.writeTask(
+    {
+      ...restored.task,
+      quality_review: {
+        ...restored.task.quality_review!,
+        review_identity_digest: `sha256:${"f".repeat(64)}`,
+      },
+      revision: restored.task.revision! + 1,
+    },
+    { expectedRevision: restored.task.revision },
+  );
+  const split = await runtime.adapter.read(taskId);
+  if (split.kind !== "canonical") throw new Error("Missing split-review fixture");
+  const splitTask = { ...split.task, execution_route: task.execution_route };
+  const reviewText = await readFile(reviewPath, "utf8");
+  await writeFile(reviewPath, "{}");
+  expect(await recoverKernelOperationalProjection(command, split.record, splitTask)).toMatchObject({
+    kind: "stop",
+  });
+  expect(await runtime.adapter.read(taskId)).toEqual(split);
+  await writeFile(reviewPath, reviewText);
+  expect(await recoverKernelOperationalProjection(command, split.record, splitTask)).toEqual({
+    kind: "restored",
+  });
+  const reconciled = await runtime.adapter.read(taskId);
+  if (reconciled.kind !== "canonical") throw new Error("Missing reconciled review");
+  expect(reconciled.record).toEqual(split.record);
+  expect(reconciled.task.quality_review).toEqual(restored.task.quality_review);
+  expect(readKernelOperationalProjection(reconciled.task.extensions)).toEqual(
+    readKernelOperationalProjection(restored.task.extensions),
+  );
 }

@@ -226,6 +226,37 @@ describe("commands/recipes list", () => {
     expect(io.stdout).toContain("viewer@1.0.0");
   });
 
+  it("rejects inherited prototype signature algorithm names", async () => {
+    const cwd = await mkdtemp(path.join(os.tmpdir(), "agentplane-recipes-cwd-"));
+    const indexPath = path.join(cwd, "recipes-index.json");
+    const index = {
+      schema_version: 1,
+      recipes: [],
+    };
+    const indexText = JSON.stringify(index, null, 2);
+    const signature = {
+      ...signIndexPayload(indexText),
+      algorithm: "constructor",
+      signature: Buffer.alloc(64).toString("base64"),
+    };
+    await writeFile(indexPath, indexText, "utf8");
+    await writeFile(`${indexPath}.sig`, JSON.stringify(signature, null, 2), "utf8");
+
+    try {
+      await expect(
+        runRecipesTest({
+          cwd,
+          args: ["--index", indexPath, "--refresh"],
+          command: "list-remote",
+        }),
+      ).rejects.toThrow(
+        'Unsupported recipes index signature algorithm "constructor". Supported algorithms: ed25519',
+      );
+    } finally {
+      await rm(cwd, { recursive: true, force: true });
+    }
+  });
+
   it("rejects unsupported recipes index signature algorithms clearly", async () => {
     const cwd = await mkdtemp(path.join(os.tmpdir(), "agentplane-recipes-cwd-"));
     const indexPath = path.join(cwd, "recipes-index.json");
@@ -284,7 +315,7 @@ describe("commands/recipes list", () => {
         text: () => Promise.resolve(indexText),
       });
     });
-    vi.stubGlobal("fetch", fetchMock as unknown as typeof fetch);
+    vi.stubGlobal("fetch", fetchMock);
 
     const io = captureStdIO();
 

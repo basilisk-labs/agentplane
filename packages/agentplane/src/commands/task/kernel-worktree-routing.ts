@@ -1,11 +1,18 @@
 import { gitCurrentBranch, listWorktrees, parseTaskIdFromBranch } from "@agentplaneorg/core/git";
 import path from "node:path";
+import { taskExecutionBaseFromExtensions } from "@agentplaneorg/core/tasks";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import { buildTaskRouteDecision } from "../shared/route-decision.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
 import { executeAdmittedBranchWorkflowOperation } from "./branch-task-supervisor-operations.js";
+import {
+  beginKernelWorktreePreparation,
+  recordKernelWorktreePreparation,
+} from "./kernel-worktree-preparation.js";
+import { readDirectTaskHead } from "./direct-task-finalization.js";
+import type { createKernelRuntime } from "./kernel-runtime-context.js";
 
 type WorktreeAction = {
   kind: "external_wait";
@@ -47,6 +54,7 @@ export async function ensureCanonicalTaskWorktree(opts: {
   taskId: string;
   reasonCode: string;
   hasWorkItem: boolean;
+  runtime: Awaited<ReturnType<typeof createKernelRuntime>>;
 }): Promise<WorktreeAction | null> {
   if (!opts.hasWorkItem || opts.task.execution_route?.repository_mode !== "branch_pr") return null;
   if (
@@ -87,6 +95,20 @@ export async function ensureCanonicalTaskWorktree(opts: {
       "Canonical worktree preparation requires the admitted worktree.prepare operation.",
     );
   }
+  const before = await opts.runtime.observe();
+  const { authority: parent } = await opts.runtime.authority.resolve(opts.taskId);
+  const targetHead =
+    taskExecutionBaseFromExtensions(opts.task.extensions)?.base_sha ??
+    (await readDirectTaskHead(root));
+  if (!targetHead)
+    throw new Error("Canonical worktree preparation requires a resolved base commit.");
+  await beginKernelWorktreePreparation({
+    command: opts.command,
+    taskId: opts.taskId,
+    parent,
+    before,
+    targetHead,
+  });
   const prepared = await executeAdmittedBranchWorkflowOperation({
     decision: workflow,
     git_root: root,
@@ -114,5 +136,12 @@ export async function ensureCanonicalTaskWorktree(opts: {
       `Canonical worktree preparation has no task checkout: ${prepared.execution.stop_reason ?? "route refresh did not expose a worktree"}`,
     );
   }
+  await recordKernelWorktreePreparation({
+    command: opts.command,
+    taskId: opts.taskId,
+    parent,
+    before,
+    target,
+  });
   return action(target);
 }

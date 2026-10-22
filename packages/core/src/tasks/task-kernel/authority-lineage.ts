@@ -1,6 +1,9 @@
+import { prospectiveScopeLineageIssues } from "./prospective-scope.js";
+import { isCorrectivePlanContinuation } from "./corrective-authority.js";
 import { compareExecutionAuthority, executionRequirementsAreSubset } from "./invariants.js";
 import { kernelDigest } from "./digest.js";
 import type {
+  AuthorityObservation,
   CanonicalAuthorityRecord,
   ExecutionAuthority,
   KernelInput,
@@ -151,6 +154,7 @@ export function policyRenewalRequestDigest(input: {
   policy_digests: readonly Sha256Digest[];
   changed_paths?: readonly string[];
   repository_evidence_digest?: Sha256Digest;
+  reviewed_base_import?: AuthorityObservation["reviewed_base_import"];
 }) {
   return kernelDigest({
     kind: "canonical_policy_authority_renewal",
@@ -161,6 +165,7 @@ export function policyRenewalRequestDigest(input: {
     policy_digests: input.policy_digests,
     changed_paths: input.changed_paths ?? [],
     repository_evidence_digest: input.repository_evidence_digest ?? null,
+    ...(input.reviewed_base_import ? { reviewed_base_import: input.reviewed_base_import } : {}),
   });
 }
 
@@ -207,9 +212,30 @@ export function policyRenewalIssues(
         changed.startsWith(".agentplane/policy/");
       return (
         !executionRequirementsAreSubset({ ...parent, scope_roots: ["."] }, requirements) ||
-        (!policyPath && !executionRequirementsAreSubset(parent, requirements))
+        (!policyPath &&
+          !observation.reviewed_base_import?.imported_paths.includes(changed) &&
+          !executionRequirementsAreSubset(parent, requirements))
       );
     }) ||
+    (observation.reviewed_base_import !== undefined &&
+      (!/^[a-f0-9]{40}$/u.test(observation.reviewed_base_import.old_commit) ||
+        !/^[a-f0-9]{40}$/u.test(observation.reviewed_base_import.new_commit) ||
+        observation.reviewed_base_import.old_commit ===
+          observation.reviewed_base_import.new_commit ||
+        observation.reviewed_base_import.checkpoint_digest !== parent.repository_fingerprint ||
+        [
+          observation.reviewed_base_import.work_order_digest,
+          observation.reviewed_base_import.canonical_record_digest,
+          observation.reviewed_base_import.mutation_receipt_digest,
+          observation.reviewed_base_import.overlay_digest,
+        ].some((value) => !/^sha256:[0-9a-f]{64}$/u.test(value)) ||
+        observation.reviewed_base_import.imported_paths.some(
+          (entry) => !observation.changed_paths.includes(entry),
+        ) ||
+        JSON.stringify(observation.reviewed_base_import.imported_paths) !==
+          JSON.stringify(
+            [...new Set(observation.reviewed_base_import.imported_paths)].toSorted(),
+          ))) ||
     observation.added_scope_roots !== undefined ||
     observation.added_repository_effects !== undefined ||
     (observation.changed_paths.length > 0 &&
@@ -220,7 +246,12 @@ export function policyRenewalIssues(
     child.provenance.evidence_digest !== parent.provenance.evidence_digest ||
     child.digest !== authorityDigest(child) ||
     kernelDigest(unchanged) !== kernelDigest(parent) ||
-    kernelDigest(child.policy_digests) === kernelDigest(parent.policy_digests) ||
+    (kernelDigest(child.policy_digests) === kernelDigest(parent.policy_digests) &&
+      !(
+        observation.reviewed_base_import &&
+        observation.reviewed_base_import.imported_paths.length > 0 &&
+        child.repository_fingerprint !== parent.repository_fingerprint
+      )) ||
     child.policy_digests.length === 0 ||
     child.policy_digests.some((value) => !/^sha256:[0-9a-f]{64}$/u.test(value)) ||
     observation.request_digest !==
@@ -231,6 +262,7 @@ export function policyRenewalIssues(
         policy_digests: child.policy_digests,
         changed_paths: observation.changed_paths,
         repository_evidence_digest: observation.repository_evidence_digest,
+        reviewed_base_import: observation.reviewed_base_import,
       }) ||
     observation.evidence_digest !==
       policyRenewalApprovalEvidence({
@@ -272,105 +304,132 @@ export function canonicalAuthorityIssues(aggregate: TaskAggregate): string[] {
           })
         : null;
     const approvedPlanAmendment =
-      approvedExpansionRoots !== null &&
+      (approvedExpansionRoots !== null ||
+        (plan && isCorrectivePlanContinuation(aggregate, source ?? undefined, plan))) &&
       authority.provenance.evidence_digest === parent?.provenance.evidence_digest &&
       JSON.stringify(record.observation?.added_scope_roots ?? []) ===
-        JSON.stringify(approvedExpansionRoots);
+        JSON.stringify(approvedExpansionRoots ?? []);
     const continuedApprovedPlanAuthority =
       record.approval_mode === null &&
       parent?.plan_revision === authority.plan_revision &&
       parent.plan_digest === authority.plan_digest &&
       parent.provenance.evidence_digest === authority.provenance.evidence_digest;
+    const approvedPolicyRenewal =
+      record.observation?.kind === "policy_renewal" &&
+      parent !== undefined &&
+      policyRenewalIssues(parent, record).length === 0;
     if (
       record.observation?.kind !== "authority_delta" &&
+      record.observation?.kind !== "prospective_scope_request" &&
       plan?.approval_evidence_digest !== authority.provenance.evidence_digest &&
       !approvedPlanAmendment &&
-      !continuedApprovedPlanAuthority
+      !continuedApprovedPlanAuthority &&
+      !approvedPolicyRenewal
     )
       issues.push("authority_plan");
-    if (record.observation?.kind === "policy_renewal") {
-      if (!parent || policyRenewalIssues(parent, record).length > 0) issues.push("policy_renewal");
-    } else if (record.observation?.kind === "authority_delta") {
-      const observation = record.observation;
-      const immutable = parent
-        ? {
-            ...authority,
-            digest: parent.digest,
-            repository_fingerprint: parent.repository_fingerprint,
-            scope_roots: parent.scope_roots,
-            repository_effects: parent.repository_effects,
-            provenance: parent.provenance,
-          }
-        : null;
-      if (
-        !parent ||
-        record.approval_mode === null ||
-        record.approval_mode !== "manual_operator" ||
-        authority.provenance.kind !== "USER" ||
-        authority.provenance.parent_authority_digest !== parent.digest ||
-        authority.provenance.evidence_digest !== parent.provenance.evidence_digest ||
-        observation.evidence_digest !==
-          authorityDeltaApprovalEvidence({
+    switch (record.observation?.kind) {
+      case "prospective_scope_request": {
+        if (parent) {
+          issues.push(...prospectiveScopeLineageIssues(parent, record));
+        } else {
+          issues.push("scope_request_parent");
+        }
+
+        break;
+      }
+      case "policy_renewal": {
+        if (!parent || policyRenewalIssues(parent, record).length > 0)
+          issues.push("policy_renewal");
+
+        break;
+      }
+      case "authority_delta": {
+        const observation = record.observation;
+        const immutable = parent
+          ? {
+              ...authority,
+              digest: parent.digest,
+              repository_fingerprint: parent.repository_fingerprint,
+              scope_roots: parent.scope_roots,
+              repository_effects: parent.repository_effects,
+              provenance: parent.provenance,
+            }
+          : null;
+        if (
+          !parent ||
+          record.approval_mode === null ||
+          record.approval_mode !== "manual_operator" ||
+          authority.provenance.kind !== "USER" ||
+          authority.provenance.parent_authority_digest !== parent.digest ||
+          authority.provenance.evidence_digest !== parent.provenance.evidence_digest ||
+          observation.evidence_digest !==
+            authorityDeltaApprovalEvidence({
+              task_id: aggregate.id,
+              request_digest: observation.request_digest!,
+              actor_id: authority.provenance.actor_id,
+            }) ||
+          observation.request_task_revision === undefined ||
+          observation.repository_evidence_digest === undefined ||
+          observation.added_scope_roots === undefined ||
+          observation.added_repository_effects === undefined ||
+          observation.added_scope_roots.length === 0 ||
+          JSON.stringify(observation.changed_paths) !==
+            JSON.stringify([...new Set(observation.changed_paths)].toSorted()) ||
+          JSON.stringify(observation.added_scope_roots) !==
+            JSON.stringify([...new Set(observation.added_scope_roots)].toSorted()) ||
+          JSON.stringify(observation.added_repository_effects) !==
+            JSON.stringify([...new Set(observation.added_repository_effects)].toSorted()) ||
+          observation.added_scope_roots.some((root) => !observation.changed_paths.includes(root)) ||
+          JSON.stringify(authority.scope_roots) !==
+            JSON.stringify(
+              [...new Set([...parent.scope_roots, ...observation.added_scope_roots])].toSorted(),
+            ) ||
+          JSON.stringify(authority.repository_effects) !==
+            JSON.stringify(
+              [
+                ...new Set([...parent.repository_effects, ...observation.added_repository_effects]),
+              ].toSorted(),
+            ) ||
+          !immutable ||
+          kernelDigest(immutable) !== kernelDigest(parent) ||
+          kernelDigest({
             task_id: aggregate.id,
-            request_digest: observation.request_digest!,
-            actor_id: authority.provenance.actor_id,
-          }) ||
-        observation.request_task_revision === undefined ||
-        observation.repository_evidence_digest === undefined ||
-        observation.added_scope_roots === undefined ||
-        observation.added_repository_effects === undefined ||
-        observation.added_scope_roots.length === 0 ||
-        JSON.stringify(observation.changed_paths) !==
-          JSON.stringify([...new Set(observation.changed_paths)].toSorted()) ||
-        JSON.stringify(observation.added_scope_roots) !==
-          JSON.stringify([...new Set(observation.added_scope_roots)].toSorted()) ||
-        JSON.stringify(observation.added_repository_effects) !==
-          JSON.stringify([...new Set(observation.added_repository_effects)].toSorted()) ||
-        observation.added_scope_roots.some((root) => !observation.changed_paths.includes(root)) ||
-        JSON.stringify(authority.scope_roots) !==
-          JSON.stringify(
-            [...new Set([...parent.scope_roots, ...observation.added_scope_roots])].toSorted(),
-          ) ||
-        JSON.stringify(authority.repository_effects) !==
-          JSON.stringify(
-            [
-              ...new Set([...parent.repository_effects, ...observation.added_repository_effects]),
-            ].toSorted(),
-          ) ||
-        !immutable ||
-        kernelDigest(immutable) !== kernelDigest(parent) ||
-        kernelDigest({
-          task_id: aggregate.id,
-          task_revision: observation.request_task_revision,
-          plan_revision: parent.plan_revision,
-          plan_digest: parent.plan_digest,
-          parent_authority_digest: parent.digest,
-          repository_identity: parent.repository_identity,
-          previous_fingerprint: parent.repository_fingerprint,
-          repository_fingerprint: authority.repository_fingerprint,
-          repository_evidence_digest: observation.repository_evidence_digest,
-          changed_paths: observation.changed_paths,
-          added_scope_roots: observation.added_scope_roots,
-          added_repository_effects: observation.added_repository_effects,
-        }) !== observation.request_digest
-      )
-        issues.push("authority_delta");
-    } else if (record.approval_mode === null) {
-      const parent = records[index - 1]?.authority;
-      if (!parent || !record.observation || continuationIssues(parent, record).length > 0)
-        issues.push("authority_continuation");
-    } else {
-      const validRootProvenance =
-        record.approval_mode === "repository_policy"
-          ? authority.provenance.kind === "SYSTEM"
-          : authority.provenance.kind === "USER";
-      if (
-        record.observation !== null ||
-        !validRootProvenance ||
-        authority.provenance.parent_authority_digest !== null ||
-        plan?.approval_actor_id !== authority.provenance.actor_id
-      )
-        issues.push("authority_approval");
+            task_revision: observation.request_task_revision,
+            plan_revision: parent.plan_revision,
+            plan_digest: parent.plan_digest,
+            parent_authority_digest: parent.digest,
+            repository_identity: parent.repository_identity,
+            previous_fingerprint: parent.repository_fingerprint,
+            repository_fingerprint: authority.repository_fingerprint,
+            repository_evidence_digest: observation.repository_evidence_digest,
+            changed_paths: observation.changed_paths,
+            added_scope_roots: observation.added_scope_roots,
+            added_repository_effects: observation.added_repository_effects,
+          }) !== observation.request_digest
+        )
+          issues.push("authority_delta");
+
+        break;
+      }
+      default: {
+        if (record.approval_mode === null) {
+          const parent = records[index - 1]?.authority;
+          if (!parent || !record.observation || continuationIssues(parent, record).length > 0)
+            issues.push("authority_continuation");
+        } else {
+          const validRootProvenance =
+            record.approval_mode === "repository_policy"
+              ? authority.provenance.kind === "SYSTEM"
+              : authority.provenance.kind === "USER";
+          if (
+            record.observation !== null ||
+            !validRootProvenance ||
+            authority.provenance.parent_authority_digest !== null ||
+            plan?.approval_actor_id !== authority.provenance.actor_id
+          )
+            issues.push("authority_approval");
+        }
+      }
     }
   }
   return issues;
@@ -417,32 +476,49 @@ export function continuationIssues(
     !/^sha256:[0-9a-f]{64}$/u.test(observation.evidence_digest)
   )
     return ["observation_binding"];
-  if (observation.kind === "plan_amendment") {
-    const addedScopeRoots = observation.added_scope_roots ?? [];
-    if (
-      child.plan_revision !== parent.plan_revision + 1 ||
-      child.plan_digest === parent.plan_digest ||
-      child.repository_fingerprint !== parent.repository_fingerprint ||
-      observation.changed_paths.length > 0 ||
-      JSON.stringify(addedScopeRoots) !==
-        JSON.stringify([...new Set(addedScopeRoots)].toSorted()) ||
-      JSON.stringify(child.scope_roots) !==
-        JSON.stringify([...new Set([...parent.scope_roots, ...addedScopeRoots])].toSorted())
-    )
-      return ["plan_observation_binding"];
-  } else if (observation.kind === "authority_delta") {
-    return ["authority_delta_requires_user"];
-  } else if (
-    child.plan_revision !== parent.plan_revision ||
-    child.plan_digest !== parent.plan_digest ||
-    child.repository_fingerprint === parent.repository_fingerprint ||
-    observation.changed_paths.length === 0 ||
-    !compareExecutionAuthority(parent, {
-      ...sameContext,
-      scope_roots: observation.changed_paths,
-    }).ok
-  )
-    return ["repository_observation_scope"];
+  switch (observation.kind) {
+    case "plan_amendment": {
+      const addedScopeRoots = observation.added_scope_roots ?? [];
+      if (
+        child.plan_revision !== parent.plan_revision + 1 ||
+        child.plan_digest === parent.plan_digest ||
+        child.repository_fingerprint !== parent.repository_fingerprint ||
+        observation.changed_paths.length > 0 ||
+        JSON.stringify(addedScopeRoots) !==
+          JSON.stringify([...new Set(addedScopeRoots)].toSorted()) ||
+        JSON.stringify(child.scope_roots) !==
+          JSON.stringify([...new Set([...parent.scope_roots, ...addedScopeRoots])].toSorted())
+      )
+        return ["plan_observation_binding"];
+      break;
+    }
+    case "authority_delta": {
+      return ["authority_delta_requires_user"];
+    }
+    case "worktree_preparation": {
+      if (
+        child.plan_revision !== parent.plan_revision ||
+        child.plan_digest !== parent.plan_digest ||
+        child.repository_fingerprint === parent.repository_fingerprint ||
+        observation.changed_paths.length > 0
+      )
+        return ["worktree_preparation_binding"];
+      break;
+    }
+    default: {
+      if (
+        child.plan_revision !== parent.plan_revision ||
+        child.plan_digest !== parent.plan_digest ||
+        child.repository_fingerprint === parent.repository_fingerprint ||
+        observation.changed_paths.length === 0 ||
+        !compareExecutionAuthority(parent, {
+          ...sameContext,
+          scope_roots: observation.changed_paths,
+        }).ok
+      )
+        return ["repository_observation_scope"];
+    }
+  }
   return [];
 }
 
@@ -488,9 +564,10 @@ export function continuationAdmissionIssues(
         })
       : null;
     const approvedScopeExpansion =
-      addedAuthorityRoots !== null &&
+      (addedAuthorityRoots !== null ||
+        isCorrectivePlanContinuation(input.aggregate, source, plan)) &&
       JSON.stringify(record.observation.added_scope_roots ?? []) ===
-        JSON.stringify(addedAuthorityRoots);
+        JSON.stringify(addedAuthorityRoots ?? []);
     if (
       (!unchangedApproval && !approvedScopeExpansion) ||
       (!approvedScopeExpansion &&
