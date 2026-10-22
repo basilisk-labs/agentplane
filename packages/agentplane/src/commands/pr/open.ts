@@ -9,6 +9,9 @@ import { loadCommandContext, type CommandContext } from "../shared/task-backend.
 
 import { pushTaskBranchUpstreamIfConfigured } from "./branch-publication.js";
 import { maybeAutoCommitTaskPrArtifacts } from "./internal/auto-commit.js";
+import { resolveChangeRequestIdentity } from "./internal/change-request-provider.js";
+import { resolveProviderBaseBranch } from "./internal/provider-base.js";
+import { resolveReviewedPublicationBase } from "./internal/reviewed-publication-base.js";
 import { type PrOpenOutcome, syncPrArtifacts } from "./internal/sync.js";
 
 function prOpenOutcomeDetails(
@@ -103,6 +106,27 @@ export async function cmdPrOpen(opts: {
     }
 
     if (!opts.syncOnly && initialSync.meta.branch) {
+      if (/^(?:[0-9a-f]{40}|[0-9a-f]{64})$/iu.test(taskCommand.execution.base_ref.trim())) {
+        const reviewedPublicationBase = await resolveReviewedPublicationBase({
+          command: commandCtx,
+          task: taskCommand.primary_task,
+          branch: initialSync.meta.branch,
+          fallback: taskCommand.execution.base_ref,
+        });
+        if (!reviewedPublicationBase) {
+          const identity = await resolveChangeRequestIdentity({
+            gitRoot: commandCtx.resolvedProject.gitRoot,
+            branch: initialSync.meta.branch,
+            recorded: initialSync.meta.provider ?? null,
+          });
+          await resolveProviderBaseBranch({
+            gitRoot: commandCtx.resolvedProject.gitRoot,
+            baseRef: taskCommand.execution.base_ref,
+            baseSha: taskCommand.execution.base_sha,
+            identity,
+          });
+        }
+      }
       try {
         await pushTaskBranchUpstreamIfConfigured({
           gitRoot: commandCtx.resolvedProject.gitRoot,

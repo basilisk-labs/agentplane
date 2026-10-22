@@ -1,0 +1,202 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run test:project agentplane packages/agentplane/src/commands/guard/impl/commands.commit-non-close.unit.test.ts packages/agentplane/src/commands/pr/internal/provider-base.test.ts packages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts packages/agentplane/src/runner/process-supervision.test.ts packages/agentplane/src/runner/process-supervision/timeout-controller.test.ts packages/agentplane/src/runner/process-supervision/process-tree.test.ts packages/agentplane/src/runner/process-supervision/termination-arbitration.test.ts",
+      "duration_ms": 11403,
+      "exit_code": 0,
+      "observation": {
+        "reason": "observation admission failed; verification still executes",
+        "status": "unavailable"
+      },
+      "runtime": {
+        "environment_digest": "sha256:765ae664d02ddcc089953743c1044114888dea96d524fa9e419012fcd96ad6af",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0903acd062e8d568de168af6a652f56f2363a8fd7929b3cbceb543684df065eb"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/guard/impl/commands.commit-non-close.unit.test.ts packages/agentplane/src/commands/pr/internal/provider-base.test.ts packages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts packages/agentplane/src/runner/process-supervision.test.ts packages/agentplane/src/runner/process-supervision/timeout-controller.test.ts packages/agentplane/src/runner/process-supervision/process-tree.test.ts packages/agentplane/src/runner/process-supervision/termination-arbitration.test.ts\n",
+      "stdout_tail": "\n RUN  v5.0.2 <repo>\n\n\n Test Files  7 passed (7)\n      Tests  54 passed (54)\n   Start at  03:51:17\n   Duration  10.59s (tests 68%, transform 23%, import 9%)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run test:project cli-core packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.validation.test.ts",
+      "duration_ms": 6750,
+      "exit_code": 0,
+      "observation": {
+        "reason": "observation admission failed; verification still executes",
+        "status": "unavailable"
+      },
+      "runtime": {
+        "environment_digest": "sha256:765ae664d02ddcc089953743c1044114888dea96d524fa9e419012fcd96ad6af",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0903acd062e8d568de168af6a652f56f2363a8fd7929b3cbceb543684df065eb"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.validation.test.ts\n",
+      "stdout_tail": "\n RUN  v5.0.2 <repo>\n\n\n Test Files  1 passed (1)\n      Tests  14 passed (14)\n   Start at  03:51:28\n   Duration  6.11s (tests 76%, transform 19%, import 5%)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run typecheck",
+      "duration_ms": 405,
+      "exit_code": 0,
+      "observation": {
+        "reason": "observation admission failed; verification still executes",
+        "status": "unavailable"
+      },
+      "runtime": {
+        "environment_digest": "sha256:765ae664d02ddcc089953743c1044114888dea96d524fa9e419012fcd96ad6af",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0903acd062e8d568de168af6a652f56f2363a8fd7929b3cbceb543684df065eb"
+      },
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run test:project agentplane packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/task/kernel-rework-lineage.test.ts",
+      "duration_ms": 5415,
+      "exit_code": 0,
+      "observation": {
+        "reason": "observation admission failed; verification still executes",
+        "status": "unavailable"
+      },
+      "runtime": {
+        "environment_digest": "sha256:765ae664d02ddcc089953743c1044114888dea96d524fa9e419012fcd96ad6af",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0903acd062e8d568de168af6a652f56f2363a8fd7929b3cbceb543684df065eb"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/task/kernel-rework-lineage.test.ts\n",
+      "stdout_tail": "\n RUN  v5.0.2 <repo>\n\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\nResumed task-1/kernel. Request a fresh task advance packet.\n\n Test Files  2 passed (2)\n      Tests  102 passed (102)\n   Start at  03:51:36\n   Duration  4.78s (tests 70%, transform 23%, import 7%)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run test:project agentplane packages/agentplane/src/commands/task/direct-task-verification.qualification.test.ts",
+      "duration_ms": 3968,
+      "exit_code": 0,
+      "observation": {
+        "reason": "observation admission failed; verification still executes",
+        "status": "unavailable"
+      },
+      "runtime": {
+        "environment_digest": "sha256:765ae664d02ddcc089953743c1044114888dea96d524fa9e419012fcd96ad6af",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0903acd062e8d568de168af6a652f56f2363a8fd7929b3cbceb543684df065eb"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/direct-task-verification.qualification.test.ts\n",
+      "stdout_tail": "\n RUN  v5.0.2 <repo>\n\n\n Test Files  1 passed (1)\n      Tests  12 passed (12)\n   Start at  03:51:41\n   Duration  3.33s (tests 73%, transform 21%, import 6%)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run arch:check",
+      "duration_ms": 65154,
+      "exit_code": 0,
+      "observation": {
+        "reason": "observation admission failed; verification still executes",
+        "status": "unavailable"
+      },
+      "runtime": {
+        "environment_digest": "sha256:765ae664d02ddcc089953743c1044114888dea96d524fa9e419012fcd96ad6af",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0903acd062e8d568de168af6a652f56f2363a8fd7929b3cbceb543684df065eb"
+      },
+      "script": "arch:check",
+      "stderr_tail": "$ bun run arch:baseline && bun run arch:deps\n$ node scripts/checks/check-depcruise-known-violations.mjs\n$ node scripts/checks/run-depcruise-arch.mjs depcruise.config.cjs\n",
+      "stdout_tail": "s cruised)\n\ndependency-cruiser: packages/agentplane/src/workflow-runtime\n\n✔ no dependency violations found (22 modules, 38 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/acr\n\n✔ no dependency violations found (120 modules, 251 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/backend\n\n✔ no dependency violations found (105 modules, 220 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/blueprint\n\n✔ no dependency violations found (4 modules, 3 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/branch\n\n✔ no dependency violations found (520 modules, 1433 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/cleanup\n\n✔ no dependency violations found (426 modules, 1165 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/codex\n\n✔ no dependency violations found (8 modules, 8 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/context\n\n✔ no dependency violations found (771 modules, 2305 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/docs\n\n✔ no dependency violations found (11 modules, 14 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/doctor\n\n✔ no dependency violations found (277 modules, 634 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/evaluator\n\n✔ no dependency violations found (597 modules, 1834 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/evidence\n\n✔ no dependency violations found (88 modules, 188 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/flow\n\n✔ no dependency violations found (416 modules, 1066 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/guard\n\n✔ no dependency violations found (242 modules, 604 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/hermes\n\n✔ no dependency violations found (628 modules, 1758 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/hooks\n\n✔ no dependency violations found (320 modules, 880 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/incidents\n\n✔ no dependency violations found (190 modules, 464 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/insights\n\n✔ no dependency violations found (84 modules, 184 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/intake\n\n✔ no dependency violations found (67 modules, 154 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/pr\n\n✔ no dependency violations found (517 modules, 1426 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/recipes\n\n✔ no dependency violations found (864 modules, 2978 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/release\n\n✔ no dependency violations found (278 modules, 590 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/scenario\n\n✔ no dependency violations found (80 modules, 175 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/shared\n\n✔ no dependency violations found (1171 modules, 3948 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/task\n\n✔ no dependency violations found (1174 modules, 4000 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/upgrade\n\n✔ no dependency violations found (29 modules, 44 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/*.ts\n\n✔ no dependency violations found (762 modules, 2296 dependencies cruised)\n\ndependency-cruiser: packages/core/src\n\n✔ no dependency violations found (147 modules, 338 dependencies cruised)\n\ndependency-cruiser: packages/recipes/src\n\n✔ no dependency violations found (23 modules, 37 dependencies cruised)\n\ndependency-cruiser: packages/testkit/src\n\n✔ no dependency violations found (686 modules, 1930 dependencies cruised)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run test:project agentplane packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/direct-task-verification.qualification.test.ts",
+      "duration_ms": 4488,
+      "exit_code": 0,
+      "observation": {
+        "reason": "observation admission failed; verification still executes",
+        "status": "unavailable"
+      },
+      "runtime": {
+        "environment_digest": "sha256:765ae664d02ddcc089953743c1044114888dea96d524fa9e419012fcd96ad6af",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0903acd062e8d568de168af6a652f56f2363a8fd7929b3cbceb543684df065eb"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/kernel-exchange.test.ts packages/agentplane/src/commands/task/direct-task-verification.qualification.test.ts\n",
+      "stdout_tail": "\n RUN  v5.0.2 <repo>\n\n\n Test Files  2 passed (2)\n      Tests  44 passed (44)\n   Start at  03:52:50\n   Duration  3.77s (tests 66%, transform 26%, import 8%)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "full_regression",
+        "task_outcome"
+      ],
+      "command": "bun run ci:local:full",
+      "duration_ms": 1083906,
+      "exit_code": 0,
+      "observation": {
+        "reason": "observation admission failed; verification still executes",
+        "status": "unavailable"
+      },
+      "runtime": {
+        "environment_digest": "sha256:765ae664d02ddcc089953743c1044114888dea96d524fa9e419012fcd96ad6af",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:0903acd062e8d568de168af6a652f56f2363a8fd7929b3cbceb543684df065eb"
+      },
+      "script": "ci:local:full",
+      "stderr_tail": "alid input: expected string, received number at \"tags[1]\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"verify[1]\"; task README frontmatter schema validation failed: Too small: expected string to have >=1 characters at \"commit.hash\"; task README frontmatter schema validation failed: Too small: expected string to have >=1 characters at \"commit.message\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"description\"\nℹ️ task doc set outcome=section-updated section=Summary\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Summary\nℹ️ task doc set outcome=full-doc-updated section=Summary\n{\"ts\":\"2026-10-14T20:08:25.197Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/private/tmp/ap25f-66b0-v1/m/t/agentplane-vitest-run-8dPnaP/agentplane-workflow-halmLS/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/private/tmp/ap25f-66b0-v1/m/t/agentplane-vitest-run-8dPnaP/agentplane-workflow-halmLS/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-14T20:08:25.207Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/private/tmp/ap25f-66b0-v1/m/t/agentplane-vitest-run-8dPnaP/agentplane-workflow-rpyOb5/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/private/tmp/ap25f-66b0-v1/m/t/agentplane-vitest-run-8dPnaP/agentplane-workflow-rpyOb5/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-14T20:08:25.213Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_completed\",\"details\":{\"workflowPath\":\"/private/tmp/ap25f-66b0-v1/m/t/agentplane-vitest-run-8dPnaP/agentplane-workflow-rpyOb5/.agentplane/WORKFLOW.md\",\"from\":\"/private/tmp/ap25f-66b0-v1/m/t/agentplane-vitest-run-8dPnaP/agentplane-workflow-rpyOb5/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-14T20:08:25.219Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/private/tmp/ap25f-66b0-v1/m/t/agentplane-vitest-run-8dPnaP/agentplane-workflow-fgeMHp/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/private/tmp/ap25f-66b0-v1/m/t/agentplane-vitest-run-8dPnaP/agentplane-workflow-fgeMHp/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-14T20:08:25.223Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_failed\",\"code\":\"WF_UNSUPPORTED_VERSION\",\"details\":{\"reason\":\"Unsupported WORKFLOW version 3; supported versions: 1, 2.\"}}\n{\"ts\":\"2026-10-14T20:08:36.565Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-10-14T20:08:36.594Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":1}}\n{\"ts\":\"2026-10-14T20:08:36.595Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-10-14T20:08:36.601Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":2}}\n{\"ts\":\"2026-10-14T20:08:36.602Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-10-14T20:08:36.605Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_completed\",\"details\":{\"diagnostics\":0}}\n$ node scripts/checks/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 3 --fixture local-basic [REDACTED] 10000\n$ node scripts/checks/run-vitest-suite.mjs critical-cli\n$ bun run docs:ia:check && bun run docs:reference:check && bun run docs:onboarding:check\n$ node scripts/checks/check-docs-ia.mjs\n$ node scripts/generate/generate-package-reference.mjs --check\n$ node scripts/checks/check-agent-onboarding-scenario.mjs\n$ node scripts/workflow/run-workflows-lint.mjs && node scripts/checks/check-workflow-command-contract.mjs && bun scripts/checks/check-lifecycle-parity.ts && node scripts/checks/check-critical-test-route.mjs\n$ node scripts/checks/run-vitest-suite.mjs platform-critical\n$ node scripts/checks/check-significant-coverage.mjs\n",
+      "stdout_tail": "eshold=5000ms, p95=286.635ms); task_list median=317.151ms (threshold=10000ms, p95=317.151ms); task_search median=307.029ms (threshold=6000ms, p95=307.029ms); task_next median=308.533ms (threshold=8000ms, p95=308.533ms); preflight_quick median=317.019ms (threshold=6000ms, p95=317.019ms))\nVitest suite critical-cli: chunk 1/5 (2 files): packages/agentplane/src/cli/run-cli.critical.context-maximum-assimilation.test.ts, packages/agentplane/src/cli/run-cli.critical.exit-codes.test.ts\nVitest suite critical-cli: chunk 1/5 passed in 9724ms (Test Files  2 passed (2); Tests  3 passed (3); Duration  9.49s (tests 76%, transform 19%, import 5%))\nVitest suite critical-cli: chunk 2/5 (2 files): packages/agentplane/src/cli/run-cli.critical.git-edge.test.ts, packages/agentplane/src/cli/run-cli.critical.protected-paths.test.ts\nVitest suite critical-cli: chunk 2/5 passed in 3624ms (Test Files  2 passed (2); Tests  5 passed (5); Duration  3.39s (tests 54%, transform 36%, import 10%))\nVitest suite critical-cli: chunk 3/5 (2 files): packages/agentplane/src/cli/run-cli.critical.scope-leak.test.ts, packages/agentplane/src/cli/run-cli.critical.symlink-root.test.ts\nVitest suite critical-cli: chunk 3/5 passed in 4206ms (Test Files  2 passed (2); Tests  7 passed (7); Duration  3.92s (tests 52%, transform 37%, import 10%))\nVitest suite critical-cli: chunk 4/5 (2 files): packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts, packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet-regressions.test.ts\nVitest suite critical-cli: chunk 4/5 passed in 29125ms (Test Files  2 passed (2); Tests  7 passed (7); Duration  28.79s (tests 90%, transform 8%, import 2%))\nVitest suite critical-cli: chunk 5/5 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts\nVitest suite critical-cli: chunk 5/5 passed in 5531ms (Test Files  1 passed (1); Tests  12 passed (12); Duration  5.29s (tests 74%, transform 21%, import 6%))\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":true,\"groups\":[{\"id\":\"runtime\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":69990},{\"id\":\"docs-schema\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":22868},{\"id\":\"core\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":877607},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":54970}]}\n{\"schema_version\":1,\"kind\":\"verification_metrics\",\"route\":\"full-fast\",\"wall_clock_ms\":1034275,\"selected_groups\":5,\"executed_groups\":5,\"parallel_group_concurrency\":1,\"build_invocations\":1,\"ok\":true}\n\n== Documentation contracts ==\nok: docs index and current path references are aligned\nok: docs/reference/generated-reference.mdx is fresh\nok: agent onboarding scenario surfaces are aligned\n\n== Workflows lint (actionlint) ==\nworkflow and command guidance contract OK\nworkflow lifecycle parity OK\ncritical Vitest route OK\n\n== Windows platform-critical tests ==\n\n RUN  v5.0.2 /private/tmp/ap25f-66b0-v1/m/t/agentplane-verification-yiGO9D\n\n\n Test Files  7 passed (7)\n      Tests  98 passed (98)\n   Start at  04:10:11\n   Duration  40.82s (tests 92%, transform 6%, import 2%)\n\n  Transform  |agentplane| transforming modules took 3.15s · 73% of tracked time, re-done on every run\n             persist transforms across runs with fsModuleCache: true\n             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns\n\n\n== Significant file coverage (guard) ==\n\n RUN  v5.0.2 /private/tmp/ap25f-66b0-v1/m/t/agentplane-verification-yiGO9D\n      Coverage enabled with v8\n\n\n Test Files  8 passed (8)\n      Tests  105 passed (105)\n   Start at  04:10:52\n   Duration  5.41s (transform 46%, tests 38%, import 14%, worker 1%, setup 1%)\n\n  Transform  transforming modules took 6.76s · 46% of tracked time, re-done on every run\n             persist transforms across runs with fsModuleCache: true\n             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns\n\n\n== Coverage threshold (significant) ==\nSignificant suite contract OK (17 source targets).\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202610120014-1C3ZFG"
+}
