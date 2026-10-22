@@ -1,0 +1,6 @@
+ ...i.core.task-advance.worktree-resolution.test.ts | 221 ++++++++++++++++++++-
+ .../src/commands/shared/worktree-topology.test.ts  |  75 ++++++-
+ .../src/commands/shared/worktree-topology.ts       |  89 ++++++++-
+ .../task/branch-task-supervisor-operations.test.ts |  49 ++++-
+ .../task/branch-task-supervisor-operations.ts      |  29 ++-
+ 5 files changed, 455 insertions(+), 8 deletions(-)
