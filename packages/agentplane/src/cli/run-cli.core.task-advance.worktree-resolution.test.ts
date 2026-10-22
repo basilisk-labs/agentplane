@@ -584,9 +584,12 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
       context: { reason_code: "worktree_preparation_route_base_mismatch" },
     });
     expect(await readFile(journalPath, "utf8").catch(() => null)).toBe(journalBefore);
-    expect(
-      (await execFileAsync("git", ["worktree", "list", "--porcelain"], { cwd: root })).stdout,
-    ).toBe(worktreesBefore.stdout);
+    const worktreesAfterRejection = await execFileAsync(
+      "git",
+      ["worktree", "list", "--porcelain"],
+      { cwd: root },
+    );
+    expect(worktreesAfterRejection.stdout).toBe(worktreesBefore.stdout);
     const prepared = await runJson(["task", "advance", taskId, "--agent-json"], baseRoot);
     expect(prepared.action, JSON.stringify(prepared)).toMatchObject({
       kind: "external_wait",
@@ -604,15 +607,12 @@ describe("runCli task advance worktree resolution", { timeout: 180_000 }, () => 
     expect(await readHead(taskRoot)).toBe(baseHead);
     expect(await readFile(path.join(taskRoot, "base-only.txt"), "utf8")).toBe("base-only\n");
     const journalAfter = JSON.parse(await readFile(journalPath, "utf8")) as {
-      operations: Array<{ authority_ref: string; status: string; result_digest: string | null }>;
+      operations: { authority_ref: string; status: string; result_digest: string | null }[];
     };
-    expect(journalAfter.operations).toEqual([
-      expect.objectContaining({
-        authority_ref: "workflow-operation:worktree.prepare",
-        status: "completed",
-        result_digest: expect.stringMatching(/^sha256:[a-f0-9]{64}$/u),
-      }),
-    ]);
+    expect(journalAfter.operations).toHaveLength(1);
+    expect(journalAfter.operations[0]?.authority_ref).toBe("workflow-operation:worktree.prepare");
+    expect(journalAfter.operations[0]?.status).toBe("completed");
+    expect(journalAfter.operations[0]?.result_digest).toMatch(/^sha256:[a-f0-9]{64}$/u);
   });
 
   it.each([false, true, "process"] as const)(

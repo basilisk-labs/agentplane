@@ -15,8 +15,8 @@ Generic AgentPlane correctness: with an explicit registered internal development
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:df8962832f1a0107ba032618507b69669ab544075906ab0233ab89ef6e5a5b66
 - Canonical workflow state lives in the task README.
 
 <details>
