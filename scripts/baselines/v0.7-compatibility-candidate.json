@@ -8,14 +8,14 @@
   "candidate": {
     "section_digests": {
       "agent_facing_context_contracts": "4926aed50aea235e24310e39404f7b939bc4caa7fc763a98387992822a2101c5",
-      "cli_topology": "e987ad41e02d4f00dcc5b858a960adee4c57c6715a57241111d9ac2859d59200",
+      "cli_topology": "142372fde652c457e2d9667498b08bfbd6aa5e357fe7ee83598aac394ce599b3",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
       "package_manifests": "6052feb72f5eee6eaa1a503bb10074492350a164de683adf50bf2b092ce647b9",
       "tarball_policy": "10e8c7b78d3166955320b6fa787d7564b5bba1f67b3ce1736dca46673528716d",
       "workflow_schema": "1003207ce9df63cccac8761565f0d1264c094fd3fda5609012a6716c82842451"
     },
-    "surface_sha256": "749a04b0c91cf2d6a36601975adcdaa77060df835d8f9a21c7bb4dd541650af7"
+    "surface_sha256": "6a95e335f7b8ad23eed6273c2931e37cee61864f9695a05444a4c217c69a5010"
   },
   "candidate_id": "agentplane.compatibility.v0.7.cumulative",
   "contract_artifacts": {
@@ -573,6 +573,24 @@
               { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
             ],
             "group": "Task",
+            "id": ["task", "cancel"],
+            "options": [
+              { "kind": "string", "name": "reason", "required": true, "valueHint": "<text>" },
+              { "kind": "string", "name": "approved-by", "valueHint": "USER" },
+              { "kind": "string", "name": "request-digest", "valueHint": "<sha256:digest>" },
+              { "kind": "string", "name": "record-digest", "valueHint": "<sha256:digest>" },
+              { "kind": "string", "name": "plan-digest", "valueHint": "<sha256:digest>" },
+              { "kind": "string", "name": "fingerprint", "valueHint": "<sha256:digest>" },
+              { "kind": "string", "name": "approval-evidence", "valueHint": "<sha256:digest>" },
+              { "kind": "string", "name": "revision", "valueHint": "<revision>" }
+            ],
+            "visibility": "advanced"
+          },
+          {
+            "args": [
+              { "name": "task-id", "required": true, "valueHint": "<task-id>", "variadic": false }
+            ],
+            "group": "Task",
             "id": ["task", "candidate", "approve"],
             "options": [
               { "kind": "string", "name": "file", "required": true, "valueHint": "<json>" },
@@ -1051,6 +1069,7 @@
           "repair adopt-legacy-conflict",
           "task advance",
           "task authority grant",
+          "task cancel",
           "task candidate approve",
           "task candidate prepare",
           "task candidate publish",
@@ -1393,6 +1412,55 @@
             "kind": "string",
             "name": "ttl-minutes",
             "valueHint": "<1-60>"
+          },
+          {
+            "command": "task cancel",
+            "kind": "string",
+            "name": "approval-evidence",
+            "valueHint": "<sha256:digest>"
+          },
+          {
+            "command": "task cancel",
+            "kind": "string",
+            "name": "approved-by",
+            "valueHint": "USER"
+          },
+          {
+            "command": "task cancel",
+            "kind": "string",
+            "name": "fingerprint",
+            "valueHint": "<sha256:digest>"
+          },
+          {
+            "command": "task cancel",
+            "kind": "string",
+            "name": "plan-digest",
+            "valueHint": "<sha256:digest>"
+          },
+          {
+            "command": "task cancel",
+            "kind": "string",
+            "name": "reason",
+            "required": true,
+            "valueHint": "<text>"
+          },
+          {
+            "command": "task cancel",
+            "kind": "string",
+            "name": "record-digest",
+            "valueHint": "<sha256:digest>"
+          },
+          {
+            "command": "task cancel",
+            "kind": "string",
+            "name": "request-digest",
+            "valueHint": "<sha256:digest>"
+          },
+          {
+            "command": "task cancel",
+            "kind": "string",
+            "name": "revision",
+            "valueHint": "<revision>"
           },
           {
             "command": "task candidate approve",
@@ -3275,9 +3343,58 @@
             "kind": "option",
             "name": "work-item",
             "source_task": "202610101141-AGRARP"
+          },
+          { "command": "task cancel", "kind": "command", "source_task": "202610160500-6RCQSY" },
+          {
+            "command": "task cancel",
+            "kind": "option",
+            "name": "approval-evidence",
+            "source_task": "202610160500-6RCQSY"
+          },
+          {
+            "command": "task cancel",
+            "kind": "option",
+            "name": "approved-by",
+            "source_task": "202610160500-6RCQSY"
+          },
+          {
+            "command": "task cancel",
+            "kind": "option",
+            "name": "fingerprint",
+            "source_task": "202610160500-6RCQSY"
+          },
+          {
+            "command": "task cancel",
+            "kind": "option",
+            "name": "plan-digest",
+            "source_task": "202610160500-6RCQSY"
+          },
+          {
+            "command": "task cancel",
+            "kind": "option",
+            "name": "reason",
+            "source_task": "202610160500-6RCQSY"
+          },
+          {
+            "command": "task cancel",
+            "kind": "option",
+            "name": "record-digest",
+            "source_task": "202610160500-6RCQSY"
+          },
+          {
+            "command": "task cancel",
+            "kind": "option",
+            "name": "request-digest",
+            "source_task": "202610160500-6RCQSY"
+          },
+          {
+            "command": "task cancel",
+            "kind": "option",
+            "name": "revision",
+            "source_task": "202610160500-6RCQSY"
           }
         ],
-        "command_count": { "from": 243, "to": 262 },
+        "command_count": { "from": 243, "to": 263 },
         "mutated_command_shells": [
           {
             "after": {
@@ -3474,8 +3591,8 @@
             "identity": "task plan approve --by"
           }
         ],
-        "option_count": { "from": 767, "to": 889 },
-        "positional_count": { "from": 165, "to": 183 },
+        "option_count": { "from": 767, "to": 897 },
+        "positional_count": { "from": 165, "to": 184 },
         "removed_command_descriptors": [
           {
             "args": [{ "name": "cmd", "required": false, "valueHint": "<cmd>", "variadic": true }],
@@ -3998,10 +4115,11 @@
         "202610100459-0NATSS",
         "202610100750-36SZWD",
         "202610101128-35N0ZK",
-        "202610101141-AGRARP"
+        "202610101141-AGRARP",
+        "202610160500-6RCQSY"
       ],
       "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with caller-supplied structured semantic intent and neutral planner intake, including bounded scope, effect, capability, and resource declarations, explainable per-task workflow routing, signed dialogue approval receipts, compatibility retirement diagnostics, safe local evidence statistics, compaction, garbage collection, and a state-bound USER-approved blocked-task scope extension; promotes the managed task runner; moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces; canonicalizes setup and execution profile selection to standard while retaining legacy init aliases; and makes auto the task route default while retiring repository as a user-facing route. Adds exact-intent operator reconciliation for interrupted integration workflow effects. Retires the active supervisor budget-epoch command after spend limits became telemetry-only. Retires the active Blueprint command surface after Task Kernel replacement proof while preserving cold compatibility readers. Adds explicit approval and supersession options to canonical duplicate and no-op closure. Add explicit bounded corrective-authority inspection, grant and revocation with finite retry and expiry limits. Adds separately USER-approved immutable candidate preparation, publication, reconciliation and revocation before final acceptance; does not complete the task or establish remote qualification.",
-      "to_sha256": "e987ad41e02d4f00dcc5b858a960adee4c57c6715a57241111d9ac2859d59200"
+      "to_sha256": "142372fde652c457e2d9667498b08bfbd6aa5e357fe7ee83598aac394ce599b3"
     },
     {
       "classification": "intentional_breaking_retirement",
@@ -4260,7 +4378,7 @@
     "from_version": "0.6.24",
     "section": "package_manifests",
     "source_task": "202608082119-P6SHBN",
-    "surface_sha256": "438cebbede20d65d056671f03dcf3407f2e6fe4d80d1f34c9fc24364448b61f0",
+    "surface_sha256": "d412116a41dc399e5238722d217d69f0fb717a13b653fe753e11e75bcb73fd15",
     "to_sha256": "fcc419a72f859fb594e93e8e576c4e83f67c207a312477cdbae6994aefda8941",
     "to_version": "0.7.12"
   },
@@ -4340,6 +4458,7 @@
     "202610100750-36SZWD",
     "202610100756-0Y9HMG",
     "202610101128-35N0ZK",
-    "202610101141-AGRARP"
+    "202610101141-AGRARP",
+    "202610160500-6RCQSY"
   ]
 }

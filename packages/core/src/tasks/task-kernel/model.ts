@@ -290,6 +290,16 @@ export type TaskAggregate = Readonly<{
     occurred_at: string;
     mutation_id: string;
   }>[];
+  cancellation?: Readonly<{
+    record_digest: Sha256Digest;
+    reason: string;
+    actor_id: string;
+    approval_evidence_digest: Sha256Digest;
+    request_digest: Sha256Digest;
+    plan_digest: Sha256Digest;
+    repository_fingerprint: Sha256Digest;
+    prior_revision: number;
+  }>;
   administrative_closure?: Readonly<{
     kind: "noop" | "duplicate" | "superseded";
     note: string;
@@ -331,6 +341,20 @@ export type TaskCommand =
         closure_kind: "noop" | "duplicate" | "superseded";
         note: string;
         related_task_id: string | null;
+        approval_evidence_digest: Sha256Digest;
+      }
+    >
+  | CommandEnvelope<
+      "cancel_withdrawn_scope",
+      {
+        record_digest: Sha256Digest;
+        stops: readonly Readonly<{
+          work_order_id: Sha256Digest;
+          command: Extract<TaskCommand, { kind: "transition_work_item" }>;
+        }>[];
+        reason: string;
+        plan_digest: Sha256Digest;
+        request_digest: Sha256Digest;
         approval_evidence_digest: Sha256Digest;
       }
     >
