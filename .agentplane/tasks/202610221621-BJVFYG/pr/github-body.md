@@ -16,7 +16,7 @@ Current main and origin/main both resolve to 7860c880. Guarantee unique determin
 ## Verification
 
 - State: ok
-- Note: Canonical validation sha256:909f9a2ed7ec358a6ab72c5513603adb4ad09b4286a0c42092ab88777e18ac64
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>
