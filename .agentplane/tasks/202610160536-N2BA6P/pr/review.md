@@ -6,7 +6,7 @@ Created: 2026-10-16T06:01:07.740Z
 
 - Task: `202610160536-N2BA6P`
 - Title: Prepare branch-pr worktrees from canonical primary when execution is routed through a registered internal base worktree
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610160536-N2BA6P/prepare-branch-pr-worktrees-from-canonical-prima`
 - Canonical task record: `.agentplane/tasks/202610160536-N2BA6P/README.md`
 
