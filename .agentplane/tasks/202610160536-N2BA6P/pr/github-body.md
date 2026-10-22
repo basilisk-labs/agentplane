@@ -16,7 +16,7 @@ Generic AgentPlane correctness: with an explicit registered internal development
 ## Verification
 
 - State: ok
-- Note: Canonical validation sha256:df8962832f1a0107ba032618507b69669ab544075906ab0233ab89ef6e5a5b66
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>

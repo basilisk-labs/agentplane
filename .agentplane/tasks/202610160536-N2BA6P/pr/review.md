@@ -13,7 +13,7 @@ Created: 2026-10-16T06:01:07.740Z
 ## Verification
 
 - State: ok
-- Note: Canonical validation sha256:df8962832f1a0107ba032618507b69669ab544075906ab0233ab89ef6e5a5b66
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
