@@ -271,7 +271,9 @@ describe("incremental context reindex", () => {
     const oldProjection = normalizeProjection(await readContextProjection(root));
 
     await write(root, source, "# One\n\nnew marker\n");
-    vi.spyOn(sqlite, "writeSqliteProjection").mockRejectedValueOnce(new Error("injected write failure"));
+    vi.spyOn(sqlite, "writeSqliteProjection").mockRejectedValueOnce(
+      new Error("injected write failure"),
+    );
     await expect(reindex(root, false, true)).rejects.toThrow("injected write failure");
     expect(await readFile(dbPath)).toEqual(before);
     expect(normalizeProjection(await readContextProjection(root))).toEqual(oldProjection);

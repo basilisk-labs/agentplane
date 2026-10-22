@@ -206,10 +206,8 @@ async function writeVerifiedSqliteProjection(
     }
     for (const dbPath of [shadowPath, sqlitePath]) {
       if (!(await isExistingFile(dbPath))) continue;
-      if (
-        !(await isExistingFile(`${dbPath}-wal`)) &&
-        !(await isExistingFile(`${dbPath}-shm`))
-      ) continue;
+      if (!(await isExistingFile(`${dbPath}-wal`)) && !(await isExistingFile(`${dbPath}-shm`)))
+        continue;
       const db = await openSqliteDatabase(dbPath, { fileMustExist: true });
       if (!db) throw new Error("SQLite is required to finalize a context projection rebuild.");
       try {

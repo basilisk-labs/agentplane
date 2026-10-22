@@ -45,10 +45,7 @@ function containsAsciiControlCharacter(value: string): boolean {
   });
 }
 
-export function jsonlRowIdentity(
-  row: { id?: unknown; [key: string]: unknown },
-  index: number,
-): string {
+function jsonlRowIdentity(row: { id?: unknown; [key: string]: unknown }, index: number): string {
   if (
     typeof row.id === "string" &&
     row.id.length > 0 &&
