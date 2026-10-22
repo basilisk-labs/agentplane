@@ -10,8 +10,8 @@ import {
   readText,
   buildSnippet,
   fileExists,
-  jsonlRowIdentity,
   parseJsonlLines,
+  uniqueJsonlRowIdentities,
 } from "./context-utils.js";
 
 const output = createCliEmitter();
@@ -93,7 +93,7 @@ export async function showContext(opts: {
     return { ref: relative, content: snippet, selection: "section" };
   }
 
-  const selectorValue = ["fact", "entity", "edge", "capability", "task"].find((key) =>
+  const selectorValue = ["fact", "entity", "edge", "capability", "task", "row"].find((key) =>
     selectorKeys.includes(key),
   );
   if (selectorValue) {
@@ -106,8 +106,9 @@ export async function showContext(opts: {
       });
     }
     const rows = parseJsonlLines(text);
+    const identities = uniqueJsonlRowIdentities(rows);
     const row =
-      rows.find((item, index) => jsonlRowIdentity(item, index) === wanted) ??
+      rows.find((_, index) => identities[index] === wanted) ??
       rows.find(
         (item) => String((item as Record<string, unknown>)[selectorValue] ?? "") === wanted,
       );

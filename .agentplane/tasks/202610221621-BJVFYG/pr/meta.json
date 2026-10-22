@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202610221621-BJVFYG/repair-issue-6159-duplicate-jsonl-and-safe-reset",
+  "created_at": "2026-10-22T16:33:48.270Z",
+  "diffstat_sha256": "sha256:d02dbda1958acb7ffd1a666636814cc7dabd488687abd193a4dc3d3eb589ca21",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610221621-BJVFYG",
+  "updated_at": "2026-10-22T16:33:48.270Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

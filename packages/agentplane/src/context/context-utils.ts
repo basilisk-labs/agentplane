@@ -65,6 +65,30 @@ export function jsonlRowIdentity(
   return typeof row.id === "number" && Number.isFinite(row.id) ? String(row.id) : String(index + 1);
 }
 
+export function uniqueJsonlRowIdentities(
+  rows: readonly { id?: unknown; [key: string]: unknown }[],
+): string[] {
+  const bases = rows.map((row, index) => jsonlRowIdentity(row, index));
+  const reserved = new Set(bases);
+  const used = new Set<string>();
+  const nextSuffix = new Map<string, number>();
+  return bases.map((base) => {
+    if (!used.has(base)) {
+      used.add(base);
+      return base;
+    }
+    let suffix = nextSuffix.get(base) ?? 2;
+    let candidate = `${base}-${suffix}`;
+    while (used.has(candidate) || reserved.has(candidate)) {
+      suffix += 1;
+      candidate = `${base}-${suffix}`;
+    }
+    nextSuffix.set(base, suffix + 1);
+    used.add(candidate);
+    return candidate;
+  });
+}
+
 export async function fileExists(filePath: string): Promise<boolean> {
   try {
     await stat(filePath);
@@ -334,21 +358,24 @@ export function scoreMatch(text: string, query: string): number {
   return Math.min(1, count * 0.1 + 0.1);
 }
 
-export function parseJsonlLines(raw: string): { id?: string; [key: string]: unknown }[] {
-  const lines = raw
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter(Boolean);
-  return lines
-    .map((line) => {
-      try {
-        const parsed = JSON.parse(line) as unknown;
-        return parsed && typeof parsed === "object" && !Array.isArray(parsed)
-          ? (parsed as { id?: string; [key: string]: unknown })
-          : null;
-      } catch {
-        return null;
+export function parseJsonlEntries(
+  raw: string,
+): { row: { id?: string; [key: string]: unknown }; line: number }[] {
+  const entries: { row: { id?: string; [key: string]: unknown }; line: number }[] = [];
+  for (const [index, line] of raw.split(/\r?\n/).entries()) {
+    if (!line.trim()) continue;
+    try {
+      const parsed = JSON.parse(line) as unknown;
+      if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+        entries.push({ row: parsed as { id?: string; [key: string]: unknown }, line: index + 1 });
       }
-    })
-    .filter((row): row is { id?: string; [key: string]: unknown } => row !== null);
+    } catch {
+      // Malformed lines do not receive row identities.
+    }
+  }
+  return entries;
+}
+
+export function parseJsonlLines(raw: string): { id?: string; [key: string]: unknown }[] {
+  return parseJsonlEntries(raw).map((entry) => entry.row);
 }
