@@ -345,6 +345,37 @@ describe("accepted implementation repository evidence", () => {
         ),
       ).toEqual({ kind: "unchanged" });
       expect(writeTask).toHaveBeenCalledOnce();
+      for (const [field, badValue] of [
+        ["work_order_id", undefined],
+        ["evidence_refs", ["evidence", 42]],
+      ] as const) {
+        const malformed = structuredClone(
+          task.extensions!["agentplane.kernel_operational_projection"],
+        ) as Record<string, unknown>;
+        if (badValue === undefined) delete malformed[field];
+        else malformed[field] = badValue;
+        delete malformed.digest;
+        malformed.digest = k.kernelDigest(malformed);
+        task.extensions!["agentplane.kernel_operational_projection"] = malformed;
+        const writesBefore = writeTask.mock.calls.length;
+        expect(
+          await recoverKernelOperationalProjection(
+            context,
+            f.record,
+            task,
+            "kernel_final_validation_required",
+          ),
+        ).toEqual({ kind: "restored" });
+        expect(writeTask).toHaveBeenCalledTimes(writesBefore + 1);
+        expect(
+          await recoverKernelOperationalProjection(
+            context,
+            f.record,
+            task,
+            "kernel_final_validation_required",
+          ),
+        ).toEqual({ kind: "unchanged" });
+      }
       expect(k.kernelDigest(task.extensions!["agentplane.kernel_operational_projection"])).toBe(
         projectionDigest,
       );

@@ -29,6 +29,31 @@ type Projection = Readonly<{
   digest: k.Sha256Digest;
 }>;
 
+function isProjection(value: unknown): value is Projection {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const projection = value as Record<string, unknown>;
+  const digest = (field: string) =>
+    typeof projection[field] === "string" && /^sha256:[a-f0-9]{64}$/u.test(projection[field]);
+  return (
+    projection.schema_version === 1 &&
+    projection.source === "task_kernel" &&
+    digest("work_order_id") &&
+    typeof projection.implementation_commit === "string" &&
+    projection.implementation_commit.length > 0 &&
+    typeof projection.implementation_tree === "string" &&
+    projection.implementation_tree.length > 0 &&
+    digest("verification_evidence_digest") &&
+    digest("review_identity_digest") &&
+    Array.isArray(projection.evidence_refs) &&
+    projection.evidence_refs.every((ref) => typeof ref === "string") &&
+    Array.isArray(projection.findings) &&
+    projection.findings.every((finding) => typeof finding === "string") &&
+    typeof projection.projected_at === "string" &&
+    projection.projected_at.length > 0 &&
+    digest("digest")
+  );
+}
+
 export function kernelProjectedReviewMatches(
   task: Pick<TaskData, "quality_review">,
   projection: Projection,
@@ -191,8 +216,8 @@ export async function ensureKernelOperationalProjectionEvidence(opts: {
 export function readKernelOperationalProjection(
   extensions: Record<string, unknown> | undefined,
 ): Projection | null {
-  const value = extensions?.[KERNEL_OPERATIONAL_PROJECTION] as Projection | undefined;
-  if (value?.schema_version !== 1 || value.source !== "task_kernel") return null;
+  const value = extensions?.[KERNEL_OPERATIONAL_PROJECTION];
+  if (!isProjection(value)) return null;
   const { digest, ...contents } = value;
   return k.kernelDigest(contents) === digest ? value : null;
 }

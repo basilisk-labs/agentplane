@@ -1,0 +1,4 @@
+ .../kernel-operational-projection-recovery.test.ts | 31 +++++++++++++++++++
+ .../task/kernel-operational-projection.test.ts     | 36 ++++++++++++++++++++++
+ .../commands/task/kernel-operational-projection.ts | 29 +++++++++++++++--
+ 3 files changed, 94 insertions(+), 2 deletions(-)

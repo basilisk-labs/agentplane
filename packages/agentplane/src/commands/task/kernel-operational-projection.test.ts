@@ -39,6 +39,42 @@ function taskWriter() {
 }
 
 describe("canonical operational evidence projection", () => {
+  it("rejects malformed persisted fields even when their digest is recomputed", () => {
+    const contents = {
+      schema_version: 1,
+      source: "task_kernel",
+      work_order_id: k.kernelDigest("order"),
+      implementation_commit: "a".repeat(40),
+      implementation_tree: "b".repeat(40),
+      verification_evidence_digest: k.kernelDigest("verification"),
+      review_identity_digest: k.kernelDigest("review"),
+      evidence_refs: ["evidence"],
+      findings: ["reviewed"],
+      projected_at: "2026-10-10T00:00:00.000Z",
+    };
+    const key = "agentplane.kernel_operational_projection";
+    const valid = { ...contents, digest: k.kernelDigest(contents) };
+    expect(readKernelOperationalProjection({ [key]: valid })).toEqual(valid);
+
+    for (const [field, badValue] of [
+      ["work_order_id", undefined],
+      ["implementation_commit", 42],
+      ["implementation_tree", undefined],
+      ["verification_evidence_digest", null],
+      ["review_identity_digest", undefined],
+      ["evidence_refs", ["evidence", 42]],
+      ["findings", undefined],
+      ["findings", ["reviewed", false]],
+      ["projected_at", {}],
+    ] as const) {
+      const malformed: Record<string, unknown> = { ...contents };
+      if (badValue === undefined) delete malformed[field];
+      else malformed[field] = badValue;
+      malformed.digest = k.kernelDigest(malformed);
+      expect(readKernelOperationalProjection({ [key]: malformed }), field).toBeNull();
+    }
+  });
+
   it("projects commit, verification and evaluator evidence without replacing Kernel state", async () => {
     const writeTask = taskWriter();
     const kernel = { kind: "canonical_task", digest: k.kernelDigest("kernel") };
