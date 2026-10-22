@@ -21,6 +21,11 @@ const mocks = vi.hoisted(() => ({
   cmdCleanupMerged: vi.fn(),
   updateProviderBranch: vi.fn(),
   synchronizeTaskBranchBase: vi.fn(),
+  resolveCanonicalWorktreePreparationRoot: vi.fn(),
+}));
+
+vi.mock("../shared/worktree-topology.js", () => ({
+  resolveCanonicalWorktreePreparationRoot: mocks.resolveCanonicalWorktreePreparationRoot,
 }));
 
 vi.mock("../shared/task-backend.js", () => ({
@@ -93,7 +98,7 @@ function routeDecision(operation: WorkflowOperation): TaskRouteDecision {
     executionPacket: { mustRunFrom: "/repo/task" },
     task: { id: "202607221852-71SCSW" },
     workflowMode: "branch_pr",
-    workspace: { baseBranch: "main" },
+    workspace: { baseBranch: "typescript", baseCheckoutPath: "/repo/task" },
     workflowStep: { id: operation.id, kind: "cli_operation", operation },
   } as unknown as TaskRouteDecision;
 }
@@ -216,11 +221,13 @@ describe("branch task supervisor operations", () => {
       command: { resolvedProject: { gitRoot: "/repo" } },
       execution: {
         selected_mode: "branch_pr",
+        primary_task_id: "202607221852-71SCSW",
         base_ref: "typescript",
         base_sha: "a".repeat(40),
       },
     });
     mocks.cmdWorkStart.mockResolvedValue(0);
+    mocks.resolveCanonicalWorktreePreparationRoot.mockResolvedValue("/repo");
     mocks.enqueue.mockResolvedValue(0);
     mocks.cmdFinish.mockResolvedValue(0);
     mocks.runNext.mockResolvedValue(0);
@@ -338,8 +345,18 @@ describe("branch task supervisor operations", () => {
       executeBranchWorkflowOperation({ decision: routeDecision(worktree), operation: worktree }),
     ).resolves.toMatchObject({ status: "succeeded" });
     expect(mocks.cmdWorkStart).toHaveBeenCalledWith(
-      expect.objectContaining({ base: "typescript", baseSha: "a".repeat(40) }),
+      expect.objectContaining({
+        cwd: "/repo",
+        base: "typescript",
+        baseSha: "a".repeat(40),
+      }),
     );
+    expect(mocks.resolveCanonicalWorktreePreparationRoot).toHaveBeenCalledWith({
+      routedCheckout: "/repo/task",
+      registeredBaseCheckout: "/repo/task",
+      baseBranch: "typescript",
+    });
+    expect(mocks.loadCommandContext).toHaveBeenCalledWith({ cwd: "/repo", rootOverride: null });
 
     await expect(
       executeBranchWorkflowOperation({ decision: routeDecision(enqueue), operation: enqueue }),
@@ -348,6 +365,34 @@ describe("branch task supervisor operations", () => {
       expect.anything(),
       expect.objectContaining({ base: "typescript" }),
     );
+  });
+
+  it("rejects a mismatched routed task before any worktree mutation", async () => {
+    const operation = worktreePrepareOperation();
+    const decision = routeDecision(operation);
+    decision.task.id = "other-task";
+    await expect(executeBranchWorkflowOperation({ decision, operation })).rejects.toMatchObject({
+      context: { reason_code: "worktree_preparation_task_base_mismatch" },
+    });
+    expect(mocks.resolveCanonicalWorktreePreparationRoot).not.toHaveBeenCalled();
+    expect(mocks.cmdWorkStart).not.toHaveBeenCalled();
+  });
+
+  it("does not report success or create a worktree for foreign topology", async () => {
+    const operation = worktreePrepareOperation();
+    mocks.resolveCanonicalWorktreePreparationRoot.mockRejectedValueOnce(
+      new CliError({
+        code: "E_GIT",
+        message: "The primary belongs to a foreign repository.",
+        context: { reason_code: "worktree_preparation_foreign_repository" },
+      }),
+    );
+    await expect(
+      executeBranchWorkflowOperation({ decision: routeDecision(operation), operation }),
+    ).rejects.toMatchObject({
+      context: { reason_code: "worktree_preparation_foreign_repository" },
+    });
+    expect(mocks.cmdWorkStart).not.toHaveBeenCalled();
   });
 
   it("lets finish resolve the reviewed implementation behind a task-artifact head", async () => {
