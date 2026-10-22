@@ -738,8 +738,13 @@ describe("runSupervisedProcess", () => {
       stdin_text: "",
       start_message: "test runner started",
       assert_artifact_boundary: async (phase) => {
-        if (phase === "before recording process start")
-          await waitForTraceMatch({ path: readyPath, matcher: (text) => text === "ready" });
+        if (phase === "before recording process start") {
+          await waitForTraceMatch({
+            path: readyPath,
+            timeoutMs: 2000,
+            matcher: (contents) => contents === "ready",
+          });
+        }
       },
     });
 
