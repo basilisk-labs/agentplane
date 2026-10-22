@@ -1,0 +1,2 @@
+"$ bun run lint:core"
+"$ eslint packages scripts eslint.config.cjs vitest.config.ts"

@@ -1,0 +1,4 @@
+ .../src/commands/task/kernel-exchange.ts           |   3 +
+ .../task/kernel-rejected-plan-inputs.test.ts       | 251 +++++++++++++++++++++
+ .../commands/task/kernel-rejected-plan-inputs.ts   | 234 +++++++++++++++++++
+ 3 files changed, 488 insertions(+)
