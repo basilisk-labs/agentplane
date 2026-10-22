@@ -1,4 +1,5 @@
 import { access, mkdir, mkdtemp, readFile, rename, rm, writeFile } from "node:fs/promises";
+import { writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
@@ -739,15 +740,26 @@ describe("runSupervisedProcess", () => {
       tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-process-supervision-eperm-"));
       const runDir = path.join(tempDir, "run");
       const scriptPath = path.join(tempDir, "runner.mjs");
+      const exitMarkerPath = path.join(runDir, "allow-clean-exit");
       await mkdir(runDir, { recursive: true });
       await writeFile(
         scriptPath,
-        String.raw`process.on('SIGTERM', () => { if (${mode !== "term"}) process.stdout.write('final tail', () => process.exit(0)); }); process.stdout.write('ready\n'); setInterval(() => {}, 1000);`,
+        mode === "gone"
+          ? String.raw`import { existsSync } from 'node:fs'; process.on('SIGTERM', () => { const wait = setInterval(() => { if (!existsSync(${JSON.stringify(exitMarkerPath)})) return; clearInterval(wait); process.stdout.write('final tail', () => process.exit(0)); }, 5); }); process.stdout.write('ready\n'); setInterval(() => {}, 1000);`
+          : String.raw`process.on('SIGTERM', () => { if (${mode !== "term"}) process.stdout.write('final tail', () => process.exit(0)); }); process.stdout.write('ready\n'); setInterval(() => {}, 1000);`,
       );
-      const invocation = wallTimeoutInvocation(tempDir, runDir, scriptPath);
+      const invocation = {
+        ...wallTimeoutInvocation(tempDir, runDir, scriptPath),
+        timeout_policy: {
+          wall_clock_ms: 120,
+          idle_ms: 1000,
+          terminate_grace_ms: mode === "gone" ? 500 : 0,
+        },
+      };
       const signalError = Object.assign(new Error("owned group signal EPERM"), { code: "EPERM" });
       let ownedPid: number | null = null;
       let termCalls = 0;
+      let groupKillFailureObserved = false;
       let additionalFailureObserved = false;
       const originalStart = coreProcess.startProcess;
       const originalKill = Reflect.get(process, "kill") as typeof process.kill;
@@ -758,7 +770,11 @@ describe("runSupervisedProcess", () => {
       });
       process.kill = (pid, signal) => {
         if (ownedPid !== null && pid === -ownedPid) {
-          if (signal === "SIGKILL") throw signalError;
+          if (signal === "SIGKILL") {
+            groupKillFailureObserved = true;
+            if (mode === "gone") writeFileSync(exitMarkerPath, "allow");
+            throw signalError;
+          }
           if (signal === "SIGTERM" && mode === "term" && termCalls++ > 0) throw signalError;
           if (signal === 0 && mode === "live") return true;
           if (signal === 0 && mode === "unknown") throw new Error("group probe unavailable");
@@ -793,6 +809,7 @@ describe("runSupervisedProcess", () => {
           expect(result.exit_code).toBe(0);
           expect(result.stdout_tail).toContain("final tail");
           expect(result.process_tree.residual_alive).toBe(false);
+          expect(groupKillFailureObserved).toBe(true);
         } else {
           await expect(execution).rejects.toMatchObject({
             primary_error: signalError,
