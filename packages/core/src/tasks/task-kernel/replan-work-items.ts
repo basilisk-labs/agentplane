@@ -241,7 +241,7 @@ export function authenticatedScopeReplanHistory(
           ),
         ];
         const rejected = Object.values(aggregate.mutation_receipts).flatMap((receipt) => {
-          const evidence = receipt.mutation_id.match(/^reject:(sha256:[a-f0-9]{64})$/u)?.[1];
+          const evidence = /^reject:(sha256:[a-f0-9]{64})$/u.exec(receipt.mutation_id)?.[1];
           if (!evidence) return [];
           return fingerprints.flatMap((fingerprint) => {
             const command: Extract<TaskCommand, { kind: "reject_plan" }> = {

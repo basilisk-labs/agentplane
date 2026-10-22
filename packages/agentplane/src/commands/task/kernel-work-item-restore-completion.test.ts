@@ -601,7 +601,8 @@ describe(
           });
           const next = await readOrder();
           expect(next.order.task.work_item_id).toBe("consumer");
-          const current = (await getRecord()).aggregate;
+          const record = await getRecord();
+          const current = record.aggregate;
           const history = k.authenticatedScopeReplanHistory(current, true, "consumer");
           expect(history?.rejections).toHaveLength(1);
           const rejectionId = history!.rejections[0]!.mutation_id;
