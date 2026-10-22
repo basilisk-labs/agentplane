@@ -673,33 +673,10 @@ describe("runSupervisedProcess", () => {
     );
 
     const invocation = {
-      adapter_id: "custom",
+      ...wallTimeoutInvocation(tempDir, runDir, scriptPath),
       run_id: "run-idle-timeout",
       work_order_id: "run-idle-timeout",
-      repository_root: tempDir,
-      run_dir: runDir,
-      bundle_path: path.join(runDir, "bundle.json"),
-      state_path: path.join(runDir, "run-state.json"),
-      events_path: path.join(runDir, "events.jsonl"),
-      result_path: path.join(runDir, "result.json"),
-      receipt_path: path.join(runDir, "execution-receipt.json"),
-      trace_path: path.join(runDir, "agent-trace.jsonl"),
-      stderr_path: path.join(runDir, "stderr.log"),
-      trace_policy: {
-        mode: "raw",
-        max_tail_bytes: 64 * 1024,
-        capture_stderr: true,
-      },
-      timeout_policy: {
-        wall_clock_ms: 5000,
-        idle_ms: 100,
-        terminate_grace_ms: 250,
-      },
-      bootstrap_path: null,
-      output_last_message_path: null,
-      argv: [process.execPath, scriptPath],
-      env: {},
-      dry_run: false,
+      timeout_policy: { wall_clock_ms: 5000, idle_ms: 100, terminate_grace_ms: 250 },
     } as const;
 
     const result = await runSupervisedProcess({
