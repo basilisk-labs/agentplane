@@ -1,0 +1,25 @@
+{
+  "checks": [
+    {
+      "check_ids": [],
+      "command": "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/context/reindex-projection.test.ts packages/agentplane/src/commands/context/reindex.incremental.unit.test.ts",
+      "duration_ms": 20890,
+      "exit_code": 0,
+      "runtime": {
+        "environment_digest": "sha256:2b156bc960cc9cd509853b28f56951dc202aa64aa60aa089c234c84e01f82139",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v5.0.3 /home/agentplane/workspace/agentplane/.agentplane/tmp/issue6159-clean-clone/.agentplane/worktrees/202610221621-BJVFYG-repair-issue-6159-duplicate-jsonl-and-safe-reset\n\n\n Test Files  2 passed (2)\n      Tests  9 passed (9)\n   Start at  19:36:13\n   Duration  11.06s (transform 41%, tests 38%, import 19%, setup 2%, worker 1%)\n\n  Transform  |agentplane| transforming modules took 3.78s · 41% of tracked time, re-done on every run\n             persist transforms across runs with fsModuleCache: true\n             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns\n\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202610221621-BJVFYG"
+}

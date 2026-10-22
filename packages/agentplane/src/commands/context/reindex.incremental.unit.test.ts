@@ -8,6 +8,7 @@ import { materializeKnowledgeRef, resolveKnowledgeRef } from "../../context/know
 import { showContext } from "./show.js";
 import { cmdContextReindex, readContextProjection, searchContextProjection } from "./reindex.js";
 import { readSqliteProjectionState, writeSqliteProjection } from "../../context/sqlite.js";
+import * as sqlite from "../../context/sqlite.js";
 
 let tempRoots: string[] = [];
 
@@ -23,11 +24,11 @@ async function write(root: string, rel: string, text: string): Promise<void> {
   await writeFile(target, text, "utf8");
 }
 
-async function reindex(root: string, includeRaw = false): Promise<string> {
+async function reindex(root: string, includeRaw = false, reset = false): Promise<string> {
   const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
   await cmdContextReindex({
     cwd: root,
-    parsed: { includeTasks: false, includeRaw, reset: false },
+    parsed: { includeTasks: false, includeRaw, reset },
   });
   return out.mock.calls.map(([chunk]) => String(chunk)).join("");
 }
@@ -239,5 +240,54 @@ describe("incremental context reindex", () => {
     expect(projection?.rows.some((row) => row.search_text.includes("corruption sentinel"))).toBe(
       true,
     );
+  });
+
+  it("keeps the last readable projection if reset validation fails", async () => {
+    const root = await tempRoot();
+    const source = "context/wiki/one.md";
+    await write(root, source, "# One\n\nold marker\n");
+    await reindex(root);
+    const dbPath = path.join(root, ".agentplane", "cache.sqlite");
+    const before = await readFile(dbPath);
+    const oldProjection = normalizeProjection(await readContextProjection(root));
+
+    await write(root, source, "# One\n\nnew marker\n");
+    const check = sqlite.checkSqliteProjection;
+    vi.spyOn(sqlite, "checkSqliteProjection").mockImplementation((candidate) =>
+      candidate.includes(".rebuild-") ? Promise.resolve(false) : check(candidate),
+    );
+    await expect(reindex(root, false, true)).rejects.toThrow("integrity check");
+    expect(await readFile(dbPath)).toEqual(before);
+    expect(normalizeProjection(await readContextProjection(root))).toEqual(oldProjection);
+  });
+
+  it("keeps the last readable projection if reset writing fails", async () => {
+    const root = await tempRoot();
+    const source = "context/wiki/one.md";
+    await write(root, source, "# One\n\nold marker\n");
+    await reindex(root);
+    const dbPath = path.join(root, ".agentplane", "cache.sqlite");
+    const before = await readFile(dbPath);
+    const oldProjection = normalizeProjection(await readContextProjection(root));
+
+    await write(root, source, "# One\n\nnew marker\n");
+    vi.spyOn(sqlite, "writeSqliteProjection").mockRejectedValueOnce(new Error("injected write failure"));
+    await expect(reindex(root, false, true)).rejects.toThrow("injected write failure");
+    expect(await readFile(dbPath)).toEqual(before);
+    expect(normalizeProjection(await readContextProjection(root))).toEqual(oldProjection);
+  });
+
+  it("replaces the projection after a successful reset", async () => {
+    const root = await tempRoot();
+    const source = "context/wiki/one.md";
+    await write(root, source, "# One\n\nold marker\n");
+    await reindex(root);
+    await write(root, source, "# One\n\nnew marker\n");
+
+    const output = await reindex(root, false, true);
+    const projection = await readContextProjection(root);
+    expect(output).toContain("strategy=full-rebuild reason=reset-requested");
+    expect(projection?.rows.some((row) => row.search_text.includes("new marker"))).toBe(true);
+    expect(projection?.rows.some((row) => row.search_text.includes("old marker"))).toBe(false);
   });
 });
