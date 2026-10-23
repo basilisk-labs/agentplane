@@ -4,7 +4,10 @@ import type { TaskData } from "../../backends/task-backend.js";
 import { resolveTaskExecutionContract } from "../../runtime/task-routing/resolve.js";
 import { amendedScopeIntake, scopeIntakeDigest } from "./kernel-scope-intake.js";
 
-function fixture(mode: "direct" | "branch_pr" = "direct") {
+function fixture(
+  mode: "direct" | "branch_pr" = "direct",
+  effects: ("source_code" | "ci" | "documentation")[] = ["source_code"],
+) {
   const config = defaultConfig();
   config.workflow_mode = mode;
   return {
@@ -15,7 +18,7 @@ function fixture(mode: "direct" | "branch_pr" = "direct") {
         schema_version: 2,
         preferred_mode: mode,
         scope_roots: ["source.ts"],
-        repository_effects: ["source_code"],
+        repository_effects: effects,
         external_effects: [],
         requirements_uncertainty: "bounded",
         implementation_uncertainty: "bounded",
@@ -27,6 +30,24 @@ function fixture(mode: "direct" | "branch_pr" = "direct") {
 }
 
 describe("prospective scope intake security", () => {
+  it("preserves existing ci and documentation grants in a redundant exact request", () => {
+    const task = fixture("branch_pr", ["source_code", "ci", "documentation"]);
+    const next = amendedScopeIntake(task, ["fixture.test.ts"], ["ci", "documentation", "tests"]);
+    expect(next.authority.allowed_repository_effects).toEqual(
+      expect.arrayContaining(["ci", "documentation", "tests"]),
+    );
+    expect(next.authority.allowed_external_effects).toEqual(
+      task.execution_contract!.authority.allowed_external_effects,
+    );
+    const denied = structuredClone(task);
+    denied.execution_contract!.authority.forbidden_repository_effects.push("ci");
+    expect(() => amendedScopeIntake(denied, ["fixture.test.ts"], ["ci", "tests"])).toThrow(
+      "independently constrained",
+    );
+    expect(() => amendedScopeIntake(fixture(), ["fixture.test.ts"], ["ci", "tests"])).toThrow(
+      "unsupported repository effect",
+    );
+  });
   it("changes only the generated local-effect complement and preserves external restrictions", () => {
     const task = fixture();
     const before = structuredClone(task.execution_contract!);
