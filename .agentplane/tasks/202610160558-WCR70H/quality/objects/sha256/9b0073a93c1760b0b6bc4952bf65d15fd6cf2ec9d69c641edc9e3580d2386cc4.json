@@ -1,0 +1,43 @@
+{
+  "native_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_task_identity",
+    "task_id": "202610160558-WCR70H",
+    "plan": {
+      "revision": 1,
+      "digest": "sha256:1f3ae3c843899889331667fd02b26b6d5e843c42ee01035aeec33634c335dd28",
+      "approval_state": "approved",
+      "approved_digest": "sha256:1f3ae3c843899889331667fd02b26b6d5e843c42ee01035aeec33634c335dd28"
+    },
+    "policy": {
+      "digest": "sha256:1150ba6caefe9e829c30b3520b9246ed1ec7ebbeedbe788c63cf7989015dbb46"
+    },
+    "capability": {
+      "digest": "sha256:c4938b6e617b86792a303ae0a23a3fa97aef72146c5a5160d4962edf29be42e2"
+    },
+    "checks": {
+      "verification_contract_digest": "sha256:8a2ec5fd2e6897ab0834741630145275aa84100ef3277f16aaa924e1288642ae",
+      "required_check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "full_regression",
+        "task_outcome"
+      ],
+      "digest": "sha256:4df64550de1ca51cdfaad60a3a0f7d1de4dc4e19214af9be778d6f7384c5aa8d"
+    },
+    "digest": "sha256:1156d8b135124d9fde5ab4a9823db64a65f67aa8fabb826aa6c727265a7e51e7"
+  },
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202610160558-WCR70H",
+    "plan_digest": "sha256:1f3ae3c843899889331667fd02b26b6d5e843c42ee01035aeec33634c335dd28",
+    "policy_digest": "sha256:1150ba6caefe9e829c30b3520b9246ed1ec7ebbeedbe788c63cf7989015dbb46",
+    "capability_digest": "sha256:c4938b6e617b86792a303ae0a23a3fa97aef72146c5a5160d4962edf29be42e2",
+    "checks_digest": "sha256:4df64550de1ca51cdfaad60a3a0f7d1de4dc4e19214af9be778d6f7384c5aa8d",
+    "verification_input_digest": "sha256:3e40f988c7f41559c8c01543dcd3ab640dcb71ec81799be66093adc7cbbb7c22",
+    "acceptance_digest": "sha256:015dd2bdc96393ab0a5d4f1f13268119861f399652a0162f809be78d5a5cb040",
+    "implementation_sha": "4259803ee74ef1cf8458c9099068fd03e4d5ab81",
+    "digest": "sha256:76b4fd9400f3429d170666b352707993a70101bcaedd9f0526389b35e966728c"
+  }
+}

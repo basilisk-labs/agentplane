@@ -1,0 +1,1 @@
+🚧 X2FBX2 task: Reject malformed persisted operational projections for PR #6158 [202610222233-X2FBX2]
