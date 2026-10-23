@@ -1,0 +1,110 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun x vitest run packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts",
+      "duration_ms": 115738,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:a48465a7b9d6aa41c350baf8995682bf17f4ade991e0aa80e9513a8e8c9abaac",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/tmp/kernel-linked-context-0713/.agentplane/worktrees/202610232049-NSMZYM-preserve-linked-worktree-observation-context-for/.agentplane/tasks/202610232049-NSMZYM/supervision/verification-runs/run-003/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:823b679e63a9645dc15a28c44831b9ece13f6bc85d0f69430a9d8138c75d48be",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v5.0.5 <repo>\n\n ✓ packages/agentplane/src/cli/run-cli.core.kernel-transport.test.ts (13 tests) 106596ms\n   ✓ canonical CLI transport (13)\n     ✓ routes planning to a divergent explicit branch base (compact=false, bundled=false) 3880ms\n     ✓ routes planning to a divergent explicit commit base (compact=false, bundled=false) 1686ms\n     ✓ routes planning to a divergent explicit branch base (compact=true, bundled=false) 1602ms\n     ✓ routes planning to a divergent explicit commit base (compact=true, bundled=false) 1870ms\n     ✓ routes planning to a divergent explicit branch base (compact=true, bundled=true) 5522ms\n     ✓ keeps canonical observation and WorkOrder roots in the invocation worktree 2115ms\n     ✓ routes a linked checkout predating a canonical task to the primary checkout 599ms\n     ✓ canonical first-write and host lifecycle on local storage 15427ms\n     ✓ canonical first-write and host lifecycle on cloud storage 9070ms\n     ✓ canonical first-write and host lifecycle on compact storage 16126ms\n     ✓ managed transport: real-custom:local preserves receipt admission and dispatch ownership 1769ms\n     ✓ managed transport: trusted-adapter-contract-double:local preserves receipt admission and dispatch ownership 22080ms\n     ✓ managed transport: trusted-adapter-contract-double:cloud preserves receipt admission and dispatch ownership 24842ms\n ✓ packages/agentplane/src/commands/shared/task-backend.test.ts (18 tests) 5302ms\n   ✓ commands/shared/task-backend CommandContext (18)\n     ✓ resolves or rejects an unavailable missing base projection without repairing it 637ms\n     ✓ resolves or rejects an unavailable malformed base projection without repairing it 618ms\n     ✓ resolves or rejects an unavailable directory_missing base projection without repairing it 839ms\n     ✓ loadTaskFromContext can fall back to origin/<branch> when the local task branch is gone 324ms\n     ✓ listTaskSummariesMemo falls back to summary projection when the backend has no explicit projection read 360ms\n     ✓ can fall back to canonical tasks when a filtered native projection is empty 374ms\n\n Test Files  2 passed (2)\n      Tests  31 passed (31)\n   Start at  00:14:49\n   Duration  114.54s (tests 98%, import 1%, transform 1%)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run format:check",
+      "duration_ms": 66684,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:98c42efdbce1ce18645fed1befee79f2d082f79ef14fab1c09d21df22049b8d8",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/tmp/kernel-linked-context-0713/.agentplane/worktrees/202610232049-NSMZYM-preserve-linked-worktree-observation-context-for/.agentplane/tasks/202610232049-NSMZYM/supervision/verification-runs/run-004/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:823b679e63a9645dc15a28c44831b9ece13f6bc85d0f69430a9d8138c75d48be",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "format:check",
+      "stderr_tail": "$ prettier . --check\n",
+      "stdout_tail": "Checking formatting...\nAll matched files use Prettier code style!\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run lint:core",
+      "duration_ms": 173614,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:8cb4d68ee3a4ae4d3e8636cc8ea1c97fcf8239a864d853dcfde65d48fd6bb84d",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/tmp/kernel-linked-context-0713/.agentplane/worktrees/202610232049-NSMZYM-preserve-linked-worktree-observation-context-for/.agentplane/tasks/202610232049-NSMZYM/supervision/verification-runs/run-005/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:823b679e63a9645dc15a28c44831b9ece13f6bc85d0f69430a9d8138c75d48be",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "lint:core",
+      "stderr_tail": "$ eslint packages scripts eslint.config.cjs vitest.config.ts\n",
+      "stdout_tail": "\n<repo>/packages/agentplane/src/commands/shared/reconcile-native-applicability.test.ts\n  8:35  warning  '<repo>/packages/agentplane/src/commands/shared/task-backend.ts' imported multiple times  import/no-duplicates\n  9:58  warning  '<repo>/packages/agentplane/src/commands/shared/task-backend.ts' imported multiple times  import/no-duplicates\n\n<repo>/packages/agentplane/src/commands/task/kernel-operational-projection-recovery.test.ts\n   3:41  warning  '<repo>/packages/agentplane/src/commands/shared/task-backend.ts' imported multiple times  import/no-duplicates\n  20:37  warning  '<repo>/packages/agentplane/src/commands/shared/task-backend.ts' imported multiple times  import/no-duplicates\n\n<repo>/packages/agentplane/src/runner/process-supervision/run.ts\n  266:13  warning  Avoid using promises inside of callbacks  promise/no-promise-in-callback\n\n✖ 5 problems (0 errors, 5 warnings)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "full_regression",
+        "task_outcome"
+      ],
+      "command": "bun run ci:local:full",
+      "duration_ms": 2378143,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:a343b8a2970c6753c570c68df25597807bbd71cde41c26e62af41b8c733ee838",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/tmp/kernel-linked-context-0713/.agentplane/worktrees/202610232049-NSMZYM-preserve-linked-worktree-observation-context-for/.agentplane/tasks/202610232049-NSMZYM/supervision/verification-runs/run-006/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:3e64dd298262475a5a7c4b8796e2c4279aa84bcb27659d5cc763586ac87e93af",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "ci:local:full",
+      "stderr_tail": "ifacts.\nSwitched to a new branch 'unrelated'\n⚠️ task requires Verify Steps by primary tag; seeded a PLANNER fallback ## Verify Steps scaffold in README (replace with task-specific acceptance coverage when available)\n{\"ts\":\"2026-10-23T21:54:54.589Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-RGWO1k/agentplane-workflow-kV3xZW/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/tmp/agentplane-vitest-run-RGWO1k/agentplane-workflow-kV3xZW/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-23T21:54:54.701Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-RGWO1k/agentplane-workflow-X3N2Yz/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/tmp/agentplane-vitest-run-RGWO1k/agentplane-workflow-X3N2Yz/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-23T21:54:54.827Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-RGWO1k/agentplane-workflow-X3N2Yz/.agentplane/WORKFLOW.md\",\"from\":\"/tmp/agentplane-vitest-run-RGWO1k/agentplane-workflow-X3N2Yz/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-23T21:54:54.888Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-RGWO1k/agentplane-workflow-wvrwck/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/tmp/agentplane-vitest-run-RGWO1k/agentplane-workflow-wvrwck/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-23T21:54:54.910Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_failed\",\"code\":\"WF_UNSUPPORTED_VERSION\",\"details\":{\"reason\":\"Unsupported WORKFLOW version 3; supported versions: 1, 2.\"}}\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\n{\"ts\":\"2026-10-23T21:56:02.782Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-10-23T21:56:02.903Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_completed\",\"details\":{\"diagnostics\":0}}\n{\"ts\":\"2026-10-23T21:56:02.936Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-GE2GHy/agentplane-cli-test-5tgO62/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/tmp/agentplane-vitest-run-GE2GHy/agentplane-cli-test-5tgO62/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-23T21:56:13.358Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-10-23T21:56:13.448Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":1}}\n{\"ts\":\"2026-10-23T21:56:13.452Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-10-23T21:56:13.510Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":2}}\n{\"ts\":\"2026-10-23T21:56:13.513Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-10-23T21:56:13.544Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_completed\",\"details\":{\"diagnostics\":0}}\n$ node scripts/checks/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 3 --fixture local-basic [REDACTED] 10000\n$ node scripts/checks/run-vitest-suite.mjs critical-cli\n$ bun run docs:ia:check && bun run docs:reference:check && bun run docs:onboarding:check\n$ node scripts/checks/check-docs-ia.mjs\n$ node scripts/generate/generate-package-reference.mjs --check\n$ node scripts/checks/check-agent-onboarding-scenario.mjs\n$ node scripts/workflow/run-workflows-lint.mjs && node scripts/checks/check-workflow-command-contract.mjs && bun scripts/checks/check-lifecycle-parity.ts && node scripts/checks/check-critical-test-route.mjs\n$ node scripts/checks/run-vitest-suite.mjs platform-critical\n$ node scripts/checks/check-significant-coverage.mjs\n",
+      "stdout_tail": "ritical.trust-boundary-ratchet-regressions.test.ts\nVitest suite critical-cli: chunk 4/5 passed in 47903ms (Test Files  2 passed (2); Tests  7 passed (7); Duration  47.47s (tests 91%, import 5%, transform 4%))\nVitest suite critical-cli: chunk 5/5 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts\nVitest suite critical-cli: chunk 5/5 passed in 12838ms (Test Files  1 passed (1); Tests  12 passed (12); Duration  12.40s (tests 85%, import 8%, transform 7%))\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":true,\"groups\":[{\"id\":\"runtime\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":125281,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202610232049-NSMZYM/supervision/verification-runs/run-006/children/run-001/manifest.json\",\"digest\":\"sha256:fbffb73825c219c138accabd7563069ecdb3a6bc28d3695d08f05cfdce4794e6\"}},{\"id\":\"docs-schema\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":69571,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202610232049-NSMZYM/supervision/verification-runs/run-006/children/run-002/manifest.json\",\"digest\":\"sha256:b6d6214420711a8b3eb47dc1c652d53ecbe636f1fbc5df165adead778eaad978\"}},{\"id\":\"core\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":1968122,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202610232049-NSMZYM/supervision/verification-runs/run-006/children/run-003/manifest.json\",\"digest\":\"sha256:05f21f1163a3d93bd88f8c87fe57bf0deb71094195826e0da090f8ae7ee2d5a4\"}},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":102603,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202610232049-NSMZYM/supervision/verification-runs/run-006/children/run-004/manifest.json\",\"digest\":\"sha256:e7738862688bb533d4d792888bd8fb1e858f54f89b2c08c3325217d2bbed210e\"}}]}\n{\"schema_version\":1,\"kind\":\"verification_metrics\",\"route\":\"full-fast\",\"wall_clock_ms\":2295559,\"selected_groups\":5,\"executed_groups\":5,\"parallel_group_concurrency\":1,\"build_invocations\":1,\"ok\":true}\n\n== Documentation contracts ==\nok: docs index and current path references are aligned\nok: docs/reference/generated-reference.mdx is fresh\nok: agent onboarding scenario surfaces are aligned\n\n== Workflows lint (actionlint) ==\nworkflow and command guidance contract OK\nworkflow lifecycle parity OK\ncritical Vitest route OK\n\n== Windows platform-critical tests ==\n\n RUN  v5.0.5 /tmp/agentplane-verification-vhxH9A\n\n\n Test Files  7 passed (7)\n      Tests  98 passed (98)\n   Start at  00:59:03\n   Duration  62.00s (tests 86%, transform 8%, import 6%)\n\n\n== Significant file coverage (guard) ==\n\n RUN  v5.0.5 /tmp/agentplane-verification-vhxH9A\n      Coverage enabled with v8\n\n ✓ packages/agentplane/src/commands/guard/impl/close-message.test.ts (18 tests) 578ms\n ✓ packages/agentplane/src/commands/guard/impl/commands.commit-non-close.unit.test.ts (19 tests) 526ms\n   ✓ guard command implementations: commit non-close (19)\n     ✓ cmdCommit non-close path commits with env and provided ctx 486ms\n ✓ packages/agentplane/src/commands/guard/impl/commands.commit-close.unit.test.ts (12 tests) 357ms\n   ✓ guard command implementations: commit close (12)\n     ✓ cmdCommit close path stages absolute README when outside gitRoot 325ms\n ✓ packages/agentplane/src/commands/guard/impl/allow.test.ts (13 tests) 106ms\n ✓ packages/agentplane/src/cli/run-cli.core.guard.test.ts (25 tests) 5379ms\n   ✓ runCli (25)\n     ✓ guard clean succeeds when no staged files 3534ms\n ✓ packages/agentplane/src/commands/guard/impl/commands.guard.unit.test.ts (3 tests) 119ms\n ✓ packages/agentplane/src/commands/guard/impl/comment-commit.test.ts (12 tests) 72ms\n ✓ packages/agentplane/src/commands/guard/impl/policy.test.ts (3 tests) 12ms\n\n Test Files  8 passed (8)\n      Tests  105 passed (105)\n   Start at  01:00:05\n   Duration  16.66s (tests 47%, transform 30%, import 21%, worker 1%, setup 1%)\n\n\n== Coverage threshold (significant) ==\nSignificant suite contract OK (17 source targets).\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202610232049-NSMZYM"
+}
