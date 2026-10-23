@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202610231840-74H7WF/admit-authenticated-native-verification-journals",
+  "created_at": "2026-10-23T18:44:38.768Z",
+  "diffstat_sha256": "sha256:5b7b3104e0cd6c1815b6fb97d0faefeee18abc125fa44ccaedcb9bf3df511bab",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610231840-74H7WF",
+  "updated_at": "2026-10-23T18:44:38.768Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

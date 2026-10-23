@@ -4,6 +4,7 @@ import os from "node:os";
 import path from "node:path";
 
 import { defineScript, runScriptMain } from "../lib/script-runtime.mjs";
+import { isNativeVerificationJournal } from "./native-verification-journal.mjs";
 
 const SCRIPT_NAME = "check-agentplane-artifacts.mjs";
 const HISTORICAL_VOLATILE_CUTOFF_EPOCH_SECONDS = 1_777_052_921;
@@ -26,14 +27,48 @@ function isPrEvidence(filePath) {
   return /^\.agentplane\/tasks\/[^/]+\/pr\/(?:verify\.log|notes\.jsonl)$/u.test(filePath);
 }
 
-function isVolatileAgentplanePath(filePath) {
+function isVolatileAgentplanePath(filePath, allowNativeJournal = false) {
   const rel = normalize(filePath);
   if (rel === ".agentplane/tasks.json") return true;
   if (/^\.agentplane\/tasks\/[^/]+\/(?:runs|repro)(?:\/|$)/u.test(rel)) return true;
   if (/^\.agentplane\/(?:cache|bin|\.npm-cache|\.release|\.upgrade)\//u.test(rel)) return true;
   if (isPrEvidence(rel)) return false;
+  if (allowNativeJournal && isNativeVerificationJournal(rel, readTrackedFile)) return false;
   if (/^\.agentplane\/tasks\/.+\.(?:log|jsonl)$/u.test(rel)) return true;
   return false;
+}
+
+let sparseBlobs;
+
+function readSparseBlobs() {
+  const paths = listTrackedFiles().filter((filePath) =>
+    /^\.agentplane\/tasks\/[^/]+\/supervision\/verification-runs\//u.test(filePath),
+  );
+  const output = execFileSync("git", ["cat-file", "--batch"], {
+    cwd: process.cwd(),
+    input: paths.map((filePath) => `:${filePath}\n`).join(""),
+    maxBuffer: COMMAND_MAX_BUFFER_BYTES,
+  });
+  const blobs = new Map();
+  let offset = 0;
+  for (const filePath of paths) {
+    const end = output.indexOf(10, offset);
+    const header = output.toString("utf8", offset, end);
+    const match = /^[0-9a-f]{40,64} blob (\d+)$/u.exec(header);
+    if (!match) throw new Error(`cannot read tracked verification blob: ${filePath}`);
+    const size = Number(match[1]);
+    blobs.set(filePath, output.subarray(end + 1, end + 1 + size));
+    offset = end + size + 2;
+  }
+  return blobs;
+}
+
+function readTrackedFile(filePath) {
+  // Validate the tracked index, including in sparse or locally dirty worktrees.
+  sparseBlobs ??= readSparseBlobs();
+  const bytes = sparseBlobs.get(filePath);
+  if (!bytes) throw new Error(`missing tracked verification blob: ${filePath}`);
+  return bytes;
 }
 
 function listTrackedFiles() {
@@ -81,7 +116,9 @@ function formatList(items) {
 
 function checkTrackedVolatile() {
   const offenders = [];
-  for (const filePath of listTrackedFiles().filter((item) => isVolatileAgentplanePath(item))) {
+  for (const filePath of listTrackedFiles().filter((item) =>
+    isVolatileAgentplanePath(item, true),
+  )) {
     const committedAt = lastCommitEpochSeconds(filePath);
     if (!committedAt || committedAt > HISTORICAL_VOLATILE_CUTOFF_EPOCH_SECONDS) {
       offenders.push(filePath);
