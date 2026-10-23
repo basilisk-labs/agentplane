@@ -1,10 +1,11 @@
 ---
 id: "202610231307-CNXADT"
 title: "Exclude JavaScript test files from clone detection without changing the clone baseline"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -42,6 +43,22 @@ quality_review:
     - "Regression uses real jscpd on two ordinary JS/MJS source files and four test/spec fixtures. It requires exactly two scanned sources, a positive clone count containing both ordinary files, and no clone endpoint in a test/spec file. Focused Vitest result was 2/2 passed."
     - "The baseline file is unchanged in the commit; its SHA256 is b31fff7a0d8a2d1c1fb65199feaad8bc44728e8e55463a14317cae4db3c108ae. Native clone:check passed at 90 clones, 1467 duplicated lines, 9859 duplicated tokens, below the existing baseline 95/1482/10417."
     - "AgentPlane native validation binds both required checks to exact commit and records exit 0 for bun run clone:check and bun run ci:local:full. Full groups and Windows/significant-coverage tails report success."
+token_usage:
+  agent_runs: 1
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:c7e977d00cc9700483fb9efebdde13e80aeada787843dc345391c50ee37bae4c"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-10-23T14:59:12.429Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -220,9 +237,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "1f238886e60052e34c0da4a0a244888ecc8a0178"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "2e00aa7e944ab53483472c1566cc0c6bf7430da1"
+  message: "🧩 CNXADT task: link PR 6908 metadata"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -230,9 +250,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-23T14:59:12.429Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "2e00aa7e944ab53483472c1566cc0c6bf7430da1"
 doc_version: 3
-doc_updated_at: "2026-10-23T14:31:20.918Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-23T14:59:12.429Z"
+doc_updated_by: "CODER"
 description: "For release 0.7.13, jscpd scans js/mjs but the scanner excludes only TS test/spec suffixes. M05 .test.mjs fixtures create false clone drift. Extend only scanner ignores to js/mjs test/spec files; add a meaningful regression proving tests are omitted and ordinary js/mjs remains scanned. Preserve baseline and metrics threshold. Independent review and full hosted CI before merge."
 sections:
   Summary: |-
@@ -346,6 +374,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:fc3e36ee74c007d8451fbe0effc56ab5b6fec868002dfde180755792b2104e20"
     work_order_id: "sha256:7c6aa720885e8a453dade3b123aab6a9f7feeee279b8d0761800104e7894d9cd"
+  implementation_commit:
+    hash: "1f238886e60052e34c0da4a0a244888ecc8a0178"
+    message: "🚧 CNXADT task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "39c5ed946a445d108f2be402c1382cc9204a311b"
@@ -928,3 +959,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/1` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:c7e977d00cc9700483fb9efebdde13e80aeada787843dc345391c50ee37bae4c`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-10-23T14:59:12.429Z`
