@@ -1,0 +1,4 @@
+ .../agentplane/src/cli/run-cli.core.pr-conflict-publication.test.ts  | 4 ++++
+ packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts  | 4 ++++
+ .../src/commands/pr/integrate/internal/github-protection.test.ts     | 5 +++--
+ 3 files changed, 11 insertions(+), 2 deletions(-)
