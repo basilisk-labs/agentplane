@@ -153,6 +153,19 @@ export async function scopeReplanInputs(
       throw new Error("Scope replan approval receipt is missing or ambiguous");
     approvalEvents.push(events[0]!);
   }
+  const rejectionEvents: k.DomainEvent[] = [];
+  for (const rejection of history.rejections) {
+    const events = record.events.filter(
+      (event) => event.kind === "plan_rejected" && event.mutation_id === rejection.mutation_id,
+    );
+    if (
+      events.length !== 1 ||
+      record.events.filter((event) => event.mutation_id === events[0]!.mutation_id).length !== 1 ||
+      !authenticReworkEvent(record, events[0]!, rejection.command)
+    )
+      throw new Error("Scope replan rejection receipt is missing or ambiguous");
+    rejectionEvents.push(events[0]!);
+  }
   const amendmentEvents: k.DomainEvent[] = [];
   const plans = [...aggregate.plan_history, current];
   for (const amendment of history.amendments) {
@@ -192,10 +205,15 @@ export async function scopeReplanInputs(
     revision = event.task_revision;
     if (proposal) {
       const approval = history.approvals.find((entry) => entry.command.plan_digest === plan.digest);
-      const approved = approvalEvents.find((entry) => entry.mutation_id === approval?.mutation_id);
-      if (!approved || approved.task_revision <= revision)
-        throw new Error("Scope replan approval is out of order");
-      revision = approved.task_revision;
+      const rejection = history.rejections.find(
+        (entry) => entry.command.plan_digest === plan.digest,
+      );
+      const decision = approval
+        ? approvalEvents.find((entry) => entry.mutation_id === approval.mutation_id)
+        : rejectionEvents.find((entry) => entry.mutation_id === rejection?.mutation_id);
+      if (!decision || decision.task_revision <= revision)
+        throw new Error("Scope replan decision is out of order");
+      revision = decision.task_revision;
     }
   }
   if (revision > aggregate.revision) throw new Error("Scope replan history is in the future");
@@ -209,6 +227,7 @@ export async function scopeReplanInputs(
     grant_event: grantEvent,
     proposal_events: proposalEvents,
     approval_events: approvalEvents,
+    rejection_events: rejectionEvents,
     amendment_events: amendmentEvents,
     result_authentication: request.result_authentication,
   };

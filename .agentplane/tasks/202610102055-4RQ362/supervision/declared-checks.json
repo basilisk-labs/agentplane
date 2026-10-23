@@ -1,0 +1,84 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run test:project agentplane packages/agentplane/src/commands/pr/internal/auto-commit.test.ts packages/agentplane/src/commands/pr/internal/auto-commit-ancestry.test.ts --maxWorkers=2",
+      "duration_ms": 20461,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:6e555d2f898404a935fbdf3e99cc94911cdb47b7b34051b276a3fe065c856c97",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610102055-4RQ362-artifact-ancestry/.agentplane/tasks/202610102055-4RQ362/supervision/verification-runs/run-003/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:bfa1c329a0b3cfd6448899ea40b9b084203e8d7125eded22140aa0c146eacc3a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/pr/internal/auto-commit.test.ts packages/agentplane/src/commands/pr/internal/auto-commit-ancestry.test.ts \"--maxWorkers=2\"\n",
+      "stdout_tail": "\n RUN  v5.0.2 <repo>\n\n\n Test Files  2 passed (2)\n      Tests  5 passed (5)\n   Start at  02:40:19\n   Duration  14.68s (transform 67%, import 18%, tests 14%, setup 1%)\n\n  Transform  |agentplane| transforming modules took 10.12s · 67% of tracked time, re-done on every run\n             persist transforms across runs with fsModuleCache: true\n             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run typecheck",
+      "duration_ms": 2652,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:ba4865ac04d4dd72a4321e08c902adbaee23944b29319e498bc64490e18560b6",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610102055-4RQ362-artifact-ancestry/.agentplane/tasks/202610102055-4RQ362/supervision/verification-runs/run-004/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:bfa1c329a0b3cfd6448899ea40b9b084203e8d7125eded22140aa0c146eacc3a",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "git diff --check",
+      "duration_ms": 3091,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:e60cc04dbc1f77f0de8b3f0329aef8ac0a2dc17869c34f751e305930613653fe",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/worktrees/202610102055-4RQ362-artifact-ancestry/.agentplane/tasks/202610102055-4RQ362/supervision/verification-runs/run-005/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:fc7aadeb66326ae2e4a20a12e972fb02cf22ccf50a8f783036c59d76a5353d31",
+        "executable_digest": "sha256:2a8c18fbf43da9f692d75474c72bea9dfd796c260b0f3dfe456376abc3bbd668",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202610102055-4RQ362"
+}

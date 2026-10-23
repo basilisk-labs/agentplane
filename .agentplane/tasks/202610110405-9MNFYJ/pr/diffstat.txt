@@ -1,0 +1,3 @@
+ .../task/kernel-completed-external-rework.test.ts  | 38 ++++-------------
+ .../kernel-completed-external-rework.testkit.ts    | 48 +++++++++++++++++++++-
+ 2 files changed, 54 insertions(+), 32 deletions(-)

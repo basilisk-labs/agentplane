@@ -1,0 +1,85 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check a5e1434de2123284564ae3d2cdaba1af23d3981a..ce1741ca58b294af0dde99e63d524eecb705de3b",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB a5e1434de2123284564ae3d2cdaba1af23d3981a..ce1741ca58b294af0dde99e63d524eecb705de3b",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202610110427-5F45G1/README.md",
+        "A\t.agentplane/tasks/202610110427-5F45G1/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202610110427-5F45G1/pr/github-body.md",
+        "A\t.agentplane/tasks/202610110427-5F45G1/pr/github-title.txt",
+        "A\t.agentplane/tasks/202610110427-5F45G1/pr/meta.json",
+        "A\t.agentplane/tasks/202610110427-5F45G1/pr/review.md",
+        "A\t.agentplane/tasks/202610110427-5F45G1/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+        "M\tpackages/agentplane/src/commands/task/kernel-exchange.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-scope-replan-inputs.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-scope-request.test.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "a5e1434de2123284564ae3d2cdaba1af23d3981a",
+  "implementation_commit": "ce1741ca58b294af0dde99e63d524eecb705de3b",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      "AM .agentplane/tasks/202610110427-5F45G1/README.md",
+      "A  .agentplane/tasks/202610110427-5F45G1/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+      "M  packages/agentplane/src/commands/task/kernel-exchange.ts",
+      "M  packages/agentplane/src/commands/task/kernel-scope-replan-inputs.ts",
+      "M  packages/agentplane/src/commands/task/kernel-scope-request.test.ts"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": "AM .agentplane/tasks/202610110427-5F45G1/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "A  .agentplane/tasks/202610110427-5F45G1/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/commands/task/kernel-exchange.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/commands/task/kernel-scope-replan-inputs.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/commands/task/kernel-scope-request.test.ts"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      "AM .agentplane/tasks/202610110427-5F45G1/README.md",
+      "A  .agentplane/tasks/202610110427-5F45G1/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+      "M  packages/agentplane/src/commands/task/kernel-exchange.ts",
+      "M  packages/agentplane/src/commands/task/kernel-scope-replan-inputs.ts",
+      "M  packages/agentplane/src/commands/task/kernel-scope-request.test.ts"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202610110427-5F45G1"
+}

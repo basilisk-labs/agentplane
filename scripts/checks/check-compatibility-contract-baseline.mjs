@@ -46,7 +46,7 @@ const candidatePath = path.join(
 const REVIEWED_SECTION_DIGESTS = {
   agent_facing_context_contracts:
     "4926aed50aea235e24310e39404f7b939bc4caa7fc763a98387992822a2101c5",
-  cli_topology: "728360d5889df8ae191d4e6262feaba9d5d455070053130b45d28e1a379cc3ff",
+  cli_topology: "142372fde652c457e2d9667498b08bfbd6aa5e357fe7ee83598aac394ce599b3",
   exit_error_contract: "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
   machine_output_contract: "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
   package_manifests: "6052feb72f5eee6eaa1a503bb10074492350a164de683adf50bf2b092ce647b9",
@@ -402,6 +402,7 @@ function validateReviewedCandidate({
     "202610100756-0Y9HMG",
     "202610101128-35N0ZK",
     "202610101141-AGRARP",
+    "202610160500-6RCQSY",
   ];
 
   assert(
@@ -975,6 +976,7 @@ function validateReviewedCandidate({
       "202610100750-36SZWD",
       "202610101128-35N0ZK",
       "202610101141-AGRARP",
+      "202610160500-6RCQSY",
     ],
     agent_facing_context_contracts: [
       "202607221848-1HWR0R",
@@ -3685,6 +3687,102 @@ function validateReviewedCandidate({
       name: "work-item",
       source_task: "202610101141-AGRARP",
     },
+
+    {
+      command: "task work-item restore-completion",
+      kind: "command",
+      source_task: "202610101141-AGRARP",
+    },
+    {
+      command: "task work-item restore-completion",
+      kind: "option",
+      name: "by",
+      source_task: "202610101141-AGRARP",
+    },
+    {
+      command: "task work-item restore-completion",
+      kind: "option",
+      name: "dry-run",
+      source_task: "202610101141-AGRARP",
+    },
+    {
+      command: "task work-item restore-completion",
+      kind: "option",
+      name: "inspection-work-order",
+      source_task: "202610101141-AGRARP",
+    },
+    {
+      command: "task work-item restore-completion",
+      kind: "option",
+      name: "note",
+      source_task: "202610101141-AGRARP",
+    },
+    {
+      command: "task work-item restore-completion",
+      kind: "option",
+      name: "proof-digest",
+      source_task: "202610101141-AGRARP",
+    },
+    {
+      command: "task work-item restore-completion",
+      kind: "option",
+      name: "state-digest",
+      source_task: "202610101141-AGRARP",
+    },
+    {
+      command: "task work-item restore-completion",
+      kind: "option",
+      name: "work-item",
+      source_task: "202610101141-AGRARP",
+    },
+    {
+      kind: "command",
+      command: "task cancel",
+      source_task: "202610160500-6RCQSY",
+    },
+    {
+      kind: "option",
+      command: "task cancel",
+      name: "approval-evidence",
+      source_task: "202610160500-6RCQSY",
+    },
+    {
+      kind: "option",
+      command: "task cancel",
+      name: "approved-by",
+      source_task: "202610160500-6RCQSY",
+    },
+    {
+      kind: "option",
+      command: "task cancel",
+      name: "fingerprint",
+      source_task: "202610160500-6RCQSY",
+    },
+    {
+      kind: "option",
+      command: "task cancel",
+      name: "plan-digest",
+      source_task: "202610160500-6RCQSY",
+    },
+    { kind: "option", command: "task cancel", name: "reason", source_task: "202610160500-6RCQSY" },
+    {
+      kind: "option",
+      command: "task cancel",
+      name: "record-digest",
+      source_task: "202610160500-6RCQSY",
+    },
+    {
+      kind: "option",
+      command: "task cancel",
+      name: "request-digest",
+      source_task: "202610160500-6RCQSY",
+    },
+    {
+      kind: "option",
+      command: "task cancel",
+      name: "revision",
+      source_task: "202610160500-6RCQSY",
+    },
   ];
   const activeExpectedAddedCommandDescriptors = expectedAddedCommandDescriptors
     .filter((command) => command.id.join(" ") !== "task supervisor budget-epoch")
@@ -3700,6 +3798,22 @@ function validateReviewedCandidate({
         : command,
     );
   activeExpectedAddedCommandDescriptors.push(
+    {
+      args: [{ name: "task-id", required: true, valueHint: "<task-id>", variadic: false }],
+      group: "Task",
+      id: ["task", "cancel"],
+      options: [
+        { kind: "string", name: "reason", required: true, valueHint: "<text>" },
+        { kind: "string", name: "approved-by", valueHint: "USER" },
+        { kind: "string", name: "request-digest", valueHint: "<sha256:digest>" },
+        { kind: "string", name: "record-digest", valueHint: "<sha256:digest>" },
+        { kind: "string", name: "plan-digest", valueHint: "<sha256:digest>" },
+        { kind: "string", name: "fingerprint", valueHint: "<sha256:digest>" },
+        { kind: "string", name: "approval-evidence", valueHint: "<sha256:digest>" },
+        { kind: "string", name: "revision", valueHint: "<revision>" },
+      ],
+      visibility: "advanced",
+    },
     {
       args: [
         {
@@ -3816,6 +3930,59 @@ function validateReviewedCandidate({
       ],
       visibility: "advanced",
     },
+    {
+      args: [
+        {
+          name: "task-id",
+          required: true,
+          valueHint: "<task-id>",
+          variadic: false,
+        },
+      ],
+      group: "Task",
+      id: ["task", "work-item", "restore-completion"],
+      options: [
+        {
+          kind: "string",
+          name: "work-item",
+          required: true,
+          valueHint: "<id>",
+        },
+        {
+          kind: "string",
+          name: "inspection-work-order",
+          required: true,
+          valueHint: "<sha256:...>",
+        },
+        {
+          kind: "string",
+          name: "state-digest",
+          valueHint: "<sha256:...>",
+        },
+        {
+          kind: "string",
+          name: "proof-digest",
+          valueHint: "<sha256:...>",
+        },
+        {
+          choices: ["USER"],
+          kind: "string",
+          name: "by",
+          valueHint: "<role>",
+        },
+        {
+          kind: "string",
+          name: "note",
+          valueHint: "<text>",
+        },
+        {
+          kind: "boolean",
+          name: "dry-run",
+          valueHint: null,
+        },
+      ],
+      visibility: "advanced",
+    },
   );
   activeExpectedAddedCommandDescriptors.sort((a, b) =>
     a.id.join(" ").localeCompare(b.id.join(" ")),
@@ -3871,6 +4038,7 @@ function validateReviewedCandidate({
         "repair adopt-legacy-conflict",
         "task advance",
         "task authority grant",
+        "task cancel",
         "task candidate approve",
         "task candidate prepare",
         "task candidate publish",
@@ -3885,6 +4053,7 @@ function validateReviewedCandidate({
         "task run tool",
         "task scope approve-request",
         "task scope extend",
+        "task work-item restore-completion",
         "task work-item resume",
         "workflow migrate",
       ]),
@@ -3896,6 +4065,25 @@ function validateReviewedCandidate({
     "new CLI command descriptor is not in the approved delta",
   );
   const activeExpectedAddedOptions = [
+    {
+      command: "task cancel",
+      kind: "string",
+      name: "approval-evidence",
+      valueHint: "<sha256:digest>",
+    },
+    { command: "task cancel", kind: "string", name: "approved-by", valueHint: "USER" },
+    { command: "task cancel", kind: "string", name: "fingerprint", valueHint: "<sha256:digest>" },
+    { command: "task cancel", kind: "string", name: "plan-digest", valueHint: "<sha256:digest>" },
+    { command: "task cancel", kind: "string", name: "reason", required: true, valueHint: "<text>" },
+    { command: "task cancel", kind: "string", name: "record-digest", valueHint: "<sha256:digest>" },
+    {
+      command: "task cancel",
+      kind: "string",
+      name: "request-digest",
+      valueHint: "<sha256:digest>",
+    },
+    { command: "task cancel", kind: "string", name: "revision", valueHint: "<revision>" },
+
     ...expectedAddedOptions.filter(
       (option) =>
         option.command !== "task supervisor budget-epoch" &&
@@ -4055,6 +4243,52 @@ function validateReviewedCandidate({
     },
     {
       command: "task scope approve-request",
+      kind: "string",
+      name: "work-item",
+      required: true,
+      valueHint: "<id>",
+    },
+
+    {
+      choices: ["USER"],
+      command: "task work-item restore-completion",
+      kind: "string",
+      name: "by",
+      valueHint: "<role>",
+    },
+    {
+      command: "task work-item restore-completion",
+      kind: "boolean",
+      name: "dry-run",
+      valueHint: null,
+    },
+    {
+      command: "task work-item restore-completion",
+      kind: "string",
+      name: "inspection-work-order",
+      required: true,
+      valueHint: "<sha256:...>",
+    },
+    {
+      command: "task work-item restore-completion",
+      kind: "string",
+      name: "note",
+      valueHint: "<text>",
+    },
+    {
+      command: "task work-item restore-completion",
+      kind: "string",
+      name: "proof-digest",
+      valueHint: "<sha256:...>",
+    },
+    {
+      command: "task work-item restore-completion",
+      kind: "string",
+      name: "state-digest",
+      valueHint: "<sha256:...>",
+    },
+    {
+      command: "task work-item restore-completion",
       kind: "string",
       name: "work-item",
       required: true,

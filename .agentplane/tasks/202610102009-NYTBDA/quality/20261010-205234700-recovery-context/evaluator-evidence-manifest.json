@@ -1,0 +1,55 @@
+{
+  "artifacts": [
+    {
+      "kind": "actual_diff",
+      "logical_name": "evaluator-diff",
+      "media_type": "text/x-diff",
+      "path": ".agentplane/tasks/202610102009-NYTBDA/quality/objects/sha256/2d4bd3bf8c47fc0491ff73a7856ef971f9bc50a9aa69b6706d66e1756eb5165f.patch",
+      "sha256": "sha256:2d4bd3bf8c47fc0491ff73a7856ef971f9bc50a9aa69b6706d66e1756eb5165f",
+      "size_bytes": 10592
+    },
+    {
+      "kind": "plan",
+      "logical_name": "evaluator-native-identity",
+      "media_type": "application/json",
+      "path": ".agentplane/tasks/202610102009-NYTBDA/quality/objects/sha256/b01c64475965cfb55bd36975df71aad70136793632f5b231b22e15b9878a80f3.json",
+      "sha256": "sha256:b01c64475965cfb55bd36975df71aad70136793632f5b231b22e15b9878a80f3",
+      "size_bytes": 1978
+    },
+    {
+      "kind": "observed_checks",
+      "logical_name": "evaluator-observed-checks",
+      "media_type": "application/json",
+      "path": ".agentplane/tasks/202610102009-NYTBDA/quality/objects/sha256/eadf6d6cf9486d582ebe61130cbdb94c38bc72b8c193e76ed7d51c22348e7e75.json",
+      "sha256": "sha256:eadf6d6cf9486d582ebe61130cbdb94c38bc72b8c193e76ed7d51c22348e7e75",
+      "size_bytes": 6099
+    },
+    {
+      "kind": "prompt",
+      "logical_name": "evaluator-prompt",
+      "media_type": "text/markdown",
+      "path": ".agentplane/tasks/202610102009-NYTBDA/quality/objects/sha256/edab7fe6d931ebd14c450c728e3cdada4061f8b10217f3a5b312b52c3ecf6b33.md",
+      "sha256": "sha256:edab7fe6d931ebd14c450c728e3cdada4061f8b10217f3a5b312b52c3ecf6b33",
+      "size_bytes": 5029
+    },
+    {
+      "kind": "result_schema",
+      "logical_name": "evaluator-result-schema",
+      "media_type": "application/schema+json",
+      "path": ".agentplane/tasks/202610102009-NYTBDA/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json",
+      "sha256": "sha256:9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a",
+      "size_bytes": 3478
+    }
+  ],
+  "created_at": "2026-10-10T20:52:34.700Z",
+  "integrity": {
+    "canonicalization": "agentplane-canonical-json-v1",
+    "digest_algorithm": "sha256",
+    "manifest_digest": "sha256:45947805cc41ddd5ca204c4f31fc479ecaaa320b5b5bc55934ee5ac422b0d7ec"
+  },
+  "kind": "evaluator_evidence_packet",
+  "object_root": ".agentplane/tasks/202610102009-NYTBDA/quality/objects",
+  "schema_version": 1,
+  "task_id": "202610102009-NYTBDA",
+  "work_order_id": "evaluator-work-order-202610102009-NYTBDA-378f396371fa2a27f5e0652e"
+}

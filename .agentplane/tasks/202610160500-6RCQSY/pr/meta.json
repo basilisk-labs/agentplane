@@ -1,0 +1,32 @@
+{
+  "base": "agentplane/J8P9K9-integration",
+  "branch": "task/202610160500-6RCQSY/withdrawn-scope-cancellation",
+  "created_at": "2026-10-16T05:41:13.733Z",
+  "diffstat_sha256": "sha256:48e74f02d844cef041515322fce4c0c6b1e1e772ffadf77b9d89ddc81c242b99",
+  "last_verified_at": "2026-10-16T07:21:31.460Z",
+  "last_verified_diffstat_sha256": "sha256:48e74f02d844cef041515322fce4c0c6b1e1e772ffadf77b9d89ddc81c242b99",
+  "pr_number": 6157,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6157",
+  "pre_merge_closure": {
+    "basis_commit": "cd8cc259560d3fb6ab41fe281f7a841ceda66798",
+    "branch": "task/202610160500-6RCQSY/withdrawn-scope-cancellation",
+    "pr_number": 6157,
+    "recorded_at": "2026-10-16T07:38:14.061Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202610160500-6RCQSY",
+  "updated_at": "2026-10-16T07:27:51.233Z",
+  "verify": {
+    "status": "pass"
+  }
+}
