@@ -82,8 +82,30 @@ const disabledDefaults66 = {
   "unicorn/prefer-ternary": [0, "always"],
 };
 
-function normalizeRules(rules) {
+// These are the complete v78 implementation-expansion exceptions. Keep their
+// v66 effective settings for the independent hash comparison, but require each
+// current setting to be disabled before restoring it for that comparison.
+const expandedRuleSettings66 = {
+  "unicorn/no-array-callback-reference": [2, { ignore: [] }],
+  "unicorn/no-await-in-promise-methods": [2],
+  "unicorn/no-negated-condition": [2],
+  "unicorn/no-unreadable-array-destructuring": [2, { maximumIgnoredElements: 1 }],
+  "unicorn/no-useless-length-check": [2],
+  "unicorn/no-useless-undefined": [2, { checkArguments: true, checkArrowFunctionBody: true }],
+  "unicorn/prefer-logical-operator-over-ternary": [2],
+  "unicorn/prefer-simple-condition-first": [2],
+  "unicorn/prefer-single-object-destructuring": [2],
+  "unicorn/prefer-type-error": [2],
+};
+
+function normalizeRules(rules, filePath) {
   rules = structuredClone(rules);
+  assert.equal(Object.keys(expandedRuleSettings66).length, 10);
+  for (const [name, oldSetting] of Object.entries(expandedRuleSettings66)) {
+    assert.equal(rules[name][0], 0, `Expanded v78 rule must stay disabled: ${name}`);
+    rules[name] =
+      name === "unicorn/prefer-type-error" && /\.tsx?$/.test(filePath) ? [0] : oldSetting;
+  }
   for (const [name, oldSetting] of Object.entries(disabledDefaults66)) {
     assert.equal(rules[name][0], 0, `Previously disabled rule became enabled: ${name}`);
     rules[name] = oldSetting;
@@ -107,11 +129,11 @@ function normalizeRules(rules) {
 }
 
 for (const [filePath, digest] of baselineDigests) {
-  test(`preserves all effective rules for ${filePath}`, async () => {
+  test(`preserves all non-exception rules for ${filePath}`, async () => {
     const config = await eslint.calculateConfigForFile(filePath);
     assert.ok(config);
     const actual = createHash("sha256")
-      .update(JSON.stringify(normalizeRules(config.rules)))
+      .update(JSON.stringify(normalizeRules(config.rules, filePath)))
       .digest("hex");
     assert.equal(actual, digest);
     for (const [name, setting] of Object.entries(config.rules)) {

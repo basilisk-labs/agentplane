@@ -267,6 +267,24 @@ const unicorn66CompatibilityRules = {
   "unicorn/require-array-sort-compare": "off",
 };
 
+// Unicorn 78 expanded these rule implementations and reports 419 errors in code
+// that passed with the v66 policy. Defer their re-admission to a separate lint
+// migration while keeping the remaining v66 selection and options unchanged.
+const unicorn78ExpandedRuleExceptions = Object.fromEntries(
+  [
+    "no-array-callback-reference",
+    "no-await-in-promise-methods",
+    "no-negated-condition",
+    "no-unreadable-array-destructuring",
+    "no-useless-length-check",
+    "no-useless-undefined",
+    "prefer-logical-operator-over-ternary",
+    "prefer-simple-condition-first",
+    "prefer-single-object-destructuring",
+    "prefer-type-error",
+  ].map((name) => [`unicorn/${name}`, "off"]),
+);
+
 /** @type {import("eslint").Linter.FlatConfig[]} */
 module.exports = [
   {
@@ -300,6 +318,7 @@ module.exports = [
       "unicorn/no-null": "off",
       "unicorn/prefer-top-level-await": "off",
       ...unicorn66CompatibilityRules,
+      ...unicorn78ExpandedRuleExceptions,
       "no-useless-assignment": "off",
       "preserve-caught-error": "off",
     },
@@ -380,6 +399,7 @@ module.exports = [
       "unicorn/prefer-top-level-await": "off",
       "unicorn/prefer-type-error": "off",
       ...unicorn66CompatibilityRules,
+      ...unicorn78ExpandedRuleExceptions,
     },
   },
 

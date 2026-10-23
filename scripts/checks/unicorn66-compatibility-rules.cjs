@@ -2,7 +2,7 @@
 // Base: 7860c880ef6a8a2261bea584fe87afe17d947795.
 // Original recommended JSON SHA256: b1bf9add7f2329518b00ec42681f558d5dc4e7fda7424759ba49405de8939e70.
 // Preserve the two original core-rule overrides; do not spread v78 recommended.
-// Only implementation-preserving rule-name replacements are applied here.
+// Retain the v66 recommended selection, map renamed rules, and pin changed defaults.
 module.exports = {
   "no-negated-condition": "off",
   "no-nested-ternary": "off",
