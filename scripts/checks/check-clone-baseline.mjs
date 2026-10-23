@@ -20,8 +20,12 @@ const DEFAULT_PATHS = [
 const DEFAULT_IGNORES = [
   "**/*.test.ts",
   "**/*.test.tsx",
+  "**/*.test.js",
+  "**/*.test.mjs",
   "**/*.spec.ts",
   "**/*.spec.tsx",
+  "**/*.spec.js",
+  "**/*.spec.mjs",
   "**/__snapshots__/**",
   "**/node_modules/**",
   "**/dist/**",

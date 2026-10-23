@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202610231307-CNXADT/exclude-javascript-test-files-from-clone-detecti",
+  "created_at": "2026-10-23T13:13:22.465Z",
+  "diffstat_sha256": "sha256:78247650bb2a1474036a3f46cb255d76b72c91b96e1ffd672c5d1251f8061618",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610231307-CNXADT",
+  "updated_at": "2026-10-23T13:13:22.465Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
