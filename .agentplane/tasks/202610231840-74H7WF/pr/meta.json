@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:5b7b3104e0cd6c1815b6fb97d0faefeee18abc125fa44ccaedcb9bf3df511bab",
   "pr_number": 6909,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6909",
+  "pre_merge_closure": {
+    "basis_commit": "505db495c7de7760b855296c457448a7f859b258",
+    "branch": "task/202610231840-74H7WF/admit-authenticated-native-verification-journals",
+    "pr_number": 6909,
+    "recorded_at": "2026-10-23T19:54:34.001Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
