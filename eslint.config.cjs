@@ -10,6 +10,7 @@ const nPluginModule = require("eslint-plugin-n");
 const promisePlugin = require("eslint-plugin-promise");
 const unicornPlugin = require("eslint-plugin-unicorn").default;
 const prettierConfig = require("eslint-config-prettier");
+const unicorn66RecommendedRules = require("./scripts/checks/unicorn66-compatibility-rules.cjs");
 const nPlugin = nPluginModule.default ?? nPluginModule;
 
 function rulesFromConfig(config) {
@@ -266,6 +267,24 @@ const unicorn66CompatibilityRules = {
   "unicorn/require-array-sort-compare": "off",
 };
 
+// Unicorn 78 expanded these rule implementations and reports 419 errors in code
+// that passed with the v66 policy. Defer their re-admission to a separate lint
+// migration while keeping the remaining v66 selection and options unchanged.
+const unicorn78ExpandedRuleExceptions = Object.fromEntries(
+  [
+    "no-array-callback-reference",
+    "no-await-in-promise-methods",
+    "no-negated-condition",
+    "no-unreadable-array-destructuring",
+    "no-useless-length-check",
+    "no-useless-undefined",
+    "prefer-logical-operator-over-ternary",
+    "prefer-simple-condition-first",
+    "prefer-single-object-destructuring",
+    "prefer-type-error",
+  ].map((name) => [`unicorn/${name}`, "off"]),
+);
+
 /** @type {import("eslint").Linter.FlatConfig[]} */
 module.exports = [
   {
@@ -291,14 +310,15 @@ module.exports = [
       ...importPlugin.configs.recommended.rules,
       ...nRecommendedModuleRules,
       ...promisePlugin.configs.recommended.rules,
-      ...unicornPlugin.configs.recommended.rules,
+      ...unicorn66RecommendedRules,
       ...prettierConfig.rules,
 
-      "unicorn/prevent-abbreviations": "off",
+      "unicorn/name-replacements": "off",
       "unicorn/no-process-exit": "off",
       "unicorn/no-null": "off",
       "unicorn/prefer-top-level-await": "off",
       ...unicorn66CompatibilityRules,
+      ...unicorn78ExpandedRuleExceptions,
       "no-useless-assignment": "off",
       "preserve-caught-error": "off",
     },
@@ -343,7 +363,7 @@ module.exports = [
       ...tsPlugin.configs["stylistic-type-checked"].rules,
       ...importPlugin.configs.recommended.rules,
       ...promisePlugin.configs.recommended.rules,
-      ...unicornPlugin.configs.recommended.rules,
+      ...unicorn66RecommendedRules,
       ...prettierConfig.rules,
 
       "@typescript-eslint/consistent-type-definitions": "off",
@@ -373,12 +393,13 @@ module.exports = [
 
       "import/no-unresolved": "off",
 
-      "unicorn/prevent-abbreviations": "off",
+      "unicorn/name-replacements": "off",
       "unicorn/no-process-exit": "off",
       "unicorn/no-null": "off",
       "unicorn/prefer-top-level-await": "off",
       "unicorn/prefer-type-error": "off",
       ...unicorn66CompatibilityRules,
+      ...unicorn78ExpandedRuleExceptions,
     },
   },
 
