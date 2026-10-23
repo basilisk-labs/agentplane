@@ -1,0 +1,4 @@
+ scripts/checks/check-agentplane-artifacts.mjs      |  41 ++++++-
+ scripts/checks/native-verification-journal.mjs     |  83 +++++++++++++
+ .../checks/native-verification-journal.test.mjs    | 128 +++++++++++++++++++++
+ 3 files changed, 250 insertions(+), 2 deletions(-)
