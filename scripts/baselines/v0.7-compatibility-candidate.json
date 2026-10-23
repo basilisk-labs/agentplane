@@ -4296,6 +4296,35 @@
       "to_sha256": "10e8c7b78d3166955320b6fa787d7564b5bba1f67b3ce1736dca46673528716d"
     }
   ],
+  "incremental_package_delta": {
+    "allowed_json_paths": [
+      "$.package_manifests[0].dependencies.zod",
+      "$.package_manifests[0].normalized_sha256",
+      "$.package_manifests[1].dependencies.zod",
+      "$.package_manifests[1].normalized_sha256",
+      "$.package_manifests[2].dependencies.zod",
+      "$.package_manifests[2].normalized_sha256"
+    ],
+    "classification": "backward_compatible_dependency_patch",
+    "from_sha256": "fcc419a72f859fb594e93e8e576c4e83f67c207a312477cdbae6994aefda8941",
+    "from_surface_sha256": "d412116a41dc399e5238722d217d69f0fb717a13b653fe753e11e75bcb73fd15",
+    "historical_dependencies": [
+      { "manifest_path": "packages/agentplane/package.json", "name": "zod", "version": "4.6.5" },
+      { "manifest_path": "packages/core/package.json", "name": "zod", "version": "4.6.5" },
+      { "manifest_path": "packages/recipes/package.json", "name": "zod", "version": "4.6.5" }
+    ],
+    "review": {
+      "reviewed_by": "ORCHESTRATOR",
+      "scope": "exact_pr_head_and_six_manifest_paths",
+      "state": "approved"
+    },
+    "section": "package_manifests",
+    "source_commit": "093015da3c2dac2ffad708bd0880f1a1d95d8856",
+    "source_pr": 6905,
+    "source_task": "202610231031-BW8WG5",
+    "to_sha256": "23ab3b86b266a0689f506e4b48c10f75e7cabb9333636a35b83a4d13a1ac5585",
+    "to_surface_sha256": "bcab59ba2d8d3baa7c4975394741c65b34aa4cfda7aa095e74dff740637854e2"
+  },
   "pre_release_package_delta": {
     "allowed_json_paths": [
       "$.package_manifests[0].dependencies.@clack/prompts",

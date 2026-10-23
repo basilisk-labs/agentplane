@@ -116,21 +116,80 @@ function verifyInternalVersionNormalization(manifests, baselineVersion) {
   if (!rejected) throw new Error("Unexpected internal dependency version was normalized away");
 }
 
+function historicalReleaseSurface(releaseSurface, candidate) {
+  const delta = candidate.incremental_package_delta;
+  if (!delta) return releaseSurface;
+  if (delta.section !== "package_manifests" || !Array.isArray(delta.historical_dependencies)) {
+    throw new Error("Incremental package delta cannot reconstruct its historical surface");
+  }
+  const historical = structuredClone(releaseSurface);
+  const manifests = new Map(
+    historical.package_manifests.map((manifest) => [manifest.path, manifest]),
+  );
+  const seen = new Set();
+  for (const entry of delta.historical_dependencies) {
+    const manifest = manifests.get(entry.manifest_path);
+    const key = `${entry.manifest_path}\0${entry.name}`;
+    if (
+      !manifest ||
+      seen.has(key) ||
+      !Object.hasOwn(manifest.dependencies ?? {}, entry.name) ||
+      manifest.dependencies[entry.name] === entry.version ||
+      typeof entry.version !== "string" ||
+      !entry.version
+    ) {
+      throw new Error("Incremental package delta has invalid historical dependency evidence");
+    }
+    seen.add(key);
+    Object.defineProperty(manifest.dependencies, entry.name, {
+      value: entry.version,
+      enumerable: true,
+      writable: true,
+      configurable: true,
+    });
+  }
+  historical.package_manifests = historical.package_manifests.map((manifest) => {
+    const normalized = structuredClone(manifest);
+    delete normalized.path;
+    delete normalized.normalized_sha256;
+    return packageSurface(manifest.path, normalized);
+  });
+  const historicalDigests = surfaceSectionDigests(historical);
+  const currentDigests = surfaceSectionDigests(releaseSurface);
+  if (
+    historicalDigests.package_manifests !== delta.from_sha256 ||
+    currentDigests.package_manifests !== delta.to_sha256 ||
+    compatibilitySurfaceDigest(historicalDigests) !== delta.from_surface_sha256 ||
+    compatibilitySurfaceDigest(currentDigests) !== delta.to_surface_sha256 ||
+    hashJson(
+      diffJsonPaths(
+        historical.package_manifests,
+        releaseSurface.package_manifests,
+        "$.package_manifests",
+      ),
+    ) !== hashJson(delta.allowed_json_paths)
+  ) {
+    throw new Error("Incremental package delta differs from its reviewed historical surface");
+  }
+  return historical;
+}
+
 function buildCandidate({ baseline, candidate, packageSourceTask }) {
   const baseSurface = reconstructCompatibilitySurface(
     baseline.sections,
     baseline.references.exact_main.section_digests,
   );
   const releaseSurface = collectCompatibilitySurface(createWorktreeSource(repoRoot));
-  const releaseSectionDigests = surfaceSectionDigests(releaseSurface);
+  const historicalSurface = historicalReleaseSurface(releaseSurface, candidate);
+  const releaseSectionDigests = surfaceSectionDigests(historicalSurface);
   const baseVersion = candidate.release_version_delta.from_version;
   const releaseVersion = releaseSurface.package_manifests[0]?.version;
   if (typeof releaseVersion !== "string" || releaseVersion.length === 0) {
     throw new Error("Unable to resolve the current release version from package manifests");
   }
-  verifyInternalVersionNormalization(releaseSurface.package_manifests, baseVersion);
+  verifyInternalVersionNormalization(historicalSurface.package_manifests, baseVersion);
   const preReleasePackageManifests = normalizePackageVersions(
-    releaseSurface.package_manifests,
+    historicalSurface.package_manifests,
     baseVersion,
   );
   const preReleasePackageDigest = hashJson(preReleasePackageManifests);
@@ -140,7 +199,7 @@ function buildCandidate({ baseline, candidate, packageSourceTask }) {
   };
   const releaseAllowedPaths = diffJsonPaths(
     preReleasePackageManifests,
-    releaseSurface.package_manifests,
+    historicalSurface.package_manifests,
     "$.package_manifests",
   );
   const preReleaseAllowedPaths = diffJsonPaths(

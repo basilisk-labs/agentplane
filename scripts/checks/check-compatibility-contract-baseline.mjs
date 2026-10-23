@@ -321,6 +321,7 @@ function validateReviewedCandidate({
       "candidate",
       "pre_release_package_delta",
       "release_version_delta",
+      "incremental_package_delta",
       "contract_artifacts",
       "review",
       "deltas",
@@ -434,6 +435,93 @@ function validateReviewedCandidate({
     "compatibility candidate surface",
   );
   assertReviewedSectionDigests(candidate.candidate.section_digests);
+  const incrementalPackageDelta = candidate.incremental_package_delta;
+  assertOnlyKeys(
+    incrementalPackageDelta,
+    [
+      "source_task",
+      "source_pr",
+      "source_commit",
+      "classification",
+      "section",
+      "from_sha256",
+      "to_sha256",
+      "from_surface_sha256",
+      "to_surface_sha256",
+      "historical_dependencies",
+      "allowed_json_paths",
+      "review",
+    ],
+    [],
+    "compatibility incremental package delta",
+  );
+  assert(
+    hashJson(incrementalPackageDelta) ===
+      hashJson({
+        source_task: "202610231031-BW8WG5",
+        source_pr: 6905,
+        source_commit: "093015da3c2dac2ffad708bd0880f1a1d95d8856",
+        classification: "backward_compatible_dependency_patch",
+        section: "package_manifests",
+        from_sha256: "fcc419a72f859fb594e93e8e576c4e83f67c207a312477cdbae6994aefda8941",
+        to_sha256: "23ab3b86b266a0689f506e4b48c10f75e7cabb9333636a35b83a4d13a1ac5585",
+        from_surface_sha256: "d412116a41dc399e5238722d217d69f0fb717a13b653fe753e11e75bcb73fd15",
+        to_surface_sha256: "bcab59ba2d8d3baa7c4975394741c65b34aa4cfda7aa095e74dff740637854e2",
+        historical_dependencies: [
+          { manifest_path: "packages/agentplane/package.json", name: "zod", version: "4.6.5" },
+          { manifest_path: "packages/core/package.json", name: "zod", version: "4.6.5" },
+          { manifest_path: "packages/recipes/package.json", name: "zod", version: "4.6.5" },
+        ],
+        allowed_json_paths: [
+          "$.package_manifests[0].dependencies.zod",
+          "$.package_manifests[0].normalized_sha256",
+          "$.package_manifests[1].dependencies.zod",
+          "$.package_manifests[1].normalized_sha256",
+          "$.package_manifests[2].dependencies.zod",
+          "$.package_manifests[2].normalized_sha256",
+        ],
+        review: {
+          state: "approved",
+          reviewed_by: "ORCHESTRATOR",
+          scope: "exact_pr_head_and_six_manifest_paths",
+        },
+      }),
+    "compatibility incremental package delta drift",
+  );
+  const historicalSurface = structuredClone(currentSurface);
+  const historicalDependencies = new Map(
+    incrementalPackageDelta.historical_dependencies.map((entry) => [entry.manifest_path, entry]),
+  );
+  assert(
+    historicalDependencies.size === currentSurface.package_manifests.length,
+    "incremental historical dependency inventory drift",
+  );
+  historicalSurface.package_manifests = currentSurface.package_manifests.map((manifest) => {
+    assert(manifest.dependencies.zod === "4.6.7", `${manifest.path}: reviewed zod version drift`);
+    const previous = historicalDependencies.get(manifest.path);
+    assert(previous, `${manifest.path}: missing historical dependency`);
+    const historicalManifest = structuredClone(manifest);
+    delete historicalManifest.path;
+    delete historicalManifest.normalized_sha256;
+    historicalManifest.dependencies[previous.name] = previous.version;
+    return packageSurface(manifest.path, historicalManifest);
+  });
+  const historicalSectionDigests = surfaceSectionDigests(historicalSurface);
+  const historicalDigest = compatibilitySurfaceDigest(historicalSectionDigests);
+  assert(
+    historicalSectionDigests.package_manifests === incrementalPackageDelta.from_sha256 &&
+      currentSectionDigests.package_manifests === incrementalPackageDelta.to_sha256 &&
+      historicalDigest === incrementalPackageDelta.from_surface_sha256 &&
+      currentDigest === incrementalPackageDelta.to_surface_sha256 &&
+      hashJson(
+        diffJsonPaths(
+          historicalSurface.package_manifests,
+          currentSurface.package_manifests,
+          "$.package_manifests",
+        ),
+      ) === hashJson(incrementalPackageDelta.allowed_json_paths),
+    "incremental package manifest surface drift",
+  );
   const preReleasePackageDelta = candidate.pre_release_package_delta;
   assertOnlyKeys(
     preReleasePackageDelta,
@@ -538,7 +626,7 @@ function validateReviewedCandidate({
     "baseline package versions must resolve to one semantic version",
   );
   const baselinePackageVersion = baselinePackageVersions[0];
-  const preReleasePackageManifests = currentSurface.package_manifests.map((manifest) => {
+  const preReleasePackageManifests = historicalSurface.package_manifests.map((manifest) => {
     const normalizedManifest = structuredClone(manifest);
     delete normalizedManifest.path;
     delete normalizedManifest.normalized_sha256;
@@ -604,7 +692,7 @@ function validateReviewedCandidate({
   const currentPackageVersion = currentPackageVersions[0];
   const releaseVersionAllowedPaths = diffJsonPaths(
     preReleasePackageManifests,
-    currentSurface.package_manifests,
+    historicalSurface.package_manifests,
     "$.package_manifests",
   );
   assert(
@@ -614,8 +702,8 @@ function validateReviewedCandidate({
       releaseVersionDelta.to_version === currentPackageVersion &&
       releaseVersionDelta.section === "package_manifests" &&
       releaseVersionDelta.from_sha256 === candidate.candidate.section_digests.package_manifests &&
-      releaseVersionDelta.to_sha256 === currentSectionDigests.package_manifests &&
-      releaseVersionDelta.surface_sha256 === currentDigest &&
+      releaseVersionDelta.to_sha256 === historicalSectionDigests.package_manifests &&
+      releaseVersionDelta.surface_sha256 === historicalDigest &&
       hashJson(releaseVersionDelta.allowed_json_paths) === hashJson(releaseVersionAllowedPaths),
     "compatibility release version delta drift",
   );
@@ -628,8 +716,8 @@ function validateReviewedCandidate({
     reviewedSurfaceSha256: candidate.candidate.surface_sha256,
     reviewedSectionDigests: candidate.candidate.section_digests,
     releaseVersionDelta,
-    currentSurfaceSha256: currentDigest,
-    currentSectionDigests,
+    currentSurfaceSha256: historicalDigest,
+    currentSectionDigests: historicalSectionDigests,
   });
 
   assertOnlyKeys(
@@ -4623,7 +4711,7 @@ function validateReviewedCandidate({
     "unexpected core tarball source-file addition",
   );
   assert(removedSourceFiles.length === 0, "candidate removes a core tarball source file");
-  return reviewedSurfaceMode;
+  return { reviewedSurfaceMode, historicalSurface };
 }
 
 function verifyRejectedRecaptureDrift(currentSurface, baselinePackageVersion) {
@@ -4734,7 +4822,6 @@ try {
   const { exactMainSurface, registry } = validateBaseline(baseline);
   const currentSurface = collectCompatibilitySurface(createWorktreeSource(repoRoot));
   validateSurface(currentSurface, "working tree");
-  verifyRejectedRecaptureDrift(currentSurface, exactMainSurface.package_manifests[0].version);
   const currentSectionDigests = surfaceSectionDigests(currentSurface);
   const currentDigest = compatibilitySurfaceDigest(currentSectionDigests);
   const expectedDigest = baseline.references.exact_main.surface_sha256;
@@ -4742,7 +4829,7 @@ try {
   if (currentDigest !== expectedDigest) {
     try {
       const candidate = readCandidate();
-      const reviewedSurfaceMode = validateReviewedCandidate({
+      const { reviewedSurfaceMode, historicalSurface } = validateReviewedCandidate({
         baseline,
         candidate,
         exactMainSurface,
@@ -4750,6 +4837,10 @@ try {
         currentDigest,
         currentSectionDigests,
       });
+      verifyRejectedRecaptureDrift(
+        historicalSurface,
+        exactMainSurface.package_manifests[0].version,
+      );
       candidateStatus = `approved:${candidate.candidate_id}:${reviewedSurfaceMode}`;
     } catch (error) {
       const sections = changedSurfaceSections(exactMainSurface, currentSurface);
@@ -4766,6 +4857,8 @@ try {
         ].join("\n"),
       );
     }
+  } else {
+    verifyRejectedRecaptureDrift(currentSurface, exactMainSurface.package_manifests[0].version);
   }
 
   const publishedStatus = verifyLocalReferenceIfAvailable({
