@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202610232049-NSMZYM/preserve-linked-worktree-observation-context-for",
+  "created_at": "2026-10-23T21:06:45.684Z",
+  "diffstat_sha256": "sha256:7a20bc770ab6fa65c820eb63c2a79d079a072e4b11c13ee45973ab3cbe5666ba",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610232049-NSMZYM",
+  "updated_at": "2026-10-23T21:06:45.684Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
