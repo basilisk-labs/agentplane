@@ -26,8 +26,9 @@ describe("GitHub base protection", () => {
     await expect(
       requiresPullRequestMergePath({ gitRoot: "/repo", baseBranch: "main" }),
     ).resolves.toBe(true);
-    expect(mocks.runGhApiJson).toHaveBeenCalledWith("/repo", [
-      "repos/owner/repo/branches/main/protection",
+    expect(mocks.runGhApiJson.mock.calls).toEqual([
+      ["/repo", ["repos/owner/repo/branches/main"]],
+      ["/repo", ["repos/owner/repo/branches/main/protection"]],
     ]);
   });
 

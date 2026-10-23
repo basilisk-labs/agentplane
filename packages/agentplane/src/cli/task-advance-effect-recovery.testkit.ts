@@ -46,6 +46,10 @@ export function fakeGithubProviderSource(detail: Record<string, unknown>): strin
   return [
     "const args = process.argv.slice(2);",
     `const detail = ${JSON.stringify(detail)};`,
+    'if (args[0] === "api" && args[1] === "repos/example/repo/branches/main") {',
+    '  console.log(JSON.stringify({ name: "main", protected: true }));',
+    "  process.exit(0);",
+    "}",
     'if (args[0] === "api" && args[1] === "repos/example/repo/branches/main/protection") {',
     "  console.log(JSON.stringify({ required_pull_request_reviews: {} }));",
     "  process.exit(0);",
