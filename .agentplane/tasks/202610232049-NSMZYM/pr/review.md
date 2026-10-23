@@ -6,7 +6,7 @@ Created: 2026-10-23T21:06:45.684Z
 
 - Task: `202610232049-NSMZYM`
 - Title: Preserve linked-worktree observation context for canonical primary-stored tasks
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610232049-NSMZYM/preserve-linked-worktree-observation-context-for`
 - Canonical task record: `.agentplane/tasks/202610232049-NSMZYM/README.md`
 
