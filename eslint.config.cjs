@@ -10,6 +10,7 @@ const nPluginModule = require("eslint-plugin-n");
 const promisePlugin = require("eslint-plugin-promise");
 const unicornPlugin = require("eslint-plugin-unicorn").default;
 const prettierConfig = require("eslint-config-prettier");
+const unicorn66RecommendedRules = require("./scripts/checks/unicorn66-compatibility-rules.cjs");
 const nPlugin = nPluginModule.default ?? nPluginModule;
 
 function rulesFromConfig(config) {
@@ -291,10 +292,10 @@ module.exports = [
       ...importPlugin.configs.recommended.rules,
       ...nRecommendedModuleRules,
       ...promisePlugin.configs.recommended.rules,
-      ...unicornPlugin.configs.recommended.rules,
+      ...unicorn66RecommendedRules,
       ...prettierConfig.rules,
 
-      "unicorn/prevent-abbreviations": "off",
+      "unicorn/name-replacements": "off",
       "unicorn/no-process-exit": "off",
       "unicorn/no-null": "off",
       "unicorn/prefer-top-level-await": "off",
@@ -343,7 +344,7 @@ module.exports = [
       ...tsPlugin.configs["stylistic-type-checked"].rules,
       ...importPlugin.configs.recommended.rules,
       ...promisePlugin.configs.recommended.rules,
-      ...unicornPlugin.configs.recommended.rules,
+      ...unicorn66RecommendedRules,
       ...prettierConfig.rules,
 
       "@typescript-eslint/consistent-type-definitions": "off",
@@ -373,7 +374,7 @@ module.exports = [
 
       "import/no-unresolved": "off",
 
-      "unicorn/prevent-abbreviations": "off",
+      "unicorn/name-replacements": "off",
       "unicorn/no-process-exit": "off",
       "unicorn/no-null": "off",
       "unicorn/prefer-top-level-await": "off",
