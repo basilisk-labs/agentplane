@@ -19,7 +19,8 @@ import { readContainedStableTextNoFollow } from "../shared/contained-stable-file
 import { isRecord } from "../shared/guards.js";
 import {
   buildSnippet,
-  jsonlRowIdentity,
+  parseJsonlEntries,
+  uniqueJsonlRowIdentities,
   locateMarkdownSection,
   parseLineRange,
 } from "./context-utils.js";
@@ -174,27 +175,16 @@ function resolveJsonlItem(opts: {
   raw: string;
   selector: { key: "fact" | "entity" | "edge"; value: string };
 }): { content: string; digest: string; line: number } | null {
-  const lines = opts.raw.split(/\r?\n/u);
-  let projectedIndex = 0;
-  for (const [index, line] of lines.entries()) {
-    if (!line.trim()) continue;
-    let row: Record<string, unknown>;
-    try {
-      const parsed = JSON.parse(line) as unknown;
-      if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) continue;
-      row = parsed as Record<string, unknown>;
-    } catch {
-      continue;
-    }
-    projectedIndex += 1;
-    const identity = jsonlRowIdentity(row, projectedIndex - 1);
-    if (identity !== opts.selector.value) {
+  const entries = parseJsonlEntries(opts.raw);
+  const identities = uniqueJsonlRowIdentities(entries.map((entry) => entry.row));
+  for (const [index, entry] of entries.entries()) {
+    if (identities[index] !== opts.selector.value) {
       continue;
     }
     return {
-      content: JSON.stringify(row, null, 2),
-      digest: sha256(JSON.stringify(row)),
-      line: index + 1,
+      content: JSON.stringify(entry.row, null, 2),
+      digest: sha256(JSON.stringify(entry.row)),
+      line: entry.line,
     };
   }
   return null;

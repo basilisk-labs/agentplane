@@ -1,4 +1,5 @@
-import { appendFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { appendFileSync, readFileSync } from "node:fs";
 
 import { evaluateGithubCiAggregate } from "../lib/github-ci-capabilities.mjs";
 
@@ -8,7 +9,17 @@ function parseJsonEnv(name) {
   return JSON.parse(raw);
 }
 
-const plan = parseJsonEnv("AGENTPLANE_CI_PLAN_JSON");
+const planPath = process.env.AGENTPLANE_CI_PLAN_FILE;
+if (!planPath) throw new Error("AGENTPLANE_CI_PLAN_FILE is empty");
+const expectedDigest = process.env.AGENTPLANE_CI_PLAN_SHA256;
+if (!/^[a-f0-9]{64}$/u.test(expectedDigest ?? "")) {
+  throw new Error("AGENTPLANE_CI_PLAN_SHA256 is missing or malformed");
+}
+const planBytes = readFileSync(planPath);
+if (createHash("sha256").update(planBytes).digest("hex") !== expectedDigest) {
+  throw new Error("CI plan artifact digest mismatch");
+}
+const plan = JSON.parse(planBytes.toString("utf8"));
 const needs = parseJsonEnv("AGENTPLANE_CI_RESULTS_JSON");
 const jobResults = Object.fromEntries(
   Object.entries(needs).map(([job, value]) => [

@@ -2,7 +2,7 @@ import type { RunnerProcessSignal, RunnerProcessTreeObservation } from "../types
 import { createSupervisionClock, monotonicNowMs } from "./clock.js";
 
 const PROCESS_GROUP_POLL_MS = 20;
-const PROCESS_GROUP_KILL_DRAIN_MS = 1000;
+export const PROCESS_GROUP_KILL_DRAIN_MS = 1000;
 const POSIX_CONTAINMENT_LIMITATION =
   "POSIX process-group cleanup cannot observe or terminate descendants that create a new session or process group.";
 const WINDOWS_CONTAINMENT_LIMITATION =
@@ -11,6 +11,7 @@ const DIRECT_CHILD_CONTAINMENT_LIMITATION =
   "Direct-child cleanup does not provide bounded descendant containment.";
 
 export type SupervisedDirectChild = {
+  pid?: number;
   exitCode?: number | null;
   signalCode?: NodeJS.Signals | null;
   kill(this: void, signal?: NodeJS.Signals | number): boolean;
@@ -79,19 +80,55 @@ function isDirectChildExited(child: SupervisedDirectChild): boolean {
     : child.signalCode !== null && child.signalCode !== undefined;
 }
 
+export async function hasConfirmedSupervisedProcessGroupExit(opts: {
+  pid: number | null;
+  child: SupervisedDirectChild;
+  observation: RunnerProcessTreeObservation;
+  child_closed: () => boolean;
+  deadline_ms: number | null;
+  monotonic_now_ms: () => number;
+}): Promise<boolean> {
+  if (
+    opts.pid === null ||
+    opts.pid < 2 ||
+    opts.child.pid !== opts.pid ||
+    opts.deadline_ms === null ||
+    opts.monotonic_now_ms() > opts.deadline_ms ||
+    !isDirectChildExited(opts.child) ||
+    opts.observation.scope !== "posix_process_group" ||
+    opts.observation.group_id !== opts.pid ||
+    opts.observation.residual_alive !== false ||
+    opts.observation.cleanup_state === "failed"
+  )
+    return false;
+  try {
+    const closed = await waitForDirectChildExit(
+      opts.child,
+      opts.deadline_ms - opts.monotonic_now_ms(),
+      opts.monotonic_now_ms,
+      opts.child_closed,
+    );
+    return closed && !isProcessGroupAlive(opts.pid) && opts.monotonic_now_ms() <= opts.deadline_ms;
+  } catch {
+    return false;
+  }
+}
+
 async function waitForDirectChildExit(
   child: SupervisedDirectChild,
   timeoutMs: number,
   readMonotonicNowMs: () => number,
+  isClosed?: () => boolean,
 ): Promise<boolean> {
+  const completed = () => isDirectChildExited(child) && (!isClosed || isClosed());
   const deadline = readMonotonicNowMs() + Math.max(0, timeoutMs);
-  while (!isDirectChildExited(child) && readMonotonicNowMs() < deadline) {
+  while (!completed() && readMonotonicNowMs() < deadline) {
     const remaining = deadline - readMonotonicNowMs();
     await new Promise((resolve) =>
       setTimeout(resolve, Math.min(PROCESS_GROUP_POLL_MS, Math.max(1, remaining))),
     );
   }
-  return isDirectChildExited(child);
+  return completed();
 }
 
 export async function cleanupSupervisedDirectChild(opts: {
@@ -191,6 +228,7 @@ export async function cleanupSupervisedDirectChild(opts: {
 }
 
 export async function cleanupSupervisedProcessGroup(opts: {
+  confirm_timeout_kill_failure?: () => boolean;
   pid: number | null;
   child?: SupervisedDirectChild | null;
   terminate_grace_ms: number;
@@ -218,6 +256,7 @@ export async function cleanupSupervisedProcessGroup(opts: {
   }
 
   const groupId = opts.pid;
+  let failedKillError: unknown = null;
   let terminateSentAt: string | null = null;
   let killSentAt: string | null = null;
   try {
@@ -268,7 +307,14 @@ export async function cleanupSupervisedProcessGroup(opts: {
     }
 
     const killAttemptedAt = nowIso();
-    if (!signalProcessGroup(groupId, "SIGKILL")) {
+    let killSent: boolean;
+    try {
+      killSent = signalProcessGroup(groupId, "SIGKILL");
+    } catch (error) {
+      failedKillError = error;
+      throw error;
+    }
+    if (!killSent) {
       return {
         scope: "posix_process_group",
         group_id: groupId,
@@ -308,11 +354,37 @@ export async function cleanupSupervisedProcessGroup(opts: {
         now_iso: nowIso,
         monotonic_now_ms: readMonotonicNowMs,
       });
-      let residualAlive: true | null = null;
+      let residualAlive: boolean | null = null;
       try {
-        residualAlive = isProcessGroupAlive(groupId) ? true : null;
+        residualAlive = isProcessGroupAlive(groupId);
       } catch {
         // The group cleanup failure remains authoritative and the residual is unknown.
+      }
+      if (
+        error === failedKillError &&
+        (error as NodeJS.ErrnoException | null)?.code === "EPERM" &&
+        opts.confirm_timeout_kill_failure?.() === true &&
+        fallback.cleanup_state !== "failed" &&
+        fallback.error === null &&
+        isDirectChildExited(opts.child) &&
+        residualAlive === false
+      ) {
+        return {
+          scope: "posix_process_group",
+          group_id: groupId,
+          cleanup_state: fallback.kill_sent_at
+            ? "force_killed"
+            : terminateSentAt || fallback.terminate_sent_at
+              ? "terminated"
+              : "not_needed",
+          terminate_sent_at: terminateSentAt ?? fallback.terminate_sent_at,
+          kill_sent_at: killSentAt ?? fallback.kill_sent_at,
+          completed_at: fallback.completed_at,
+          residual_alive: false,
+          error: null,
+          containment_state: "limited",
+          containment_limitation: POSIX_CONTAINMENT_LIMITATION,
+        };
       }
       const fallbackSummary =
         `direct-child fallback ended in ${fallback.cleanup_state}` +

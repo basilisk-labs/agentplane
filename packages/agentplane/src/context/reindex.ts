@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-empty-function, unicorn/no-array-sort */
-import { createHash } from "node:crypto";
-import { access, stat, mkdir, rm } from "node:fs/promises";
+import { createHash, randomUUID } from "node:crypto";
+import { access, stat, mkdir, rename, rm } from "node:fs/promises";
 import path from "node:path";
 
 import { createCliEmitter, infoMessage, warnMessage } from "../cli/output.js";
+import { openSqliteDatabase } from "../shared/sqlite-driver.js";
 import { ensureRuntimeSqliteGitignore } from "../runtime/shared/runtime-gitignore.js";
 import { resolveAgentplaneCacheSqlitePath } from "../shared/cache-paths.js";
 import {
@@ -193,6 +194,38 @@ async function removeProjectionFiles(sqlitePath: string): Promise<void> {
   );
 }
 
+async function writeVerifiedSqliteProjection(
+  sqlitePath: string,
+  projection: Parameters<typeof writeSqliteProjection>[1],
+): Promise<void> {
+  const shadowPath = `${sqlitePath}.rebuild-${randomUUID()}`;
+  try {
+    await writeSqliteProjection(shadowPath, projection);
+    if (!(await checkSqliteProjection(shadowPath))) {
+      throw new Error("Context projection rebuild did not pass SQLite integrity check.");
+    }
+    for (const dbPath of [shadowPath, sqlitePath]) {
+      if (!(await isExistingFile(dbPath))) continue;
+      if (!(await isExistingFile(`${dbPath}-wal`)) && !(await isExistingFile(`${dbPath}-shm`)))
+        continue;
+      const db = await openSqliteDatabase(dbPath, { fileMustExist: true });
+      if (!db) throw new Error("SQLite is required to finalize a context projection rebuild.");
+      try {
+        db.pragma("wal_checkpoint(TRUNCATE)");
+        db.pragma("journal_mode = DELETE");
+      } finally {
+        db.close();
+      }
+      if ((await isExistingFile(`${dbPath}-wal`)) || (await isExistingFile(`${dbPath}-shm`))) {
+        throw new Error(`Context projection has active SQLite sidecars: ${dbPath}`);
+      }
+    }
+    await rename(shadowPath, sqlitePath);
+  } finally {
+    await removeProjectionFiles(shadowPath);
+  }
+}
+
 export function renderContextReindexResult(result: ContextReindexResult): void {
   for (const warning of result.warnings) output.line(warnMessage(warning));
   output.lines([
@@ -217,10 +250,6 @@ export async function runContextReindex(opts: {
   const root = path.resolve(opts.rootOverride ?? opts.cwd);
   const service = path.join(root, ".agentplane", "context", "service");
   const sqlitePath = resolveAgentplaneCacheSqlitePath(root);
-
-  if (opts.parsed.reset) {
-    await removeProjectionFiles(sqlitePath);
-  }
 
   await mkdir(service, { recursive: true });
   await mkdir(path.join(service, "cache"), { recursive: true });
@@ -260,9 +289,6 @@ export async function runContextReindex(opts: {
   }
 
   if (rebuildReason) {
-    if (rebuildReason === "integrity-failure") {
-      await removeProjectionFiles(sqlitePath);
-    }
     const rows = snapshots.flatMap((snapshot) => projectSnapshotRows(snapshot, now));
     const metadata = projectionMetadata(
       root,
@@ -280,7 +306,7 @@ export async function runContextReindex(opts: {
       0,
     );
     await ensureRuntimeSqliteGitignore({ gitRoot: root }).catch(() => null);
-    await writeSqliteProjection(sqlitePath, {
+    await writeVerifiedSqliteProjection(sqlitePath, {
       metadata,
       sources: snapshots.map(({ source_path, sha256, size_bytes }) => ({
         source_path,
@@ -289,9 +315,6 @@ export async function runContextReindex(opts: {
       })),
       rows,
     });
-    if (!(await checkSqliteProjection(sqlitePath))) {
-      throw new Error("Context projection rebuild did not pass SQLite integrity check.");
-    }
     return {
       sqlite_path: sqlitePath,
       receipt: {
@@ -398,7 +421,7 @@ export async function runContextReindex(opts: {
       (total, row) => total + Buffer.byteLength(row.preview_text, "utf8"),
       0,
     );
-    await writeSqliteProjection(sqlitePath, {
+    await writeVerifiedSqliteProjection(sqlitePath, {
       metadata: repairedMetadata,
       sources: snapshots.map(({ source_path, sha256, size_bytes }) => ({
         source_path,
@@ -407,9 +430,6 @@ export async function runContextReindex(opts: {
       })),
       rows,
     });
-    if (!(await checkSqliteProjection(sqlitePath))) {
-      throw new Error("Context projection repair did not pass SQLite integrity check.");
-    }
     result = {
       sqlite_path: sqlitePath,
       receipt: {

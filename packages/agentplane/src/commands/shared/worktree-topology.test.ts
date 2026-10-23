@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type * as CoreGit from "@agentplaneorg/core/git";
 
 import {
@@ -6,16 +6,87 @@ import {
   assertSingleTaskWorktreeRegistration,
   findDuplicateTaskWorktreeRegistrations,
   findNestedWorktreeRegistrations,
+  resolveCanonicalWorktreePreparationRoot,
 } from "./worktree-topology.js";
 
-const mocks = vi.hoisted(() => ({ listWorktrees: vi.fn() }));
+const mocks = vi.hoisted(() => ({ listWorktrees: vi.fn(), gitRevParse: vi.fn() }));
 
 vi.mock("@agentplaneorg/core/git", async (importOriginal) => ({
   ...(await importOriginal<typeof CoreGit>()),
   listWorktrees: mocks.listWorktrees,
+  gitRevParse: mocks.gitRevParse,
 }));
 
 describe("worktree topology invariants", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mocks.gitRevParse.mockResolvedValue("/repo/.git");
+  });
+
+  it("selects the same-repository primary while preserving a registered internal base", async () => {
+    mocks.listWorktrees.mockResolvedValue([
+      { path: "/repo", branch: "refs/heads/main" },
+      { path: "/repo/.agentplane/worktrees/base", branch: "refs/heads/integration" },
+    ]);
+    await expect(
+      resolveCanonicalWorktreePreparationRoot({
+        routedCheckout: "/repo/.agentplane/worktrees/base",
+        registeredBaseCheckout: "/repo/.agentplane/worktrees/base",
+        baseBranch: "integration",
+      }),
+    ).resolves.toBe("/repo");
+    expect(mocks.gitRevParse).toHaveBeenCalledTimes(2);
+  });
+
+  it("rejects an unregistered or wrong-branch base before preparation", async () => {
+    mocks.listWorktrees.mockResolvedValue([
+      { path: "/repo", branch: "refs/heads/main" },
+      { path: "/repo/.agentplane/worktrees/base", branch: "refs/heads/other" },
+    ]);
+    await expect(
+      resolveCanonicalWorktreePreparationRoot({
+        routedCheckout: "/repo/.agentplane/worktrees/base",
+        registeredBaseCheckout: "/repo/.agentplane/worktrees/base",
+        baseBranch: "integration",
+      }),
+    ).rejects.toMatchObject({
+      context: { reason_code: "worktree_preparation_base_branch_mismatch" },
+    });
+    expect(mocks.gitRevParse).not.toHaveBeenCalled();
+  });
+
+  it("rejects a foreign primary Git common directory", async () => {
+    mocks.listWorktrees.mockResolvedValue([
+      { path: "/repo", branch: "refs/heads/main" },
+      { path: "/repo/.agentplane/worktrees/base", branch: "refs/heads/integration" },
+    ]);
+    mocks.gitRevParse.mockResolvedValueOnce("/repo/.git").mockResolvedValueOnce("/foreign/.git");
+    await expect(
+      resolveCanonicalWorktreePreparationRoot({
+        routedCheckout: "/repo/.agentplane/worktrees/base",
+        registeredBaseCheckout: "/repo/.agentplane/worktrees/base",
+        baseBranch: "integration",
+      }),
+    ).rejects.toMatchObject({
+      context: { reason_code: "worktree_preparation_foreign_repository" },
+    });
+  });
+
+  it("rejects duplicate primary registration", async () => {
+    mocks.listWorktrees.mockResolvedValue([
+      { path: "/repo", branch: "refs/heads/main" },
+      { path: "/repo", branch: "refs/heads/other" },
+    ]);
+    await expect(
+      resolveCanonicalWorktreePreparationRoot({
+        routedCheckout: "/repo",
+        registeredBaseCheckout: "/repo",
+        baseBranch: "main",
+      }),
+    ).rejects.toMatchObject({
+      context: { reason_code: "worktree_preparation_registration_ambiguous" },
+    });
+  });
   it("allows different active tasks while finding duplicate ownership for one task", () => {
     const worktrees = [
       { path: "/repo", branch: "refs/heads/main" },

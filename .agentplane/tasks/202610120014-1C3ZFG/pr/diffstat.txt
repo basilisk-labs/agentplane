@@ -1,0 +1,26 @@
+ ...run-cli.core.pr-flow.pr-open.validation.test.ts |  426 +++++++
+ .../impl/commands.commit-non-close.unit.test.ts    |  161 ++-
+ .../src/commands/guard/impl/commit-refresh.ts      |    3 +-
+ .../agentplane/src/commands/guard/impl/commit.ts   |    1 +
+ packages/agentplane/src/commands/pr/open.ts        |   24 +
+ .../direct-task-verification.qualification.test.ts |  115 +-
+ .../commands/task/direct-task-verification.test.ts |    8 +-
+ .../src/commands/task/direct-task-verification.ts  |   11 +-
+ .../src/commands/task/kernel-exchange.test.ts      |   27 +-
+ .../src/commands/task/kernel-exchange.ts           |    3 +
+ .../commands/task/kernel-recovery-evidence.test.ts | 1116 ++++++++++++------
+ .../src/commands/task/kernel-recovery-evidence.ts  |  215 +++-
+ .../commands/task/kernel-rework-lineage.test.ts    | 1180 +++++++++++---------
+ .../src/commands/task/kernel-rework-lineage.ts     |  112 +-
+ .../src/commands/task/kernel-rework-proof.test.ts  |   27 +-
+ .../commands/task/kernel-scope-replan-inputs.ts    |  237 ++++
+ .../src/runner/process-supervision.test.ts         |  151 ++-
+ .../src/runner/process-supervision/process-tree.ts |   84 +-
+ .../src/runner/process-supervision/run.ts          |   57 +-
+ .../process-supervision/timeout-controller.ts      |   23 +-
+ packages/core/src/tasks/task-kernel/index.ts       |    1 +
+ .../src/tasks/task-kernel/kernel-replan.test.ts    |  316 +++++-
+ packages/core/src/tasks/task-kernel/kernel.ts      |   28 +-
+ .../tasks/task-kernel/replan-work-items.test.ts    |  479 ++++++++
+ .../src/tasks/task-kernel/replan-work-items.ts     |  300 +++++
+ 25 files changed, 3976 insertions(+), 1129 deletions(-)

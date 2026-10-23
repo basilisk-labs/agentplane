@@ -1,4 +1,5 @@
 import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -212,6 +213,7 @@ describe("GitHub CI capability planning", () => {
       const headSha = git(repo, ["rev-parse", "HEAD"]);
       const eventPath = path.join(repo, "event.json");
       const outputPath = path.join(repo, "github-output");
+      const planPath = path.join(repo, "ci-plan.json");
       writeFileSync(
         eventPath,
         JSON.stringify({ pull_request: { base: { sha: baseSha }, head: { sha: headSha } } }),
@@ -230,6 +232,9 @@ describe("GitHub CI capability planning", () => {
             GITHUB_OUTPUT: outputPath,
             GITHUB_TOKEN: "",
             GITHUB_HEAD_REF: "task/large-output",
+            GITHUB_RUN_ID: "123456",
+            GITHUB_RUN_ATTEMPT: "1",
+            AGENTPLANE_CI_PLAN_FILE: planPath,
           },
         },
       );
@@ -243,7 +248,7 @@ describe("GitHub CI capability planning", () => {
         while (lines[++index] !== header[2] && index < lines.length) value.push(lines[index]);
         outputs[header[1]] = value.join("\n");
       }
-      const aggregatePlan = JSON.parse(outputs.plan_json) as Pick<
+      const aggregatePlan = JSON.parse(readFileSync(planPath, "utf8")) as Pick<
         GithubCiPlan,
         "route" | "route_reason" | "expected_jobs" | "executing_jobs_count"
       > & {
@@ -258,7 +263,7 @@ describe("GitHub CI capability planning", () => {
         ),
       ).toBeLessThan(1024 * 1024);
       expect(outputs.changed_files.split("\n")).toEqual(changedFiles);
-      expect(aggregatePlan).toEqual({
+      expect(aggregatePlan).toMatchObject({
         schema_version: 1,
         route: fullPlan.route,
         route_reason: fullPlan.route_reason,
@@ -266,6 +271,11 @@ describe("GitHub CI capability planning", () => {
         executing_jobs_count: fullPlan.executing_jobs_count,
         changed_files_count: changedFiles.length,
       });
+      expect(outputs.plan_sha256).toBe(
+        createHash("sha256").update(readFileSync(planPath)).digest("hex"),
+      );
+      expect(outputs.plan_artifact).toBe("ci-plan-123456-1");
+      expect(outputs).not.toHaveProperty("plan_json");
       const expectedJobs = new Set(aggregatePlan.expected_jobs);
       const jobResults = Object.fromEntries(
         GITHUB_CI_GATE_JOBS.map((job) => [job, expectedJobs.has(job) ? "success" : "skipped"]),
@@ -822,5 +832,51 @@ describe("GitHub CI capability planning", () => {
   it("declares every aggregate dependency in the shared gate registry", () => {
     const result = plan([".github/workflows/ci.yml"]);
     for (const job of result.expected_jobs) expect(GITHUB_CI_GATE_JOBS).toContain(job);
+  });
+});
+
+describe("GitHub CI plan artifact producer", () => {
+  it("retains every aggregate field and pins exact bytes to the originating run attempt", () => {
+    const directory = mkdtempSync(path.join(os.tmpdir(), "ci-plan-producer-"));
+    try {
+      const file = path.join(directory, "plan.json");
+      const output = path.join(directory, "outputs.txt");
+      const event = path.join(directory, "event.json");
+      writeFileSync(event, "{}");
+      const stdout = execFileSync(
+        process.execPath,
+        [path.resolve("scripts/checks/plan-github-ci.mjs")],
+        {
+          cwd: directory,
+          encoding: "utf8",
+          maxBuffer: 8 * 1024 * 1024,
+          env: {
+            ...process.env,
+            GITHUB_OUTPUT: output,
+            GITHUB_EVENT_PATH: event,
+            GITHUB_EVENT_NAME: "workflow_dispatch",
+            GITHUB_REF: "refs/heads/main",
+            GITHUB_HEAD_REF: "",
+            GITHUB_RUN_ID: "123456",
+            GITHUB_RUN_ATTEMPT: "2",
+            GITHUB_TOKEN: "",
+            AGENTPLANE_RELEASE_RECOVERY_SHA: "",
+            AGENTPLANE_CI_PLAN_FILE: file,
+          },
+        },
+      );
+      const fullPlan = JSON.parse(stdout) as Record<string, unknown>;
+      delete fullPlan.local_execution_plan;
+      const bytes = readFileSync(file);
+      expect(JSON.parse(bytes.toString("utf8"))).toEqual(fullPlan);
+      const outputs = readFileSync(output, "utf8");
+      expect(outputs).toContain(createHash("sha256").update(bytes).digest("hex"));
+      expect(outputs).toContain("ci-plan-123456-2");
+      expect(outputs).toContain("expected_jobs<<");
+      expect(outputs).not.toContain("plan_json<<");
+      expect(outputs).not.toContain(JSON.stringify(fullPlan));
+    } finally {
+      rmSync(directory, { recursive: true, force: true });
+    }
   });
 });

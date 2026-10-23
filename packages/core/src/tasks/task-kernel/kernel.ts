@@ -1,4 +1,14 @@
+import { cancellationIssues } from "./cancellation.js";
 import { prospectiveScopeAdmissionIssues } from "./prospective-scope.js";
+import {
+  reconcileReplannedWorkItems,
+  authenticatedScopeReplanHistory,
+  isScopeProposalRejection,
+} from "./replan-work-items.js";
+import {
+  completionRestorationAdmissionIssues,
+  restoredCompletionRuntime,
+} from "./completion-restoration.js";
 import { correctiveAmendmentGrant, correctiveGrantIssues } from "./corrective-authority.js";
 import { planObligationIssues } from "../kernel-plan-refinement.js";
 import {
@@ -144,6 +154,7 @@ const EFFECT_OBSERVE_TRANSITIONS: Readonly<
 };
 
 const EVENT_KIND: Readonly<Record<TaskCommand["kind"], DomainEvent["kind"]>> = {
+  cancel_withdrawn_scope: "task_transitioned",
   append_audit_comment: "audit_comment_recorded",
   close_without_implementation: "task_administratively_closed",
   capture_intent: "intent_captured",
@@ -157,6 +168,7 @@ const EVENT_KIND: Readonly<Record<TaskCommand["kind"], DomainEvent["kind"]>> = {
   renew_policy_authority: "authority_continued",
   approve_authority_delta: "authority_continued",
   approve_scope_request: "authority_continued",
+  restore_work_item_completion: "work_item_transitioned",
   materialize_work_items: "work_items_materialized",
   transition_work_item: "work_item_transitioned",
   accept_work_item_result: "work_item_result_accepted",
@@ -230,6 +242,7 @@ function requiredAuthority(input: KernelInput, workItemId: string | null): Kerne
     if (
       !rejectedPlanReplanning &&
       !approvedBlockedPlanRejection &&
+      !isScopeProposalRejection(input) &&
       kernelDigest(authority) !== kernelDigest(persisted) &&
       !compareExecutionAuthority(persisted, authority).ok
     )
@@ -420,6 +433,14 @@ function preconditions(input: KernelInput): KernelResult | null {
   const commandDigest = kernelDigest(input.command);
   const existing = input.aggregate.mutation_receipts[input.mutation_id];
   if (existing) {
+    if (
+      input.command.kind === "cancel_withdrawn_scope" &&
+      (input.actor.kind !== "USER" ||
+        input.actor.transport !== "manual" ||
+        input.actor.id !== input.aggregate.cancellation?.actor_id ||
+        !input.actor.capabilities.includes("task.cancel"))
+    )
+      return rejected("AUTHORITY_PROVENANCE_ESCALATION", ["manual_user_cancellation_required"]);
     if (existing.command_digest !== commandDigest) {
       return rejected("MUTATION_ID_CONFLICT", [input.mutation_id], "use_new_mutation_id");
     }
@@ -457,6 +478,10 @@ function preconditions(input: KernelInput): KernelResult | null {
       Number.isFinite(Date.parse(input.occurred_at))
       ? null
       : rejected("AUTHORITY_SCOPE_EXCEEDED", ["native_audit_actor_required"]);
+  }
+  if (input.command.kind === "cancel_withdrawn_scope") {
+    const issues = cancellationIssues(input);
+    return issues.length > 0 ? rejected("AUTHORITY_SCOPE_EXCEEDED", issues) : null;
   }
   if (input.command.kind === "close_without_implementation") {
     const command = input.command;
@@ -531,6 +556,10 @@ function preconditions(input: KernelInput): KernelResult | null {
         Date.parse(parent.expires_at) <= Date.parse(input.occurred_at)) ||
       policyRenewalIssues(parent, record).length > 0;
     return issues ? rejected("AUTHORITY_SCOPE_EXCEEDED", ["policy_renewal_binding"]) : null;
+  }
+  if (input.command.kind === "restore_work_item_completion") {
+    const issues = completionRestorationAdmissionIssues(input);
+    return issues.length > 0 ? rejected("AUTHORITY_SCOPE_EXCEEDED", issues) : null;
   }
   if (input.command.kind === "continue_authority") {
     const issues = continuationAdmissionIssues(input, input.command.record);
@@ -872,6 +901,24 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
       };
       break;
     }
+    case "cancel_withdrawn_scope": {
+      next = {
+        ...aggregate,
+        revision: aggregate.revision + 1,
+        state: "CANCELLED",
+        cancellation: {
+          record_digest: command.record_digest,
+          reason: command.reason,
+          actor_id: input.actor.id,
+          approval_evidence_digest: command.approval_evidence_digest,
+          request_digest: command.request_digest,
+          plan_digest: command.plan_digest,
+          repository_fingerprint: command.expected_state_fingerprint,
+          prior_revision: aggregate.revision,
+        },
+      };
+      break;
+    }
     case "close_without_implementation": {
       next = {
         ...aggregate,
@@ -938,6 +985,25 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
       }
       const issues = validateWorkItemDefinitions(command.plan.work_items);
       if (issues.length > 0) return rejected("WORK_ITEM_DEPENDENCY_INCOMPLETE", issues);
+      const scopeReplan = authenticatedScopeReplanHistory(aggregate);
+      if (Object.keys(aggregate.work_items).length > 0 && !scopeReplan)
+        return rejected(
+          "ILLEGAL_WORK_ITEM_TRANSITION",
+          ["retained_work_requires_bound_replan"],
+          "wait_or_replan",
+        );
+      const reconciled = scopeReplan
+        ? reconcileReplannedWorkItems(aggregate, command.plan)
+        : { workItems: {}, issues: [] };
+      if (reconciled.issues.length > 0)
+        return rejected("ILLEGAL_WORK_ITEM_TRANSITION", reconciled.issues, "wait_or_replan");
+      if (
+        scopeReplan &&
+        aggregate.effects.some((effect) =>
+          ["PREPARED", "PENDING", "IN_DOUBT"].includes(effect.state),
+        )
+      )
+        return rejected("EFFECT_RECONCILIATION_REQUIRED", ["scope_replan_pending_effect"]);
       next = {
         ...aggregate,
         revision: aggregate.revision + 1,
@@ -946,7 +1012,7 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
         plan_history: aggregate.current_plan
           ? [...aggregate.plan_history, aggregate.current_plan]
           : aggregate.plan_history,
-        work_items: {},
+        work_items: reconciled.workItems,
         final_validation: null,
       };
       break;
@@ -1020,6 +1086,7 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
           : {}),
         revision: aggregate.revision + 1,
         state: "ACTIVE",
+        work_items: refreshReadyItems(aggregate.work_items),
         current_plan: {
           ...aggregate.current_plan,
           state: "APPROVED",
@@ -1047,6 +1114,21 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
           ? { ...aggregate.current_plan, state: "REJECTED" }
           : null,
         authority_lineage: [...(aggregate.authority_lineage ?? []), command.record],
+      };
+      break;
+    }
+    case "restore_work_item_completion": {
+      next = {
+        ...aggregate,
+        revision: aggregate.revision + 1,
+        final_validation: null,
+        work_items: refreshReadyItems({
+          ...aggregate.work_items,
+          [command.work_item_id]: restoredCompletionRuntime(
+            aggregate.work_items[command.work_item_id]!,
+            command.proof,
+          ),
+        }),
       };
       break;
     }

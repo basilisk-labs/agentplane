@@ -36,7 +36,8 @@ describe("Core CI workflow contract", () => {
       "codeql_languages",
       "expected_jobs",
       "executing_jobs_count",
-      "plan_json",
+      "plan_sha256",
+      "plan_artifact",
     ]) {
       expect(workflow).toContain(`${output}: \${{ steps.plan.outputs.${output} }}`);
     }
@@ -63,7 +64,17 @@ describe("Core CI workflow contract", () => {
     expect(codeqlConfig).toContain('- "**/*.spec.ts"');
     expect(codeqlConfig).not.toContain("query-filters:");
     expect(workflow).toContain("name: PR verification");
-    expect(workflow).toContain("AGENTPLANE_CI_PLAN_JSON: ${{ needs.plan.outputs.plan_json }}");
+    expect(workflow).not.toContain("AGENTPLANE_CI_PLAN_JSON");
+    expect(workflow).not.toContain("outputs.plan_json");
+    expect(workflow).toContain("AGENTPLANE_CI_PLAN_SHA256: ${{ needs.plan.outputs.plan_sha256 }}");
+    expect(workflow).toContain("AGENTPLANE_CI_PLAN_FILE: ${{ runner.temp }}/ci-plan.json");
+    expect(workflow).toContain(
+      "AGENTPLANE_CI_PLAN_FILE: ${{ runner.temp }}/aggregate-ci-plan/ci-plan.json",
+    );
+    expect(workflow).toContain("name: ${{ steps.plan.outputs.plan_artifact }}");
+    expect(workflow).toContain("name: ${{ needs.plan.outputs.plan_artifact }}");
+    expect(workflow).toContain("uses: actions/download-artifact@v8");
+    expect(workflow).toContain("if-no-files-found: error");
     expect(workflow).toContain('"verify-security":"${{ needs.verify-security.result }}"');
     expect(workflow).toContain('"verify-real-e2e":"${{ needs.verify-real-e2e.result }}"');
     expect(workflow).toContain("run: node scripts/checks/evaluate-github-ci.mjs");

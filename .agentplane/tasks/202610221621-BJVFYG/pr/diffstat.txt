@@ -1,0 +1,8 @@
+ .../context/reindex.incremental.unit.test.ts       | 125 ++++++++++++++++++++-
+ packages/agentplane/src/commands/context/show.ts   |   7 +-
+ packages/agentplane/src/context/context-utils.ts   |  59 +++++++---
+ packages/agentplane/src/context/knowledge-ref.ts   |  28 ++---
+ .../src/context/reindex-projection.test.ts         |  20 ++++
+ .../agentplane/src/context/reindex-projection.ts   |   5 +-
+ packages/agentplane/src/context/reindex.ts         |  56 ++++++---
+ 7 files changed, 241 insertions(+), 59 deletions(-)

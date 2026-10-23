@@ -1,3 +1,4 @@
+import { taskCheckTimeoutProfile } from "./direct-task-verification-timeout.js";
 import path from "node:path";
 import type { ObservationReference } from "./verification-observation.js";
 
@@ -45,6 +46,7 @@ export type DirectTaskVerificationInputIdentity = Readonly<{
   arch: string;
   node: string;
   runtimes: readonly LocalRuntimeEvidence[];
+  task_timeout_ms?: number;
 }>;
 
 export function renderDirectTaskVerificationDetails(opts: {
@@ -101,9 +103,11 @@ export function directTaskVerificationInputIdentity(opts: {
 }): DirectTaskVerificationInputIdentity {
   const commands = [...new Set(opts.commands)];
   const env = verificationChildEnv();
+  const profile = taskCheckTimeoutProfile(env);
   return Object.freeze({
     schema_version: 1,
     kind: "direct_task_verification_input",
+    ...(profile === undefined ? {} : { task_timeout_ms: profile }),
     cwd: path.resolve(opts.cwd),
     commands,
     platform: process.platform,

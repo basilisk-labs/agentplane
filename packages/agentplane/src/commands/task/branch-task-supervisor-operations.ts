@@ -21,6 +21,8 @@ import type { WorkflowSupervisorOperationResult } from "../shared/workflow-super
 import type { WorkflowOperation } from "../shared/workflow-step.js";
 import { supervisePersistedWorkflowEpisode } from "../shared/supervisor-execution-episode.js";
 import { applyForeignTaskReadmeReplicaRepair } from "../shared/task-worktree-foreign-artifact-repair.js";
+import { isSameBranchIdentity } from "../shared/branch-identity.js";
+import { resolveCanonicalWorktreePreparationRoot } from "../shared/worktree-topology.js";
 import { cmdFinish } from "./finish-command.js";
 import { makeRunTaskHostedClosePrHandler } from "./hosted-close-pr.command.js";
 import { cmdTaskStartReady } from "./start-ready.js";
@@ -146,9 +148,32 @@ export async function executeBranchWorkflowOperation(opts: {
       );
     }
     case "worktree.prepare": {
+      if (
+        opts.decision.task.id !== operation.params.taskId ||
+        taskCommand.execution.primary_task_id !== operation.params.taskId ||
+        !taskCommand.execution.base_sha ||
+        !opts.decision.workspace.baseBranch ||
+        !isSameBranchIdentity(opts.decision.workspace.baseBranch, taskCommand.execution.base_ref)
+      ) {
+        throw new CliError({
+          code: "E_GIT",
+          message:
+            "Worktree preparation requires the exact routed task and admitted development base.",
+          context: { reason_code: "worktree_preparation_task_base_mismatch" },
+        });
+      }
+      const primaryCheckout = await resolveCanonicalWorktreePreparationRoot({
+        routedCheckout: cwd,
+        registeredBaseCheckout: opts.decision.workspace.baseCheckoutPath,
+        baseBranch: taskCommand.execution.base_ref,
+      });
+      const primaryCommand =
+        primaryCheckout === cwd
+          ? command
+          : await loadCommandContext({ cwd: primaryCheckout, rootOverride: null });
       exitCode = await cmdWorkStart({
-        ctx: command,
-        cwd,
+        ctx: primaryCommand,
+        cwd: primaryCheckout,
         taskId: operation.params.taskId,
         agent: operation.params.agent,
         slug: operation.params.slug,
