@@ -1,0 +1,190 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run clone:check\nResult: pass\nEvidence: .agentplane/tasks/202610231307-CNXADT/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610231307-CNXADT Verification Contract check affected_unit_integration (1/2)\n\nCheck: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610231307-CNXADT/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610231307-CNXADT Verification Contract check affected_unit_integration (2/2)\n\nCheck: critical_paths\nCommand: bun run clone:check\nResult: pass\nEvidence: .agentplane/tasks/202610231307-CNXADT/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610231307-CNXADT Verification Contract check critical_paths (1/2)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610231307-CNXADT/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610231307-CNXADT Verification Contract check critical_paths (2/2)\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610231307-CNXADT/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610231307-CNXADT Verification Contract check full_regression\n\nCheck: task_outcome\nCommand: bun run clone:check\nResult: pass\nEvidence: .agentplane/tasks/202610231307-CNXADT/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610231307-CNXADT Verification Contract check task_outcome (1/2)\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610231307-CNXADT/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610231307-CNXADT Verification Contract check task_outcome (2/2)",
+  "digest": "sha256:89bff0c1e5189403df841a37ef305c027499d8387b7adbc8af4c8d234a98b90c",
+  "implementation_sha": "1f238886e60052e34c0da4a0a244888ecc8a0178",
+  "input": {
+    "checked_input": {
+      "commands": {
+        "digest": "sha256:d1c40772f50f25b715712b2fff5f0f4bcdf9e2363791ff99c2a27764319b739c",
+        "entries": [
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run clone:check"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run clone:check"
+          },
+          {
+            "check_id": "full_regression",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run clone:check"
+          }
+        ]
+      },
+      "context": {
+        "digest": "sha256:99daad1395e800c14511aa93bdd1543575521f4ee89189529a3fb84c4b785e2b",
+        "paths": [
+          ".agentplane/WORKFLOW.md",
+          ".github/ISSUE_TEMPLATE/config.yml",
+          "bun.lock",
+          "depcruise.config.cjs",
+          "eslint.config.cjs",
+          "knip.json",
+          "package.json",
+          "packages/agentplane/package.json",
+          "packages/agentplane/src/cli/run-cli/commands/config.ts",
+          "packages/agentplane/src/runner/config.test.ts",
+          "packages/agentplane/src/runner/config.ts",
+          "packages/agentplane/tsconfig.json",
+          "packages/agentplane/tsup.config.ts",
+          "packages/core/package.json",
+          "packages/core/schemas/config.schema.json",
+          "packages/core/src/config/config.test.ts",
+          "packages/core/src/config/config.ts",
+          "packages/core/tsconfig.json",
+          "packages/core/tsup.config.ts",
+          "packages/recipes/package.json",
+          "packages/recipes/tsconfig.json",
+          "packages/recipes/tsup.config.ts",
+          "packages/spec/examples/config.json",
+          "packages/spec/package.json",
+          "packages/spec/schemas/config.schema.json",
+          "packages/testkit/package.json",
+          "packages/testkit/tsconfig.json",
+          "schemas/config.schema.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package-lock.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package.json",
+          "tsconfig.json",
+          "turbo.json",
+          "vitest.config.ts",
+          "vitest.workspace.ts"
+        ]
+      },
+      "digest": "sha256:8e4b79ff86c59a83b66e547b2829acf9675a8c60ff5406305d65dbb12988b87a",
+      "environment": {
+        "digest": "sha256:9ec5bf2323cd53a84a354760f7a2e04adc570a2f8a0452d4311892dcb83d880b",
+        "runtime": {
+          "architecture": "x64",
+          "bun_major": null,
+          "node_major": "24",
+          "platform": "linux"
+        }
+      },
+      "evidence": {
+        "details_digest": "sha256:cc6e90b51285c0a4e76cbe6fa0af7065cd76e48b9678ddc246a17958b3cafc30",
+        "digest": "sha256:900425c66d06b8308ed7b5987b20ea18356ff7751cfa22f7c3c4753d988f173b",
+        "references": [
+          {
+            "digest": "sha256:3f91c573bba41b22f31ca57a176aa36e2374bc00d3d07bdbf72e105e98f27096",
+            "fragment": "check-1",
+            "path": ".agentplane/tasks/202610231307-CNXADT/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610231307-CNXADT/supervision/declared-checks.json#check-1",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:3f91c573bba41b22f31ca57a176aa36e2374bc00d3d07bdbf72e105e98f27096",
+            "fragment": "check-2",
+            "path": ".agentplane/tasks/202610231307-CNXADT/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610231307-CNXADT/supervision/declared-checks.json#check-2",
+            "source": "filesystem"
+          }
+        ]
+      },
+      "implementation": {
+        "base_sha": "39c5ed946a445d108f2be402c1382cc9204a311b",
+        "digest": "sha256:a806da3a23443f9994723e287bf0ace5c8c8914691c73ff440a13aca67223225",
+        "strategy": "branch_diff",
+        "target_sha": "1f238886e60052e34c0da4a0a244888ecc8a0178"
+      }
+    },
+    "concurrency": {
+      "digest": "sha256:df388e2b9c4f3e06daafb176aa4103020db74095b07ad4a2cdbd9efe9af2777a",
+      "execution": {
+        "authoritative_task_source": "task_worktree",
+        "base_ref": "main",
+        "base_sha": "39c5ed946a445d108f2be402c1382cc9204a311b",
+        "digest": "sha256:90669fdc917c24d27f493fdc597c7b535bf373a652f37c8ce7de2504d8bee833",
+        "primary_task_id": "202610231307-CNXADT",
+        "reason_codes": [
+          "agent_preferred_branch_pr",
+          "repository_branch_pr_floor"
+        ],
+        "repository_mode": "branch_pr",
+        "requested_mode": "branch_pr",
+        "route_source": "execution_contract",
+        "selected_mode": "branch_pr",
+        "task_ids": [
+          "202610231307-CNXADT"
+        ]
+      },
+      "task": {
+        "capability": {
+          "digest": "sha256:523fd28ab1c3f1cd5bcc4a3d71cf14cffeea7241b773c97e8e0fe7b519d276a0"
+        },
+        "checks": {
+          "digest": "sha256:65f895923f7f9efe5ffdd19ce549a18ebc48b95f77eabe9383629b813f217329",
+          "required_check_ids": [
+            "affected_unit_integration",
+            "critical_paths",
+            "full_regression",
+            "task_outcome"
+          ],
+          "verification_contract_digest": "sha256:441ce352fc6d6df8054e2ffc6c1677be3185183de648c238a2f4d0db7ba31ca3"
+        },
+        "digest": "sha256:9b91c44243ceefd8cef17728901414d4c9f021db997044c7958a43dfc93396cd",
+        "kind": "agentplane.native_task_identity",
+        "plan": {
+          "approval_state": "approved",
+          "approved_digest": "sha256:3fb4f4bd03248608258f69c97dc571db64bc085df17c8489b9fc802d7e1fd0f1",
+          "digest": "sha256:3fb4f4bd03248608258f69c97dc571db64bc085df17c8489b9fc802d7e1fd0f1",
+          "revision": 1
+        },
+        "policy": {
+          "digest": "sha256:1150ba6caefe9e829c30b3520b9246ed1ec7ebbeedbe788c63cf7989015dbb46"
+        },
+        "schema_version": 1,
+        "task_id": "202610231307-CNXADT"
+      }
+    },
+    "digest": "sha256:69a6056e14a8d3c89ffee0a0b3d56b811b60b1fe10db4d1b9432cf66c1c87675",
+    "kind": "task_verification_input",
+    "obligations": {
+      "digest": "sha256:51b3e8b703323ebd496b1997b0478f6d5ea83ce8d5d47763488d66cf8efb6ad1",
+      "required_check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "full_regression",
+        "task_outcome"
+      ],
+      "verification_contract_digest": "sha256:441ce352fc6d6df8054e2ffc6c1677be3185183de648c238a2f4d0db7ba31ca3",
+      "verify_steps_digest": "sha256:3701e2d70bc72ca7ffa95956d3bb69eb6e7296a40817809496deabc4dccfef42"
+    },
+    "schema_version": 5
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: canonical Task Kernel final checks passed.",
+  "recorded_at": "2026-10-23T14:31:20.160Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Exclude JavaScript test files from clone detection without changing the clone baseline\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Exclude JavaScript test files from clone detection without changing the clone baseline\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:3701e2d70bc72ca7ffa95956d3bb69eb6e7296a40817809496deabc4dccfef42",
+  "task_id": "202610231307-CNXADT",
+  "verification_command": "agentplane verify 202610231307-CNXADT --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
