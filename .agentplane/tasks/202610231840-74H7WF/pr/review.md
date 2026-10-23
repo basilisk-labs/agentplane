@@ -6,7 +6,7 @@ Created: 2026-10-23T18:44:38.768Z
 
 - Task: `202610231840-74H7WF`
 - Title: Admit authenticated native verification journals in artifact gate for 0.7.13
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610231840-74H7WF/admit-authenticated-native-verification-journals`
 - Canonical task record: `.agentplane/tasks/202610231840-74H7WF/README.md`
 
