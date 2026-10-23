@@ -6,7 +6,7 @@ Created: 2026-10-23T13:13:22.465Z
 
 - Task: `202610231307-CNXADT`
 - Title: Exclude JavaScript test files from clone detection without changing the clone baseline
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610231307-CNXADT/exclude-javascript-test-files-from-clone-detecti`
 - Canonical task record: `.agentplane/tasks/202610231307-CNXADT/README.md`
 
