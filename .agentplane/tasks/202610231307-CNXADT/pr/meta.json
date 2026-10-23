@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:78247650bb2a1474036a3f46cb255d76b72c91b96e1ffd672c5d1251f8061618",
   "pr_number": 6908,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6908",
+  "pre_merge_closure": {
+    "basis_commit": "2e00aa7e944ab53483472c1566cc0c6bf7430da1",
+    "branch": "task/202610231307-CNXADT/exclude-javascript-test-files-from-clone-detecti",
+    "pr_number": 6908,
+    "recorded_at": "2026-10-23T14:59:12.586Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
