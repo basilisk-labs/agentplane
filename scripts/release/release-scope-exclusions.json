@@ -96,6 +96,60 @@
       "reason": "The historical release projection is covered by the published v0.7.12 tag.",
       "git_ref": "c0cf289ed677063ddf74a78e13ff81da1b154b7b",
       "tag": "v0.7.12"
+    },
+    {
+      "task_id": "202610221938-VGPVEZ",
+      "evidence_kind": "merged_commit",
+      "reason": "The supervised timeout regression fix is present in the reviewed 0.7.13 recovery history at this merged commit; the DOING status is a historical projection.",
+      "git_ref": "8f7611c1927605a292bdc63e0a5a0acc0e96bc4f"
+    },
+    {
+      "task_id": "202610101145-W370XB",
+      "evidence_kind": "merged_commit",
+      "reason": "The semantic result authority binding is present in the reviewed 0.7.13 recovery history at this merged commit; the DOING status is a historical projection.",
+      "git_ref": "8f7611c1927605a292bdc63e0a5a0acc0e96bc4f"
+    },
+    {
+      "task_id": "202610101212-RDPWEM",
+      "evidence_kind": "merged_commit",
+      "reason": "The authenticated publication base binding is present in the reviewed 0.7.13 recovery history at this merged commit; the DOING status is a historical projection.",
+      "git_ref": "8f7611c1927605a292bdc63e0a5a0acc0e96bc4f"
+    },
+    {
+      "task_id": "202610160508-9N195W",
+      "evidence_kind": "merged_commit",
+      "reason": "The historical plan amendment recovery source and task record are present at this integrated commit; the DOING status is a historical projection.",
+      "git_ref": "19e72d8dfc21de0cfd7937b79bee90cdae6bcf05"
+    },
+    {
+      "task_id": "202610101320-J8P9K9",
+      "evidence_kind": "merged_commit",
+      "reason": "The reviewed J8 recovery source is present at this merged commit; the DOING status is a historical projection.",
+      "git_ref": "8f7611c1927605a292bdc63e0a5a0acc0e96bc4f"
+    },
+    {
+      "task_id": "202610101141-AGRARP",
+      "evidence_kind": "merged_commit",
+      "reason": "The native pre-effect scope approval source is present in the reviewed 0.7.13 recovery history at this merged commit; the DOING status is a historical projection.",
+      "git_ref": "8f7611c1927605a292bdc63e0a5a0acc0e96bc4f"
+    },
+    {
+      "task_id": "202610080740-NDWDC5",
+      "evidence_kind": "merged_commit",
+      "reason": "The offline M05 campaign contract and accounting work were integrated by this merge; live measurements remain deferred.",
+      "git_ref": "85f2f1d5de30623a72d503d6277b14d4b7b0f272"
+    },
+    {
+      "task_id": "202610081424-21WCFZ",
+      "evidence_kind": "merged_commit",
+      "reason": "The M05 subscription and token accounting infrastructure is present at this merge; no measured savings are claimed.",
+      "git_ref": "af39767d2ce5bf75f04b8a621dc78b354dacb291"
+    },
+    {
+      "task_id": "202610101128-35N0ZK",
+      "evidence_kind": "merged_commit",
+      "reason": "The immutable reviewed candidate publication source is present in the reviewed 0.7.13 recovery history at this merged commit; the DOING status is a historical projection.",
+      "git_ref": "8f7611c1927605a292bdc63e0a5a0acc0e96bc4f"
     }
   ]
 }
