@@ -1,10 +1,11 @@
 ---
 id: "202610232049-NSMZYM"
 title: "Preserve linked-worktree observation context for canonical primary-stored tasks"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -43,6 +44,22 @@ quality_review:
     - "The code requires a canonical task record in the linked checkout before preserving its observation root, so an older checkout without the task continues to route to primary."
     - "Explicit base resolution and task-branch owner routing precede or bypass the new fallback; existing test matrix passes. No Factory-specific condition or weakened assertion is present."
     - "Separate independent exact-commit reviewer reported PASS with no P0/P1 findings."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:09b89729054506d4922008e3cc0aab09b0d2286f51e826e04c8e2c4ae773c194"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-10-23T22:05:17.925Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -241,9 +258,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "dc12ebc188f10d41bd15037e7e1f0b530fa054d7"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "6261daf29548b3567d9eeb7e5da1435f0ad1489d"
+  message: "✅ NSMZYM task: preserve linked-worktree observation context for canonical..."
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -251,9 +271,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-23T22:05:17.925Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "6261daf29548b3567d9eeb7e5da1435f0ad1489d"
 doc_version: 3
-doc_updated_at: "2026-10-23T22:00:33.905Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-23T22:05:17.925Z"
+doc_updated_by: "CODER"
 description: "Release 0.7.13 blocker: focused run-cli.core.kernel-transport.test.ts fails because resolveTaskCommandContext returns the primary checkout when a canonical Kernel task is stored there but invoked from a linked worktree without its own task branch. Keep canonical backend storage primary while preserving the invocation linked gitRoot and WorkOrder context. Preserve explicit-base routing and owner task-branch routing. Add focused regression coverage. Do not add Factory-specific behavior or weaken tests."
 sections:
   Summary: |-
@@ -403,6 +431,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:c51eede7e59d6163978bcd6846f0ceccafcaef1a5676e584b654db4b47861419"
     work_order_id: "sha256:cf946a5023b284dddab535fdbef8fc8bb6496ca433ed4608552e9068102a197a"
+  implementation_commit:
+    hash: "dc12ebc188f10d41bd15037e7e1f0b530fa054d7"
+    message: "🚧 NSMZYM task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "d26d3b9db612abacec93dcfe7ae1371816453236"
@@ -1013,3 +1044,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:09b89729054506d4922008e3cc0aab09b0d2286f51e826e04c8e2c4ae773c194`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-10-23T22:05:17.925Z`

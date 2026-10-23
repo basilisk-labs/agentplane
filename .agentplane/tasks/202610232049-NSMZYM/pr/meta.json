@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:7a20bc770ab6fa65c820eb63c2a79d079a072e4b11c13ee45973ab3cbe5666ba",
   "pr_number": 6910,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6910",
+  "pre_merge_closure": {
+    "basis_commit": "6261daf29548b3567d9eeb7e5da1435f0ad1489d",
+    "branch": "task/202610232049-NSMZYM/preserve-linked-worktree-observation-context-for",
+    "pr_number": 6910,
+    "recorded_at": "2026-10-23T22:05:18.095Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
