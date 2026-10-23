@@ -1,0 +1,165 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/context/reindex-projection.test.ts packages/agentplane/src/commands/context/reindex.incremental.unit.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610221621-BJVFYG/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610221621-BJVFYG Verification Contract check affected_unit_integration\n\nCheck: critical_paths\nCommand: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/context/reindex-projection.test.ts packages/agentplane/src/commands/context/reindex.incremental.unit.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610221621-BJVFYG/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610221621-BJVFYG Verification Contract check critical_paths\n\nCheck: task_outcome\nCommand: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/context/reindex-projection.test.ts packages/agentplane/src/commands/context/reindex.incremental.unit.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610221621-BJVFYG/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610221621-BJVFYG Verification Contract check task_outcome",
+  "digest": "sha256:b3cedba7c83513506c4482431c1d2a3eabcc5087afcca478a0404a0175f22425",
+  "implementation_sha": "29cee05a4c5c8f9721563c283b86099a6dc324b8",
+  "input": {
+    "checked_input": {
+      "commands": {
+        "digest": "sha256:cc38f73c3b93517637fec13f30c9daf376a241b9ac363c70382666983f1fcdb9",
+        "entries": [
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/context/reindex-projection.test.ts packages/agentplane/src/commands/context/reindex.incremental.unit.test.ts"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/context/reindex-projection.test.ts packages/agentplane/src/commands/context/reindex.incremental.unit.test.ts"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/context/reindex-projection.test.ts packages/agentplane/src/commands/context/reindex.incremental.unit.test.ts"
+          }
+        ]
+      },
+      "context": {
+        "digest": "sha256:c3ae14e7ebdee606aa1222c1ea5ff1722387ae3619a62d7c03f67f577a264f9b",
+        "paths": [
+          ".agentplane/WORKFLOW.md",
+          ".github/ISSUE_TEMPLATE/config.yml",
+          "bun.lock",
+          "depcruise.config.cjs",
+          "eslint.config.cjs",
+          "knip.json",
+          "package.json",
+          "packages/agentplane/package.json",
+          "packages/agentplane/src/cli/run-cli/commands/config.ts",
+          "packages/agentplane/src/runner/config.test.ts",
+          "packages/agentplane/src/runner/config.ts",
+          "packages/agentplane/tsconfig.json",
+          "packages/agentplane/tsup.config.ts",
+          "packages/core/package.json",
+          "packages/core/schemas/config.schema.json",
+          "packages/core/src/config/config.test.ts",
+          "packages/core/src/config/config.ts",
+          "packages/core/tsconfig.json",
+          "packages/core/tsup.config.ts",
+          "packages/recipes/package.json",
+          "packages/recipes/tsconfig.json",
+          "packages/recipes/tsup.config.ts",
+          "packages/spec/examples/config.json",
+          "packages/spec/package.json",
+          "packages/spec/schemas/config.schema.json",
+          "packages/testkit/package.json",
+          "packages/testkit/tsconfig.json",
+          "schemas/config.schema.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package-lock.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package.json",
+          "tsconfig.json",
+          "turbo.json",
+          "vitest.config.ts",
+          "vitest.workspace.ts"
+        ]
+      },
+      "digest": "sha256:33e40520c74b75f9888b1bb9e0ea4053f1806aec2e869b757185b1937d09fc58",
+      "environment": {
+        "digest": "sha256:9ec5bf2323cd53a84a354760f7a2e04adc570a2f8a0452d4311892dcb83d880b",
+        "runtime": {
+          "architecture": "x64",
+          "bun_major": null,
+          "node_major": "24",
+          "platform": "linux"
+        }
+      },
+      "evidence": {
+        "details_digest": "sha256:287f7554a5a154b21cf2332c8f9ec180dfd23fb6ef15bf81f1214f9d70e9c349",
+        "digest": "sha256:2ef8b8840f908dcdec11c4af54969a457df657e35f0621119ef6c9670cfa4e57",
+        "references": [
+          {
+            "digest": "sha256:6dc65f44e742ca2a537e4efcd06ba1cee0327ae8c82f85baa61cf2090b842daf",
+            "fragment": "check-1",
+            "path": ".agentplane/tasks/202610221621-BJVFYG/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610221621-BJVFYG/supervision/declared-checks.json#check-1",
+            "source": "filesystem"
+          }
+        ]
+      },
+      "implementation": {
+        "base_sha": "7860c880ef6a8a2261bea584fe87afe17d947795",
+        "digest": "sha256:03b5ea5c0b62b948e570ba6abd9005043a302d60613133072018199bdaa79502",
+        "strategy": "branch_diff",
+        "target_sha": "29cee05a4c5c8f9721563c283b86099a6dc324b8"
+      }
+    },
+    "concurrency": {
+      "digest": "sha256:897df72946b263321b0d4d78732ce9b4441b58e0fdd908f5a6594f730e6d7452",
+      "execution": {
+        "authoritative_task_source": "task_worktree",
+        "base_ref": "main",
+        "base_sha": "7860c880ef6a8a2261bea584fe87afe17d947795",
+        "digest": "sha256:7b3ecdba98e2b6fe05bfba4f260477ae20a1b262d2935520fa0727f5d64da9c4",
+        "primary_task_id": "202610221621-BJVFYG",
+        "reason_codes": [
+          "agent_preferred_branch_pr",
+          "repository_branch_pr_floor"
+        ],
+        "repository_mode": "branch_pr",
+        "requested_mode": "branch_pr",
+        "route_source": "execution_contract",
+        "selected_mode": "branch_pr",
+        "task_ids": [
+          "202610221621-BJVFYG"
+        ]
+      },
+      "task": {
+        "capability": {
+          "digest": "sha256:ae0bae6e91763973517476892c721db6430640adb04a7f6bfd57f40c3507c996"
+        },
+        "checks": {
+          "digest": "sha256:79015644835cbe5bbb748e758adfae5ed1934e72190a83dfe76eeff73c13d514",
+          "required_check_ids": [
+            "affected_unit_integration",
+            "critical_paths",
+            "task_outcome"
+          ],
+          "verification_contract_digest": "sha256:86bab996cd7e67e0550dfaa30d8bdc0c3a3d1b6fe6d511ba5c413a383c182a53"
+        },
+        "digest": "sha256:38332626234401648a5ff40822f10bdbba7a5cf11e40efd7adc9b48059ed787f",
+        "kind": "agentplane.native_task_identity",
+        "plan": {
+          "approval_state": "approved",
+          "approved_digest": "sha256:ab290bb3c7efbb2c07de4926115923f0aab991fff141e30d000dac6d441206d9",
+          "digest": "sha256:ab290bb3c7efbb2c07de4926115923f0aab991fff141e30d000dac6d441206d9",
+          "revision": 1
+        },
+        "policy": {
+          "digest": "sha256:1150ba6caefe9e829c30b3520b9246ed1ec7ebbeedbe788c63cf7989015dbb46"
+        },
+        "schema_version": 1,
+        "task_id": "202610221621-BJVFYG"
+      }
+    },
+    "digest": "sha256:1ebe014e2051afca1f800e9cf361374af15f8ef80a568a0cc458ff6fdbbed115",
+    "kind": "task_verification_input",
+    "obligations": {
+      "digest": "sha256:f621d03ef9c438df7a20f0fcaf5ae9547ea539656201cf525de1f9580815eb06",
+      "required_check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "verification_contract_digest": "sha256:86bab996cd7e67e0550dfaa30d8bdc0c3a3d1b6fe6d511ba5c413a383c182a53",
+      "verify_steps_digest": "sha256:5ab416eacdf8dbfc7ddbcd605ba2c96d96c4624cecdb5174ef94adbe9cda5a8b"
+    },
+    "schema_version": 5
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: canonical Task Kernel final checks passed.",
+  "recorded_at": "2026-10-22T16:51:21.846Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Repair issue 6159 duplicate JSONL and safe reset from named main base\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Repair issue 6159 duplicate JSONL and safe reset from named main base\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:5ab416eacdf8dbfc7ddbcd605ba2c96d96c4624cecdb5174ef94adbe9cda5a8b",
+  "task_id": "202610221621-BJVFYG",
+  "verification_command": "agentplane verify 202610221621-BJVFYG --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

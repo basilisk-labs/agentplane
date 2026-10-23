@@ -56,7 +56,8 @@ jobs:
       exact_sha_recovery: ${{ steps.plan.outputs.exact_sha_recovery }}
       expected_jobs: ${{ steps.plan.outputs.expected_jobs }}
       executing_jobs_count: ${{ steps.plan.outputs.executing_jobs_count }}
-      plan_json: ${{ steps.plan.outputs.plan_json }}
+      plan_sha256: ${{ steps.plan.outputs.plan_sha256 }}
+      plan_artifact: ${{ steps.plan.outputs.plan_artifact }}
       changed_files: ${{ steps.plan.outputs.changed_files }}
       changed_files_count: ${{ steps.plan.outputs.changed_files_count }}
       lifecycle_only_head: ${{ steps.plan.outputs.lifecycle_only_head }}
@@ -78,7 +79,15 @@ jobs:
         id: plan
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          AGENTPLANE_CI_PLAN_FILE: ${{ runner.temp }}/ci-plan.json
         run: node scripts/checks/plan-github-ci.mjs
+      - name: Retain aggregate CI plan
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.plan.outputs.plan_artifact }}
+          path: ${{ runner.temp }}/ci-plan.json
+          if-no-files-found: error
+          retention-days: 7
 
   verify-routed:
     needs: plan
@@ -659,9 +668,15 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: "24"
+      - name: Retrieve aggregate CI plan
+        uses: actions/download-artifact@v8
+        with:
+          name: ${{ needs.plan.outputs.plan_artifact }}
+          path: ${{ runner.temp }}/aggregate-ci-plan
       - name: Evaluate aggregate verification
         env:
-          AGENTPLANE_CI_PLAN_JSON: ${{ needs.plan.outputs.plan_json }}
+          AGENTPLANE_CI_PLAN_FILE: ${{ runner.temp }}/aggregate-ci-plan/ci-plan.json
+          AGENTPLANE_CI_PLAN_SHA256: ${{ needs.plan.outputs.plan_sha256 }}
           AGENTPLANE_CI_RESULTS_JSON: >-
             {"plan":"${{ needs.plan.result }}","verify-routed":"${{ needs.verify-routed.result }}","verify-contract":"${{ needs.verify-contract.result }}","verify-package-node-runtime":"${{ needs.verify-package-node-runtime.result }}","verify-static":"${{ needs.verify-static.result }}","verify-tests":"${{ needs.verify-tests.result }}","verify-real-e2e":"${{ needs.verify-real-e2e.result }}","verify-docs":"${{ needs.verify-docs.result }}","verify-security":"${{ needs.verify-security.result }}","test-windows":"${{ needs.test-windows.result }}","recovery-validate":"${{ needs.recovery-validate.result }}","release-ready":"${{ needs.release-ready.result }}"}
         run: node scripts/checks/evaluate-github-ci.mjs

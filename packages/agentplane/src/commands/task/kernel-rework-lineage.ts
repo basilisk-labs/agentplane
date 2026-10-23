@@ -196,8 +196,10 @@ export function retainedIssuanceAuthority(record: KernelRecord, order: AgentWork
     const parent = entry.authority;
     if (parent.plan_digest !== plan.digest || parent.plan_revision !== plan.revision) continue;
     const approval = entry.observation === null && entry.approval_mode !== null;
+    const renewal = entry.observation?.kind === "policy_renewal";
     if (
       !approval &&
+      !renewal &&
       !["repository_implementation", "plan_amendment"].includes(entry.observation?.kind ?? "")
     )
       continue;
@@ -214,13 +216,21 @@ export function retainedIssuanceAuthority(record: KernelRecord, order: AgentWork
             approval_evidence_digest: parent.provenance.evidence_digest,
             authority_mode: entry.approval_mode!,
           }
-        : {
-            kind: "continue_authority",
-            task_id: binding.task_id,
-            expected_task_revision: event.task_revision - 1,
-            expected_state_fingerprint: parent.repository_fingerprint,
-            record: entry,
-          };
+        : renewal
+          ? {
+              kind: "renew_policy_authority",
+              task_id: binding.task_id,
+              expected_task_revision: event.task_revision - 1,
+              expected_state_fingerprint: parent.repository_fingerprint,
+              record: entry,
+            }
+          : {
+              kind: "continue_authority",
+              task_id: binding.task_id,
+              expected_task_revision: event.task_revision - 1,
+              expected_state_fingerprint: parent.repository_fingerprint,
+              record: entry,
+            };
       return authenticReworkEvent(record, event, command);
     });
     if (

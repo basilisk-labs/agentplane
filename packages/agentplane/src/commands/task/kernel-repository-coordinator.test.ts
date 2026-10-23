@@ -132,12 +132,15 @@ describe("canonical repository coordinator", () => {
   });
 
   it.each([
-    [".agentplane/policy/local.md", ["security_boundary"], true, false],
-    [".agentplane/config.json", ["security_boundary"], false, true],
-    [".agentplane/policy/local.md", ["documentation"], false, false],
+    [".agentplane/policy/local.md", ["security_boundary"], true, false, false],
+    [".agentplane/config.json", ["security_boundary"], false, true, false],
+    [".agentplane/policy/local.md", ["documentation"], false, false, false],
+    [".github/workflows/verify.yml", ["ci"], false, false, true],
+    [".github/workflows/verify.yml", ["source_code"], false, false, false],
+    ["src/change.ts", ["ci"], false, false, false],
   ])(
     "derives protected commit flags for %s from approved effects %j",
-    async (file, effects, allowPolicy, allowConfig) => {
+    async (file, effects, allowPolicy, allowConfig, allowCI) => {
       const baseline = {
         schema_version: 1,
         kind: "canonical_repository_baseline",
@@ -176,9 +179,27 @@ describe("canonical repository coordinator", () => {
       }
       expect(mocks.cmdCommit).toHaveBeenCalledTimes(2);
       expect(mocks.cmdCommit).toHaveBeenLastCalledWith(
-        expect.objectContaining({ allowPolicy, allowConfig, allow: [file] }),
+        expect.objectContaining({
+          allowPolicy,
+          allowConfig,
+          allowCI,
+          allowHooks: false,
+          allow: [file],
+        }),
       );
-      if (allowPolicy || allowConfig) {
+      if (allowCI) {
+        await expect(
+          commitCanonicalImplementation({
+            command,
+            directory: "/exchange",
+            work_order: workOrder,
+            changed_paths: [file],
+            repository_effects: effects,
+          }),
+        ).rejects.toThrow("escaped its commit scope");
+        expect(mocks.cmdCommit).toHaveBeenCalledTimes(2);
+      }
+      if (allowPolicy || allowConfig || allowCI) {
         mocks.stagedPaths.mockResolvedValue([file, ".agentplane/policy/unrelated.md"]);
         await expect(
           commitCanonicalImplementation({

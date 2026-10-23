@@ -1,3 +1,4 @@
+import { scopeReplanInputs } from "./kernel-scope-replan-inputs.js";
 import {
   findReworkLineage,
   historicalAmendment,
@@ -10,7 +11,6 @@ import { isRecord } from "../../shared/guards.js";
 import { CliError } from "../../shared/errors.js";
 import { renderCliArgv } from "../shared/workflow-operation-projection.js";
 import { kernelRecoveryInputs } from "./kernel-recovery-evidence.js";
-import { scopeReplanInputs } from "./kernel-scope-replan-inputs.js";
 import {
   putEvaluatorEvidenceObject,
   readEvaluatorEvidenceObject,

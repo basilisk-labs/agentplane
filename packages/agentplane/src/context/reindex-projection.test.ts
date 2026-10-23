@@ -74,6 +74,26 @@ describe("context projection v2", () => {
     });
   });
 
+  it("keeps every JSONL selector distinct when ids, suffixes, and ordinal fallbacks collide", () => {
+    const file = "context/raw/demo/posts.jsonl";
+    const content = [
+      { id: "post", text: "first" },
+      { id: "post-2", text: "reserved suffix" },
+      { id: "post", text: "duplicate" },
+      { text: "ordinal fallback" },
+      { id: "4", text: "numeric collision" },
+    ]
+      .map((row) => JSON.stringify(row))
+      .join("\n");
+    const rows = projectRowsForFile(file, content);
+
+    expect(rows.map((row) => row.path)).toEqual(
+      ["post", "post-2", "post-3", "4", "4-2"].map((id) => `${file}#row=${id}`),
+    );
+    expect(new Set(rows.map((row) => row.path)).size).toBe(rows.length);
+    expect(rows.map((row) => row.search_text)).toEqual(content.split("\n"));
+  });
+
   it("records projection-size boundaries on a scalable fixture within the explicit latency budget", () => {
     const content = Array.from(
       { length: PROJECTION_WINDOW_MAX_LINES * 16 },
