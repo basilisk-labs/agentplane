@@ -2,9 +2,9 @@ import { createHash } from "node:crypto";
 
 import {
   createMarkdownSectionSlugger,
-  jsonlRowIdentity,
   parseJsonlLines,
   toPosix,
+  uniqueJsonlRowIdentities,
 } from "./context-utils.js";
 
 export type ProjectionSourceRow = {
@@ -261,6 +261,7 @@ export function projectRowsForFile(
   const rel = toPosix(filePath);
   if (filePath.endsWith(".jsonl")) {
     const rows = parseJsonlLines(content);
+    const identities = uniqueJsonlRowIdentities(rows);
     const selector = selectorForJsonlRow(filePath);
     if (rows.length === 0) {
       return [
@@ -277,7 +278,7 @@ export function projectRowsForFile(
     }
     return rows.map((row, index) => {
       const serialized = JSON.stringify(row);
-      const id = jsonlRowIdentity(row, index);
+      const id = identities[index]!;
       const selectorValue = canonicalSelectorValue(id);
       const ref = `${rel}#${selector}=${selectorValue}`;
       return {

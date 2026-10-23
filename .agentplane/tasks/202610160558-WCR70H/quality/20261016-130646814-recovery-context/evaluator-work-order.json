@@ -1,0 +1,124 @@
+{
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202610160558-WCR70H-9b3ed5ab15dc04e5856280c0",
+  "prepared_at": "2026-10-16T13:06:46.814Z",
+  "task": {
+    "id": "202610160558-WCR70H",
+    "revision": 20,
+    "objective": "Match operational review projections to normalized Task readback\n\nRepair the reproduced recovery loop where canonical accepted evaluator findings retain trailing whitespace but Task compatibility readback trims strings. Normalize only the expected compatibility quality-review representation with the existing backend normalizer before comparison; preserve raw accepted EVAL, reports, projection and review/authority identity digests. Extend the two nearest projection/recovery tests to prove LF and whitespace readback idempotence, restored then unchanged recovery and strict changed-field rejection. Preserve existing completed source and native history. No Factory task/controller/runtime publication changes.",
+    "acceptance_criteria": [
+      "bun run arch:check",
+      "bun run ci:local:full",
+      "bun run test:project agentplane packages/agentplane/src/commands/task/kernel-operational-projection.test.ts packages/agentplane/src/commands/task/kernel-operational-projection-recovery.test.ts",
+      "bun run typecheck",
+      "- In scope: Repair the reproduced recovery loop where canonical accepted evaluator findings retain trailing whitespace but Task compatibility readback trims strings. Normalize only the expected compatibility quality-review representation with the existing backend normalizer before comparison; preserve raw accepted EVAL, reports, projection and review/authority identity digests. Extend the two nearest projection/recovery tests to prove LF and whitespace readback idempotence, restored then unchanged recovery and strict changed-field rejection. Preserve existing completed source and native history. No Factory task/controller/runtime publication changes.\n- Out of scope: unrelated refactors not required for \"Match operational review projections to normalized Task readback\".",
+      "1. Execute approved WorkItem normalize-operational-review-readback.",
+      "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun run test:project agentplane packages/agentplane/src/commands/task/kernel-operational-projection.test.ts packages/agentplane/src/commands/task/kernel-operational-projection-recovery.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Run `bun run arch:check`. Expected: it succeeds and confirms the requested outcome for this task.\n4. Run `bun run ci:local:full`. Expected: it succeeds and confirms the requested outcome for this task.\n5. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n6. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings."
+    ]
+  },
+  "evaluated_sha": "4259803ee74ef1cf8458c9099068fd03e4d5ab81",
+  "diff_base_sha": "7860c880ef6a8a2261bea584fe87afe17d947795",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202610160558-WCR70H/quality/20261016-130646814-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:d7f9ec0fb8d49715c0bab9c35bf076a9e2b86a8e628085cc1bfbd3234641a801",
+    "prompt_path": ".agentplane/tasks/202610160558-WCR70H/quality/objects/sha256/ff8e4163499ba0d2d972ade27541c1ad2895415050f93e620d6ed423d7e2bcab.md",
+    "result_schema_path": ".agentplane/tasks/202610160558-WCR70H/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "schema_version": 2,
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202610160558-WCR70H",
+    "plan_digest": "sha256:1f3ae3c843899889331667fd02b26b6d5e843c42ee01035aeec33634c335dd28",
+    "policy_digest": "sha256:1150ba6caefe9e829c30b3520b9246ed1ec7ebbeedbe788c63cf7989015dbb46",
+    "capability_digest": "sha256:c4938b6e617b86792a303ae0a23a3fa97aef72146c5a5160d4962edf29be42e2",
+    "checks_digest": "sha256:4df64550de1ca51cdfaad60a3a0f7d1de4dc4e19214af9be778d6f7384c5aa8d",
+    "verification_input_digest": "sha256:3e40f988c7f41559c8c01543dcd3ab640dcb71ec81799be66093adc7cbbb7c22",
+    "acceptance_digest": "sha256:015dd2bdc96393ab0a5d4f1f13268119861f399652a0162f809be78d5a5cb040",
+    "implementation_sha": "4259803ee74ef1cf8458c9099068fd03e4d5ab81",
+    "digest": "sha256:76b4fd9400f3429d170666b352707993a70101bcaedd9f0526389b35e966728c"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202610160558-WCR70H/README.md",
+      "sha256": "sha256:444ca2bb80ff35d8abfbc81383d0563cd199a6a124d1936608a17c64aec6613d",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202610160558-WCR70H/quality/objects/sha256/9e47fd82dceb02665e6c9456164871bd1a0baaa4a98436f995d6d300552bf5f1.patch",
+      "sha256": "sha256:9e47fd82dceb02665e6c9456164871bd1a0baaa4a98436f995d6d300552bf5f1",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202610160558-WCR70H/quality/objects/sha256/c53384c999369c22c03a26a212c8d03117a44e84cc50cda4d6f086d4f0356067.json",
+      "sha256": "sha256:c53384c999369c22c03a26a212c8d03117a44e84cc50cda4d6f086d4f0356067",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202610160558-WCR70H/verification/20261016124029525-57fc9b2b7fb39296.json",
+      "sha256": "sha256:f599a8cac970ca680bf120849559a858e0cc67ccee486631f679b2b0f28de0c3",
+      "required": true
+    },
+    {
+      "id": "native-identity",
+      "kind": "plan",
+      "path": ".agentplane/tasks/202610160558-WCR70H/quality/objects/sha256/9b0073a93c1760b0b6bc4952bf65d15fd6cf2ec9d69c641edc9e3580d2386cc4.json",
+      "sha256": "sha256:9b0073a93c1760b0b6bc4952bf65d15fd6cf2ec9d69c641edc9e3580d2386cc4",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:35a4c7a567a9b658a31feed9e096276ede95ad0c82198f362c302fe7bd20b612",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:6e5cb34ada84017778c43c3d057edcc68d3ccb60840c805e412f7dc6781070ee",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:d3dfd4eb0293213ab49d32c6f199066f2bc7c954cada6465aab458b1a9c7ee25",
+      "required": true
+    }
+  ]
+}

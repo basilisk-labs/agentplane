@@ -1,9 +1,10 @@
 import path from "node:path";
 
-import { listWorktrees, parseTaskIdFromBranch } from "@agentplaneorg/core/git";
+import { gitRevParse, listWorktrees, parseTaskIdFromBranch } from "@agentplaneorg/core/git";
 
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";
+import { isSameBranchIdentity } from "./branch-identity.js";
 import { isPathWithin, resolvePathFallback } from "./path.js";
 
 export type RegisteredWorktree = {
@@ -25,6 +26,92 @@ export type DuplicateTaskWorktreeRegistration = {
 
 function normalizedPath(value: string): string {
   return path.resolve(value);
+}
+
+function invalidPreparationTopology(reasonCode: string, message: string): never {
+  throw new CliError({
+    exitCode: exitCodeForError("E_GIT"),
+    code: "E_GIT",
+    message,
+    context: { reason_code: reasonCode },
+  });
+}
+
+async function gitCommonDir(checkout: string): Promise<string> {
+  const commonDir = await gitRevParse(checkout, ["--path-format=absolute", "--git-common-dir"]);
+  if (!commonDir) {
+    invalidPreparationTopology(
+      "worktree_preparation_common_dir_missing",
+      `Cannot establish the Git common directory for ${checkout}.`,
+    );
+  }
+  return await resolvePathFallback(path.resolve(checkout, commonDir));
+}
+
+/** Keep the admitted base for task identity while creating its sibling from the primary checkout. */
+export async function resolveCanonicalWorktreePreparationRoot(opts: {
+  routedCheckout: string;
+  registeredBaseCheckout: string | null;
+  baseBranch: string;
+}): Promise<string> {
+  if (!opts.registeredBaseCheckout || !opts.baseBranch) {
+    invalidPreparationTopology(
+      "worktree_preparation_base_missing",
+      "Worktree preparation requires a registered development-base checkout and branch.",
+    );
+  }
+  const [routedPath, basePath] = await Promise.all([
+    resolvePathFallback(opts.routedCheckout),
+    resolvePathFallback(opts.registeredBaseCheckout),
+  ]);
+  if (routedPath !== basePath) {
+    invalidPreparationTopology(
+      "worktree_preparation_route_base_mismatch",
+      "The routed checkout does not match the registered development-base checkout.",
+    );
+  }
+
+  const worktrees = await listWorktrees(routedPath);
+  const primary = worktrees[0];
+  if (!primary) {
+    invalidPreparationTopology(
+      "worktree_preparation_primary_missing",
+      "Git has no registered primary checkout for worktree preparation.",
+    );
+  }
+  const registrations = await Promise.all(
+    worktrees.map(async (worktree) => ({
+      ...worktree,
+      normalizedPath: await resolvePathFallback(worktree.path),
+    })),
+  );
+  const baseRegistrations = registrations.filter((entry) => entry.normalizedPath === basePath);
+  const primaryPath = registrations[0]?.normalizedPath;
+  if (
+    !primaryPath ||
+    baseRegistrations.length !== 1 ||
+    registrations.filter((entry) => entry.normalizedPath === primaryPath).length !== 1
+  ) {
+    invalidPreparationTopology(
+      "worktree_preparation_registration_ambiguous",
+      "Git worktree registration does not uniquely identify the primary and development-base checkouts.",
+    );
+  }
+  const registeredBranch = baseRegistrations[0]?.branch;
+  if (!registeredBranch || !isSameBranchIdentity(registeredBranch, opts.baseBranch)) {
+    invalidPreparationTopology(
+      "worktree_preparation_base_branch_mismatch",
+      "The registered development-base checkout does not own the admitted base branch.",
+    );
+  }
+  const commonDirs = await Promise.all([gitCommonDir(routedPath), gitCommonDir(primaryPath)]);
+  if (commonDirs[0] !== commonDirs[1]) {
+    invalidPreparationTopology(
+      "worktree_preparation_foreign_repository",
+      "The registered development base and primary checkout do not share a Git common directory.",
+    );
+  }
+  return primaryPath;
 }
 
 export function findNestedWorktreeRegistrations(opts: {

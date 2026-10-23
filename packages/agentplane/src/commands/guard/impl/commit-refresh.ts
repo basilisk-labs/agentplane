@@ -56,6 +56,7 @@ export async function commitRefreshedTaskArtifacts(opts: {
   taskId: string;
   sourceMessage: string;
   quiet: boolean;
+  requireClean?: boolean;
 }): Promise<CommitRef> {
   const changedPaths = await opts.ctx.git.statusChangedPaths();
   const taskArtifactPaths = changedPaths.filter((relPath) =>
@@ -100,7 +101,7 @@ export async function commitRefreshedTaskArtifacts(opts: {
     allowConfig: false,
     allowHooks: false,
     allowCI: false,
-    requireClean: true,
+    requireClean: opts.requireClean ?? true,
     quiet: opts.quiet,
   });
 

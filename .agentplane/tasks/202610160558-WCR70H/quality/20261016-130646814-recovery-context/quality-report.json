@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202610160558-WCR70H",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-10-16T13:16:57.628Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 6 typed finding(s).",
+  "evaluated_sha": "4259803ee74ef1cf8458c9099068fd03e4d5ab81",
+  "review_identity_digest": "sha256:76b4fd9400f3429d170666b352707993a70101bcaedd9f0526389b35e966728c",
+  "findings": [
+    "The matcher normalizes only the expected compatibility quality review with the existing backend normalizer. The observed review, raw accepted EVAL, projection and identity digests remain unchanged.",
+    "The two nearest tests cover LF, CRLF, outer whitespace, blank entries, real Task readback, one restoration followed by unchanged recovery, and rejection of changed fields, finding order and duplicates.",
+    "The four retained native checks pass. Native FULL completed in 2220.620 seconds. Four failed nested process fixtures are intentional verification-contract tests of exit codes 2 and 3, not failed declared checks.",
+    "Current b8424fd2147831a19f77cdda24cc3a39f847d1ab differs from tested 09aa3cbabe354bfbf76ae43f5cf5fb1a146f9486 only in 126 own Task metadata/evidence paths. Source files exactly match 73e427f22e13793e0d309eae9618ec19e39871ac. Previous failed run-007 and successful run-006 bytes remain unchanged.",
+    "Residual risk: This review covers the current local WCR70H implementation and native evidence. Hosted CI on b8424fd2147831a19f77cdda24cc3a39f847d1ab is not observed. Earlier hosted CI applies only to 4259803ee74ef1cf8458c9099068fd03e4d5ab81.",
+    "Residual risk: This review does not establish Factory 0.4.0 readiness or real agent recovery."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202610160558-WCR70H/quality/objects/sha256/9e47fd82dceb02665e6c9456164871bd1a0baaa4a98436f995d6d300552bf5f1.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

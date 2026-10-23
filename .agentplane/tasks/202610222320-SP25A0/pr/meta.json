@@ -1,0 +1,22 @@
+{
+  "base": "main",
+  "branch": "task/202610222320-SP25A0/record-deferred-m05-measurement-decision-for-0-7",
+  "created_at": "2026-10-22T23:27:27.258Z",
+  "diffstat_sha256": "sha256:98b91cf617e35d156ea3d0029cbfa7d6bb2fe7e8b1f5dfc93fd6c0168ff4ed63",
+  "last_verified_at": "2026-10-23T04:47:31.739Z",
+  "last_verified_diffstat_sha256": "sha256:98b91cf617e35d156ea3d0029cbfa7d6bb2fe7e8b1f5dfc93fd6c0168ff4ed63",
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610222320-SP25A0",
+  "updated_at": "2026-10-22T23:27:27.258Z",
+  "verify": {
+    "status": "pass"
+  }
+}

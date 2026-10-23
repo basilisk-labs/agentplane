@@ -4,8 +4,11 @@ import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { PROJECTION_VERSION } from "../../context/reindex.js";
+import { materializeKnowledgeRef, resolveKnowledgeRef } from "../../context/knowledge-ref.js";
+import { showContext } from "./show.js";
 import { cmdContextReindex, readContextProjection, searchContextProjection } from "./reindex.js";
 import { readSqliteProjectionState, writeSqliteProjection } from "../../context/sqlite.js";
+import * as sqlite from "../../context/sqlite.js";
 
 let tempRoots: string[] = [];
 
@@ -21,11 +24,11 @@ async function write(root: string, rel: string, text: string): Promise<void> {
   await writeFile(target, text, "utf8");
 }
 
-async function reindex(root: string): Promise<string> {
+async function reindex(root: string, includeRaw = false, reset = false): Promise<string> {
   const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
   await cmdContextReindex({
     cwd: root,
-    parsed: { includeTasks: false, includeRaw: false, reset: false },
+    parsed: { includeTasks: false, includeRaw, reset },
   });
   return out.mock.calls.map(([chunk]) => String(chunk)).join("");
 }
@@ -54,6 +57,75 @@ afterEach(async () => {
 });
 
 describe("incremental context reindex", () => {
+  it("indexes duplicate raw JSONL ids and resolves every projected selector", async () => {
+    const root = await tempRoot();
+    const rawPath = "context/raw/demo/posts.jsonl";
+    const factsPath = ".agentplane/context/derived/facts/facts.jsonl";
+    await write(
+      root,
+      rawPath,
+      [
+        '{"id":"post","text":"first raw marker"}',
+        '{"id":"post","text":"second raw marker"}',
+        '{"id":"post-2","text":"reserved raw marker"}',
+      ].join("\n"),
+    );
+    await write(
+      root,
+      factsPath,
+      [
+        "not-json",
+        '{"id":"fact-a","fact":"first fact marker"}',
+        "",
+        '{"id":"fact-a","fact":"second fact marker"}',
+      ].join("\n"),
+    );
+
+    const output = await reindex(root, true);
+    const projection = await readContextProjection(root);
+    const rawRefs = projection?.rows
+      .filter((row) => row.path.startsWith(`${rawPath}#`))
+      .map((row) => row.path);
+    expect(output).toContain("strategy=full-rebuild reason=missing-index");
+    expect(rawRefs?.toSorted()).toEqual(
+      [`${rawPath}#row=post`, `${rawPath}#row=post-3`, `${rawPath}#row=post-2`].toSorted(),
+    );
+    const rawSearch = await searchContextProjection(root, {
+      query: "second raw marker",
+      scopes: ["raw"],
+      limit: 10,
+      offset: 0,
+    });
+    expect(rawSearch?.rows.some((row) => row.path === `${rawPath}#row=post-3`)).toBe(true);
+    const rawShown = await showContext({ cwd: root, parsed: { ref: `${rawPath}#row=post-3` } });
+    expect(JSON.parse(rawShown.content)).toMatchObject({ text: "second raw marker" });
+
+    const factRef = `${factsPath}#fact=fact-a-2`;
+    const factShown = await showContext({ cwd: root, parsed: { ref: factRef } });
+    expect(JSON.parse(factShown.content)).toMatchObject({ fact: "second fact marker" });
+    const knowledgeRef = await materializeKnowledgeRef({
+      repository_root: root,
+      ref: factRef,
+      kind: "fact",
+      reason: "Resolve the duplicate fact independently.",
+      retrieval: "exact",
+      required: true,
+      index_snapshot: null,
+    });
+    const resolved = await resolveKnowledgeRef({
+      repository_root: root,
+      knowledge_ref: knowledgeRef,
+    });
+    expect(resolved).toMatchObject({
+      status: "fresh",
+      source: { line_start: 4, line_end: 4 },
+      index_freshness: { status: "fresh" },
+    });
+    expect(resolved.status === "fresh" && resolved.content).toContain(
+      '"fact": "second fact marker"',
+    );
+  });
+
   it("retains one source identity and leaves an unchanged projection byte-for-byte intact", async () => {
     const root = await tempRoot();
     await write(
@@ -168,5 +240,56 @@ describe("incremental context reindex", () => {
     expect(projection?.rows.some((row) => row.search_text.includes("corruption sentinel"))).toBe(
       true,
     );
+  });
+
+  it("keeps the last readable projection if reset validation fails", async () => {
+    const root = await tempRoot();
+    const source = "context/wiki/one.md";
+    await write(root, source, "# One\n\nold marker\n");
+    await reindex(root);
+    const dbPath = path.join(root, ".agentplane", "cache.sqlite");
+    const before = await readFile(dbPath);
+    const oldProjection = normalizeProjection(await readContextProjection(root));
+
+    await write(root, source, "# One\n\nnew marker\n");
+    const check = sqlite.checkSqliteProjection;
+    vi.spyOn(sqlite, "checkSqliteProjection").mockImplementation((candidate) =>
+      candidate.includes(".rebuild-") ? Promise.resolve(false) : check(candidate),
+    );
+    await expect(reindex(root, false, true)).rejects.toThrow("integrity check");
+    expect(await readFile(dbPath)).toEqual(before);
+    expect(normalizeProjection(await readContextProjection(root))).toEqual(oldProjection);
+  });
+
+  it("keeps the last readable projection if reset writing fails", async () => {
+    const root = await tempRoot();
+    const source = "context/wiki/one.md";
+    await write(root, source, "# One\n\nold marker\n");
+    await reindex(root);
+    const dbPath = path.join(root, ".agentplane", "cache.sqlite");
+    const before = await readFile(dbPath);
+    const oldProjection = normalizeProjection(await readContextProjection(root));
+
+    await write(root, source, "# One\n\nnew marker\n");
+    vi.spyOn(sqlite, "writeSqliteProjection").mockRejectedValueOnce(
+      new Error("injected write failure"),
+    );
+    await expect(reindex(root, false, true)).rejects.toThrow("injected write failure");
+    expect(await readFile(dbPath)).toEqual(before);
+    expect(normalizeProjection(await readContextProjection(root))).toEqual(oldProjection);
+  });
+
+  it("replaces the projection after a successful reset", async () => {
+    const root = await tempRoot();
+    const source = "context/wiki/one.md";
+    await write(root, source, "# One\n\nold marker\n");
+    await reindex(root);
+    await write(root, source, "# One\n\nnew marker\n");
+
+    const output = await reindex(root, false, true);
+    const projection = await readContextProjection(root);
+    expect(output).toContain("strategy=full-rebuild reason=reset-requested");
+    expect(projection?.rows.some((row) => row.search_text.includes("new marker"))).toBe(true);
+    expect(projection?.rows.some((row) => row.search_text.includes("old marker"))).toBe(false);
   });
 });

@@ -17,6 +17,8 @@ import type {
 } from "../types.js";
 import {
   cleanupSupervisedProcessGroup,
+  hasConfirmedSupervisedProcessGroupExit,
+  PROCESS_GROUP_KILL_DRAIN_MS,
   isPosixProcessGroupSupported,
   supervisedProcessSignalTarget,
 } from "./process-tree.js";
@@ -88,6 +90,9 @@ export async function runSupervisedProcess(opts: {
     let stdout_bytes = 0;
     let stderr_bytes = 0;
     let settled = false;
+    let childClosed = false;
+    // A confirmed group exit cannot override another control or artifact failure.
+    let additionalError = false;
     const tracePolicy = opts.invocation.trace_policy;
     const timeoutPolicy = opts.invocation.timeout_policy;
     const redactPatterns = tracePolicy.redact_patterns ?? [];
@@ -154,6 +159,9 @@ export async function runSupervisedProcess(opts: {
         terminate_grace_ms: timeoutPolicy.terminate_grace_ms,
         now_iso: clock.nowIso,
         monotonic_now_ms: clock.monotonicNowMs,
+        confirm_timeout_kill_failure: () =>
+          timeoutController.hasOwnedTimeoutKillFailure() &&
+          terminationArbiter.cause() === "timeout",
       });
       return processGroupCleanupPromise;
     };
@@ -238,20 +246,24 @@ export async function runSupervisedProcess(opts: {
       }
     };
     const finishWithError = (err: unknown) => {
-      if (settled) return;
+      if (settled) {
+        additionalError = true;
+        return;
+      }
       acceptsSupervisionPatches = false;
       timeoutController.clearTimers();
       cancellationController?.clearTimers();
       settled = true;
-      void rejectAfterBufferedFlush(err);
+      const groupExitDeadline =
+        timeoutController.hasOwnedTimeoutKillFailure(err) &&
+        terminationArbiter.cause() === "timeout"
+          ? clock.monotonicNowMs() + PROCESS_GROUP_KILL_DRAIN_MS
+          : null;
+      void rejectAfterBufferedFlush(err, groupExitDeadline);
     };
-    const rejectAfterBufferedFlush = async (err: unknown) => {
+    const rejectAfterBufferedFlush = async (err: unknown, groupExitDeadline: number | null) => {
       const primaryError = errorFromUnknown(err);
-      try {
-        await runningStateReady;
-      } catch {
-        // The original running-state failure remains the primary error.
-      }
+      await runningStateReady.catch(() => null);
       await stateWriteTail;
       await drainControlEffects();
       let processGroupObservation: RunnerProcessTreeObservation;
@@ -276,18 +288,32 @@ export async function runSupervisedProcess(opts: {
             "The supervisor could not complete its process-tree cleanup observation.",
         };
       }
+      const verifiedTimeoutExit = await hasConfirmedSupervisedProcessGroupExit({
+        pid,
+        child,
+        observation: processGroupObservation,
+        child_closed: () => childClosed,
+        deadline_ms: groupExitDeadline,
+        monotonic_now_ms: clock.monotonicNowMs,
+      });
       try {
         traceSession.flushPendingLines();
       } catch {
-        // The original supervision error remains primary.
+        additionalError = true;
       }
-      await traceSession.flushWritersSettled();
+      try {
+        await traceSession.flushWriters();
+      } catch {
+        additionalError = true;
+        await traceSession.flushWritersSettled();
+      }
       ({ stdout_tail, stderr_tail, stdout_bytes, stderr_bytes } = traceSession.getResult());
       let traceArtifactPath: string | null = null;
       let traceArchivePath: string | null = null;
       let stderrArtifactPath: string | null = null;
       let stderrArchivePath: string | null = null;
       try {
+        await opts.assert_artifact_boundary?.("before finalizing process artifacts");
         const traceArtifact = await finalizeTraceArtifact({
           file_path: opts.invocation.trace_path,
           policy: tracePolicy,
@@ -297,7 +323,7 @@ export async function runSupervisedProcess(opts: {
         traceArtifactPath = traceArtifact.artifact_path;
         traceArchivePath = traceArtifact.archive_path;
       } catch {
-        // The original supervision error remains primary.
+        additionalError = true;
       }
       try {
         const stderrArtifact = await finalizeTraceArtifact({
@@ -308,14 +334,15 @@ export async function runSupervisedProcess(opts: {
         });
         stderrArtifactPath = stderrArtifact.artifact_path;
         stderrArchivePath = stderrArtifact.archive_path;
+        await opts.assert_artifact_boundary?.("after finalizing process artifacts");
       } catch {
-        // The original supervision error remains primary.
+        additionalError = true;
       }
       let currentState: Awaited<ReturnType<typeof readRunnerRunState>> = null;
       try {
         currentState = await readRunnerRunState(opts.invocation.state_path);
       } catch {
-        // The original supervision error remains primary.
+        additionalError = true;
       }
       const supervision = currentState?.supervision;
       const endedAt = processGroupObservation.completed_at;
@@ -351,7 +378,8 @@ export async function runSupervisedProcess(opts: {
         stderr_artifact_path: stderrArtifactPath,
         stderr_archive_path: stderrArchivePath,
       };
-      reject(new SupervisedProcessExecutionError(primaryError, processResult));
+      if (verifiedTimeoutExit && !additionalError) resolve(processResult);
+      else reject(new SupervisedProcessExecutionError(primaryError, processResult));
     };
     const traceSession = createTraceSession({
       adapter_id: opts.invocation.adapter_id,
@@ -476,6 +504,7 @@ export async function runSupervisedProcess(opts: {
       void startProcessGroupCleanup();
     });
     void child.on("close", (code, signal) => {
+      childClosed = true;
       void (async () => {
         try {
           await runningStateReady;

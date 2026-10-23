@@ -1,0 +1,110 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run arch:check",
+      "duration_ms": 207442,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:e2be1ceffba88028a58cead5c38a5c730bb560ef647b3f583a09a19ed71b6c62",
+        "manifest_path": "/Users/densmirnov/Github/agentplane-issue6152-source-primary-20261015/.agentplane/worktrees/202610160558-WCR70H-match-operational-review-projections-to-normaliz/.agentplane/tasks/202610160558-WCR70H/supervision/verification-runs/run-008/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:abb3e398222b73206924286b5431c629da4fba40d2998c00479d79ba5f026215",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:4b3c1e1ff73596aa0359c1d8390c46480a83e2e7b79486a0abee1e37ed22e27d"
+      },
+      "script": "arch:check",
+      "stderr_tail": "$ bun run arch:baseline && bun run arch:deps\n$ node scripts/checks/check-depcruise-known-violations.mjs\n$ node scripts/checks/run-depcruise-arch.mjs depcruise.config.cjs\n",
+      "stdout_tail": "s cruised)\n\ndependency-cruiser: packages/agentplane/src/workflow-runtime\n\n✔ no dependency violations found (22 modules, 38 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/acr\n\n✔ no dependency violations found (120 modules, 251 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/backend\n\n✔ no dependency violations found (105 modules, 220 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/blueprint\n\n✔ no dependency violations found (4 modules, 3 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/branch\n\n✔ no dependency violations found (520 modules, 1433 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/cleanup\n\n✔ no dependency violations found (426 modules, 1165 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/codex\n\n✔ no dependency violations found (8 modules, 8 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/context\n\n✔ no dependency violations found (770 modules, 2301 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/docs\n\n✔ no dependency violations found (11 modules, 14 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/doctor\n\n✔ no dependency violations found (277 modules, 634 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/evaluator\n\n✔ no dependency violations found (596 modules, 1830 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/evidence\n\n✔ no dependency violations found (88 modules, 188 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/flow\n\n✔ no dependency violations found (416 modules, 1066 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/guard\n\n✔ no dependency violations found (242 modules, 602 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/hermes\n\n✔ no dependency violations found (628 modules, 1758 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/hooks\n\n✔ no dependency violations found (320 modules, 880 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/incidents\n\n✔ no dependency violations found (190 modules, 464 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/insights\n\n✔ no dependency violations found (84 modules, 184 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/intake\n\n✔ no dependency violations found (67 modules, 154 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/pr\n\n✔ no dependency violations found (516 modules, 1420 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/recipes\n\n✔ no dependency violations found (863 modules, 2973 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/release\n\n✔ no dependency violations found (278 modules, 590 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/scenario\n\n✔ no dependency violations found (80 modules, 175 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/shared\n\n✔ no dependency violations found (1170 modules, 3942 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/task\n\n✔ no dependency violations found (1172 modules, 3998 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/upgrade\n\n✔ no dependency violations found (29 modules, 44 dependencies cruised)\n\ndependency-cruiser: packages/agentplane/src/commands/*.ts\n\n✔ no dependency violations found (761 modules, 2292 dependencies cruised)\n\ndependency-cruiser: packages/core/src\n\n✔ no dependency violations found (145 modules, 329 dependencies cruised)\n\ndependency-cruiser: packages/recipes/src\n\n✔ no dependency violations found (23 modules, 37 dependencies cruised)\n\ndependency-cruiser: packages/testkit/src\n\n✔ no dependency violations found (686 modules, 1930 dependencies cruised)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "full_regression",
+        "task_outcome"
+      ],
+      "command": "bun run ci:local:full",
+      "duration_ms": 2220700,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:95b422121001120618aff03fd39e4f1317966b1a6a50893933a6dd7987456783",
+        "manifest_path": "/Users/densmirnov/Github/agentplane-issue6152-source-primary-20261015/.agentplane/worktrees/202610160558-WCR70H-match-operational-review-projections-to-normaliz/.agentplane/tasks/202610160558-WCR70H/supervision/verification-runs/run-009/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:abb3e398222b73206924286b5431c629da4fba40d2998c00479d79ba5f026215",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:4b3c1e1ff73596aa0359c1d8390c46480a83e2e7b79486a0abee1e37ed22e27d"
+      },
+      "script": "ci:local:full",
+      "stderr_tail": "tion failed: Invalid input: expected string, received number at \"tags[1]\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"verify[1]\"; task README frontmatter schema validation failed: Too small: expected string to have >=1 characters at \"commit.hash\"; task README frontmatter schema validation failed: Too small: expected string to have >=1 characters at \"commit.message\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"description\"\nℹ️ task doc set outcome=section-updated section=Summary\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Summary\nℹ️ task doc set outcome=full-doc-updated section=Summary\n{\"ts\":\"2026-10-16T12:35:26.058Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/private/tmp/wcr70h-v425/m/t/agentplane-vitest-run-yLN6pM/agentplane-workflow-at7ui2/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/private/tmp/wcr70h-v425/m/t/agentplane-vitest-run-yLN6pM/agentplane-workflow-at7ui2/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-16T12:35:26.083Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/private/tmp/wcr70h-v425/m/t/agentplane-vitest-run-yLN6pM/agentplane-workflow-85OWz0/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/private/tmp/wcr70h-v425/m/t/agentplane-vitest-run-yLN6pM/agentplane-workflow-85OWz0/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-16T12:35:26.094Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_completed\",\"details\":{\"workflowPath\":\"/private/tmp/wcr70h-v425/m/t/agentplane-vitest-run-yLN6pM/agentplane-workflow-85OWz0/.agentplane/WORKFLOW.md\",\"from\":\"/private/tmp/wcr70h-v425/m/t/agentplane-vitest-run-yLN6pM/agentplane-workflow-85OWz0/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-16T12:35:26.114Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/private/tmp/wcr70h-v425/m/t/agentplane-vitest-run-yLN6pM/agentplane-workflow-CKmFCC/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/private/tmp/wcr70h-v425/m/t/agentplane-vitest-run-yLN6pM/agentplane-workflow-CKmFCC/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-16T12:35:26.129Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_failed\",\"code\":\"WF_UNSUPPORTED_VERSION\",\"details\":{\"reason\":\"Unsupported WORKFLOW version 3; supported versions: 1, 2.\"}}\n{\"ts\":\"2026-10-16T12:35:42.567Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-10-16T12:35:42.620Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":1}}\n{\"ts\":\"2026-10-16T12:35:42.624Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-10-16T12:35:42.634Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":2}}\n{\"ts\":\"2026-10-16T12:35:42.636Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-10-16T12:35:42.643Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_completed\",\"details\":{\"diagnostics\":0}}\n$ node scripts/checks/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 3 --fixture local-basic [REDACTED] 10000\n$ node scripts/checks/run-vitest-suite.mjs critical-cli\n$ bun run docs:ia:check && bun run docs:reference:check && bun run docs:onboarding:check\n$ node scripts/checks/check-docs-ia.mjs\n$ node scripts/generate/generate-package-reference.mjs --check\n$ node scripts/checks/check-agent-onboarding-scenario.mjs\n$ node scripts/workflow/run-workflows-lint.mjs && node scripts/checks/check-workflow-command-contract.mjs && bun scripts/checks/check-lifecycle-parity.ts && node scripts/checks/check-critical-test-route.mjs\n$ node scripts/checks/run-vitest-suite.mjs platform-critical\n$ node scripts/checks/check-significant-coverage.mjs\n",
+      "stdout_tail": " includes materialized recipe files in the install commit 2176ms\n     ✓ init --gitignore-agents updates .gitignore and skips the install commit 1809ms\n     ✓ init --yes leaves a clean tree in a fresh repository 1877ms\n     ✓ context init bootstraps AgentPlane in an empty directory 7931ms\n     ✓ context init remains idempotent in an initialized AgentPlane project 5173ms\n     ✓ init --backend cloud leaves a clean tree in a fresh repository 1004ms\n     ✓ init --backend cloud writes backend config and env template 1346ms\n     ✓ init --backend cloud keeps existing .env untouched and writes .env.example 1500ms\n     ✓ init bootstraps git repo and commits install when git is missing 1177ms\n     ✓ init --quick --tool hermes configures the native Hermes runner profile without IDE sync 1492ms\n     ✓ init --no-input is an alias for --yes 2056ms\n ✓  cli-core  packages/agentplane/src/cli/run-cli.core.upgrade.test.ts (14 tests) 45689ms\n   ✓ runCli (14)\n     ✓ upgrade applies bundle changes by default and cleans backup artifacts 8962ms\n     ✓ upgrade renders managed markdown assets before writing installed policy files 2001ms\n     ✓ upgrade includes missing runtime .gitignore lines in the upgrade commit 9156ms\n     ✓ upgrade --dry-run reports changes without modifying files 1062ms\n     ✓ upgrade restores workflow runtime artifacts even when managed files are otherwise unchanged 6857ms\n     ✓ upgrade commits tracked legacy config removal when migrating to WORKFLOW-only config 935ms\n     ✓ recovers a legacy README v2 task after upgrade via task migrate-doc 4677ms\n     ✓ upgrade --migrate-task-docs recovers a legacy README v2 task in one run 6122ms\n     ✓ upgrade --migrate-task-docs repairs incomplete policy tree drift and legacy task docs together 5565ms\n\n Test Files  7 passed (7)\n      Tests  98 passed (98)\n   Start at  20:39:15\n   Duration  55.86s (tests 78%, transform 18%, import 4%)\n\n  Transform   agentplane  transforming modules took 10.14s · 77% of tracked time, re-done on every run\n             persist transforms across runs with fsModuleCache: true\n             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns\n\n\n== Significant file coverage (guard) ==\n\n RUN  v5.0.2 /private/tmp/wcr70h-v425/m/t/agentplane-verification-bX7kS0\n      Coverage enabled with v8\n\n ✓ packages/agentplane/src/commands/guard/impl/policy.test.ts (3 tests) 36ms\n ✓ packages/agentplane/src/commands/guard/impl/allow.test.ts (13 tests) 139ms\n ✓ packages/agentplane/src/commands/guard/impl/commands.guard.unit.test.ts (3 tests) 217ms\n ✓ packages/agentplane/src/commands/guard/impl/commands.commit-close.unit.test.ts (12 tests) 655ms\n   ✓ guard command implementations: commit close (12)\n     ✓ cmdCommit close path stages absolute README when outside gitRoot 605ms\n ✓ packages/agentplane/src/commands/guard/impl/commands.commit-non-close.unit.test.ts (15 tests) 656ms\n   ✓ guard command implementations: commit non-close (15)\n     ✓ cmdCommit non-close path commits with env and provided ctx 601ms\n ✓ packages/agentplane/src/commands/guard/impl/comment-commit.test.ts (12 tests) 109ms\n ✓ packages/agentplane/src/commands/guard/impl/close-message.test.ts (18 tests) 2023ms\n   ✓ buildCloseCommitMessage (9)\n     ✓ builds a deterministic close commit message (non-spike) and filters task artifacts from key files 338ms\n ✓ packages/agentplane/src/cli/run-cli.core.guard.test.ts (25 tests) 4674ms\n   ✓ runCli (25)\n     ✓ guard clean succeeds when no staged files 2604ms\n\n Test Files  8 passed (8)\n      Tests  101 passed (101)\n   Start at  20:40:11\n   Duration  9.75s (transform 47%, tests 38%, import 14%, worker 1%, setup 1%)\n\n  Transform  transforming modules took 10.53s · 47% of tracked time, re-done on every run\n             persist transforms across runs with fsModuleCache: true\n             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns\n\n\n== Coverage threshold (significant) ==\nSignificant suite contract OK (17 source targets).\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run test:project agentplane packages/agentplane/src/commands/task/kernel-operational-projection.test.ts packages/agentplane/src/commands/task/kernel-operational-projection-recovery.test.ts",
+      "duration_ms": 5685,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:e4bd0bad5296f49f6a419a80ef805e3cebd2b89d20ff36c500dc543f2830209d",
+        "manifest_path": "/Users/densmirnov/Github/agentplane-issue6152-source-primary-20261015/.agentplane/worktrees/202610160558-WCR70H-match-operational-review-projections-to-normaliz/.agentplane/tasks/202610160558-WCR70H/supervision/verification-runs/run-010/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:abb3e398222b73206924286b5431c629da4fba40d2998c00479d79ba5f026215",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:4b3c1e1ff73596aa0359c1d8390c46480a83e2e7b79486a0abee1e37ed22e27d"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/kernel-operational-projection.test.ts packages/agentplane/src/commands/task/kernel-operational-projection-recovery.test.ts\n",
+      "stdout_tail": "\n RUN  v5.0.2 <repo>\n\n ✓  agentplane  packages/agentplane/src/commands/task/kernel-operational-projection.test.ts (9 tests) 32ms\n ✓  agentplane  packages/agentplane/src/commands/task/kernel-operational-projection-recovery.test.ts (8 tests) 320ms\n   ✓ accepted implementation repository evidence (8)\n     ✓ restores whitespace findings once and then lets final-validation recovery progress 304ms\n\n Test Files  2 passed (2)\n      Tests  17 passed (17)\n   Start at  20:40:23\n   Duration  4.39s (transform 70%, import 23%, tests 7%, setup 1%)\n\n  Transform   agentplane  transforming modules took 3.64s · 70% of tracked time, re-done on every run\n             persist transforms across runs with fsModuleCache: true\n             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run typecheck",
+      "duration_ms": 810,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:1e2720e9f203fa62682c93891b2391849a7e1e649fd9365ad81c055eaa34fe2b",
+        "manifest_path": "/Users/densmirnov/Github/agentplane-issue6152-source-primary-20261015/.agentplane/worktrees/202610160558-WCR70H-match-operational-review-projections-to-normaliz/.agentplane/tasks/202610160558-WCR70H/supervision/verification-runs/run-011/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:abb3e398222b73206924286b5431c629da4fba40d2998c00479d79ba5f026215",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:4b3c1e1ff73596aa0359c1d8390c46480a83e2e7b79486a0abee1e37ed22e27d"
+      },
+      "script": "typecheck",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs\n",
+      "stdout_tail": ""
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202610160558-WCR70H"
+}
