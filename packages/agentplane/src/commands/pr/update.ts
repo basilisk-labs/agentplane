@@ -137,7 +137,7 @@ export async function cmdPrUpdate(opts: {
         relatedTaskIds: opts.includeTaskIds,
         branch: meta.branch,
         baseBranch: meta.base ?? null,
-        strategy: "amend",
+        strategy: "commit",
       });
     }
 

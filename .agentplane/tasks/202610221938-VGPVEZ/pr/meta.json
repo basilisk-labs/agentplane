@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202610221938-VGPVEZ/make-the-supervised-timeout-eperm-gone-case-test",
+  "created_at": "2026-10-22T19:45:08.781Z",
+  "diffstat_sha256": "sha256:cf2b7263c92c150e8c99ecb18a74a58299d8c1a8721ba3ef80feb433706ae49c",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202610221938-VGPVEZ",
+  "updated_at": "2026-10-22T19:45:08.781Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

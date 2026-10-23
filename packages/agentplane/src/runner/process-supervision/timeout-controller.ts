@@ -34,6 +34,7 @@ export function createTimeoutController(opts: {
   let idleTimer: NodeJS.Timeout | null = null;
   let wallTimer: NodeJS.Timeout | null = null;
   let killTimer: NodeJS.Timeout | null = null;
+  let killFailure: { error: unknown; signal_pid: number | null } | null = null;
   const nowIso = opts.now_iso ?? createSupervisionClock().nowIso;
 
   const patchRunningSupervision = async (patch: Partial<RunnerSupervisionState>) =>
@@ -93,7 +94,10 @@ export function createTimeoutController(opts: {
       try {
         process.kill(opts.signal_pid, "SIGKILL");
       } catch (err) {
-        if ((err as NodeJS.ErrnoException | null)?.code !== "ESRCH") opts.finish_with_error(err);
+        if ((err as NodeJS.ErrnoException | null)?.code !== "ESRCH") {
+          killFailure = { error: err, signal_pid: opts.signal_pid };
+          opts.finish_with_error(err);
+        }
         return;
       }
       opts.mutable.killSentAt = nowIso();
@@ -114,7 +118,10 @@ export function createTimeoutController(opts: {
       try {
         process.kill(opts.signal_pid!, "SIGKILL");
       } catch (err) {
-        if ((err as NodeJS.ErrnoException | null)?.code !== "ESRCH") opts.finish_with_error(err);
+        if ((err as NodeJS.ErrnoException | null)?.code !== "ESRCH") {
+          killFailure = { error: err, signal_pid: opts.signal_pid };
+          opts.finish_with_error(err);
+        }
         return;
       }
       const killSentAt = nowIso();
@@ -153,6 +160,18 @@ export function createTimeoutController(opts: {
   };
 
   return {
+    hasOwnedTimeoutKillFailure(error: unknown = killFailure?.error) {
+      return (
+        killFailure?.error === error &&
+        (error as NodeJS.ErrnoException | null)?.code === "EPERM" &&
+        opts.pid !== null &&
+        opts.pid > 1 &&
+        killFailure?.signal_pid === -opts.pid &&
+        opts.mutable.timeoutReason !== null &&
+        opts.mutable.terminateSentAt !== null
+      );
+    },
+
     clearTimers() {
       if (idleTimer) clearTimeout(idleTimer);
       if (wallTimer) clearTimeout(wallTimer);

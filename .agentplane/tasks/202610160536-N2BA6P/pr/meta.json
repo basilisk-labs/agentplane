@@ -1,0 +1,25 @@
+{
+  "base": "main",
+  "branch": "task/202610160536-N2BA6P/prepare-branch-pr-worktrees-from-canonical-prima",
+  "created_at": "2026-10-16T06:01:07.740Z",
+  "diffstat_sha256": "sha256:bef25ac2a186bbed0c09161eb91105d2c2782a6748119640844308bd0970ee3d",
+  "last_verified_at": "2026-10-22T21:03:01.133Z",
+  "last_verified_diffstat_sha256": "sha256:bef25ac2a186bbed0c09161eb91105d2c2782a6748119640844308bd0970ee3d",
+  "pr_number": 6901,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6901",
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202610160536-N2BA6P",
+  "updated_at": "2026-10-22T21:08:22.342Z",
+  "verify": {
+    "status": "pass"
+  }
+}

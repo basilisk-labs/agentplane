@@ -1,0 +1,21 @@
+{
+  "base": "agentplane/PR6147-correction-source",
+  "branch": "task/202610160508-9N195W/final-amendment-proof",
+  "created_at": "2026-10-16T05:21:09.346Z",
+  "diffstat_sha256": "sha256:a8aceb9b2c52fc9c4a9f5d8b9b5b99afd75ff477841fb0aa21d24e6fbc78be39",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610160508-9N195W",
+  "updated_at": "2026-10-16T05:21:09.346Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
