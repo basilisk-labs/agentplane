@@ -269,9 +269,11 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
     );
     const linked = path.join(root, ".agentplane/worktrees/canonical-context");
     git(["worktree", "add", "-b", "canonical-context", linked]);
+    const primary = await loadCommandContext({ cwd: root });
     const initial = await loadCommandContext({ cwd: linked });
     const command = await resolveTaskOwnerCommandContext({ ctx: initial, taskId });
     expect(command.resolvedProject.gitRoot).toBe(initial.resolvedProject.gitRoot);
+    expect(command.backendConfigPath).toBe(primary.backendConfigPath);
     const runtime = await createKernelRuntime({
       command,
       task_id: taskId,
@@ -292,6 +294,24 @@ describe("canonical CLI transport", { timeout: 60_000 }, () => {
     await writeFile(path.join(linked, "local-change.txt"), "local change");
     expect(await runtime.observe()).not.toMatchObject({ fingerprint: before.fingerprint });
   });
+
+  it("routes a linked checkout predating a canonical task to the primary checkout", async () => {
+    const root = await mkGitRepoRootWithCommit();
+    await writeConfig(root, defaultConfig());
+    const git = (args: string[]) =>
+      execFileSync("git", ["-c", "core.hooksPath=/dev/null", ...args], { cwd: root });
+    git(["add", "."]);
+    git(["commit", "-m", "pre-task worktree fixture"]);
+    const linked = path.join(root, ".agentplane/worktrees/pre-task");
+    git(["worktree", "add", "-b", "pre-task", linked]);
+    const taskId = await createTask(root);
+
+    const initial = await loadCommandContext({ cwd: linked });
+    const command = await resolveTaskOwnerCommandContext({ ctx: initial, taskId });
+    expect(command.resolvedProject.gitRoot).toBe(root);
+    await expect(command.taskBackend.getTask(taskId)).resolves.toMatchObject({ id: taskId });
+  });
+
   it.each(["local", "cloud", "compact"] as const)(
     "canonical first-write and host lifecycle on %s storage",
     async (backendKind) => {

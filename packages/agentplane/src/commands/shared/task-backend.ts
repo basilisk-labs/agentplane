@@ -285,9 +285,10 @@ export async function resolveTaskOwnerCommandContext(opts: {
   const primaryTask = await primaryCtx.taskBackend.getTask(opts.taskId);
   if (primaryTask) {
     const base = taskExecutionBaseFromExtensions(primaryTask.extensions);
+    const canonicalTask = Object.hasOwn(primaryTask.extensions ?? {}, TASK_KERNEL_EXTENSION);
     if (
       primaryCtx !== opts.ctx &&
-      Object.hasOwn(primaryTask.extensions ?? {}, TASK_KERNEL_EXTENSION) &&
+      canonicalTask &&
       primaryTask.execution_route?.repository_mode === "branch_pr" &&
       base?.source === "explicit"
     ) {
@@ -307,6 +308,21 @@ export async function resolveTaskOwnerCommandContext(opts: {
           backendConfigPath: primaryCtx.backendConfigPath,
         };
       }
+    }
+    if (
+      primaryCtx !== opts.ctx &&
+      canonicalTask &&
+      localTask &&
+      Object.hasOwn(localTask.extensions ?? {}, TASK_KERNEL_EXTENSION) &&
+      base?.source !== "explicit"
+    ) {
+      // Canonical storage stays primary; observations use the invocation checkout.
+      return {
+        ...opts.ctx,
+        taskBackend: primaryCtx.taskBackend,
+        backendId: primaryCtx.backendId,
+        backendConfigPath: primaryCtx.backendConfigPath,
+      };
     }
     return primaryCtx;
   }
