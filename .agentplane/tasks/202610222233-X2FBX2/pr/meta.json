@@ -1,0 +1,21 @@
+{
+  "base": "agentplane/A3NC2N-frozen-base",
+  "branch": "task/202610222233-X2FBX2/reject-malformed-persisted-operational-projectio",
+  "created_at": "2026-10-22T22:42:45.320Z",
+  "diffstat_sha256": "sha256:ffb6ea177d1603f242210888015d1863b7c95721ba31650532bc06e767697f8f",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610222233-X2FBX2",
+  "updated_at": "2026-10-22T22:42:45.320Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
