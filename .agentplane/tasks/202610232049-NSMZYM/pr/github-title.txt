@@ -1,1 +1,1 @@
-🚧 NSMZYM task: Preserve linked-worktree observation context for canonical primary-stored tasks [202610232049-NSMZYM]
+✅ NSMZYM task: Preserve linked-worktree observation context for canonical primary-stored tasks [202610232049-NSMZYM]
