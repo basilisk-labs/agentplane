@@ -150,6 +150,18 @@
       "evidence_kind": "merged_commit",
       "reason": "The immutable reviewed candidate publication source is present in the reviewed 0.7.13 recovery history at this merged commit; the DOING status is a historical projection.",
       "git_ref": "8f7611c1927605a292bdc63e0a5a0acc0e96bc4f"
+    },
+    {
+      "task_id": "202610222233-X2FBX2",
+      "evidence_kind": "merged_commit",
+      "reason": "The malformed persisted operational projection rejection is present in the merged PR 6158 history; the DOING status is a historical projection.",
+      "git_ref": "e7969085b2a24d102efbd335fdaad7156900c4b0"
+    },
+    {
+      "task_id": "202610222320-SP25A0",
+      "evidence_kind": "merged_commit",
+      "reason": "The approved decision to defer live M05 measurements is present at this merged PR 6902 commit; the DOING status is a historical projection, not measurement evidence.",
+      "git_ref": "a4e689eeca2b4ccf27166ce6e85ce2edfe834ec5"
     }
   ]
 }
