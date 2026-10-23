@@ -1,3 +1,4 @@
+import type { CompletionRestorationProof } from "./completion-restoration.js";
 import type { ProspectiveScopeRequest } from "./prospective-scope.js";
 import type { KernelWorkContract } from "../kernel-plan-refinement.js";
 export type Sha256Digest = `sha256:${string}`;
@@ -289,6 +290,16 @@ export type TaskAggregate = Readonly<{
     occurred_at: string;
     mutation_id: string;
   }>[];
+  cancellation?: Readonly<{
+    record_digest: Sha256Digest;
+    reason: string;
+    actor_id: string;
+    approval_evidence_digest: Sha256Digest;
+    request_digest: Sha256Digest;
+    plan_digest: Sha256Digest;
+    repository_fingerprint: Sha256Digest;
+    prior_revision: number;
+  }>;
   administrative_closure?: Readonly<{
     kind: "noop" | "duplicate" | "superseded";
     note: string;
@@ -333,6 +344,20 @@ export type TaskCommand =
         approval_evidence_digest: Sha256Digest;
       }
     >
+  | CommandEnvelope<
+      "cancel_withdrawn_scope",
+      {
+        record_digest: Sha256Digest;
+        stops: readonly Readonly<{
+          work_order_id: Sha256Digest;
+          command: Extract<TaskCommand, { kind: "transition_work_item" }>;
+        }>[];
+        reason: string;
+        plan_digest: Sha256Digest;
+        request_digest: Sha256Digest;
+        approval_evidence_digest: Sha256Digest;
+      }
+    >
   | CommandEnvelope<"capture_intent", { intent_digest: Sha256Digest }>
   | CommandEnvelope<"transition_task", { action: "request_human" | "block" | "resume" | "cancel" }>
   | CommandEnvelope<"propose_plan", { plan: PlanRecord }>
@@ -372,6 +397,15 @@ export type TaskCommand =
       }
     >
   | CommandEnvelope<"approve_scope_request", { record: CanonicalAuthorityRecord }>
+  | CommandEnvelope<
+      "restore_work_item_completion",
+      {
+        work_item_id: string;
+        proof: CompletionRestorationProof;
+        proof_digest: Sha256Digest;
+        note: string;
+      }
+    >
   | CommandEnvelope<"materialize_work_items", { plan_revision: number; plan_digest: Sha256Digest }>
   | CommandEnvelope<
       "transition_work_item",

@@ -307,7 +307,7 @@ export async function acquireTaskRunnerActiveClaim(
   const existing = await readObservedClaim(directory);
   if (existing) {
     const ownerStatus = await inspectTaskRunnerActiveClaimOwner(existing.claim);
-    if (ownerStatus !== "stale") {
+    if (opts.operation === "cancel" || ownerStatus !== "stale") {
       throw competingTaskRunnerActiveClaimError(claim, existing.claim, ownerStatus);
     }
   }
@@ -370,7 +370,7 @@ export async function acquireTaskRunnerActiveClaim(
         const competing = await readObservedClaim(directory);
         if (!competing) continue;
         const ownerStatus = await inspectTaskRunnerActiveClaimOwner(competing.claim);
-        if (ownerStatus !== "stale") {
+        if (opts.operation === "cancel" || ownerStatus !== "stale") {
           throw competingTaskRunnerActiveClaimError(claim, competing.claim, ownerStatus);
         }
         const runAuthority = await inspectTaskRunnerClaimedRunAuthority(directory, competing.claim);

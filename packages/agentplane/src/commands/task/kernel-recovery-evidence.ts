@@ -193,7 +193,7 @@ function unchangedApprovedPlanHistory(
   );
 }
 
-function semanticStopPlanMatches(
+export function semanticStopPlanMatches(
   record: KernelRecord,
   binding: NonNullable<AgentWorkOrderV2["canonical_binding"]>,
   orderId: string,

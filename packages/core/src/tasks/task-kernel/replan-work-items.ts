@@ -137,6 +137,10 @@ export function authenticatedScopeReplanHistory(
       mutation_id: string;
       command: Extract<TaskCommand, { kind: "approve_plan" }>;
     }[] = [];
+    const rejections: {
+      mutation_id: string;
+      command: Extract<TaskCommand, { kind: "reject_plan" }>;
+    }[] = [];
     const amendments: {
       plan: PlanRecord;
       fingerprint: typeof grant.authority.repository_fingerprint;
@@ -228,7 +232,38 @@ export function authenticatedScopeReplanHistory(
       const selected = matches[0]!;
       proposals.push({ mutation_id: selected.receipt.mutation_id, command: selected.command });
       taskRevision = selected.receipt.after_revision;
-      if (approvedCurrent) {
+      if (approvedCurrent && plan.state === "REJECTED" && plan.approval_actor_id === null) {
+        const fingerprints = [
+          ...new Set(
+            (aggregate.authority_lineage ?? []).map(
+              (entry) => entry.authority.repository_fingerprint,
+            ),
+          ),
+        ];
+        const rejected = Object.values(aggregate.mutation_receipts).flatMap((receipt) => {
+          const evidence = /^reject:(sha256:[a-f0-9]{64})$/u.exec(receipt.mutation_id)?.[1];
+          if (!evidence) return [];
+          return fingerprints.flatMap((fingerprint) => {
+            const command: Extract<TaskCommand, { kind: "reject_plan" }> = {
+              kind: "reject_plan",
+              task_id: aggregate.id,
+              expected_task_revision: receipt.before_revision,
+              expected_state_fingerprint: fingerprint,
+              plan_revision: plan.revision,
+              plan_digest: plan.digest,
+              rejection_evidence_digest: evidence as `sha256:${string}`,
+            };
+            return receipt.before_revision >= taskRevision &&
+              receipt.after_revision === receipt.before_revision + 1 &&
+              receipt.command_digest === kernelDigest(command)
+              ? [{ mutation_id: receipt.mutation_id, command, revision: receipt.after_revision }]
+              : [];
+          });
+        });
+        if (rejected.length !== 1) return [];
+        rejections.push({ mutation_id: rejected[0]!.mutation_id, command: rejected[0]!.command });
+        taskRevision = rejected[0]!.revision;
+      } else if (approvedCurrent) {
         if (!/^USER(?::[A-Za-z0-9._@-]+)?$/u.test(plan.approval_actor_id ?? "")) return [];
         const approved = (aggregate.authority_lineage ?? []).flatMap((entry) => {
           const authority = entry.authority;
@@ -273,7 +308,7 @@ export function authenticatedScopeReplanHistory(
       }
       previous = plan;
     }
-    return [{ source, grant, grantCommand, proposals, approvals, amendments }];
+    return [{ source, grant, grantCommand, proposals, approvals, rejections, amendments }];
   });
   return candidates.length === 1 ? candidates[0]! : null;
 }
