@@ -3,7 +3,8 @@
   "branch": "task/202610240837-5MMMW5/repair-pr-check-snapshot-validation-for-0-7-13",
   "created_at": "2026-10-24T08:48:08.033Z",
   "diffstat_sha256": "sha256:34c6f631178ec7caf5fb6069981b862574f13ec1fe99353de92df1a04bb8fb11",
-  "last_verified_at": null,
+  "last_verified_at": "2026-10-24T11:23:53.243Z",
+  "last_verified_diffstat_sha256": "sha256:34c6f631178ec7caf5fb6069981b862574f13ec1fe99353de92df1a04bb8fb11",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202610240837-5MMMW5",
   "updated_at": "2026-10-24T08:48:08.033Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
