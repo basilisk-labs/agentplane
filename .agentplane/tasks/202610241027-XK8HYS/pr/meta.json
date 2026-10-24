@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202610241027-XK8HYS/align-branch-work-start-integration-fixtures-wit",
+  "created_at": "2026-10-24T10:40:28.035Z",
+  "diffstat_sha256": "sha256:b07de93936c9cf64874ed5a948d8188b8a43734dff0204cf4ffbf14fd48d5aea",
+  "last_verified_at": "2026-10-24T14:56:51.843Z",
+  "last_verified_diffstat_sha256": "sha256:b07de93936c9cf64874ed5a948d8188b8a43734dff0204cf4ffbf14fd48d5aea",
+  "pr_number": 6917,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6917",
+  "pre_merge_closure": {
+    "basis_commit": "e924281cf095dbe1a6128bea3556722bc4a94512",
+    "branch": "task/202610241027-XK8HYS/align-branch-work-start-integration-fixtures-wit",
+    "pr_number": 6917,
+    "recorded_at": "2026-10-24T15:04:51.684Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202610241027-XK8HYS",
+  "updated_at": "2026-10-24T15:01:46.362Z",
+  "verify": {
+    "status": "pass"
+  }
+}
