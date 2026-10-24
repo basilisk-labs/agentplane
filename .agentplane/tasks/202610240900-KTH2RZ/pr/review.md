@@ -6,7 +6,7 @@ Created: 2026-10-24T10:18:44.031Z
 
 - Task: `202610240900-KTH2RZ`
 - Title: Repair release chunk51 CLI test fixtures for canonical state and validation exits
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610240900-KTH2RZ/repair-release-chunk51-cli-test-fixtures-for-can`
 - Canonical task record: `.agentplane/tasks/202610240900-KTH2RZ/README.md`
 
