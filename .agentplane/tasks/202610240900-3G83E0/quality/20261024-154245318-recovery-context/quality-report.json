@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202610240900-3G83E0",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-10-24T15:43:44.326Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 3 typed finding(s).",
+  "evaluated_sha": "8375c051466ca8f731ec5730523ef767535a059d",
+  "review_identity_digest": "sha256:49997d13f99819f4829c872e017b2a79ffd8d24ddf5da8d200634f4e256ad9a6",
+  "findings": [
+    "The runtime adds the two current Vitest coverage graph packages to the exact subset and pins the reviewed driver subset hash; it retains the historical subject subset hash and deletes packages absent from the historical subject during projection.",
+    "The focused critical test fixture models current additions and historical removals and rejects restored removed packages, altered integrity, and missing current packages.",
+    "Native full verification run-005 passed in 41 minutes with no failures after branch update; GitHub Core CI on PR #6916 head 8375c051466ca8f731ec5730523ef767535a059d shows all 14 checks completed successfully or intentionally skipped."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202610240900-3G83E0/quality/objects/sha256/eb6f1db9d8770f98c647e4fb786e215f64e1075d0b1e9055110a27a20a2ef3bb.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
