@@ -6,7 +6,7 @@ Created: 2026-10-24T05:30:41.631Z
 
 - Task: `202610240523-F9GFJF`
 - Title: Align PR lifecycle tests with ancestry-safe artifact refresh commits
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610240523-F9GFJF/align-pr-lifecycle-tests-with-ancestry-safe-arti`
 - Canonical task record: `.agentplane/tasks/202610240523-F9GFJF/README.md`
 
