@@ -201,7 +201,7 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
     const io = captureStdIO();
     try {
       const code = await runCli(["pr", "check", taskId, "--root", root]);
-      expect(code).toBe(0);
+      expect(code, io.stderr).toBe(0);
       expect(io.stdout).toContain("✅ pr check");
     } finally {
       io.restore();
@@ -293,7 +293,7 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
     },
   );
 
-  it("pr check prefers local PR artifacts when multiple task branches match", async () => {
+  it("pr check rejects an unregistered task branch despite local PR artifacts", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
@@ -312,9 +312,9 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
         "task",
         "new",
         "--title",
-        "PR check local artifact preference",
+        "PR check unregistered branch rejection",
         "--description",
-        "Local PR artifacts should beat ambiguous branch fallback",
+        "Local PR artifacts cannot bypass task worktree registration",
         "--priority",
         "med",
         "--owner",
@@ -346,8 +346,8 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
     const io = captureStdIO();
     try {
       const code = await runCli(["pr", "check", taskId, "--root", root]);
-      expect(code).toBe(0);
-      expect(io.stdout).toContain("✅ pr check");
+      expect(code).toBe(3);
+      expect(io.stderr).toContain(`has no registered authoritative worktree for ${taskId}`);
     } finally {
       io.restore();
     }
@@ -398,7 +398,11 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
       const branch = `task/${taskId}/fresh-branch-snapshot`;
-      await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+      const taskWorktree = path.join(root, ".agentplane", "worktrees", taskId);
+      await mkdir(path.dirname(taskWorktree), { recursive: true });
+      await execFileAsync("git", ["worktree", "add", "-b", branch, taskWorktree, "main"], {
+        cwd: root,
+      });
       await runCliSilent([
         "pr",
         "open",
@@ -408,15 +412,12 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
         "--branch",
         branch,
         "--root",
-        root,
+        taskWorktree,
       ]);
-      await commitPathsIfChanged(
-        root,
-        [`.agentplane/tasks/${taskId}`],
-        `${taskId} add initial pr artifacts`,
-      );
+      const taskArtifacts = [`.agentplane/tasks/${taskId}`];
+      await commitPathsIfChanged(taskWorktree, taskArtifacts, `${taskId} add initial pr artifacts`);
 
-      const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+      const prDir = path.join(taskWorktree, ".agentplane", "tasks", taskId, "pr");
       const staleMeta = await readFile(path.join(prDir, "meta.json"), "utf8");
       const staleDiffstat = await readFile(path.join(prDir, "diffstat.txt"), "utf8");
       const staleVerifyLogPath = path.join(prDir, "verify.log");
@@ -426,27 +427,23 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
       const staleReview = await readFile(path.join(prDir, "review.md"), "utf8");
       const staleGithubTitle = await readFile(path.join(prDir, "github-title.txt"), "utf8");
       const staleGithubBody = await readFile(path.join(prDir, "github-body.md"), "utf8");
-      await writeFile(path.join(root, "feature.txt"), "feature", "utf8");
-      await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
-      await execFileAsync("git", ["commit", "-m", "feature"], { cwd: root });
-      await runCliSilent(["pr", "update", taskId, "--root", root]);
-      await commitPathsIfChanged(
-        root,
-        [`.agentplane/tasks/${taskId}`],
-        `${taskId} refresh pr artifacts`,
-      );
-      await execFileAsync("git", ["checkout", "main"], { cwd: root });
-      await mkdir(prDir, { recursive: true });
-      await writeFile(path.join(prDir, "meta.json"), staleMeta, "utf8");
-      await writeFile(path.join(prDir, "diffstat.txt"), staleDiffstat, "utf8");
-      await writeFile(staleVerifyLogPath, staleVerifyLog, "utf8");
-      await writeFile(path.join(prDir, "review.md"), staleReview, "utf8");
-      await writeFile(path.join(prDir, "github-title.txt"), staleGithubTitle, "utf8");
-      await writeFile(path.join(prDir, "github-body.md"), staleGithubBody, "utf8");
+      await writeFile(path.join(taskWorktree, "feature.txt"), "feature", "utf8");
+      await execFileAsync("git", ["add", "feature.txt"], { cwd: taskWorktree });
+      await execFileAsync("git", ["commit", "-m", "feature"], { cwd: taskWorktree });
+      await runCliSilent(["pr", "update", taskId, "--root", taskWorktree]);
+      await commitPathsIfChanged(taskWorktree, taskArtifacts, `${taskId} refresh pr artifacts`);
+      const stalePrDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+      await mkdir(stalePrDir, { recursive: true });
+      await writeFile(path.join(stalePrDir, "meta.json"), staleMeta, "utf8");
+      await writeFile(path.join(stalePrDir, "diffstat.txt"), staleDiffstat, "utf8");
+      await writeFile(path.join(stalePrDir, "verify.log"), staleVerifyLog, "utf8");
+      await writeFile(path.join(stalePrDir, "review.md"), staleReview, "utf8");
+      await writeFile(path.join(stalePrDir, "github-title.txt"), staleGithubTitle, "utf8");
+      await writeFile(path.join(stalePrDir, "github-body.md"), staleGithubBody, "utf8");
       const io = captureStdIO();
       try {
         const code = await runCli(["pr", "check", taskId, "--root", root]);
-        expect(code).toBe(0);
+        expect(code, io.stderr).toBe(0);
         expect(io.stdout).toContain("✅ pr check");
         expect(io.stdout).toContain("artifact_source: branch");
         expect(io.stdout).toContain(`artifact_branch=${branch}`);
