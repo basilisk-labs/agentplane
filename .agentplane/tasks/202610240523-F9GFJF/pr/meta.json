@@ -3,7 +3,8 @@
   "branch": "task/202610240523-F9GFJF/align-pr-lifecycle-tests-with-ancestry-safe-arti",
   "created_at": "2026-10-24T05:30:41.631Z",
   "diffstat_sha256": "sha256:db9cd06433800262ebd949204d4b9bf8c017fbf39d3e44be54b878c7f146ce2a",
-  "last_verified_at": null,
+  "last_verified_at": "2026-10-24T07:14:16.986Z",
+  "last_verified_diffstat_sha256": "sha256:db9cd06433800262ebd949204d4b9bf8c017fbf39d3e44be54b878c7f146ce2a",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202610240523-F9GFJF",
   "updated_at": "2026-10-24T05:30:41.631Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
