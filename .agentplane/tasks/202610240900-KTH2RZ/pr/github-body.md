@@ -1,0 +1,35 @@
+Task: `202610240900-KTH2RZ`
+Title: Repair release chunk51 CLI test fixtures for canonical state and validation exits
+Canonical task record: `.agentplane/tasks/202610240900-KTH2RZ/README.md`
+
+## Summary
+
+Repair release chunk51 CLI test fixtures for canonical state and validation exits
+
+Align task-new exit assertions with current validation contract and isolate synthetic completion persistence from canonical preflight.
+
+## Scope
+
+- In scope: Align task-new exit assertions with current validation contract and isolate synthetic completion persistence from canonical preflight.
+- Out of scope: unrelated refactors not required for "Repair release chunk51 CLI test fixtures for canonical state and validation exits".
+
+## Verification
+
+- State: pending
+- Note: Not recorded yet.
+- Canonical workflow state lives in the task README.
+
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-10-24T10:18:44.031Z
+- Branch: task/202610240900-KTH2RZ/repair-release-chunk51-cli-test-fixtures-for-can
+- Head: computed live by `agentplane pr check` / `agentplane integrate`
+
+```text
+ .../cli/run-cli.core.task-advance.worktree-resolution.test.ts    | 9 +++++++++
+ packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts    | 4 ++--
+ 2 files changed, 11 insertions(+), 2 deletions(-)
+```
+
+</details>

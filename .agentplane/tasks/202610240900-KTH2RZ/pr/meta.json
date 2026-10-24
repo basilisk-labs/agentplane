@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202610240900-KTH2RZ/repair-release-chunk51-cli-test-fixtures-for-can",
+  "created_at": "2026-10-24T10:18:44.031Z",
+  "diffstat_sha256": "sha256:8b27edb95f8f2dc2bbf53dd61dd9f0b2c3dac4420c9b42e0d4570ad5871e0bbf",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610240900-KTH2RZ",
+  "updated_at": "2026-10-24T10:18:44.031Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
