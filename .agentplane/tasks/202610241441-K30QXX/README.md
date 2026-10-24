@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 32
+revision: 33
 origin:
   system: "manual"
 depends_on: []
@@ -29,35 +29,34 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-10-24T20:44:02.891Z"
+  updated_at: "2026-10-24T21:30:00.151Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 4 typed finding(s)."
-  evaluated_sha: "7d15ad04fd2c8de526fcfc424ef80e6045982d09"
-  review_identity_digest: "sha256:fa93becba472a119d80712c71f9638cc9317987162be167e8d8e376693187a4a"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "326b574d690bb11481156ffa413b6cdb37753ed3"
+  review_identity_digest: "sha256:0f0fc1749ffa88fe845a70080385ca950195d2dc372b80c2b6adc08426d674a6"
   evidence_refs:
-    - ".agentplane/tasks/202610241441-K30QXX/quality/20261024-204244928-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202610241441-K30QXX/quality/20261024-204244928-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202610241441-K30QXX/quality/objects/sha256/689cb6016374fc140c0eea33b7c9e247a9b3ee716381761e0f7e97249419f44e.md"
-    - ".agentplane/tasks/202610241441-K30QXX/quality/20261024-204244928-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202610241441-K30QXX/quality/20261024-204244928-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202610241441-K30QXX/quality/20261024-204244928-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202610241441-K30QXX/quality/20261024-204244928-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202610241441-K30QXX/quality/20261024-212922816-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202610241441-K30QXX/quality/20261024-212922816-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202610241441-K30QXX/quality/objects/sha256/36c237a3bac42838cfcf6275d36d10eed5b2eca2c73a54a2b99fd2c97a1d28a0.md"
+    - ".agentplane/tasks/202610241441-K30QXX/quality/20261024-212922816-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202610241441-K30QXX/quality/20261024-212922816-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202610241441-K30QXX/quality/20261024-212922816-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202610241441-K30QXX/README.md"
-    - ".agentplane/tasks/202610241441-K30QXX/quality/objects/sha256/b137b4513ee77b5ff2ec3abe19dfadf41dbe47553fd0238db77b1e027abe602e.patch"
-    - ".agentplane/tasks/202610241441-K30QXX/quality/objects/sha256/5191a830772d4c240fc573ea0fb9050bb273802a6af8b73eb2f3b38aeaaeb52b.json"
-    - ".agentplane/tasks/202610241441-K30QXX/verification/20261024204059763-1fe8d93b36de0f61.json"
-    - ".agentplane/tasks/202610241441-K30QXX/quality/objects/sha256/e777f4f09ceefeeb0c62fa6de02bc1e72ed8d0c6c18cbf8330ec1f20763f083e.json"
+    - ".agentplane/tasks/202610241441-K30QXX/quality/objects/sha256/ee01c2afa03366fe62154965d43ddadb4cb1dcba5d0a73cc5b3c4f9452d149d9.patch"
+    - ".agentplane/tasks/202610241441-K30QXX/quality/objects/sha256/4cac528fcb8d5c3393a51dc80316321e320492465734af8c60ddc5a5c9817605.json"
+    - ".agentplane/tasks/202610241441-K30QXX/verification/20261024212836551-47babda6aec8827e.json"
+    - ".agentplane/tasks/202610241441-K30QXX/quality/objects/sha256/0110a3e5016a0acd55aaacbe1d86a6c35320c7ecf67526fe09652285a80d2bfa.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "In packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts:465-495, the new guard checks exchange identity, WorkOrder task, operation role, and effect_ref. It omits journal.task_id === opts.task_id and operation.precondition_fingerprint_digest === exchange.state_fingerprint. externalAgentIssueDigest binds the exchange and WorkOrder, but does not bind these two journal fields. A validly shaped mismatched journal can therefore satisfy the guard and be retired when its unrelated precondition differs from the current fingerprint. This conflicts with the approved exact supervisor intent identity requirement."
-    - "The new result_digest guard test in external-agent-read-only-observation.test.ts correctly preserves an issued exchange with a recorded result digest. The running/effect_in_doubt, prepared/issued, unchanged-boundary, returned-result, mutation-capable, and interrupted-retirement cases are present."
-    - "Native verification record 20261024204059763-1fe8d93b36de0f61 reports focused tests, lint:core, and ci:local:full passed. These checks do not cover the mismatched journal identity case. The working tree has evaluator-preparation artifacts; this read-only review did not modify source files."
-    - "Residual risk: If identity fields mismatch, retirement can discard an unrelated unresolved supervisor intent instead of failing closed."
+    - "packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts adds journal.task_id === opts.task_id and operation.precondition_fingerprint_digest === exchange.state_fingerprint to the existing exact exchange, WorkOrder, role, and effect-ref guard. This closes the prior mismatched-journal finding before exchange acknowledgement or journal CAS."
+    - "packages/agentplane/src/commands/task/external-agent-read-only-observation.test.ts adds separate journal task and precondition mismatch cases. Each case preserves a valid journal digest, expects the identity error, and asserts that both the journal and exchange remain unchanged."
+    - "The approved two implementation paths remain the only source/test paths changed for this task. Native verification record 20261024212836551-47babda6aec8827e is ok and records focused tests, lint:core, and ci:local:full as passed. The implementation evidence identifies commit 326b574d690bb11481156ffa413b6cdb37753ed3 and clean status before evaluator preparation."
+    - "Residual risk: The updated PR head must receive its exact hosted CI result before integration."
 token_usage:
   agent_runs: 3
   input_tokens: null
@@ -1056,7 +1055,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-10-24T21:28:38.024Z"
+doc_updated_at: "2026-10-24T21:30:00.178Z"
 doc_updated_by: "CODER"
 description: "Recover a stale issued or prepared read-only task-worktree observation after task-state drift only when exact supervisor intent identity matches and no result exists. Preserve current-boundary, result-present and mutation-capable behavior. Reuse the independently reviewed two-file implementation from blocked task 202610241410-R84RC3 under new native worktree authority; its mandatory lint:ci check does not exist. Native plan must use valid focused tests, lint:core and ci:local:full."
 sections:
@@ -1419,13 +1418,13 @@ sections:
   Findings: ""
 extensions:
   agentplane.completed_native_review:
-    applied_at: "2026-10-24T20:44:02.891Z"
+    applied_at: "2026-10-24T21:30:00.151Z"
     kernel_digest: "sha256:ca26452f67132ce7435550db964866fa1cf4d47539006753f5584ea764af5441"
-    quality_digest: "sha256:8186141338fc9f440f29ddcf86a1e998dccdd9fc3e6207d991dadd819bfffb07"
-    result_digest: "sha256:76c3d9cda58ccd77f6eb10a9b8e7e2a07d2fc52856d03e470cfefaad0009b702"
+    quality_digest: "sha256:03f922a79e0272e111cca4722cb94657133dc95829b817b8734a9285c1335666"
+    result_digest: "sha256:ce5a5433d46e02784b52544016096d5cce9e713c59153ba351bbe44c3284b6e9"
     schema_version: 1
-    state_fingerprint: "sha256:0e4048311a509f6501904070d842aad1d0991fed41f1281b9930167cf4ab501a"
-    transition_id: "tr_b876a41433bc2cfb5e325535349a2fb0"
+    state_fingerprint: "sha256:663f2e314901496a7081e71c8e722c22a8d763b6fdbcdd549950beaa127559ce"
+    transition_id: "tr_b95d7f2df27820e477190f70ed298753"
   agentplane.kernel_operational_projection:
     digest: "sha256:f0f2eab6d55074972f772728197854b02057dbdc23263c5eadfba70363834253"
     evidence_refs:

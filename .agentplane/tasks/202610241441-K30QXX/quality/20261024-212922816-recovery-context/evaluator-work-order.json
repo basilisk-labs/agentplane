@@ -1,0 +1,123 @@
+{
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202610241441-K30QXX-f2fab4ba0305e7aa943ffe2e",
+  "prepared_at": "2026-10-24T21:29:22.816Z",
+  "task": {
+    "id": "202610241441-K30QXX",
+    "revision": 32,
+    "objective": "Retire drifted unanswered read-only supervisor intent with valid verification\n\nRecover a stale issued or prepared read-only task-worktree observation after task-state drift only when exact supervisor intent identity matches and no result exists. Preserve current-boundary, result-present and mutation-capable behavior. Reuse the independently reviewed two-file implementation from blocked task 202610241410-R84RC3 under new native worktree authority; its mandatory lint:ci check does not exist. Native plan must use valid focused tests, lint:core and ci:local:full.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "bun run lint:core",
+      "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/external-agent-read-only-observation.test.ts packages/agentplane/src/commands/task/external-agent-supervisor-recovery.test.ts --pool=forks --maxWorkers 1",
+      "- In scope: Recover a stale issued or prepared read-only task-worktree observation after task-state drift only when exact supervisor intent identity matches and no result exists. Preserve current-boundary, result-present and mutation-capable behavior. Reuse the independently reviewed two-file implementation from blocked task 202610241410-R84RC3 under new native worktree authority; its mandatory lint:ci check does not exist. Native plan must use valid focused tests, lint:core and ci:local:full.\n- Out of scope: unrelated refactors not required for \"Retire drifted unanswered read-only supervisor intent with valid verification\".",
+      "1. Execute approved WorkItem recover-read-only-intent.",
+      "PLANNER fallback scaffold for \"Retire drifted unanswered read-only supervisor intent with valid verification\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Retire drifted unanswered read-only supervisor intent with valid verification\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "326b574d690bb11481156ffa413b6cdb37753ed3",
+  "diff_base_sha": "72fe225ea5f14590482643751d4abceba5ca422c",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202610241441-K30QXX/quality/20261024-212922816-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:87716cb278a0905688e1cb763a71419ecd78a4cdc31f67fba75a1c0032df920d",
+    "prompt_path": ".agentplane/tasks/202610241441-K30QXX/quality/objects/sha256/36c237a3bac42838cfcf6275d36d10eed5b2eca2c73a54a2b99fd2c97a1d28a0.md",
+    "result_schema_path": ".agentplane/tasks/202610241441-K30QXX/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "schema_version": 2,
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202610241441-K30QXX",
+    "plan_digest": "sha256:8be7214b9ba190e41c17167ff42fd96efef65efea6eb974b6340b83bd86610f0",
+    "policy_digest": "sha256:1150ba6caefe9e829c30b3520b9246ed1ec7ebbeedbe788c63cf7989015dbb46",
+    "capability_digest": "sha256:ad84de6f35e3c0bf81c5d2c192b58b7327cf6bef092875afe915c3af00c76970",
+    "checks_digest": "sha256:5b32638c1c634bccf90e1b66d5e522606ba05d6aabc3f408c8153044d1bfb61f",
+    "verification_input_digest": "sha256:8a996fa25de642af503a6d30e78ac6cce13f3083b9eaa7740c1313ca83925c06",
+    "acceptance_digest": "sha256:d8a25a4cc62fef6e61c4ee3a2ba06389a4bcf294bb058b5bac19585f79c7b3d6",
+    "implementation_sha": "326b574d690bb11481156ffa413b6cdb37753ed3",
+    "digest": "sha256:0f0fc1749ffa88fe845a70080385ca950195d2dc372b80c2b6adc08426d674a6"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202610241441-K30QXX/README.md",
+      "sha256": "sha256:d0d02215bc10958c00b6a8ab2f6aeafb4cef50015b66e750bc5290d8b36c4861",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202610241441-K30QXX/quality/objects/sha256/ee01c2afa03366fe62154965d43ddadb4cb1dcba5d0a73cc5b3c4f9452d149d9.patch",
+      "sha256": "sha256:ee01c2afa03366fe62154965d43ddadb4cb1dcba5d0a73cc5b3c4f9452d149d9",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202610241441-K30QXX/quality/objects/sha256/4cac528fcb8d5c3393a51dc80316321e320492465734af8c60ddc5a5c9817605.json",
+      "sha256": "sha256:4cac528fcb8d5c3393a51dc80316321e320492465734af8c60ddc5a5c9817605",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202610241441-K30QXX/verification/20261024212836551-47babda6aec8827e.json",
+      "sha256": "sha256:284426d3cc8c2e1bf4105d4c6187d566a5a93e6abb2a683969024a5c679354fd",
+      "required": true
+    },
+    {
+      "id": "native-identity",
+      "kind": "plan",
+      "path": ".agentplane/tasks/202610241441-K30QXX/quality/objects/sha256/0110a3e5016a0acd55aaacbe1d86a6c35320c7ecf67526fe09652285a80d2bfa.json",
+      "sha256": "sha256:0110a3e5016a0acd55aaacbe1d86a6c35320c7ecf67526fe09652285a80d2bfa",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:35a4c7a567a9b658a31feed9e096276ede95ad0c82198f362c302fe7bd20b612",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:6e5cb34ada84017778c43c3d057edcc68d3ccb60840c805e412f7dc6781070ee",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:d3dfd4eb0293213ab49d32c6f199066f2bc7c954cada6465aab458b1a9c7ee25",
+      "required": true
+    }
+  ]
+}
