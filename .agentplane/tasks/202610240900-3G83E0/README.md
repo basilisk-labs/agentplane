@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -60,9 +60,11 @@ quality_review:
     - "The focused critical test fixture models current additions and historical removals and rejects restored removed packages, altered integrity, and missing current packages."
     - "Native full verification run-005 passed in 41 minutes with no failures after branch update; GitHub Core CI on PR #6916 head 8375c051466ca8f731ec5730523ef767535a059d shows all 14 checks completed successfully or intentionally skipped."
 token_usage:
-  agent_runs: 0
+  agent_runs: 1
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
   input_tokens: null
-  journal_digest: "sha256:85776713db7f53b81892d8f1b761fbad45fc11d1b86983ad7a18433109fe16c7"
+  journal_digest: "sha256:f7f53ec0d54fdd0031ff49dbbc2d05d2ecdc23fe308686c65c2db5e6b4fd541b"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -71,8 +73,8 @@ token_usage:
   source: "supervisor_journal"
   state: "unavailable"
   total_tokens: null
-  unavailable_reason: "no_supervised_agent_runs"
-  updated_at: "2026-10-24T14:15:32.499Z"
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-24T15:44:16.777Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -822,9 +824,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "1d78c003a9b84b774b6cfb4d09daa20bbca35997"
-  message: "✅ 3G83E0 task: restore frozen replay anchor lock compatibility for Vitest 5.0.5 on..."
+  hash: "ee5c25cdc92e2df5648371e7166371b00073dc94"
+  message: "🚧 3G83E0 task: record external evaluator result"
 comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -849,8 +854,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-10-24T15:44:16.777Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "ee5c25cdc92e2df5648371e7166371b00073dc94"
 doc_version: 3
-doc_updated_at: "2026-10-24T15:43:44.379Z"
+doc_updated_at: "2026-10-24T15:44:16.818Z"
 doc_updated_by: "CODER"
 description: "The current exact Vitest 5.0.5 bun.lock causes critical anchor lock tests to reject the otherwise approved release driver graph. Preserve the historical subject lock, pin the exact reviewed current Vitest package graph including additions and removals, reject any tampering or unrelated package changes, and verify focused critical tests plus native CI. Do not broaden an allowlist or change anchor identity."
 sections:
@@ -1079,8 +1092,8 @@ extensions:
     verification_evidence_digest: "sha256:8b2e73952d220f310bb6dc5ac84216d596e767185773e50e392a7bb7ce2c9f87"
     work_order_id: "sha256:ca5feca2d9f2eaa8139b82872d1b0aa55479e9634752144eb543f617c068dd9f"
   implementation_commit:
-    hash: "62d9064b8231cc950668a6e59575b0c07f8ab595"
-    message: "🚧 3G83E0 task: apply canonical agent result"
+    hash: "8375c051466ca8f731ec5730523ef767535a059d"
+    message: "Merge branch 'main' into task/202610240900-3G83E0/restore-frozen-replay-anchor-lock-compatibility"
   task_execution_context:
     base_ref: "main"
     base_sha: "5a1c1dda6693966e934193a8ec05a3604648cf3e"
@@ -1772,12 +1785,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/0` agent runs
+- Completeness: `0/1` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:85776713db7f53b81892d8f1b761fbad45fc11d1b86983ad7a18433109fe16c7`
-- Unavailable reason: `no_supervised_agent_runs`
-- Updated at: `2026-10-24T14:15:32.499Z`
+- Journal digest: `sha256:f7f53ec0d54fdd0031ff49dbbc2d05d2ecdc23fe308686c65c2db5e6b4fd541b`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-24T15:44:16.777Z`
