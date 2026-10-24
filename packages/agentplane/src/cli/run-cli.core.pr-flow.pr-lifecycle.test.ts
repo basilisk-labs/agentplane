@@ -688,7 +688,7 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
     expect(statusOut.trim()).toBe("");
   });
 
-  it("pr open amends refreshed artifacts into an existing implementation commit", async () => {
+  it("pr open preserves the implementation commit and records refreshed artifacts separately", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
@@ -707,9 +707,9 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
         "task",
         "new",
         "--title",
-        "PR open amends artifacts",
+        "PR open preserves implementation commit",
         "--description",
-        "Opening PR artifacts after an implementation commit should preserve a one-commit task branch.",
+        "Opening PR artifacts after an implementation commit should preserve the original commit and add an artifact refresh commit.",
         "--priority",
         "med",
         "--owner",
@@ -726,13 +726,16 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
     }
 
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
-    const branch = `task/${taskId}/open-amend-artifacts`;
+    const branch = `task/${taskId}/open-preserve-implementation`;
     await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
     const suffix = extractTaskSuffix(taskId);
 
     await writeFile(path.join(root, "change.txt"), "change\n", "utf8");
     await execFileAsync("git", ["add", "change.txt"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", `🧩 ${suffix} workflow: change`], {
+      cwd: root,
+    });
+    const { stdout: implementationHeadOut } = await execFileAsync("git", ["rev-parse", "HEAD"], {
       cwd: root,
     });
 
@@ -755,17 +758,28 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
       io.restore();
     }
 
-    const { stdout: subjectOut } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], {
+    const { stdout: subjectsOut } = await execFileAsync("git", ["log", "-2", "--pretty=%s"], {
       cwd: root,
     });
-    expect(subjectOut.trim()).toBe(`🧩 ${suffix} workflow: change`);
+    const subjects = subjectsOut
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
+    expect(subjects).toEqual([
+      `🧩 ${suffix} task: refresh task artifacts after commit`,
+      `🧩 ${suffix} workflow: change`,
+    ]);
+    const { stdout: implementationParentOut } = await execFileAsync("git", ["rev-parse", "HEAD^"], {
+      cwd: root,
+    });
+    expect(implementationParentOut.trim()).toBe(implementationHeadOut.trim());
 
     const { stdout: commitCountOut } = await execFileAsync(
       "git",
       ["rev-list", "--count", "main..HEAD"],
       { cwd: root },
     );
-    expect(commitCountOut.trim()).toBe("1");
+    expect(commitCountOut.trim()).toBe("2");
 
     const { stdout: showOut } = await execFileAsync(
       "git",
@@ -776,9 +790,16 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
       .split("\n")
       .map((line) => line.trim())
       .filter(Boolean);
-    expect(changedFiles).toContain("change.txt");
+    expect(changedFiles).not.toContain("change.txt");
     expect(changedFiles).toContain(`.agentplane/tasks/${taskId}/README.md`);
     expect(changedFiles).toContain(`.agentplane/tasks/${taskId}/pr/meta.json`);
+
+    const { stdout: implementationShowOut } = await execFileAsync(
+      "git",
+      ["show", "--name-only", "--pretty=format:", "HEAD^"],
+      { cwd: root },
+    );
+    expect(implementationShowOut.split("\n").map((line) => line.trim())).toContain("change.txt");
 
     const { stdout: statusOut } = await execFileAsync(
       "git",
@@ -937,6 +958,9 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
     await writeFile(path.join(root, "change.txt"), "change", "utf8");
     await execFileAsync("git", ["add", "change.txt"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "change"], { cwd: root });
+    const { stdout: changeHeadOut } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
 
     const io = captureStdIO();
     try {
@@ -953,8 +977,15 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
     const subjects = subjectOut
       .split("\n")
       .map((line) => line.trim())
-      .find(Boolean);
-    expect(subjects).toBe("change");
+      .filter(Boolean);
+    expect(subjects).toEqual([
+      `🧩 ${extractTaskSuffix(taskId)} task: refresh task artifacts after commit`,
+      "change",
+    ]);
+    const { stdout: changeParentOut } = await execFileAsync("git", ["rev-parse", "HEAD^"], {
+      cwd: root,
+    });
+    expect(changeParentOut.trim()).toBe(changeHeadOut.trim());
 
     const meta = JSON.parse(
       await readFile(path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json"), "utf8"),
