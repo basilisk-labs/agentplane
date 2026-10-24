@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 33
+revision: 34
 origin:
   system: "manual"
 depends_on: []
@@ -58,9 +58,11 @@ quality_review:
     - "The approved two implementation paths remain the only source/test paths changed for this task. Native verification record 20261024212836551-47babda6aec8827e is ok and records focused tests, lint:core, and ci:local:full as passed. The implementation evidence identifies commit 326b574d690bb11481156ffa413b6cdb37753ed3 and clean status before evaluator preparation."
     - "Residual risk: The updated PR head must receive its exact hosted CI result before integration."
 token_usage:
-  agent_runs: 3
+  agent_runs: 8
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
   input_tokens: null
-  journal_digest: "sha256:f008e8df419534fc6ac69eeef634dff18c947e6b5736eaf5adb2872ea36a3680"
+  journal_digest: "sha256:4a3c3a191804a41bcf0bc354622b7b0482833e0b2a74e0c6efa853095ab67d81"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -70,7 +72,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "external_host_turn_unallocatable"
-  updated_at: "2026-10-24T17:33:29.696Z"
+  updated_at: "2026-10-24T21:30:13.205Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -1016,8 +1018,13 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "c1cd1a8c552ee4229b1a9bb73789659a5cb445cf"
+  message: "🚧 K30QXX task: record external evaluator result"
 comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -1054,8 +1061,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-10-24T21:30:13.205Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "c1cd1a8c552ee4229b1a9bb73789659a5cb445cf"
 doc_version: 3
-doc_updated_at: "2026-10-24T21:30:00.178Z"
+doc_updated_at: "2026-10-24T21:30:13.220Z"
 doc_updated_by: "CODER"
 description: "Recover a stale issued or prepared read-only task-worktree observation after task-state drift only when exact supervisor intent identity matches and no result exists. Preserve current-boundary, result-present and mutation-capable behavior. Reuse the independently reviewed two-file implementation from blocked task 202610241410-R84RC3 under new native worktree authority; its mandatory lint:ci check does not exist. Native plan must use valid focused tests, lint:core and ci:local:full."
 sections:
@@ -1443,6 +1458,7 @@ extensions:
     work_order_id: "sha256:77900576cd0ec503aa6f3e697412a4294c31f373ac32940434bbdd3bb0e4874f"
   implementation_commit:
     hash: "326b574d690bb11481156ffa413b6cdb37753ed3"
+    message: "🚧 K30QXX task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "4346a00204229a1a919f1a4879cd7455dae9e301"
@@ -2407,12 +2423,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/3` agent runs
+- Completeness: `0/8` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:f008e8df419534fc6ac69eeef634dff18c947e6b5736eaf5adb2872ea36a3680`
+- Journal digest: `sha256:4a3c3a191804a41bcf0bc354622b7b0482833e0b2a74e0c6efa853095ab67d81`
 - Unavailable reason: `external_host_turn_unallocatable`
-- Updated at: `2026-10-24T17:33:29.696Z`
+- Updated at: `2026-10-24T21:30:13.205Z`
