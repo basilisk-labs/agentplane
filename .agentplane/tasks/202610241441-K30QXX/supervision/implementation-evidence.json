@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check 4346a00204229a1a919f1a4879cd7455dae9e301..d9fb6b3cf02030fdc56337fddc8b5dbe8f5491c7",
+      "command": "git diff --check c5031f03bee33d4975b151f6240c7533da903b52..7d15ad04fd2c8de526fcfc424ef80e6045982d09",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,20 +13,15 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB 4346a00204229a1a919f1a4879cd7455dae9e301..d9fb6b3cf02030fdc56337fddc8b5dbe8f5491c7",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB c5031f03bee33d4975b151f6240c7533da903b52..7d15ad04fd2c8de526fcfc424ef80e6045982d09",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "A\t.agentplane/tasks/202610241441-K30QXX/README.md",
-        "A\t.agentplane/tasks/202610241441-K30QXX/pr/diffstat.txt",
-        "A\t.agentplane/tasks/202610241441-K30QXX/pr/github-body.md",
-        "A\t.agentplane/tasks/202610241441-K30QXX/pr/github-title.txt",
-        "A\t.agentplane/tasks/202610241441-K30QXX/pr/meta.json",
-        "A\t.agentplane/tasks/202610241441-K30QXX/pr/review.md",
-        "A\t.agentplane/tasks/202610241441-K30QXX/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
-        "A\t.agentplane/tasks/202610241441-K30QXX/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
-        "M\tpackages/agentplane/src/commands/task/external-agent-read-only-observation.test.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
+        "M\t.agentplane/tasks/202610241441-K30QXX/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202610241441-K30QXX/pr/github-body.md",
+        "M\t.agentplane/tasks/202610241441-K30QXX/pr/meta.json",
+        "M\t.agentplane/tasks/202610241441-K30QXX/pr/review.md",
+        "M\tpackages/agentplane/src/commands/task/external-agent-read-only-observation.test.ts"
       ]
     },
     {
@@ -36,36 +31,15 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "4346a00204229a1a919f1a4879cd7455dae9e301",
-  "implementation_commit": "d9fb6b3cf02030fdc56337fddc8b5dbe8f5491c7",
+  "execution_base_commit": "c5031f03bee33d4975b151f6240c7533da903b52",
+  "implementation_commit": "7d15ad04fd2c8de526fcfc424ef80e6045982d09",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [
-      "?? .agentplane/tasks/202610241441-K30QXX/README.md",
-      "?? .agentplane/tasks/202610241441-K30QXX/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
-      "?? .agentplane/tasks/202610241441-K30QXX/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
-    ],
-    "classification": [
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202610241441-K30QXX/README.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202610241441-K30QXX/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202610241441-K30QXX/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
-      }
-    ],
+    "baseline": [],
+    "classification": [],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [
-      "?? .agentplane/tasks/202610241441-K30QXX/README.md",
-      "?? .agentplane/tasks/202610241441-K30QXX/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
-      "?? .agentplane/tasks/202610241441-K30QXX/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
-    ],
+    "removed_after_execution_baseline": [],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,
