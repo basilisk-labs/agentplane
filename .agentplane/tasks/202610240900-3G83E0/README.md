@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -34,17 +34,31 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-10-24T13:24:34.293Z"
+  updated_at: "2026-10-24T15:43:44.326Z"
   updated_by: "EVALUATOR"
-  note: "Canonical EVALUATOR review passed."
-  evaluated_sha: "62d9064b8231cc950668a6e59575b0c07f8ab595"
-  review_identity_digest: "sha256:8a2b3d69dd092ea182b62cf1b6058919e3cafab5023eefd73960d4ab5f4b89ec"
+  note: "EVALUATOR returned pass with 3 typed finding(s)."
+  evaluated_sha: "8375c051466ca8f731ec5730523ef767535a059d"
+  review_identity_digest: "sha256:49997d13f99819f4829c872e017b2a79ffd8d24ddf5da8d200634f4e256ad9a6"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202610240900-3G83E0/a7fbe0536bd774a09438f501d4e695337f4407559240c4c6ca0bea26caad70ca/quality-report.json"
+    - ".agentplane/tasks/202610240900-3G83E0/quality/20261024-154245318-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202610240900-3G83E0/quality/20261024-154245318-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202610240900-3G83E0/quality/objects/sha256/8652fbd454d933c4d104015993050d85524d3869c1ee4cbaa46e97c7d1e6a599.md"
+    - ".agentplane/tasks/202610240900-3G83E0/quality/20261024-154245318-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202610240900-3G83E0/quality/20261024-154245318-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202610240900-3G83E0/quality/20261024-154245318-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202610240900-3G83E0/README.md"
+    - ".agentplane/tasks/202610240900-3G83E0/quality/objects/sha256/eb6f1db9d8770f98c647e4fb786e215f64e1075d0b1e9055110a27a20a2ef3bb.patch"
+    - ".agentplane/tasks/202610240900-3G83E0/quality/objects/sha256/277cc50e42cd2146fe606a2e81f3168e9d2cf3631d561e0a571bf07fc47b4551.json"
+    - ".agentplane/tasks/202610240900-3G83E0/verification/20261024154217963-5bffbb6e205ccbb7.json"
+    - ".agentplane/tasks/202610240900-3G83E0/quality/objects/sha256/7cfee936ec61a973997cbef41ed219d2c02cfb15817b837b45dad913aa828107.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Commit 62d9064b8231cc950668a6e59575b0c07f8ab595 changes only the two approved implementation paths; the root reviewer examined the exact diff before commit and found no actionable issue."
-    - "Historical subject subset hash f69e5fc87f34b7c04e8a4ee1701b541e064f22138366b77f011040a71e644051 is preserved; current driver subset f29f26c2c4e2cb0e6f7df318c263909eb538129db59d129238f111bc38ec7c7a matches bun.lock; the projection explicitly restores historical absence/presence and retains whole-lock equality."
-    - "Native validation status passed: focused critical lock test 34/34 exit 0 and ci:local:full exit 0 across docs-schema, core, cli, platform-critical, and guard coverage."
+    - "The runtime adds the two current Vitest coverage graph packages to the exact subset and pins the reviewed driver subset hash; it retains the historical subject subset hash and deletes packages absent from the historical subject during projection."
+    - "The focused critical test fixture models current additions and historical removals and rejects restored removed packages, altered integrity, and missing current packages."
+    - "Native full verification run-005 passed in 41 minutes with no failures after branch update; GitHub Core CI on PR #6916 head 8375c051466ca8f731ec5730523ef767535a059d shows all 14 checks completed successfully or intentionally skipped."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -836,7 +850,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-10-24T15:42:25.089Z"
+doc_updated_at: "2026-10-24T15:43:44.379Z"
 doc_updated_by: "CODER"
 description: "The current exact Vitest 5.0.5 bun.lock causes critical anchor lock tests to reject the otherwise approved release driver graph. Preserve the historical subject lock, pin the exact reviewed current Vitest package graph including additions and removals, reject any tampering or unrelated package changes, and verify focused critical tests plus native CI. Do not broaden an allowlist or change anchor identity."
 sections:
@@ -1040,6 +1054,14 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.completed_native_review:
+    applied_at: "2026-10-24T15:43:44.326Z"
+    kernel_digest: "sha256:aa234a15edddebc4e431e139639b633f89e603065f9b92fd532c8700b70d4f52"
+    quality_digest: "sha256:cd19ed73a46ff4a2c03c290ac7c6b5d9bbf932ecb8b2c45c31fe534786e6fdf6"
+    result_digest: "sha256:7791bb5aaa9cbe51f467c8d2f0220ee628eef59cff0045f120238ab168c1678a"
+    schema_version: 1
+    state_fingerprint: "sha256:1c22ca7d8e884ce2256bc5ea501e719223b2fac53e249b572f463dbeab74fab4"
+    transition_id: "tr_02cd0cacb45c6f21fa067d2665528065"
   agentplane.kernel_operational_projection:
     digest: "sha256:f782865e8f23c1b9621a7a42992b7b4ebd556d8c2311fb77ee91f75591bb8a83"
     evidence_refs:
