@@ -120,6 +120,60 @@ describe("canonical read-only observation admission", () => {
     });
   });
 
+  it.each(["task", "fingerprint"] as const)(
+    "rejects an unanswered exchange with a mismatched journal %s before retirement",
+    async (kind) => {
+      const f = await fixture();
+      const issued = await issue(f);
+      await unlink(issued.paths.result);
+      const journalPath = await resolveSupervisorExecutionEpisodePath({
+        git_root: f.root,
+        common_git_dir: path.join(f.root, ".git"),
+        task_id: f.id,
+      });
+      const journal = await issued.journal();
+      const changed = structuredClone(journal);
+      if (kind === "task") changed.task_id = "202610060000-OTHER1";
+      else changed.operations.at(-1)!.precondition_fingerprint_digest = `sha256:${"b".repeat(64)}`;
+      const operation = changed.operations.at(-1)!;
+      if (operation.recovery) {
+        const previousKey = operation.operation_key;
+        operation.operation_key = digestSupervisorEpisodeValue({
+          task_id: changed.task_id,
+          episode: operation.episode,
+          role: operation.role,
+          kind: operation.kind,
+          operation_identity: operation.recovery.operation_identity,
+          precondition_fingerprint_digest: operation.precondition_fingerprint_digest,
+          authority_ref: operation.authority_ref,
+          authority_digest: operation.authority_digest,
+          work_order_ref: operation.work_order_ref,
+          effect_ref: operation.effect_ref,
+          ...(operation.replacement_of_operation_key
+            ? { replacement_of_operation_key: operation.replacement_of_operation_key }
+            : {}),
+          recovery: operation.recovery,
+        });
+        if (changed.cursor.operation_key === previousKey)
+          changed.cursor.operation_key = operation.operation_key;
+      }
+      const { digest: _digest, ...payload } = changed;
+      changed.digest = digestSupervisorEpisodeValue(payload);
+      await createSupervisorEpisodeStore(journalPath).write(changed);
+      const exchange = await readExternalAgentExchange(issued.paths.exchange);
+      await expect(
+        recoverPendingExternalAgentResult({
+          command: f.command,
+          task_id: f.id,
+          current_decision: decisionAfterDrift(f),
+          accept_result: () => Promise.reject(new Error("No result may be applied")),
+        }),
+      ).rejects.toThrow("Read-only observation does not match the unresolved supervisor intent.");
+      expect(await issued.journal()).toEqual(changed);
+      expect(await readExternalAgentExchange(issued.paths.exchange)).toEqual(exchange);
+    },
+  );
+
   it("finishes retirement after exchange acknowledgement but before journal CAS", async () => {
     const f = await fixture();
     const issued = await issue(f);

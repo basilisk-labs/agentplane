@@ -27,9 +27,9 @@ Recover a stale issued or prepared read-only task-worktree observation after tas
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../external-agent-read-only-observation.test.ts   | 213 ++++++++++++++++++++-
- .../task/external-agent-supervisor-recovery.ts     | 118 +++++++-----
- 2 files changed, 283 insertions(+), 48 deletions(-)
+ .../external-agent-read-only-observation.test.ts   | 267 ++++++++++++++++++++-
+ .../task/external-agent-supervisor-recovery.ts     | 120 +++++----
+ 2 files changed, 339 insertions(+), 48 deletions(-)
 ```
 
 </details>
