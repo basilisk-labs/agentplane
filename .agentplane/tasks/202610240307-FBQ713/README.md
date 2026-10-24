@@ -1,10 +1,10 @@
 ---
 id: "202610240307-FBQ713"
 title: "Repair shared fake GitHub branch metadata for protected-base integration"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -380,7 +380,7 @@ sections:
   Findings: ""
 extensions:
   agentplane.kernel_operational_projection:
-    digest: "sha256:1a7284a8aa4475125ee5c3bf4410a7de6c8d162a9376bca16a7e9e5a4376a950"
+    digest: "sha256:94f1ca565faa202217dc38c564bf970e8d8f6a2bc90264bcad53a23884d67df3"
     evidence_refs:
       - "../../../.git/agentplane/kernel/exchanges/202610240307-FBQ713/b29b383f0053c9825445d5da268538cac1b1dbc917ea5bd18e25c53d171183a3/quality-report.json"
     findings:
@@ -393,7 +393,7 @@ extensions:
     review_identity_digest: "sha256:a3868a304f00b7265f2e9da792ba8b18485b40a5e1e731ddbfc377c418e77955"
     schema_version: 1
     source: "task_kernel"
-    verification_evidence_digest: "sha256:723be2604bb593e48457e57f0517f0cbf590b7b6657f440df7a427aea1555c19"
+    verification_evidence_digest: "sha256:497bf691f261a2caf4c8c663f9c1419953291d0a2074d6421c610fca5a3e6557"
     work_order_id: "sha256:14bb2d80babfcdca71c81a11fb9c069368abec459fbb7d44b87dda4e7fb66824"
   task_execution_context:
     base_ref: "main"
@@ -559,6 +559,15 @@ extensions:
           event_digests:
             - "sha256:6bd82457d4b5be8d2ae1ea6425a49fa07340c17614b26e0249e8f5a2cd63119a"
           mutation_id: "final-validation:sha256:497bf691f261a2caf4c8c663f9c1419953291d0a2074d6421c610fca5a3e6557:11"
+        kernel_task_completion_required:sha256:d7bafeb20c2e90f3e50c78b70dc0765aa08ce8d609ef28a237adf916581fb7c5:sha256:629b6961f10968dd401fe6c9347845bd9d728fd457661fa800023fb492355c3b:
+          after_revision: 13
+          aggregate_digest: "sha256:41578d76cbac1f9ce494ffb52ccaa18c495cc3e3c6ae99d273f3f4386d137c55"
+          before_revision: 12
+          command_digest: "sha256:5e05aa66efcfdf882e2287e4d4aff42d156113c8d953794b250d9c4b6d792ca9"
+          effect_ids: []
+          event_digests:
+            - "sha256:ba7cddea17ffecae5665e93468453673d13c0ecab20406daea8746b4e1daaa57"
+          mutation_id: "kernel_task_completion_required:sha256:d7bafeb20c2e90f3e50c78b70dc0765aa08ce8d609ef28a237adf916581fb7c5:sha256:629b6961f10968dd401fe6c9347845bd9d728fd457661fa800023fb492355c3b"
         kernel_work_item_claim_required:sha256:8bf1c2f336b5875b85e2de2e65be03b85b220a0419485b941fec93442aaf12df:sha256:7b025a2f9d81739475a5b5e1486577648a3b6b54a74310c841be10d0504f8039:
           after_revision: 5
           aggregate_digest: "sha256:bba4c0e672c802e70c649866a45c14cceff5c105d4e4097f703122e2bd42814e"
@@ -650,9 +659,9 @@ extensions:
             - "sha256:d03ad94f1949a8cc0cfb6a477b7c446376ec8ae2b4d173d8c159f697ae0fea14"
           mutation_id: "validation:sha256:b29b383f0053c9825445d5da268538cac1b1dbc917ea5bd18e25c53d171183a3"
       plan_history: []
-      revision: 12
+      revision: 13
       schema_version: 1
-      state: "FINAL_VALIDATION"
+      state: "COMPLETED"
       work_items:
         repair-protected-branch-fixture:
           attempt: 1
@@ -712,7 +721,7 @@ extensions:
               toolchain_digest: "sha256:5a3b0e29e27baf58fa8f4697c8a875f35fc209aaa906b14d0f3f20bd67718381"
             observed_at: "2026-10-24T03:22:56.521Z"
             status: "PASSED"
-    digest: "sha256:d7bafeb20c2e90f3e50c78b70dc0765aa08ce8d609ef28a237adf916581fb7c5"
+    digest: "sha256:9b972b88b68d38993e06b98f236d4e0dd5440f8496cbe62df9fb8e1fb158d950"
     documents:
       contracts:
         sha256:5098726842df146af6bbee864ac65914ccc041da0db435d294a282ccc37f8bbd:
@@ -839,6 +848,15 @@ extensions:
         payload_digest: "sha256:9e549d5b36bd56fef56919030b686bf2c89c370449146299ed7a802bfe2aff52"
         task_id: "202610240307-FBQ713"
         task_revision: 12
+      -
+        command_digest: "sha256:5e05aa66efcfdf882e2287e4d4aff42d156113c8d953794b250d9c4b6d792ca9"
+        id: "kernel_task_completion_required:sha256:d7bafeb20c2e90f3e50c78b70dc0765aa08ce8d609ef28a237adf916581fb7c5:sha256:629b6961f10968dd401fe6c9347845bd9d728fd457661fa800023fb492355c3b:task_completed"
+        kind: "task_completed"
+        mutation_id: "kernel_task_completion_required:sha256:d7bafeb20c2e90f3e50c78b70dc0765aa08ce8d609ef28a237adf916581fb7c5:sha256:629b6961f10968dd401fe6c9347845bd9d728fd457661fa800023fb492355c3b"
+        occurred_at: "2026-10-24T04:04:26.611Z"
+        payload_digest: "sha256:ae743eab051bd6a1e4873e5dd9f9c4f11e55aba5a3ec2b0a285930130dc72fbd"
+        task_id: "202610240307-FBQ713"
+        task_revision: 13
     kind: "canonical_task"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
