@@ -1,10 +1,11 @@
 ---
 id: "202610240837-5MMMW5"
 title: "Repair PR check snapshot validation for 0.7.13"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 25
 origin:
   system: "manual"
 depends_on: []
@@ -43,6 +44,22 @@ quality_review:
     - "The stale-local case creates a real linked task worktree, commits refreshed branch artifacts there, and still asserts branch snapshot selection."
     - "AgentPlane native validation records exit 0 for focused 23-test file, lint, and full local CI on implementation head fb805e8; diff --check passes."
     - "Independent read-only reviewer found no actionable issue; existing oversized test budget passes."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:2f1a09163151ac4a31e7334526775236c1a16b110cfa8c204412421e3d354af9"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-10-24T11:28:47.554Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -225,9 +242,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "fb805e8a6317cb096cf95d27cdab2dafe45c5019"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "be63506b8bc869fe61b00b47e930f188d701727a"
+  message: "✅ 5MMMW5 task: repair PR check snapshot validation for 0.7.13"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -235,9 +255,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-24T11:28:47.554Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "be63506b8bc869fe61b00b47e930f188d701727a"
 doc_version: 3
-doc_updated_at: "2026-10-24T11:23:54.284Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-24T11:28:47.554Z"
+doc_updated_by: "CODER"
 description: "Diagnose and fix two deterministic pr check failures in pr-validation CLI tests. Preserve correct local-versus-branch artifact freshness selection and fail-closed validation. Add exact stderr evidence, focused regression coverage, and full verification."
 sections:
   Summary: |-
@@ -369,6 +397,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:53bfd6ffd5dd296e967b4cead01e2c32f12a90ce8285080c4e54106d7ff43e0e"
     work_order_id: "sha256:020491f55f5f2ec15b5896ef8409cccc4d8b3382ae01c9b0d7adec8f6aea84f5"
+  implementation_commit:
+    hash: "fb805e8a6317cb096cf95d27cdab2dafe45c5019"
+    message: "🚧 5MMMW5 task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "5a1c1dda6693966e934193a8ec05a3604648cf3e"
@@ -1067,3 +1098,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:2f1a09163151ac4a31e7334526775236c1a16b110cfa8c204412421e3d354af9`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-10-24T11:28:47.554Z`
