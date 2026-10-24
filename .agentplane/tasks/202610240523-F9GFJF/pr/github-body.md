@@ -15,8 +15,8 @@ In 0.7.13 release CI retry8, run-cli.core.pr-flow.pr-lifecycle.test.ts has two s
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:641c6212acf86d32cc8e49fb9d809694ff1b2e4d4d815dd5ad606ceb08fc1f9f
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,8 +27,8 @@ In 0.7.13 release CI retry8, run-cli.core.pr-flow.pr-lifecycle.test.ts has two s
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../cli/run-cli.core.pr-flow.pr-lifecycle.test.ts  | 51 +++++++++++++++++-----
- 1 file changed, 41 insertions(+), 10 deletions(-)
+ .../cli/run-cli.core.pr-flow.pr-lifecycle.test.ts  | 60 ++++++++++++----------
+ 1 file changed, 34 insertions(+), 26 deletions(-)
 ```
 
 </details>

@@ -696,6 +696,10 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
     await configureGitUser(root);
 
     const execFileAsync = promisify(execFile);
+    const gitOutput = async (...args: string[]) => {
+      const { stdout } = await execFileAsync("git", args, { cwd: root });
+      return stdout.trim();
+    };
     await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
     await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
@@ -735,9 +739,7 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
     await execFileAsync("git", ["commit", "-m", `🧩 ${suffix} workflow: change`], {
       cwd: root,
     });
-    const { stdout: implementationHeadOut } = await execFileAsync("git", ["rev-parse", "HEAD"], {
-      cwd: root,
-    });
+    const implementationHead = await gitOutput("rev-parse", "HEAD");
 
     const io = captureStdIO();
     try {
@@ -758,48 +760,23 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
       io.restore();
     }
 
-    const { stdout: subjectsOut } = await execFileAsync("git", ["log", "-2", "--pretty=%s"], {
-      cwd: root,
-    });
-    const subjects = subjectsOut
-      .split("\n")
-      .map((line) => line.trim())
-      .filter(Boolean);
-    expect(subjects).toEqual([
+    const subjects = await gitOutput("log", "-2", "--pretty=%s");
+    expect(subjects.split("\n")).toEqual([
       `🧩 ${suffix} task: refresh task artifacts after commit`,
       `🧩 ${suffix} workflow: change`,
     ]);
-    const { stdout: implementationParentOut } = await execFileAsync("git", ["rev-parse", "HEAD^"], {
-      cwd: root,
-    });
-    expect(implementationParentOut.trim()).toBe(implementationHeadOut.trim());
+    expect(await gitOutput("rev-parse", "HEAD^")).toBe(implementationHead);
 
-    const { stdout: commitCountOut } = await execFileAsync(
-      "git",
-      ["rev-list", "--count", "main..HEAD"],
-      { cwd: root },
-    );
-    expect(commitCountOut.trim()).toBe("2");
+    expect(await gitOutput("rev-list", "--count", "main..HEAD")).toBe("2");
 
-    const { stdout: showOut } = await execFileAsync(
-      "git",
-      ["show", "--name-only", "--pretty=format:", "HEAD"],
-      { cwd: root },
-    );
-    const changedFiles = showOut
-      .split("\n")
-      .map((line) => line.trim())
-      .filter(Boolean);
+    const headFiles = await gitOutput("show", "--name-only", "--pretty=format:", "HEAD");
+    const changedFiles = headFiles.split("\n");
     expect(changedFiles).not.toContain("change.txt");
     expect(changedFiles).toContain(`.agentplane/tasks/${taskId}/README.md`);
     expect(changedFiles).toContain(`.agentplane/tasks/${taskId}/pr/meta.json`);
 
-    const { stdout: implementationShowOut } = await execFileAsync(
-      "git",
-      ["show", "--name-only", "--pretty=format:", "HEAD^"],
-      { cwd: root },
-    );
-    expect(implementationShowOut.split("\n").map((line) => line.trim())).toContain("change.txt");
+    const parentFiles = await gitOutput("show", "--name-only", "--pretty=format:", "HEAD^");
+    expect(parentFiles.split("\n")).toContain("change.txt");
 
     const { stdout: statusOut } = await execFileAsync(
       "git",
