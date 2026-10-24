@@ -27,9 +27,9 @@ Align task-new exit assertions with current validation contract and isolate synt
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../cli/run-cli.core.task-advance.worktree-resolution.test.ts    | 9 +++++++++
- packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts    | 4 ++--
- 2 files changed, 11 insertions(+), 2 deletions(-)
+ .../cli/run-cli.core.task-advance.worktree-resolution.test.ts | 11 +++++++++--
+ packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts |  4 ++--
+ 2 files changed, 11 insertions(+), 4 deletions(-)
 ```
 
 </details>

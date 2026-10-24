@@ -322,8 +322,7 @@ async function publicCompletionRegression() {
   ]);
   const originalRecoverKernelOperationalProjection =
     kernelProjectionRecovery.recoverKernelOperationalProjection;
-  // This completion-persistence fixture supplies synthetic validation and projection evidence.
-  // Recovery is a separate boundary; keep the actual completion write and Git commit below.
+  // Synthetic validation and projection isolate the completion write and Git commit.
   const recoverySpy = vi
     .spyOn(kernelProjectionRecovery, "recoverKernelOperationalProjection")
     .mockResolvedValue({ kind: "unchanged" });
@@ -333,8 +332,7 @@ async function publicCompletionRegression() {
     kernelProjection.ensureKernelOperationalProjectionEvidence;
   const originalDecideCanonicalWorkflowEffect = kernelProviderEffects.decideCanonicalWorkflowEffect;
   const originalEnsureReconciledBeforeMutation = reconcileCheck.ensureReconciledBeforeMutation;
-  // The synthetic completion record is deliberately not a persisted canonical plan.
-  // Keep this regression focused on the actual completion write and Git commit.
+  // Synthetic completion bypasses reconciliation to test the actual write and Git commit.
   const reconcileSpy = vi
     .spyOn(reconcileCheck, "ensureReconciledBeforeMutation")
     .mockResolvedValue(undefined);
