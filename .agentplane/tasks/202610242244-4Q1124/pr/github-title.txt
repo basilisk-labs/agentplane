@@ -1,0 +1,1 @@
+🚧 4Q1124 task: Fail closed on unresolved read-only supervisor intent before canonical provider effects [202610242244-4Q1124]

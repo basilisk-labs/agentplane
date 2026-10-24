@@ -18,6 +18,19 @@ import {
   resolveSupervisorExecutionEpisodePath,
 } from "../shared/supervisor-execution-episode.js";
 installRunCliIntegrationHarness();
+async function reconcilePendingReadOnlyExternalAgentObservation(
+  opts: Omit<
+    Parameters<typeof recoverPendingExternalAgentResult>[0],
+    "accept_result" | "recovery_scope"
+  >,
+) {
+  return await recoverPendingExternalAgentResult({
+    ...opts,
+    recovery_scope: "read_only_observation",
+    accept_result: () =>
+      Promise.reject(new Error("A completed provider route cannot apply a result.")),
+  });
+}
 describe("canonical read-only observation admission", () => {
   it.each([
     ["running", "issued"],
@@ -169,6 +182,13 @@ describe("canonical read-only observation admission", () => {
           accept_result: () => Promise.reject(new Error("No result may be applied")),
         }),
       ).rejects.toThrow("Read-only observation does not match the unresolved supervisor intent.");
+      await expect(
+        reconcilePendingReadOnlyExternalAgentObservation({
+          command: f.command,
+          task_id: f.id,
+          current_decision: decisionAfterDrift(f),
+        }),
+      ).rejects.toThrow("Read-only observation does not match the unresolved supervisor intent.");
       expect(await issued.journal()).toEqual(changed);
       expect(await readExternalAgentExchange(issued.paths.exchange)).toEqual(exchange);
     },
@@ -203,11 +223,10 @@ describe("canonical read-only observation admission", () => {
       status: "retired",
     });
     await expect(
-      recoverPendingExternalAgentResult({
+      reconcilePendingReadOnlyExternalAgentObservation({
         command: f.command,
         task_id: f.id,
         current_decision: laterDecision,
-        accept_result: () => Promise.reject(new Error("Retired result may not be applied")),
       }),
     ).rejects.toThrow(/reconciled a retired external-agent exchange/u);
     const reconciled = await issued.journal();
@@ -484,6 +503,188 @@ describe("canonical read-only observation admission", () => {
       expect(git(f.root, "rev-parse", "HEAD")).toBe(f.head);
     },
   );
+});
+
+describe("canonical provider read-only reconciliation", () => {
+  it.each(["issued", "prepared"] as const)(
+    "retires a drifted unanswered %s observation",
+    async (status) => {
+      const f = await fixture();
+      const issued = await issue(f);
+      await unlink(issued.paths.result);
+      if (status === "prepared") {
+        const exchange = (await readExternalAgentExchange(issued.paths.exchange))!;
+        await writeFile(issued.paths.exchange, JSON.stringify({ ...exchange, status }));
+      }
+      await expect(
+        reconcilePendingReadOnlyExternalAgentObservation({
+          command: f.command,
+          task_id: f.id,
+          current_decision: decisionAfterDrift(f),
+        }),
+      ).rejects.toThrow(/retired the stale result.*--replacement/u);
+      const retiredJournal = await issued.journal();
+      expect(retiredJournal.operations.at(-1)?.status).toBe("failed");
+      expect(await readExternalAgentExchange(issued.paths.exchange)).toMatchObject({
+        status: "retired",
+      });
+    },
+  );
+
+  it.each(["unchanged", "result-file", "result-digest", "mutation"] as const)(
+    "preserves a %s pending intent",
+    async (kind) => {
+      const f = await fixture();
+      const issued = await issue(f);
+      if (kind !== "result-file") await unlink(issued.paths.result);
+      if (kind === "result-digest") {
+        const exchange = (await readExternalAgentExchange(issued.paths.exchange))!;
+        await writeFile(
+          issued.paths.exchange,
+          JSON.stringify({ ...exchange, result_digest: `sha256:${"a".repeat(64)}` }),
+        );
+      }
+      if (kind === "mutation") {
+        const order = JSON.parse(await readFile(issued.paths.work_order, "utf8")) as {
+          authority: { sandbox: string; writable_roots: string[] };
+        };
+        order.authority.sandbox = "workspace-write";
+        order.authority.writable_roots = [f.root];
+        await writeFile(issued.paths.work_order, JSON.stringify(order));
+      }
+      const journal = await issued.journal();
+      const exchange = await readExternalAgentExchange(issued.paths.exchange);
+      await expect(
+        reconcilePendingReadOnlyExternalAgentObservation({
+          command: f.command,
+          task_id: f.id,
+          current_decision: kind === "unchanged" ? f.decision : decisionAfterDrift(f),
+        }),
+      ).rejects.toThrow(/unresolved/u);
+      expect(await issued.journal()).toEqual(journal);
+      expect(await readExternalAgentExchange(issued.paths.exchange)).toEqual(exchange);
+    },
+  );
+
+  it("blocks retirement if a result appears between the eligibility and final absence checks", async () => {
+    const f = await fixture();
+    const issued = await issue(f);
+    await unlink(issued.paths.result);
+    const journal = await issued.journal();
+    const exchange = await readExternalAgentExchange(issued.paths.exchange);
+    const originalRead = exchangeOwner.readExternalAgentWorkOrder;
+    let reads = 0;
+    const spy = vi
+      .spyOn(exchangeOwner, "readExternalAgentWorkOrder")
+      .mockImplementation(async (ref) => {
+        const order = await originalRead(ref);
+        if (++reads === 2) await writeFile(issued.paths.result, issued.bytes);
+        return order;
+      });
+    try {
+      await expect(
+        reconcilePendingReadOnlyExternalAgentObservation({
+          command: f.command,
+          task_id: f.id,
+          current_decision: decisionAfterDrift(f),
+        }),
+      ).rejects.toThrow("gained a result before retirement");
+    } finally {
+      spy.mockRestore();
+    }
+    expect(reads).toBe(2);
+    expect(await issued.journal()).toEqual(journal);
+    expect(await readExternalAgentExchange(issued.paths.exchange)).toEqual(exchange);
+  });
+
+  it("blocks an unresolved external-agent intent with no work-order reference", async () => {
+    const f = await fixture();
+    const issued = await issue(f);
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: f.root,
+      common_git_dir: path.join(f.root, ".git"),
+      task_id: f.id,
+    });
+    const changed = structuredClone(await issued.journal());
+    const operation = changed.operations.at(-1)!;
+    operation.work_order_ref = null;
+    if (operation.recovery) {
+      const oldKey = operation.operation_key;
+      operation.operation_key = digestSupervisorEpisodeValue({
+        task_id: changed.task_id,
+        episode: operation.episode,
+        role: operation.role,
+        kind: operation.kind,
+        operation_identity: operation.recovery.operation_identity,
+        precondition_fingerprint_digest: operation.precondition_fingerprint_digest,
+        authority_ref: operation.authority_ref,
+        authority_digest: operation.authority_digest,
+        work_order_ref: operation.work_order_ref,
+        effect_ref: operation.effect_ref,
+        recovery: operation.recovery,
+      });
+      if (changed.cursor.operation_key === oldKey)
+        changed.cursor.operation_key = operation.operation_key;
+    }
+    const { digest: _digest, ...payload } = changed;
+    changed.digest = digestSupervisorEpisodeValue(payload);
+    await createSupervisorEpisodeStore(journalPath).write(changed);
+    const exchange = await readExternalAgentExchange(issued.paths.exchange);
+    await expect(
+      reconcilePendingReadOnlyExternalAgentObservation({
+        command: f.command,
+        task_id: f.id,
+        current_decision: decisionAfterDrift(f),
+      }),
+    ).rejects.toThrow("unresolved external-agent intent has no work order");
+    expect(await issued.journal()).toEqual(changed);
+    expect(await readExternalAgentExchange(issued.paths.exchange)).toEqual(exchange);
+  });
+
+  it("rejects an unrelated historical issue without retiring it", async () => {
+    const f = await fixture();
+    const issued = await issue(f);
+    await unlink(issued.paths.result);
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: f.root,
+      common_git_dir: path.join(f.root, ".git"),
+      task_id: f.id,
+    });
+    const journal = await issued.journal();
+    const changed = structuredClone(journal);
+    changed.operations.at(-1)!.precondition_fingerprint_digest = `sha256:${"b".repeat(64)}`;
+    const operation = changed.operations.at(-1)!;
+    if (operation.recovery) {
+      const oldKey = operation.operation_key;
+      operation.operation_key = digestSupervisorEpisodeValue({
+        task_id: changed.task_id,
+        episode: operation.episode,
+        role: operation.role,
+        kind: operation.kind,
+        operation_identity: operation.recovery.operation_identity,
+        precondition_fingerprint_digest: operation.precondition_fingerprint_digest,
+        authority_ref: operation.authority_ref,
+        authority_digest: operation.authority_digest,
+        work_order_ref: operation.work_order_ref,
+        effect_ref: operation.effect_ref,
+        recovery: operation.recovery,
+      });
+      if (changed.cursor.operation_key === oldKey)
+        changed.cursor.operation_key = operation.operation_key;
+    }
+    const { digest: _digest, ...payload } = changed;
+    changed.digest = digestSupervisorEpisodeValue(payload);
+    await createSupervisorEpisodeStore(journalPath).write(changed);
+    await expect(
+      reconcilePendingReadOnlyExternalAgentObservation({
+        command: f.command,
+        task_id: f.id,
+        current_decision: decisionAfterDrift(f),
+      }),
+    ).rejects.toThrow("Read-only observation does not match the unresolved supervisor intent.");
+    expect(await issued.journal()).toEqual(changed);
+    expect(await readExternalAgentExchange(issued.paths.exchange)).toEqual(issued.exchange);
+  });
 });
 const originalWrite = exchangeOwner.writeExternalAgentExchange;
 
