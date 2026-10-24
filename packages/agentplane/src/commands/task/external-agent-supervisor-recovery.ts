@@ -483,6 +483,8 @@ export async function recoverPendingExternalAgentResult(opts: {
       checkout: workOrder.state_fingerprint.worktree ?? exchange.checkout,
     });
     if (
+      journal.task_id !== opts.task_id ||
+      operation.precondition_fingerprint_digest !== exchange.state_fingerprint ||
       workOrder.task.id !== opts.task_id ||
       operation.role !== workOrder.role ||
       operation.effect_ref !==
