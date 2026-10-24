@@ -417,6 +417,21 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       io.restore();
     }
 
+    const ghLogPath = process.env.AGENTPLANE_GH_LOG;
+    if (!ghLogPath) throw new Error("Protected-base fixture did not install a GitHub log");
+    const ghLog = await readFile(ghLogPath, "utf8");
+    const branchRoutes = ghLog
+      .trim()
+      .split("\n")
+      .map((line) => JSON.parse(line) as string[])
+      .filter((args) => args[0] === "api" && args[1]?.startsWith("repos/example/repo/branches/"))
+      .map((args) => args[1]);
+    const metadataRoute = "repos/example/repo/branches/main";
+    const protectionRoute = `${metadataRoute}/protection`;
+    expect(branchRoutes).toContain(metadataRoute);
+    expect(branchRoutes).toContain(protectionRoute);
+    expect(branchRoutes.indexOf(metadataRoute)).toBeLessThan(branchRoutes.indexOf(protectionRoute));
+
     const { stdout: afterMainHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
       cwd: root,
       env: cleanGitEnv(),

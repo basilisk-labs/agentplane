@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202610240307-FBQ713/repair-shared-fake-github-branch-metadata-for-pr",
+  "created_at": "2026-10-24T03:18:54.602Z",
+  "diffstat_sha256": "sha256:ea702430e296006f1d95420078571227a54b1b8fe2e19c0c9200e8286fbfbfc3",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610240307-FBQ713",
+  "updated_at": "2026-10-24T03:18:54.602Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
