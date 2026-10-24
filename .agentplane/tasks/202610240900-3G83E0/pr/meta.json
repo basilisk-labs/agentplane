@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202610240900-3G83E0/restore-frozen-replay-anchor-lock-compatibility",
+  "created_at": "2026-10-24T09:07:23.839Z",
+  "diffstat_sha256": "sha256:5d25953b84dc51c759af91426b7f12fba5158b80e0955eb150421f693880fd43",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610240900-3G83E0",
+  "updated_at": "2026-10-24T09:07:23.839Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
