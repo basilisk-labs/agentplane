@@ -16,13 +16,13 @@ The current exact Vitest 5.0.5 bun.lock causes critical anchor lock tests to rej
 ## Verification
 
 - State: ok
-- Note: Verified: canonical Task Kernel final checks passed.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-10-24T09:07:23.839Z
+- Updated: 2026-10-24T14:13:22.911Z
 - Branch: task/202610240900-3G83E0/restore-frozen-replay-anchor-lock-compatibility
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
