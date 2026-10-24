@@ -6,7 +6,7 @@ Created: 2026-10-24T08:48:08.033Z
 
 - Task: `202610240837-5MMMW5`
 - Title: Repair PR check snapshot validation for 0.7.13
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610240837-5MMMW5/repair-pr-check-snapshot-validation-for-0-7-13`
 - Canonical task record: `.agentplane/tasks/202610240837-5MMMW5/README.md`
 
