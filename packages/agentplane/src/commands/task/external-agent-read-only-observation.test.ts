@@ -95,6 +95,31 @@ describe("canonical read-only observation admission", () => {
     });
   });
 
+  it("does not retire an exchange with a recorded result digest", async () => {
+    const f = await fixture();
+    const issued = await issue(f);
+    await unlink(issued.paths.result);
+    const exchange = (await readExternalAgentExchange(issued.paths.exchange))!;
+    await writeFile(
+      issued.paths.exchange,
+      JSON.stringify({ ...exchange, result_digest: `sha256:${"a".repeat(64)}` }),
+    );
+    const before = await issued.journal();
+    expect(
+      await recoverPendingExternalAgentResult({
+        command: f.command,
+        task_id: f.id,
+        current_decision: decisionAfterDrift(f),
+        accept_result: () => Promise.reject(new Error("No result may be applied")),
+      }),
+    ).toBeNull();
+    expect(await issued.journal()).toEqual(before);
+    expect(await readExternalAgentExchange(issued.paths.exchange)).toMatchObject({
+      status: "issued",
+      result_digest: `sha256:${"a".repeat(64)}`,
+    });
+  });
+
   it("finishes retirement after exchange acknowledgement but before journal CAS", async () => {
     const f = await fixture();
     const issued = await issue(f);
