@@ -1,0 +1,228 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: node node_modules/.bin/vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610240523-F9GFJF/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610240523-F9GFJF Verification Contract check affected_unit_integration (1/4)\n\nCheck: affected_unit_integration\nCommand: node node_modules/.bin/prettier --check packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610240523-F9GFJF/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610240523-F9GFJF Verification Contract check affected_unit_integration (2/4)\n\nCheck: affected_unit_integration\nCommand: bun run lint\nResult: pass\nEvidence: .agentplane/tasks/202610240523-F9GFJF/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610240523-F9GFJF Verification Contract check affected_unit_integration (3/4)\n\nCheck: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610240523-F9GFJF/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610240523-F9GFJF Verification Contract check affected_unit_integration (4/4)\n\nCheck: critical_paths\nCommand: node node_modules/.bin/vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610240523-F9GFJF/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610240523-F9GFJF Verification Contract check critical_paths (1/4)\n\nCheck: critical_paths\nCommand: node node_modules/.bin/prettier --check packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610240523-F9GFJF/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610240523-F9GFJF Verification Contract check critical_paths (2/4)\n\nCheck: critical_paths\nCommand: bun run lint\nResult: pass\nEvidence: .agentplane/tasks/202610240523-F9GFJF/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610240523-F9GFJF Verification Contract check critical_paths (3/4)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610240523-F9GFJF/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610240523-F9GFJF Verification Contract check critical_paths (4/4)\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610240523-F9GFJF/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610240523-F9GFJF Verification Contract check full_regression\n\nCheck: task_outcome\nCommand: node node_modules/.bin/vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610240523-F9GFJF/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610240523-F9GFJF Verification Contract check task_outcome (1/4)\n\nCheck: task_outcome\nCommand: node node_modules/.bin/prettier --check packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610240523-F9GFJF/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610240523-F9GFJF Verification Contract check task_outcome (2/4)\n\nCheck: task_outcome\nCommand: bun run lint\nResult: pass\nEvidence: .agentplane/tasks/202610240523-F9GFJF/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610240523-F9GFJF Verification Contract check task_outcome (3/4)\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610240523-F9GFJF/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610240523-F9GFJF Verification Contract check task_outcome (4/4)",
+  "digest": "sha256:bbbcc1a703a5901ffb0bad37a76923a448c4abeb9a5780e4303b1d64700376f9",
+  "implementation_sha": "bdfbbf16e861b727a60adfb2efcdec059132d738",
+  "input": {
+    "checked_input": {
+      "commands": {
+        "digest": "sha256:2567c1cd81ddaee7a9d4b3ab13a1b0fc65ceb2f4d433e08d88724cc4870ecd5e",
+        "entries": [
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run lint"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "node node_modules/.bin/prettier --check packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "node node_modules/.bin/vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run lint"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "node node_modules/.bin/prettier --check packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "node node_modules/.bin/vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts"
+          },
+          {
+            "check_id": "full_regression",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run lint"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "node node_modules/.bin/prettier --check packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "node node_modules/.bin/vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts"
+          }
+        ]
+      },
+      "context": {
+        "digest": "sha256:99daad1395e800c14511aa93bdd1543575521f4ee89189529a3fb84c4b785e2b",
+        "paths": [
+          ".agentplane/WORKFLOW.md",
+          ".github/ISSUE_TEMPLATE/config.yml",
+          "bun.lock",
+          "depcruise.config.cjs",
+          "eslint.config.cjs",
+          "knip.json",
+          "package.json",
+          "packages/agentplane/package.json",
+          "packages/agentplane/src/cli/run-cli/commands/config.ts",
+          "packages/agentplane/src/runner/config.test.ts",
+          "packages/agentplane/src/runner/config.ts",
+          "packages/agentplane/tsconfig.json",
+          "packages/agentplane/tsup.config.ts",
+          "packages/core/package.json",
+          "packages/core/schemas/config.schema.json",
+          "packages/core/src/config/config.test.ts",
+          "packages/core/src/config/config.ts",
+          "packages/core/tsconfig.json",
+          "packages/core/tsup.config.ts",
+          "packages/recipes/package.json",
+          "packages/recipes/tsconfig.json",
+          "packages/recipes/tsup.config.ts",
+          "packages/spec/examples/config.json",
+          "packages/spec/package.json",
+          "packages/spec/schemas/config.schema.json",
+          "packages/testkit/package.json",
+          "packages/testkit/tsconfig.json",
+          "schemas/config.schema.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package-lock.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package.json",
+          "tsconfig.json",
+          "turbo.json",
+          "vitest.config.ts",
+          "vitest.workspace.ts"
+        ]
+      },
+      "digest": "sha256:5ce8cbf7139ecae0efc86c5ce3b1f96095e8163628b5cd16646e7b098bf205fa",
+      "environment": {
+        "digest": "sha256:9ec5bf2323cd53a84a354760f7a2e04adc570a2f8a0452d4311892dcb83d880b",
+        "runtime": {
+          "architecture": "x64",
+          "bun_major": null,
+          "node_major": "24",
+          "platform": "linux"
+        }
+      },
+      "evidence": {
+        "details_digest": "sha256:97676330cc9f14c03d0068171b0f4fc11d6198b65ab887d9f76806b7b2f8ccc2",
+        "digest": "sha256:ee582d5d748d676395d639e19d21dc1380e44c9681774c87c5533bc13f4484c8",
+        "references": [
+          {
+            "digest": "sha256:da3990a50b0a80999066ba1f7808da3835e6a30630fdecccd89290415858c7e3",
+            "fragment": "check-1",
+            "path": ".agentplane/tasks/202610240523-F9GFJF/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610240523-F9GFJF/supervision/declared-checks.json#check-1",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:da3990a50b0a80999066ba1f7808da3835e6a30630fdecccd89290415858c7e3",
+            "fragment": "check-2",
+            "path": ".agentplane/tasks/202610240523-F9GFJF/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610240523-F9GFJF/supervision/declared-checks.json#check-2",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:da3990a50b0a80999066ba1f7808da3835e6a30630fdecccd89290415858c7e3",
+            "fragment": "check-3",
+            "path": ".agentplane/tasks/202610240523-F9GFJF/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610240523-F9GFJF/supervision/declared-checks.json#check-3",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:da3990a50b0a80999066ba1f7808da3835e6a30630fdecccd89290415858c7e3",
+            "fragment": "check-4",
+            "path": ".agentplane/tasks/202610240523-F9GFJF/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610240523-F9GFJF/supervision/declared-checks.json#check-4",
+            "source": "filesystem"
+          }
+        ]
+      },
+      "implementation": {
+        "base_sha": "14d3439a3daf5a9c17625e4f4667b839e33962d6",
+        "digest": "sha256:f1bce6c25b77aa32e7e4b4171221d09d5f4447e29f59dc1d5ed8a0610e547614",
+        "strategy": "branch_diff",
+        "target_sha": "bdfbbf16e861b727a60adfb2efcdec059132d738"
+      }
+    },
+    "concurrency": {
+      "digest": "sha256:0b040a1eeaf746567dbc968e557da36d901605bb55c985f562dd3d88b1e9c05e",
+      "execution": {
+        "authoritative_task_source": "task_worktree",
+        "base_ref": "main",
+        "base_sha": "14d3439a3daf5a9c17625e4f4667b839e33962d6",
+        "digest": "sha256:ca69ab3f8d6b7ee391298db4c0d30bf34df551e78ca1921857afe113543d430a",
+        "primary_task_id": "202610240523-F9GFJF",
+        "reason_codes": [
+          "agent_preferred_branch_pr",
+          "repository_branch_pr_floor"
+        ],
+        "repository_mode": "branch_pr",
+        "requested_mode": "branch_pr",
+        "route_source": "execution_contract",
+        "selected_mode": "branch_pr",
+        "task_ids": [
+          "202610240523-F9GFJF"
+        ]
+      },
+      "task": {
+        "capability": {
+          "digest": "sha256:525687da631d274cd77fb28bb9ddc57a8f671d957b89b046be11ff8b36b4d2f3"
+        },
+        "checks": {
+          "digest": "sha256:4bcbc122a535b29d8dbf0346d338c423f7e65bcb2855f9c667afbf28ab155c1f",
+          "required_check_ids": [
+            "affected_unit_integration",
+            "critical_paths",
+            "full_regression",
+            "task_outcome"
+          ],
+          "verification_contract_digest": "sha256:d83ea56dce72f2f92ef9c4c5393b6f608162c16b0ba2b62910b76369436cd218"
+        },
+        "digest": "sha256:275fdc5d4c50d78daa752475b5f9f5f59eafa2d8c87e31dac5b773c103ab2877",
+        "kind": "agentplane.native_task_identity",
+        "plan": {
+          "approval_state": "approved",
+          "approved_digest": "sha256:409f60c162fb38a9e78bff24db7900de9be2bb632a18811d89025c188113e624",
+          "digest": "sha256:409f60c162fb38a9e78bff24db7900de9be2bb632a18811d89025c188113e624",
+          "revision": 2
+        },
+        "policy": {
+          "digest": "sha256:1150ba6caefe9e829c30b3520b9246ed1ec7ebbeedbe788c63cf7989015dbb46"
+        },
+        "schema_version": 1,
+        "task_id": "202610240523-F9GFJF"
+      }
+    },
+    "digest": "sha256:ff9e0589e17d50e2ac2f437303484b823ec73b32de1ea5f58743ed80040d8d3b",
+    "kind": "task_verification_input",
+    "obligations": {
+      "digest": "sha256:a043540e8abad2342990adfe25eae1ebff981940c7ecedbc13457d1382baa337",
+      "required_check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "full_regression",
+        "task_outcome"
+      ],
+      "verification_contract_digest": "sha256:d83ea56dce72f2f92ef9c4c5393b6f608162c16b0ba2b62910b76369436cd218",
+      "verify_steps_digest": "sha256:0346308271e797927ba7e248e691c39dab061fa9d8a9f57136ef00510f451a40"
+    },
+    "schema_version": 5
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: canonical Task Kernel final checks passed.",
+  "recorded_at": "2026-10-24T07:14:16.986Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Align PR lifecycle tests with ancestry-safe artifact refresh commits\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Align PR lifecycle tests with ancestry-safe artifact refresh commits\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:0346308271e797927ba7e248e691c39dab061fa9d8a9f57136ef00510f451a40",
+  "task_id": "202610240523-F9GFJF",
+  "verification_command": "agentplane verify 202610240523-F9GFJF --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

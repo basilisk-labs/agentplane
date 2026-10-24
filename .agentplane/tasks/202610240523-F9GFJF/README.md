@@ -1,10 +1,10 @@
 ---
 id: "202610240523-F9GFJF"
 title: "Align PR lifecycle tests with ancestry-safe artifact refresh commits"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 34
+revision: 36
 origin:
   system: "manual"
 depends_on: []
@@ -373,7 +373,7 @@ sections:
   Findings: ""
 extensions:
   agentplane.kernel_operational_projection:
-    digest: "sha256:a9f63dbae345bb4a5875f92b78bff0f9221a2100b7022b0fe2cc4f4b4f861e36"
+    digest: "sha256:f1f4af7fc684f1ccea1f00418228ce25cbc1ba368b6fcaf33acee9888313962b"
     evidence_refs:
       - "../../../.git/agentplane/kernel/exchanges/202610240523-F9GFJF/0549b2bdc83c46ab603bee19daf9eda5b42d9cdb432ff02e3e6633ff8039ca37/quality-report.json"
     findings:
@@ -386,7 +386,7 @@ extensions:
     review_identity_digest: "sha256:3189127d50421ea891b9440187f238d25921055c92c79ce60b282880efec063e"
     schema_version: 1
     source: "task_kernel"
-    verification_evidence_digest: "sha256:03a99acb66269b1bcfae3e579ca481d6ca2ff4401aa61a211dd4e552f67977db"
+    verification_evidence_digest: "sha256:78319d0e1ce3882c76c2c3b7c4f136d463bd6d498770dfac28452e4157105bf7"
     work_order_id: "sha256:07d8447d5dd1d4a7b38c1a8db833aeee6b9ef1821a6c2347228a3c9b35cb4d41"
   task_execution_context:
     base_ref: "main"
@@ -679,6 +679,15 @@ extensions:
           event_digests:
             - "sha256:340823d4044689e147ec2305d90c2a4c2bd127b2a8834a52997807ad88d43436"
           mutation_id: "final-validation:sha256:90eafb38bae8168382f847ba9aa2d684b879a4355e37ffdfed48c88816fd640b:17"
+        kernel_task_completion_required:sha256:a89894cac004cc7e6eec3b839c5027b2d62b8d2d3656cb7b5821866a6a9ba22a:sha256:d8429f274adb80af80a0e1693549972de580aaf077ab83e582d81b05cd60404d:
+          after_revision: 29
+          aggregate_digest: "sha256:8a1f8eb4963ba932e71c424271a742285809341880956634ab758759f17723df"
+          before_revision: 28
+          command_digest: "sha256:f474a2b9f7ad8ec8a884a35c2a5c8d7601002fcc40f227699e7e2c14f2d654a3"
+          effect_ids: []
+          event_digests:
+            - "sha256:6fef5a3ef2bd60830b19e6e317b50dc0dc26b383a0c433e76b2199733b08d713"
+          mutation_id: "kernel_task_completion_required:sha256:a89894cac004cc7e6eec3b839c5027b2d62b8d2d3656cb7b5821866a6a9ba22a:sha256:d8429f274adb80af80a0e1693549972de580aaf077ab83e582d81b05cd60404d"
         kernel_work_item_claim_required:sha256:1b28785f5963399ca3db643f5cf8c236ede5685c984e582381c7ed6a69390cbc:sha256:629b6961f10968dd401fe6c9347845bd9d728fd457661fa800023fb492355c3b:
           after_revision: 5
           aggregate_digest: "sha256:a0283ee045cb31cee27fa26200ea14bcc80c6602ff3e71b80566c1f2fe31b000"
@@ -922,9 +931,9 @@ extensions:
               id: "align-pr-lifecycle-ancestry-tests"
               optional: false
               required_inputs: []
-      revision: 28
+      revision: 29
       schema_version: 1
-      state: "FINAL_VALIDATION"
+      state: "COMPLETED"
       work_items:
         align-pr-lifecycle-ancestry-tests:
           attempt: 2
@@ -1021,7 +1030,7 @@ extensions:
               toolchain_digest: "sha256:5a3b0e29e27baf58fa8f4697c8a875f35fc209aaa906b14d0f3f20bd67718381"
             observed_at: "2026-10-24T06:32:26.691Z"
             status: "PASSED"
-    digest: "sha256:a89894cac004cc7e6eec3b839c5027b2d62b8d2d3656cb7b5821866a6a9ba22a"
+    digest: "sha256:920d9faeb28aa40c6171222ccd3b95455a5450ced65e28f1c61626d67aa01eb3"
     documents:
       contracts:
         sha256:d93742d473153feced8384ace9ce64804c4fb20b9ebc211cc8a0acad465e178c:
@@ -1303,6 +1312,15 @@ extensions:
         payload_digest: "sha256:e9373e612bfcad8639d58ae3b4bdbac7ff86d82520e9bd4c3ae7504c4c747303"
         task_id: "202610240523-F9GFJF"
         task_revision: 28
+      -
+        command_digest: "sha256:f474a2b9f7ad8ec8a884a35c2a5c8d7601002fcc40f227699e7e2c14f2d654a3"
+        id: "kernel_task_completion_required:sha256:a89894cac004cc7e6eec3b839c5027b2d62b8d2d3656cb7b5821866a6a9ba22a:sha256:d8429f274adb80af80a0e1693549972de580aaf077ab83e582d81b05cd60404d:task_completed"
+        kind: "task_completed"
+        mutation_id: "kernel_task_completion_required:sha256:a89894cac004cc7e6eec3b839c5027b2d62b8d2d3656cb7b5821866a6a9ba22a:sha256:d8429f274adb80af80a0e1693549972de580aaf077ab83e582d81b05cd60404d"
+        occurred_at: "2026-10-24T07:16:33.485Z"
+        payload_digest: "sha256:a40d98bc44b91d2d66dd217157b800b4097340784a25fae26daad1fe17bc0430"
+        task_id: "202610240523-F9GFJF"
+        task_revision: 29
     kind: "canonical_task"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
