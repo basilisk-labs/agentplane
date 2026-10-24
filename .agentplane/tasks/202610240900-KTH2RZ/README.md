@@ -1,10 +1,11 @@
 ---
 id: "202610240900-KTH2RZ"
 title: "Repair release chunk51 CLI test fixtures for canonical state and validation exits"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -41,6 +42,22 @@ quality_review:
     - "The synthetic completion fixture narrowly stubs reconciliation for its noncanonical plan, restores the original implementation in finally, and still asserts native DONE persistence and committed README."
     - "The cumulative implementation changes only the two approved test files; production reconciliation and policy are unchanged."
     - "The authoritative attempt-2 native validation passed focused tests 26/26 and ci:local:full including docs-schema, core, CLI, Windows, and coverage. The original hotspots baseline is retained."
+token_usage:
+  agent_runs: 2
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:f47c4e5bbc4fb1e258b44b9dd82e76b94274a817b366829897d8ee26b9ec7d4b"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-24T13:31:18.754Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -215,9 +232,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "6322346c32eab81ee8a3e1017b793a7f06aae8b7"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "d54ac2990f83fdcb7b9c122158f6224ff5f1c39a"
+  message: "✅ KTH2RZ task: repair release chunk51 CLI test fixtures for canonical state and..."
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -225,9 +245,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-24T13:31:18.754Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "d54ac2990f83fdcb7b9c122158f6224ff5f1c39a"
 doc_version: 3
-doc_updated_at: "2026-10-24T13:23:44.413Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-24T13:31:18.754Z"
+doc_updated_by: "CODER"
 description: "Align task-new exit assertions with current validation contract and isolate synthetic completion persistence from canonical preflight."
 sections:
   Summary: |-
@@ -341,6 +369,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:d7305e388ba605168f059b5cd5f5b7a2d7614fbad46829814dfec6eef1620d5b"
     work_order_id: "sha256:7577634df9e1be516f80cfe69e81dc97a677f72ff6dcdaec92b16f348d1eac52"
+  implementation_commit:
+    hash: "6322346c32eab81ee8a3e1017b793a7f06aae8b7"
+    message: "🚧 KTH2RZ task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "5a1c1dda6693966e934193a8ec05a3604648cf3e"
@@ -1082,3 +1113,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/2` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:f47c4e5bbc4fb1e258b44b9dd82e76b94274a817b366829897d8ee26b9ec7d4b`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-24T13:31:18.754Z`
