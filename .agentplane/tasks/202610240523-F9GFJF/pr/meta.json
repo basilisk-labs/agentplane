@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202610240523-F9GFJF/align-pr-lifecycle-tests-with-ancestry-safe-arti",
+  "created_at": "2026-10-24T05:30:41.631Z",
+  "diffstat_sha256": "sha256:014f4baf26bf66b0a7117d5bd35161d4d57a22d295f22dcb2171887a988c698b",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610240523-F9GFJF",
+  "updated_at": "2026-10-24T05:30:41.631Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
