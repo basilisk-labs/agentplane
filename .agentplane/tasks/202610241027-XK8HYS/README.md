@@ -1,10 +1,11 @@
 ---
 id: "202610241027-XK8HYS"
 title: "Align branch work-start integration fixtures with frozen base and framework ownership"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -41,6 +42,22 @@ quality_review:
     - "The consumer worktree test now asserts that foreign framework bin/dist assets are absent."
     - "Framework runtime tests copy exact current package manifests for owned packages, including exports, and retain runnable bootstrap/runtime assertions. Only the two approved test files changed."
     - "AgentPlane native validation passed the two-file Vitest suite (16/16) and Prettier at the committed implementation head."
+token_usage:
+  agent_runs: 1
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:cce68147b5fecd3dd70762551dfb35c480f4fd959821621768aa957b98a9035f"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-10-24T15:04:51.368Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -219,9 +236,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "a7934d33da69bfcce667701172bdddc6f79a03cf"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "e924281cf095dbe1a6128bea3556722bc4a94512"
+  message: "✅ XK8HYS task: align branch work-start integration fixtures with frozen base and..."
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -229,9 +249,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-24T15:04:51.368Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "e924281cf095dbe1a6128bea3556722bc4a94512"
 doc_version: 3
-doc_updated_at: "2026-10-24T14:56:52.860Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-24T15:04:51.368Z"
+doc_updated_by: "CODER"
 description: "Correct three pre-bump release CI assertions: an authenticated frozen task base remains valid after upstream advances; a consumer worktree receives no framework runtime; framework bootstrap fixtures declare real package ownership before expecting local runtime assets."
 sections:
   Summary: |-
@@ -362,6 +390,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:eafeee4995ced5226c0d713ebcc3af6691a3795b778df8ab3bd7503a44327311"
     work_order_id: "sha256:298cf6764e43e31d74acda1ed86a1873c1d665e54c426f667fb86a7c091fc7e9"
+  implementation_commit:
+    hash: "a7934d33da69bfcce667701172bdddc6f79a03cf"
+    message: "🚧 XK8HYS task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "5a1c1dda6693966e934193a8ec05a3604648cf3e"
@@ -930,3 +961,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/1` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:cce68147b5fecd3dd70762551dfb35c480f4fd959821621768aa957b98a9035f`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-10-24T15:04:51.368Z`
