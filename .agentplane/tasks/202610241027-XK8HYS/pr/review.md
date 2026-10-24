@@ -6,7 +6,7 @@ Created: 2026-10-24T10:40:28.035Z
 
 - Task: `202610241027-XK8HYS`
 - Title: Align branch work-start integration fixtures with frozen base and framework ownership
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610241027-XK8HYS/align-branch-work-start-integration-fixtures-wit`
 - Canonical task record: `.agentplane/tasks/202610241027-XK8HYS/README.md`
 
