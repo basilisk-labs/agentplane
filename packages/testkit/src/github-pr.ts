@@ -71,6 +71,10 @@ export async function installFakeGhPrLookup(opts: {
       "}",
       ...(opts.protectedBranch
         ? [
+            `if (route === ${JSON.stringify(`repos/example/repo/branches/${opts.protectedBranch}`)}) {`,
+            `  console.log(JSON.stringify(${JSON.stringify({ name: opts.protectedBranch, protected: true })}));`,
+            "  process.exit(0);",
+            "}",
             `if (route === ${JSON.stringify(
               `repos/example/repo/branches/${opts.protectedBranch}/protection`,
             )}) {`,
