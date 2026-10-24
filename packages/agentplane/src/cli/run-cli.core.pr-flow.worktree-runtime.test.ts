@@ -125,6 +125,14 @@ async function seedFrameworkCheckoutMarker(root: string): Promise<void> {
   const cliPath = path.join(root, "packages", "agentplane", "src", "cli.ts");
   await mkdir(path.dirname(cliPath), { recursive: true });
   await writeFile(cliPath, "export const cli = true;\n", "utf8");
+  for (const directory of ["agentplane", "core", "recipes"]) {
+    const packageRoot = path.join(root, "packages", directory);
+    await mkdir(packageRoot, { recursive: true });
+    await cp(
+      path.join(workspaceRoot, "packages", directory, "package.json"),
+      path.join(packageRoot, "package.json"),
+    );
+  }
 }
 
 describe(
@@ -228,13 +236,13 @@ describe(
           await pathExists(
             path.join(worktreePath, "packages", "agentplane", "bin", "agentplane.js"),
           ),
-        ).toBe(true);
+        ).toBe(false);
         expect(
           await pathExists(path.join(worktreePath, "packages", "agentplane", "dist", "cli.js")),
-        ).toBe(true);
+        ).toBe(false);
         expect(
           await pathExists(path.join(worktreePath, "packages", "core", "dist", "index.js")),
-        ).toBe(true);
+        ).toBe(false);
 
         const baseShowIo = captureStdIO();
         try {
@@ -275,6 +283,7 @@ describe(
         await seedRepoLocalDistArtifacts(root);
         await seedRepoLocalNodeModules(root);
         await seedRepoLocalCorePackage(root);
+        await seedFrameworkCheckoutMarker(root);
         await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
         const execFileAsync = promisify(execFile);
         await execFileAsync("git", ["add", "."], { cwd: root });
