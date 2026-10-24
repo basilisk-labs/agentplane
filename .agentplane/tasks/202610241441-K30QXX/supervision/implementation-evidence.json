@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check c5031f03bee33d4975b151f6240c7533da903b52..7d15ad04fd2c8de526fcfc424ef80e6045982d09",
+      "command": "git diff --check b9ece81cb0f4e8d43dd4cbbb5359bee76543ee42..326b574d690bb11481156ffa413b6cdb37753ed3",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,7 +13,7 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB c5031f03bee33d4975b151f6240c7533da903b52..7d15ad04fd2c8de526fcfc424ef80e6045982d09",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB b9ece81cb0f4e8d43dd4cbbb5359bee76543ee42..326b574d690bb11481156ffa413b6cdb37753ed3",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
@@ -21,7 +21,8 @@
         "M\t.agentplane/tasks/202610241441-K30QXX/pr/github-body.md",
         "M\t.agentplane/tasks/202610241441-K30QXX/pr/meta.json",
         "M\t.agentplane/tasks/202610241441-K30QXX/pr/review.md",
-        "M\tpackages/agentplane/src/commands/task/external-agent-read-only-observation.test.ts"
+        "M\tpackages/agentplane/src/commands/task/external-agent-read-only-observation.test.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
       ]
     },
     {
@@ -31,8 +32,8 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "c5031f03bee33d4975b151f6240c7533da903b52",
-  "implementation_commit": "7d15ad04fd2c8de526fcfc424ef80e6045982d09",
+  "execution_base_commit": "b9ece81cb0f4e8d43dd4cbbb5359bee76543ee42",
+  "implementation_commit": "326b574d690bb11481156ffa413b6cdb37753ed3",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
     "baseline": [],
