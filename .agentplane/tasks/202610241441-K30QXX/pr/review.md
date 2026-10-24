@@ -12,8 +12,8 @@ Created: 2026-10-24T15:43:59.353Z
 
 ## Verification
 
-- State: ok
-- Note: Verified: canonical Task Kernel final checks passed.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run lint:core
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-10-24T15:43:59.353Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-10-24T15:43:59.353Z
+- Updated: 2026-10-24T17:29:04.845Z
 - Branch: task/202610241441-K30QXX/retire-drifted-unanswered-read-only-supervisor-i
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
