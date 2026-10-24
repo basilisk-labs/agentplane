@@ -1,2 +1,2 @@
- .../cli/run-cli.core.pr-flow.pr-lifecycle.test.ts  | 51 +++++++++++++++++-----
- 1 file changed, 41 insertions(+), 10 deletions(-)
+ .../cli/run-cli.core.pr-flow.pr-lifecycle.test.ts  | 60 ++++++++++++----------
+ 1 file changed, 34 insertions(+), 26 deletions(-)
