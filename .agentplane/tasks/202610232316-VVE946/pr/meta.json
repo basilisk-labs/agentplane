@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:5e130d38aaf03001708827d5e4ce047a84f9a125477812eccdab4c73428c5b25",
   "pr_number": 6911,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6911",
+  "pre_merge_closure": {
+    "basis_commit": "9419a9de670e45e201d6ba1bd1762208fa4565ed",
+    "branch": "task/202610232316-VVE946/align-conflict-fake-github-providers-with-branch",
+    "pr_number": 6911,
+    "recorded_at": "2026-10-24T01:02:50.607Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",

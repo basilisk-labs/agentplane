@@ -1,10 +1,11 @@
 ---
 id: "202610232316-VVE946"
 title: "Align conflict fake GitHub providers with branch protection observation"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -43,6 +44,22 @@ quality_review:
     - "The resolver regression now checks both provider calls in order. Existing fail-closed tests and production code are unchanged."
     - "AgentPlane-owned verification passed: three files and 45 tests; Prettier passed; lint passed with zero errors and five unrelated warnings."
     - "Implementation commit f2fb4abd0fbe034a13cc9603e6794228cd2e33fc changes only the three approved test paths, apart from native task artifacts."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:23e1421d5d728f823e626b2a383fe5ad4beda6cd8605fae450b1ec68cc1f4c56"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-10-24T01:02:50.462Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -242,9 +259,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "f2fb4abd0fbe034a13cc9603e6794228cd2e33fc"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "9419a9de670e45e201d6ba1bd1762208fa4565ed"
+  message: "✅ VVE946 task: persist canonical completion"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -252,9 +272,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-24T01:02:50.462Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "9419a9de670e45e201d6ba1bd1762208fa4565ed"
 doc_version: 3
-doc_updated_at: "2026-10-24T00:59:14.070Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-24T01:02:50.462Z"
+doc_updated_by: "CODER"
 description: "Fix release 0.7.13 pre-bump failures in PR conflict publication and rework fixtures. Fake GitHub providers must answer the exact branches/main observation before branches/main/protection while still rejecting unknown endpoints. Keep production fail-closed protection logic unchanged. Audit other protection fixtures and strengthen the focused resolver call-order assertion."
 sections:
   Summary: |-
@@ -406,6 +434,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:6dc73d438a476faabcbabfb44b1527c1cb19b6585b7abc29172226ec22131cc6"
     work_order_id: "sha256:012aa83f5f0e1ff8f8cdef45770d84acc4e524b92a9653fad57bf1ed6114ad07"
+  implementation_commit:
+    hash: "f2fb4abd0fbe034a13cc9603e6794228cd2e33fc"
+    message: "🚧 VVE946 task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "e769ec11a233efc57329f9c15574216f4f057d03"
@@ -1029,3 +1060,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:23e1421d5d728f823e626b2a383fe5ad4beda6cd8605fae450b1ec68cc1f4c56`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-10-24T01:02:50.462Z`
