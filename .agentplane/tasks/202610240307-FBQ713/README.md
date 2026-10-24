@@ -1,10 +1,11 @@
 ---
 id: "202610240307-FBQ713"
 title: "Repair shared fake GitHub branch metadata for protected-base integration"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -41,6 +42,22 @@ quality_review:
     - "Commit 1fac91e7f907a32ab7eaefbe51d03da4660dcfdd changes only the shared fake provider and the protected-main integration test outside native task records."
     - "The fake returns matching name and protected=true for the exact branch metadata route, retains the protection detail route, and leaves unprotected and unexpected-command behavior unchanged."
     - "The integration test asserts metadata before protection and still verifies E_HANDOFF without main mutation. Native declared checks passed: 8/8 Vitest, Prettier, and lint with zero errors. Independent read-only review found no actionable issue."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:c29dded2eed7ae6a3ebcc512566b3ffdfc8bb95a0dcf71a0a956b56941380225"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-10-24T04:05:52.216Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -235,9 +252,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "1fac91e7f907a32ab7eaefbe51d03da4660dcfdd"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "5b367f222e4f41595bb03cc098a2669ca3a5f1d6"
+  message: "✅ FBQ713 task: persist canonical completion"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -245,9 +265,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-24T04:05:52.216Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "5b367f222e4f41595bb03cc098a2669ca3a5f1d6"
 doc_version: 3
-doc_updated_at: "2026-10-24T04:02:42.530Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-24T04:05:52.216Z"
+doc_updated_by: "CODER"
 description: "The protected-base integration fixture installs installFakeGhPrLookup from packages/testkit/src/github-pr.ts. Production correctly reads repos/example/repo/branches/main before its protection detail; the fake currently returns [] for the first request, causing run-cli.core.pr-flow.integrate-validation.test.ts to fail in 0.7.13 release CI. Add the exact protected-branch metadata response ahead of the protection response, preserve unknown-command rejection and existing unprotected behavior, and assert the two-call protection observation in the focused integration test. Audit other protection fakes for actual call sites; leave unused or separate-contract helpers unchanged. Do not change production protection policy. Validate targeted Vitest, formatting, lint, and full local CI."
 sections:
   Summary: |-
@@ -395,6 +423,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:497bf691f261a2caf4c8c663f9c1419953291d0a2074d6421c610fca5a3e6557"
     work_order_id: "sha256:14bb2d80babfcdca71c81a11fb9c069368abec459fbb7d44b87dda4e7fb66824"
+  implementation_commit:
+    hash: "1fac91e7f907a32ab7eaefbe51d03da4660dcfdd"
+    message: "🚧 FBQ713 task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "f60646cd285fda515d2d6f62d5578242ce213ff6"
@@ -1003,3 +1034,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:c29dded2eed7ae6a3ebcc512566b3ffdfc8bb95a0dcf71a0a956b56941380225`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-10-24T04:05:52.216Z`
