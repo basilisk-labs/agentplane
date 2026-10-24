@@ -6,7 +6,7 @@ Created: 2026-10-24T09:07:23.839Z
 
 - Task: `202610240900-3G83E0`
 - Title: Restore frozen replay anchor lock compatibility for Vitest 5.0.5 on release 0.7.13
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610240900-3G83E0/restore-frozen-replay-anchor-lock-compatibility`
 - Canonical task record: `.agentplane/tasks/202610240900-3G83E0/README.md`
 
