@@ -310,6 +310,7 @@ async function publicCompletionRegression() {
     kernelProviderEffects,
     verifyLog,
     kernelProjectionRecovery,
+    reconcileCheck,
   ] = await Promise.all([
     import("../commands/task/kernel-runtime-context.js"),
     import("../commands/task/kernel-final-validation.js"),
@@ -317,6 +318,7 @@ async function publicCompletionRegression() {
     import("../commands/task/kernel-provider-effect-coordinator.js"),
     import("../commands/shared/pr-meta/verify-log.js"),
     import("../commands/task/kernel-operational-projection-recovery.js"),
+    import("../commands/shared/reconcile-check.js"),
   ]);
   const originalRecoverKernelOperationalProjection =
     kernelProjectionRecovery.recoverKernelOperationalProjection;
@@ -330,6 +332,12 @@ async function publicCompletionRegression() {
   const originalEnsureKernelOperationalProjectionEvidence =
     kernelProjection.ensureKernelOperationalProjectionEvidence;
   const originalDecideCanonicalWorkflowEffect = kernelProviderEffects.decideCanonicalWorkflowEffect;
+  const originalEnsureReconciledBeforeMutation = reconcileCheck.ensureReconciledBeforeMutation;
+  // The synthetic completion record is deliberately not a persisted canonical plan.
+  // Keep this regression focused on the actual completion write and Git commit.
+  const reconcileSpy = vi
+    .spyOn(reconcileCheck, "ensureReconciledBeforeMutation")
+    .mockResolvedValue(undefined);
   const runtimeSpy = vi
     .spyOn(kernelRuntime, "createKernelRuntime")
     .mockResolvedValue(runtime as never);
@@ -368,6 +376,7 @@ async function publicCompletionRegression() {
     });
   } finally {
     io.restore();
+    reconcileSpy.mockImplementation(originalEnsureReconciledBeforeMutation);
     recoverySpy.mockImplementation(originalRecoverKernelOperationalProjection);
     workflowSpy.mockImplementation(originalDecideCanonicalWorkflowEffect);
     projectionSpy.mockImplementation(originalEnsureKernelOperationalProjectionEvidence);
