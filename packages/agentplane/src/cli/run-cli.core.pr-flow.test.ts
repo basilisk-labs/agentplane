@@ -733,7 +733,7 @@ describe("runCli", { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS }, () =>
   );
 
   it(
-    "work start rejects a base branch that is behind its upstream tracking ref",
+    "work start keeps its admitted base commit when the upstream tracking ref advances",
     async () => {
       const root = await mkGitRepoRootWithBranch("main");
       const config = defaultConfig();
@@ -745,6 +745,10 @@ describe("runCli", { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS }, () =>
       const execFileAsync = promisify(execFile);
       await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+      const { stdout: admittedShaOut } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+        cwd: root,
+      });
+      const admittedSha = admittedShaOut.trim();
 
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
       await execFileAsync("git", ["remote", "add", "origin", "."], { cwd: root });
@@ -775,9 +779,9 @@ describe("runCli", { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS }, () =>
           "task",
           "new",
           "--title",
-          "Stale base work start",
+          "Frozen base work start",
           "--description",
-          "Branch_pr work start should reject stale base branches before creating task branches.",
+          "Branch_pr work start should retain its admitted base commit after upstream advances.",
           "--priority",
           "med",
           "--owner",
@@ -803,24 +807,22 @@ describe("runCli", { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS }, () =>
           "--agent",
           "CODER",
           "--slug",
-          "stale-base",
+          "frozen-base",
           "--worktree",
           "--root",
           root,
         ]);
-        expect(code).toBe(5);
-        expect(io.stderr).toContain(
-          "Base branch main does not exactly match its upstream origin/main: behind by 1 commit",
-        );
-        expect(io.stderr).toContain("Reconcile the base branch with its upstream");
+        expect(code).toBe(0);
       } finally {
         io.restore();
       }
 
-      expect(
-        await pathExists(path.join(root, ".agentplane", "worktrees", `${taskId}-stale-base`)),
-      ).toBe(false);
-      expect(await gitBranchExists(root, `task/${taskId}/stale-base`)).toBe(false);
+      const worktreePath = path.join(root, ".agentplane", "worktrees", `${taskId}-frozen-base`);
+      const { stdout: worktreeShaOut } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+        cwd: worktreePath,
+      });
+      expect(worktreeShaOut.trim()).toBe(admittedSha);
+      expect(await gitBranchExists(root, `task/${taskId}/frozen-base`)).toBe(true);
     },
     WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS,
   );
