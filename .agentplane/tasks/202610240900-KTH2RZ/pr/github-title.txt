@@ -1,1 +1,1 @@
-🚧 KTH2RZ task: Repair release chunk51 CLI test fixtures for canonical state and validation exits [202610240900-KTH2RZ]
+✅ KTH2RZ task: Repair release chunk51 CLI test fixtures for canonical state and validation exits [202610240900-KTH2RZ]
