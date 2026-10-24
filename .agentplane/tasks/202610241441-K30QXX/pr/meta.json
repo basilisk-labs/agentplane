@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:a15504cac57d3d7896b853a02ec07c522ed801404a547590876005cd1f274aa3",
   "pr_number": 6919,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6919",
+  "pre_merge_closure": {
+    "basis_commit": "e16f26bba32787813dcae89a42109927d2783b42",
+    "branch": "task/202610241441-K30QXX/retire-drifted-unanswered-read-only-supervisor-i",
+    "pr_number": 6919,
+    "recorded_at": "2026-10-24T17:33:29.926Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",

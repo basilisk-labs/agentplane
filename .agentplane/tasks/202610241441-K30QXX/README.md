@@ -1,10 +1,11 @@
 ---
 id: "202610241441-K30QXX"
 title: "Retire drifted unanswered read-only supervisor intent with valid verification"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -41,6 +42,22 @@ quality_review:
     - "The new branch requires an unresolved intent, changed canonical precondition fingerprint, read-only task_worktree_resolution authority, prepared or issued exchange, null retained result and digest, absent result file, and exact historical exchange/work-order/operation identity before retirement."
     - "The exchange is marked retired before the journal compare-and-swap, so interruption after acknowledgement is reconciled on replay; the journal then records a failed historical operation and native --replacement is required."
     - "Focused regressions cover running and effect_in_doubt journals, prepared and issued exchanges, unchanged boundary, returned result, mutation-capable authority, and interrupted retirement replay. AgentPlane observed focused 35/35, lint:core, and ci:local:full passing."
+token_usage:
+  agent_runs: 3
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:f008e8df419534fc6ac69eeef634dff18c947e6b5736eaf5adb2872ea36a3680"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-24T17:33:29.696Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -216,9 +233,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "d9fb6b3cf02030fdc56337fddc8b5dbe8f5491c7"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "e16f26bba32787813dcae89a42109927d2783b42"
+  message: "📝 K30QXX task: record PR link"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -226,9 +246,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-24T17:33:29.696Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "e16f26bba32787813dcae89a42109927d2783b42"
 doc_version: 3
-doc_updated_at: "2026-10-24T17:24:55.807Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-24T17:33:29.696Z"
+doc_updated_by: "CODER"
 description: "Recover a stale issued or prepared read-only task-worktree observation after task-state drift only when exact supervisor intent identity matches and no result exists. Preserve current-boundary, result-present and mutation-capable behavior. Reuse the independently reviewed two-file implementation from blocked task 202610241410-R84RC3 under new native worktree authority; its mandatory lint:ci check does not exist. Native plan must use valid focused tests, lint:core and ci:local:full."
 sections:
   Summary: |-
@@ -352,6 +380,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:ad922eb8d8bdb97f3322f1d9bb79839578d3f90515a2bb768e21603c9143a931"
     work_order_id: "sha256:77900576cd0ec503aa6f3e697412a4294c31f373ac32940434bbdd3bb0e4874f"
+  implementation_commit:
+    hash: "d9fb6b3cf02030fdc56337fddc8b5dbe8f5491c7"
+    message: "🚧 K30QXX task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "4346a00204229a1a919f1a4879cd7455dae9e301"
@@ -1059,3 +1090,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/3` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:f008e8df419534fc6ac69eeef634dff18c947e6b5736eaf5adb2872ea36a3680`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-24T17:33:29.696Z`
