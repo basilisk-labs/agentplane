@@ -1,1 +1,1 @@
-🚧 3G83E0 task: Restore frozen replay anchor lock compatibility for Vitest 5.0.5 on release 0.7.13 [202610240900-3G83E0]
+✅ 3G83E0 task: Restore frozen replay anchor lock compatibility for Vitest 5.0.5 on release 0.7.13 [202610240900-3G83E0]
