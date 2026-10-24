@@ -1,1 +1,1 @@
-🚧 F9GFJF task: Align PR lifecycle tests with ancestry-safe artifact refresh commits [202610240523-F9GFJF]
+✅ F9GFJF task: Align PR lifecycle tests with ancestry-safe artifact refresh commits [202610240523-F9GFJF]
