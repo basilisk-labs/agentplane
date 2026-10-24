@@ -1,10 +1,11 @@
 ---
 id: "202610240900-3G83E0"
 title: "Restore frozen replay anchor lock compatibility for Vitest 5.0.5 on release 0.7.13"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -44,6 +45,22 @@ quality_review:
     - "Commit 62d9064b8231cc950668a6e59575b0c07f8ab595 changes only the two approved implementation paths; the root reviewer examined the exact diff before commit and found no actionable issue."
     - "Historical subject subset hash f69e5fc87f34b7c04e8a4ee1701b541e064f22138366b77f011040a71e644051 is preserved; current driver subset f29f26c2c4e2cb0e6f7df318c263909eb538129db59d129238f111bc38ec7c7a matches bun.lock; the projection explicitly restores historical absence/presence and retains whole-lock equality."
     - "Native validation status passed: focused critical lock test 34/34 exit 0 and ci:local:full exit 0 across docs-schema, core, cli, platform-critical, and guard coverage."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:85776713db7f53b81892d8f1b761fbad45fc11d1b86983ad7a18433109fe16c7"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-10-24T14:15:32.499Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -249,9 +266,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "62d9064b8231cc950668a6e59575b0c07f8ab595"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "1d78c003a9b84b774b6cfb4d09daa20bbca35997"
+  message: "✅ 3G83E0 task: restore frozen replay anchor lock compatibility for Vitest 5.0.5 on..."
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -259,9 +279,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-24T14:15:32.499Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "1d78c003a9b84b774b6cfb4d09daa20bbca35997"
 doc_version: 3
-doc_updated_at: "2026-10-24T14:09:29.100Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-24T14:15:32.499Z"
+doc_updated_by: "CODER"
 description: "The current exact Vitest 5.0.5 bun.lock causes critical anchor lock tests to reject the otherwise approved release driver graph. Preserve the historical subject lock, pin the exact reviewed current Vitest package graph including additions and removals, reject any tampering or unrelated package changes, and verify focused critical tests plus native CI. Do not broaden an allowlist or change anchor identity."
 sections:
   Summary: |-
@@ -385,6 +413,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:8b2e73952d220f310bb6dc5ac84216d596e767185773e50e392a7bb7ce2c9f87"
     work_order_id: "sha256:ca5feca2d9f2eaa8139b82872d1b0aa55479e9634752144eb543f617c068dd9f"
+  implementation_commit:
+    hash: "62d9064b8231cc950668a6e59575b0c07f8ab595"
+    message: "🚧 3G83E0 task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "5a1c1dda6693966e934193a8ec05a3604648cf3e"
@@ -977,3 +1008,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:85776713db7f53b81892d8f1b761fbad45fc11d1b86983ad7a18433109fe16c7`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-10-24T14:15:32.499Z`

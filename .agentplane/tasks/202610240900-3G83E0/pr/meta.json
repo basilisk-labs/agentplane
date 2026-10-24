@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:5d25953b84dc51c759af91426b7f12fba5158b80e0955eb150421f693880fd43",
   "pr_number": 6916,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6916",
+  "pre_merge_closure": {
+    "basis_commit": "1d78c003a9b84b774b6cfb4d09daa20bbca35997",
+    "branch": "task/202610240900-3G83E0/restore-frozen-replay-anchor-lock-compatibility",
+    "pr_number": 6916,
+    "recorded_at": "2026-10-24T14:15:33.087Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
