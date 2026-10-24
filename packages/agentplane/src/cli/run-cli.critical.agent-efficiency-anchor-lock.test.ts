@@ -50,22 +50,24 @@ async function lockFixture() {
     approved.workspaces[""].devDependencies[name] = actual.workspaces[""].devDependencies[name];
   }
   for (const [name, value] of Object.entries(actual.packages)) {
-    if (
-      name === "@typescript/native" ||
-      name.startsWith("@typescript/typescript-") ||
-      name === "vitest" ||
-      [
-        "coverage-v8",
-        "expect",
-        "mocker",
-        "pretty-format",
-        "runner",
-        "snapshot",
-        "spy",
-        "utils",
-      ].some((suffix) => name === `@vitest/${suffix}`)
-    )
+    if (name === "@typescript/native" || name.startsWith("@typescript/typescript-"))
       approved.packages[name] = value;
+  }
+  for (const name of [
+    "vitest",
+    "@vitest/coverage-v8",
+    "@vitest/expect",
+    "@vitest/istanbul-lib-coverage",
+    "@vitest/istanbul-lib-report",
+    "@vitest/mocker",
+    "@vitest/pretty-format",
+    "@vitest/runner",
+    "@vitest/snapshot",
+    "@vitest/spy",
+    "@vitest/utils",
+  ]) {
+    if (actual.packages[name] === undefined) delete approved.packages[name];
+    else approved.packages[name] = actual.packages[name];
   }
   for (const relative of ["packages/agentplane", "packages/core", "packages/recipes"])
     approved.workspaces[relative].version = "0.7.13";
@@ -140,6 +142,18 @@ describeCritical("critical: frozen replay security lock projection", () => {
       (lock: Lock) => (lock.packages["@vitest/extra"] = ["@vitest/extra@4.1.11", "", {}]),
     ],
     ["missing package", (lock: Lock) => delete lock.packages["@vitest/spy"]],
+    [
+      "restored removed package",
+      (lock: Lock) => (lock.packages["@vitest/expect"] = ["@vitest/expect@4.1.9", "", {}]),
+    ],
+    [
+      "new coverage package integrity",
+      (lock: Lock) => (lock.packages["@vitest/istanbul-lib-coverage"][3] = "sha512-tampered"),
+    ],
+    [
+      "missing new report package",
+      (lock: Lock) => delete lock.packages["@vitest/istanbul-lib-report"],
+    ],
   ] as const)("rejects a changed %s", async (_label, mutate) => {
     const { subject, driver, assertAnchorLockCompatible, parseReplayJsonc } = await lockFixture();
     const changed = parseReplayJsonc(driver.toString("utf8"));
