@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:ea702430e296006f1d95420078571227a54b1b8fe2e19c0c9200e8286fbfbfc3",
   "pr_number": 6912,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6912",
+  "pre_merge_closure": {
+    "basis_commit": "5b367f222e4f41595bb03cc098a2669ca3a5f1d6",
+    "branch": "task/202610240307-FBQ713/repair-shared-fake-github-branch-metadata-for-pr",
+    "pr_number": 6912,
+    "recorded_at": "2026-10-24T04:05:52.409Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
