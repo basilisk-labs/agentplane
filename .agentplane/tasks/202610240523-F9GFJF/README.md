@@ -1,10 +1,11 @@
 ---
 id: "202610240523-F9GFJF"
 title: "Align PR lifecycle tests with ancestry-safe artifact refresh commits"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 36
+revision: 37
 origin:
   system: "manual"
 depends_on: []
@@ -41,6 +42,22 @@ quality_review:
     - "The changed test file is 987 lines, below the 1000-line baseline threshold; hotspots:check passed with the original eight oversized entries and total 8872 lines."
     - "The local gitOutput helper only consolidates equivalent Git reads. Exact parent SHA identity, two subjects, two-commit count, artifact/source placement, and clean status remain asserted; PR-update case is unchanged."
     - "Native Vitest 10/10, Prettier, and lint all passed on commit bdfbbf16e861b727a60adfb2efcdec059132d738. Independent correction review passed."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:93046a66d69b5631def7d4e525363cc86359630c2089709996fb4ad4a98ce083"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-10-24T07:18:00.579Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -226,9 +243,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "bdfbbf16e861b727a60adfb2efcdec059132d738"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "2b7e0569e203875e2e5096f2575038560b8d48f1"
+  message: "✅ F9GFJF task: persist canonical completion"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -236,9 +256,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-24T07:18:00.579Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "2b7e0569e203875e2e5096f2575038560b8d48f1"
 doc_version: 3
-doc_updated_at: "2026-10-24T07:14:19.163Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-24T07:18:00.579Z"
+doc_updated_by: "CODER"
 description: "In 0.7.13 release CI retry8, run-cli.core.pr-flow.pr-lifecycle.test.ts has two stale HEAD assertions after pr open and pr update. Production pr/internal/auto-commit.ts intentionally preserves the existing implementation HEAD and creates a separate task artifact refresh commit because publication cannot be disproved from local refs or commit subject. Update only the affected test assertions, titles and commit/file expectations to prove ancestry-safe behavior: PR open keeps source change in parent and task artifacts in HEAD; PR update keeps change parent and task refresh HEAD. Audit adjacent PR lifecycle tests for the same stale assumption. Do not alter production commit behavior or weaken checks. Validate focused Vitest, formatting, lint, full local CI, independent review, hosted exact-head and guarded integration."
 sections:
   Summary: |-
@@ -388,6 +416,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:78319d0e1ce3882c76c2c3b7c4f136d463bd6d498770dfac28452e4157105bf7"
     work_order_id: "sha256:07d8447d5dd1d4a7b38c1a8db833aeee6b9ef1821a6c2347228a3c9b35cb4d41"
+  implementation_commit:
+    hash: "bdfbbf16e861b727a60adfb2efcdec059132d738"
+    message: "🚧 F9GFJF task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "14d3439a3daf5a9c17625e4f4667b839e33962d6"
@@ -1468,3 +1499,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:93046a66d69b5631def7d4e525363cc86359630c2089709996fb4ad4a98ce083`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-10-24T07:18:00.579Z`
