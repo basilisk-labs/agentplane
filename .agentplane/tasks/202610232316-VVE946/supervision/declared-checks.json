@@ -1,0 +1,110 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-conflict-publication.test.ts packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts packages/agentplane/src/commands/pr/integrate/internal/github-protection.test.ts --pool=forks --maxWorkers 2 --testTimeout 120000 --hookTimeout 120000",
+      "duration_ms": 1076785,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:215b3777818585ee1975d9121b950ba1a81e4002f7218fef75fc0fabe5b2c107",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/tmp/pr-protection-fixtures-0713/.agentplane/worktrees/202610232316-VVE946-align-conflict-fake-github-providers-with-branch/.agentplane/tasks/202610232316-VVE946/supervision/verification-runs/run-003/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:823b679e63a9645dc15a28c44831b9ece13f6bc85d0f69430a9d8138c75d48be",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v5.0.5 <repo>\n\n ✓ packages/agentplane/src/cli/run-cli.core.pr-conflict-publication.test.ts (1 test) 4896ms\n   ✓ resolved provider conflict publication (1)\n     ✓ publishes a verified DONE descendant before requiring queue or handoff evidence 4881ms\n ✓ packages/agentplane/src/commands/pr/integrate/internal/github-protection.test.ts (16 tests) 15ms\n ✓ packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts (28 tests) 1072709ms\n   ✓ provider conflict rework CLI (28)\n     ✓ routes a clean strict local descendant through guarded publication before conflict rework 22507ms\n     ✓ routes a live GitHub conflict to CODER with a fresh packet (read_only) 24997ms\n     ✓ routes a live GitHub conflict to CODER with a fresh packet (external_exchange) 37912ms\n     ✓ routes a live GitHub conflict to CODER with a fresh packet (external_exchange_advanced_base) 36475ms\n     ✓ routes a live GitHub conflict to CODER with a fresh packet (after_verification_advanced_base) 39394ms\n     ✓ routes a live GitHub conflict to CODER with a fresh packet (managed_interrupted_advanced_base) 56537ms\n     ✓ routes a live GitHub conflict to CODER with a fresh packet (after_verification_base_advanced_base) 35243ms\n     ✓ routes a live GitHub conflict to CODER with a fresh packet (after_verification_provider_advanced_base) 38376ms\n     ✓ routes a live GitHub conflict to CODER with a fresh packet (after_verification_diffstat_advanced_base) 39934ms\n     ✓ routes a live GitHub conflict to CODER with a fresh packet (interrupted_exchange) 40015ms\n     ✓ routes a live GitHub conflict to CODER with a fresh packet (interrupted_drift) 34783ms\n     ✓ routes a live GitHub conflict to CODER with a fresh packet (before_checkpoint) 38514ms\n     ✓ routes a live GitHub conflict to CODER with a fresh packet (before_checkpoint_drift) 35813ms\n     ✓ routes a live GitHub conflict to CODER with a fresh packet (after_verification) 40172ms\n     ✓ routes a live GitHub conflict to CODER with a fresh packet (before_verification_artifacts) 45592ms\n     ✓ routes a live GitHub conflict to CODER with a fresh packet (after_verification_workspace) 35635ms\n     ✓ routes a live GitHub conflict to CODER with a fresh packet (after_verification_task) 34357ms\n     ✓ routes a live GitHub conflict to CODER with a fresh packet (after_verification_result) 33519ms\n     ✓ routes a live GitHub conflict to CODER with a fresh packet (after_verification_policy) 36533ms\n     ✓ routes a live GitHub conflict to CODER with a fresh packet (managed_runner) 47145ms\n     ✓ routes a live GitHub conflict to CODER with a fresh packet (managed_workspace_drift) 32957ms\n     ✓ routes a live GitHub conflict to CODER with a fresh packet (managed_result_drift) 31130ms\n     ✓ routes a live GitHub conflict to CODER with a fresh packet (managed_policy_drift) 35221ms\n     ✓ routes a live GitHub conflict to CODER with a fresh packet (managed_interrupted) 50656ms\n     ✓ routes a live GitHub conflict to CODER with a fresh packet (managed_evidence_interrupted) 49114ms\n     ✓ routes a live GitHub conflict to CODER with a fresh packet (managed_interrupted_context_drift) 37425ms\n     ✓ routes a live GitHub conflict to CODER with a fresh packet (managed_interrupted_workspace_drift) 44150ms\n     ✓ routes a live GitHub conflict to CODER with a fresh packet (managed_interrupted_policy_drift) 38594ms\n\n Test Files  3 passed (3)\n      Tests  45 passed (45)\n   Start at  03:01:57\n   Duration  1075.51s (tests 100%)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bunx prettier packages/agentplane/src/cli/run-cli.core.pr-conflict-publication.test.ts packages/agentplane/src/cli/task-advance-effect-recovery.testkit.ts packages/agentplane/src/commands/pr/integrate/internal/github-protection.test.ts --check",
+      "duration_ms": 1022,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:4bc4c2fefb79d683165242e77adce69c4f77e017a3b220cbc5aa4ddae0ae81e8",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/tmp/pr-protection-fixtures-0713/.agentplane/worktrees/202610232316-VVE946-align-conflict-fake-github-providers-with-branch/.agentplane/tasks/202610232316-VVE946/supervision/verification-runs/run-004/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:823b679e63a9645dc15a28c44831b9ece13f6bc85d0f69430a9d8138c75d48be",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "Checking formatting...\nAll matched files use Prettier code style!\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "command": "bun run lint",
+      "duration_ms": 171976,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:9f77d7f9b3ed72e2bdc1dfa9ad0edbec3f8b908bf3736179760fa4604f02966f",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/tmp/pr-protection-fixtures-0713/.agentplane/worktrees/202610232316-VVE946-align-conflict-fake-github-providers-with-branch/.agentplane/tasks/202610232316-VVE946/supervision/verification-runs/run-005/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:823b679e63a9645dc15a28c44831b9ece13f6bc85d0f69430a9d8138c75d48be",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "lint",
+      "stderr_tail": "$ bun run lint:core\n$ eslint packages scripts eslint.config.cjs vitest.config.ts\n",
+      "stdout_tail": "\n<repo>/packages/agentplane/src/commands/shared/reconcile-native-applicability.test.ts\n  8:35  warning  '<repo>/packages/agentplane/src/commands/shared/task-backend.ts' imported multiple times  import/no-duplicates\n  9:58  warning  '<repo>/packages/agentplane/src/commands/shared/task-backend.ts' imported multiple times  import/no-duplicates\n\n<repo>/packages/agentplane/src/commands/task/kernel-operational-projection-recovery.test.ts\n   3:41  warning  '<repo>/packages/agentplane/src/commands/shared/task-backend.ts' imported multiple times  import/no-duplicates\n  20:37  warning  '<repo>/packages/agentplane/src/commands/shared/task-backend.ts' imported multiple times  import/no-duplicates\n\n<repo>/packages/agentplane/src/runner/process-supervision/run.ts\n  266:13  warning  Avoid using promises inside of callbacks  promise/no-promise-in-callback\n\n✖ 5 problems (0 errors, 5 warnings)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "full_regression",
+        "task_outcome"
+      ],
+      "command": "bun run ci:local:full",
+      "duration_ms": 2177740,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:49eef55d298bf6a66c220a70fc2f6763293f9d4f807251072bac2533a2a22e71",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/tmp/pr-protection-fixtures-0713/.agentplane/worktrees/202610232316-VVE946-align-conflict-fake-github-providers-with-branch/.agentplane/tasks/202610232316-VVE946/supervision/verification-runs/run-006/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:3e64dd298262475a5a7c4b8796e2c4279aa84bcb27659d5cc763586ac87e93af",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "ci:local:full",
+      "stderr_tail": "ifacts.\nSwitched to a new branch 'unrelated'\n⚠️ task requires Verify Steps by primary tag; seeded a PLANNER fallback ## Verify Steps scaffold in README (replace with task-specific acceptance coverage when available)\n{\"ts\":\"2026-10-24T00:53:48.836Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-PZX0ln/agentplane-workflow-vfjdIc/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/tmp/agentplane-vitest-run-PZX0ln/agentplane-workflow-vfjdIc/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-24T00:53:48.895Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-PZX0ln/agentplane-workflow-ag0NLJ/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/tmp/agentplane-vitest-run-PZX0ln/agentplane-workflow-ag0NLJ/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-24T00:53:48.924Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-PZX0ln/agentplane-workflow-ag0NLJ/.agentplane/WORKFLOW.md\",\"from\":\"/tmp/agentplane-vitest-run-PZX0ln/agentplane-workflow-ag0NLJ/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-24T00:53:48.944Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-PZX0ln/agentplane-workflow-NtlQmT/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/tmp/agentplane-vitest-run-PZX0ln/agentplane-workflow-NtlQmT/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-24T00:53:48.967Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_failed\",\"code\":\"WF_UNSUPPORTED_VERSION\",\"details\":{\"reason\":\"Unsupported WORKFLOW version 3; supported versions: 1, 2.\"}}\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Verify Steps\n{\"ts\":\"2026-10-24T00:54:54.086Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-10-24T00:54:54.141Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_completed\",\"details\":{\"diagnostics\":0}}\n{\"ts\":\"2026-10-24T00:54:54.160Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-TSJXRP/agentplane-cli-test-rSOKWx/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/tmp/agentplane-vitest-run-TSJXRP/agentplane-cli-test-rSOKWx/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-24T00:55:05.792Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-10-24T00:55:05.929Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":1}}\n{\"ts\":\"2026-10-24T00:55:05.934Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-10-24T00:55:05.971Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":2}}\n{\"ts\":\"2026-10-24T00:55:05.972Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-10-24T00:55:06.008Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_completed\",\"details\":{\"diagnostics\":0}}\n$ node scripts/checks/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 3 --fixture local-basic [REDACTED] 10000\n$ node scripts/checks/run-vitest-suite.mjs critical-cli\n$ bun run docs:ia:check && bun run docs:reference:check && bun run docs:onboarding:check\n$ node scripts/checks/check-docs-ia.mjs\n$ node scripts/generate/generate-package-reference.mjs --check\n$ node scripts/checks/check-agent-onboarding-scenario.mjs\n$ node scripts/workflow/run-workflows-lint.mjs && node scripts/checks/check-workflow-command-contract.mjs && bun scripts/checks/check-lifecycle-parity.ts && node scripts/checks/check-critical-test-route.mjs\n$ node scripts/checks/run-vitest-suite.mjs platform-critical\n$ node scripts/checks/check-significant-coverage.mjs\n",
+      "stdout_tail": "ransform 5%))\nVitest suite critical-cli: chunk 5/5 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts\nVitest suite critical-cli: chunk 5/5 passed in 12140ms (Test Files  1 passed (1); Tests  12 passed (12); Duration  11.67s (tests 85%, import 9%, transform 6%))\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":true,\"groups\":[{\"id\":\"runtime\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":107615,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202610232316-VVE946/supervision/verification-runs/run-006/children/run-001/manifest.json\",\"digest\":\"sha256:b7788349737ff62031027e7a611bd77fbca9255f00e86713b45748f406555ca4\"}},{\"id\":\"docs-schema\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":70673,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202610232316-VVE946/supervision/verification-runs/run-006/children/run-002/manifest.json\",\"digest\":\"sha256:bdb6e7ed2534e89d4bb1a2c53289d5b950bce29669ce15d608ebcde1f3ef5208\"}},{\"id\":\"core\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":1789508,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202610232316-VVE946/supervision/verification-runs/run-006/children/run-003/manifest.json\",\"digest\":\"sha256:6c42c152cbe18fbeda167cc075b7a36d7248d74cf6c65f0d2ef6133d9fc689e2\"}},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":99268,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202610232316-VVE946/supervision/verification-runs/run-006/children/run-004/manifest.json\",\"digest\":\"sha256:1315a066f00bd44f293be77d119a01512c2b2e4560077ef5fca6edfe43c33aed\"}}]}\n{\"schema_version\":1,\"kind\":\"verification_metrics\",\"route\":\"full-fast\",\"wall_clock_ms\":2098690,\"selected_groups\":5,\"executed_groups\":5,\"parallel_group_concurrency\":1,\"build_invocations\":1,\"ok\":true}\n\n== Documentation contracts ==\nok: docs index and current path references are aligned\nok: docs/reference/generated-reference.mdx is fresh\nok: agent onboarding scenario surfaces are aligned\n\n== Workflows lint (actionlint) ==\nworkflow and command guidance contract OK\nworkflow lifecycle parity OK\ncritical Vitest route OK\n\n== Windows platform-critical tests ==\n\n RUN  v5.0.5 /tmp/agentplane-verification-K1nxf8\n\n\n Test Files  7 passed (7)\n      Tests  98 passed (98)\n   Start at  03:57:48\n   Duration  58.53s (tests 87%, import 7%, transform 6%)\n\n\n== Significant file coverage (guard) ==\n\n RUN  v5.0.5 /tmp/agentplane-verification-K1nxf8\n      Coverage enabled with v8\n\n ✓ packages/agentplane/src/commands/guard/impl/close-message.test.ts (18 tests) 702ms\n ✓ packages/agentplane/src/commands/guard/impl/commands.commit-close.unit.test.ts (12 tests) 575ms\n   ✓ guard command implementations: commit close (12)\n     ✓ cmdCommit close path stages absolute README when outside gitRoot 540ms\n ✓ packages/agentplane/src/commands/guard/impl/commands.commit-non-close.unit.test.ts (19 tests) 525ms\n   ✓ guard command implementations: commit non-close (19)\n     ✓ cmdCommit non-close path commits with env and provided ctx 469ms\n ✓ packages/agentplane/src/commands/guard/impl/allow.test.ts (13 tests) 106ms\n ✓ packages/agentplane/src/cli/run-cli.core.guard.test.ts (25 tests) 3996ms\n   ✓ runCli (25)\n     ✓ guard clean succeeds when no staged files 2173ms\n ✓ packages/agentplane/src/commands/guard/impl/commands.guard.unit.test.ts (3 tests) 139ms\n ✓ packages/agentplane/src/commands/guard/impl/comment-commit.test.ts (12 tests) 67ms\n ✓ packages/agentplane/src/commands/guard/impl/policy.test.ts (3 tests) 20ms\n\n Test Files  8 passed (8)\n      Tests  105 passed (105)\n   Start at  03:58:47\n   Duration  15.63s (tests 44%, transform 31%, import 22%, worker 1%, setup 1%)\n\n    Isolate  8 workers spawned · ~133ms startup each (spawn + environment, per file)\n             at least ~928ms faster with isolate: false — reuses workers across files instead of one per file\n\n\n== Coverage threshold (significant) ==\nSignificant suite contract OK (17 source targets).\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202610232316-VVE946"
+}
