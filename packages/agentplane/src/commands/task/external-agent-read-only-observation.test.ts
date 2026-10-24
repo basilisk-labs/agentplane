@@ -1,8 +1,11 @@
-import { readFile, writeFile } from "node:fs/promises";
+import { readFile, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { describe, expect, it, vi } from "vitest";
 import { commitAll, installRunCliIntegrationHarness } from "@agentplane/testkit";
-import { digestSupervisorEpisodeValue } from "@agentplaneorg/core/schemas";
+import {
+  digestSupervisorEpisodeValue,
+  stopSupervisorExecutionEpisode,
+} from "@agentplaneorg/core/schemas";
 import { fixture, issue, unchanged, git } from "./external-agent-observation.testkit.js";
 import { acceptExternalAgentResult } from "./external-agent-supervisor.js";
 import { refreshExternalAgentRoute } from "./external-agent-result-routing.js";
@@ -10,8 +13,174 @@ import { recoverPendingExternalAgentResult } from "./external-agent-supervisor-r
 import { readExternalAgentExchange } from "./external-agent-exchange.js";
 import * as observation from "./external-agent-read-only-observation.js";
 import * as exchangeOwner from "./external-agent-exchange.js";
+import {
+  createSupervisorEpisodeStore,
+  resolveSupervisorExecutionEpisodePath,
+} from "../shared/supervisor-execution-episode.js";
 installRunCliIntegrationHarness();
 describe("canonical read-only observation admission", () => {
+  it.each([
+    ["running", "issued"],
+    ["effect_in_doubt", "issued"],
+    ["running", "prepared"],
+  ] as const)(
+    "retires an unanswered read-only intent after a later route replaces it (%s, %s)",
+    async (journalState, exchangeStatus) => {
+      const f = await fixture();
+      const issued = await issue(f);
+      await unlink(issued.paths.result);
+      if (exchangeStatus === "prepared") {
+        const exchange = (await readExternalAgentExchange(issued.paths.exchange))!;
+        await writeFile(issued.paths.exchange, JSON.stringify({ ...exchange, status: "prepared" }));
+      }
+      const journalPath = await resolveSupervisorExecutionEpisodePath({
+        git_root: f.root,
+        common_git_dir: path.join(f.root, ".git"),
+        task_id: f.id,
+      });
+      if (journalState === "effect_in_doubt") {
+        const store = createSupervisorEpisodeStore(journalPath);
+        const journal = await issued.journal();
+        expect(
+          await store.compareAndSwap(
+            journal.digest,
+            stopSupervisorExecutionEpisode({ journal, reason: "effect_in_doubt" }),
+          ),
+        ).toBe(true);
+      }
+      const laterDecision = decisionAfterDrift(f);
+      await expect(
+        recoverPendingExternalAgentResult({
+          command: f.command,
+          task_id: f.id,
+          current_decision: laterDecision,
+          accept_result: () => Promise.reject(new Error("No result may be applied")),
+        }),
+      ).rejects.toThrow(/retired the stale result.*--replacement/u);
+      const retired = await issued.journal();
+      expect(retired.operations.at(-1)?.status).toBe("failed");
+      expect(retired.stop?.reason).toBe("operation_failed");
+      expect(await readExternalAgentExchange(issued.paths.exchange)).toMatchObject({
+        status: "retired",
+        postcondition_fingerprint: laterDecision.workflowStep.preconditionFingerprint.digest,
+      });
+      expect(
+        await recoverPendingExternalAgentResult({
+          command: f.command,
+          task_id: f.id,
+          current_decision: laterDecision,
+          accept_result: () => Promise.reject(new Error("Retired result may not be applied")),
+        }),
+      ).toBeNull();
+      expect(await issued.journal()).toEqual(retired);
+    },
+  );
+
+  it("keeps an unanswered observation at its original boundary", async () => {
+    const f = await fixture();
+    const issued = await issue(f);
+    await unlink(issued.paths.result);
+    const before = await issued.journal();
+    expect(
+      await recoverPendingExternalAgentResult({
+        command: f.command,
+        task_id: f.id,
+        current_decision: f.decision,
+        accept_result: () => Promise.reject(new Error("No result may be applied")),
+      }),
+    ).toBeNull();
+    expect(await issued.journal()).toEqual(before);
+    expect(await readExternalAgentExchange(issued.paths.exchange)).toMatchObject({
+      status: "issued",
+    });
+  });
+
+  it("finishes retirement after exchange acknowledgement but before journal CAS", async () => {
+    const f = await fixture();
+    const issued = await issue(f);
+    await unlink(issued.paths.result);
+    const laterDecision = decisionAfterDrift(f);
+    const spy = vi
+      .spyOn(exchangeOwner, "writeExternalAgentExchange")
+      .mockImplementationOnce(async (target, value) => {
+        await originalWrite(target, value);
+        throw new Error("Injected post-acknowledgement interruption");
+      });
+    try {
+      await expect(
+        recoverPendingExternalAgentResult({
+          command: f.command,
+          task_id: f.id,
+          current_decision: laterDecision,
+          accept_result: () => Promise.reject(new Error("No result may be applied")),
+        }),
+      ).rejects.toThrow("Injected post-acknowledgement interruption");
+    } finally {
+      spy.mockRestore();
+    }
+    const interrupted = await issued.journal();
+    expect(interrupted.operations.at(-1)?.status).toBe("intent");
+    expect(await readExternalAgentExchange(issued.paths.exchange)).toMatchObject({
+      status: "retired",
+    });
+    await expect(
+      recoverPendingExternalAgentResult({
+        command: f.command,
+        task_id: f.id,
+        current_decision: laterDecision,
+        accept_result: () => Promise.reject(new Error("Retired result may not be applied")),
+      }),
+    ).rejects.toThrow(/reconciled a retired external-agent exchange/u);
+    const reconciled = await issued.journal();
+    expect(reconciled.operations.at(-1)?.status).toBe("failed");
+  });
+
+  it("preserves a returned observation for its original result path", async () => {
+    const f = await fixture();
+    const issued = await issue(f);
+    const before = await issued.journal();
+    const accepted = vi.fn(() => Promise.resolve(decisionAfterDrift(f)));
+    await recoverPendingExternalAgentResult({
+      command: f.command,
+      task_id: f.id,
+      current_decision: decisionAfterDrift(f),
+      accept_result: accepted,
+    });
+    expect(accepted).toHaveBeenCalledWith({
+      cwd: issued.exchange.checkout,
+      result_path: issued.paths.result,
+    });
+    expect(await issued.journal()).toEqual(before);
+    expect(await readExternalAgentExchange(issued.paths.exchange)).toMatchObject({
+      status: "issued",
+    });
+  });
+
+  it("does not retire a mutation-capable unanswered exchange", async () => {
+    const f = await fixture();
+    const issued = await issue(f);
+    await unlink(issued.paths.result);
+    const order = JSON.parse(await readFile(issued.paths.work_order, "utf8")) as {
+      authority: { sandbox: string; writable_roots: string[] };
+    };
+    order.authority.sandbox = "workspace-write";
+    order.authority.writable_roots = [f.root];
+    await writeFile(issued.paths.work_order, JSON.stringify(order));
+    const before = await issued.journal();
+    expect(
+      await recoverPendingExternalAgentResult({
+        command: f.command,
+        task_id: f.id,
+        current_decision: decisionAfterDrift(f),
+        accept_result: () => Promise.reject(new Error("No result may be applied")),
+      }),
+    ).toBeNull();
+    expect(await issued.journal()).toEqual(before);
+    expect(await readExternalAgentExchange(issued.paths.exchange)).toMatchObject({
+      status: "issued",
+    });
+  });
+
   it("preserves legacy comment and native metadata commit behavior", async () => {
     const f = await fixture();
     const issued = await issue(f);
@@ -238,3 +407,18 @@ describe("canonical read-only observation admission", () => {
   );
 });
 const originalWrite = exchangeOwner.writeExternalAgentExchange;
+
+function decisionAfterDrift(f: Awaited<ReturnType<typeof fixture>>) {
+  return {
+    ...f.decision,
+    workflowStep: {
+      ...f.decision.workflowStep,
+      kind: "cli_operation",
+      operation: { id: "provider.pr.update_branch", params: {} },
+      preconditionFingerprint: {
+        ...f.decision.workflowStep.preconditionFingerprint,
+        digest: `sha256:${"f".repeat(64)}`,
+      },
+    },
+  } as typeof f.decision;
+}
