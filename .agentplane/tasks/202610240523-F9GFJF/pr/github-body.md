@@ -16,7 +16,7 @@ In 0.7.13 release CI retry8, run-cli.core.pr-flow.pr-lifecycle.test.ts has two s
 ## Verification
 
 - State: ok
-- Note: Canonical validation sha256:641c6212acf86d32cc8e49fb9d809694ff1b2e4d4d815dd5ad606ceb08fc1f9f
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>
