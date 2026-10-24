@@ -118,6 +118,8 @@ function projectApprovedVitestSecurityLock(driverLock, subjectLock) {
     "vitest",
     "@vitest/coverage-v8",
     "@vitest/expect",
+    "@vitest/istanbul-lib-coverage",
+    "@vitest/istanbul-lib-report",
     "@vitest/mocker",
     "@vitest/pretty-format",
     "@vitest/runner",
@@ -132,12 +134,12 @@ function projectApprovedVitestSecurityLock(driverLock, subjectLock) {
     ),
     packages: Object.fromEntries(packageNames.map((name) => [name, lock.packages?.[name]])),
   });
-  // Freeze the complete reviewed 4.1.9 -> 4.1.11 delta for GHSA-82fw-gwwq-j7x9.
+  // Freeze the complete reviewed 4.1.9 -> 5.0.5 Vitest package delta.
   if (
     sha256(stableJson(lockSubset(subjectLock))) !==
       "sha256:f69e5fc87f34b7c04e8a4ee1701b541e064f22138366b77f011040a71e644051" ||
     sha256(stableJson(lockSubset(driverLock))) !==
-      "sha256:8fa1308d65180877716202d061e22f5c462ee2a975a82cc5876f96cfd6553fca"
+      "sha256:f29f26c2c4e2cb0e6f7df318c263909eb538129db59d129238f111bc38ec7c7a"
   ) {
     return null;
   }
@@ -146,8 +148,10 @@ function projectApprovedVitestSecurityLock(driverLock, subjectLock) {
     projected.workspaces[""].devDependencies[name] =
       subjectLock.workspaces[""].devDependencies[name];
   }
-  for (const name of packageNames)
-    projected.packages[name] = structuredClone(subjectLock.packages[name]);
+  for (const name of packageNames) {
+    if (subjectLock.packages[name] === undefined) delete projected.packages[name];
+    else projected.packages[name] = structuredClone(subjectLock.packages[name]);
+  }
   return projected;
 }
 
