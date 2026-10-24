@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:db9cd06433800262ebd949204d4b9bf8c017fbf39d3e44be54b878c7f146ce2a",
   "pr_number": 6913,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6913",
+  "pre_merge_closure": {
+    "basis_commit": "2b7e0569e203875e2e5096f2575038560b8d48f1",
+    "branch": "task/202610240523-F9GFJF/align-pr-lifecycle-tests-with-ancestry-safe-arti",
+    "pr_number": 6913,
+    "recorded_at": "2026-10-24T07:18:00.742Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
