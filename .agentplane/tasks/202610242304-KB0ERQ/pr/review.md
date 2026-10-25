@@ -6,7 +6,7 @@ Created: 2026-10-25T08:10:49.193Z
 
 - Task: `202610242304-KB0ERQ`
 - Title: Complete canonical USER-approved timing-only final-validation exception for issue 6918
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610242304-KB0ERQ/complete-canonical-user-approved-timing-only-fin`
 - Canonical task record: `.agentplane/tasks/202610242304-KB0ERQ/README.md`
 
