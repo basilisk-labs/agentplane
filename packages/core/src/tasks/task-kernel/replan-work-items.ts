@@ -4,6 +4,7 @@ import {
   planScopeExpansionApprovalDigest,
   planAmendmentScopeRoots,
 } from "./authority-lineage.js";
+import { executionRequirementsAreSubset } from "./invariants.js";
 import type {
   KernelInput,
   PlanRecord,
@@ -264,7 +265,18 @@ export function authenticatedScopeReplanHistory(
         rejections.push({ mutation_id: rejected[0]!.mutation_id, command: rejected[0]!.command });
         taskRevision = rejected[0]!.revision;
       } else if (approvedCurrent) {
-        if (!/^USER(?::[A-Za-z0-9._@-]+)?$/u.test(plan.approval_actor_id ?? "")) return [];
+        const userApproved = /^USER(?::[A-Za-z0-9._@-]+)?$/u.test(plan.approval_actor_id ?? "");
+        const policyApproved = plan.approval_actor_id === "agentplane:kernel-controller";
+        if (
+          !userApproved &&
+          (!policyApproved ||
+            grant.approval_mode !== "manual_operator" ||
+            grant.authority.provenance.kind !== "USER" ||
+            !plan.work_items.every((item) =>
+              executionRequirementsAreSubset(grant.authority, item.execution_requirements),
+            ))
+        )
+          return [];
         const approved = (aggregate.authority_lineage ?? []).flatMap((entry) => {
           const authority = entry.authority;
           const approvalMode = entry.approval_mode;
@@ -277,10 +289,11 @@ export function authenticatedScopeReplanHistory(
             authority.task_id !== aggregate.id ||
             authority.plan_digest !== plan.digest ||
             authority.plan_revision !== plan.revision ||
-            authority.provenance.kind !== "USER" ||
+            authority.provenance.kind !== (userApproved ? "USER" : "SYSTEM") ||
             authority.provenance.parent_authority_digest !== null ||
             authority.provenance.actor_id !== plan.approval_actor_id ||
-            authority.provenance.evidence_digest !== plan.approval_evidence_digest
+            authority.provenance.evidence_digest !== plan.approval_evidence_digest ||
+            (policyApproved && approvalMode !== "repository_policy")
           )
             return [];
           return Object.values(aggregate.mutation_receipts).flatMap((receipt) => {
