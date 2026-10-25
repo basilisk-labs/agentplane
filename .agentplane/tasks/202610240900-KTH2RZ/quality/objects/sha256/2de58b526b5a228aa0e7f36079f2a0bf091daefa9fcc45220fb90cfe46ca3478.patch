@@ -1,0 +1,68 @@
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts b/packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts
+index 0cba5a474..b81a7ddee 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-advance.worktree-resolution.test.ts
+@@ -310,6 +310,7 @@ async function publicCompletionRegression() {
+     kernelProviderEffects,
+     verifyLog,
+     kernelProjectionRecovery,
++    reconcileCheck,
+   ] = await Promise.all([
+     import("../commands/task/kernel-runtime-context.js"),
+     import("../commands/task/kernel-final-validation.js"),
+@@ -317,11 +318,11 @@ async function publicCompletionRegression() {
+     import("../commands/task/kernel-provider-effect-coordinator.js"),
+     import("../commands/shared/pr-meta/verify-log.js"),
+     import("../commands/task/kernel-operational-projection-recovery.js"),
++    import("../commands/shared/reconcile-check.js"),
+   ]);
+   const originalRecoverKernelOperationalProjection =
+     kernelProjectionRecovery.recoverKernelOperationalProjection;
+-  // This completion-persistence fixture supplies synthetic validation and projection evidence.
+-  // Recovery is a separate boundary; keep the actual completion write and Git commit below.
++  // Synthetic validation and projection isolate the completion write and Git commit.
+   const recoverySpy = vi
+     .spyOn(kernelProjectionRecovery, "recoverKernelOperationalProjection")
+     .mockResolvedValue({ kind: "unchanged" });
+@@ -330,6 +331,11 @@ async function publicCompletionRegression() {
+   const originalEnsureKernelOperationalProjectionEvidence =
+     kernelProjection.ensureKernelOperationalProjectionEvidence;
+   const originalDecideCanonicalWorkflowEffect = kernelProviderEffects.decideCanonicalWorkflowEffect;
++  const originalEnsureReconciledBeforeMutation = reconcileCheck.ensureReconciledBeforeMutation;
++  // Synthetic completion bypasses reconciliation to test the actual write and Git commit.
++  const reconcileSpy = vi
++    .spyOn(reconcileCheck, "ensureReconciledBeforeMutation")
++    .mockResolvedValue(undefined);
+   const runtimeSpy = vi
+     .spyOn(kernelRuntime, "createKernelRuntime")
+     .mockResolvedValue(runtime as never);
+@@ -368,6 +374,7 @@ async function publicCompletionRegression() {
+     });
+   } finally {
+     io.restore();
++    reconcileSpy.mockImplementation(originalEnsureReconciledBeforeMutation);
+     recoverySpy.mockImplementation(originalRecoverKernelOperationalProjection);
+     workflowSpy.mockImplementation(originalDecideCanonicalWorkflowEffect);
+     projectionSpy.mockImplementation(originalEnsureKernelOperationalProjectionEvidence);
+diff --git a/packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts b/packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts
+index 9c21f8cdd..4c5c7d470 100644
+--- a/packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts
+@@ -583,7 +583,7 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
+         "--root",
+         root,
+       ]);
+-      expect(code).toBe(4);
++      expect(code, io.stderr).toBe(3);
+       expect(io.stderr).toContain("exact duplicate open task detected");
+       expect(io.stderr).toContain("--allow-duplicate");
+       expect(io.stderr).toContain("close-duplicate");
+@@ -699,7 +699,7 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
+         "--root",
+         root,
+       ]);
+-      expect(code).toBe(4);
++      expect(code, io.stderr).toBe(3);
+       expect(io.stderr).toContain("unknown task owner id: NOPE");
+     } finally {
+       io.restore();
