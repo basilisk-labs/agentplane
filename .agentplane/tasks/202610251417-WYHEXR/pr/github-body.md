@@ -15,8 +15,8 @@ A completed branch_pr task can retain a stopped effect_in_doubt provider.pr.upda
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bun run lint:core
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>

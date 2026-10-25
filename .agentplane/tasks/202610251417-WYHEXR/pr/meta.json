@@ -3,7 +3,7 @@
   "branch": "task/202610251417-WYHEXR/recover-proven-applied-provider-branch-updates-a",
   "created_at": "2026-10-25T14:55:38.380Z",
   "diffstat_sha256": "sha256:5ab4a472f111419dcbf31b8a7aef1b99101845569856a53897a1354acb3fa503",
-  "last_verified_at": "2026-10-25T20:37:48.039Z",
+  "last_verified_at": "2026-10-25T21:25:06.884Z",
   "last_verified_diffstat_sha256": "sha256:5ab4a472f111419dcbf31b8a7aef1b99101845569856a53897a1354acb3fa503",
   "pr_number": 6925,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6925",
@@ -20,6 +20,6 @@
   "task_id": "202610251417-WYHEXR",
   "updated_at": "2026-10-25T17:46:12.223Z",
   "verify": {
-    "status": "fail"
+    "status": "pass"
   }
 }
