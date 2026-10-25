@@ -1,10 +1,11 @@
 ---
 id: "202610251040-KDBTXH"
 title: "Keep historical compatibility package delta valid after later surface changes"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -43,6 +44,22 @@ quality_review:
     - "The checker retains its exact hash-pinned PR #6905 incremental record and existing candidate, section, and source-task approval ratchets. No compatibility candidate JSON or released baseline changed."
     - "Both capture and contract-check routes use the same reconstruction. It validates complete manifest inventory, exact historical and current package-section digests, and exact allowed JSON paths without comparing archived full-surface hashes to later unrelated CLI/context state."
     - "Focused negatives reject package version, manifest inventory, from/to digest, allowed-path, and historical dependency drift. Native focused tests, candidate check, contract check, hotspots check, and full CI run-004 all passed at fc893a0fc31d7faf2addbed38bf64117b3402785."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:3837982254e1c028f9e146f198b92bdddfd363d6776fb063f5375b682f9d22a5"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-10-25T12:24:09.480Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -265,9 +282,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "fc893a0fc31d7faf2addbed38bf64117b3402785"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "489db2f9d9a0b328ac6db7ead7996e9bca675185"
+  message: "✅ KDBTXH task: persist canonical completion"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -275,9 +295,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-25T12:24:09.480Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "489db2f9d9a0b328ac6db7ead7996e9bca675185"
 doc_version: 3
-doc_updated_at: "2026-10-25T12:04:27.054Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-25T12:24:09.480Z"
+doc_updated_by: "CODER"
 description: "For release 0.7.13, decouple immutable PR #6905 incremental Zod package history from later unrelated CLI/context full-surface changes. Preserve the exact reviewed PR #6905 record, its package-section from/to hashes, and six allowed manifest paths. Add a generic regression that accepts later unrelated surface drift but rejects package digest or path drift. Do not update the KB0 candidate JSON or weaken current candidate approval ratchets in this task."
 sections:
   Summary: |-
@@ -443,6 +471,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:dbfd0765218afae0e5dcfed730169d0193c61ee1a95f4653d12b574ebd87c516"
     work_order_id: "sha256:8686d8b24820232617a30f4103ad25be2f0ad249cbe883d5cad3a3459da0fc8d"
+  implementation_commit:
+    hash: "fc893a0fc31d7faf2addbed38bf64117b3402785"
+    message: "🚧 KDBTXH task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "1b8097aecf1f07f1e3e7dec86dafb9618990c77a"
@@ -1107,3 +1138,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:3837982254e1c028f9e146f198b92bdddfd363d6776fb063f5375b682f9d22a5`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-10-25T12:24:09.480Z`

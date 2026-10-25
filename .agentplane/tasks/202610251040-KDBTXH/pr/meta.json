@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:d91a73f00e81ca9e2bcb8b9f4dd9976d49daa9bfbb40ad9226992f9b06ed8688",
   "pr_number": 6924,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6924",
+  "pre_merge_closure": {
+    "basis_commit": "489db2f9d9a0b328ac6db7ead7996e9bca675185",
+    "branch": "task/202610251040-KDBTXH/keep-historical-compatibility-package-delta-vali",
+    "pr_number": 6924,
+    "recorded_at": "2026-10-25T12:24:09.635Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
