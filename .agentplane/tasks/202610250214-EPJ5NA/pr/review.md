@@ -6,7 +6,7 @@ Created: 2026-10-25T02:54:28.387Z
 
 - Task: `202610250214-EPJ5NA`
 - Title: Make cloud auto-pull freshness fixture deterministic
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610250214-EPJ5NA/make-cloud-auto-pull-freshness-fixture-determini`
 - Canonical task record: `.agentplane/tasks/202610250214-EPJ5NA/README.md`
 

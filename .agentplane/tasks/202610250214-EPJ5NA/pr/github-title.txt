@@ -1,1 +1,1 @@
-🚧 EPJ5NA task: Make cloud auto-pull freshness fixture deterministic [202610250214-EPJ5NA]
+✅ EPJ5NA task: Make cloud auto-pull freshness fixture deterministic [202610250214-EPJ5NA]
