@@ -17,6 +17,10 @@ import {
 } from "@agentplaneorg/core/schemas";
 
 import { CliError } from "../../shared/errors.js";
+import {
+  requireRecoverableReadOnlyObservation,
+  verifyUnansweredReadOnlyObservation,
+} from "./external-agent-read-only-recovery.js";
 import { retireStaleEvaluatorExchange } from "./external-agent-evaluator-recovery.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import {
@@ -42,6 +46,10 @@ export type RecoverableExternalAgentExchange = {
   paths: ExternalAgentExchangePaths;
   work_order: AgentWorkOrderV2;
 };
+
+function replacementArgv(taskId: string): string[] {
+  return ["agentplane", "task", "advance", taskId, "--replacement", "--agent-json"];
+}
 
 export async function failRejectedExternalAgentResult(opts: {
   store: SupervisorEpisodeStore;
@@ -86,14 +94,7 @@ export async function failRejectedExternalAgentResult(opts: {
       task_id: opts.exchange.task_id,
       transition_id: opts.exchange.transition_id,
       rejected_error: opts.error.code,
-      exact_argv: [
-        "agentplane",
-        "task",
-        "advance",
-        opts.exchange.task_id,
-        "--replacement",
-        "--agent-json",
-      ],
+      exact_argv: replacementArgv(opts.exchange.task_id),
     },
   });
 }
@@ -236,14 +237,7 @@ async function unresolvedExternalAgentExchange(opts: {
           "--replacement --agent-json",
         context: {
           task_id: opts.decision.task.id,
-          exact_argv: [
-            "agentplane",
-            "task",
-            "advance",
-            opts.decision.task.id,
-            "--replacement",
-            "--agent-json",
-          ],
+          exact_argv: replacementArgv(opts.decision.task.id),
         },
       });
     }
@@ -346,6 +340,7 @@ export async function recoverPendingExternalAgentResult(opts: {
   task_id: string;
   current_decision: TaskRouteDecision;
   accept_result: (input: { cwd: string; result_path: string }) => Promise<TaskRouteDecision>;
+  recovery_scope?: "read_only_observation";
 }): Promise<TaskRouteDecision | null> {
   const commonGitDir = await resolveCommandGitCommonDir(opts.command);
   const journalPath = await resolveSupervisorExecutionEpisodePath({
@@ -390,6 +385,17 @@ export async function recoverPendingExternalAgentResult(opts: {
     return null;
   }
   if (
+    opts.recovery_scope === "read_only_observation" &&
+    operation?.status === "intent" &&
+    operation.effect_ref?.startsWith("external-agent-issue:") &&
+    !operation.work_order_ref
+  ) {
+    throw new CliError({
+      code: "E_RUNTIME",
+      message: "An unresolved external-agent intent has no work order.",
+    });
+  }
+  if (
     !operation?.work_order_ref ||
     (operation.status !== "intent" && operation.status !== "completed")
   ) {
@@ -397,6 +403,17 @@ export async function recoverPendingExternalAgentResult(opts: {
   }
   const paths = exchangePathsFromWorkOrderRef(operation.work_order_ref);
   const exchange = await readExternalAgentExchange(paths.exchange);
+  if (opts.recovery_scope === "read_only_observation") {
+    if (operation.status !== "intent") return null;
+    await requireRecoverableReadOnlyObservation({
+      journal,
+      operation,
+      exchange,
+      paths,
+      task_id: opts.task_id,
+      current_fingerprint: opts.current_decision.workflowStep.preconditionFingerprint.digest,
+    });
+  }
   if (exchange?.task_id !== opts.task_id) return null;
   if (exchange.status === "consumed") {
     await recoverConsumedExternalAgentDuplicate({
@@ -443,14 +460,7 @@ export async function recoverPendingExternalAgentResult(opts: {
         `intent; run: agentplane task advance ${opts.task_id} --replacement --agent-json`,
       context: {
         task_id: opts.task_id,
-        exact_argv: [
-          "agentplane",
-          "task",
-          "advance",
-          opts.task_id,
-          "--replacement",
-          "--agent-json",
-        ],
+        exact_argv: replacementArgv(opts.task_id),
       },
     });
   }
@@ -476,14 +486,36 @@ export async function recoverPendingExternalAgentResult(opts: {
     paths,
     journal_path: journalPath,
   });
-  const implementationRecoveryRequired =
-    !isReadOnlyWorktreeObservation({ exchange, work_order: workOrder }) &&
-    !refinementApplied &&
-    requiresImplementationRecoveryReplacement({
-      decision: opts.current_decision,
+  const currentFingerprint = opts.current_decision.workflowStep.preconditionFingerprint.digest;
+  const readOnlyObservation = isReadOnlyWorktreeObservation({ exchange, work_order: workOrder });
+  let unansweredReadOnlyDrift = false;
+  if (
+    operation.status === "intent" &&
+    readOnlyObservation &&
+    operation.precondition_fingerprint_digest !== currentFingerprint &&
+    (exchange.status === "prepared" || exchange.status === "issued") &&
+    exchange.result === null &&
+    exchange.result_digest === null
+  ) {
+    unansweredReadOnlyDrift = await verifyUnansweredReadOnlyObservation({
+      journal,
+      operation,
       exchange,
+      paths,
       work_order: workOrder,
+      task_id: opts.task_id,
+      require_absent: opts.recovery_scope === "read_only_observation",
     });
+  }
+  const implementationRecoveryRequired =
+    !refinementApplied &&
+    (unansweredReadOnlyDrift ||
+      (!readOnlyObservation &&
+        requiresImplementationRecoveryReplacement({
+          decision: opts.current_decision,
+          exchange,
+          work_order: workOrder,
+        })));
 
   if (
     operation.status === "intent" &&
@@ -495,13 +527,23 @@ export async function recoverPendingExternalAgentResult(opts: {
       result: {
         classification: planningRecoveryRequired
           ? "planning_recovery_state_fingerprint_drift"
-          : "implementation_authority_state_fingerprint_drift",
+          : unansweredReadOnlyDrift
+            ? "read_only_observation_state_fingerprint_drift"
+            : "implementation_authority_state_fingerprint_drift",
         transition_id: exchange.transition_id,
         previous_state_fingerprint: exchange.state_fingerprint,
         current_state_fingerprint:
           opts.current_decision.workflowStep.preconditionFingerprint.digest,
       },
     });
+    const retiredExchange = {
+      ...exchange,
+      status: "retired" as const,
+      postcondition_fingerprint: currentFingerprint,
+      updated_at: new Date().toISOString(),
+    };
+    // Keep the exact historical intent recoverable if acknowledgement is interrupted.
+    if (unansweredReadOnlyDrift) await writeExternalAgentExchange(paths.exchange, retiredExchange);
     const store = createSupervisorEpisodeStore(journalPath);
     if (!(await store.compareAndSwap(journal.digest, retired))) {
       throw new CliError({
@@ -509,30 +551,20 @@ export async function recoverPendingExternalAgentResult(opts: {
         message: "External-agent supervisor changed while retiring the stale result.",
       });
     }
-    await writeExternalAgentExchange(paths.exchange, {
-      ...exchange,
-      status: "retired",
-      postcondition_fingerprint: opts.current_decision.workflowStep.preconditionFingerprint.digest,
-      updated_at: new Date().toISOString(),
-    });
+    if (!unansweredReadOnlyDrift) await writeExternalAgentExchange(paths.exchange, retiredExchange);
     throw new CliError({
       code: "E_RUNTIME",
       message:
         (planningRecoveryRequired
           ? "The planning state changed after the pending external-agent result was issued. "
-          : "The task authority changed after the pending external-agent result was issued. ") +
+          : unansweredReadOnlyDrift
+            ? "The unanswered read-only observation became stale after the task state changed. "
+            : "The task authority changed after the pending external-agent result was issued. ") +
         `AgentPlane retired the stale result; run: agentplane task advance ${opts.task_id} ` +
         "--replacement --agent-json",
       context: {
         task_id: opts.task_id,
-        exact_argv: [
-          "agentplane",
-          "task",
-          "advance",
-          opts.task_id,
-          "--replacement",
-          "--agent-json",
-        ],
+        exact_argv: replacementArgv(opts.task_id),
       },
     });
   }

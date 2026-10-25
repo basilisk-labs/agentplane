@@ -1,0 +1,2 @@
+"$ node scripts/checks/run-local-ci.mjs --mode full"
+"$ node scripts/checks/run-typescript-build.mjs && bun run --filter=@agentplaneorg/core build:bundle && bun run --filter=@agentplaneorg/recipes build:bundle && bun run --filter=agentplane build:bundle"
