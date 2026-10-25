@@ -26,6 +26,7 @@ import {
   resolveReviewedCompatibilitySurfaceMode,
   surfaceSectionDigests,
 } from "../lib/compatibility-contract.mjs";
+import { reconstructHistoricalPackageSurface } from "../lib/compatibility-incremental-package-delta.mjs";
 
 const scriptPath = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
@@ -303,14 +304,7 @@ function validateBaseline(baseline) {
   };
 }
 
-function validateReviewedCandidate({
-  baseline,
-  candidate,
-  exactMainSurface,
-  currentSurface,
-  currentDigest,
-  currentSectionDigests,
-}) {
+function validateReviewedCandidate({ baseline, candidate, exactMainSurface, currentSurface }) {
   assertOnlyKeys(
     candidate,
     [
@@ -488,40 +482,15 @@ function validateReviewedCandidate({
       }),
     "compatibility incremental package delta drift",
   );
-  const historicalSurface = structuredClone(currentSurface);
-  const historicalDependencies = new Map(
-    incrementalPackageDelta.historical_dependencies.map((entry) => [entry.manifest_path, entry]),
-  );
-  assert(
-    historicalDependencies.size === currentSurface.package_manifests.length,
-    "incremental historical dependency inventory drift",
-  );
-  historicalSurface.package_manifests = currentSurface.package_manifests.map((manifest) => {
+  for (const manifest of currentSurface.package_manifests) {
     assert(manifest.dependencies.zod === "4.6.7", `${manifest.path}: reviewed zod version drift`);
-    const previous = historicalDependencies.get(manifest.path);
-    assert(previous, `${manifest.path}: missing historical dependency`);
-    const historicalManifest = structuredClone(manifest);
-    delete historicalManifest.path;
-    delete historicalManifest.normalized_sha256;
-    historicalManifest.dependencies[previous.name] = previous.version;
-    return packageSurface(manifest.path, historicalManifest);
-  });
+  }
+  const historicalSurface = reconstructHistoricalPackageSurface(
+    currentSurface,
+    incrementalPackageDelta,
+  );
   const historicalSectionDigests = surfaceSectionDigests(historicalSurface);
   const historicalDigest = compatibilitySurfaceDigest(historicalSectionDigests);
-  assert(
-    historicalSectionDigests.package_manifests === incrementalPackageDelta.from_sha256 &&
-      currentSectionDigests.package_manifests === incrementalPackageDelta.to_sha256 &&
-      historicalDigest === incrementalPackageDelta.from_surface_sha256 &&
-      currentDigest === incrementalPackageDelta.to_surface_sha256 &&
-      hashJson(
-        diffJsonPaths(
-          historicalSurface.package_manifests,
-          currentSurface.package_manifests,
-          "$.package_manifests",
-        ),
-      ) === hashJson(incrementalPackageDelta.allowed_json_paths),
-    "incremental package manifest surface drift",
-  );
   const preReleasePackageDelta = candidate.pre_release_package_delta;
   assertOnlyKeys(
     preReleasePackageDelta,
@@ -4834,8 +4803,6 @@ try {
         candidate,
         exactMainSurface,
         currentSurface,
-        currentDigest,
-        currentSectionDigests,
       });
       verifyRejectedRecaptureDrift(
         historicalSurface,

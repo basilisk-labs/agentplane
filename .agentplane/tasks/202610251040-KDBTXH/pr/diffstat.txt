@@ -1,0 +1,5 @@
+ scripts/bench/capture-compatibility-candidate.mjs  | 56 +--------------
+ .../check-compatibility-contract-baseline.mjs      | 49 +++----------
+ .../compatibility-incremental-package-delta.mjs    | 56 +++++++++++++++
+ ...ompatibility-incremental-package-delta.test.mjs | 84 ++++++++++++++++++++++
+ 4 files changed, 150 insertions(+), 95 deletions(-)
