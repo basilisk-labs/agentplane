@@ -8,10 +8,10 @@
   "pr_number": 6920,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6920",
   "pre_merge_closure": {
-    "basis_commit": "b8b0a5233eff75e885f7f6a6f82e3a302d62ceb7",
+    "basis_commit": "d96df2ad7fc39371fcd069fab525fb3e117956cc",
     "branch": "task/202610242244-4Q1124/fail-closed-on-unresolved-read-only-supervisor-i",
     "pr_number": 6920,
-    "recorded_at": "2026-10-25T05:50:09.090Z",
+    "recorded_at": "2026-10-25T07:48:36.620Z",
     "state": "closed_before_merge"
   },
   "provider": {

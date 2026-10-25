@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -60,9 +60,11 @@ quality_review:
     - "Retained native run-010 full CI passed with exit code 0; lint:core and hotspots:check passed. The verification record is bound to implementation SHA 9a2e81e9fc025a5cb3098644513ef981d9bd5e02."
     - "Residual risk: A result written after the final filesystem absence check can remain on a retired exchange; the provider guard does not consume or admit it."
 token_usage:
-  agent_runs: 3
+  agent_runs: 4
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
   input_tokens: null
-  journal_digest: "sha256:68e2c82e867d2c1a3cc62c030b173de2c0a19a3e1a846bd47a39c9c6337974a7"
+  journal_digest: "sha256:444b2e303ae7bf3645d68c70ff6660209d5510e0461f9422d86752c9bfefccb8"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -72,7 +74,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "external_host_turn_unallocatable"
-  updated_at: "2026-10-25T05:50:08.893Z"
+  updated_at: "2026-10-25T07:48:36.431Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -765,9 +767,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "b8b0a5233eff75e885f7f6a6f82e3a302d62ceb7"
-  message: "✅ 4Q1124 task: fail closed on unresolved read-only supervisor intent before canonical..."
+  hash: "d96df2ad7fc39371fcd069fab525fb3e117956cc"
+  message: "🚧 4Q1124 task: record external evaluator result"
 comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -792,8 +797,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-10-25T07:48:36.431Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "d96df2ad7fc39371fcd069fab525fb3e117956cc"
 doc_version: 3
-doc_updated_at: "2026-10-25T07:48:15.781Z"
+doc_updated_at: "2026-10-25T07:48:36.442Z"
 doc_updated_by: "CODER"
 description: "For a canonical COMPLETED task, retire only a provably stale unanswered read-only external-agent intent through shared identity and CAS gates. Any other unresolved intent must block provider admission and execution. Extract generic guard to a small helper to retain the 600-line hotspot ceiling; verify positive, negative and interrupted acknowledgement routes."
 sections:
@@ -1054,8 +1067,8 @@ extensions:
     verification_evidence_digest: "sha256:e07559033afb1e9e445ca80cce7dc29091610feba02875e9c3799d42f64306a8"
     work_order_id: "sha256:3d7428e4a69eaa9ad5695ecc4cd12cf16d11a96a14cc48bd3669b14194fd4d91"
   implementation_commit:
-    hash: "d5a8258ea5e1fae11ba08111a05fa2dc24a31d75"
-    message: "🚧 4Q1124 task: apply canonical agent result"
+    hash: "9a2e81e9fc025a5cb3098644513ef981d9bd5e02"
+    message: "Merge branch 'main' into task/202610242244-4Q1124/fail-closed-on-unresolved-read-only-supervisor-i"
   task_execution_context:
     base_ref: "main"
     base_sha: "214a26d1bda13f9a81349cc1364669ad24dfb92c"
@@ -1813,12 +1826,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/3` agent runs
+- Completeness: `0/4` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:68e2c82e867d2c1a3cc62c030b173de2c0a19a3e1a846bd47a39c9c6337974a7`
+- Journal digest: `sha256:444b2e303ae7bf3645d68c70ff6660209d5510e0461f9422d86752c9bfefccb8`
 - Unavailable reason: `external_host_turn_unallocatable`
-- Updated at: `2026-10-25T05:50:08.893Z`
+- Updated at: `2026-10-25T07:48:36.431Z`
