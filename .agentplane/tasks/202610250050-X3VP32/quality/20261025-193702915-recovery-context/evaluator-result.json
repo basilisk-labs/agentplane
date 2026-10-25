@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The scoped diff against current main changes only kernel-provider-effect-coordinator.ts and its test. The coordinator invokes recoverPendingExternalAgentResult with recovery_scope read_only_observation before executeAdmittedBranchWorkflowOperation.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610250050-X3VP32/quality/objects/sha256/21122b3b3bf4cb2fe49e50427e5a22df390853f9de0b2ea8ae6a0739ce7e186f.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The regression tests assert that eligible recovery is called and that six ineligible or unresolved intent cases reject before supervision or adapter execution.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610250050-X3VP32/quality/objects/sha256/21122b3b3bf4cb2fe49e50427e5a22df390853f9de0b2ea8ae6a0739ce7e186f.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Native verification run-020 passed bun run ci:local:full at implementation head 19162c1041d0075f5f97e5425f284fa3b38c52b2. Follow-up hotspots, lint, and targeted runs 021-023 passed. Git diff --check is clean. No unresolved scoped finding is recorded.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610250050-X3VP32/quality/objects/sha256/21122b3b3bf4cb2fe49e50427e5a22df390853f9de0b2ea8ae6a0739ce7e186f.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
