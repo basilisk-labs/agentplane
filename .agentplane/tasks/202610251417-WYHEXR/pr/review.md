@@ -29,15 +29,15 @@ Created: 2026-10-25T14:55:38.380Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../supervisor-execution-effect-recovery.test.ts   |  81 +++++
+ .../supervisor-execution-effect-recovery.test.ts   |  89 +++++
  .../src/commands/shared/workflow-step-authority.ts |   2 +-
  .../src/commands/task/advance.command.ts           |   4 +-
  .../src/commands/task/ordinary-advance-step.ts     |   4 +-
- .../task/provider-update-effect-recovery.test.ts   | 349 ++++++++++++++++++++
- .../task/provider-update-effect-recovery.ts        | 357 +++++++++++++++++++++
+ .../task/provider-update-effect-recovery.test.ts   | 416 +++++++++++++++++++++
+ .../task/provider-update-effect-recovery.ts        | 365 ++++++++++++++++++
  .../task/roadmap-integration-parity.test.ts        |   5 +-
  .../src/commands/task/workflow-effect-recovery.ts  |  22 ++
- 8 files changed, 816 insertions(+), 8 deletions(-)
+ 8 files changed, 899 insertions(+), 8 deletions(-)
 ```
 
 </details>

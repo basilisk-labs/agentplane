@@ -65,11 +65,15 @@ export const providerUpdateEffectResolutionSchema = z.strictObject({
     decision_ref: nonempty,
     observed_at: isoTimestampSchema(),
   }),
-  evidence: z.array(z.strictObject({
-    ref: nonempty,
-    content: z.string().refine((value) => value.trim().length > 0),
-    digest,
-  })).min(1),
+  evidence: z
+    .array(
+      z.strictObject({
+        ref: nonempty,
+        content: z.string().refine((value) => value.trim().length > 0),
+        digest,
+      }),
+    )
+    .min(1),
 });
 
 type ProviderUpdateEffectResolution = z.infer<typeof providerUpdateEffectResolutionSchema>;
@@ -189,27 +193,30 @@ export async function reconcileProviderUpdateEffect(opts: {
       taskId: opts.task_id,
       task,
     });
-    const eligibleGrants = authority.state?.grants.filter((item) =>
-      item.actor === "USER" &&
-      item.operationId === "provider.pr.update_branch" &&
-      item.operationDigest === operationDigest &&
-      item.policyRule === "workflow.external_high_risk" &&
-      Date.parse(item.issuedAt) <= Date.parse(operation.started_at) &&
-      Date.parse(item.expiresAt) >= Date.parse(operation.started_at),
-    ) ?? [];
+    const eligibleGrants =
+      authority.state?.grants.filter(
+        (item) =>
+          item.actor === "USER" &&
+          item.operationId === "provider.pr.update_branch" &&
+          item.operationDigest === operationDigest &&
+          item.policyRule === "workflow.external_high_risk" &&
+          Date.parse(item.issuedAt) <= Date.parse(operation.started_at) &&
+          Date.parse(item.expiresAt) >= Date.parse(operation.started_at),
+      ) ?? [];
     const grant = eligibleGrants[0];
     if (
       eligibleGrants.length !== 1 ||
       grant?.id !== resolution.grant_id ||
-      !authority.state?.audit.some((entry) =>
-        entry.authorityDigest === grant.digest &&
-        entry.actor === grant.actor &&
-        entry.policyRule === grant.policyRule &&
-        entry.operationId === grant.operationId &&
-        entry.operationDigest === grant.operationDigest &&
-        entry.stateFingerprintDigest === grant.stateFingerprintDigest &&
-        entry.outcome === "approved" &&
-        Date.parse(entry.at) <= Date.parse(operation.started_at),
+      !authority.state?.audit.some(
+        (entry) =>
+          entry.authorityDigest === grant.digest &&
+          entry.actor === grant.actor &&
+          entry.policyRule === grant.policyRule &&
+          entry.operationId === grant.operationId &&
+          entry.operationDigest === grant.operationDigest &&
+          entry.stateFingerprintDigest === grant.stateFingerprintDigest &&
+          entry.outcome === "approved" &&
+          Date.parse(entry.at) <= Date.parse(operation.started_at),
       )
     ) {
       reject("the original operation has no matching retained USER authority.");
@@ -218,7 +225,8 @@ export async function reconcileProviderUpdateEffect(opts: {
     const checkout = current.workspace.taskWorktreePath;
     if (
       current.task.id !== opts.task_id ||
-      current.workflowStep.preconditionFingerprint.digest !== resolution.current_state_fingerprint ||
+      current.workflowStep.preconditionFingerprint.digest !==
+        resolution.current_state_fingerprint ||
       !checkout ||
       path.resolve(current.workspace.baseCheckoutPath ?? opts.command.resolvedProject.gitRoot) !==
         path.resolve(resolution.repository_root) ||

@@ -12,7 +12,10 @@ import {
 } from "@agentplaneorg/core/schemas";
 import { mkGitRepoRoot } from "@agentplane/testkit";
 
-import { createSupervisorEpisodeStore, resolveSupervisorExecutionEpisodePath } from "../shared/supervisor-execution-episode.js";
+import {
+  createSupervisorEpisodeStore,
+  resolveSupervisorExecutionEpisodePath,
+} from "../shared/supervisor-execution-episode.js";
 import { operationPayloadDigest } from "../shared/workflow-step-authority.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
@@ -66,7 +69,16 @@ async function fixture(authorityRef = "workflow-operation:provider.pr.update_bra
   const root = await mkGitRepoRoot();
   execFileSync(
     "git",
-    ["-c", "user.name=Test", "-c", "user.email=test@example.com", "commit", "--allow-empty", "-m", "init"],
+    [
+      "-c",
+      "user.name=Test",
+      "-c",
+      "user.email=test@example.com",
+      "commit",
+      "--allow-empty",
+      "-m",
+      "init",
+    ],
     { cwd: root },
   );
   const base = execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim();
@@ -78,9 +90,16 @@ async function fixture(authorityRef = "workflow-operation:provider.pr.update_bra
     git_head: originalHead,
     worktree: root,
     components: Object.fromEntries(
-      ["task", "git", "backend_projection", "policy", "blueprint", "knowledge", "provider", "authority"].map(
-        (key) => [key, { state: "present", source: "test", value: { key } }],
-      ),
+      [
+        "task",
+        "git",
+        "backend_projection",
+        "policy",
+        "blueprint",
+        "knowledge",
+        "provider",
+        "authority",
+      ].map((key) => [key, { state: "present", source: "test", value: { key } }]),
     ) as Parameters<typeof buildStateFingerprint>[0]["components"],
   });
   const params = {
@@ -126,7 +145,10 @@ async function fixture(authorityRef = "workflow-operation:provider.pr.update_bra
     journal: started.journal,
     state_fingerprint_digest: originalFingerprint.digest,
   });
-  const journalPath = await resolveSupervisorExecutionEpisodePath({ git_root: root, task_id: taskId });
+  const journalPath = await resolveSupervisorExecutionEpisodePath({
+    git_root: root,
+    task_id: taskId,
+  });
   await createSupervisorEpisodeStore(journalPath).write(stopped);
   const grant = {
     schemaVersion: 1,
@@ -139,12 +161,15 @@ async function fixture(authorityRef = "workflow-operation:provider.pr.update_bra
     stateFingerprintDigest: `sha256:${"8".repeat(64)}`,
     stateScopeDigest: `sha256:${"7".repeat(64)}`,
     issuedAt: new Date(Date.parse(started.journal.operations[0]!.started_at) - 1000).toISOString(),
-    expiresAt: new Date(Date.parse(started.journal.operations[0]!.started_at) + 60_000).toISOString(),
+    expiresAt: new Date(
+      Date.parse(started.journal.operations[0]!.started_at) + 60_000,
+    ).toISOString(),
     digest: `sha256:${"d".repeat(64)}`,
   };
   const authorityState = {
     grants: [grant],
-    audit: [{
+    audit: [
+      {
         authorityDigest: grant.digest,
         actor: grant.actor,
         policyRule: grant.policyRule,
@@ -153,7 +178,8 @@ async function fixture(authorityRef = "workflow-operation:provider.pr.update_bra
         stateFingerprintDigest: grant.stateFingerprintDigest,
         at: grant.issuedAt,
         outcome: "approved",
-    }],
+      },
+    ],
   };
   mocks.authority.mockResolvedValue({
     state: authorityState,
@@ -175,9 +201,16 @@ async function fixture(authorityRef = "workflow-operation:provider.pr.update_bra
   });
   mocks.compare.mockImplementation((_root: string, args: string[]) => {
     if (args[0]!.includes("/git/commits/"))
-      return Promise.resolve({ sha: observedHead, parents: [{ sha: originalHead }, { sha: base }] });
+      return Promise.resolve({
+        sha: observedHead,
+        parents: [{ sha: originalHead }, { sha: base }],
+      });
     const [older] = args[0]!.split("/compare/")[1]!.split("...");
-    return Promise.resolve({ status: "ahead", base_commit: { sha: older }, merge_base_commit: { sha: older } });
+    return Promise.resolve({
+      status: "ahead",
+      base_commit: { sha: older },
+      merge_base_commit: { sha: older },
+    });
   });
   mocks.local.mockResolvedValue(null);
   const route = {
@@ -218,13 +251,20 @@ async function fixture(authorityRef = "workflow-operation:provider.pr.update_bra
       decision_ref: "release-0713-reconcile-observed-update",
       observed_at: new Date().toISOString(),
     },
-    evidence: [{
-      ref: "hosted-pr-observation",
-      content: `PR 42 head ${observedHead} is the provider-published update merge`,
-      digest: digestSupervisorEpisodeValue(`PR 42 head ${observedHead} is the provider-published update merge`),
-    }],
+    evidence: [
+      {
+        ref: "hosted-pr-observation",
+        content: `PR 42 head ${observedHead} is the provider-published update merge`,
+        digest: digestSupervisorEpisodeValue(
+          `PR 42 head ${observedHead} is the provider-published update merge`,
+        ),
+      },
+    ],
   };
-  const inputPath = path.join(await mkdtemp(path.join(os.tmpdir(), "ap-provider-recovery-")), "input.json");
+  const inputPath = path.join(
+    await mkdtemp(path.join(os.tmpdir(), "ap-provider-recovery-")),
+    "input.json",
+  );
   const invoke = async (delta: Record<string, unknown> = {}) => {
     await writeFile(inputPath, JSON.stringify({ ...input, ...delta }));
     return await reconcileProviderUpdateEffect({
@@ -262,7 +302,9 @@ describe("interrupted provider update recovery", () => {
         return Array.isArray(args) && !(args as unknown[]).includes("-X");
       }),
     ).toBe(true);
-    await expect(f.invoke()).rejects.toThrow("exact stopped provider operation is absent or changed");
+    await expect(f.invoke()).rejects.toThrow(
+      "exact stopped provider operation is absent or changed",
+    );
   });
 
   it.each([
@@ -282,7 +324,11 @@ describe("interrupted provider update recovery", () => {
   it("rejects missing USER grant, provider mismatch, ancestry failure, and dirty local state", async () => {
     const scenarios = [
       () => mocks.authority.mockResolvedValue({ state: { grants: [], audit: [] } }),
-      () => mocks.observe.mockResolvedValue({ state: "found", pr: { status: "OPEN", headSha: "e".repeat(40) } }),
+      () =>
+        mocks.observe.mockResolvedValue({
+          state: "found",
+          pr: { status: "OPEN", headSha: "e".repeat(40) },
+        }),
       () => mocks.compare.mockResolvedValue({ status: "diverged" }),
       () => mocks.local.mockResolvedValue("dirty checkout"),
     ];
@@ -291,17 +337,24 @@ describe("interrupted provider update recovery", () => {
       const f: Fixture = await fixture();
       arrange();
       await expect(f.invoke()).rejects.toThrow();
-      expect(await createSupervisorEpisodeStore(f.journalPath).read()).toMatchObject({ status: "stopped" });
+      expect(await createSupervisorEpisodeStore(f.journalPath).read()).toMatchObject({
+        status: "stopped",
+      });
     }
   });
 
   it("rejects competing payload grants and mismatched historical audit bindings", async () => {
     const f = await fixture();
     const state = f.authorityState;
-    mocks.authority.mockResolvedValue({ state: { ...state, grants: [f.grant, { ...f.grant, id: "authority-other" }] } });
+    mocks.authority.mockResolvedValue({
+      state: { ...state, grants: [f.grant, { ...f.grant, id: "authority-other" }] },
+    });
     await expect(f.invoke()).rejects.toThrow("matching retained USER authority");
     mocks.authority.mockResolvedValue({
-      state: { ...state, audit: [{ ...state.audit[0], stateFingerprintDigest: `sha256:${"f".repeat(64)}` }] },
+      state: {
+        ...state,
+        audit: [{ ...state.audit[0], stateFingerprintDigest: `sha256:${"f".repeat(64)}` }],
+      },
     });
     await expect(f.invoke()).rejects.toThrow("matching retained USER authority");
   });
@@ -310,22 +363,36 @@ describe("interrupted provider update recovery", () => {
     const f = await fixture();
     mocks.compare.mockImplementation((_root: string, args: string[]) => {
       if (args[0]!.includes("/git/commits/"))
-        return Promise.resolve({ sha: observedHead, parents: [{ sha: originalHead }, { sha: "f".repeat(40) }] });
+        return Promise.resolve({
+          sha: observedHead,
+          parents: [{ sha: originalHead }, { sha: "f".repeat(40) }],
+        });
       const [older] = args[0]!.split("/compare/")[1]!.split("...");
-      return Promise.resolve({ status: "ahead", base_commit: { sha: older }, merge_base_commit: { sha: older } });
+      return Promise.resolve({
+        status: "ahead",
+        base_commit: { sha: older },
+        merge_base_commit: { sha: older },
+      });
     });
     await expect(f.invoke()).rejects.toThrow("exact original-head/base merge commit");
   });
 
   it("rejects operator evidence with a mismatched digest", async () => {
     const f = await fixture();
-    await expect(f.invoke({ evidence: [{ ref: "hosted-pr-observation", content: "forged", digest: f.input.evidence[0]!.digest }] }))
-      .rejects.toThrow("operator evidence content digest mismatch");
+    await expect(
+      f.invoke({
+        evidence: [
+          { ref: "hosted-pr-observation", content: "forged", digest: f.input.evidence[0]!.digest },
+        ],
+      }),
+    ).rejects.toThrow("operator evidence content digest mismatch");
   });
 
   it("leaves unrelated mutating intents stopped", async () => {
     const f = await fixture("workflow-operation:pr.open");
-    await expect(f.invoke()).rejects.toThrow("exact stopped provider operation is absent or changed");
+    await expect(f.invoke()).rejects.toThrow(
+      "exact stopped provider operation is absent or changed",
+    );
     expect(await createSupervisorEpisodeStore(f.journalPath).read()).toMatchObject({
       status: "stopped",
       operations: [{ status: "intent" }],
