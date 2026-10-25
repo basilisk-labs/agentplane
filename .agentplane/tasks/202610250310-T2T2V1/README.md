@@ -1,10 +1,11 @@
 ---
 id: "202610250310-T2T2V1"
 title: "Authenticate repository-policy scope replans after approved scope requests"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -43,6 +44,22 @@ quality_review:
     - "authenticatedScopeReplanHistory accepts repository-policy approval only after an exact manual_operator USER scope grant, a plan whose every work item fits the grant authority, matching SYSTEM actor agentplane:kernel-controller, repository_policy approval mode, Plan evidence digest, authority digest, and canonical approve_plan mutation receipt."
     - "The prior USER approval route remains supported. Core tests cover valid USER and policy routes and reject wrong actor, mode, grant, and ungranted scope; the native external-agent test checks required approved-scope-replan input plus retained-result and grant tampering."
     - "AgentPlane retained focused tests, lint:core, hotspots:check, and full ci:local:full as passed in verification runs run-000 through run-003. The full CI completed all selected groups without a recorded failure."
+token_usage:
+  agent_runs: 1
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:fff8fc926c511309085b264d7f614f9156a4bfd9e82d5beeae722d3771263dda"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-10-25T07:54:28.099Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -244,9 +261,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "b6d949442e7df8afd70321410f4e0390150c683b"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "021ad50945ebdeac99752f5270e971c35641d8cd"
+  message: "✅ T2T2V1 task: authenticate repository-policy scope replans after approved scope..."
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -254,9 +274,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-25T07:54:28.099Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "021ad50945ebdeac99752f5270e971c35641d8cd"
 doc_version: 3
-doc_updated_at: "2026-10-25T07:46:24.358Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-25T07:54:28.099Z"
+doc_updated_by: "CODER"
 description: "For release 0.7.13, fix canonical rework evidence lookup after a USER-approved scope extension when the revised Plan is automatically approved by repository policy. Retain exact USER scope grant, historical blocked result, proposal/approval receipts, authority and scope ceiling checks. Support both explicit USER and repository-policy SYSTEM Plan approval without weakening fail-closed behavior. Add focused core and native external-agent regressions. No Factory-specific adapter or manual journal edits."
 sections:
   Summary: |-
@@ -405,6 +433,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:b578a5022c96aa37349eeca5baf360ed35cb552dbb5bbb8d0d83f3f30fd4182e"
     work_order_id: "sha256:3cd771f9ac846041bd428815f131eb81a14d47604f81ed23d09f85601115af97"
+  implementation_commit:
+    hash: "b6d949442e7df8afd70321410f4e0390150c683b"
+    message: "🚧 T2T2V1 task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "214a26d1bda13f9a81349cc1364669ad24dfb92c"
@@ -1030,3 +1061,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/1` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:fff8fc926c511309085b264d7f614f9156a4bfd9e82d5beeae722d3771263dda`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-10-25T07:54:28.099Z`
