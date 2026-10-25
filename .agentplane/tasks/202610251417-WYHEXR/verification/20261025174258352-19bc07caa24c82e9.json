@@ -1,0 +1,210 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun test packages/agentplane/src/commands/shared/supervisor-execution-effect-recovery.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610251417-WYHEXR/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610251417-WYHEXR Verification Contract check affected_unit_integration (1/3)\n\nCheck: affected_unit_integration\nCommand: bun run lint:core\nResult: pass\nEvidence: .agentplane/tasks/202610251417-WYHEXR/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610251417-WYHEXR Verification Contract check affected_unit_integration (2/3)\n\nCheck: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610251417-WYHEXR/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610251417-WYHEXR Verification Contract check affected_unit_integration (3/3)\n\nCheck: critical_paths\nCommand: bun test packages/agentplane/src/commands/shared/supervisor-execution-effect-recovery.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610251417-WYHEXR/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610251417-WYHEXR Verification Contract check critical_paths (1/3)\n\nCheck: critical_paths\nCommand: bun run lint:core\nResult: pass\nEvidence: .agentplane/tasks/202610251417-WYHEXR/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610251417-WYHEXR Verification Contract check critical_paths (2/3)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610251417-WYHEXR/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610251417-WYHEXR Verification Contract check critical_paths (3/3)\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610251417-WYHEXR/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610251417-WYHEXR Verification Contract check full_regression\n\nCheck: task_outcome\nCommand: bun test packages/agentplane/src/commands/shared/supervisor-execution-effect-recovery.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610251417-WYHEXR/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610251417-WYHEXR Verification Contract check task_outcome (1/3)\n\nCheck: task_outcome\nCommand: bun run lint:core\nResult: pass\nEvidence: .agentplane/tasks/202610251417-WYHEXR/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610251417-WYHEXR Verification Contract check task_outcome (2/3)\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610251417-WYHEXR/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610251417-WYHEXR Verification Contract check task_outcome (3/3)",
+  "digest": "sha256:19bc07caa24c82e9bc83aca858dd043b6049fa526782b45e2998fe1de50c9065",
+  "implementation_sha": "867e10bc68cddae80edcfeeb4ee38d61fc64a377",
+  "input": {
+    "checked_input": {
+      "commands": {
+        "digest": "sha256:242e4fd5f9a599b3645e8f3ae00c5390722333f77e2a7ffe494edd5a4d96b9d6",
+        "entries": [
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run lint:core"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun test packages/agentplane/src/commands/shared/supervisor-execution-effect-recovery.test.ts"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run lint:core"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun test packages/agentplane/src/commands/shared/supervisor-execution-effect-recovery.test.ts"
+          },
+          {
+            "check_id": "full_regression",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run lint:core"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun test packages/agentplane/src/commands/shared/supervisor-execution-effect-recovery.test.ts"
+          }
+        ]
+      },
+      "context": {
+        "digest": "sha256:99daad1395e800c14511aa93bdd1543575521f4ee89189529a3fb84c4b785e2b",
+        "paths": [
+          ".agentplane/WORKFLOW.md",
+          ".github/ISSUE_TEMPLATE/config.yml",
+          "bun.lock",
+          "depcruise.config.cjs",
+          "eslint.config.cjs",
+          "knip.json",
+          "package.json",
+          "packages/agentplane/package.json",
+          "packages/agentplane/src/cli/run-cli/commands/config.ts",
+          "packages/agentplane/src/runner/config.test.ts",
+          "packages/agentplane/src/runner/config.ts",
+          "packages/agentplane/tsconfig.json",
+          "packages/agentplane/tsup.config.ts",
+          "packages/core/package.json",
+          "packages/core/schemas/config.schema.json",
+          "packages/core/src/config/config.test.ts",
+          "packages/core/src/config/config.ts",
+          "packages/core/tsconfig.json",
+          "packages/core/tsup.config.ts",
+          "packages/recipes/package.json",
+          "packages/recipes/tsconfig.json",
+          "packages/recipes/tsup.config.ts",
+          "packages/spec/examples/config.json",
+          "packages/spec/package.json",
+          "packages/spec/schemas/config.schema.json",
+          "packages/testkit/package.json",
+          "packages/testkit/tsconfig.json",
+          "schemas/config.schema.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package-lock.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package.json",
+          "tsconfig.json",
+          "turbo.json",
+          "vitest.config.ts",
+          "vitest.workspace.ts"
+        ]
+      },
+      "digest": "sha256:b281891fd5fefa950ed515ffc2353867d31489455e65b8d4a7d6d2368b086bf3",
+      "environment": {
+        "digest": "sha256:9ec5bf2323cd53a84a354760f7a2e04adc570a2f8a0452d4311892dcb83d880b",
+        "runtime": {
+          "architecture": "x64",
+          "bun_major": null,
+          "node_major": "24",
+          "platform": "linux"
+        }
+      },
+      "evidence": {
+        "details_digest": "sha256:5ab08d3f33a1a90fc2be1ae23c27ed5c48f260611bfa611f0772de63304029af",
+        "digest": "sha256:ffe139ba4040064ca138ab6d51310bfd6d6b389474f61381506853e714ac41ec",
+        "references": [
+          {
+            "digest": "sha256:118a2f2f942f88ee61b8a4f3c5815a148b5408a2056fb79c19cef499bf43bedf",
+            "fragment": "check-1",
+            "path": ".agentplane/tasks/202610251417-WYHEXR/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610251417-WYHEXR/supervision/declared-checks.json#check-1",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:118a2f2f942f88ee61b8a4f3c5815a148b5408a2056fb79c19cef499bf43bedf",
+            "fragment": "check-2",
+            "path": ".agentplane/tasks/202610251417-WYHEXR/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610251417-WYHEXR/supervision/declared-checks.json#check-2",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:118a2f2f942f88ee61b8a4f3c5815a148b5408a2056fb79c19cef499bf43bedf",
+            "fragment": "check-3",
+            "path": ".agentplane/tasks/202610251417-WYHEXR/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610251417-WYHEXR/supervision/declared-checks.json#check-3",
+            "source": "filesystem"
+          }
+        ]
+      },
+      "implementation": {
+        "base_sha": "43599c5f5a42310f4b5265def081b1d5ccb26fa8",
+        "digest": "sha256:f789ad4daba46425bd5eb328e36270f6719b1cf2d66c78ba8061dac9aff37ffa",
+        "strategy": "branch_diff",
+        "target_sha": "867e10bc68cddae80edcfeeb4ee38d61fc64a377"
+      }
+    },
+    "concurrency": {
+      "digest": "sha256:117a33b8dca4fac64754962cc8dff5e003efd0879195f7328b2d482add5b444b",
+      "execution": {
+        "authoritative_task_source": "task_worktree",
+        "base_ref": "main",
+        "base_sha": "43599c5f5a42310f4b5265def081b1d5ccb26fa8",
+        "digest": "sha256:7d3803e77ebe6a705f5302bf92369582eac02d7f3cdbc5d48f02c025f12aa1e2",
+        "primary_task_id": "202610251417-WYHEXR",
+        "reason_codes": [
+          "agent_preferred_branch_pr",
+          "effect_security_boundary",
+          "repository_branch_pr_floor"
+        ],
+        "repository_mode": "branch_pr",
+        "requested_mode": "branch_pr",
+        "route_source": "execution_contract",
+        "selected_mode": "branch_pr",
+        "task_ids": [
+          "202610251417-WYHEXR"
+        ]
+      },
+      "task": {
+        "capability": {
+          "digest": "sha256:558663a1a3c98babbd4c45be033da50a564647bc7797c8e00c170c97d7b597ff"
+        },
+        "checks": {
+          "digest": "sha256:bfb99fe4582836b840448079bcbba5780d33931718f6c340c909d6f37429aa97",
+          "required_check_ids": [
+            "affected_unit_integration",
+            "critical_paths",
+            "full_regression",
+            "task_outcome"
+          ],
+          "verification_contract_digest": "sha256:860d920d0be17600abab77b4b24d6e659754a8145f25d99310d189c1be255637"
+        },
+        "digest": "sha256:edd3795cd4d6b4acb89ad9d34b5598daa689901aaf3efaa91ccfcf263e11c4ed",
+        "kind": "agentplane.native_task_identity",
+        "plan": {
+          "approval_state": "approved",
+          "approved_digest": "sha256:7035ddcb213d8a43fbbbc3ea28d96922af5817b3b70067aa40e19cda822a6fe7",
+          "digest": "sha256:7035ddcb213d8a43fbbbc3ea28d96922af5817b3b70067aa40e19cda822a6fe7",
+          "revision": 1
+        },
+        "policy": {
+          "digest": "sha256:b0f3ed8717357e14968093aaf83e3059ba55a248477be0e758cb9ae571d6f7ac"
+        },
+        "schema_version": 1,
+        "task_id": "202610251417-WYHEXR"
+      }
+    },
+    "digest": "sha256:65a557d13e237a5f08d5a283c4073ae1ac07a5f1c0de3171ca59c7b61f844011",
+    "kind": "task_verification_input",
+    "obligations": {
+      "digest": "sha256:437bbbd751d7a326fac2bcc89e43b2321969459c0e88683e7e545223d27ff8c4",
+      "required_check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "full_regression",
+        "task_outcome"
+      ],
+      "verification_contract_digest": "sha256:860d920d0be17600abab77b4b24d6e659754a8145f25d99310d189c1be255637",
+      "verify_steps_digest": "sha256:314bc460f82eb8ce5ee61d8edff8f1275de1d3860d3a9b8a76c40c84b44bb458"
+    },
+    "schema_version": 5
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: canonical Task Kernel final checks passed.",
+  "recorded_at": "2026-10-25T17:42:58.352Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Recover proven applied provider branch updates after interrupted supervisor intents\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Recover proven applied provider branch updates after interrupted supervisor intents\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:314bc460f82eb8ce5ee61d8edff8f1275de1d3860d3a9b8a76c40c84b44bb458",
+  "task_id": "202610251417-WYHEXR",
+  "verification_command": "agentplane verify 202610251417-WYHEXR --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

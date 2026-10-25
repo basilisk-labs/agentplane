@@ -15,8 +15,8 @@ A completed branch_pr task can retain a stopped effect_in_doubt provider.pr.upda
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>

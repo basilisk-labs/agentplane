@@ -1,0 +1,7 @@
+""
+"packages/agentplane/src/commands/shared/supervisor-execution-effect-recovery.test.ts:"
+"(pass) worktree recovery leaves a stopped provider update intent untouched [11.89ms]"
+""
+" 1 pass"
+" 0 fail"
+"Ran 1 test across 1 file. [229.00ms]"
