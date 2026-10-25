@@ -24,7 +24,7 @@ import {
   type WorkflowStep,
 } from "./workflow-step.js";
 
-function operationPayloadDigest(payload: {
+export function operationPayloadDigest(payload: {
   id: WorkflowOperationId;
   type: WorkflowOperation["type"];
   params: WorkflowOperation["params"];

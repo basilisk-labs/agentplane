@@ -48,9 +48,8 @@ vi.mock("../../adapters/task-backend/kernel-record.js", () => ({
 vi.mock("./execution-authority-context.js", () => ({
   resolveLogicalRepositoryIdentity: () => Promise.resolve("repository"),
 }));
-vi.mock("./external-agent-workflow-recovery.js", () => ({
-  reconcileIntegrationEffect: mocks.reconcile,
-  requireIntegrationEffectResolution: vi.fn(),
+vi.mock("./workflow-effect-recovery.js", () => ({
+  reconcileWorkflowEffect: mocks.reconcile,
 }));
 import { makeRunTaskAdvanceHandler } from "./advance.command.js";
 

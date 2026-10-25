@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202610251417-WYHEXR/recover-proven-applied-provider-branch-updates-a",
+  "created_at": "2026-10-25T14:55:38.380Z",
+  "diffstat_sha256": "sha256:54cd7e253b05027aa7120deb24f2153e6e5f5064f63e0ef3b867ffe84dc402c6",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610251417-WYHEXR",
+  "updated_at": "2026-10-25T14:55:38.380Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

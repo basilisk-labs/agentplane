@@ -18,7 +18,7 @@ import {
 import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
 import { classifyKernelCutover } from "./kernel-cutover.js";
 import { advanceOrdinaryRoute } from "./ordinary-advance-step.js";
-import { reconcileIntegrationEffect } from "./external-agent-workflow-recovery.js";
+import { reconcileWorkflowEffect } from "./workflow-effect-recovery.js";
 import { preparePersistedSupervisorReplacementAfterFailure } from "../shared/supervisor-execution-episode.js";
 
 function legacyMigrationRequired(taskId: string, reason: string): CliError {
@@ -124,7 +124,7 @@ export function makeRunTaskAdvanceHandler(deps: {
           code: "E_USAGE",
           message: "Canonical workflow recovery requires an already completed Task.",
         });
-      const resolution = await reconcileIntegrationEffect({
+      const resolution = await reconcileWorkflowEffect({
         command,
         task_id: parsed.taskId,
         input_path: parsed.workflowRecovery,
