@@ -1,4 +1,6 @@
 import { readTaskKernel, reportTaskKernelRead } from "./kernel-read.js";
+import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
+import { CliError } from "../../shared/errors.js";
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { createCliEmitter, infoMessage } from "../../cli/output.js";
 import {
@@ -163,6 +165,30 @@ export function makeRunTaskNextActionHandler(session: {
       ? session.getRemoteContext("task next-action")
       : session.getLocalContext("task next-action"));
     const canonical = await readTaskKernel(commandCtx, parsed.taskId);
+    if (canonical.kind === "legacy_unmigrated") {
+      const projected = await commandCtx.taskBackend.getTask(parsed.taskId);
+      const embedded = projected ? taskCentricAggregateFromExtensions(projected.extensions) : null;
+      if (
+        projected?.revision !== undefined &&
+        embedded &&
+        projected.revision !== embedded.revision
+      ) {
+        throw new CliError({
+          code: "E_VALIDATION",
+          message:
+            `Task-centric revision split blocks ${parsed.taskId}: ` +
+            `README ${String(projected.revision)}, aggregate ${embedded.revision}. ` +
+            `Run agentplane doctor and inspect task show ${parsed.taskId} --json; ` +
+            "use only an evidence-specific recovery before a lifecycle transition.",
+          context: {
+            reason_code: "task_centric_revision_split",
+            task_id: parsed.taskId,
+            readme_revision: projected.revision ?? null,
+            aggregate_revision: embedded.revision,
+          },
+        });
+      }
+    }
     if (canonical.kind !== "legacy_unmigrated" && !parsed.remote) {
       return reportTaskKernelRead(canonical, parsed.taskId, parsed.json, commandCtx);
     }
