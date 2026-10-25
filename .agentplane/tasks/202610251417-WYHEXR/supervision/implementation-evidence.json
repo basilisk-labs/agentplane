@@ -1,0 +1,79 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 43599c5f5a42310f4b5265def081b1d5ccb26fa8..157000e7afb475caa085d698173d5ae9ec9afb10",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 43599c5f5a42310f4b5265def081b1d5ccb26fa8..157000e7afb475caa085d698173d5ae9ec9afb10",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202610251417-WYHEXR/README.md",
+        "A\t.agentplane/tasks/202610251417-WYHEXR/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202610251417-WYHEXR/pr/github-body.md",
+        "A\t.agentplane/tasks/202610251417-WYHEXR/pr/github-title.txt",
+        "A\t.agentplane/tasks/202610251417-WYHEXR/pr/meta.json",
+        "A\t.agentplane/tasks/202610251417-WYHEXR/pr/review.md",
+        "A\t.agentplane/tasks/202610251417-WYHEXR/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
+        "A\t.agentplane/tasks/202610251417-WYHEXR/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+        "A\tpackages/agentplane/src/commands/shared/supervisor-execution-effect-recovery.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/workflow-step-authority.ts",
+        "M\tpackages/agentplane/src/commands/task/advance.command.ts",
+        "M\tpackages/agentplane/src/commands/task/ordinary-advance-step.ts",
+        "A\tpackages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts",
+        "A\tpackages/agentplane/src/commands/task/provider-update-effect-recovery.ts",
+        "M\tpackages/agentplane/src/commands/task/roadmap-integration-parity.test.ts",
+        "A\tpackages/agentplane/src/commands/task/workflow-effect-recovery.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "43599c5f5a42310f4b5265def081b1d5ccb26fa8",
+  "implementation_commit": "157000e7afb475caa085d698173d5ae9ec9afb10",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      "?? .agentplane/tasks/202610251417-WYHEXR/README.md",
+      "?? .agentplane/tasks/202610251417-WYHEXR/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
+      "?? .agentplane/tasks/202610251417-WYHEXR/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610251417-WYHEXR/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610251417-WYHEXR/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610251417-WYHEXR/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      "?? .agentplane/tasks/202610251417-WYHEXR/README.md",
+      "?? .agentplane/tasks/202610251417-WYHEXR/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
+      "?? .agentplane/tasks/202610251417-WYHEXR/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202610251417-WYHEXR"
+}

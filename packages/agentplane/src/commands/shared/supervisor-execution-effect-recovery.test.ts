@@ -1,5 +1,4 @@
 import { deepStrictEqual, strictEqual } from "node:assert/strict";
-import { test } from "bun:test";
 import {
   buildStateFingerprint,
   createSupervisorExecutionEpisodeJournal,
@@ -9,9 +8,15 @@ import {
 
 import { recoverProvenNotAppliedWorktreePreparation } from "./supervisor-execution-effect-recovery.js";
 
-const bunTest = test as unknown as (name: string, run: () => Promise<void>) => void;
+const testRuntime =
+  "Bun" in globalThis
+    ? ((await import("bun" + ":test")) as {
+        test: (name: string, run: () => Promise<void>) => void;
+      })
+    : await import("vitest");
+const runTest = testRuntime.test;
 
-bunTest("worktree recovery leaves a stopped provider update intent untouched", async () => {
+runTest("worktree recovery leaves a stopped provider update intent untouched", async () => {
   const taskId = "202610251417-RECOVR";
   const component = { state: "present", source: "test", value: { taskId } } as const;
   const fingerprint = buildStateFingerprint({
@@ -74,7 +79,10 @@ bunTest("worktree recovery leaves a stopped provider update intent untouched", a
     journal: stopped,
     operation: { id: "provider.pr.update_branch", idempotencyKey: effectRef },
     state_fingerprint_digest: fingerprint.digest,
-    compare_and_swap: () => { writes += 1; return Promise.resolve(true); },
+    compare_and_swap: () => {
+      writes += 1;
+      return Promise.resolve(true);
+    },
   });
   deepStrictEqual(actual, stopped);
   strictEqual(writes, 0);
