@@ -12,8 +12,8 @@ Created: 2026-10-25T14:55:38.380Z
 
 ## Verification
 
-- State: ok
-- Note: Verified: canonical Task Kernel final checks passed.
+- State: needs_rework
+- Note: Rework: Declared check failed: bun run lint:core
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-10-25T14:55:38.380Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-10-25T14:55:38.380Z
+- Updated: 2026-10-25T17:46:12.223Z
 - Branch: task/202610251417-WYHEXR/recover-proven-applied-provider-branch-updates-a
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

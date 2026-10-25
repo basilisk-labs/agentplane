@@ -1,0 +1,173 @@
+{
+  "details": "Command: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610251417-WYHEXR/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610251417-WYHEXR declared verification\n\nCommand: bun run lint:core\nResult: fail\nEvidence: .agentplane/tasks/202610251417-WYHEXR/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610251417-WYHEXR declared verification",
+  "digest": "sha256:b1a3975f011306118778b556d663ef7a0746923ce45692554935c9140bb66306",
+  "implementation_sha": "e0a1638f33d081e07b697fea72278a4cc87467dc",
+  "input": {
+    "checked_input": {
+      "commands": {
+        "digest": "sha256:125e67431dd25ddbabe2b75ada555892a646eef0ea0b331593283d80bd4276f4",
+        "entries": [
+          {
+            "check_id": null,
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": null,
+            "command": "bun run lint:core"
+          }
+        ]
+      },
+      "context": {
+        "digest": "sha256:99daad1395e800c14511aa93bdd1543575521f4ee89189529a3fb84c4b785e2b",
+        "paths": [
+          ".agentplane/WORKFLOW.md",
+          ".github/ISSUE_TEMPLATE/config.yml",
+          "bun.lock",
+          "depcruise.config.cjs",
+          "eslint.config.cjs",
+          "knip.json",
+          "package.json",
+          "packages/agentplane/package.json",
+          "packages/agentplane/src/cli/run-cli/commands/config.ts",
+          "packages/agentplane/src/runner/config.test.ts",
+          "packages/agentplane/src/runner/config.ts",
+          "packages/agentplane/tsconfig.json",
+          "packages/agentplane/tsup.config.ts",
+          "packages/core/package.json",
+          "packages/core/schemas/config.schema.json",
+          "packages/core/src/config/config.test.ts",
+          "packages/core/src/config/config.ts",
+          "packages/core/tsconfig.json",
+          "packages/core/tsup.config.ts",
+          "packages/recipes/package.json",
+          "packages/recipes/tsconfig.json",
+          "packages/recipes/tsup.config.ts",
+          "packages/spec/examples/config.json",
+          "packages/spec/package.json",
+          "packages/spec/schemas/config.schema.json",
+          "packages/testkit/package.json",
+          "packages/testkit/tsconfig.json",
+          "schemas/config.schema.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package-lock.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package.json",
+          "tsconfig.json",
+          "turbo.json",
+          "vitest.config.ts",
+          "vitest.workspace.ts"
+        ]
+      },
+      "digest": "sha256:67b01275a49f8ae16b75ed06f4a7bc44c33d9efa3aab92b612595d95a7fd8bee",
+      "environment": {
+        "digest": "sha256:9ec5bf2323cd53a84a354760f7a2e04adc570a2f8a0452d4311892dcb83d880b",
+        "runtime": {
+          "architecture": "x64",
+          "bun_major": null,
+          "node_major": "24",
+          "platform": "linux"
+        }
+      },
+      "evidence": {
+        "details_digest": "sha256:26bb8406421d86891563f9e999ab080d9028b45ad810eb6a04c61ea7c14cde77",
+        "digest": "sha256:99714537124d494f6b42d7dad4430c11f537cef6dc28f3910808fab8437988d4",
+        "references": [
+          {
+            "digest": "sha256:be103a574456ec7bb95e801248d4d09bfc043579271c869a2ce3898e6dc4149a",
+            "fragment": "check-1",
+            "path": ".agentplane/tasks/202610251417-WYHEXR/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610251417-WYHEXR/supervision/declared-checks.json#check-1",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:be103a574456ec7bb95e801248d4d09bfc043579271c869a2ce3898e6dc4149a",
+            "fragment": "check-2",
+            "path": ".agentplane/tasks/202610251417-WYHEXR/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610251417-WYHEXR/supervision/declared-checks.json#check-2",
+            "source": "filesystem"
+          }
+        ]
+      },
+      "implementation": {
+        "base_sha": "43599c5f5a42310f4b5265def081b1d5ccb26fa8",
+        "digest": "sha256:4cbe731fd950f04f33aef6f518e4d5b36fc02b9e8a5d1474cb34cee9fe4f1bb3",
+        "strategy": "branch_diff",
+        "target_sha": "e0a1638f33d081e07b697fea72278a4cc87467dc"
+      }
+    },
+    "concurrency": {
+      "digest": "sha256:90c14d224c03c2c3bc56d5e496ee04515aa948cb5a1271fa388c2ee734c8ac17",
+      "execution": {
+        "authoritative_task_source": "task_worktree",
+        "base_ref": "main",
+        "base_sha": "43599c5f5a42310f4b5265def081b1d5ccb26fa8",
+        "digest": "sha256:7d3803e77ebe6a705f5302bf92369582eac02d7f3cdbc5d48f02c025f12aa1e2",
+        "primary_task_id": "202610251417-WYHEXR",
+        "reason_codes": [
+          "agent_preferred_branch_pr",
+          "effect_security_boundary",
+          "repository_branch_pr_floor"
+        ],
+        "repository_mode": "branch_pr",
+        "requested_mode": "branch_pr",
+        "route_source": "execution_contract",
+        "selected_mode": "branch_pr",
+        "task_ids": [
+          "202610251417-WYHEXR"
+        ]
+      },
+      "task": {
+        "capability": {
+          "digest": "sha256:558663a1a3c98babbd4c45be033da50a564647bc7797c8e00c170c97d7b597ff"
+        },
+        "checks": {
+          "digest": "sha256:663df34a4fe7657bf488b35eec483001f4b682562326eb4079e52d4c8eee6622",
+          "required_check_ids": [
+            "affected_unit_integration",
+            "critical_paths",
+            "docs_contract",
+            "full_regression",
+            "task_outcome"
+          ],
+          "verification_contract_digest": "sha256:de6c61213e34469edb1080827a696e3b34d7098b12c8f9e34c6d0a4e4ccfcc6d"
+        },
+        "digest": "sha256:f261740081a50289f465d672b9e902e7f81f21a9e75772bba825e03ce3949b17",
+        "kind": "agentplane.native_task_identity",
+        "plan": {
+          "approval_state": "approved",
+          "approved_digest": "sha256:7035ddcb213d8a43fbbbc3ea28d96922af5817b3b70067aa40e19cda822a6fe7",
+          "digest": "sha256:7035ddcb213d8a43fbbbc3ea28d96922af5817b3b70067aa40e19cda822a6fe7",
+          "revision": 1
+        },
+        "policy": {
+          "digest": "sha256:b0f3ed8717357e14968093aaf83e3059ba55a248477be0e758cb9ae571d6f7ac"
+        },
+        "schema_version": 1,
+        "task_id": "202610251417-WYHEXR"
+      }
+    },
+    "digest": "sha256:8d52a706383489b3bba2eab785059349923916833448582ead1a80ad1ca19e9c",
+    "kind": "task_verification_input",
+    "obligations": {
+      "digest": "sha256:bbc1a36c1932acb4795e861d63121b29fe1d74f0f537a8cbce8c9cd6ff65dc7c",
+      "required_check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "full_regression",
+        "task_outcome"
+      ],
+      "verification_contract_digest": "sha256:de6c61213e34469edb1080827a696e3b34d7098b12c8f9e34c6d0a4e4ccfcc6d",
+      "verify_steps_digest": "sha256:314bc460f82eb8ce5ee61d8edff8f1275de1d3860d3a9b8a76c40c84b44bb458"
+    },
+    "schema_version": 5
+  },
+  "kind": "task_verification_record",
+  "note": "Rework: Declared check failed: bun run lint:core",
+  "recorded_at": "2026-10-25T20:37:48.039Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Recover proven applied provider branch updates after interrupted supervisor intents\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Recover proven applied provider branch updates after interrupted supervisor intents\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:314bc460f82eb8ce5ee61d8edff8f1275de1d3860d3a9b8a76c40c84b44bb458",
+  "task_id": "202610251417-WYHEXR",
+  "verification_command": "agentplane verify 202610251417-WYHEXR --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
