@@ -16,13 +16,13 @@ Align task-new exit assertions with current validation contract and isolate synt
 ## Verification
 
 - State: ok
-- Note: Verified: canonical Task Kernel final checks passed.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-10-24T10:18:44.031Z
+- Updated: 2026-10-24T13:26:44.856Z
 - Branch: task/202610240900-KTH2RZ/repair-release-chunk51-cli-test-fixtures-for-can
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
