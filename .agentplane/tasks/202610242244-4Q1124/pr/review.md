@@ -6,7 +6,7 @@ Created: 2026-10-24T23:07:04.256Z
 
 - Task: `202610242244-4Q1124`
 - Title: Fail closed on unresolved read-only supervisor intent before canonical provider effects
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610242244-4Q1124/fail-closed-on-unresolved-read-only-supervisor-i`
 - Canonical task record: `.agentplane/tasks/202610242244-4Q1124/README.md`
 
