@@ -38,7 +38,7 @@ const identitySchema = z.strictObject({
   targetUrl: nonempty,
 });
 
-export const providerUpdateEffectResolutionSchema = z.strictObject({
+const providerUpdateEffectResolutionSchema = z.strictObject({
   schema_version: z.literal(1),
   kind: z.literal("provider_update_branch_effect_resolution"),
   task_id: nonempty,
