@@ -1,10 +1,10 @@
 ---
 id: "202610251040-KDBTXH"
 title: "Keep historical compatibility package delta valid after later surface changes"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -428,7 +428,7 @@ sections:
   Findings: ""
 extensions:
   agentplane.kernel_operational_projection:
-    digest: "sha256:de2e3f207ac75977018a71c5ade1a4c3c78be77238523106d1a4960d1737f0d4"
+    digest: "sha256:b8c8cba261f78de340095f1ce5da425e8fecd16d157de6f767c8ef3fc40697cd"
     evidence_refs:
       - "../../../.git/agentplane/kernel/exchanges/202610251040-KDBTXH/27ca01762c058374222ba8175976e3c9c75b472f4fc30b12601e36caf27c6659/quality-report.json"
     findings:
@@ -441,7 +441,7 @@ extensions:
     review_identity_digest: "sha256:abc5ba3d76f3949f98108829631ec1617813c84a331839ae2dba3415f211f125"
     schema_version: 1
     source: "task_kernel"
-    verification_evidence_digest: "sha256:62f9d6f6c552dda51ddb4782f2f71036e1e7295a2129ace07c750c2ebab8709e"
+    verification_evidence_digest: "sha256:dbfd0765218afae0e5dcfed730169d0193c61ee1a95f4653d12b574ebd87c516"
     work_order_id: "sha256:8686d8b24820232617a30f4103ad25be2f0ad249cbe883d5cad3a3459da0fc8d"
   task_execution_context:
     base_ref: "main"
@@ -620,6 +620,15 @@ extensions:
           event_digests:
             - "sha256:8677f8c07667b1257a3d2032b138f6d027fb2bc1213647794a91e2043228a37a"
           mutation_id: "final-validation:sha256:dbfd0765218afae0e5dcfed730169d0193c61ee1a95f4653d12b574ebd87c516:11"
+        kernel_task_completion_required:sha256:44a6b71fcfca850cd97d267b9012f2d098481699df006a4762f20269f48a95a8:sha256:eb618e83fba1b24c36eed2955aa6c98bad461deeba0c234b9f44e0070fe2a5cd:
+          after_revision: 13
+          aggregate_digest: "sha256:99d109abb638087cbd29c417c7e9bfc163c7a73ebf2e06eb193c1b9283821ea7"
+          before_revision: 12
+          command_digest: "sha256:da5400b2a43c541ef9eff2d90a5d0d44aa564997fa864c6c367441fd7ad47cd2"
+          effect_ids: []
+          event_digests:
+            - "sha256:59fad4fa6e8c427d7ba981c42fc7efb1dcc51da43cb94d332184c598176c677b"
+          mutation_id: "kernel_task_completion_required:sha256:44a6b71fcfca850cd97d267b9012f2d098481699df006a4762f20269f48a95a8:sha256:eb618e83fba1b24c36eed2955aa6c98bad461deeba0c234b9f44e0070fe2a5cd"
         kernel_work_item_claim_required:sha256:65eb1ec57d72991ca42050609782992a8b642c19545b1afc1b447ae7aa656158:sha256:17a5ba218d357bf7555fdc3a55bd1669d2a2a96885b3d2d028743f3b89355468:
           after_revision: 5
           aggregate_digest: "sha256:2d614cb2c8076d09fd714226264859e73c3a67964ea861ba836cb818b343f70b"
@@ -711,9 +720,9 @@ extensions:
             - "sha256:9656d0eb8189b2960a8198ee25153aca14844264e521c3de59b4d75590977732"
           mutation_id: "validation:sha256:27ca01762c058374222ba8175976e3c9c75b472f4fc30b12601e36caf27c6659"
       plan_history: []
-      revision: 12
+      revision: 13
       schema_version: 1
-      state: "FINAL_VALIDATION"
+      state: "COMPLETED"
       work_items:
         validate-historical-package-delta:
           attempt: 1
@@ -796,7 +805,7 @@ extensions:
               toolchain_digest: "sha256:ae9b1f430f69f8222cf51f0882e83f5a81914ade7b73607adb8b06158650d837"
             observed_at: "2026-10-25T11:27:22.227Z"
             status: "PASSED"
-    digest: "sha256:44a6b71fcfca850cd97d267b9012f2d098481699df006a4762f20269f48a95a8"
+    digest: "sha256:9b83436967c4d1d9f1a6c898b8bc555010b67e7e6f92173f494b6eadd2b4577a"
     documents:
       contracts:
         sha256:cd75b02349d94dc20234251845670c8ef3752501f0f6e1e673cef510db33e567:
@@ -925,6 +934,15 @@ extensions:
         payload_digest: "sha256:9e549d5b36bd56fef56919030b686bf2c89c370449146299ed7a802bfe2aff52"
         task_id: "202610251040-KDBTXH"
         task_revision: 12
+      -
+        command_digest: "sha256:da5400b2a43c541ef9eff2d90a5d0d44aa564997fa864c6c367441fd7ad47cd2"
+        id: "kernel_task_completion_required:sha256:44a6b71fcfca850cd97d267b9012f2d098481699df006a4762f20269f48a95a8:sha256:eb618e83fba1b24c36eed2955aa6c98bad461deeba0c234b9f44e0070fe2a5cd:task_completed"
+        kind: "task_completed"
+        mutation_id: "kernel_task_completion_required:sha256:44a6b71fcfca850cd97d267b9012f2d098481699df006a4762f20269f48a95a8:sha256:eb618e83fba1b24c36eed2955aa6c98bad461deeba0c234b9f44e0070fe2a5cd"
+        occurred_at: "2026-10-25T12:23:05.048Z"
+        payload_digest: "sha256:ae743eab051bd6a1e4873e5dd9f9c4f11e55aba5a3ec2b0a285930130dc72fbd"
+        task_id: "202610251040-KDBTXH"
+        task_revision: 13
     kind: "canonical_task"
     repository_identity: "sha256:54ebc175d5062bd17583cc599ab63bc6327beb701cc820e49ae678de363898e0"
     schema_version: 1

@@ -1,0 +1,248 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: node --test scripts/lib/compatibility-incremental-package-delta.test.mjs\nResult: pass\nEvidence: .agentplane/tasks/202610251040-KDBTXH/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610251040-KDBTXH Verification Contract check affected_unit_integration (1/5)\n\nCheck: affected_unit_integration\nCommand: bun run bench:compatibility:candidate:check\nResult: pass\nEvidence: .agentplane/tasks/202610251040-KDBTXH/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610251040-KDBTXH Verification Contract check affected_unit_integration (2/5)\n\nCheck: affected_unit_integration\nCommand: bun run bench:compatibility:check\nResult: pass\nEvidence: .agentplane/tasks/202610251040-KDBTXH/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610251040-KDBTXH Verification Contract check affected_unit_integration (3/5)\n\nCheck: affected_unit_integration\nCommand: bun run hotspots:check\nResult: pass\nEvidence: .agentplane/tasks/202610251040-KDBTXH/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610251040-KDBTXH Verification Contract check affected_unit_integration (4/5)\n\nCheck: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610251040-KDBTXH/supervision/declared-checks.json#check-5\nScope: branch_pr task 202610251040-KDBTXH Verification Contract check affected_unit_integration (5/5)\n\nCheck: critical_paths\nCommand: node --test scripts/lib/compatibility-incremental-package-delta.test.mjs\nResult: pass\nEvidence: .agentplane/tasks/202610251040-KDBTXH/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610251040-KDBTXH Verification Contract check critical_paths (1/5)\n\nCheck: critical_paths\nCommand: bun run bench:compatibility:candidate:check\nResult: pass\nEvidence: .agentplane/tasks/202610251040-KDBTXH/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610251040-KDBTXH Verification Contract check critical_paths (2/5)\n\nCheck: critical_paths\nCommand: bun run bench:compatibility:check\nResult: pass\nEvidence: .agentplane/tasks/202610251040-KDBTXH/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610251040-KDBTXH Verification Contract check critical_paths (3/5)\n\nCheck: critical_paths\nCommand: bun run hotspots:check\nResult: pass\nEvidence: .agentplane/tasks/202610251040-KDBTXH/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610251040-KDBTXH Verification Contract check critical_paths (4/5)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610251040-KDBTXH/supervision/declared-checks.json#check-5\nScope: branch_pr task 202610251040-KDBTXH Verification Contract check critical_paths (5/5)\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610251040-KDBTXH/supervision/declared-checks.json#check-5\nScope: branch_pr task 202610251040-KDBTXH Verification Contract check full_regression\n\nCheck: task_outcome\nCommand: node --test scripts/lib/compatibility-incremental-package-delta.test.mjs\nResult: pass\nEvidence: .agentplane/tasks/202610251040-KDBTXH/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610251040-KDBTXH Verification Contract check task_outcome (1/5)\n\nCheck: task_outcome\nCommand: bun run bench:compatibility:candidate:check\nResult: pass\nEvidence: .agentplane/tasks/202610251040-KDBTXH/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610251040-KDBTXH Verification Contract check task_outcome (2/5)\n\nCheck: task_outcome\nCommand: bun run bench:compatibility:check\nResult: pass\nEvidence: .agentplane/tasks/202610251040-KDBTXH/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610251040-KDBTXH Verification Contract check task_outcome (3/5)\n\nCheck: task_outcome\nCommand: bun run hotspots:check\nResult: pass\nEvidence: .agentplane/tasks/202610251040-KDBTXH/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610251040-KDBTXH Verification Contract check task_outcome (4/5)\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610251040-KDBTXH/supervision/declared-checks.json#check-5\nScope: branch_pr task 202610251040-KDBTXH Verification Contract check task_outcome (5/5)",
+  "digest": "sha256:57d9b36b463d0120299c2d35553aad7b27f2ef325b478047ffb08bd07c9f8464",
+  "implementation_sha": "fc893a0fc31d7faf2addbed38bf64117b3402785",
+  "input": {
+    "checked_input": {
+      "commands": {
+        "digest": "sha256:d33631f03a67fa82b6a7c0eee7bfaaaaf33be7cefa30a615391e56be710a4f02",
+        "entries": [
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run bench:compatibility:candidate:check"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run bench:compatibility:check"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run hotspots:check"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "node --test scripts/lib/compatibility-incremental-package-delta.test.mjs"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run bench:compatibility:candidate:check"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run bench:compatibility:check"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run hotspots:check"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "node --test scripts/lib/compatibility-incremental-package-delta.test.mjs"
+          },
+          {
+            "check_id": "full_regression",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run bench:compatibility:candidate:check"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run bench:compatibility:check"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run hotspots:check"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "node --test scripts/lib/compatibility-incremental-package-delta.test.mjs"
+          }
+        ]
+      },
+      "context": {
+        "digest": "sha256:99daad1395e800c14511aa93bdd1543575521f4ee89189529a3fb84c4b785e2b",
+        "paths": [
+          ".agentplane/WORKFLOW.md",
+          ".github/ISSUE_TEMPLATE/config.yml",
+          "bun.lock",
+          "depcruise.config.cjs",
+          "eslint.config.cjs",
+          "knip.json",
+          "package.json",
+          "packages/agentplane/package.json",
+          "packages/agentplane/src/cli/run-cli/commands/config.ts",
+          "packages/agentplane/src/runner/config.test.ts",
+          "packages/agentplane/src/runner/config.ts",
+          "packages/agentplane/tsconfig.json",
+          "packages/agentplane/tsup.config.ts",
+          "packages/core/package.json",
+          "packages/core/schemas/config.schema.json",
+          "packages/core/src/config/config.test.ts",
+          "packages/core/src/config/config.ts",
+          "packages/core/tsconfig.json",
+          "packages/core/tsup.config.ts",
+          "packages/recipes/package.json",
+          "packages/recipes/tsconfig.json",
+          "packages/recipes/tsup.config.ts",
+          "packages/spec/examples/config.json",
+          "packages/spec/package.json",
+          "packages/spec/schemas/config.schema.json",
+          "packages/testkit/package.json",
+          "packages/testkit/tsconfig.json",
+          "schemas/config.schema.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package-lock.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package.json",
+          "tsconfig.json",
+          "turbo.json",
+          "vitest.config.ts",
+          "vitest.workspace.ts"
+        ]
+      },
+      "digest": "sha256:a427517c24ed8da5c881461614c54aad899b45ea2aa27126d28c0e7fd92b46a3",
+      "environment": {
+        "digest": "sha256:9ec5bf2323cd53a84a354760f7a2e04adc570a2f8a0452d4311892dcb83d880b",
+        "runtime": {
+          "architecture": "x64",
+          "bun_major": null,
+          "node_major": "24",
+          "platform": "linux"
+        }
+      },
+      "evidence": {
+        "details_digest": "sha256:63d0963c4dbde7ab4e97a8a8eb4fd191c01d9f11410cb3778fb6cd77a36769e1",
+        "digest": "sha256:aa27f0a46a22b494dc9b240ff862dab3956dadfdafcd25b10f975555dfeb8058",
+        "references": [
+          {
+            "digest": "sha256:63f6003f443c22ab38713fd23ee2b32ac6b15fd9a196b6a0952b19b71d799a0f",
+            "fragment": "check-1",
+            "path": ".agentplane/tasks/202610251040-KDBTXH/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610251040-KDBTXH/supervision/declared-checks.json#check-1",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:63f6003f443c22ab38713fd23ee2b32ac6b15fd9a196b6a0952b19b71d799a0f",
+            "fragment": "check-2",
+            "path": ".agentplane/tasks/202610251040-KDBTXH/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610251040-KDBTXH/supervision/declared-checks.json#check-2",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:63f6003f443c22ab38713fd23ee2b32ac6b15fd9a196b6a0952b19b71d799a0f",
+            "fragment": "check-3",
+            "path": ".agentplane/tasks/202610251040-KDBTXH/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610251040-KDBTXH/supervision/declared-checks.json#check-3",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:63f6003f443c22ab38713fd23ee2b32ac6b15fd9a196b6a0952b19b71d799a0f",
+            "fragment": "check-4",
+            "path": ".agentplane/tasks/202610251040-KDBTXH/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610251040-KDBTXH/supervision/declared-checks.json#check-4",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:63f6003f443c22ab38713fd23ee2b32ac6b15fd9a196b6a0952b19b71d799a0f",
+            "fragment": "check-5",
+            "path": ".agentplane/tasks/202610251040-KDBTXH/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610251040-KDBTXH/supervision/declared-checks.json#check-5",
+            "source": "filesystem"
+          }
+        ]
+      },
+      "implementation": {
+        "base_sha": "1b8097aecf1f07f1e3e7dec86dafb9618990c77a",
+        "digest": "sha256:c8fc58858d372b22920b3c9062ced81575195612915f4d3a3c71e5f21c07cdb9",
+        "strategy": "branch_diff",
+        "target_sha": "fc893a0fc31d7faf2addbed38bf64117b3402785"
+      }
+    },
+    "concurrency": {
+      "digest": "sha256:3d69edc7896596f759caf2f8f871c550f23b3e2654bbe202bf3c8b195a959317",
+      "execution": {
+        "authoritative_task_source": "task_worktree",
+        "base_ref": "main",
+        "base_sha": "1b8097aecf1f07f1e3e7dec86dafb9618990c77a",
+        "digest": "sha256:f5d5792af48118893740fb0325254808eb53a396469294e05a7ad7e8c3ec0dfe",
+        "primary_task_id": "202610251040-KDBTXH",
+        "reason_codes": [
+          "agent_preferred_branch_pr",
+          "effect_ci",
+          "repository_branch_pr_floor"
+        ],
+        "repository_mode": "branch_pr",
+        "requested_mode": "branch_pr",
+        "route_source": "execution_contract",
+        "selected_mode": "branch_pr",
+        "task_ids": [
+          "202610251040-KDBTXH"
+        ]
+      },
+      "task": {
+        "capability": {
+          "digest": "sha256:29089b5a2364b286f957f6957f6d92631f4339211e822ec9e0fabf27ffb0143c"
+        },
+        "checks": {
+          "digest": "sha256:1750927ad6030d0bdb03351c95d4fc76e7899f49b7e50ccd5d712ee8eb14ede8",
+          "required_check_ids": [
+            "affected_unit_integration",
+            "critical_paths",
+            "full_regression",
+            "task_outcome"
+          ],
+          "verification_contract_digest": "sha256:332144c720564cacb0e3b540da295fc149cfd799d368fc099c028a9b6e51fc9e"
+        },
+        "digest": "sha256:907738c6a4ca9e2ac054e72f26737cbc8ce59a5e846f5e92f4eb1a3c5cf94581",
+        "kind": "agentplane.native_task_identity",
+        "plan": {
+          "approval_state": "approved",
+          "approved_digest": "sha256:eca5840665eafea74c073c07e775fdeb495ffbc12b559dc92acedf0a439758c1",
+          "digest": "sha256:eca5840665eafea74c073c07e775fdeb495ffbc12b559dc92acedf0a439758c1",
+          "revision": 1
+        },
+        "policy": {
+          "digest": "sha256:0a1c23b8d8d34f5109077402d56c9e1fcde960daddafaea20ba2824992dfef7f"
+        },
+        "schema_version": 1,
+        "task_id": "202610251040-KDBTXH"
+      }
+    },
+    "digest": "sha256:5cfd95ed9c182c1d753f88faee6776464187c28eef69e6f173a85aae104ba7bf",
+    "kind": "task_verification_input",
+    "obligations": {
+      "digest": "sha256:c16ad701729a1c7b481ca2498e21cfe50dc79735a8777b2983e0da4b19a9e629",
+      "required_check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "full_regression",
+        "task_outcome"
+      ],
+      "verification_contract_digest": "sha256:332144c720564cacb0e3b540da295fc149cfd799d368fc099c028a9b6e51fc9e",
+      "verify_steps_digest": "sha256:179fea070cfed53902be9a99c7dba30b65dc58ca1a1d9b77b20e3cf39d3c63b5"
+    },
+    "schema_version": 5
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: canonical Task Kernel final checks passed.",
+  "recorded_at": "2026-10-25T12:04:26.200Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Keep historical compatibility package delta valid after later surface changes\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Keep historical compatibility package delta valid after later surface changes\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:179fea070cfed53902be9a99c7dba30b65dc58ca1a1d9b77b20e3cf39d3c63b5",
+  "task_id": "202610251040-KDBTXH",
+  "verification_command": "agentplane verify 202610251040-KDBTXH --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
