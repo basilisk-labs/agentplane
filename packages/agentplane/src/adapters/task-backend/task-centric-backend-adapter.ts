@@ -5,6 +5,7 @@ import {
   materializeApprovedWorkItems,
   projectTaskLifecycleToLegacyStatus,
   TASK_CENTRIC_REPLAN_REQUIRED_EXTENSION_KEY,
+  taskCentricAggregateFromExtensions,
   withTaskCentricAggregate,
   type DomainEvent,
   type ExecutionLease,
@@ -85,7 +86,13 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
   }): Promise<TransitionReceipt> {
     const current = await this.backend.getTask(opts.task_id);
     if (!current) throw new Error(`Task not found: ${opts.task_id}`);
-    const currentRevision = current.revision ?? 1;
+    const embedded = taskCentricAggregateFromExtensions(current.extensions);
+    const currentRevision = current.revision ?? embedded?.revision ?? 1;
+    if (embedded && embedded.revision !== currentRevision) {
+      throw new Error(
+        `Task-centric mutation revision mismatch: expected ${currentRevision}, observed ${embedded.revision}.`,
+      );
+    }
     const runtime = opts.runtime ?? runtimeFrom(current);
     const already = runtime.mutation_receipts[opts.mutation_id];
     if (already) return already;

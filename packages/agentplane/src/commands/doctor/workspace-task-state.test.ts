@@ -34,10 +34,10 @@ describe("task-centric projection integrity diagnostics", () => {
     expect(findings[0]).toContain("task plan recover-rejection");
   });
 
-  it("does not treat ordinary README revision drift as a rejected-plan corruption", () => {
+  it("blocks ambiguous 15/14 drift without proposing rejected-plan recovery", () => {
     const aggregate = createLegacyTaskAggregate({
       id: "ordinary-active-task",
-      revision: 11,
+      revision: 14,
       title: "Ordinary task",
       description: "Fixture",
       status: "DOING",
@@ -51,12 +51,42 @@ describe("task-centric projection integrity diagnostics", () => {
         id: aggregate.id,
         status: "DOING",
         doc_version: 3,
-        revision: 29,
+        revision: 15,
         plan_approval: { state: "approved" },
         extensions: withTaskCentricAggregate({}, aggregate),
       },
     ]);
 
-    expect(findings).toEqual([]);
+    expect(findings).toHaveLength(1);
+    expect(findings[0]).toContain("[ERROR]");
+    expect(findings[0]).toContain("task-centric revision split blocks");
+    expect(findings[0]).toContain("README revision/state: 15/approved");
+    expect(findings[0]).toContain("Aggregate revision/state: 14/missing");
+    expect(findings[0]).toContain("task show ordinary-active-task --json");
+    expect(findings[0]).not.toContain("recover-rejection");
+  });
+
+  it("does not report synchronized projection revisions", () => {
+    const aggregate = createLegacyTaskAggregate({
+      id: "coherent-task",
+      revision: 14,
+      title: "Coherent task",
+      description: "Fixture",
+      status: "DOING",
+      acceptance_criteria: [],
+      captured_at: "2026-09-03T10:00:00.000Z",
+      updated_at: "2026-09-03T10:00:00.000Z",
+    });
+    expect(
+      buildTaskCentricProjectionIntegrityFindings([
+        {
+          id: aggregate.id,
+          status: "DOING",
+          revision: 14,
+          plan_approval: { state: "approved" },
+          extensions: withTaskCentricAggregate({}, aggregate),
+        },
+      ]),
+    ).toEqual([]);
   });
 });
