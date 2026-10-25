@@ -3,7 +3,8 @@
   "branch": "task/202610242244-4Q1124/fail-closed-on-unresolved-read-only-supervisor-i",
   "created_at": "2026-10-24T23:07:04.256Z",
   "diffstat_sha256": "sha256:1f733aa489d423a98316b3650e57fc40a446bd972b9c11b3ab1ed11eba5fd48d",
-  "last_verified_at": null,
+  "last_verified_at": "2026-10-25T00:37:05.968Z",
+  "last_verified_diffstat_sha256": "sha256:1f733aa489d423a98316b3650e57fc40a446bd972b9c11b3ab1ed11eba5fd48d",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202610242244-4Q1124",
   "updated_at": "2026-10-24T23:07:04.256Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
