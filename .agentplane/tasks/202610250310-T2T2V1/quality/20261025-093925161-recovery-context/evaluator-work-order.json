@@ -1,0 +1,124 @@
+{
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202610250310-T2T2V1-1c4449347083f689c2a46e00",
+  "prepared_at": "2026-10-25T09:39:25.161Z",
+  "task": {
+    "id": "202610250310-T2T2V1",
+    "revision": 20,
+    "objective": "Authenticate repository-policy scope replans after approved scope requests\n\nFor release 0.7.13, fix canonical rework evidence lookup after a USER-approved scope extension when the revised Plan is automatically approved by repository policy. Retain exact USER scope grant, historical blocked result, proposal/approval receipts, authority and scope ceiling checks. Support both explicit USER and repository-policy SYSTEM Plan approval without weakening fail-closed behavior. Add focused core and native external-agent regressions. No Factory-specific adapter or manual journal edits.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "bun run hotspots:check",
+      "bun run lint:core",
+      "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/core/src/tasks/task-kernel/replan-work-items.test.ts packages/agentplane/src/commands/task/kernel-scope-request.test.ts --pool=forks --maxWorkers 1",
+      "- In scope: For release 0.7.13, fix canonical rework evidence lookup after a USER-approved scope extension when the revised Plan is automatically approved by repository policy. Retain exact USER scope grant, historical blocked result, proposal/approval receipts, authority and scope ceiling checks. Support both explicit USER and repository-policy SYSTEM Plan approval without weakening fail-closed behavior. Add focused core and native external-agent regressions. No Factory-specific adapter or manual journal edits.\n- Out of scope: unrelated refactors not required for \"Authenticate repository-policy scope replans after approved scope requests\".",
+      "1. Execute approved WorkItem authenticate-policy-scope-replan.",
+      "PLANNER fallback scaffold for \"Authenticate repository-policy scope replans after approved scope requests\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Authenticate repository-policy scope replans after approved scope requests\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "133c13f9bae55fb4a52ef2c78f727af7226eaea8",
+  "diff_base_sha": "1b8097aecf1f07f1e3e7dec86dafb9618990c77a",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202610250310-T2T2V1/quality/20261025-093925161-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:f4dcc36547be42ffe2a2a2cc69be19254f968241c79b59aef766b3d5eced1372",
+    "prompt_path": ".agentplane/tasks/202610250310-T2T2V1/quality/objects/sha256/44dd1e022986c5d3e3bc9aff5c899ff9a261db75366a4805f2b481462bf4aa5d.md",
+    "result_schema_path": ".agentplane/tasks/202610250310-T2T2V1/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "schema_version": 2,
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202610250310-T2T2V1",
+    "plan_digest": "sha256:23c5943fb03d0a7e0ad71b92e1f6bb41a440d67869e205101013b2b34e68c4d8",
+    "policy_digest": "sha256:1150ba6caefe9e829c30b3520b9246ed1ec7ebbeedbe788c63cf7989015dbb46",
+    "capability_digest": "sha256:54f92e9b637414af3fa8dbf504b1f3a8e00c5ec78e00c2700ae2729ac8dee773",
+    "checks_digest": "sha256:448e515784794a704e3ee5f2311dad98dcc680fbf2926796daf0d8267ae00a6c",
+    "verification_input_digest": "sha256:c62de13d01a1ec72720da52e3996258243e4b38d3d3faa5add08ea841ab2e550",
+    "acceptance_digest": "sha256:cd51f65457ec9d4241348772d701c991e1d8e25fa98b9acdcc950c77e1607100",
+    "implementation_sha": "133c13f9bae55fb4a52ef2c78f727af7226eaea8",
+    "digest": "sha256:e267393fe6d3b028c4771af737a8d944e5cbd66795b29adf9b3ddc1ed3f8d3ce"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202610250310-T2T2V1/README.md",
+      "sha256": "sha256:18f988a620792476e41c65b0603bfbfa6aa77edcdd02efb96e017c95290ab340",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202610250310-T2T2V1/quality/objects/sha256/0ec637ef57d363b5142182fd046d6d1bf85e50069020657c30d508336da1913d.patch",
+      "sha256": "sha256:0ec637ef57d363b5142182fd046d6d1bf85e50069020657c30d508336da1913d",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202610250310-T2T2V1/quality/objects/sha256/d768ec50e660a52b7fc36eab828083023c207f646fa83678221a9c7092cf9cc4.json",
+      "sha256": "sha256:d768ec50e660a52b7fc36eab828083023c207f646fa83678221a9c7092cf9cc4",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202610250310-T2T2V1/verification/20261025093855328-cdb7e64e14eaebaa.json",
+      "sha256": "sha256:34859562b6626b709e9509782d10d3c573b3b7bb17b691efc9172d94786e55ca",
+      "required": true
+    },
+    {
+      "id": "native-identity",
+      "kind": "plan",
+      "path": ".agentplane/tasks/202610250310-T2T2V1/quality/objects/sha256/ca47a6908286b1a3cb1936c36e099672ccbed076d72c8bd32fd356a46012c2d9.json",
+      "sha256": "sha256:ca47a6908286b1a3cb1936c36e099672ccbed076d72c8bd32fd356a46012c2d9",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:35a4c7a567a9b658a31feed9e096276ede95ad0c82198f362c302fe7bd20b612",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:6e5cb34ada84017778c43c3d057edcc68d3ccb60840c805e412f7dc6781070ee",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:d3dfd4eb0293213ab49d32c6f199066f2bc7c954cada6465aab458b1a9c7ee25",
+      "required": true
+    }
+  ]
+}
