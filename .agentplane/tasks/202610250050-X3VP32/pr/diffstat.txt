@@ -1,0 +1,8 @@
+ .../external-agent-read-only-observation.test.ts   | 205 ++++++++++++++++++++-
+ .../task/external-agent-read-only-recovery.ts      | 129 +++++++++++++
+ .../task/external-agent-supervisor-recovery.ts     |  60 +++---
+ .../kernel-completed-provider-workflow.test.ts     |  58 ++++++
+ .../task/kernel-completed-provider-workflow.ts     |  11 ++
+ .../kernel-provider-effect-coordinator.test.ts     |  32 ++++
+ .../task/kernel-provider-effect-coordinator.ts     |  11 ++
+ 7 files changed, 476 insertions(+), 30 deletions(-)

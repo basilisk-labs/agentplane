@@ -34,6 +34,7 @@ import {
 } from "./kernel-controller-handoff.js";
 import { ensureKernelOperationalProjectionEvidence } from "./kernel-operational-projection.js";
 import { executeProductionBranchEpisode } from "./branch-task-supervisor-episodes.js";
+import { recoverPendingExternalAgentResult } from "./external-agent-supervisor-recovery.js";
 import { CliError } from "../../shared/errors.js";
 
 type SupportedOperationId = keyof typeof CANONICAL_EFFECT_KIND_BY_OPERATION;
@@ -458,6 +459,16 @@ export async function executeCanonicalLocalWorkflowOperation(opts: {
   if (step.kind !== "cli_operation" || step.operation.id in CANONICAL_EFFECT_KIND_BY_OPERATION) {
     return false;
   }
+  await recoverPendingExternalAgentResult({
+    command: opts.command,
+    task_id: opts.task_id,
+    current_decision: opts.decision,
+    recovery_scope: "read_only_observation",
+    accept_result: () =>
+      Promise.reject(
+        new Error("A canonical local workflow cannot apply an external-agent result."),
+      ),
+  });
   const persisted = await executeAdmittedBranchWorkflowOperation({
     decision: opts.decision,
     git_root: opts.command.resolvedProject.gitRoot,
