@@ -16,6 +16,7 @@ const mocks = vi.hoisted(() => ({
   readEnvelope: vi.fn(),
   readJournal: vi.fn(),
   ensureProjection: vi.fn(),
+  recoverReadOnly: vi.fn(),
 }));
 const routeBeforeDigest = k.kernelDigest("route-before");
 const routeAfterDigest = k.kernelDigest("route-after");
@@ -37,6 +38,9 @@ vi.mock("../../shared/stable-file.js", () => ({
 }));
 vi.mock("./kernel-operational-projection.js", () => ({
   ensureKernelOperationalProjectionEvidence: mocks.ensureProjection,
+}));
+vi.mock("./external-agent-supervisor-recovery.js", () => ({
+  recoverPendingExternalAgentResult: mocks.recoverReadOnly,
 }));
 vi.mock("../shared/task-backend.js", async (importOriginal) => ({
   ...(await importOriginal<typeof TaskBackendModule>()),
@@ -223,7 +227,35 @@ describe("canonical provider effect coordinator", () => {
         task_id: "T-1",
       }),
     ).resolves.toBe(true);
+    expect(mocks.recoverReadOnly).toHaveBeenCalledWith(
+      expect.objectContaining({
+        task_id: "T-1",
+        current_decision: before,
+        recovery_scope: "read_only_observation",
+      }),
+    );
     expect(mocks.supervise).toHaveBeenCalledOnce();
+    expect(mocks.execute).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    "drifted unanswered read-only intent retired for replacement",
+    "unchanged read-only intent",
+    "result-present read-only intent",
+    "mutation-authorized intent",
+    "malformed external-agent intent",
+    "unrelated external-agent intent",
+  ])("blocks local operation admission for %s", async (reason) => {
+    mocks.recoverReadOnly.mockRejectedValueOnce(new Error(reason));
+
+    await expect(
+      executeCanonicalLocalWorkflowOperation({
+        command: { resolvedProject: { gitRoot: "/repo" } } as never,
+        decision: localDecision(),
+        task_id: "T-1",
+      }),
+    ).rejects.toThrow(reason);
+    expect(mocks.supervise).not.toHaveBeenCalled();
     expect(mocks.execute).not.toHaveBeenCalled();
   });
 

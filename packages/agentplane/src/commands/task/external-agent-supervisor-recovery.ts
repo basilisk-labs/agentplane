@@ -17,7 +17,10 @@ import {
 } from "@agentplaneorg/core/schemas";
 
 import { CliError } from "../../shared/errors.js";
-import { assertExternalAgentExchangeIdentity } from "./external-agent-exchange-authority.js";
+import {
+  requireRecoverableReadOnlyObservation,
+  verifyUnansweredReadOnlyObservation,
+} from "./external-agent-read-only-recovery.js";
 import { retireStaleEvaluatorExchange } from "./external-agent-evaluator-recovery.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import {
@@ -337,6 +340,7 @@ export async function recoverPendingExternalAgentResult(opts: {
   task_id: string;
   current_decision: TaskRouteDecision;
   accept_result: (input: { cwd: string; result_path: string }) => Promise<TaskRouteDecision>;
+  recovery_scope?: "read_only_observation";
 }): Promise<TaskRouteDecision | null> {
   const commonGitDir = await resolveCommandGitCommonDir(opts.command);
   const journalPath = await resolveSupervisorExecutionEpisodePath({
@@ -381,6 +385,17 @@ export async function recoverPendingExternalAgentResult(opts: {
     return null;
   }
   if (
+    opts.recovery_scope === "read_only_observation" &&
+    operation?.status === "intent" &&
+    operation.effect_ref?.startsWith("external-agent-issue:") &&
+    !operation.work_order_ref
+  ) {
+    throw new CliError({
+      code: "E_RUNTIME",
+      message: "An unresolved external-agent intent has no work order.",
+    });
+  }
+  if (
     !operation?.work_order_ref ||
     (operation.status !== "intent" && operation.status !== "completed")
   ) {
@@ -388,6 +403,17 @@ export async function recoverPendingExternalAgentResult(opts: {
   }
   const paths = exchangePathsFromWorkOrderRef(operation.work_order_ref);
   const exchange = await readExternalAgentExchange(paths.exchange);
+  if (opts.recovery_scope === "read_only_observation") {
+    if (operation.status !== "intent") return null;
+    await requireRecoverableReadOnlyObservation({
+      journal,
+      operation,
+      exchange,
+      paths,
+      task_id: opts.task_id,
+      current_fingerprint: opts.current_decision.workflowStep.preconditionFingerprint.digest,
+    });
+  }
   if (exchange?.task_id !== opts.task_id) return null;
   if (exchange.status === "consumed") {
     await recoverConsumedExternalAgentDuplicate({
@@ -471,37 +497,15 @@ export async function recoverPendingExternalAgentResult(opts: {
     exchange.result === null &&
     exchange.result_digest === null
   ) {
-    assertExternalAgentExchangeIdentity({
+    unansweredReadOnlyDrift = await verifyUnansweredReadOnlyObservation({
+      journal,
+      operation,
       exchange,
       paths,
+      work_order: workOrder,
       task_id: opts.task_id,
-      transition_id: path.basename(path.dirname(paths.directory)),
-      state_fingerprint: workOrder.state_fingerprint.digest,
-      work_order_id: workOrder.work_order_id,
-      role: workOrder.role,
-      purpose: "task_worktree_resolution",
-      checkout: workOrder.state_fingerprint.worktree ?? exchange.checkout,
+      require_absent: opts.recovery_scope === "read_only_observation",
     });
-    if (
-      journal.task_id !== opts.task_id ||
-      operation.precondition_fingerprint_digest !== exchange.state_fingerprint ||
-      workOrder.task.id !== opts.task_id ||
-      operation.role !== workOrder.role ||
-      operation.effect_ref !==
-        `external-agent-issue:${externalAgentIssueDigest({ exchange, work_order: workOrder })}`
-    ) {
-      throw new CliError({
-        code: "E_VALIDATION",
-        message: "Read-only observation does not match the unresolved supervisor intent.",
-      });
-    }
-    unansweredReadOnlyDrift = await access(paths.result).then(
-      () => false,
-      (error) => {
-        if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return true;
-        throw error;
-      },
-    );
   }
   const implementationRecoveryRequired =
     !refinementApplied &&

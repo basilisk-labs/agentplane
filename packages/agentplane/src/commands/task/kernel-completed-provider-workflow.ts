@@ -14,6 +14,7 @@ import {
   executeAdmittedBranchWorkflowOperation,
   executeBranchWorkflowOperation,
 } from "./branch-task-supervisor-operations.js";
+import { recoverPendingExternalAgentResult } from "./external-agent-supervisor-recovery.js";
 import {
   recoverCanonicalControllerSuspension,
   withCanonicalControllerSuspendedForOperation,
@@ -63,6 +64,16 @@ async function executeCompletedProviderWorkflow(opts: {
   if (step.kind !== "cli_operation" || !(step.operation.id in CANONICAL_EFFECT_KIND_BY_OPERATION)) {
     return null;
   }
+  await recoverPendingExternalAgentResult({
+    command: opts.command,
+    task_id: opts.task_id,
+    current_decision: before,
+    recovery_scope: "read_only_observation",
+    accept_result: () =>
+      Promise.reject(
+        new Error("A completed provider workflow cannot apply an external-agent result."),
+      ),
+  });
   if (step.operation.id === "integration.run_next") {
     await recoverCanonicalControllerSuspension({
       command: opts.command,
