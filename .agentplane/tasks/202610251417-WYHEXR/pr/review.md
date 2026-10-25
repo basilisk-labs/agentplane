@@ -6,7 +6,7 @@ Created: 2026-10-25T14:55:38.380Z
 
 - Task: `202610251417-WYHEXR`
 - Title: Recover proven applied provider branch updates after interrupted supervisor intents
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610251417-WYHEXR/recover-proven-applied-provider-branch-updates-a`
 - Canonical task record: `.agentplane/tasks/202610251417-WYHEXR/README.md`
 
