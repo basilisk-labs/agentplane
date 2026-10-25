@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 27
+revision: 28
 origin:
   system: "manual"
 depends_on: []
@@ -30,18 +30,31 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-10-24T12:46:08.717Z"
+  updated_at: "2026-10-25T16:19:50.088Z"
   updated_by: "EVALUATOR"
-  note: "Canonical EVALUATOR review passed."
-  evaluated_sha: "6322346c32eab81ee8a3e1017b793a7f06aae8b7"
-  review_identity_digest: "sha256:ce8bef63751b58ad4191e01eaf9374c1e7ff694e7df2cdc4939c997a8d504046"
+  note: "EVALUATOR returned pass with 3 typed finding(s)."
+  evaluated_sha: "9b55b10b53b399cc04cfdd554ae3cb47027ecd58"
+  review_identity_digest: "sha256:7a410a6f3fcc3936dcc0ea0e0afb0bd91f3c5fb5797956591a163521e2a6f342"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202610240900-KTH2RZ/7182cddfe6e4f5c456a498c3ff526016d083101e6844b897837916d036784d2d/quality-report.json"
+    - ".agentplane/tasks/202610240900-KTH2RZ/quality/20261025-161843912-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202610240900-KTH2RZ/quality/20261025-161843912-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202610240900-KTH2RZ/quality/objects/sha256/5c1f38aa7d48d3c686639c9a048078b21e2cca5435630477a949ddcaccbb69ff.md"
+    - ".agentplane/tasks/202610240900-KTH2RZ/quality/20261025-161843912-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202610240900-KTH2RZ/quality/20261025-161843912-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202610240900-KTH2RZ/quality/20261025-161843912-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202610240900-KTH2RZ/README.md"
+    - ".agentplane/tasks/202610240900-KTH2RZ/quality/objects/sha256/2de58b526b5a228aa0e7f36079f2a0bf091daefa9fcc45220fb90cfe46ca3478.patch"
+    - ".agentplane/tasks/202610240900-KTH2RZ/quality/objects/sha256/450f42e4ae6fb4b4e489d1e8fa5e6fe1c445bcb1ea953c0dd1ed4ad04841cb80.json"
+    - ".agentplane/tasks/202610240900-KTH2RZ/verification/20261025161657096-be40f1bba00dbc8e.json"
+    - ".agentplane/tasks/202610240900-KTH2RZ/quality/objects/sha256/c2702a34640681b0d44d5fa619ca1c8bb91cb0c1987b748ff3efad09ba1a4f65.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Duplicate title and unknown owner tests assert exit code 3 and retain the specific error-message checks."
-    - "The synthetic completion fixture narrowly stubs reconciliation for its noncanonical plan, restores the original implementation in finally, and still asserts native DONE persistence and committed README."
-    - "The cumulative implementation changes only the two approved test files; production reconciliation and policy are unchanged."
-    - "The authoritative attempt-2 native validation passed focused tests 26/26 and ci:local:full including docs-schema, core, CLI, Windows, and coverage. The original hotspots baseline is retained."
+    - "The task-new tests assert validation exit code 3 for exact duplicate and unknown owner while retaining specific stderr assertions."
+    - "The completion fixture mocks only the pre-mutation reconciliation boundary and restores the original implementation in finally; it still exercises the completion write and Git commit."
+    - "The exact implementation head 9b55b10b53b399cc04cfdd554ae3cb47027ecd58 has recorded full local CI run-008 PASS and targeted run-009 PASS. No unresolved scoped follow-up appears in the task Findings section."
 token_usage:
   agent_runs: 2
   input_tokens: null
@@ -6370,7 +6383,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-10-25T16:17:05.588Z"
+doc_updated_at: "2026-10-25T16:19:50.257Z"
 doc_updated_by: "CODER"
 description: "Align task-new exit assertions with current validation contract and isolate synthetic completion persistence from canonical preflight."
 sections:
@@ -6551,6 +6564,14 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.completed_native_review:
+    applied_at: "2026-10-25T16:19:50.088Z"
+    kernel_digest: "sha256:4357e4c7f7c4aa08823fd579e253f546eadb1cf14ae484d1fceee80a99f06e95"
+    quality_digest: "sha256:d88cb0d2dceb04f1335049514543f97693c319954ec1a4a38e93fe8f3d6fc5ed"
+    result_digest: "sha256:690720858222a91e3b71236679ec3b9b7fa2fbea3450d0c984317bce644a499c"
+    schema_version: 1
+    state_fingerprint: "sha256:0c24937bd21175bd37197f0343893eb2bb904e74396aeb43b4bda7b80d81e4d8"
+    transition_id: "tr_ae6d7d86d47fc04938adef04de834e20"
   agentplane.kernel_operational_projection:
     digest: "sha256:9a7069a50640a81fee14d8772c147bb2645d918d736af0cda9c2822f9270caff"
     evidence_refs:
