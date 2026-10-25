@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -32,18 +32,33 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-10-25T05:48:53.816Z"
+  updated_at: "2026-10-25T10:27:18.303Z"
   updated_by: "EVALUATOR"
-  note: "Canonical EVALUATOR review passed."
-  evaluated_sha: "b6d949442e7df8afd70321410f4e0390150c683b"
-  review_identity_digest: "sha256:a73d392bc41d3bc539a879748838bc9c1649a91d8a3e8b675e06cb39bd6dd788"
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  evaluated_sha: "133c13f9bae55fb4a52ef2c78f727af7226eaea8"
+  review_identity_digest: "sha256:e267393fe6d3b028c4771af737a8d944e5cbd66795b29adf9b3ddc1ed3f8d3ce"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202610250310-T2T2V1/a00f31c8d97638cb740fc49e26c066c645f5c435458f50c584465bbfe0128b4e/quality-report.json"
+    - ".agentplane/tasks/202610250310-T2T2V1/quality/20261025-093925161-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202610250310-T2T2V1/quality/20261025-093925161-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202610250310-T2T2V1/quality/objects/sha256/44dd1e022986c5d3e3bc9aff5c899ff9a261db75366a4805f2b481462bf4aa5d.md"
+    - ".agentplane/tasks/202610250310-T2T2V1/quality/20261025-093925161-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202610250310-T2T2V1/quality/20261025-093925161-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202610250310-T2T2V1/quality/20261025-093925161-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202610250310-T2T2V1/README.md"
+    - ".agentplane/tasks/202610250310-T2T2V1/quality/objects/sha256/0ec637ef57d363b5142182fd046d6d1bf85e50069020657c30d508336da1913d.patch"
+    - ".agentplane/tasks/202610250310-T2T2V1/quality/objects/sha256/d768ec50e660a52b7fc36eab828083023c207f646fa83678221a9c7092cf9cc4.json"
+    - ".agentplane/tasks/202610250310-T2T2V1/verification/20261025093855328-cdb7e64e14eaebaa.json"
+    - ".agentplane/tasks/202610250310-T2T2V1/quality/objects/sha256/ca47a6908286b1a3cb1936c36e099672ccbed076d72c8bd32fd356a46012c2d9.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The three implementation paths at commit b6d949442e7df8afd70321410f4e0390150c683b match the WorkOrder scope; no Factory adapter or verification bypass was added."
-    - "authenticatedScopeReplanHistory accepts repository-policy approval only after an exact manual_operator USER scope grant, a plan whose every work item fits the grant authority, matching SYSTEM actor agentplane:kernel-controller, repository_policy approval mode, Plan evidence digest, authority digest, and canonical approve_plan mutation receipt."
-    - "The prior USER approval route remains supported. Core tests cover valid USER and policy routes and reject wrong actor, mode, grant, and ungranted scope; the native external-agent test checks required approved-scope-replan input plus retained-result and grant tampering."
-    - "AgentPlane retained focused tests, lint:core, hotspots:check, and full ci:local:full as passed in verification runs run-000 through run-003. The full CI completed all selected groups without a recorded failure."
+    - "The frozen three-file diff is limited to the canonical replan evidence reader and focused Core/native regressions. Its retained patch hash matches the evaluator work order."
+    - "Repository-policy approval is accepted only for the canonical SYSTEM controller actor, a repository_policy Plan approval receipt, the preceding manual_operator USER scope grant, and work-item execution requirements within that grant. Existing receipt, revision, digest, and unique-history checks remain in force."
+    - "Negative tests reject wrong policy actor, approval mode, grant mode, and ungranted scope. The native integration variant exercises automatic repository-policy approval after an exact USER scope request and checks historical blocked-result recovery."
+    - "The verification record binds to implementation SHA 133c13f9bae55fb4a52ef2c78f727af7226eaea8. Retained focused, lint, hotspots, and full local CI checks pass; hosted PR #6922 at the same head has successful required jobs and no failing jobs."
+    - "Residual risk: This review does not grant authority for a future scope expansion; each scope request still requires its own exact USER grant."
 token_usage:
   agent_runs: 1
   input_tokens: null
@@ -1562,7 +1577,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-10-25T09:39:02.271Z"
+doc_updated_at: "2026-10-25T10:27:18.360Z"
 doc_updated_by: "CODER"
 description: "For release 0.7.13, fix canonical rework evidence lookup after a USER-approved scope extension when the revised Plan is automatically approved by repository policy. Retain exact USER scope grant, historical blocked result, proposal/approval receipts, authority and scope ceiling checks. Support both explicit USER and repository-policy SYSTEM Plan approval without weakening fail-closed behavior. Add focused core and native external-agent regressions. No Factory-specific adapter or manual journal edits."
 sections:
@@ -1826,6 +1841,14 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.completed_native_review:
+    applied_at: "2026-10-25T10:27:18.303Z"
+    kernel_digest: "sha256:c296e42e922db13dfcaa637ee5ace7d55d9e2189d7647fb4e2de2a2e74f6a1b3"
+    quality_digest: "sha256:ab8143e12b99a574479e9a0974ce8664594fe6a2ea992aa012ecce81015a5441"
+    result_digest: "sha256:ceb9bf13b4cf83b450eb52ac82ed7f6d8167ea7d77e5d78d23c8ab373d184a5c"
+    schema_version: 1
+    state_fingerprint: "sha256:b5f1505719bbcad9326aa8d1c459ce1fbfbf7dbcf2a26d0f56a8b68474eff286"
+    transition_id: "tr_35859c25c85dc2cff437dbb85ecd8432"
   agentplane.kernel_operational_projection:
     digest: "sha256:ad81c2487687327ada75cd3702a073f71d11b88c39349cf359bc3b9333508dd2"
     evidence_refs:
