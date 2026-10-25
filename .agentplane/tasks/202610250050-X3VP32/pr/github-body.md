@@ -15,8 +15,8 @@ For release 0.7.13, carry forward the independently reviewed PR #6920 generic fa
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>
