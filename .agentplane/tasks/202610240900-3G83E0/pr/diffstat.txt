@@ -1,0 +1,3 @@
+ ...i.critical.agent-efficiency-anchor-lock.test.ts | 44 ++++++++++++++--------
+ .../internal/agent-efficiency-anchor-runtime.mjs   | 12 ++++--
+ 2 files changed, 37 insertions(+), 19 deletions(-)

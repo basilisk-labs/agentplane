@@ -1,0 +1,48 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check b9ece81cb0f4e8d43dd4cbbb5359bee76543ee42..326b574d690bb11481156ffa413b6cdb37753ed3",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB b9ece81cb0f4e8d43dd4cbbb5359bee76543ee42..326b574d690bb11481156ffa413b6cdb37753ed3",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202610241441-K30QXX/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202610241441-K30QXX/pr/github-body.md",
+        "M\t.agentplane/tasks/202610241441-K30QXX/pr/meta.json",
+        "M\t.agentplane/tasks/202610241441-K30QXX/pr/review.md",
+        "M\tpackages/agentplane/src/commands/task/external-agent-read-only-observation.test.ts",
+        "M\tpackages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "b9ece81cb0f4e8d43dd4cbbb5359bee76543ee42",
+  "implementation_commit": "326b574d690bb11481156ffa413b6cdb37753ed3",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [],
+    "classification": [],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202610241441-K30QXX"
+}

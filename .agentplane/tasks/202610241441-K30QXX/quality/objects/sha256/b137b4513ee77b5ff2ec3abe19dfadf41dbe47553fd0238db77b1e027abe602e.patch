@@ -1,0 +1,432 @@
+diff --git a/packages/agentplane/src/commands/task/external-agent-read-only-observation.test.ts b/packages/agentplane/src/commands/task/external-agent-read-only-observation.test.ts
+index a997a724..3321fc1a 100644
+--- a/packages/agentplane/src/commands/task/external-agent-read-only-observation.test.ts
++++ b/packages/agentplane/src/commands/task/external-agent-read-only-observation.test.ts
+@@ -1,8 +1,11 @@
+-import { readFile, writeFile } from "node:fs/promises";
++import { readFile, unlink, writeFile } from "node:fs/promises";
+ import path from "node:path";
+ import { describe, expect, it, vi } from "vitest";
+ import { commitAll, installRunCliIntegrationHarness } from "@agentplane/testkit";
+-import { digestSupervisorEpisodeValue } from "@agentplaneorg/core/schemas";
++import {
++  digestSupervisorEpisodeValue,
++  stopSupervisorExecutionEpisode,
++} from "@agentplaneorg/core/schemas";
+ import { fixture, issue, unchanged, git } from "./external-agent-observation.testkit.js";
+ import { acceptExternalAgentResult } from "./external-agent-supervisor.js";
+ import { refreshExternalAgentRoute } from "./external-agent-result-routing.js";
+@@ -10,8 +13,199 @@ import { recoverPendingExternalAgentResult } from "./external-agent-supervisor-r
+ import { readExternalAgentExchange } from "./external-agent-exchange.js";
+ import * as observation from "./external-agent-read-only-observation.js";
+ import * as exchangeOwner from "./external-agent-exchange.js";
++import {
++  createSupervisorEpisodeStore,
++  resolveSupervisorExecutionEpisodePath,
++} from "../shared/supervisor-execution-episode.js";
+ installRunCliIntegrationHarness();
+ describe("canonical read-only observation admission", () => {
++  it.each([
++    ["running", "issued"],
++    ["effect_in_doubt", "issued"],
++    ["running", "prepared"],
++  ] as const)(
++    "retires an unanswered read-only intent after a later route replaces it (%s, %s)",
++    async (journalState, exchangeStatus) => {
++      const f = await fixture();
++      const issued = await issue(f);
++      await unlink(issued.paths.result);
++      if (exchangeStatus === "prepared") {
++        const exchange = (await readExternalAgentExchange(issued.paths.exchange))!;
++        await writeFile(issued.paths.exchange, JSON.stringify({ ...exchange, status: "prepared" }));
++      }
++      const journalPath = await resolveSupervisorExecutionEpisodePath({
++        git_root: f.root,
++        common_git_dir: path.join(f.root, ".git"),
++        task_id: f.id,
++      });
++      if (journalState === "effect_in_doubt") {
++        const store = createSupervisorEpisodeStore(journalPath);
++        const journal = await issued.journal();
++        expect(
++          await store.compareAndSwap(
++            journal.digest,
++            stopSupervisorExecutionEpisode({ journal, reason: "effect_in_doubt" }),
++          ),
++        ).toBe(true);
++      }
++      const laterDecision = decisionAfterDrift(f);
++      await expect(
++        recoverPendingExternalAgentResult({
++          command: f.command,
++          task_id: f.id,
++          current_decision: laterDecision,
++          accept_result: () => Promise.reject(new Error("No result may be applied")),
++        }),
++      ).rejects.toThrow(/retired the stale result.*--replacement/u);
++      const retired = await issued.journal();
++      expect(retired.operations.at(-1)?.status).toBe("failed");
++      expect(retired.stop?.reason).toBe("operation_failed");
++      expect(await readExternalAgentExchange(issued.paths.exchange)).toMatchObject({
++        status: "retired",
++        postcondition_fingerprint: laterDecision.workflowStep.preconditionFingerprint.digest,
++      });
++      expect(
++        await recoverPendingExternalAgentResult({
++          command: f.command,
++          task_id: f.id,
++          current_decision: laterDecision,
++          accept_result: () => Promise.reject(new Error("Retired result may not be applied")),
++        }),
++      ).toBeNull();
++      expect(await issued.journal()).toEqual(retired);
++    },
++  );
++
++  it("keeps an unanswered observation at its original boundary", async () => {
++    const f = await fixture();
++    const issued = await issue(f);
++    await unlink(issued.paths.result);
++    const before = await issued.journal();
++    expect(
++      await recoverPendingExternalAgentResult({
++        command: f.command,
++        task_id: f.id,
++        current_decision: f.decision,
++        accept_result: () => Promise.reject(new Error("No result may be applied")),
++      }),
++    ).toBeNull();
++    expect(await issued.journal()).toEqual(before);
++    expect(await readExternalAgentExchange(issued.paths.exchange)).toMatchObject({
++      status: "issued",
++    });
++  });
++
++  it("does not retire an exchange with a recorded result digest", async () => {
++    const f = await fixture();
++    const issued = await issue(f);
++    await unlink(issued.paths.result);
++    const exchange = (await readExternalAgentExchange(issued.paths.exchange))!;
++    await writeFile(
++      issued.paths.exchange,
++      JSON.stringify({ ...exchange, result_digest: `sha256:${"a".repeat(64)}` }),
++    );
++    const before = await issued.journal();
++    expect(
++      await recoverPendingExternalAgentResult({
++        command: f.command,
++        task_id: f.id,
++        current_decision: decisionAfterDrift(f),
++        accept_result: () => Promise.reject(new Error("No result may be applied")),
++      }),
++    ).toBeNull();
++    expect(await issued.journal()).toEqual(before);
++    expect(await readExternalAgentExchange(issued.paths.exchange)).toMatchObject({
++      status: "issued",
++      result_digest: `sha256:${"a".repeat(64)}`,
++    });
++  });
++
++  it("finishes retirement after exchange acknowledgement but before journal CAS", async () => {
++    const f = await fixture();
++    const issued = await issue(f);
++    await unlink(issued.paths.result);
++    const laterDecision = decisionAfterDrift(f);
++    const spy = vi
++      .spyOn(exchangeOwner, "writeExternalAgentExchange")
++      .mockImplementationOnce(async (target, value) => {
++        await originalWrite(target, value);
++        throw new Error("Injected post-acknowledgement interruption");
++      });
++    try {
++      await expect(
++        recoverPendingExternalAgentResult({
++          command: f.command,
++          task_id: f.id,
++          current_decision: laterDecision,
++          accept_result: () => Promise.reject(new Error("No result may be applied")),
++        }),
++      ).rejects.toThrow("Injected post-acknowledgement interruption");
++    } finally {
++      spy.mockRestore();
++    }
++    const interrupted = await issued.journal();
++    expect(interrupted.operations.at(-1)?.status).toBe("intent");
++    expect(await readExternalAgentExchange(issued.paths.exchange)).toMatchObject({
++      status: "retired",
++    });
++    await expect(
++      recoverPendingExternalAgentResult({
++        command: f.command,
++        task_id: f.id,
++        current_decision: laterDecision,
++        accept_result: () => Promise.reject(new Error("Retired result may not be applied")),
++      }),
++    ).rejects.toThrow(/reconciled a retired external-agent exchange/u);
++    const reconciled = await issued.journal();
++    expect(reconciled.operations.at(-1)?.status).toBe("failed");
++  });
++
++  it("preserves a returned observation for its original result path", async () => {
++    const f = await fixture();
++    const issued = await issue(f);
++    const before = await issued.journal();
++    const accepted = vi.fn(() => Promise.resolve(decisionAfterDrift(f)));
++    await recoverPendingExternalAgentResult({
++      command: f.command,
++      task_id: f.id,
++      current_decision: decisionAfterDrift(f),
++      accept_result: accepted,
++    });
++    expect(accepted).toHaveBeenCalledWith({
++      cwd: issued.exchange.checkout,
++      result_path: issued.paths.result,
++    });
++    expect(await issued.journal()).toEqual(before);
++    expect(await readExternalAgentExchange(issued.paths.exchange)).toMatchObject({
++      status: "issued",
++    });
++  });
++
++  it("does not retire a mutation-capable unanswered exchange", async () => {
++    const f = await fixture();
++    const issued = await issue(f);
++    await unlink(issued.paths.result);
++    const order = JSON.parse(await readFile(issued.paths.work_order, "utf8")) as {
++      authority: { sandbox: string; writable_roots: string[] };
++    };
++    order.authority.sandbox = "workspace-write";
++    order.authority.writable_roots = [f.root];
++    await writeFile(issued.paths.work_order, JSON.stringify(order));
++    const before = await issued.journal();
++    expect(
++      await recoverPendingExternalAgentResult({
++        command: f.command,
++        task_id: f.id,
++        current_decision: decisionAfterDrift(f),
++        accept_result: () => Promise.reject(new Error("No result may be applied")),
++      }),
++    ).toBeNull();
++    expect(await issued.journal()).toEqual(before);
++    expect(await readExternalAgentExchange(issued.paths.exchange)).toMatchObject({
++      status: "issued",
++    });
++  });
++
+   it("preserves legacy comment and native metadata commit behavior", async () => {
+     const f = await fixture();
+     const issued = await issue(f);
+@@ -238,3 +432,18 @@ describe("canonical read-only observation admission", () => {
+   );
+ });
+ const originalWrite = exchangeOwner.writeExternalAgentExchange;
++
++function decisionAfterDrift(f: Awaited<ReturnType<typeof fixture>>) {
++  return {
++    ...f.decision,
++    workflowStep: {
++      ...f.decision.workflowStep,
++      kind: "cli_operation",
++      operation: { id: "provider.pr.update_branch", params: {} },
++      preconditionFingerprint: {
++        ...f.decision.workflowStep.preconditionFingerprint,
++        digest: `sha256:${"f".repeat(64)}`,
++      },
++    },
++  } as typeof f.decision;
++}
+diff --git a/packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts b/packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts
+index cf865dd6..73212ae2 100644
+--- a/packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts
++++ b/packages/agentplane/src/commands/task/external-agent-supervisor-recovery.ts
+@@ -17,6 +17,7 @@ import {
+ } from "@agentplaneorg/core/schemas";
+ 
+ import { CliError } from "../../shared/errors.js";
++import { assertExternalAgentExchangeIdentity } from "./external-agent-exchange-authority.js";
+ import { retireStaleEvaluatorExchange } from "./external-agent-evaluator-recovery.js";
+ import type { TaskRouteDecision } from "../shared/route-decision-types.js";
+ import {
+@@ -43,6 +44,10 @@ export type RecoverableExternalAgentExchange = {
+   work_order: AgentWorkOrderV2;
+ };
+ 
++function replacementArgv(taskId: string): string[] {
++  return ["agentplane", "task", "advance", taskId, "--replacement", "--agent-json"];
++}
++
+ export async function failRejectedExternalAgentResult(opts: {
+   store: SupervisorEpisodeStore;
+   journal: ReturnType<typeof validateSupervisorExecutionEpisodeJournal>;
+@@ -86,14 +91,7 @@ export async function failRejectedExternalAgentResult(opts: {
+       task_id: opts.exchange.task_id,
+       transition_id: opts.exchange.transition_id,
+       rejected_error: opts.error.code,
+-      exact_argv: [
+-        "agentplane",
+-        "task",
+-        "advance",
+-        opts.exchange.task_id,
+-        "--replacement",
+-        "--agent-json",
+-      ],
++      exact_argv: replacementArgv(opts.exchange.task_id),
+     },
+   });
+ }
+@@ -236,14 +234,7 @@ async function unresolvedExternalAgentExchange(opts: {
+           "--replacement --agent-json",
+         context: {
+           task_id: opts.decision.task.id,
+-          exact_argv: [
+-            "agentplane",
+-            "task",
+-            "advance",
+-            opts.decision.task.id,
+-            "--replacement",
+-            "--agent-json",
+-          ],
++          exact_argv: replacementArgv(opts.decision.task.id),
+         },
+       });
+     }
+@@ -443,14 +434,7 @@ export async function recoverPendingExternalAgentResult(opts: {
+         `intent; run: agentplane task advance ${opts.task_id} --replacement --agent-json`,
+       context: {
+         task_id: opts.task_id,
+-        exact_argv: [
+-          "agentplane",
+-          "task",
+-          "advance",
+-          opts.task_id,
+-          "--replacement",
+-          "--agent-json",
+-        ],
++        exact_argv: replacementArgv(opts.task_id),
+       },
+     });
+   }
+@@ -476,14 +460,56 @@ export async function recoverPendingExternalAgentResult(opts: {
+     paths,
+     journal_path: journalPath,
+   });
+-  const implementationRecoveryRequired =
+-    !isReadOnlyWorktreeObservation({ exchange, work_order: workOrder }) &&
+-    !refinementApplied &&
+-    requiresImplementationRecoveryReplacement({
+-      decision: opts.current_decision,
++  const currentFingerprint = opts.current_decision.workflowStep.preconditionFingerprint.digest;
++  const readOnlyObservation = isReadOnlyWorktreeObservation({ exchange, work_order: workOrder });
++  let unansweredReadOnlyDrift = false;
++  if (
++    operation.status === "intent" &&
++    readOnlyObservation &&
++    operation.precondition_fingerprint_digest !== currentFingerprint &&
++    (exchange.status === "prepared" || exchange.status === "issued") &&
++    exchange.result === null &&
++    exchange.result_digest === null
++  ) {
++    assertExternalAgentExchangeIdentity({
+       exchange,
+-      work_order: workOrder,
++      paths,
++      task_id: opts.task_id,
++      transition_id: path.basename(path.dirname(paths.directory)),
++      state_fingerprint: workOrder.state_fingerprint.digest,
++      work_order_id: workOrder.work_order_id,
++      role: workOrder.role,
++      purpose: "task_worktree_resolution",
++      checkout: workOrder.state_fingerprint.worktree ?? exchange.checkout,
+     });
++    if (
++      workOrder.task.id !== opts.task_id ||
++      operation.role !== workOrder.role ||
++      operation.effect_ref !==
++        `external-agent-issue:${externalAgentIssueDigest({ exchange, work_order: workOrder })}`
++    ) {
++      throw new CliError({
++        code: "E_VALIDATION",
++        message: "Read-only observation does not match the unresolved supervisor intent.",
++      });
++    }
++    unansweredReadOnlyDrift = await access(paths.result).then(
++      () => false,
++      (error) => {
++        if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return true;
++        throw error;
++      },
++    );
++  }
++  const implementationRecoveryRequired =
++    !refinementApplied &&
++    (unansweredReadOnlyDrift ||
++      (!readOnlyObservation &&
++        requiresImplementationRecoveryReplacement({
++          decision: opts.current_decision,
++          exchange,
++          work_order: workOrder,
++        })));
+ 
+   if (
+     operation.status === "intent" &&
+@@ -495,13 +521,23 @@ export async function recoverPendingExternalAgentResult(opts: {
+       result: {
+         classification: planningRecoveryRequired
+           ? "planning_recovery_state_fingerprint_drift"
+-          : "implementation_authority_state_fingerprint_drift",
++          : unansweredReadOnlyDrift
++            ? "read_only_observation_state_fingerprint_drift"
++            : "implementation_authority_state_fingerprint_drift",
+         transition_id: exchange.transition_id,
+         previous_state_fingerprint: exchange.state_fingerprint,
+         current_state_fingerprint:
+           opts.current_decision.workflowStep.preconditionFingerprint.digest,
+       },
+     });
++    const retiredExchange = {
++      ...exchange,
++      status: "retired" as const,
++      postcondition_fingerprint: currentFingerprint,
++      updated_at: new Date().toISOString(),
++    };
++    // Keep the exact historical intent recoverable if acknowledgement is interrupted.
++    if (unansweredReadOnlyDrift) await writeExternalAgentExchange(paths.exchange, retiredExchange);
+     const store = createSupervisorEpisodeStore(journalPath);
+     if (!(await store.compareAndSwap(journal.digest, retired))) {
+       throw new CliError({
+@@ -509,30 +545,20 @@ export async function recoverPendingExternalAgentResult(opts: {
+         message: "External-agent supervisor changed while retiring the stale result.",
+       });
+     }
+-    await writeExternalAgentExchange(paths.exchange, {
+-      ...exchange,
+-      status: "retired",
+-      postcondition_fingerprint: opts.current_decision.workflowStep.preconditionFingerprint.digest,
+-      updated_at: new Date().toISOString(),
+-    });
++    if (!unansweredReadOnlyDrift) await writeExternalAgentExchange(paths.exchange, retiredExchange);
+     throw new CliError({
+       code: "E_RUNTIME",
+       message:
+         (planningRecoveryRequired
+           ? "The planning state changed after the pending external-agent result was issued. "
+-          : "The task authority changed after the pending external-agent result was issued. ") +
++          : unansweredReadOnlyDrift
++            ? "The unanswered read-only observation became stale after the task state changed. "
++            : "The task authority changed after the pending external-agent result was issued. ") +
+         `AgentPlane retired the stale result; run: agentplane task advance ${opts.task_id} ` +
+         "--replacement --agent-json",
+       context: {
+         task_id: opts.task_id,
+-        exact_argv: [
+-          "agentplane",
+-          "task",
+-          "advance",
+-          opts.task_id,
+-          "--replacement",
+-          "--agent-json",
+-        ],
++        exact_argv: replacementArgv(opts.task_id),
+       },
+     });
+   }

@@ -17,6 +17,7 @@ const mocks = vi.hoisted(() => ({
   common: vi.fn(),
   read: vi.fn(),
   recover: vi.fn(),
+  reconcileReadOnly: vi.fn(),
   suspend: vi.fn(),
   findWorktree: vi.fn(),
   listWorktrees: vi.fn(),
@@ -41,6 +42,9 @@ vi.mock("../../adapters/task-backend/kernel-record.js", () => ({
 vi.mock("./kernel-controller-handoff.js", () => ({
   recoverCanonicalControllerSuspension: mocks.recover,
   withCanonicalControllerSuspendedForOperation: mocks.suspend,
+}));
+vi.mock("./external-agent-supervisor-recovery.js", () => ({
+  recoverPendingExternalAgentResult: mocks.reconcileReadOnly,
 }));
 vi.mock("./kernel-provider-effect-coordinator.js", () => ({
   canonicalWorkflowRequestDigest: (_task: string, decision: TaskRouteDecision) =>
@@ -104,9 +108,63 @@ beforeEach(() => {
     async ({ run }: { run: () => Promise<WorkflowSupervisorOperationResult> }) => await run(),
   );
   mocks.admit.mockResolvedValue(persisted());
+  mocks.reconcileReadOnly.mockResolvedValue(undefined);
 });
 
 describe("completed provider workflow", () => {
+  it("reconciles a stale read-only intent before admitting any provider effect", async () => {
+    const before = decision("provider.pr.update_branch");
+    mocks.reconcileReadOnly.mockRejectedValueOnce(new Error("retired; use --replacement"));
+    await expect(
+      advanceCompletedProviderWorkflow({ command, decision: before, task_id: "T-1" }),
+    ).rejects.toThrow("retired; use --replacement");
+    expect(mocks.reconcileReadOnly).toHaveBeenCalledTimes(1);
+    const recoveryCall = mocks.reconcileReadOnly.mock.calls[0]?.[0] as unknown as {
+      accept_result: unknown;
+    };
+    expect(recoveryCall).toMatchObject({
+      command,
+      task_id: "T-1",
+      current_decision: before,
+      recovery_scope: "read_only_observation",
+    });
+    expect(typeof recoveryCall.accept_result).toBe("function");
+    expect(mocks.admit).not.toHaveBeenCalled();
+    expect(mocks.execute).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    "unchanged",
+    "result-present",
+    "result-race",
+    "mutation-authorized",
+    "malformed",
+    "unrelated",
+  ])("does not admit a provider effect for a %s unresolved intent", async (kind) => {
+    mocks.reconcileReadOnly.mockRejectedValueOnce(new Error(`unresolved ${kind} intent`));
+    await expect(
+      advanceCompletedProviderWorkflow({
+        command,
+        decision: decision("provider.pr.update_branch"),
+        task_id: "T-1",
+      }),
+    ).rejects.toThrow(`unresolved ${kind} intent`);
+    expect(mocks.admit).not.toHaveBeenCalled();
+    expect(mocks.execute).not.toHaveBeenCalled();
+  });
+
+  it("admits the provider effect after the read-only check finds no unresolved intent", async () => {
+    await expect(
+      advanceCompletedProviderWorkflow({
+        command,
+        decision: decision("provider.pr.update_branch"),
+        task_id: "T-1",
+      }),
+    ).resolves.toEqual({ kind: "progress" });
+    expect(mocks.reconcileReadOnly).toHaveBeenCalledTimes(1);
+    expect(mocks.admit).toHaveBeenCalledTimes(1);
+  });
+
   it("preserves the admission boundary and stops on denied authority", async () => {
     mocks.admit.mockResolvedValue(
       persisted({

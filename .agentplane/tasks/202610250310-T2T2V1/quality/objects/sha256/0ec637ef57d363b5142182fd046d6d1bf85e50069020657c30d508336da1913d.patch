@@ -1,0 +1,229 @@
+diff --git a/packages/agentplane/src/commands/task/kernel-scope-request.test.ts b/packages/agentplane/src/commands/task/kernel-scope-request.test.ts
+index f602ad7c4..ad6602848 100644
+--- a/packages/agentplane/src/commands/task/kernel-scope-request.test.ts
++++ b/packages/agentplane/src/commands/task/kernel-scope-request.test.ts
+@@ -24,15 +24,17 @@ import type * as KernelRuntimeContext from "./kernel-runtime-context.js";
+ 
+ installRunCliIntegrationHarness();
+ describe("native prospective scope request", { timeout: 180_000 }, () => {
+-  it.each(["native", "legacy", "existing-effects", "operator"])(
++  it.each(["native", "legacy", "existing-effects", "operator", "policy"])(
+     "requires exact scope approval and fresh planning (legacy stop: %s)",
+     async (variant) => {
+       const legacyStop = variant === "legacy";
+       const existingEffects = variant === "existing-effects";
++      const policyApproval = variant === "policy";
+       const root = await mkGitRepoRootWithBranch("main");
+       await configureGitUser(root);
+       const config = defaultConfig();
+       config.workflow_mode = "direct";
++      config.agents.approvals.require_plan = !policyApproval;
+       await writeConfig(root, config);
+       await ensureRuntimeGitignore({ gitRoot: root });
+       await writeFile(path.join(root, "source.ts"), "export const value = 1;\n");
+@@ -114,11 +116,13 @@ describe("native prospective scope request", { timeout: 180_000 }, () => {
+         ],
+       };
+       await submit({ canonical_plan: proposal });
+-      expect(packet.action).toMatchObject({ kind: "approval_required" });
+-      expect(
+-        await runCliSilent(["task", "plan", "approve", id, "--by", "USER", "--root", root]),
+-      ).toBe(0);
+-      packet = await runJson(root, ["task", "advance", id, "--agent-json"]);
++      if (!policyApproval) {
++        expect(packet.action).toMatchObject({ kind: "approval_required" });
++        expect(
++          await runCliSilent(["task", "plan", "approve", id, "--by", "USER", "--root", root]),
++        ).toBe(0);
++        packet = await runJson(root, ["task", "advance", id, "--agent-json"]);
++      }
+       expect(packet.authority).toMatchObject({ role: "EXECUTOR" });
+       const unchanged = await readFile(path.join(root, "fixture.test.ts"), "utf8");
+       // Emit the historical command shape through the real kernel. Do not rewrite its receipt.
+@@ -240,11 +244,13 @@ describe("native prospective scope request", { timeout: 180_000 }, () => {
+       } else {
+         await submit({ canonical_plan: expanded });
+       }
+-      expect(packet.action, JSON.stringify(packet)).toMatchObject({ kind: "approval_required" });
+-      expect(
+-        await runCliSilent(["task", "plan", "approve", id, "--by", "USER", "--root", root]),
+-      ).toBe(0);
+-      packet = await runJson(root, ["task", "advance", id, "--agent-json"]);
++      if (!policyApproval) {
++        expect(packet.action, JSON.stringify(packet)).toMatchObject({ kind: "approval_required" });
++        expect(
++          await runCliSilent(["task", "plan", "approve", id, "--by", "USER", "--root", root]),
++        ).toBe(0);
++        packet = await runJson(root, ["task", "advance", id, "--agent-json"]);
++      }
+       expect(packet.authority, JSON.stringify(packet)).toMatchObject({ role: "EXECUTOR" });
+       const nextOrder = AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse(
+         JSON.parse(
+@@ -261,7 +267,7 @@ describe("native prospective scope request", { timeout: 180_000 }, () => {
+         ),
+       ).toBe(true);
+       expect(await readFile(path.join(root, "fixture.test.ts"), "utf8")).toBe(unchanged);
+-      if (variant === "native" || variant === "operator") {
++      if (variant === "native" || variant === "operator" || policyApproval) {
+         const context = await loadCommandContext({ cwd: root, rootOverride: root });
+         const nativeRuntime = await createRuntime({
+           command: context,
+@@ -316,7 +322,7 @@ describe("native prospective scope request", { timeout: 180_000 }, () => {
+         ).rejects.toThrow("preceding attempt");
+         await writeFile(retainedPath, retainedResult);
+       }
+-      if (!legacyStop) {
++      if (!legacyStop && !policyApproval) {
+         await submit({
+           status: "blocked",
+           blocker: {
+diff --git a/packages/core/src/tasks/task-kernel/replan-work-items.test.ts b/packages/core/src/tasks/task-kernel/replan-work-items.test.ts
+index 5eb3e2668..735b09c0a 100644
+--- a/packages/core/src/tasks/task-kernel/replan-work-items.test.ts
++++ b/packages/core/src/tasks/task-kernel/replan-work-items.test.ts
+@@ -13,7 +13,7 @@ import {
+   authenticatedScopeReplanHistory,
+   reconcileReplannedWorkItems,
+ } from "./replan-work-items.js";
+-import type { CanonicalAuthorityRecord, PlanRecord, TaskCommand } from "./model.js";
++import type { CanonicalAuthorityRecord, PlanRecord, TaskAggregate, TaskCommand } from "./model.js";
+ import type { ProspectiveScopeRequest } from "./prospective-scope.js";
+ 
+ function fixture() {
+@@ -154,6 +154,7 @@ describe("scope replan proposal provenance", () => {
+     };
+     const grant: CanonicalAuthorityRecord = {
+       authority,
++      approval_mode: "manual_operator",
+       observation: {
+         kind: "prospective_scope_request",
+         evidence_digest: kernelDigest("grant"),
+@@ -230,8 +231,13 @@ describe("scope replan proposal provenance", () => {
+     "wrong-task",
+     "wrong-attempt",
+     "unrelated-concurrent",
++    "policy-valid",
++    "policy-wrong-actor",
++    "policy-wrong-mode",
++    "policy-wrong-grant",
++    "policy-ungranted-scope",
+   ])("retains a formerly approved rejected replacement: %s", (kind) => {
+-    const { state, command, proposalId } = historyFixture("operator");
++    const { state, command, proposalId } = structuredClone(historyFixture("operator"));
+     const source = state.plan_history[0]!;
+     const request = state.authority_lineage[0]!.observation!.scope_request!;
+     source.work_items.find((item) => item.id === "consumer")!.contract_digest =
+@@ -335,7 +341,7 @@ describe("scope replan proposal provenance", () => {
+       plan_revision: revision,
+       plan_digest: next.digest,
+     };
+-    const record = {
++    const record: TaskAggregate = {
+       ...state,
+       plan_history: [source, approved],
+       current_plan: next,
+@@ -372,6 +378,40 @@ describe("scope replan proposal provenance", () => {
+         },
+       },
+     };
++    if (kind.startsWith("policy-")) {
++      const evidence = kernelDigest("repository-policy");
++      next.approval_actor_id = "agentplane:kernel-controller";
++      next.approval_evidence_digest = evidence;
++      const policyRoot = {
++        ...nextRoot,
++        provenance: {
++          ...nextRoot.provenance,
++          kind: "SYSTEM" as const,
++          actor_id: "agentplane:kernel-controller",
++          evidence_digest: evidence,
++        },
++      };
++      policyRoot.digest = authorityDigest(policyRoot);
++      record.authority_lineage!.at(-1)!.authority = policyRoot;
++      record.authority_lineage!.at(-1)!.approval_mode =
++        kind === "policy-wrong-mode" ? "manual_operator" : "repository_policy";
++      finalApproval.approval_evidence_digest = evidence;
++      finalApproval.authority_mode =
++        kind === "policy-wrong-mode" ? "manual_operator" : "repository_policy";
++      record.mutation_receipts.final!.command_digest = kernelDigest(finalApproval);
++      if (kind === "policy-wrong-actor")
++        record.authority_lineage!.at(-1)!.authority.provenance.actor_id = "other-system";
++      if (kind === "policy-wrong-grant") {
++        record.authority_lineage![0]!.approval_mode = "repository_policy";
++        record.mutation_receipts[grantId]!.command_digest = kernelDigest(grantCommand);
++      }
++      if (kind === "policy-ungranted-scope") {
++        const grant = record.authority_lineage![0]!;
++        grant.authority = { ...grant.authority, scope_roots: [] };
++        grant.authority.digest = authorityDigest(grant.authority);
++        record.mutation_receipts[grantId]!.command_digest = kernelDigest(grantCommand);
++      }
++    }
+     if (kind === "unrelated-concurrent") {
+       const unrelatedRequest = {
+         ...request,
+@@ -395,7 +435,7 @@ describe("scope replan proposal provenance", () => {
+         record: unrelated,
+       };
+       const id = `scope-request:${kernelDigest(unrelatedRequest)}`;
+-      record.authority_lineage.push(unrelated);
++      record.authority_lineage = [...record.authority_lineage!, unrelated];
+       Object.assign(record.mutation_receipts, {
+         [id]: {
+           ...receipt,
+@@ -441,7 +481,7 @@ describe("scope replan proposal provenance", () => {
+     if (kind === "wrong-task") request.task_id = "other-task";
+     if (kind === "wrong-attempt") record.work_items.consumer.attempt++;
+     expect(authenticatedScopeReplanHistory(record, true, "consumer") !== null).toBe(
+-      kind === "valid" || kind === "unrelated-concurrent",
++      kind === "valid" || kind === "unrelated-concurrent" || kind === "policy-valid",
+     );
+     expect(authenticatedScopeReplanHistory(record, true, "missing")).toBeNull();
+   });
+diff --git a/packages/core/src/tasks/task-kernel/replan-work-items.ts b/packages/core/src/tasks/task-kernel/replan-work-items.ts
+index 6a6596d80..66403ab58 100644
+--- a/packages/core/src/tasks/task-kernel/replan-work-items.ts
++++ b/packages/core/src/tasks/task-kernel/replan-work-items.ts
+@@ -4,6 +4,7 @@ import {
+   planScopeExpansionApprovalDigest,
+   planAmendmentScopeRoots,
+ } from "./authority-lineage.js";
++import { executionRequirementsAreSubset } from "./invariants.js";
+ import type {
+   KernelInput,
+   PlanRecord,
+@@ -264,7 +265,18 @@ export function authenticatedScopeReplanHistory(
+         rejections.push({ mutation_id: rejected[0]!.mutation_id, command: rejected[0]!.command });
+         taskRevision = rejected[0]!.revision;
+       } else if (approvedCurrent) {
+-        if (!/^USER(?::[A-Za-z0-9._@-]+)?$/u.test(plan.approval_actor_id ?? "")) return [];
++        const userApproved = /^USER(?::[A-Za-z0-9._@-]+)?$/u.test(plan.approval_actor_id ?? "");
++        const policyApproved = plan.approval_actor_id === "agentplane:kernel-controller";
++        if (
++          !userApproved &&
++          (!policyApproved ||
++            grant.approval_mode !== "manual_operator" ||
++            grant.authority.provenance.kind !== "USER" ||
++            !plan.work_items.every((item) =>
++              executionRequirementsAreSubset(grant.authority, item.execution_requirements),
++            ))
++        )
++          return [];
+         const approved = (aggregate.authority_lineage ?? []).flatMap((entry) => {
+           const authority = entry.authority;
+           const approvalMode = entry.approval_mode;
+@@ -277,10 +289,11 @@ export function authenticatedScopeReplanHistory(
+             authority.task_id !== aggregate.id ||
+             authority.plan_digest !== plan.digest ||
+             authority.plan_revision !== plan.revision ||
+-            authority.provenance.kind !== "USER" ||
++            authority.provenance.kind !== (userApproved ? "USER" : "SYSTEM") ||
+             authority.provenance.parent_authority_digest !== null ||
+             authority.provenance.actor_id !== plan.approval_actor_id ||
+-            authority.provenance.evidence_digest !== plan.approval_evidence_digest
++            authority.provenance.evidence_digest !== plan.approval_evidence_digest ||
++            (policyApproved && approvalMode !== "repository_policy")
+           )
+             return [];
+           return Object.values(aggregate.mutation_receipts).flatMap((receipt) => {

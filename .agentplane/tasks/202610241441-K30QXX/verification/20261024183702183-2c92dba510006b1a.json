@@ -1,0 +1,172 @@
+{
+  "details": "Command: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610241441-K30QXX/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610241441-K30QXX declared verification\n\nCommand: bun run lint:core\nResult: fail\nEvidence: .agentplane/tasks/202610241441-K30QXX/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610241441-K30QXX declared verification",
+  "digest": "sha256:2c92dba510006b1a132a9d495a74f0da2bf06ab9a5b163d75a1d784452fdb62d",
+  "implementation_sha": "3b4ade237a137a012ddfbd7a462eddb28e4087a1",
+  "input": {
+    "checked_input": {
+      "commands": {
+        "digest": "sha256:125e67431dd25ddbabe2b75ada555892a646eef0ea0b331593283d80bd4276f4",
+        "entries": [
+          {
+            "check_id": null,
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": null,
+            "command": "bun run lint:core"
+          }
+        ]
+      },
+      "context": {
+        "digest": "sha256:99daad1395e800c14511aa93bdd1543575521f4ee89189529a3fb84c4b785e2b",
+        "paths": [
+          ".agentplane/WORKFLOW.md",
+          ".github/ISSUE_TEMPLATE/config.yml",
+          "bun.lock",
+          "depcruise.config.cjs",
+          "eslint.config.cjs",
+          "knip.json",
+          "package.json",
+          "packages/agentplane/package.json",
+          "packages/agentplane/src/cli/run-cli/commands/config.ts",
+          "packages/agentplane/src/runner/config.test.ts",
+          "packages/agentplane/src/runner/config.ts",
+          "packages/agentplane/tsconfig.json",
+          "packages/agentplane/tsup.config.ts",
+          "packages/core/package.json",
+          "packages/core/schemas/config.schema.json",
+          "packages/core/src/config/config.test.ts",
+          "packages/core/src/config/config.ts",
+          "packages/core/tsconfig.json",
+          "packages/core/tsup.config.ts",
+          "packages/recipes/package.json",
+          "packages/recipes/tsconfig.json",
+          "packages/recipes/tsup.config.ts",
+          "packages/spec/examples/config.json",
+          "packages/spec/package.json",
+          "packages/spec/schemas/config.schema.json",
+          "packages/testkit/package.json",
+          "packages/testkit/tsconfig.json",
+          "schemas/config.schema.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package-lock.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package.json",
+          "tsconfig.json",
+          "turbo.json",
+          "vitest.config.ts",
+          "vitest.workspace.ts"
+        ]
+      },
+      "digest": "sha256:8e4664044c39d2bbe329697aa954132d2cdd7b5bf8d4bd35e8631bf07d69f172",
+      "environment": {
+        "digest": "sha256:9ec5bf2323cd53a84a354760f7a2e04adc570a2f8a0452d4311892dcb83d880b",
+        "runtime": {
+          "architecture": "x64",
+          "bun_major": null,
+          "node_major": "24",
+          "platform": "linux"
+        }
+      },
+      "evidence": {
+        "details_digest": "sha256:b092628239e7fff41aafbec9d0db3e966e6dfb933312f23b0d1becf64a333d62",
+        "digest": "sha256:e9bacd02e473dd430d7626535bf0ecb1a90677e54896323e83454035ba6a95b9",
+        "references": [
+          {
+            "digest": "sha256:c67cf0e487295c42607796518a57f1c0b6b2b339e8c6105a0676885b170f6a8b",
+            "fragment": "check-1",
+            "path": ".agentplane/tasks/202610241441-K30QXX/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610241441-K30QXX/supervision/declared-checks.json#check-1",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:c67cf0e487295c42607796518a57f1c0b6b2b339e8c6105a0676885b170f6a8b",
+            "fragment": "check-2",
+            "path": ".agentplane/tasks/202610241441-K30QXX/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610241441-K30QXX/supervision/declared-checks.json#check-2",
+            "source": "filesystem"
+          }
+        ]
+      },
+      "implementation": {
+        "base_sha": "4346a00204229a1a919f1a4879cd7455dae9e301",
+        "digest": "sha256:5e1bcd6edd3ba0157735b9aa797b53ec6c609c8cffddd68ad49dc7d0e81c9a3d",
+        "strategy": "branch_diff",
+        "target_sha": "3b4ade237a137a012ddfbd7a462eddb28e4087a1"
+      }
+    },
+    "concurrency": {
+      "digest": "sha256:d953b97de2e93126d33c1947a88083a147073e3e5b8de3eff73edd0c370d8674",
+      "execution": {
+        "authoritative_task_source": "task_worktree",
+        "base_ref": "main",
+        "base_sha": "4346a00204229a1a919f1a4879cd7455dae9e301",
+        "digest": "sha256:41b370193051bddc5a3764219de283ecd61f60ae2ab88c426d164b4895df1788",
+        "primary_task_id": "202610241441-K30QXX",
+        "reason_codes": [
+          "agent_preferred_branch_pr",
+          "repository_branch_pr_floor"
+        ],
+        "repository_mode": "branch_pr",
+        "requested_mode": "branch_pr",
+        "route_source": "execution_contract",
+        "selected_mode": "branch_pr",
+        "task_ids": [
+          "202610241441-K30QXX"
+        ]
+      },
+      "task": {
+        "capability": {
+          "digest": "sha256:ad84de6f35e3c0bf81c5d2c192b58b7327cf6bef092875afe915c3af00c76970"
+        },
+        "checks": {
+          "digest": "sha256:5b32638c1c634bccf90e1b66d5e522606ba05d6aabc3f408c8153044d1bfb61f",
+          "required_check_ids": [
+            "affected_unit_integration",
+            "critical_paths",
+            "docs_contract",
+            "full_regression",
+            "task_outcome"
+          ],
+          "verification_contract_digest": "sha256:98a504b6dcd1cc4c6d42ee80bb643d248e588f5001f7a569276725e5db8b0cc1"
+        },
+        "digest": "sha256:68ba67f6900b1cf6024fef1bc4e3156136e7208438c098a2b9baa34995a67219",
+        "kind": "agentplane.native_task_identity",
+        "plan": {
+          "approval_state": "approved",
+          "approved_digest": "sha256:8be7214b9ba190e41c17167ff42fd96efef65efea6eb974b6340b83bd86610f0",
+          "digest": "sha256:8be7214b9ba190e41c17167ff42fd96efef65efea6eb974b6340b83bd86610f0",
+          "revision": 1
+        },
+        "policy": {
+          "digest": "sha256:1150ba6caefe9e829c30b3520b9246ed1ec7ebbeedbe788c63cf7989015dbb46"
+        },
+        "schema_version": 1,
+        "task_id": "202610241441-K30QXX"
+      }
+    },
+    "digest": "sha256:6f9bd717f8a9daf0960107480b0ad5b16894067c5aa91a461662bf978f276ba1",
+    "kind": "task_verification_input",
+    "obligations": {
+      "digest": "sha256:9c1a723f0e0220e710504234ad47b4c79b69aa96a944034271ed749fb60012c1",
+      "required_check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "full_regression",
+        "task_outcome"
+      ],
+      "verification_contract_digest": "sha256:98a504b6dcd1cc4c6d42ee80bb643d248e588f5001f7a569276725e5db8b0cc1",
+      "verify_steps_digest": "sha256:a115d4d74a944d9c7d194436e2e32015bcf0381236c162a6ad24efa15445757a"
+    },
+    "schema_version": 5
+  },
+  "kind": "task_verification_record",
+  "note": "Rework: Declared check failed: bun run lint:core",
+  "recorded_at": "2026-10-24T18:37:02.183Z",
+  "result": "needs_rework",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Retire drifted unanswered read-only supervisor intent with valid verification\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Retire drifted unanswered read-only supervisor intent with valid verification\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:a115d4d74a944d9c7d194436e2e32015bcf0381236c162a6ad24efa15445757a",
+  "task_id": "202610241441-K30QXX",
+  "verification_command": "agentplane verify 202610241441-K30QXX --rework --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

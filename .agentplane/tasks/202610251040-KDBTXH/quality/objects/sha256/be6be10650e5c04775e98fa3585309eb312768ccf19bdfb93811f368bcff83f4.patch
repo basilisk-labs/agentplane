@@ -1,0 +1,310 @@
+diff --git a/scripts/bench/capture-compatibility-candidate.mjs b/scripts/bench/capture-compatibility-candidate.mjs
+index aa99dbb20..62e8776b0 100644
+--- a/scripts/bench/capture-compatibility-candidate.mjs
++++ b/scripts/bench/capture-compatibility-candidate.mjs
+@@ -16,6 +16,7 @@ import {
+   reconstructCompatibilitySurface,
+   surfaceSectionDigests,
+ } from "../lib/compatibility-contract.mjs";
++import { reconstructHistoricalPackageSurface } from "../lib/compatibility-incremental-package-delta.mjs";
+ 
+ const scriptPath = fileURLToPath(import.meta.url);
+ const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
+@@ -118,60 +119,7 @@ function verifyInternalVersionNormalization(manifests, baselineVersion) {
+ 
+ function historicalReleaseSurface(releaseSurface, candidate) {
+   const delta = candidate.incremental_package_delta;
+-  if (!delta) return releaseSurface;
+-  if (delta.section !== "package_manifests" || !Array.isArray(delta.historical_dependencies)) {
+-    throw new Error("Incremental package delta cannot reconstruct its historical surface");
+-  }
+-  const historical = structuredClone(releaseSurface);
+-  const manifests = new Map(
+-    historical.package_manifests.map((manifest) => [manifest.path, manifest]),
+-  );
+-  const seen = new Set();
+-  for (const entry of delta.historical_dependencies) {
+-    const manifest = manifests.get(entry.manifest_path);
+-    const key = `${entry.manifest_path}\0${entry.name}`;
+-    if (
+-      !manifest ||
+-      seen.has(key) ||
+-      !Object.hasOwn(manifest.dependencies ?? {}, entry.name) ||
+-      manifest.dependencies[entry.name] === entry.version ||
+-      typeof entry.version !== "string" ||
+-      !entry.version
+-    ) {
+-      throw new Error("Incremental package delta has invalid historical dependency evidence");
+-    }
+-    seen.add(key);
+-    Object.defineProperty(manifest.dependencies, entry.name, {
+-      value: entry.version,
+-      enumerable: true,
+-      writable: true,
+-      configurable: true,
+-    });
+-  }
+-  historical.package_manifests = historical.package_manifests.map((manifest) => {
+-    const normalized = structuredClone(manifest);
+-    delete normalized.path;
+-    delete normalized.normalized_sha256;
+-    return packageSurface(manifest.path, normalized);
+-  });
+-  const historicalDigests = surfaceSectionDigests(historical);
+-  const currentDigests = surfaceSectionDigests(releaseSurface);
+-  if (
+-    historicalDigests.package_manifests !== delta.from_sha256 ||
+-    currentDigests.package_manifests !== delta.to_sha256 ||
+-    compatibilitySurfaceDigest(historicalDigests) !== delta.from_surface_sha256 ||
+-    compatibilitySurfaceDigest(currentDigests) !== delta.to_surface_sha256 ||
+-    hashJson(
+-      diffJsonPaths(
+-        historical.package_manifests,
+-        releaseSurface.package_manifests,
+-        "$.package_manifests",
+-      ),
+-    ) !== hashJson(delta.allowed_json_paths)
+-  ) {
+-    throw new Error("Incremental package delta differs from its reviewed historical surface");
+-  }
+-  return historical;
++  return delta ? reconstructHistoricalPackageSurface(releaseSurface, delta) : releaseSurface;
+ }
+ 
+ function buildCandidate({ baseline, candidate, packageSourceTask }) {
+diff --git a/scripts/checks/check-compatibility-contract-baseline.mjs b/scripts/checks/check-compatibility-contract-baseline.mjs
+index 6c1c1c186..49d152254 100644
+--- a/scripts/checks/check-compatibility-contract-baseline.mjs
++++ b/scripts/checks/check-compatibility-contract-baseline.mjs
+@@ -26,6 +26,7 @@ import {
+   resolveReviewedCompatibilitySurfaceMode,
+   surfaceSectionDigests,
+ } from "../lib/compatibility-contract.mjs";
++import { reconstructHistoricalPackageSurface } from "../lib/compatibility-incremental-package-delta.mjs";
+ 
+ const scriptPath = fileURLToPath(import.meta.url);
+ const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
+@@ -303,14 +304,7 @@ function validateBaseline(baseline) {
+   };
+ }
+ 
+-function validateReviewedCandidate({
+-  baseline,
+-  candidate,
+-  exactMainSurface,
+-  currentSurface,
+-  currentDigest,
+-  currentSectionDigests,
+-}) {
++function validateReviewedCandidate({ baseline, candidate, exactMainSurface, currentSurface }) {
+   assertOnlyKeys(
+     candidate,
+     [
+@@ -488,40 +482,15 @@ function validateReviewedCandidate({
+       }),
+     "compatibility incremental package delta drift",
+   );
+-  const historicalSurface = structuredClone(currentSurface);
+-  const historicalDependencies = new Map(
+-    incrementalPackageDelta.historical_dependencies.map((entry) => [entry.manifest_path, entry]),
+-  );
+-  assert(
+-    historicalDependencies.size === currentSurface.package_manifests.length,
+-    "incremental historical dependency inventory drift",
+-  );
+-  historicalSurface.package_manifests = currentSurface.package_manifests.map((manifest) => {
++  for (const manifest of currentSurface.package_manifests) {
+     assert(manifest.dependencies.zod === "4.6.7", `${manifest.path}: reviewed zod version drift`);
+-    const previous = historicalDependencies.get(manifest.path);
+-    assert(previous, `${manifest.path}: missing historical dependency`);
+-    const historicalManifest = structuredClone(manifest);
+-    delete historicalManifest.path;
+-    delete historicalManifest.normalized_sha256;
+-    historicalManifest.dependencies[previous.name] = previous.version;
+-    return packageSurface(manifest.path, historicalManifest);
+-  });
++  }
++  const historicalSurface = reconstructHistoricalPackageSurface(
++    currentSurface,
++    incrementalPackageDelta,
++  );
+   const historicalSectionDigests = surfaceSectionDigests(historicalSurface);
+   const historicalDigest = compatibilitySurfaceDigest(historicalSectionDigests);
+-  assert(
+-    historicalSectionDigests.package_manifests === incrementalPackageDelta.from_sha256 &&
+-      currentSectionDigests.package_manifests === incrementalPackageDelta.to_sha256 &&
+-      historicalDigest === incrementalPackageDelta.from_surface_sha256 &&
+-      currentDigest === incrementalPackageDelta.to_surface_sha256 &&
+-      hashJson(
+-        diffJsonPaths(
+-          historicalSurface.package_manifests,
+-          currentSurface.package_manifests,
+-          "$.package_manifests",
+-        ),
+-      ) === hashJson(incrementalPackageDelta.allowed_json_paths),
+-    "incremental package manifest surface drift",
+-  );
+   const preReleasePackageDelta = candidate.pre_release_package_delta;
+   assertOnlyKeys(
+     preReleasePackageDelta,
+@@ -4834,8 +4803,6 @@ try {
+         candidate,
+         exactMainSurface,
+         currentSurface,
+-        currentDigest,
+-        currentSectionDigests,
+       });
+       verifyRejectedRecaptureDrift(
+         historicalSurface,
+diff --git a/scripts/lib/compatibility-incremental-package-delta.mjs b/scripts/lib/compatibility-incremental-package-delta.mjs
+new file mode 100644
+index 000000000..bc477568c
+--- /dev/null
++++ b/scripts/lib/compatibility-incremental-package-delta.mjs
+@@ -0,0 +1,56 @@
++import {
++  diffJsonPaths,
++  hashJson,
++  packageSurface,
++  surfaceSectionDigests,
++} from "./compatibility-contract.mjs";
++
++export function reconstructHistoricalPackageSurface(currentSurface, delta) {
++  if (delta?.section !== "package_manifests" || !Array.isArray(delta.historical_dependencies)) {
++    throw new Error("Incremental package delta cannot reconstruct its historical surface");
++  }
++  const historical = structuredClone(currentSurface);
++  const manifests = new Map(
++    historical.package_manifests.map((manifest) => [manifest.path, manifest]),
++  );
++  const seen = new Set();
++  for (const entry of delta.historical_dependencies) {
++    const manifest = manifests.get(entry.manifest_path);
++    if (
++      !manifest ||
++      seen.has(entry.manifest_path) ||
++      typeof entry.name !== "string" ||
++      !Object.hasOwn(manifest.dependencies ?? {}, entry.name) ||
++      typeof entry.version !== "string" ||
++      !entry.version ||
++      manifest.dependencies[entry.name] === entry.version
++    ) {
++      throw new Error("Incremental package delta has invalid historical dependency evidence");
++    }
++    seen.add(entry.manifest_path);
++    manifest.dependencies[entry.name] = entry.version;
++  }
++  if (seen.size !== manifests.size) {
++    throw new Error("Incremental package delta has incomplete historical dependency evidence");
++  }
++  historical.package_manifests = historical.package_manifests.map((manifest) => {
++    const normalized = structuredClone(manifest);
++    delete normalized.path;
++    delete normalized.normalized_sha256;
++    return packageSurface(manifest.path, normalized);
++  });
++  if (
++    surfaceSectionDigests(historical).package_manifests !== delta.from_sha256 ||
++    surfaceSectionDigests(currentSurface).package_manifests !== delta.to_sha256 ||
++    hashJson(
++      diffJsonPaths(
++        historical.package_manifests,
++        currentSurface.package_manifests,
++        "$.package_manifests",
++      ),
++    ) !== hashJson(delta.allowed_json_paths)
++  ) {
++    throw new Error("Incremental package delta differs from its reviewed package section");
++  }
++  return historical;
++}
+diff --git a/scripts/lib/compatibility-incremental-package-delta.test.mjs b/scripts/lib/compatibility-incremental-package-delta.test.mjs
+new file mode 100644
+index 000000000..f18d96aae
+--- /dev/null
++++ b/scripts/lib/compatibility-incremental-package-delta.test.mjs
+@@ -0,0 +1,84 @@
++import assert from "node:assert/strict";
++import { test } from "node:test";
++
++import { diffJsonPaths, hashJson, packageSurface } from "./compatibility-contract.mjs";
++import { reconstructHistoricalPackageSurface } from "./compatibility-incremental-package-delta.mjs";
++
++const manifestPath = "packages/example/package.json";
++const historicalManifest = packageSurface(manifestPath, {
++  name: "example",
++  version: "0.7.13",
++  dependencies: { zod: "4.6.5" },
++});
++const currentManifest = packageSurface(manifestPath, {
++  name: "example",
++  version: "0.7.13",
++  dependencies: { zod: "4.6.7" },
++});
++
++function fixture() {
++  const surface = {
++    schema_version: 2,
++    cli_topology: { commands: ["new-command"] },
++    package_manifests: [currentManifest],
++  };
++  const delta = {
++    section: "package_manifests",
++    historical_dependencies: [{ manifest_path: manifestPath, name: "zod", version: "4.6.5" }],
++    from_sha256: hashJson([historicalManifest]),
++    to_sha256: hashJson([currentManifest]),
++    from_surface_sha256: "immutable-historical-full-surface-digest",
++    to_surface_sha256: "immutable-reviewed-full-surface-digest",
++    allowed_json_paths: diffJsonPaths(
++      [historicalManifest],
++      [currentManifest],
++      "$.package_manifests",
++    ),
++  };
++  return { surface, delta };
++}
++
++test("historical package evidence survives later unrelated surface changes", () => {
++  const { surface, delta } = fixture();
++  const reconstructed = reconstructHistoricalPackageSurface(surface, delta);
++  assert.deepEqual(reconstructed.package_manifests, [historicalManifest]);
++  assert.deepEqual(reconstructed.cli_topology, surface.cli_topology);
++  assert.deepEqual(surface.package_manifests, [currentManifest]);
++  surface.cli_topology.commands.push("another-command");
++  assert.deepEqual(reconstructHistoricalPackageSurface(surface, delta).package_manifests, [
++    historicalManifest,
++  ]);
++});
++
++test("historical package evidence rejects package and path drift", () => {
++  const cases = [
++    (surface) => {
++      surface.package_manifests[0] = { ...currentManifest, version: "0.7.14" };
++    },
++    (surface) => {
++      surface.package_manifests.push(
++        packageSurface("packages/extra/package.json", { name: "extra" }),
++      );
++    },
++    (_surface, delta) => {
++      delta.from_sha256 = "incorrect";
++    },
++    (_surface, delta) => {
++      delta.to_sha256 = "incorrect";
++    },
++    (_surface, delta) => {
++      delta.allowed_json_paths = [];
++    },
++    (_surface, delta) => {
++      delta.historical_dependencies[0].version = "4.6.6";
++    },
++    (_surface, delta) => {
++      delta.historical_dependencies = [];
++    },
++  ];
++  for (const change of cases) {
++    const { surface, delta } = fixture();
++    change(surface, delta);
++    assert.throws(() => reconstructHistoricalPackageSurface(surface, delta));
++  }
++});
