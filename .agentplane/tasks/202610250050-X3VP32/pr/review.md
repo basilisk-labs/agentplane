@@ -6,7 +6,7 @@ Created: 2026-10-25T01:17:13.320Z
 
 - Task: `202610250050-X3VP32`
 - Title: Guard canonical local lifecycle against unresolved external-agent intent
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610250050-X3VP32/guard-canonical-local-lifecycle-against-unresolv`
 - Canonical task record: `.agentplane/tasks/202610250050-X3VP32/README.md`
 
