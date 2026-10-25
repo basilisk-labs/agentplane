@@ -8,10 +8,10 @@
   "pr_number": 6922,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6922",
   "pre_merge_closure": {
-    "basis_commit": "021ad50945ebdeac99752f5270e971c35641d8cd",
+    "basis_commit": "193e3913d407d255db1509bea983ad15bd2b0b03",
     "branch": "task/202610250310-T2T2V1/authenticate-repository-policy-scope-replans-aft",
     "pr_number": 6922,
-    "recorded_at": "2026-10-25T07:54:28.239Z",
+    "recorded_at": "2026-10-25T10:27:50.246Z",
     "state": "closed_before_merge"
   },
   "provider": {
