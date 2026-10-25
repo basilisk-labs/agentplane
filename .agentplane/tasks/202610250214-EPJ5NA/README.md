@@ -1,10 +1,11 @@
 ---
 id: "202610250214-EPJ5NA"
 title: "Make cloud auto-pull freshness fixture deterministic"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -42,6 +43,22 @@ quality_review:
     - "Seeded last_checked_at 2026-05-05T00:00:00.000Z remains stale relative to fixed 2026-10-25T00:00:00.000Z, while the mocked successful pull computes new Date().toISOString() under that fixed clock and remains fresh regardless of CI scheduling delay."
     - "vi.useFakeTimers({ toFake: [\"Date\"] }) leaves asynchronous timers real, and vi.useRealTimers() is in finally around the exercise and assertions."
     - "AgentPlane retained focused cloud suite run-000 exit 0 (18/18), lint:core run-001 exit 0 (five unrelated warnings), and native full CI run-002 exit 0 with build, runtime, docs-schema, core, CLI, platform-critical and coverage checks passing."
+token_usage:
+  agent_runs: 1
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:22e13dcb2b2a88b9a067a452086c98eb4ab78ad531c7f1f6f351d7e6038fdde7"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-10-25T05:11:15.240Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -210,9 +227,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "95cd98166137a4e6b1a30949369d7e383a220de0"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "cebcc9d19c0274e08c4564d00f38c3d86b520263"
+  message: "✅ EPJ5NA task: make cloud auto-pull freshness fixture deterministic"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -220,9 +240,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-25T05:11:15.240Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "cebcc9d19c0274e08c4564d00f38c3d86b520263"
 doc_version: 3
-doc_updated_at: "2026-10-25T05:02:25.310Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-25T05:11:15.240Z"
+doc_updated_by: "CODER"
 description: "The cloud auto-pull stale-projection test uses a one-second freshness window and a live Date timestamp. Freeze Date only within that test so the seeded old projection remains stale and the mocked pull remains fresh under slow CI; restore real time afterward. Keep production code and assertions unchanged."
 sections:
   Summary: |-
@@ -347,6 +375,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:e4121cbc5d8d8950e0192caf4d8c077e0d7191bd97b2e79996c43f0c4f1fc9fd"
     work_order_id: "sha256:9b5f0e4a249134b67c72a37fd9cf886b24825c61674170a87600c4fb4cd54473"
+  implementation_commit:
+    hash: "95cd98166137a4e6b1a30949369d7e383a220de0"
+    message: "🚧 EPJ5NA task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "214a26d1bda13f9a81349cc1364669ad24dfb92c"
@@ -924,3 +955,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/1` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:22e13dcb2b2a88b9a067a452086c98eb4ab78ad531c7f1f6f351d7e6038fdde7`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-10-25T05:11:15.240Z`

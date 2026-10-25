@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:84c2e1c941a88762b64edecb81b414b0b70e5b3564526b81e75365b07bf23ba7",
   "pr_number": 6921,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6921",
+  "pre_merge_closure": {
+    "basis_commit": "cebcc9d19c0274e08c4564d00f38c3d86b520263",
+    "branch": "task/202610250214-EPJ5NA/make-cloud-auto-pull-freshness-fixture-determini",
+    "pr_number": 6921,
+    "recorded_at": "2026-10-25T05:11:15.497Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
