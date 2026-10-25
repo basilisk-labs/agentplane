@@ -24,15 +24,17 @@ import type * as KernelRuntimeContext from "./kernel-runtime-context.js";
 
 installRunCliIntegrationHarness();
 describe("native prospective scope request", { timeout: 180_000 }, () => {
-  it.each(["native", "legacy", "existing-effects", "operator"])(
+  it.each(["native", "legacy", "existing-effects", "operator", "policy"])(
     "requires exact scope approval and fresh planning (legacy stop: %s)",
     async (variant) => {
       const legacyStop = variant === "legacy";
       const existingEffects = variant === "existing-effects";
+      const policyApproval = variant === "policy";
       const root = await mkGitRepoRootWithBranch("main");
       await configureGitUser(root);
       const config = defaultConfig();
       config.workflow_mode = "direct";
+      config.agents.approvals.require_plan = !policyApproval;
       await writeConfig(root, config);
       await ensureRuntimeGitignore({ gitRoot: root });
       await writeFile(path.join(root, "source.ts"), "export const value = 1;\n");
@@ -114,11 +116,13 @@ describe("native prospective scope request", { timeout: 180_000 }, () => {
         ],
       };
       await submit({ canonical_plan: proposal });
-      expect(packet.action).toMatchObject({ kind: "approval_required" });
-      expect(
-        await runCliSilent(["task", "plan", "approve", id, "--by", "USER", "--root", root]),
-      ).toBe(0);
-      packet = await runJson(root, ["task", "advance", id, "--agent-json"]);
+      if (!policyApproval) {
+        expect(packet.action).toMatchObject({ kind: "approval_required" });
+        expect(
+          await runCliSilent(["task", "plan", "approve", id, "--by", "USER", "--root", root]),
+        ).toBe(0);
+        packet = await runJson(root, ["task", "advance", id, "--agent-json"]);
+      }
       expect(packet.authority).toMatchObject({ role: "EXECUTOR" });
       const unchanged = await readFile(path.join(root, "fixture.test.ts"), "utf8");
       // Emit the historical command shape through the real kernel. Do not rewrite its receipt.
@@ -240,11 +244,13 @@ describe("native prospective scope request", { timeout: 180_000 }, () => {
       } else {
         await submit({ canonical_plan: expanded });
       }
-      expect(packet.action, JSON.stringify(packet)).toMatchObject({ kind: "approval_required" });
-      expect(
-        await runCliSilent(["task", "plan", "approve", id, "--by", "USER", "--root", root]),
-      ).toBe(0);
-      packet = await runJson(root, ["task", "advance", id, "--agent-json"]);
+      if (!policyApproval) {
+        expect(packet.action, JSON.stringify(packet)).toMatchObject({ kind: "approval_required" });
+        expect(
+          await runCliSilent(["task", "plan", "approve", id, "--by", "USER", "--root", root]),
+        ).toBe(0);
+        packet = await runJson(root, ["task", "advance", id, "--agent-json"]);
+      }
       expect(packet.authority, JSON.stringify(packet)).toMatchObject({ role: "EXECUTOR" });
       const nextOrder = AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse(
         JSON.parse(
@@ -261,7 +267,7 @@ describe("native prospective scope request", { timeout: 180_000 }, () => {
         ),
       ).toBe(true);
       expect(await readFile(path.join(root, "fixture.test.ts"), "utf8")).toBe(unchanged);
-      if (variant === "native" || variant === "operator") {
+      if (variant === "native" || variant === "operator" || policyApproval) {
         const context = await loadCommandContext({ cwd: root, rootOverride: root });
         const nativeRuntime = await createRuntime({
           command: context,
@@ -316,7 +322,7 @@ describe("native prospective scope request", { timeout: 180_000 }, () => {
         ).rejects.toThrow("preceding attempt");
         await writeFile(retainedPath, retainedResult);
       }
-      if (!legacyStop) {
+      if (!legacyStop && !policyApproval) {
         await submit({
           status: "blocked",
           blocker: {
