@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -32,19 +32,33 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-10-24T23:50:51.694Z"
+  updated_at: "2026-10-25T07:48:15.755Z"
   updated_by: "EVALUATOR"
-  note: "Canonical EVALUATOR review passed."
-  evaluated_sha: "d5a8258ea5e1fae11ba08111a05fa2dc24a31d75"
-  review_identity_digest: "sha256:73767e59005a2fb012a4ce15bf717bad34dabcc223544040c4ea17cb7f401aa1"
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  evaluated_sha: "9a2e81e9fc025a5cb3098644513ef981d9bd5e02"
+  review_identity_digest: "sha256:300e02cfbf05082b401a4e12492cb37cfdd50c40cbba7cb66b0b96a2749ba0f1"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202610242244-4Q1124/2bc7b8d676b94c85733364aa63d54e4e4a7aa1c7f86f28eccb0aec52f8c3638b/quality-report.json"
+    - ".agentplane/tasks/202610242244-4Q1124/quality/20261025-070119722-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202610242244-4Q1124/quality/20261025-070119722-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202610242244-4Q1124/quality/objects/sha256/c3195c8e3ef33b4b77a1d8566b6f1575aaf7f7ae6196d0bcb0de79a186fb5d6e.md"
+    - ".agentplane/tasks/202610242244-4Q1124/quality/20261025-070119722-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202610242244-4Q1124/quality/20261025-070119722-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202610242244-4Q1124/quality/20261025-070119722-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202610242244-4Q1124/README.md"
+    - ".agentplane/tasks/202610242244-4Q1124/quality/objects/sha256/7ef4cbfd26eb46756920ba556739cd7cc608fbbf4b19a0b68c18988cac99a85d.patch"
+    - ".agentplane/tasks/202610242244-4Q1124/quality/objects/sha256/7c33d8fab8d9616b63613ec4b7cdf7c5d867d7201fae6e52111e3060ac1079fe.json"
+    - ".agentplane/tasks/202610242244-4Q1124/verification/20261025070053255-91422a8706a61228.json"
+    - ".agentplane/tasks/202610242244-4Q1124/quality/objects/sha256/c07704017bf2fbb216df9e9a2f7788fd921e3f55b194451542f8e8ae047cb604.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The completed provider workflow awaits scoped recovery before provider admission; a failed or retired unresolved intent stops dispatch (kernel-completed-provider-workflow.ts:67-84)."
-    - "Exact read-only authority, task/work-order/exchange identity, issue digest, historical fingerprint, and absent result are checked before stale issued or prepared observations retire (external-agent-read-only-recovery.ts:32-128)."
-    - "Ineligible unresolved intents fail closed, including unchanged fingerprint, retained or newly arrived result, mutation authority, unrelated identity, and an external-agent issue without a work-order reference; negative tests verify preserved journal/exchange and no provider admission."
-    - "Stale retirement retains exchange-first acknowledgement, journal compare-and-swap, native replacement guidance, and interrupted-acknowledgement replay; absent and completed intents allow the normal provider route."
-    - "Implementation commit d5a8258 changes five task source/test files without a provider-specific adapter or bypass; recovery module is 597 lines. AgentPlane native validation reports focused 59/59, lint, hotspots, and ci:local:full run-003 all passed."
+    - "The frozen diff against f69363b15fb7575d6173b6ddabc2b95e2e850825 changes five in-scope generic recovery/provider source and test files. Its stored patch digest matches the prepared evaluator evidence."
+    - "The completed-provider route checks unresolved external-agent journal intent before effect admission. A drifted issued or prepared read-only observation retires only after exact journal/exchange/work-order/effect identity and no-result checks; exchange-first acknowledgement and journal compare-and-swap preserve an interrupted recovery route."
+    - "Unchanged, result-present, mutation-authorized, malformed, unrelated, and missing-work-order intents fail closed before provider execution. Absent or completed intents retain normal provider behavior. Focused tests include positive retirement, negative and result-arrival cases."
+    - "Retained native run-010 full CI passed with exit code 0; lint:core and hotspots:check passed. The verification record is bound to implementation SHA 9a2e81e9fc025a5cb3098644513ef981d9bd5e02."
+    - "Residual risk: A result written after the final filesystem absence check can remain on a retired exchange; the provider guard does not consume or admit it."
 token_usage:
   agent_runs: 3
   input_tokens: null
@@ -779,7 +793,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-10-25T07:01:01.136Z"
+doc_updated_at: "2026-10-25T07:48:15.781Z"
 doc_updated_by: "CODER"
 description: "For a canonical COMPLETED task, retire only a provably stale unanswered read-only external-agent intent through shared identity and CAS gates. Any other unresolved intent must block provider admission and execution. Extract generic guard to a small helper to retain the 600-line hotspot ceiling; verify positive, negative and interrupted acknowledgement routes."
 sections:
@@ -1013,6 +1027,14 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.completed_native_review:
+    applied_at: "2026-10-25T07:48:15.755Z"
+    kernel_digest: "sha256:cbc350ad01dedfc30f66e07646a7aee507327f6c46f94798ff66ac07a71dc2bc"
+    quality_digest: "sha256:4031350c7d3f93258aff01f492b150b1ceaf52c426c8554ea0091c89e2806d27"
+    result_digest: "sha256:dcd09d5074a07019f7b99f580886a1376ccf6c5a98502765414fadd7ec2546dd"
+    schema_version: 1
+    state_fingerprint: "sha256:86cb615ce6d85994fb4f19d3eacec1020e9bb0aaef666e0dd47163e3a50b1854"
+    transition_id: "tr_e6c17e98780578b255b8d73840b82de4"
   agentplane.kernel_operational_projection:
     digest: "sha256:37a1602a6c5d34afd4c7654fcc98b37590e34f28c85b4a5ad6fc71dbf6197c5e"
     evidence_refs:
