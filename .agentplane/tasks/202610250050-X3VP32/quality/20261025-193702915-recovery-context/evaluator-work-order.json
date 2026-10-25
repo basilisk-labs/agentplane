@@ -1,0 +1,124 @@
+{
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202610250050-X3VP32-82d369092d0a0397aefaaa6b",
+  "prepared_at": "2026-10-25T19:37:02.915Z",
+  "task": {
+    "id": "202610250050-X3VP32",
+    "revision": 33,
+    "objective": "Guard canonical local lifecycle against unresolved external-agent intent\n\nFor release 0.7.13, carry forward the independently reviewed PR #6920 generic fail-closed read-only recovery patch and call the same strict recovery guard before canonical local lifecycle operation admission, including task.pre_merge_close. Retire only an exact drifted unanswered read-only observation through historical identity and exchange-first journal CAS, then require native replacement. Block every ineligible unresolved external-agent intent before local operation admission and execution, including unchanged, result-present, mutation-authorized, malformed and unrelated states. Preserve normal local operation behavior when no unresolved intent exists. Add zero-dispatch regressions. No Factory-specific adapter, manual journal edit, weakened verification or hotspot exception.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "bun run hotspots:check",
+      "bun run lint:core",
+      "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/task/kernel-completed-provider-workflow.test.ts packages/agentplane/src/commands/task/external-agent-read-only-observation.test.ts packages/agentplane/src/commands/task/kernel-provider-effect-coordinator.test.ts --pool=forks --maxWorkers 1",
+      "- In scope: For release 0.7.13, carry forward the independently reviewed PR #6920 generic fail-closed read-only recovery patch and call the same strict recovery guard before canonical local lifecycle operation admission, including task.pre_merge_close. Retire only an exact drifted unanswered read-only observation through historical identity and exchange-first journal CAS, then require native replacement. Block every ineligible unresolved external-agent intent before local operation admission and execution, including unchanged, result-present, mutation-authorized, malformed and unrelated states. Preserve normal local operation behavior when no unresolved intent exists. Add zero-dispatch regressions. No Factory-specific adapter, manual journal edit, weakened verification or hotspot exception.\n- Out of scope: unrelated refactors not required for \"Guard canonical local lifecycle against unresolved external-agent intent\".",
+      "1. Execute approved WorkItem guard-canonical-local-lifecycle.",
+      "PLANNER fallback scaffold for \"Guard canonical local lifecycle against unresolved external-agent intent\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Guard canonical local lifecycle against unresolved external-agent intent\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "19162c1041d0075f5f97e5425f284fa3b38c52b2",
+  "diff_base_sha": "6352fc3db3de5b091405671b8e068c6257522a9b",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202610250050-X3VP32/quality/20261025-193702915-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:7664121695c9f59c082b17b508348af874be907b2d3e7e3b8dad8d3a9d108609",
+    "prompt_path": ".agentplane/tasks/202610250050-X3VP32/quality/objects/sha256/ca4ed094af4b26c453b6f66de6f15ba4245a8a6be34658a4c5fd65ad213b5770.md",
+    "result_schema_path": ".agentplane/tasks/202610250050-X3VP32/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "schema_version": 2,
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202610250050-X3VP32",
+    "plan_digest": "sha256:73eeaec71e43dc266fce311bf29812e305eaf010e376178d0887bf1abce95410",
+    "policy_digest": "sha256:1150ba6caefe9e829c30b3520b9246ed1ec7ebbeedbe788c63cf7989015dbb46",
+    "capability_digest": "sha256:201cf5a330a22caced30a90b34c17d3b9a2197aa8f72755f0c56150cc3c34ca4",
+    "checks_digest": "sha256:5973ede40eebab457ac1cb18efd6a407ba0d9da6b0849de6dc75b6d8721f7b15",
+    "verification_input_digest": "sha256:a70940de6d51b2fe22a3c0870528be3044b6a2cd3dbcbc857d2c3508c57cb964",
+    "acceptance_digest": "sha256:47c6264fa50d02c1d33f3233d481b29cd45b8b9127580ef58c79690e252297ac",
+    "implementation_sha": "19162c1041d0075f5f97e5425f284fa3b38c52b2",
+    "digest": "sha256:97d8455b4aa7f20a7d4ab042bc85cf3443725845da240e7988e29b8cfa26e8d5"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202610250050-X3VP32/README.md",
+      "sha256": "sha256:b9c25d08603b53a5ace7a0732825ca98fb5b72787f741c68310464afcbd8b533",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202610250050-X3VP32/quality/objects/sha256/21122b3b3bf4cb2fe49e50427e5a22df390853f9de0b2ea8ae6a0739ce7e186f.patch",
+      "sha256": "sha256:21122b3b3bf4cb2fe49e50427e5a22df390853f9de0b2ea8ae6a0739ce7e186f",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202610250050-X3VP32/quality/objects/sha256/fec98f6c3b8ee8b2d52fd8f0bbeb32f12917ba440ab3df018d3608973a0c9154.json",
+      "sha256": "sha256:fec98f6c3b8ee8b2d52fd8f0bbeb32f12917ba440ab3df018d3608973a0c9154",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202610250050-X3VP32/verification/20261025193632503-c7bc10429a1fefd2.json",
+      "sha256": "sha256:3872511a8c221a70ff8bd1db117e686ec803c86c0497300a50e06cde1ec6bb6f",
+      "required": true
+    },
+    {
+      "id": "native-identity",
+      "kind": "plan",
+      "path": ".agentplane/tasks/202610250050-X3VP32/quality/objects/sha256/e4fd718085e425ca989ac49dd739e88c2bb108b4534368d49b1c529038d4c5eb.json",
+      "sha256": "sha256:e4fd718085e425ca989ac49dd739e88c2bb108b4534368d49b1c529038d4c5eb",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:35a4c7a567a9b658a31feed9e096276ede95ad0c82198f362c302fe7bd20b612",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:6e5cb34ada84017778c43c3d057edcc68d3ccb60840c805e412f7dc6781070ee",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:d3dfd4eb0293213ab49d32c6f199066f2bc7c954cada6465aab458b1a9c7ee25",
+      "required": true
+    }
+  ]
+}
