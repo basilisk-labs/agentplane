@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:0fd02405784bc8214d45bc424970d1975b6ea6a9a770d4382366b59f5f4054b0",
   "pr_number": 6929,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6929",
+  "pre_merge_closure": {
+    "basis_commit": "f1146cd455d9fed4d3b49e69c2fd326000ea2dc7",
+    "branch": "task/202610250050-X3VP32/guard-canonical-local-lifecycle-against-unresolv",
+    "pr_number": 6929,
+    "recorded_at": "2026-10-25T18:34:37.199Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",

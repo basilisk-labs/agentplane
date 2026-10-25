@@ -1,10 +1,11 @@
 ---
 id: "202610250050-X3VP32"
 title: "Guard canonical local lifecycle against unresolved external-agent intent"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 31
+revision: 32
 origin:
   system: "manual"
 depends_on: []
@@ -44,6 +45,22 @@ quality_review:
     - "Unchanged, result-present, mutation-authorized, missing work-order and unrelated intents reject before effect dispatch; completed or absent intents leave normal local/provider routing available. Focused real-journal regressions cover interrupted acknowledgement and a result arriving between eligibility and final absence checks."
     - "The cloud fixture seeds a May 2026 stale projection, freezes only Date at October 25 during the pull, and restores real timers in finally. Production cloud readiness and network mock shape are unchanged."
     - "Native validation retained focused cloud and guard tests, lint:core, hotspots:check and full CI run-008 with exit code 0; full CI status success=true."
+token_usage:
+  agent_runs: 1
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:e2172c14d07dc93c75a0b7ed49c1acb000ae5c602dd33816eec895bd385ec601"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-10-25T18:34:37.053Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -267,9 +284,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "25cdec1ca401621a43f98548c772c530ed27487e"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "f1146cd455d9fed4d3b49e69c2fd326000ea2dc7"
+  message: "✅ X3VP32 task: guard canonical local lifecycle against unresolved external-agent intent"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -277,9 +297,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-25T18:34:37.053Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "f1146cd455d9fed4d3b49e69c2fd326000ea2dc7"
 doc_version: 3
-doc_updated_at: "2026-10-25T18:28:03.554Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-25T18:34:37.053Z"
+doc_updated_by: "CODER"
 description: "For release 0.7.13, carry forward the independently reviewed PR #6920 generic fail-closed read-only recovery patch and call the same strict recovery guard before canonical local lifecycle operation admission, including task.pre_merge_close. Retire only an exact drifted unanswered read-only observation through historical identity and exchange-first journal CAS, then require native replacement. Block every ineligible unresolved external-agent intent before local operation admission and execution, including unchanged, result-present, mutation-authorized, malformed and unrelated states. Preserve normal local operation behavior when no unresolved intent exists. Add zero-dispatch regressions. No Factory-specific adapter, manual journal edit, weakened verification or hotspot exception."
 sections:
   Summary: |-
@@ -441,6 +469,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:bc21f0bb5ebc32a145d2d5eff0dca77d5af89a3435d3ad3339341122e36e6339"
     work_order_id: "sha256:6aed1ff85ec029bbd67aaa8b0f6ed57e301928e3bd21bdda9482182079d4828f"
+  implementation_commit:
+    hash: "25cdec1ca401621a43f98548c772c530ed27487e"
+    message: "🚧 X3VP32 task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "214a26d1bda13f9a81349cc1364669ad24dfb92c"
@@ -1560,3 +1591,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/1` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:e2172c14d07dc93c75a0b7ed49c1acb000ae5c602dd33816eec895bd385ec601`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-10-25T18:34:37.053Z`
