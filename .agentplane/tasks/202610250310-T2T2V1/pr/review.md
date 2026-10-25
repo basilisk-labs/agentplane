@@ -6,7 +6,7 @@ Created: 2026-10-25T03:39:57.920Z
 
 - Task: `202610250310-T2T2V1`
 - Title: Authenticate repository-policy scope replans after approved scope requests
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610250310-T2T2V1/authenticate-repository-policy-scope-replans-aft`
 - Canonical task record: `.agentplane/tasks/202610250310-T2T2V1/README.md`
 
