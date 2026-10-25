@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -56,9 +56,11 @@ quality_review:
     - "The consumer-worktree assertions reject foreign framework bin and dist assets. The framework fixture copies current package manifests before expecting local runtime assets."
     - "The implementation changes only the two approved test files. Native focused verification and full CI passed at implementation SHA 342956a5fdad1d0abb0dd7f34c8e42f4b013fcda; required hosted checks passed at the same SHA."
 token_usage:
-  agent_runs: 1
+  agent_runs: 2
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
   input_tokens: null
-  journal_digest: "sha256:cce68147b5fecd3dd70762551dfb35c480f4fd959821621768aa957b98a9035f"
+  journal_digest: "sha256:2013be7aaa1a86eb2713788eae15ecde140c43acaac7e254bb155d0f5f0475cb"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -67,8 +69,8 @@ token_usage:
   source: "supervisor_journal"
   state: "unavailable"
   total_tokens: null
-  unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-10-24T15:04:51.368Z"
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-25T14:56:41.184Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -5759,9 +5761,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "e924281cf095dbe1a6128bea3556722bc4a94512"
-  message: "✅ XK8HYS task: align branch work-start integration fixtures with frozen base and..."
+  hash: "ab46abaf55abdba8e91487d59e04857ae03ed9fa"
+  message: "🚧 XK8HYS task: record external evaluator result"
 comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -5786,8 +5791,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-10-25T14:56:41.184Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "ab46abaf55abdba8e91487d59e04857ae03ed9fa"
 doc_version: 3
-doc_updated_at: "2026-10-25T14:56:00.822Z"
+doc_updated_at: "2026-10-25T14:56:41.203Z"
 doc_updated_by: "CODER"
 description: "Correct three pre-bump release CI assertions: an authenticated frozen task base remains valid after upstream advances; a consumer worktree receives no framework runtime; framework bootstrap fixtures declare real package ownership before expecting local runtime assets."
 sections:
@@ -6011,8 +6024,8 @@ extensions:
     verification_evidence_digest: "sha256:eafeee4995ced5226c0d713ebcc3af6691a3795b778df8ab3bd7503a44327311"
     work_order_id: "sha256:298cf6764e43e31d74acda1ed86a1873c1d665e54c426f667fb86a7c091fc7e9"
   implementation_commit:
-    hash: "a7934d33da69bfcce667701172bdddc6f79a03cf"
-    message: "🚧 XK8HYS task: apply canonical agent result"
+    hash: "342956a5fdad1d0abb0dd7f34c8e42f4b013fcda"
+    message: "Merge branch 'main' into task/202610241027-XK8HYS/align-branch-work-start-integration-fixtures-wit"
   task_execution_context:
     base_ref: "main"
     base_sha: "5a1c1dda6693966e934193a8ec05a3604648cf3e"
@@ -6668,12 +6681,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/1` agent runs
+- Completeness: `0/2` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:cce68147b5fecd3dd70762551dfb35c480f4fd959821621768aa957b98a9035f`
-- Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-10-24T15:04:51.368Z`
+- Journal digest: `sha256:2013be7aaa1a86eb2713788eae15ecde140c43acaac7e254bb155d0f5f0475cb`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-25T14:56:41.184Z`

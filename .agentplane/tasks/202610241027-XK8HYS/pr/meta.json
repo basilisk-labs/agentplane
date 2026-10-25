@@ -8,10 +8,10 @@
   "pr_number": 6917,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6917",
   "pre_merge_closure": {
-    "basis_commit": "e924281cf095dbe1a6128bea3556722bc4a94512",
+    "basis_commit": "ab46abaf55abdba8e91487d59e04857ae03ed9fa",
     "branch": "task/202610241027-XK8HYS/align-branch-work-start-integration-fixtures-wit",
     "pr_number": 6917,
-    "recorded_at": "2026-10-24T15:04:51.684Z",
+    "recorded_at": "2026-10-25T14:56:41.720Z",
     "state": "closed_before_merge"
   },
   "provider": {
