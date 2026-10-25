@@ -13,7 +13,7 @@ Created: 2026-10-24T23:07:04.256Z
 ## Verification
 
 - State: ok
-- Note: Verified: canonical Task Kernel final checks passed.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-10-24T23:07:04.256Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-10-24T23:07:04.256Z
+- Updated: 2026-10-25T00:38:36.322Z
 - Branch: task/202610242244-4Q1124/fail-closed-on-unresolved-read-only-supervisor-i
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
