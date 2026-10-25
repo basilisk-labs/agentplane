@@ -32,7 +32,7 @@ import {
 } from "./external-agent-supervisor.js";
 import { recoverPendingExternalAgentResult } from "./external-agent-supervisor-recovery.js";
 import { executeExternalAgentVerification } from "./external-agent-verification.js";
-import { reconcileIntegrationEffect } from "./external-agent-workflow-recovery.js";
+import { reconcileWorkflowEffect } from "./workflow-effect-recovery.js";
 import { requireKernelIssuanceEligibility } from "./kernel-cutover.js";
 
 export function canonicalCompletionPrecedesWorkflow(
@@ -67,7 +67,7 @@ export async function advanceOrdinaryRoute(opts: {
     });
   };
   if (parsed.workflowRecovery) {
-    const resolution = await reconcileIntegrationEffect({
+    const resolution = await reconcileWorkflowEffect({
       command,
       task_id: parsed.taskId,
       input_path: parsed.workflowRecovery,
