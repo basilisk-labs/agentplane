@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -60,9 +60,11 @@ quality_review:
     - "Native full CI run-012 passed all six child groups at e58d7717f213f4107047e982e3db5c976457c222. The later local head 8c88a57a008ab72db2e613963f29f4ebf5fd2f75 changes only task artifacts; source files are byte-identical to the validated head."
     - "Residual risk: The KB0 public-surface candidate ratchet remains a separate required change before issue #6918 can merge."
 token_usage:
-  agent_runs: 0
+  agent_runs: 2
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
   input_tokens: null
-  journal_digest: "sha256:3837982254e1c028f9e146f198b92bdddfd363d6776fb063f5375b682f9d22a5"
+  journal_digest: "sha256:f52425843077b68ce5a404e0c9978eb2d0101cfd0fb736db8e24129d15288d8a"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -71,8 +73,8 @@ token_usage:
   source: "supervisor_journal"
   state: "unavailable"
   total_tokens: null
-  unavailable_reason: "no_supervised_agent_runs"
-  updated_at: "2026-10-25T12:24:09.480Z"
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-25T13:23:54.099Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -1235,9 +1237,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "489db2f9d9a0b328ac6db7ead7996e9bca675185"
-  message: "✅ KDBTXH task: persist canonical completion"
+  hash: "b2ad5d842628eda422bbcd2542d188b0b5bf0d62"
+  message: "🚧 KDBTXH task: record external evaluator result"
 comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -1262,8 +1267,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-10-25T13:23:54.099Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "b2ad5d842628eda422bbcd2542d188b0b5bf0d62"
 doc_version: 3
-doc_updated_at: "2026-10-25T13:23:38.665Z"
+doc_updated_at: "2026-10-25T13:23:54.111Z"
 doc_updated_by: "CODER"
 description: "For release 0.7.13, decouple immutable PR #6905 incremental Zod package history from later unrelated CLI/context full-surface changes. Preserve the exact reviewed PR #6905 record, its package-section from/to hashes, and six allowed manifest paths. Add a generic regression that accepts later unrelated surface drift but rejects package digest or path drift. Do not update the KB0 candidate JSON or weaken current candidate approval ratchets in this task."
 sections:
@@ -1570,8 +1583,8 @@ extensions:
     verification_evidence_digest: "sha256:dbfd0765218afae0e5dcfed730169d0193c61ee1a95f4653d12b574ebd87c516"
     work_order_id: "sha256:8686d8b24820232617a30f4103ad25be2f0ad249cbe883d5cad3a3459da0fc8d"
   implementation_commit:
-    hash: "fc893a0fc31d7faf2addbed38bf64117b3402785"
-    message: "🚧 KDBTXH task: apply canonical agent result"
+    hash: "e58d7717f213f4107047e982e3db5c976457c222"
+    message: "Merge branch 'main' into task/202610251040-KDBTXH/keep-historical-compatibility-package-delta-vali"
   task_execution_context:
     base_ref: "main"
     base_sha: "1b8097aecf1f07f1e3e7dec86dafb9618990c77a"
@@ -2371,12 +2384,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/0` agent runs
+- Completeness: `0/2` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:3837982254e1c028f9e146f198b92bdddfd363d6776fb063f5375b682f9d22a5`
-- Unavailable reason: `no_supervised_agent_runs`
-- Updated at: `2026-10-25T12:24:09.480Z`
+- Journal digest: `sha256:f52425843077b68ce5a404e0c9978eb2d0101cfd0fb736db8e24129d15288d8a`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-25T13:23:54.099Z`
