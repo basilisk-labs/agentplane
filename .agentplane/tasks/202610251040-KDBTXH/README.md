@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -33,17 +33,32 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-10-25T11:27:22.227Z"
+  updated_at: "2026-10-25T13:23:38.638Z"
   updated_by: "EVALUATOR"
-  note: "Canonical EVALUATOR review passed."
-  evaluated_sha: "fc893a0fc31d7faf2addbed38bf64117b3402785"
-  review_identity_digest: "sha256:abc5ba3d76f3949f98108829631ec1617813c84a331839ae2dba3415f211f125"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "e58d7717f213f4107047e982e3db5c976457c222"
+  review_identity_digest: "sha256:777dbe87e1893fe9fe9da13234afcebb3eb19a3ce9f6f81667fee8dc74e0661a"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202610251040-KDBTXH/27ca01762c058374222ba8175976e3c9c75b472f4fc30b12601e36caf27c6659/quality-report.json"
+    - ".agentplane/tasks/202610251040-KDBTXH/quality/20261025-132200858-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202610251040-KDBTXH/quality/20261025-132200858-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202610251040-KDBTXH/quality/objects/sha256/430094a7e21bca5b7a5c0e54563e8035cc6a1744a784f31990991481e3cf2e9f.md"
+    - ".agentplane/tasks/202610251040-KDBTXH/quality/20261025-132200858-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202610251040-KDBTXH/quality/20261025-132200858-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202610251040-KDBTXH/quality/20261025-132200858-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202610251040-KDBTXH/README.md"
+    - ".agentplane/tasks/202610251040-KDBTXH/quality/objects/sha256/be6be10650e5c04775e98fa3585309eb312768ccf19bdfb93811f368bcff83f4.patch"
+    - ".agentplane/tasks/202610251040-KDBTXH/quality/objects/sha256/530a36f85f942e3c669c1a68fb259c37a43e17393ff1cbf8b47b90bdfaef03ea.json"
+    - ".agentplane/tasks/202610251040-KDBTXH/verification/20261025131858983-8e2f349e942fa2f9.json"
+    - ".agentplane/tasks/202610251040-KDBTXH/quality/objects/sha256/3095344650e6480295ec621abe9425f68653c7101f86296237afbf4e2d92db2c.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The checker retains its exact hash-pinned PR #6905 incremental record and existing candidate, section, and source-task approval ratchets. No compatibility candidate JSON or released baseline changed."
-    - "Both capture and contract-check routes use the same reconstruction. It validates complete manifest inventory, exact historical and current package-section digests, and exact allowed JSON paths without comparing archived full-surface hashes to later unrelated CLI/context state."
-    - "Focused negatives reject package version, manifest inventory, from/to digest, allowed-path, and historical dependency drift. Native focused tests, candidate check, contract check, hotspots check, and full CI run-004 all passed at fc893a0fc31d7faf2addbed38bf64117b3402785."
+    - "The source diff contains only the two compatibility routes, shared package-section validator, and focused regression test. No compatibility candidate JSON, immutable released baseline, or KB0 code was changed."
+    - "The checker still pins the exact PR #6905 incremental record and current candidate approval ratchets. The shared validator enforces complete manifest inventory, exact package-section hashes, and six allowed JSON paths while permitting unrelated later CLI/context changes."
+    - "Native full CI run-012 passed all six child groups at e58d7717f213f4107047e982e3db5c976457c222. The later local head 8c88a57a008ab72db2e613963f29f4ebf5fd2f75 changes only task artifacts; source files are byte-identical to the validated head."
+    - "Residual risk: The KB0 public-surface candidate ratchet remains a separate required change before issue #6918 can merge."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -1248,7 +1263,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-10-25T13:19:01.572Z"
+doc_updated_at: "2026-10-25T13:23:38.665Z"
 doc_updated_by: "CODER"
 description: "For release 0.7.13, decouple immutable PR #6905 incremental Zod package history from later unrelated CLI/context full-surface changes. Preserve the exact reviewed PR #6905 record, its package-section from/to hashes, and six allowed manifest paths. Add a generic regression that accepts later unrelated surface drift but rejects package digest or path drift. Do not update the KB0 candidate JSON or weaken current candidate approval ratchets in this task."
 sections:
@@ -1530,6 +1545,14 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.completed_native_review:
+    applied_at: "2026-10-25T13:23:38.638Z"
+    kernel_digest: "sha256:33fe18721fa3909ea18f115bf7bfb49c94c3b707ccde765e5e70bdce4e53a589"
+    quality_digest: "sha256:4d1c353c584b7c5147faedf8a9ce06687110c7c0fbab4a852f115c14d8f5b4a3"
+    result_digest: "sha256:4ddb8e17feeb07fda82fce78a74198dcd89d42435d871edb1b709cbaa812920e"
+    schema_version: 1
+    state_fingerprint: "sha256:abffe1201c6309f33756abd0edf1c1025a177d621d7699ddebe03ea02d916430"
+    transition_id: "tr_08afd7557607f70e45de3e90fbc1d30d"
   agentplane.kernel_operational_projection:
     digest: "sha256:b8c8cba261f78de340095f1ce5da425e8fecd16d157de6f767c8ef3fc40697cd"
     evidence_refs:
