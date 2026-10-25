@@ -13,7 +13,7 @@ Created: 2026-10-25T03:39:57.920Z
 ## Verification
 
 - State: ok
-- Note: Verified: canonical Task Kernel final checks passed.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-10-25T03:39:57.920Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-10-25T03:39:57.920Z
+- Updated: 2026-10-25T07:48:48.873Z
 - Branch: task/202610250310-T2T2V1/authenticate-repository-policy-scope-replans-aft
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
