@@ -3,7 +3,8 @@
   "branch": "task/202610250214-EPJ5NA/make-cloud-auto-pull-freshness-fixture-determini",
   "created_at": "2026-10-25T02:54:28.387Z",
   "diffstat_sha256": "sha256:84c2e1c941a88762b64edecb81b414b0b70e5b3564526b81e75365b07bf23ba7",
-  "last_verified_at": null,
+  "last_verified_at": "2026-10-25T05:02:24.328Z",
+  "last_verified_diffstat_sha256": "sha256:84c2e1c941a88762b64edecb81b414b0b70e5b3564526b81e75365b07bf23ba7",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202610250214-EPJ5NA",
   "updated_at": "2026-10-25T02:54:28.387Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
