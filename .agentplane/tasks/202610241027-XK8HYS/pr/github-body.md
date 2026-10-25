@@ -16,13 +16,13 @@ Correct three pre-bump release CI assertions: an authenticated frozen task base 
 ## Verification
 
 - State: ok
-- Note: Verified: canonical Task Kernel final checks passed.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-10-24T10:40:28.035Z
+- Updated: 2026-10-24T15:01:46.362Z
 - Branch: task/202610241027-XK8HYS/align-branch-work-start-integration-fixtures-wit
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
