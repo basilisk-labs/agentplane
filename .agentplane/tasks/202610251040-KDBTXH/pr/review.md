@@ -6,7 +6,7 @@ Created: 2026-10-25T10:47:34.062Z
 
 - Task: `202610251040-KDBTXH`
 - Title: Keep historical compatibility package delta valid after later surface changes
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610251040-KDBTXH/keep-historical-compatibility-package-delta-vali`
 - Canonical task record: `.agentplane/tasks/202610251040-KDBTXH/README.md`
 

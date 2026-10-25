@@ -1,1 +1,1 @@
-🚧 KDBTXH task: Keep historical compatibility package delta valid after later surface changes [202610251040-KDBTXH]
+✅ KDBTXH task: Keep historical compatibility package delta valid after later surface changes [202610251040-KDBTXH]
