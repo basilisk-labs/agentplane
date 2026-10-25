@@ -17,6 +17,8 @@ import {
   resolveSupervisorExecutionEpisodePath,
 } from "../shared/supervisor-execution-episode.js";
 import { operationPayloadDigest } from "../shared/workflow-step-authority.js";
+import { workflowOperationAuthorityDigest } from "../shared/side-effect-authority.js";
+import { providerUpdateRecoveryGrantOperation } from "../shared/provider-update-branch-route.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import { reconcileProviderUpdateEffect } from "./provider-update-effect-recovery.js";
@@ -274,7 +276,144 @@ async function fixture(authorityRef = "workflow-operation:provider.pr.update_bra
       decide: () => Promise.resolve(route),
     });
   };
-  return { root, journalPath, input, invoke, grant, authorityState };
+  return { root, base, journalPath, input, invoke, grant, authorityState };
+}
+
+function advancedBaseFixture(f: Fixture) {
+  execFileSync(
+    "git",
+    [
+      "-c",
+      "user.name=Test",
+      "-c",
+      "user.email=test@example.com",
+      "commit",
+      "--allow-empty",
+      "-m",
+      "advanced",
+    ],
+    { cwd: f.root },
+  );
+  const mergedBase = execFileSync("git", ["rev-parse", "HEAD"], {
+    cwd: f.root,
+    encoding: "utf8",
+  }).trim();
+  execFileSync("git", ["update-ref", "refs/remotes/origin/main", mergedBase], { cwd: f.root });
+  const stopped = createSupervisorEpisodeStore(f.journalPath).read();
+  const verifiedAt = async () => {
+    const journal = (await stopped) as {
+      operations: { started_at: string }[];
+      stop: { at: string };
+    };
+    return new Date(
+      (Date.parse(journal.operations[0]!.started_at) + Date.parse(journal.stop.at)) / 2,
+    ).toISOString();
+  };
+  const attestation = {
+    kind: "operator_attested_advanced_base",
+    journal_digest: f.input.journal_digest,
+    operation_key: f.input.operation_key,
+    grant_id: f.grant.id,
+    grant_digest: f.grant.digest,
+    identity,
+    pr_number: 42,
+    pr_url: f.input.pr_url,
+    branch,
+    base_branch: "main",
+    original_head_sha: originalHead,
+    original_base_sha: f.base,
+    observed_merge_base_sha: mergedBase,
+    observed_head_sha: observedHead,
+    provider_actor_login: "deus-agentplane",
+    provider_actor_id: 282_251_400,
+  };
+  const recoveryOperation = providerUpdateRecoveryGrantOperation(
+    {
+      taskId,
+      identity,
+      prNumber: 42,
+      branch,
+      baseBranch: "main",
+      expectedHeadSha: originalHead,
+      expectedBaseSha: f.base,
+    },
+    {
+      kind: "advanced_base_effect_recovery",
+      journalDigest: f.input.journal_digest,
+      operationKey: f.input.operation_key,
+      originalGrantId: f.grant.id,
+      originalGrantDigest: f.grant.digest,
+      prUrl: f.input.pr_url,
+      originalHeadSha: originalHead,
+      originalBaseSha: f.base,
+      observedHeadSha: observedHead,
+      observedMergeBaseSha: mergedBase,
+      providerActorLogin: "deus-agentplane",
+      providerActorId: 282_251_400,
+      evidenceDigest: digestSupervisorEpisodeValue(f.input.evidence),
+    },
+  );
+  const recoveryGrant = {
+    ...f.grant,
+    id: "authority-recovery",
+    operationDigest: workflowOperationAuthorityDigest(recoveryOperation),
+    issuedAt: new Date().toISOString(),
+    expiresAt: new Date(Date.now() + 60_000).toISOString(),
+    digest: `sha256:${"2".repeat(64)}`,
+  };
+  f.authorityState.grants.push(recoveryGrant);
+  f.authorityState.audit.push({
+    ...f.authorityState.audit[0]!,
+    authorityDigest: recoveryGrant.digest,
+    operationDigest: recoveryGrant.operationDigest,
+    stateFingerprintDigest: recoveryGrant.stateFingerprintDigest,
+    at: recoveryGrant.issuedAt,
+  });
+  mocks.observe.mockResolvedValue({
+    state: "found",
+    pr: {
+      provider: "github",
+      status: "OPEN",
+      prNumber: 42,
+      prUrl: f.input.pr_url,
+      headRef: branch,
+      base: "main",
+      baseSha: mergedBase,
+      headSha: observedHead,
+      identity,
+    },
+  });
+  mocks.compare.mockImplementation(async (_root: string, args: string[]) => {
+    const endpoint = args[0]!;
+    if (endpoint.includes("/git/commits/"))
+      return { sha: observedHead, parents: [{ sha: originalHead }, { sha: mergedBase }] };
+    if (endpoint.includes("/commits/"))
+      return {
+        sha: observedHead,
+        parents: [{ sha: originalHead }, { sha: mergedBase }],
+        author: { login: "deus-agentplane", id: 282_251_400 },
+        committer: { login: "web-flow" },
+        commit: {
+          message: `Merge branch 'main' into ${branch}`,
+          verification: { verified: true, reason: "valid", verified_at: await verifiedAt() },
+        },
+      };
+    if (endpoint === "user") return { login: "deus-agentplane", id: 282_251_400 };
+    const [older] = endpoint.split("/compare/")[1]!.split("...");
+    return { status: "ahead", base_commit: { sha: older }, merge_base_commit: { sha: older } };
+  });
+  const input = {
+    operator: {
+      ...f.input.operator,
+      actor: "USER",
+      advanced_base_attestation: {
+        ...attestation,
+        recovery_grant_id: recoveryGrant.id,
+        recovery_grant_digest: recoveryGrant.digest,
+      },
+    },
+  };
+  return { mergedBase, attestation, input, recoveryGrant };
 }
 
 describe("interrupted provider update recovery", () => {
@@ -305,6 +444,167 @@ describe("interrupted provider update recovery", () => {
     await expect(f.invoke()).rejects.toThrow(
       "exact stopped provider operation is absent or changed",
     );
+  });
+
+  it("settles an attested advanced-base update once without provider mutation", async () => {
+    const f = await fixture();
+    const advanced = advancedBaseFixture(f);
+    await expect(f.invoke(advanced.input)).resolves.toMatchObject({ verdict: "applied" });
+    const stored = await createSupervisorEpisodeStore(f.journalPath).read();
+    expect(stored).toMatchObject({ status: "running", operations: [{ status: "completed" }] });
+    expect(
+      mocks.compare.mock.calls.some(
+        (call: unknown[]) =>
+          Array.isArray(call[1]) &&
+          String(call[1][0]).includes(`${f.base}...${advanced.mergedBase}`),
+      ),
+    ).toBe(true);
+    expect(mocks.observe).toHaveBeenCalledTimes(2);
+    expect(!JSON.stringify(mocks.compare.mock.calls).includes('"-X"')).toBe(true);
+    await expect(f.invoke(advanced.input)).rejects.toThrow("exact stopped provider operation");
+  });
+
+  it("requires exact USER attestation and rejects replayed or competing authority", async () => {
+    const f = await fixture();
+    const advanced = advancedBaseFixture(f);
+    for (const operator of [
+      { ...advanced.input.operator, actor: "release operator" },
+      { ...advanced.input.operator, advanced_base_attestation: undefined },
+      {
+        ...advanced.input.operator,
+        advanced_base_attestation: {
+          ...advanced.attestation,
+          grant_digest: `sha256:${"f".repeat(64)}`,
+        },
+      },
+      {
+        ...advanced.input.operator,
+        advanced_base_attestation: { ...advanced.attestation, observed_merge_base_sha: f.base },
+      },
+    ]) {
+      await expect(f.invoke({ operator })).rejects.toThrow("exact USER attestation");
+    }
+    const stored = await createSupervisorEpisodeStore(f.journalPath).read();
+    expect(stored.status).toBe("stopped");
+    expect(!JSON.stringify(mocks.compare.mock.calls).includes('"-X"')).toBe(true);
+  });
+
+  it("rejects missing, mismatched, expired, or competing recovery grants", async () => {
+    for (const variant of ["missing", "wrong-evidence", "expired", "competing"] as const) {
+      const f = await fixture();
+      const advanced = advancedBaseFixture(f);
+      if (variant === "missing") f.authorityState.grants.pop();
+      if (variant === "wrong-evidence") {
+        advanced.input.operator.advanced_base_attestation.recovery_grant_digest = `sha256:${"e".repeat(64)}`;
+      }
+      if (variant === "expired") {
+        advanced.recoveryGrant.expiresAt = new Date(Date.now() - 1).toISOString();
+      }
+      if (variant === "competing") {
+        f.authorityState.grants.push({ ...advanced.recoveryGrant, id: "authority-competing" });
+      }
+      await expect(f.invoke(advanced.input)).rejects.toThrow("matching retained USER grant");
+      const stored = await createSupervisorEpisodeStore(f.journalPath).read();
+      expect(stored.status).toBe("stopped");
+      expect(!JSON.stringify(mocks.compare.mock.calls).includes('"-X"')).toBe(true);
+    }
+  });
+
+  it("accepts a trusted signed-receipt USER actor retained in grant and audit", async () => {
+    const f = await fixture();
+    const advanced = advancedBaseFixture(f);
+    advanced.recoveryGrant.actor = "USER:release@trusted-issuer";
+    f.authorityState.audit.at(-1)!.actor = advanced.recoveryGrant.actor;
+    await expect(f.invoke(advanced.input)).resolves.toMatchObject({ verdict: "applied" });
+  });
+
+  it.each([
+    "wrong message",
+    "wrong merge parent",
+    "out-of-window verification",
+    "wrong actor",
+    "non-descendant base",
+  ] as const)(
+    "rejects %s despite the retained USER grant and never dispatches PUT",
+    async (variant) => {
+      const f = await fixture();
+      const advanced = advancedBaseFixture(f);
+      const original = mocks.compare.getMockImplementation() as (
+        root: string,
+        args: string[],
+      ) => Promise<{
+        status?: string;
+        parents?: { sha: string }[];
+        commit?: { message?: string; verification?: { verified_at?: string } };
+        author?: { login: string; id: number };
+      }>;
+      mocks.compare.mockImplementation(async (root: string, args: string[]) => {
+        const value = await original(root, args);
+        const endpoint = args[0]!;
+        if (variant === "non-descendant base" && endpoint.includes(`/compare/${f.base}...`)) {
+          return { ...value, status: "diverged" };
+        }
+        if (variant === "wrong merge parent" && endpoint.includes("/git/commits/")) {
+          return { ...value, parents: [{ sha: originalHead }, { sha: "e".repeat(40) }] };
+        }
+        if (endpoint.includes("/commits/") && !endpoint.includes("/git/commits/")) {
+          if (variant === "wrong message") {
+            return { ...value, commit: { ...value.commit, message: "Unrelated merge" } };
+          }
+          if (variant === "out-of-window verification") {
+            return {
+              ...value,
+              commit: {
+                ...value.commit,
+                verification: {
+                  ...value.commit?.verification,
+                  verified_at: "2000-01-01T00:00:00Z",
+                },
+              },
+            };
+          }
+          if (variant === "wrong actor") {
+            return { ...value, author: { login: "other-agent", id: 1 } };
+          }
+        }
+        return value;
+      });
+      await expect(f.invoke(advanced.input)).rejects.toThrow();
+      expect(await createSupervisorEpisodeStore(f.journalPath).read()).toMatchObject({
+        status: "stopped",
+        operations: [{ status: "intent" }],
+      });
+      expect(!JSON.stringify(mocks.compare.mock.calls).includes('"-X"')).toBe(true);
+    },
+  );
+
+  it("rejects a fresh hosted head change or authority-store mutation before journal CAS", async () => {
+    for (const variant of ["head", "authority"] as const) {
+      const f = await fixture();
+      const advanced = advancedBaseFixture(f);
+      if (variant === "head") {
+        const first = (await mocks.observe()) as {
+          state: string;
+          pr: Record<string, unknown>;
+        };
+        mocks.observe.mockResolvedValueOnce(first).mockResolvedValueOnce({
+          ...first,
+          pr: { ...first.pr, headSha: "e".repeat(40) },
+        });
+      } else {
+        const first = structuredClone(f.authorityState);
+        const changed = structuredClone(f.authorityState);
+        changed.grants.pop();
+        mocks.authority
+          .mockResolvedValueOnce({ state: first })
+          .mockResolvedValueOnce({ state: changed });
+      }
+      await expect(f.invoke(advanced.input)).rejects.toThrow(
+        variant === "head" ? "before advanced-base settlement" : "authority changed or expired",
+      );
+      const stored = await createSupervisorEpisodeStore(f.journalPath).read();
+      expect(stored.status).toBe("stopped");
+    }
   });
 
   it.each([
@@ -374,7 +674,7 @@ describe("interrupted provider update recovery", () => {
         merge_base_commit: { sha: older },
       });
     });
-    await expect(f.invoke()).rejects.toThrow("exact original-head/base merge commit");
+    await expect(f.invoke()).rejects.toThrow("exact USER attestation");
   });
 
   it("rejects operator evidence with a mismatched digest", async () => {

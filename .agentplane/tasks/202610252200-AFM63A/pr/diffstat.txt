@@ -1,0 +1,7 @@
+ .../shared/provider-update-branch-route.ts         |  29 ++
+ .../commands/task/authority-grant.command.test.ts  | 392 ++++++++++++++++++++-
+ .../src/commands/task/authority-grant.command.ts   |  55 ++-
+ .../task/provider-update-effect-recovery.test.ts   | 304 +++++++++++++++-
+ .../task/provider-update-effect-recovery.ts        | 277 +++++++++++++--
+ .../task/provider-update-recovery-grant.ts         | 374 ++++++++++++++++++++
+ 6 files changed, 1389 insertions(+), 42 deletions(-)

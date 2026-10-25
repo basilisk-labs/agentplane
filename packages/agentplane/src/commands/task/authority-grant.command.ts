@@ -11,15 +11,16 @@ import {
   createSideEffectAuthorityRecord,
   hasConsumedSideEffectAuthorityEvidence,
 } from "../shared/side-effect-authority.js";
+import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import {
   loadSideEffectAuthorityState,
   persistSideEffectAuthorityState,
 } from "../shared/side-effect-authority-store.js";
-import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import {
   userApprovalReceiptRequestForStep,
   verifyUserApprovalReceipt,
 } from "./user-approval-receipt.js";
+import { grantAdvancedBaseRecovery } from "./provider-update-recovery-grant.js";
 
 export type TaskAuthorityGrantParsed = {
   taskId: string;
@@ -29,6 +30,7 @@ export type TaskAuthorityGrantParsed = {
   stateScopeDigest: string;
   by?: string;
   approvalReceipt?: string;
+  recoveryInput?: string;
   ttlMinutes: number;
   remote: boolean;
 };
@@ -43,28 +45,24 @@ export const taskAuthorityGrantSpec: CommandSpec<TaskAuthorityGrantParsed> = {
       kind: "string",
       name: "operation",
       valueHint: "<operation-id>",
-      required: true,
       description: "Protected workflow operation from task next-action.",
     },
     {
       kind: "string",
       name: "operation-digest",
       valueHint: "<sha256>",
-      required: true,
       description: "Exact operation digest emitted by task next-action.",
     },
     {
       kind: "string",
       name: "state-fingerprint",
       valueHint: "<sha256>",
-      required: true,
       description: "Current route fingerprint emitted by task next-action.",
     },
     {
       kind: "string",
       name: "state-scope-digest",
       valueHint: "<sha256>",
-      required: true,
       description: "Current authority scope digest emitted by task next-action.",
     },
     {
@@ -78,6 +76,12 @@ export const taskAuthorityGrantSpec: CommandSpec<TaskAuthorityGrantParsed> = {
       name: "approval-receipt",
       valueHint: "<base64url>",
       description: "Signed user approval receipt from a configured trusted bridge.",
+    },
+    {
+      kind: "string",
+      name: "recovery-input",
+      valueHint: "<path>",
+      description: "Operator-only exact stopped provider update recovery proposal.",
     },
     {
       kind: "string",
@@ -99,14 +103,32 @@ export const taskAuthorityGrantSpec: CommandSpec<TaskAuthorityGrantParsed> = {
     },
   ],
   validateRaw: (raw) => {
-    for (const key of [
-      "operation",
-      "operation-digest",
-      "state-fingerprint",
-      "state-scope-digest",
-    ] as const) {
-      if (typeof raw.opts[key] !== "string" || raw.opts[key].trim().length === 0) {
-        throw usageError({ spec: taskAuthorityGrantSpec, message: `Missing required --${key}.` });
+    const recoveryInput = raw.opts["recovery-input"];
+    if (recoveryInput !== undefined) {
+      if (
+        typeof recoveryInput !== "string" ||
+        !recoveryInput.trim() ||
+        raw.opts.remote !== true ||
+        ["operation", "operation-digest", "state-fingerprint", "state-scope-digest"].some(
+          (key) => raw.opts[key] !== undefined,
+        )
+      ) {
+        throw usageError({
+          spec: taskAuthorityGrantSpec,
+          message:
+            "--recovery-input requires --remote and cannot combine with normal operation options.",
+        });
+      }
+    } else {
+      for (const key of [
+        "operation",
+        "operation-digest",
+        "state-fingerprint",
+        "state-scope-digest",
+      ] as const) {
+        if (typeof raw.opts[key] !== "string" || raw.opts[key].trim().length === 0) {
+          throw usageError({ spec: taskAuthorityGrantSpec, message: `Missing required --${key}.` });
+        }
       }
     }
     const by = raw.opts.by;
@@ -140,6 +162,10 @@ export const taskAuthorityGrantSpec: CommandSpec<TaskAuthorityGrantParsed> = {
     approvalReceipt:
       typeof raw.opts["approval-receipt"] === "string"
         ? raw.opts["approval-receipt"].trim()
+        : undefined,
+    recoveryInput:
+      typeof raw.opts["recovery-input"] === "string"
+        ? raw.opts["recovery-input"].trim()
         : undefined,
     ttlMinutes: typeof raw.opts["ttl-minutes"] === "string" ? Number(raw.opts["ttl-minutes"]) : 15,
     remote: raw.opts.remote === true,
@@ -195,6 +221,9 @@ export function makeRunTaskAuthorityGrantHandler(session: {
       }),
     );
     const decision = preparedWorkOrder.route_decision;
+    if (parsed.recoveryInput) {
+      return await grantAdvancedBaseRecovery({ session, parsed, decision, commandCtx });
+    }
     const request = requestedOperation(decision, parsed);
     if (
       request.operationId !== parsed.operationId ||

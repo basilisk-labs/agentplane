@@ -11,7 +11,36 @@ export type ProviderUpdateBranchOperationParams = {
   expectedHeadSha: string;
   expectedBaseSha: string;
   reconcileHeadSha?: string;
+  /** Operator-only recovery approval. The live provider update route never sets this field. */
+  recovery?: ProviderUpdateRecoveryGrantTuple;
 };
+
+export type ProviderUpdateRecoveryGrantTuple = {
+  kind: "advanced_base_effect_recovery";
+  journalDigest: string;
+  operationKey: string;
+  originalGrantId: string;
+  originalGrantDigest: string;
+  prUrl: string;
+  originalHeadSha: string;
+  originalBaseSha: string;
+  observedHeadSha: string;
+  observedMergeBaseSha: string;
+  providerActorLogin: string;
+  providerActorId: number;
+  evidenceDigest: string;
+};
+
+export function providerUpdateRecoveryGrantOperation(
+  params: Omit<ProviderUpdateBranchOperationParams, "recovery">,
+  recovery: ProviderUpdateRecoveryGrantTuple,
+) {
+  return {
+    id: "provider.pr.update_branch" as const,
+    type: "provider_update_branch" as const,
+    params: { ...params, recovery },
+  };
+}
 
 const GIT_OBJECT_ID = /^[0-9a-f]{40,64}$/u;
 
