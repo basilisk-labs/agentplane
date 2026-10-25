@@ -1,0 +1,1 @@
+"$ eslint packages scripts eslint.config.cjs vitest.config.ts"
