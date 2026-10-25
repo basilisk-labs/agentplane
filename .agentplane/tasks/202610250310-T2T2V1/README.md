@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -60,9 +60,11 @@ quality_review:
     - "The verification record binds to implementation SHA 133c13f9bae55fb4a52ef2c78f727af7226eaea8. Retained focused, lint, hotspots, and full local CI checks pass; hosted PR #6922 at the same head has successful required jobs and no failing jobs."
     - "Residual risk: This review does not grant authority for a future scope expansion; each scope request still requires its own exact USER grant."
 token_usage:
-  agent_runs: 1
+  agent_runs: 2
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
   input_tokens: null
-  journal_digest: "sha256:fff8fc926c511309085b264d7f614f9156a4bfd9e82d5beeae722d3771263dda"
+  journal_digest: "sha256:5ccbc0f87a81e0e7e777993c803c210af36b1ac76789ade58c7cabf01497158b"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -71,8 +73,8 @@ token_usage:
   source: "supervisor_journal"
   state: "unavailable"
   total_tokens: null
-  unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-10-25T07:54:28.099Z"
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-25T10:27:50.018Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -1549,9 +1551,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "021ad50945ebdeac99752f5270e971c35641d8cd"
-  message: "✅ T2T2V1 task: authenticate repository-policy scope replans after approved scope..."
+  hash: "193e3913d407d255db1509bea983ad15bd2b0b03"
+  message: "🚧 T2T2V1 task: record external evaluator result"
 comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -1576,8 +1581,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-10-25T10:27:50.018Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "193e3913d407d255db1509bea983ad15bd2b0b03"
 doc_version: 3
-doc_updated_at: "2026-10-25T10:27:18.360Z"
+doc_updated_at: "2026-10-25T10:27:50.044Z"
 doc_updated_by: "CODER"
 description: "For release 0.7.13, fix canonical rework evidence lookup after a USER-approved scope extension when the revised Plan is automatically approved by repository policy. Retain exact USER scope grant, historical blocked result, proposal/approval receipts, authority and scope ceiling checks. Support both explicit USER and repository-policy SYSTEM Plan approval without weakening fail-closed behavior. Add focused core and native external-agent regressions. No Factory-specific adapter or manual journal edits."
 sections:
@@ -1867,8 +1880,8 @@ extensions:
     verification_evidence_digest: "sha256:b578a5022c96aa37349eeca5baf360ed35cb552dbb5bbb8d0d83f3f30fd4182e"
     work_order_id: "sha256:3cd771f9ac846041bd428815f131eb81a14d47604f81ed23d09f85601115af97"
   implementation_commit:
-    hash: "b6d949442e7df8afd70321410f4e0390150c683b"
-    message: "🚧 T2T2V1 task: apply canonical agent result"
+    hash: "133c13f9bae55fb4a52ef2c78f727af7226eaea8"
+    message: "Merge branch 'main' into task/202610250310-T2T2V1/authenticate-repository-policy-scope-replans-aft"
   task_execution_context:
     base_ref: "main"
     base_sha: "214a26d1bda13f9a81349cc1364669ad24dfb92c"
@@ -2629,12 +2642,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/1` agent runs
+- Completeness: `0/2` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:fff8fc926c511309085b264d7f614f9156a4bfd9e82d5beeae722d3771263dda`
-- Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-10-25T07:54:28.099Z`
+- Journal digest: `sha256:5ccbc0f87a81e0e7e777993c803c210af36b1ac76789ade58c7cabf01497158b`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-25T10:27:50.018Z`
