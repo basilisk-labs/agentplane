@@ -27,6 +27,7 @@ For release 0.7.13, carry forward the independently reviewed PR #6920 generic fa
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .../src/backends/task-backend.cloud.test.ts        |  20 +-
  .../external-agent-read-only-observation.test.ts   | 205 ++++++++++++++++++++-
  .../task/external-agent-read-only-recovery.ts      | 129 +++++++++++++
  .../task/external-agent-supervisor-recovery.ts     |  60 +++---
@@ -34,7 +35,7 @@ For release 0.7.13, carry forward the independently reviewed PR #6920 generic fa
  .../task/kernel-completed-provider-workflow.ts     |  11 ++
  .../kernel-provider-effect-coordinator.test.ts     |  32 ++++
  .../task/kernel-provider-effect-coordinator.ts     |  11 ++
- 7 files changed, 476 insertions(+), 30 deletions(-)
+ 8 files changed, 489 insertions(+), 37 deletions(-)
 ```
 
 </details>

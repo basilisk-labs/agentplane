@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202610250050-X3VP32/guard-canonical-local-lifecycle-against-unresolv",
   "created_at": "2026-10-25T01:17:13.320Z",
-  "diffstat_sha256": "sha256:2c71285dcb14a99b7bf4e81bc6cf44d0ac85fe7fb1d55d4498bbe29d4376230a",
+  "diffstat_sha256": "sha256:0fd02405784bc8214d45bc424970d1975b6ea6a9a770d4382366b59f5f4054b0",
   "last_verified_at": null,
   "provider": {
     "hostname": "github.com",
