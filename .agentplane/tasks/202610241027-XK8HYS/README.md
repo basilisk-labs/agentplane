@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -30,18 +30,31 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-10-24T10:46:38.142Z"
+  updated_at: "2026-10-25T14:56:00.549Z"
   updated_by: "EVALUATOR"
-  note: "Canonical EVALUATOR review passed."
-  evaluated_sha: "a7934d33da69bfcce667701172bdddc6f79a03cf"
-  review_identity_digest: "sha256:56afed0b4937caaeda74c2521420d01712f3bd4ea0fa4948f2bec644a0b45354"
+  note: "EVALUATOR returned pass with 3 typed finding(s)."
+  evaluated_sha: "342956a5fdad1d0abb0dd7f34c8e42f4b013fcda"
+  review_identity_digest: "sha256:431d105294fd6143893c327bd8bc33b97622fb347c9d649bece92779e60276cd"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202610241027-XK8HYS/c21a65b6aa751a5c05617780bf7b8c1a8b3131fe5c9945f0c8b765d6010c6497/quality-report.json"
+    - ".agentplane/tasks/202610241027-XK8HYS/quality/20261025-145421239-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202610241027-XK8HYS/quality/20261025-145421239-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202610241027-XK8HYS/quality/objects/sha256/98a17c19e81e73d8f2a1081ccb0456c29eec1edb2f224c1f7c7b8b9fa1370805.md"
+    - ".agentplane/tasks/202610241027-XK8HYS/quality/20261025-145421239-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202610241027-XK8HYS/quality/20261025-145421239-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202610241027-XK8HYS/quality/20261025-145421239-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202610241027-XK8HYS/README.md"
+    - ".agentplane/tasks/202610241027-XK8HYS/quality/objects/sha256/98ca375b3349fcba878371b780ce679ad7c74d5fa5f2a6cea6671993589a5088.patch"
+    - ".agentplane/tasks/202610241027-XK8HYS/quality/objects/sha256/c255aed443bdb91e48eb0e3af1d4ebb05212ee56232c44eb2ebeef35b166809b.json"
+    - ".agentplane/tasks/202610241027-XK8HYS/verification/20261025145341247-be5b9098331e0486.json"
+    - ".agentplane/tasks/202610241027-XK8HYS/quality/objects/sha256/2236f62d2ad4b49609b0684231aaca0a83fb16b7ca10bd0b6824fe5c86a44c58.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The frozen-base integration assertion verifies successful work start from the exact admitted SHA after the upstream ref advances. Existing legacy admission tests continue to reject upstream mismatch."
-    - "The consumer worktree test now asserts that foreign framework bin/dist assets are absent."
-    - "Framework runtime tests copy exact current package manifests for owned packages, including exports, and retain runnable bootstrap/runtime assertions. Only the two approved test files changed."
-    - "AgentPlane native validation passed the two-file Vitest suite (16/16) and Prettier at the committed implementation head."
+    - "The work-start test records the admitted base SHA and confirms that a task worktree starts from that SHA after the upstream ref advances."
+    - "The consumer-worktree assertions reject foreign framework bin and dist assets. The framework fixture copies current package manifests before expecting local runtime assets."
+    - "The implementation changes only the two approved test files. Native focused verification and full CI passed at implementation SHA 342956a5fdad1d0abb0dd7f34c8e42f4b013fcda; required hosted checks passed at the same SHA."
 token_usage:
   agent_runs: 1
   input_tokens: null
@@ -5774,7 +5787,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-10-25T14:53:49.339Z"
+doc_updated_at: "2026-10-25T14:56:00.822Z"
 doc_updated_by: "CODER"
 description: "Correct three pre-bump release CI assertions: an authenticated frozen task base remains valid after upstream advances; a consumer worktree receives no framework runtime; framework bootstrap fixtures declare real package ownership before expecting local runtime assets."
 sections:
@@ -5972,6 +5985,14 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.completed_native_review:
+    applied_at: "2026-10-25T14:56:00.549Z"
+    kernel_digest: "sha256:73fa39da78ec7b6d28e4c3077b21df8ab95564adf6ca2e4b1790de586e43bcc9"
+    quality_digest: "sha256:7fe2db89d7e76889e7e1f89539745b9f9034bcc0b47e3fde091552d6511e7e25"
+    result_digest: "sha256:855e06fe91d961573045a26ce545a6008a70c120d8d008a0b77e03d0e2e1710a"
+    schema_version: 1
+    state_fingerprint: "sha256:64ce6e04a8b37c1e32d18c3e9c599aa611225195bd8a836cb1edfdecb454f5d5"
+    transition_id: "tr_8fb28afe7a57658124f52ea7720c92a4"
   agentplane.kernel_operational_projection:
     digest: "sha256:ad732206fcc0b4fda15a3c641567641b2bfa2cbc2fe36040bff6792a3027c432"
     evidence_refs:

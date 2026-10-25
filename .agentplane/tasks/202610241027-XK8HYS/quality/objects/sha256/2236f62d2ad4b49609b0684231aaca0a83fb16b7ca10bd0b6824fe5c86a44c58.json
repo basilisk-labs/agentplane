@@ -1,0 +1,44 @@
+{
+  "native_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_task_identity",
+    "task_id": "202610241027-XK8HYS",
+    "plan": {
+      "revision": 1,
+      "digest": "sha256:2e121b1823bc17d14a9ade5e82fffc32f28d61644962649108eefbd685f7e962",
+      "approval_state": "approved",
+      "approved_digest": "sha256:2e121b1823bc17d14a9ade5e82fffc32f28d61644962649108eefbd685f7e962"
+    },
+    "policy": {
+      "digest": "sha256:1150ba6caefe9e829c30b3520b9246ed1ec7ebbeedbe788c63cf7989015dbb46"
+    },
+    "capability": {
+      "digest": "sha256:678b0b5ca28202306d1203470116caa33f118732b5d1499087a567eb09b3f4ab"
+    },
+    "checks": {
+      "verification_contract_digest": "sha256:89f1badb566f36cbcdc209401dc42fc7d126f2dbad3539223d494823ceb20a83",
+      "required_check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "full_regression",
+        "task_outcome"
+      ],
+      "digest": "sha256:ba3990c76a5224d1f3c185765a40b75c9dfc235785af9a94d321c62a715af418"
+    },
+    "digest": "sha256:d7866caabc73c376841d0aa03cd442474cdad94d51da141af0a9531f606c53cb"
+  },
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202610241027-XK8HYS",
+    "plan_digest": "sha256:2e121b1823bc17d14a9ade5e82fffc32f28d61644962649108eefbd685f7e962",
+    "policy_digest": "sha256:1150ba6caefe9e829c30b3520b9246ed1ec7ebbeedbe788c63cf7989015dbb46",
+    "capability_digest": "sha256:678b0b5ca28202306d1203470116caa33f118732b5d1499087a567eb09b3f4ab",
+    "checks_digest": "sha256:ba3990c76a5224d1f3c185765a40b75c9dfc235785af9a94d321c62a715af418",
+    "verification_input_digest": "sha256:975485dca30ac5b9057ed6298caa78750a0c70b7ab5ccdc5e417a5d76e3db6fe",
+    "acceptance_digest": "sha256:33cd38383ecfe31a46bb88d75a6b857bdde7cbc6a3b32f714ac7f8c97a9d4590",
+    "implementation_sha": "342956a5fdad1d0abb0dd7f34c8e42f4b013fcda",
+    "digest": "sha256:431d105294fd6143893c327bd8bc33b97622fb347c9d649bece92779e60276cd"
+  }
+}
