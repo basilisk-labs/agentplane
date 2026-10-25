@@ -12,8 +12,8 @@ Created: 2026-10-25T14:55:38.380Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: Declared check failed: bun run lint:core
+- State: ok
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
