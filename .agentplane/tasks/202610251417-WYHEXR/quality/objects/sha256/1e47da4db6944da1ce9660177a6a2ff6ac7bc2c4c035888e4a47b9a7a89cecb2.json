@@ -1,0 +1,44 @@
+{
+  "native_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_task_identity",
+    "task_id": "202610251417-WYHEXR",
+    "plan": {
+      "revision": 1,
+      "digest": "sha256:7035ddcb213d8a43fbbbc3ea28d96922af5817b3b70067aa40e19cda822a6fe7",
+      "approval_state": "approved",
+      "approved_digest": "sha256:7035ddcb213d8a43fbbbc3ea28d96922af5817b3b70067aa40e19cda822a6fe7"
+    },
+    "policy": {
+      "digest": "sha256:b0f3ed8717357e14968093aaf83e3059ba55a248477be0e758cb9ae571d6f7ac"
+    },
+    "capability": {
+      "digest": "sha256:558663a1a3c98babbd4c45be033da50a564647bc7797c8e00c170c97d7b597ff"
+    },
+    "checks": {
+      "verification_contract_digest": "sha256:de6c61213e34469edb1080827a696e3b34d7098b12c8f9e34c6d0a4e4ccfcc6d",
+      "required_check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "full_regression",
+        "task_outcome"
+      ],
+      "digest": "sha256:663df34a4fe7657bf488b35eec483001f4b682562326eb4079e52d4c8eee6622"
+    },
+    "digest": "sha256:f261740081a50289f465d672b9e902e7f81f21a9e75772bba825e03ce3949b17"
+  },
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202610251417-WYHEXR",
+    "plan_digest": "sha256:7035ddcb213d8a43fbbbc3ea28d96922af5817b3b70067aa40e19cda822a6fe7",
+    "policy_digest": "sha256:b0f3ed8717357e14968093aaf83e3059ba55a248477be0e758cb9ae571d6f7ac",
+    "capability_digest": "sha256:558663a1a3c98babbd4c45be033da50a564647bc7797c8e00c170c97d7b597ff",
+    "checks_digest": "sha256:663df34a4fe7657bf488b35eec483001f4b682562326eb4079e52d4c8eee6622",
+    "verification_input_digest": "sha256:38a2f483fa7e8f488f2e6548dd1bf85986c073a90165b1d81c630804067c2921",
+    "acceptance_digest": "sha256:e7cdfa965ab12957c7b0353c0e97211c481bbf29862d68ba76b8e7851fc19e43",
+    "implementation_sha": "286da6f5938a7351ddd528c5188f4bb6919217d3",
+    "digest": "sha256:61ba1682f48bd648cffb1d741c2623d047903e18931ab87098951f14241fc712"
+  }
+}

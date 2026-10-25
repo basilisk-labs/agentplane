@@ -1,0 +1,55 @@
+{
+  "artifacts": [
+    {
+      "kind": "actual_diff",
+      "logical_name": "evaluator-diff",
+      "media_type": "text/x-diff",
+      "path": ".agentplane/tasks/202610251417-WYHEXR/quality/objects/sha256/6770453d85fbe86bcdfb6a360c01a3a9163d13b8954d7a07243fdacf9e97078a.patch",
+      "sha256": "sha256:6770453d85fbe86bcdfb6a360c01a3a9163d13b8954d7a07243fdacf9e97078a",
+      "size_bytes": 38296
+    },
+    {
+      "kind": "plan",
+      "logical_name": "evaluator-native-identity",
+      "media_type": "application/json",
+      "path": ".agentplane/tasks/202610251417-WYHEXR/quality/objects/sha256/1e47da4db6944da1ce9660177a6a2ff6ac7bc2c4c035888e4a47b9a7a89cecb2.json",
+      "sha256": "sha256:1e47da4db6944da1ce9660177a6a2ff6ac7bc2c4c035888e4a47b9a7a89cecb2",
+      "size_bytes": 2030
+    },
+    {
+      "kind": "observed_checks",
+      "logical_name": "evaluator-observed-checks",
+      "media_type": "application/json",
+      "path": ".agentplane/tasks/202610251417-WYHEXR/quality/objects/sha256/b8627c412fb4400bad9e3f609972c9d2a2a98aac226b1e264d70cee395d3bd30.json",
+      "sha256": "sha256:b8627c412fb4400bad9e3f609972c9d2a2a98aac226b1e264d70cee395d3bd30",
+      "size_bytes": 356153
+    },
+    {
+      "kind": "prompt",
+      "logical_name": "evaluator-prompt",
+      "media_type": "text/markdown",
+      "path": ".agentplane/tasks/202610251417-WYHEXR/quality/objects/sha256/918471eeb5b7bf1216608a2fc7e3ae8a3d6253a387abd89ea9f4941e5b3abd01.md",
+      "sha256": "sha256:918471eeb5b7bf1216608a2fc7e3ae8a3d6253a387abd89ea9f4941e5b3abd01",
+      "size_bytes": 5029
+    },
+    {
+      "kind": "result_schema",
+      "logical_name": "evaluator-result-schema",
+      "media_type": "application/schema+json",
+      "path": ".agentplane/tasks/202610251417-WYHEXR/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json",
+      "sha256": "sha256:9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a",
+      "size_bytes": 3478
+    }
+  ],
+  "created_at": "2026-10-25T21:25:38.418Z",
+  "integrity": {
+    "canonicalization": "agentplane-canonical-json-v1",
+    "digest_algorithm": "sha256",
+    "manifest_digest": "sha256:25db1af07f6068229b0da0ad165de3f05199a8472ba0c4fdc4c1e6d4904d5ce4"
+  },
+  "kind": "evaluator_evidence_packet",
+  "object_root": ".agentplane/tasks/202610251417-WYHEXR/quality/objects",
+  "schema_version": 1,
+  "task_id": "202610251417-WYHEXR",
+  "work_order_id": "evaluator-work-order-202610251417-WYHEXR-ea23fa51af9e4fad5b488f9b"
+}

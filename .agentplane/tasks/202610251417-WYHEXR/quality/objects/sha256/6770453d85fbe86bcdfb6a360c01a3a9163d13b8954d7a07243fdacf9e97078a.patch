@@ -1,0 +1,989 @@
+diff --git a/packages/agentplane/src/commands/shared/supervisor-execution-effect-recovery.test.ts b/packages/agentplane/src/commands/shared/supervisor-execution-effect-recovery.test.ts
+new file mode 100644
+index 000000000..a233ac719
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/supervisor-execution-effect-recovery.test.ts
+@@ -0,0 +1,89 @@
++import { deepStrictEqual, strictEqual } from "node:assert/strict";
++import {
++  buildStateFingerprint,
++  createSupervisorExecutionEpisodeJournal,
++  recoverSupervisorExecutionEpisodeJournal,
++  startSupervisorExecutionEpisode,
++} from "@agentplaneorg/core/schemas";
++
++import { recoverProvenNotAppliedWorktreePreparation } from "./supervisor-execution-effect-recovery.js";
++
++const testRuntime =
++  "Bun" in globalThis
++    ? ((await import("bun" + ":test")) as {
++        test: (name: string, run: () => Promise<void>) => void;
++      })
++    : await import("vitest");
++const runTest = testRuntime.test;
++
++runTest("worktree recovery leaves a stopped provider update intent untouched", async () => {
++  const taskId = "202610251417-RECOVR";
++  const component = { state: "present", source: "test", value: { taskId } } as const;
++  const fingerprint = buildStateFingerprint({
++    task_id: taskId,
++    task_revision: 1,
++    git_head: "a".repeat(40),
++    worktree: "/test/worktree",
++    components: {
++      task: component,
++      git: component,
++      backend_projection: component,
++      policy: component,
++      blueprint: component,
++      knowledge: component,
++      provider: component,
++      authority: component,
++    },
++  });
++  const created = createSupervisorExecutionEpisodeJournal({
++    task_id: taskId,
++    task_revision: 1,
++    state_fingerprint_digest: fingerprint.digest,
++    budget: {
++      max_episodes: 10,
++      max_agent_runs: null,
++      max_input_tokens: null,
++      max_output_tokens: null,
++      max_total_tokens: null,
++      max_wall_time_ms: null,
++      max_changed_files: null,
++      max_diff_lines: null,
++      max_no_progress_episodes: null,
++    },
++  });
++  const effectRef = `provider.pr.update_branch:${taskId}:original`;
++  const started = startSupervisorExecutionEpisode({
++    journal: created,
++    role: "EXECUTOR",
++    kind: "cli_operation",
++    operation_identity: {
++      id: "provider.pr.update_branch",
++      type: "provider_update_branch",
++      params: { taskId },
++      preconditionFingerprint: fingerprint,
++      authorityRef: `route:${taskId}:${fingerprint.digest}`,
++      idempotencyKey: effectRef,
++    },
++    precondition_fingerprint_digest: fingerprint.digest,
++    authority_ref: "workflow-operation:provider.pr.update_branch",
++    authority_digest: fingerprint.digest,
++    effect_ref: effectRef,
++  });
++  if (started.status !== "started") throw new Error("expected started operation");
++  const stopped = recoverSupervisorExecutionEpisodeJournal({
++    journal: started.journal,
++    state_fingerprint_digest: fingerprint.digest,
++  });
++  let writes = 0;
++  const actual = await recoverProvenNotAppliedWorktreePreparation({
++    journal: stopped,
++    operation: { id: "provider.pr.update_branch", idempotencyKey: effectRef },
++    state_fingerprint_digest: fingerprint.digest,
++    compare_and_swap: () => {
++      writes += 1;
++      return Promise.resolve(true);
++    },
++  });
++  deepStrictEqual(actual, stopped);
++  strictEqual(writes, 0);
++});
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-authority.ts b/packages/agentplane/src/commands/shared/workflow-step-authority.ts
+index 5a51cfcf8..dfee0ae62 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-authority.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-authority.ts
+@@ -24,7 +24,7 @@ import {
+   type WorkflowStep,
+ } from "./workflow-step.js";
+ 
+-function operationPayloadDigest(payload: {
++export function operationPayloadDigest(payload: {
+   id: WorkflowOperationId;
+   type: WorkflowOperation["type"];
+   params: WorkflowOperation["params"];
+diff --git a/packages/agentplane/src/commands/task/advance.command.ts b/packages/agentplane/src/commands/task/advance.command.ts
+index 71083abec..e65aab11b 100644
+--- a/packages/agentplane/src/commands/task/advance.command.ts
++++ b/packages/agentplane/src/commands/task/advance.command.ts
+@@ -18,7 +18,7 @@ import {
+ import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
+ import { classifyKernelCutover } from "./kernel-cutover.js";
+ import { advanceOrdinaryRoute } from "./ordinary-advance-step.js";
+-import { reconcileIntegrationEffect } from "./external-agent-workflow-recovery.js";
++import { reconcileWorkflowEffect } from "./workflow-effect-recovery.js";
+ import { preparePersistedSupervisorReplacementAfterFailure } from "../shared/supervisor-execution-episode.js";
+ 
+ function legacyMigrationRequired(taskId: string, reason: string): CliError {
+@@ -124,7 +124,7 @@ export function makeRunTaskAdvanceHandler(deps: {
+           code: "E_USAGE",
+           message: "Canonical workflow recovery requires an already completed Task.",
+         });
+-      const resolution = await reconcileIntegrationEffect({
++      const resolution = await reconcileWorkflowEffect({
+         command,
+         task_id: parsed.taskId,
+         input_path: parsed.workflowRecovery,
+diff --git a/packages/agentplane/src/commands/task/ordinary-advance-step.ts b/packages/agentplane/src/commands/task/ordinary-advance-step.ts
+index 6406d69ea..a6f1a2761 100644
+--- a/packages/agentplane/src/commands/task/ordinary-advance-step.ts
++++ b/packages/agentplane/src/commands/task/ordinary-advance-step.ts
+@@ -32,7 +32,7 @@ import {
+ } from "./external-agent-supervisor.js";
+ import { recoverPendingExternalAgentResult } from "./external-agent-supervisor-recovery.js";
+ import { executeExternalAgentVerification } from "./external-agent-verification.js";
+-import { reconcileIntegrationEffect } from "./external-agent-workflow-recovery.js";
++import { reconcileWorkflowEffect } from "./workflow-effect-recovery.js";
+ import { requireKernelIssuanceEligibility } from "./kernel-cutover.js";
+ 
+ export function canonicalCompletionPrecedesWorkflow(
+@@ -67,7 +67,7 @@ export async function advanceOrdinaryRoute(opts: {
+     });
+   };
+   if (parsed.workflowRecovery) {
+-    const resolution = await reconcileIntegrationEffect({
++    const resolution = await reconcileWorkflowEffect({
+       command,
+       task_id: parsed.taskId,
+       input_path: parsed.workflowRecovery,
+diff --git a/packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts b/packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts
+new file mode 100644
+index 000000000..c95e808aa
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts
+@@ -0,0 +1,416 @@
++import { mkdtemp, writeFile } from "node:fs/promises";
++import { execFileSync } from "node:child_process";
++import os from "node:os";
++import path from "node:path";
++import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
++import {
++  buildStateFingerprint,
++  createSupervisorExecutionEpisodeJournal,
++  digestSupervisorEpisodeValue,
++  recoverSupervisorExecutionEpisodeJournal,
++  startSupervisorExecutionEpisode,
++} from "@agentplaneorg/core/schemas";
++import { mkGitRepoRoot } from "@agentplane/testkit";
++
++import {
++  createSupervisorEpisodeStore,
++  resolveSupervisorExecutionEpisodePath,
++} from "../shared/supervisor-execution-episode.js";
++import { operationPayloadDigest } from "../shared/workflow-step-authority.js";
++import type { CommandContext } from "../shared/task-backend.js";
++import type { TaskRouteDecision } from "../shared/route-decision-types.js";
++import { reconcileProviderUpdateEffect } from "./provider-update-effect-recovery.js";
++
++const mocks = vi.hoisted(() => ({
++  observe: vi.fn(),
++  compare: vi.fn(),
++  local: vi.fn(),
++  authority: vi.fn(),
++}));
++vi.mock("../pr/internal/change-request-provider.js", () => ({
++  observeExistingChangeRequestByNumber: mocks.observe,
++}));
++vi.mock("../pr/internal/gh-api.js", () => ({ runGhApiJson: mocks.compare }));
++vi.mock("../pr/provider-update-branch-local.js", () => ({
++  validateProviderUpdateLocalState: mocks.local,
++}));
++vi.mock("../shared/side-effect-authority-store.js", () => ({
++  loadSideEffectAuthorityState: mocks.authority,
++}));
++
++const taskId = "202610251417-RECOVR";
++const branch = `task/${taskId}/example`;
++const originalHead = "a".repeat(40);
++const observedHead = "b".repeat(40);
++const identity = {
++  provider: "github" as const,
++  hostname: "github.com",
++  remote: "origin",
++  sourceProject: "example/repo",
++  targetProject: "example/repo",
++  sourceUrl: "https://github.com/example/repo.git",
++  targetUrl: "https://github.com/example/repo.git",
++};
++const budget = {
++  max_episodes: 10,
++  max_agent_runs: null,
++  max_input_tokens: null,
++  max_output_tokens: null,
++  max_total_tokens: null,
++  max_wall_time_ms: null,
++  max_changed_files: null,
++  max_diff_lines: null,
++  max_no_progress_episodes: null,
++} as const;
++
++type Fixture = Awaited<ReturnType<typeof fixture>>;
++
++async function fixture(authorityRef = "workflow-operation:provider.pr.update_branch") {
++  const root = await mkGitRepoRoot();
++  execFileSync(
++    "git",
++    [
++      "-c",
++      "user.name=Test",
++      "-c",
++      "user.email=test@example.com",
++      "commit",
++      "--allow-empty",
++      "-m",
++      "init",
++    ],
++    { cwd: root },
++  );
++  const base = execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim();
++  execFileSync("git", ["update-ref", "refs/remotes/origin/main", base], { cwd: root });
++  const currentFingerprint = `sha256:${"c".repeat(64)}`;
++  const originalFingerprint = buildStateFingerprint({
++    task_id: taskId,
++    task_revision: 1,
++    git_head: originalHead,
++    worktree: root,
++    components: Object.fromEntries(
++      [
++        "task",
++        "git",
++        "backend_projection",
++        "policy",
++        "blueprint",
++        "knowledge",
++        "provider",
++        "authority",
++      ].map((key) => [key, { state: "present", source: "test", value: { key } }]),
++    ) as Parameters<typeof buildStateFingerprint>[0]["components"],
++  });
++  const params = {
++    taskId,
++    identity,
++    prNumber: 42,
++    branch,
++    baseBranch: "main",
++    expectedHeadSha: originalHead,
++    expectedBaseSha: base,
++  };
++  const payloadDigest = `sha256:${operationPayloadDigest({
++    id: "provider.pr.update_branch",
++    type: "provider_update_branch",
++    params,
++  })}`;
++  const effectRef = `provider.pr.update_branch:${taskId}:${originalFingerprint.digest}:${payloadDigest.slice(7)}`;
++  const created = createSupervisorExecutionEpisodeJournal({
++    task_id: taskId,
++    task_revision: 1,
++    state_fingerprint_digest: originalFingerprint.digest,
++    budget,
++  });
++  const started = startSupervisorExecutionEpisode({
++    journal: created,
++    role: "EXECUTOR",
++    kind: "cli_operation",
++    operation_identity: {
++      id: "provider.pr.update_branch",
++      type: "provider_update_branch",
++      params,
++      preconditionFingerprint: originalFingerprint,
++      authorityRef: `route:${taskId}:${originalFingerprint.digest}`,
++      idempotencyKey: effectRef,
++    },
++    precondition_fingerprint_digest: originalFingerprint.digest,
++    authority_ref: authorityRef,
++    authority_digest: originalFingerprint.digest,
++    effect_ref: effectRef,
++  });
++  if (started.status !== "started") throw new Error("expected started operation");
++  const stopped = recoverSupervisorExecutionEpisodeJournal({
++    journal: started.journal,
++    state_fingerprint_digest: originalFingerprint.digest,
++  });
++  const journalPath = await resolveSupervisorExecutionEpisodePath({
++    git_root: root,
++    task_id: taskId,
++  });
++  await createSupervisorEpisodeStore(journalPath).write(stopped);
++  const grant = {
++    schemaVersion: 1,
++    kind: "side_effect_authority",
++    id: "authority-example",
++    actor: "USER",
++    operationId: "provider.pr.update_branch",
++    operationDigest: payloadDigest,
++    policyRule: "workflow.external_high_risk",
++    stateFingerprintDigest: `sha256:${"8".repeat(64)}`,
++    stateScopeDigest: `sha256:${"7".repeat(64)}`,
++    issuedAt: new Date(Date.parse(started.journal.operations[0]!.started_at) - 1000).toISOString(),
++    expiresAt: new Date(
++      Date.parse(started.journal.operations[0]!.started_at) + 60_000,
++    ).toISOString(),
++    digest: `sha256:${"d".repeat(64)}`,
++  };
++  const authorityState = {
++    grants: [grant],
++    audit: [
++      {
++        authorityDigest: grant.digest,
++        actor: grant.actor,
++        policyRule: grant.policyRule,
++        operationId: grant.operationId,
++        operationDigest: payloadDigest,
++        stateFingerprintDigest: grant.stateFingerprintDigest,
++        at: grant.issuedAt,
++        outcome: "approved",
++      },
++    ],
++  };
++  mocks.authority.mockResolvedValue({
++    state: authorityState,
++    source: "git_common_dir",
++  });
++  mocks.observe.mockResolvedValue({
++    state: "found",
++    pr: {
++      provider: "github",
++      status: "OPEN",
++      prNumber: 42,
++      prUrl: "https://github.com/example/repo/pull/42",
++      headRef: branch,
++      base: "main",
++      baseSha: base,
++      headSha: observedHead,
++      identity,
++    },
++  });
++  mocks.compare.mockImplementation((_root: string, args: string[]) => {
++    if (args[0]!.includes("/git/commits/"))
++      return Promise.resolve({
++        sha: observedHead,
++        parents: [{ sha: originalHead }, { sha: base }],
++      });
++    const [older] = args[0]!.split("/compare/")[1]!.split("...");
++    return Promise.resolve({
++      status: "ahead",
++      base_commit: { sha: older },
++      merge_base_commit: { sha: older },
++    });
++  });
++  mocks.local.mockResolvedValue(null);
++  const route = {
++    task: { id: taskId },
++    workspace: { taskWorktreePath: root, baseCheckoutPath: root, prBranch: branch },
++    workflowStep: {
++      id: "agent.implementation_rework",
++      preconditionFingerprint: { digest: currentFingerprint },
++    },
++  } as TaskRouteDecision;
++  const command = {
++    resolvedProject: { gitRoot: root },
++    memo: {},
++    taskBackend: { getTask: vi.fn().mockResolvedValue({ id: taskId }) },
++  } as unknown as CommandContext;
++  const input = {
++    schema_version: 1,
++    kind: "provider_update_branch_effect_resolution",
++    task_id: taskId,
++    repository_root: root,
++    journal_digest: stopped.digest,
++    operation_key: started.operation_key,
++    precondition_fingerprint_digest: originalFingerprint.digest,
++    effect_ref: effectRef,
++    grant_id: grant.id,
++    current_state_fingerprint: currentFingerprint,
++    identity,
++    pr_number: 42,
++    pr_url: "https://github.com/example/repo/pull/42",
++    branch,
++    base_branch: "main",
++    original_head_sha: originalHead,
++    original_base_sha: base,
++    observed_head_sha: observedHead,
++    operator: {
++      kind: "operator_decision",
++      actor: "release operator",
++      decision_ref: "release-0713-reconcile-observed-update",
++      observed_at: new Date().toISOString(),
++    },
++    evidence: [
++      {
++        ref: "hosted-pr-observation",
++        content: `PR 42 head ${observedHead} is the provider-published update merge`,
++        digest: digestSupervisorEpisodeValue(
++          `PR 42 head ${observedHead} is the provider-published update merge`,
++        ),
++      },
++    ],
++  };
++  const inputPath = path.join(
++    await mkdtemp(path.join(os.tmpdir(), "ap-provider-recovery-")),
++    "input.json",
++  );
++  const invoke = async (delta: Record<string, unknown> = {}) => {
++    await writeFile(inputPath, JSON.stringify({ ...input, ...delta }));
++    return await reconcileProviderUpdateEffect({
++      command,
++      task_id: taskId,
++      input_path: inputPath,
++      decide: () => Promise.resolve(route),
++    });
++  };
++  return { root, journalPath, input, invoke, grant, authorityState };
++}
++
++describe("interrupted provider update recovery", () => {
++  beforeEach(() => vi.clearAllMocks());
++  afterEach(() => vi.restoreAllMocks());
++
++  it("settles the exact applied intent once without another provider PUT or changing hosted truth", async () => {
++    const f = await fixture();
++    await expect(f.invoke()).resolves.toMatchObject({
++      verdict: "applied",
++      observed_head_sha: observedHead,
++      next_step: "agent.implementation_rework",
++    });
++    const stored = await createSupervisorEpisodeStore(f.journalPath).read();
++    expect(stored).toMatchObject({
++      status: "running",
++      cursor: { phase: "ready" },
++      operations: [{ status: "completed" }],
++    });
++    expect(mocks.compare).toHaveBeenCalledTimes(3);
++    const compareCalls = mocks.compare.mock.calls as unknown[][];
++    expect(
++      compareCalls.every((call) => {
++        const args = call[1];
++        return Array.isArray(args) && !(args as unknown[]).includes("-X");
++      }),
++    ).toBe(true);
++    await expect(f.invoke()).rejects.toThrow(
++      "exact stopped provider operation is absent or changed",
++    );
++  });
++
++  it.each([
++    ["wrong operation", { effect_ref: "provider.pr.update_branch:forged" }],
++    ["wrong task", { task_id: "other-task" }],
++    ["wrong published head", { observed_head_sha: "e".repeat(40) }],
++    ["wrong original base", { original_base_sha: "f".repeat(40) }],
++  ])("rejects %s before journal completion", async (_label, delta) => {
++    const f = await fixture();
++    await expect(f.invoke(delta)).rejects.toThrow();
++    expect(await createSupervisorEpisodeStore(f.journalPath).read()).toMatchObject({
++      status: "stopped",
++      operations: [{ status: "intent" }],
++    });
++  });
++
++  it("rejects missing USER grant, provider mismatch, ancestry failure, and dirty local state", async () => {
++    const scenarios = [
++      () => mocks.authority.mockResolvedValue({ state: { grants: [], audit: [] } }),
++      () =>
++        mocks.observe.mockResolvedValue({
++          state: "found",
++          pr: { status: "OPEN", headSha: "e".repeat(40) },
++        }),
++      () => mocks.compare.mockResolvedValue({ status: "diverged" }),
++      () => mocks.local.mockResolvedValue("dirty checkout"),
++    ];
++    for (const arrange of scenarios) {
++      vi.clearAllMocks();
++      const f: Fixture = await fixture();
++      arrange();
++      await expect(f.invoke()).rejects.toThrow();
++      expect(await createSupervisorEpisodeStore(f.journalPath).read()).toMatchObject({
++        status: "stopped",
++      });
++    }
++  });
++
++  it("rejects competing payload grants and mismatched historical audit bindings", async () => {
++    const f = await fixture();
++    const state = f.authorityState;
++    mocks.authority.mockResolvedValue({
++      state: { ...state, grants: [f.grant, { ...f.grant, id: "authority-other" }] },
++    });
++    await expect(f.invoke()).rejects.toThrow("matching retained USER authority");
++    mocks.authority.mockResolvedValue({
++      state: {
++        ...state,
++        audit: [{ ...state.audit[0], stateFingerprintDigest: `sha256:${"f".repeat(64)}` }],
++      },
++    });
++    await expect(f.invoke()).rejects.toThrow("matching retained USER authority");
++  });
++
++  it("rejects an unrelated hosted descendant with the same old base", async () => {
++    const f = await fixture();
++    mocks.compare.mockImplementation((_root: string, args: string[]) => {
++      if (args[0]!.includes("/git/commits/"))
++        return Promise.resolve({
++          sha: observedHead,
++          parents: [{ sha: originalHead }, { sha: "f".repeat(40) }],
++        });
++      const [older] = args[0]!.split("/compare/")[1]!.split("...");
++      return Promise.resolve({
++        status: "ahead",
++        base_commit: { sha: older },
++        merge_base_commit: { sha: older },
++      });
++    });
++    await expect(f.invoke()).rejects.toThrow("exact original-head/base merge commit");
++  });
++
++  it("rejects operator evidence with a mismatched digest", async () => {
++    const f = await fixture();
++    await expect(
++      f.invoke({
++        evidence: [
++          { ref: "hosted-pr-observation", content: "forged", digest: f.input.evidence[0]!.digest },
++        ],
++      }),
++    ).rejects.toThrow("operator evidence content digest mismatch");
++  });
++
++  it("leaves unrelated mutating intents stopped", async () => {
++    const f = await fixture("workflow-operation:pr.open");
++    await expect(f.invoke()).rejects.toThrow(
++      "exact stopped provider operation is absent or changed",
++    );
++    expect(await createSupervisorEpisodeStore(f.journalPath).read()).toMatchObject({
++      status: "stopped",
++      operations: [{ status: "intent" }],
++    });
++  });
++
++  it("rejects a concurrent journal change at compare-and-swap", async () => {
++    const f = await fixture();
++    mocks.local.mockImplementation(async () => {
++      const concurrent = createSupervisorExecutionEpisodeJournal({
++        task_id: taskId,
++        task_revision: 2,
++        state_fingerprint_digest: `sha256:${"9".repeat(64)}`,
++        budget,
++      });
++      await createSupervisorEpisodeStore(f.journalPath).write(concurrent);
++      return null;
++    });
++    await expect(f.invoke()).rejects.toThrow("supervisor journal changed during recovery");
++  });
++});
+diff --git a/packages/agentplane/src/commands/task/provider-update-effect-recovery.ts b/packages/agentplane/src/commands/task/provider-update-effect-recovery.ts
+new file mode 100644
+index 000000000..ae35bd3b4
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/provider-update-effect-recovery.ts
+@@ -0,0 +1,365 @@
++import { readFile } from "node:fs/promises";
++import path from "node:path";
++import { z } from "zod";
++import {
++  advanceSupervisorExecutionEpisodeState,
++  completeSupervisorExecutionEpisode,
++  digestSupervisorEpisodeValue,
++  isoTimestampSchema,
++  reopenSupervisorExecutionEpisodeAfterEffectEvidence,
++  validateSupervisorExecutionEpisodeJournal,
++} from "@agentplaneorg/core/schemas";
++import { gitRevParse } from "@agentplaneorg/core/git";
++
++import { CliError } from "../../shared/errors.js";
++import { observeExistingChangeRequestByNumber } from "../pr/internal/change-request-provider.js";
++import { runGhApiJson } from "../pr/internal/gh-api.js";
++import { validateProviderUpdateLocalState } from "../pr/provider-update-branch-local.js";
++import { operationPayloadDigest } from "../shared/workflow-step-authority.js";
++import { loadSideEffectAuthorityState } from "../shared/side-effect-authority-store.js";
++import {
++  createSupervisorEpisodeStore,
++  resolveSupervisorExecutionEpisodePath,
++  tryAcquireSupervisorExecutionLease,
++} from "../shared/supervisor-execution-episode.js";
++import { resolveCommandGitCommonDir, type CommandContext } from "../shared/task-backend.js";
++import type { TaskRouteDecision } from "../shared/route-decision-types.js";
++
++const digest = z.string().regex(/^sha256:[0-9a-f]{64}$/u);
++const sha = z.string().regex(/^[0-9a-f]{40}$/u);
++const nonempty = z.string().trim().min(1);
++const identitySchema = z.strictObject({
++  provider: z.literal("github"),
++  hostname: nonempty,
++  remote: nonempty,
++  sourceProject: nonempty,
++  targetProject: nonempty,
++  sourceUrl: nonempty,
++  targetUrl: nonempty,
++});
++
++const providerUpdateEffectResolutionSchema = z.strictObject({
++  schema_version: z.literal(1),
++  kind: z.literal("provider_update_branch_effect_resolution"),
++  task_id: nonempty,
++  repository_root: nonempty,
++  journal_digest: digest,
++  operation_key: digest,
++  precondition_fingerprint_digest: digest,
++  effect_ref: nonempty,
++  grant_id: nonempty,
++  current_state_fingerprint: digest,
++  identity: identitySchema,
++  pr_number: z.number().int().positive(),
++  pr_url: nonempty,
++  branch: nonempty,
++  base_branch: nonempty,
++  original_head_sha: sha,
++  original_base_sha: sha,
++  observed_head_sha: sha,
++  operator: z.strictObject({
++    kind: z.literal("operator_decision"),
++    actor: nonempty.refine(
++      (value) => !/^(agent|planner|executor|evaluator|coder|tester|orchestrator)$/iu.test(value),
++    ),
++    decision_ref: nonempty,
++    observed_at: isoTimestampSchema(),
++  }),
++  evidence: z
++    .array(
++      z.strictObject({
++        ref: nonempty,
++        content: z.string().refine((value) => value.trim().length > 0),
++        digest,
++      }),
++    )
++    .min(1),
++});
++
++type ProviderUpdateEffectResolution = z.infer<typeof providerUpdateEffectResolutionSchema>;
++type GithubCompareResponse = {
++  status?: string | null;
++  base_commit?: { sha?: string | null } | null;
++  merge_base_commit?: { sha?: string | null } | null;
++};
++type GithubCommitResponse = { sha?: string | null; parents?: { sha?: string | null }[] | null };
++
++function reject(detail: string): never {
++  throw new CliError({
++    code: "E_VALIDATION",
++    message: `Provider update effect recovery: ${detail}`,
++  });
++}
++
++async function provesHostedAncestor(
++  root: string,
++  project: string,
++  ancestor: string,
++  descendant: string,
++): Promise<boolean> {
++  if (ancestor === descendant) return true;
++  const observed = await runGhApiJson<GithubCompareResponse>(root, [
++    `repos/${project}/compare/${encodeURIComponent(ancestor)}...${encodeURIComponent(descendant)}`,
++  ]);
++  return (
++    observed.status?.toLowerCase() === "ahead" &&
++    observed.base_commit?.sha === ancestor &&
++    observed.merge_base_commit?.sha === ancestor
++  );
++}
++
++function originalOperationDigest(resolution: ProviderUpdateEffectResolution): string {
++  return `sha256:${operationPayloadDigest({
++    id: "provider.pr.update_branch",
++    type: "provider_update_branch",
++    params: {
++      taskId: resolution.task_id,
++      identity: resolution.identity,
++      prNumber: resolution.pr_number,
++      branch: resolution.branch,
++      baseBranch: resolution.base_branch,
++      expectedHeadSha: resolution.original_head_sha,
++      expectedBaseSha: resolution.original_base_sha,
++    },
++  })}`;
++}
++
++export async function reconcileProviderUpdateEffect(opts: {
++  command: CommandContext;
++  task_id: string;
++  input_path: string;
++  decide: () => Promise<TaskRouteDecision>;
++}): Promise<{
++  task_id: string;
++  operation_key: string;
++  verdict: "applied";
++  observed_head_sha: string;
++  next_step: string;
++}> {
++  const parsed = providerUpdateEffectResolutionSchema.safeParse(
++    JSON.parse(await readFile(opts.input_path, "utf8")),
++  );
++  if (!parsed.success) reject(`invalid operator input: ${parsed.error.message}`);
++  const resolution = parsed.data;
++  if (resolution.task_id !== opts.task_id) reject("the input names another task.");
++  for (const evidence of resolution.evidence) {
++    if (digestSupervisorEpisodeValue(evidence.content) !== evidence.digest)
++      reject("operator evidence content digest mismatch.");
++  }
++  const commonGitDir = await resolveCommandGitCommonDir(opts.command);
++  const journalPath = await resolveSupervisorExecutionEpisodePath({
++    git_root: opts.command.resolvedProject.gitRoot,
++    common_git_dir: commonGitDir,
++    task_id: opts.task_id,
++  });
++  const lease = await tryAcquireSupervisorExecutionLease({ journal_path: journalPath });
++  if (!lease) reject("another supervisor owns this task.");
++  try {
++    const store = createSupervisorEpisodeStore(journalPath);
++    const journal = validateSupervisorExecutionEpisodeJournal(await store.read());
++    const operation = journal.operations.at(-1);
++    if (
++      journal.task_id !== opts.task_id ||
++      journal.digest !== resolution.journal_digest ||
++      journal.status !== "stopped" ||
++      journal.stop?.reason !== "effect_in_doubt" ||
++      journal.stop.operation_key !== resolution.operation_key ||
++      operation?.operation_key !== resolution.operation_key ||
++      operation.status !== "intent" ||
++      operation.kind !== "cli_operation" ||
++      operation.authority_ref !== "workflow-operation:provider.pr.update_branch" ||
++      operation.authority_digest !== resolution.precondition_fingerprint_digest ||
++      operation.precondition_fingerprint_digest !== resolution.precondition_fingerprint_digest ||
++      operation.effect_ref !== resolution.effect_ref
++    ) {
++      reject("the exact stopped provider operation is absent or changed.");
++    }
++    const operationDigest = originalOperationDigest(resolution);
++    const observedAt = Date.parse(resolution.operator.observed_at);
++    if (observedAt < Date.parse(operation.started_at) || observedAt > Date.now())
++      reject("operator evidence predates the intent or is future-dated.");
++    if (
++      resolution.effect_ref !==
++        `provider.pr.update_branch:${opts.task_id}:${resolution.precondition_fingerprint_digest}:${operationDigest.slice(7)}` ||
++      resolution.original_head_sha === resolution.observed_head_sha
++    ) {
++      reject("the original operation identity or distinct published head is unproven.");
++    }
++    const task = await opts.command.taskBackend.getTask(opts.task_id);
++    if (!task) reject("the task record is unavailable.");
++    const authority = await loadSideEffectAuthorityState({
++      gitRoot: opts.command.resolvedProject.gitRoot,
++      commonGitDir,
++      taskId: opts.task_id,
++      task,
++    });
++    const eligibleGrants =
++      authority.state?.grants.filter(
++        (item) =>
++          item.actor === "USER" &&
++          item.operationId === "provider.pr.update_branch" &&
++          item.operationDigest === operationDigest &&
++          item.policyRule === "workflow.external_high_risk" &&
++          Date.parse(item.issuedAt) <= Date.parse(operation.started_at) &&
++          Date.parse(item.expiresAt) >= Date.parse(operation.started_at),
++      ) ?? [];
++    const grant = eligibleGrants[0];
++    if (
++      eligibleGrants.length !== 1 ||
++      grant?.id !== resolution.grant_id ||
++      !authority.state?.audit.some(
++        (entry) =>
++          entry.authorityDigest === grant.digest &&
++          entry.actor === grant.actor &&
++          entry.policyRule === grant.policyRule &&
++          entry.operationId === grant.operationId &&
++          entry.operationDigest === grant.operationDigest &&
++          entry.stateFingerprintDigest === grant.stateFingerprintDigest &&
++          entry.outcome === "approved" &&
++          Date.parse(entry.at) <= Date.parse(operation.started_at),
++      )
++    ) {
++      reject("the original operation has no matching retained USER authority.");
++    }
++    const current = await opts.decide();
++    const checkout = current.workspace.taskWorktreePath;
++    if (
++      current.task.id !== opts.task_id ||
++      current.workflowStep.preconditionFingerprint.digest !==
++        resolution.current_state_fingerprint ||
++      !checkout ||
++      path.resolve(current.workspace.baseCheckoutPath ?? opts.command.resolvedProject.gitRoot) !==
++        path.resolve(resolution.repository_root) ||
++      current.workspace.prBranch !== resolution.branch
++    ) {
++      reject("the authoritative task route or checkout changed.");
++    }
++    const observed = await observeExistingChangeRequestByNumber({
++      gitRoot: resolution.repository_root,
++      prNumber: resolution.pr_number,
++      branch: resolution.branch,
++      baseBranch: resolution.base_branch,
++    });
++    if (observed.state !== "found") reject("fresh provider PR evidence is unavailable.");
++    const pr = observed.pr;
++    if (
++      pr.provider !== "github" ||
++      pr.status !== "OPEN" ||
++      pr.prNumber !== resolution.pr_number ||
++      pr.prUrl !== resolution.pr_url ||
++      pr.headRef !== resolution.branch ||
++      pr.base !== resolution.base_branch ||
++      pr.headSha !== resolution.observed_head_sha ||
++      pr.identity.provider !== resolution.identity.provider ||
++      pr.identity.hostname !== resolution.identity.hostname ||
++      pr.identity.remote !== resolution.identity.remote ||
++      pr.identity.sourceProject !== resolution.identity.sourceProject ||
++      pr.identity.targetProject !== resolution.identity.targetProject ||
++      pr.identity.sourceUrl !== resolution.identity.sourceUrl ||
++      pr.identity.targetUrl !== resolution.identity.targetUrl ||
++      !pr.baseSha
++    ) {
++      reject("provider PR identity, head, or base changed.");
++    }
++    const project = resolution.identity.targetProject;
++    const hostedCommit = await runGhApiJson<GithubCommitResponse>(resolution.repository_root, [
++      `repos/${project}/git/commits/${resolution.observed_head_sha}`,
++    ]);
++    if (
++      hostedCommit.sha !== resolution.observed_head_sha ||
++      hostedCommit.parents?.length !== 2 ||
++      hostedCommit.parents[0]?.sha !== resolution.original_head_sha ||
++      hostedCommit.parents[1]?.sha !== resolution.original_base_sha
++    ) {
++      reject("the published head is not the exact original-head/base merge commit.");
++    }
++    if (
++      !(await provesHostedAncestor(
++        resolution.repository_root,
++        project,
++        resolution.original_head_sha,
++        resolution.observed_head_sha,
++      )) ||
++      !(await provesHostedAncestor(
++        resolution.repository_root,
++        project,
++        resolution.original_base_sha,
++        resolution.observed_head_sha,
++      )) ||
++      !(await provesHostedAncestor(
++        resolution.repository_root,
++        project,
++        resolution.original_base_sha,
++        pr.baseSha,
++      ))
++    ) {
++      reject("exact hosted head and base ancestry is unproven.");
++    }
++    const local = await validateProviderUpdateLocalState(
++      {
++        gitRoot: resolution.repository_root,
++        worktreePath: checkout,
++        identity: resolution.identity,
++        prNumber: resolution.pr_number,
++        branch: resolution.branch,
++        baseBranch: resolution.base_branch,
++        expectedHeadSha: resolution.original_head_sha,
++        expectedBaseSha: resolution.original_base_sha,
++      },
++      [resolution.observed_head_sha],
++    );
++    if (local) reject(`local task head is not safely aligned: ${local}`);
++    if (
++      (await gitRevParse(checkout, [
++        `refs/remotes/${resolution.identity.remote}/${resolution.base_branch}`,
++      ])) !== pr.baseSha
++    ) {
++      reject("local base tracking head differs from provider base.");
++    }
++    const refreshed = await opts.decide();
++    if (
++      refreshed.workflowStep.preconditionFingerprint.digest !==
++        resolution.current_state_fingerprint ||
++      refreshed.task.id !== opts.task_id
++    ) {
++      reject("the route changed during provider proof.");
++    }
++    const reopened = reopenSupervisorExecutionEpisodeAfterEffectEvidence({
++      journal,
++      operation_key: resolution.operation_key,
++    });
++    const completed = completeSupervisorExecutionEpisode({
++      journal: reopened,
++      operation_key: resolution.operation_key,
++      result: {
++        kind: "provider_update_branch_effect_resolution",
++        verdict: "applied",
++        original_operation_digest: operationDigest,
++        grant_digest: grant.digest,
++        grant_state_fingerprint_digest: grant.stateFingerprintDigest,
++        grant_state_scope_digest: grant.stateScopeDigest,
++        observed_head_sha: resolution.observed_head_sha,
++        observed_base_sha: pr.baseSha,
++        operator: resolution.operator,
++        evidence: resolution.evidence,
++      },
++    });
++    const advanced = advanceSupervisorExecutionEpisodeState({
++      journal: completed,
++      state_fingerprint_digest: resolution.current_state_fingerprint,
++      route_observation: { step_id: refreshed.workflowStep.id },
++    });
++    if (!(await store.compareAndSwap(journal.digest, advanced))) {
++      reject("the supervisor journal changed during recovery.");
++    }
++    return {
++      task_id: opts.task_id,
++      operation_key: resolution.operation_key,
++      verdict: "applied",
++      observed_head_sha: resolution.observed_head_sha,
++      next_step: refreshed.workflowStep.id,
++    };
++  } finally {
++    await lease.release();
++  }
++}
+diff --git a/packages/agentplane/src/commands/task/roadmap-integration-parity.test.ts b/packages/agentplane/src/commands/task/roadmap-integration-parity.test.ts
+index 820da8882..0f889d607 100644
+--- a/packages/agentplane/src/commands/task/roadmap-integration-parity.test.ts
++++ b/packages/agentplane/src/commands/task/roadmap-integration-parity.test.ts
+@@ -48,9 +48,8 @@ vi.mock("../../adapters/task-backend/kernel-record.js", () => ({
+ vi.mock("./execution-authority-context.js", () => ({
+   resolveLogicalRepositoryIdentity: () => Promise.resolve("repository"),
+ }));
+-vi.mock("./external-agent-workflow-recovery.js", () => ({
+-  reconcileIntegrationEffect: mocks.reconcile,
+-  requireIntegrationEffectResolution: vi.fn(),
++vi.mock("./workflow-effect-recovery.js", () => ({
++  reconcileWorkflowEffect: mocks.reconcile,
+ }));
+ import { makeRunTaskAdvanceHandler } from "./advance.command.js";
+ 
+diff --git a/packages/agentplane/src/commands/task/workflow-effect-recovery.ts b/packages/agentplane/src/commands/task/workflow-effect-recovery.ts
+new file mode 100644
+index 000000000..80b0b1086
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/workflow-effect-recovery.ts
+@@ -0,0 +1,22 @@
++import { readFile } from "node:fs/promises";
++
++import { CliError } from "../../shared/errors.js";
++import { reconcileIntegrationEffect } from "./external-agent-workflow-recovery.js";
++import { reconcileProviderUpdateEffect } from "./provider-update-effect-recovery.js";
++
++export async function reconcileWorkflowEffect(
++  opts: Parameters<typeof reconcileIntegrationEffect>[0],
++) {
++  let kind: unknown;
++  try {
++    const input: unknown = JSON.parse(await readFile(opts.input_path, "utf8"));
++    kind = input && typeof input === "object" && "kind" in input ? input.kind : null;
++  } catch {
++    throw new CliError({ code: "E_VALIDATION", message: "Invalid workflow recovery input." });
++  }
++  if (kind === "integration_effect_resolution") return await reconcileIntegrationEffect(opts);
++  if (kind === "provider_update_branch_effect_resolution") {
++    return await reconcileProviderUpdateEffect(opts);
++  }
++  throw new CliError({ code: "E_VALIDATION", message: "Unsupported workflow recovery kind." });
++}

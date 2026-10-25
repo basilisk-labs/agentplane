@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The rework from 4a2190a to 286da6f changes one internal declaration from export const to const in provider-update-effect-recovery.ts. Repository search finds no external consumer; parsing and type inference retain the same local schema.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610251417-WYHEXR/quality/objects/sha256/6770453d85fbe86bcdfb6a360c01a3a9163d13b8954d7a07243fdacf9e97078a.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The previously reviewed fail-closed provider effect recovery remains unchanged: exact stopped intent and USER grant, provider PR and two-parent merge readback, local alignment, replay rejection, and journal compare-and-swap precede normal route recomputation. It does not redispatch a provider update.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610251417-WYHEXR/quality/objects/sha256/6770453d85fbe86bcdfb6a360c01a3a9163d13b8954d7a07243fdacf9e97078a.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Independent focused checks on this worktree passed: bun run knip:check reports agentplane CLI files=0/0 total=0/0, and the provider recovery Vitest file passes 11/11.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610251417-WYHEXR/quality/objects/sha256/6770453d85fbe86bcdfb6a360c01a3a9163d13b8954d7a07243fdacf9e97078a.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Native supervision retains full ci:local:full run-011 and lint:core run-012 as passed, with a SUPERVISOR verification record bound to implementation SHA 286da6f. Earlier hosted failure and failed lint run remain in task history rather than being relabeled as passes.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610251417-WYHEXR/quality/objects/sha256/6770453d85fbe86bcdfb6a360c01a3a9163d13b8954d7a07243fdacf9e97078a.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: Strict two-parent provider proof is intentionally conservative for other update methods; unsupported shapes remain stopped until separately reviewed.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610251417-WYHEXR/quality/objects/sha256/6770453d85fbe86bcdfb6a360c01a3a9163d13b8954d7a07243fdacf9e97078a.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

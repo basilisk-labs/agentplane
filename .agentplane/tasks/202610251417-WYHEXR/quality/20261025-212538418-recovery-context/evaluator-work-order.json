@@ -1,0 +1,122 @@
+{
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202610251417-WYHEXR-ea23fa51af9e4fad5b488f9b",
+  "prepared_at": "2026-10-25T21:25:38.418Z",
+  "task": {
+    "id": "202610251417-WYHEXR",
+    "revision": 29,
+    "objective": "Recover proven applied provider branch updates after interrupted supervisor intents\n\nA completed branch_pr task can retain a stopped effect_in_doubt provider.pr.update_branch intent after GitHub updates its PR head and the controller is interrupted. Add a generic fail-closed read-only reconciliation route for the exact original operation. Require bound USER-authorized operation identity, current provider PR identity, exact published descendant ancestry from original head and base, clean local branch/tracking alignment, and atomic journal completion. Never repeat provider PUT during recovery. Reject ambiguous, mismatched, stale, replayed, or unrelated mutating intents. Preserve failed hosted checks and let normal route re-evaluate.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "bun run lint:core",
+      "- In scope: A completed branch_pr task can retain a stopped effect_in_doubt provider.pr.update_branch intent after GitHub updates its PR head and the controller is interrupted. Add a generic fail-closed read-only reconciliation route for the exact original operation. Require bound USER-authorized operation identity, current provider PR identity, exact published descendant ancestry from original head and base, clean local branch/tracking alignment, and atomic journal completion. Never repeat provider PUT during recovery. Reject ambiguous, mismatched, stale, replayed, or unrelated mutating intents. Preserve failed hosted checks and let normal route re-evaluate.\n- Out of scope: unrelated refactors not required for \"Recover proven applied provider branch updates after interrupted supervisor intents\".",
+      "1. Execute approved WorkItem recover-proven-provider-update-intent.",
+      "PLANNER fallback scaffold for \"Recover proven applied provider branch updates after interrupted supervisor intents\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Recover proven applied provider branch updates after interrupted supervisor intents\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "286da6f5938a7351ddd528c5188f4bb6919217d3",
+  "diff_base_sha": "55742dd0764158c0ff61dec7e16f56b24a3cb1c5",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202610251417-WYHEXR/quality/20261025-212538418-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:9f2241ec2b1e8183800237dc4c5ce346eb4319a37e7a9004fa120a3f88c646ea",
+    "prompt_path": ".agentplane/tasks/202610251417-WYHEXR/quality/objects/sha256/918471eeb5b7bf1216608a2fc7e3ae8a3d6253a387abd89ea9f4941e5b3abd01.md",
+    "result_schema_path": ".agentplane/tasks/202610251417-WYHEXR/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "schema_version": 2,
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202610251417-WYHEXR",
+    "plan_digest": "sha256:7035ddcb213d8a43fbbbc3ea28d96922af5817b3b70067aa40e19cda822a6fe7",
+    "policy_digest": "sha256:b0f3ed8717357e14968093aaf83e3059ba55a248477be0e758cb9ae571d6f7ac",
+    "capability_digest": "sha256:558663a1a3c98babbd4c45be033da50a564647bc7797c8e00c170c97d7b597ff",
+    "checks_digest": "sha256:663df34a4fe7657bf488b35eec483001f4b682562326eb4079e52d4c8eee6622",
+    "verification_input_digest": "sha256:38a2f483fa7e8f488f2e6548dd1bf85986c073a90165b1d81c630804067c2921",
+    "acceptance_digest": "sha256:e7cdfa965ab12957c7b0353c0e97211c481bbf29862d68ba76b8e7851fc19e43",
+    "implementation_sha": "286da6f5938a7351ddd528c5188f4bb6919217d3",
+    "digest": "sha256:61ba1682f48bd648cffb1d741c2623d047903e18931ab87098951f14241fc712"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202610251417-WYHEXR/README.md",
+      "sha256": "sha256:c2d15e46de4b957d5ab118e698a3bb58e378c7993c6178bdd2e7afe91f3476a0",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202610251417-WYHEXR/quality/objects/sha256/6770453d85fbe86bcdfb6a360c01a3a9163d13b8954d7a07243fdacf9e97078a.patch",
+      "sha256": "sha256:6770453d85fbe86bcdfb6a360c01a3a9163d13b8954d7a07243fdacf9e97078a",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202610251417-WYHEXR/quality/objects/sha256/b8627c412fb4400bad9e3f609972c9d2a2a98aac226b1e264d70cee395d3bd30.json",
+      "sha256": "sha256:b8627c412fb4400bad9e3f609972c9d2a2a98aac226b1e264d70cee395d3bd30",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202610251417-WYHEXR/verification/20261025212506884-bb2f76973e29c4c2.json",
+      "sha256": "sha256:d9c1e757e502c65b64054d4a01d6c4e5c328c99121a35faa7ff9ec646364cc9e",
+      "required": true
+    },
+    {
+      "id": "native-identity",
+      "kind": "plan",
+      "path": ".agentplane/tasks/202610251417-WYHEXR/quality/objects/sha256/1e47da4db6944da1ce9660177a6a2ff6ac7bc2c4c035888e4a47b9a7a89cecb2.json",
+      "sha256": "sha256:1e47da4db6944da1ce9660177a6a2ff6ac7bc2c4c035888e4a47b9a7a89cecb2",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:35a4c7a567a9b658a31feed9e096276ede95ad0c82198f362c302fe7bd20b612",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:6e5cb34ada84017778c43c3d057edcc68d3ccb60840c805e412f7dc6781070ee",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:d3dfd4eb0293213ab49d32c6f199066f2bc7c954cada6465aab458b1a9c7ee25",
+      "required": true
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202610251417-WYHEXR",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-10-25T21:27:52.512Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 5 typed finding(s).",
+  "evaluated_sha": "286da6f5938a7351ddd528c5188f4bb6919217d3",
+  "review_identity_digest": "sha256:61ba1682f48bd648cffb1d741c2623d047903e18931ab87098951f14241fc712",
+  "findings": [
+    "The rework from 4a2190a to 286da6f changes one internal declaration from export const to const in provider-update-effect-recovery.ts. Repository search finds no external consumer; parsing and type inference retain the same local schema.",
+    "The previously reviewed fail-closed provider effect recovery remains unchanged: exact stopped intent and USER grant, provider PR and two-parent merge readback, local alignment, replay rejection, and journal compare-and-swap precede normal route recomputation. It does not redispatch a provider update.",
+    "Independent focused checks on this worktree passed: bun run knip:check reports agentplane CLI files=0/0 total=0/0, and the provider recovery Vitest file passes 11/11.",
+    "Native supervision retains full ci:local:full run-011 and lint:core run-012 as passed, with a SUPERVISOR verification record bound to implementation SHA 286da6f. Earlier hosted failure and failed lint run remain in task history rather than being relabeled as passes.",
+    "Residual risk: Strict two-parent provider proof is intentionally conservative for other update methods; unsupported shapes remain stopped until separately reviewed."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202610251417-WYHEXR/quality/objects/sha256/6770453d85fbe86bcdfb6a360c01a3a9163d13b8954d7a07243fdacf9e97078a.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

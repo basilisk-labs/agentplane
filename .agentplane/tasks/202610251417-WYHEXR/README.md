@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 29
+revision: 30
 origin:
   system: "manual"
 depends_on: []
@@ -30,18 +30,33 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-10-25T17:02:57.051Z"
+  updated_at: "2026-10-25T21:27:52.512Z"
   updated_by: "EVALUATOR"
-  note: "Canonical EVALUATOR review passed."
-  evaluated_sha: "867e10bc68cddae80edcfeeb4ee38d61fc64a377"
-  review_identity_digest: "sha256:ec925c76c11c342b2a93d992f05f77ca90314f7afb5a063a74904da666bb6c78"
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  evaluated_sha: "286da6f5938a7351ddd528c5188f4bb6919217d3"
+  review_identity_digest: "sha256:61ba1682f48bd648cffb1d741c2623d047903e18931ab87098951f14241fc712"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202610251417-WYHEXR/82117c3fb563ce84651969ca97191a3011218a793301c835761334d041c6d252/quality-report.json"
+    - ".agentplane/tasks/202610251417-WYHEXR/quality/20261025-212538418-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202610251417-WYHEXR/quality/20261025-212538418-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202610251417-WYHEXR/quality/objects/sha256/918471eeb5b7bf1216608a2fc7e3ae8a3d6253a387abd89ea9f4941e5b3abd01.md"
+    - ".agentplane/tasks/202610251417-WYHEXR/quality/20261025-212538418-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202610251417-WYHEXR/quality/20261025-212538418-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202610251417-WYHEXR/quality/20261025-212538418-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202610251417-WYHEXR/README.md"
+    - ".agentplane/tasks/202610251417-WYHEXR/quality/objects/sha256/6770453d85fbe86bcdfb6a360c01a3a9163d13b8954d7a07243fdacf9e97078a.patch"
+    - ".agentplane/tasks/202610251417-WYHEXR/quality/objects/sha256/b8627c412fb4400bad9e3f609972c9d2a2a98aac226b1e264d70cee395d3bd30.json"
+    - ".agentplane/tasks/202610251417-WYHEXR/verification/20261025212506884-bb2f76973e29c4c2.json"
+    - ".agentplane/tasks/202610251417-WYHEXR/quality/objects/sha256/1e47da4db6944da1ce9660177a6a2ff6ac7bc2c4c035888e4a47b9a7a89cecb2.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The eight source and test paths at the frozen head match the approved recovery scope; the final three-path rework is formatting plus dual Bun/Vitest test registration."
-    - "Recovery accepts only the exact stopped provider.pr.update_branch intent and unique original USER grant with matching historical audit, then reads the same PR identity and exact two-parent hosted merge commit before checking ancestry and clean local tracking."
-    - "The recovery route performs provider GET observations only, repeats no update-branch PUT or push, verifies the route again, and settles the journal once by compare-and-swap. Unrelated mutating intents remain stopped; negative tests cover incorrect identity, grant, parents, evidence, replay and concurrent journal change."
-    - "Native verification bound to head 867e10bc passed Bun contract test run-003 (1/1), lint:core run-004, and ci:local:full run-005 (all selected groups); earlier run-002 failure remains recorded truthfully."
+    - "The rework from 4a2190a to 286da6f changes one internal declaration from export const to const in provider-update-effect-recovery.ts. Repository search finds no external consumer; parsing and type inference retain the same local schema."
+    - "The previously reviewed fail-closed provider effect recovery remains unchanged: exact stopped intent and USER grant, provider PR and two-parent merge readback, local alignment, replay rejection, and journal compare-and-swap precede normal route recomputation. It does not redispatch a provider update."
+    - "Independent focused checks on this worktree passed: bun run knip:check reports agentplane CLI files=0/0 total=0/0, and the provider recovery Vitest file passes 11/11."
+    - "Native supervision retains full ci:local:full run-011 and lint:core run-012 as passed, with a SUPERVISOR verification record bound to implementation SHA 286da6f. Earlier hosted failure and failed lint run remain in task history rather than being relabeled as passes."
+    - "Residual risk: Strict two-parent provider proof is intentionally conservative for other update methods; unsupported shapes remain stopped until separately reviewed."
 token_usage:
   agent_runs: 1
   input_tokens: null
@@ -3014,7 +3029,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-10-25T21:25:13.841Z"
+doc_updated_at: "2026-10-25T21:27:52.574Z"
 doc_updated_by: "CODER"
 description: "A completed branch_pr task can retain a stopped effect_in_doubt provider.pr.update_branch intent after GitHub updates its PR head and the controller is interrupted. Add a generic fail-closed read-only reconciliation route for the exact original operation. Require bound USER-authorized operation identity, current provider PR identity, exact published descendant ancestry from original head and base, clean local branch/tracking alignment, and atomic journal completion. Never repeat provider PUT during recovery. Reject ambiguous, mismatched, stale, replayed, or unrelated mutating intents. Preserve failed hosted checks and let normal route re-evaluate."
 sections:
@@ -3251,6 +3266,14 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.completed_native_review:
+    applied_at: "2026-10-25T21:27:52.512Z"
+    kernel_digest: "sha256:ad1deb1975043be2f5cd475a103fa23d7f72874d9048fa6a03b6d0d4511690cf"
+    quality_digest: "sha256:36eeb7312a233e48f9de2e5b681415d7f5df1c0aba1f3bdf8a5c550e67bde224"
+    result_digest: "sha256:b3a67947589b12bd366bf0d550f38254328cd2776bd8204297756b86d67b6781"
+    schema_version: 1
+    state_fingerprint: "sha256:7256e8694d8c9a1305237421559a229bc63d20fc11617bf67f4d3299ae124d6a"
+    transition_id: "tr_be4f57befa1e6bf385b9d80a65ec4eb2"
   agentplane.kernel_operational_projection:
     digest: "sha256:3f90ac47a8f38cbe43e53abe64f49a3bbb3151a8706c0014c14eb03fded10e97"
     evidence_refs:
