@@ -1,0 +1,4 @@
+ .../src/commands/task/kernel-scope-request.test.ts | 32 ++++++++------
+ .../tasks/task-kernel/replan-work-items.test.ts    | 50 +++++++++++++++++++---
+ .../src/tasks/task-kernel/replan-work-items.ts     | 19 ++++++--
+ 3 files changed, 80 insertions(+), 21 deletions(-)

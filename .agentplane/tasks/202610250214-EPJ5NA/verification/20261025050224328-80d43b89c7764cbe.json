@@ -1,0 +1,203 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/backends/task-backend.cloud.test.ts --pool=forks --maxWorkers 1\nResult: pass\nEvidence: .agentplane/tasks/202610250214-EPJ5NA/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610250214-EPJ5NA Verification Contract check affected_unit_integration (1/3)\n\nCheck: affected_unit_integration\nCommand: bun run lint:core\nResult: pass\nEvidence: .agentplane/tasks/202610250214-EPJ5NA/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610250214-EPJ5NA Verification Contract check affected_unit_integration (2/3)\n\nCheck: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610250214-EPJ5NA/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610250214-EPJ5NA Verification Contract check affected_unit_integration (3/3)\n\nCheck: critical_paths\nCommand: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/backends/task-backend.cloud.test.ts --pool=forks --maxWorkers 1\nResult: pass\nEvidence: .agentplane/tasks/202610250214-EPJ5NA/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610250214-EPJ5NA Verification Contract check critical_paths (1/3)\n\nCheck: critical_paths\nCommand: bun run lint:core\nResult: pass\nEvidence: .agentplane/tasks/202610250214-EPJ5NA/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610250214-EPJ5NA Verification Contract check critical_paths (2/3)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610250214-EPJ5NA/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610250214-EPJ5NA Verification Contract check critical_paths (3/3)\n\nCheck: task_outcome\nCommand: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/backends/task-backend.cloud.test.ts --pool=forks --maxWorkers 1\nResult: pass\nEvidence: .agentplane/tasks/202610250214-EPJ5NA/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610250214-EPJ5NA Verification Contract check task_outcome (1/3)\n\nCheck: task_outcome\nCommand: bun run lint:core\nResult: pass\nEvidence: .agentplane/tasks/202610250214-EPJ5NA/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610250214-EPJ5NA Verification Contract check task_outcome (2/3)\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610250214-EPJ5NA/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610250214-EPJ5NA Verification Contract check task_outcome (3/3)",
+  "digest": "sha256:80d43b89c7764cbec5135158231c1abcce4124989a1e0b0073743fbb515d695a",
+  "implementation_sha": "95cd98166137a4e6b1a30949369d7e383a220de0",
+  "input": {
+    "checked_input": {
+      "commands": {
+        "digest": "sha256:412b9f0506a48a05307afef083a19169708c69188245facf54eed2b1d2161841",
+        "entries": [
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run lint:core"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/backends/task-backend.cloud.test.ts --pool=forks --maxWorkers 1"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run lint:core"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/backends/task-backend.cloud.test.ts --pool=forks --maxWorkers 1"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run lint:core"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/backends/task-backend.cloud.test.ts --pool=forks --maxWorkers 1"
+          }
+        ]
+      },
+      "context": {
+        "digest": "sha256:99daad1395e800c14511aa93bdd1543575521f4ee89189529a3fb84c4b785e2b",
+        "paths": [
+          ".agentplane/WORKFLOW.md",
+          ".github/ISSUE_TEMPLATE/config.yml",
+          "bun.lock",
+          "depcruise.config.cjs",
+          "eslint.config.cjs",
+          "knip.json",
+          "package.json",
+          "packages/agentplane/package.json",
+          "packages/agentplane/src/cli/run-cli/commands/config.ts",
+          "packages/agentplane/src/runner/config.test.ts",
+          "packages/agentplane/src/runner/config.ts",
+          "packages/agentplane/tsconfig.json",
+          "packages/agentplane/tsup.config.ts",
+          "packages/core/package.json",
+          "packages/core/schemas/config.schema.json",
+          "packages/core/src/config/config.test.ts",
+          "packages/core/src/config/config.ts",
+          "packages/core/tsconfig.json",
+          "packages/core/tsup.config.ts",
+          "packages/recipes/package.json",
+          "packages/recipes/tsconfig.json",
+          "packages/recipes/tsup.config.ts",
+          "packages/spec/examples/config.json",
+          "packages/spec/package.json",
+          "packages/spec/schemas/config.schema.json",
+          "packages/testkit/package.json",
+          "packages/testkit/tsconfig.json",
+          "schemas/config.schema.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package-lock.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package.json",
+          "tsconfig.json",
+          "turbo.json",
+          "vitest.config.ts",
+          "vitest.workspace.ts"
+        ]
+      },
+      "digest": "sha256:51a06cad2b6c35faa2ba26c214f1f206a20f1b8adc5d6335061fffd6d5501124",
+      "environment": {
+        "digest": "sha256:9ec5bf2323cd53a84a354760f7a2e04adc570a2f8a0452d4311892dcb83d880b",
+        "runtime": {
+          "architecture": "x64",
+          "bun_major": null,
+          "node_major": "24",
+          "platform": "linux"
+        }
+      },
+      "evidence": {
+        "details_digest": "sha256:f6721f30fe71ae6df0f1b51c62d4f21a7ea96466f3ba24eaea4b61725b332b54",
+        "digest": "sha256:eaa2ab85a31f7659d36b5509bc46551ba016ff473737562056ca7df4e30a9ea6",
+        "references": [
+          {
+            "digest": "sha256:bb27701d63010dd89b05f2802b6b1166d224a0463da45d64a4abd6cc336e98bf",
+            "fragment": "check-1",
+            "path": ".agentplane/tasks/202610250214-EPJ5NA/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610250214-EPJ5NA/supervision/declared-checks.json#check-1",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:bb27701d63010dd89b05f2802b6b1166d224a0463da45d64a4abd6cc336e98bf",
+            "fragment": "check-2",
+            "path": ".agentplane/tasks/202610250214-EPJ5NA/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610250214-EPJ5NA/supervision/declared-checks.json#check-2",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:bb27701d63010dd89b05f2802b6b1166d224a0463da45d64a4abd6cc336e98bf",
+            "fragment": "check-3",
+            "path": ".agentplane/tasks/202610250214-EPJ5NA/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610250214-EPJ5NA/supervision/declared-checks.json#check-3",
+            "source": "filesystem"
+          }
+        ]
+      },
+      "implementation": {
+        "base_sha": "214a26d1bda13f9a81349cc1364669ad24dfb92c",
+        "digest": "sha256:315c82cc2ed0a98be2829d41530251ce876aa6d41ffdcd9116330ba1ca0463b9",
+        "strategy": "branch_diff",
+        "target_sha": "95cd98166137a4e6b1a30949369d7e383a220de0"
+      }
+    },
+    "concurrency": {
+      "digest": "sha256:592df5b6c91ba7ea51b7b9641be96721d6995a0a9e82c2a984a072ac959779d4",
+      "execution": {
+        "authoritative_task_source": "task_worktree",
+        "base_ref": "main",
+        "base_sha": "214a26d1bda13f9a81349cc1364669ad24dfb92c",
+        "digest": "sha256:917e323fecb420876f9b9599dece414557d97c9879a53c207a9ce1bcf6da6283",
+        "primary_task_id": "202610250214-EPJ5NA",
+        "reason_codes": [
+          "agent_preferred_branch_pr",
+          "repository_branch_pr_floor"
+        ],
+        "repository_mode": "branch_pr",
+        "requested_mode": "branch_pr",
+        "route_source": "execution_contract",
+        "selected_mode": "branch_pr",
+        "task_ids": [
+          "202610250214-EPJ5NA"
+        ]
+      },
+      "task": {
+        "capability": {
+          "digest": "sha256:ed2978228e5e2af267506d09c0389831a7ad360ddf3f599dea62fa40204248f7"
+        },
+        "checks": {
+          "digest": "sha256:22d79ecd67d5d669939816b8f07a621be3324bfba237a975f78cb0d2339bc8c2",
+          "required_check_ids": [
+            "affected_unit_integration",
+            "critical_paths",
+            "task_outcome"
+          ],
+          "verification_contract_digest": "sha256:5b4caafa9d1aebb3c58f9e8d9eca1cb35f3865d644ad46cb45f3307fcbb75104"
+        },
+        "digest": "sha256:cf7121e2e36946fe255d5da6f5a29c5cb108d4934af477b89b928035cdc5e4c7",
+        "kind": "agentplane.native_task_identity",
+        "plan": {
+          "approval_state": "approved",
+          "approved_digest": "sha256:eee2a8e36e009550bea9603cce0b06d779b7b18f809ca882c8eda01ed9b2face",
+          "digest": "sha256:eee2a8e36e009550bea9603cce0b06d779b7b18f809ca882c8eda01ed9b2face",
+          "revision": 1
+        },
+        "policy": {
+          "digest": "sha256:1150ba6caefe9e829c30b3520b9246ed1ec7ebbeedbe788c63cf7989015dbb46"
+        },
+        "schema_version": 1,
+        "task_id": "202610250214-EPJ5NA"
+      }
+    },
+    "digest": "sha256:cf5de0f962c691a186160a1a56056dfa9ffba3612abe4b56e9af3fbe4dd5bdb6",
+    "kind": "task_verification_input",
+    "obligations": {
+      "digest": "sha256:6aad4c4be557979a934d623927ffe405c75098f14e6127d91fb6f6715d121d78",
+      "required_check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "verification_contract_digest": "sha256:5b4caafa9d1aebb3c58f9e8d9eca1cb35f3865d644ad46cb45f3307fcbb75104",
+      "verify_steps_digest": "sha256:8f216e38a873f980bc8fe73cb6c45d310f8faac4b4d3ee29dea4b4af077f0417"
+    },
+    "schema_version": 5
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: canonical Task Kernel final checks passed.",
+  "recorded_at": "2026-10-25T05:02:24.328Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Make cloud auto-pull freshness fixture deterministic\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Make cloud auto-pull freshness fixture deterministic\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:8f216e38a873f980bc8fe73cb6c45d310f8faac4b4d3ee29dea4b4af077f0417",
+  "task_id": "202610250214-EPJ5NA",
+  "verification_command": "agentplane verify 202610250214-EPJ5NA --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

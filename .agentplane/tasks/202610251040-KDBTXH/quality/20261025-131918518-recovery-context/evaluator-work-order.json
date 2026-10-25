@@ -1,0 +1,124 @@
+{
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202610251040-KDBTXH-ca82ef34a89cdb66dfa5c2f9",
+  "prepared_at": "2026-10-25T13:19:18.518Z",
+  "task": {
+    "id": "202610251040-KDBTXH",
+    "revision": 20,
+    "objective": "Keep historical compatibility package delta valid after later surface changes\n\nFor release 0.7.13, decouple immutable PR #6905 incremental Zod package history from later unrelated CLI/context full-surface changes. Preserve the exact reviewed PR #6905 record, its package-section from/to hashes, and six allowed manifest paths. Add a generic regression that accepts later unrelated surface drift but rejects package digest or path drift. Do not update the KB0 candidate JSON or weaken current candidate approval ratchets in this task.",
+    "acceptance_criteria": [
+      "bun run bench:compatibility:candidate:check",
+      "bun run bench:compatibility:check",
+      "bun run ci:local:full",
+      "node --test scripts/lib/compatibility-incremental-package-delta.test.mjs",
+      "- In scope: For release 0.7.13, decouple immutable PR #6905 incremental Zod package history from later unrelated CLI/context full-surface changes. Preserve the exact reviewed PR #6905 record, its package-section from/to hashes, and six allowed manifest paths. Add a generic regression that accepts later unrelated surface drift but rejects package digest or path drift. Do not update the KB0 candidate JSON or weaken current candidate approval ratchets in this task.\n- Out of scope: unrelated refactors not required for \"Keep historical compatibility package delta valid after later surface changes\".",
+      "1. Execute approved WorkItem validate-historical-package-delta.",
+      "PLANNER fallback scaffold for \"Keep historical compatibility package delta valid after later surface changes\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Keep historical compatibility package delta valid after later surface changes\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "e58d7717f213f4107047e982e3db5c976457c222",
+  "diff_base_sha": "cc3288c6ab55bda105efcc82a188a68f9345a745",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202610251040-KDBTXH/quality/20261025-131918518-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:69a7af59ca40fcb97e3cce21311c7891bae904762467beaab9eda5c3329c3fac",
+    "prompt_path": ".agentplane/tasks/202610251040-KDBTXH/quality/objects/sha256/c24abfb043ef7db40f977b0e27ac14c64478e65882c538efd5675f34098ff827.md",
+    "result_schema_path": ".agentplane/tasks/202610251040-KDBTXH/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "schema_version": 2,
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202610251040-KDBTXH",
+    "plan_digest": "sha256:eca5840665eafea74c073c07e775fdeb495ffbc12b559dc92acedf0a439758c1",
+    "policy_digest": "sha256:0a1c23b8d8d34f5109077402d56c9e1fcde960daddafaea20ba2824992dfef7f",
+    "capability_digest": "sha256:29089b5a2364b286f957f6957f6d92631f4339211e822ec9e0fabf27ffb0143c",
+    "checks_digest": "sha256:1171123f79329b71645130b5a4ee0dc6ed8c48fc80a99aeac2c5d905b6c128c9",
+    "verification_input_digest": "sha256:97da848c61c3e193faa9fe4f4e25e1b1079bcc1ba4ce3e949bf8ac07feebdc09",
+    "acceptance_digest": "sha256:0bd7f180a398fff4972cbb9abce75809c53801a28ac9b2d6bcc30961d97abc2a",
+    "implementation_sha": "e58d7717f213f4107047e982e3db5c976457c222",
+    "digest": "sha256:777dbe87e1893fe9fe9da13234afcebb3eb19a3ce9f6f81667fee8dc74e0661a"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202610251040-KDBTXH/README.md",
+      "sha256": "sha256:cea82b4f7a020ff35640e2865ede636b59992581fa40218c57d48dc643501a71",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202610251040-KDBTXH/quality/objects/sha256/be6be10650e5c04775e98fa3585309eb312768ccf19bdfb93811f368bcff83f4.patch",
+      "sha256": "sha256:be6be10650e5c04775e98fa3585309eb312768ccf19bdfb93811f368bcff83f4",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202610251040-KDBTXH/quality/objects/sha256/530a36f85f942e3c669c1a68fb259c37a43e17393ff1cbf8b47b90bdfaef03ea.json",
+      "sha256": "sha256:530a36f85f942e3c669c1a68fb259c37a43e17393ff1cbf8b47b90bdfaef03ea",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202610251040-KDBTXH/verification/20261025131858983-8e2f349e942fa2f9.json",
+      "sha256": "sha256:307b56fe04c7100d602a1fa375dcee8f8ae517b3933ef968830165c7390db17d",
+      "required": true
+    },
+    {
+      "id": "native-identity",
+      "kind": "plan",
+      "path": ".agentplane/tasks/202610251040-KDBTXH/quality/objects/sha256/3095344650e6480295ec621abe9425f68653c7101f86296237afbf4e2d92db2c.json",
+      "sha256": "sha256:3095344650e6480295ec621abe9425f68653c7101f86296237afbf4e2d92db2c",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:35a4c7a567a9b658a31feed9e096276ede95ad0c82198f362c302fe7bd20b612",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:6e5cb34ada84017778c43c3d057edcc68d3ccb60840c805e412f7dc6781070ee",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:d3dfd4eb0293213ab49d32c6f199066f2bc7c954cada6465aab458b1a9c7ee25",
+      "required": true
+    }
+  ]
+}

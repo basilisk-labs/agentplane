@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202610250310-T2T2V1/authenticate-repository-policy-scope-replans-aft",
+  "created_at": "2026-10-25T03:39:57.920Z",
+  "diffstat_sha256": "sha256:897861d222d9f87c0fdfe3f02beac417e0465c358e83d2a48621954dd80de269",
+  "last_verified_at": "2026-10-25T09:38:55.328Z",
+  "last_verified_diffstat_sha256": "sha256:897861d222d9f87c0fdfe3f02beac417e0465c358e83d2a48621954dd80de269",
+  "pr_number": 6922,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6922",
+  "pre_merge_closure": {
+    "basis_commit": "193e3913d407d255db1509bea983ad15bd2b0b03",
+    "branch": "task/202610250310-T2T2V1/authenticate-repository-policy-scope-replans-aft",
+    "pr_number": 6922,
+    "recorded_at": "2026-10-25T10:27:50.246Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202610250310-T2T2V1",
+  "updated_at": "2026-10-25T07:48:48.873Z",
+  "verify": {
+    "status": "pass"
+  }
+}
