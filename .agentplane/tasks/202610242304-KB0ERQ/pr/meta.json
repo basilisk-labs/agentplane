@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:a7ad2dd9078ab994fbc2945754dd9c8786b059b867667560dbb95cf17107ee98",
   "pr_number": 6923,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6923",
+  "pre_merge_closure": {
+    "basis_commit": "66d867b405afee9d10959aaa4d0ec9c360112eff",
+    "branch": "task/202610242304-KB0ERQ/complete-canonical-user-approved-timing-only-fin",
+    "pr_number": 6923,
+    "recorded_at": "2026-10-25T13:45:15.879Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",

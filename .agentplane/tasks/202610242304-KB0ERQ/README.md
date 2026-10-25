@@ -1,10 +1,11 @@
 ---
 id: "202610242304-KB0ERQ"
 title: "Complete canonical USER-approved timing-only final-validation exception for issue 6918"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -44,6 +45,22 @@ quality_review:
     - "The Kernel stores a distinct final_timing_exception while retaining the original FAILED final_validation; completion and operational projection use accepted_timing_exception only while plan, validation, fingerprint, settled effects and hosted evidence remain current."
     - "Negative tests cover stale request/plan/implementation, invalid or absent approval, signed-receipt policy, functional failures, excessive overage, pending effects, missing or failed required hosted jobs, GitLab latest exact-head pipeline/page limits, and merged-head replay."
     - "Native validation evidence reports all five required checks passed, including repeat full local CI; six generated task schemas are synchronized and the reviewed diff passes git diff --check."
+token_usage:
+  agent_runs: 2
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:be9febe2b4410b9158ab8f5f4382a73578ca98963e374ee0297c0317cf9d36ce"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-10-25T13:45:15.721Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -454,9 +471,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "32acddc82721d8d4bc30fe7c09e130d0f44e5fde"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "66d867b405afee9d10959aaa4d0ec9c360112eff"
+  message: "✅ KB0ERQ task: complete canonical USER-approved timing-only final-validation..."
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -464,9 +484,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-25T13:45:15.721Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "66d867b405afee9d10959aaa4d0ec9c360112eff"
 doc_version: 3
-doc_updated_at: "2026-10-25T10:26:20.497Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-25T13:45:15.721Z"
+doc_updated_by: "CODER"
 description: "Finish the provider-neutral canonical timing exception implementation from the blocked predecessor. Preserve FAILED local validation and expose a distinct accepted_timing_exception state. Require explicit USER manual operator approval or configured signed receipt, exact failure/report/plan/implementation binding, a finite timing-only bound, complete exact-SHA hosted success including required jobs, and fail-closed replay and post-merge routes. Preserve legacy aggregate serialization compatibility. Synchronize exactly six generated task artifact schemas. Retain predecessor failed full-CI evidence, then rerun all native gates."
 sections:
   Summary: |-
@@ -711,6 +739,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:f7853b4685ba1a7259a4424f10e52b9e4d510e0f07bd7228d1c85d0d8e6de9c6"
     work_order_id: "sha256:a386c387ef88482c3c14d4b37fe64d7c75171ebc68f266b8c80ae82ee2a35bfa"
+  implementation_commit:
+    hash: "32acddc82721d8d4bc30fe7c09e130d0f44e5fde"
+    message: "🚧 KB0ERQ task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "214a26d1bda13f9a81349cc1364669ad24dfb92c"
@@ -1533,3 +1564,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/2` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:be9febe2b4410b9158ab8f5f4382a73578ca98963e374ee0297c0317cf9d36ce`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-10-25T13:45:15.721Z`
