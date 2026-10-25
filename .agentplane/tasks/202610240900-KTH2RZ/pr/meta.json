@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202610240900-KTH2RZ/repair-release-chunk51-cli-test-fixtures-for-can",
+  "created_at": "2026-10-24T10:18:44.031Z",
+  "diffstat_sha256": "sha256:bc7b34f17e6b9cae76da584e0181f9e49e35296e6cc6d1d299bc6fcb71e97da4",
+  "last_verified_at": "2026-10-25T16:16:57.096Z",
+  "last_verified_diffstat_sha256": "sha256:bc7b34f17e6b9cae76da584e0181f9e49e35296e6cc6d1d299bc6fcb71e97da4",
+  "pr_number": 6915,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6915",
+  "pre_merge_closure": {
+    "basis_commit": "defb44ceb23c814083483cf95dfc669be8060778",
+    "branch": "task/202610240900-KTH2RZ/repair-release-chunk51-cli-test-fixtures-for-can",
+    "pr_number": 6915,
+    "recorded_at": "2026-10-25T16:20:32.065Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202610240900-KTH2RZ",
+  "updated_at": "2026-10-24T13:26:44.856Z",
+  "verify": {
+    "status": "pass"
+  }
+}

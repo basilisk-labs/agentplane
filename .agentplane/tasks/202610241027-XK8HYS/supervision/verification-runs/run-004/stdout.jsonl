@@ -1,0 +1,3 @@
+"Local CI mode: full"
+"{\"schema_version\":1,\"kind\":\"full_ci_resource_profile\",\"group_timeout_ms\":3600000,\"group_timeout_source\":\"default\",\"outer_timeout_ms\":9000000,\"outer_deadline_epoch_ms\":1792848041547,\"observed_at_epoch_ms\":1792839047772,\"outer_timeout_source\":\"native_default\",\"limiting_deadline\":\"local_group\",\"lint_heap_mb\":4096,\"lint_heap_source\":\"default\",\"memory_capacity_mb\":11676,\"minimum_memory_mb\":5632}"
+"{\"schema_version\":1,\"kind\":\"full_ci_group_launch\",\"groups\":[\"build\"],\"group_timeout_ms\":3600000,\"group_timeout_source\":\"default\",\"outer_remaining_ms\":8993775,\"outer_timeout_source\":\"native_default\",\"limiting_deadline\":\"local_group\"}"

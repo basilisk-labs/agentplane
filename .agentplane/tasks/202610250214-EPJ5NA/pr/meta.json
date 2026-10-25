@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202610250214-EPJ5NA/make-cloud-auto-pull-freshness-fixture-determini",
+  "created_at": "2026-10-25T02:54:28.387Z",
+  "diffstat_sha256": "sha256:84c2e1c941a88762b64edecb81b414b0b70e5b3564526b81e75365b07bf23ba7",
+  "last_verified_at": "2026-10-25T05:02:24.328Z",
+  "last_verified_diffstat_sha256": "sha256:84c2e1c941a88762b64edecb81b414b0b70e5b3564526b81e75365b07bf23ba7",
+  "pr_number": 6921,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6921",
+  "pre_merge_closure": {
+    "basis_commit": "cebcc9d19c0274e08c4564d00f38c3d86b520263",
+    "branch": "task/202610250214-EPJ5NA/make-cloud-auto-pull-freshness-fixture-determini",
+    "pr_number": 6921,
+    "recorded_at": "2026-10-25T05:11:15.497Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202610250214-EPJ5NA",
+  "updated_at": "2026-10-25T05:04:32.707Z",
+  "verify": {
+    "status": "pass"
+  }
+}

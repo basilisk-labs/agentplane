@@ -583,7 +583,7 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
         "--root",
         root,
       ]);
-      expect(code).toBe(4);
+      expect(code, io.stderr).toBe(3);
       expect(io.stderr).toContain("exact duplicate open task detected");
       expect(io.stderr).toContain("--allow-duplicate");
       expect(io.stderr).toContain("close-duplicate");
@@ -699,7 +699,7 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
         "--root",
         root,
       ]);
-      expect(code).toBe(4);
+      expect(code, io.stderr).toBe(3);
       expect(io.stderr).toContain("unknown task owner id: NOPE");
     } finally {
       io.restore();
