@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 28
+revision: 29
 origin:
   system: "manual"
 depends_on: []
@@ -56,9 +56,11 @@ quality_review:
     - "The completion fixture mocks only the pre-mutation reconciliation boundary and restores the original implementation in finally; it still exercises the completion write and Git commit."
     - "The exact implementation head 9b55b10b53b399cc04cfdd554ae3cb47027ecd58 has recorded full local CI run-008 PASS and targeted run-009 PASS. No unresolved scoped follow-up appears in the task Findings section."
 token_usage:
-  agent_runs: 2
+  agent_runs: 3
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
   input_tokens: null
-  journal_digest: "sha256:f47c4e5bbc4fb1e258b44b9dd82e76b94274a817b366829897d8ee26b9ec7d4b"
+  journal_digest: "sha256:14aa299751d96ce1555fbb87906b7af66bb2a3cddfad6e03fa94ab2ce512e738"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -68,7 +70,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "external_host_turn_unallocatable"
-  updated_at: "2026-10-24T13:31:18.754Z"
+  updated_at: "2026-10-25T16:20:31.579Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -6355,9 +6357,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "d54ac2990f83fdcb7b9c122158f6224ff5f1c39a"
-  message: "✅ KTH2RZ task: repair release chunk51 CLI test fixtures for canonical state and..."
+  hash: "defb44ceb23c814083483cf95dfc669be8060778"
+  message: "🚧 KTH2RZ task: record external evaluator result"
 comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -6382,8 +6387,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-10-25T16:20:31.579Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "defb44ceb23c814083483cf95dfc669be8060778"
 doc_version: 3
-doc_updated_at: "2026-10-25T16:19:50.257Z"
+doc_updated_at: "2026-10-25T16:20:31.605Z"
 doc_updated_by: "CODER"
 description: "Align task-new exit assertions with current validation contract and isolate synthetic completion persistence from canonical preflight."
 sections:
@@ -6590,8 +6603,8 @@ extensions:
     verification_evidence_digest: "sha256:d7305e388ba605168f059b5cd5f5b7a2d7614fbad46829814dfec6eef1620d5b"
     work_order_id: "sha256:7577634df9e1be516f80cfe69e81dc97a677f72ff6dcdaec92b16f348d1eac52"
   implementation_commit:
-    hash: "6322346c32eab81ee8a3e1017b793a7f06aae8b7"
-    message: "🚧 KTH2RZ task: apply canonical agent result"
+    hash: "9b55b10b53b399cc04cfdd554ae3cb47027ecd58"
+    message: "Merge branch 'main' into task/202610240900-KTH2RZ/repair-release-chunk51-cli-test-fixtures-for-can"
   task_execution_context:
     base_ref: "main"
     base_sha: "5a1c1dda6693966e934193a8ec05a3604648cf3e"
@@ -7420,12 +7433,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/2` agent runs
+- Completeness: `0/3` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:f47c4e5bbc4fb1e258b44b9dd82e76b94274a817b366829897d8ee26b9ec7d4b`
+- Journal digest: `sha256:14aa299751d96ce1555fbb87906b7af66bb2a3cddfad6e03fa94ab2ce512e738`
 - Unavailable reason: `external_host_turn_unallocatable`
-- Updated at: `2026-10-24T13:31:18.754Z`
+- Updated at: `2026-10-25T16:20:31.579Z`
