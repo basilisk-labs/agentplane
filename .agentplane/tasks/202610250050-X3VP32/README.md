@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 34
+revision: 35
 origin:
   system: "manual"
 depends_on: []
@@ -58,9 +58,11 @@ quality_review:
     - "The regression tests assert that eligible recovery is called and that six ineligible or unresolved intent cases reject before supervision or adapter execution."
     - "Native verification run-020 passed bun run ci:local:full at implementation head 19162c1041d0075f5f97e5425f284fa3b38c52b2. Follow-up hotspots, lint, and targeted runs 021-023 passed. Git diff --check is clean. No unresolved scoped finding is recorded."
 token_usage:
-  agent_runs: 1
+  agent_runs: 2
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
   input_tokens: null
-  journal_digest: "sha256:e2172c14d07dc93c75a0b7ed49c1acb000ae5c602dd33816eec895bd385ec601"
+  journal_digest: "sha256:ab9d41f4e0095c29df9571ab20f07b7624c45a8b3aec9ba662db250dfe1d3e43"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -69,8 +71,8 @@ token_usage:
   source: "supervisor_journal"
   state: "unavailable"
   total_tokens: null
-  unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-10-25T18:34:37.053Z"
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-25T19:38:03.103Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -4929,9 +4931,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "f1146cd455d9fed4d3b49e69c2fd326000ea2dc7"
-  message: "✅ X3VP32 task: guard canonical local lifecycle against unresolved external-agent intent"
+  hash: "ccedcb34f339274f842eb2a2c883440b18856a3c"
+  message: "🚧 X3VP32 task: record external evaluator result"
 comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -4956,8 +4961,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-10-25T19:38:03.103Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "ccedcb34f339274f842eb2a2c883440b18856a3c"
 doc_version: 3
-doc_updated_at: "2026-10-25T19:37:41.826Z"
+doc_updated_at: "2026-10-25T19:38:03.130Z"
 doc_updated_by: "CODER"
 description: "For release 0.7.13, carry forward the independently reviewed PR #6920 generic fail-closed read-only recovery patch and call the same strict recovery guard before canonical local lifecycle operation admission, including task.pre_merge_close. Retire only an exact drifted unanswered read-only observation through historical identity and exchange-first journal CAS, then require native replacement. Block every ineligible unresolved external-agent intent before local operation admission and execution, including unchanged, result-present, mutation-authorized, malformed and unrelated states. Preserve normal local operation behavior when no unresolved intent exists. Add zero-dispatch regressions. No Factory-specific adapter, manual journal edit, weakened verification or hotspot exception."
 sections:
@@ -5260,8 +5273,8 @@ extensions:
     verification_evidence_digest: "sha256:bc21f0bb5ebc32a145d2d5eff0dca77d5af89a3435d3ad3339341122e36e6339"
     work_order_id: "sha256:6aed1ff85ec029bbd67aaa8b0f6ed57e301928e3bd21bdda9482182079d4828f"
   implementation_commit:
-    hash: "25cdec1ca401621a43f98548c772c530ed27487e"
-    message: "🚧 X3VP32 task: apply canonical agent result"
+    hash: "19162c1041d0075f5f97e5425f284fa3b38c52b2"
+    message: "Merge branch 'main' into task/202610250050-X3VP32/guard-canonical-local-lifecycle-against-unresolv"
   task_execution_context:
     base_ref: "main"
     base_sha: "214a26d1bda13f9a81349cc1364669ad24dfb92c"
@@ -6516,12 +6529,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/1` agent runs
+- Completeness: `0/2` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:e2172c14d07dc93c75a0b7ed49c1acb000ae5c602dd33816eec895bd385ec601`
-- Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-10-25T18:34:37.053Z`
+- Journal digest: `sha256:ab9d41f4e0095c29df9571ab20f07b7624c45a8b3aec9ba662db250dfe1d3e43`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-25T19:38:03.103Z`
