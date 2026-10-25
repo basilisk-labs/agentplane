@@ -1,0 +1,386 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 214a26d1bda13f9a81349cc1364669ad24dfb92c..32acddc82721d8d4bc30fe7c09e130d0f44e5fde",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 214a26d1bda13f9a81349cc1364669ad24dfb92c..32acddc82721d8d4bc30fe7c09e130d0f44e5fde",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202610242304-KB0ERQ/README.md",
+        "A\t.agentplane/tasks/202610242304-KB0ERQ/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202610242304-KB0ERQ/pr/github-body.md",
+        "A\t.agentplane/tasks/202610242304-KB0ERQ/pr/github-title.txt",
+        "A\t.agentplane/tasks/202610242304-KB0ERQ/pr/meta.json",
+        "A\t.agentplane/tasks/202610242304-KB0ERQ/pr/review.md",
+        "A\t.agentplane/tasks/202610242304-KB0ERQ/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
+        "A\t.agentplane/tasks/202610242304-KB0ERQ/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+        "A\tdocs/canonical-final-timing-exception.md",
+        "M\tpackages/agentplane/src/adapters/authority/user-approval-receipt.ts",
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts",
+        "A\tpackages/agentplane/src/adapters/task-backend/kernel-final-timing-exception.test-fixtures.ts",
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-record-invariants.ts",
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-record.ts",
+        "M\tpackages/agentplane/src/cli/run-cli/command-catalog/task-recovery.ts",
+        "M\tpackages/agentplane/src/cli/run-cli/command-loaders/task.ts",
+        "M\tpackages/agentplane/src/commands/pr/flow-status.pre-merge.test.ts",
+        "M\tpackages/agentplane/src/commands/pr/flow-status.ts",
+        "M\tpackages/agentplane/src/commands/pr/hosted-checks.gitlab.test.ts",
+        "M\tpackages/agentplane/src/commands/pr/hosted-checks.ts",
+        "M\tpackages/agentplane/src/commands/shared/canonical-pre-merge-evidence.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/canonical-pre-merge-evidence.ts",
+        "A\tpackages/agentplane/src/commands/shared/canonical-timing-exception.ts",
+        "M\tpackages/agentplane/src/commands/shared/route-decision-blockers.ts",
+        "M\tpackages/agentplane/src/commands/shared/route-decision-verification-blocker.ts",
+        "M\tpackages/agentplane/src/commands/shared/route-decision-verification.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/route-decision-verification.ts",
+        "M\tpackages/agentplane/src/commands/shared/workflow-step-branch.ts",
+        "M\tpackages/agentplane/src/commands/shared/workflow-step-projections.ts",
+        "M\tpackages/agentplane/src/commands/task/advance-task-step.ts",
+        "A\tpackages/agentplane/src/commands/task/final-timing-exception.command.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-final-timing-exception-evidence.test.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-final-timing-exception-evidence.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-final-timing-exception.test.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-final-timing-exception.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-operational-projection.test.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-operational-projection.ts",
+        "M\tpackages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts",
+        "M\tpackages/agentplane/src/commands/task/user-approval-receipt.test.ts",
+        "M\tpackages/agentplane/src/commands/task/user-approval-receipt.ts",
+        "M\tpackages/core/schemas/task-readme-frontmatter.schema.json",
+        "M\tpackages/core/schemas/tasks-export.schema.json",
+        "M\tpackages/core/src/tasks/task-artifact-schema.task.ts",
+        "M\tpackages/core/src/tasks/task-artifact-schema.verification.ts",
+        "M\tpackages/core/src/tasks/task-kernel/index.ts",
+        "A\tpackages/core/src/tasks/task-kernel/kernel-final-timing-exception.test.ts",
+        "M\tpackages/core/src/tasks/task-kernel/kernel.ts",
+        "M\tpackages/core/src/tasks/task-kernel/model.ts",
+        "M\tpackages/core/src/tasks/task-store.ts",
+        "M\tpackages/spec/schemas/task-readme-frontmatter.schema.json",
+        "M\tpackages/spec/schemas/tasks-export.schema.json",
+        "M\tschemas/task-readme-frontmatter.schema.json",
+        "M\tschemas/tasks-export.schema.json"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "214a26d1bda13f9a81349cc1364669ad24dfb92c",
+  "implementation_commit": "32acddc82721d8d4bc30fe7c09e130d0f44e5fde",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      "AM .agentplane/tasks/202610242304-KB0ERQ/README.md",
+      "A  .agentplane/tasks/202610242304-KB0ERQ/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
+      "A  .agentplane/tasks/202610242304-KB0ERQ/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+      "A  docs/canonical-final-timing-exception.md",
+      "M  packages/agentplane/src/adapters/authority/user-approval-receipt.ts",
+      "M  packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts",
+      "A  packages/agentplane/src/adapters/task-backend/kernel-final-timing-exception.test-fixtures.ts",
+      "M  packages/agentplane/src/adapters/task-backend/kernel-record-invariants.ts",
+      "M  packages/agentplane/src/adapters/task-backend/kernel-record.ts",
+      "M  packages/agentplane/src/cli/run-cli/command-catalog/task-recovery.ts",
+      "M  packages/agentplane/src/cli/run-cli/command-loaders/task.ts",
+      "M  packages/agentplane/src/commands/pr/flow-status.pre-merge.test.ts",
+      "M  packages/agentplane/src/commands/pr/flow-status.ts",
+      "M  packages/agentplane/src/commands/pr/hosted-checks.gitlab.test.ts",
+      "M  packages/agentplane/src/commands/pr/hosted-checks.ts",
+      "M  packages/agentplane/src/commands/shared/canonical-pre-merge-evidence.test.ts",
+      "M  packages/agentplane/src/commands/shared/canonical-pre-merge-evidence.ts",
+      "A  packages/agentplane/src/commands/shared/canonical-timing-exception.ts",
+      "M  packages/agentplane/src/commands/shared/route-decision-blockers.ts",
+      "M  packages/agentplane/src/commands/shared/route-decision-verification-blocker.ts",
+      "M  packages/agentplane/src/commands/shared/route-decision-verification.test.ts",
+      "M  packages/agentplane/src/commands/shared/route-decision-verification.ts",
+      "M  packages/agentplane/src/commands/shared/workflow-step-branch.ts",
+      "M  packages/agentplane/src/commands/shared/workflow-step-projections.ts",
+      "M  packages/agentplane/src/commands/task/advance-task-step.ts",
+      "A  packages/agentplane/src/commands/task/final-timing-exception.command.ts",
+      "A  packages/agentplane/src/commands/task/kernel-final-timing-exception-evidence.test.ts",
+      "A  packages/agentplane/src/commands/task/kernel-final-timing-exception-evidence.ts",
+      "A  packages/agentplane/src/commands/task/kernel-final-timing-exception.test.ts",
+      "A  packages/agentplane/src/commands/task/kernel-final-timing-exception.ts",
+      "M  packages/agentplane/src/commands/task/kernel-operational-projection.test.ts",
+      "M  packages/agentplane/src/commands/task/kernel-operational-projection.ts",
+      "M  packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts",
+      "M  packages/agentplane/src/commands/task/user-approval-receipt.test.ts",
+      "M  packages/agentplane/src/commands/task/user-approval-receipt.ts",
+      "M  packages/core/schemas/task-readme-frontmatter.schema.json",
+      "M  packages/core/schemas/tasks-export.schema.json",
+      "M  packages/core/src/tasks/task-artifact-schema.task.ts",
+      "M  packages/core/src/tasks/task-artifact-schema.verification.ts",
+      "M  packages/core/src/tasks/task-kernel/index.ts",
+      "A  packages/core/src/tasks/task-kernel/kernel-final-timing-exception.test.ts",
+      "M  packages/core/src/tasks/task-kernel/kernel.ts",
+      "M  packages/core/src/tasks/task-kernel/model.ts",
+      "M  packages/core/src/tasks/task-store.ts",
+      "M  packages/spec/schemas/task-readme-frontmatter.schema.json",
+      "M  packages/spec/schemas/tasks-export.schema.json",
+      "M  schemas/task-readme-frontmatter.schema.json",
+      "M  schemas/tasks-export.schema.json"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": "AM .agentplane/tasks/202610242304-KB0ERQ/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "A  .agentplane/tasks/202610242304-KB0ERQ/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "A  .agentplane/tasks/202610242304-KB0ERQ/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "A  docs/canonical-final-timing-exception.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/adapters/authority/user-approval-receipt.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "A  packages/agentplane/src/adapters/task-backend/kernel-final-timing-exception.test-fixtures.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/adapters/task-backend/kernel-record-invariants.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/adapters/task-backend/kernel-record.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/cli/run-cli/command-catalog/task-recovery.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/cli/run-cli/command-loaders/task.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/commands/pr/flow-status.pre-merge.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/commands/pr/flow-status.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/commands/pr/hosted-checks.gitlab.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/commands/pr/hosted-checks.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/commands/shared/canonical-pre-merge-evidence.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/commands/shared/canonical-pre-merge-evidence.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "A  packages/agentplane/src/commands/shared/canonical-timing-exception.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/commands/shared/route-decision-blockers.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/commands/shared/route-decision-verification-blocker.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/commands/shared/route-decision-verification.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/commands/shared/route-decision-verification.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/commands/shared/workflow-step-branch.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/commands/shared/workflow-step-projections.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/commands/task/advance-task-step.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "A  packages/agentplane/src/commands/task/final-timing-exception.command.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "A  packages/agentplane/src/commands/task/kernel-final-timing-exception-evidence.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "A  packages/agentplane/src/commands/task/kernel-final-timing-exception-evidence.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "A  packages/agentplane/src/commands/task/kernel-final-timing-exception.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "A  packages/agentplane/src/commands/task/kernel-final-timing-exception.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/commands/task/kernel-operational-projection.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/commands/task/kernel-operational-projection.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/commands/task/user-approval-receipt.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/agentplane/src/commands/task/user-approval-receipt.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/core/schemas/task-readme-frontmatter.schema.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/core/schemas/tasks-export.schema.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/core/src/tasks/task-artifact-schema.task.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/core/src/tasks/task-artifact-schema.verification.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/core/src/tasks/task-kernel/index.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "A  packages/core/src/tasks/task-kernel/kernel-final-timing-exception.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/core/src/tasks/task-kernel/kernel.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/core/src/tasks/task-kernel/model.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/core/src/tasks/task-store.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/spec/schemas/task-readme-frontmatter.schema.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  packages/spec/schemas/tasks-export.schema.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  schemas/task-readme-frontmatter.schema.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "M  schemas/tasks-export.schema.json"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      "AM .agentplane/tasks/202610242304-KB0ERQ/README.md",
+      "A  .agentplane/tasks/202610242304-KB0ERQ/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
+      "A  .agentplane/tasks/202610242304-KB0ERQ/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+      "A  docs/canonical-final-timing-exception.md",
+      "M  packages/agentplane/src/adapters/authority/user-approval-receipt.ts",
+      "M  packages/agentplane/src/adapters/task-backend/kernel-backend-adapter.test.ts",
+      "A  packages/agentplane/src/adapters/task-backend/kernel-final-timing-exception.test-fixtures.ts",
+      "M  packages/agentplane/src/adapters/task-backend/kernel-record-invariants.ts",
+      "M  packages/agentplane/src/adapters/task-backend/kernel-record.ts",
+      "M  packages/agentplane/src/cli/run-cli/command-catalog/task-recovery.ts",
+      "M  packages/agentplane/src/cli/run-cli/command-loaders/task.ts",
+      "M  packages/agentplane/src/commands/pr/flow-status.pre-merge.test.ts",
+      "M  packages/agentplane/src/commands/pr/flow-status.ts",
+      "M  packages/agentplane/src/commands/pr/hosted-checks.gitlab.test.ts",
+      "M  packages/agentplane/src/commands/pr/hosted-checks.ts",
+      "M  packages/agentplane/src/commands/shared/canonical-pre-merge-evidence.test.ts",
+      "M  packages/agentplane/src/commands/shared/canonical-pre-merge-evidence.ts",
+      "A  packages/agentplane/src/commands/shared/canonical-timing-exception.ts",
+      "M  packages/agentplane/src/commands/shared/route-decision-blockers.ts",
+      "M  packages/agentplane/src/commands/shared/route-decision-verification-blocker.ts",
+      "M  packages/agentplane/src/commands/shared/route-decision-verification.test.ts",
+      "M  packages/agentplane/src/commands/shared/route-decision-verification.ts",
+      "M  packages/agentplane/src/commands/shared/workflow-step-branch.ts",
+      "M  packages/agentplane/src/commands/shared/workflow-step-projections.ts",
+      "M  packages/agentplane/src/commands/task/advance-task-step.ts",
+      "A  packages/agentplane/src/commands/task/final-timing-exception.command.ts",
+      "A  packages/agentplane/src/commands/task/kernel-final-timing-exception-evidence.test.ts",
+      "A  packages/agentplane/src/commands/task/kernel-final-timing-exception-evidence.ts",
+      "A  packages/agentplane/src/commands/task/kernel-final-timing-exception.test.ts",
+      "A  packages/agentplane/src/commands/task/kernel-final-timing-exception.ts",
+      "M  packages/agentplane/src/commands/task/kernel-operational-projection.test.ts",
+      "M  packages/agentplane/src/commands/task/kernel-operational-projection.ts",
+      "M  packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts",
+      "M  packages/agentplane/src/commands/task/user-approval-receipt.test.ts",
+      "M  packages/agentplane/src/commands/task/user-approval-receipt.ts",
+      "M  packages/core/schemas/task-readme-frontmatter.schema.json",
+      "M  packages/core/schemas/tasks-export.schema.json",
+      "M  packages/core/src/tasks/task-artifact-schema.task.ts",
+      "M  packages/core/src/tasks/task-artifact-schema.verification.ts",
+      "M  packages/core/src/tasks/task-kernel/index.ts",
+      "A  packages/core/src/tasks/task-kernel/kernel-final-timing-exception.test.ts",
+      "M  packages/core/src/tasks/task-kernel/kernel.ts",
+      "M  packages/core/src/tasks/task-kernel/model.ts",
+      "M  packages/core/src/tasks/task-store.ts",
+      "M  packages/spec/schemas/task-readme-frontmatter.schema.json",
+      "M  packages/spec/schemas/tasks-export.schema.json",
+      "M  schemas/task-readme-frontmatter.schema.json",
+      "M  schemas/tasks-export.schema.json"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202610242304-KB0ERQ"
+}
