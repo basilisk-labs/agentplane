@@ -1,10 +1,11 @@
 ---
 id: "202610242244-4Q1124"
 title: "Fail closed on unresolved read-only supervisor intent before canonical provider effects"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -44,6 +45,22 @@ quality_review:
     - "Ineligible unresolved intents fail closed, including unchanged fingerprint, retained or newly arrived result, mutation authority, unrelated identity, and an external-agent issue without a work-order reference; negative tests verify preserved journal/exchange and no provider admission."
     - "Stale retirement retains exchange-first acknowledgement, journal compare-and-swap, native replacement guidance, and interrupted-acknowledgement replay; absent and completed intents allow the normal provider route."
     - "Implementation commit d5a8258 changes five task source/test files without a provider-specific adapter or bypass; recovery module is 597 lines. AgentPlane native validation reports focused 59/59, lint, hotspots, and ci:local:full run-003 all passed."
+token_usage:
+  agent_runs: 3
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:68e2c82e867d2c1a3cc62c030b173de2c0a19a3e1a846bd47a39c9c6337974a7"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-25T05:50:08.893Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -243,9 +260,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "d5a8258ea5e1fae11ba08111a05fa2dc24a31d75"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "b8b0a5233eff75e885f7f6a6f82e3a302d62ceb7"
+  message: "✅ 4Q1124 task: fail closed on unresolved read-only supervisor intent before canonical..."
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -253,9 +273,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-25T05:50:08.893Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "b8b0a5233eff75e885f7f6a6f82e3a302d62ceb7"
 doc_version: 3
-doc_updated_at: "2026-10-25T00:37:06.984Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-25T05:50:08.893Z"
+doc_updated_by: "CODER"
 description: "For a canonical COMPLETED task, retire only a provably stale unanswered read-only external-agent intent through shared identity and CAS gates. Any other unresolved intent must block provider admission and execution. Extract generic guard to a small helper to retain the 600-line hotspot ceiling; verify positive, negative and interrupted acknowledgement routes."
 sections:
   Summary: |-
@@ -399,6 +427,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:e07559033afb1e9e445ca80cce7dc29091610feba02875e9c3799d42f64306a8"
     work_order_id: "sha256:3d7428e4a69eaa9ad5695ecc4cd12cf16d11a96a14cc48bd3669b14194fd4d91"
+  implementation_commit:
+    hash: "d5a8258ea5e1fae11ba08111a05fa2dc24a31d75"
+    message: "🚧 4Q1124 task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "214a26d1bda13f9a81349cc1364669ad24dfb92c"
@@ -1045,3 +1076,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/3` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:68e2c82e867d2c1a3cc62c030b173de2c0a19a3e1a846bd47a39c9c6337974a7`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-25T05:50:08.893Z`
