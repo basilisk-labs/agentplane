@@ -1,10 +1,11 @@
 ---
 id: "202610251417-WYHEXR"
 title: "Recover proven applied provider branch updates after interrupted supervisor intents"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 25
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -41,6 +42,22 @@ quality_review:
     - "Recovery accepts only the exact stopped provider.pr.update_branch intent and unique original USER grant with matching historical audit, then reads the same PR identity and exact two-parent hosted merge commit before checking ancestry and clean local tracking."
     - "The recovery route performs provider GET observations only, repeats no update-branch PUT or push, verifies the route again, and settles the journal once by compare-and-swap. Unrelated mutating intents remain stopped; negative tests cover incorrect identity, grant, parents, evidence, replay and concurrent journal change."
     - "Native verification bound to head 867e10bc passed Bun contract test run-003 (1/1), lint:core run-004, and ci:local:full run-005 (all selected groups); earlier run-002 failure remains recorded truthfully."
+token_usage:
+  agent_runs: 1
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:a9659bc73ec4a2dc2b497db289458f5989909bf1320f9f75a66173437cee5d0a"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-10-25T17:53:29.621Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -246,9 +263,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "867e10bc68cddae80edcfeeb4ee38d61fc64a377"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "dff6b17d887041ce03e03c93d88e0b5019c83707"
+  message: "✅ WYHEXR task: recover proven applied provider branch updates after interrupted..."
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -256,9 +276,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-25T17:53:29.621Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "dff6b17d887041ce03e03c93d88e0b5019c83707"
 doc_version: 3
-doc_updated_at: "2026-10-25T17:42:59.390Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-25T17:53:29.621Z"
+doc_updated_by: "CODER"
 description: "A completed branch_pr task can retain a stopped effect_in_doubt provider.pr.update_branch intent after GitHub updates its PR head and the controller is interrupted. Add a generic fail-closed read-only reconciliation route for the exact original operation. Require bound USER-authorized operation identity, current provider PR identity, exact published descendant ancestry from original head and base, clean local branch/tracking alignment, and atomic journal completion. Never repeat provider PUT during recovery. Reject ambiguous, mismatched, stale, replayed, or unrelated mutating intents. Preserve failed hosted checks and let normal route re-evaluate."
 sections:
   Summary: |-
@@ -389,6 +417,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:cbfbf285336475ce0bd8d4628eb1a61957b08a9dd534a659c58510a89a85b8a0"
     work_order_id: "sha256:6c56362b3675a6c9c5f48521df634052c8dd951a2fcf56fee46d72d17600e090"
+  implementation_commit:
+    hash: "867e10bc68cddae80edcfeeb4ee38d61fc64a377"
+    message: "🚧 WYHEXR task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "43599c5f5a42310f4b5265def081b1d5ccb26fa8"
@@ -1193,3 +1224,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/1` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:a9659bc73ec4a2dc2b497db289458f5989909bf1320f9f75a66173437cee5d0a`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-10-25T17:53:29.621Z`
