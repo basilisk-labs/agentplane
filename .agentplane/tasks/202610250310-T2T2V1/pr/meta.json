@@ -3,7 +3,8 @@
   "branch": "task/202610250310-T2T2V1/authenticate-repository-policy-scope-replans-aft",
   "created_at": "2026-10-25T03:39:57.920Z",
   "diffstat_sha256": "sha256:897861d222d9f87c0fdfe3f02beac417e0465c358e83d2a48621954dd80de269",
-  "last_verified_at": null,
+  "last_verified_at": "2026-10-25T07:46:22.268Z",
+  "last_verified_diffstat_sha256": "sha256:897861d222d9f87c0fdfe3f02beac417e0465c358e83d2a48621954dd80de269",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202610250310-T2T2V1",
   "updated_at": "2026-10-25T03:39:57.920Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
