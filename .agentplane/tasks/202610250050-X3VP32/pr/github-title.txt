@@ -1,0 +1,1 @@
+✅ X3VP32 task: Guard canonical local lifecycle against unresolved external-agent intent [202610250050-X3VP32]

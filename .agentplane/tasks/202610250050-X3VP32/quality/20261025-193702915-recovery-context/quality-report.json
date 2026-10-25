@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202610250050-X3VP32",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-10-25T19:37:41.731Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 3 typed finding(s).",
+  "evaluated_sha": "19162c1041d0075f5f97e5425f284fa3b38c52b2",
+  "review_identity_digest": "sha256:97d8455b4aa7f20a7d4ab042bc85cf3443725845da240e7988e29b8cfa26e8d5",
+  "findings": [
+    "The scoped diff against current main changes only kernel-provider-effect-coordinator.ts and its test. The coordinator invokes recoverPendingExternalAgentResult with recovery_scope read_only_observation before executeAdmittedBranchWorkflowOperation.",
+    "The regression tests assert that eligible recovery is called and that six ineligible or unresolved intent cases reject before supervision or adapter execution.",
+    "Native verification run-020 passed bun run ci:local:full at implementation head 19162c1041d0075f5f97e5425f284fa3b38c52b2. Follow-up hotspots, lint, and targeted runs 021-023 passed. Git diff --check is clean. No unresolved scoped finding is recorded."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202610250050-X3VP32/quality/objects/sha256/21122b3b3bf4cb2fe49e50427e5a22df390853f9de0b2ea8ae6a0739ce7e186f.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

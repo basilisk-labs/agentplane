@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202610241027-XK8HYS",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-10-25T14:56:00.549Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 3 typed finding(s).",
+  "evaluated_sha": "342956a5fdad1d0abb0dd7f34c8e42f4b013fcda",
+  "review_identity_digest": "sha256:431d105294fd6143893c327bd8bc33b97622fb347c9d649bece92779e60276cd",
+  "findings": [
+    "The work-start test records the admitted base SHA and confirms that a task worktree starts from that SHA after the upstream ref advances.",
+    "The consumer-worktree assertions reject foreign framework bin and dist assets. The framework fixture copies current package manifests before expecting local runtime assets.",
+    "The implementation changes only the two approved test files. Native focused verification and full CI passed at implementation SHA 342956a5fdad1d0abb0dd7f34c8e42f4b013fcda; required hosted checks passed at the same SHA."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202610241027-XK8HYS/quality/objects/sha256/98ca375b3349fcba878371b780ce679ad7c74d5fa5f2a6cea6671993589a5088.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

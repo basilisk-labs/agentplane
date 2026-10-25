@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202610240900-KTH2RZ",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-10-25T16:19:50.088Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 3 typed finding(s).",
+  "evaluated_sha": "9b55b10b53b399cc04cfdd554ae3cb47027ecd58",
+  "review_identity_digest": "sha256:7a410a6f3fcc3936dcc0ea0e0afb0bd91f3c5fb5797956591a163521e2a6f342",
+  "findings": [
+    "The task-new tests assert validation exit code 3 for exact duplicate and unknown owner while retaining specific stderr assertions.",
+    "The completion fixture mocks only the pre-mutation reconciliation boundary and restores the original implementation in finally; it still exercises the completion write and Git commit.",
+    "The exact implementation head 9b55b10b53b399cc04cfdd554ae3cb47027ecd58 has recorded full local CI run-008 PASS and targeted run-009 PASS. No unresolved scoped follow-up appears in the task Findings section."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202610240900-KTH2RZ/quality/objects/sha256/2de58b526b5a228aa0e7f36079f2a0bf091daefa9fcc45220fb90cfe46ca3478.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
