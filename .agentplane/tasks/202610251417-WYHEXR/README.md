@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 30
+revision: 31
 origin:
   system: "manual"
 depends_on: []
@@ -58,9 +58,11 @@ quality_review:
     - "Native supervision retains full ci:local:full run-011 and lint:core run-012 as passed, with a SUPERVISOR verification record bound to implementation SHA 286da6f. Earlier hosted failure and failed lint run remain in task history rather than being relabeled as passes."
     - "Residual risk: Strict two-parent provider proof is intentionally conservative for other update methods; unsupported shapes remain stopped until separately reviewed."
 token_usage:
-  agent_runs: 1
+  agent_runs: 3
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
   input_tokens: null
-  journal_digest: "sha256:a9659bc73ec4a2dc2b497db289458f5989909bf1320f9f75a66173437cee5d0a"
+  journal_digest: "sha256:0d64a99992f4b7ff96ec680daccdc60a39ab21913934867f61ffbe32d89a1000"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -69,8 +71,8 @@ token_usage:
   source: "supervisor_journal"
   state: "unavailable"
   total_tokens: null
-  unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-10-25T17:53:29.621Z"
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-25T21:28:12.944Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -2996,8 +2998,13 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "77964091f8c41cbc454eb5dffe772b78103f8c6e"
+  message: "🚧 WYHEXR task: record external evaluator result"
 comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -3028,8 +3035,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-10-25T21:28:12.944Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "77964091f8c41cbc454eb5dffe772b78103f8c6e"
 doc_version: 3
-doc_updated_at: "2026-10-25T21:27:52.574Z"
+doc_updated_at: "2026-10-25T21:28:12.959Z"
 doc_updated_by: "CODER"
 description: "A completed branch_pr task can retain a stopped effect_in_doubt provider.pr.update_branch intent after GitHub updates its PR head and the controller is interrupted. Add a generic fail-closed read-only reconciliation route for the exact original operation. Require bound USER-authorized operation identity, current provider PR identity, exact published descendant ancestry from original head and base, clean local branch/tracking alignment, and atomic journal completion. Never repeat provider PUT during recovery. Reject ambiguous, mismatched, stale, replayed, or unrelated mutating intents. Preserve failed hosted checks and let normal route re-evaluate."
 sections:
@@ -3293,6 +3308,7 @@ extensions:
     work_order_id: "sha256:6c56362b3675a6c9c5f48521df634052c8dd951a2fcf56fee46d72d17600e090"
   implementation_commit:
     hash: "286da6f5938a7351ddd528c5188f4bb6919217d3"
+    message: "🚧 WYHEXR task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "43599c5f5a42310f4b5265def081b1d5ccb26fa8"
@@ -4223,12 +4239,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/1` agent runs
+- Completeness: `0/3` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:a9659bc73ec4a2dc2b497db289458f5989909bf1320f9f75a66173437cee5d0a`
-- Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-10-25T17:53:29.621Z`
+- Journal digest: `sha256:0d64a99992f4b7ff96ec680daccdc60a39ab21913934867f61ffbe32d89a1000`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-25T21:28:12.944Z`

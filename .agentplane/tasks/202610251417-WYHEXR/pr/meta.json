@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:5ab4a472f111419dcbf31b8a7aef1b99101845569856a53897a1354acb3fa503",
   "pr_number": 6925,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6925",
+  "pre_merge_closure": {
+    "basis_commit": "77964091f8c41cbc454eb5dffe772b78103f8c6e",
+    "branch": "task/202610251417-WYHEXR/recover-proven-applied-provider-branch-updates-a",
+    "pr_number": 6925,
+    "recorded_at": "2026-10-25T21:28:13.192Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
