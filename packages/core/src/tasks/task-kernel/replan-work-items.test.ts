@@ -13,7 +13,7 @@ import {
   authenticatedScopeReplanHistory,
   reconcileReplannedWorkItems,
 } from "./replan-work-items.js";
-import type { CanonicalAuthorityRecord, PlanRecord, TaskCommand } from "./model.js";
+import type { CanonicalAuthorityRecord, PlanRecord, TaskAggregate, TaskCommand } from "./model.js";
 import type { ProspectiveScopeRequest } from "./prospective-scope.js";
 
 function fixture() {
@@ -154,6 +154,7 @@ describe("scope replan proposal provenance", () => {
     };
     const grant: CanonicalAuthorityRecord = {
       authority,
+      approval_mode: "manual_operator",
       observation: {
         kind: "prospective_scope_request",
         evidence_digest: kernelDigest("grant"),
@@ -230,8 +231,13 @@ describe("scope replan proposal provenance", () => {
     "wrong-task",
     "wrong-attempt",
     "unrelated-concurrent",
+    "policy-valid",
+    "policy-wrong-actor",
+    "policy-wrong-mode",
+    "policy-wrong-grant",
+    "policy-ungranted-scope",
   ])("retains a formerly approved rejected replacement: %s", (kind) => {
-    const { state, command, proposalId } = historyFixture("operator");
+    const { state, command, proposalId } = structuredClone(historyFixture("operator"));
     const source = state.plan_history[0]!;
     const request = state.authority_lineage[0]!.observation!.scope_request!;
     source.work_items.find((item) => item.id === "consumer")!.contract_digest =
@@ -335,7 +341,7 @@ describe("scope replan proposal provenance", () => {
       plan_revision: revision,
       plan_digest: next.digest,
     };
-    const record = {
+    const record: TaskAggregate = {
       ...state,
       plan_history: [source, approved],
       current_plan: next,
@@ -372,6 +378,40 @@ describe("scope replan proposal provenance", () => {
         },
       },
     };
+    if (kind.startsWith("policy-")) {
+      const evidence = kernelDigest("repository-policy");
+      next.approval_actor_id = "agentplane:kernel-controller";
+      next.approval_evidence_digest = evidence;
+      const policyRoot = {
+        ...nextRoot,
+        provenance: {
+          ...nextRoot.provenance,
+          kind: "SYSTEM" as const,
+          actor_id: "agentplane:kernel-controller",
+          evidence_digest: evidence,
+        },
+      };
+      policyRoot.digest = authorityDigest(policyRoot);
+      record.authority_lineage!.at(-1)!.authority = policyRoot;
+      record.authority_lineage!.at(-1)!.approval_mode =
+        kind === "policy-wrong-mode" ? "manual_operator" : "repository_policy";
+      finalApproval.approval_evidence_digest = evidence;
+      finalApproval.authority_mode =
+        kind === "policy-wrong-mode" ? "manual_operator" : "repository_policy";
+      record.mutation_receipts.final!.command_digest = kernelDigest(finalApproval);
+      if (kind === "policy-wrong-actor")
+        record.authority_lineage!.at(-1)!.authority.provenance.actor_id = "other-system";
+      if (kind === "policy-wrong-grant") {
+        record.authority_lineage![0]!.approval_mode = "repository_policy";
+        record.mutation_receipts[grantId]!.command_digest = kernelDigest(grantCommand);
+      }
+      if (kind === "policy-ungranted-scope") {
+        const grant = record.authority_lineage![0]!;
+        grant.authority = { ...grant.authority, scope_roots: [] };
+        grant.authority.digest = authorityDigest(grant.authority);
+        record.mutation_receipts[grantId]!.command_digest = kernelDigest(grantCommand);
+      }
+    }
     if (kind === "unrelated-concurrent") {
       const unrelatedRequest = {
         ...request,
@@ -395,7 +435,7 @@ describe("scope replan proposal provenance", () => {
         record: unrelated,
       };
       const id = `scope-request:${kernelDigest(unrelatedRequest)}`;
-      record.authority_lineage.push(unrelated);
+      record.authority_lineage = [...record.authority_lineage!, unrelated];
       Object.assign(record.mutation_receipts, {
         [id]: {
           ...receipt,
@@ -441,7 +481,7 @@ describe("scope replan proposal provenance", () => {
     if (kind === "wrong-task") request.task_id = "other-task";
     if (kind === "wrong-attempt") record.work_items.consumer.attempt++;
     expect(authenticatedScopeReplanHistory(record, true, "consumer") !== null).toBe(
-      kind === "valid" || kind === "unrelated-concurrent",
+      kind === "valid" || kind === "unrelated-concurrent" || kind === "policy-valid",
     );
     expect(authenticatedScopeReplanHistory(record, true, "missing")).toBeNull();
   });
