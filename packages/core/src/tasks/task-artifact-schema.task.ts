@@ -729,6 +729,7 @@ export function withTaskReadmeFrontmatterDefaults(
   const verification = normalizeApprovalRecord(verificationSource, [
     "pending",
     "ok",
+    "accepted_timing_exception",
     "needs_rework",
     "blocked_external",
   ]);

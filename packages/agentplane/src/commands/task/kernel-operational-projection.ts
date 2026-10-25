@@ -4,6 +4,7 @@ import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record
 import type { TaskData } from "../../backends/task-backend.js";
 import { normalizeQualityReviewResult } from "../../backends/task-backend/shared/normalize.js";
 import type { CommandContext } from "../shared/task-backend.js";
+import { canonicalTimingExceptionPresent } from "../shared/canonical-timing-exception.js";
 import type { KernelRepositoryEvidence } from "./kernel-repository-coordinator.js";
 
 export const KERNEL_OPERATIONAL_PROJECTION = "agentplane.kernel_operational_projection";
@@ -12,7 +13,7 @@ function projectedVerification(
   verification: TaskData["verification"],
   fallback: NonNullable<TaskData["verification"]>,
 ): NonNullable<TaskData["verification"]> {
-  return verification?.state === "ok" ? verification : fallback;
+  return verification?.state === fallback.state ? verification : fallback;
 }
 
 type Projection = Readonly<{
@@ -131,11 +132,13 @@ export async function projectKernelOperationalEvidence(opts: {
         message: "AgentPlane-owned canonical implementation commit",
       },
       verification: projectedVerification(task.verification, {
-        state: "ok",
+        state: canonicalTimingExceptionPresent(task) ? "accepted_timing_exception" : "ok",
         attempts: Math.max(1, task.verification?.attempts ?? 0),
         updated_at: opts.projected_at,
         updated_by: "SUPERVISOR",
-        note: `Canonical validation ${opts.verification_evidence_digest}`,
+        note: canonicalTimingExceptionPresent(task)
+          ? `Accepted timing exception for FAILED canonical validation ${opts.verification_evidence_digest}`
+          : `Canonical validation ${opts.verification_evidence_digest}`,
       }),
       quality_review: {
         state: "pass",
@@ -187,11 +190,13 @@ export async function ensureKernelOperationalProjectionEvidence(opts: {
     digest: k.kernelDigest(projectionContents),
   };
   const fallbackVerification = projectedVerification(task.verification, {
-    state: "ok",
+    state: canonicalTimingExceptionPresent(task) ? "accepted_timing_exception" : "ok",
     attempts: 1,
     updated_at: existing.projected_at,
     updated_by: "SUPERVISOR",
-    note: `Canonical validation ${verificationEvidenceDigest}`,
+    note: canonicalTimingExceptionPresent(task)
+      ? `Accepted timing exception for FAILED canonical validation ${verificationEvidenceDigest}`
+      : `Canonical validation ${verificationEvidenceDigest}`,
   });
   if (
     projection.digest === existing.digest &&

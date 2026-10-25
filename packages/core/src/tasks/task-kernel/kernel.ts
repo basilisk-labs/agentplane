@@ -33,6 +33,7 @@ import type {
   DomainEvent,
   EffectState,
   ExternalEffect,
+  FinalTimingException,
   ExecutionRequirements,
   KernelInput,
   KernelRejectionCode,
@@ -174,6 +175,7 @@ const EVENT_KIND: Readonly<Record<TaskCommand["kind"], DomainEvent["kind"]>> = {
   accept_work_item_result: "work_item_result_accepted",
   record_work_item_validation: "work_item_validation_recorded",
   record_final_validation: "final_validation_recorded",
+  accept_final_timing_exception: "final_timing_exception_accepted",
   prepare_effect: "effect_prepared",
   begin_effect: "effect_started",
   observe_effect: "effect_observed",
@@ -1320,6 +1322,63 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
         revision: aggregate.revision + 1,
         state: "FINAL_VALIDATION",
         final_validation: command.validation,
+        ...(Object.hasOwn(aggregate, "final_timing_exception")
+          ? { final_timing_exception: null }
+          : {}),
+      };
+      break;
+    }
+    case "accept_final_timing_exception": {
+      const exception = command.exception;
+      const validation = aggregate.final_validation;
+      const plan = aggregate.current_plan;
+      const digest = /^sha256:[a-f0-9]{64}$/u;
+      const settled = aggregate.effects.every((effect) =>
+        ["APPLIED", "NOT_APPLIED", "RECONCILED", "SUPERSEDED"].includes(effect.state),
+      );
+      if (
+        input.actor.kind !== "USER" ||
+        !validTimingApprovalActor(exception.approval_mode, input.actor.id) ||
+        input.actor.transport !== "manual" ||
+        exception.approved_by !== "USER" ||
+        exception.approval_actor_id !== input.actor.id ||
+        aggregate.state !== "FINAL_VALIDATION" ||
+        plan?.state !== "APPROVED" ||
+        validation?.status !== "FAILED" ||
+        exception.schema_version !== 1 ||
+        exception.kind !== "timing_only" ||
+        exception.task_id !== aggregate.id ||
+        exception.plan_revision !== plan.revision ||
+        exception.plan_digest !== plan.digest ||
+        exception.validation_digest !== kernelDigest(validation) ||
+        !validation.evidence_digests.includes(exception.failure_evidence_digest) ||
+        exception.implementation_identity !== validation.identity.implementation_identity ||
+        exception.command_digest !== validation.identity.command_digest ||
+        exception.environment_digest !== validation.identity.environment_digest ||
+        input.repository_fingerprint !== exception.acceptance_fingerprint ||
+        !exception.failed_check_id.trim() ||
+        !/^[a-f0-9]{40,64}$/u.test(exception.hosted_head_sha) ||
+        !digest.test(exception.hosted_evidence_digest) ||
+        !digest.test(exception.approval_evidence_digest) ||
+        !validRequiredHostedChecks(exception.hosted_required_checks) ||
+        !Number.isSafeInteger(exception.budget_ms) ||
+        !Number.isSafeInteger(exception.duration_ms) ||
+        !Number.isSafeInteger(exception.max_overage_ms) ||
+        exception.budget_ms <= 0 ||
+        exception.duration_ms <= exception.budget_ms ||
+        exception.max_overage_ms <= 0 ||
+        exception.max_overage_ms > Math.min(60_000, exception.budget_ms * 0.05) ||
+        exception.duration_ms - exception.budget_ms > exception.max_overage_ms ||
+        exception.accepted_at !== input.occurred_at ||
+        !requiredWorkComplete(aggregate) ||
+        !settled
+      ) {
+        return rejected("TASK_COMPLETION_INELIGIBLE", ["final_timing_exception_invalid"]);
+      }
+      next = {
+        ...aggregate,
+        revision: aggregate.revision + 1,
+        final_timing_exception: exception,
       };
       break;
     }
@@ -1565,11 +1624,15 @@ export function isTaskCompletionEligible(
   aggregate: TaskAggregate,
   repositoryFingerprint: Sha256Digest,
 ): boolean {
+  const validation = aggregate.final_validation;
   if (
     aggregate.state !== "FINAL_VALIDATION" ||
     aggregate.current_plan?.state !== "APPROVED" ||
-    aggregate.final_validation?.status !== "PASSED" ||
-    !validationIdentityMatchesResult(aggregate.final_validation, repositoryFingerprint)
+    (!(
+      validation?.status === "PASSED" &&
+      validationIdentityMatchesResult(validation, repositoryFingerprint)
+    ) &&
+      !hasAcceptedFinalTimingException(aggregate, repositoryFingerprint))
   ) {
     return false;
   }
@@ -1578,6 +1641,61 @@ export function isTaskCompletionEligible(
     aggregate.effects.every((effect) =>
       ["APPLIED", "NOT_APPLIED", "RECONCILED", "SUPERSEDED"].includes(effect.state),
     )
+  );
+}
+
+/** The original FAILED result remains authoritative; this is a separate bounded disposition. */
+export function hasAcceptedFinalTimingException(
+  aggregate: TaskAggregate,
+  repositoryFingerprint: Sha256Digest,
+): boolean {
+  const validation = aggregate.final_validation;
+  const exception = aggregate.final_timing_exception;
+  return (
+    validation?.status === "FAILED" &&
+    exception?.kind === "timing_only" &&
+    exception.task_id === aggregate.id &&
+    exception.plan_revision === aggregate.current_plan?.revision &&
+    exception.plan_digest === aggregate.current_plan?.digest &&
+    exception.validation_digest === kernelDigest(validation) &&
+    validation.evidence_digests.includes(exception.failure_evidence_digest) &&
+    exception.implementation_identity === validation.identity.implementation_identity &&
+    exception.command_digest === validation.identity.command_digest &&
+    exception.environment_digest === validation.identity.environment_digest &&
+    exception.acceptance_fingerprint === repositoryFingerprint &&
+    exception.approved_by === "USER" &&
+    validTimingApprovalActor(exception.approval_mode, exception.approval_actor_id) &&
+    exception.failed_check_id.trim().length > 0 &&
+    /^[a-f0-9]{40,64}$/u.test(exception.hosted_head_sha) &&
+    isSha256Digest(exception.hosted_evidence_digest) &&
+    isSha256Digest(exception.approval_evidence_digest) &&
+    validRequiredHostedChecks(exception.hosted_required_checks) &&
+    Number.isSafeInteger(exception.budget_ms) &&
+    Number.isSafeInteger(exception.duration_ms) &&
+    Number.isSafeInteger(exception.max_overage_ms) &&
+    exception.budget_ms > 0 &&
+    exception.duration_ms > exception.budget_ms &&
+    exception.max_overage_ms > 0 &&
+    exception.max_overage_ms <= Math.min(60_000, exception.budget_ms * 0.05) &&
+    exception.duration_ms - exception.budget_ms <= exception.max_overage_ms
+  );
+}
+
+function validTimingApprovalActor(
+  mode: FinalTimingException["approval_mode"],
+  actor: string,
+): boolean {
+  return mode === "manual_operator"
+    ? actor === "USER"
+    : mode === "signed_user_receipt" && /^USER:[A-Za-z0-9._@-]+@[A-Za-z0-9._-]+$/u.test(actor);
+}
+
+function validRequiredHostedChecks(checks: readonly string[]): boolean {
+  return (
+    Array.isArray(checks) &&
+    checks.length > 0 &&
+    checks.every((name) => typeof name === "string" && name.length > 0 && name.trim() === name) &&
+    new Set(checks).size === checks.length
   );
 }
 

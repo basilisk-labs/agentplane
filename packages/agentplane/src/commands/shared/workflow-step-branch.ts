@@ -1,4 +1,5 @@
 import { hasUninitializedTaskBaseline } from "./workflow-step-policy-scope.js";
+import { hasAcceptedTaskVerification } from "./canonical-timing-exception.js";
 import type { WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
 import { conflictReworkRouteStep } from "./workflow-step-conflict-rework.js";
 import {
@@ -496,7 +497,7 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
     return workItemReadinessWaitStep(state, "task_worktree");
   }
   const implementationCommit = state.task.commit?.hash?.trim() ?? "";
-  if (!implementationCommit && state.task.verification?.state !== "ok")
+  if (!implementationCommit && !hasAcceptedTaskVerification(state.task))
     return branchImplementationStep(state);
   if (state.prFlow?.pr.state === "not_found") {
     return cliOperationStep({

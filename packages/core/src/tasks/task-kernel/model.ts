@@ -194,6 +194,33 @@ export type ValidationRecord = Readonly<{
   observed_at: string;
 }>;
 
+/** A USER decision about one failed timing gate. The failed validation remains authoritative. */
+export type FinalTimingException = Readonly<{
+  schema_version: 1;
+  kind: "timing_only";
+  task_id: string;
+  plan_revision: number;
+  plan_digest: Sha256Digest;
+  validation_digest: Sha256Digest;
+  failed_check_id: string;
+  failure_evidence_digest: Sha256Digest;
+  implementation_identity: Sha256Digest;
+  acceptance_fingerprint: Sha256Digest;
+  command_digest: Sha256Digest;
+  environment_digest: Sha256Digest;
+  budget_ms: number;
+  duration_ms: number;
+  max_overage_ms: number;
+  hosted_head_sha: string;
+  hosted_required_checks: readonly string[];
+  hosted_evidence_digest: Sha256Digest;
+  approval_evidence_digest: Sha256Digest;
+  approval_mode: "signed_user_receipt" | "manual_operator";
+  approval_actor_id: string;
+  approved_by: "USER";
+  accepted_at: string;
+}>;
+
 export type WorkItemDefinition = Readonly<{
   id: string;
   /** Immutable semantic contract used to prepare an application WorkOrder. */
@@ -316,6 +343,7 @@ export type TaskAggregate = Readonly<{
   plan_history: readonly PlanRecord[];
   work_items: Readonly<Record<string, WorkItemRuntime>>;
   final_validation: ValidationRecord | null;
+  final_timing_exception?: FinalTimingException | null;
   effects: readonly ExternalEffect[];
   mutation_receipts: Readonly<Record<string, MutationReceipt>>;
   controller_transfer: ControllerTransferReceipt | null;
@@ -442,6 +470,7 @@ export type TaskCommand =
       { work_item_id: string; validation: ValidationRecord }
     >
   | CommandEnvelope<"record_final_validation", { validation: ValidationRecord }>
+  | CommandEnvelope<"accept_final_timing_exception", { exception: FinalTimingException }>
   | CommandEnvelope<"prepare_effect", { effect: ExternalEffect }>
   | CommandEnvelope<"begin_effect", { effect_id: string }>
   | CommandEnvelope<
@@ -499,6 +528,7 @@ export type DomainEvent = Readonly<{
     | "work_item_result_accepted"
     | "work_item_validation_recorded"
     | "final_validation_recorded"
+    | "final_timing_exception_accepted"
     | "effect_prepared"
     | "effect_started"
     | "effect_observed"

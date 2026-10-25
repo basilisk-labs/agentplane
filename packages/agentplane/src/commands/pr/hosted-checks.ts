@@ -37,6 +37,14 @@ export type HostedChecksSummary =
     }
   | { checked: false; reason: string };
 
+/** A merged change request retains its head after the source branch is removed. */
+export function hostedChecksExpectedHeadSha(
+  branchHeadSha: string | null,
+  pr: { state: string; headSha?: string | null },
+): string | null {
+  return branchHeadSha ?? (pr.state === "not_found" ? null : (pr.headSha ?? null));
+}
+
 const DEFAULT_HOSTED_POLL_INTERVAL_MS = 5000;
 const DEFAULT_HOSTED_TIMEOUT_MS = 10 * 60 * 1000;
 
@@ -96,6 +104,8 @@ export async function resolveHostedChecksStatus(opts: {
   gitRoot: string;
   prNumber: number | null;
   requiredChecks?: readonly string[];
+  /** Fail closed on incomplete GitLab job inventory and non-success pipeline state. */
+  requireCompleteSuccess?: boolean;
   branch?: string | null;
   expectedHeadSha?: string | null;
   recordedProvider?: RecordedGitHostIdentity | null;
@@ -120,15 +130,27 @@ export async function resolveHostedChecksStatus(opts: {
         const pipelines = await runGlabApiJson<GitLabPipeline[]>({
           cwd: opts.gitRoot,
           hostname: identity.hostname,
-          endpoint: `projects/${project}/merge_requests/${opts.prNumber}/pipelines`,
+          endpoint: `projects/${project}/merge_requests/${opts.prNumber}/pipelines${opts.requireCompleteSuccess ? "?per_page=100" : ""}`,
         });
         if (!Array.isArray(pipelines)) {
           return { checked: false, reason: "GitLab MR pipeline lookup returned invalid data" };
         }
+        if (opts.requireCompleteSuccess && pipelines.length >= 100) {
+          return {
+            checked: false,
+            reason: "GitLab MR pipeline inventory is incomplete or at the page limit",
+          };
+        }
         const expectedHeadSha = opts.expectedHeadSha?.trim() ?? "";
-        const pipeline = pipelines.find(
+        const candidates = pipelines.filter(
           (candidate) => !expectedHeadSha || candidate.sha?.trim() === expectedHeadSha,
         );
+        let pipeline = candidates[0];
+        if (opts.requireCompleteSuccess) {
+          for (const candidate of candidates) {
+            if (Number(candidate.id ?? 0) > Number(pipeline?.id ?? 0)) pipeline = candidate;
+          }
+        }
         if (!pipeline || !Number.isInteger(pipeline.id) || Number(pipeline.id) <= 0) {
           const hasRequiredChecks = (opts.requiredChecks ?? []).some(
             (name) => name.trim().length > 0,
@@ -152,12 +174,21 @@ export async function resolveHostedChecksStatus(opts: {
               : "GitLab MR has no pipeline",
           };
         }
+        if (opts.requireCompleteSuccess && pipeline.status?.toLowerCase() !== "success") {
+          return { checked: false, reason: `GitLab MR pipeline for exact head is not successful` };
+        }
         const projectId = Number(pipeline.project_id);
         const jobs = await runGlabApiJson<GitLabJob[]>({
           cwd: opts.gitRoot,
           hostname: identity.hostname,
           endpoint: `projects/${Number.isInteger(projectId) && projectId > 0 ? projectId : project}/pipelines/${pipeline.id}/jobs?per_page=100`,
         });
+        if (opts.requireCompleteSuccess && (!Array.isArray(jobs) || jobs.length >= 100)) {
+          return {
+            checked: false,
+            reason: "GitLab MR job inventory is incomplete or at the page limit",
+          };
+        }
         const rows: HostedCheckRow[] = Array.isArray(jobs)
           ? jobs.map((job) => ({ name: job.name ?? null, state: job.status ?? null }))
           : [];

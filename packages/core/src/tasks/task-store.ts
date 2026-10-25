@@ -35,7 +35,8 @@ export type PlanApproval = {
   note: string | null;
 };
 
-export type VerificationState = "pending" | "ok" | "needs_rework" | "blocked_external";
+export type VerificationState =
+  "pending" | "ok" | "accepted_timing_exception" | "needs_rework" | "blocked_external";
 export type VerificationResult = {
   state: VerificationState;
   attempts: number;

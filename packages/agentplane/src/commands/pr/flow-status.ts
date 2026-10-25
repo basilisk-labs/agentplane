@@ -4,6 +4,11 @@ import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";
 import { isRecord } from "../../shared/guards.js";
 import {
+  canonicalTimingExceptionRequiredChecks,
+  hasCanonicalTimingException,
+} from "../shared/canonical-timing-exception.js";
+import { hostedChecksExpectedHeadSha } from "./hosted-checks.js";
+import {
   loadBackendTask,
   resolveTaskBranchFromContext,
   type CommandContext,
@@ -100,7 +105,7 @@ function canonicalProviderReady(
   if (
     aggregate.state !== "FINAL_VALIDATION" ||
     !isRecord(aggregate.final_validation) ||
-    aggregate.final_validation.status !== "PASSED" ||
+    (aggregate.final_validation.status !== "PASSED" && !hasCanonicalTimingException(task)) ||
     !isRecord(aggregate.work_items)
   ) {
     return false;
@@ -532,7 +537,9 @@ export async function resolvePrFlowStatus(opts: {
       gitRoot: resolved.gitRoot,
       prNumber,
       branch,
-      expectedHeadSha: branchHeadSha,
+      expectedHeadSha: hostedChecksExpectedHeadSha(branchHeadSha, pr),
+      requiredChecks: canonicalTimingExceptionRequiredChecks(task),
+      requireCompleteSuccess: hasCanonicalTimingException(task),
       recordedProvider: meta?.provider ?? null,
     }),
     pr.provider === "gitlab"

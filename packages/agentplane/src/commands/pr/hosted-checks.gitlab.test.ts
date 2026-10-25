@@ -57,6 +57,93 @@ describe("GitLab hosted checks", () => {
     );
   });
 
+  it("rejects a failed exact-head pipeline even if its visible jobs are green", async () => {
+    mocks.runGlabApiJson.mockResolvedValueOnce([
+      { id: 11, project_id: 7, sha: "exact-head", status: "failed" },
+    ]);
+    await expect(
+      resolveHostedChecksStatus({
+        gitRoot: "/repo",
+        prNumber: 42,
+        branch: "task/T-1/work",
+        expectedHeadSha: "exact-head",
+        requiredChecks: ["test"],
+        requireCompleteSuccess: true,
+      }),
+    ).resolves.toEqual({
+      checked: false,
+      reason: "GitLab MR pipeline for exact head is not successful",
+    });
+    expect(mocks.runGlabApiJson).toHaveBeenCalledTimes(1);
+  });
+
+  it("selects the newest exact-head pipeline in strict mode regardless of API order", async () => {
+    mocks.runGlabApiJson.mockResolvedValueOnce([
+      { id: 10, project_id: 7, sha: "exact-head", status: "success" },
+      { id: 11, project_id: 7, sha: "exact-head", status: "failed" },
+    ]);
+    await expect(
+      resolveHostedChecksStatus({
+        gitRoot: "/repo",
+        prNumber: 42,
+        branch: "task/T-1/work",
+        expectedHeadSha: "exact-head",
+        requiredChecks: ["test"],
+        requireCompleteSuccess: true,
+      }),
+    ).resolves.toEqual({
+      checked: false,
+      reason: "GitLab MR pipeline for exact head is not successful",
+    });
+    expect(mocks.runGlabApiJson).toHaveBeenCalledTimes(1);
+  });
+
+  it("rejects a page-limit job inventory even when its first hundred jobs are green", async () => {
+    mocks.runGlabApiJson
+      .mockResolvedValueOnce([{ id: 11, project_id: 7, sha: "exact-head", status: "success" }])
+      .mockResolvedValueOnce(
+        Array.from({ length: 100 }, (_, index) => ({ name: `job-${index}`, status: "success" })),
+      );
+    await expect(
+      resolveHostedChecksStatus({
+        gitRoot: "/repo",
+        prNumber: 42,
+        branch: "task/T-1/work",
+        expectedHeadSha: "exact-head",
+        requiredChecks: ["job-1"],
+        requireCompleteSuccess: true,
+      }),
+    ).resolves.toEqual({
+      checked: false,
+      reason: "GitLab MR job inventory is incomplete or at the page limit",
+    });
+  });
+
+  it("rejects a page-limit pipeline inventory before choosing an exact-head run", async () => {
+    mocks.runGlabApiJson.mockResolvedValueOnce(
+      Array.from({ length: 100 }, (_, index) => ({
+        id: index + 1,
+        project_id: 7,
+        sha: "exact-head",
+        status: "success",
+      })),
+    );
+    await expect(
+      resolveHostedChecksStatus({
+        gitRoot: "/repo",
+        prNumber: 42,
+        branch: "task/T-1/work",
+        expectedHeadSha: "exact-head",
+        requiredChecks: ["test"],
+        requireCompleteSuccess: true,
+      }),
+    ).resolves.toEqual({
+      checked: false,
+      reason: "GitLab MR pipeline inventory is incomplete or at the page limit",
+    });
+    expect(mocks.runGlabApiJson).toHaveBeenCalledTimes(1);
+  });
+
   it("accepts an absent pipeline only when GitLab policy does not require one", async () => {
     mocks.runGlabApiJson
       .mockResolvedValueOnce([{ id: 10, project_id: 7, sha: "old-head", status: "success" }])

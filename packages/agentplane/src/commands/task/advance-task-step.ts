@@ -136,7 +136,9 @@ async function advanceCanonicalRoute(opts: {
     const persistedValidationEvidence =
       record.aggregate.final_validation?.status === "PASSED"
         ? record.aggregate.final_validation.evidence_digests.at(-1)
-        : undefined;
+        : k.hasAcceptedFinalTimingException(record.aggregate, context.repository_fingerprint)
+          ? record.aggregate.final_timing_exception?.failure_evidence_digest
+          : undefined;
     if (
       needsPullRequest &&
       !finalValidation &&

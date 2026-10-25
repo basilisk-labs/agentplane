@@ -209,6 +209,92 @@ describe("canonical operational evidence projection", () => {
     });
   });
 
+  it("projects accepted timing as distinct from PASS after canonical acceptance", async () => {
+    const writeTask = taskWriter();
+    const fingerprint = k.kernelDigest("current-repository");
+    const failureEvidence = k.kernelDigest("failed-final-validation");
+    const planDigest = k.kernelDigest("approved-plan");
+    const validation = {
+      status: "FAILED" as const,
+      identity: {
+        implementation_identity: fingerprint,
+        check_id: "canonical-final-contracts-v2",
+        command_digest: k.kernelDigest("commands"),
+        toolchain_digest: k.kernelDigest("toolchain"),
+        environment_digest: k.kernelDigest("environment"),
+      },
+      evidence_digests: [failureEvidence],
+      observed_at: "2026-10-24T00:00:00.000Z",
+    };
+    const aggregate = {
+      id: "T-1",
+      state: "FINAL_VALIDATION",
+      current_plan: { state: "APPROVED", revision: 1, digest: planDigest, work_items: [] },
+      work_items: {},
+      effects: [],
+      final_validation: validation,
+      final_timing_exception: {
+        schema_version: 1,
+        kind: "timing_only",
+        task_id: "T-1",
+        plan_revision: 1,
+        plan_digest: planDigest,
+        validation_digest: k.kernelDigest(validation),
+        failure_evidence_digest: failureEvidence,
+        implementation_identity: fingerprint,
+        acceptance_fingerprint: fingerprint,
+        command_digest: validation.identity.command_digest,
+        environment_digest: validation.identity.environment_digest,
+        failed_check_id: "full-suite",
+        budget_ms: 1_440_000,
+        duration_ms: 1_463_240,
+        max_overage_ms: 30_000,
+        hosted_head_sha: "a".repeat(40),
+        hosted_evidence_digest: k.kernelDigest("hosted-green"),
+        approval_evidence_digest: k.kernelDigest("user-approval"),
+        hosted_required_checks: ["unit", "lint"],
+        approval_mode: "signed_user_receipt",
+        approval_actor_id: "USER:release-owner@trusted-issuer",
+        approved_by: "USER",
+        accepted_at: "2026-10-24T00:00:00.000Z",
+      },
+    };
+    const kernelContents = { kind: "canonical_task", aggregate };
+    const projectionContents = {
+      schema_version: 1 as const,
+      source: "task_kernel" as const,
+      work_order_id: k.kernelDigest("order"),
+      implementation_commit: "a".repeat(40),
+      implementation_tree: "b".repeat(40),
+      verification_evidence_digest: k.kernelDigest("work-item"),
+      review_identity_digest: k.kernelDigest("review"),
+      evidence_refs: ["quality-report.json"],
+      findings: ["reviewed"],
+      projected_at: "2026-10-24T00:00:00.000Z",
+    };
+    const task = {
+      id: "T-1",
+      revision: 9,
+      verification: { state: "ok", attempts: 1 },
+      extensions: {
+        task_kernel: { ...kernelContents, digest: k.kernelDigest(kernelContents) },
+        "agentplane.kernel_operational_projection": {
+          ...projectionContents,
+          digest: k.kernelDigest(projectionContents),
+        },
+      },
+    };
+    await ensureKernelOperationalProjectionEvidence({
+      command: { taskBackend: { getTask: vi.fn().mockResolvedValue(task), writeTask } } as never,
+      task_id: "T-1",
+      verification_evidence_digest: failureEvidence,
+    });
+    expect(writeTask.mock.calls[0]![0].verification).toMatchObject({
+      state: "accepted_timing_exception",
+      note: `Accepted timing exception for FAILED canonical validation ${failureEvidence}`,
+    });
+  });
+
   it("synchronizes the projection with restored final-validation evidence", async () => {
     const writeTask = taskWriter();
     const projectionContents = {

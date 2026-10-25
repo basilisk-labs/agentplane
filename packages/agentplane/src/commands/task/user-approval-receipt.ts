@@ -12,7 +12,9 @@ export type {
 
 export function userApprovalReceiptRequestForStep(
   step: Extract<WorkflowStep, { kind: "approval" }>,
-): UserApprovalReceiptRequest {
+): UserApprovalReceiptRequest & {
+  approvalType: "plan_approval" | "side_effect" | "provider_merge";
+} {
   if (step.request.type === "side_effect") {
     return {
       approvalType: "side_effect",

@@ -72,6 +72,39 @@ function sideEffectRequest(
 }
 
 describe("signed user approval receipts", () => {
+  it("binds a timing exception to an exact state, outcome and hosted scope", () => {
+    const issued = issueReceipt({
+      approval_type: "final_timing_exception",
+      authority_reference: `final-timing:${OPERATION_DIGEST}`,
+      operation_id: "task.final-validation.accept-timing",
+    });
+    const request: UserApprovalReceiptRequest = {
+      approvalType: "final_timing_exception",
+      taskId: TASK_ID,
+      authorityReference: `final-timing:${OPERATION_DIGEST}`,
+      stateFingerprint: STATE_FINGERPRINT,
+      operationId: "task.final-validation.accept-timing",
+      operationDigest: OPERATION_DIGEST,
+      stateScopeDigest: STATE_SCOPE_DIGEST,
+    };
+    expect(
+      verifyUserApprovalReceipt({
+        encoded: issued.encoded,
+        config: issued.config,
+        request,
+        now: NOW,
+      }).actor,
+    ).toBe("USER:denis@hermes-bridge");
+    expect(() =>
+      verifyUserApprovalReceipt({
+        encoded: issued.encoded,
+        config: issued.config,
+        request: { ...request, operationDigest: `sha256:${"d".repeat(64)}` },
+        now: NOW,
+      }),
+    ).toThrow("stale or does not match");
+  });
+
   it("accepts a trusted, unexpired receipt bound to the exact route", () => {
     const issued = issueReceipt();
 

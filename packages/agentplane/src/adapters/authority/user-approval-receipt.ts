@@ -30,7 +30,8 @@ const RECEIPT_KEYS = [
   "task_id",
 ] as const;
 
-type UserApprovalType = "plan_approval" | "side_effect" | "provider_merge";
+type UserApprovalType =
+  "plan_approval" | "side_effect" | "provider_merge" | "final_timing_exception";
 
 export type UserApprovalReceipt = {
   schema_version: 1;
@@ -107,7 +108,9 @@ function parseReceipt(encoded: string): UserApprovalReceipt {
     typeof value.subject !== "string" ||
     !SUBJECT_PATTERN.test(value.subject) ||
     value.decision !== "approved" ||
-    !["plan_approval", "side_effect", "provider_merge"].includes(String(value.approval_type)) ||
+    !["plan_approval", "side_effect", "provider_merge", "final_timing_exception"].includes(
+      String(value.approval_type),
+    ) ||
     typeof value.task_id !== "string" ||
     !value.task_id.trim() ||
     typeof value.authority_reference !== "string" ||
@@ -163,13 +166,15 @@ function assertRequestBinding(
     throw receiptError("Approval receipt is stale or does not match the current task route.");
   }
   if (
-    receipt.approval_type === "side_effect" &&
+    (receipt.approval_type === "side_effect" ||
+      receipt.approval_type === "final_timing_exception") &&
     (!receipt.operation_id || !receipt.operation_digest || !receipt.state_scope_digest)
   ) {
-    throw receiptError("Side-effect approval receipt is missing state-bound operation fields.");
+    throw receiptError("Operation approval receipt is missing state-bound fields.");
   }
   if (
     receipt.approval_type !== "side_effect" &&
+    receipt.approval_type !== "final_timing_exception" &&
     (receipt.operation_id !== null ||
       receipt.operation_digest !== null ||
       receipt.state_scope_digest !== null)
