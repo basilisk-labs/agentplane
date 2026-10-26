@@ -62,8 +62,65 @@ describe("task-centric projection integrity diagnostics", () => {
     expect(findings[0]).toContain("task-centric revision split blocks");
     expect(findings[0]).toContain("README revision/state: 15/approved");
     expect(findings[0]).toContain("Aggregate revision/state: 14/missing");
-    expect(findings[0]).toContain("task show ordinary-active-task --json");
+    expect(findings[0]).toContain("task show ordinary-active-task");
     expect(findings[0]).not.toContain("recover-rejection");
+  });
+
+  it("reports a completed historical split without failing the workspace doctor", () => {
+    const aggregate = createLegacyTaskAggregate({
+      id: "archived-task",
+      revision: 38,
+      title: "Archived task",
+      description: "Fixture",
+      status: "DONE",
+      acceptance_criteria: ["complete"],
+      captured_at: "2026-08-22T07:00:00.000Z",
+      updated_at: "2026-08-22T07:00:00.000Z",
+    });
+    const findings = buildTaskCentricProjectionIntegrityFindings([
+      {
+        id: aggregate.id,
+        status: "DONE",
+        doc_version: 3,
+        revision: 44,
+        plan_approval: { state: "approved" },
+        extensions: withTaskCentricAggregate({}, aggregate),
+      },
+    ]);
+
+    expect(findings).toHaveLength(1);
+    expect(findings[0]).toContain("[WARN]");
+    expect(findings[0]).toContain("archived task-centric revision split");
+    expect(findings[0]).toContain("README revision/state: 44/approved");
+    expect(findings[0]).toContain("Aggregate revision/state: 38/missing");
+    expect(findings[0]).toContain("task show archived-task");
+  });
+
+  it("blocks a DONE README when the aggregate is still active", () => {
+    const aggregate = createLegacyTaskAggregate({
+      id: "unfinished-aggregate",
+      revision: 14,
+      title: "Unfinished aggregate",
+      description: "Fixture",
+      status: "DOING",
+      acceptance_criteria: ["complete"],
+      captured_at: "2026-09-03T10:00:00.000Z",
+      updated_at: "2026-09-03T10:00:00.000Z",
+    });
+    const findings = buildTaskCentricProjectionIntegrityFindings([
+      {
+        id: aggregate.id,
+        status: "DONE",
+        doc_version: 3,
+        revision: 15,
+        plan_approval: { state: "approved" },
+        extensions: withTaskCentricAggregate({}, aggregate),
+      },
+    ]);
+
+    expect(findings).toHaveLength(1);
+    expect(findings[0]).toContain("[ERROR]");
+    expect(findings[0]).toContain("task-centric revision split blocks unfinished-aggregate");
   });
 
   it("does not report synchronized projection revisions", () => {

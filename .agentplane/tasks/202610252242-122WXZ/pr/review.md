@@ -24,18 +24,18 @@ Created: 2026-10-25T23:12:48.064Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-10-25T23:12:48.064Z
+- Updated: 2026-10-26T00:29:35.504Z
 - Branch: task/202610252242-122WXZ/ensure-task-projection-and-canonical-aggregate-r
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
  .../task-centric-backend-adapter.test.ts           |  39 ++++
  .../task-backend/task-centric-backend-adapter.ts   |   9 +-
- .../commands/doctor/workspace-task-state.test.ts   |  38 +++-
- .../src/commands/doctor/workspace-task-state.ts    |  44 +++-
+ .../commands/doctor/workspace-task-state.test.ts   |  95 ++++++++-
+ .../src/commands/doctor/workspace-task-state.ts    |  53 +++--
  .../src/commands/task/next-action.command.ts       |  26 +++
  .../task/revision-consistency.integration.test.ts  | 227 +++++++++++++++++++++
- 6 files changed, 367 insertions(+), 16 deletions(-)
+ 6 files changed, 432 insertions(+), 17 deletions(-)
 ```
 
 </details>
