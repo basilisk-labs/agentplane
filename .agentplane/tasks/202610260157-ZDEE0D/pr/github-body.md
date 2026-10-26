@@ -15,8 +15,8 @@ Add a generic, USER-attested correction route for a required verification comman
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:731de155276362896b92f88f54b4a1a30c0117f902411e2695474861f57967de
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -29,10 +29,10 @@ Add a generic, USER-attested correction route for a required verification comman
 ```text
  .../agentplane/src/commands/task/kernel-plan.ts    |  82 ++++++
  .../src/commands/task/plan-set.command.ts          |  26 ++
- packages/core/src/tasks/task-kernel/kernel.test.ts | 299 +++++++++++++++++++++
- packages/core/src/tasks/task-kernel/kernel.ts      | 165 +++++++++++-
+ packages/core/src/tasks/task-kernel/kernel.ts      | 165 ++++++++++-
  packages/core/src/tasks/task-kernel/model.ts       |   9 +
- 5 files changed, 576 insertions(+), 5 deletions(-)
+ .../task-kernel/required-check-correction.test.ts  | 321 +++++++++++++++++++++
+ 5 files changed, 598 insertions(+), 5 deletions(-)
 ```
 
 </details>
