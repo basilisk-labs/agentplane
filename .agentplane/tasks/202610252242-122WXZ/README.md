@@ -1,10 +1,11 @@
 ---
 id: "202610252242-122WXZ"
 title: "Ensure task projection and canonical aggregate revision coherence through verification-only replans"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 30
+revision: 31
 origin:
   system: "manual"
 depends_on: []
@@ -55,6 +56,22 @@ quality_review:
     - "Doctor treats active or unfinished projection splits as errors and completed historical splits as warnings. The route refuses an active split. The dedicated five-file regression run passed 60 tests, including the new archive diagnostic cases."
     - "A historical split cannot be repaired safely without task-specific provenance; the change deliberately leaves those bytes untouched and directs inspection."
     - "Residual risk: The original historical 15/14 state was not causally reproduced on current main; recovery of an already split task still requires task-specific provenance."
+token_usage:
+  agent_runs: 1
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:8fec0c8def5290bc0b471f502f515b4d01ea0b92b1aaf5c3c48b5c400ad49805"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-26T17:07:54.291Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -232,9 +249,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "f7f7e91f90289958f63b82b8fe15b77a9ca51776"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "d346d84bd2978e383e4fea40afe925c9543c44c3"
+  message: "🚧 122WXZ task: record external evaluator result"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -248,9 +268,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-26T17:07:54.291Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "d346d84bd2978e383e4fea40afe925c9543c44c3"
 doc_version: 3
-doc_updated_at: "2026-10-26T17:03:06.089Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-26T17:07:54.291Z"
+doc_updated_by: "CODER"
 description: "Investigate #6926 on exact current main; reproduce historical verification-only replan, replace-verify, approve, start-ready and already-split 15/14; if reproduced, implement generic atomic CAS/projection and evidence-bound recovery without bypassing concurrency; otherwise document exact current-main evidence and disposition."
 sections:
   Summary: |-
@@ -430,6 +458,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:2e437ef660bfff5ebd8c06eea598822553d86317df162d0fc27884f0c94081a5"
     work_order_id: "sha256:61c2393411f918a583c0ed453ee84e5dea9b3460c43d6ce0e80c21cf9b39ae86"
+  implementation_commit:
+    hash: "c99e268b5ffbc525d272f5dfd87080a53ecf7c85"
+    message: "🐛 122WXZ task: distinguish completed archive revision drift"
   task_execution_context:
     base_ref: "main"
     base_sha: "cdc68137f324840b306f26b78e7c5dc9587b51e6"
@@ -1481,3 +1512,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/1` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:8fec0c8def5290bc0b471f502f515b4d01ea0b92b1aaf5c3c48b5c400ad49805`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-26T17:07:54.291Z`
