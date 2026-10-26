@@ -32,6 +32,7 @@ import {
 import type {
   DomainEvent,
   EffectState,
+  ExecutionAuthority,
   ExternalEffect,
   ExecutionRequirements,
   KernelInput,
@@ -704,8 +705,7 @@ function validRequiredCheckCorrection(
   const before = current.work_items.find((item) => item.id === proof.work_item_id);
   const after = amended.work_items.find((item) => item.id === proof.work_item_id);
   const runtime = input.aggregate.work_items[proof.work_item_id];
-  if (!before || !after || !runtime || runtime.attempt < 2 || runtime.result_digest !== null)
-    return null;
+  if (!before || !after || !runtime || runtime.attempt < 1) return null;
   if (
     !["REWORK_READY", "BLOCKED"].includes(runtime.state) ||
     amended.work_items.some(
@@ -746,6 +746,10 @@ function validRequiredCheckCorrection(
   const acceptedResult = object(proof.accepted_result_command_input);
   const acceptedResultCommand = object(acceptedResult?.command);
   const acceptedResultAuthority = object(acceptedResult?.authority);
+  const acceptedResultProvenance = object(acceptedResultAuthority?.provenance);
+  const acceptedAuthorityDigest = acceptedResultAuthority
+    ? authorityDigest(acceptedResultAuthority as unknown as ExecutionAuthority)
+    : null;
   const failedWorkOrder = object(proof.failed_work_order);
   const issuedBinding = object(failedWorkOrder?.canonical_binding);
   const workBinding = issuedBinding && {
@@ -773,10 +777,21 @@ function validRequiredCheckCorrection(
   const nativeChecks = object(native?.checks);
   const checks = nativeChecks?.checks;
   const receipt = input.aggregate.mutation_receipts[`validation:${proof.failed_work_order_id}`];
+  const unsupported =
+    priorValidation?.status === "BLOCKED" &&
+    nativeChecks?.status === "unsupported" &&
+    nativeChecks.reason === `Unsupported declared check: ${proof.previous_command}`;
+  const unavailable =
+    priorValidation?.status === "FAILED" &&
+    nativeChecks?.status === "failed" &&
+    nativeChecks.reason === `Declared check could not run: ${proof.previous_command}`;
   if (
     failedWorkOrder?.work_order_id !== proof.failed_work_order_id ||
     object(failedWorkOrder.task)?.id !== input.aggregate.id ||
-    object(failedWorkOrder?.task)?.revision !== acceptedResultCommand?.expected_task_revision ||
+    ![
+      acceptedResultCommand?.expected_task_revision,
+      Number(acceptedResultCommand?.expected_task_revision) - 1,
+    ].includes(object(failedWorkOrder?.task)?.revision) ||
     issuedBinding?.phase !== "implementation" ||
     issuedBinding.task_id !== input.aggregate.id ||
     issuedBinding.work_item_id !== proof.work_item_id ||
@@ -784,11 +799,20 @@ function validRequiredCheckCorrection(
     issuedBinding.plan_digest !== current.digest ||
     issuedBinding.contract_digest !== oldDigest ||
     issuedBinding.repository_identity !== acceptedResultAuthority?.repository_identity ||
-    issuedBinding.authority_digest !== acceptedResultAuthority?.digest ||
-    issuedBinding.repository_fingerprint !== acceptedResult?.repository_fingerprint ||
-    issuedBinding.repository_fingerprint !== nativeInput?.repository_fingerprint ||
+    acceptedResultAuthority?.digest !== acceptedAuthorityDigest ||
+    acceptedResultAuthority.task_id !== input.aggregate.id ||
+    acceptedResultAuthority.plan_revision !== current.revision ||
+    acceptedResultAuthority.plan_digest !== current.digest ||
+    acceptedResultAuthority.work_item_id !== proof.work_item_id ||
+    (issuedBinding.authority_digest !== acceptedResultAuthority?.digest &&
+      issuedBinding.authority_digest !== acceptedResultProvenance?.parent_authority_digest) ||
+    acceptedResultAuthority?.repository_fingerprint !== acceptedResult?.repository_fingerprint ||
+    acceptedResult?.repository_fingerprint !== nativeInput?.repository_fingerprint ||
     !Number.isInteger(issuedBinding.attempt) ||
     Number(issuedBinding.attempt) < 1 ||
+    runtime.attempt !== issuedBinding.attempt ||
+    runtime.claim_id !== issuedBinding.claim_id ||
+    runtime.result_digest !== acceptedResultCommand?.result_digest ||
     typeof issuedBinding.claim_id !== "string" ||
     !issuedBinding.claim_id ||
     (acceptedResultCommand?.binding_digest !== undefined &&
@@ -810,7 +834,8 @@ function validRequiredCheckCorrection(
     priorCommand?.task_id !== input.aggregate.id ||
     priorCommand?.work_item_id !== proof.work_item_id ||
     priorCommand?.expected_state_fingerprint !== prior?.repository_fingerprint ||
-    priorValidation?.status !== "FAILED" ||
+    (!unsupported && !unavailable) ||
+    (unsupported && kernelDigest(runtime.validation) !== kernelDigest(priorValidation)) ||
     identity?.command_digest !== kernelDigest(oldChecks) ||
     native?.kind !== "kernel_native_validation" ||
     nativeInput?.task_id !== input.aggregate.id ||
@@ -820,10 +845,8 @@ function validRequiredCheckCorrection(
     !Array.isArray(priorValidation?.evidence_digests) ||
     priorValidation.evidence_digests[0] !== kernelDigest(native) ||
     kernelDigest(verification?.commands) !== kernelDigest(oldChecks) ||
-    nativeChecks?.status !== "failed" ||
-    nativeChecks?.reason !== `Declared check could not run: ${proof.previous_command}` ||
     !Array.isArray(checks) ||
-    checks.length !== oldChecks.length ||
+    checks.length !== (unsupported ? changedIndex : oldChecks.length) ||
     receipt?.mutation_id !== prior?.mutation_id ||
     receipt.command_digest !== kernelDigest(priorCommand) ||
     receipt.before_revision !== priorCommand?.expected_task_revision ||
