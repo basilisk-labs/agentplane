@@ -182,6 +182,7 @@ describe("task verification durability", () => {
     const { backend } = await taskBackend.loadTaskBackend({ cwd: root, rootOverride: null });
     const task = await backend.getTask(taskId);
     expect(task?.verification?.state).toBe("pending");
+    expect(task?.verification?.attempts).toBe(0);
     await expect(
       readdir(path.join(root, ".agentplane", "tasks", taskId, "verification")),
     ).resolves.toEqual([]);
