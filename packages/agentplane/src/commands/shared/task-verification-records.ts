@@ -2,9 +2,11 @@ import { createHash } from "node:crypto";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { gitEnv, gitShowFile, toGitPath } from "@agentplaneorg/core/git";
+import { taskKernel as k } from "@agentplaneorg/core/tasks";
 import { execFileAsync } from "@agentplaneorg/core/process";
 
 import type { TaskData } from "../../backends/task-backend.js";
+import { readKernelRecord } from "../../adapters/task-backend/kernel-record.js";
 import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import { resolveQualityReviewTargetSha } from "./quality-review-target.js";
 import {
@@ -14,7 +16,10 @@ import {
   verificationInputInvalidationReason,
 } from "./task-verification-input.js";
 import { resolveNativeTaskIdentity } from "./native-task-identity.js";
-import { parseVerificationCheckDetails } from "./verification-details.js";
+import {
+  parseVerificationCheckDetails,
+  parseVerificationNoCheckDetails,
+} from "./verification-details.js";
 import { hasValidRecordDigest, parseVerificationInput } from "./task-verification-record-parser.js";
 
 export type VerificationRecordTargetContext = {
@@ -118,8 +123,40 @@ function verifyStepsDigest(task: TaskData): `sha256:${string}` | null {
   return typeof verifySteps === "string" && verifySteps.trim() ? sha256(verifySteps.trim()) : null;
 }
 
-function hasConcreteCheckDetails(details: unknown): boolean {
-  return parseVerificationCheckDetails(details) !== null;
+function hasConcreteCheckDetails(task: TaskData, details: unknown): boolean {
+  return (
+    parseVerificationCheckDetails(details) !== null || trustedNoCheckDisposition(task, details)
+  );
+}
+
+function trustedNoCheckDisposition(task: TaskData, details: unknown): boolean {
+  const disposition = parseVerificationNoCheckDetails(details);
+  if (!disposition) return false;
+  if (disposition.taskId !== task.id || task.mutation_scope === "code") return false;
+  const source = task.extensions?.task_kernel;
+  if (!source || typeof source !== "object" || !("repository_identity" in source)) return false;
+  const identity = source.repository_identity;
+  if (typeof identity !== "string" || !/^sha256:[a-f0-9]{64}$/u.test(identity)) return false;
+  const read = readKernelRecord(task, identity as `sha256:${string}`);
+  if (read.kind !== "canonical") return false;
+  const plan = read.record.aggregate.current_plan;
+  const validation = read.record.aggregate.final_validation;
+  if (
+    plan?.state !== "APPROVED" ||
+    plan.digest !== disposition.planDigest ||
+    validation?.status !== "PASSED" ||
+    validation.identity.check_id !== "canonical-final-contracts-v2" ||
+    validation.identity.command_digest !== k.kernelDigest([]) ||
+    validation.identity.toolchain_digest !== k.kernelDigest([]) ||
+    !validation.evidence_digests.includes(disposition.evidenceDigest as `sha256:${string}`)
+  )
+    return false;
+  return plan.work_items.every((item) =>
+    item.execution_requirements.repository_effects.every(
+      (effect) =>
+        !["source_code", "tests", "public_api", "schema", "security_boundary"].includes(effect),
+    ),
+  );
 }
 
 function normalizedCheckIds(value: unknown): string[] | null {
@@ -149,6 +186,16 @@ export function verificationContractEvidenceCoverage(
   details: unknown,
 ): VerificationContractEvidenceCoverage {
   const requiredChecks = requiredVerificationContractChecks(task);
+  if (trustedNoCheckDisposition(task, details)) {
+    const allowed = requiredChecks.every((check) => check === "task_outcome");
+    return {
+      requiredChecks,
+      satisfiedChecks: allowed ? requiredChecks : [],
+      missingChecks: allowed ? [] : requiredChecks,
+      unexpectedChecks: [],
+      accepted: allowed,
+    };
+  }
   const normalized = normalizedCheckIds(
     parseVerificationCheckDetails(details)?.map(({ checkId }) => checkId) ?? null,
   );
@@ -221,7 +268,7 @@ async function assessCurrentVerification(
   ) {
     return rejectedAssessment("verification_contract_changed");
   }
-  if (requireConcreteCheckDetails && !hasConcreteCheckDetails(record.details)) {
+  if (requireConcreteCheckDetails && !hasConcreteCheckDetails(task, record.details)) {
     return rejectedAssessment("verification_details_missing");
   }
   if (record.result === "ok") {

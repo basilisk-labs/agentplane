@@ -1,6 +1,6 @@
 import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 import type { TaskData } from "../../backends/task-backend/shared/types.js";
-import type { taskKernel as k } from "@agentplaneorg/core/tasks";
+import { taskKernel as k, type KernelPlanProposal } from "@agentplaneorg/core/tasks";
 import type { NativeAuthorityContext } from "../../ports/kernel-authority.js";
 import { kernelApprovalReference } from "../../runner/usecases/kernel-authority.js";
 import type { CommandContext } from "../shared/task-backend.js";
@@ -160,6 +160,64 @@ export function assertCanonicalPlanWithinExecutionContract(
       { reason_code: "plan_exceeds_execution_contract", violations },
     );
   }
+}
+
+/** An empty WorkItem command list is only valid when no executable local check is owed. */
+export function assertCanonicalPlanVerificationPolicy(
+  task: Pick<TaskData, "task_kind" | "mutation_scope" | "execution_contract">,
+  proposal: KernelPlanProposal,
+  current?: k.PlanRecord | null,
+): void {
+  const selected = task.execution_contract?.verification.contract?.selected_checks ?? [];
+  const mandatoryLocal = selected.filter(
+    (check) => check !== "hosted_integration" && check !== "task_outcome",
+  );
+  const invalid = proposal.work_items.filter((item) => {
+    if (item.contract.verification_commands.length > 0) return false;
+    // An approved historical contract is immutable. A corrective Plan may retain it verbatim.
+    if (
+      current?.state === "APPROVED" &&
+      current.work_items.some(
+        (prior) =>
+          prior.id === item.id &&
+          prior.contract_digest === k.kernelDigest(item.contract) &&
+          k.kernelDigest({
+            depends_on: prior.depends_on,
+            required_inputs: prior.required_inputs,
+            expected_outputs: prior.expected_outputs,
+            execution_requirements: prior.execution_requirements,
+            optional: prior.optional,
+          }) ===
+            k.kernelDigest({
+              depends_on: item.depends_on,
+              required_inputs: item.required_inputs,
+              expected_outputs: item.expected_outputs,
+              execution_requirements: item.execution_requirements,
+              optional: item.optional,
+            }),
+      )
+    )
+      return false;
+    const effects = item.execution_requirements.repository_effects;
+    return (
+      task.mutation_scope === "code" ||
+      effects.some((effect) =>
+        ["source_code", "tests", "public_api", "schema", "security_boundary"].includes(effect),
+      ) ||
+      mandatoryLocal.length > 0
+    );
+  });
+  if (invalid.length === 0) return;
+  throw new CliError({
+    code: "E_VALIDATION",
+    message: `Canonical Plan requires executable verification commands for ${invalid.map((item) => item.id).join(", ")}. Add commands to the WorkItem contract; selected policy checks do not execute or bind themselves.`,
+    context: {
+      reason_code: "canonical_executable_verification_required",
+      work_item_ids: invalid.map((item) => item.id),
+      selected_local_checks: mandatoryLocal,
+      required_action: "correct_plan_proposal",
+    },
+  });
 }
 
 export function repositoryPolicyApprovalEligible(opts: {

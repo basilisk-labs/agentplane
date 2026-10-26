@@ -49,6 +49,7 @@ type KernelNativeValidationInput = Readonly<{
   result_digest: string;
   repository_fingerprint: string;
   repository_evidence_digest: string | null;
+  no_executable_checks: boolean;
   verification: DirectTaskVerificationInputIdentity;
 }>;
 
@@ -142,6 +143,7 @@ export function nativeValidationInput(opts: {
   binding: InspectionBinding;
   commands: readonly string[];
   repositoryEvidence: KernelRepositoryEvidence | null;
+  noExecutableChecks?: boolean;
 }): { input: KernelNativeValidationInput; digest: k.Sha256Digest; path: string } {
   const input: KernelNativeValidationInput = {
     schema_version: 1,
@@ -151,6 +153,7 @@ export function nativeValidationInput(opts: {
     result_digest: opts.binding.result_digest,
     repository_fingerprint: opts.binding.repository_fingerprint,
     repository_evidence_digest: opts.repositoryEvidence?.digest ?? null,
+    no_executable_checks: opts.noExecutableChecks === true,
     verification: directTaskVerificationInputIdentity({
       cwd: opts.command.resolvedProject.gitRoot,
       commands: opts.commands,
@@ -207,6 +210,7 @@ export async function runKernelNativeValidation(opts: {
   commands: readonly string[];
   directory: string;
   repositoryEvidence: KernelRepositoryEvidence | null;
+  noExecutableChecks?: boolean;
 }): Promise<
   | { kind: "observed"; evidence: KernelNativeValidationEvidence; path: string }
   | { kind: "retry"; reason: string | null }
@@ -244,7 +248,8 @@ export async function runKernelNativeValidation(opts: {
     cwd: opts.command.resolvedProject.gitRoot,
     additional_only: true,
     additional_commands: opts.commands.map((check) => ({ command: check })),
-    allow_empty: true,
+    allow_empty: opts.noExecutableChecks === true,
+    empty_is_failure: opts.noExecutableChecks !== true,
   });
   if (kernelCheckReviewDisposition(checks) === "retry") {
     await retainInfrastructure({

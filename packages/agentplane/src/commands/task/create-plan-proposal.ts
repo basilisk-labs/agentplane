@@ -94,9 +94,19 @@ export function suppliedKernelProposal(
               ).map((criterion) => criterion.description),
             ),
           ],
-          verification_commands: item.validation.checks
-            .map((check) => check.command)
-            .filter((command): command is string => command !== undefined),
+          // A semantic task.verify binding executes the Task's declared checks.
+          // Other semantic checks do not invent executable verification.
+          verification_commands: [
+            ...new Set(
+              item.validation.checks.flatMap((check) =>
+                check.command
+                  ? [check.command]
+                  : check.capability === "task.verify"
+                    ? task.verify
+                    : [],
+              ),
+            ),
+          ],
           role: "EXECUTOR",
           plan_input_digest: sourceDigest,
         },
