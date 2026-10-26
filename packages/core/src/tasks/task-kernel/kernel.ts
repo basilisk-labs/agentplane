@@ -745,6 +745,23 @@ function validRequiredCheckCorrection(
 
   const acceptedResult = object(proof.accepted_result_command_input);
   const acceptedResultCommand = object(acceptedResult?.command);
+  const acceptedResultAuthority = object(acceptedResult?.authority);
+  const failedWorkOrder = object(proof.failed_work_order);
+  const issuedBinding = object(failedWorkOrder?.canonical_binding);
+  const workBinding = issuedBinding && {
+    task_id: issuedBinding.task_id,
+    repository_fingerprint: issuedBinding.repository_fingerprint,
+    plan_revision: issuedBinding.plan_revision,
+    plan_digest: issuedBinding.plan_digest,
+    work_item_id: issuedBinding.work_item_id,
+    attempt: issuedBinding.attempt,
+    claim_id: issuedBinding.claim_id,
+    contract_digest: issuedBinding.contract_digest,
+  };
+  const boundResultCommand =
+    acceptedResultCommand && workBinding
+      ? { ...acceptedResultCommand, binding_digest: kernelDigest(workBinding) }
+      : null;
   const resultReceipt = input.aggregate.mutation_receipts[`result:${proof.failed_work_order_id}`];
   const prior = object(proof.validation_command_input);
   const priorCommand = object(prior?.command);
@@ -757,6 +774,25 @@ function validRequiredCheckCorrection(
   const checks = nativeChecks?.checks;
   const receipt = input.aggregate.mutation_receipts[`validation:${proof.failed_work_order_id}`];
   if (
+    failedWorkOrder?.work_order_id !== proof.failed_work_order_id ||
+    object(failedWorkOrder.task)?.id !== input.aggregate.id ||
+    object(failedWorkOrder?.task)?.revision !== acceptedResultCommand?.expected_task_revision ||
+    issuedBinding?.phase !== "implementation" ||
+    issuedBinding.task_id !== input.aggregate.id ||
+    issuedBinding.work_item_id !== proof.work_item_id ||
+    issuedBinding.plan_revision !== current.revision ||
+    issuedBinding.plan_digest !== current.digest ||
+    issuedBinding.contract_digest !== oldDigest ||
+    issuedBinding.repository_identity !== acceptedResultAuthority?.repository_identity ||
+    issuedBinding.authority_digest !== acceptedResultAuthority?.digest ||
+    issuedBinding.repository_fingerprint !== acceptedResult?.repository_fingerprint ||
+    issuedBinding.repository_fingerprint !== nativeInput?.repository_fingerprint ||
+    !Number.isInteger(issuedBinding.attempt) ||
+    Number(issuedBinding.attempt) < 1 ||
+    typeof issuedBinding.claim_id !== "string" ||
+    !issuedBinding.claim_id ||
+    (acceptedResultCommand?.binding_digest !== undefined &&
+      acceptedResultCommand.binding_digest !== kernelDigest(workBinding)) ||
     acceptedResult?.mutation_id !== `result:${proof.failed_work_order_id}` ||
     acceptedResultCommand?.kind !== "accept_work_item_result" ||
     acceptedResultCommand?.task_id !== input.aggregate.id ||
@@ -765,7 +801,7 @@ function validRequiredCheckCorrection(
     acceptedResultCommand?.plan_digest !== current.digest ||
     acceptedResultCommand?.result_digest !== nativeInput?.result_digest ||
     resultReceipt?.mutation_id !== acceptedResult?.mutation_id ||
-    resultReceipt.command_digest !== kernelDigest(acceptedResultCommand) ||
+    resultReceipt.command_digest !== kernelDigest(boundResultCommand) ||
     resultReceipt.before_revision !== acceptedResultCommand?.expected_task_revision ||
     resultReceipt.after_revision !== resultReceipt.before_revision + 1 ||
     resultReceipt.after_revision > input.aggregate.revision ||
