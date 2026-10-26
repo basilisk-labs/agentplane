@@ -268,6 +268,30 @@ describe("canonical task kernel reducer", () => {
       repository_fingerprint: fingerprint,
       command: priorCommand,
     };
+    const acceptedResultCommand: TaskCommand = {
+      kind: "accept_work_item_result",
+      task_id: "task-1",
+      expected_task_revision: 4,
+      expected_state_fingerprint: fingerprint,
+      plan_revision: current.revision,
+      plan_digest: current.digest,
+      work_item_id: "kernel",
+      result_digest: resultDigest,
+      output_manifests: [],
+    };
+    const acceptedResult = {
+      mutation_id: `result:${workOrderId}`,
+      command: acceptedResultCommand,
+    };
+    const resultReceipt = {
+      mutation_id: acceptedResult.mutation_id,
+      command_digest: kernelDigest(acceptedResultCommand),
+      before_revision: 4,
+      after_revision: 5,
+      aggregate_digest: kernelDigest("after-result"),
+      event_digests: [],
+      effect_ids: [],
+    };
     const receipt = {
       mutation_id: `validation:${workOrderId}`,
       command_digest: kernelDigest(priorCommand),
@@ -280,7 +304,10 @@ describe("canonical task kernel reducer", () => {
     const state = aggregate({
       current_plan: current,
       work_items: { kernel: { ...runtime("BLOCKED"), definition: oldDefinition, attempt: 2 } },
-      mutation_receipts: { [receipt.mutation_id]: receipt },
+      mutation_receipts: {
+        [resultReceipt.mutation_id]: resultReceipt,
+        [receipt.mutation_id]: receipt,
+      },
     });
     const base = amendmentCommand(state, [newDefinition]);
     const approvalDigest = planScopeExpansionApprovalDigest({
@@ -301,6 +328,7 @@ describe("canonical task kernel reducer", () => {
         failed_work_order_id: workOrderId,
         previous_command: oldCheck,
         replacement_command: newCheck,
+        accepted_result_command_input: acceptedResult,
         validation_command_input: prior,
         native_validation: native,
       },
@@ -317,7 +345,10 @@ describe("canonical task kernel reducer", () => {
       aggregate: {
         current_plan: { approval_evidence_digest: approvalDigest },
         work_items: { kernel: { state: "READY", result_digest: null, validation: null } },
-        mutation_receipts: { [receipt.mutation_id]: receipt },
+        mutation_receipts: {
+          [resultReceipt.mutation_id]: resultReceipt,
+          [receipt.mutation_id]: receipt,
+        },
       },
     });
     expectRejection(
@@ -355,6 +386,32 @@ describe("canonical task kernel reducer", () => {
     );
     expectRejection(
       { ...invocation, aggregate: { ...state, mutation_receipts: {} } },
+      "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
+    );
+    expectRejection(
+      {
+        ...invocation,
+        command: {
+          ...command,
+          required_check_correction: {
+            ...command.required_check_correction!,
+            accepted_result_command_input: {
+              ...acceptedResult,
+              command: { ...acceptedResultCommand, plan_digest: kernelDigest("older-plan") },
+            },
+          },
+        },
+      },
+      "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
+    );
+    expectRejection(
+      {
+        ...invocation,
+        aggregate: {
+          ...state,
+          mutation_receipts: { [receipt.mutation_id]: receipt, "result:unrelated": resultReceipt },
+        },
+      },
       "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
     );
     expectRejection(

@@ -743,6 +743,9 @@ function validRequiredCheckCorrection(
   )
     return null;
 
+  const acceptedResult = object(proof.accepted_result_command_input);
+  const acceptedResultCommand = object(acceptedResult?.command);
+  const resultReceipt = input.aggregate.mutation_receipts[`result:${proof.failed_work_order_id}`];
   const prior = object(proof.validation_command_input);
   const priorCommand = object(prior?.command);
   const priorValidation = object(priorCommand?.validation);
@@ -754,6 +757,18 @@ function validRequiredCheckCorrection(
   const checks = nativeChecks?.checks;
   const receipt = input.aggregate.mutation_receipts[`validation:${proof.failed_work_order_id}`];
   if (
+    acceptedResult?.mutation_id !== `result:${proof.failed_work_order_id}` ||
+    acceptedResultCommand?.kind !== "accept_work_item_result" ||
+    acceptedResultCommand?.task_id !== input.aggregate.id ||
+    acceptedResultCommand?.work_item_id !== proof.work_item_id ||
+    acceptedResultCommand?.plan_revision !== current.revision ||
+    acceptedResultCommand?.plan_digest !== current.digest ||
+    acceptedResultCommand?.result_digest !== nativeInput?.result_digest ||
+    resultReceipt?.mutation_id !== acceptedResult?.mutation_id ||
+    resultReceipt.command_digest !== kernelDigest(acceptedResultCommand) ||
+    resultReceipt.before_revision !== acceptedResultCommand?.expected_task_revision ||
+    resultReceipt.after_revision !== resultReceipt.before_revision + 1 ||
+    resultReceipt.after_revision > input.aggregate.revision ||
     prior?.mutation_id !== `validation:${proof.failed_work_order_id}` ||
     priorCommand?.kind !== "record_work_item_validation" ||
     priorCommand?.task_id !== input.aggregate.id ||
@@ -777,6 +792,7 @@ function validRequiredCheckCorrection(
     receipt.command_digest !== kernelDigest(priorCommand) ||
     receipt.before_revision !== priorCommand?.expected_task_revision ||
     receipt.after_revision !== receipt.before_revision + 1 ||
+    resultReceipt.after_revision > receipt.before_revision ||
     receipt.after_revision > input.aggregate.revision
   )
     return null;
