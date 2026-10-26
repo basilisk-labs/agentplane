@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -56,9 +56,11 @@ quality_review:
     - "At evaluated head d01a0ecd5e860907306ba30c0d0ed917903ffe27, the diff removes only the early retained-evidence completion path and adds negative regression cases for changed implementation and invalidated checks. The supervisor recorded a passing full local CI run for the updated head; hosted checks also passed on that head."
     - "Residual risk: Native hosted integration and task closure remain pending after this read-only quality verdict."
 token_usage:
-  agent_runs: 0
+  agent_runs: 1
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
   input_tokens: null
-  journal_digest: "sha256:1a0b0fbafe164e7d11bfb18a0cb5edef5a53178d4bc9c0c048500f35de8be8d3"
+  journal_digest: "sha256:d3a2b20c48afcbd8c6df5762cda0f70d3dd51aca6a183eb869a5e0b6ac0d8562"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -67,8 +69,8 @@ token_usage:
   source: "supervisor_journal"
   state: "unavailable"
   total_tokens: null
-  unavailable_reason: "no_supervised_agent_runs"
-  updated_at: "2026-10-26T14:44:47.459Z"
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-26T16:40:26.286Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -1307,9 +1309,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "a9f3eb0205dda893c1513989699fcef6950f5093"
-  message: "✅ JK4HX9 task: prevent stale final-validation evidence from bypassing authority..."
+  hash: "aad510e804ed77b5c573cf56f527c411fccc5898"
+  message: "🚧 JK4HX9 task: record external evaluator result"
 comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -1340,8 +1345,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-10-26T16:40:26.286Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "aad510e804ed77b5c573cf56f527c411fccc5898"
 doc_version: 3
-doc_updated_at: "2026-10-26T16:39:59.978Z"
+doc_updated_at: "2026-10-26T16:40:26.296Z"
 doc_updated_by: "CODER"
 description: "For a canonical branch PR task whose implementation changed after a recorded PASS, advance authority to the new repository fingerprint and execute fresh final validation before completion. Preserve fail-closed behavior and never synthesize verification. Add regression coverage for stale evidence and stable recovery."
 sections:
@@ -1594,8 +1607,8 @@ extensions:
     verification_evidence_digest: "sha256:292ad0620abfc4cc99a50731937bc5c9af65c9a4895e28ba83c0799997b69853"
     work_order_id: "sha256:ead222400ab549c0a31c8cdc1037c4cbc64684857fb57762cebbc3890786a77b"
   implementation_commit:
-    hash: "582299f70bc395f4e44971dd394f5a475e147f66"
-    message: "🚧 JK4HX9 task: apply canonical agent result"
+    hash: "d01a0ecd5e860907306ba30c0d0ed917903ffe27"
+    message: "Merge branch 'main' into task/202610261134-JK4HX9/prevent-stale-final-validation-evidence-from-byp"
   task_execution_context:
     base_ref: "main"
     base_sha: "cdc68137f324840b306f26b78e7c5dc9587b51e6"
@@ -2317,12 +2330,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/0` agent runs
+- Completeness: `0/1` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:1a0b0fbafe164e7d11bfb18a0cb5edef5a53178d4bc9c0c048500f35de8be8d3`
-- Unavailable reason: `no_supervised_agent_runs`
-- Updated at: `2026-10-26T14:44:47.459Z`
+- Journal digest: `sha256:d3a2b20c48afcbd8c6df5762cda0f70d3dd51aca6a183eb869a5e0b6ac0d8562`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-26T16:40:26.286Z`
