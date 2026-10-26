@@ -6,7 +6,7 @@ Created: 2026-10-25T22:34:12.763Z
 
 - Task: `202610252200-AFM63A`
 - Title: Recover provider update intent across authorized base advancement
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610252200-AFM63A/recover-provider-update-intent-across-authorized`
 - Canonical task record: `.agentplane/tasks/202610252200-AFM63A/README.md`
 
