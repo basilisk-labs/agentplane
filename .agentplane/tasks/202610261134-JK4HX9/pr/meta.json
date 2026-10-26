@@ -8,10 +8,10 @@
   "pr_number": 6938,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6938",
   "pre_merge_closure": {
-    "basis_commit": "a9f3eb0205dda893c1513989699fcef6950f5093",
+    "basis_commit": "aad510e804ed77b5c573cf56f527c411fccc5898",
     "branch": "task/202610261134-JK4HX9/prevent-stale-final-validation-evidence-from-byp",
     "pr_number": 6938,
-    "recorded_at": "2026-10-26T14:44:47.755Z",
+    "recorded_at": "2026-10-26T16:40:26.420Z",
     "state": "closed_before_merge"
   },
   "provider": {
