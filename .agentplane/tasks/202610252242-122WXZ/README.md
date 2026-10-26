@@ -1,10 +1,10 @@
 ---
 id: "202610252242-122WXZ"
 title: "Ensure task projection and canonical aggregate revision coherence through verification-only replans"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 23
+revision: 29
 origin:
   system: "manual"
 depends_on: []
@@ -21,7 +21,7 @@ plan_approval:
   note: "Projected from the approved canonical Task Kernel plan."
 verification:
   state: "ok"
-  updated_at: "2026-10-25T23:19:17.931Z"
+  updated_at: "2026-10-26T17:03:04.408Z"
   updated_by: "SUPERVISOR"
   note: "Verified: canonical Task Kernel final checks passed."
   attempts: 0
@@ -227,8 +227,14 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "verify"
+    at: "2026-10-26T17:03:04.408Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: canonical Task Kernel final checks passed."
 doc_version: 3
-doc_updated_at: "2026-10-25T23:19:23.831Z"
+doc_updated_at: "2026-10-26T17:03:06.089Z"
 doc_updated_by: "SUPERVISOR"
 description: "Investigate #6926 on exact current main; reproduce historical verification-only replan, replace-verify, approve, start-ready and already-split 15/14; if reproduced, implement generic atomic CAS/projection and evidence-bound recovery without bypassing concurrency; otherwise document exact current-main evidence and disposition."
 sections:
@@ -313,6 +319,71 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-10-26T17:03:04.408Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: canonical Task Kernel final checks passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:57504d8da360da3e9663aa8fe1856eecba6d607e8d7bae7c3497dbc34db1e0d4, input_digest=sha256:ccb03234881b65bfe7421f3f9c794d70f39d054d8cf9f12ee27864c2949f3ba8
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/commands/task/update.unit.test.ts packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610252242-122WXZ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610252242-122WXZ Verification Contract check affected_unit_integration (1/2)
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/commands/task/revision-consistency.integration.test.ts packages/agentplane/src/commands/task/update.unit.test.ts packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/commands/doctor/workspace-task-state.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610252242-122WXZ/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610252242-122WXZ Verification Contract check affected_unit_integration (2/2)
+
+    Check: critical_paths
+    Command: bunx vitest run packages/agentplane/src/commands/task/update.unit.test.ts packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610252242-122WXZ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610252242-122WXZ Verification Contract check critical_paths (1/2)
+
+    Check: critical_paths
+    Command: bunx vitest run packages/agentplane/src/commands/task/revision-consistency.integration.test.ts packages/agentplane/src/commands/task/update.unit.test.ts packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/commands/doctor/workspace-task-state.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610252242-122WXZ/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610252242-122WXZ Verification Contract check critical_paths (2/2)
+
+    Check: task_outcome
+    Command: bunx vitest run packages/agentplane/src/commands/task/update.unit.test.ts packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610252242-122WXZ/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610252242-122WXZ Verification Contract check task_outcome (1/2)
+
+    Check: task_outcome
+    Command: bunx vitest run packages/agentplane/src/commands/task/revision-consistency.integration.test.ts packages/agentplane/src/commands/task/update.unit.test.ts packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/commands/doctor/workspace-task-state.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610252242-122WXZ/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610252242-122WXZ Verification Contract check task_outcome (2/2)
+
+    NativeTaskIdentityRef:
+    - plan_digest: sha256:2cd740521347ce805824bbc83426f76f012c65f0f44a87e4ba230264b2517d8e
+    - policy_digest: sha256:1150ba6caefe9e829c30b3520b9246ed1ec7ebbeedbe788c63cf7989015dbb46
+    - capability_digest: sha256:f3724675b80d5bc85968b9d7a588cf8ccec326b5ba4c8eeeb5426465e83b7ff4
+    - checks_digest: sha256:1663a3bf7ed675baa1089cae8f78cc54d65c19d9e37554316646d51ffdb5ba12
+    - identity_digest: sha256:ff957d1f701f2bd52ffd2512c37b89dd94e038feb00b67457d1a3da7ceb73336
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202610252242-122WXZ
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -320,7 +391,7 @@ sections:
   Findings: ""
 extensions:
   agentplane.kernel_operational_projection:
-    digest: "sha256:40de8b7dc6cf8dc89dc32628ce388573b38ec2811a0731345f3e366ea91651ee"
+    digest: "sha256:fc48a5fb6ae98af769d60487c8e98a72dd2af07e3e7890ea476cb2be482d68dc"
     evidence_refs:
       - "../../../.git/agentplane/kernel/exchanges/202610252242-122WXZ/b170c37586229d1abce43a2c937439cb016e80cfd62155aa9a9eb47babb3cbf3/quality-report.json"
     findings:
@@ -334,7 +405,7 @@ extensions:
     review_identity_digest: "sha256:0df33886467730d211ad8cc003fe0e743a961dcdbbab349eba2a0ced0b546b65"
     schema_version: 1
     source: "task_kernel"
-    verification_evidence_digest: "sha256:5b4349a149f814e18ab45cd1eb02754085000a5f72e42300ed1473617c7ed970"
+    verification_evidence_digest: "sha256:2e437ef660bfff5ebd8c06eea598822553d86317df162d0fc27884f0c94081a5"
     work_order_id: "sha256:61c2393411f918a583c0ed453ee84e5dea9b3460c43d6ce0e80c21cf9b39ae86"
   task_execution_context:
     base_ref: "main"
@@ -603,6 +674,55 @@ extensions:
             evidence_digest: "sha256:d07f8c77353f41506ee1d4bc89d68227910afd4db9cce1be5e46cd1eddb6f6c0"
             kind: "repository_implementation"
             previous_fingerprint: "sha256:5c330c2585ee6eb4513618402ffadf4634fe9ac8cfe2eeed48d5a7289fa1d3d7"
+        -
+          approval_mode: null
+          authority:
+            capabilities:
+              - "repository_write"
+            completion_requirements:
+              - "work_item_validation"
+              - "final_validation"
+            digest: "sha256:927fb59c5893913830cb9f78a0a90c9b05900957f725ba568745fbb5e8004671"
+            expires_at: null
+            external_effects: []
+            plan_digest: "sha256:2cd740521347ce805824bbc83426f76f012c65f0f44a87e4ba230264b2517d8e"
+            plan_revision: 2
+            policy_digests:
+              - "sha256:37492408e7e56de75241cc87a953f635dd9852af3cd93225899233274890938c"
+            provenance:
+              actor_id: "agentplane:kernel-controller"
+              evidence_digest: "sha256:e18033acffb6f79f315df10a8ac43fcafbeca0feabd9f86fec685df7bc20ff6b"
+              kind: "SYSTEM"
+              parent_authority_digest: "sha256:b312f3bb8d4d00851cbf9277897082ad7d9594fad58f2667911b5f229cc9263d"
+            repository_effects:
+              - "repository_write"
+              - "source_code"
+              - "tests"
+            repository_fingerprint: "sha256:ed67b4e5d083db423a208b9e0b0bff7290a9216c7ccd0cc51d6b8b72d4773a7d"
+            repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+            resources: []
+            risk:
+              implementation: "bounded"
+              requirements: "bounded"
+              reversibility: "reversible"
+            scope_roots:
+              - "packages/agentplane/src/adapters/task-backend"
+              - "packages/agentplane/src/commands/doctor"
+              - "packages/agentplane/src/commands/task"
+            task_id: "202610252242-122WXZ"
+            validation_requirements:
+              - "affected_unit_integration"
+              - "critical_paths"
+              - "hosted_integration"
+              - "task_outcome"
+            work_item_id: null
+          observation:
+            changed_paths:
+              - "packages/agentplane/src/commands/doctor/workspace-task-state.test.ts"
+              - "packages/agentplane/src/commands/doctor/workspace-task-state.ts"
+            evidence_digest: "sha256:f8caa357760fe3d1a2c1b481325e0785a67b240be00b7e4beb88d521cffbe94f"
+            kind: "repository_implementation"
+            previous_fingerprint: "sha256:03295507a9689aad2dc71b7ee44735dde234f0a75a8a31a8a880c15235194e7c"
       controller_transfer: null
       current_plan:
         approval_actor_id: "agentplane:kernel-controller"
@@ -636,14 +756,14 @@ extensions:
       effects: []
       final_validation:
         evidence_digests:
-          - "sha256:938d0dc5d0b11916a3b6aefc7d322e8f01057ed2569ceab9356931ad1f1d5ed8"
+          - "sha256:2e437ef660bfff5ebd8c06eea598822553d86317df162d0fc27884f0c94081a5"
         identity:
           check_id: "canonical-final-contracts-v2"
           command_digest: "sha256:ca2defc087327ffcad6e974dc984a8cb9b8b4e1e7b54cf4f8175c26d4edb5c1d"
-          environment_digest: "sha256:732116cf4b29f8b20a4661dbf4f883d55ae6f56318b9e14a22f076fe43e20e07"
-          implementation_identity: "sha256:03295507a9689aad2dc71b7ee44735dde234f0a75a8a31a8a880c15235194e7c"
-          toolchain_digest: "sha256:c95285ef3f232cbd82fed7d4890b6d8e5635dd6f6b4dbfd91e31882f685bf374"
-        observed_at: "2026-10-25T23:17:21.243Z"
+          environment_digest: "sha256:39598cea21ccd1aa2a8db599310cc7975598d770945f0c58db94d43bab1298f1"
+          implementation_identity: "sha256:ed67b4e5d083db423a208b9e0b0bff7290a9216c7ccd0cc51d6b8b72d4773a7d"
+          toolchain_digest: "sha256:69f4d61f435eba0a1a7ce98f3d6f5cc5d87cebfab1dae418e3268da258c2fa48"
+        observed_at: "2026-10-26T17:02:29.034Z"
         status: "PASSED"
       id: "202610252242-122WXZ"
       intent_digest: "sha256:bc146b51694b098b1e9c6d1a4a18fd6f36985a2cb8d25002e24315b8d9b3605a"
@@ -658,6 +778,15 @@ extensions:
           event_digests:
             - "sha256:57a78f90f505fa03ffaf9fbb12324551c023c946001e5d2d4998eda89fa0333f"
           mutation_id: "capture:202610252242-122WXZ"
+        final-validation:sha256:2e437ef660bfff5ebd8c06eea598822553d86317df162d0fc27884f0c94081a5:20:
+          after_revision: 21
+          aggregate_digest: "sha256:d19d81d5dff2363594f53a5c950c802af4efc947f5752d5ee7284ee1e567ef72"
+          before_revision: 20
+          command_digest: "sha256:ba2e6c17170accb7baa71f297a22907c56f9b196fab9e625f92dac3a3143d15e"
+          effect_ids: []
+          event_digests:
+            - "sha256:c9ff9362b4fd733be1652a5dd5cb010b8c9d6fad82e4635e46523692a74d5f7f"
+          mutation_id: "final-validation:sha256:2e437ef660bfff5ebd8c06eea598822553d86317df162d0fc27884f0c94081a5:20"
         final-validation:sha256:938d0dc5d0b11916a3b6aefc7d322e8f01057ed2569ceab9356931ad1f1d5ed8:18:
           after_revision: 19
           aggregate_digest: "sha256:c97a7cf6be45ba76b54fb1be4b3cf90816b67cfea2e2ddea0262e86d38045505"
@@ -667,6 +796,15 @@ extensions:
           event_digests:
             - "sha256:cde90b524392163522007876f6126d8d84b8535bfe079d938887e68ec5be68ec"
           mutation_id: "final-validation:sha256:938d0dc5d0b11916a3b6aefc7d322e8f01057ed2569ceab9356931ad1f1d5ed8:18"
+        kernel_task_completion_required:sha256:c8713a8ad04b0eb30eddd859ffb5d5c3f814bbf42d5e631c12dcf47b0575085f:sha256:ed67b4e5d083db423a208b9e0b0bff7290a9216c7ccd0cc51d6b8b72d4773a7d:
+          after_revision: 22
+          aggregate_digest: "sha256:27f8af27772cbcd3fb7e529812a595828d63dc38eab4bc843a939f21fda85900"
+          before_revision: 21
+          command_digest: "sha256:b27ae106e8c558e1c8f3ebdd530240adc57c14351ae3e23d860d7a3915c17429"
+          effect_ids: []
+          event_digests:
+            - "sha256:ae16b05e43c0604f6240e1592f7cdce279edde21177a0e6685dbe6e7370d5d80"
+          mutation_id: "kernel_task_completion_required:sha256:c8713a8ad04b0eb30eddd859ffb5d5c3f814bbf42d5e631c12dcf47b0575085f:sha256:ed67b4e5d083db423a208b9e0b0bff7290a9216c7ccd0cc51d6b8b72d4773a7d"
         kernel_work_item_claim_required:sha256:3e97fd89a9ac7217be59f2d94c9ad116a917d9726aec925920de3958aa5372e3:sha256:5c330c2585ee6eb4513618402ffadf4634fe9ac8cfe2eeed48d5a7289fa1d3d7:
           after_revision: 12
           aggregate_digest: "sha256:34bfed4fdd846234b27e77dac209338c4cfe626ce2ff886f654e3029c5b03870"
@@ -766,6 +904,15 @@ extensions:
           event_digests:
             - "sha256:129f7d3f894b849c144ac98fda095710e09078906e88069bd1044b8db5005b14"
           mutation_id: "semantic-stop:sha256:3ced6b751873d36550b9f833f77d5567f4616d9b0961d70103fbf1d357f6e38a"
+        sha256:428b0b8cf315999dedbdbe6d9b67eb077b021a553141bc0927c295f4ceb004ce:
+          after_revision: 20
+          aggregate_digest: "sha256:30673708c62f07b253ccd37ad9aa79796ddcb28240472d41fb352ea269ddd452"
+          before_revision: 19
+          command_digest: "sha256:04e69ad1c44df0f226f17cdfca8513817629b0b536f9957da418886071c354d7"
+          effect_ids: []
+          event_digests:
+            - "sha256:7ed592649c273d0e8aec6c47510d7ebf28f4b22ad43ed3ec3778e608a189a553"
+          mutation_id: "sha256:428b0b8cf315999dedbdbe6d9b67eb077b021a553141bc0927c295f4ceb004ce"
         sha256:89bb1711f7feb6a2b4c4842f9894b40f8036874caa7ad7c505fa48f2b7e6d7dd:
           after_revision: 7
           aggregate_digest: "sha256:491bf486b7dd6b614bfee993004c301d4218e9f3c4f78f07ee0c717aadc84d10"
@@ -849,9 +996,9 @@ extensions:
               id: "revision-consistency-investigation"
               optional: false
               required_inputs: []
-      revision: 19
+      revision: 22
       schema_version: 1
-      state: "FINAL_VALIDATION"
+      state: "COMPLETED"
       work_items:
         revision-consistency-investigation:
           attempt: 2
@@ -912,7 +1059,7 @@ extensions:
               toolchain_digest: "sha256:41f556c967f03a69c0cef4ec75be7f8d38201f5dbd7892c6be1827991efef149"
             observed_at: "2026-10-25T23:16:15.691Z"
             status: "PASSED"
-    digest: "sha256:3af5acc921b5ec127a4ed6cab6a5ce5435e0a7dbf5e773c73abd5fd70bf6876d"
+    digest: "sha256:d03e2c60e9d71d597a6f3e0cd5d1074d868678d4f13742c136a7466354e2dea7"
     documents:
       contracts:
         sha256:3f41238c75aff312bded289b149efc1663be7ded08eca5ec276714d442d5b1bd:
@@ -1115,6 +1262,33 @@ extensions:
         payload_digest: "sha256:061b64c43e766deec68402b745cdbeebf06d7f074e836a20923db1df75ee5a64"
         task_id: "202610252242-122WXZ"
         task_revision: 19
+      -
+        command_digest: "sha256:04e69ad1c44df0f226f17cdfca8513817629b0b536f9957da418886071c354d7"
+        id: "sha256:428b0b8cf315999dedbdbe6d9b67eb077b021a553141bc0927c295f4ceb004ce:authority_continued"
+        kind: "authority_continued"
+        mutation_id: "sha256:428b0b8cf315999dedbdbe6d9b67eb077b021a553141bc0927c295f4ceb004ce"
+        occurred_at: "2026-10-26T17:02:14.737Z"
+        payload_digest: "sha256:881eb1d3f48c5092189b9c51aa93913d574c5e9406e4b901513a8741256569d1"
+        task_id: "202610252242-122WXZ"
+        task_revision: 20
+      -
+        command_digest: "sha256:ba2e6c17170accb7baa71f297a22907c56f9b196fab9e625f92dac3a3143d15e"
+        id: "final-validation:sha256:2e437ef660bfff5ebd8c06eea598822553d86317df162d0fc27884f0c94081a5:20:final_validation_recorded"
+        kind: "final_validation_recorded"
+        mutation_id: "final-validation:sha256:2e437ef660bfff5ebd8c06eea598822553d86317df162d0fc27884f0c94081a5:20"
+        occurred_at: "2026-10-26T17:03:00.665Z"
+        payload_digest: "sha256:3576d93b0e7b1aa2698edaa9ef403e82acb32177611cf400c1c7b7a6cb66102b"
+        task_id: "202610252242-122WXZ"
+        task_revision: 21
+      -
+        command_digest: "sha256:b27ae106e8c558e1c8f3ebdd530240adc57c14351ae3e23d860d7a3915c17429"
+        id: "kernel_task_completion_required:sha256:c8713a8ad04b0eb30eddd859ffb5d5c3f814bbf42d5e631c12dcf47b0575085f:sha256:ed67b4e5d083db423a208b9e0b0bff7290a9216c7ccd0cc51d6b8b72d4773a7d:task_completed"
+        kind: "task_completed"
+        mutation_id: "kernel_task_completion_required:sha256:c8713a8ad04b0eb30eddd859ffb5d5c3f814bbf42d5e631c12dcf47b0575085f:sha256:ed67b4e5d083db423a208b9e0b0bff7290a9216c7ccd0cc51d6b8b72d4773a7d"
+        occurred_at: "2026-10-26T17:03:25.745Z"
+        payload_digest: "sha256:9e3ffba84d9618414a6e19ccc6b3f0c514e0c979da474ed11af650a90cc317db"
+        task_id: "202610252242-122WXZ"
+        task_revision: 22
     kind: "canonical_task"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
@@ -1199,6 +1373,71 @@ NativeTaskIdentityRef:
 - capability_digest: sha256:f3724675b80d5bc85968b9d7a588cf8ccec326b5ba4c8eeeb5426465e83b7ff4
 - checks_digest: sha256:a5a93c2a8534721650e340a5de52514191e7fa4dbf468d1ec5944b5dd5514761
 - identity_digest: sha256:c347e930a88e14316e24e1dfad3d1714b66009f2034f821efc77c1bb815bfd82
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202610252242-122WXZ
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-10-26T17:03:04.408Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: canonical Task Kernel final checks passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:57504d8da360da3e9663aa8fe1856eecba6d607e8d7bae7c3497dbc34db1e0d4, input_digest=sha256:ccb03234881b65bfe7421f3f9c794d70f39d054d8cf9f12ee27864c2949f3ba8
+
+Details:
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/commands/task/update.unit.test.ts packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610252242-122WXZ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610252242-122WXZ Verification Contract check affected_unit_integration (1/2)
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/commands/task/revision-consistency.integration.test.ts packages/agentplane/src/commands/task/update.unit.test.ts packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/commands/doctor/workspace-task-state.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610252242-122WXZ/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610252242-122WXZ Verification Contract check affected_unit_integration (2/2)
+
+Check: critical_paths
+Command: bunx vitest run packages/agentplane/src/commands/task/update.unit.test.ts packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610252242-122WXZ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610252242-122WXZ Verification Contract check critical_paths (1/2)
+
+Check: critical_paths
+Command: bunx vitest run packages/agentplane/src/commands/task/revision-consistency.integration.test.ts packages/agentplane/src/commands/task/update.unit.test.ts packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/commands/doctor/workspace-task-state.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610252242-122WXZ/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610252242-122WXZ Verification Contract check critical_paths (2/2)
+
+Check: task_outcome
+Command: bunx vitest run packages/agentplane/src/commands/task/update.unit.test.ts packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610252242-122WXZ/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610252242-122WXZ Verification Contract check task_outcome (1/2)
+
+Check: task_outcome
+Command: bunx vitest run packages/agentplane/src/commands/task/revision-consistency.integration.test.ts packages/agentplane/src/commands/task/update.unit.test.ts packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/commands/doctor/workspace-task-state.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610252242-122WXZ/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610252242-122WXZ Verification Contract check task_outcome (2/2)
+
+NativeTaskIdentityRef:
+- plan_digest: sha256:2cd740521347ce805824bbc83426f76f012c65f0f44a87e4ba230264b2517d8e
+- policy_digest: sha256:1150ba6caefe9e829c30b3520b9246ed1ec7ebbeedbe788c63cf7989015dbb46
+- capability_digest: sha256:f3724675b80d5bc85968b9d7a588cf8ccec326b5ba4c8eeeb5426465e83b7ff4
+- checks_digest: sha256:1663a3bf7ed675baa1089cae8f78cc54d65c19d9e37554316646d51ffdb5ba12
+- identity_digest: sha256:ff957d1f701f2bd52ffd2512c37b89dd94e038feb00b67457d1a3da7ceb73336
 
 DecisionContextRef:
 - operator_action: stop

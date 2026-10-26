@@ -7,15 +7,15 @@
         "task_outcome"
       ],
       "command": "bunx vitest run packages/agentplane/src/commands/task/update.unit.test.ts packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts",
-      "duration_ms": 14330,
+      "duration_ms": 5246,
       "exit_code": 0,
       "observation": {
-        "digest": "sha256:1b852ca6a3e6cdb7f979fbfc6e62d22a0364b7c2766222c26bd09a834a8e74e7",
-        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/tmp/revision-split-0713/.agentplane/worktrees/202610252242-122WXZ-ensure-task-projection-and-canonical-aggregate-r/.agentplane/tasks/202610252242-122WXZ/supervision/verification-runs/run-002/manifest.json",
+        "digest": "sha256:92eac437abdacb24f1eb1d3e15fce38d235f2a65e5187850d3c52e44ed69130f",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/tmp/revision-split-0713/.agentplane/worktrees/202610252242-122WXZ-ensure-task-projection-and-canonical-aggregate-r/.agentplane/tasks/202610252242-122WXZ/supervision/verification-runs/run-004/manifest.json",
         "status": "retained"
       },
       "runtime": {
-        "environment_digest": "sha256:aaf8c357abd2329c09960561eeb97f5285786c13261b14c4efa4df1ef9fb0585",
+        "environment_digest": "sha256:59d2174821113f96228ba60741c75927a4c315ee61bd93b3eaf6af3a10f66579",
         "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
         "kind": "local_runtime_resolution",
         "status": "resolved",
@@ -23,7 +23,7 @@
       },
       "script": null,
       "stderr_tail": "",
-      "stdout_tail": "\n RUN  v5.0.5 <repo>\n\n✅ updated T-1\n✅ updated T-1\n ✓ packages/agentplane/src/commands/task/update.unit.test.ts (5 tests) 2098ms\n   ✓ task update command (unit) (5)\n     ✓ keeps canonical metadata writes atomic (stale=false) 2053ms\n ✓ packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts (10 tests) 111ms\n\n Test Files  2 passed (2)\n      Tests  15 passed (15)\n   Start at  02:17:32\n   Duration  9.66s (import 51%, tests 26%, transform 20%, setup 3%, worker 1%)\n\n     Import  273 modules were evaluated 431 times · 4.33s total, 51% of tracked time\n             ~1.59s faster with isolate: false — shared modules are evaluated once per worker instead of once per file\n             learn more: https://vitest.dev/guide/improving-performance#test-isolation\n\n"
+      "stdout_tail": "\n RUN  v5.0.5 <repo>\n\n ✓ packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts (10 tests) 42ms\n✅ updated T-1\n✅ updated T-1\n ✓ packages/agentplane/src/commands/task/update.unit.test.ts (5 tests) 845ms\n   ✓ task update command (unit) (5)\n     ✓ keeps canonical metadata writes atomic (stale=false) 836ms\n\n Test Files  2 passed (2)\n      Tests  15 passed (15)\n   Start at  20:02:33\n   Duration  4.10s (transform 45%, import 31%, tests 23%, setup 1%)\n\n"
     },
     {
       "check_ids": [
@@ -32,15 +32,15 @@
         "task_outcome"
       ],
       "command": "bunx vitest run packages/agentplane/src/commands/task/revision-consistency.integration.test.ts packages/agentplane/src/commands/task/update.unit.test.ts packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts packages/agentplane/src/commands/task/scope-extend.test.ts packages/agentplane/src/commands/doctor/workspace-task-state.test.ts",
-      "duration_ms": 53603,
+      "duration_ms": 15808,
       "exit_code": 0,
       "observation": {
-        "digest": "sha256:f34f65a4c49f0c43e7d77497ede1e9a70c9823613a82b55401ebb487f8a5dbd0",
-        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/tmp/revision-split-0713/.agentplane/worktrees/202610252242-122WXZ-ensure-task-projection-and-canonical-aggregate-r/.agentplane/tasks/202610252242-122WXZ/supervision/verification-runs/run-003/manifest.json",
+        "digest": "sha256:3f97a62fc9c281af3b9cc4f789e4481f35ee8b32f9d676e010851ae63920405b",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/tmp/revision-split-0713/.agentplane/worktrees/202610252242-122WXZ-ensure-task-projection-and-canonical-aggregate-r/.agentplane/tasks/202610252242-122WXZ/supervision/verification-runs/run-005/manifest.json",
         "status": "retained"
       },
       "runtime": {
-        "environment_digest": "sha256:aaf8c357abd2329c09960561eeb97f5285786c13261b14c4efa4df1ef9fb0585",
+        "environment_digest": "sha256:59d2174821113f96228ba60741c75927a4c315ee61bd93b3eaf6af3a10f66579",
         "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
         "kind": "local_runtime_resolution",
         "status": "resolved",
@@ -48,7 +48,7 @@
       },
       "script": null,
       "stderr_tail": "",
-      "stdout_tail": "\n RUN  v5.0.5 <repo>\n\n ✓ packages/agentplane/src/commands/task/revision-consistency.integration.test.ts (2 tests) 14845ms\n   ✓ verification-only replanning revision consistency (2)\n     ✓ keeps one revision after a verification-only replan (replace=false) 8137ms\n     ✓ keeps one revision after a verification-only replan (replace=true) 6670ms\n✅ updated T-1\n✅ updated T-1\n ✓ packages/agentplane/src/commands/task/update.unit.test.ts (5 tests) 1425ms\n   ✓ task update command (unit) (5)\n     ✓ keeps canonical metadata writes atomic (stale=false) 1357ms\n ✓ packages/agentplane/src/commands/task/scope-extend.test.ts (40 tests) 1500ms\n ✓ packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts (10 tests) 302ms\n ✓ packages/agentplane/src/commands/doctor/workspace-task-state.test.ts (3 tests) 63ms\n\n Test Files  5 passed (5)\n      Tests  60 passed (60)\n   Start at  02:17:46\n   Duration  49.23s (tests 40%, import 31%, transform 28%, setup 1%)\n\n     Import  1117 modules were evaluated 2275 times · 14.41s total, 31% of tracked time\n             ~7.34s faster with isolate: false — shared modules are evaluated once per worker instead of once per file\n             learn more: https://vitest.dev/guide/improving-performance#test-isolation\n\n"
+      "stdout_tail": "\n RUN  v5.0.5 <repo>\n\n ✓ packages/agentplane/src/commands/task/scope-extend.test.ts (40 tests) 177ms\n ✓ packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts (10 tests) 56ms\n ✓ packages/agentplane/src/commands/task/revision-consistency.integration.test.ts (2 tests) 5763ms\n   ✓ verification-only replanning revision consistency (2)\n     ✓ keeps one revision after a verification-only replan (replace=false) 4019ms\n     ✓ keeps one revision after a verification-only replan (replace=true) 1737ms\n✅ updated T-1\n✅ updated T-1\n ✓ packages/agentplane/src/commands/task/update.unit.test.ts (5 tests) 209ms\n ✓ packages/agentplane/src/commands/doctor/workspace-task-state.test.ts (5 tests) 8ms\n\n Test Files  5 passed (5)\n      Tests  62 passed (62)\n   Start at  20:02:39\n   Duration  14.72s (tests 44%, transform 32%, import 23%, setup 1%)\n\n"
     }
   ],
   "kind": "direct_task_declared_checks",
