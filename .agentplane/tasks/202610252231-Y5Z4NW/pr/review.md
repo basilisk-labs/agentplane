@@ -33,10 +33,10 @@ Created: 2026-10-26T01:46:43.770Z
  .../release/apply.version-mutation.test.ts         | 144 ++++++++++++++-
  scripts/bench/capture-compatibility-candidate.mjs  |  77 ++++----
  .../check-compatibility-contract-baseline.mjs      |  57 +++---
- scripts/lib/compatibility-candidate-path.mjs       | 118 ++++++++++++
+ scripts/lib/compatibility-candidate-path.mjs       | 125 +++++++++++++
  .../compatibility-incremental-package-delta.mjs    |  58 +++++-
  ...ompatibility-incremental-package-delta.test.mjs | 203 ++++++++++++++++++++-
- 7 files changed, 675 insertions(+), 89 deletions(-)
+ 7 files changed, 682 insertions(+), 89 deletions(-)
 ```
 
 </details>

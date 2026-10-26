@@ -55,18 +55,25 @@ function sameSnapshot(left, right) {
 }
 
 export function readCompatibilityCandidate(candidatePath, options = {}) {
-  const before = lstatSync(candidatePath, { bigint: true });
-  if (before.isSymbolicLink() || !before.isFile()) {
-    throw new Error("Compatibility candidate must be a regular repository file");
-  }
   options.beforeOpen?.();
-  const descriptor = openSync(
-    candidatePath,
-    constants.O_RDONLY | (constants.O_NOFOLLOW ?? 0) | (constants.O_NONBLOCK ?? 0),
-  );
+  let descriptor;
+  try {
+    descriptor = openSync(
+      candidatePath,
+      constants.O_RDONLY | (constants.O_NOFOLLOW ?? 0) | (constants.O_NONBLOCK ?? 0),
+    );
+  } catch (error) {
+    if (error?.code === "ELOOP") {
+      throw new Error("Compatibility candidate must be a regular repository file", {
+        cause: error,
+      });
+    }
+    throw error;
+  }
   try {
     const opened = fstatSync(descriptor, { bigint: true });
-    if (!opened.isFile() || !sameSnapshot(before, opened)) {
+    const pathBefore = lstatSync(candidatePath, { bigint: true });
+    if (!opened.isFile() || !pathBefore.isFile() || !sameSnapshot(opened, pathBefore)) {
       throw new Error("Compatibility candidate changed before read");
     }
     const content = readFileSync(descriptor, "utf8");

@@ -79,7 +79,7 @@ test("candidate reads and atomic writes reject a swapped leaf symlink", (context
             symlinkSync(outside, candidate);
           },
         }),
-      (error) => error.code === "ELOOP" || /changed before read/u.test(error.message),
+      /regular repository file|changed before read/u,
     );
     assert.throws(() => readCompatibilityCandidate(candidate), /regular repository file/u);
     assert.throws(
