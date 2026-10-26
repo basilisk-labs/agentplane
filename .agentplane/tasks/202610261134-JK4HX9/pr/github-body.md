@@ -16,13 +16,13 @@ For a canonical branch PR task whose implementation changed after a recorded PAS
 ## Verification
 
 - State: ok
-- Note: Verified: canonical Task Kernel final checks passed.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-10-26T12:11:02.980Z
+- Updated: 2026-10-26T14:40:39.028Z
 - Branch: task/202610261134-JK4HX9/prevent-stale-final-validation-evidence-from-byp
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
