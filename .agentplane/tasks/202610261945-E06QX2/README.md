@@ -1,10 +1,11 @@
 ---
 id: "202610261945-E06QX2"
 title: "Accept an authentic first-attempt unsupported required check correction with exact retained kernel proof"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -41,6 +42,22 @@ quality_review:
     - "The issuance binding, delegated authority self-digest and parent, accepted-result receipt, validation receipt, and native evidence digest are checked before the contract replacement is admitted."
     - "The serialized regression rejects altered issuance fingerprint or authority, forged delegated provenance, changed WorkItem attempt or result, altered command prefix, changed unsupported reason, and launched executable failures."
     - "Native WorkItem validation runs run-000 and run-001 passed; targeted kernel tests, typecheck, ESLint, Prettier, and diff whitespace checks also passed."
+token_usage:
+  agent_runs: 1
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:c38cd9c3c2d647022188d0b204079d3c650d9acb8d00cd0c7c04ad2df35b8716"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-10-26T21:19:57.920Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -233,9 +250,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "4735284e4cd1fe1dfb7d5ea2c1f1b558a9c4081a"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "80f6dd4220588c170ed1dea4f95115817a06ab7b"
+  message: "🧩 E06QX2 task: record opened pull request metadata"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -243,9 +263,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-26T21:19:57.920Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "80f6dd4220588c170ed1dea4f95115817a06ab7b"
 doc_version: 3
-doc_updated_at: "2026-10-26T21:03:21.272Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-26T21:19:57.920Z"
+doc_updated_by: "CODER"
 description: "Repair generic required-check-correction validation for a native first-attempt unsupported declared check. Bind the failed WorkOrder, accepted result, validation receipt, and native validation without trusting synthetic state. Preserve rejection of forged proofs and executable check failures."
 sections:
   Summary: |-
@@ -376,6 +404,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:c19d829094613f6ae44f91db66df08728219e2b48b4cb1b93d422756ae6aedea"
     work_order_id: "sha256:5dfe80177308b39a33e71cf115925c65eeee52cf41bf3ef54fa170903f02c4f8"
+  implementation_commit:
+    hash: "4735284e4cd1fe1dfb7d5ea2c1f1b558a9c4081a"
+    message: "🚧 E06QX2 task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "5f3abf24da208b10a3552a869e09ecdb58272e99"
@@ -1033,3 +1064,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/1` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:c38cd9c3c2d647022188d0b204079d3c650d9acb8d00cd0c7c04ad2df35b8716`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-10-26T21:19:57.920Z`
