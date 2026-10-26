@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "At evaluated head d01a0ecd5e860907306ba30c0d0ed917903ffe27, the diff removes only the early retained-evidence completion path and adds negative regression cases for changed implementation and invalidated checks. The supervisor recorded a passing full local CI run for the updated head; hosted checks also passed on that head.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610261134-JK4HX9/quality/objects/sha256/dc37e9a7e73f957f13150be4f2ee9acbddc19fd53970ca268d3d34595f1a6083.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Residual risk: Native hosted integration and task closure remain pending after this read-only quality verdict.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610261134-JK4HX9/quality/objects/sha256/dc37e9a7e73f957f13150be4f2ee9acbddc19fd53970ca268d3d34595f1a6083.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -31,18 +31,30 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-10-26T13:26:31.634Z"
+  updated_at: "2026-10-26T16:39:59.914Z"
   updated_by: "EVALUATOR"
-  note: "Canonical EVALUATOR review passed."
-  evaluated_sha: "582299f70bc395f4e44971dd394f5a475e147f66"
-  review_identity_digest: "sha256:bb0c01c2572f5f8f10cbc42662db92659e6cea3e3b9a74c989bd4232580c4f4c"
+  note: "EVALUATOR returned pass with 2 typed finding(s)."
+  evaluated_sha: "d01a0ecd5e860907306ba30c0d0ed917903ffe27"
+  review_identity_digest: "sha256:f06ee16e0adada9512ee75fd547407b44c0c02b033208c424f7ce128544b2a0a"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202610261134-JK4HX9/14236728ee13cd28de317e4aa572d8ba6e0a53eb84f243f368c746623cd386e7/quality-report.json"
+    - ".agentplane/tasks/202610261134-JK4HX9/quality/20261026-160011583-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202610261134-JK4HX9/quality/20261026-160011583-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202610261134-JK4HX9/quality/objects/sha256/5af4301f9374ac48bd9e1167cae365a723aab988e7e5ec83e748d35eaa125339.md"
+    - ".agentplane/tasks/202610261134-JK4HX9/quality/20261026-160011583-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202610261134-JK4HX9/quality/20261026-160011583-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202610261134-JK4HX9/quality/20261026-160011583-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202610261134-JK4HX9/README.md"
+    - ".agentplane/tasks/202610261134-JK4HX9/quality/objects/sha256/dc37e9a7e73f957f13150be4f2ee9acbddc19fd53970ca268d3d34595f1a6083.patch"
+    - ".agentplane/tasks/202610261134-JK4HX9/quality/objects/sha256/77404f4287ae42006f74c446e8af773da4b584e97cb23c91e69335fa5283771b.json"
+    - ".agentplane/tasks/202610261134-JK4HX9/verification/20261026155940277-5d4a51eb396cdab6.json"
+    - ".agentplane/tasks/202610261134-JK4HX9/quality/objects/sha256/b6ab3b84fb52280120703a9cde1c0a7527f360c17a17cb52dd7037438f6a98e8.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "advance-task-step.ts removes the shortcut that projected retained PASSED evidence and called complete_task when restoreKernelFinalValidation returned null. The remaining completion branch requires matching repository fingerprint, environment digest, plan digest, and recorded evidence digest."
-    - "The approved-plan authority continuation precedes final-validation and completion handling. When current identity does not restore, runKernelFinalValidation executes before a completion attempt; failed continuation or failed checks stop without input(complete_task) or lifecycle.apply."
-    - "roadmap-terminal-noop.test.ts adds changed-implementation and invalidated-check regressions asserting no completion/projection on stale PASS. Existing current-identity and completion-order tests preserve unchanged recovery and ensure terminal artifacts follow committed complete_task."
-    - "AgentPlane native declared checks are bound to implementation HEAD 582299f70bc395f4e44971dd394f5a475e147f66: focused kernel-final-validation test run-000 and ci:local:full run-001 both passed."
+    - "At evaluated head d01a0ecd5e860907306ba30c0d0ed917903ffe27, the diff removes only the early retained-evidence completion path and adds negative regression cases for changed implementation and invalidated checks. The supervisor recorded a passing full local CI run for the updated head; hosted checks also passed on that head."
+    - "Residual risk: Native hosted integration and task closure remain pending after this read-only quality verdict."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -1329,7 +1341,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-10-26T15:59:47.569Z"
+doc_updated_at: "2026-10-26T16:39:59.978Z"
 doc_updated_by: "CODER"
 description: "For a canonical branch PR task whose implementation changed after a recorded PASS, advance authority to the new repository fingerprint and execute fresh final validation before completion. Preserve fail-closed behavior and never synthesize verification. Add regression coverage for stale evidence and stable recovery."
 sections:
@@ -1556,6 +1568,14 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.completed_native_review:
+    applied_at: "2026-10-26T16:39:59.914Z"
+    kernel_digest: "sha256:75ff33dfbc320ee755c9e4558c09851a14475f946bd080338c2160977a5cc75f"
+    quality_digest: "sha256:59267a8db5f7168e0ce2bdc91e2ac4f4bac6b2c68dd873f00a874d3f2d33f60a"
+    result_digest: "sha256:cdd48d6f94af7d7538cc050be393b434bc8758650301cbfa05aa9a1c181cefdb"
+    schema_version: 1
+    state_fingerprint: "sha256:68d8f290b07fdb58a5595f4ca3602684532444ca75fb01a7037d35a481db90a8"
+    transition_id: "tr_956d227e8ddaa801052d2560cbc71438"
   agentplane.kernel_operational_projection:
     digest: "sha256:d1e8198d55e99e78ddc16651efd2c2c372f981d0ea79a1ec04901b32ce4977a5"
     evidence_refs:
