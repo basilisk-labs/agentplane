@@ -6,7 +6,7 @@ Created: 2026-10-25T23:12:48.064Z
 
 - Task: `202610252242-122WXZ`
 - Title: Ensure task projection and canonical aggregate revision coherence through verification-only replans
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610252242-122WXZ/ensure-task-projection-and-canonical-aggregate-r`
 - Canonical task record: `.agentplane/tasks/202610252242-122WXZ/README.md`
 
