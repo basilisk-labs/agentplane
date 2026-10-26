@@ -28,6 +28,8 @@ Add a generic, USER-attested correction route for a required verification comman
 
 ```text
  docs/user/cli-reference.generated.mdx              |   1 +
+ .../task/kernel-completed-external-blocker.test.ts |  58 +++
+ .../task/kernel-completed-external-blocker.ts      | 103 +++--
  .../src/commands/task/kernel-exchange.ts           |  18 +-
  .../commands/task/kernel-failed-check-evidence.ts  |  74 ++++
  .../agentplane/src/commands/task/kernel-plan.ts    |  15 +
@@ -38,7 +40,7 @@ Add a generic, USER-attested correction route for a required verification comman
  packages/core/src/tasks/task-kernel/kernel.ts      | 201 +++++++++-
  packages/core/src/tasks/task-kernel/model.ts       |  10 +
  .../task-kernel/required-check-correction.test.ts  | 417 +++++++++++++++++++++
- 11 files changed, 1060 insertions(+), 14 deletions(-)
+ 13 files changed, 1190 insertions(+), 45 deletions(-)
 ```
 
 </details>
