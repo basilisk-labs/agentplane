@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 63
+revision: 64
 origin:
   system: "manual"
 depends_on: []
@@ -1347,6 +1347,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The required local verification found a formatting error in the new regression test. Hosted compatibility verification also rejects this task's public CLI option until the reviewed candidate and checker are updated; those two files are outside current write authority. Recommended action: Approve this exact two-file scope extension, then format the regression test, update the candidate and checker for the one public CLI option, and rerun native and hosted verification. Requested scope: roots=scripts/baselines/v0.7-compatibility-candidate.json,scripts/checks/check-compatibility-contract-baseline.mjs; repository effects=ci,release_metadata; request digest=sha256:e0203df6585d20ef337b1c65fbedb3049279ae8e3cc7f72f455ed60d70b2b5c7. Agentplane receipt: external-agent-blocker/tr_c534ac265c2382e6541e7332427b9adb/sha256:4573e19bd4759f10f882e882a920023b430c60d86cd6689cb3e6a65ec3568823/sha256:e0203df6585d20ef337b1c65fbedb3049279ae8e3cc7f72f455ed60d70b2b5c7."
 events:
   -
     type: "verify"
@@ -1389,8 +1392,8 @@ events:
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-10-26T17:44:25.746Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-10-26T17:46:12.065Z"
+doc_updated_by: "SUPERVISOR"
 description: "Add a generic, USER-attested correction route for a required verification command that native validation proved non-executable. Preserve the original FAILED receipt and exact old/new command audit evidence; reject unrelated contract, scope, or command changes; rerun the replacement check before completion. Do not silently waive verification or add release-specific adapters."
 sections:
   Summary: |-
@@ -1966,6 +1969,23 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:b696f3dedf53c206fa6a8e157e8e1441969cf9456638ac6b3b13631b26d2ce94"
     work_order_id: "sha256:d52927653fc31d44857c9b34ff37be5c437e6d73e8543c0f53b699e01f2f24b4"
+  agentplane.scope_extension_request:
+    blocker_state_fingerprint: "sha256:4573e19bd4759f10f882e882a920023b430c60d86cd6689cb3e6a65ec3568823"
+    kind: "task_scope_extension_request"
+    request:
+      rationale: "The approved task adds a public CLI option, and hosted verify-contract rejects the reviewed release compatibility candidate. The candidate and its contract assertions must record this exact option and task provenance without weakening the required gate. The same rework episode can also correct the separately recorded format:check failure in an already-authorized test file."
+      repository_effects:
+        - "ci"
+        - "release_metadata"
+      schema_version: 1
+      scope_roots:
+        - "scripts/baselines/v0.7-compatibility-candidate.json"
+        - "scripts/checks/check-compatibility-contract-baseline.mjs"
+    request_digest: "sha256:e0203df6585d20ef337b1c65fbedb3049279ae8e3cc7f72f455ed60d70b2b5c7"
+    schema_version: 1
+    status: "pending"
+    transition_id: "tr_c534ac265c2382e6541e7332427b9adb"
+    work_item_id: null
   task_execution_context:
     base_ref: "main"
     base_sha: "cdc68137f324840b306f26b78e7c5dc9587b51e6"
