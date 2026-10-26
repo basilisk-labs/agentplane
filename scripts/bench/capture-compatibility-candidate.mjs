@@ -1,4 +1,4 @@
-import { readFileSync, renameSync, writeFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -20,7 +20,11 @@ import {
   reconstructHistoricalPackageSurface,
   reviewedPackageVersion,
 } from "../lib/compatibility-incremental-package-delta.mjs";
-import { resolveCompatibilityCandidatePath } from "../lib/compatibility-candidate-path.mjs";
+import {
+  readCompatibilityCandidate,
+  resolveCompatibilityCandidatePath,
+  writeCompatibilityCandidateAtomic,
+} from "../lib/compatibility-candidate-path.mjs";
 
 const scriptPath = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
@@ -220,7 +224,7 @@ try {
   const options = parseArgs(process.argv.slice(2));
   const candidatePath = resolveCompatibilityCandidatePath(repoRoot, options.candidatePath);
   const baseline = JSON.parse(readFileSync(baselinePath, "utf8"));
-  const currentText = readFileSync(candidatePath, "utf8");
+  const currentText = readCompatibilityCandidate(candidatePath);
   const candidate = JSON.parse(currentText);
   const next = buildCandidate({
     baseline,
@@ -237,9 +241,7 @@ try {
       throw new Error("compatibility candidate is stale; run capture with --write");
     process.stdout.write("compatibility candidate is current\n");
   } else if (options.write) {
-    const temporaryPath = `${candidatePath}.tmp`;
-    writeFileSync(temporaryPath, nextText, "utf8");
-    renameSync(temporaryPath, candidatePath);
+    writeCompatibilityCandidateAtomic(candidatePath, nextText);
     process.stdout.write(`wrote ${path.relative(repoRoot, candidatePath)}\n`);
   } else {
     process.stdout.write(nextText);

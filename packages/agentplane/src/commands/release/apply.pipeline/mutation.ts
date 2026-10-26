@@ -1,4 +1,6 @@
-import { lstat, readFile, readdir, writeFile } from "node:fs/promises";
+import { randomUUID } from "node:crypto";
+import { constants } from "node:fs";
+import { lstat, open, readdir, rename, unlink } from "node:fs/promises";
 import path from "node:path";
 
 import { extractTaskSuffix } from "@agentplaneorg/core/commit";
@@ -6,6 +8,7 @@ import { loadConfig } from "@agentplaneorg/core/config";
 import { execFileAsync } from "@agentplaneorg/core/process";
 import { gitEnv, GitContext, parseTaskIdFromBranch } from "@agentplaneorg/core/git";
 import { appendDcoSignoff } from "../../guard/impl/dco.js";
+import { readStableRegularFileNoFollow } from "../../../shared/stable-file.js";
 import {
   cleanHookEnv,
   maybePersistExpectedCliVersion,
@@ -21,6 +24,48 @@ import {
 import { fileExists } from "../apply.preflight.plan.js";
 import type { ReleaseCommandMutation, ReleaseCommandState } from "../apply.types.js";
 import { emitReleaseLine } from "./shared.js";
+
+async function restoreCompatibilityCandidate(
+  candidatePath: string,
+  previous: Buffer,
+): Promise<void> {
+  const temporaryPath = `${candidatePath}.${randomUUID()}.tmp`;
+  let temporaryExists = false;
+  try {
+    const original = await lstat(candidatePath, { bigint: true });
+    if (original.isSymbolicLink() || !original.isFile()) {
+      throw new Error("Compatibility candidate changed to a non-regular file before rollback");
+    }
+    const handle = await open(
+      temporaryPath,
+      constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | (constants.O_NOFOLLOW ?? 0),
+      Number(original.mode & 0o777n),
+    );
+    temporaryExists = true;
+    try {
+      await handle.writeFile(previous);
+    } finally {
+      await handle.close();
+    }
+    const current = await lstat(candidatePath, { bigint: true });
+    if (
+      current.isSymbolicLink() ||
+      !current.isFile() ||
+      current.dev !== original.dev ||
+      current.ino !== original.ino
+    ) {
+      throw new Error("Compatibility candidate changed before rollback");
+    }
+    await rename(temporaryPath, candidatePath);
+    temporaryExists = false;
+  } finally {
+    if (temporaryExists) {
+      await unlink(temporaryPath).catch((error: unknown) => {
+        if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+      });
+    }
+  }
+}
 
 async function applyReleaseMutation(opts: {
   agentplaneDir: string;
@@ -119,7 +164,10 @@ async function applyReleaseMutation(opts: {
     if (candidateStat.isSymbolicLink() || !candidateStat.isFile()) {
       throw new Error("Compatibility candidate must be a regular repository file");
     }
-    const previousCandidate = await readFile(candidatePath);
+    const previousCandidate = await readStableRegularFileNoFollow(
+      candidatePath,
+      "compatibility candidate",
+    );
     try {
       await execFileAsync(
         process.execPath,
@@ -132,7 +180,11 @@ async function applyReleaseMutation(opts: {
         { cwd: opts.gitRoot },
       );
     } catch (error) {
-      await writeFile(candidatePath, previousCandidate);
+      try {
+        await restoreCompatibilityCandidate(candidatePath, previousCandidate);
+      } catch (rollbackError) {
+        throw new AggregateError([error, rollbackError], "Compatibility candidate rollback failed");
+      }
       throw error;
     }
   }

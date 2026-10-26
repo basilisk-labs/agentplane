@@ -31,7 +31,10 @@ import {
   reconstructHistoricalPackageSurface,
   reviewedPackageVersion,
 } from "../lib/compatibility-incremental-package-delta.mjs";
-import { resolveCompatibilityCandidatePath } from "../lib/compatibility-candidate-path.mjs";
+import {
+  readCompatibilityCandidate,
+  resolveCompatibilityCandidatePath,
+} from "../lib/compatibility-candidate-path.mjs";
 
 const scriptPath = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
@@ -72,7 +75,7 @@ function readBaseline() {
 }
 
 function readCandidate() {
-  return JSON.parse(readFileSync(candidatePathFromArgs(process.argv.slice(2)), "utf8"));
+  return JSON.parse(readCompatibilityCandidate(candidatePathFromArgs(process.argv.slice(2))));
 }
 
 function assert(condition, message) {

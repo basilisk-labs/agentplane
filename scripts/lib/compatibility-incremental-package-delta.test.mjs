@@ -1,11 +1,24 @@
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import {
+  mkdtempSync,
+  mkdirSync,
+  readFileSync,
+  renameSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
 
 import { diffJsonPaths, hashJson, packageSurface } from "./compatibility-contract.mjs";
-import { resolveCompatibilityCandidatePath } from "./compatibility-candidate-path.mjs";
+import {
+  readCompatibilityCandidate,
+  resolveCompatibilityCandidatePath,
+  writeCompatibilityCandidateAtomic,
+} from "./compatibility-candidate-path.mjs";
 import {
   normalizePackageVersions,
   reconstructHistoricalPackageSurface,
@@ -23,6 +36,93 @@ const currentManifest = packageSurface(manifestPath, {
   version: "0.7.13",
   dependencies: { zod: "4.6.7" },
 });
+
+test("candidate reads and atomic writes reject a swapped leaf symlink", (context) => {
+  const root = mkdtempSync(path.join(os.tmpdir(), "candidate-safe-"));
+  try {
+    const baselineDir = path.join(root, "scripts/baselines");
+    mkdirSync(baselineDir, { recursive: true });
+    const candidate = path.join(baselineDir, "current-compatibility-candidate.json");
+    const outside = path.join(root, "outside.json");
+    writeFileSync(candidate, "original");
+    writeFileSync(outside, "outside");
+    try {
+      symlinkSync(outside, `${candidate}.tmp`);
+    } catch (error) {
+      if (process.platform === "win32" && ["EPERM", "EACCES"].includes(error.code)) {
+        context.skip("Windows runner does not permit symlink creation");
+        return;
+      }
+      throw error;
+    }
+    assert.equal(readCompatibilityCandidate(candidate), "original");
+    writeCompatibilityCandidateAtomic(candidate, "recaptured");
+    assert.equal(readFileSync(candidate, "utf8"), "recaptured");
+    assert.equal(readFileSync(outside, "utf8"), "outside");
+    assert.throws(
+      () =>
+        writeCompatibilityCandidateAtomic(candidate, "stale-write", {
+          beforeReplace() {
+            const replacement = path.join(root, "new-regular-file.json");
+            writeFileSync(replacement, "new-regular-file");
+            renameSync(replacement, candidate);
+          },
+        }),
+      /changed before write/u,
+    );
+    assert.equal(readFileSync(candidate, "utf8"), "new-regular-file");
+    assert.throws(
+      () =>
+        readCompatibilityCandidate(candidate, {
+          beforeOpen() {
+            rmSync(candidate);
+            symlinkSync(outside, candidate);
+          },
+        }),
+      (error) => error.code === "ELOOP" || /changed before read/u.test(error.message),
+    );
+    assert.throws(() => readCompatibilityCandidate(candidate), /regular repository file/u);
+    assert.throws(
+      () => writeCompatibilityCandidateAtomic(candidate, "untrusted"),
+      /regular repository file/u,
+    );
+    assert.equal(readFileSync(outside, "utf8"), "outside");
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test(
+  "candidate read rejects a swapped FIFO without blocking",
+  { skip: process.platform === "win32" },
+  () => {
+    const root = mkdtempSync(path.join(os.tmpdir(), "candidate-fifo-"));
+    try {
+      const candidate = path.join(root, "candidate.json");
+      writeFileSync(candidate, "regular");
+      const source = new URL("compatibility-candidate-path.mjs", import.meta.url).href;
+      const child = spawnSync(
+        process.execPath,
+        [
+          "--input-type=module",
+          "-e",
+          `import { execFileSync } from "node:child_process"; import { rmSync } from "node:fs"; import { readCompatibilityCandidate } from ${JSON.stringify(source)}; readCompatibilityCandidate(process.argv[1], { beforeOpen() { rmSync(process.argv[1]); execFileSync("mkfifo", [process.argv[1]]); } });`,
+          candidate,
+        ],
+        { encoding: "utf8", timeout: 3000 },
+      );
+      assert.equal(
+        child.signal,
+        null,
+        "candidate read must return without waiting for a FIFO writer",
+      );
+      assert.equal(child.status, 1);
+      assert.match(child.stderr, /changed before read/u);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  },
+);
 
 function fixture() {
   const surface = {
