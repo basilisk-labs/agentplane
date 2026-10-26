@@ -6,7 +6,7 @@ Created: 2026-10-26T08:19:23.922Z
 
 - Task: `202610252238-33VQN8`
 - Title: Repair canonical no-executable-check verification contracts and recovery for issue #6927
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610252238-33VQN8/repair-canonical-no-executable-check-verificatio`
 - Canonical task record: `.agentplane/tasks/202610252238-33VQN8/README.md`
 
