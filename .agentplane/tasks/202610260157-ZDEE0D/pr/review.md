@@ -13,7 +13,7 @@ Created: 2026-10-26T02:38:13.651Z
 ## Verification
 
 - State: ok
-- Note: Verified: canonical Task Kernel final checks passed.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
