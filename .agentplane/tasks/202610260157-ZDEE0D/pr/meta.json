@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202610260157-ZDEE0D/recover-an-approved-plan-when-a-required-declare",
   "created_at": "2026-10-26T02:38:13.651Z",
-  "diffstat_sha256": "sha256:db70b2d6711eb2b54b47dcc082b311e4e0685dd46070db1af09b2030c667bee7",
+  "diffstat_sha256": "sha256:5be694664d6ad52e018b4ccf79940d759b06bcf9a2359285ad2cd799a3a41618",
   "last_verified_at": "2026-10-26T08:13:55.864Z",
   "last_verified_diffstat_sha256": "sha256:757fd28b3e91d39ecce76b66c20ec2d5b766abed76d3e3cb04d32a5e08750dc1",
   "pr_number": 6932,

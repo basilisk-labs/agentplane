@@ -30,12 +30,17 @@ Created: 2026-10-26T02:38:13.651Z
 
 ```text
  docs/user/cli-reference.generated.mdx              |   1 +
- .../agentplane/src/commands/task/kernel-plan.ts    |  89 +++++
+ .../src/commands/task/kernel-exchange.ts           |  18 +-
+ .../commands/task/kernel-failed-check-evidence.ts  |  74 ++++
+ .../agentplane/src/commands/task/kernel-plan.ts    |  15 +
+ .../task/kernel-required-check-rework.test.ts      | 246 ++++++++++++
+ .../src/commands/task/kernel-rework-lineage.ts     |  48 +++
+ .../src/commands/task/kernel-rework-proof.ts       |  18 +-
  .../src/commands/task/plan-set.command.ts          |  26 ++
  packages/core/src/tasks/task-kernel/kernel.ts      | 201 +++++++++-
  packages/core/src/tasks/task-kernel/model.ts       |  10 +
  .../task-kernel/required-check-correction.test.ts  | 417 +++++++++++++++++++++
- 6 files changed, 739 insertions(+), 5 deletions(-)
+ 11 files changed, 1060 insertions(+), 14 deletions(-)
 ```
 
 </details>
