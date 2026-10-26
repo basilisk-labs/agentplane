@@ -4,7 +4,7 @@ title: "Recover an approved plan when a required declared check cannot execute"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 57
+revision: 58
 origin:
   system: "manual"
 depends_on: []
@@ -32,17 +32,31 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-10-26T07:39:17.550Z"
+  updated_at: "2026-10-26T15:19:42.128Z"
   updated_by: "EVALUATOR"
-  note: "Canonical EVALUATOR review passed."
-  evaluated_sha: "e11c798e2452ac44042ee13179f71b7860fe5b7e"
-  review_identity_digest: "sha256:a59cba55c0779ac57e825c1edc18e311151fe9d53b09d14e30313af3abe5810e"
+  note: "EVALUATOR returned pass with 3 typed finding(s)."
+  evaluated_sha: "6cdef4c9388c477122d3012808ef4a2180213ee9"
+  review_identity_digest: "sha256:28636ab642b6057a44cc10fd0d3f3d334efc7ce3a1529bec8f089f9b5faa13dd"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202610260157-ZDEE0D/7c006022e9e724ad67955a1650baca6a5f2860bf3694c592589ef82eead72ffb/quality-report.json"
+    - ".agentplane/tasks/202610260157-ZDEE0D/quality/20261026-151803729-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202610260157-ZDEE0D/quality/20261026-151803729-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202610260157-ZDEE0D/quality/objects/sha256/df94cde285df04cf037f87bba1470a399c5fee85a3c5eb208689aa31ea46144b.md"
+    - ".agentplane/tasks/202610260157-ZDEE0D/quality/20261026-151803729-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202610260157-ZDEE0D/quality/20261026-151803729-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202610260157-ZDEE0D/quality/20261026-151803729-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202610260157-ZDEE0D/README.md"
+    - ".agentplane/tasks/202610260157-ZDEE0D/quality/objects/sha256/99d10837a92debbdeae48032af48f7a14090b00b2ed569a72ab824c4ba622354.patch"
+    - ".agentplane/tasks/202610260157-ZDEE0D/quality/objects/sha256/20a7f8bcdcefb5c598ea2d4ddea18f76b0599fedeeb3bfaa68763ee738710175.json"
+    - ".agentplane/tasks/202610260157-ZDEE0D/verification/20261026151733384-d9da9857e2d628f6.json"
+    - ".agentplane/tasks/202610260157-ZDEE0D/quality/objects/sha256/3d5f281675eb0d4d1be4785ceb449065b3fb652aa31e70910770ed2d21e234fe.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The implementation commit changes only docs/user/cli-reference.generated.mdx, adding one option line for --failed-check-work-order."
-    - "AgentPlane independently passed typecheck, both focused Vitest commands, hotspots:check, and docs:cli:check."
-    - "The prior final-check failure and authenticated scope grant remain in the task evidence."
+    - "The kernel checks the issued WorkOrder, accepted result receipt, FAILED validation receipt, exact command index, and unchanged WorkItem contract terms before accepting a correction. Tests reject altered identities, failed executable checks, added checks, and scope expansion."
+    - "The CLI reconstructs correction proof from stable no-follow reads of retained exchange files. The task verification record at 2026-10-26T15:17:33.384Z reports PASS for ci:local:full, typecheck, routing, and doctor at implementation 6cdef4c9388c477122d3012808ef4a2180213ee9."
+    - "Residual risk: The PR must be updated against current main and pass fresh hosted checks before integration."
 execution_route:
   frozen: true
   reason_codes:
@@ -693,6 +707,14 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.completed_native_review:
+    applied_at: "2026-10-26T15:19:42.128Z"
+    kernel_digest: "sha256:cc4934a22b8b425ecf6a1bc3c55d03a5baf79c93951ce6cb742a9a45f5a11d40"
+    quality_digest: "sha256:7ea793e2757119d5a2c2efbeab91a53f2d10202b6bcc47a375deb5deb1f99764"
+    result_digest: "sha256:cac7c2173d987634b98264596dbc71e7b4444d4df271b7361522037fcf473d63"
+    schema_version: 1
+    state_fingerprint: "sha256:8ee60adc5b97e3ef0fc6364a3e54519bd62fac26410ba80e7615aec5c368bf19"
+    transition_id: "tr_43580688c5bc552ff523cdf15feffa91"
   agentplane.kernel_operational_projection:
     digest: "sha256:56920d9ddaab9ed12216da699fcd1db899c72e479bdc38a0312a703494621743"
     evidence_refs:
