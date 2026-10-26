@@ -20,6 +20,7 @@ export type TaskPlanSetParsed = {
   recipeFile?: string;
   updatedBy?: string;
   scopeExpansionApprovedBy?: string;
+  failedCheckWorkOrder?: string;
 };
 
 export const taskPlanSetSpec: CommandSpec<TaskPlanSetParsed> = {
@@ -59,6 +60,13 @@ export const taskPlanSetSpec: CommandSpec<TaskPlanSetParsed> = {
       valueHint: "<role>",
       description:
         "Explicit manual approval for an additive canonical WorkItem scope expansion. Requires USER.",
+    },
+    {
+      kind: "string",
+      name: "failed-check-work-order",
+      valueHint: "<sha256:digest>",
+      description:
+        "Correct one native-proven unlaunchable required check in this WorkOrder. Requires --scope-expansion-approved-by USER and a revised Plan file.",
     },
   ],
   examples: [
@@ -105,6 +113,19 @@ export const taskPlanSetSpec: CommandSpec<TaskPlanSetParsed> = {
         message: "--scope-expansion-approved-by requires exact USER authority.",
       });
     }
+    if (
+      raw.opts["failed-check-work-order"] !== undefined &&
+      (scopeExpansionApprovedBy !== "USER" ||
+        typeof raw.opts["failed-check-work-order"] !== "string" ||
+        !/^sha256:[a-f0-9]{64}$/u.test(raw.opts["failed-check-work-order"]) ||
+        raw.opts.file === undefined ||
+        raw.opts["recipe-file"] !== undefined)
+    )
+      throw usageError({
+        spec: taskPlanSetSpec,
+        message:
+          "--failed-check-work-order requires an exact WorkOrder digest, --file and --scope-expansion-approved-by USER.",
+      });
   },
   parse: (raw) => {
     return {
@@ -117,6 +138,10 @@ export const taskPlanSetSpec: CommandSpec<TaskPlanSetParsed> = {
       scopeExpansionApprovedBy:
         typeof raw.opts["scope-expansion-approved-by"] === "string"
           ? raw.opts["scope-expansion-approved-by"]
+          : undefined,
+      failedCheckWorkOrder:
+        typeof raw.opts["failed-check-work-order"] === "string"
+          ? raw.opts["failed-check-work-order"]
           : undefined,
     };
   },
@@ -165,6 +190,7 @@ export function makeRunTaskPlanSetHandler(getCtx: (cmd: string) => Promise<Comma
       });
       const result = await setCanonicalPlan(command, p.taskId, JSON.parse(text), {
         scopeExpansionApprovedBy: p.scopeExpansionApprovedBy,
+        failedCheckWorkOrder: p.failedCheckWorkOrder,
       });
       createCliEmitter().json({
         task_id: p.taskId,
