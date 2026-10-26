@@ -6,7 +6,7 @@ Created: 2026-10-26T20:26:35.434Z
 
 - Task: `202610261945-E06QX2`
 - Title: Accept an authentic first-attempt unsupported required check correction with exact retained kernel proof
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610261945-E06QX2/accept-an-authentic-first-attempt-unsupported-re`
 - Canonical task record: `.agentplane/tasks/202610261945-E06QX2/README.md`
 
