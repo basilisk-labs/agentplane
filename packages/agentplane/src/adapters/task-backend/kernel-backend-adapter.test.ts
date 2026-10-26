@@ -16,6 +16,7 @@ import { KernelBackendAdapter, type KernelCommandInput } from "./kernel-backend-
 import { makeKernelRecord, readKernelRecord, TASK_KERNEL_EXTENSION } from "./kernel-record.js";
 import { projectKernelTask } from "./kernel-projector.js";
 import { kernelRecordIssues } from "./kernel-record-invariants.js";
+import { readTimingExceptionFixture } from "./kernel-final-timing-exception.test-fixtures.js";
 
 const taskId = "202608300000-KRN001";
 const identity = taskKernel.kernelDigest("fixture-repository");
@@ -231,6 +232,20 @@ function approvedMaterialLineage(state: "ACTIVE" | "COMPLETED"): taskKernel.Task
 }
 
 describe("canonical kernel persistence boundary", () => {
+  it("roundtrips a distinct accepted timing exception without rewriting FAILED validation", () => {
+    const { aggregate, failed, loaded } = readTimingExceptionFixture(
+      identity,
+      task(),
+      approvedMaterialLineage("COMPLETED"),
+    );
+    expect(loaded.kind).toBe("canonical");
+    if (loaded.kind !== "canonical") return;
+    expect(loaded.record.aggregate.final_validation).toEqual(failed);
+    expect(loaded.record.aggregate.final_timing_exception).toEqual(
+      aggregate.final_timing_exception,
+    );
+  });
+
   it.each(["ACTIVE", "COMPLETED"] as const)(
     "roundtrips %s material-amendment lineage without losing completed work or review evidence",
     async (state) => {

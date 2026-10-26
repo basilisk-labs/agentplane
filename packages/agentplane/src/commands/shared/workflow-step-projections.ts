@@ -1,4 +1,5 @@
 import type { TaskData } from "../../backends/task-backend.js";
+import { hasAcceptedTaskVerification } from "./canonical-timing-exception.js";
 import type { RouteNextAction } from "./route-decision-types.js";
 import type { RouteExecutionPacket, RouteOracle } from "./route-oracle.js";
 import { projectWorkflowOperationArgv } from "./workflow-operation-projection.js";
@@ -153,7 +154,7 @@ export function projectWorkflowStepExecutionPacket(opts: {
 }): RouteExecutionPacket {
   const missing = new Set<string>(opts.step.execution.evidenceMissing);
   if (opts.task.plan_approval?.state !== "approved") missing.add("approved_plan");
-  if (opts.step.execution.needsVerificationRecord && opts.task.verification?.state !== "ok") {
+  if (opts.step.execution.needsVerificationRecord && !hasAcceptedTaskVerification(opts.task)) {
     missing.add("verification_record");
   }
   const blockersForEvidence = opts.step.selectedBlocker

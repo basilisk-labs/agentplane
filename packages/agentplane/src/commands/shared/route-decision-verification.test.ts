@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { taskKernel as k } from "@agentplaneorg/core/tasks";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import type { PrFlowStatusReport } from "../pr/flow-status.js";
@@ -94,6 +95,115 @@ beforeEach(() => {
 });
 
 describe("route verification target selection", () => {
+  it("requires every retained hosted job after a timing exception on a merged PR", async () => {
+    const fingerprint = k.kernelDigest("implementation");
+    const planDigest = k.kernelDigest("plan");
+    const failureDigest = k.kernelDigest("failure");
+    const validation = {
+      status: "FAILED",
+      identity: {
+        implementation_identity: fingerprint,
+        command_digest: k.kernelDigest("commands"),
+        environment_digest: k.kernelDigest("environment"),
+      },
+      evidence_digests: [failureDigest],
+    };
+    const aggregate = {
+      id: "T-1",
+      state: "COMPLETED",
+      current_plan: { state: "APPROVED", revision: 1, digest: planDigest, work_items: [] },
+      work_items: {},
+      effects: [],
+      final_validation: validation,
+      final_timing_exception: {
+        schema_version: 1,
+        kind: "timing_only",
+        task_id: "T-1",
+        plan_revision: 1,
+        plan_digest: planDigest,
+        validation_digest: k.kernelDigest(validation),
+        failed_check_id: "full-suite",
+        failure_evidence_digest: failureDigest,
+        implementation_identity: fingerprint,
+        acceptance_fingerprint: fingerprint,
+        command_digest: validation.identity.command_digest,
+        environment_digest: validation.identity.environment_digest,
+        budget_ms: 1_440_000,
+        duration_ms: 1_463_240,
+        max_overage_ms: 30_000,
+        hosted_head_sha: mergedPrHead,
+        hosted_required_checks: ["unit", "lint"],
+        hosted_evidence_digest: k.kernelDigest("hosted"),
+        approval_evidence_digest: k.kernelDigest("manual"),
+        approval_mode: "manual_operator",
+        approval_actor_id: "USER",
+        approved_by: "USER",
+        accepted_at: "2026-10-24T00:00:00.000Z",
+      },
+    };
+    const contents = { kind: "canonical_task", aggregate };
+    const acceptedTask = {
+      ...task,
+      verification: { state: "accepted_timing_exception" },
+      quality_review: { ...task.quality_review, evaluated_sha: mergedPrHead },
+      extensions: { task_kernel: { ...contents, digest: k.kernelDigest(contents) } },
+    } as TaskData;
+    const flow = mergedFlow();
+    flow.hostedChecks = {
+      checked: true,
+      total: 1,
+      passing: 1,
+      pending: 0,
+      failing: 0,
+      missingRequired: [],
+      rows: [{ name: "unit", state: "SUCCESS" }],
+    };
+    await expect(
+      hasAcceptedVerificationForCurrentImplementation({
+        ctx,
+        task: acceptedTask,
+        resume,
+        prFlow: flow,
+        batchOwnership: { role: "none" },
+      }),
+    ).resolves.toBe(false);
+    flow.hostedChecks = {
+      checked: true,
+      total: 2,
+      passing: 2,
+      pending: 0,
+      failing: 0,
+      missingRequired: [],
+      rows: [
+        { name: "unit", state: "SUCCESS" },
+        { name: "lint", state: "SUCCESS" },
+      ],
+    };
+    await expect(
+      hasAcceptedVerificationForCurrentImplementation({
+        ctx,
+        task: acceptedTask,
+        resume,
+        prFlow: flow,
+        batchOwnership: { role: "none" },
+      }),
+    ).resolves.toBe(true);
+    flow.hostedChecks = {
+      ...flow.hostedChecks,
+      total: 3,
+      passing: 3,
+      rows: [...flow.hostedChecks.rows, { name: "optional", state: "SKIPPED" }],
+    };
+    await expect(
+      hasAcceptedVerificationForCurrentImplementation({
+        ctx,
+        task: acceptedTask,
+        resume,
+        prFlow: flow,
+        batchOwnership: { role: "none" },
+      }),
+    ).resolves.toBe(false);
+  });
   it("uses the reviewed pre-rebase target after hosted close rewrites the base history", async () => {
     await expect(
       hasAcceptedVerificationForCurrentImplementation({

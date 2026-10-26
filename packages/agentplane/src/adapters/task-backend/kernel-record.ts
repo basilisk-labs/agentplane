@@ -136,6 +136,42 @@ const kernelAggregateSchema = z.strictObject({
     }),
   ),
   final_validation: kernelValidationSchema.nullable(),
+  final_timing_exception: z
+    .strictObject({
+      schema_version: z.literal(1),
+      kind: z.literal("timing_only"),
+      task_id: z.string().min(1),
+      plan_revision: revision.positive(),
+      plan_digest: digest,
+      validation_digest: digest,
+      failed_check_id: z.string().min(1),
+      failure_evidence_digest: digest,
+      implementation_identity: digest,
+      acceptance_fingerprint: digest,
+      command_digest: digest,
+      environment_digest: digest,
+      budget_ms: revision.positive(),
+      duration_ms: revision.positive(),
+      max_overage_ms: revision.positive(),
+      hosted_head_sha: z.string().regex(/^[a-f0-9]{40,64}$/u),
+      hosted_required_checks: z
+        .array(
+          z
+            .string()
+            .min(1)
+            .refine((name) => name.trim() === name),
+        )
+        .min(1)
+        .refine((names) => new Set(names).size === names.length),
+      hosted_evidence_digest: digest,
+      approval_evidence_digest: digest,
+      approval_mode: z.enum(["signed_user_receipt", "manual_operator"]),
+      approval_actor_id: z.string().min(1),
+      approved_by: z.literal("USER"),
+      accepted_at: isoTimestampSchema(),
+    })
+    .nullable()
+    .optional(),
   audit_comments: z
     .array(
       z.strictObject({
@@ -204,6 +240,7 @@ const event = z.strictObject({
     "work_item_result_accepted",
     "work_item_validation_recorded",
     "final_validation_recorded",
+    "final_timing_exception_accepted",
     "effect_prepared",
     "effect_started",
     "effect_observed",

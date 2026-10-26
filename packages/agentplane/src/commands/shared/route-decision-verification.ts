@@ -14,6 +14,10 @@ import type { RouteBatchOwnership } from "./route-batch-ownership.js";
 import { resolveQualityReviewTargetSha } from "./quality-review-target.js";
 import type { CommandContext } from "./task-backend.js";
 import { hasAcceptedVerificationRecord } from "./task-verification-records.js";
+import {
+  canonicalTimingExceptionHead,
+  canonicalTimingExceptionRequiredChecks,
+} from "./canonical-timing-exception.js";
 import type { VerificationRecordAssessment } from "./task-verification-records.js";
 
 function hostedCloseVerificationTarget(
@@ -126,6 +130,28 @@ export async function hasAcceptedVerificationForCurrentImplementation(opts: {
       (typeof opts.task.commit?.hash === "string" ? opts.task.commit.hash.trim() : "")) ||
     null;
   if (!headSha) return false;
+  const timingHead = canonicalTimingExceptionHead(opts.task);
+  if (timingHead) {
+    return (
+      timingHead === headSha &&
+      opts.prFlow?.pr.state !== "not_found" &&
+      opts.prFlow?.pr.headSha === timingHead &&
+      opts.prFlow?.hostedChecks.checked === true &&
+      opts.prFlow.hostedChecks.total > 0 &&
+      opts.prFlow.hostedChecks.passing === opts.prFlow.hostedChecks.total &&
+      opts.prFlow.hostedChecks.pending === 0 &&
+      opts.prFlow.hostedChecks.failing === 0 &&
+      opts.prFlow.hostedChecks.missingRequired.length === 0 &&
+      opts.prFlow.hostedChecks.rows.every((row) => row.state?.toUpperCase() === "SUCCESS") &&
+      canonicalTimingExceptionRequiredChecks(opts.task).every(
+        (name) =>
+          opts.prFlow!.hostedChecks.checked &&
+          opts.prFlow!.hostedChecks.rows.some(
+            (row) => row.name === name && row.state?.toUpperCase() === "SUCCESS",
+          ),
+      )
+    );
+  }
   const evaluatedSha =
     (liveBranchHead ? null : finalizedEvaluatedSha) ??
     (await resolveQualityReviewTargetSha({

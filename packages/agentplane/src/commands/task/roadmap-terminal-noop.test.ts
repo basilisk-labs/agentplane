@@ -67,6 +67,10 @@ vi.mock("./kernel-operational-projection.js", () => ({
 vi.mock("./kernel-operational-projection-recovery.js", () => ({
   recoverKernelOperationalProjection: mocks.recoverKernelOperationalProjection,
 }));
+vi.mock("./kernel-plan-authority.js", async (original) => ({
+  ...(await original<Record<string, unknown>>()),
+  projectCanonicalPlanApproval: vi.fn().mockResolvedValue(undefined),
+}));
 
 import { commitCanonicalTerminalTaskArtifacts } from "./kernel-terminal-artifacts.js";
 
@@ -339,6 +343,110 @@ describe("LC-20 terminal replay", () => {
     ).rejects.toThrow("stop after ordering proof");
 
     expect(events).toEqual(["complete_task", "terminal_artifacts"]);
+  });
+
+  it("advances a signed accepted FAILED timing result without rerunning local validation", async () => {
+    const fingerprint = k.kernelDigest("current-repository");
+    const planDigest = k.kernelDigest("approved-plan");
+    const failureEvidence = k.kernelDigest("failed-final-validation");
+    const validation = {
+      status: "FAILED" as const,
+      identity: {
+        implementation_identity: fingerprint,
+        command_digest: k.kernelDigest("commands"),
+        environment_digest: k.kernelDigest("environment"),
+      },
+      evidence_digests: [failureEvidence],
+    };
+    const record = {
+      digest: k.kernelDigest("record"),
+      aggregate: {
+        id: "task-1",
+        revision: 12,
+        state: "FINAL_VALIDATION",
+        current_plan: { state: "APPROVED", revision: 1, digest: planDigest, work_items: [] },
+        final_validation: validation,
+        final_timing_exception: {
+          kind: "timing_only",
+          task_id: "task-1",
+          plan_revision: 1,
+          plan_digest: planDigest,
+          validation_digest: k.kernelDigest(validation),
+          failure_evidence_digest: failureEvidence,
+          implementation_identity: fingerprint,
+          acceptance_fingerprint: fingerprint,
+          command_digest: validation.identity.command_digest,
+          environment_digest: validation.identity.environment_digest,
+          approved_by: "USER",
+          approval_actor_id: "USER:owner@trusted-issuer",
+          failed_check_id: "full-suite",
+          hosted_head_sha: "a".repeat(40),
+          hosted_evidence_digest: k.kernelDigest("hosted-green"),
+          approval_evidence_digest: k.kernelDigest("signed-receipt"),
+          hosted_required_checks: ["unit", "lint"],
+          approval_mode: "signed_user_receipt",
+          budget_ms: 1_440_000,
+          duration_ms: 1_463_240,
+          max_overage_ms: 30_000,
+        },
+        work_items: {},
+        effects: [],
+      },
+    };
+    const runtime = {
+      adapter: { read: vi.fn().mockResolvedValue({ kind: "canonical", record }) },
+      native: { readContext: vi.fn().mockResolvedValue({ repository_fingerprint: fingerprint }) },
+      lifecycle: {
+        read: vi
+          .fn()
+          .mockResolvedValueOnce({
+            read: {
+              kind: "canonical",
+              task: { execution_route: { repository_mode: "branch_pr" } },
+              record,
+            },
+            next_action: {
+              reason_code: "kernel_task_completion_required",
+              work_item_id: null,
+              effect_id: null,
+            },
+          })
+          .mockResolvedValue({
+            read: {
+              kind: "canonical",
+              task: { execution_route: { repository_mode: "branch_pr" } },
+              record,
+            },
+            next_action: {
+              reason_code: "kernel_task_completed",
+              work_item_id: null,
+              effect_id: null,
+            },
+          }),
+        apply: vi.fn().mockResolvedValue({ kind: "committed" }),
+      },
+      input: vi.fn().mockResolvedValue({ command: { expected_task_revision: 12 } }),
+      checkpoint: vi.fn(),
+      observe: vi.fn().mockResolvedValue({ fingerprint }),
+    };
+    expect(k.hasAcceptedFinalTimingException(record.aggregate as never, fingerprint)).toBe(true);
+    mocks.createKernelRuntime.mockResolvedValue(runtime);
+    mocks.commitCanonicalTerminalTaskArtifacts.mockRejectedValue(
+      new Error("stop after completion"),
+    );
+    await expect(
+      advanceTaskStep({
+        command: { resolvedProject: { gitRoot: "/repo" } } as never,
+        task_id: "task-1",
+        transport: "host",
+        allow_provider_effects: true,
+      }),
+    ).rejects.toThrow("stop after completion");
+    expect(runtime.lifecycle.apply).toHaveBeenCalledOnce();
+    expect(mocks.ensureKernelOperationalProjectionEvidence).toHaveBeenCalledWith(
+      expect.objectContaining({ verification_evidence_digest: failureEvidence }),
+    );
+    expect(mocks.runKernelFinalValidation).not.toHaveBeenCalled();
   });
 
   it("does not commit terminal task artifacts when complete_task fails", async () => {

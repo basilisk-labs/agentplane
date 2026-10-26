@@ -2,6 +2,7 @@ import { taskKernel } from "@agentplaneorg/core/tasks";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import { isRecord } from "../../shared/guards.js";
+import { hasCanonicalTimingException } from "./canonical-timing-exception.js";
 
 function validatedCanonicalAggregate(task: TaskData): Record<string, unknown> | null {
   const raw = task.extensions?.task_kernel;
@@ -12,7 +13,8 @@ function validatedCanonicalAggregate(task: TaskData): Record<string, unknown> | 
     aggregate && isRecord(aggregate.final_validation) ? aggregate.final_validation : null;
   return typeof digest === "string" &&
     taskKernel.kernelDigest(recordContents) === digest &&
-    finalValidation?.status === "PASSED" &&
+    finalValidation !== null &&
+    (finalValidation.status === "PASSED" || hasCanonicalTimingException(task)) &&
     Array.isArray(finalValidation.evidence_digests) &&
     finalValidation.evidence_digests.length > 0
     ? aggregate

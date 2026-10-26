@@ -427,6 +427,11 @@ export const loadTaskScopeApproveRequestSpec = (session: TaskLifecycleSession) =
     m.makeRunTaskScopeApproveRequestHandler(getSessionContext(session, "git.mutate")),
   );
 
+export const loadTaskFinalTimingExceptionSpec = (session: TaskLifecycleSession) =>
+  import("../../../commands/task/final-timing-exception.command.js").then((m) =>
+    m.makeRunTaskFinalTimingExceptionHandler(getSessionContext(session, "git.mutate")),
+  );
+
 export const loadTaskCancelSpec = (session: TaskLifecycleSession) =>
   import("../../../commands/task/cancel.command.js").then((m) =>
     m.makeRunTaskCancelHandler(getSessionContext(session, "git.mutate")),

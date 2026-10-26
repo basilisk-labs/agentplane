@@ -93,7 +93,8 @@ export function kernelRecordIssues(
     (!aggregate.final_validation ||
       !taskKernel.isTaskCompletionEligible(
         { ...aggregate, state: "FINAL_VALIDATION" },
-        aggregate.final_validation.identity.implementation_identity,
+        aggregate.final_timing_exception?.acceptance_fingerprint ??
+          aggregate.final_validation.identity.implementation_identity,
       ))
   )
     issues.push("completion");

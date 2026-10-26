@@ -13,6 +13,7 @@ export type {
 } from "./invariants.js";
 export {
   EFFECT_OBSERVE_TRANSITION_TABLE,
+  hasAcceptedFinalTimingException,
   isTaskCompletionEligible,
   kernelDigest,
   reduceTaskCommand,

@@ -1612,7 +1612,13 @@
             "properties": {
               "state": {
                 "type": "string",
-                "enum": ["pending", "ok", "needs_rework", "blocked_external"]
+                "enum": [
+                  "pending",
+                  "ok",
+                  "accepted_timing_exception",
+                  "needs_rework",
+                  "blocked_external"
+                ]
               },
               "attempts": {
                 "type": "integer",

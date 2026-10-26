@@ -318,7 +318,9 @@ export async function deriveBlockers(opts: {
       blockers,
       task: opts.task,
       acceptedVerificationRecord:
-        opts.task.verification?.state === "ok" && !finalizedDoneTask
+        (opts.task.verification?.state === "ok" ||
+          opts.task.verification?.state === "accepted_timing_exception") &&
+        !finalizedDoneTask
           ? await hasAcceptedVerificationForCurrentImplementation({
               ...opts,
               execution: opts.execution,

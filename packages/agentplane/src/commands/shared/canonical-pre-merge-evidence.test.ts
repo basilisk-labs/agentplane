@@ -53,6 +53,67 @@ describe("canonical pre-merge evidence", () => {
     expect(hasCanonicalPreMergeEvidence(canonicalTask())).toBe(true);
   });
 
+  it("accepts the distinct timing disposition only while the FAILED canonical evidence is current", () => {
+    const task = canonicalTask();
+    const fingerprint = k.kernelDigest("current-repository");
+    const planDigest = k.kernelDigest("approved-plan");
+    const failureEvidence = k.kernelDigest("failed-validation");
+    const validation = {
+      status: "FAILED",
+      identity: {
+        implementation_identity: fingerprint,
+        check_id: "canonical-final-contracts-v2",
+        command_digest: k.kernelDigest("commands"),
+        toolchain_digest: k.kernelDigest("toolchain"),
+        environment_digest: k.kernelDigest("environment"),
+      },
+      evidence_digests: [failureEvidence],
+    };
+    const aggregate = {
+      id: "T-1",
+      state: "COMPLETED",
+      current_plan: { state: "APPROVED", revision: 1, digest: planDigest, work_items: [] },
+      work_items: {},
+      effects: [],
+      final_validation: validation,
+      final_timing_exception: {
+        schema_version: 1,
+        kind: "timing_only",
+        task_id: "T-1",
+        plan_revision: 1,
+        plan_digest: planDigest,
+        validation_digest: k.kernelDigest(validation),
+        failed_check_id: "full-suite",
+        failure_evidence_digest: failureEvidence,
+        implementation_identity: fingerprint,
+        acceptance_fingerprint: fingerprint,
+        command_digest: validation.identity.command_digest,
+        environment_digest: validation.identity.environment_digest,
+        budget_ms: 1_440_000,
+        duration_ms: 1_463_240,
+        max_overage_ms: 30_000,
+        hosted_head_sha: "a".repeat(40),
+        hosted_evidence_digest: k.kernelDigest("hosted-green"),
+        approval_evidence_digest: k.kernelDigest("user-approval"),
+        hosted_required_checks: ["unit", "lint"],
+        approval_mode: "signed_user_receipt",
+        approval_actor_id: "USER:release-owner@trusted-issuer",
+        approved_by: "USER",
+        accepted_at: "2026-10-24T00:00:00.000Z",
+      },
+    };
+    const contents = { kind: "canonical_task", aggregate };
+    task.verification = { state: "accepted_timing_exception", attempts: 1 };
+    task.extensions!.task_kernel = { ...contents, digest: k.kernelDigest(contents) };
+    expect(hasCanonicalPreMergeEvidence(task)).toBe(true);
+    aggregate.final_timing_exception.plan_digest = k.kernelDigest("stale-plan");
+    task.extensions!.task_kernel = {
+      ...contents,
+      digest: k.kernelDigest(contents),
+    };
+    expect(hasCanonicalPreMergeEvidence(task)).toBe(false);
+  });
+
   it("keeps canonical evidence current after a task-artifact closure commit", () => {
     const task = canonicalTask() as {
       commit: { hash: string };

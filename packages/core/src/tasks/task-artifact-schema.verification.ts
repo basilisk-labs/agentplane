@@ -6,6 +6,7 @@ export const PLAN_APPROVAL_STATE_VALUES = ["pending", "approved", "rejected"] as
 export const VERIFICATION_STATE_VALUES = [
   "pending",
   "ok",
+  "accepted_timing_exception",
   "needs_rework",
   "blocked_external",
 ] as const;

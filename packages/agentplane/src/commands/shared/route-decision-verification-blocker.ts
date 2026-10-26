@@ -1,5 +1,6 @@
 import type { TaskData } from "../../backends/task-backend.js";
 import type { RouteBlocker } from "./route-oracle.js";
+import { hasAcceptedTaskVerification } from "./canonical-timing-exception.js";
 
 export function addVerificationRequiredBlocker(opts: {
   blockers: RouteBlocker[];
@@ -14,10 +15,10 @@ export function addVerificationRequiredBlocker(opts: {
   const requiresVerification =
     status === "DONE" ||
     (status === "DOING" &&
-      (Boolean(opts.task.commit?.hash?.trim()) || opts.task.verification?.state === "ok"));
+      (Boolean(opts.task.commit?.hash?.trim()) || hasAcceptedTaskVerification(opts.task)));
   if (
     !requiresVerification ||
-    (opts.task.verification?.state === "ok" && opts.acceptedVerificationRecord !== false)
+    (hasAcceptedTaskVerification(opts.task) && opts.acceptedVerificationRecord !== false)
   ) {
     return;
   }

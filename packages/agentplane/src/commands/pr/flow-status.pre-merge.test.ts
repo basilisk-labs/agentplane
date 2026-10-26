@@ -7,6 +7,7 @@ import { configureGitUser, mkGitRepoRoot } from "@agentplane/testkit";
 import { describe, expect, it } from "vitest";
 
 import { matchesMergedPreMergeClosure } from "./flow-status.js";
+import { hostedChecksExpectedHeadSha } from "./hosted-checks.js";
 
 type RemotePrStatus = Parameters<typeof matchesMergedPreMergeClosure>[0]["pr"];
 type MatchOptions = Parameters<typeof matchesMergedPreMergeClosure>[0];
@@ -73,6 +74,20 @@ function buildOptions(opts: { root: string; basis: string; head: string }): Matc
 }
 
 describe("pre-merge closure flow status", () => {
+  it("uses the retained merged MR head for hosted checks after source branch cleanup", () => {
+    expect(
+      hostedChecksExpectedHeadSha(null, {
+        provider: "gitlab",
+        state: "MERGED",
+        source: "metadata",
+        prNumber: 42,
+        prUrl: null,
+        base: "main",
+        headSha: "a".repeat(40),
+        mergeCommit: "b".repeat(40),
+      }),
+    ).toBe("a".repeat(40));
+  });
   it("accepts a merged, closed task whose closure basis is an ancestor of its head", async () => {
     const commits = await createRepoCommits();
     await expect(matchesMergedPreMergeClosure(buildOptions(commits))).resolves.toBe(true);
