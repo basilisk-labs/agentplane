@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 68
+revision: 69
 origin:
   system: "manual"
 depends_on: []
@@ -33,32 +33,32 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-10-26T18:39:35.057Z"
+  updated_at: "2026-10-26T19:16:56.519Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 4 typed finding(s)."
-  evaluated_sha: "65fd38bdfab6eb826c35dce1d25d04d8a9a916b5"
-  review_identity_digest: "sha256:8683329e69f3f302f6ec45cd2a6c95e179a2ab7e6b91a104ae94cbf3b776b148"
+  evaluated_sha: "5610bba52ca24c1fa51bfc559b3290fa44cd39aa"
+  review_identity_digest: "sha256:379c8f3377bd51d2be5d8da97b54c54c84fedb3d8165c8c60f9c319122312d06"
   evidence_refs:
-    - ".agentplane/tasks/202610260157-ZDEE0D/quality/20261026-183829508-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202610260157-ZDEE0D/quality/20261026-183829508-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202610260157-ZDEE0D/quality/objects/sha256/dbf1fb0858674c23fa0f594ed0f1c69a92f383efccd51d27cf63109e0e69f313.md"
-    - ".agentplane/tasks/202610260157-ZDEE0D/quality/20261026-183829508-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202610260157-ZDEE0D/quality/20261026-183829508-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202610260157-ZDEE0D/quality/20261026-183829508-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202610260157-ZDEE0D/quality/20261026-191618184-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202610260157-ZDEE0D/quality/20261026-191618184-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202610260157-ZDEE0D/quality/objects/sha256/ce0b3a750e05f94d8e1d4708e0dc769c2c137bfa9ac7a98ffd5ae50e491794ea.md"
+    - ".agentplane/tasks/202610260157-ZDEE0D/quality/20261026-191618184-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202610260157-ZDEE0D/quality/20261026-191618184-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202610260157-ZDEE0D/quality/20261026-191618184-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202610260157-ZDEE0D/README.md"
     - ".agentplane/tasks/202610260157-ZDEE0D/quality/objects/sha256/1e1a18c35d84870fb270dffc94ee7afa827206f95dc2f670a059ae5d1fc034f4.patch"
-    - ".agentplane/tasks/202610260157-ZDEE0D/quality/objects/sha256/be9013187a53eaf6991e01a6cae6216060bfea341817145be93dac2195b560fe.json"
-    - ".agentplane/tasks/202610260157-ZDEE0D/verification/20261026183759637-12927579be50f26e.json"
-    - ".agentplane/tasks/202610260157-ZDEE0D/quality/objects/sha256/5c5a563bc719a06705f77a7c733e36447a0a9d490474e964f838e690c154f75d.json"
+    - ".agentplane/tasks/202610260157-ZDEE0D/quality/objects/sha256/af5a4385ecc99286f66eb48a8d6561dd9ccd0d3323c9af08585058ed49c2c632.json"
+    - ".agentplane/tasks/202610260157-ZDEE0D/verification/20261026191545527-ac3eeb0a0c339136.json"
+    - ".agentplane/tasks/202610260157-ZDEE0D/quality/objects/sha256/ba11645c4ddf559ea331741fd57ca0c7a9a6331d9d4fba153935b80ebb512bdd.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The kernel checks the original failed WorkOrder, accepted-result and validation receipts, unavailable executable evidence, unchanged work contract terms, and a manual USER approval digest before accepting one replacement command."
-    - "Regression tests cover successful correction and rejection of forged identities, tampered receipts, executable test failure, changed scope, extra commands, and stale plan state. Historical amendment recovery rejects altered retained evidence."
-    - "Recorded native verification for implementation head 65fd38bdfab6eb826c35dce1d25d04d8a9a916b5 passed: ci:local:full run-036, typecheck run-037, routing run-038, and doctor run-039. The compatibility checker passed with the new CLI option ratcheted in candidate and checker."
-    - "Residual risk: Hosted PR checks and main-base reconciliation remain for the native PR lifecycle. The prospective scope-extension bridge for completed rework needs a separate generic product fix."
+    - "The correction replaces exactly one unlaunched declared check under manual USER-bound proof, preserves the failed WorkOrder and native validation receipt, and rejects unrelated scope, contract, command, or executed-check changes."
+    - "Focused kernel and historical-recovery tests cover successful correction plus forged, stale, widened, and altered-evidence cases. The compatibility ratchet approves the exact new task plan set option with source-task provenance."
+    - "Native verification after main reconciliation passed on HEAD 5610bba52ca24c1fa51bfc559b3290fa44cd39aa: ci:local:full run-040, typecheck run-041, policy routing run-042, and doctor run-043. The task worktree has no tracked changes."
+    - "Residual risk: Provider PR-head update and final hosted integration evidence remain in the native lifecycle. The prospective scope-extension bridge for completed rework needs a separate generic product fix."
 token_usage:
   agent_runs: 10
   input_tokens: null
@@ -2416,7 +2416,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-10-26T19:15:52.986Z"
+doc_updated_at: "2026-10-26T19:16:56.617Z"
 doc_updated_by: "CODER"
 description: "Add a generic, USER-attested correction route for a required verification command that native validation proved non-executable. Preserve the original FAILED receipt and exact old/new command audit evidence; reject unrelated contract, scope, or command changes; rerun the replacement check before completion. Do not silently waive verification or add release-specific adapters."
 sections:
@@ -3232,13 +3232,13 @@ sections:
   Findings: ""
 extensions:
   agentplane.completed_native_review:
-    applied_at: "2026-10-26T18:39:35.057Z"
+    applied_at: "2026-10-26T19:16:56.519Z"
     kernel_digest: "sha256:cc4934a22b8b425ecf6a1bc3c55d03a5baf79c93951ce6cb742a9a45f5a11d40"
-    quality_digest: "sha256:444fe9ea311d796892244fca720c9d066fe01c4c6c9965768da59c73b8c47759"
-    result_digest: "sha256:7c129a9790092e094c366293f8201149a7001ae2b846c5e564c6ea0bc1fcfdfb"
+    quality_digest: "sha256:bd86504277eeb26ba0a961c74f12b8cc7abc065a0cdaad0517aa30377b53cf03"
+    result_digest: "sha256:ba7072d71b862930c6e537078a9b78e7bc84782eb9780e0f628e9759c99c1108"
     schema_version: 1
-    state_fingerprint: "sha256:468bf7818638c18365fc5f63f6c1d2c84e3530ebc495d15eeabe5593068e4590"
-    transition_id: "tr_722600c69bb2cc19b84d360fa716f6f5"
+    state_fingerprint: "sha256:be7f8969eec43ef5e8740203e40949c947e873d5072f0457e291361944a5b44b"
+    transition_id: "tr_cfec328aa3b6c5ffc8a3fff34feef859"
   agentplane.kernel_operational_projection:
     digest: "sha256:56920d9ddaab9ed12216da699fcd1db899c72e479bdc38a0312a703494621743"
     evidence_refs:
