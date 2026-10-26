@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { mkdir, readFile, rm, symlink, writeFile } from "node:fs/promises";
+import { chmod, mkdir, readFile, rm, stat, symlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { expect, it } from "vitest";
@@ -435,6 +435,7 @@ describeWhenNotHook(
       expect(await readFile(accepted.candidatePath, "utf8")).toBe(candidateText);
 
       const rejected = await fixture(true);
+      if (process.platform !== "win32") await chmod(rejected.candidatePath, 0o640);
       const beforeHead = await execFileAsync("git", ["rev-parse", "HEAD"], {
         cwd: rejected.root,
       });
@@ -449,6 +450,10 @@ describeWhenNotHook(
       const after = afterHead.stdout.trim();
       expect(after).toBe(before);
       expect(await readFile(rejected.candidatePath, "utf8")).toBe(previousCandidate);
+      if (process.platform !== "win32") {
+        const candidateStat = await stat(rejected.candidatePath);
+        expect(candidateStat.mode & 0o777).toBe(0o640);
+      }
 
       const linked = await fixture(false);
       const outsidePath = path.join(linked.root, "outside-candidate.json");
@@ -459,6 +464,29 @@ describeWhenNotHook(
         withDryRunReleaseMode(() => runReleaseCommandExecute(linked.state)),
       ).rejects.toThrow(/regular repository file/u);
       expect(await readFile(outsidePath, "utf8")).toBe('{"version":"outside"}\n');
+
+      if (process.platform !== "win32") {
+        const swapped = await fixture(false);
+        const outsideRollbackPath = path.join(swapped.root, "outside-rollback.json");
+        await writeFile(outsideRollbackPath, '{"version":"outside"}\n');
+        await writeFile(
+          path.join(swapped.root, "scripts/bench/capture-compatibility-candidate.mjs"),
+          "import { unlinkSync, symlinkSync } from 'node:fs';\n" +
+            "unlinkSync('scripts/baselines/v0.7-compatibility-candidate.json');\n" +
+            `symlinkSync(${JSON.stringify(outsideRollbackPath)}, 'scripts/baselines/v0.7-compatibility-candidate.json');\n`,
+        );
+        const { stdout: beforeRollback } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+          cwd: swapped.root,
+        });
+        await expect(
+          withDryRunReleaseMode(() => runReleaseCommandExecute(swapped.state)),
+        ).rejects.toThrow(/rollback failed/u);
+        const { stdout: afterRollback } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+          cwd: swapped.root,
+        });
+        expect(afterRollback).toBe(beforeRollback);
+        expect(await readFile(outsideRollbackPath, "utf8")).toBe('{"version":"outside"}\n');
+      }
     });
 
     it(

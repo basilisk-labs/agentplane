@@ -1,0 +1,114 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "node --test scripts/lib/compatibility-incremental-package-delta.test.mjs",
+      "duration_ms": 844,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:8c58d48bf217a44ca69a0f76f4cf73739d0bc5bd8111382f0c829a6e53f63cb5",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/tmp/release-compat-ratchet-0713-v2/.agentplane/worktrees/202610252231-Y5Z4NW-ratchet-compatibility-candidate-for-release-vers/.agentplane/tasks/202610252231-Y5Z4NW/supervision/verification-runs/run-003/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:7330a1160e4f425ec42c804696fc4783f4141c62f63710439b717b72363c3f42",
+        "executable_digest": "sha256:7fde7b8afa198da66257f42ee2001d874c7355631e6d1579a5fb5ef1f246df4c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "✔ historical package evidence survives later unrelated surface changes (2.282324ms)\n✔ historical package evidence rejects package and path drift (1.339428ms)\n✔ reviewed package hashes survive only a parity-only release version bump (3.248902ms)\n✔ version normalization rejects mismatched internal dependency parity (0.269011ms)\n✔ reviewed-version anchor cannot be null or replaced with a new release version (1.000784ms)\n✔ candidate path accepts one explicit versioned artifact and rejects path escape (1.07216ms)\nℹ tests 6\nℹ suites 0\nℹ pass 6\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 85.984567\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run bench:compatibility:candidate:check",
+      "duration_ms": 8181,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:134560332e8b905d3bfc154c6e9bc0afce79d1a4ed0b210836583f835d320b91",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/tmp/release-compat-ratchet-0713-v2/.agentplane/worktrees/202610252231-Y5Z4NW-ratchet-compatibility-candidate-for-release-vers/.agentplane/tasks/202610252231-Y5Z4NW/supervision/verification-runs/run-004/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:9e35ce84a7558493e4006360103dc0581cc697bee8f83643f36e3c9c2aaab451",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "bench:compatibility:candidate:check",
+      "stderr_tail": "$ node scripts/bench/capture-compatibility-candidate.mjs --check\n",
+      "stdout_tail": "compatibility candidate is current\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bunx vitest run packages/agentplane/src/commands/release/apply.version-mutation.test.ts",
+      "duration_ms": 4669,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:a3ae24606f2473490d3db88342a27f9e653100f6fda66e778ffe02435fafadb3",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/tmp/release-compat-ratchet-0713-v2/.agentplane/worktrees/202610252231-Y5Z4NW-ratchet-compatibility-candidate-for-release-vers/.agentplane/tasks/202610252231-Y5Z4NW/supervision/verification-runs/run-005/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:9e35ce84a7558493e4006360103dc0581cc697bee8f83643f36e3c9c2aaab451",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "\n RUN  v5.0.5 <repo>\n\nRelease plan written: .agentplane/.release/plan/2026-10-26T09-39-39-386Z\nNext tag: v0.2.7\nHint: Create a DOCS task to write docs/releases/v0.2.7.md based on this plan.\nRelease tag created: v0.2.7\nNext: git push <remote> HEAD && git push <remote> v0.2.7\nRelease report: .agentplane/.release/apply/2026-10-26T09-39-39-533Z.json\nRelease plan written: .agentplane/.release/plan/2026-10-26T09-39-39-632Z\nNext tag: v0.2.7\nHint: Create a DOCS task to write docs/releases/v0.2.7.md based on this plan.\nRelease tag created: v0.2.7\nNext: git push <remote> HEAD && git push <remote> v0.2.7\nRelease report: .agentplane/.release/apply/2026-10-26T09-39-39-765Z.json\nRelease plan written: .agentplane/.release/plan/2026-10-26T09-39-40-957Z\nNext tag: v0.2.7\nHint: Create a DOCS task to write docs/releases/v0.2.7.md based on this plan.\n ✓ packages/agentplane/src/commands/release/apply.version-mutation.test.ts (6 tests) 1793ms\n   ✓ release apply: version mutation (6)\n     ✓ bumps versions, commits, and tags using the latest plan 344ms\n     ✓ recaptures and validates a present compatibility candidate in the release commit 604ms\n\n Test Files  1 passed (1)\n      Tests  6 passed (6)\n   Start at  12:39:37\n   Duration  3.54s (tests 53%, import 30%, transform 16%)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "full_regression",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run ci:local:full",
+      "duration_ms": 1963227,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:08ab3190774110f795931793115b655d3b98823d3710c7641e94eb020a2a1cb9",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/tmp/release-compat-ratchet-0713-v2/.agentplane/worktrees/202610252231-Y5Z4NW-ratchet-compatibility-candidate-for-release-vers/.agentplane/tasks/202610252231-Y5Z4NW/supervision/verification-runs/run-006/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:93328d025beb5630cc48f8b0e049698fb856bbc26771ae38d9289131e96b16f4",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "ci:local:full",
+      "stderr_tail": "-ABCDE: task README frontmatter schema validation failed: Invalid input: expected string, received number at \"title\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"tags[1]\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"verify[1]\"; task README frontmatter schema validation failed: Too small: expected string to have >=1 characters at \"commit.hash\"; task README frontmatter schema validation failed: Too small: expected string to have >=1 characters at \"commit.message\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"description\"\nSwitched to a new branch 'unrelated'\nℹ️ task doc set outcome=section-updated section=Summary\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Summary\nℹ️ task doc set outcome=full-doc-updated section=Summary\n{\"ts\":\"2026-10-26T10:06:47.624Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-9eIY2F/agentplane-workflow-SIqeyg/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/tmp/agentplane-vitest-run-9eIY2F/agentplane-workflow-SIqeyg/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-26T10:06:47.638Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-9eIY2F/agentplane-workflow-4A2pGP/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/tmp/agentplane-vitest-run-9eIY2F/agentplane-workflow-4A2pGP/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-26T10:06:47.660Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-9eIY2F/agentplane-workflow-4A2pGP/.agentplane/WORKFLOW.md\",\"from\":\"/tmp/agentplane-vitest-run-9eIY2F/agentplane-workflow-4A2pGP/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-26T10:06:47.677Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-9eIY2F/agentplane-workflow-1xuFXM/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/tmp/agentplane-vitest-run-9eIY2F/agentplane-workflow-1xuFXM/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-26T10:06:47.695Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_failed\",\"code\":\"WF_UNSUPPORTED_VERSION\",\"details\":{\"reason\":\"Unsupported WORKFLOW version 3; supported versions: 1, 2.\"}}\n{\"ts\":\"2026-10-26T10:08:32.126Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-10-26T10:08:32.169Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":1}}\n{\"ts\":\"2026-10-26T10:08:32.172Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-10-26T10:08:32.190Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":2}}\n{\"ts\":\"2026-10-26T10:08:32.192Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-10-26T10:08:32.211Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_completed\",\"details\":{\"diagnostics\":0}}\n$ node scripts/checks/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 3 --fixture local-basic [REDACTED] 10000\n$ node scripts/checks/run-vitest-suite.mjs critical-cli\n$ bun run docs:ia:check && bun run docs:reference:check && bun run docs:onboarding:check\n$ node scripts/checks/check-docs-ia.mjs\n$ node scripts/generate/generate-package-reference.mjs --check\n$ node scripts/checks/check-agent-onboarding-scenario.mjs\n$ node scripts/workflow/run-workflows-lint.mjs && node scripts/checks/check-workflow-command-contract.mjs && bun scripts/checks/check-lifecycle-parity.ts && node scripts/checks/check-critical-test-route.mjs\n$ node scripts/checks/run-vitest-suite.mjs platform-critical\n$ node scripts/checks/check-significant-coverage.mjs\n",
+      "stdout_tail": "i.critical.trust-boundary-ratchet.test.ts\nVitest suite critical-cli: chunk 5/5 passed in 12435ms (Test Files  1 passed (1); Tests  12 passed (12); Duration  12.05s (tests 86%, import 8%, transform 6%))\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":true,\"groups\":[{\"id\":\"runtime\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":84310,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202610252231-Y5Z4NW/supervision/verification-runs/run-006/children/run-001/manifest.json\",\"digest\":\"sha256:7aac72ac94e8c082ee99be402a88599b388d02b506e6ea53537ec16fbbf0bc44\"}},{\"id\":\"docs-schema\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":64726,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202610252231-Y5Z4NW/supervision/verification-runs/run-006/children/run-002/manifest.json\",\"digest\":\"sha256:c1c5873ee9c0221c122f5ffc9dafcc0b0c0a5d0c4316803299c3aab92214483e\"}},{\"id\":\"core\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":1630508,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202610252231-Y5Z4NW/supervision/verification-runs/run-006/children/run-003/manifest.json\",\"digest\":\"sha256:e3b59a7534b2d9ea7201558e4e331f6edf8c8f9ab2efdf0952c96f7a47b15f3c\"}},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":90050,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202610252231-Y5Z4NW/supervision/verification-runs/run-006/children/run-004/manifest.json\",\"digest\":\"sha256:569a6b86e6a228e5fb63195f78afa65102a6446322cc413f6d2809fe49b5902c\"}}]}\n{\"schema_version\":1,\"kind\":\"verification_metrics\",\"route\":\"full-fast\",\"wall_clock_ms\":1900646,\"selected_groups\":5,\"executed_groups\":5,\"parallel_group_concurrency\":1,\"build_invocations\":1,\"ok\":true}\n\n== Documentation contracts ==\nok: docs index and current path references are aligned\nok: docs/reference/generated-reference.mdx is fresh\nok: agent onboarding scenario surfaces are aligned\n\n== Workflows lint (actionlint) ==\nworkflow and command guidance contract OK\nworkflow lifecycle parity OK\ncritical Vitest route OK\n\n== Windows platform-critical tests ==\n\n RUN  v5.0.5 /tmp/agentplane-verification-JqSrH7\n\n\n Test Files  7 passed (7)\n      Tests  98 passed (98)\n   Start at  13:11:24\n   Duration  45.22s (tests 87%, import 7%, transform 6%)\n\n\n== Significant file coverage (guard) ==\n\n RUN  v5.0.5 /tmp/agentplane-verification-JqSrH7\n      Coverage enabled with v8\n\n ✓ packages/agentplane/src/cli/run-cli.core.guard.test.ts (25 tests) 3404ms\n   ✓ runCli (25)\n     ✓ guard clean succeeds when no staged files 2209ms\n ✓ packages/agentplane/src/commands/guard/impl/close-message.test.ts (18 tests) 360ms\n ✓ packages/agentplane/src/commands/guard/impl/commands.commit-close.unit.test.ts (12 tests) 448ms\n   ✓ guard command implementations: commit close (12)\n     ✓ cmdCommit close path stages absolute README when outside gitRoot 414ms\n ✓ packages/agentplane/src/commands/guard/impl/commands.commit-non-close.unit.test.ts (19 tests) 455ms\n   ✓ guard command implementations: commit non-close (19)\n     ✓ cmdCommit non-close path commits with env and provided ctx 390ms\n ✓ packages/agentplane/src/commands/guard/impl/commands.guard.unit.test.ts (3 tests) 164ms\n ✓ packages/agentplane/src/commands/guard/impl/comment-commit.test.ts (12 tests) 56ms\n ✓ packages/agentplane/src/commands/guard/impl/allow.test.ts (13 tests) 54ms\n ✓ packages/agentplane/src/commands/guard/impl/policy.test.ts (3 tests) 12ms\n\n Test Files  8 passed (8)\n      Tests  105 passed (105)\n   Start at  13:12:10\n   Duration  13.91s (tests 40%, transform 31%, import 26%, worker 1%, setup 1%)\n\n     Import  1105 modules were evaluated 2652 times · 3.15s total, 26% of tracked time\n             ~1.83s faster with isolate: false — shared modules are evaluated once per worker instead of once per file\n             learn more: https://vitest.dev/guide/improving-performance#test-isolation\n\n\n== Coverage threshold (significant) ==\nSignificant suite contract OK (17 source targets).\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202610252231-Y5Z4NW"
+}
