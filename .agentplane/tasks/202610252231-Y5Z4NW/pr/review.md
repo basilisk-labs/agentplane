@@ -6,7 +6,7 @@ Created: 2026-10-26T01:46:43.770Z
 
 - Task: `202610252231-Y5Z4NW`
 - Title: Ratchet compatibility candidate for release versions
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610252231-Y5Z4NW/ratchet-compatibility-candidate-for-release-vers`
 - Canonical task record: `.agentplane/tasks/202610252231-Y5Z4NW/README.md`
 
