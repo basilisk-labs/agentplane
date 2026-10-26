@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202610261134-JK4HX9/prevent-stale-final-validation-evidence-from-byp",
+  "created_at": "2026-10-26T12:11:02.980Z",
+  "diffstat_sha256": "sha256:4b86dc603ee409ebbc5aaad9271db746b184ce0108c074f320cff6c3fdfa4ff4",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610261134-JK4HX9",
+  "updated_at": "2026-10-26T12:11:02.980Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
