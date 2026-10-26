@@ -27,12 +27,12 @@ Add a generic, USER-attested correction route for a required verification comman
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../agentplane/src/commands/task/kernel-plan.ts    |  75 +++++++
- .../src/commands/task/plan-set.command.ts          |  26 +++
- packages/core/src/tasks/task-kernel/kernel.test.ts | 242 +++++++++++++++++++++
- packages/core/src/tasks/task-kernel/kernel.ts      | 149 ++++++++++++-
- packages/core/src/tasks/task-kernel/model.ts       |   8 +
- 5 files changed, 495 insertions(+), 5 deletions(-)
+ .../agentplane/src/commands/task/kernel-plan.ts    |  82 ++++++
+ .../src/commands/task/plan-set.command.ts          |  26 ++
+ packages/core/src/tasks/task-kernel/kernel.test.ts | 299 +++++++++++++++++++++
+ packages/core/src/tasks/task-kernel/kernel.ts      | 165 +++++++++++-
+ packages/core/src/tasks/task-kernel/model.ts       |   9 +
+ 5 files changed, 576 insertions(+), 5 deletions(-)
 ```
 
 </details>

@@ -52,6 +52,12 @@ async function failedRequiredCheckEvidence(
   if (changed.length !== 1 || !changed[0]?.replacement_command)
     throw new Error("Required check correction must replace exactly one command");
   const directory = await kernelExchangeDirectory(command, taskId, workOrderId);
+  const acceptedResultCommand = JSON.parse(
+    await readStableRegularTextNoFollow(
+      path.join(directory, "command-input.json"),
+      "accepted result command for failed check",
+    ),
+  ) as unknown;
   const validationCommand = JSON.parse(
     await readStableRegularTextNoFollow(
       path.join(directory, "validation-command.json"),
@@ -74,6 +80,7 @@ async function failedRequiredCheckEvidence(
     failed_work_order_id: workOrderId as k.Sha256Digest,
     previous_command: changed[0].previous_command,
     replacement_command: changed[0].replacement_command,
+    accepted_result_command_input: acceptedResultCommand,
     validation_command_input: validationCommand,
     native_validation: matching[0],
   };
