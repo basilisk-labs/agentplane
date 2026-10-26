@@ -1,10 +1,11 @@
 ---
 id: "202610261134-JK4HX9"
 title: "Prevent stale final-validation evidence from bypassing authority continuation"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -42,6 +43,22 @@ quality_review:
     - "The approved-plan authority continuation precedes final-validation and completion handling. When current identity does not restore, runKernelFinalValidation executes before a completion attempt; failed continuation or failed checks stop without input(complete_task) or lifecycle.apply."
     - "roadmap-terminal-noop.test.ts adds changed-implementation and invalidated-check regressions asserting no completion/projection on stale PASS. Existing current-identity and completion-order tests preserve unchanged recovery and ensure terminal artifacts follow committed complete_task."
     - "AgentPlane native declared checks are bound to implementation HEAD 582299f70bc395f4e44971dd394f5a475e147f66: focused kernel-final-validation test run-000 and ci:local:full run-001 both passed."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:1a0b0fbafe164e7d11bfb18a0cb5edef5a53178d4bc9c0c048500f35de8be8d3"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-10-26T14:44:47.459Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -218,9 +235,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "582299f70bc395f4e44971dd394f5a475e147f66"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "a9f3eb0205dda893c1513989699fcef6950f5093"
+  message: "✅ JK4HX9 task: prevent stale final-validation evidence from bypassing authority..."
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -234,9 +254,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-26T14:44:47.459Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "a9f3eb0205dda893c1513989699fcef6950f5093"
 doc_version: 3
-doc_updated_at: "2026-10-26T14:38:48.600Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-26T14:44:47.459Z"
+doc_updated_by: "CODER"
 description: "For a canonical branch PR task whose implementation changed after a recorded PASS, advance authority to the new repository fingerprint and execute fresh final validation before completion. Preserve fail-closed behavior and never synthesize verification. Add regression coverage for stale evidence and stable recovery."
 sections:
   Summary: |-
@@ -420,6 +448,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:292ad0620abfc4cc99a50731937bc5c9af65c9a4895e28ba83c0799997b69853"
     work_order_id: "sha256:ead222400ab549c0a31c8cdc1037c4cbc64684857fb57762cebbc3890786a77b"
+  implementation_commit:
+    hash: "582299f70bc395f4e44971dd394f5a475e147f66"
+    message: "🚧 JK4HX9 task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "cdc68137f324840b306f26b78e7c5dc9587b51e6"
@@ -1078,3 +1109,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:1a0b0fbafe164e7d11bfb18a0cb5edef5a53178d4bc9c0c048500f35de8be8d3`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-10-26T14:44:47.459Z`
