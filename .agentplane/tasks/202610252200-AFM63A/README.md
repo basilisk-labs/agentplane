@@ -1,10 +1,11 @@
 ---
 id: "202610252200-AFM63A"
 title: "Recover provider update intent across authorized base advancement"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 33
+revision: 34
 origin:
   system: "manual"
 depends_on: []
@@ -44,6 +45,22 @@ quality_review:
     - "The recovery grant binds the stopped journal, original USER grant, PR identity and merge parents, provider actor, and operator evidence; its operation digest differs from the live provider PUT route."
     - "Advanced-base reconciliation rechecks hosted signature, actor, server time, ancestry, local tracking, route, PR, journal and authority before one journal CAS. Existing exact-base recovery remains strict."
     - "Native receipts record 31 focused tests, lint:core, hotspots:check and ci:local:full as passed. The KB0 journal remains stopped at its original intent with six original grants and audits."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:9f37c458b65b54113708fffe96df7936ab9b98968666592a75c5a66a6862c208"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-10-26T00:23:54.038Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -263,9 +280,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "fde6051afe8102f6df30c6a432f193f4c0fc3ca5"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "de6fbdcb23ee058e672189ae7527f7791fab8ac9"
+  message: "✅ AFM63A task: recover provider update intent across authorized base advancement"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -273,9 +293,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-26T00:23:54.038Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "de6fbdcb23ee058e672189ae7527f7791fab8ac9"
 doc_version: 3
-doc_updated_at: "2026-10-26T00:17:35.857Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-26T00:23:54.038Z"
+doc_updated_by: "CODER"
 description: "Release 0.7.13 generic supervisor recovery: preserve strict same-base proof. For a stopped provider.pr.update_branch intent whose signed base advanced before GitHub completed its update, settle only after exact original USER grant/audit and intent binding, GitHub verified merge of the signed old head with a descendant base, temporal and authenticated account proof, explicit USER attestation of exact PR/head/base/grant, clean local tracking, second route check, and one-shot journal CAS. Read-only recovery must never dispatch a provider mutation. Reject ambiguous actor, unrelated merge, stale head, wrong ancestry, replay, or concurrent journal drift. Preserve hosted failure verdict and normal route recomputation."
 sections:
   Summary: |-
@@ -423,6 +451,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:7478e3f47cec53ed0505163a1cd4dfe3d966ec9a78153a58a5e2b5f176c98e70"
     work_order_id: "sha256:a1602267ef18e306b4a2a3ee788735cf837c58f56341d0a8cb53fb594a0d5538"
+  implementation_commit:
+    hash: "fde6051afe8102f6df30c6a432f193f4c0fc3ca5"
+    message: "🚧 AFM63A task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "cdc68137f324840b306f26b78e7c5dc9587b51e6"
@@ -1790,3 +1821,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:9f37c458b65b54113708fffe96df7936ab9b98968666592a75c5a66a6862c208`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-10-26T00:23:54.038Z`
