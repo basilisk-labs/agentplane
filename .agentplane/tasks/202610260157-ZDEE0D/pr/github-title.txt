@@ -1,1 +1,1 @@
-🚧 ZDEE0D task: Recover an approved plan when a required declared check cannot execute [202610260157-ZDEE0D]
+✅ ZDEE0D task: Recover an approved plan when a required declared check cannot execute [202610260157-ZDEE0D]

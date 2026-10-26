@@ -6,7 +6,7 @@ Created: 2026-10-26T02:38:13.651Z
 
 - Task: `202610260157-ZDEE0D`
 - Title: Recover an approved plan when a required declared check cannot execute
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610260157-ZDEE0D/recover-an-approved-plan-when-a-required-declare`
 - Canonical task record: `.agentplane/tasks/202610260157-ZDEE0D/README.md`
 
