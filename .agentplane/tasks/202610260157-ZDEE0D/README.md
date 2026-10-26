@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 61
+revision: 62
 origin:
   system: "manual"
 depends_on: []
@@ -59,9 +59,11 @@ quality_review:
     - "Native verification receipt 20261026163927675-17455f9db4c193ed.json reports PASS for ci:local:full, typecheck, routing, and doctor at implementation 77182dcbc04e8a3dcca325818b127d4d175dbf0c."
     - "Residual risk: Reviewed compatibility candidate and fresh hosted checks remain mandatory before merge."
 token_usage:
-  agent_runs: 2
+  agent_runs: 3
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
   input_tokens: null
-  journal_digest: "sha256:a3ee56f12b892186c778abfd1d265136695e3a2d7ad1bdfdd92eff102b13a99d"
+  journal_digest: "sha256:54277ef0f945d13e8f8a092f5abb05d139cfbcb67618e71ea7f4fbb8dc212ddd"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -71,7 +73,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "external_host_turn_unallocatable"
-  updated_at: "2026-10-26T15:20:08.464Z"
+  updated_at: "2026-10-26T16:44:00.511Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -1380,9 +1382,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "c9bed8ec24524a1194c1a2c0d5524db152be5216"
+  hash: "1edd8f4ed781d4ded8ecea370690a392ee615d5a"
   message: "🚧 ZDEE0D task: record external evaluator result"
 comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -1413,8 +1418,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-10-26T16:44:00.511Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "1edd8f4ed781d4ded8ecea370690a392ee615d5a"
 doc_version: 3
-doc_updated_at: "2026-10-26T16:43:31.844Z"
+doc_updated_at: "2026-10-26T16:44:00.527Z"
 doc_updated_by: "CODER"
 description: "Add a generic, USER-attested correction route for a required verification command that native validation proved non-executable. Preserve the original FAILED receipt and exact old/new command audit evidence; reject unrelated contract, scope, or command changes; rerun the replacement check before completion. Do not silently waive verification or add release-specific adapters."
 sections:
@@ -1958,8 +1971,8 @@ extensions:
     verification_evidence_digest: "sha256:b696f3dedf53c206fa6a8e157e8e1441969cf9456638ac6b3b13631b26d2ce94"
     work_order_id: "sha256:d52927653fc31d44857c9b34ff37be5c437e6d73e8543c0f53b699e01f2f24b4"
   implementation_commit:
-    hash: "6cdef4c9388c477122d3012808ef4a2180213ee9"
-    message: "🐛 ZDEE0D task: recover historical failed-check amendments"
+    hash: "77182dcbc04e8a3dcca325818b127d4d175dbf0c"
+    message: "Merge branch 'main' into task/202610260157-ZDEE0D/recover-an-approved-plan-when-a-required-declare"
   task_execution_context:
     base_ref: "main"
     base_sha: "cdc68137f324840b306f26b78e7c5dc9587b51e6"
@@ -4242,12 +4255,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/2` agent runs
+- Completeness: `0/3` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:a3ee56f12b892186c778abfd1d265136695e3a2d7ad1bdfdd92eff102b13a99d`
+- Journal digest: `sha256:54277ef0f945d13e8f8a092f5abb05d139cfbcb67618e71ea7f4fbb8dc212ddd`
 - Unavailable reason: `external_host_turn_unallocatable`
-- Updated at: `2026-10-26T15:20:08.464Z`
+- Updated at: `2026-10-26T16:44:00.511Z`
