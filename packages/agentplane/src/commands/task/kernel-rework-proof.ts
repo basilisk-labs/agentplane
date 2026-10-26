@@ -1,7 +1,7 @@
 import {
   authenticReworkEvent as authentic,
   findReworkLineage,
-  historicalAmendment,
+  historicalAmendmentWithFailedCheck,
   retainedPrerequisiteStops,
 } from "./kernel-rework-lineage.js";
 import path from "node:path";
@@ -69,7 +69,13 @@ export async function authenticatedAmendmentHistory(
     );
     if (
       !authority ||
-      !historicalAmendment(record, plan, amendment, authority.observation!.previous_fingerprint)
+      !(await historicalAmendmentWithFailedCheck(
+        record,
+        plan,
+        amendment,
+        authority.observation!.previous_fingerprint,
+        directory,
+      ))
     )
       return false;
     let fingerprint = authority.observation!.previous_fingerprint;
@@ -116,7 +122,13 @@ export async function authenticatedAmendmentHistory(
             next.work_items.length !== plan.work_items.length
           )
             return false;
-          const amended = historicalAmendment(record, next, event, fingerprint);
+          const amended = await historicalAmendmentWithFailedCheck(
+            record,
+            next,
+            event,
+            fingerprint,
+            directory,
+          );
           if (!amended) return false;
           command = amended;
           plan = next;
