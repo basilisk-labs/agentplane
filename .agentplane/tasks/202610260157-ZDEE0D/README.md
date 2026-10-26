@@ -1,10 +1,11 @@
 ---
 id: "202610260157-ZDEE0D"
 title: "Recover an approved plan when a required declared check cannot execute"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 58
+revision: 59
 origin:
   system: "manual"
 depends_on: []
@@ -57,6 +58,22 @@ quality_review:
     - "The kernel checks the issued WorkOrder, accepted result receipt, FAILED validation receipt, exact command index, and unchanged WorkItem contract terms before accepting a correction. Tests reject altered identities, failed executable checks, added checks, and scope expansion."
     - "The CLI reconstructs correction proof from stable no-follow reads of retained exchange files. The task verification record at 2026-10-26T15:17:33.384Z reports PASS for ci:local:full, typecheck, routing, and doctor at implementation 6cdef4c9388c477122d3012808ef4a2180213ee9."
     - "Residual risk: The PR must be updated against current main and pass fresh hosted checks before integration."
+token_usage:
+  agent_runs: 2
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:a3ee56f12b892186c778abfd1d265136695e3a2d7ad1bdfdd92eff102b13a99d"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-26T15:20:08.464Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -302,9 +319,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "e11c798e2452ac44042ee13179f71b7860fe5b7e"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "c9bed8ec24524a1194c1a2c0d5524db152be5216"
+  message: "🚧 ZDEE0D task: record external evaluator result"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -318,9 +338,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-10-26T15:20:08.464Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "c9bed8ec24524a1194c1a2c0d5524db152be5216"
 doc_version: 3
-doc_updated_at: "2026-10-26T15:17:39.617Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-26T15:20:08.464Z"
+doc_updated_by: "CODER"
 description: "Add a generic, USER-attested correction route for a required verification command that native validation proved non-executable. Preserve the original FAILED receipt and exact old/new command audit evidence; reject unrelated contract, scope, or command changes; rerun the replacement check before completion. Do not silently waive verification or add release-specific adapters."
 sections:
   Summary: |-
@@ -731,6 +759,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:b696f3dedf53c206fa6a8e157e8e1441969cf9456638ac6b3b13631b26d2ce94"
     work_order_id: "sha256:d52927653fc31d44857c9b34ff37be5c437e6d73e8543c0f53b699e01f2f24b4"
+  implementation_commit:
+    hash: "6cdef4c9388c477122d3012808ef4a2180213ee9"
+    message: "🐛 ZDEE0D task: recover historical failed-check amendments"
   task_execution_context:
     base_ref: "main"
     base_sha: "cdc68137f324840b306f26b78e7c5dc9587b51e6"
@@ -2878,3 +2909,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/2` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:a3ee56f12b892186c778abfd1d265136695e3a2d7ad1bdfdd92eff102b13a99d`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-26T15:20:08.464Z`
