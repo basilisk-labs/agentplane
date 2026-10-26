@@ -1,10 +1,11 @@
 ---
 id: "202610252231-Y5Z4NW"
 title: "Ratchet compatibility candidate for release versions"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 33
+revision: 34
 origin:
   system: "manual"
 depends_on: []
@@ -55,6 +56,22 @@ quality_review:
     - "The release mutation recaptures and validates the candidate after version changes, stages it with the release commit, and restores the previous candidate if capture or validation fails. Focused tests cover version parity, drift rejection, symlink/path hazards, and rollback."
     - "Native run-010 passed bun run ci:local:full; the declared compatibility checker, incremental-delta Node tests, and release mutation Vitest also passed. The post-implementation commit changes task metadata and verification artifacts only."
     - "Residual risk: The current 0.7.12 candidate intentionally has no explicit reviewed-version anchor; release mutation for 0.7.13 must recapture and validate it before publication. Hosted integration and the final release remain separate lifecycle gates."
+token_usage:
+  agent_runs: 1
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:9082d33567412404c4f5bdc13e5d3215dc2bf689e04a148fbae41f59513385cd"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-26T14:02:04.050Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -778,9 +795,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "c55026626439480bbf335b924dd9944a902293e7"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "1cf69bf65833284ae3a4abe8193d9dc38aaf0d39"
+  message: "🚧 Y5Z4NW task: record external evaluator result"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -794,9 +814,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-26T14:02:04.050Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "1cf69bf65833284ae3a4abe8193d9dc38aaf0d39"
 doc_version: 3
-doc_updated_at: "2026-10-26T13:25:55.006Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-26T14:02:04.050Z"
+doc_updated_by: "CODER"
 description: "Generic release ratchet with digest-sealed reviewed-version anchor, immutable historical Zod delta and v0.6.24 baseline, version-parity recapture in release mutation, and negative drift tests. Successor to non-executable 94ATB0/B4RATB plans."
 sections:
   Summary: |-
@@ -1133,6 +1161,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:21b4b9501f0e606ddc0e9c62474d556e697a7c7bbf2d1a81fb6acc48967efa02"
     work_order_id: "sha256:710e58912c9b58fba7e8ac550d8f65210e42094f26fbc581468bf0d0173e993b"
+  implementation_commit:
+    hash: "34292ac692a4809386f080fd2204a3b3bc9834fa"
+    message: "Merge branch 'main' into task/202610252231-Y5Z4NW/ratchet-compatibility-candidate-for-release-vers"
   task_execution_context:
     base_ref: "main"
     base_sha: "cdc68137f324840b306f26b78e7c5dc9587b51e6"
@@ -2429,3 +2460,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/1` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:9082d33567412404c4f5bdc13e5d3215dc2bf689e04a148fbae41f59513385cd`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-26T14:02:04.050Z`

@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:a7ab91ab13dfb6b3b44b7920dc5b9fdad9f933383bd2ccce7c37e1864be07e7c",
   "pr_number": 6936,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6936",
+  "pre_merge_closure": {
+    "basis_commit": "1cf69bf65833284ae3a4abe8193d9dc38aaf0d39",
+    "branch": "task/202610252231-Y5Z4NW/ratchet-compatibility-candidate-for-release-vers",
+    "pr_number": 6936,
+    "recorded_at": "2026-10-26T14:02:04.363Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
