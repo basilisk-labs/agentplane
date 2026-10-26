@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:c094d4814625597b98169853579f66742fb0f5a71c21ebcc7e4cb31279778bb5",
   "pr_number": 6937,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6937",
+  "pre_merge_closure": {
+    "basis_commit": "882a2bf92164de557290805b4471f779272b5c9b",
+    "branch": "task/202610252238-33VQN8/repair-canonical-no-executable-check-verificatio",
+    "pr_number": 6937,
+    "recorded_at": "2026-10-26T11:23:23.068Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",

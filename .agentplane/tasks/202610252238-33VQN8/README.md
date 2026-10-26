@@ -1,10 +1,11 @@
 ---
 id: "202610252238-33VQN8"
 title: "Repair canonical no-executable-check verification contracts and recovery for issue #6927"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -42,6 +43,22 @@ quality_review:
     - "Historical empty code contracts fail native inspection/final validation. The corrective Plan preserves completed contracts, requires a new executable checked WorkItem and an exact USER scope-expansion approval."
     - "Report-only no-check results use a distinct nonempty disposition tied to approved Plan and native final-validation evidence; changed projection contracts invalidate the PASS."
     - "Native verification receipt for e5d8a60ab records bun run ci:local:full exit 0 with runtime, docs-schema, core, CLI, platform-critical, and coverage groups passing."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:fb010f62e4960e6302435c43fd9fcea594f57b3fe2b4fa1eefbefdb14fea8592"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-10-26T11:23:22.823Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -293,9 +310,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "e5d8a60ab63336c7762a30b36ad410993fb84caf"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "882a2bf92164de557290805b4471f779272b5c9b"
+  message: "🧩 33VQN8 task: refresh task artifacts after commit"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -303,9 +323,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-26T11:23:22.823Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "882a2bf92164de557290805b4471f779272b5c9b"
 doc_version: 3
-doc_updated_at: "2026-10-26T10:49:19.326Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-26T11:23:22.823Z"
+doc_updated_by: "CODER"
 description: "Make empty executable-check handling policy-aware at canonical plan admission, final validation and verification projection. Add authorized recovery for already approved affected tasks with all WorkItems complete, preserving immutable contracts, failed evidence and freshness. Cover code/analysis/report contracts, implicit checks, repeated resume and negative authority cases."
 sections:
   Summary: |-
@@ -400,6 +428,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:75f2fef94d1e97b0322b6a23dfff91fa21b2cb2efcd3f98009bfa5e34342c603"
     work_order_id: "sha256:1e7cc31c9c0b9770d7f43d00ff4fd0e0b045979834c91d3722f09be4ea128f4b"
+  implementation_commit:
+    hash: "e5d8a60ab63336c7762a30b36ad410993fb84caf"
+    message: "🚧 33VQN8 task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "cdc68137f324840b306f26b78e7c5dc9587b51e6"
@@ -1355,3 +1386,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:fb010f62e4960e6302435c43fd9fcea594f57b3fe2b4fa1eefbefdb14fea8592`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-10-26T11:23:22.823Z`
