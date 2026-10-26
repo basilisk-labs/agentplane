@@ -24,7 +24,7 @@ Created: 2026-10-26T02:38:13.651Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-10-26T02:38:13.651Z
+- Updated: 2026-10-26T08:16:59.359Z
 - Branch: task/202610260157-ZDEE0D/recover-an-approved-plan-when-a-required-declare
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
