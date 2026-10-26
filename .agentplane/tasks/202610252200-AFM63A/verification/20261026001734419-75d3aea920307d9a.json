@@ -1,0 +1,229 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bunx vitest run packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts --pool=forks --maxWorkers 1\nResult: pass\nEvidence: .agentplane/tasks/202610252200-AFM63A/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610252200-AFM63A Verification Contract check affected_unit_integration (1/4)\n\nCheck: affected_unit_integration\nCommand: bun run lint:core\nResult: pass\nEvidence: .agentplane/tasks/202610252200-AFM63A/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610252200-AFM63A Verification Contract check affected_unit_integration (2/4)\n\nCheck: affected_unit_integration\nCommand: bun run hotspots:check\nResult: pass\nEvidence: .agentplane/tasks/202610252200-AFM63A/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610252200-AFM63A Verification Contract check affected_unit_integration (3/4)\n\nCheck: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610252200-AFM63A/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610252200-AFM63A Verification Contract check affected_unit_integration (4/4)\n\nCheck: critical_paths\nCommand: bunx vitest run packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts --pool=forks --maxWorkers 1\nResult: pass\nEvidence: .agentplane/tasks/202610252200-AFM63A/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610252200-AFM63A Verification Contract check critical_paths (1/4)\n\nCheck: critical_paths\nCommand: bun run lint:core\nResult: pass\nEvidence: .agentplane/tasks/202610252200-AFM63A/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610252200-AFM63A Verification Contract check critical_paths (2/4)\n\nCheck: critical_paths\nCommand: bun run hotspots:check\nResult: pass\nEvidence: .agentplane/tasks/202610252200-AFM63A/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610252200-AFM63A Verification Contract check critical_paths (3/4)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610252200-AFM63A/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610252200-AFM63A Verification Contract check critical_paths (4/4)\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610252200-AFM63A/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610252200-AFM63A Verification Contract check full_regression\n\nCheck: task_outcome\nCommand: bunx vitest run packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts --pool=forks --maxWorkers 1\nResult: pass\nEvidence: .agentplane/tasks/202610252200-AFM63A/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610252200-AFM63A Verification Contract check task_outcome (1/4)\n\nCheck: task_outcome\nCommand: bun run lint:core\nResult: pass\nEvidence: .agentplane/tasks/202610252200-AFM63A/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610252200-AFM63A Verification Contract check task_outcome (2/4)\n\nCheck: task_outcome\nCommand: bun run hotspots:check\nResult: pass\nEvidence: .agentplane/tasks/202610252200-AFM63A/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610252200-AFM63A Verification Contract check task_outcome (3/4)\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610252200-AFM63A/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610252200-AFM63A Verification Contract check task_outcome (4/4)",
+  "digest": "sha256:75d3aea920307d9abc1f9e86f64229401059163534b511a391309fcfc908789f",
+  "implementation_sha": "fde6051afe8102f6df30c6a432f193f4c0fc3ca5",
+  "input": {
+    "checked_input": {
+      "commands": {
+        "digest": "sha256:f73f09d343ae0d3bac867273393633d0fa291379e3a2b8fe44d9dcc2bd21212a",
+        "entries": [
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run hotspots:check"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run lint:core"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bunx vitest run packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts --pool=forks --maxWorkers 1"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run hotspots:check"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run lint:core"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bunx vitest run packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts --pool=forks --maxWorkers 1"
+          },
+          {
+            "check_id": "full_regression",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run hotspots:check"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run lint:core"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bunx vitest run packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts packages/agentplane/src/commands/task/authority-grant.command.test.ts --pool=forks --maxWorkers 1"
+          }
+        ]
+      },
+      "context": {
+        "digest": "sha256:99daad1395e800c14511aa93bdd1543575521f4ee89189529a3fb84c4b785e2b",
+        "paths": [
+          ".agentplane/WORKFLOW.md",
+          ".github/ISSUE_TEMPLATE/config.yml",
+          "bun.lock",
+          "depcruise.config.cjs",
+          "eslint.config.cjs",
+          "knip.json",
+          "package.json",
+          "packages/agentplane/package.json",
+          "packages/agentplane/src/cli/run-cli/commands/config.ts",
+          "packages/agentplane/src/runner/config.test.ts",
+          "packages/agentplane/src/runner/config.ts",
+          "packages/agentplane/tsconfig.json",
+          "packages/agentplane/tsup.config.ts",
+          "packages/core/package.json",
+          "packages/core/schemas/config.schema.json",
+          "packages/core/src/config/config.test.ts",
+          "packages/core/src/config/config.ts",
+          "packages/core/tsconfig.json",
+          "packages/core/tsup.config.ts",
+          "packages/recipes/package.json",
+          "packages/recipes/tsconfig.json",
+          "packages/recipes/tsup.config.ts",
+          "packages/spec/examples/config.json",
+          "packages/spec/package.json",
+          "packages/spec/schemas/config.schema.json",
+          "packages/testkit/package.json",
+          "packages/testkit/tsconfig.json",
+          "schemas/config.schema.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package-lock.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package.json",
+          "tsconfig.json",
+          "turbo.json",
+          "vitest.config.ts",
+          "vitest.workspace.ts"
+        ]
+      },
+      "digest": "sha256:680cc90d75304131ea32517e9d568e61600734ba5fabde57aa1ce72dc3c713c1",
+      "environment": {
+        "digest": "sha256:9ec5bf2323cd53a84a354760f7a2e04adc570a2f8a0452d4311892dcb83d880b",
+        "runtime": {
+          "architecture": "x64",
+          "bun_major": null,
+          "node_major": "24",
+          "platform": "linux"
+        }
+      },
+      "evidence": {
+        "details_digest": "sha256:9b0ecc5c3e1cf96ed80a493410a80162ac4b6ec61f423d7b073184c0d6b236c0",
+        "digest": "sha256:3c610b91dcc2c55b0a8660c3bd06b38d46be6742b93efda7142697ff49c1245c",
+        "references": [
+          {
+            "digest": "sha256:b550a85ca755de11406d731698b443a424287878eddfc2ca23457200e90e8e8e",
+            "fragment": "check-1",
+            "path": ".agentplane/tasks/202610252200-AFM63A/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610252200-AFM63A/supervision/declared-checks.json#check-1",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:b550a85ca755de11406d731698b443a424287878eddfc2ca23457200e90e8e8e",
+            "fragment": "check-2",
+            "path": ".agentplane/tasks/202610252200-AFM63A/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610252200-AFM63A/supervision/declared-checks.json#check-2",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:b550a85ca755de11406d731698b443a424287878eddfc2ca23457200e90e8e8e",
+            "fragment": "check-3",
+            "path": ".agentplane/tasks/202610252200-AFM63A/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610252200-AFM63A/supervision/declared-checks.json#check-3",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:b550a85ca755de11406d731698b443a424287878eddfc2ca23457200e90e8e8e",
+            "fragment": "check-4",
+            "path": ".agentplane/tasks/202610252200-AFM63A/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610252200-AFM63A/supervision/declared-checks.json#check-4",
+            "source": "filesystem"
+          }
+        ]
+      },
+      "implementation": {
+        "base_sha": "cdc68137f324840b306f26b78e7c5dc9587b51e6",
+        "digest": "sha256:ebf0afa6df79d5e725afa2e28c4620ca2a0e9fe01ce99a44ac18073dc4c9cbfe",
+        "strategy": "branch_diff",
+        "target_sha": "fde6051afe8102f6df30c6a432f193f4c0fc3ca5"
+      }
+    },
+    "concurrency": {
+      "digest": "sha256:0bc72242495f9dc69e2f992c4d37dab49eafc1e788d01ad53e61a3512cb6f1fb",
+      "execution": {
+        "authoritative_task_source": "task_worktree",
+        "base_ref": "main",
+        "base_sha": "cdc68137f324840b306f26b78e7c5dc9587b51e6",
+        "digest": "sha256:8ea50a1cf934e2a5480af90f03c7a9503f0c02d617a3ecc269b9304f69ff8447",
+        "primary_task_id": "202610252200-AFM63A",
+        "reason_codes": [
+          "agent_preferred_branch_pr",
+          "effect_security_boundary",
+          "repository_branch_pr_floor"
+        ],
+        "repository_mode": "branch_pr",
+        "requested_mode": "branch_pr",
+        "route_source": "execution_contract",
+        "selected_mode": "branch_pr",
+        "task_ids": [
+          "202610252200-AFM63A"
+        ]
+      },
+      "task": {
+        "capability": {
+          "digest": "sha256:615139bfe8b17d92fd961e93ee73276bf7bd282e125d92819152a55874a23f2e"
+        },
+        "checks": {
+          "digest": "sha256:4ef1da00f86c2492693b018ffff02dce8ef8e9a9b1426623854139d35225ac88",
+          "required_check_ids": [
+            "affected_unit_integration",
+            "critical_paths",
+            "full_regression",
+            "task_outcome"
+          ],
+          "verification_contract_digest": "sha256:053f0f0306d16b382d93cf2b58dc0d0ccf09cf2f54ed1ce8b2ee43c4feabe6f0"
+        },
+        "digest": "sha256:ed6547e51119ba15ec993ce0222ec7af5847ad248b8190b1d0ac035a742c722e",
+        "kind": "agentplane.native_task_identity",
+        "plan": {
+          "approval_state": "approved",
+          "approved_digest": "sha256:4985d35a61ac4b0cf7f82310219f912a245520e8b371944fdc6f5d30a428d917",
+          "digest": "sha256:4985d35a61ac4b0cf7f82310219f912a245520e8b371944fdc6f5d30a428d917",
+          "revision": 3
+        },
+        "policy": {
+          "digest": "sha256:b0f3ed8717357e14968093aaf83e3059ba55a248477be0e758cb9ae571d6f7ac"
+        },
+        "schema_version": 1,
+        "task_id": "202610252200-AFM63A"
+      }
+    },
+    "digest": "sha256:db7254fb0e6ba2144a212bab1dba182f8bc8e22a03aabbce000bcbdb11f4c9fd",
+    "kind": "task_verification_input",
+    "obligations": {
+      "digest": "sha256:08e28c597cc0a1b39a407758fbb0dd13130f0e12941a824a840e2892411c6b10",
+      "required_check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "full_regression",
+        "task_outcome"
+      ],
+      "verification_contract_digest": "sha256:053f0f0306d16b382d93cf2b58dc0d0ccf09cf2f54ed1ce8b2ee43c4feabe6f0",
+      "verify_steps_digest": "sha256:e5e12ade981124486c7291133f92f1f74f15f51e05f600aa5998a8ebe183cd04"
+    },
+    "schema_version": 5
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: canonical Task Kernel final checks passed.",
+  "recorded_at": "2026-10-26T00:17:34.419Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Recover provider update intent across authorized base advancement\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Recover provider update intent across authorized base advancement\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:e5e12ade981124486c7291133f92f1f74f15f51e05f600aa5998a8ebe183cd04",
+  "task_id": "202610252200-AFM63A",
+  "verification_command": "agentplane verify 202610252200-AFM63A --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
