@@ -1,11 +1,43 @@
-import {
-  diffJsonPaths,
-  hashJson,
-  packageSurface,
-  surfaceSectionDigests,
-} from "./compatibility-contract.mjs";
+import { diffJsonPaths, hashJson, packageSurface } from "./compatibility-contract.mjs";
 
-export function reconstructHistoricalPackageSurface(currentSurface, delta) {
+export function reviewedPackageVersion(candidate) {
+  const version = Object.hasOwn(candidate, "incremental_package_delta_reviewed_version")
+    ? candidate.incremental_package_delta_reviewed_version
+    : candidate.release_version_delta?.to_version;
+  if (typeof version !== "string" || !/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/u.test(version)) {
+    throw new Error("Invalid reviewed package version anchor");
+  }
+  return version;
+}
+
+export function normalizePackageVersions(manifests, version) {
+  if (typeof version !== "string" || !/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/u.test(version)) {
+    throw new Error("Invalid reviewed package version");
+  }
+  const currentVersions = new Set(manifests.map((manifest) => manifest.version));
+  if (currentVersions.size !== 1) throw new Error("Package versions do not have release parity");
+  return manifests.map((manifest) => {
+    const normalized = structuredClone(manifest);
+    delete normalized.path;
+    delete normalized.normalized_sha256;
+    normalized.version = version;
+    const internalDependencies =
+      manifest.path === "packages/agentplane/package.json"
+        ? ["@agentplaneorg/core", "@agentplaneorg/recipes"]
+        : manifest.path === "packages/recipes/package.json"
+          ? ["@agentplaneorg/core"]
+          : [];
+    for (const name of internalDependencies) {
+      if (manifest.dependencies?.[name] !== manifest.version) {
+        throw new Error(`${manifest.path}: unexpected internal dependency version for ${name}`);
+      }
+      normalized.dependencies[name] = version;
+    }
+    return packageSurface(manifest.path, normalized);
+  });
+}
+
+export function reconstructHistoricalPackageSurface(currentSurface, delta, reviewedVersion) {
   if (delta?.section !== "package_manifests" || !Array.isArray(delta.historical_dependencies)) {
     throw new Error("Incremental package delta cannot reconstruct its historical surface");
   }
@@ -39,9 +71,17 @@ export function reconstructHistoricalPackageSurface(currentSurface, delta) {
     delete normalized.normalized_sha256;
     return packageSurface(manifest.path, normalized);
   });
+  const reviewedCurrent =
+    reviewedVersion !== undefined
+      ? normalizePackageVersions(currentSurface.package_manifests, reviewedVersion)
+      : currentSurface.package_manifests;
+  const reviewedHistorical =
+    reviewedVersion !== undefined
+      ? normalizePackageVersions(historical.package_manifests, reviewedVersion)
+      : historical.package_manifests;
   if (
-    surfaceSectionDigests(historical).package_manifests !== delta.from_sha256 ||
-    surfaceSectionDigests(currentSurface).package_manifests !== delta.to_sha256 ||
+    hashJson(reviewedHistorical) !== delta.from_sha256 ||
+    hashJson(reviewedCurrent) !== delta.to_sha256 ||
     hashJson(
       diffJsonPaths(
         historical.package_manifests,
