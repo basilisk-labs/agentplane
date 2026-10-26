@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:3e6e4508a375827e7cdd5b66fadd173bd6e33562e80b2a6aa5b89de1c0430e76",
   "pr_number": 6932,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6932",
+  "pre_merge_closure": {
+    "basis_commit": "c0e28ad1195e046a565bdf2f9820725b9bed2d4c",
+    "branch": "task/202610260157-ZDEE0D/recover-an-approved-plan-when-a-required-declare",
+    "pr_number": 6932,
+    "recorded_at": "2026-10-26T18:39:57.812Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",

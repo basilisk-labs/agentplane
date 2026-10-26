@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 66
+revision: 67
 origin:
   system: "manual"
 depends_on: []
@@ -60,9 +60,11 @@ quality_review:
     - "Recorded native verification for implementation head 65fd38bdfab6eb826c35dce1d25d04d8a9a916b5 passed: ci:local:full run-036, typecheck run-037, routing run-038, and doctor run-039. The compatibility checker passed with the new CLI option ratcheted in candidate and checker."
     - "Residual risk: Hosted PR checks and main-base reconciliation remain for the native PR lifecycle. The prospective scope-extension bridge for completed rework needs a separate generic product fix."
 token_usage:
-  agent_runs: 3
+  agent_runs: 10
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
   input_tokens: null
-  journal_digest: "sha256:54277ef0f945d13e8f8a092f5abb05d139cfbcb67618e71ea7f4fbb8dc212ddd"
+  journal_digest: "sha256:720efcd8a9b5a114d620e9c47b413bcb93342a2d8e8b175a4b3d4a5d4b241b76"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -72,7 +74,7 @@ token_usage:
   state: "unavailable"
   total_tokens: null
   unavailable_reason: "external_host_turn_unallocatable"
-  updated_at: "2026-10-26T16:44:00.511Z"
+  updated_at: "2026-10-26T18:39:57.617Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -1393,7 +1395,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "c0e28ad1195e046a565bdf2f9820725b9bed2d4c"
+  message: "🚧 ZDEE0D task: record external evaluator result"
 comments:
   -
     author: "CODER"
@@ -1404,6 +1408,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The required local verification found a formatting error in the new regression test. Hosted compatibility verification also rejects this task's public CLI option until the reviewed candidate and checker are updated; those two files are outside current write authority. Recommended action: Approve this exact two-file scope extension, then format the regression test, update the candidate and checker for the one public CLI option, and rerun native and hosted verification. Requested scope: roots=scripts/baselines/v0.7-compatibility-candidate.json,scripts/checks/check-compatibility-contract-baseline.mjs; repository effects=ci,release_metadata; request digest=sha256:e0203df6585d20ef337b1c65fbedb3049279ae8e3cc7f72f455ed60d70b2b5c7. Agentplane receipt: external-agent-blocker/tr_c534ac265c2382e6541e7332427b9adb/sha256:4573e19bd4759f10f882e882a920023b430c60d86cd6689cb3e6a65ec3568823/sha256:e0203df6585d20ef337b1c65fbedb3049279ae8e3cc7f72f455ed60d70b2b5c7."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -1451,9 +1458,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-10-26T18:39:57.617Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "c0e28ad1195e046a565bdf2f9820725b9bed2d4c"
 doc_version: 3
-doc_updated_at: "2026-10-26T18:39:35.103Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-26T18:39:57.636Z"
+doc_updated_by: "CODER"
 description: "Add a generic, USER-attested correction route for a required verification command that native validation proved non-executable. Preserve the original FAILED receipt and exact old/new command audit evidence; reject unrelated contract, scope, or command changes; rerun the replacement check before completion. Do not silently waive verification or add release-specific adapters."
 sections:
   Summary: |-
@@ -2177,6 +2192,9 @@ extensions:
     status: "pending"
     transition_id: "tr_c534ac265c2382e6541e7332427b9adb"
     work_item_id: null
+  implementation_commit:
+    hash: "65fd38bdfab6eb826c35dce1d25d04d8a9a916b5"
+    message: "🐛 ZDEE0D task: format blocker test and ratchet CLI option"
   task_execution_context:
     base_ref: "main"
     base_sha: "cdc68137f324840b306f26b78e7c5dc9587b51e6"
@@ -4624,12 +4642,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/3` agent runs
+- Completeness: `0/10` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:54277ef0f945d13e8f8a092f5abb05d139cfbcb67618e71ea7f4fbb8dc212ddd`
+- Journal digest: `sha256:720efcd8a9b5a114d620e9c47b413bcb93342a2d8e8b175a4b3d4a5d4b241b76`
 - Unavailable reason: `external_host_turn_unallocatable`
-- Updated at: `2026-10-26T16:44:00.511Z`
+- Updated at: `2026-10-26T18:39:57.617Z`
