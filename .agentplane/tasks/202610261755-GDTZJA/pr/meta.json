@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202610261755-GDTZJA/authorize-prospective-scope-for-completed-canoni",
+  "created_at": "2026-10-26T23:53:24.219Z",
+  "diffstat_sha256": "sha256:85c5245cf18ca3e6d8d4266ccc0b9332f49fcb486262e7509e28fa9a9d722783",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610261755-GDTZJA",
+  "updated_at": "2026-10-26T23:53:24.219Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

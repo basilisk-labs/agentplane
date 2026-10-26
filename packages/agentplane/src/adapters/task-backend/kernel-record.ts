@@ -323,9 +323,13 @@ export function readKernelRecord(
       fields: ["status"],
     };
   }
-  const lastScopeRequest = aggregate.authority_lineage?.findLast(
-    (entry) => entry.observation?.kind === "prospective_scope_request",
-  )?.observation?.scope_request;
+  const lastScopeObservation = aggregate.authority_lineage?.findLast(
+    (entry) =>
+      entry.observation?.kind === "prospective_scope_request" ||
+      entry.observation?.kind === "completed_rework_scope_request",
+  )?.observation;
+  const lastScopeRequest =
+    lastScopeObservation?.scope_request ?? lastScopeObservation?.completed_rework_scope_request;
   if (
     lastScopeRequest &&
     scopeIntakeDigest(task.execution_contract) !== lastScopeRequest.intake_after_digest

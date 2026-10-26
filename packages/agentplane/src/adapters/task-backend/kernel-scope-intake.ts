@@ -91,7 +91,13 @@ export function amendedScopeIntake(
   }).contract;
 }
 
-export function projectApprovedScopeIntake(task: TaskData, request: k.ProspectiveScopeRequest) {
+export function projectApprovedScopeIntake(
+  task: TaskData,
+  request: Pick<
+    k.ProspectiveScopeRequest | k.CompletedReworkScopeRequest,
+    "intake_before_digest" | "intake_after_digest" | "scope_roots" | "repository_effects"
+  >,
+) {
   if (scopeIntakeDigest(task.execution_contract) !== request.intake_before_digest)
     throw new Error("Scope request intake changed");
   const next = amendedScopeIntake(task, request.scope_roots, request.repository_effects);

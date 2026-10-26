@@ -36,6 +36,7 @@ import {
 import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
 import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
 import { createKernelRuntime, requireKernelCommit } from "./kernel-runtime-context.js";
+import { approveCompletedReworkScopeRequest } from "./kernel-completed-rework-scope.js";
 
 const output = createCliEmitter();
 
@@ -317,6 +318,24 @@ export async function cmdTaskScopeExtend(opts: {
           invocation_id: opts.requestDigest,
         },
       });
+      const read = await runtime.adapter.read(opts.taskId);
+      if (
+        read.kind === "canonical" &&
+        read.record.aggregate.state === "COMPLETED" &&
+        parseTaskScopeExtensionRequestState(read.task)?.work_item_id === null
+      ) {
+        await approveCompletedReworkScopeRequest(
+          await resolveTaskOwnerCommandContext({ ctx: opts.ctx, taskId: opts.taskId }),
+          {
+            taskId: opts.taskId,
+            requestDigest: opts.requestDigest,
+            scopeRoots: opts.scopeRoots,
+            repositoryEffects: opts.repositoryEffects,
+            by: opts.by,
+          },
+        );
+        return 0;
+      }
       requireKernelCommit(
         await runtime.authority.approveDelta({
           task_id: opts.taskId,

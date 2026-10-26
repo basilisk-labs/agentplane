@@ -25,6 +25,11 @@ describe("canonical scope grant ownership", () => {
       .mockResolvedValue(owner);
     const approveDelta = vi.fn().mockResolvedValue({ kind: "committed" });
     const create = vi.spyOn(kernelRuntime, "createKernelRuntime").mockResolvedValue({
+      adapter: {
+        read: vi
+          .fn()
+          .mockResolvedValue({ kind: "canonical", record: { aggregate: { state: "ACTIVE" } } }),
+      },
       authority: { approveDelta },
     } as never);
     await expect(

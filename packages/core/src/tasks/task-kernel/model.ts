@@ -1,5 +1,5 @@
 import type { CompletionRestorationProof } from "./completion-restoration.js";
-import type { ProspectiveScopeRequest } from "./prospective-scope.js";
+import type { CompletedReworkScopeRequest, ProspectiveScopeRequest } from "./prospective-scope.js";
 import type { KernelWorkContract } from "../kernel-plan-refinement.js";
 export type Sha256Digest = `sha256:${string}`;
 
@@ -142,6 +142,7 @@ export type AuthorityObservation = Readonly<{
     | "repository_implementation"
     | "authority_delta"
     | "prospective_scope_request"
+    | "completed_rework_scope_request"
     | "policy_renewal"
     | "worktree_preparation";
   evidence_digest: Sha256Digest;
@@ -154,6 +155,7 @@ export type AuthorityObservation = Readonly<{
   repository_evidence_digest?: Sha256Digest;
   reviewed_base_import?: ReviewedBaseImport;
   scope_request?: ProspectiveScopeRequest;
+  completed_rework_scope_request?: CompletedReworkScopeRequest;
 }>;
 
 /** Ordered authority lineage inside the same atomic aggregate as lifecycle state. */
@@ -397,6 +399,7 @@ export type TaskCommand =
       }
     >
   | CommandEnvelope<"approve_scope_request", { record: CanonicalAuthorityRecord }>
+  | CommandEnvelope<"approve_completed_rework_scope", { record: CanonicalAuthorityRecord }>
   | CommandEnvelope<
       "restore_work_item_completion",
       {

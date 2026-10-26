@@ -1,5 +1,8 @@
 import { cancellationIssues } from "./cancellation.js";
-import { prospectiveScopeAdmissionIssues } from "./prospective-scope.js";
+import {
+  completedReworkScopeAdmissionIssues,
+  prospectiveScopeAdmissionIssues,
+} from "./prospective-scope.js";
 import {
   reconcileReplannedWorkItems,
   authenticatedScopeReplanHistory,
@@ -168,6 +171,7 @@ const EVENT_KIND: Readonly<Record<TaskCommand["kind"], DomainEvent["kind"]>> = {
   renew_policy_authority: "authority_continued",
   approve_authority_delta: "authority_continued",
   approve_scope_request: "authority_continued",
+  approve_completed_rework_scope: "authority_continued",
   restore_work_item_completion: "work_item_transitioned",
   materialize_work_items: "work_items_materialized",
   transition_work_item: "work_item_transitioned",
@@ -446,7 +450,11 @@ function preconditions(input: KernelInput): KernelResult | null {
     }
     return { kind: "accepted", aggregate: input.aggregate, events: [], receipts: [existing] };
   }
-  if (input.aggregate.state === "COMPLETED" || input.aggregate.state === "CANCELLED") {
+  if (
+    (input.aggregate.state === "COMPLETED" &&
+      input.command.kind !== "approve_completed_rework_scope") ||
+    input.aggregate.state === "CANCELLED"
+  ) {
     return rejected("ILLEGAL_TASK_TRANSITION", [input.aggregate.state, input.command.kind]);
   }
   if (input.command.task_id !== input.aggregate.id) {
@@ -567,6 +575,10 @@ function preconditions(input: KernelInput): KernelResult | null {
   }
   if (input.command.kind === "approve_scope_request") {
     const issues = prospectiveScopeAdmissionIssues(input, input.command.record);
+    return issues.length > 0 ? rejected("AUTHORITY_SCOPE_EXCEEDED", issues) : null;
+  }
+  if (input.command.kind === "approve_completed_rework_scope") {
+    const issues = completedReworkScopeAdmissionIssues(input, input.command.record);
     return issues.length > 0 ? rejected("AUTHORITY_SCOPE_EXCEEDED", issues) : null;
   }
   if (input.command.kind === "approve_authority_delta") {
@@ -985,7 +997,29 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
       }
       const issues = validateWorkItemDefinitions(command.plan.work_items);
       if (issues.length > 0) return rejected("WORK_ITEM_DEPENDENCY_INCOMPLETE", issues);
-      const scopeReplan = authenticatedScopeReplanHistory(aggregate);
+      const completedReworkGrant = aggregate.authority_lineage?.at(-1);
+      const completedReworkRequest =
+        completedReworkGrant?.observation?.kind === "completed_rework_scope_request"
+          ? completedReworkGrant.observation.completed_rework_scope_request
+          : undefined;
+      const completedReworkReceipt = completedReworkRequest
+        ? aggregate.mutation_receipts[
+            `completed-rework-scope:${kernelDigest(completedReworkRequest)}`
+          ]
+        : undefined;
+      const completedReworkReplan =
+        aggregate.state === "PLANNING" &&
+        aggregate.current_plan?.state === "REJECTED" &&
+        completedReworkRequest !== undefined &&
+        [...aggregate.plan_history, aggregate.current_plan].some(
+          (plan) =>
+            plan.digest === completedReworkRequest.plan_digest &&
+            plan.revision === completedReworkRequest.plan_revision,
+        ) &&
+        completedReworkReceipt !== undefined &&
+        completedReworkReceipt.after_revision <= aggregate.revision &&
+        completedReworkReceipt.before_revision === completedReworkRequest.task_revision;
+      const scopeReplan = authenticatedScopeReplanHistory(aggregate) ? true : completedReworkReplan;
       if (Object.keys(aggregate.work_items).length > 0 && !scopeReplan)
         return rejected(
           "ILLEGAL_WORK_ITEM_TRANSITION",
@@ -995,6 +1029,19 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
       const reconciled = scopeReplan
         ? reconcileReplannedWorkItems(aggregate, command.plan)
         : { workItems: {}, issues: [] };
+      if (
+        completedReworkReplan &&
+        !command.plan.work_items.some(
+          (item) =>
+            !item.optional &&
+            ![...aggregate.plan_history, aggregate.current_plan!]
+              .find((plan) => plan.digest === completedReworkRequest!.plan_digest)!
+              .work_items.some((original) => original.id === item.id),
+        )
+      )
+        return rejected("WORK_ITEM_DEPENDENCY_INCOMPLETE", [
+          "completed_rework_requires_new_required_work",
+        ]);
       if (reconciled.issues.length > 0)
         return rejected("ILLEGAL_WORK_ITEM_TRANSITION", reconciled.issues, "wait_or_replan");
       if (
@@ -1110,6 +1157,19 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
         ...aggregate,
         revision: aggregate.revision + 1,
         state: "PLANNING",
+        current_plan: aggregate.current_plan
+          ? { ...aggregate.current_plan, state: "REJECTED" }
+          : null,
+        authority_lineage: [...(aggregate.authority_lineage ?? []), command.record],
+      };
+      break;
+    }
+    case "approve_completed_rework_scope": {
+      next = {
+        ...aggregate,
+        revision: aggregate.revision + 1,
+        state: "PLANNING",
+        final_validation: null,
         current_plan: aggregate.current_plan
           ? { ...aggregate.current_plan, state: "REJECTED" }
           : null,

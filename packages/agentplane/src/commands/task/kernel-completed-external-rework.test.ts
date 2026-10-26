@@ -298,7 +298,7 @@ async function issue(f: Awaited<ReturnType<typeof fixture>>) {
   const result = await invoke(f.root, ["task", "advance", f.id, "--agent-json"]);
   expect(result.code, result.stderr + result.stdout).toBe(0);
   const packet = parsePacket(result.stdout);
-  expect(packet.action.kind).toBe("agent_episode");
+  expect(packet.action.kind, result.stderr + result.stdout).toBe("agent_episode");
   const order = validateAgentWorkOrderV2(
     JSON.parse(
       await readFile(path.join(packet.exchange.directory, packet.exchange.work_order_ref), "utf8"),

@@ -66,6 +66,9 @@ export class KernelBackendAdapter {
     readonly backend: TaskBackend,
     readonly repositoryIdentity: taskKernel.Sha256Digest,
     readonly verifyScopeRequest?: (request: taskKernel.ProspectiveScopeRequest) => Promise<void>,
+    readonly verifyCompletedReworkScopeRequest?: (
+      request: taskKernel.CompletedReworkScopeRequest,
+    ) => Promise<void>,
   ) {}
 
   async read(taskId: string): Promise<KernelRead> {
@@ -206,6 +209,15 @@ export class KernelBackendAdapter {
       await this.verifyScopeRequest(request);
       projectApprovedScopeIntake(current.task, request);
     }
+    if (input.command.kind === "approve_completed_rework_scope") {
+      const request = input.command.record.observation?.completed_rework_scope_request;
+      if (request?.record_digest !== current.record.digest)
+        return this.unavailable("malformed", "completed_rework_scope_record");
+      if (!this.verifyCompletedReworkScopeRequest)
+        return this.unavailable("backend_capability_missing", "completed_rework_scope_verifier");
+      await this.verifyCompletedReworkScopeRequest(request);
+      projectApprovedScopeIntake(current.task, request);
+    }
     const result = taskKernel.reduceTaskCommand({ ...input, aggregate: current.record.aggregate });
     if (result.kind === "rejected") return result;
     const retained = documents ?? current.record.documents;
@@ -264,11 +276,15 @@ export class KernelBackendAdapter {
     aggregate: taskKernel.TaskAggregate,
     documents?: KernelDocuments,
   ): KernelAdapterResult | null {
-    if (
-      aggregate.authority_lineage &&
-      !kernelAuthorityRecordSchema.array().safeParse(aggregate.authority_lineage).success
-    )
-      return this.unavailable("malformed", "invalid_authority_schema");
+    const authoritySchema = kernelAuthorityRecordSchema
+      .array()
+      .safeParse(aggregate.authority_lineage);
+    if (aggregate.authority_lineage && !authoritySchema.success)
+      return this.unavailable(
+        "malformed",
+        "invalid_authority_schema",
+        ...authoritySchema.error.issues.map((issue) => `${issue.path.join(".")}:${issue.message}`),
+      );
     const authorityIssues = taskKernel.canonicalAuthorityIssues(aggregate);
     if (authorityIssues.length > 0) return this.unavailable("malformed", ...authorityIssues);
     if (documents && !kernelDocumentsSchema.safeParse(documents).success)
@@ -328,11 +344,14 @@ export class KernelBackendAdapter {
     const projection = projectKernelTask(record.aggregate);
     const next = {
       ...task,
-      ...(input.command.kind === "approve_scope_request"
+      ...(input.command.kind === "approve_scope_request" ||
+      input.command.kind === "approve_completed_rework_scope"
         ? {
             execution_contract: projectApprovedScopeIntake(
               task,
-              input.command.record.observation!.scope_request!,
+              input.command.kind === "approve_scope_request"
+                ? input.command.record.observation!.scope_request!
+                : input.command.record.observation!.completed_rework_scope_request!,
             ),
           }
         : {}),
