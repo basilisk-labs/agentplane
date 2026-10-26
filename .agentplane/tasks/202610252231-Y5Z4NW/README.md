@@ -4,7 +4,7 @@ title: "Ratchet compatibility candidate for release versions"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 32
+revision: 33
 origin:
   system: "manual"
 depends_on: []
@@ -29,18 +29,32 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-10-26T09:39:01.731Z"
+  updated_at: "2026-10-26T14:01:29.766Z"
   updated_by: "EVALUATOR"
-  note: "Canonical EVALUATOR review passed."
-  evaluated_sha: "c55026626439480bbf335b924dd9944a902293e7"
-  review_identity_digest: "sha256:0b1d81a0ea8e7d4e666faf48b3e8f01b1438619e33935772519ed826ad66bc96"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "34292ac692a4809386f080fd2204a3b3bc9834fa"
+  review_identity_digest: "sha256:6662fb0b569b67f5c51bbc060cfd3b5ef2188d6f7bbd583ca623061735b40cca"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202610252231-Y5Z4NW/ce3556eb86b76859ad9d3afe0a2ec562879bc22a455442f00aa994e29248a0fa/quality-report.json"
+    - ".agentplane/tasks/202610252231-Y5Z4NW/quality/20261026-132845573-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202610252231-Y5Z4NW/quality/20261026-132845573-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202610252231-Y5Z4NW/quality/objects/sha256/e4a22e6273cf159947390cc220e9922db0c824a7755c81770a4fc2a169cd587b.md"
+    - ".agentplane/tasks/202610252231-Y5Z4NW/quality/20261026-132845573-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202610252231-Y5Z4NW/quality/20261026-132845573-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202610252231-Y5Z4NW/quality/20261026-132845573-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202610252231-Y5Z4NW/README.md"
+    - ".agentplane/tasks/202610252231-Y5Z4NW/quality/objects/sha256/177e76bf5dd36be33991f358b1cb53f23a2cf862349f9ab82975a6a9ae559a71.patch"
+    - ".agentplane/tasks/202610252231-Y5Z4NW/quality/objects/sha256/b70746c9776588ace974d5ab7f4306de221533dba52a3e9540236f1822c88e32.json"
+    - ".agentplane/tasks/202610252231-Y5Z4NW/verification/20261026132553289-5e96392459ba33ab.json"
+    - ".agentplane/tasks/202610252231-Y5Z4NW/quality/objects/sha256/202041555a19415865b10234280268c1e86b58a9804c091ebe357e466e555d89.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The v0.6.24 baseline and v0.7 candidate files are byte-identical to base cdc68137; the six-path incremental_package_delta remains an exact checker constant."
-    - "Historical package hashes are checked after release-version normalization to the reviewed anchor; unrelated package drift and internal version mismatch remain rejected."
-    - "Release mutation discovers one candidate, recaptures and validates it before staging, restores candidate bytes on validation failure, and rejects a symlink candidate."
-    - "Native declared checks passed: six incremental-delta tests, current candidate checker, and six release mutation tests. The implementation diff has no whitespace errors."
+    - "The checker preserves the immutable historical Zod 4.6.5-to-4.6.7 delta and v0.6.24 package baseline with fixed digest and path comparisons; the reviewed-version anchor is checked through normalized historical/current manifest digests."
+    - "The release mutation recaptures and validates the candidate after version changes, stages it with the release commit, and restores the previous candidate if capture or validation fails. Focused tests cover version parity, drift rejection, symlink/path hazards, and rollback."
+    - "Native run-010 passed bun run ci:local:full; the declared compatibility checker, incremental-delta Node tests, and release mutation Vitest also passed. The post-implementation commit changes task metadata and verification artifacts only."
+    - "Residual risk: The current 0.7.12 candidate intentionally has no explicit reviewed-version anchor; release mutation for 0.7.13 must recapture and validate it before publication. Hosted integration and the final release remain separate lifecycle gates."
 execution_route:
   frozen: true
   reason_codes:
@@ -1094,6 +1108,14 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.completed_native_review:
+    applied_at: "2026-10-26T14:01:29.766Z"
+    kernel_digest: "sha256:5c44926f63ed35b612d75d2cb5bb8a193a4cfafdb9a5cc88f4a37ccf4a89c6bf"
+    quality_digest: "sha256:8196960ec116c682b65831ce7291756d209b09fe3b2e88a2ac8dc42abf9dac1c"
+    result_digest: "sha256:2155e0c2d5556aef1df1a21529a75972f55c6b884a0230a13704ff177a3d4bd3"
+    schema_version: 1
+    state_fingerprint: "sha256:3590b976fb778082238b7b954d42bf8bedd302ac30c3e575a1521807e7ecfd64"
+    transition_id: "tr_314cb74fff863c6387cee9517576d9b7"
   agentplane.kernel_operational_projection:
     digest: "sha256:dabc79edd8bf54969a98b4898009c08df324a630d5ca666e31b0593989045ee9"
     evidence_refs:
