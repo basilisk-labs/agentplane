@@ -1,0 +1,201 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bunx vitest run packages/agentplane/src/commands/task/update.unit.test.ts packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts"
+  ],
+  "verification_contract": {
+    "schema_version": 2,
+    "source": "execution_contract",
+    "phase": "task",
+    "declared": {
+      "repository_effects": [
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "components": [
+        "packages/agentplane/src/adapters/task-backend",
+        "packages/agentplane/src/commands/doctor",
+        "packages/agentplane/src/commands/task"
+      ],
+      "risk": {
+        "requirements_uncertainty": "bounded",
+        "implementation_uncertainty": "bounded",
+        "reversibility": "reversible"
+      },
+      "evidence_requirements": [
+        "hosted_integration",
+        "repository_effect:repository_write",
+        "repository_effect:source_code",
+        "repository_effect:tests",
+        "task_outcome"
+      ]
+    },
+    "observed": {
+      "repository_effects": [
+        "repository_write",
+        "source_code",
+        "tests"
+      ],
+      "external_effects": [],
+      "changed_components": [
+        "packages/agentplane"
+      ],
+      "changed_files": [
+        "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts",
+        "packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts",
+        "packages/agentplane/src/commands/doctor/workspace-task-state.test.ts",
+        "packages/agentplane/src/commands/doctor/workspace-task-state.ts",
+        "packages/agentplane/src/commands/task/next-action.command.ts",
+        "packages/agentplane/src/commands/task/revision-consistency.integration.test.ts"
+      ]
+    },
+    "policy_floor": {
+      "pr_full_regression": true,
+      "unknown_or_central_full_regression": true,
+      "monotonic_strengthening": true
+    },
+    "selector": {
+      "kind": "semantic",
+      "reason": "execution_declaration",
+      "execution_mode": "semantic",
+      "bucket": null,
+      "buckets": [],
+      "lint_targets": [],
+      "vitest_pool": "forks",
+      "run_cli_docs_check": false,
+      "selected_test_files": []
+    },
+    "selected_checks": [
+      "affected_unit_integration",
+      "critical_paths",
+      "hosted_integration",
+      "task_outcome"
+    ],
+    "execution_groups": [
+      "core",
+      "cli"
+    ],
+    "escalation_reasons": [],
+    "requires_full_regression": false,
+    "requires_real_e2e": false,
+    "digest": "sha256:5a1b5dd144a102eaf17462f942f101b8e6a98656bc280d232bb4854e56155abd"
+  },
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-10-26T17:03:04.408Z",
+    "updated_by": "SUPERVISOR",
+    "note": "Verified: canonical Task Kernel final checks passed."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202610252242-122WXZ/verification/20261026170304408-e9f407da6fae5309.json",
+      "sha256": "sha256:2f970dfaa062382e16f933c3039c86e8cd6c2dc029c6b56513aee033c1d354c5"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check cdc68137f324840b306f26b78e7c5dc9587b51e6..f7f7e91f90289958f63b82b8fe15b77a9ca51776",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB cdc68137f324840b306f26b78e7c5dc9587b51e6..f7f7e91f90289958f63b82b8fe15b77a9ca51776",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "A\t.agentplane/tasks/202610252242-122WXZ/README.md",
+          "A\t.agentplane/tasks/202610252242-122WXZ/pr/diffstat.txt",
+          "A\t.agentplane/tasks/202610252242-122WXZ/pr/github-body.md",
+          "A\t.agentplane/tasks/202610252242-122WXZ/pr/github-title.txt",
+          "A\t.agentplane/tasks/202610252242-122WXZ/pr/meta.json",
+          "A\t.agentplane/tasks/202610252242-122WXZ/pr/review.md",
+          "A\t.agentplane/tasks/202610252242-122WXZ/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
+          "A\t.agentplane/tasks/202610252242-122WXZ/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+          "M\tpackages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts",
+          "M\tpackages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts",
+          "M\tpackages/agentplane/src/commands/doctor/workspace-task-state.test.ts",
+          "M\tpackages/agentplane/src/commands/doctor/workspace-task-state.ts",
+          "M\tpackages/agentplane/src/commands/task/next-action.command.ts",
+          "A\tpackages/agentplane/src/commands/task/revision-consistency.integration.test.ts"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": []
+      }
+    ],
+    "execution_base_commit": "cdc68137f324840b306f26b78e7c5dc9587b51e6",
+    "implementation_commit": "f7f7e91f90289958f63b82b8fe15b77a9ca51776",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [
+        " M packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts",
+        " M packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts",
+        "?? .agentplane/tasks/202610252242-122WXZ/README.md",
+        "?? .agentplane/tasks/202610252242-122WXZ/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
+        "?? .agentplane/tasks/202610252242-122WXZ/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+        "?? packages/agentplane/src/commands/task/revision-consistency.integration.test.ts"
+      ],
+      "classification": [
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": " M packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202610252242-122WXZ/README.md"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202610252242-122WXZ/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? .agentplane/tasks/202610252242-122WXZ/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+        },
+        {
+          "classification": "removed_during_execution",
+          "line": "?? packages/agentplane/src/commands/task/revision-consistency.integration.test.ts"
+        }
+      ],
+      "final": [],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [
+        " M packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts",
+        " M packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts",
+        "?? .agentplane/tasks/202610252242-122WXZ/README.md",
+        "?? .agentplane/tasks/202610252242-122WXZ/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
+        "?? .agentplane/tasks/202610252242-122WXZ/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+        "?? packages/agentplane/src/commands/task/revision-consistency.integration.test.ts"
+      ],
+      "unchanged_from_execution_baseline": []
+    },
+    "schema_version": 1,
+    "task_id": "202610252242-122WXZ",
+    "source": "active_task",
+    "source_path": ".agentplane/tasks/202610252242-122WXZ/supervision/implementation-evidence.json"
+  },
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
