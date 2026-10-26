@@ -22,7 +22,7 @@ Make empty executable-check handling policy-aware at canonical plan admission, f
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-10-26T08:19:23.922Z
+- Updated: 2026-10-26T10:53:20.634Z
 - Branch: task/202610252238-33VQN8/repair-canonical-no-executable-check-verificatio
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
