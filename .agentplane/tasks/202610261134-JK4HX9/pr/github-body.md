@@ -15,8 +15,8 @@ For a canonical branch PR task whose implementation changed after a recorded PAS
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>
