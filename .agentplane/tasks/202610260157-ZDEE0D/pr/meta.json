@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202610260157-ZDEE0D/recover-an-approved-plan-when-a-required-declare",
   "created_at": "2026-10-26T02:38:13.651Z",
-  "diffstat_sha256": "sha256:05a420ced940374ad372812e3a38be2ea72723109787424e74925d0f7ffd825b",
+  "diffstat_sha256": "sha256:1041acb9cd5f4fb08364cd821f698f8d29958f8b6b09a01ce24144199ed0de1a",
   "last_verified_at": null,
   "provider": {
     "hostname": "github.com",
