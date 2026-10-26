@@ -15,8 +15,8 @@ Make empty executable-check handling policy-aware at canonical plan admission, f
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>
