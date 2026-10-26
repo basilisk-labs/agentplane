@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 62
+revision: 63
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +25,11 @@ plan_approval:
   updated_by: "agentplane:kernel-controller"
   note: "Projected from the approved canonical Task Kernel plan."
 verification:
-  state: "ok"
-  updated_at: "2026-10-26T16:39:27.675Z"
+  state: "needs_rework"
+  updated_at: "2026-10-26T17:44:18.748Z"
   updated_by: "SUPERVISOR"
-  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
-  attempts: 0
+  note: "Rework: Declared check failed: bun run ci:local:full"
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -60,8 +60,6 @@ quality_review:
     - "Residual risk: Reviewed compatibility candidate and fresh hosted checks remain mandatory before merge."
 token_usage:
   agent_runs: 3
-  cached_input_observed_agent_runs: 0
-  cached_input_tokens: null
   input_tokens: null
   journal_digest: "sha256:54277ef0f945d13e8f8a092f5abb05d139cfbcb67618e71ea7f4fbb8dc212ddd"
   observed_agent_runs: 0
@@ -133,13 +131,17 @@ execution_contract:
       - "packages/agentplane/src/commands/task"
       - "packages/core/src/tasks"
   observed:
-    authority_violations: []
+    authority_violations:
+      - "verification:recorded-check-1:fail"
+      - "verification:verification-record:fail"
     changed_components:
       - "docs"
       - "packages/agentplane"
       - "packages/core"
     changed_paths:
       - "docs/user/cli-reference.generated.mdx"
+      - "packages/agentplane/src/commands/task/kernel-completed-external-blocker.test.ts"
+      - "packages/agentplane/src/commands/task/kernel-completed-external-blocker.ts"
       - "packages/agentplane/src/commands/task/kernel-exchange.ts"
       - "packages/agentplane/src/commands/task/kernel-failed-check-evidence.ts"
       - "packages/agentplane/src/commands/task/kernel-plan.ts"
@@ -159,58 +161,10 @@ execution_contract:
     verification_results:
       -
         id: "recorded-check-1"
-        result: "pass"
-      -
-        id: "recorded-check-10"
-        result: "pass"
-      -
-        id: "recorded-check-11"
-        result: "pass"
-      -
-        id: "recorded-check-12"
-        result: "pass"
-      -
-        id: "recorded-check-13"
-        result: "pass"
-      -
-        id: "recorded-check-14"
-        result: "pass"
-      -
-        id: "recorded-check-15"
-        result: "pass"
-      -
-        id: "recorded-check-16"
-        result: "pass"
-      -
-        id: "recorded-check-17"
-        result: "pass"
-      -
-        id: "recorded-check-2"
-        result: "pass"
-      -
-        id: "recorded-check-3"
-        result: "pass"
-      -
-        id: "recorded-check-4"
-        result: "pass"
-      -
-        id: "recorded-check-5"
-        result: "pass"
-      -
-        id: "recorded-check-6"
-        result: "pass"
-      -
-        id: "recorded-check-7"
-        result: "pass"
-      -
-        id: "recorded-check-8"
-        result: "pass"
-      -
-        id: "recorded-check-9"
-        result: "pass"
+        result: "fail"
       -
         id: "verification-record"
-        result: "pass"
+        result: "fail"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_security_boundary"
@@ -249,7 +203,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:ebcd57d146db377bd8e63bffee0b8740e32e32b0ca1931eef13d8fcc20fc33df"
+      digest: "sha256:f3a6e87762f3060da165b9434df74ccc086b23e8b297391bb65d8ddaf16ad4d4"
       escalation_reasons:
         - "central_component:packages/core/src/tasks"
         - "central_path:packages/agentplane/src/commands/shared/task-verification-records.test.ts"
@@ -1312,6 +1266,8 @@ execution_contract:
           - "packages/agentplane/src/commands/task/direct-task-verification-empty.test.ts"
           - "packages/agentplane/src/commands/task/direct-task-verification.test.ts"
           - "packages/agentplane/src/commands/task/direct-task-verification.ts"
+          - "packages/agentplane/src/commands/task/kernel-completed-external-blocker.test.ts"
+          - "packages/agentplane/src/commands/task/kernel-completed-external-blocker.ts"
           - "packages/agentplane/src/commands/task/kernel-exchange.ts"
           - "packages/agentplane/src/commands/task/kernel-failed-check-evidence.ts"
           - "packages/agentplane/src/commands/task/kernel-final-validation.test.ts"
@@ -1381,9 +1337,9 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit:
-  hash: "1edd8f4ed781d4ded8ecea370690a392ee615d5a"
-  message: "🚧 ZDEE0D task: record external evaluator result"
+      - "verification_recovery:recorded-check-1"
+      - "verification_recovery:verification-record"
+commit: null
 comments:
   -
     author: "CODER"
@@ -1426,8 +1382,14 @@ events:
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
     commit: "1edd8f4ed781d4ded8ecea370690a392ee615d5a"
+  -
+    type: "verify"
+    at: "2026-10-26T17:44:18.748Z"
+    author: "SUPERVISOR"
+    state: "needs_rework"
+    note: "Rework: Declared check failed: bun run ci:local:full"
 doc_version: 3
-doc_updated_at: "2026-10-26T16:44:00.527Z"
+doc_updated_at: "2026-10-26T17:44:25.746Z"
 doc_updated_by: "CODER"
 description: "Add a generic, USER-attested correction route for a required verification command that native validation proved non-executable. Preserve the original FAILED receipt and exact old/new command audit evidence; reject unrelated contract, scope, or command changes; rerun the replacement check before completion. Do not silently waive verification or add release-specific adapters."
 sections:
@@ -1940,6 +1902,40 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-10-26T17:44:18.748Z — VERIFY — needs_rework
+
+    By: SUPERVISOR
+
+    Note: Rework: Declared check failed: bun run ci:local:full
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:68d1a38692ff9f072beb9d59276fad5bde72792094b924f81c557c2fc6b767be, input_digest=sha256:31a3c7b8cff315b5dad260d2db1ef1764b479ed4b6303e0369f45cbc26335881
+
+    Details:
+
+    Command: bun run ci:local:full
+    Result: fail
+    Evidence: .agentplane/tasks/202610260157-ZDEE0D/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610260157-ZDEE0D declared verification
+
+    NativeTaskIdentityRef:
+    - plan_digest: sha256:d15e91b7fa22e055171e7f708e7ba9ac69b529994e9ee2c405cd130f4d684320
+    - policy_digest: sha256:b0f3ed8717357e14968093aaf83e3059ba55a248477be0e758cb9ae571d6f7ac
+    - capability_digest: sha256:50a6a9165b39e3211d5b8d447b2ce28ef930f41b7c7ff9e2ff9630a0b2f1f306
+    - checks_digest: sha256:39081e9c8c078ecbcacb13b5848e21ebb1b96e4e8864752c0777f2fa80fb05e5
+    - identity_digest: sha256:3bc6eda7c9029d2919165e681f59c3d4bdb29d7fecc9214b0ccda9008cbdab16
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -1970,9 +1966,6 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:b696f3dedf53c206fa6a8e157e8e1441969cf9456638ac6b3b13631b26d2ce94"
     work_order_id: "sha256:d52927653fc31d44857c9b34ff37be5c437e6d73e8543c0f53b699e01f2f24b4"
-  implementation_commit:
-    hash: "77182dcbc04e8a3dcca325818b127d4d175dbf0c"
-    message: "Merge branch 'main' into task/202610260157-ZDEE0D/recover-an-approved-plan-when-a-required-declare"
   task_execution_context:
     base_ref: "main"
     base_sha: "cdc68137f324840b306f26b78e7c5dc9587b51e6"
@@ -4231,6 +4224,40 @@ NativeTaskIdentityRef:
 - capability_digest: sha256:50a6a9165b39e3211d5b8d447b2ce28ef930f41b7c7ff9e2ff9630a0b2f1f306
 - checks_digest: sha256:92002bc5513fe0d23c9c4365cd2edff33590d3288b4b295825209e1ef90f3603
 - identity_digest: sha256:d09d7feb4d5c7222e8a14221117b39d2d69899a1f05b58e56ca1cfc0e390538e
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-10-26T17:44:18.748Z — VERIFY — needs_rework
+
+By: SUPERVISOR
+
+Note: Rework: Declared check failed: bun run ci:local:full
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:68d1a38692ff9f072beb9d59276fad5bde72792094b924f81c557c2fc6b767be, input_digest=sha256:31a3c7b8cff315b5dad260d2db1ef1764b479ed4b6303e0369f45cbc26335881
+
+Details:
+
+Command: bun run ci:local:full
+Result: fail
+Evidence: .agentplane/tasks/202610260157-ZDEE0D/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610260157-ZDEE0D declared verification
+
+NativeTaskIdentityRef:
+- plan_digest: sha256:d15e91b7fa22e055171e7f708e7ba9ac69b529994e9ee2c405cd130f4d684320
+- policy_digest: sha256:b0f3ed8717357e14968093aaf83e3059ba55a248477be0e758cb9ae571d6f7ac
+- capability_digest: sha256:50a6a9165b39e3211d5b8d447b2ce28ef930f41b7c7ff9e2ff9630a0b2f1f306
+- checks_digest: sha256:39081e9c8c078ecbcacb13b5848e21ebb1b96e4e8864752c0777f2fa80fb05e5
+- identity_digest: sha256:3bc6eda7c9029d2919165e681f59c3d4bdb29d7fecc9214b0ccda9008cbdab16
 
 DecisionContextRef:
 - operator_action: stop
