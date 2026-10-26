@@ -95,11 +95,39 @@ describe("required check correction", () => {
     };
     const acceptedResult = {
       mutation_id: `result:${workOrderId}`,
+      repository_fingerprint: fingerprint,
+      authority: {
+        repository_identity: kernelDigest("repository"),
+        digest: kernelDigest("authority"),
+      },
       command: acceptedResultCommand,
+    };
+    const workBinding = {
+      task_id: "task-1",
+      repository_fingerprint: fingerprint,
+      plan_revision: current.revision,
+      plan_digest: current.digest,
+      work_item_id: "kernel",
+      attempt: 1,
+      claim_id: "claim-1",
+      contract_digest: oldDefinition.contract_digest,
+    };
+    const failedWorkOrder = {
+      work_order_id: workOrderId,
+      task: { id: "task-1", revision: acceptedResultCommand.expected_task_revision },
+      canonical_binding: {
+        ...workBinding,
+        phase: "implementation",
+        repository_identity: kernelDigest("repository"),
+        authority_digest: kernelDigest("authority"),
+      },
     };
     const resultReceipt = {
       mutation_id: acceptedResult.mutation_id,
-      command_digest: kernelDigest(acceptedResultCommand),
+      command_digest: kernelDigest({
+        ...acceptedResultCommand,
+        binding_digest: kernelDigest(workBinding),
+      }),
       before_revision: 4,
       after_revision: 5,
       aggregate_digest: kernelDigest("after-result"),
@@ -142,6 +170,7 @@ describe("required check correction", () => {
         failed_work_order_id: workOrderId,
         previous_command: oldCheck,
         replacement_command: newCheck,
+        failed_work_order: failedWorkOrder,
         accepted_result_command_input: acceptedResult,
         validation_command_input: prior,
         native_validation: native,
@@ -193,6 +222,73 @@ describe("required check correction", () => {
           required_check_correction: {
             ...command.required_check_correction!,
             failed_work_order_id: kernelDigest("other"),
+          },
+        },
+      },
+      "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
+    );
+    for (const canonical_binding of [
+      { ...failedWorkOrder.canonical_binding, plan_digest: kernelDigest("other-plan") },
+      { ...failedWorkOrder.canonical_binding, work_item_id: "other-item" },
+      { ...failedWorkOrder.canonical_binding, claim_id: "other-claim" },
+      { ...failedWorkOrder.canonical_binding, repository_identity: kernelDigest("other-repo") },
+    ]) {
+      expectRejection(
+        {
+          ...invocation,
+          command: {
+            ...command,
+            required_check_correction: {
+              ...command.required_check_correction!,
+              failed_work_order: { ...failedWorkOrder, canonical_binding },
+            },
+          },
+        },
+        "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
+      );
+    }
+    expectRejection(
+      {
+        ...invocation,
+        command: {
+          ...command,
+          required_check_correction: {
+            ...command.required_check_correction!,
+            failed_work_order: { ...failedWorkOrder, work_order_id: kernelDigest("other-order") },
+          },
+        },
+      },
+      "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
+    );
+    for (const authority of [
+      { ...acceptedResult.authority, repository_identity: kernelDigest("other-repo") },
+      { ...acceptedResult.authority, digest: kernelDigest("other-authority") },
+    ]) {
+      expectRejection(
+        {
+          ...invocation,
+          command: {
+            ...command,
+            required_check_correction: {
+              ...command.required_check_correction!,
+              accepted_result_command_input: { ...acceptedResult, authority },
+            },
+          },
+        },
+        "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
+      );
+    }
+    expectRejection(
+      {
+        ...invocation,
+        aggregate: {
+          ...state,
+          mutation_receipts: {
+            ...state.mutation_receipts,
+            [resultReceipt.mutation_id]: {
+              ...resultReceipt,
+              command_digest: kernelDigest("other-result-command"),
+            },
           },
         },
       },

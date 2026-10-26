@@ -1,7 +1,7 @@
  docs/user/cli-reference.generated.mdx              |   1 +
- .../agentplane/src/commands/task/kernel-plan.ts    |  82 ++++++
+ .../agentplane/src/commands/task/kernel-plan.ts    |  89 +++++
  .../src/commands/task/plan-set.command.ts          |  26 ++
- packages/core/src/tasks/task-kernel/kernel.ts      | 165 ++++++++++-
- packages/core/src/tasks/task-kernel/model.ts       |   9 +
- .../task-kernel/required-check-correction.test.ts  | 321 +++++++++++++++++++++
- 6 files changed, 599 insertions(+), 5 deletions(-)
+ packages/core/src/tasks/task-kernel/kernel.ts      | 201 +++++++++-
+ packages/core/src/tasks/task-kernel/model.ts       |  10 +
+ .../task-kernel/required-check-correction.test.ts  | 417 +++++++++++++++++++++
+ 6 files changed, 739 insertions(+), 5 deletions(-)
