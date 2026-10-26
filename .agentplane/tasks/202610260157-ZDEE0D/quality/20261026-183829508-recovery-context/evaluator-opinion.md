@@ -1,0 +1,23 @@
+# Semantic quality review: pass
+
+Provenance: evaluator_supplied
+
+EVALUATOR returned pass with 4 typed finding(s).
+
+## Findings
+- The kernel checks the original failed WorkOrder, accepted-result and validation receipts, unavailable executable evidence, unchanged work contract terms, and a manual USER approval digest before accepting one replacement command.
+- Regression tests cover successful correction and rejection of forged identities, tampered receipts, executable test failure, changed scope, extra commands, and stale plan state. Historical amendment recovery rejects altered retained evidence.
+- Recorded native verification for implementation head 65fd38bdfab6eb826c35dce1d25d04d8a9a916b5 passed: ci:local:full run-036, typecheck run-037, routing run-038, and doctor run-039. The compatibility checker passed with the new CLI option ratcheted in candidate and checker.
+- Residual risk: Hosted PR checks and main-base reconciliation remain for the native PR lifecycle. The prospective scope-extension bridge for completed rework needs a separate generic product fix.
+
+## Evidence
+- .agentplane/tasks/202610260157-ZDEE0D/quality/objects/sha256/1e1a18c35d84870fb270dffc94ee7afa827206f95dc2f670a059ae5d1fc034f4.patch
+
+## Missing Tests
+- none recorded
+
+## Hidden Assumptions
+- none recorded
+
+## Residual Risks
+- none recorded
