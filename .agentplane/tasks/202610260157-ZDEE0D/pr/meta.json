@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202610260157-ZDEE0D/recover-an-approved-plan-when-a-required-declare",
+  "created_at": "2026-10-26T02:38:13.651Z",
+  "diffstat_sha256": "sha256:e263db2559dae4e9a6bd929ec1be0c7feb072a89654ebe4f34a84e341448d3b1",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610260157-ZDEE0D",
+  "updated_at": "2026-10-26T02:38:13.651Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
