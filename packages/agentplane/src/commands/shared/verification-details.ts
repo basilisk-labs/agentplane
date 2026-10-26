@@ -6,6 +6,25 @@ export type VerificationCheckDetail = {
   scope: string;
 };
 
+export type VerificationNoCheckDetail = {
+  taskId: string;
+  planDigest: string;
+  evidenceDigest: string;
+};
+
+/** Distinct from a check result: this never claims that a process was launched. */
+export function parseVerificationNoCheckDetails(
+  details: unknown,
+): VerificationNoCheckDetail | null {
+  if (typeof details !== "string") return null;
+  const match =
+    /^No-Executable-Checks: approved\nTask: ([^\n]+)\nPlan: (sha256:[a-f0-9]{64})\nEvidence: (sha256:[a-f0-9]{64})$/u.exec(
+      details.trim(),
+    );
+  if (!match) return null;
+  return { taskId: match[1]!, planDigest: match[2]!, evidenceDigest: match[3]! };
+}
+
 const REQUIRED_FIELDS = ["Command", "Result", "Evidence", "Scope"] as const;
 type RequiredField = (typeof REQUIRED_FIELDS)[number];
 type VerificationField = RequiredField | "Check";

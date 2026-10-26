@@ -177,7 +177,7 @@ describe("planning status evidence", { timeout: 120_000 }, () => {
                 role: "EXECUTOR",
                 objective: "Write the report",
                 acceptance_criteria: ["Report exists"],
-                verification_commands: [],
+                verification_commands: ["node --version"],
               },
             },
           ],

@@ -22,7 +22,6 @@ import { parseDeclaredTaskCheckSequence } from "../shared/declared-check.js";
 import { localRuntimeEvidence } from "../../shared/runtime-env.js";
 import { verificationChildEnv } from "../shared/pr-meta/verify-log.js";
 import type { CommandContext } from "../shared/task-backend.js";
-
 import { isVerificationInfrastructureError } from "./verification-infrastructure.js";
 import {
   parseDirectTaskCheck,
@@ -324,6 +323,7 @@ export async function runDirectTaskVerification(opts: {
   additional_commands?: readonly AdditionalDirectTaskCommand[];
   additional_only?: boolean;
   allow_empty?: boolean;
+  empty_is_failure?: boolean;
   map_selected_checks?: boolean;
   retain_infrastructure_failure?: (
     result: Omit<DirectTaskVerificationResult, "artifact_path">,
@@ -368,11 +368,11 @@ export async function runDirectTaskVerification(opts: {
     }
   }
   if (commands.length === 0) {
-    const result = {
-      status: opts.allow_empty ? ("passed" as const) : ("unsupported" as const),
+    const result: Omit<DirectTaskVerificationResult, "artifact_path"> = {
+      status: opts.allow_empty ? "passed" : opts.empty_is_failure ? "failed" : "unsupported",
       checks,
       reason: opts.allow_empty
-        ? null
+        ? "No executable checks are required by the approved report-only contract."
         : "No executable declared verification checks are configured for this task.",
     };
     return { ...result, artifact_path: await writeCheckArtifact({ ...opts, result }) };

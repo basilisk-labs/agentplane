@@ -11,7 +11,10 @@ import {
 import { resolveImplementationVerificationTask } from "./external-agent-implementation-recovery.js";
 import { readDirectRepositoryStatus } from "./direct-task-finalization.js";
 import { pathFromStatusLine } from "./git-status-path.js";
-import { verificationContractEvidenceCoverage } from "../shared/task-verification-records.js";
+import {
+  requiredVerificationContractChecks,
+  verificationContractEvidenceCoverage,
+} from "../shared/task-verification-records.js";
 import { cmdVerifyParsed } from "./verify-record.js";
 import { kernelExchangeDirectory, writeKernelArtifact } from "./kernel-exchange.js";
 import type { createKernelRuntime } from "./kernel-runtime-context.js";
@@ -19,6 +22,7 @@ import { requireKernelCommit } from "./kernel-runtime-context.js";
 import { listKernelRepositoryEvidence } from "./kernel-repository-coordinator.js";
 import { resolveQualityReviewTargetSha } from "../shared/quality-review-target.js";
 import { recoverKernelOperationalProjection } from "./kernel-operational-projection-recovery.js";
+import { canonicalNoExecutableChecksAllowed } from "./kernel-no-check-policy.js";
 
 type Runtime = Awaited<ReturnType<typeof createKernelRuntime>>;
 const FINAL_VALIDATION_CHECK_ID = "canonical-final-contracts-v2";
@@ -116,12 +120,17 @@ export async function restoreKernelFinalValidation(
       status_lines: status?.lines ?? null,
       task_artifact_prefix: taskArtifactPrefix,
     }) ||
-    validation.identity.command_digest !== k.kernelDigest(finalValidationCommands(record)) ||
     validation.identity.environment_digest !== environmentDigest ||
     !evidenceDigest
   ) {
     return null;
   }
+  const commands = finalValidationCommands(record);
+  if (commands.length === 0) {
+    const task = await command.taskBackend.getTask(record.aggregate.id);
+    if (!task || !canonicalNoExecutableChecksAllowed(task, record)) return null;
+  }
+  if (validation.identity.command_digest !== k.kernelDigest(commands)) return null;
   return {
     fingerprint: repositoryFingerprint,
     environment_digest: environmentDigest,
@@ -184,6 +193,12 @@ export async function runKernelFinalValidation(
           workflow: "branch_pr",
         })
       : null;
+  const projectionTask = verification?.task ?? operationalTask;
+  const noExecutableChecks =
+    commands.length === 0 &&
+    canonicalNoExecutableChecksAllowed(operationalTask, record) &&
+    canonicalNoExecutableChecksAllowed(projectionTask, record) &&
+    requiredVerificationContractChecks(projectionTask).every((check) => check === "task_outcome");
   // Retain only a digest of the check environment, never its values. No check cache spans invocations.
   const environmentDigest = k.kernelDigest(verificationChildEnv());
   const binding = {
@@ -192,10 +207,11 @@ export async function runKernelFinalValidation(
     repository_fingerprint: context.repository_fingerprint,
     authority_digest: authority.digest,
     commands,
+    no_executable_checks: noExecutableChecks,
     environment_digest: environmentDigest,
     repository_evidence: repositoryEvidence,
     evaluator_target: evaluatorTarget,
-    verification_contract: (verification?.task ?? operationalTask).execution_contract ?? null,
+    verification_contract: projectionTask.execution_contract ?? null,
     work_items: Object.fromEntries(
       Object.entries(record.aggregate.work_items).map(([id, item]) => [
         id,
@@ -211,11 +227,14 @@ export async function runKernelFinalValidation(
   await writeKernelArtifact(directory, "final-validation-inputs.json", binding);
   const checks = await runDirectTaskVerification({
     command,
-    task: canonicalFinalValidationTask(verification?.task ?? operationalTask),
+    task: canonicalFinalValidationTask(projectionTask),
     task_id: taskId,
     cwd: command.resolvedProject.gitRoot,
     additional_commands: commands.map((check) => ({ command: check })),
-    allow_empty: true,
+    // A historical empty canonical contract cannot be rescued by an implicit policy fallback.
+    additional_only: commands.length === 0 && !noExecutableChecks,
+    allow_empty: noExecutableChecks,
+    empty_is_failure: !noExecutableChecks,
   });
   const current = await runtime.adapter.read(taskId);
   const observed = await runtime.observe();
@@ -253,9 +272,17 @@ export async function runKernelFinalValidation(
     await writeKernelArtifact(directory, "final-validation-command.json", input);
     requireKernelCommit(await runtime.lifecycle.apply(input));
     const retry = ["agentplane", "task", "advance", taskId, "--agent-json"];
+    const missingCommands =
+      checks.status === "failed" && commands.length === 0 && !noExecutableChecks;
     const correction =
       checks.status === "failed"
-        ? await writeCorrectivePlan(directory, record, commands, k.kernelDigest(evidence))
+        ? await writeCorrectivePlan(
+            directory,
+            record,
+            commands,
+            k.kernelDigest(evidence),
+            missingCommands,
+          )
         : null;
     return {
       stop: {
@@ -264,13 +291,37 @@ export async function runKernelFinalValidation(
           checks.status === "failed"
             ? "canonical_final_checks_failed"
             : "canonical_final_checks_infrastructure_blocked",
-        summary: checks.reason,
+        summary:
+          commands.length === 0 && checks.checks.length === 0 && !noExecutableChecks
+            ? "The approved Plan has no executable verification command. A USER-approved corrective Plan must add a new checked WorkItem while preserving the completed contracts and failed evidence."
+            : checks.reason,
         evidence: directory,
         failure_class: checks.status === "failed" ? "code_regression" : "infrastructure",
         recovery: {
           cwd: command.resolvedProject.gitRoot,
           retry_argv: retry,
-          ...(correction
+          ...(missingCommands && correction
+            ? {
+                required_role: "USER",
+                plan_template: correction,
+                plan_amendment_argv: [
+                  "agentplane",
+                  "task",
+                  "plan",
+                  "set",
+                  taskId,
+                  "--file",
+                  correction,
+                  "--scope-expansion-approved-by",
+                  "USER",
+                ],
+                required_edit:
+                  "Set verification_commands on the new corrective WorkItem to an executable local check before submitting this template. The untouched template is intentionally inadmissible.",
+                constraint:
+                  "Retain completed WorkItems and append a checked corrective WorkItem within the approved scope. USER approval is required for the revised Plan.",
+              }
+            : {}),
+          ...(correction && !missingCommands
             ? {
                 required_role: "USER",
                 corrective_plan: correction,
@@ -298,9 +349,17 @@ export async function runKernelFinalValidation(
         taskId,
         workflow: "branch_pr",
         result: checks,
+        ...(noExecutableChecks && checks.checks.length === 0
+          ? {
+              no_check_evidence: {
+                plan_digest: plan.digest,
+                evidence_digest: k.kernelDigest(evidence),
+              },
+            }
+          : {}),
       })
     : null;
-  if (verification && details) {
+  if (verification && details && !noExecutableChecks) {
     const coverage = verificationContractEvidenceCoverage(verification.task, details);
     if (!coverage.accepted)
       throw new Error(
@@ -316,6 +375,73 @@ export async function runKernelFinalValidation(
     throw new Error("Canonical final validation task changed before persistence");
   await writeKernelArtifact(directory, "final-validation-command.json", input);
   requireKernelCommit(await runtime.lifecycle.apply(input));
+  if (verification && details && noExecutableChecks) {
+    const projectedTask = await command.taskBackend.getTask(taskId);
+    const coverage = projectedTask
+      ? verificationContractEvidenceCoverage(projectedTask, details)
+      : { accepted: false, missingChecks: ["task_projection_missing"] };
+    if (!coverage.accepted) {
+      const current = await runtime.adapter.read(taskId);
+      if (
+        current.kind !== "canonical" ||
+        current.record.aggregate.current_plan?.digest !== plan.digest ||
+        !current.record.aggregate.final_validation?.evidence_digests.includes(
+          k.kernelDigest(evidence),
+        )
+      )
+        throw new Error("Canonical no-check projection changed after final validation");
+      const context = await runtime.native.readContext(taskId);
+      const rejectedEvidence = {
+        binding,
+        checks,
+        coverage,
+        reason: "no_check_projection_rejected",
+      };
+      await writeKernelArtifact(
+        directory,
+        "final-validation-projection-rejected.json",
+        rejectedEvidence,
+      );
+      const rejected: k.ValidationRecord = {
+        ...validation,
+        status: "FAILED",
+        identity: {
+          ...validation.identity,
+          implementation_identity: context.repository_fingerprint,
+        },
+        evidence_digests: [k.kernelDigest(rejectedEvidence)],
+        observed_at: context.occurred_at,
+      };
+      const invalidate = await runtime.input(
+        { kind: "record_final_validation", validation: rejected },
+        `final-validation-projection-rejected:${k.kernelDigest(rejectedEvidence)}:${current.record.aggregate.revision}`,
+      );
+      if (invalidate.command.expected_task_revision !== current.record.aggregate.revision)
+        throw new Error("Canonical no-check projection changed before rejection persistence");
+      await writeKernelArtifact(
+        directory,
+        "final-validation-projection-rejected-command.json",
+        invalidate,
+      );
+      requireKernelCommit(await runtime.lifecycle.apply(invalidate));
+      return {
+        stop: {
+          kind: "human_required",
+          reason: "canonical_no_check_projection_rejected",
+          summary: `No-check evidence does not satisfy the current Verification Contract: ${coverage.missingChecks.join(",")}`,
+          evidence: directory,
+          failure_class: "infrastructure",
+          recovery: {
+            cwd: command.resolvedProject.gitRoot,
+            required_role: "USER",
+            retry_argv: ["agentplane", "task", "advance", taskId, "--agent-json"],
+            constraint:
+              "Review the changed Verification Contract and approve a corrective checked Plan. Preserve the rejected evidence.",
+          },
+        },
+      };
+    }
+  }
   if (verification) {
     const exitCode = await cmdVerifyParsed({
       ctx: command,
@@ -355,6 +481,7 @@ async function writeCorrectivePlan(
   record: KernelRecord,
   commands: string[],
   evidenceDigest: string,
+  missingCommands = false,
 ) {
   const plan = record.aggregate.current_plan!;
   const items = plan.work_items.map(({ contract_digest, ...definition }) => {
@@ -384,10 +511,16 @@ async function writeCorrectivePlan(
           resources: union("resources"),
         },
         contract: {
-          objective: `Repair the failed final validation evidenced by ${evidenceDigest}. Read ${path.join(directory, "final-validation.json")} before edits.`,
+          objective: missingCommands
+            ? `Add executable final verification for the approved implementation evidenced by ${evidenceDigest}. Read ${path.join(directory, "final-validation.json")} before edits.`
+            : `Repair the failed final validation evidenced by ${evidenceDigest}. Read ${path.join(directory, "final-validation.json")} before edits.`,
           acceptance_criteria: [
-            "Correct the reproduced regression within the existing approved scope. Preserve completed work and all prior evidence.",
-            "Run the unchanged required validation commands. Return implementation evidence for independent native review.",
+            missingCommands
+              ? "Select and run an executable local verification command for the existing approved code. Preserve completed work and all prior evidence."
+              : "Correct the reproduced regression within the existing approved scope. Preserve completed work and all prior evidence.",
+            missingCommands
+              ? "Record the selected executable command in this WorkItem contract before Plan submission. Return concrete results for independent native review."
+              : "Run the unchanged required validation commands. Return implementation evidence for independent native review.",
             "Do not bypass checks, expand authority, discard effects or claim that infrastructure failures are code defects.",
           ],
           verification_commands: commands,
@@ -396,10 +529,7 @@ async function writeCorrectivePlan(
       },
     ],
   };
-  await writeKernelArtifact(
-    directory,
-    "corrective-plan.json",
-    kernelPlanProposalSchema.parse(proposal),
-  );
-  return path.join(directory, "corrective-plan.json");
+  const filename = missingCommands ? "corrective-plan.template.json" : "corrective-plan.json";
+  await writeKernelArtifact(directory, filename, kernelPlanProposalSchema.parse(proposal));
+  return path.join(directory, filename);
 }

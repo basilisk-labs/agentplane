@@ -2,10 +2,14 @@ import { createHash } from "node:crypto";
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { canonicalizeJson } from "@agentplaneorg/core/tasks";
+import { canonicalizeJson, taskKernel as k } from "@agentplaneorg/core/tasks";
 import { afterEach, describe, expect, it } from "vitest";
 
 import type { TaskData } from "../../backends/task-backend.js";
+import {
+  makeKernelRecord,
+  TASK_KERNEL_EXTENSION,
+} from "../../adapters/task-backend/kernel-record.js";
 
 import {
   verificationContractEvidenceCoverage,
@@ -84,6 +88,86 @@ afterEach(async () => {
 });
 
 describe("task verification records", () => {
+  it("binds a no-check report disposition to exact canonical final evidence and rejects replay or local obligations", () => {
+    const task = makeTask("T-REPORT");
+    task.mutation_scope = "none";
+    task.execution_contract = {
+      verification: { contract: { selected_checks: ["task_outcome"] } },
+    } as TaskData["execution_contract"];
+    const evidence = k.kernelDigest("report-evidence");
+    const approved = {
+      revision: 1,
+      digest: k.kernelDigest("report-plan"),
+      state: "APPROVED" as const,
+      approval_actor_id: "USER",
+      approval_evidence_digest: k.kernelDigest("approval"),
+      work_items: [],
+    };
+    const record = makeKernelRecord(
+      k.kernelDigest("repo"),
+      {
+        schema_version: 1,
+        id: task.id,
+        revision: 3,
+        state: "ACTIVE",
+        intent_digest: k.kernelDigest("intent"),
+        current_plan: approved,
+        plan_history: [],
+        work_items: {},
+        final_validation: {
+          status: "PASSED",
+          identity: {
+            implementation_identity: k.kernelDigest("implementation"),
+            check_id: "canonical-final-contracts-v2",
+            command_digest: k.kernelDigest([]),
+            toolchain_digest: k.kernelDigest([]),
+            environment_digest: k.kernelDigest("environment"),
+          },
+          evidence_digests: [evidence],
+          observed_at: "2026-10-25T00:00:00.000Z",
+        },
+        effects: [],
+        mutation_receipts: {},
+        controller_transfer: null,
+        migration_receipts: [],
+      },
+      [],
+    );
+    task.extensions = { [TASK_KERNEL_EXTENSION]: record };
+    const details = `No-Executable-Checks: approved\nTask: ${task.id}\nPlan: ${approved.digest}\nEvidence: ${evidence}`;
+    expect(verificationContractEvidenceCoverage(task, details).accepted).toBe(true);
+    task.extensions = {
+      [TASK_KERNEL_EXTENSION]: makeKernelRecord(
+        record.repository_identity,
+        {
+          ...record.aggregate,
+          final_validation: {
+            ...record.aggregate.final_validation!,
+            identity: {
+              ...record.aggregate.final_validation!.identity,
+              command_digest: k.kernelDigest(["bun test"]),
+            },
+          },
+        },
+        [],
+      ),
+    };
+    expect(verificationContractEvidenceCoverage(task, details).accepted).toBe(false);
+    task.extensions = { [TASK_KERNEL_EXTENSION]: record };
+    expect(
+      verificationContractEvidenceCoverage(task, details.replace(evidence, k.kernelDigest("other")))
+        .accepted,
+    ).toBe(false);
+    expect(
+      verificationContractEvidenceCoverage(task, details.replace(task.id, "T-OTHER")).accepted,
+    ).toBe(false);
+    task.execution_contract = {
+      verification: { contract: { selected_checks: ["full_regression"] } },
+    } as TaskData["execution_contract"];
+    expect(verificationContractEvidenceCoverage(task, details).accepted).toBe(false);
+    task.mutation_scope = "code";
+    expect(verificationContractEvidenceCoverage(task, details).accepted).toBe(false);
+  });
   it("requires exact structured coverage for every selected Verification Contract check", () => {
     const task = makeTask("T-CONTRACT");
     task.execution_contract = {
