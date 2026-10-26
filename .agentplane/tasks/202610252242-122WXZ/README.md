@@ -4,7 +4,7 @@ title: "Ensure task projection and canonical aggregate revision coherence throug
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 29
+revision: 30
 origin:
   system: "manual"
 depends_on: []
@@ -28,18 +28,33 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-10-25T23:16:15.691Z"
+  updated_at: "2026-10-26T17:07:33.675Z"
   updated_by: "EVALUATOR"
-  note: "Canonical EVALUATOR review passed."
-  evaluated_sha: "f7f7e91f90289958f63b82b8fe15b77a9ca51776"
-  review_identity_digest: "sha256:0df33886467730d211ad8cc003fe0e743a961dcdbbab349eba2a0ced0b546b65"
+  note: "EVALUATOR returned pass with 5 typed finding(s)."
+  evaluated_sha: "c99e268b5ffbc525d272f5dfd87080a53ecf7c85"
+  review_identity_digest: "sha256:a09357139eded43e2366441f9ebb36e38e38f2829b7c1222a359c42a7146bd45"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202610252242-122WXZ/b170c37586229d1abce43a2c937439cb016e80cfd62155aa9a9eb47babb3cbf3/quality-report.json"
+    - ".agentplane/tasks/202610252242-122WXZ/quality/20261026-170358027-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202610252242-122WXZ/quality/20261026-170358027-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202610252242-122WXZ/quality/objects/sha256/990c47f34022342df578ff7380fc6cd8dab84ac835994bc339cbcbacc9cc0a2f.md"
+    - ".agentplane/tasks/202610252242-122WXZ/quality/20261026-170358027-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202610252242-122WXZ/quality/20261026-170358027-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202610252242-122WXZ/quality/20261026-170358027-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202610252242-122WXZ/README.md"
+    - ".agentplane/tasks/202610252242-122WXZ/quality/objects/sha256/abe0ec02290030ce6be5ec252ce3714d50a6f28458ef045557903fbdde53c697.patch"
+    - ".agentplane/tasks/202610252242-122WXZ/quality/objects/sha256/15288ed1090e7cacdd8b0c84bbf75529004bbd4252fb17bad290dbf8f7eae640.json"
+    - ".agentplane/tasks/202610252242-122WXZ/verification/20261026170304408-e9f407da6fae5309.json"
+    - ".agentplane/tasks/202610252242-122WXZ/quality/objects/sha256/22ca375c669a446fafb03c73a8aebd55adba8e35e4182316b790c8f1b2085ffd.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "On source cdc68137f324840b306f26b78e7c5dc9587b51e6, the public CLI fixture covers both replace-verify variants. Approval, replan, verification update, invalid reapproval, route, and start-ready outcomes are asserted; revisions remain aligned until an intentional split fixture."
-    - "The adapter guard executes before mutation receipt replay and compare-and-swap. Its split 15/14 test asserts rejection on first and repeated attempts and exact retention of foreign description, commit, verification, and USER approval. The existing concurrent-writer test asserts a single winner."
-    - "Doctor reports the ambiguous split with both revisions and evidence-specific recovery guidance. The rejected-plan recovery branch remains intact, and scope-extension recovery regressions pass. The route oracle refuses start-ready on the split."
-    - "AgentPlane native validation passed both declared checks: 2 files/15 tests and 5 files/60 tests. Evaluator target f7f7e91f90289958f63b82b8fe15b77a9ca51776 contains only scoped code and test changes plus task artifacts."
+    - "The CLI regression covers both replace-verify variants and asserts revision equality through approval, replan, verification, invalid reapproval, route, and start-ready."
+    - "The adapter rejects the 15/14 split before mutation receipt replay or CAS; the regression asserts repeated rejection and preservation of unrelated task fields. Existing concurrent-writer coverage remains in place."
+    - "Doctor treats active or unfinished projection splits as errors and completed historical splits as warnings. The route refuses an active split. The dedicated five-file regression run passed 60 tests, including the new archive diagnostic cases."
+    - "A historical split cannot be repaired safely without task-specific provenance; the change deliberately leaves those bytes untouched and directs inspection."
+    - "Residual risk: The original historical 15/14 state was not causally reproduced on current main; recovery of an already split task still requires task-specific provenance."
 execution_route:
   frozen: true
   reason_codes:
@@ -390,6 +405,14 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.completed_native_review:
+    applied_at: "2026-10-26T17:07:33.675Z"
+    kernel_digest: "sha256:6fd7ba587ff0d06f0b124975933e2681a43cc3eb7216f9a4feef7e4a2db06c1d"
+    quality_digest: "sha256:620839894d6adddcf7238dea43a5eb20e1945ecb19a46f71476f892c7793b1b1"
+    result_digest: "sha256:c50baef0cae9612eee5ef82daa1b43b5ff9f6b021c6da72f7b2e818b4064b57b"
+    schema_version: 1
+    state_fingerprint: "sha256:44c2532e0e07dd500b2bd48609ea8f6b0a491827f1fc54e8f355b10c8a15ac34"
+    transition_id: "tr_470d38bb9fd980896ca3aaacce468e50"
   agentplane.kernel_operational_projection:
     digest: "sha256:fc48a5fb6ae98af769d60487c8e98a72dd2af07e3e7890ea476cb2be482d68dc"
     evidence_refs:
