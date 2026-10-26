@@ -1,3 +1,4 @@
+import { lstat, readFile, readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { extractTaskSuffix } from "@agentplaneorg/core/commit";
@@ -83,12 +84,66 @@ async function applyReleaseMutation(opts: {
   await maybeUpdateBunLockfile(opts.gitRoot, fileExists);
   const generatedReferenceExists = await maybeRefreshGeneratedReference(opts.gitRoot, fileExists);
 
+  const scriptsDir = path.join(opts.gitRoot, "scripts");
+  const baselineDir = path.join(scriptsDir, "baselines");
+  let candidateNames: string[] = [];
+  try {
+    for (const directory of [scriptsDir, baselineDir]) {
+      const stat = await lstat(directory);
+      if (stat.isSymbolicLink() || !stat.isDirectory()) {
+        throw new Error("Compatibility candidate directory must be a regular repository directory");
+      }
+    }
+    const entries = await readdir(baselineDir);
+    candidateNames = entries.filter((name) => name.endsWith("-compatibility-candidate.json"));
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+  }
+  if (candidateNames.length > 1) {
+    throw new Error("Multiple compatibility candidates require an unambiguous release contract");
+  }
+  const compatibilityCandidate = candidateNames[0]
+    ? `scripts/baselines/${candidateNames[0]}`
+    : null;
+  const capturePath = path.join(opts.gitRoot, "scripts/bench/capture-compatibility-candidate.mjs");
+  const checkPath = path.join(
+    opts.gitRoot,
+    "scripts/checks/check-compatibility-contract-baseline.mjs",
+  );
+  if (compatibilityCandidate) {
+    if (!(await fileExists(capturePath)) || !(await fileExists(checkPath))) {
+      throw new Error("Compatibility candidate requires its capture and validation scripts");
+    }
+    const candidatePath = path.join(opts.gitRoot, compatibilityCandidate);
+    const candidateStat = await lstat(candidatePath);
+    if (candidateStat.isSymbolicLink() || !candidateStat.isFile()) {
+      throw new Error("Compatibility candidate must be a regular repository file");
+    }
+    const previousCandidate = await readFile(candidatePath);
+    try {
+      await execFileAsync(
+        process.execPath,
+        [capturePath, "--write", "--candidate-path", compatibilityCandidate],
+        { cwd: opts.gitRoot },
+      );
+      await execFileAsync(
+        process.execPath,
+        [checkPath, "--candidate-path", compatibilityCandidate],
+        { cwd: opts.gitRoot },
+      );
+    } catch (error) {
+      await writeFile(candidatePath, previousCandidate);
+      throw error;
+    }
+  }
+
   const stagePaths = [
     "packages/core/package.json",
     "packages/agentplane/package.json",
     "packages/recipes/package.json",
     path.relative(opts.gitRoot, opts.notesPath),
   ];
+  if (compatibilityCandidate) stagePaths.push(compatibilityCandidate);
   if (shouldUpdateRecipesRuntimeVersion) {
     stagePaths.push("packages/recipes/src/index.ts");
   }

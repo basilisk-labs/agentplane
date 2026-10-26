@@ -12,11 +12,15 @@ import {
   diffCliTopology,
   diffJsonPaths,
   hashJson,
-  packageSurface,
   reconstructCompatibilitySurface,
   surfaceSectionDigests,
 } from "../lib/compatibility-contract.mjs";
-import { reconstructHistoricalPackageSurface } from "../lib/compatibility-incremental-package-delta.mjs";
+import {
+  normalizePackageVersions,
+  reconstructHistoricalPackageSurface,
+  reviewedPackageVersion,
+} from "../lib/compatibility-incremental-package-delta.mjs";
+import { resolveCompatibilityCandidatePath } from "../lib/compatibility-candidate-path.mjs";
 
 const scriptPath = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
@@ -26,15 +30,8 @@ const baselinePath = path.join(
   "baselines",
   "v0.6.24-compatibility-contract.json",
 );
-const candidatePath = path.join(
-  repoRoot,
-  "scripts",
-  "baselines",
-  "v0.7-compatibility-candidate.json",
-);
-
 function parseArgs(argv) {
-  const options = { write: false, check: false, packageSourceTask: null };
+  const options = { write: false, check: false, packageSourceTask: null, candidatePath: null };
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index];
     if (argument === "--write") {
@@ -52,6 +49,13 @@ function parseArgs(argv) {
       index += 1;
       continue;
     }
+    if (argument === "--candidate-path") {
+      const value = argv[index + 1]?.trim();
+      if (!value) throw new Error("Missing value after --candidate-path");
+      options.candidatePath = value;
+      index += 1;
+      continue;
+    }
     throw new Error(`Unknown argument: ${argument}`);
   }
   if (options.write && options.check) throw new Error("Use either --write or --check, not both");
@@ -61,34 +65,6 @@ function parseArgs(argv) {
 function withSourceTask(values, sourceTask) {
   if (!sourceTask || values.includes(sourceTask)) return values;
   return [...values, sourceTask];
-}
-
-function normalizePackageVersions(manifests, version) {
-  return manifests.map((manifest) => {
-    const normalized = structuredClone(manifest);
-    delete normalized.path;
-    delete normalized.normalized_sha256;
-    normalized.version = version;
-    const internalDependencies =
-      manifest.path === "packages/agentplane/package.json"
-        ? ["@agentplaneorg/core", "@agentplaneorg/recipes"]
-        : manifest.path === "packages/recipes/package.json"
-          ? ["@agentplaneorg/core"]
-          : [];
-    for (const name of internalDependencies) {
-      if (manifest.dependencies?.[name] !== manifest.version) {
-        throw new Error(`${manifest.path}: unexpected internal dependency version for ${name}`);
-      }
-    }
-    if (manifest.path === "packages/agentplane/package.json") {
-      normalized.dependencies["@agentplaneorg/core"] = version;
-      normalized.dependencies["@agentplaneorg/recipes"] = version;
-    }
-    if (manifest.path === "packages/recipes/package.json") {
-      normalized.dependencies["@agentplaneorg/core"] = version;
-    }
-    return packageSurface(manifest.path, normalized);
-  });
 }
 
 function verifyInternalVersionNormalization(manifests, baselineVersion) {
@@ -119,7 +95,10 @@ function verifyInternalVersionNormalization(manifests, baselineVersion) {
 
 function historicalReleaseSurface(releaseSurface, candidate) {
   const delta = candidate.incremental_package_delta;
-  return delta ? reconstructHistoricalPackageSurface(releaseSurface, delta) : releaseSurface;
+  const reviewedVersion = reviewedPackageVersion(candidate);
+  return delta
+    ? reconstructHistoricalPackageSurface(releaseSurface, delta, reviewedVersion)
+    : releaseSurface;
 }
 
 function buildCandidate({ baseline, candidate, packageSourceTask }) {
@@ -169,6 +148,13 @@ function buildCandidate({ baseline, candidate, packageSourceTask }) {
 
   return canonicalizeJson({
     ...candidate,
+    ...(candidate.incremental_package_delta &&
+    (Object.hasOwn(candidate, "incremental_package_delta_reviewed_version") ||
+      releaseVersion !== candidate.release_version_delta.to_version)
+      ? {
+          incremental_package_delta_reviewed_version: reviewedPackageVersion(candidate),
+        }
+      : {}),
     source_tasks: withSourceTask(candidate.source_tasks, packageSourceTask),
     candidate: {
       surface_sha256: compatibilitySurfaceDigest(candidateSectionDigests),
@@ -232,6 +218,7 @@ function buildCandidate({ baseline, candidate, packageSourceTask }) {
 
 try {
   const options = parseArgs(process.argv.slice(2));
+  const candidatePath = resolveCompatibilityCandidatePath(repoRoot, options.candidatePath);
   const baseline = JSON.parse(readFileSync(baselinePath, "utf8"));
   const currentText = readFileSync(candidatePath, "utf8");
   const candidate = JSON.parse(currentText);
