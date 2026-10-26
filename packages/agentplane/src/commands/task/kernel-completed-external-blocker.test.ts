@@ -52,7 +52,12 @@ describe("canonical blocker README projection", () => {
     ["request", current.replace("sha256:exact", "sha256:changed")],
   ])("rejects unrelated %s drift", (_name, changed) => {
     expect(() =>
-      canonicalBlockerReadmeProjection({ baseline, current: changed, body: "Exact blocker", pending }),
+      canonicalBlockerReadmeProjection({
+        baseline,
+        current: changed,
+        body: "Exact blocker",
+        pending,
+      }),
     ).toThrow();
   });
 });

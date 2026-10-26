@@ -30,7 +30,7 @@ Created: 2026-10-26T02:38:13.651Z
 
 ```text
  docs/user/cli-reference.generated.mdx              |   1 +
- .../task/kernel-completed-external-blocker.test.ts |  58 +++
+ .../task/kernel-completed-external-blocker.test.ts |  63 ++++
  .../task/kernel-completed-external-blocker.ts      | 103 +++--
  .../src/commands/task/kernel-exchange.ts           |  18 +-
  .../commands/task/kernel-failed-check-evidence.ts  |  74 ++++
@@ -42,7 +42,9 @@ Created: 2026-10-26T02:38:13.651Z
  packages/core/src/tasks/task-kernel/kernel.ts      | 201 +++++++++-
  packages/core/src/tasks/task-kernel/model.ts       |  10 +
  .../task-kernel/required-check-correction.test.ts  | 417 +++++++++++++++++++++
- 13 files changed, 1190 insertions(+), 45 deletions(-)
+ .../baselines/v0.7-compatibility-candidate.json    |  28 +-
+ .../check-compatibility-contract-baseline.mjs      |  16 +-
+ 15 files changed, 1231 insertions(+), 53 deletions(-)
 ```
 
 </details>
