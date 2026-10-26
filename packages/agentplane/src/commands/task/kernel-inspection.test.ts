@@ -105,7 +105,10 @@ describe("evaluator exchange identity", () => {
     });
     const issue = () =>
       issueKernelInspection(
-        { resolvedProject: { gitRoot: "/repo" } } as never,
+        {
+          resolvedProject: { gitRoot: "/repo" },
+          taskBackend: { getTask: () => Promise.resolve({ mutation_scope: "code" }) },
+        } as never,
         runtime as never,
         record as never,
         "build",

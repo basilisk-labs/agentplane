@@ -11,7 +11,10 @@ import type { CommandContext } from "../shared/task-backend.js";
 import { readDirectTaskHead } from "./direct-task-finalization.js";
 import { acceptKernelInspection } from "./kernel-inspection.js";
 import { canonicalPlanFromProposal } from "./kernel-plan.js";
-import { assertCanonicalPlanWithinExecutionContract } from "./kernel-plan-authority.js";
+import {
+  assertCanonicalPlanVerificationPolicy,
+  assertCanonicalPlanWithinExecutionContract,
+} from "./kernel-plan-authority.js";
 import { readKernelOrderResult, writeKernelArtifact } from "./kernel-exchange.js";
 import { commitCanonicalImplementation } from "./kernel-repository-coordinator.js";
 import type { createKernelRuntime } from "./kernel-runtime-context.js";
@@ -207,6 +210,7 @@ export async function acceptKernelSemanticResult(
         : read.record.aggregate.current_plan,
       contracts: read.record.documents?.contracts ?? {},
     });
+    assertCanonicalPlanVerificationPolicy(read.task, proposal, read.record.aggregate.current_plan);
     const plan = canonicalPlanFromProposal(proposal, binding.plan_revision + 1);
     assertCanonicalPlanWithinExecutionContract(read.task, plan);
     await validateKernelRecipeBindings({

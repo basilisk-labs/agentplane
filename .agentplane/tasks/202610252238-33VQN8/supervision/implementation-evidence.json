@@ -1,0 +1,210 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check cdc68137f324840b306f26b78e7c5dc9587b51e6..e5d8a60ab63336c7762a30b36ad410993fb84caf",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB cdc68137f324840b306f26b78e7c5dc9587b51e6..e5d8a60ab63336c7762a30b36ad410993fb84caf",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202610252238-33VQN8/README.md",
+        "A\t.agentplane/tasks/202610252238-33VQN8/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202610252238-33VQN8/pr/github-body.md",
+        "A\t.agentplane/tasks/202610252238-33VQN8/pr/github-title.txt",
+        "A\t.agentplane/tasks/202610252238-33VQN8/pr/meta.json",
+        "A\t.agentplane/tasks/202610252238-33VQN8/pr/review.md",
+        "A\t.agentplane/tasks/202610252238-33VQN8/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
+        "A\t.agentplane/tasks/202610252238-33VQN8/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+        "M\tpackages/agentplane/src/commands/shared/task-verification-records.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/task-verification-records.ts",
+        "M\tpackages/agentplane/src/commands/shared/verification-details.test.ts",
+        "M\tpackages/agentplane/src/commands/shared/verification-details.ts",
+        "M\tpackages/agentplane/src/commands/task/create-plan-proposal.test.ts",
+        "M\tpackages/agentplane/src/commands/task/create-plan-proposal.ts",
+        "M\tpackages/agentplane/src/commands/task/direct-task-verification-checks.ts",
+        "A\tpackages/agentplane/src/commands/task/direct-task-verification-empty.test.ts",
+        "M\tpackages/agentplane/src/commands/task/direct-task-verification.test.ts",
+        "M\tpackages/agentplane/src/commands/task/direct-task-verification.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-final-validation.test.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-final-validation.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-inspection-validation.test.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-inspection-validation.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-inspection.test.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-inspection.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-no-check-policy.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-no-check-recovery.test.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-plan-authority.test.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-plan-authority.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-plan.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-planning-view.test.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-semantic-result.ts",
+        "M\tpackages/agentplane/src/commands/task/verify-record.durability.unit.test.ts",
+        "A\tpackages/agentplane/src/commands/task/verify-record.no-check-durability.test.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "cdc68137f324840b306f26b78e7c5dc9587b51e6",
+  "implementation_commit": "e5d8a60ab63336c7762a30b36ad410993fb84caf",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      " M packages/agentplane/src/commands/shared/task-verification-records.test.ts",
+      " M packages/agentplane/src/commands/shared/task-verification-records.ts",
+      " M packages/agentplane/src/commands/shared/verification-details.test.ts",
+      " M packages/agentplane/src/commands/shared/verification-details.ts",
+      " M packages/agentplane/src/commands/task/direct-task-verification-checks.ts",
+      " M packages/agentplane/src/commands/task/direct-task-verification.test.ts",
+      " M packages/agentplane/src/commands/task/direct-task-verification.ts",
+      " M packages/agentplane/src/commands/task/kernel-final-validation.test.ts",
+      " M packages/agentplane/src/commands/task/kernel-final-validation.ts",
+      " M packages/agentplane/src/commands/task/kernel-inspection-validation.test.ts",
+      " M packages/agentplane/src/commands/task/kernel-inspection-validation.ts",
+      " M packages/agentplane/src/commands/task/kernel-inspection.ts",
+      " M packages/agentplane/src/commands/task/kernel-plan-authority.test.ts",
+      " M packages/agentplane/src/commands/task/kernel-plan-authority.ts",
+      " M packages/agentplane/src/commands/task/kernel-plan.ts",
+      " M packages/agentplane/src/commands/task/kernel-semantic-result.ts",
+      " M packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts",
+      "?? .agentplane/tasks/202610252238-33VQN8/README.md",
+      "?? .agentplane/tasks/202610252238-33VQN8/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
+      "?? .agentplane/tasks/202610252238-33VQN8/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+      "?? packages/agentplane/src/commands/task/kernel-no-check-policy.ts",
+      "?? packages/agentplane/src/commands/task/kernel-no-check-recovery.test.ts"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/task-verification-records.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/task-verification-records.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/verification-details.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/verification-details.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/direct-task-verification-checks.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/direct-task-verification.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/direct-task-verification.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-final-validation.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-final-validation.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-inspection-validation.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-inspection-validation.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-inspection.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-plan-authority.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-plan-authority.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-plan.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-semantic-result.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610252238-33VQN8/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610252238-33VQN8/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610252238-33VQN8/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/kernel-no-check-policy.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/kernel-no-check-recovery.test.ts"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M packages/agentplane/src/commands/shared/task-verification-records.test.ts",
+      " M packages/agentplane/src/commands/shared/task-verification-records.ts",
+      " M packages/agentplane/src/commands/shared/verification-details.test.ts",
+      " M packages/agentplane/src/commands/shared/verification-details.ts",
+      " M packages/agentplane/src/commands/task/direct-task-verification-checks.ts",
+      " M packages/agentplane/src/commands/task/direct-task-verification.test.ts",
+      " M packages/agentplane/src/commands/task/direct-task-verification.ts",
+      " M packages/agentplane/src/commands/task/kernel-final-validation.test.ts",
+      " M packages/agentplane/src/commands/task/kernel-final-validation.ts",
+      " M packages/agentplane/src/commands/task/kernel-inspection-validation.test.ts",
+      " M packages/agentplane/src/commands/task/kernel-inspection-validation.ts",
+      " M packages/agentplane/src/commands/task/kernel-inspection.ts",
+      " M packages/agentplane/src/commands/task/kernel-plan-authority.test.ts",
+      " M packages/agentplane/src/commands/task/kernel-plan-authority.ts",
+      " M packages/agentplane/src/commands/task/kernel-plan.ts",
+      " M packages/agentplane/src/commands/task/kernel-semantic-result.ts",
+      " M packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts",
+      "?? .agentplane/tasks/202610252238-33VQN8/README.md",
+      "?? .agentplane/tasks/202610252238-33VQN8/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
+      "?? .agentplane/tasks/202610252238-33VQN8/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+      "?? packages/agentplane/src/commands/task/kernel-no-check-policy.ts",
+      "?? packages/agentplane/src/commands/task/kernel-no-check-recovery.test.ts"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202610252238-33VQN8"
+}

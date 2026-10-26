@@ -105,6 +105,24 @@ describe("native validation operator boundary", () => {
 
 describe("canonical timeout profile evidence", () => {
   afterEach(() => vi.unstubAllEnvs());
+  it("separates a policy-approved no-check identity from a historical empty-command identity", () => {
+    const opts = {
+      command: { resolvedProject: { gitRoot: process.cwd() } } as never,
+      binding: {
+        task_id: "task",
+        work_item_id: "item",
+        result_digest: k.kernelDigest("result"),
+        repository_fingerprint: k.kernelDigest("repo"),
+      } as InspectionBinding,
+      commands: [],
+      repositoryEvidence: null,
+    };
+    const historical = nativeValidationInput(opts);
+    const approved = nativeValidationInput({ ...opts, noExecutableChecks: true });
+    expect(historical.input.no_executable_checks).toBe(false);
+    expect(approved.input.no_executable_checks).toBe(true);
+    expect(approved.digest).not.toBe(historical.digest);
+  });
   it("separates native cache keys when only the operator timeout changes", () => {
     const opts = {
       command: { resolvedProject: { gitRoot: process.cwd() } } as never,

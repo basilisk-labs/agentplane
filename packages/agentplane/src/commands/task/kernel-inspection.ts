@@ -26,6 +26,7 @@ import {
 import { readDirectTaskHead } from "./direct-task-finalization.js";
 import { readKernelRepositoryEvidence } from "./kernel-repository-coordinator.js";
 import { projectKernelOperationalEvidence } from "./kernel-operational-projection.js";
+import { canonicalNoExecutableChecksAllowed } from "./kernel-no-check-policy.js";
 import {
   kernelCheckReviewDisposition,
   nativeValidationInput,
@@ -107,11 +108,14 @@ export async function issueKernelInspection(
     resultDirectory!,
   );
   const repositoryEvidence = resolvedRepositoryEvidence?.evidence ?? null;
+  const operationalTask = await command.taskBackend.getTask(record.aggregate.id);
+  if (!operationalTask) throw new Error("Canonical inspection task is unavailable");
   const native = await runKernelNativeValidation({
     command,
     runtime,
     binding,
     commands: contract.verification_commands,
+    noExecutableChecks: canonicalNoExecutableChecksAllowed(operationalTask, record),
     directory: resultDirectory!,
     repositoryEvidence,
   });
@@ -399,6 +403,7 @@ export async function acceptKernelInspection(
     binding,
     commands: contract.verification_commands,
     repositoryEvidence,
+    noExecutableChecks: canonicalNoExecutableChecksAllowed(read.task, read.record),
   });
   const nativeEvidence = requireNativeValidationEvidence({
     evidence: JSON.parse(

@@ -54,8 +54,17 @@ export function renderDirectTaskVerificationDetails(opts: {
   taskId: string;
   workflow: "direct" | "branch_pr";
   result: DirectTaskVerificationResult;
+  no_check_evidence?: { plan_digest: string; evidence_digest: string };
 }): string {
   const checks = opts.result.checks;
+  if (checks.length === 0 && opts.result.status === "passed" && opts.no_check_evidence) {
+    return [
+      "No-Executable-Checks: approved",
+      `Task: ${opts.taskId}`,
+      `Plan: ${opts.no_check_evidence.plan_digest}`,
+      `Evidence: ${opts.no_check_evidence.evidence_digest}`,
+    ].join("\n");
+  }
   const selectedChecks = (
     opts.task.execution_contract?.verification.contract?.selected_checks ?? []
   ).filter((checkId) => checkId !== "hosted_integration");
