@@ -1,4 +1,5 @@
 import type * as TaskBackend from "../shared/task-backend.js";
+import type * as PlanAuthority from "./kernel-plan-authority.js";
 import { execFile } from "node:child_process";
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
@@ -66,6 +67,10 @@ vi.mock("./kernel-operational-projection.js", () => ({
 }));
 vi.mock("./kernel-operational-projection-recovery.js", () => ({
   recoverKernelOperationalProjection: mocks.recoverKernelOperationalProjection,
+}));
+vi.mock("./kernel-plan-authority.js", async (original) => ({
+  ...(await original<typeof PlanAuthority>()),
+  projectCanonicalPlanApproval: vi.fn().mockResolvedValue(undefined),
 }));
 
 import { commitCanonicalTerminalTaskArtifacts } from "./kernel-terminal-artifacts.js";
@@ -149,6 +154,85 @@ async function repositorySnapshot(root: string, evidencePath: string, record: un
 }
 
 describe("LC-20 terminal replay", () => {
+  it.each([
+    {
+      name: "changed implementation",
+      retainedFingerprint: "sha256:old",
+      expected: "native continuation",
+    },
+    {
+      name: "invalidated checks in the same repository",
+      retainedFingerprint: "sha256:current",
+      expected: "fresh checks",
+    },
+  ])(
+    "does not complete from retained PASS after $name",
+    async ({ retainedFingerprint, expected }) => {
+      const record = {
+        digest: "sha256:record",
+        aggregate: {
+          revision: 19,
+          state: "FINAL_VALIDATION",
+          current_plan: { state: "APPROVED", digest: "sha256:plan" },
+          final_validation: {
+            status: "PASSED",
+            evidence_digests: ["sha256:old-pass"],
+          },
+          authority_lineage: [{ authority: { repository_fingerprint: retainedFingerprint } }],
+          work_items: {},
+          effects: [],
+        },
+      };
+      const continueAuthority = vi.fn().mockRejectedValue(new Error("native continuation"));
+      const input = vi.fn();
+      const apply = vi.fn();
+      const runtime = {
+        adapter: { read: vi.fn().mockResolvedValue({ kind: "canonical", record }) },
+        native: {
+          readContext: vi.fn().mockResolvedValue({ repository_fingerprint: "sha256:current" }),
+        },
+        lifecycle: {
+          read: vi.fn().mockResolvedValue({
+            read: {
+              kind: "canonical",
+              task: { execution_route: { repository_mode: "branch_pr" } },
+              record,
+            },
+            next_action: {
+              reason_code: "kernel_task_completion_required",
+              work_item_id: null,
+              effect_id: null,
+            },
+          }),
+          apply,
+        },
+        authority: { continue: continueAuthority },
+        input,
+        checkpoint: vi.fn(),
+      };
+      mocks.createKernelRuntime.mockResolvedValue(runtime);
+      mocks.restoreKernelFinalValidation.mockResolvedValue(null);
+      mocks.runKernelFinalValidation.mockRejectedValue(new Error("fresh checks"));
+
+      await expect(
+        advanceTaskStep({
+          command: { resolvedProject: { gitRoot: "/repo" } } as never,
+          task_id: "task-1",
+          transport: "host",
+          allow_provider_effects: true,
+        }),
+      ).rejects.toThrow(expected);
+
+      expect(continueAuthority).toHaveBeenCalledTimes(retainedFingerprint === "sha256:old" ? 1 : 0);
+      expect(mocks.runKernelFinalValidation).toHaveBeenCalledTimes(
+        retainedFingerprint === "sha256:old" ? 0 : 1,
+      );
+      expect(mocks.ensureKernelOperationalProjectionEvidence).not.toHaveBeenCalled();
+      expect(input).not.toHaveBeenCalled();
+      expect(apply).not.toHaveBeenCalled();
+    },
+  );
+
   it("stops before terminal effects when projection recovery requires re-evaluation", async () => {
     const { runtime, apply } = completedRuntime();
     mocks.createKernelRuntime.mockResolvedValue(runtime);
