@@ -4,6 +4,7 @@ import { taskKernel as k, type TaskExecutionContract } from "@agentplaneorg/core
 import {
   canonicalPlanContractViolations,
   assertCanonicalPlanWithinExecutionContract,
+  assertCanonicalPlanVerificationPolicy,
   repositoryPolicyApprovalEligible,
   projectCanonicalPlanApproval,
 } from "./kernel-plan-authority.js";
@@ -165,6 +166,97 @@ describe("canonical approval projection", () => {
 });
 
 describe("canonical Plan execution-contract admission", () => {
+  it("requires explicit executable checks for new code contracts while retaining an exact approved historical contract", () => {
+    const item = {
+      ...plan().work_items[0]!,
+      contract: {
+        objective: "Repair code",
+        acceptance_criteria: ["The fix works"],
+        verification_commands: [],
+        role: "EXECUTOR" as const,
+      },
+    };
+    const proposal = { revision: 1, work_items: [item] };
+    const code = {
+      task_kind: "implementation",
+      mutation_scope: "code",
+      execution_contract: contract(),
+    } as never;
+    expect(() => assertCanonicalPlanVerificationPolicy(code, proposal)).toThrow(
+      "executable verification",
+    );
+    const approved = {
+      ...plan(),
+      state: "APPROVED" as const,
+      work_items: [{ ...plan().work_items[0]!, contract_digest: k.kernelDigest(item.contract) }],
+    };
+    expect(() => assertCanonicalPlanVerificationPolicy(code, proposal, approved)).not.toThrow();
+    expect(() =>
+      assertCanonicalPlanVerificationPolicy(
+        code,
+        {
+          ...proposal,
+          work_items: [{ ...item, contract: { ...item.contract, objective: "Changed contract" } }],
+        },
+        approved,
+      ),
+    ).toThrow("executable verification");
+    expect(() =>
+      assertCanonicalPlanVerificationPolicy(
+        code,
+        {
+          ...proposal,
+          work_items: [{ ...item, expected_outputs: ["different-output"] }],
+        },
+        approved,
+      ),
+    ).toThrow("executable verification");
+  });
+
+  it("allows report analysis without local checks but rejects required local verification", () => {
+    const item = {
+      ...plan().work_items[0]!,
+      execution_requirements: {
+        ...plan().work_items[0]!.execution_requirements,
+        repository_effects: [],
+      },
+      contract: {
+        objective: "Analyze evidence",
+        acceptance_criteria: ["Provide a report"],
+        verification_commands: [],
+        role: "EXECUTOR" as const,
+      },
+    };
+    const report: Pick<TaskData, "task_kind" | "mutation_scope" | "execution_contract"> = {
+      task_kind: "analysis",
+      mutation_scope: "none",
+      execution_contract: {
+        ...contract(),
+        verification: {
+          required_evidence: ["task_outcome"],
+          contract: { selected_checks: ["task_outcome"] },
+        },
+      } as TaskData["execution_contract"],
+    };
+    expect(() =>
+      assertCanonicalPlanVerificationPolicy(report, { revision: 1, work_items: [item] }),
+    ).not.toThrow();
+    expect(() =>
+      assertCanonicalPlanVerificationPolicy(
+        {
+          ...report,
+          execution_contract: {
+            ...contract(),
+            verification: {
+              required_evidence: ["task_outcome"],
+              contract: { selected_checks: ["full_regression"] },
+            },
+          },
+        },
+        { revision: 1, work_items: [item] },
+      ),
+    ).toThrow("executable verification");
+  });
   it("preserves explicitly requested test, documentation, schema, and CI effects at intake", () => {
     const executionContract = resolveExplicitExecutionContract({
       config: {

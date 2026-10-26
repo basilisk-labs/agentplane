@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The checker preserves the immutable historical Zod 4.6.5-to-4.6.7 delta and v0.6.24 package baseline with fixed digest and path comparisons; the reviewed-version anchor is checked through normalized historical/current manifest digests.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610252231-Y5Z4NW/quality/objects/sha256/177e76bf5dd36be33991f358b1cb53f23a2cf862349f9ab82975a6a9ae559a71.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The release mutation recaptures and validates the candidate after version changes, stages it with the release commit, and restores the previous candidate if capture or validation fails. Focused tests cover version parity, drift rejection, symlink/path hazards, and rollback.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610252231-Y5Z4NW/quality/objects/sha256/177e76bf5dd36be33991f358b1cb53f23a2cf862349f9ab82975a6a9ae559a71.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Native run-010 passed bun run ci:local:full; the declared compatibility checker, incremental-delta Node tests, and release mutation Vitest also passed. The post-implementation commit changes task metadata and verification artifacts only.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610252231-Y5Z4NW/quality/objects/sha256/177e76bf5dd36be33991f358b1cb53f23a2cf862349f9ab82975a6a9ae559a71.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Residual risk: The current 0.7.12 candidate intentionally has no explicit reviewed-version anchor; release mutation for 0.7.13 must recapture and validate it before publication. Hosted integration and the final release remain separate lifecycle gates.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610252231-Y5Z4NW/quality/objects/sha256/177e76bf5dd36be33991f358b1cb53f23a2cf862349f9ab82975a6a9ae559a71.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

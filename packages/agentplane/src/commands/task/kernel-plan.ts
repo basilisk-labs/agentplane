@@ -9,7 +9,10 @@ import {
 } from "@agentplaneorg/core/tasks";
 import type { CommandContext } from "../shared/task-backend.js";
 import { createKernelRuntime, requireKernelCommit } from "./kernel-runtime-context.js";
-import { assertCanonicalPlanWithinExecutionContract } from "./kernel-plan-authority.js";
+import {
+  assertCanonicalPlanVerificationPolicy,
+  assertCanonicalPlanWithinExecutionContract,
+} from "./kernel-plan-authority.js";
 import { parseSuppliedPlanInput, prepareSuppliedPlan } from "./create-plan-input.js";
 import { suppliedKernelProposal } from "./create-plan-proposal.js";
 import { canonicalPlanFromProposal } from "./kernel-plan-proposal.js";
@@ -77,6 +80,7 @@ export async function setCanonicalPlan(
   )
     throw new Error("Supplied Plan observation changed before proposal admission");
   const planInputs = input ? { [String(k.kernelDigest(input))]: input } : undefined;
+  assertCanonicalPlanVerificationPolicy(read.task, proposal, current);
   const plan = canonicalPlanFromProposal(proposal, (current?.revision ?? 0) + 1);
   assertCanonicalPlanWithinExecutionContract(read.task, plan);
   const contracts = proposal.work_items.map((item) => item.contract);

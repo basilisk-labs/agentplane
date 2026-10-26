@@ -26,7 +26,15 @@ import {
   resolveReviewedCompatibilitySurfaceMode,
   surfaceSectionDigests,
 } from "../lib/compatibility-contract.mjs";
-import { reconstructHistoricalPackageSurface } from "../lib/compatibility-incremental-package-delta.mjs";
+import {
+  normalizePackageVersions,
+  reconstructHistoricalPackageSurface,
+  reviewedPackageVersion,
+} from "../lib/compatibility-incremental-package-delta.mjs";
+import {
+  readCompatibilityCandidate,
+  resolveCompatibilityCandidatePath,
+} from "../lib/compatibility-candidate-path.mjs";
 
 const scriptPath = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
@@ -36,12 +44,13 @@ const baselinePath = path.join(
   "baselines",
   "v0.6.24-compatibility-contract.json",
 );
-const candidatePath = path.join(
-  repoRoot,
-  "scripts",
-  "baselines",
-  "v0.7-compatibility-candidate.json",
-);
+function candidatePathFromArgs(argv) {
+  if (argv.length === 0) return resolveCompatibilityCandidatePath(repoRoot);
+  if (argv.length !== 2 || argv[0] !== "--candidate-path") {
+    throw new Error("Expected --candidate-path <scripts/baselines/*-compatibility-candidate.json>");
+  }
+  return resolveCompatibilityCandidatePath(repoRoot, argv[1]);
+}
 
 // Exact reviewed Recipe V2 surface. Recapturing an unexpected change is not approval.
 const REVIEWED_SECTION_DIGESTS = {
@@ -66,7 +75,7 @@ function readBaseline() {
 }
 
 function readCandidate() {
-  return JSON.parse(readFileSync(candidatePath, "utf8"));
+  return JSON.parse(readCompatibilityCandidate(candidatePathFromArgs(process.argv.slice(2))));
 }
 
 function assert(condition, message) {
@@ -320,7 +329,7 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
       "review",
       "deltas",
     ],
-    [],
+    ["incremental_package_delta_reviewed_version"],
     "compatibility candidate",
   );
   assert(
@@ -488,6 +497,7 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
   const historicalSurface = reconstructHistoricalPackageSurface(
     currentSurface,
     incrementalPackageDelta,
+    reviewedPackageVersion(candidate),
   );
   const historicalSectionDigests = surfaceSectionDigests(historicalSurface);
   const historicalDigest = compatibilitySurfaceDigest(historicalSectionDigests);
@@ -595,31 +605,10 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
     "baseline package versions must resolve to one semantic version",
   );
   const baselinePackageVersion = baselinePackageVersions[0];
-  const preReleasePackageManifests = historicalSurface.package_manifests.map((manifest) => {
-    const normalizedManifest = structuredClone(manifest);
-    delete normalizedManifest.path;
-    delete normalizedManifest.normalized_sha256;
-    normalizedManifest.version = baselinePackageVersion;
-    const internalDependencies =
-      manifest.path === "packages/agentplane/package.json"
-        ? ["@agentplaneorg/core", "@agentplaneorg/recipes"]
-        : manifest.path === "packages/recipes/package.json"
-          ? ["@agentplaneorg/core"]
-          : [];
-    for (const name of internalDependencies) {
-      if (manifest.dependencies?.[name] !== manifest.version) {
-        throw new Error(`${manifest.path}: unexpected internal dependency version for ${name}`);
-      }
-    }
-    if (manifest.path === "packages/agentplane/package.json") {
-      normalizedManifest.dependencies["@agentplaneorg/core"] = baselinePackageVersion;
-      normalizedManifest.dependencies["@agentplaneorg/recipes"] = baselinePackageVersion;
-    }
-    if (manifest.path === "packages/recipes/package.json") {
-      normalizedManifest.dependencies["@agentplaneorg/core"] = baselinePackageVersion;
-    }
-    return packageSurface(manifest.path, normalizedManifest);
-  });
+  const preReleasePackageManifests = normalizePackageVersions(
+    historicalSurface.package_manifests,
+    baselinePackageVersion,
+  );
   assert(
     hashJson(preReleasePackageManifests) === preReleasePackageDelta.to_sha256,
     "pre-release package manifest reconstruction drift",

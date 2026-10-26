@@ -1,0 +1,120 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check cdc68137f324840b306f26b78e7c5dc9587b51e6..c55026626439480bbf335b924dd9944a902293e7",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB cdc68137f324840b306f26b78e7c5dc9587b51e6..c55026626439480bbf335b924dd9944a902293e7",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202610252231-Y5Z4NW/README.md",
+        "A\t.agentplane/tasks/202610252231-Y5Z4NW/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202610252231-Y5Z4NW/pr/github-body.md",
+        "A\t.agentplane/tasks/202610252231-Y5Z4NW/pr/github-title.txt",
+        "A\t.agentplane/tasks/202610252231-Y5Z4NW/pr/meta.json",
+        "A\t.agentplane/tasks/202610252231-Y5Z4NW/pr/review.md",
+        "A\t.agentplane/tasks/202610252231-Y5Z4NW/quality/objects/sha256/3843bff288bb14b89e3366c8d7dec5532bcc3f35106b624f48f00047b3593844.json",
+        "A\t.agentplane/tasks/202610252231-Y5Z4NW/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+        "M\tpackages/agentplane/src/commands/release/apply.pipeline/mutation.ts",
+        "M\tpackages/agentplane/src/commands/release/apply.version-mutation.test.ts",
+        "M\tscripts/bench/capture-compatibility-candidate.mjs",
+        "M\tscripts/checks/check-compatibility-contract-baseline.mjs",
+        "A\tscripts/lib/compatibility-candidate-path.mjs",
+        "M\tscripts/lib/compatibility-incremental-package-delta.mjs",
+        "M\tscripts/lib/compatibility-incremental-package-delta.test.mjs"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "cdc68137f324840b306f26b78e7c5dc9587b51e6",
+  "implementation_commit": "c55026626439480bbf335b924dd9944a902293e7",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      " M packages/agentplane/src/commands/release/apply.pipeline/mutation.ts",
+      " M packages/agentplane/src/commands/release/apply.version-mutation.test.ts",
+      " M scripts/bench/capture-compatibility-candidate.mjs",
+      " M scripts/checks/check-compatibility-contract-baseline.mjs",
+      " M scripts/lib/compatibility-incremental-package-delta.mjs",
+      " M scripts/lib/compatibility-incremental-package-delta.test.mjs",
+      "?? .agentplane/tasks/202610252231-Y5Z4NW/README.md",
+      "?? .agentplane/tasks/202610252231-Y5Z4NW/quality/objects/sha256/3843bff288bb14b89e3366c8d7dec5532bcc3f35106b624f48f00047b3593844.json",
+      "?? .agentplane/tasks/202610252231-Y5Z4NW/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+      "?? scripts/lib/compatibility-candidate-path.mjs"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/release/apply.pipeline/mutation.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/release/apply.version-mutation.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M scripts/bench/capture-compatibility-candidate.mjs"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M scripts/checks/check-compatibility-contract-baseline.mjs"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M scripts/lib/compatibility-incremental-package-delta.mjs"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M scripts/lib/compatibility-incremental-package-delta.test.mjs"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610252231-Y5Z4NW/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610252231-Y5Z4NW/quality/objects/sha256/3843bff288bb14b89e3366c8d7dec5532bcc3f35106b624f48f00047b3593844.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610252231-Y5Z4NW/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? scripts/lib/compatibility-candidate-path.mjs"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M packages/agentplane/src/commands/release/apply.pipeline/mutation.ts",
+      " M packages/agentplane/src/commands/release/apply.version-mutation.test.ts",
+      " M scripts/bench/capture-compatibility-candidate.mjs",
+      " M scripts/checks/check-compatibility-contract-baseline.mjs",
+      " M scripts/lib/compatibility-incremental-package-delta.mjs",
+      " M scripts/lib/compatibility-incremental-package-delta.test.mjs",
+      "?? .agentplane/tasks/202610252231-Y5Z4NW/README.md",
+      "?? .agentplane/tasks/202610252231-Y5Z4NW/quality/objects/sha256/3843bff288bb14b89e3366c8d7dec5532bcc3f35106b624f48f00047b3593844.json",
+      "?? .agentplane/tasks/202610252231-Y5Z4NW/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+      "?? scripts/lib/compatibility-candidate-path.mjs"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202610252231-Y5Z4NW"
+}

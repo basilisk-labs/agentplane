@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { chmod, mkdir, readFile, rm, stat, symlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { expect, it } from "vitest";
@@ -346,6 +346,148 @@ describeWhenNotHook(
       },
       60_000,
     );
+
+    it("recaptures and validates a present compatibility candidate in the release commit", async () => {
+      async function fixture(rejectCandidate: boolean) {
+        const root = await mkGitRepoRoot();
+        await writeDefaultConfig(root);
+        await seedReleaseWorkspace(root, { coreVersion: "0.7.12" });
+        await writeReleaseNotes(root, "0.7.13", validReleaseNotesBody("0.7.13"));
+        const candidatePath = path.join(
+          root,
+          "scripts/baselines/v0.7-compatibility-candidate.json",
+        );
+        const capturePath = path.join(root, "scripts/bench/capture-compatibility-candidate.mjs");
+        const checkPath = path.join(
+          root,
+          "scripts/checks/check-compatibility-contract-baseline.mjs",
+        );
+        await mkdir(path.dirname(candidatePath), { recursive: true });
+        await mkdir(path.dirname(capturePath), { recursive: true });
+        await mkdir(path.dirname(checkPath), { recursive: true });
+        await writeFile(candidatePath, '{"version":"0.7.12"}\n');
+        await writeFile(
+          capturePath,
+          "import { readFileSync, writeFileSync } from 'node:fs';\n" +
+            "if (process.argv.at(-1) !== 'scripts/baselines/v0.7-compatibility-candidate.json') throw new Error('candidate path missing');\n" +
+            "const version = JSON.parse(readFileSync('packages/core/package.json', 'utf8')).version;\n" +
+            "writeFileSync('scripts/baselines/v0.7-compatibility-candidate.json', JSON.stringify({ version }) + '\\n');\n",
+        );
+        await writeFile(
+          checkPath,
+          rejectCandidate
+            ? "if (process.argv.at(-1) !== 'scripts/baselines/v0.7-compatibility-candidate.json') throw new Error('candidate path missing');\nthrow new Error('candidate rejected');\n"
+            : "import { readFileSync } from 'node:fs';\n" +
+                "if (process.argv.at(-1) !== 'scripts/baselines/v0.7-compatibility-candidate.json') throw new Error('candidate path missing');\n" +
+                "const version = JSON.parse(readFileSync('packages/core/package.json', 'utf8')).version;\n" +
+                "const candidate = JSON.parse(readFileSync('scripts/baselines/v0.7-compatibility-candidate.json', 'utf8'));\n" +
+                "if (candidate.version !== version) throw new Error('candidate version drift');\n",
+        );
+        await commitAll(root, "seed compatibility candidate");
+        const state: ReleaseCommandState = {
+          resolved: { gitRoot: root, agentplaneDir: path.join(root, ".agentplane") },
+          gitRoot: root,
+          planDir: path.join(root, ".agentplane/.release/plan/fixture"),
+          plan: {
+            prevTag: "v0.7.12",
+            prevVersion: "0.7.12",
+            nextTag: "v0.7.13",
+            nextVersion: "0.7.13",
+            bump: "patch",
+          },
+          notesPath: path.join(root, "docs/releases/v0.7.13.md"),
+          taskBranchPrefix: "task",
+          route: {
+            kind: "direct_release",
+            workflow_mode: "direct",
+            current_branch: "main",
+            base_branch: null,
+          },
+          corePkgPath: path.join(root, "packages/core/package.json"),
+          agentplanePkgPath: path.join(root, "packages/agentplane/package.json"),
+          recipesPkgPath: path.join(root, "packages/recipes/package.json"),
+          testkitPkgPath: path.join(root, "packages/testkit/package.json"),
+          npmVersionChecked: false,
+        };
+        return { root, state, candidatePath };
+      }
+
+      const accepted = await fixture(false);
+      const acceptedResult = await withDryRunReleaseMode(() =>
+        runReleaseCommandExecute(accepted.state),
+      );
+      expect(acceptedResult.releaseCommit).not.toBeNull();
+      const corePackage = JSON.parse(
+        await readFile(path.join(accepted.root, "packages/core/package.json"), "utf8"),
+      ) as { version: string };
+      expect(corePackage.version).toBe("0.7.13");
+      expect(JSON.parse(await readFile(accepted.candidatePath, "utf8"))).toEqual({
+        version: "0.7.13",
+      });
+      const { stdout } = await execFileAsync(
+        "git",
+        ["show", "HEAD:scripts/baselines/v0.7-compatibility-candidate.json"],
+        { cwd: accepted.root },
+      );
+      expect(JSON.parse(stdout)).toEqual({ version: "0.7.13" });
+      const candidateText = await readFile(accepted.candidatePath, "utf8");
+      await withDryRunReleaseMode(() => runReleaseCommandExecute(accepted.state));
+      expect(await readFile(accepted.candidatePath, "utf8")).toBe(candidateText);
+
+      const rejected = await fixture(true);
+      if (process.platform !== "win32") await chmod(rejected.candidatePath, 0o640);
+      const beforeHead = await execFileAsync("git", ["rev-parse", "HEAD"], {
+        cwd: rejected.root,
+      });
+      const before = beforeHead.stdout.trim();
+      const previousCandidate = await readFile(rejected.candidatePath, "utf8");
+      await expect(
+        withDryRunReleaseMode(() => runReleaseCommandExecute(rejected.state)),
+      ).rejects.toThrow(/candidate rejected/u);
+      const afterHead = await execFileAsync("git", ["rev-parse", "HEAD"], {
+        cwd: rejected.root,
+      });
+      const after = afterHead.stdout.trim();
+      expect(after).toBe(before);
+      expect(await readFile(rejected.candidatePath, "utf8")).toBe(previousCandidate);
+      if (process.platform !== "win32") {
+        const candidateStat = await stat(rejected.candidatePath);
+        expect(candidateStat.mode & 0o777).toBe(0o640);
+      }
+
+      const linked = await fixture(false);
+      const outsidePath = path.join(linked.root, "outside-candidate.json");
+      await writeFile(outsidePath, '{"version":"outside"}\n');
+      await rm(linked.candidatePath);
+      await symlink(outsidePath, linked.candidatePath);
+      await expect(
+        withDryRunReleaseMode(() => runReleaseCommandExecute(linked.state)),
+      ).rejects.toThrow(/regular repository file/u);
+      expect(await readFile(outsidePath, "utf8")).toBe('{"version":"outside"}\n');
+
+      if (process.platform !== "win32") {
+        const swapped = await fixture(false);
+        const outsideRollbackPath = path.join(swapped.root, "outside-rollback.json");
+        await writeFile(outsideRollbackPath, '{"version":"outside"}\n');
+        await writeFile(
+          path.join(swapped.root, "scripts/bench/capture-compatibility-candidate.mjs"),
+          "import { unlinkSync, symlinkSync } from 'node:fs';\n" +
+            "unlinkSync('scripts/baselines/v0.7-compatibility-candidate.json');\n" +
+            `symlinkSync(${JSON.stringify(outsideRollbackPath)}, 'scripts/baselines/v0.7-compatibility-candidate.json');\n`,
+        );
+        const { stdout: beforeRollback } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+          cwd: swapped.root,
+        });
+        await expect(
+          withDryRunReleaseMode(() => runReleaseCommandExecute(swapped.state)),
+        ).rejects.toThrow(/rollback failed/u);
+        const { stdout: afterRollback } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+          cwd: swapped.root,
+        });
+        expect(afterRollback).toBe(beforeRollback);
+        expect(await readFile(outsideRollbackPath, "utf8")).toBe('{"version":"outside"}\n');
+      }
+    });
 
     it(
       "fails when the current package versions drift past the release-plan baseline",

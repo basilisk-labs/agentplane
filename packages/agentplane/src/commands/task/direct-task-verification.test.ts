@@ -602,6 +602,7 @@ describe("direct task verification", () => {
         result,
       }),
     ).toContain("Command: bun run lifecycle:invariants");
+    expect(result.checks.map((check) => check.command)).not.toContain("bun run ci:local:full");
   });
 
   it("persists the actual observations from each rerun, including equivalent pass outcomes", async () => {

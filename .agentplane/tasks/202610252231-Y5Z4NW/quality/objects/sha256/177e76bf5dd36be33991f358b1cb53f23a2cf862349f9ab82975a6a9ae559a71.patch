@@ -1,0 +1,983 @@
+diff --git a/packages/agentplane/src/commands/release/apply.pipeline/mutation.ts b/packages/agentplane/src/commands/release/apply.pipeline/mutation.ts
+index 1c247f068..2bf4fbd28 100644
+--- a/packages/agentplane/src/commands/release/apply.pipeline/mutation.ts
++++ b/packages/agentplane/src/commands/release/apply.pipeline/mutation.ts
+@@ -1,3 +1,6 @@
++import { randomUUID } from "node:crypto";
++import { constants } from "node:fs";
++import { lstat, open, readdir, rename, unlink } from "node:fs/promises";
+ import path from "node:path";
+ 
+ import { extractTaskSuffix } from "@agentplaneorg/core/commit";
+@@ -5,6 +8,7 @@ import { loadConfig } from "@agentplaneorg/core/config";
+ import { execFileAsync } from "@agentplaneorg/core/process";
+ import { gitEnv, GitContext, parseTaskIdFromBranch } from "@agentplaneorg/core/git";
+ import { appendDcoSignoff } from "../../guard/impl/dco.js";
++import { readStableRegularFileNoFollow } from "../../../shared/stable-file.js";
+ import {
+   cleanHookEnv,
+   maybePersistExpectedCliVersion,
+@@ -21,6 +25,48 @@ import { fileExists } from "../apply.preflight.plan.js";
+ import type { ReleaseCommandMutation, ReleaseCommandState } from "../apply.types.js";
+ import { emitReleaseLine } from "./shared.js";
+ 
++async function restoreCompatibilityCandidate(
++  candidatePath: string,
++  previous: Buffer,
++): Promise<void> {
++  const temporaryPath = `${candidatePath}.${randomUUID()}.tmp`;
++  let temporaryExists = false;
++  try {
++    const original = await lstat(candidatePath, { bigint: true });
++    if (original.isSymbolicLink() || !original.isFile()) {
++      throw new Error("Compatibility candidate changed to a non-regular file before rollback");
++    }
++    const handle = await open(
++      temporaryPath,
++      constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | (constants.O_NOFOLLOW ?? 0),
++      Number(original.mode & 0o777n),
++    );
++    temporaryExists = true;
++    try {
++      await handle.writeFile(previous);
++    } finally {
++      await handle.close();
++    }
++    const current = await lstat(candidatePath, { bigint: true });
++    if (
++      current.isSymbolicLink() ||
++      !current.isFile() ||
++      current.dev !== original.dev ||
++      current.ino !== original.ino
++    ) {
++      throw new Error("Compatibility candidate changed before rollback");
++    }
++    await rename(temporaryPath, candidatePath);
++    temporaryExists = false;
++  } finally {
++    if (temporaryExists) {
++      await unlink(temporaryPath).catch((error: unknown) => {
++        if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
++      });
++    }
++  }
++}
++
+ async function applyReleaseMutation(opts: {
+   agentplaneDir: string;
+   gitRoot: string;
+@@ -83,12 +129,73 @@ async function applyReleaseMutation(opts: {
+   await maybeUpdateBunLockfile(opts.gitRoot, fileExists);
+   const generatedReferenceExists = await maybeRefreshGeneratedReference(opts.gitRoot, fileExists);
+ 
++  const scriptsDir = path.join(opts.gitRoot, "scripts");
++  const baselineDir = path.join(scriptsDir, "baselines");
++  let candidateNames: string[] = [];
++  try {
++    for (const directory of [scriptsDir, baselineDir]) {
++      const stat = await lstat(directory);
++      if (stat.isSymbolicLink() || !stat.isDirectory()) {
++        throw new Error("Compatibility candidate directory must be a regular repository directory");
++      }
++    }
++    const entries = await readdir(baselineDir);
++    candidateNames = entries.filter((name) => name.endsWith("-compatibility-candidate.json"));
++  } catch (error) {
++    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
++  }
++  if (candidateNames.length > 1) {
++    throw new Error("Multiple compatibility candidates require an unambiguous release contract");
++  }
++  const compatibilityCandidate = candidateNames[0]
++    ? `scripts/baselines/${candidateNames[0]}`
++    : null;
++  const capturePath = path.join(opts.gitRoot, "scripts/bench/capture-compatibility-candidate.mjs");
++  const checkPath = path.join(
++    opts.gitRoot,
++    "scripts/checks/check-compatibility-contract-baseline.mjs",
++  );
++  if (compatibilityCandidate) {
++    if (!(await fileExists(capturePath)) || !(await fileExists(checkPath))) {
++      throw new Error("Compatibility candidate requires its capture and validation scripts");
++    }
++    const candidatePath = path.join(opts.gitRoot, compatibilityCandidate);
++    const candidateStat = await lstat(candidatePath);
++    if (candidateStat.isSymbolicLink() || !candidateStat.isFile()) {
++      throw new Error("Compatibility candidate must be a regular repository file");
++    }
++    const previousCandidate = await readStableRegularFileNoFollow(
++      candidatePath,
++      "compatibility candidate",
++    );
++    try {
++      await execFileAsync(
++        process.execPath,
++        [capturePath, "--write", "--candidate-path", compatibilityCandidate],
++        { cwd: opts.gitRoot },
++      );
++      await execFileAsync(
++        process.execPath,
++        [checkPath, "--candidate-path", compatibilityCandidate],
++        { cwd: opts.gitRoot },
++      );
++    } catch (error) {
++      try {
++        await restoreCompatibilityCandidate(candidatePath, previousCandidate);
++      } catch (rollbackError) {
++        throw new AggregateError([error, rollbackError], "Compatibility candidate rollback failed");
++      }
++      throw error;
++    }
++  }
++
+   const stagePaths = [
+     "packages/core/package.json",
+     "packages/agentplane/package.json",
+     "packages/recipes/package.json",
+     path.relative(opts.gitRoot, opts.notesPath),
+   ];
++  if (compatibilityCandidate) stagePaths.push(compatibilityCandidate);
+   if (shouldUpdateRecipesRuntimeVersion) {
+     stagePaths.push("packages/recipes/src/index.ts");
+   }
+diff --git a/packages/agentplane/src/commands/release/apply.version-mutation.test.ts b/packages/agentplane/src/commands/release/apply.version-mutation.test.ts
+index f6a032cf2..2eee61593 100644
+--- a/packages/agentplane/src/commands/release/apply.version-mutation.test.ts
++++ b/packages/agentplane/src/commands/release/apply.version-mutation.test.ts
+@@ -1,5 +1,5 @@
+ import { execFile } from "node:child_process";
+-import { mkdir, readFile, writeFile } from "node:fs/promises";
++import { chmod, mkdir, readFile, rm, stat, symlink, writeFile } from "node:fs/promises";
+ import path from "node:path";
+ import { promisify } from "node:util";
+ import { expect, it } from "vitest";
+@@ -347,6 +347,148 @@ describeWhenNotHook(
+       60_000,
+     );
+ 
++    it("recaptures and validates a present compatibility candidate in the release commit", async () => {
++      async function fixture(rejectCandidate: boolean) {
++        const root = await mkGitRepoRoot();
++        await writeDefaultConfig(root);
++        await seedReleaseWorkspace(root, { coreVersion: "0.7.12" });
++        await writeReleaseNotes(root, "0.7.13", validReleaseNotesBody("0.7.13"));
++        const candidatePath = path.join(
++          root,
++          "scripts/baselines/v0.7-compatibility-candidate.json",
++        );
++        const capturePath = path.join(root, "scripts/bench/capture-compatibility-candidate.mjs");
++        const checkPath = path.join(
++          root,
++          "scripts/checks/check-compatibility-contract-baseline.mjs",
++        );
++        await mkdir(path.dirname(candidatePath), { recursive: true });
++        await mkdir(path.dirname(capturePath), { recursive: true });
++        await mkdir(path.dirname(checkPath), { recursive: true });
++        await writeFile(candidatePath, '{"version":"0.7.12"}\n');
++        await writeFile(
++          capturePath,
++          "import { readFileSync, writeFileSync } from 'node:fs';\n" +
++            "if (process.argv.at(-1) !== 'scripts/baselines/v0.7-compatibility-candidate.json') throw new Error('candidate path missing');\n" +
++            "const version = JSON.parse(readFileSync('packages/core/package.json', 'utf8')).version;\n" +
++            "writeFileSync('scripts/baselines/v0.7-compatibility-candidate.json', JSON.stringify({ version }) + '\\n');\n",
++        );
++        await writeFile(
++          checkPath,
++          rejectCandidate
++            ? "if (process.argv.at(-1) !== 'scripts/baselines/v0.7-compatibility-candidate.json') throw new Error('candidate path missing');\nthrow new Error('candidate rejected');\n"
++            : "import { readFileSync } from 'node:fs';\n" +
++                "if (process.argv.at(-1) !== 'scripts/baselines/v0.7-compatibility-candidate.json') throw new Error('candidate path missing');\n" +
++                "const version = JSON.parse(readFileSync('packages/core/package.json', 'utf8')).version;\n" +
++                "const candidate = JSON.parse(readFileSync('scripts/baselines/v0.7-compatibility-candidate.json', 'utf8'));\n" +
++                "if (candidate.version !== version) throw new Error('candidate version drift');\n",
++        );
++        await commitAll(root, "seed compatibility candidate");
++        const state: ReleaseCommandState = {
++          resolved: { gitRoot: root, agentplaneDir: path.join(root, ".agentplane") },
++          gitRoot: root,
++          planDir: path.join(root, ".agentplane/.release/plan/fixture"),
++          plan: {
++            prevTag: "v0.7.12",
++            prevVersion: "0.7.12",
++            nextTag: "v0.7.13",
++            nextVersion: "0.7.13",
++            bump: "patch",
++          },
++          notesPath: path.join(root, "docs/releases/v0.7.13.md"),
++          taskBranchPrefix: "task",
++          route: {
++            kind: "direct_release",
++            workflow_mode: "direct",
++            current_branch: "main",
++            base_branch: null,
++          },
++          corePkgPath: path.join(root, "packages/core/package.json"),
++          agentplanePkgPath: path.join(root, "packages/agentplane/package.json"),
++          recipesPkgPath: path.join(root, "packages/recipes/package.json"),
++          testkitPkgPath: path.join(root, "packages/testkit/package.json"),
++          npmVersionChecked: false,
++        };
++        return { root, state, candidatePath };
++      }
++
++      const accepted = await fixture(false);
++      const acceptedResult = await withDryRunReleaseMode(() =>
++        runReleaseCommandExecute(accepted.state),
++      );
++      expect(acceptedResult.releaseCommit).not.toBeNull();
++      const corePackage = JSON.parse(
++        await readFile(path.join(accepted.root, "packages/core/package.json"), "utf8"),
++      ) as { version: string };
++      expect(corePackage.version).toBe("0.7.13");
++      expect(JSON.parse(await readFile(accepted.candidatePath, "utf8"))).toEqual({
++        version: "0.7.13",
++      });
++      const { stdout } = await execFileAsync(
++        "git",
++        ["show", "HEAD:scripts/baselines/v0.7-compatibility-candidate.json"],
++        { cwd: accepted.root },
++      );
++      expect(JSON.parse(stdout)).toEqual({ version: "0.7.13" });
++      const candidateText = await readFile(accepted.candidatePath, "utf8");
++      await withDryRunReleaseMode(() => runReleaseCommandExecute(accepted.state));
++      expect(await readFile(accepted.candidatePath, "utf8")).toBe(candidateText);
++
++      const rejected = await fixture(true);
++      if (process.platform !== "win32") await chmod(rejected.candidatePath, 0o640);
++      const beforeHead = await execFileAsync("git", ["rev-parse", "HEAD"], {
++        cwd: rejected.root,
++      });
++      const before = beforeHead.stdout.trim();
++      const previousCandidate = await readFile(rejected.candidatePath, "utf8");
++      await expect(
++        withDryRunReleaseMode(() => runReleaseCommandExecute(rejected.state)),
++      ).rejects.toThrow(/candidate rejected/u);
++      const afterHead = await execFileAsync("git", ["rev-parse", "HEAD"], {
++        cwd: rejected.root,
++      });
++      const after = afterHead.stdout.trim();
++      expect(after).toBe(before);
++      expect(await readFile(rejected.candidatePath, "utf8")).toBe(previousCandidate);
++      if (process.platform !== "win32") {
++        const candidateStat = await stat(rejected.candidatePath);
++        expect(candidateStat.mode & 0o777).toBe(0o640);
++      }
++
++      const linked = await fixture(false);
++      const outsidePath = path.join(linked.root, "outside-candidate.json");
++      await writeFile(outsidePath, '{"version":"outside"}\n');
++      await rm(linked.candidatePath);
++      await symlink(outsidePath, linked.candidatePath);
++      await expect(
++        withDryRunReleaseMode(() => runReleaseCommandExecute(linked.state)),
++      ).rejects.toThrow(/regular repository file/u);
++      expect(await readFile(outsidePath, "utf8")).toBe('{"version":"outside"}\n');
++
++      if (process.platform !== "win32") {
++        const swapped = await fixture(false);
++        const outsideRollbackPath = path.join(swapped.root, "outside-rollback.json");
++        await writeFile(outsideRollbackPath, '{"version":"outside"}\n');
++        await writeFile(
++          path.join(swapped.root, "scripts/bench/capture-compatibility-candidate.mjs"),
++          "import { unlinkSync, symlinkSync } from 'node:fs';\n" +
++            "unlinkSync('scripts/baselines/v0.7-compatibility-candidate.json');\n" +
++            `symlinkSync(${JSON.stringify(outsideRollbackPath)}, 'scripts/baselines/v0.7-compatibility-candidate.json');\n`,
++        );
++        const { stdout: beforeRollback } = await execFileAsync("git", ["rev-parse", "HEAD"], {
++          cwd: swapped.root,
++        });
++        await expect(
++          withDryRunReleaseMode(() => runReleaseCommandExecute(swapped.state)),
++        ).rejects.toThrow(/rollback failed/u);
++        const { stdout: afterRollback } = await execFileAsync("git", ["rev-parse", "HEAD"], {
++          cwd: swapped.root,
++        });
++        expect(afterRollback).toBe(beforeRollback);
++        expect(await readFile(outsideRollbackPath, "utf8")).toBe('{"version":"outside"}\n');
++      }
++    });
++
+     it(
+       "fails when the current package versions drift past the release-plan baseline",
+       async () => {
+diff --git a/scripts/bench/capture-compatibility-candidate.mjs b/scripts/bench/capture-compatibility-candidate.mjs
+index 62e8776b0..ab8a4db9b 100644
+--- a/scripts/bench/capture-compatibility-candidate.mjs
++++ b/scripts/bench/capture-compatibility-candidate.mjs
+@@ -1,4 +1,4 @@
+-import { readFileSync, renameSync, writeFileSync } from "node:fs";
++import { readFileSync } from "node:fs";
+ import path from "node:path";
+ import { fileURLToPath } from "node:url";
+ 
+@@ -12,11 +12,19 @@ import {
+   diffCliTopology,
+   diffJsonPaths,
+   hashJson,
+-  packageSurface,
+   reconstructCompatibilitySurface,
+   surfaceSectionDigests,
+ } from "../lib/compatibility-contract.mjs";
+-import { reconstructHistoricalPackageSurface } from "../lib/compatibility-incremental-package-delta.mjs";
++import {
++  normalizePackageVersions,
++  reconstructHistoricalPackageSurface,
++  reviewedPackageVersion,
++} from "../lib/compatibility-incremental-package-delta.mjs";
++import {
++  readCompatibilityCandidate,
++  resolveCompatibilityCandidatePath,
++  writeCompatibilityCandidateAtomic,
++} from "../lib/compatibility-candidate-path.mjs";
+ 
+ const scriptPath = fileURLToPath(import.meta.url);
+ const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
+@@ -26,15 +34,8 @@ const baselinePath = path.join(
+   "baselines",
+   "v0.6.24-compatibility-contract.json",
+ );
+-const candidatePath = path.join(
+-  repoRoot,
+-  "scripts",
+-  "baselines",
+-  "v0.7-compatibility-candidate.json",
+-);
+-
+ function parseArgs(argv) {
+-  const options = { write: false, check: false, packageSourceTask: null };
++  const options = { write: false, check: false, packageSourceTask: null, candidatePath: null };
+   for (let index = 0; index < argv.length; index += 1) {
+     const argument = argv[index];
+     if (argument === "--write") {
+@@ -52,6 +53,13 @@ function parseArgs(argv) {
+       index += 1;
+       continue;
+     }
++    if (argument === "--candidate-path") {
++      const value = argv[index + 1]?.trim();
++      if (!value) throw new Error("Missing value after --candidate-path");
++      options.candidatePath = value;
++      index += 1;
++      continue;
++    }
+     throw new Error(`Unknown argument: ${argument}`);
+   }
+   if (options.write && options.check) throw new Error("Use either --write or --check, not both");
+@@ -63,34 +71,6 @@ function withSourceTask(values, sourceTask) {
+   return [...values, sourceTask];
+ }
+ 
+-function normalizePackageVersions(manifests, version) {
+-  return manifests.map((manifest) => {
+-    const normalized = structuredClone(manifest);
+-    delete normalized.path;
+-    delete normalized.normalized_sha256;
+-    normalized.version = version;
+-    const internalDependencies =
+-      manifest.path === "packages/agentplane/package.json"
+-        ? ["@agentplaneorg/core", "@agentplaneorg/recipes"]
+-        : manifest.path === "packages/recipes/package.json"
+-          ? ["@agentplaneorg/core"]
+-          : [];
+-    for (const name of internalDependencies) {
+-      if (manifest.dependencies?.[name] !== manifest.version) {
+-        throw new Error(`${manifest.path}: unexpected internal dependency version for ${name}`);
+-      }
+-    }
+-    if (manifest.path === "packages/agentplane/package.json") {
+-      normalized.dependencies["@agentplaneorg/core"] = version;
+-      normalized.dependencies["@agentplaneorg/recipes"] = version;
+-    }
+-    if (manifest.path === "packages/recipes/package.json") {
+-      normalized.dependencies["@agentplaneorg/core"] = version;
+-    }
+-    return packageSurface(manifest.path, normalized);
+-  });
+-}
+-
+ function verifyInternalVersionNormalization(manifests, baselineVersion) {
+   const expected = hashJson(normalizePackageVersions(manifests, baselineVersion));
+   const release = manifests.map((manifest) => {
+@@ -119,7 +99,10 @@ function verifyInternalVersionNormalization(manifests, baselineVersion) {
+ 
+ function historicalReleaseSurface(releaseSurface, candidate) {
+   const delta = candidate.incremental_package_delta;
+-  return delta ? reconstructHistoricalPackageSurface(releaseSurface, delta) : releaseSurface;
++  const reviewedVersion = reviewedPackageVersion(candidate);
++  return delta
++    ? reconstructHistoricalPackageSurface(releaseSurface, delta, reviewedVersion)
++    : releaseSurface;
+ }
+ 
+ function buildCandidate({ baseline, candidate, packageSourceTask }) {
+@@ -169,6 +152,13 @@ function buildCandidate({ baseline, candidate, packageSourceTask }) {
+ 
+   return canonicalizeJson({
+     ...candidate,
++    ...(candidate.incremental_package_delta &&
++    (Object.hasOwn(candidate, "incremental_package_delta_reviewed_version") ||
++      releaseVersion !== candidate.release_version_delta.to_version)
++      ? {
++          incremental_package_delta_reviewed_version: reviewedPackageVersion(candidate),
++        }
++      : {}),
+     source_tasks: withSourceTask(candidate.source_tasks, packageSourceTask),
+     candidate: {
+       surface_sha256: compatibilitySurfaceDigest(candidateSectionDigests),
+@@ -232,8 +222,9 @@ function buildCandidate({ baseline, candidate, packageSourceTask }) {
+ 
+ try {
+   const options = parseArgs(process.argv.slice(2));
++  const candidatePath = resolveCompatibilityCandidatePath(repoRoot, options.candidatePath);
+   const baseline = JSON.parse(readFileSync(baselinePath, "utf8"));
+-  const currentText = readFileSync(candidatePath, "utf8");
++  const currentText = readCompatibilityCandidate(candidatePath);
+   const candidate = JSON.parse(currentText);
+   const next = buildCandidate({
+     baseline,
+@@ -250,9 +241,7 @@ try {
+       throw new Error("compatibility candidate is stale; run capture with --write");
+     process.stdout.write("compatibility candidate is current\n");
+   } else if (options.write) {
+-    const temporaryPath = `${candidatePath}.tmp`;
+-    writeFileSync(temporaryPath, nextText, "utf8");
+-    renameSync(temporaryPath, candidatePath);
++    writeCompatibilityCandidateAtomic(candidatePath, nextText);
+     process.stdout.write(`wrote ${path.relative(repoRoot, candidatePath)}\n`);
+   } else {
+     process.stdout.write(nextText);
+diff --git a/scripts/checks/check-compatibility-contract-baseline.mjs b/scripts/checks/check-compatibility-contract-baseline.mjs
+index 49d152254..14d8a9be8 100644
+--- a/scripts/checks/check-compatibility-contract-baseline.mjs
++++ b/scripts/checks/check-compatibility-contract-baseline.mjs
+@@ -26,7 +26,15 @@ import {
+   resolveReviewedCompatibilitySurfaceMode,
+   surfaceSectionDigests,
+ } from "../lib/compatibility-contract.mjs";
+-import { reconstructHistoricalPackageSurface } from "../lib/compatibility-incremental-package-delta.mjs";
++import {
++  normalizePackageVersions,
++  reconstructHistoricalPackageSurface,
++  reviewedPackageVersion,
++} from "../lib/compatibility-incremental-package-delta.mjs";
++import {
++  readCompatibilityCandidate,
++  resolveCompatibilityCandidatePath,
++} from "../lib/compatibility-candidate-path.mjs";
+ 
+ const scriptPath = fileURLToPath(import.meta.url);
+ const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
+@@ -36,12 +44,13 @@ const baselinePath = path.join(
+   "baselines",
+   "v0.6.24-compatibility-contract.json",
+ );
+-const candidatePath = path.join(
+-  repoRoot,
+-  "scripts",
+-  "baselines",
+-  "v0.7-compatibility-candidate.json",
+-);
++function candidatePathFromArgs(argv) {
++  if (argv.length === 0) return resolveCompatibilityCandidatePath(repoRoot);
++  if (argv.length !== 2 || argv[0] !== "--candidate-path") {
++    throw new Error("Expected --candidate-path <scripts/baselines/*-compatibility-candidate.json>");
++  }
++  return resolveCompatibilityCandidatePath(repoRoot, argv[1]);
++}
+ 
+ // Exact reviewed Recipe V2 surface. Recapturing an unexpected change is not approval.
+ const REVIEWED_SECTION_DIGESTS = {
+@@ -66,7 +75,7 @@ function readBaseline() {
+ }
+ 
+ function readCandidate() {
+-  return JSON.parse(readFileSync(candidatePath, "utf8"));
++  return JSON.parse(readCompatibilityCandidate(candidatePathFromArgs(process.argv.slice(2))));
+ }
+ 
+ function assert(condition, message) {
+@@ -320,7 +329,7 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
+       "review",
+       "deltas",
+     ],
+-    [],
++    ["incremental_package_delta_reviewed_version"],
+     "compatibility candidate",
+   );
+   assert(
+@@ -488,6 +497,7 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
+   const historicalSurface = reconstructHistoricalPackageSurface(
+     currentSurface,
+     incrementalPackageDelta,
++    reviewedPackageVersion(candidate),
+   );
+   const historicalSectionDigests = surfaceSectionDigests(historicalSurface);
+   const historicalDigest = compatibilitySurfaceDigest(historicalSectionDigests);
+@@ -595,31 +605,10 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
+     "baseline package versions must resolve to one semantic version",
+   );
+   const baselinePackageVersion = baselinePackageVersions[0];
+-  const preReleasePackageManifests = historicalSurface.package_manifests.map((manifest) => {
+-    const normalizedManifest = structuredClone(manifest);
+-    delete normalizedManifest.path;
+-    delete normalizedManifest.normalized_sha256;
+-    normalizedManifest.version = baselinePackageVersion;
+-    const internalDependencies =
+-      manifest.path === "packages/agentplane/package.json"
+-        ? ["@agentplaneorg/core", "@agentplaneorg/recipes"]
+-        : manifest.path === "packages/recipes/package.json"
+-          ? ["@agentplaneorg/core"]
+-          : [];
+-    for (const name of internalDependencies) {
+-      if (manifest.dependencies?.[name] !== manifest.version) {
+-        throw new Error(`${manifest.path}: unexpected internal dependency version for ${name}`);
+-      }
+-    }
+-    if (manifest.path === "packages/agentplane/package.json") {
+-      normalizedManifest.dependencies["@agentplaneorg/core"] = baselinePackageVersion;
+-      normalizedManifest.dependencies["@agentplaneorg/recipes"] = baselinePackageVersion;
+-    }
+-    if (manifest.path === "packages/recipes/package.json") {
+-      normalizedManifest.dependencies["@agentplaneorg/core"] = baselinePackageVersion;
+-    }
+-    return packageSurface(manifest.path, normalizedManifest);
+-  });
++  const preReleasePackageManifests = normalizePackageVersions(
++    historicalSurface.package_manifests,
++    baselinePackageVersion,
++  );
+   assert(
+     hashJson(preReleasePackageManifests) === preReleasePackageDelta.to_sha256,
+     "pre-release package manifest reconstruction drift",
+diff --git a/scripts/lib/compatibility-candidate-path.mjs b/scripts/lib/compatibility-candidate-path.mjs
+new file mode 100644
+index 000000000..bc5c8aac3
+--- /dev/null
++++ b/scripts/lib/compatibility-candidate-path.mjs
+@@ -0,0 +1,125 @@
++import { randomUUID } from "node:crypto";
++import {
++  closeSync,
++  constants,
++  fstatSync,
++  lstatSync,
++  openSync,
++  readFileSync,
++  renameSync,
++  unlinkSync,
++  writeFileSync,
++} from "node:fs";
++import path from "node:path";
++
++export const DEFAULT_COMPATIBILITY_CANDIDATE_PATH =
++  "scripts/baselines/v0.7-compatibility-candidate.json";
++
++export function resolveCompatibilityCandidatePath(repoRoot, relativePath) {
++  const selected = relativePath ?? DEFAULT_COMPATIBILITY_CANDIDATE_PATH;
++  if (
++    typeof selected !== "string" ||
++    !/^scripts\/baselines\/[A-Za-z0-9][A-Za-z0-9._-]*-compatibility-candidate\.json$/u.test(
++      selected,
++    )
++  ) {
++    throw new Error("Compatibility candidate path must name one candidate in scripts/baselines");
++  }
++  const scriptsDir = path.join(repoRoot, "scripts");
++  const baselinesDir = path.join(scriptsDir, "baselines");
++  const candidatePath = path.join(repoRoot, selected);
++  for (const directory of [scriptsDir, baselinesDir]) {
++    const stat = lstatSync(directory);
++    if (stat.isSymbolicLink() || !stat.isDirectory()) {
++      throw new Error("Compatibility candidate directory must be a regular repository directory");
++    }
++  }
++  const stat = lstatSync(candidatePath);
++  if (stat.isSymbolicLink() || !stat.isFile()) {
++    throw new Error("Compatibility candidate must be a regular repository file");
++  }
++  return candidatePath;
++}
++
++function sameFile(left, right) {
++  return left.dev === right.dev && left.ino === right.ino;
++}
++
++function sameSnapshot(left, right) {
++  return (
++    sameFile(left, right) &&
++    left.size === right.size &&
++    left.mtimeNs === right.mtimeNs &&
++    left.ctimeNs === right.ctimeNs
++  );
++}
++
++export function readCompatibilityCandidate(candidatePath, options = {}) {
++  options.beforeOpen?.();
++  let descriptor;
++  try {
++    descriptor = openSync(
++      candidatePath,
++      constants.O_RDONLY | (constants.O_NOFOLLOW ?? 0) | (constants.O_NONBLOCK ?? 0),
++    );
++  } catch (error) {
++    if (error?.code === "ELOOP") {
++      throw new Error("Compatibility candidate must be a regular repository file", {
++        cause: error,
++      });
++    }
++    throw error;
++  }
++  try {
++    const opened = fstatSync(descriptor, { bigint: true });
++    const pathBefore = lstatSync(candidatePath, { bigint: true });
++    if (!opened.isFile() || !pathBefore.isFile() || !sameSnapshot(opened, pathBefore)) {
++      throw new Error("Compatibility candidate changed before read");
++    }
++    const content = readFileSync(descriptor, "utf8");
++    const after = fstatSync(descriptor, { bigint: true });
++    const pathAfter = lstatSync(candidatePath, { bigint: true });
++    if (
++      !after.isFile() ||
++      !pathAfter.isFile() ||
++      !sameSnapshot(opened, after) ||
++      !sameSnapshot(after, pathAfter)
++    ) {
++      throw new Error("Compatibility candidate changed while being read");
++    }
++    return content;
++  } finally {
++    closeSync(descriptor);
++  }
++}
++
++export function writeCompatibilityCandidateAtomic(candidatePath, content, options = {}) {
++  const temporaryPath = `${candidatePath}.${randomUUID()}.tmp`;
++  let temporaryExists = false;
++  try {
++    const original = lstatSync(candidatePath, { bigint: true });
++    if (original.isSymbolicLink() || !original.isFile()) {
++      throw new Error("Compatibility candidate must be a regular repository file");
++    }
++    const descriptor = openSync(
++      temporaryPath,
++      constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | (constants.O_NOFOLLOW ?? 0),
++      Number(original.mode & 0o777n),
++    );
++    temporaryExists = true;
++    try {
++      writeFileSync(descriptor, content, "utf8");
++    } finally {
++      closeSync(descriptor);
++    }
++    options.beforeReplace?.();
++    const current = lstatSync(candidatePath, { bigint: true });
++    if (current.isSymbolicLink() || !current.isFile() || !sameFile(original, current)) {
++      throw new Error("Compatibility candidate changed before write");
++    }
++    renameSync(temporaryPath, candidatePath);
++    temporaryExists = false;
++  } finally {
++    if (temporaryExists) unlinkSync(temporaryPath);
++  }
++}
+diff --git a/scripts/lib/compatibility-incremental-package-delta.mjs b/scripts/lib/compatibility-incremental-package-delta.mjs
+index bc477568c..b38e9258f 100644
+--- a/scripts/lib/compatibility-incremental-package-delta.mjs
++++ b/scripts/lib/compatibility-incremental-package-delta.mjs
+@@ -1,11 +1,43 @@
+-import {
+-  diffJsonPaths,
+-  hashJson,
+-  packageSurface,
+-  surfaceSectionDigests,
+-} from "./compatibility-contract.mjs";
++import { diffJsonPaths, hashJson, packageSurface } from "./compatibility-contract.mjs";
+ 
+-export function reconstructHistoricalPackageSurface(currentSurface, delta) {
++export function reviewedPackageVersion(candidate) {
++  const version = Object.hasOwn(candidate, "incremental_package_delta_reviewed_version")
++    ? candidate.incremental_package_delta_reviewed_version
++    : candidate.release_version_delta?.to_version;
++  if (typeof version !== "string" || !/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/u.test(version)) {
++    throw new Error("Invalid reviewed package version anchor");
++  }
++  return version;
++}
++
++export function normalizePackageVersions(manifests, version) {
++  if (typeof version !== "string" || !/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/u.test(version)) {
++    throw new Error("Invalid reviewed package version");
++  }
++  const currentVersions = new Set(manifests.map((manifest) => manifest.version));
++  if (currentVersions.size !== 1) throw new Error("Package versions do not have release parity");
++  return manifests.map((manifest) => {
++    const normalized = structuredClone(manifest);
++    delete normalized.path;
++    delete normalized.normalized_sha256;
++    normalized.version = version;
++    const internalDependencies =
++      manifest.path === "packages/agentplane/package.json"
++        ? ["@agentplaneorg/core", "@agentplaneorg/recipes"]
++        : manifest.path === "packages/recipes/package.json"
++          ? ["@agentplaneorg/core"]
++          : [];
++    for (const name of internalDependencies) {
++      if (manifest.dependencies?.[name] !== manifest.version) {
++        throw new Error(`${manifest.path}: unexpected internal dependency version for ${name}`);
++      }
++      normalized.dependencies[name] = version;
++    }
++    return packageSurface(manifest.path, normalized);
++  });
++}
++
++export function reconstructHistoricalPackageSurface(currentSurface, delta, reviewedVersion) {
+   if (delta?.section !== "package_manifests" || !Array.isArray(delta.historical_dependencies)) {
+     throw new Error("Incremental package delta cannot reconstruct its historical surface");
+   }
+@@ -39,9 +71,17 @@ export function reconstructHistoricalPackageSurface(currentSurface, delta) {
+     delete normalized.normalized_sha256;
+     return packageSurface(manifest.path, normalized);
+   });
++  const reviewedCurrent =
++    reviewedVersion !== undefined
++      ? normalizePackageVersions(currentSurface.package_manifests, reviewedVersion)
++      : currentSurface.package_manifests;
++  const reviewedHistorical =
++    reviewedVersion !== undefined
++      ? normalizePackageVersions(historical.package_manifests, reviewedVersion)
++      : historical.package_manifests;
+   if (
+-    surfaceSectionDigests(historical).package_manifests !== delta.from_sha256 ||
+-    surfaceSectionDigests(currentSurface).package_manifests !== delta.to_sha256 ||
++    hashJson(reviewedHistorical) !== delta.from_sha256 ||
++    hashJson(reviewedCurrent) !== delta.to_sha256 ||
+     hashJson(
+       diffJsonPaths(
+         historical.package_manifests,
+diff --git a/scripts/lib/compatibility-incremental-package-delta.test.mjs b/scripts/lib/compatibility-incremental-package-delta.test.mjs
+index f18d96aae..e524dfe56 100644
+--- a/scripts/lib/compatibility-incremental-package-delta.test.mjs
++++ b/scripts/lib/compatibility-incremental-package-delta.test.mjs
+@@ -1,8 +1,29 @@
+ import assert from "node:assert/strict";
++import { spawnSync } from "node:child_process";
++import {
++  mkdtempSync,
++  mkdirSync,
++  readFileSync,
++  renameSync,
++  rmSync,
++  symlinkSync,
++  writeFileSync,
++} from "node:fs";
++import os from "node:os";
++import path from "node:path";
+ import { test } from "node:test";
+ 
+ import { diffJsonPaths, hashJson, packageSurface } from "./compatibility-contract.mjs";
+-import { reconstructHistoricalPackageSurface } from "./compatibility-incremental-package-delta.mjs";
++import {
++  readCompatibilityCandidate,
++  resolveCompatibilityCandidatePath,
++  writeCompatibilityCandidateAtomic,
++} from "./compatibility-candidate-path.mjs";
++import {
++  normalizePackageVersions,
++  reconstructHistoricalPackageSurface,
++  reviewedPackageVersion,
++} from "./compatibility-incremental-package-delta.mjs";
+ 
+ const manifestPath = "packages/example/package.json";
+ const historicalManifest = packageSurface(manifestPath, {
+@@ -16,6 +37,93 @@ const currentManifest = packageSurface(manifestPath, {
+   dependencies: { zod: "4.6.7" },
+ });
+ 
++test("candidate reads and atomic writes reject a swapped leaf symlink", (context) => {
++  const root = mkdtempSync(path.join(os.tmpdir(), "candidate-safe-"));
++  try {
++    const baselineDir = path.join(root, "scripts/baselines");
++    mkdirSync(baselineDir, { recursive: true });
++    const candidate = path.join(baselineDir, "current-compatibility-candidate.json");
++    const outside = path.join(root, "outside.json");
++    writeFileSync(candidate, "original");
++    writeFileSync(outside, "outside");
++    try {
++      symlinkSync(outside, `${candidate}.tmp`);
++    } catch (error) {
++      if (process.platform === "win32" && ["EPERM", "EACCES"].includes(error.code)) {
++        context.skip("Windows runner does not permit symlink creation");
++        return;
++      }
++      throw error;
++    }
++    assert.equal(readCompatibilityCandidate(candidate), "original");
++    writeCompatibilityCandidateAtomic(candidate, "recaptured");
++    assert.equal(readFileSync(candidate, "utf8"), "recaptured");
++    assert.equal(readFileSync(outside, "utf8"), "outside");
++    assert.throws(
++      () =>
++        writeCompatibilityCandidateAtomic(candidate, "stale-write", {
++          beforeReplace() {
++            const replacement = path.join(root, "new-regular-file.json");
++            writeFileSync(replacement, "new-regular-file");
++            renameSync(replacement, candidate);
++          },
++        }),
++      /changed before write/u,
++    );
++    assert.equal(readFileSync(candidate, "utf8"), "new-regular-file");
++    assert.throws(
++      () =>
++        readCompatibilityCandidate(candidate, {
++          beforeOpen() {
++            rmSync(candidate);
++            symlinkSync(outside, candidate);
++          },
++        }),
++      /regular repository file|changed before read/u,
++    );
++    assert.throws(() => readCompatibilityCandidate(candidate), /regular repository file/u);
++    assert.throws(
++      () => writeCompatibilityCandidateAtomic(candidate, "untrusted"),
++      /regular repository file/u,
++    );
++    assert.equal(readFileSync(outside, "utf8"), "outside");
++  } finally {
++    rmSync(root, { recursive: true, force: true });
++  }
++});
++
++test(
++  "candidate read rejects a swapped FIFO without blocking",
++  { skip: process.platform === "win32" },
++  () => {
++    const root = mkdtempSync(path.join(os.tmpdir(), "candidate-fifo-"));
++    try {
++      const candidate = path.join(root, "candidate.json");
++      writeFileSync(candidate, "regular");
++      const source = new URL("compatibility-candidate-path.mjs", import.meta.url).href;
++      const child = spawnSync(
++        process.execPath,
++        [
++          "--input-type=module",
++          "-e",
++          `import { execFileSync } from "node:child_process"; import { rmSync } from "node:fs"; import { readCompatibilityCandidate } from ${JSON.stringify(source)}; readCompatibilityCandidate(process.argv[1], { beforeOpen() { rmSync(process.argv[1]); execFileSync("mkfifo", [process.argv[1]]); } });`,
++          candidate,
++        ],
++        { encoding: "utf8", timeout: 3000 },
++      );
++      assert.equal(
++        child.signal,
++        null,
++        "candidate read must return without waiting for a FIFO writer",
++      );
++      assert.equal(child.status, 1);
++      assert.match(child.stderr, /changed before read/u);
++    } finally {
++      rmSync(root, { recursive: true, force: true });
++    }
++  },
++);
++
+ function fixture() {
+   const surface = {
+     schema_version: 2,
+@@ -82,3 +190,96 @@ test("historical package evidence rejects package and path drift", () => {
+     assert.throws(() => reconstructHistoricalPackageSurface(surface, delta));
+   }
+ });
++
++test("reviewed package hashes survive only a parity-only release version bump", () => {
++  const { surface, delta } = fixture();
++  const reviewedVersion = surface.package_manifests[0].version;
++  surface.package_manifests = [
++    packageSurface(manifestPath, {
++      name: "example",
++      version: "0.7.14",
++      dependencies: { zod: "4.6.7" },
++    }),
++  ];
++  const historical = reconstructHistoricalPackageSurface(surface, delta, reviewedVersion);
++  assert.equal(historical.package_manifests[0].version, "0.7.14");
++  assert.equal(historical.package_manifests[0].dependencies.zod, "4.6.5");
++  assert.throws(() => reconstructHistoricalPackageSurface(surface, delta, "0.7.15"));
++  assert.throws(() => reconstructHistoricalPackageSurface(surface, delta, "invalid"));
++  assert.throws(() => reconstructHistoricalPackageSurface(surface, delta, ""));
++
++  surface.package_manifests[0] = packageSurface(manifestPath, {
++    name: "example",
++    version: "0.7.14",
++    dependencies: { zod: "4.6.7", unrelated: "1.0.0" },
++  });
++  assert.throws(() => reconstructHistoricalPackageSurface(surface, delta, reviewedVersion));
++  surface.package_manifests[0] = packageSurface(manifestPath, {
++    name: "example",
++    version: "0.7.14",
++    dependencies: { zod: "4.6.8" },
++  });
++  assert.throws(() => reconstructHistoricalPackageSurface(surface, delta, reviewedVersion));
++  delta.allowed_json_paths = [];
++  assert.throws(() => reconstructHistoricalPackageSurface(surface, delta, reviewedVersion));
++});
++
++test("version normalization rejects mismatched internal dependency parity", () => {
++  const manifest = packageSurface("packages/agentplane/package.json", {
++    name: "agentplane",
++    version: "0.7.14",
++    dependencies: {
++      "@agentplaneorg/core": "0.7.13",
++      "@agentplaneorg/recipes": "0.7.14",
++    },
++  });
++  assert.throws(() => normalizePackageVersions([manifest], "0.7.12"));
++});
++
++test("reviewed-version anchor cannot be null or replaced with a new release version", () => {
++  const legacy = { release_version_delta: { to_version: "0.7.12" } };
++  assert.equal(reviewedPackageVersion(legacy), "0.7.12");
++  assert.throws(() =>
++    reviewedPackageVersion({ ...legacy, incremental_package_delta_reviewed_version: null }),
++  );
++  const { surface, delta } = fixture();
++  assert.throws(() => reconstructHistoricalPackageSurface(surface, delta, "0.7.14"));
++});
++
++test("candidate path accepts one explicit versioned artifact and rejects path escape", () => {
++  const root = mkdtempSync(path.join(os.tmpdir(), "agentplane-candidate-path-"));
++  try {
++    const baselines = path.join(root, "scripts/baselines");
++    mkdirSync(baselines, { recursive: true });
++    const candidate = path.join(baselines, "v0.8-compatibility-candidate.json");
++    writeFileSync(candidate, "{}\n");
++    assert.equal(
++      resolveCompatibilityCandidatePath(
++        root,
++        "scripts/baselines/v0.8-compatibility-candidate.json",
++      ),
++      candidate,
++    );
++    assert.throws(() =>
++      resolveCompatibilityCandidatePath(root, "scripts/baselines/../outside-candidate.json"),
++    );
++    assert.throws(() => resolveCompatibilityCandidatePath(root, "/tmp/outside-candidate.json"));
++    symlinkSync(candidate, path.join(baselines, "v0.9-compatibility-candidate.json"));
++    assert.throws(() =>
++      resolveCompatibilityCandidatePath(
++        root,
++        "scripts/baselines/v0.9-compatibility-candidate.json",
++      ),
++    );
++    rmSync(baselines, { recursive: true });
++    symlinkSync(path.join(root, "outside"), baselines);
++    assert.throws(() =>
++      resolveCompatibilityCandidatePath(
++        root,
++        "scripts/baselines/v0.8-compatibility-candidate.json",
++      ),
++    );
++  } finally {
++    rmSync(root, { recursive: true, force: true });
++  }
++});

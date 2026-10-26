@@ -1,8 +1,24 @@
 import { describe, expect, it } from "vitest";
 
-import { parseVerificationCheckDetails } from "./verification-details.js";
+import {
+  parseVerificationCheckDetails,
+  parseVerificationNoCheckDetails,
+} from "./verification-details.js";
 
 describe("verification details", () => {
+  it("parses a distinct no-process disposition without treating it as a check result", () => {
+    const plan = `sha256:${"a".repeat(64)}`;
+    const evidence = `sha256:${"b".repeat(64)}`;
+    const details = `No-Executable-Checks: approved\nTask: T-1\nPlan: ${plan}\nEvidence: ${evidence}`;
+    expect(parseVerificationNoCheckDetails(details)).toEqual({
+      taskId: "T-1",
+      planDigest: plan,
+      evidenceDigest: evidence,
+    });
+    expect(parseVerificationCheckDetails(details)).toBeNull();
+    expect(parseVerificationNoCheckDetails(`${details}\nResult: pass`)).toBeNull();
+    expect(parseVerificationNoCheckDetails(details.replace(plan, "sha256:bad"))).toBeNull();
+  });
   it("accepts a terminal period after the typed outcome", () => {
     expect(
       parseVerificationCheckDetails(
