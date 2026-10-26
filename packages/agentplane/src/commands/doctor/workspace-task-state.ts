@@ -203,14 +203,19 @@ export function buildTaskCentricProjectionIntegrityFindings(
       continue;
     }
     if (readmeRevision === aggregate.revision) continue;
+    const completedArchive =
+      normalizeTaskStatus(task.status) === "DONE" && aggregate.lifecycle === "COMPLETED";
     findings.push(
       renderDiagnosticFinding({
-        severity: "ERROR",
-        state: `task-centric revision split blocks ${taskId}`,
-        likelyCause:
-          "the task README and embedded aggregate have different revisions; the correct afterimage is not established",
+        severity: completedArchive ? "WARN" : "ERROR",
+        state: completedArchive
+          ? `archived task-centric revision split for ${taskId}`
+          : `task-centric revision split blocks ${taskId}`,
+        likelyCause: completedArchive
+          ? "the completed task archive retains different README and aggregate revisions; its historical afterimage must be reviewed before reuse"
+          : "the task README and embedded aggregate have different revisions; the correct afterimage is not established",
         nextAction: {
-          command: `agentplane task show ${taskId} --json`,
+          command: `agentplane task show ${taskId}`,
           reason:
             "inspect retained plan, verification, implementation, and mutation receipts; use only an evidence-specific recovery",
         },
@@ -218,7 +223,9 @@ export function buildTaskCentricProjectionIntegrityFindings(
           `Task: ${taskId}`,
           `README revision/state: ${readmeRevision}/${readmePlanState}`,
           `Aggregate revision/state: ${aggregate.revision}/${aggregatePlanState}`,
-          "Ordinary transitions must not normalize this split or run start-ready.",
+          completedArchive
+            ? "This completed archive is diagnostic history; do not normalize its revisions without evidence."
+            : "Ordinary transitions must not normalize this split or run start-ready.",
         ],
       }),
     );
