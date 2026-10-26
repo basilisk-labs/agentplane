@@ -16,7 +16,7 @@ Add a generic, USER-attested correction route for a required verification comman
 ## Verification
 
 - State: ok
-- Note: Canonical validation sha256:731de155276362896b92f88f54b4a1a30c0117f902411e2695474861f57967de
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>
