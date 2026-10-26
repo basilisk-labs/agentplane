@@ -4,7 +4,7 @@ title: "Recover an approved plan when a required declared check cannot execute"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 56
+revision: 57
 origin:
   system: "manual"
 depends_on: []
@@ -25,9 +25,9 @@ plan_approval:
   note: "Projected from the approved canonical Task Kernel plan."
 verification:
   state: "ok"
-  updated_at: "2026-10-26T08:13:55.864Z"
+  updated_at: "2026-10-26T15:17:33.384Z"
   updated_by: "SUPERVISOR"
-  note: "Verified: canonical Task Kernel final checks passed."
+  note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
   state: "pass"
@@ -109,7 +109,12 @@ execution_contract:
       - "packages/core"
     changed_paths:
       - "docs/user/cli-reference.generated.mdx"
+      - "packages/agentplane/src/commands/task/kernel-exchange.ts"
+      - "packages/agentplane/src/commands/task/kernel-failed-check-evidence.ts"
       - "packages/agentplane/src/commands/task/kernel-plan.ts"
+      - "packages/agentplane/src/commands/task/kernel-required-check-rework.test.ts"
+      - "packages/agentplane/src/commands/task/kernel-rework-lineage.ts"
+      - "packages/agentplane/src/commands/task/kernel-rework-proof.ts"
       - "packages/agentplane/src/commands/task/plan-set.command.ts"
       - "packages/core/src/tasks/task-kernel/kernel.ts"
       - "packages/core/src/tasks/task-kernel/model.ts"
@@ -149,58 +154,10 @@ execution_contract:
         id: "recorded-check-17"
         result: "pass"
       -
-        id: "recorded-check-18"
-        result: "pass"
-      -
-        id: "recorded-check-19"
-        result: "pass"
-      -
         id: "recorded-check-2"
         result: "pass"
       -
-        id: "recorded-check-20"
-        result: "pass"
-      -
-        id: "recorded-check-21"
-        result: "pass"
-      -
-        id: "recorded-check-22"
-        result: "pass"
-      -
-        id: "recorded-check-23"
-        result: "pass"
-      -
-        id: "recorded-check-24"
-        result: "pass"
-      -
-        id: "recorded-check-25"
-        result: "pass"
-      -
-        id: "recorded-check-26"
-        result: "pass"
-      -
-        id: "recorded-check-27"
-        result: "pass"
-      -
-        id: "recorded-check-28"
-        result: "pass"
-      -
-        id: "recorded-check-29"
-        result: "pass"
-      -
         id: "recorded-check-3"
-        result: "pass"
-      -
-        id: "recorded-check-30"
-        result: "pass"
-      -
-        id: "recorded-check-31"
-        result: "pass"
-      -
-        id: "recorded-check-32"
-        result: "pass"
-      -
-        id: "recorded-check-33"
         result: "pass"
       -
         id: "recorded-check-4"
@@ -261,7 +218,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "reversible"
-      digest: "sha256:8ea695323e9760089b8c7eff88bf66ba911aaf65e9fe0cc745035c1056f4ae5b"
+      digest: "sha256:b9e2437681e8c9f613ebc025619d3472caa5bed2ad364f7aa1c4b7eb578fa61a"
       escalation_reasons:
         - "central_component:packages/core/src/tasks"
         - "central_path:packages/core/src/tasks/task-kernel/kernel.ts"
@@ -280,7 +237,12 @@ execution_contract:
           - "packages/core"
         changed_files:
           - "docs/user/cli-reference.generated.mdx"
+          - "packages/agentplane/src/commands/task/kernel-exchange.ts"
+          - "packages/agentplane/src/commands/task/kernel-failed-check-evidence.ts"
           - "packages/agentplane/src/commands/task/kernel-plan.ts"
+          - "packages/agentplane/src/commands/task/kernel-required-check-rework.test.ts"
+          - "packages/agentplane/src/commands/task/kernel-rework-lineage.ts"
+          - "packages/agentplane/src/commands/task/kernel-rework-proof.ts"
           - "packages/agentplane/src/commands/task/plan-set.command.ts"
           - "packages/core/src/tasks/task-kernel/kernel.ts"
           - "packages/core/src/tasks/task-kernel/model.ts"
@@ -336,8 +298,14 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "verify"
+    at: "2026-10-26T15:17:33.384Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-10-26T08:13:56.883Z"
+doc_updated_at: "2026-10-26T15:17:39.617Z"
 doc_updated_by: "SUPERVISOR"
 description: "Add a generic, USER-attested correction route for a required verification command that native validation proved non-executable. Preserve the original FAILED receipt and exact old/new command audit evidence; reject unrelated contract, scope, or command changes; rerun the replacement check before completion. Do not silently waive verification or add release-specific adapters."
 sections:
@@ -582,6 +550,137 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202610260157-ZDEE0D
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-10-26T15:17:33.384Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:68d1a38692ff9f072beb9d59276fad5bde72792094b924f81c557c2fc6b767be, input_digest=sha256:da85083bdff5c24d403f8eacc9c4ccb7c2c572e0fc1a43e1e2da3f9dc713e75b
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610260157-ZDEE0D/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610260157-ZDEE0D Verification Contract check affected_unit_integration (1/4)
+
+    Check: affected_unit_integration
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202610260157-ZDEE0D/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610260157-ZDEE0D Verification Contract check affected_unit_integration (2/4)
+
+    Check: affected_unit_integration
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610260157-ZDEE0D/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610260157-ZDEE0D Verification Contract check affected_unit_integration (3/4)
+
+    Check: affected_unit_integration
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202610260157-ZDEE0D/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610260157-ZDEE0D Verification Contract check affected_unit_integration (4/4)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610260157-ZDEE0D/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610260157-ZDEE0D Verification Contract check critical_paths (1/4)
+
+    Check: critical_paths
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202610260157-ZDEE0D/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610260157-ZDEE0D Verification Contract check critical_paths (2/4)
+
+    Check: critical_paths
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610260157-ZDEE0D/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610260157-ZDEE0D Verification Contract check critical_paths (3/4)
+
+    Check: critical_paths
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202610260157-ZDEE0D/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610260157-ZDEE0D Verification Contract check critical_paths (4/4)
+
+    Check: docs_contract
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610260157-ZDEE0D/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610260157-ZDEE0D Verification Contract check docs_contract (1/4)
+
+    Check: docs_contract
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202610260157-ZDEE0D/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610260157-ZDEE0D Verification Contract check docs_contract (2/4)
+
+    Check: docs_contract
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610260157-ZDEE0D/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610260157-ZDEE0D Verification Contract check docs_contract (3/4)
+
+    Check: docs_contract
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202610260157-ZDEE0D/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610260157-ZDEE0D Verification Contract check docs_contract (4/4)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610260157-ZDEE0D/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610260157-ZDEE0D Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610260157-ZDEE0D/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610260157-ZDEE0D Verification Contract check task_outcome (1/4)
+
+    Check: task_outcome
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202610260157-ZDEE0D/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610260157-ZDEE0D Verification Contract check task_outcome (2/4)
+
+    Check: task_outcome
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610260157-ZDEE0D/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610260157-ZDEE0D Verification Contract check task_outcome (3/4)
+
+    Check: task_outcome
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202610260157-ZDEE0D/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610260157-ZDEE0D Verification Contract check task_outcome (4/4)
+
+    NativeTaskIdentityRef:
+    - plan_digest: sha256:d15e91b7fa22e055171e7f708e7ba9ac69b529994e9ee2c405cd130f4d684320
+    - policy_digest: sha256:b0f3ed8717357e14968093aaf83e3059ba55a248477be0e758cb9ae571d6f7ac
+    - capability_digest: sha256:50a6a9165b39e3211d5b8d447b2ce28ef930f41b7c7ff9e2ff9630a0b2f1f306
+    - checks_digest: sha256:1ad4934c68eff14edb61ad49fa7305a45b50ea0bbd2fd5f7bbd6134aa7027401
+    - identity_digest: sha256:46b58578df2a3abd69dcbb7dc744f8fee128940b91b575387b3a15e8a1068024
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -2612,6 +2711,137 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202610260157-ZDEE0D
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-10-26T15:17:33.384Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:68d1a38692ff9f072beb9d59276fad5bde72792094b924f81c557c2fc6b767be, input_digest=sha256:da85083bdff5c24d403f8eacc9c4ccb7c2c572e0fc1a43e1e2da3f9dc713e75b
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610260157-ZDEE0D/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610260157-ZDEE0D Verification Contract check affected_unit_integration (1/4)
+
+Check: affected_unit_integration
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202610260157-ZDEE0D/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610260157-ZDEE0D Verification Contract check affected_unit_integration (2/4)
+
+Check: affected_unit_integration
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610260157-ZDEE0D/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610260157-ZDEE0D Verification Contract check affected_unit_integration (3/4)
+
+Check: affected_unit_integration
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202610260157-ZDEE0D/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610260157-ZDEE0D Verification Contract check affected_unit_integration (4/4)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610260157-ZDEE0D/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610260157-ZDEE0D Verification Contract check critical_paths (1/4)
+
+Check: critical_paths
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202610260157-ZDEE0D/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610260157-ZDEE0D Verification Contract check critical_paths (2/4)
+
+Check: critical_paths
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610260157-ZDEE0D/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610260157-ZDEE0D Verification Contract check critical_paths (3/4)
+
+Check: critical_paths
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202610260157-ZDEE0D/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610260157-ZDEE0D Verification Contract check critical_paths (4/4)
+
+Check: docs_contract
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610260157-ZDEE0D/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610260157-ZDEE0D Verification Contract check docs_contract (1/4)
+
+Check: docs_contract
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202610260157-ZDEE0D/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610260157-ZDEE0D Verification Contract check docs_contract (2/4)
+
+Check: docs_contract
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610260157-ZDEE0D/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610260157-ZDEE0D Verification Contract check docs_contract (3/4)
+
+Check: docs_contract
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202610260157-ZDEE0D/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610260157-ZDEE0D Verification Contract check docs_contract (4/4)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610260157-ZDEE0D/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610260157-ZDEE0D Verification Contract check full_regression
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610260157-ZDEE0D/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610260157-ZDEE0D Verification Contract check task_outcome (1/4)
+
+Check: task_outcome
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202610260157-ZDEE0D/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610260157-ZDEE0D Verification Contract check task_outcome (2/4)
+
+Check: task_outcome
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610260157-ZDEE0D/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610260157-ZDEE0D Verification Contract check task_outcome (3/4)
+
+Check: task_outcome
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202610260157-ZDEE0D/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610260157-ZDEE0D Verification Contract check task_outcome (4/4)
+
+NativeTaskIdentityRef:
+- plan_digest: sha256:d15e91b7fa22e055171e7f708e7ba9ac69b529994e9ee2c405cd130f4d684320
+- policy_digest: sha256:b0f3ed8717357e14968093aaf83e3059ba55a248477be0e758cb9ae571d6f7ac
+- capability_digest: sha256:50a6a9165b39e3211d5b8d447b2ce28ef930f41b7c7ff9e2ff9630a0b2f1f306
+- checks_digest: sha256:1ad4934c68eff14edb61ad49fa7305a45b50ea0bbd2fd5f7bbd6134aa7027401
+- identity_digest: sha256:46b58578df2a3abd69dcbb7dc744f8fee128940b91b575387b3a15e8a1068024
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
