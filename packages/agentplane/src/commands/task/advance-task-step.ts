@@ -133,29 +133,6 @@ async function advanceCanonicalRoute(opts: {
       record,
       context.repository_fingerprint,
     );
-    const persistedValidationEvidence =
-      record.aggregate.final_validation?.status === "PASSED"
-        ? record.aggregate.final_validation.evidence_digests.at(-1)
-        : undefined;
-    if (
-      needsPullRequest &&
-      !finalValidation &&
-      persistedValidationEvidence &&
-      ["kernel_final_validation_required", "kernel_task_completion_required"].includes(
-        route.reason_code,
-      )
-    ) {
-      await ensureKernelOperationalProjectionEvidence({
-        command: opts.command,
-        task_id: opts.task_id,
-        verification_evidence_digest: persistedValidationEvidence,
-      });
-      const completion = await runtime.input({ kind: "complete_task" }, operationId);
-      if (completion.command.expected_task_revision !== record.aggregate.revision)
-        throw new Error("Canonical task changed before completion");
-      requireKernelCommit(await runtime.lifecycle.apply(completion));
-      continue;
-    }
     if (route.reason_code === "kernel_task_completed" && !needsPullRequest) {
       if (!reportOnlyCompletion)
         await commitCanonicalTerminalTaskArtifacts(opts.command, opts.task_id);
