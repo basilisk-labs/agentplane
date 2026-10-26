@@ -6,7 +6,7 @@ Created: 2026-10-26T12:11:02.980Z
 
 - Task: `202610261134-JK4HX9`
 - Title: Prevent stale final-validation evidence from bypassing authority continuation
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610261134-JK4HX9/prevent-stale-final-validation-evidence-from-byp`
 - Canonical task record: `.agentplane/tasks/202610261134-JK4HX9/README.md`
 
