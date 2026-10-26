@@ -1,0 +1,8 @@
+"Checking formatting..."
+"All matched files use Prettier code style!"
+"schemas OK"
+"agents templates OK"
+"policy routing OK"
+"Release parity check passed (core=0.7.12, agentplane=0.7.12, recipes=0.7.12, coreDep=0.7.12, recipesDep=0.7.12, recipesRuntime=0.7.12)."
+"/tmp/agentplane-cli-docs-C7jGM2/cli-reference.generated.mdx"
+"../agentplane-cli-docs-C7jGM2/cli-reference.generated.mdx 422ms (unchanged)"
