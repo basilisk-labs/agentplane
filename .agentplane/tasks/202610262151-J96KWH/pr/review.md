@@ -6,7 +6,7 @@ Created: 2026-10-27T00:32:49.190Z
 
 - Task: `202610262151-J96KWH`
 - Title: Authenticate sibling delegated authorities across repository continuation in required-check correction
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610262151-J96KWH/authenticate-sibling-delegated-authorities-acros`
 - Canonical task record: `.agentplane/tasks/202610262151-J96KWH/README.md`
 

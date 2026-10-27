@@ -1,1 +1,1 @@
-🚧 J96KWH task: Authenticate sibling delegated authorities across repository continuation in required-check c... [202610262151-J96KWH]
+✅ J96KWH task: Authenticate sibling delegated authorities across repository continuation in required-check c... [202610262151-J96KWH]
