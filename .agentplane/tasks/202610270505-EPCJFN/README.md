@@ -4,7 +4,7 @@ title: "Authenticate retained native validation across approved Plan corrections
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 49
+revision: 50
 origin:
   system: "manual"
 depends_on: []
@@ -32,17 +32,32 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-10-27T09:53:04.686Z"
+  updated_at: "2026-10-27T22:23:37.828Z"
   updated_by: "EVALUATOR"
-  note: "Canonical EVALUATOR review passed."
-  evaluated_sha: "e588c8a311d617410f24b277b17770d045a17cbd"
-  review_identity_digest: "sha256:2dff468dc99f7603c29e7b4b736f79832eff2110e770262197055ff9290c84bf"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "9f2139a40a24b5dec9618915fbe7277d4a950651"
+  review_identity_digest: "sha256:ad3e51c162c57a1646534bc7005d89196b77e94bf967be6bc47a87459fd7107a"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202610270505-EPCJFN/132d72718340206b9989e611b6c50cec63ed434b89d5eebde661066fdbf2cd73/quality-report.json"
+    - ".agentplane/tasks/202610270505-EPCJFN/quality/20261027-222134979-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202610270505-EPCJFN/quality/20261027-222134979-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202610270505-EPCJFN/quality/objects/sha256/0721722bacf70ad62e97a672df4b5942e948b9ea8898c8835c5d180e22527d06.md"
+    - ".agentplane/tasks/202610270505-EPCJFN/quality/20261027-222134979-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202610270505-EPCJFN/quality/20261027-222134979-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202610270505-EPCJFN/quality/20261027-222134979-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202610270505-EPCJFN/README.md"
+    - ".agentplane/tasks/202610270505-EPCJFN/quality/objects/sha256/3230e70b6e5cd4579777ef3fe4418284691bf1a84ad92eb0af1496c8e9e434d6.patch"
+    - ".agentplane/tasks/202610270505-EPCJFN/quality/objects/sha256/55e73223034f877106786f8a4d51def0da6e205bf2a9af764428ce4ff0185488.json"
+    - ".agentplane/tasks/202610270505-EPCJFN/verification/20261027222103987-1fc06753e62154e4.json"
+    - ".agentplane/tasks/202610270505-EPCJFN/quality/objects/sha256/c0033910b15df3dc4623ca975f94ba009c61a45a6be7574c6661762aecaf0361.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The changed-Plan recovery path reconstructs the full historical WorkOrder and failed-check proof, then matches the amended command against native event and receipt digests; a stale Plan-history entry alone cannot authorize recovery."
-    - "The new issuance tests exercise kernelRecoveryInputs and withKernelReworkEvidence, retain the original validation and WorkOrder bytes, and reject changed task, work item, claim, receipt, approval, lineage, and successor Plan evidence."
-    - "Native validation records all three declared checks as passed: 91 focused tests, agentplane typecheck, and ci:local:full run-008; its failure log is empty."
+    - "The four scoped source/test files at 9f2139a are byte-identical to the previously independently reviewed e588c8a implementation; the additional c0d6b62 commit contains native verification artifacts, not source changes."
+    - "Historical recovery re-reads the original WorkOrder and BLOCKED validation, checks the original contract and semantic stop, and accepts the successor only through the native USER-approved amendment and event/receipt lineage; negative tests reject missing proof, changed claims, stale attempts, wrong parent Plan, and missing approval evidence."
+    - "The retained run-017 full CI and both run-015/run-016 critical checks passed for source head 9f2139a; the approved Plan revision 3 and frozen review identity bind that same implementation SHA."
+    - "Residual risk: The hosted provider state may change after this offline review; native exact-head hosted checks must be evaluated before integration."
 execution_route:
   frozen: true
   reason_codes:
@@ -4254,6 +4269,14 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.completed_native_review:
+    applied_at: "2026-10-27T22:23:37.828Z"
+    kernel_digest: "sha256:6b30e98ad29453862b48b37ea15faa176bcb87c832b397f0c523b5d6cfad6dbc"
+    quality_digest: "sha256:f6e2291ea126125899f5bbf9e9ea04a182c01ddb16a4f494020eccfd865b0cb3"
+    result_digest: "sha256:85a14f0ba131e2afebfd9f64e4eb6735d85fc43fdf86f3eb8f06c844181e95d3"
+    schema_version: 1
+    state_fingerprint: "sha256:923e9ce57cc380c2ab93b19a562fe2eb96839d5d69f776af004887ffdd71d5ca"
+    transition_id: "tr_4fc74ae5e3b0564fe0d3c1315512cf00"
   agentplane.kernel_operational_projection:
     digest: "sha256:fa3ff3b2fddfca834cb90e9c7fdd6b1fcceadd0684dcc08377db3dadbcee85e0"
     evidence_refs:
