@@ -3,6 +3,7 @@ import { readdir } from "node:fs/promises";
 import { z } from "zod";
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
 import {
+  AGENT_WORK_ORDER_V2_ZOD_SCHEMA,
   AGENT_SEMANTIC_RESULT_ZOD_SCHEMA,
   type AgentWorkOrderV2,
 } from "@agentplaneorg/core/schemas";
@@ -12,7 +13,12 @@ import {
 } from "../../adapters/task-backend/kernel-record.js";
 import { isRecord } from "../../shared/guards.js";
 import { readStableRegularTextNoFollow } from "../../shared/stable-file.js";
-import { authenticReworkEvent, historicalAmendment } from "./kernel-rework-lineage.js";
+import {
+  authenticReworkEvent,
+  findReworkLineage,
+  historicalAmendment,
+  historicalAmendmentWithFailedCheck,
+} from "./kernel-rework-lineage.js";
 
 const digest = z.string().regex(/^sha256:[a-f0-9]{64}$/u);
 const recoveryFields = {
@@ -362,6 +368,18 @@ async function readNativeStop(kernelRoot: string, record: KernelRecord, orderId:
   const validation = kernelValidationSchema.parse(saved.command.validation);
   const result = AGENT_SEMANTIC_RESULT_ZOD_SCHEMA.parse(await read("received-result.json"));
   const binding = result.canonical_binding;
+  const implementationBinding = binding?.phase === "implementation" ? binding : null;
+  const order = AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse(await read("work-order.json"));
+  const originalPlan = [...record.aggregate.plan_history, record.aggregate.current_plan].find(
+    (plan) =>
+      plan !== null &&
+      implementationBinding !== null &&
+      plan.digest === implementationBinding.plan_digest &&
+      plan.revision === implementationBinding.plan_revision,
+  );
+  const originalDefinition = originalPlan?.work_items.find(
+    (item) => item.id === implementationBinding?.work_item_id,
+  );
   const evidence = nativeEvidenceSchema.parse(await read("validation.json"));
   if (
     binding?.phase !== "implementation" ||
@@ -372,11 +390,21 @@ async function readNativeStop(kernelRoot: string, record: KernelRecord, orderId:
     validation.identity.implementation_identity !== k.kernelDigest(result) ||
     binding.task_id !== record.aggregate.id ||
     binding.repository_identity !== record.repository_identity ||
-    binding.plan_digest !== record.aggregate.current_plan?.digest ||
-    binding.plan_revision !== record.aggregate.current_plan.revision ||
+    !originalPlan ||
+    (originalPlan.digest !== record.aggregate.current_plan?.digest &&
+      originalPlan.digest !==
+        k.kernelDigest({ revision: originalPlan.revision, work_items: originalPlan.work_items })) ||
+    originalDefinition?.contract_digest !== binding.contract_digest ||
+    order.work_order_id !== orderId ||
+    order.task.id !== binding.task_id ||
+    order.task.work_item_id !== binding.work_item_id ||
+    order.task.revision === null ||
+    order.task.revision > mutation.before_revision ||
+    k.kernelDigest(order.canonical_binding) !== k.kernelDigest(binding) ||
     saved.command.work_item_id !== binding.work_item_id ||
-    binding.contract_digest !==
-      record.aggregate.work_items[binding.work_item_id]?.definition.contract_digest ||
+    (binding.plan_digest === record.aggregate.current_plan?.digest &&
+      binding.contract_digest !==
+        record.aggregate.work_items[binding.work_item_id]?.definition.contract_digest) ||
     !isRecord(evidence) ||
     evidence.task_id !== binding.task_id ||
     evidence.work_item_id !== binding.work_item_id ||
@@ -420,6 +448,99 @@ async function readNativeStop(kernelRoot: string, record: KernelRecord, orderId:
   return { binding, validation, evidence, mutation, path: path.join(directory, "validation.json") };
 }
 
+/** A historical BLOCKED check may cross a Plan boundary only through native USER amendments. */
+export async function authenticNativePlanCorrection(
+  directory: string,
+  record: KernelRecord,
+  old: Extract<NonNullable<AgentWorkOrderV2["canonical_binding"]>, { phase: "implementation" }>,
+  current: Extract<NonNullable<AgentWorkOrderV2["canonical_binding"]>, { phase: "implementation" }>,
+  stopRevision: number,
+  oldOrderId: string,
+) {
+  if (old.plan_digest === current.plan_digest && old.plan_revision === current.plan_revision)
+    return old.contract_digest === current.contract_digest;
+  const history = findReworkLineage(record, old.work_item_id);
+  const plans = [...record.aggregate.plan_history, record.aggregate.current_plan];
+  const oldIndex = plans.findIndex(
+    (plan) => plan?.digest === old.plan_digest && plan.revision === old.plan_revision,
+  );
+  const originalDefinition = plans[oldIndex]?.work_items.find(
+    (item) => item.id === old.work_item_id,
+  );
+  if (
+    !history ||
+    oldIndex === -1 ||
+    originalDefinition?.contract_digest !== old.contract_digest ||
+    current.attempt !== old.attempt + 1 ||
+    plans.at(-1)?.digest !== current.plan_digest ||
+    plans.at(-1)?.revision !== current.plan_revision ||
+    oldIndex >= plans.length - 1 ||
+    old.task_id !== current.task_id ||
+    old.repository_identity !== current.repository_identity ||
+    old.work_item_id !== current.work_item_id ||
+    record.aggregate.current_plan?.state !== "APPROVED" ||
+    record.aggregate.work_items[current.work_item_id]?.definition.contract_digest !==
+      current.contract_digest
+  )
+    return false;
+  let previousRevision = stopRevision;
+  let previousPlan = plans[oldIndex]!;
+  for (const [index, plan] of plans.slice(oldIndex + 1).entries()) {
+    if (!plan) return false;
+    const lineage = record.aggregate.authority_lineage ?? [];
+    const authorityIndex = lineage.findIndex(
+      (entry) =>
+        entry.observation?.kind === "plan_amendment" && entry.authority.plan_digest === plan.digest,
+    );
+    const authority = lineage[authorityIndex];
+    const parent = lineage[authorityIndex - 1]?.authority;
+    if (authority?.observation?.kind !== "plan_amendment") return false;
+    if (
+      !parent ||
+      previousPlan.state !== "SUPERSEDED" ||
+      plan.revision !== previousPlan.revision + 1 ||
+      plan.digest !== k.kernelDigest({ revision: plan.revision, work_items: plan.work_items }) ||
+      !/^USER(?::[A-Za-z0-9._@-]+)?$/u.test(plan.approval_actor_id ?? "") ||
+      plan.approval_evidence_digest !==
+        k.planScopeExpansionApprovalDigest({
+          task_id: record.aggregate.id,
+          current_plan_digest: previousPlan.digest,
+          amended_plan_digest: plan.digest,
+          actor_id: plan.approval_actor_id!,
+        }) ||
+      parent.plan_digest !== previousPlan.digest ||
+      parent.plan_revision !== previousPlan.revision ||
+      k.planAmendmentScopeRoots({ current: previousPlan, amended: plan, authority: parent }) ===
+        null
+    )
+      return false;
+    const matches = [];
+    for (const event of record.events.filter(
+      (candidate) =>
+        candidate.kind === "plan_amended" && candidate.task_revision > previousRevision,
+    )) {
+      const command = await historicalAmendmentWithFailedCheck(
+        record,
+        plan,
+        event,
+        authority.observation.previous_fingerprint,
+        directory,
+      );
+      if (
+        command &&
+        (index > 0 ||
+          (command.kind === "amend_plan" &&
+            command.required_check_correction?.failed_work_order_id === oldOrderId))
+      )
+        matches.push(event);
+    }
+    if (matches.length !== 1) return false;
+    previousRevision = matches[0]!.task_revision;
+    previousPlan = plan;
+  }
+  return true;
+}
+
 export async function captureKernelNativeValidation(
   kernelRoot: string,
   record: KernelRecord,
@@ -457,6 +578,22 @@ export async function captureKernelNativeValidation(
       k.kernelDigest(item.validation) !== k.kernelDigest(stop.validation)
     )
       throw new Error("Native validation recovery claim is stale");
+    if (
+      !(await authenticNativePlanCorrection(
+        path.join(kernelRoot, "exchanges", record.aggregate.id, orderId.slice(7)),
+        record,
+        stop.binding,
+        {
+          ...stop.binding,
+          plan_digest: record.aggregate.current_plan!.digest,
+          plan_revision: record.aggregate.current_plan!.revision,
+          contract_digest: item.definition.contract_digest!,
+        },
+        stop.mutation.after_revision,
+        orderId,
+      ))
+    )
+      throw new Error("Native validation Plan correction is not authenticated");
     return { work_order_id: orderId, validation_digest: k.kernelDigest(stop.evidence) };
   }
   throw new Error("Recovery requires retained BLOCKED native validation for this attempt");
@@ -503,9 +640,19 @@ export async function kernelRecoveryInputs(
       if (
         stop.binding.work_item_id !== binding.work_item_id ||
         stop.binding.repository_identity !== binding.repository_identity ||
-        stop.binding.plan_digest !== binding.plan_digest ||
-        stop.binding.plan_revision !== binding.plan_revision ||
-        stop.binding.contract_digest !== binding.contract_digest ||
+        !(await authenticNativePlanCorrection(
+          path.join(
+            kernelRoot,
+            "exchanges",
+            record.aggregate.id,
+            receipt.native_validation.work_order_id.slice(7),
+          ),
+          record,
+          stop.binding,
+          binding,
+          stop.mutation.after_revision,
+          receipt.native_validation.work_order_id,
+        )) ||
         k.kernelDigest(stop.evidence) !== receipt.native_validation.validation_digest ||
         receipt.transition.task_id !== binding.task_id ||
         receipt.transition.work_item_id !== binding.work_item_id ||
@@ -577,6 +724,66 @@ export async function kernelRecoveryInputs(
         description:
           "Native-recorded USER resolution of the preceding semantic stop. Digest uses canonical JSON.",
         required: true,
+      },
+    ];
+  }
+  // A USER-approved required-check correction resets the changed WorkItem to PLANNED.
+  // It creates no work-item-resume receipt, so bind the next attempt to the old native
+  // BLOCKED validation and the authenticated amendment instead of inventing a resume.
+  for (const [id, mutation] of Object.entries(record.aggregate.mutation_receipts)
+    .filter(([id]) => /^validation:sha256:[a-f0-9]{64}$/u.test(id))
+    .toSorted((a, b) => b[1].after_revision - a[1].after_revision)) {
+    const oldOrderId = id.slice("validation:".length);
+    const oldDirectory = path.join(kernelRoot, "exchanges", binding.task_id, oldOrderId.slice(7));
+    const saved: unknown = JSON.parse(
+      await readStableRegularTextNoFollow(
+        path.join(oldDirectory, "validation-command.json"),
+        "historical native validation command",
+      ),
+    );
+    if (!isRecord(saved) || !isRecord(saved.command))
+      throw new Error("Malformed retained native validation command");
+    if (saved.command.work_item_id !== binding.work_item_id) continue;
+    const stop = await readNativeStop(kernelRoot, record, oldOrderId);
+    if (stop.binding.attempt !== binding.attempt - 1) continue;
+    if (stop.binding.plan_digest === binding.plan_digest) continue;
+    if (
+      mutation.after_revision >= (order.task.revision ?? 0) ||
+      !(await authenticNativePlanCorrection(
+        oldDirectory,
+        record,
+        stop.binding,
+        binding,
+        mutation.after_revision,
+        oldOrderId,
+      ))
+    )
+      throw new Error("Required-check correction does not bind the preceding native validation");
+    return [
+      {
+        id: `native-validation:${oldOrderId}`,
+        kind: "source_artifact",
+        path: stop.path,
+        digest: k.kernelDigest(stop.evidence),
+        required: true,
+        description: "Retained BLOCKED native validation before the approved Plan correction.",
+      },
+      {
+        id: `native-work-order:${oldOrderId}`,
+        kind: "source_artifact",
+        path: path.join(oldDirectory, "work-order.json"),
+        digest: k.kernelDigest(
+          AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse(
+            JSON.parse(
+              await readStableRegularTextNoFollow(
+                path.join(oldDirectory, "work-order.json"),
+                "historical native WorkOrder",
+              ),
+            ),
+          ),
+        ),
+        required: true,
+        description: "Original issued WorkOrder authenticated by the native correction receipt.",
       },
     ];
   }
