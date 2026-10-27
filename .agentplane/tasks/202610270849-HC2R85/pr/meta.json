@@ -3,7 +3,8 @@
   "branch": "task/202610270849-HC2R85/bound-doctor-archive-commit-inspection-in-partia",
   "created_at": "2026-10-27T09:16:56.607Z",
   "diffstat_sha256": "sha256:23ee27ea895ae5fa900f57cea8352de709e7ecf6cb0a02d8631a52bd5ffa8206",
-  "last_verified_at": null,
+  "last_verified_at": "2026-10-27T12:26:18.319Z",
+  "last_verified_diffstat_sha256": "sha256:23ee27ea895ae5fa900f57cea8352de709e7ecf6cb0a02d8631a52bd5ffa8206",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202610270849-HC2R85",
   "updated_at": "2026-10-27T09:16:56.607Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
