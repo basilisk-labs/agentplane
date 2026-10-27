@@ -6,7 +6,7 @@ Created: 2026-10-27T16:04:31.947Z
 
 - Task: `202610270505-EPCJFN`
 - Title: Authenticate retained native validation across approved Plan corrections
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610270505-EPCJFN/authenticate-retained-native-validation-across-a`
 - Canonical task record: `.agentplane/tasks/202610270505-EPCJFN/README.md`
 
