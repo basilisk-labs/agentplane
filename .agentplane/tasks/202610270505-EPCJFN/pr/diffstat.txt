@@ -1,0 +1,5 @@
+ .../commands/task/kernel-recovery-evidence.test.ts | 162 ----
+ .../src/commands/task/kernel-recovery-evidence.ts  | 258 +++---
+ .../commands/task/kernel-recovery-lineage.test.ts  | 986 +++++++++++++++++++++
+ .../src/commands/task/kernel-recovery-lineage.ts   | 231 +++++
+ 4 files changed, 1338 insertions(+), 299 deletions(-)

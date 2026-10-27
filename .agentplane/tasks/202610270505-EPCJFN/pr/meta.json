@@ -1,0 +1,22 @@
+{
+  "base": "main",
+  "branch": "task/202610270505-EPCJFN/authenticate-retained-native-validation-across-a",
+  "created_at": "2026-10-27T16:04:31.947Z",
+  "diffstat_sha256": "sha256:49aa2eb88f901ef7699dac0c05aaa1b953856c1cfe8708217d56554cad2efdd1",
+  "last_verified_at": "2026-10-27T16:04:29.839Z",
+  "last_verified_diffstat_sha256": "sha256:49aa2eb88f901ef7699dac0c05aaa1b953856c1cfe8708217d56554cad2efdd1",
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610270505-EPCJFN",
+  "updated_at": "2026-10-27T16:04:31.947Z",
+  "verify": {
+    "status": "pass"
+  }
+}
