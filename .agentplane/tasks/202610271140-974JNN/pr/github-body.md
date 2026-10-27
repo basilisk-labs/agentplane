@@ -29,11 +29,11 @@ Provide the typed provider-neutral adopted-PR metadata schema prerequisite for M
 ```text
  packages/core/schemas/pr-meta.schema.json          | 85 ++++++++++++++++++++++
  .../src/tasks/task-artifact-schema.pr-metadata.ts  | 33 ++++++++-
- .../core/src/tasks/task-artifact-schema.test.ts    | 62 ++++++++++++++++
+ .../core/src/tasks/task-artifact-schema.test.ts    | 49 +++++++++++++
  packages/spec/schemas/pr-meta.schema.json          | 85 ++++++++++++++++++++++
  schemas/pr-meta.schema.json                        | 85 ++++++++++++++++++++++
  scripts/generate/sync-schemas.mjs                  |  2 +-
- 6 files changed, 350 insertions(+), 2 deletions(-)
+ 6 files changed, 337 insertions(+), 2 deletions(-)
 ```
 
 </details>

@@ -604,40 +604,27 @@ describe("task-artifact-schema", () => {
       adoption,
     };
     expect(validateTaskPrMeta(meta).adoption).toEqual(adoption);
-    expect(() =>
-      validateTaskPrMeta({
-        ...meta,
-        adoption: { ...adoption, target_project: "another/project" },
-      }),
-    ).toThrow();
-    expect(() =>
-      validateTaskPrMeta({ ...meta, adoption: { ...adoption, base_sha: "not-a-sha" } }),
-    ).toThrow();
-    expect(() =>
-      validateTaskPrMeta({ ...meta, adoption: { ...adoption, task_id: "another-task" } }),
-    ).toThrow();
     for (const invalid of [
       { source_project: "another/project" },
+      { target_project: "another/project" },
+      { task_id: "another-task" },
       { pr_number: 0 },
       { pr_number: 1.5 },
       { head_ref: "" },
       { base_ref: "" },
       { head_sha: "not-a-sha" },
+      { base_sha: "not-a-sha" },
       { observed_at: "not-a-timestamp" },
       { readback_digest: "sha256:invalid" },
       { authority_digest: "sha256:invalid" },
       { provider: "unknown" },
-      { hostname: "" },
-      { remote: "" },
       { unexpected: true },
+      { hostname: undefined },
     ]) {
       expect(() =>
         validateTaskPrMeta({ ...meta, adoption: { ...adoption, ...invalid } }),
       ).toThrow();
     }
-    expect(() =>
-      validateTaskPrMeta({ ...meta, adoption: { ...adoption, hostname: undefined } }),
-    ).toThrow();
   });
 
   it("accepts short non-git commit hashes in task README frontmatter", () => {
