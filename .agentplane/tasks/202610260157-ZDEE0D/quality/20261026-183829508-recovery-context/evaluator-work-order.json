@@ -1,0 +1,122 @@
+{
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202610260157-ZDEE0D-a23e49fdcbe85d6a7358080d",
+  "prepared_at": "2026-10-26T18:38:29.508Z",
+  "task": {
+    "id": "202610260157-ZDEE0D",
+    "revision": 65,
+    "objective": "Recover an approved plan when a required declared check cannot execute\n\nAdd a generic, USER-attested correction route for a required verification command that native validation proved non-executable. Preserve the original FAILED receipt and exact old/new command audit evidence; reject unrelated contract, scope, or command changes; rerun the replacement check before completion. Do not silently waive verification or add release-specific adapters.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "bun run typecheck",
+      "- In scope: Add a generic, USER-attested correction route for a required verification command that native validation proved non-executable. Preserve the original FAILED receipt and exact old/new command audit evidence; reject unrelated contract, scope, or command changes; rerun the replacement check before completion. Do not silently waive verification or add release-specific adapters.\n- Out of scope: unrelated refactors not required for \"Recover an approved plan when a required declared check cannot execute\".",
+      "1. Execute approved WorkItem recover-nonexecutable-required-check.\n2. Execute approved WorkItem split-required-check-recovery-test.\n3. Execute approved WorkItem final-correction-948a30e490fb.",
+      "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run ci:local:full`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings."
+    ]
+  },
+  "evaluated_sha": "65fd38bdfab6eb826c35dce1d25d04d8a9a916b5",
+  "diff_base_sha": "3ead7367713d495dafa2f203d582683f5d460875",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202610260157-ZDEE0D/quality/20261026-183829508-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:0091b607099b2adb35f9e24b7df66b531b19ac00d373c9752d74eaa050fc47d7",
+    "prompt_path": ".agentplane/tasks/202610260157-ZDEE0D/quality/objects/sha256/dbf1fb0858674c23fa0f594ed0f1c69a92f383efccd51d27cf63109e0e69f313.md",
+    "result_schema_path": ".agentplane/tasks/202610260157-ZDEE0D/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "schema_version": 2,
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202610260157-ZDEE0D",
+    "plan_digest": "sha256:d15e91b7fa22e055171e7f708e7ba9ac69b529994e9ee2c405cd130f4d684320",
+    "policy_digest": "sha256:d5176432de77f4d9e75b3811751aa7a7f050f2b1980ca055f727db86efc731d9",
+    "capability_digest": "sha256:50a6a9165b39e3211d5b8d447b2ce28ef930f41b7c7ff9e2ff9630a0b2f1f306",
+    "checks_digest": "sha256:ff053e98e59e08832417073bd05b40655b49e0201534b05f32acfa63f88ce49b",
+    "verification_input_digest": "sha256:af17e3affb0b5104db725b5dfad7201d754f30c074bcb09259b4c06a96626469",
+    "acceptance_digest": "sha256:b34522e9645f739773fe772d92d028b5282dc2782b3e5ff5d9532f6f7e8ecce1",
+    "implementation_sha": "65fd38bdfab6eb826c35dce1d25d04d8a9a916b5",
+    "digest": "sha256:8683329e69f3f302f6ec45cd2a6c95e179a2ab7e6b91a104ae94cbf3b776b148"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202610260157-ZDEE0D/README.md",
+      "sha256": "sha256:3052027e5df54421c4a536a96a3d54169eb654727f1e49da9f1616c6424e478f",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202610260157-ZDEE0D/quality/objects/sha256/1e1a18c35d84870fb270dffc94ee7afa827206f95dc2f670a059ae5d1fc034f4.patch",
+      "sha256": "sha256:1e1a18c35d84870fb270dffc94ee7afa827206f95dc2f670a059ae5d1fc034f4",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202610260157-ZDEE0D/quality/objects/sha256/be9013187a53eaf6991e01a6cae6216060bfea341817145be93dac2195b560fe.json",
+      "sha256": "sha256:be9013187a53eaf6991e01a6cae6216060bfea341817145be93dac2195b560fe",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202610260157-ZDEE0D/verification/20261026183759637-12927579be50f26e.json",
+      "sha256": "sha256:8dc3cb9fa979ab5dc2f23ed23d7a582d83e8395b79b08cd7364b86085ff22eca",
+      "required": true
+    },
+    {
+      "id": "native-identity",
+      "kind": "plan",
+      "path": ".agentplane/tasks/202610260157-ZDEE0D/quality/objects/sha256/5c5a563bc719a06705f77a7c733e36447a0a9d490474e964f838e690c154f75d.json",
+      "sha256": "sha256:5c5a563bc719a06705f77a7c733e36447a0a9d490474e964f838e690c154f75d",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:35a4c7a567a9b658a31feed9e096276ede95ad0c82198f362c302fe7bd20b612",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:6e5cb34ada84017778c43c3d057edcc68d3ccb60840c805e412f7dc6781070ee",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:d3dfd4eb0293213ab49d32c6f199066f2bc7c954cada6465aab458b1a9c7ee25",
+      "required": true
+    }
+  ]
+}

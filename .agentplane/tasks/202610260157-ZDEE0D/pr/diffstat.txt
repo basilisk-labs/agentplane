@@ -1,0 +1,16 @@
+ docs/user/cli-reference.generated.mdx              |   1 +
+ .../task/kernel-completed-external-blocker.test.ts |  63 ++++
+ .../task/kernel-completed-external-blocker.ts      | 103 +++--
+ .../src/commands/task/kernel-exchange.ts           |  18 +-
+ .../commands/task/kernel-failed-check-evidence.ts  |  74 ++++
+ .../agentplane/src/commands/task/kernel-plan.ts    |  15 +
+ .../task/kernel-required-check-rework.test.ts      | 246 ++++++++++++
+ .../src/commands/task/kernel-rework-lineage.ts     |  48 +++
+ .../src/commands/task/kernel-rework-proof.ts       |  18 +-
+ .../src/commands/task/plan-set.command.ts          |  26 ++
+ packages/core/src/tasks/task-kernel/kernel.ts      | 201 +++++++++-
+ packages/core/src/tasks/task-kernel/model.ts       |  10 +
+ .../task-kernel/required-check-correction.test.ts  | 417 +++++++++++++++++++++
+ .../baselines/v0.7-compatibility-candidate.json    |  28 +-
+ .../check-compatibility-contract-baseline.mjs      |  16 +-
+ 15 files changed, 1231 insertions(+), 53 deletions(-)

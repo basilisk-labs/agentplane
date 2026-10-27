@@ -35,6 +35,7 @@ import {
 import type {
   DomainEvent,
   EffectState,
+  ExecutionAuthority,
   ExternalEffect,
   ExecutionRequirements,
   KernelInput,
@@ -681,6 +682,209 @@ function preconditions(input: KernelInput): KernelResult | null {
   return requiredAuthority(input, workItemId);
 }
 
+function object(value: unknown): Record<string, unknown> | null {
+  return value !== null && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : null;
+}
+
+/** A failed executable test is never eligible. Only an unlaunched declared check may be corrected. */
+function validRequiredCheckCorrection(
+  input: KernelInput,
+  command: Extract<TaskCommand, { kind: "amend_plan" }>,
+  current: PlanRecord,
+) {
+  const proof = command.required_check_correction;
+  if (!proof) return null;
+  const amended = command.amended_plan;
+  const approvalDigest = planScopeExpansionApprovalDigest({
+    task_id: input.aggregate.id,
+    current_plan_digest: current.digest,
+    amended_plan_digest: amended.digest,
+    actor_id: input.actor.id,
+  });
+  if (
+    input.actor.kind !== "USER" ||
+    input.actor.transport !== "manual" ||
+    command.authority_delta_digest !== approvalDigest ||
+    !/^sha256:[a-f0-9]{64}$/u.test(proof.failed_work_order_id) ||
+    !proof.previous_command ||
+    !proof.replacement_command ||
+    proof.previous_command === proof.replacement_command ||
+    amended.work_items.length !== current.work_items.length
+  )
+    return null;
+  const before = current.work_items.find((item) => item.id === proof.work_item_id);
+  const after = amended.work_items.find((item) => item.id === proof.work_item_id);
+  const runtime = input.aggregate.work_items[proof.work_item_id];
+  if (!before || !after || !runtime || runtime.attempt < 1) return null;
+  if (
+    !["REWORK_READY", "BLOCKED"].includes(runtime.state) ||
+    amended.work_items.some(
+      (item, index) =>
+        item.id !== current.work_items[index]?.id ||
+        (item.id !== proof.work_item_id &&
+          kernelDigest(item) !== kernelDigest(current.work_items[index])),
+    )
+  )
+    return null;
+  const { contract_digest: oldDigest, ...oldDefinition } = before;
+  const { contract_digest: newDigest, ...newDefinition } = after;
+  if (kernelDigest(oldDefinition) !== kernelDigest(newDefinition)) return null;
+  const oldContract = oldDigest && command.work_contracts?.[oldDigest];
+  const newContract = newDigest && command.work_contracts?.[newDigest];
+  if (
+    !oldContract ||
+    !newContract ||
+    kernelDigest(oldContract) !== oldDigest ||
+    kernelDigest(newContract) !== newDigest
+  )
+    return null;
+  const { verification_commands: oldChecks, ...oldTerms } = oldContract;
+  const { verification_commands: newChecks, ...newTerms } = newContract;
+  if (
+    kernelDigest(oldTerms) !== kernelDigest(newTerms) ||
+    oldChecks.length !== newChecks.length ||
+    oldChecks.filter((check, index) => check !== newChecks[index]).length !== 1
+  )
+    return null;
+  const changedIndex = oldChecks.findIndex((check, index) => check !== newChecks[index]);
+  if (
+    oldChecks[changedIndex] !== proof.previous_command ||
+    newChecks[changedIndex] !== proof.replacement_command
+  )
+    return null;
+
+  const acceptedResult = object(proof.accepted_result_command_input);
+  const acceptedResultCommand = object(acceptedResult?.command);
+  const acceptedResultAuthority = object(acceptedResult?.authority);
+  const acceptedResultProvenance = object(acceptedResultAuthority?.provenance);
+  const acceptedAuthorityDigest = acceptedResultAuthority
+    ? authorityDigest(acceptedResultAuthority as unknown as ExecutionAuthority)
+    : null;
+  const failedWorkOrder = object(proof.failed_work_order);
+  const issuedBinding = object(failedWorkOrder?.canonical_binding);
+  const workBinding = issuedBinding && {
+    task_id: issuedBinding.task_id,
+    repository_fingerprint: issuedBinding.repository_fingerprint,
+    plan_revision: issuedBinding.plan_revision,
+    plan_digest: issuedBinding.plan_digest,
+    work_item_id: issuedBinding.work_item_id,
+    attempt: issuedBinding.attempt,
+    claim_id: issuedBinding.claim_id,
+    contract_digest: issuedBinding.contract_digest,
+  };
+  const boundResultCommand =
+    acceptedResultCommand && workBinding
+      ? { ...acceptedResultCommand, binding_digest: kernelDigest(workBinding) }
+      : null;
+  const resultReceipt = input.aggregate.mutation_receipts[`result:${proof.failed_work_order_id}`];
+  const prior = object(proof.validation_command_input);
+  const priorCommand = object(prior?.command);
+  const priorValidation = object(priorCommand?.validation);
+  const identity = object(priorValidation?.identity);
+  const native = object(proof.native_validation);
+  const nativeInput = object(native?.input);
+  const verification = object(nativeInput?.verification);
+  const nativeChecks = object(native?.checks);
+  const checks = nativeChecks?.checks;
+  const receipt = input.aggregate.mutation_receipts[`validation:${proof.failed_work_order_id}`];
+  const unsupported =
+    priorValidation?.status === "BLOCKED" &&
+    nativeChecks?.status === "unsupported" &&
+    nativeChecks.reason === `Unsupported declared check: ${proof.previous_command}`;
+  const unavailable =
+    priorValidation?.status === "FAILED" &&
+    nativeChecks?.status === "failed" &&
+    nativeChecks.reason === `Declared check could not run: ${proof.previous_command}`;
+  if (
+    failedWorkOrder?.work_order_id !== proof.failed_work_order_id ||
+    object(failedWorkOrder.task)?.id !== input.aggregate.id ||
+    ![
+      acceptedResultCommand?.expected_task_revision,
+      Number(acceptedResultCommand?.expected_task_revision) - 1,
+    ].includes(object(failedWorkOrder?.task)?.revision) ||
+    issuedBinding?.phase !== "implementation" ||
+    issuedBinding.task_id !== input.aggregate.id ||
+    issuedBinding.work_item_id !== proof.work_item_id ||
+    issuedBinding.plan_revision !== current.revision ||
+    issuedBinding.plan_digest !== current.digest ||
+    issuedBinding.contract_digest !== oldDigest ||
+    issuedBinding.repository_identity !== acceptedResultAuthority?.repository_identity ||
+    acceptedResultAuthority?.digest !== acceptedAuthorityDigest ||
+    acceptedResultAuthority.task_id !== input.aggregate.id ||
+    acceptedResultAuthority.plan_revision !== current.revision ||
+    acceptedResultAuthority.plan_digest !== current.digest ||
+    acceptedResultAuthority.work_item_id !== proof.work_item_id ||
+    (issuedBinding.authority_digest !== acceptedResultAuthority?.digest &&
+      issuedBinding.authority_digest !== acceptedResultProvenance?.parent_authority_digest) ||
+    acceptedResultAuthority?.repository_fingerprint !== acceptedResult?.repository_fingerprint ||
+    acceptedResult?.repository_fingerprint !== nativeInput?.repository_fingerprint ||
+    !Number.isInteger(issuedBinding.attempt) ||
+    Number(issuedBinding.attempt) < 1 ||
+    runtime.attempt !== issuedBinding.attempt ||
+    runtime.claim_id !== issuedBinding.claim_id ||
+    runtime.result_digest !== acceptedResultCommand?.result_digest ||
+    typeof issuedBinding.claim_id !== "string" ||
+    !issuedBinding.claim_id ||
+    (acceptedResultCommand?.binding_digest !== undefined &&
+      acceptedResultCommand.binding_digest !== kernelDigest(workBinding)) ||
+    acceptedResult?.mutation_id !== `result:${proof.failed_work_order_id}` ||
+    acceptedResultCommand?.kind !== "accept_work_item_result" ||
+    acceptedResultCommand?.task_id !== input.aggregate.id ||
+    acceptedResultCommand?.work_item_id !== proof.work_item_id ||
+    acceptedResultCommand?.plan_revision !== current.revision ||
+    acceptedResultCommand?.plan_digest !== current.digest ||
+    acceptedResultCommand?.result_digest !== nativeInput?.result_digest ||
+    resultReceipt?.mutation_id !== acceptedResult?.mutation_id ||
+    resultReceipt.command_digest !== kernelDigest(boundResultCommand) ||
+    resultReceipt.before_revision !== acceptedResultCommand?.expected_task_revision ||
+    resultReceipt.after_revision !== resultReceipt.before_revision + 1 ||
+    resultReceipt.after_revision > input.aggregate.revision ||
+    prior?.mutation_id !== `validation:${proof.failed_work_order_id}` ||
+    priorCommand?.kind !== "record_work_item_validation" ||
+    priorCommand?.task_id !== input.aggregate.id ||
+    priorCommand?.work_item_id !== proof.work_item_id ||
+    priorCommand?.expected_state_fingerprint !== prior?.repository_fingerprint ||
+    (!unsupported && !unavailable) ||
+    (unsupported && kernelDigest(runtime.validation) !== kernelDigest(priorValidation)) ||
+    identity?.command_digest !== kernelDigest(oldChecks) ||
+    native?.kind !== "kernel_native_validation" ||
+    nativeInput?.task_id !== input.aggregate.id ||
+    nativeInput?.work_item_id !== proof.work_item_id ||
+    nativeInput?.repository_fingerprint !== prior?.repository_fingerprint ||
+    identity?.implementation_identity !== nativeInput?.result_digest ||
+    !Array.isArray(priorValidation?.evidence_digests) ||
+    priorValidation.evidence_digests[0] !== kernelDigest(native) ||
+    kernelDigest(verification?.commands) !== kernelDigest(oldChecks) ||
+    !Array.isArray(checks) ||
+    checks.length !== (unsupported ? changedIndex : oldChecks.length) ||
+    receipt?.mutation_id !== prior?.mutation_id ||
+    receipt.command_digest !== kernelDigest(priorCommand) ||
+    receipt.before_revision !== priorCommand?.expected_task_revision ||
+    receipt.after_revision !== receipt.before_revision + 1 ||
+    resultReceipt.after_revision > receipt.before_revision ||
+    receipt.after_revision > input.aggregate.revision
+  )
+    return null;
+  for (const [index, value] of checks.entries()) {
+    const check = object(value);
+    const checkRuntime = object(check?.runtime);
+    if (check?.command !== oldChecks[index]) return null;
+    if (index === changedIndex) {
+      if (
+        check?.exit_code !== null ||
+        checkRuntime?.status !== "unavailable" ||
+        checkRuntime.executable_digest !== null ||
+        typeof check.stderr_tail !== "string" ||
+        !check.stderr_tail.startsWith("process command is not in the allowed executable set:")
+      )
+        return null;
+    } else if (check?.exit_code !== 0 || checkRuntime?.status !== "resolved") return null;
+  }
+  return proof;
+}
+
 function amendPlan(
   input: KernelInput,
   command: Extract<TaskCommand, { kind: "amend_plan" }>,
@@ -708,6 +912,9 @@ function amendPlan(
   const issues = validateWorkItemDefinitions(proposed.work_items);
   if (issues.length > 0) return rejected("WORK_ITEM_DEPENDENCY_INCOMPLETE", issues);
   const originals = new Map(current.work_items.map((item) => [item.id, item]));
+  const checkCorrection = validRequiredCheckCorrection(input, command, current);
+  if (command.required_check_correction && !checkCorrection)
+    return rejected("PLAN_SCOPE_EXPANSION_REQUIRES_USER", ["invalid_required_check_correction"]);
   const material =
     proposed.work_items.length !== current.work_items.length ||
     proposed.work_items.some(
@@ -720,10 +927,15 @@ function amendPlan(
       proposed.work_items,
       command.work_contracts ?? {},
     );
-    if (obligationIssues.length > 0)
+    const remainingObligationIssues = checkCorrection
+      ? obligationIssues.filter(
+          (issue) => issue !== `mandatory_check_removed:${checkCorrection.previous_command}`,
+        )
+      : obligationIssues;
+    if (remainingObligationIssues.length > 0)
       return rejected(
         "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
-        obligationIssues,
+        remainingObligationIssues,
         "request_authority_delta",
       );
   }
@@ -755,7 +967,8 @@ function amendPlan(
   const correctiveGrant = correctiveAmendmentGrant(input, command);
   if (command.corrective_grant_digest && !correctiveGrant)
     return rejected("AUTHORITY_SCOPE_EXCEEDED", ["corrective_grant_not_applicable"]);
-  const amendmentApproved = scopeExpansionApproved || correctiveGrant !== null;
+  const amendmentApproved =
+    scopeExpansionApproved || correctiveGrant !== null || checkCorrection !== null;
   if (
     (command.authority_delta_digest !== null && !amendmentApproved) ||
     (material && !amendmentApproved) ||
@@ -777,9 +990,10 @@ function amendPlan(
           item.execution_requirements,
         ) &&
           !amendmentApproved) ||
-        input.authority?.work_item_id !== null ||
+        (input.authority?.work_item_id !== null && checkCorrection === null) ||
         (!amendmentApproved &&
-          !executionRequirementsAreSubset(input.authority, item.execution_requirements))
+          (input.authority === null ||
+            !executionRequirementsAreSubset(input.authority, item.execution_requirements)))
       );
     })
   ) {

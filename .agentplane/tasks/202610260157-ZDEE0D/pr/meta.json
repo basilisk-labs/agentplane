@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202610260157-ZDEE0D/recover-an-approved-plan-when-a-required-declare",
+  "created_at": "2026-10-26T02:38:13.651Z",
+  "diffstat_sha256": "sha256:3e6e4508a375827e7cdd5b66fadd173bd6e33562e80b2a6aa5b89de1c0430e76",
+  "last_verified_at": "2026-10-26T19:15:45.527Z",
+  "last_verified_diffstat_sha256": "sha256:3e6e4508a375827e7cdd5b66fadd173bd6e33562e80b2a6aa5b89de1c0430e76",
+  "pr_number": 6932,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6932",
+  "pre_merge_closure": {
+    "basis_commit": "c19e679b46f5caec6bf0589ab528fe987d24ad7f",
+    "branch": "task/202610260157-ZDEE0D/recover-an-approved-plan-when-a-required-declare",
+    "pr_number": 6932,
+    "recorded_at": "2026-10-26T19:17:23.418Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202610260157-ZDEE0D",
+  "updated_at": "2026-10-26T08:16:59.359Z",
+  "verify": {
+    "status": "pass"
+  }
+}

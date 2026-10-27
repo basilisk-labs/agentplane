@@ -4,6 +4,7 @@ import { AGENT_WORK_ORDER_V2_ZOD_SCHEMA, type AgentWorkOrderV2 } from "@agentpla
 import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js";
 import { readStableRegularTextNoFollow } from "../../shared/stable-file.js";
 import { isRecord } from "../../shared/guards.js";
+import { failedRequiredCheckEvidence } from "./kernel-failed-check-evidence.js";
 
 type Plan = NonNullable<KernelRecord["aggregate"]["current_plan"]>;
 
@@ -91,6 +92,10 @@ export function historicalAmendment(
   plan: Plan,
   event: k.DomainEvent,
   fingerprint: k.Sha256Digest,
+  requiredCheckCorrection?: Extract<
+    k.TaskCommand,
+    { kind: "amend_plan" }
+  >["required_check_correction"],
 ): k.TaskCommand | null {
   const plans = [
     ...record.aggregate.plan_history,
@@ -118,8 +123,51 @@ export function historicalAmendment(
     amendment_digest: k.kernelDigest(amended),
     authority_delta_digest: plan.approval_evidence_digest,
     work_contracts: contracts,
+    ...(requiredCheckCorrection ? { required_check_correction: requiredCheckCorrection } : {}),
   };
   return authenticReworkEvent(record, event, command) ? command : null;
+}
+
+/** Recover a historical correction only when its retained failed exchange reproduces the receipt. */
+export async function historicalAmendmentWithFailedCheck(
+  record: KernelRecord,
+  plan: Plan,
+  event: k.DomainEvent,
+  fingerprint: k.Sha256Digest,
+  directory: string,
+): Promise<k.TaskCommand | null> {
+  const ordinary = historicalAmendment(record, plan, event, fingerprint);
+  if (ordinary) return ordinary;
+  const history = [...record.aggregate.plan_history, record.aggregate.current_plan].filter(
+    (value): value is Plan => value !== null,
+  );
+  const index = history.findIndex((value) => value.digest === plan.digest);
+  const source = history[index - 1];
+  if (!source || event.kind !== "plan_amended") return null;
+  const proposal = plan.work_items.map((definition) => {
+    const contract = record.documents?.contracts[String(definition.contract_digest)];
+    return contract ? { id: definition.id, contract } : null;
+  });
+  if (proposal.includes(null)) return null;
+  const matches: k.TaskCommand[] = [];
+  for (const mutationId of Object.keys(record.aggregate.mutation_receipts)) {
+    const match = /^validation:(sha256:[a-f0-9]{64})$/u.exec(mutationId);
+    if (!match) continue;
+    try {
+      const proof = await failedRequiredCheckEvidence(
+        path.join(path.dirname(directory), match[1]!.slice(7)),
+        match[1]!,
+        source,
+        { work_items: proposal as { id: string; contract: { verification_commands: string[] } }[] },
+        record.documents!.contracts,
+      );
+      const command = historicalAmendment(record, plan, event, fingerprint, proof);
+      if (command) matches.push(command);
+    } catch {
+      // A different or incomplete historical exchange cannot authenticate this amendment.
+    }
+  }
+  return matches.length === 1 ? matches[0]! : null;
 }
 
 export async function retainedPrerequisiteStops(

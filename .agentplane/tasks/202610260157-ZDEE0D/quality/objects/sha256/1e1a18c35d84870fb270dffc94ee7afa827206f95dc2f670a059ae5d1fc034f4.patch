@@ -1,0 +1,1641 @@
+diff --git a/docs/user/cli-reference.generated.mdx b/docs/user/cli-reference.generated.mdx
+index c9d561aa5..d681cd365 100644
+--- a/docs/user/cli-reference.generated.mdx
++++ b/docs/user/cli-reference.generated.mdx
+@@ -851,6 +851,7 @@ Options:
+ - `--file <path>`: Read plan text from a file path (relative to cwd).
+ - `--updated-by <id>`: Optional. Sets doc_updated_by when writing the plan.
+ - `--scope-expansion-approved-by <role>`: Explicit manual approval for an additive canonical WorkItem scope expansion. Requires USER.
++- `--failed-check-work-order <sha256:digest>`: Correct one native-proven unlaunchable required check in this WorkOrder. Requires --scope-expansion-approved-by USER and a revised Plan file.
+ 
+ Examples:
+ 
+diff --git a/packages/agentplane/src/commands/task/kernel-completed-external-blocker.test.ts b/packages/agentplane/src/commands/task/kernel-completed-external-blocker.test.ts
+new file mode 100644
+index 000000000..5eadf2b1c
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/kernel-completed-external-blocker.test.ts
+@@ -0,0 +1,63 @@
++import { describe, expect, it } from "vitest";
++import { canonicalBlockerReadmeProjection } from "./kernel-completed-external-blocker.js";
++
++const baseline = `---
++revision: 62
++comments:
++  - author: CODER
++    body: Completed implementation
++doc_updated_at: "2026-10-26T16:44:00.527Z"
++doc_updated_by: CODER
++token_usage:
++  agent_runs: 3
++  cached_input_observed_agent_runs: 0
++  cached_input_tokens: null
++extensions:
++  existing: retained
++---
++Task body
++`;
++const pending = { status: "pending", request_digest: "sha256:exact" };
++const current = `---
++revision: 63
++comments:
++  - author: CODER
++    body: Completed implementation
++  - author: SUPERVISOR
++    body: Exact blocker
++doc_updated_at: "2026-10-26T16:49:20.174Z"
++doc_updated_by: SUPERVISOR
++token_usage:
++  agent_runs: 3
++extensions:
++  existing: retained
++  agentplane.scope_extension_request:
++    status: pending
++    request_digest: "sha256:exact"
++---
++Task body
++`;
++
++describe("canonical blocker README projection", () => {
++  it("accepts the task writer's timestamp and omitted legacy token defaults", () => {
++    expect(
++      canonicalBlockerReadmeProjection({ baseline, current, body: "Exact blocker", pending }),
++    ).toBe(true);
++  });
++
++  it.each([
++    ["task body", current.replace("Task body", "Altered body")],
++    ["token usage", current.replace("agent_runs: 3", "agent_runs: 4")],
++    ["writer identity", current.replace("doc_updated_by: SUPERVISOR", "doc_updated_by: UNKNOWN")],
++    ["request", current.replace("sha256:exact", "sha256:changed")],
++  ])("rejects unrelated %s drift", (_name, changed) => {
++    expect(() =>
++      canonicalBlockerReadmeProjection({
++        baseline,
++        current: changed,
++        body: "Exact blocker",
++        pending,
++      }),
++    ).toThrow();
++  });
++});
+diff --git a/packages/agentplane/src/commands/task/kernel-completed-external-blocker.ts b/packages/agentplane/src/commands/task/kernel-completed-external-blocker.ts
+index 1a0ef3ef4..1f24d1092 100644
+--- a/packages/agentplane/src/commands/task/kernel-completed-external-blocker.ts
++++ b/packages/agentplane/src/commands/task/kernel-completed-external-blocker.ts
+@@ -29,6 +29,72 @@ function fail(reason: string): never {
+   });
+ }
+ 
++export function canonicalBlockerReadmeProjection(opts: {
++  baseline: string;
++  current: string;
++  body: string;
++  pending: unknown;
++}): boolean {
++  const before = parseTaskReadme(opts.baseline);
++  before.frontmatter = withTaskReadmeFrontmatterDefaults(before.frontmatter);
++  const after = parseTaskReadme(opts.current);
++  after.frontmatter = withTaskReadmeFrontmatterDefaults(after.frontmatter);
++  const comment = { author: "SUPERVISOR", body: opts.body };
++  const comments: unknown[] = Array.isArray(before.frontmatter.comments)
++    ? before.frontmatter.comments
++    : [];
++  const recorded = stable(after.frontmatter.comments ?? []) === stable([...comments, comment]);
++  if (recorded) {
++    if (after.frontmatter.revision !== Number(before.frontmatter.revision) + 1)
++      fail("projection-revision");
++    after.frontmatter.revision = before.frontmatter.revision;
++    if (Object.hasOwn(before.frontmatter, "comments"))
++      after.frontmatter.comments = before.frontmatter.comments;
++    else delete after.frontmatter.comments;
++    if (opts.pending) {
++      const extensions = after.frontmatter.extensions as Record<string, unknown> | undefined;
++      const original = before.frontmatter.extensions as Record<string, unknown> | undefined;
++      if (
++        !extensions ||
++        stable(extensions[TASK_SCOPE_EXTENSION_REQUEST_KEY]) !== stable(opts.pending)
++      )
++        fail("scope-request");
++      if (original && Object.hasOwn(original, TASK_SCOPE_EXTENSION_REQUEST_KEY))
++        extensions[TASK_SCOPE_EXTENSION_REQUEST_KEY] = original[TASK_SCOPE_EXTENSION_REQUEST_KEY];
++      else delete extensions[TASK_SCOPE_EXTENSION_REQUEST_KEY];
++    }
++    // The task writer updates these fields when it appends the supervisor comment.
++    if (
++      after.frontmatter.doc_updated_by !== before.frontmatter.doc_updated_by &&
++      after.frontmatter.doc_updated_by !== "SUPERVISOR"
++    )
++      fail("projection-writer");
++    const updatedAt = after.frontmatter.doc_updated_at;
++    if (typeof updatedAt !== "string" || !Number.isFinite(Date.parse(updatedAt)))
++      fail("projection-timestamp");
++    after.frontmatter.doc_updated_at = before.frontmatter.doc_updated_at;
++    after.frontmatter.doc_updated_by = before.frontmatter.doc_updated_by;
++    // The task schema omits legacy default cache counters on write. Restore only
++    // those exact defaults for comparison; all non-default usage remains guarded.
++    const priorUsage = before.frontmatter.token_usage as Record<string, unknown> | undefined;
++    const currentUsage = after.frontmatter.token_usage as Record<string, unknown> | undefined;
++    if (priorUsage && currentUsage) {
++      if (
++        priorUsage.cached_input_observed_agent_runs === 0 &&
++        !Object.hasOwn(currentUsage, "cached_input_observed_agent_runs")
++      )
++        currentUsage.cached_input_observed_agent_runs = 0;
++      if (
++        priorUsage.cached_input_tokens === null &&
++        !Object.hasOwn(currentUsage, "cached_input_tokens")
++      )
++        currentUsage.cached_input_tokens = null;
++    }
++  }
++  if (stable(before) !== stable(after)) fail("task-projection");
++  return recorded;
++}
++
+ /** Prove only the one native comment/request projection changed since issuance. */
+ export async function canonicalBlockerProjection(opts: {
+   command: CommandContext;
+@@ -67,41 +133,16 @@ export async function canonicalBlockerProjection(opts: {
+     stable(withoutReadme(opts.exchange.baseline.task_artifacts ?? {}))
+   )
+     fail("protected-artifacts");
+-  const before = parseTaskReadme(baseline.stdout);
+-  before.frontmatter = withTaskReadmeFrontmatterDefaults(before.frontmatter);
+-  const after = parseTaskReadme(
+-    await readStableRegularTextNoFollow(
++  const recorded = canonicalBlockerReadmeProjection({
++    baseline: baseline.stdout,
++    current: await readStableRegularTextNoFollow(
+       path.join(opts.exchange.checkout, file),
+       "canonical blocker task",
+     ),
+-  );
+-  after.frontmatter = withTaskReadmeFrontmatterDefaults(after.frontmatter);
++    body: opts.body,
++    pending: opts.pending,
++  });
+   const comment = { author: "SUPERVISOR", body: opts.body };
+-  const comments: unknown[] = Array.isArray(before.frontmatter.comments)
+-    ? before.frontmatter.comments
+-    : [];
+-  const recorded = stable(after.frontmatter.comments ?? []) === stable([...comments, comment]);
+-  if (recorded) {
+-    if (after.frontmatter.revision !== Number(before.frontmatter.revision) + 1)
+-      fail("projection-revision");
+-    after.frontmatter.revision = before.frontmatter.revision;
+-    if (Object.hasOwn(before.frontmatter, "comments"))
+-      after.frontmatter.comments = before.frontmatter.comments;
+-    else delete after.frontmatter.comments;
+-    if (opts.pending) {
+-      const extensions = after.frontmatter.extensions as Record<string, unknown> | undefined;
+-      const original = before.frontmatter.extensions as Record<string, unknown> | undefined;
+-      if (
+-        !extensions ||
+-        stable(extensions[TASK_SCOPE_EXTENSION_REQUEST_KEY]) !== stable(opts.pending)
+-      )
+-        fail("scope-request");
+-      if (original && Object.hasOwn(original, TASK_SCOPE_EXTENSION_REQUEST_KEY))
+-        extensions[TASK_SCOPE_EXTENSION_REQUEST_KEY] = original[TASK_SCOPE_EXTENSION_REQUEST_KEY];
+-      else delete extensions[TASK_SCOPE_EXTENSION_REQUEST_KEY];
+-    }
+-  }
+-  if (stable(before) !== stable(after)) fail("task-projection");
+   if (opts.persist && !recorded) {
+     await applyTaskMutation({
+       ctx: opts.command,
+diff --git a/packages/agentplane/src/commands/task/kernel-exchange.ts b/packages/agentplane/src/commands/task/kernel-exchange.ts
+index 7300df9c8..585e0a438 100644
+--- a/packages/agentplane/src/commands/task/kernel-exchange.ts
++++ b/packages/agentplane/src/commands/task/kernel-exchange.ts
+@@ -1,7 +1,7 @@
+ import { scopeReplanInputs } from "./kernel-scope-replan-inputs.js";
+ import {
+   findReworkLineage,
+-  historicalAmendment,
++  historicalAmendmentWithFailedCheck,
+   retainedIssuanceAuthority,
+   authenticReworkEvent,
+   precedingStopContinuation,
+@@ -301,16 +301,22 @@ async function approvedAmendmentInputs(
+       entry.observation?.kind === "plan_amendment" &&
+       entry.authority.plan_digest === history.origin.digest,
+   );
+-  const amendment = record.events.find(
+-    (event) =>
++  let amendment;
++  for (const event of record.events) {
++    if (
+       originAuthority?.observation &&
+-      historicalAmendment(
++      (await historicalAmendmentWithFailedCheck(
+         record,
+         history.origin,
+         event,
+         originAuthority.observation.previous_fingerprint,
+-      ),
+-  );
++        directory,
++      ))
++    ) {
++      amendment = event;
++      break;
++    }
++  }
+   if (!amendment) return [];
+   if (!(await authenticatedAmendmentHistory(order, directory, record, amendment))) return [];
+   for (const [id, receipt] of Object.entries(record.aggregate.mutation_receipts).toSorted(
+diff --git a/packages/agentplane/src/commands/task/kernel-failed-check-evidence.ts b/packages/agentplane/src/commands/task/kernel-failed-check-evidence.ts
+new file mode 100644
+index 000000000..2ec1f91fc
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/kernel-failed-check-evidence.ts
+@@ -0,0 +1,74 @@
++import { readdir } from "node:fs/promises";
++import path from "node:path";
++import { taskKernel as k } from "@agentplaneorg/core/tasks";
++
++import { readStableRegularTextNoFollow } from "../../shared/stable-file.js";
++
++/** Rebuild the exact immutable proof used by a USER-approved required-check correction. */
++export async function failedRequiredCheckEvidence(
++  directory: string,
++  workOrderId: string,
++  current: { work_items: readonly { id: string; contract_digest?: string }[] },
++  proposal: {
++    work_items: readonly { id: string; contract: { verification_commands: readonly string[] } }[];
++  },
++  contracts: Readonly<Record<string, { verification_commands: readonly string[] }>>,
++) {
++  const changed = proposal.work_items.flatMap((item) => {
++    const original = current.work_items.find((candidate) => candidate.id === item.id);
++    const before = original?.contract_digest && contracts[original.contract_digest];
++    if (!before) return [];
++    return before.verification_commands.flatMap((check, index) =>
++      check === item.contract.verification_commands[index]
++        ? []
++        : [
++            {
++              work_item_id: item.id,
++              previous_command: check,
++              replacement_command: item.contract.verification_commands[index],
++            },
++          ],
++    );
++  });
++  if (changed.length !== 1 || !changed[0]?.replacement_command)
++    throw new Error("Required check correction must replace exactly one command");
++  const acceptedResultCommand = JSON.parse(
++    await readStableRegularTextNoFollow(
++      path.join(directory, "command-input.json"),
++      "accepted result command for failed check",
++    ),
++  ) as unknown;
++  const failedWorkOrder = JSON.parse(
++    await readStableRegularTextNoFollow(
++      path.join(directory, "work-order.json"),
++      "issued WorkOrder for failed check",
++    ),
++  ) as unknown;
++  const validationCommand = JSON.parse(
++    await readStableRegularTextNoFollow(
++      path.join(directory, "validation-command.json"),
++      "failed required check validation command",
++    ),
++  ) as { command?: { validation?: { evidence_digests?: string[] } } };
++  const evidenceDigest = validationCommand.command?.validation?.evidence_digests?.[0];
++  const files = await readdir(directory);
++  const nativeFiles = files.filter((name) => /^native-validation-[a-f0-9]{64}\.json$/u.test(name));
++  const matching = [];
++  for (const name of nativeFiles) {
++    const value: unknown = JSON.parse(
++      await readStableRegularTextNoFollow(path.join(directory, name), "native failed check"),
++    );
++    if (k.kernelDigest(value) === evidenceDigest) matching.push(value);
++  }
++  if (matching.length !== 1) throw new Error("Native failed-check evidence is unavailable");
++  return {
++    work_item_id: changed[0].work_item_id,
++    failed_work_order_id: workOrderId as k.Sha256Digest,
++    previous_command: changed[0].previous_command,
++    replacement_command: changed[0].replacement_command,
++    failed_work_order: failedWorkOrder,
++    accepted_result_command_input: acceptedResultCommand,
++    validation_command_input: validationCommand,
++    native_validation: matching[0],
++  };
++}
+diff --git a/packages/agentplane/src/commands/task/kernel-plan.ts b/packages/agentplane/src/commands/task/kernel-plan.ts
+index f1ff021ca..b9a40d462 100644
+--- a/packages/agentplane/src/commands/task/kernel-plan.ts
++++ b/packages/agentplane/src/commands/task/kernel-plan.ts
+@@ -16,6 +16,8 @@ import {
+ import { parseSuppliedPlanInput, prepareSuppliedPlan } from "./create-plan-input.js";
+ import { suppliedKernelProposal } from "./create-plan-proposal.js";
+ import { canonicalPlanFromProposal } from "./kernel-plan-proposal.js";
++import { kernelExchangeDirectory } from "./kernel-exchange.js";
++import { failedRequiredCheckEvidence } from "./kernel-failed-check-evidence.js";
+ export { canonicalPlanFromProposal } from "./kernel-plan-proposal.js";
+ 
+ /** Explicit native planning entrypoint. The input describes intent and never carries approval. */
+@@ -27,6 +29,7 @@ export async function setCanonicalPlan(
+     scopeExpansionApprovedBy?: string;
+     expectedSuppliedInputDigest?: string;
+     correctiveGrantDigest?: k.Sha256Digest;
++    failedCheckWorkOrder?: string;
+   } = {},
+ ) {
+   const supplied =
+@@ -118,6 +121,17 @@ export async function setCanonicalPlan(
+     );
+   }
+   const amended = { revision: plan.revision, digest: plan.digest, work_items: plan.work_items };
++  if (options.failedCheckWorkOrder && options.scopeExpansionApprovedBy !== "USER")
++    throw new Error("Required check correction requires exact USER authority");
++  const checkCorrection = options.failedCheckWorkOrder
++    ? await failedRequiredCheckEvidence(
++        await kernelExchangeDirectory(command, taskId, options.failedCheckWorkOrder),
++        options.failedCheckWorkOrder,
++        current,
++        proposal,
++        read.record.documents?.contracts ?? {},
++      )
++    : null;
+   const approvalDigest = options.scopeExpansionApprovedBy
+     ? k.planScopeExpansionApprovalDigest({
+         task_id: taskId,
+@@ -147,6 +161,7 @@ export async function setCanonicalPlan(
+       amended_plan: amended,
+       amendment_digest: k.kernelDigest(amended),
+       authority_delta_digest: approvalDigest,
++      ...(checkCorrection ? { required_check_correction: checkCorrection } : {}),
+       ...(options.correctiveGrantDigest
+         ? {
+             corrective_grant_digest: options.correctiveGrantDigest,
+diff --git a/packages/agentplane/src/commands/task/kernel-required-check-rework.test.ts b/packages/agentplane/src/commands/task/kernel-required-check-rework.test.ts
+new file mode 100644
+index 000000000..b4549d020
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/kernel-required-check-rework.test.ts
+@@ -0,0 +1,246 @@
++import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
++import os from "node:os";
++import path from "node:path";
++import { afterEach, describe, expect, it } from "vitest";
++import { taskKernel as k } from "@agentplaneorg/core/tasks";
++import {
++  aggregate,
++  fingerprint,
++  plan,
++  runtime,
++} from "../../../../core/src/tasks/task-kernel/kernel.test-fixtures.js";
++import { makeKernelRecord } from "../../adapters/task-backend/kernel-record.js";
++import {
++  historicalAmendment,
++  historicalAmendmentWithFailedCheck,
++} from "./kernel-rework-lineage.js";
++
++const directories: string[] = [];
++afterEach(async () => {
++  for (const directory of directories.splice(0))
++    await rm(directory, { recursive: true, force: true });
++});
++
++async function fixture(corrected: boolean) {
++  const directory = await mkdtemp(path.join(os.tmpdir(), "kernel-required-rework-"));
++  directories.push(directory);
++  const oldCheck = "Focused tests covering negative drift";
++  const replacement =
++    "bunx vitest run packages/agentplane/src/commands/task/kernel-required-check-rework.test.ts";
++  const oldContract = {
++    role: "EXECUTOR" as const,
++    objective: "Verify recovery",
++    acceptance_criteria: ["Checks pass"],
++    verification_commands: ["bun run typecheck", oldCheck],
++  };
++  const nextContract = {
++    ...oldContract,
++    verification_commands: ["bun run typecheck", replacement],
++  };
++  const oldDefinition = { ...plan.work_items[0]!, contract_digest: k.kernelDigest(oldContract) };
++  const nextDefinition = {
++    ...oldDefinition,
++    contract_digest: k.kernelDigest(nextContract),
++    ...(corrected ? {} : { expected_outputs: ["new-output"] }),
++  };
++  const source = {
++    ...plan,
++    state: "SUPERSEDED" as const,
++    work_items: [oldDefinition],
++    digest: k.kernelDigest({ revision: 1, work_items: [oldDefinition] }),
++  };
++  const amended = {
++    revision: 2,
++    work_items: [nextDefinition],
++    digest: k.kernelDigest({ revision: 2, work_items: [nextDefinition] }),
++  };
++  const approval = k.planScopeExpansionApprovalDigest({
++    task_id: "task-1",
++    current_plan_digest: source.digest,
++    amended_plan_digest: amended.digest,
++    actor_id: "USER",
++  });
++  const current = {
++    ...source,
++    ...amended,
++    state: "APPROVED" as const,
++    approval_actor_id: "USER",
++    approval_evidence_digest: approval,
++  };
++  const workOrderId = k.kernelDigest("failed-check-work-order");
++  const native = {
++    checks: {
++      status: "failed",
++      checks: [{ command: oldCheck, runtime: { status: "unavailable" } }],
++    },
++  };
++  const failedWorkOrder = {
++    work_order_id: workOrderId,
++    canonical_binding: { plan_digest: source.digest },
++  };
++  const acceptedResult = {
++    command: { kind: "accept_work_item_result", plan_digest: source.digest },
++  };
++  const validation = { command: { validation: { evidence_digests: [k.kernelDigest(native)] } } };
++  const proof = {
++    work_item_id: "kernel",
++    failed_work_order_id: workOrderId,
++    previous_command: oldCheck,
++    replacement_command: replacement,
++    failed_work_order: failedWorkOrder,
++    accepted_result_command_input: acceptedResult,
++    validation_command_input: validation,
++    native_validation: native,
++  };
++  const contracts = {
++    [k.kernelDigest(oldContract)]: oldContract,
++    [k.kernelDigest(nextContract)]: nextContract,
++  };
++  const command: k.TaskCommand = {
++    kind: "amend_plan",
++    task_id: "task-1",
++    expected_task_revision: 7,
++    expected_state_fingerprint: fingerprint,
++    plan_revision: 1,
++    plan_digest: source.digest,
++    amended_plan: amended,
++    amendment_digest: k.kernelDigest(amended),
++    authority_delta_digest: approval,
++    work_contracts: contracts,
++    ...(corrected ? { required_check_correction: proof } : {}),
++  };
++  const event: k.DomainEvent = {
++    id: "amendment:plan_amended",
++    task_id: "task-1",
++    mutation_id: "amendment",
++    task_revision: 8,
++    kind: "plan_amended",
++    command_digest: k.kernelDigest(command),
++    payload_digest: k.kernelDigest({ kind: "amend_plan", aggregate_revision: 8 }),
++    occurred_at: "2026-10-26T00:00:00.000Z",
++  };
++  const record = makeKernelRecord(
++    k.kernelDigest("repository"),
++    aggregate({
++      revision: 8,
++      plan_history: [source],
++      current_plan: current,
++      work_items: { kernel: { ...runtime("READY"), definition: nextDefinition } },
++      mutation_receipts: {
++        amendment: {
++          mutation_id: "amendment",
++          command_digest: event.command_digest,
++          before_revision: 7,
++          after_revision: 8,
++          aggregate_digest: k.kernelDigest("post-amendment"),
++          event_digests: [k.kernelDigest(event)],
++          effect_ids: [],
++        },
++        [`validation:${workOrderId}`]: {
++          mutation_id: `validation:${workOrderId}`,
++          command_digest: k.kernelDigest(validation),
++          before_revision: 6,
++          after_revision: 7,
++          aggregate_digest: k.kernelDigest("failed-validation"),
++          event_digests: [],
++          effect_ids: [],
++        },
++      },
++    }),
++    [event],
++    { intent: { objective: "Verify recovery", context: "Test" }, contracts },
++  );
++  const exchange = path.join(directory, workOrderId.slice(7));
++  await mkdir(exchange);
++  await Promise.all([
++    writeFile(path.join(exchange, "command-input.json"), JSON.stringify(acceptedResult)),
++    writeFile(path.join(exchange, "work-order.json"), JSON.stringify(failedWorkOrder)),
++    writeFile(path.join(exchange, "validation-command.json"), JSON.stringify(validation)),
++    writeFile(
++      path.join(exchange, `native-validation-${k.kernelDigest(native).slice(7)}.json`),
++      JSON.stringify(native),
++    ),
++  ]);
++  return { record, current, event, directory, exchange, command };
++}
++
++describe("historical required-check amendment", () => {
++  it("reconstructs the exact accepted correction from retained failed evidence", async () => {
++    const f = await fixture(true);
++    expect(historicalAmendment(f.record, f.current, f.event, fingerprint)).toBeNull();
++    expect(
++      await historicalAmendmentWithFailedCheck(
++        f.record,
++        f.current,
++        f.event,
++        fingerprint,
++        path.join(f.directory, "current"),
++      ),
++    ).toEqual(f.command);
++  });
++
++  it.each([
++    "missing-proof",
++    "tampered-proof",
++    "tampered-accepted-result",
++    "wrong-plan",
++    "wrong-work-order",
++    "receipt-mismatch",
++  ])("rejects %s", async (kind) => {
++    const f = await fixture(true);
++    if (kind === "missing-proof") await rm(path.join(f.exchange, "validation-command.json"));
++    if (kind === "tampered-proof")
++      await writeFile(
++        path.join(f.exchange, "work-order.json"),
++        JSON.stringify({ work_order_id: "forged" }),
++      );
++    if (kind === "tampered-accepted-result")
++      await writeFile(
++        path.join(f.exchange, "command-input.json"),
++        JSON.stringify({ command: { kind: "unrelated" } }),
++      );
++    if (kind === "wrong-plan")
++      await writeFile(
++        path.join(f.exchange, "work-order.json"),
++        JSON.stringify({
++          work_order_id: k.kernelDigest("failed-check-work-order"),
++          canonical_binding: { plan_digest: k.kernelDigest("other-plan") },
++        }),
++      );
++    if (kind === "wrong-work-order") {
++      const receipt =
++        f.record.aggregate.mutation_receipts[
++          `validation:${k.kernelDigest("failed-check-work-order")}`
++        ]!;
++      delete f.record.aggregate.mutation_receipts[receipt.mutation_id];
++      f.record.aggregate.mutation_receipts[`validation:${k.kernelDigest("other")}`] = {
++        ...receipt,
++        mutation_id: `validation:${k.kernelDigest("other")}`,
++      };
++    }
++    if (kind === "receipt-mismatch")
++      f.record.aggregate.mutation_receipts.amendment!.command_digest = k.kernelDigest("forged");
++    expect(
++      await historicalAmendmentWithFailedCheck(
++        f.record,
++        f.current,
++        f.event,
++        fingerprint,
++        path.join(f.directory, "current"),
++      ),
++    ).toBeNull();
++  });
++
++  it("retains ordinary amendment recovery without a failed-check proof", async () => {
++    const f = await fixture(false);
++    expect(
++      await historicalAmendmentWithFailedCheck(
++        f.record,
++        f.current,
++        f.event,
++        fingerprint,
++        path.join(f.directory, "current"),
++      ),
++    ).toEqual(f.command);
++  });
++});
+diff --git a/packages/agentplane/src/commands/task/kernel-rework-lineage.ts b/packages/agentplane/src/commands/task/kernel-rework-lineage.ts
+index 9321978c2..a7995d389 100644
+--- a/packages/agentplane/src/commands/task/kernel-rework-lineage.ts
++++ b/packages/agentplane/src/commands/task/kernel-rework-lineage.ts
+@@ -4,6 +4,7 @@ import { AGENT_WORK_ORDER_V2_ZOD_SCHEMA, type AgentWorkOrderV2 } from "@agentpla
+ import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js";
+ import { readStableRegularTextNoFollow } from "../../shared/stable-file.js";
+ import { isRecord } from "../../shared/guards.js";
++import { failedRequiredCheckEvidence } from "./kernel-failed-check-evidence.js";
+ 
+ type Plan = NonNullable<KernelRecord["aggregate"]["current_plan"]>;
+ 
+@@ -91,6 +92,10 @@ export function historicalAmendment(
+   plan: Plan,
+   event: k.DomainEvent,
+   fingerprint: k.Sha256Digest,
++  requiredCheckCorrection?: Extract<
++    k.TaskCommand,
++    { kind: "amend_plan" }
++  >["required_check_correction"],
+ ): k.TaskCommand | null {
+   const plans = [
+     ...record.aggregate.plan_history,
+@@ -118,10 +123,53 @@ export function historicalAmendment(
+     amendment_digest: k.kernelDigest(amended),
+     authority_delta_digest: plan.approval_evidence_digest,
+     work_contracts: contracts,
++    ...(requiredCheckCorrection ? { required_check_correction: requiredCheckCorrection } : {}),
+   };
+   return authenticReworkEvent(record, event, command) ? command : null;
+ }
+ 
++/** Recover a historical correction only when its retained failed exchange reproduces the receipt. */
++export async function historicalAmendmentWithFailedCheck(
++  record: KernelRecord,
++  plan: Plan,
++  event: k.DomainEvent,
++  fingerprint: k.Sha256Digest,
++  directory: string,
++): Promise<k.TaskCommand | null> {
++  const ordinary = historicalAmendment(record, plan, event, fingerprint);
++  if (ordinary) return ordinary;
++  const history = [...record.aggregate.plan_history, record.aggregate.current_plan].filter(
++    (value): value is Plan => value !== null,
++  );
++  const index = history.findIndex((value) => value.digest === plan.digest);
++  const source = history[index - 1];
++  if (!source || event.kind !== "plan_amended") return null;
++  const proposal = plan.work_items.map((definition) => {
++    const contract = record.documents?.contracts[String(definition.contract_digest)];
++    return contract ? { id: definition.id, contract } : null;
++  });
++  if (proposal.includes(null)) return null;
++  const matches: k.TaskCommand[] = [];
++  for (const mutationId of Object.keys(record.aggregate.mutation_receipts)) {
++    const match = /^validation:(sha256:[a-f0-9]{64})$/u.exec(mutationId);
++    if (!match) continue;
++    try {
++      const proof = await failedRequiredCheckEvidence(
++        path.join(path.dirname(directory), match[1]!.slice(7)),
++        match[1]!,
++        source,
++        { work_items: proposal as { id: string; contract: { verification_commands: string[] } }[] },
++        record.documents!.contracts,
++      );
++      const command = historicalAmendment(record, plan, event, fingerprint, proof);
++      if (command) matches.push(command);
++    } catch {
++      // A different or incomplete historical exchange cannot authenticate this amendment.
++    }
++  }
++  return matches.length === 1 ? matches[0]! : null;
++}
++
+ export async function retainedPrerequisiteStops(
+   directory: string,
+   record: KernelRecord,
+diff --git a/packages/agentplane/src/commands/task/kernel-rework-proof.ts b/packages/agentplane/src/commands/task/kernel-rework-proof.ts
+index 86af5518e..e8656d5b6 100644
+--- a/packages/agentplane/src/commands/task/kernel-rework-proof.ts
++++ b/packages/agentplane/src/commands/task/kernel-rework-proof.ts
+@@ -1,7 +1,7 @@
+ import {
+   authenticReworkEvent as authentic,
+   findReworkLineage,
+-  historicalAmendment,
++  historicalAmendmentWithFailedCheck,
+   retainedPrerequisiteStops,
+ } from "./kernel-rework-lineage.js";
+ import path from "node:path";
+@@ -69,7 +69,13 @@ export async function authenticatedAmendmentHistory(
+     );
+     if (
+       !authority ||
+-      !historicalAmendment(record, plan, amendment, authority.observation!.previous_fingerprint)
++      !(await historicalAmendmentWithFailedCheck(
++        record,
++        plan,
++        amendment,
++        authority.observation!.previous_fingerprint,
++        directory,
++      ))
+     )
+       return false;
+     let fingerprint = authority.observation!.previous_fingerprint;
+@@ -116,7 +122,13 @@ export async function authenticatedAmendmentHistory(
+             next.work_items.length !== plan.work_items.length
+           )
+             return false;
+-          const amended = historicalAmendment(record, next, event, fingerprint);
++          const amended = await historicalAmendmentWithFailedCheck(
++            record,
++            next,
++            event,
++            fingerprint,
++            directory,
++          );
+           if (!amended) return false;
+           command = amended;
+           plan = next;
+diff --git a/packages/agentplane/src/commands/task/plan-set.command.ts b/packages/agentplane/src/commands/task/plan-set.command.ts
+index aad3303da..2399ccc02 100644
+--- a/packages/agentplane/src/commands/task/plan-set.command.ts
++++ b/packages/agentplane/src/commands/task/plan-set.command.ts
+@@ -20,6 +20,7 @@ export type TaskPlanSetParsed = {
+   recipeFile?: string;
+   updatedBy?: string;
+   scopeExpansionApprovedBy?: string;
++  failedCheckWorkOrder?: string;
+ };
+ 
+ export const taskPlanSetSpec: CommandSpec<TaskPlanSetParsed> = {
+@@ -60,6 +61,13 @@ export const taskPlanSetSpec: CommandSpec<TaskPlanSetParsed> = {
+       description:
+         "Explicit manual approval for an additive canonical WorkItem scope expansion. Requires USER.",
+     },
++    {
++      kind: "string",
++      name: "failed-check-work-order",
++      valueHint: "<sha256:digest>",
++      description:
++        "Correct one native-proven unlaunchable required check in this WorkOrder. Requires --scope-expansion-approved-by USER and a revised Plan file.",
++    },
+   ],
+   examples: [
+     {
+@@ -105,6 +113,19 @@ export const taskPlanSetSpec: CommandSpec<TaskPlanSetParsed> = {
+         message: "--scope-expansion-approved-by requires exact USER authority.",
+       });
+     }
++    if (
++      raw.opts["failed-check-work-order"] !== undefined &&
++      (scopeExpansionApprovedBy !== "USER" ||
++        typeof raw.opts["failed-check-work-order"] !== "string" ||
++        !/^sha256:[a-f0-9]{64}$/u.test(raw.opts["failed-check-work-order"]) ||
++        raw.opts.file === undefined ||
++        raw.opts["recipe-file"] !== undefined)
++    )
++      throw usageError({
++        spec: taskPlanSetSpec,
++        message:
++          "--failed-check-work-order requires an exact WorkOrder digest, --file and --scope-expansion-approved-by USER.",
++      });
+   },
+   parse: (raw) => {
+     return {
+@@ -118,6 +139,10 @@ export const taskPlanSetSpec: CommandSpec<TaskPlanSetParsed> = {
+         typeof raw.opts["scope-expansion-approved-by"] === "string"
+           ? raw.opts["scope-expansion-approved-by"]
+           : undefined,
++      failedCheckWorkOrder:
++        typeof raw.opts["failed-check-work-order"] === "string"
++          ? raw.opts["failed-check-work-order"]
++          : undefined,
+     };
+   },
+ };
+@@ -165,6 +190,7 @@ export function makeRunTaskPlanSetHandler(getCtx: (cmd: string) => Promise<Comma
+       });
+       const result = await setCanonicalPlan(command, p.taskId, JSON.parse(text), {
+         scopeExpansionApprovedBy: p.scopeExpansionApprovedBy,
++        failedCheckWorkOrder: p.failedCheckWorkOrder,
+       });
+       createCliEmitter().json({
+         task_id: p.taskId,
+diff --git a/packages/core/src/tasks/task-kernel/kernel.ts b/packages/core/src/tasks/task-kernel/kernel.ts
+index ebc85225a..863e753fa 100644
+--- a/packages/core/src/tasks/task-kernel/kernel.ts
++++ b/packages/core/src/tasks/task-kernel/kernel.ts
+@@ -669,6 +669,187 @@ function preconditions(input: KernelInput): KernelResult | null {
+   return requiredAuthority(input, workItemId);
+ }
+ 
++function object(value: unknown): Record<string, unknown> | null {
++  return value !== null && typeof value === "object" && !Array.isArray(value)
++    ? (value as Record<string, unknown>)
++    : null;
++}
++
++/** A failed executable test is never eligible. Only an unlaunched declared check may be corrected. */
++function validRequiredCheckCorrection(
++  input: KernelInput,
++  command: Extract<TaskCommand, { kind: "amend_plan" }>,
++  current: PlanRecord,
++) {
++  const proof = command.required_check_correction;
++  if (!proof) return null;
++  const amended = command.amended_plan;
++  const approvalDigest = planScopeExpansionApprovalDigest({
++    task_id: input.aggregate.id,
++    current_plan_digest: current.digest,
++    amended_plan_digest: amended.digest,
++    actor_id: input.actor.id,
++  });
++  if (
++    input.actor.kind !== "USER" ||
++    input.actor.transport !== "manual" ||
++    command.authority_delta_digest !== approvalDigest ||
++    !/^sha256:[a-f0-9]{64}$/u.test(proof.failed_work_order_id) ||
++    !proof.previous_command ||
++    !proof.replacement_command ||
++    proof.previous_command === proof.replacement_command ||
++    amended.work_items.length !== current.work_items.length
++  )
++    return null;
++  const before = current.work_items.find((item) => item.id === proof.work_item_id);
++  const after = amended.work_items.find((item) => item.id === proof.work_item_id);
++  const runtime = input.aggregate.work_items[proof.work_item_id];
++  if (!before || !after || !runtime || runtime.attempt < 2 || runtime.result_digest !== null)
++    return null;
++  if (
++    !["REWORK_READY", "BLOCKED"].includes(runtime.state) ||
++    amended.work_items.some(
++      (item, index) =>
++        item.id !== current.work_items[index]?.id ||
++        (item.id !== proof.work_item_id &&
++          kernelDigest(item) !== kernelDigest(current.work_items[index])),
++    )
++  )
++    return null;
++  const { contract_digest: oldDigest, ...oldDefinition } = before;
++  const { contract_digest: newDigest, ...newDefinition } = after;
++  if (kernelDigest(oldDefinition) !== kernelDigest(newDefinition)) return null;
++  const oldContract = oldDigest && command.work_contracts?.[oldDigest];
++  const newContract = newDigest && command.work_contracts?.[newDigest];
++  if (
++    !oldContract ||
++    !newContract ||
++    kernelDigest(oldContract) !== oldDigest ||
++    kernelDigest(newContract) !== newDigest
++  )
++    return null;
++  const { verification_commands: oldChecks, ...oldTerms } = oldContract;
++  const { verification_commands: newChecks, ...newTerms } = newContract;
++  if (
++    kernelDigest(oldTerms) !== kernelDigest(newTerms) ||
++    oldChecks.length !== newChecks.length ||
++    oldChecks.filter((check, index) => check !== newChecks[index]).length !== 1
++  )
++    return null;
++  const changedIndex = oldChecks.findIndex((check, index) => check !== newChecks[index]);
++  if (
++    oldChecks[changedIndex] !== proof.previous_command ||
++    newChecks[changedIndex] !== proof.replacement_command
++  )
++    return null;
++
++  const acceptedResult = object(proof.accepted_result_command_input);
++  const acceptedResultCommand = object(acceptedResult?.command);
++  const acceptedResultAuthority = object(acceptedResult?.authority);
++  const failedWorkOrder = object(proof.failed_work_order);
++  const issuedBinding = object(failedWorkOrder?.canonical_binding);
++  const workBinding = issuedBinding && {
++    task_id: issuedBinding.task_id,
++    repository_fingerprint: issuedBinding.repository_fingerprint,
++    plan_revision: issuedBinding.plan_revision,
++    plan_digest: issuedBinding.plan_digest,
++    work_item_id: issuedBinding.work_item_id,
++    attempt: issuedBinding.attempt,
++    claim_id: issuedBinding.claim_id,
++    contract_digest: issuedBinding.contract_digest,
++  };
++  const boundResultCommand =
++    acceptedResultCommand && workBinding
++      ? { ...acceptedResultCommand, binding_digest: kernelDigest(workBinding) }
++      : null;
++  const resultReceipt = input.aggregate.mutation_receipts[`result:${proof.failed_work_order_id}`];
++  const prior = object(proof.validation_command_input);
++  const priorCommand = object(prior?.command);
++  const priorValidation = object(priorCommand?.validation);
++  const identity = object(priorValidation?.identity);
++  const native = object(proof.native_validation);
++  const nativeInput = object(native?.input);
++  const verification = object(nativeInput?.verification);
++  const nativeChecks = object(native?.checks);
++  const checks = nativeChecks?.checks;
++  const receipt = input.aggregate.mutation_receipts[`validation:${proof.failed_work_order_id}`];
++  if (
++    failedWorkOrder?.work_order_id !== proof.failed_work_order_id ||
++    object(failedWorkOrder.task)?.id !== input.aggregate.id ||
++    object(failedWorkOrder?.task)?.revision !== acceptedResultCommand?.expected_task_revision ||
++    issuedBinding?.phase !== "implementation" ||
++    issuedBinding.task_id !== input.aggregate.id ||
++    issuedBinding.work_item_id !== proof.work_item_id ||
++    issuedBinding.plan_revision !== current.revision ||
++    issuedBinding.plan_digest !== current.digest ||
++    issuedBinding.contract_digest !== oldDigest ||
++    issuedBinding.repository_identity !== acceptedResultAuthority?.repository_identity ||
++    issuedBinding.authority_digest !== acceptedResultAuthority?.digest ||
++    issuedBinding.repository_fingerprint !== acceptedResult?.repository_fingerprint ||
++    issuedBinding.repository_fingerprint !== nativeInput?.repository_fingerprint ||
++    !Number.isInteger(issuedBinding.attempt) ||
++    Number(issuedBinding.attempt) < 1 ||
++    typeof issuedBinding.claim_id !== "string" ||
++    !issuedBinding.claim_id ||
++    (acceptedResultCommand?.binding_digest !== undefined &&
++      acceptedResultCommand.binding_digest !== kernelDigest(workBinding)) ||
++    acceptedResult?.mutation_id !== `result:${proof.failed_work_order_id}` ||
++    acceptedResultCommand?.kind !== "accept_work_item_result" ||
++    acceptedResultCommand?.task_id !== input.aggregate.id ||
++    acceptedResultCommand?.work_item_id !== proof.work_item_id ||
++    acceptedResultCommand?.plan_revision !== current.revision ||
++    acceptedResultCommand?.plan_digest !== current.digest ||
++    acceptedResultCommand?.result_digest !== nativeInput?.result_digest ||
++    resultReceipt?.mutation_id !== acceptedResult?.mutation_id ||
++    resultReceipt.command_digest !== kernelDigest(boundResultCommand) ||
++    resultReceipt.before_revision !== acceptedResultCommand?.expected_task_revision ||
++    resultReceipt.after_revision !== resultReceipt.before_revision + 1 ||
++    resultReceipt.after_revision > input.aggregate.revision ||
++    prior?.mutation_id !== `validation:${proof.failed_work_order_id}` ||
++    priorCommand?.kind !== "record_work_item_validation" ||
++    priorCommand?.task_id !== input.aggregate.id ||
++    priorCommand?.work_item_id !== proof.work_item_id ||
++    priorCommand?.expected_state_fingerprint !== prior?.repository_fingerprint ||
++    priorValidation?.status !== "FAILED" ||
++    identity?.command_digest !== kernelDigest(oldChecks) ||
++    native?.kind !== "kernel_native_validation" ||
++    nativeInput?.task_id !== input.aggregate.id ||
++    nativeInput?.work_item_id !== proof.work_item_id ||
++    nativeInput?.repository_fingerprint !== prior?.repository_fingerprint ||
++    identity?.implementation_identity !== nativeInput?.result_digest ||
++    !Array.isArray(priorValidation?.evidence_digests) ||
++    priorValidation.evidence_digests[0] !== kernelDigest(native) ||
++    kernelDigest(verification?.commands) !== kernelDigest(oldChecks) ||
++    nativeChecks?.status !== "failed" ||
++    nativeChecks?.reason !== `Declared check could not run: ${proof.previous_command}` ||
++    !Array.isArray(checks) ||
++    checks.length !== oldChecks.length ||
++    receipt?.mutation_id !== prior?.mutation_id ||
++    receipt.command_digest !== kernelDigest(priorCommand) ||
++    receipt.before_revision !== priorCommand?.expected_task_revision ||
++    receipt.after_revision !== receipt.before_revision + 1 ||
++    resultReceipt.after_revision > receipt.before_revision ||
++    receipt.after_revision > input.aggregate.revision
++  )
++    return null;
++  for (const [index, value] of checks.entries()) {
++    const check = object(value);
++    const checkRuntime = object(check?.runtime);
++    if (check?.command !== oldChecks[index]) return null;
++    if (index === changedIndex) {
++      if (
++        check?.exit_code !== null ||
++        checkRuntime?.status !== "unavailable" ||
++        checkRuntime.executable_digest !== null ||
++        typeof check.stderr_tail !== "string" ||
++        !check.stderr_tail.startsWith("process command is not in the allowed executable set:")
++      )
++        return null;
++    } else if (check?.exit_code !== 0 || checkRuntime?.status !== "resolved") return null;
++  }
++  return proof;
++}
++
+ function amendPlan(
+   input: KernelInput,
+   command: Extract<TaskCommand, { kind: "amend_plan" }>,
+@@ -696,6 +877,9 @@ function amendPlan(
+   const issues = validateWorkItemDefinitions(proposed.work_items);
+   if (issues.length > 0) return rejected("WORK_ITEM_DEPENDENCY_INCOMPLETE", issues);
+   const originals = new Map(current.work_items.map((item) => [item.id, item]));
++  const checkCorrection = validRequiredCheckCorrection(input, command, current);
++  if (command.required_check_correction && !checkCorrection)
++    return rejected("PLAN_SCOPE_EXPANSION_REQUIRES_USER", ["invalid_required_check_correction"]);
+   const material =
+     proposed.work_items.length !== current.work_items.length ||
+     proposed.work_items.some(
+@@ -708,10 +892,15 @@ function amendPlan(
+       proposed.work_items,
+       command.work_contracts ?? {},
+     );
+-    if (obligationIssues.length > 0)
++    const remainingObligationIssues = checkCorrection
++      ? obligationIssues.filter(
++          (issue) => issue !== `mandatory_check_removed:${checkCorrection.previous_command}`,
++        )
++      : obligationIssues;
++    if (remainingObligationIssues.length > 0)
+       return rejected(
+         "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
+-        obligationIssues,
++        remainingObligationIssues,
+         "request_authority_delta",
+       );
+   }
+@@ -743,7 +932,8 @@ function amendPlan(
+   const correctiveGrant = correctiveAmendmentGrant(input, command);
+   if (command.corrective_grant_digest && !correctiveGrant)
+     return rejected("AUTHORITY_SCOPE_EXCEEDED", ["corrective_grant_not_applicable"]);
+-  const amendmentApproved = scopeExpansionApproved || correctiveGrant !== null;
++  const amendmentApproved =
++    scopeExpansionApproved || correctiveGrant !== null || checkCorrection !== null;
+   if (
+     (command.authority_delta_digest !== null && !amendmentApproved) ||
+     (material && !amendmentApproved) ||
+@@ -765,9 +955,10 @@ function amendPlan(
+           item.execution_requirements,
+         ) &&
+           !amendmentApproved) ||
+-        input.authority?.work_item_id !== null ||
++        (input.authority?.work_item_id !== null && checkCorrection === null) ||
+         (!amendmentApproved &&
+-          !executionRequirementsAreSubset(input.authority, item.execution_requirements))
++          (input.authority === null ||
++            !executionRequirementsAreSubset(input.authority, item.execution_requirements)))
+       );
+     })
+   ) {
+diff --git a/packages/core/src/tasks/task-kernel/model.ts b/packages/core/src/tasks/task-kernel/model.ts
+index a4c48c38d..83f227d14 100644
+--- a/packages/core/src/tasks/task-kernel/model.ts
++++ b/packages/core/src/tasks/task-kernel/model.ts
+@@ -472,6 +472,16 @@ export type TaskCommand =
+         authority_delta_digest: Sha256Digest | null;
+         corrective_grant_digest?: Sha256Digest;
+         verification_contract_digest?: Sha256Digest;
++        required_check_correction?: Readonly<{
++          work_item_id: string;
++          failed_work_order_id: Sha256Digest;
++          previous_command: string;
++          replacement_command: string;
++          failed_work_order: unknown;
++          accepted_result_command_input: unknown;
++          validation_command_input: unknown;
++          native_validation: unknown;
++        }>;
+       }
+     >
+   | CommandEnvelope<
+diff --git a/packages/core/src/tasks/task-kernel/required-check-correction.test.ts b/packages/core/src/tasks/task-kernel/required-check-correction.test.ts
+new file mode 100644
+index 000000000..fe3a3193a
+--- /dev/null
++++ b/packages/core/src/tasks/task-kernel/required-check-correction.test.ts
+@@ -0,0 +1,417 @@
++import { describe, expect, it } from "vitest";
++import { kernelDigest, reduceTaskCommand } from "./kernel.js";
++import { planScopeExpansionApprovalDigest } from "./authority-lineage.js";
++import type { TaskCommand } from "./model.js";
++import {
++  fingerprint,
++  resultDigest,
++  requirements,
++  plan,
++  authority,
++  runtime,
++  aggregate,
++  input,
++  validation,
++  amendmentCommand,
++} from "./kernel.test-fixtures.js";
++
++function expectRejection(invocation: Parameters<typeof reduceTaskCommand>[0], code: string): void {
++  expect(reduceTaskCommand(invocation)).toMatchObject({ kind: "rejected", code });
++}
++
++describe("required check correction", () => {
++  it("corrects one unavailable required check with USER-bound failed evidence and reruns the WorkItem", () => {
++    const oldCheck = "A prose description of the focused tests";
++    const newCheck = "bunx vitest run packages/core/src/tasks/task-kernel/kernel.test.ts";
++    const oldContract = {
++      objective: "Verify the implementation",
++      acceptance_criteria: ["The result is validated"],
++      verification_commands: ["bun run typecheck", oldCheck],
++      role: "EXECUTOR" as const,
++    };
++    const newContract = { ...oldContract, verification_commands: ["bun run typecheck", newCheck] };
++    const oldDefinition = { ...plan.work_items[0]!, contract_digest: kernelDigest(oldContract) };
++    const newDefinition = { ...oldDefinition, contract_digest: kernelDigest(newContract) };
++    const current = {
++      ...plan,
++      work_items: [oldDefinition],
++      digest: kernelDigest({ revision: plan.revision, work_items: [oldDefinition] }),
++    };
++    const workOrderId = kernelDigest("failed-work-order");
++    const native = {
++      kind: "kernel_native_validation",
++      input: {
++        task_id: "task-1",
++        work_item_id: "kernel",
++        result_digest: resultDigest,
++        repository_fingerprint: fingerprint,
++        verification: { commands: oldContract.verification_commands },
++      },
++      checks: {
++        status: "failed",
++        reason: `Declared check could not run: ${oldCheck}`,
++        checks: [
++          { command: "bun run typecheck", exit_code: 0, runtime: { status: "resolved" } },
++          {
++            command: oldCheck,
++            exit_code: null,
++            stderr_tail: "process command is not in the allowed executable set: A",
++            runtime: { status: "unavailable", executable_digest: null },
++          },
++        ],
++      },
++    };
++    const priorCommand: TaskCommand = {
++      kind: "record_work_item_validation",
++      task_id: "task-1",
++      expected_task_revision: 6,
++      expected_state_fingerprint: fingerprint,
++      work_item_id: "kernel",
++      validation: {
++        ...validation(resultDigest),
++        status: "FAILED",
++        identity: {
++          ...validation(resultDigest).identity,
++          command_digest: kernelDigest(oldContract.verification_commands),
++        },
++        evidence_digests: [kernelDigest(native)],
++      },
++    };
++    const prior = {
++      mutation_id: `validation:${workOrderId}`,
++      repository_fingerprint: fingerprint,
++      command: priorCommand,
++    };
++    const acceptedResultCommand: TaskCommand = {
++      kind: "accept_work_item_result",
++      task_id: "task-1",
++      expected_task_revision: 4,
++      expected_state_fingerprint: fingerprint,
++      plan_revision: current.revision,
++      plan_digest: current.digest,
++      work_item_id: "kernel",
++      result_digest: resultDigest,
++      output_manifests: [],
++    };
++    const acceptedResult = {
++      mutation_id: `result:${workOrderId}`,
++      repository_fingerprint: fingerprint,
++      authority: {
++        repository_identity: kernelDigest("repository"),
++        digest: kernelDigest("authority"),
++      },
++      command: acceptedResultCommand,
++    };
++    const workBinding = {
++      task_id: "task-1",
++      repository_fingerprint: fingerprint,
++      plan_revision: current.revision,
++      plan_digest: current.digest,
++      work_item_id: "kernel",
++      attempt: 1,
++      claim_id: "claim-1",
++      contract_digest: oldDefinition.contract_digest,
++    };
++    const failedWorkOrder = {
++      work_order_id: workOrderId,
++      task: { id: "task-1", revision: acceptedResultCommand.expected_task_revision },
++      canonical_binding: {
++        ...workBinding,
++        phase: "implementation",
++        repository_identity: kernelDigest("repository"),
++        authority_digest: kernelDigest("authority"),
++      },
++    };
++    const resultReceipt = {
++      mutation_id: acceptedResult.mutation_id,
++      command_digest: kernelDigest({
++        ...acceptedResultCommand,
++        binding_digest: kernelDigest(workBinding),
++      }),
++      before_revision: 4,
++      after_revision: 5,
++      aggregate_digest: kernelDigest("after-result"),
++      event_digests: [],
++      effect_ids: [],
++    };
++    const receipt = {
++      mutation_id: `validation:${workOrderId}`,
++      command_digest: kernelDigest(priorCommand),
++      before_revision: 6,
++      after_revision: 7,
++      aggregate_digest: kernelDigest("after-failure"),
++      event_digests: [],
++      effect_ids: [],
++    };
++    const state = aggregate({
++      current_plan: current,
++      work_items: { kernel: { ...runtime("BLOCKED"), definition: oldDefinition, attempt: 2 } },
++      mutation_receipts: {
++        [resultReceipt.mutation_id]: resultReceipt,
++        [receipt.mutation_id]: receipt,
++      },
++    });
++    const base = amendmentCommand(state, [newDefinition]);
++    const approvalDigest = planScopeExpansionApprovalDigest({
++      task_id: state.id,
++      current_plan_digest: current.digest,
++      amended_plan_digest: base.amended_plan.digest,
++      actor_id: "USER",
++    });
++    const command: TaskCommand = {
++      ...base,
++      authority_delta_digest: approvalDigest,
++      work_contracts: {
++        [kernelDigest(oldContract)]: oldContract,
++        [kernelDigest(newContract)]: newContract,
++      },
++      required_check_correction: {
++        work_item_id: "kernel",
++        failed_work_order_id: workOrderId,
++        previous_command: oldCheck,
++        replacement_command: newCheck,
++        failed_work_order: failedWorkOrder,
++        accepted_result_command_input: acceptedResult,
++        validation_command_input: prior,
++        native_validation: native,
++      },
++    };
++    const invocation = {
++      ...input(state, command),
++      actor: { id: "USER", kind: "USER" as const, transport: "manual" as const, capabilities: [] },
++      authority: { ...authority, plan_digest: current.digest },
++    };
++    const accepted = reduceTaskCommand(invocation);
++    if (accepted.kind === "rejected") throw new Error(JSON.stringify(accepted));
++    expect(accepted).toMatchObject({
++      kind: "accepted",
++      aggregate: {
++        current_plan: { approval_evidence_digest: approvalDigest },
++        work_items: { kernel: { state: "READY", result_digest: null, validation: null } },
++        mutation_receipts: {
++          [resultReceipt.mutation_id]: resultReceipt,
++          [receipt.mutation_id]: receipt,
++        },
++      },
++    });
++    expectRejection(
++      {
++        ...invocation,
++        aggregate: {
++          ...state,
++          work_items: {
++            kernel: { ...state.work_items.kernel!, state: "EXECUTING" },
++          },
++        },
++      },
++      "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
++    );
++    expectRejection(
++      { ...invocation, actor: { ...invocation.actor, id: "other" } },
++      "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
++    );
++    expectRejection(
++      { ...invocation, actor: { ...invocation.actor, kind: "AGENT" } },
++      "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
++    );
++    expectRejection(
++      {
++        ...invocation,
++        command: {
++          ...command,
++          required_check_correction: {
++            ...command.required_check_correction!,
++            failed_work_order_id: kernelDigest("other"),
++          },
++        },
++      },
++      "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
++    );
++    for (const canonical_binding of [
++      { ...failedWorkOrder.canonical_binding, plan_digest: kernelDigest("other-plan") },
++      { ...failedWorkOrder.canonical_binding, work_item_id: "other-item" },
++      { ...failedWorkOrder.canonical_binding, claim_id: "other-claim" },
++      { ...failedWorkOrder.canonical_binding, repository_identity: kernelDigest("other-repo") },
++    ]) {
++      expectRejection(
++        {
++          ...invocation,
++          command: {
++            ...command,
++            required_check_correction: {
++              ...command.required_check_correction!,
++              failed_work_order: { ...failedWorkOrder, canonical_binding },
++            },
++          },
++        },
++        "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
++      );
++    }
++    expectRejection(
++      {
++        ...invocation,
++        command: {
++          ...command,
++          required_check_correction: {
++            ...command.required_check_correction!,
++            failed_work_order: { ...failedWorkOrder, work_order_id: kernelDigest("other-order") },
++          },
++        },
++      },
++      "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
++    );
++    for (const authority of [
++      { ...acceptedResult.authority, repository_identity: kernelDigest("other-repo") },
++      { ...acceptedResult.authority, digest: kernelDigest("other-authority") },
++    ]) {
++      expectRejection(
++        {
++          ...invocation,
++          command: {
++            ...command,
++            required_check_correction: {
++              ...command.required_check_correction!,
++              accepted_result_command_input: { ...acceptedResult, authority },
++            },
++          },
++        },
++        "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
++      );
++    }
++    expectRejection(
++      {
++        ...invocation,
++        aggregate: {
++          ...state,
++          mutation_receipts: {
++            ...state.mutation_receipts,
++            [resultReceipt.mutation_id]: {
++              ...resultReceipt,
++              command_digest: kernelDigest("other-result-command"),
++            },
++          },
++        },
++      },
++      "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
++    );
++    expectRejection(
++      { ...invocation, aggregate: { ...state, mutation_receipts: {} } },
++      "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
++    );
++    expectRejection(
++      {
++        ...invocation,
++        command: {
++          ...command,
++          required_check_correction: {
++            ...command.required_check_correction!,
++            accepted_result_command_input: {
++              ...acceptedResult,
++              command: { ...acceptedResultCommand, plan_digest: kernelDigest("older-plan") },
++            },
++          },
++        },
++      },
++      "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
++    );
++    expectRejection(
++      {
++        ...invocation,
++        aggregate: {
++          ...state,
++          mutation_receipts: { [receipt.mutation_id]: receipt, "result:unrelated": resultReceipt },
++        },
++      },
++      "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
++    );
++    expectRejection(
++      {
++        ...invocation,
++        aggregate: {
++          ...state,
++          mutation_receipts: { "validation:unrelated": receipt },
++        },
++      },
++      "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
++    );
++    expectRejection(
++      {
++        ...invocation,
++        command: {
++          ...command,
++          required_check_correction: {
++            ...command.required_check_correction!,
++            native_validation: {
++              ...native,
++              checks: {
++                ...native.checks,
++                checks: [{ ...native.checks.checks[0]!, exit_code: 1 }, native.checks.checks[1]!],
++              },
++            },
++          },
++        },
++      },
++      "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
++    );
++    expectRejection(
++      {
++        ...invocation,
++        command: {
++          ...command,
++          required_check_correction: {
++            ...command.required_check_correction!,
++            native_validation: {
++              ...native,
++              checks: {
++                ...native.checks,
++                checks: [native.checks.checks[0]!, { ...native.checks.checks[1]!, exit_code: 1 }],
++              },
++            },
++          },
++        },
++      },
++      "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
++    );
++    const widened = {
++      ...newDefinition,
++      execution_requirements: { ...requirements, scope_roots: ["outside"] },
++    };
++    expectRejection(
++      { ...invocation, command: amendmentCommand(state, [widened]) },
++      "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
++    );
++    const extraContract = {
++      ...newContract,
++      verification_commands: ["bun run typecheck", newCheck, "bun test"],
++    };
++    const extraDefinition = { ...newDefinition, contract_digest: kernelDigest(extraContract) };
++    const extraCommand = amendmentCommand(state, [extraDefinition]);
++    expectRejection(
++      {
++        ...invocation,
++        command: {
++          ...extraCommand,
++          authority_delta_digest: planScopeExpansionApprovalDigest({
++            task_id: state.id,
++            current_plan_digest: current.digest,
++            amended_plan_digest: extraCommand.amended_plan.digest,
++            actor_id: "USER",
++          }),
++          work_contracts: {
++            ...command.work_contracts,
++            [kernelDigest(extraContract)]: extraContract,
++          },
++          required_check_correction: command.required_check_correction,
++        },
++      },
++      "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
++    );
++    expectRejection(
++      {
++        ...invocation,
++        aggregate: { ...state, current_plan: { ...current, digest: kernelDigest("stale") } },
++      },
++      "AUTHORITY_SCOPE_EXCEEDED",
++    );
++  });
++});
+diff --git a/scripts/baselines/v0.7-compatibility-candidate.json b/scripts/baselines/v0.7-compatibility-candidate.json
+index 917b37d53..80e92aa19 100644
+--- a/scripts/baselines/v0.7-compatibility-candidate.json
++++ b/scripts/baselines/v0.7-compatibility-candidate.json
+@@ -8,14 +8,14 @@
+   "candidate": {
+     "section_digests": {
+       "agent_facing_context_contracts": "4926aed50aea235e24310e39404f7b939bc4caa7fc763a98387992822a2101c5",
+-      "cli_topology": "142372fde652c457e2d9667498b08bfbd6aa5e357fe7ee83598aac394ce599b3",
++      "cli_topology": "29d82e181a9959fd9db4e1f11bd102f3a0530e2db272507e814f16d92577cab0",
+       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
+       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+       "package_manifests": "6052feb72f5eee6eaa1a503bb10074492350a164de683adf50bf2b092ce647b9",
+       "tarball_policy": "10e8c7b78d3166955320b6fa787d7564b5bba1f67b3ce1736dca46673528716d",
+       "workflow_schema": "1003207ce9df63cccac8761565f0d1264c094fd3fda5609012a6716c82842451"
+     },
+-    "surface_sha256": "6a95e335f7b8ad23eed6273c2931e37cee61864f9695a05444a4c217c69a5010"
++    "surface_sha256": "aaa1829bfdfcfda78a3f1c1bc9ea590c09b8b2b6706decf059b22d1871a0ae21"
+   },
+   "candidate_id": "agentplane.compatibility.v0.7.cumulative",
+   "contract_artifacts": {
+@@ -1920,6 +1920,12 @@
+             "required": true,
+             "valueHint": "<sha256>"
+           },
++          {
++            "command": "task plan set",
++            "kind": "string",
++            "name": "failed-check-work-order",
++            "valueHint": "<sha256:digest>"
++          },
+           {
+             "command": "task plan set",
+             "kind": "string",
+@@ -3392,6 +3398,12 @@
+             "kind": "option",
+             "name": "revision",
+             "source_task": "202610160500-6RCQSY"
++          },
++          {
++            "command": "task plan set",
++            "kind": "option",
++            "name": "failed-check-work-order",
++            "source_task": "202610260157-ZDEE0D"
+           }
+         ],
+         "command_count": { "from": 243, "to": 263 },
+@@ -3591,7 +3603,7 @@
+             "identity": "task plan approve --by"
+           }
+         ],
+-        "option_count": { "from": 767, "to": 897 },
++        "option_count": { "from": 767, "to": 898 },
+         "positional_count": { "from": 165, "to": 184 },
+         "removed_command_descriptors": [
+           {
+@@ -4116,10 +4128,11 @@
+         "202610100750-36SZWD",
+         "202610101128-35N0ZK",
+         "202610101141-AGRARP",
+-        "202610160500-6RCQSY"
++        "202610160500-6RCQSY",
++        "202610260157-ZDEE0D"
+       ],
+       "summary": "Adds the compact external task advance packet with explicit failed-operation replacement, user-first task creation with caller-supplied structured semantic intent and neutral planner intake, including bounded scope, effect, capability, and resource declarations, explainable per-task workflow routing, signed dialogue approval receipts, compatibility retirement diagnostics, safe local evidence statistics, compaction, garbage collection, and a state-bound USER-approved blocked-task scope extension; promotes the managed task runner; moves legacy manual lifecycle and conflict repair choreography behind advanced or internal compatibility surfaces; canonicalizes setup and execution profile selection to standard while retaining legacy init aliases; and makes auto the task route default while retiring repository as a user-facing route. Adds exact-intent operator reconciliation for interrupted integration workflow effects. Retires the active supervisor budget-epoch command after spend limits became telemetry-only. Retires the active Blueprint command surface after Task Kernel replacement proof while preserving cold compatibility readers. Adds explicit approval and supersession options to canonical duplicate and no-op closure. Add explicit bounded corrective-authority inspection, grant and revocation with finite retry and expiry limits. Adds separately USER-approved immutable candidate preparation, publication, reconciliation and revocation before final acceptance; does not complete the task or establish remote qualification.",
+-      "to_sha256": "142372fde652c457e2d9667498b08bfbd6aa5e357fe7ee83598aac394ce599b3"
++      "to_sha256": "29d82e181a9959fd9db4e1f11bd102f3a0530e2db272507e814f16d92577cab0"
+     },
+     {
+       "classification": "intentional_breaking_retirement",
+@@ -4407,7 +4420,7 @@
+     "from_version": "0.6.24",
+     "section": "package_manifests",
+     "source_task": "202608082119-P6SHBN",
+-    "surface_sha256": "d412116a41dc399e5238722d217d69f0fb717a13b653fe753e11e75bcb73fd15",
++    "surface_sha256": "f93dad921a5cf53d5685a1deb758366898c76c994bf0cf83bcf486f7af7f88a2",
+     "to_sha256": "fcc419a72f859fb594e93e8e576c4e83f67c207a312477cdbae6994aefda8941",
+     "to_version": "0.7.12"
+   },
+@@ -4488,6 +4501,7 @@
+     "202610100756-0Y9HMG",
+     "202610101128-35N0ZK",
+     "202610101141-AGRARP",
+-    "202610160500-6RCQSY"
++    "202610160500-6RCQSY",
++    "202610260157-ZDEE0D"
+   ]
+ }
+diff --git a/scripts/checks/check-compatibility-contract-baseline.mjs b/scripts/checks/check-compatibility-contract-baseline.mjs
+index 14d8a9be8..afeb9c3b7 100644
+--- a/scripts/checks/check-compatibility-contract-baseline.mjs
++++ b/scripts/checks/check-compatibility-contract-baseline.mjs
+@@ -56,7 +56,7 @@ function candidatePathFromArgs(argv) {
+ const REVIEWED_SECTION_DIGESTS = {
+   agent_facing_context_contracts:
+     "4926aed50aea235e24310e39404f7b939bc4caa7fc763a98387992822a2101c5",
+-  cli_topology: "142372fde652c457e2d9667498b08bfbd6aa5e357fe7ee83598aac394ce599b3",
++  cli_topology: "29d82e181a9959fd9db4e1f11bd102f3a0530e2db272507e814f16d92577cab0",
+   exit_error_contract: "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
+   machine_output_contract: "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+   package_manifests: "6052feb72f5eee6eaa1a503bb10074492350a164de683adf50bf2b092ce647b9",
+@@ -407,6 +407,7 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
+     "202610101128-35N0ZK",
+     "202610101141-AGRARP",
+     "202610160500-6RCQSY",
++    "202610260157-ZDEE0D",
+   ];
+ 
+   assert(
+@@ -1023,6 +1024,7 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
+       "202610101128-35N0ZK",
+       "202610101141-AGRARP",
+       "202610160500-6RCQSY",
++      "202610260157-ZDEE0D",
+     ],
+     agent_facing_context_contracts: [
+       "202607221848-1HWR0R",
+@@ -3829,6 +3831,12 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
+       name: "revision",
+       source_task: "202610160500-6RCQSY",
+     },
++    {
++      kind: "option",
++      command: "task plan set",
++      name: "failed-check-work-order",
++      source_task: "202610260157-ZDEE0D",
++    },
+   ];
+   const activeExpectedAddedCommandDescriptors = expectedAddedCommandDescriptors
+     .filter((command) => command.id.join(" ") !== "task supervisor budget-epoch")
+@@ -4111,6 +4119,12 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
+     "new CLI command descriptor is not in the approved delta",
+   );
+   const activeExpectedAddedOptions = [
++    {
++      command: "task plan set",
++      kind: "string",
++      name: "failed-check-work-order",
++      valueHint: "<sha256:digest>",
++    },
+     {
+       command: "task cancel",
+       kind: "string",
