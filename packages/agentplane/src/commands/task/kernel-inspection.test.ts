@@ -81,7 +81,14 @@ describe("evaluator exchange identity", () => {
           }),
       },
     };
-    mocks.read.mockResolvedValue(JSON.stringify(implementation));
+    mocks.read.mockImplementation((filePath: string) => {
+      if (filePath.endsWith("repository-evidence.json")) {
+        throw Object.assign(new Error("optional repository evidence is absent"), {
+          code: "ENOENT",
+        });
+      }
+      return JSON.stringify(implementation);
+    });
     const evidence = (environment: string) => ({
       input: { environment },
       input_digest: k.kernelDigest(environment),

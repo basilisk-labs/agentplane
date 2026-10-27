@@ -1,3 +1,4 @@
+import path from "node:path";
 import { gitRevParse, taskCloseBranchName } from "@agentplaneorg/core/git";
 
 import { exitCodeForError } from "../../cli/exit-codes.js";
@@ -37,6 +38,15 @@ import {
   observeExistingChangeRequestByNumber,
 } from "./internal/change-request-provider.js";
 import type { ChangeRequestLookupResult } from "./internal/change-request-model.js";
+import { matchesAdoptedPrObservation, type AdoptedPrIdentity } from "./adoption-identity.js";
+import { hasExactAdoptedVerificationRecord } from "./adoption-verification.js";
+import { createExistingPrAdoptionStore, resolveAdoptionControlRoot } from "./adoption-store.js";
+import {
+  readKernelRecord,
+  TASK_KERNEL_EXTENSION,
+} from "../../adapters/task-backend/kernel-record.js";
+import { taskKernel as k } from "@agentplaneorg/core/tasks";
+import { loadCommandContext } from "../shared/task-backend.js";
 
 type ProviderName = "github" | "gitlab";
 
@@ -66,6 +76,9 @@ type CloseTailStatus =
     };
 
 export type PrFlowStatusReport = {
+  adoption?: AdoptedPrIdentity | null;
+  adoptedVerificationCurrent?: boolean;
+  adoptedControllerTransferred?: boolean;
   task: {
     id: string;
     status: string;
@@ -437,14 +450,78 @@ export async function resolvePrFlowStatus(opts: {
     preferBranchSnapshot: true,
   });
 
-  const taskMeta = await readTaskPrArtifact({
+  let taskMeta = await readTaskPrArtifact({
     ctx: opts.ctx,
     taskId: task.id,
     prDir,
     fileName: "meta.json",
     preferBranchSnapshot: true,
   });
-  const meta = parsePrMetaIfPresent(taskMeta.content, task.id);
+  // Adoption metadata is control-plane evidence and is never published into
+  // the pre-existing hosted branch. Prefer it only when that branch has no
+  // task-owned metadata snapshot.
+  if (taskMeta.content === null) {
+    const local = await readTaskPrArtifact({
+      ctx: opts.ctx,
+      taskId: task.id,
+      prDir,
+      fileName: "meta.json",
+      preferBranchSnapshot: false,
+    });
+    const localMeta = parsePrMetaIfPresent(local.content, task.id);
+    if ((localMeta as (PrMeta & { adoption?: AdoptedPrIdentity }) | null)?.adoption) {
+      taskMeta = local;
+    }
+  }
+  const controlRoot = await resolveAdoptionControlRoot(resolved.gitRoot);
+  const controlMeta = await createExistingPrAdoptionStore({
+    gitRoot: controlRoot,
+    workflowDir: config.paths.workflow_dir,
+  }).readMetadata(task.id);
+  const branchMeta = parsePrMetaIfPresent(taskMeta.content, task.id);
+  if (
+    controlMeta?.adoption &&
+    taskMeta.content !== null &&
+    (!branchMeta ||
+      (branchMeta.pr_number && branchMeta.pr_number !== controlMeta.adoption.pr_number))
+  ) {
+    throw new Error("Adopted PR has conflicting or malformed task-branch metadata");
+  }
+  const meta = controlMeta?.adoption ? controlMeta : branchMeta;
+  const adoption = (meta as (PrMeta & { adoption?: AdoptedPrIdentity }) | null)?.adoption ?? null;
+  let adoptedControllerTransferred = false;
+  if (adoption) {
+    const controlCommand =
+      path.resolve(controlRoot) === path.resolve(opts.ctx.resolvedProject.gitRoot)
+        ? opts.ctx
+        : await loadCommandContext({ cwd: controlRoot, rootOverride: null });
+    const controlTask = await controlCommand.taskBackend.getTask(task.id);
+    const sourceValue = task.extensions?.[TASK_KERNEL_EXTENSION];
+    if (
+      controlMeta?.status === "MERGED" &&
+      controlTask?.status === "DONE" &&
+      isRecord(sourceValue) &&
+      typeof sourceValue.repository_identity === "string" &&
+      /^sha256:[a-f0-9]{64}$/u.test(sourceValue.repository_identity) &&
+      controlTask
+    ) {
+      const identity = sourceValue.repository_identity as k.Sha256Digest;
+      const source = readKernelRecord(task, identity);
+      const target = readKernelRecord(controlTask, identity);
+      adoptedControllerTransferred =
+        source.kind === "canonical" &&
+        target.kind === "canonical" &&
+        target.record.aggregate.state === "COMPLETED" &&
+        source.record.aggregate.controller_transfer?.to_controller ===
+          `checkout:${path.resolve(controlRoot)}` &&
+        target.record.aggregate.controller_transfer?.to_controller ===
+          `checkout:${path.resolve(controlRoot)}` &&
+        source.record.events.length <= target.record.events.length &&
+        source.record.events.every(
+          (event, index) => k.kernelDigest(event) === k.kernelDigest(target.record.events[index]),
+        );
+    }
+  }
   const queue = await readIntegrationQueue(opts.integrationQueueRoot ?? resolved.gitRoot);
   const queueEntry = queue.entries.find((candidate) => candidate.task_id === task.id) ?? null;
   const metaBranch = meta?.branch?.trim() ?? "";
@@ -458,7 +535,9 @@ export async function resolvePrFlowStatus(opts: {
       ? metaBranch
       : (queueEntry?.branch.trim() ?? inferredTaskBranch?.trim() ?? "");
   const branch = rawBranch.length > 0 ? rawBranch : null;
-  const branchHeadSha = await resolveBranchHeadSha(resolved.gitRoot, branch);
+  const branchHeadSha = adoption
+    ? (meta?.head_sha ?? adoption.head_sha)
+    : await resolveBranchHeadSha(resolved.gitRoot, branch);
   const baseHint = normalizeBaseBranch(meta?.base) ?? normalizeBaseBranch(queueEntry?.base);
   const storedPrNumber = Number(meta?.pr_number ?? queueEntry?.pr_number ?? 0);
   const observedByNumber: ChangeRequestLookupResult | null =
@@ -471,7 +550,7 @@ export async function resolvePrFlowStatus(opts: {
           recorded: meta?.provider ?? null,
         })
       : null;
-  const providerObservation: ChangeRequestLookupResult =
+  const unverifiedObservation: ChangeRequestLookupResult =
     observedByNumber?.state === "found" || observedByNumber?.state === "unavailable" || !branch
       ? (observedByNumber ?? {
           state: "unavailable",
@@ -483,11 +562,17 @@ export async function resolvePrFlowStatus(opts: {
           baseBranch: baseHint,
           recorded: meta?.provider ?? null,
         });
+  const providerObservation: ChangeRequestLookupResult =
+    adoption &&
+    unverifiedObservation.state === "found" &&
+    !matchesAdoptedPrObservation(adoption, unverifiedObservation.pr)
+      ? { state: "unavailable", reason: "Adopted PR provider identity or refs changed" }
+      : unverifiedObservation;
   const pr = remoteStatusFromObservation(providerObservation, meta, queueEntry);
   const publication = await resolvePrHeadPublicationStatus({
     gitRoot: resolved.gitRoot,
     branch,
-    localHeadSha: branchHeadSha,
+    localHeadSha: adoption ? null : branchHeadSha,
     providerObservation:
       providerObservation.state === "found"
         ? { state: "found", headSha: providerObservation.pr.headSha }
@@ -528,13 +613,18 @@ export async function resolvePrFlowStatus(opts: {
   });
   const prNumber = pr.state === "not_found" ? null : pr.prNumber;
   const [hostedChecks, reviewThreads, handoff] = await Promise.all([
-    resolveHostedChecksStatus({
-      gitRoot: resolved.gitRoot,
-      prNumber,
-      branch,
-      expectedHeadSha: branchHeadSha,
-      recordedProvider: meta?.provider ?? null,
-    }),
+    adoption && providerObservation.state !== "found"
+      ? Promise.resolve({
+          checked: false as const,
+          reason: "Adopted PR has no matching fresh provider identity readback",
+        })
+      : resolveHostedChecksStatus({
+          gitRoot: resolved.gitRoot,
+          prNumber,
+          branch,
+          expectedHeadSha: branchHeadSha,
+          recordedProvider: meta?.provider ?? null,
+        }),
     pr.provider === "gitlab"
       ? Promise.resolve({ checked: false as const, reason: "GitHub review threads do not apply" })
       : resolveReviewThreadsStatus({ gitRoot: resolved.gitRoot, prNumber }),
@@ -558,6 +648,16 @@ export async function resolvePrFlowStatus(opts: {
       metaHeadSha: meta?.head_sha ?? null,
     },
     pr,
+    adoption,
+    adoptedControllerTransferred,
+    adoptedVerificationCurrent:
+      adoption && providerObservation.state === "found" && providerObservation.pr.headSha
+        ? await hasExactAdoptedVerificationRecord({
+            ctx: opts.ctx,
+            task,
+            headSha: providerObservation.pr.headSha,
+          }).catch(() => false)
+        : false,
     providerObservation,
     publication,
     closeTail,

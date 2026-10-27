@@ -21,6 +21,39 @@ export async function readKernelRepositoryEvidence(
   const { digest, ...contents } = evidence;
   if (k.kernelDigest(contents) !== digest)
     throw new Error("Canonical repository evidence is invalid");
+  if (evidence.origin === "adopted_hosted_pr") {
+    const head = evidence.hosted_head;
+    if (!head) throw new Error("Canonical adopted hosted PR head evidence is missing");
+    if (
+      evidence.task_id !== head.task_id ||
+      evidence.work_order_id !== head.work_order_id ||
+      evidence.implementation_commit !== head.current_head ||
+      evidence.implementation_tree !== head.head_tree ||
+      evidence.base_commit !== head.current_base ||
+      evidence.evaluator_target !== head.current_head ||
+      !evidence.control_checkout ||
+      path.resolve(evidence.checkout) === path.resolve(evidence.control_checkout) ||
+      !k.validateHostedPrHeadEvidence(head, {
+        task_id: evidence.task_id,
+        work_order_id: evidence.work_order_id as k.Sha256Digest,
+        adoption_digest: head.adoption_digest,
+        identity: head.identity,
+        current_head: evidence.implementation_commit,
+        current_base: evidence.base_commit,
+        current_readback_digest: head.current_readback_digest,
+      })
+    ) {
+      throw new Error("Canonical adopted hosted PR evidence is invalid");
+    }
+  } else if (evidence.origin !== undefined && evidence.origin !== "task_branch") {
+    throw new Error("Canonical repository evidence origin is unsupported");
+  } else if (
+    !evidence.implementation_evidence ||
+    evidence.hosted_head ||
+    evidence.control_checkout
+  ) {
+    throw new Error("Canonical task-branch repository evidence is invalid");
+  }
   return evidence;
 }
 

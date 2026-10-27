@@ -10,6 +10,7 @@ import {
   reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
   resumeSupervisorExecutionEpisodeAfterInternalAnomaly,
   startSupervisorExecutionEpisode,
+  stopSupervisorExecutionEpisode,
   type SupervisorEpisodeOperationKind,
   type SupervisorExecutionBudget,
   type SupervisorExecutionEpisodeJournal,
@@ -430,7 +431,17 @@ export async function supervisePersistedWorkflowEpisode(opts: {
               branch: opts.decision.prFlow?.branch ?? null,
             },
           }
-        : {}),
+        : (operation.id === "provider.pr.update_branch" && opts.decision.prFlow?.adoption) ||
+            operation.id === "integration.adopted_merge"
+          ? {
+              recovery_context: {
+                schema_version: 1,
+                kind: "adopted_provider_effect",
+                task_id: opts.decision.task.id,
+                adoption: opts.decision.prFlow?.adoption ?? null,
+              },
+            }
+          : {}),
       precondition_fingerprint_digest: currentFingerprint,
       authority_ref: `workflow-operation:${operation.id}`,
       authority_digest: operation.preconditionFingerprint.digest,
@@ -507,6 +518,14 @@ export async function supervisePersistedWorkflowEpisode(opts: {
         await store.write(journal);
         return result;
       } catch (error) {
+        if (
+          invoked.id === "integration.adopted_merge" ||
+          (invoked.id === "provider.pr.update_branch" && opts.decision.prFlow?.adoption)
+        ) {
+          journal = stopSupervisorExecutionEpisode({ journal, reason: "effect_in_doubt" });
+          await store.write(journal);
+          throw error;
+        }
         const operationEndedAt = performance.now();
         journal = completeSupervisorExecutionEpisode({
           journal,

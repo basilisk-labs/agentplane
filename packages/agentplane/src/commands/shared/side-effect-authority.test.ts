@@ -24,6 +24,12 @@ const operation = {
   params: { taskId, author: "CODER", includeTaskIds: [] },
 } as Pick<WorkflowOperation, "id" | "type" | "params">;
 
+const existingPrAdoption = {
+  id: "pr.existing.adopt",
+  type: "pr_adopt",
+  params: { taskId, requestDigest: `sha256:${"a".repeat(64)}` },
+} as Pick<WorkflowOperation, "id" | "type" | "params">;
+
 function fingerprint(gitHead = "a".repeat(40), trackedContent = gitHead): StateFingerprint {
   return buildStateFingerprint({
     task_id: taskId,
@@ -251,6 +257,51 @@ describe("side-effect authority", () => {
     expect(
       evaluateWorkflowOperationAuthority({ task: tampered, operation, fingerprint: fingerprint() }),
     ).toMatchObject({ state: "approval_required" });
+
+    const adoptedMerge = {
+      id: "integration.adopted_merge" as const,
+      type: "integration_adopted_merge" as const,
+      params: { taskId, prNumber: 42, headSha: "a".repeat(40), baseSha: "b".repeat(40) },
+    };
+    const providerUpdate = {
+      id: "provider.pr.update_branch" as const,
+      type: "provider_update_branch" as const,
+      params: {
+        taskId,
+        identity: {
+          provider: "github" as const,
+          hostname: "github.com",
+          remote: "origin",
+          sourceProject: "org/repo",
+          targetProject: "org/repo",
+          sourceUrl: "https://github.com/org/repo",
+          targetUrl: "https://github.com/org/repo",
+        },
+        prNumber: 42,
+        branch: "dependency/update",
+        baseBranch: "main",
+        expectedHeadSha: "a".repeat(40),
+        expectedBaseSha: "b".repeat(40),
+      },
+    };
+    for (const protectedOperation of [adoptedMerge, providerUpdate]) {
+      expect(
+        evaluateWorkflowOperationAuthority({
+          task,
+          operation: protectedOperation,
+          fingerprint: fingerprint(),
+        }),
+      ).toMatchObject({ state: "approval_required" });
+      expect(() =>
+        createSideEffectAuthorityRecord({
+          actor: "AGENT",
+          operation: protectedOperation,
+          fingerprint: fingerprint(),
+          issuedAt: "2026-07-26T12:00:00.000Z",
+          expiresAt: "2026-07-26T12:15:00.000Z",
+        }),
+      ).toThrow("USER approval");
+    }
   });
 
   it("classifies every formal workflow operation deliberately", () => {
@@ -679,5 +730,43 @@ describe("candidate publication authority", () => {
         expiresAt: "2026-07-26T12:15:00Z",
       }),
     ).toThrow("USER approval");
+  });
+});
+
+describe("existing PR adoption authority", () => {
+  it("requires a separate exact USER grant that cannot authorize later PR operations", () => {
+    const current = fingerprint();
+    expect(
+      evaluateWorkflowOperationAuthority({
+        task: { extensions: {} },
+        operation: existingPrAdoption,
+        fingerprint: current,
+      }).state,
+    ).toBe("approval_required");
+    expect(() =>
+      createSideEffectAuthorityRecord({
+        actor: "EXECUTOR",
+        operation: existingPrAdoption,
+        fingerprint: current,
+        issuedAt: "2026-07-26T12:00:00Z",
+        expiresAt: "2026-07-26T12:15:00Z",
+      }),
+    ).toThrow("USER approval");
+    const task = approvedTask(existingPrAdoption);
+    const assess = (requested: Pick<WorkflowOperation, "id" | "type" | "params">) =>
+      evaluateWorkflowOperationAuthority({
+        task,
+        operation: requested,
+        fingerprint: current,
+        now: new Date("2026-07-26T12:01:00Z"),
+      }).state;
+    expect(assess(existingPrAdoption)).toBe("allowed");
+    expect(
+      assess({
+        ...existingPrAdoption,
+        params: { taskId, requestDigest: `sha256:${"b".repeat(64)}` },
+      }),
+    ).toBe("approval_required");
+    expect(assess(operation)).toBe("approval_required");
   });
 });

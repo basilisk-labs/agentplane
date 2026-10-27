@@ -19,6 +19,12 @@ import {
   type KernelEffectPortResolver,
 } from "./kernel-effect-coordinator.js";
 import { commitCanonicalTerminalTaskArtifacts } from "./kernel-repository-coordinator.js";
+import { listKernelRepositoryEvidence } from "./kernel-accepted-repository-evidence.js";
+import {
+  readKernelAdoption,
+  resolveKernelAdoptedValidationRoute,
+} from "./kernel-adopted-pr-route.js";
+import { assertCurrentHostedHead } from "./kernel-hosted-head-evidence.js";
 import { decideCanonicalWorkflowEffect } from "./kernel-provider-effect-coordinator.js";
 import {
   advanceCompletedProviderWorkflow,
@@ -48,6 +54,7 @@ export { kernelPlanApprovalOperatorAction } from "./kernel-plan-authority.js";
 export { canonicalCompletionPrecedesWorkflow } from "./ordinary-advance-step.js";
 
 import { authorityDeltaStop } from "./kernel-authority-delta-stop.js";
+import { recoverAdoptedProviderEffect } from "./adopted-provider-effect-recovery.js";
 
 async function advanceCanonicalRoute(opts: {
   command: CommandContext;
@@ -89,6 +96,11 @@ async function advanceCanonicalRoute(opts: {
     plan_digest: string;
   } | null = null;
   for (let step = 0; step < INTERNAL_ORCHESTRATOR_TRANSITION_FUSE; step++) {
+    if (
+      opts.allow_provider_effects &&
+      (await recoverAdoptedProviderEffect({ command: opts.command, task_id: opts.task_id }))
+    )
+      continue;
     const context = await runtime.native.readContext(opts.task_id);
     const current = await runtime.lifecycle.read(opts.task_id, context.repository_fingerprint);
     if (current.read.kind !== "canonical")
@@ -333,6 +345,22 @@ async function advanceCanonicalRoute(opts: {
           finalValidation.evidence_digest,
         )
       ) {
+        const evidence = await listKernelRepositoryEvidence(opts.command, record);
+        const acceptedEvidence = evidence.at(-1) ?? null;
+        if (acceptedEvidence?.origin === "adopted_hosted_pr") {
+          const hostedRoute = await resolveKernelAdoptedValidationRoute(
+            opts.command,
+            opts.task_id,
+            acceptedEvidence,
+          );
+          if (!hostedRoute) throw new Error("Canonical adopted completion has no exact-head route");
+          await assertCurrentHostedHead({
+            repository_root: opts.command.resolvedProject.gitRoot,
+            checkout: acceptedEvidence.checkout,
+            evidence: acceptedEvidence.hosted_head,
+            fresh_readback: hostedRoute.fresh_readback,
+          });
+        }
         if (needsPullRequest) {
           if (!opts.allow_provider_effects) {
             return {
@@ -433,6 +461,90 @@ async function advanceCanonicalRoute(opts: {
         route.reason_code === "kernel_work_item_rework_claim_required") &&
       route.work_item_id
     ) {
+      // A hosted provider update changes the implementation tree. Admit it only before the
+      // first WorkItem claim, so every subsequent TESTER/EVALUATOR/final check sees its new SHA.
+      if (
+        route.reason_code === "kernel_work_item_claim_required" &&
+        Object.values(record.aggregate.work_items).every((item) =>
+          ["PLANNED", "READY"].includes(item.state),
+        ) &&
+        (await readKernelAdoption(opts.command, opts.task_id))
+      ) {
+        if (!opts.allow_provider_effects) {
+          return {
+            schema_version: 1,
+            task_id: opts.task_id,
+            action: { kind: "external_wait", reason: "canonical_provider_access_required" },
+          };
+        }
+        const workflow = await decideCanonicalWorkflowEffect(opts.command, opts.task_id, true);
+        const step = workflow.workflowStep;
+        if (
+          step.kind === "approval" &&
+          step.request.type === "side_effect" &&
+          step.request.operationId === "provider.pr.update_branch"
+        ) {
+          return {
+            schema_version: 1,
+            task_id: opts.task_id,
+            action: { kind: "approval_required", reason: "adopted_provider_update_required" },
+            operator_action: {
+              kind: "grant_side_effect_authority",
+              required_role: "USER",
+              cwd: workflow.executionPacket.mustRunFrom,
+              argv: [
+                "agentplane",
+                "task",
+                "authority",
+                "grant",
+                opts.task_id,
+                "--remote",
+                "--operation",
+                step.request.operationId,
+                "--operation-digest",
+                step.request.operationDigest,
+                "--state-fingerprint",
+                step.request.stateFingerprintDigest,
+                "--state-scope-digest",
+                step.request.stateScopeDigest,
+                "--by",
+                "USER",
+              ],
+              authority_reference: step.request.authorityRef,
+            },
+          };
+        }
+        if (step.kind === "cli_operation" && step.operation.id === "provider.pr.update_branch") {
+          const updated = await advanceCompletedProviderWorkflow({
+            command: opts.command,
+            decision: workflow,
+            task_id: opts.task_id,
+          });
+          if (updated?.kind === "progress") {
+            anomalyTracker.reset();
+            continue;
+          }
+          return {
+            schema_version: 1,
+            task_id: opts.task_id,
+            action:
+              updated?.kind === "stop"
+                ? updated.action
+                : { kind: "human_required", reason: "adopted_provider_update_unavailable" },
+          };
+        }
+        if (step.id !== "terminal.adopted_kernel_incomplete") {
+          return {
+            schema_version: 1,
+            task_id: opts.task_id,
+            action: {
+              kind: step.kind === "cli_operation" ? "external_wait" : "human_required",
+              reason: "adopted_provider_prevalidation_unavailable",
+              workflow_step: step.id,
+            },
+          };
+        }
+      }
       await runtime.checkpoint(await runtime.observe());
       requireKernelCommit(
         await runtime.lifecycle.apply(

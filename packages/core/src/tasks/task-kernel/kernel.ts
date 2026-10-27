@@ -339,6 +339,8 @@ function validationIdentityMatchesResult(
     resultDigest !== null &&
     isSha256Digest(resultDigest) &&
     identity.implementation_identity === resultDigest &&
+    (identity.hosted_head_evidence_digest === undefined ||
+      isSha256Digest(identity.hosted_head_evidence_digest)) &&
     identity.check_id.trim().length > 0 &&
     isSha256Digest(identity.command_digest) &&
     isSha256Digest(identity.toolchain_digest) &&
@@ -1659,6 +1661,9 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
       if (!validationIdentityMatchesResult(command.validation, input.repository_fingerprint)) {
         return rejected("VALIDATION_IDENTITY_MISMATCH", ["final_validation"]);
       }
+      if (!hostedFinalValidationMatchesCompletedWork(aggregate, command.validation)) {
+        return rejected("VALIDATION_IDENTITY_MISMATCH", ["hosted_head_evidence"]);
+      }
       if (command.validation.status === "STALE") {
         return rejected("FINAL_VALIDATION_MISSING", [command.validation.status]);
       }
@@ -1922,7 +1927,8 @@ export function isTaskCompletionEligible(
     aggregate.state !== "FINAL_VALIDATION" ||
     aggregate.current_plan?.state !== "APPROVED" ||
     aggregate.final_validation?.status !== "PASSED" ||
-    !validationIdentityMatchesResult(aggregate.final_validation, repositoryFingerprint)
+    !validationIdentityMatchesResult(aggregate.final_validation, repositoryFingerprint) ||
+    !hostedFinalValidationMatchesCompletedWork(aggregate, aggregate.final_validation)
   ) {
     return false;
   }
@@ -1932,6 +1938,27 @@ export function isTaskCompletionEligible(
       ["APPLIED", "NOT_APPLIED", "RECONCILED", "SUPERSEDED"].includes(effect.state),
     )
   );
+}
+
+function hostedFinalValidationMatchesCompletedWork(
+  aggregate: TaskAggregate,
+  finalValidation: ValidationRecord,
+): boolean {
+  const hosted = new Set<Sha256Digest>(
+    aggregate.current_plan?.work_items
+      .filter(
+        (definition) =>
+          !definition.optional || aggregate.work_items[definition.id]?.state === "COMPLETED",
+      )
+      .map(
+        (definition) =>
+          aggregate.work_items[definition.id]?.validation?.identity.hosted_head_evidence_digest,
+      )
+      .filter((value): value is Sha256Digest => value !== undefined),
+  );
+  if (hosted.size > 1) return false;
+  const accepted = hosted.values().next().value;
+  return accepted === finalValidation.identity.hosted_head_evidence_digest;
 }
 
 function requiredWorkComplete(aggregate: TaskAggregate): boolean {

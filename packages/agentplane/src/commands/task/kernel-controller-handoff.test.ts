@@ -171,13 +171,13 @@ describe("canonical controller checkout handoff", () => {
       ...projectionContents,
       digest: k.kernelDigest(projectionContents),
     };
-    const record = (aggregate: Record<string, unknown>) => {
+    const record = (aggregate: Record<string, unknown>, events: unknown[] = []) => {
       const contents = {
         schema_version: 1 as const,
         kind: "canonical_task" as const,
         repository_identity: k.kernelDigest("repository"),
         aggregate,
-        events: [],
+        events,
       };
       return { ...contents, digest: k.kernelDigest(contents) };
     };
@@ -214,11 +214,16 @@ describe("canonical controller checkout handoff", () => {
       },
     } as never;
     mocks.load.mockResolvedValue(target);
-    const before = record({ authority_lineage: [{ authority }], controller_transfer: null });
-    const transferred = record({
-      authority_lineage: [{ authority }],
-      controller_transfer: { to_controller: `checkout:${path.resolve(f.root)}` },
-    });
+    const before = record({ authority_lineage: [{ authority }], controller_transfer: null }, [
+      { sequence: 1 },
+    ]);
+    const transferred = record(
+      {
+        authority_lineage: [{ authority }],
+        controller_transfer: { to_controller: `checkout:${path.resolve(f.root)}` },
+      },
+      [{ sequence: 1 }, { sequence: 2 }],
+    );
     const apply = vi.fn().mockResolvedValue({ kind: "committed" });
     const runtime = {
       adapter: {
@@ -279,6 +284,26 @@ describe("canonical controller checkout handoff", () => {
       resolveCanonicalControllerCommand({ command: sourceWithTask, task_id: "T-1" }),
     ).resolves.toBe(target);
     expect(targetTask.extensions[TASK_KERNEL_EXTENSION]).toEqual(transferred);
+    expect(writeTask).toHaveBeenCalledTimes(2);
+
+    const advanced = record(
+      {
+        authority_lineage: [{ authority }],
+        controller_transfer: { to_controller: `checkout:${path.resolve(f.root)}` },
+        state: "COMPLETED",
+      },
+      [{ sequence: 1 }, { sequence: 2 }, { sequence: 3 }],
+    );
+    targetTask = {
+      ...targetTask,
+      revision: 10,
+      status: "DONE",
+      extensions: { ...targetTask.extensions, [TASK_KERNEL_EXTENSION]: advanced },
+    };
+    await expect(
+      resolveCanonicalControllerCommand({ command: sourceWithTask, task_id: "T-1" }),
+    ).resolves.toBe(target);
+    expect(targetTask.extensions[TASK_KERNEL_EXTENSION]).toEqual(advanced);
     expect(writeTask).toHaveBeenCalledTimes(2);
   });
 });

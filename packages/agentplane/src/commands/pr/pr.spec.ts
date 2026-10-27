@@ -11,7 +11,7 @@ export const prSpec: CommandSpec<PrGroupParsed> = {
   summary:
     "Manage local review artifacts and hosted GitHub PR or GitLab MR publication for a task (branch_pr workflow).",
   synopsis: [
-    "agentplane pr <open|update|check|flow status|conflict-rework|note|close|close-superseded> <task-id|pr-number> [options]",
+    "agentplane pr <open|adopt|update|check|flow status|conflict-rework|note|close|close-superseded> <task-id|pr-number> [options]",
   ],
   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<cmd>" }],
   examples: [

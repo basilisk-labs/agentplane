@@ -1,4 +1,8 @@
 import { readKernelRepositoryEvidence } from "./kernel-accepted-repository-evidence.js";
+import { readKernelAdoption } from "./kernel-adopted-pr-route.js";
+import { prepareKernelHostedCheckout } from "./kernel-hosted-checkout.js";
+import { assertCurrentHostedHead } from "./kernel-hosted-head-evidence.js";
+import { freshHostedPrReadback } from "./kernel-hosted-readback.js";
 import { protectedPathKindForFile } from "../../shared/protected-paths.js";
 import { CliError } from "../../shared/errors.js";
 import { assertHookRunnerReady } from "../shared/hook-shim-template.js";
@@ -207,7 +211,7 @@ function evidenceContents(
   implementationTree: string,
   changedPaths: readonly string[],
   evidence: DirectImplementationEvidence,
-): Omit<KernelRepositoryEvidence, "digest"> {
+): Omit<Extract<KernelRepositoryEvidence, { origin?: "task_branch" }>, "digest"> {
   return {
     schema_version: 1,
     kind: "canonical_repository_evidence",
@@ -509,6 +513,116 @@ export async function commitCanonicalImplementation(opts: {
     prepared.evidence,
   );
   const evidence = { ...contents, digest: k.kernelDigest(contents) };
+  return evidence;
+}
+
+/** Adopt a separately owned provider head without turning the task worktree into source evidence. */
+export async function captureCanonicalAdoptedImplementation(opts: {
+  command: CommandContext;
+  directory: string;
+  work_order: AgentWorkOrderV2;
+}): Promise<KernelRepositoryEvidence | null> {
+  const taskId = opts.work_order.task.id;
+  const adoption = await readKernelAdoption(opts.command, taskId);
+  if (!adoption) return null;
+  const baseline = await readKernelRepositoryBaseline(opts.directory);
+  if (
+    baseline.task_id !== taskId ||
+    baseline.work_order_id !== opts.work_order.work_order_id ||
+    path.resolve(baseline.checkout) !== path.resolve(opts.command.resolvedProject.gitRoot)
+  ) {
+    throw new Error("Canonical adopted PR control checkout identity changed");
+  }
+  const [head, branch, status] = await Promise.all([
+    readDirectTaskHead(baseline.checkout),
+    gitValue(opts.command, ["branch", "--show-current"], "branch"),
+    readDirectRepositoryStatus(baseline.checkout),
+  ]);
+  if (
+    head !== baseline.head ||
+    branch !== baseline.branch ||
+    !status ||
+    k.kernelDigest(nonTaskStatusLines(opts.command, taskId, status).toSorted()) !==
+      k.kernelDigest(nonTaskStatusLines(opts.command, taskId, baseline.status).toSorted())
+  ) {
+    throw new Error("Canonical adopted PR control checkout changed outside task metadata");
+  }
+  const freshReadback = freshHostedPrReadback({
+    gitRoot: baseline.checkout,
+    identity: adoption.identity,
+  });
+  let existing: KernelRepositoryEvidence | null = null;
+  try {
+    existing = await readKernelRepositoryEvidence(opts.directory);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+  }
+  if (existing) {
+    if (
+      existing.origin !== "adopted_hosted_pr" ||
+      existing.task_id !== taskId ||
+      existing.work_order_id !== opts.work_order.work_order_id ||
+      existing.hosted_head.adoption_digest !== adoption.digest
+    ) {
+      throw new Error("Canonical adopted PR retained evidence identity changed");
+    }
+    await assertCurrentHostedHead({
+      repository_root: baseline.checkout,
+      checkout: existing.checkout,
+      evidence: existing.hosted_head,
+      fresh_readback: freshReadback,
+    });
+    return existing;
+  }
+  const prepared = await prepareKernelHostedCheckout({
+    repository_root: baseline.checkout,
+    worktrees_dir_rel: opts.command.config.paths.worktrees_dir,
+    task_id: taskId,
+    work_order_id: opts.work_order.work_order_id as k.Sha256Digest,
+    adoption_digest: adoption.digest,
+    identity: adoption.identity,
+    adopted_head: adoption.receipt.head_sha,
+    adopted_base: adoption.receipt.base_sha,
+    fresh_readback: freshReadback,
+  });
+  const roots = opts.work_order.authority.writable_roots.map((root) =>
+    path.relative(baseline.checkout, root).replaceAll(path.sep, "/"),
+  );
+  if (
+    prepared.changed_paths.length === 0 ||
+    prepared.changed_paths.some(
+      (candidate) =>
+        !roots.some(
+          (root) => root === "" || candidate === root || candidate.startsWith(`${root}/`),
+        ),
+    )
+  ) {
+    throw new Error("Canonical adopted PR diff is empty or escapes WorkOrder scope");
+  }
+  const contents = {
+    schema_version: 1 as const,
+    kind: "canonical_repository_evidence" as const,
+    origin: "adopted_hosted_pr" as const,
+    task_id: taskId,
+    work_item_id: opts.work_order.task.work_item_id!,
+    task_revision: opts.work_order.task.revision ?? 0,
+    work_order_id: opts.work_order.work_order_id,
+    control_checkout: baseline.checkout,
+    checkout: prepared.checkout,
+    branch: adoption.identity.head_ref,
+    base_commit: prepared.evidence.current_base,
+    implementation_commit: prepared.evidence.current_head,
+    implementation_tree: prepared.evidence.head_tree,
+    changed_paths: prepared.changed_paths,
+    evaluator_target: prepared.evidence.current_head,
+    hosted_head: prepared.evidence,
+  };
+  const evidence: KernelRepositoryEvidence = { ...contents, digest: k.kernelDigest(contents) };
+  await writeNewStableRegularFileNoFollow(
+    path.join(opts.directory, "repository-evidence.json"),
+    `${JSON.stringify(evidence, null, 2)}\n`,
+    "canonical adopted PR repository evidence",
+  );
   return evidence;
 }
 
