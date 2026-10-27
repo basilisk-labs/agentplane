@@ -1,10 +1,10 @@
 ---
 id: "202610270505-EPCJFN"
 title: "Authenticate retained native validation across approved Plan corrections"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 43
+revision: 48
 origin:
   system: "manual"
 depends_on: []
@@ -25,7 +25,7 @@ plan_approval:
   note: "Projected from the approved canonical Task Kernel plan."
 verification:
   state: "ok"
-  updated_at: "2026-10-27T10:33:57.702Z"
+  updated_at: "2026-10-27T16:04:29.839Z"
   updated_by: "SUPERVISOR"
   note: "Verified: canonical Task Kernel final checks passed."
   attempts: 0
@@ -251,8 +251,14 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "verify"
+    at: "2026-10-27T16:04:29.839Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: canonical Task Kernel final checks passed."
 doc_version: 3
-doc_updated_at: "2026-10-27T10:33:59.573Z"
+doc_updated_at: "2026-10-27T16:04:31.727Z"
 doc_updated_by: "SUPERVISOR"
 description: "Generic recovery: preserve original WorkOrder and immutable validation proof, verify native USER-approved Plan correction lineage, and issue the next bounded action without treating a historical Plan as the current Plan. Add regression tests for missing or tampered transitions."
 sections:
@@ -361,6 +367,95 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-10-27T16:04:29.839Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: canonical Task Kernel final checks passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:1ccc3e0d585b797a0cbe8f5068a54340da1deb5e0a9049d4cedc1c391efae43c, input_digest=sha256:2d29501fa6ff007d7ab906fb565bae5b455299e45a999defbcba20b7e14d50f0
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/task/kernel-recovery-lineage.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610270505-EPCJFN/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610270505-EPCJFN Verification Contract check affected_unit_integration (1/3)
+
+    Check: affected_unit_integration
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202610270505-EPCJFN/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610270505-EPCJFN Verification Contract check affected_unit_integration (2/3)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610270505-EPCJFN/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610270505-EPCJFN Verification Contract check affected_unit_integration (3/3)
+
+    Check: critical_paths
+    Command: bunx vitest run packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/task/kernel-recovery-lineage.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610270505-EPCJFN/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610270505-EPCJFN Verification Contract check critical_paths (1/3)
+
+    Check: critical_paths
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202610270505-EPCJFN/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610270505-EPCJFN Verification Contract check critical_paths (2/3)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610270505-EPCJFN/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610270505-EPCJFN Verification Contract check critical_paths (3/3)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610270505-EPCJFN/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610270505-EPCJFN Verification Contract check full_regression
+
+    Check: task_outcome
+    Command: bunx vitest run packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/task/kernel-recovery-lineage.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610270505-EPCJFN/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610270505-EPCJFN Verification Contract check task_outcome (1/3)
+
+    Check: task_outcome
+    Command: bun run test:critical
+    Result: pass
+    Evidence: .agentplane/tasks/202610270505-EPCJFN/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610270505-EPCJFN Verification Contract check task_outcome (2/3)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610270505-EPCJFN/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610270505-EPCJFN Verification Contract check task_outcome (3/3)
+
+    NativeTaskIdentityRef:
+    - plan_digest: sha256:830f31f3c1750a3eca94deac95cd14d3c9322e4f57aaa91d0a3ce85f55413890
+    - policy_digest: sha256:b0f3ed8717357e14968093aaf83e3059ba55a248477be0e758cb9ae571d6f7ac
+    - capability_digest: sha256:81e20b53db82dc41def360d247099f72db0a254218394e63e35c84bf1e9192a6
+    - checks_digest: sha256:6cde2321d9385d235d962df93b2ba8f7984200186621aae9c9444dd9dd78901e
+    - identity_digest: sha256:cc8402e0ad5f5907ddc0f453ea7b15f9f7ac52d01e740339dc1fbee9924d19e6
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202610270505-EPCJFN
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -368,7 +463,7 @@ sections:
   Findings: ""
 extensions:
   agentplane.kernel_operational_projection:
-    digest: "sha256:7bd8e0df829660fb0162829a9f4cc21dc5aa13a309e264a408ac0d85a2936f97"
+    digest: "sha256:fa3ff3b2fddfca834cb90e9c7fdd6b1fcceadd0684dcc08377db3dadbcee85e0"
     evidence_refs:
       - "../../../.git/agentplane/kernel/exchanges/202610270505-EPCJFN/132d72718340206b9989e611b6c50cec63ed434b89d5eebde661066fdbf2cd73/quality-report.json"
     findings:
@@ -381,7 +476,7 @@ extensions:
     review_identity_digest: "sha256:2dff468dc99f7603c29e7b4b736f79832eff2110e770262197055ff9290c84bf"
     schema_version: 1
     source: "task_kernel"
-    verification_evidence_digest: "sha256:48bd74031763265d529a13f71b3c65fbc1c582a625add85d494e5fb57a68b178"
+    verification_evidence_digest: "sha256:43b65d640e348c7b4fcc82bc58b61524cbbee67ff085b83d040898d43c9cf81d"
     work_order_id: "sha256:6df09bd82a07e2f54293e48fea19a5101a72c2ec92c3adec5a9b74249074e380"
   task_execution_context:
     base_ref: "main"
@@ -876,6 +971,76 @@ extensions:
             evidence_digest: "sha256:1c690034107dd35a04cc48f47b9ecbc6709a1e1874133c69b2a9aec7584a316a"
             kind: "repository_implementation"
             previous_fingerprint: "sha256:c95bec45b3f2ebb3ad3e35ad395cdf97c7b50cd7fdf21bb7fa891cdaebdbf49d"
+        -
+          approval_mode: "manual_operator"
+          authority:
+            capabilities:
+              - "repository_write"
+            completion_requirements:
+              - "work_item_validation"
+              - "final_validation"
+            digest: "sha256:818398cff1edfea54dd941edddd529cc07ae172a5a99b5c454a34bdb2c75029b"
+            expires_at: null
+            external_effects: []
+            plan_digest: "sha256:830f31f3c1750a3eca94deac95cd14d3c9322e4f57aaa91d0a3ce85f55413890"
+            plan_revision: 3
+            policy_digests:
+              - "sha256:37492408e7e56de75241cc87a953f635dd9852af3cd93225899233274890938c"
+            provenance:
+              actor_id: "USER"
+              evidence_digest: "sha256:eca3f6b3bb0c69d12778ea367c927f9bb206c7810d38da2550bf9340d086ff54"
+              kind: "USER"
+              parent_authority_digest: "sha256:a4d6365067cc402caf06e3026a19780bbc9deb1ac59061a7f4cd2d8c3c21ec42"
+            repository_effects:
+              - "repository_write"
+              - "security_boundary"
+              - "source_code"
+              - "tests"
+            repository_fingerprint: "sha256:5ee82ba09e16fad83a9fffd19904d114043bfa7886b652af715fb89aba097351"
+            repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+            resources: []
+            risk:
+              implementation: "bounded"
+              requirements: "bounded"
+              reversibility: "reversible"
+            scope_roots:
+              - "package.json"
+              - "packages/agentplane/src/commands/doctor/archive.test.ts"
+              - "packages/agentplane/src/commands/doctor/archive.ts"
+              - "packages/agentplane/src/commands/release/workflow-node-version-contract.test.ts"
+              - "packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts"
+              - "packages/agentplane/src/commands/task/kernel-recovery-evidence.ts"
+              - "packages/agentplane/src/commands/task/kernel-recovery-lineage.test.ts"
+              - "packages/agentplane/src/commands/task/kernel-recovery-lineage.ts"
+            task_id: "202610270505-EPCJFN"
+            validation_requirements:
+              - "affected_unit_integration"
+              - "critical_paths"
+              - "full_regression"
+              - "hosted_integration"
+              - "task_outcome"
+            work_item_id: null
+          observation:
+            added_repository_effects:
+              - "repository_write"
+              - "source_code"
+              - "tests"
+            added_scope_roots:
+              - "package.json"
+              - "packages/agentplane/src/commands/doctor/archive.test.ts"
+              - "packages/agentplane/src/commands/doctor/archive.ts"
+              - "packages/agentplane/src/commands/release/workflow-node-version-contract.test.ts"
+            changed_paths:
+              - "package.json"
+              - "packages/agentplane/src/commands/doctor/archive.test.ts"
+              - "packages/agentplane/src/commands/doctor/archive.ts"
+              - "packages/agentplane/src/commands/release/workflow-node-version-contract.test.ts"
+            evidence_digest: "sha256:92990d98a8d0cee00a6b751b08f3101579d13c34fdae08c5dbee5b52cf03a945"
+            kind: "authority_delta"
+            previous_fingerprint: "sha256:73939381a47141434e16f6b1ed1026a1a4e0e4c3e66f1507cc978dcb3b338aad"
+            repository_evidence_digest: "sha256:ca3016ab516cf2018ed3de14d04b74105b64a6ac8f46a7a432f2ba434e8752d3"
+            request_digest: "sha256:683cfa8748b16d2f4925ac52bfd438aa31a79ed539d6f0ebb1b202a9341c8aea"
+            request_task_revision: 39
       controller_transfer: null
       current_plan:
         approval_actor_id: "agentplane:kernel-controller"
@@ -912,14 +1077,14 @@ extensions:
       effects: []
       final_validation:
         evidence_digests:
-          - "sha256:abaf0639cf67c4fa88f0ab7d5954efd9456e906500052eba281af5d5b09a3acb"
+          - "sha256:43b65d640e348c7b4fcc82bc58b61524cbbee67ff085b83d040898d43c9cf81d"
         identity:
           check_id: "canonical-final-contracts-v2"
           command_digest: "sha256:7b02fba1fd46f3b852cf58df6c05b6e86ec5c53b11844402a49fd8e7525afde2"
-          environment_digest: "sha256:a57989e837e67617e988a3a5a0353e4b61f6c4c4aac9403e47e74fb7d0cde0d1"
-          implementation_identity: "sha256:73939381a47141434e16f6b1ed1026a1a4e0e4c3e66f1507cc978dcb3b338aad"
+          environment_digest: "sha256:0e89f7614a56c57b8308a26a2185b707ac282307b116b4dba5128ac0a699511e"
+          implementation_identity: "sha256:5ee82ba09e16fad83a9fffd19904d114043bfa7886b652af715fb89aba097351"
           toolchain_digest: "sha256:336b6fb2815f69a01f10ed4971eec34c294fac0f46014da691f1298c7261c146"
-        observed_at: "2026-10-27T09:53:27.825Z"
+        observed_at: "2026-10-27T15:13:12.199Z"
         status: "PASSED"
       id: "202610270505-EPCJFN"
       intent_digest: "sha256:6362515079d39b5879f82993868d2e51b60b6042ea369e037b66b21337735aac"
@@ -934,6 +1099,15 @@ extensions:
           event_digests:
             - "sha256:3c4bcb181ddc5c9606f7b15eb0b3b5293eb4749795feca32ea924ed9eb2c7d43"
           mutation_id: "capture:202610270505-EPCJFN"
+        final-validation:sha256:43b65d640e348c7b4fcc82bc58b61524cbbee67ff085b83d040898d43c9cf81d:40:
+          after_revision: 41
+          aggregate_digest: "sha256:377dea7fb8d291d1fc2421e26677f26b70fc1a41c3db6376aea4fb9bcada9dee"
+          before_revision: 40
+          command_digest: "sha256:d9360239b00d428caeeb5c6fb9a246dc4db428711f019b5486d44ab0eeebbfb9"
+          effect_ids: []
+          event_digests:
+            - "sha256:7d5c989b897be37be41c4f321c9c0d41724e187a57eca6880c2f690adbe8cb6e"
+          mutation_id: "final-validation:sha256:43b65d640e348c7b4fcc82bc58b61524cbbee67ff085b83d040898d43c9cf81d:40"
         final-validation:sha256:abaf0639cf67c4fa88f0ab7d5954efd9456e906500052eba281af5d5b09a3acb:38:
           after_revision: 39
           aggregate_digest: "sha256:8668e08bc9a9cb31bb5f91c445b71ad2cd08bddbc46a50025cd2e79890c05dc8"
@@ -943,6 +1117,15 @@ extensions:
           event_digests:
             - "sha256:9f68d29308ea75585bbdaef541b90485b5635de70c7fcf295576887070873530"
           mutation_id: "final-validation:sha256:abaf0639cf67c4fa88f0ab7d5954efd9456e906500052eba281af5d5b09a3acb:38"
+        kernel_task_completion_required:sha256:b00168e356e36f51152376c540e6f19a70767c161cfc26be011145282ba2758e:sha256:5ee82ba09e16fad83a9fffd19904d114043bfa7886b652af715fb89aba097351:
+          after_revision: 42
+          aggregate_digest: "sha256:6e3b21e74aadbaa134a573d72f8f79c5a3a2cf03759defdf739991af2f8829b0"
+          before_revision: 41
+          command_digest: "sha256:d8a8364f395ae9d53f82a5a92f06145a0fbde9e50e9c384bd152a839e0a156c9"
+          effect_ids: []
+          event_digests:
+            - "sha256:b0b4e0d879fcaabe7bfe3d22a2ddf24eb37441a64e0fbc5d95b8e98517d15378"
+          mutation_id: "kernel_task_completion_required:sha256:b00168e356e36f51152376c540e6f19a70767c161cfc26be011145282ba2758e:sha256:5ee82ba09e16fad83a9fffd19904d114043bfa7886b652af715fb89aba097351"
         kernel_work_item_claim_required:sha256:27b5c52c514cdc07977158299424f6c2e769e898c4f0d7c11168b16eaed37dab:sha256:f90a41f5fef30af97517746443dd875e822fcd4ea2e190e4562f5d5c04ae64d5:
           after_revision: 25
           aggregate_digest: "sha256:afb3843c467f2e494a4149c8876683a9b7b0e44a3f765b39eec17e037dc62ab7"
@@ -1222,6 +1405,15 @@ extensions:
           event_digests:
             - "sha256:355cb113676e7cd361e3ef99b1065687de571f8b68e3ea6ca8822de8047b2a84"
           mutation_id: "sha256:901785b177254b31971cc71871c193d0a78c9879efbb44ea3d1d0fd92eb53331"
+        sha256:b19e2eb66b1895a508cc8c58156175261ec667a7d8e851f1de77b4b50e008ec8:
+          after_revision: 40
+          aggregate_digest: "sha256:0ddee65d8241ec67f87e8722cba39f3a221e820c916a2f59ecd51ec9485cf0a7"
+          before_revision: 39
+          command_digest: "sha256:bb167e9c9524c190a25769eed295e6e79449005275f0811f6601d136053a626a"
+          effect_ids: []
+          event_digests:
+            - "sha256:ff20c7a927019b4cfcc8287afdea02ded1c665afe9a65a2329e364d7962e54d8"
+          mutation_id: "sha256:b19e2eb66b1895a508cc8c58156175261ec667a7d8e851f1de77b4b50e008ec8"
         validation-resolution:sha256:785ce10df29a64ec3b6275805de37c82b3e47bf6cc5d692f19027cc4029b6515:
           after_revision: 11
           aggregate_digest: "sha256:9fc2aeddcb8789832f92898547d63eef30765879653d7bb73d075e1e4ea7476b"
@@ -1338,9 +1530,9 @@ extensions:
               id: "native-validation-plan-correction-recovery"
               optional: false
               required_inputs: []
-      revision: 39
+      revision: 42
       schema_version: 1
-      state: "FINAL_VALIDATION"
+      state: "COMPLETED"
       work_items:
         native-validation-plan-correction-recovery:
           attempt: 5
@@ -1413,7 +1605,7 @@ extensions:
               toolchain_digest: "sha256:5a3b0e29e27baf58fa8f4697c8a875f35fc209aaa906b14d0f3f20bd67718381"
             observed_at: "2026-10-27T09:53:04.686Z"
             status: "PASSED"
-    digest: "sha256:797bacc4f0d6be3ac5f9a8e40cf1a75a62c31c123e752da8ea0a0aa1349eba84"
+    digest: "sha256:2bb9e27656118fa414032f4b2a98b43035c582b853ebac20ff6a5a863bb356c2"
     documents:
       contracts:
         sha256:0812f19d62d81b9e48321babd722436a94a8073c4be5df0a63fb2e4d2b7ceb06:
@@ -1795,6 +1987,33 @@ extensions:
         payload_digest: "sha256:faee0a9bd2616d6c1f32518a06071acea8ba3c54ee2fee11fc49f111ce39fcfe"
         task_id: "202610270505-EPCJFN"
         task_revision: 39
+      -
+        command_digest: "sha256:bb167e9c9524c190a25769eed295e6e79449005275f0811f6601d136053a626a"
+        id: "sha256:b19e2eb66b1895a508cc8c58156175261ec667a7d8e851f1de77b4b50e008ec8:authority_continued"
+        kind: "authority_continued"
+        mutation_id: "sha256:b19e2eb66b1895a508cc8c58156175261ec667a7d8e851f1de77b4b50e008ec8"
+        occurred_at: "2026-10-27T15:11:35.769Z"
+        payload_digest: "sha256:6b52dfa8db945bbcc58dcd9dbe44ac11f3503908088957bc9752766e5c33f0f3"
+        task_id: "202610270505-EPCJFN"
+        task_revision: 40
+      -
+        command_digest: "sha256:d9360239b00d428caeeb5c6fb9a246dc4db428711f019b5486d44ab0eeebbfb9"
+        id: "final-validation:sha256:43b65d640e348c7b4fcc82bc58b61524cbbee67ff085b83d040898d43c9cf81d:40:final_validation_recorded"
+        kind: "final_validation_recorded"
+        mutation_id: "final-validation:sha256:43b65d640e348c7b4fcc82bc58b61524cbbee67ff085b83d040898d43c9cf81d:40"
+        occurred_at: "2026-10-27T16:04:25.982Z"
+        payload_digest: "sha256:0d6dbc590a3aedc45986e5e494ee2e9265c0bb1fd8c955817593ae40bb0e99ff"
+        task_id: "202610270505-EPCJFN"
+        task_revision: 41
+      -
+        command_digest: "sha256:d8a8364f395ae9d53f82a5a92f06145a0fbde9e50e9c384bd152a839e0a156c9"
+        id: "kernel_task_completion_required:sha256:b00168e356e36f51152376c540e6f19a70767c161cfc26be011145282ba2758e:sha256:5ee82ba09e16fad83a9fffd19904d114043bfa7886b652af715fb89aba097351:task_completed"
+        kind: "task_completed"
+        mutation_id: "kernel_task_completion_required:sha256:b00168e356e36f51152376c540e6f19a70767c161cfc26be011145282ba2758e:sha256:5ee82ba09e16fad83a9fffd19904d114043bfa7886b652af715fb89aba097351"
+        occurred_at: "2026-10-27T16:06:26.997Z"
+        payload_digest: "sha256:efc14d672416d83058d2fee3d83308db5cfd2c79e5c048b47673b36d0bfe2f1f"
+        task_id: "202610270505-EPCJFN"
+        task_revision: 42
     kind: "canonical_task"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
@@ -1903,6 +2122,95 @@ NativeTaskIdentityRef:
 - capability_digest: sha256:81e20b53db82dc41def360d247099f72db0a254218394e63e35c84bf1e9192a6
 - checks_digest: sha256:72c13128ab9c8c132318e48461592a16101bc7d8104c907d6d8cfa7da417889c
 - identity_digest: sha256:d68ce913df14fe3b57c53921c43a1436dc33ce020835e2736542d66adc4a3681
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202610270505-EPCJFN
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-10-27T16:04:29.839Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: canonical Task Kernel final checks passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:1ccc3e0d585b797a0cbe8f5068a54340da1deb5e0a9049d4cedc1c391efae43c, input_digest=sha256:2d29501fa6ff007d7ab906fb565bae5b455299e45a999defbcba20b7e14d50f0
+
+Details:
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/task/kernel-recovery-lineage.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610270505-EPCJFN/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610270505-EPCJFN Verification Contract check affected_unit_integration (1/3)
+
+Check: affected_unit_integration
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202610270505-EPCJFN/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610270505-EPCJFN Verification Contract check affected_unit_integration (2/3)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610270505-EPCJFN/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610270505-EPCJFN Verification Contract check affected_unit_integration (3/3)
+
+Check: critical_paths
+Command: bunx vitest run packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/task/kernel-recovery-lineage.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610270505-EPCJFN/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610270505-EPCJFN Verification Contract check critical_paths (1/3)
+
+Check: critical_paths
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202610270505-EPCJFN/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610270505-EPCJFN Verification Contract check critical_paths (2/3)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610270505-EPCJFN/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610270505-EPCJFN Verification Contract check critical_paths (3/3)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610270505-EPCJFN/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610270505-EPCJFN Verification Contract check full_regression
+
+Check: task_outcome
+Command: bunx vitest run packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts packages/agentplane/src/commands/task/kernel-recovery-lineage.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610270505-EPCJFN/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610270505-EPCJFN Verification Contract check task_outcome (1/3)
+
+Check: task_outcome
+Command: bun run test:critical
+Result: pass
+Evidence: .agentplane/tasks/202610270505-EPCJFN/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610270505-EPCJFN Verification Contract check task_outcome (2/3)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610270505-EPCJFN/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610270505-EPCJFN Verification Contract check task_outcome (3/3)
+
+NativeTaskIdentityRef:
+- plan_digest: sha256:830f31f3c1750a3eca94deac95cd14d3c9322e4f57aaa91d0a3ce85f55413890
+- policy_digest: sha256:b0f3ed8717357e14968093aaf83e3059ba55a248477be0e758cb9ae571d6f7ac
+- capability_digest: sha256:81e20b53db82dc41def360d247099f72db0a254218394e63e35c84bf1e9192a6
+- checks_digest: sha256:6cde2321d9385d235d962df93b2ba8f7984200186621aae9c9444dd9dd78901e
+- identity_digest: sha256:cc8402e0ad5f5907ddc0f453ea7b15f9f7ac52d01e740339dc1fbee9924d19e6
 
 DecisionContextRef:
 - operator_action: stop
