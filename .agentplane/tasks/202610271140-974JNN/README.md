@@ -1,10 +1,11 @@
 ---
 id: "202610271140-974JNN"
 title: "Synchronize adopted PR metadata schema with formatted generation"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -45,6 +46,22 @@ quality_review:
     - "The three generated pr-meta.schema.json snapshots are byte-identical and contain the optional adoption structure. The generator uses Prettier-stable JSON output."
     - "The implementation changes exactly the six approved source/schema/test/generator paths, with no MY0JZE changes or hosted PR mutation."
     - "AgentPlane retained exit code 0 for schemas:check, 29 focused schema tests, typecheck, format:check, and ci:local:full on the exact implementation head. The prior failed oversized-test receipt remains retained and the revised test stays within the file budget."
+token_usage:
+  agent_runs: 1
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:d8897010fc1f9b1ca6b5651dea47e71a84c0acd0d14f72257cdf419913de160f"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "provider_token_telemetry_unavailable"
+  updated_at: "2026-10-27T15:21:11.883Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -287,9 +304,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "d853f22e10f43aa371c6281af4d97bb136b26b55"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "aabdf11491f4193cf8099acba878e63fc95296d7"
+  message: "🧩 974JNN task: record opened PR metadata"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -297,9 +317,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-27T15:21:11.883Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "aabdf11491f4193cf8099acba878e63fc95296d7"
 doc_version: 3
-doc_updated_at: "2026-10-27T15:09:42.993Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-27T15:21:11.883Z"
+doc_updated_by: "CODER"
 description: "Provide the typed provider-neutral adopted-PR metadata schema prerequisite for MY0JZE. Add strict core schema and tests, make canonical pr-meta schema generation Prettier-stable, and sync exactly three pr-meta.schema.json snapshots. Supersedes RSHVSQ because its immutable five-file criterion omitted the generator. Merge before MY0JZE finalization; do not edit MY0JZE artifacts or add a task-graph depends_on edge."
 sections:
   Summary: |-
@@ -469,6 +497,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:e2461afdec5ff164e524d24f157ebe9ddda102f5c21c7fa65195c6c2d156dc87"
     work_order_id: "sha256:6ea6617719e8779c1cfa5b7801f8c6e13cfdfe15db6edc6573e6ad10760cc515"
+  implementation_commit:
+    hash: "d853f22e10f43aa371c6281af4d97bb136b26b55"
+    message: "🚧 974JNN task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "3a5d69bd47e56d65e6928d6a16beb0586b056f04"
@@ -1327,3 +1358,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/1` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:d8897010fc1f9b1ca6b5651dea47e71a84c0acd0d14f72257cdf419913de160f`
+- Unavailable reason: `provider_token_telemetry_unavailable`
+- Updated at: `2026-10-27T15:21:11.883Z`
