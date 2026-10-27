@@ -8,7 +8,10 @@ vi.mock("../../internal/glab-api.js", async (importOriginal) => ({
   runGlabApiJson: mocks.runGlabApiJson,
 }));
 
-import { runProtectedBaseGitLabMerge } from "./gitlab-mr-merge.js";
+import {
+  assertGitLabExactBaseMergeCapability,
+  runProtectedBaseGitLabMerge,
+} from "./gitlab-mr-merge.js";
 
 const identity = {
   provider: "gitlab" as const,
@@ -22,6 +25,26 @@ const identity = {
 
 describe("gitlab-mr-merge", () => {
   beforeEach(() => vi.clearAllMocks());
+
+  it("rejects a fast-forward or rebase project before any hosted merge effect", async () => {
+    for (const merge_method of ["ff", "rebase_merge", null]) {
+      expect(() => assertGitLabExactBaseMergeCapability({ merge_method })).toThrow();
+    }
+    const guard = vi.fn(() => Promise.resolve());
+    mocks.runGlabApiJson.mockResolvedValue({ merge_method: "ff" });
+    await expect(
+      runProtectedBaseGitLabMerge({
+        gitRoot: "/repo",
+        identity,
+        prNumber: 42,
+        expectedHeadSha: "expected-head",
+        preMutationGuard: guard,
+        exactBaseParentProof: true,
+      }),
+    ).rejects.toThrow("merge-commit method");
+    expect(guard).not.toHaveBeenCalled();
+    expect(mocks.runGlabApiJson).toHaveBeenCalledTimes(1);
+  });
 
   it("runs the pre-mutation guard and sends a SHA-guarded merge through explicit hostname", async () => {
     const guard = vi.fn(() => Promise.resolve());

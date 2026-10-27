@@ -424,6 +424,10 @@ export const loadPrOpenSpec = (session: ProviderWriteSession) =>
   import("../../../commands/pr/pr.command.js").then((m) =>
     m.makeRunPrOpenHandler((command) => getProviderWriteContext(session, command)),
   );
+export const loadPrAdoptSpec = (session: ProviderWriteSession) =>
+  import("../../../commands/pr/adoption.command.js").then((m) =>
+    m.makeRunPrAdoptHandler((command) => getProviderWriteContext(session, command)),
+  );
 export const loadPrUpdateSpec = (session: ProviderWriteSession) =>
   import("../../../commands/pr/pr.command.js").then((m) =>
     m.makeRunPrUpdateHandler((command) => getProviderWriteContext(session, command)),

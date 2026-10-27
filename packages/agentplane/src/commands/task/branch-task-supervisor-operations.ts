@@ -1,4 +1,5 @@
 import path from "node:path";
+import { findWorktreeForBranch } from "@agentplaneorg/core/git";
 
 import type { CommandCtx } from "../../cli/spec/spec.js";
 import { CliError } from "../../shared/errors.js";
@@ -11,12 +12,27 @@ import {
   makeRunIntegrateQueueRunNextHandler,
 } from "../integrate-queue.command.js";
 import { resolvePrFlowStatus } from "../pr/flow-status.js";
+import { mergeAdoptedPr } from "../pr/adoption-merge.js";
+import { createExistingPrAdoptionStore, resolveAdoptionControlRoot } from "../pr/adoption-store.js";
+import { assertAdoptedPrMergeReadiness } from "../pr/adoption-task-authority.js";
+import { matchesAdoptedPrObservation } from "../pr/adoption-identity.js";
+import { hasExactAdoptedVerificationRecord } from "../pr/adoption-verification.js";
 import { cmdPrOpen } from "../pr/open.js";
 import { cmdPrUpdate } from "../pr/update.js";
 import { updateProviderBranch } from "../pr/provider-update-branch.js";
+import { freshHostedPrReadback } from "./kernel-hosted-readback.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
-import { workflowAuthorityStateScopeDigest } from "../shared/side-effect-authority.js";
-import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
+import {
+  evaluateWorkflowOperationAuthority,
+  workflowAuthorityStateScopeDigest,
+} from "../shared/side-effect-authority.js";
+import { hydrateTaskSideEffectAuthority } from "../shared/side-effect-authority-store.js";
+import {
+  loadBackendTask,
+  loadCommandContext,
+  loadTaskFromContext,
+  resolveTaskBranchFromContext,
+} from "../shared/task-backend.js";
 import type { WorkflowSupervisorOperationResult } from "../shared/workflow-supervisor.js";
 import type { WorkflowOperation } from "../shared/workflow-step.js";
 import { supervisePersistedWorkflowEpisode } from "../shared/supervisor-execution-episode.js";
@@ -24,6 +40,8 @@ import { applyForeignTaskReadmeReplicaRepair } from "../shared/task-worktree-for
 import { isSameBranchIdentity } from "../shared/branch-identity.js";
 import { resolveCanonicalWorktreePreparationRoot } from "../shared/worktree-topology.js";
 import { cmdFinish } from "./finish-command.js";
+import { transferCanonicalControllerToBase } from "./kernel-controller-handoff.js";
+import { createKernelRuntime } from "./kernel-runtime-context.js";
 import { makeRunTaskHostedClosePrHandler } from "./hosted-close-pr.command.js";
 import { cmdTaskStartReady } from "./start-ready.js";
 import { cmdTaskScopeExtend } from "./scope-extend.js";
@@ -127,6 +145,168 @@ export async function executeBranchWorkflowOperation(opts: {
   switch (operation.id) {
     case "candidate.publish": {
       throw new Error("Candidate publication requires its dedicated operator checkpoint.");
+    }
+    case "pr.existing.adopt": {
+      throw new Error("Existing PR adoption requires its dedicated operator checkpoint.");
+    }
+    case "integration.adopted_merge": {
+      const root = command.resolvedProject.gitRoot;
+      const store = createExistingPrAdoptionStore({
+        gitRoot: await resolveAdoptionControlRoot(root),
+        workflowDir: command.config.paths.workflow_dir,
+      });
+      const receipt = await store.readTask(operation.params.taskId);
+      if (receipt?.pr_number !== operation.params.prNumber) {
+        throw new Error("Native adopted PR merge has no exact retained task binding");
+      }
+      const assertAuthority = async () => {
+        const { task: fresh } = await loadBackendTask({
+          ctx: command,
+          cwd,
+          taskId: operation.params.taskId,
+          preferBranchSnapshot: false,
+        });
+        assertAdoptedPrMergeReadiness(fresh, operation.params.headSha);
+        const decision = evaluateWorkflowOperationAuthority({
+          task: await hydrateTaskSideEffectAuthority({
+            gitRoot: root,
+            taskId: operation.params.taskId,
+            task: fresh,
+          }),
+          operation,
+          fingerprint: operation.preconditionFingerprint,
+        });
+        if (decision.state !== "allowed" || decision.authority?.actor !== "USER") {
+          throw new Error("Adopted PR merge requires its own current USER authority");
+        }
+      };
+      const { task: currentTask } = await loadBackendTask({
+        ctx: command,
+        cwd,
+        taskId: operation.params.taskId,
+        preferBranchSnapshot: false,
+      });
+      const result = await mergeAdoptedPr({
+        gitRoot: root,
+        task: currentTask,
+        receipt,
+        expectedHeadSha: operation.params.headSha,
+        expectedBaseSha: operation.params.baseSha,
+        assertAuthority,
+        assertVerification: async () => {
+          const { task: fresh } = await loadBackendTask({
+            ctx: command,
+            cwd,
+            taskId: operation.params.taskId,
+            preferBranchSnapshot: false,
+          });
+          if (
+            !(await hasExactAdoptedVerificationRecord({
+              ctx: command,
+              task: fresh,
+              headSha: operation.params.headSha,
+            }))
+          ) {
+            throw new Error(
+              "Adopted PR merge requires a current native verification record for the exact hosted head",
+            );
+          }
+        },
+      });
+      await store.recordMerged(
+        operation.params.taskId,
+        operation.params.headSha,
+        result.mergeCommit,
+        result.mergedAt,
+      );
+      return succeeded(
+        operation,
+        `merged adopted PR #${receipt.pr_number}; provider confirmed merge commit ${result.mergeCommit}`,
+      );
+    }
+    case "task.adopted.finish": {
+      const root = command.resolvedProject.gitRoot;
+      const store = createExistingPrAdoptionStore({
+        gitRoot: await resolveAdoptionControlRoot(root),
+        workflowDir: command.config.paths.workflow_dir,
+      });
+      const receipt = await store.readTask(operation.params.taskId);
+      const recorded = await store.readMerged(operation.params.taskId);
+      if (
+        receipt?.pr_number !== operation.params.prNumber ||
+        recorded?.headSha !== operation.params.headSha ||
+        recorded.mergeCommit !== operation.params.mergeCommit ||
+        recorded.mergedAt !== operation.params.mergedAt
+      ) {
+        throw new Error("Adopted PR task closure has no matching native merge receipt");
+      }
+      const flow = await resolvePrFlowStatus({
+        ctx: command,
+        cwd,
+        taskId: operation.params.taskId,
+      });
+      const observed = flow.providerObservation;
+      if (
+        observed?.state !== "found" ||
+        !matchesAdoptedPrObservation(receipt, observed.pr) ||
+        observed.pr.status !== "MERGED" ||
+        observed.pr.headSha !== operation.params.headSha ||
+        observed.pr.mergeCommit !== operation.params.mergeCommit ||
+        observed.pr.mergedAt !== operation.params.mergedAt
+      ) {
+        throw new Error("Adopted PR task closure requires fresh matching merged provider readback");
+      }
+      const taskBranch = await resolveTaskBranchFromContext({
+        ctx: command,
+        taskId: operation.params.taskId,
+      });
+      const owner = taskBranch ? await findWorktreeForBranch(root, taskBranch) : null;
+      if (
+        !owner ||
+        !opts.decision.workspace.taskWorktreePath ||
+        path.resolve(owner) !== path.resolve(opts.decision.workspace.taskWorktreePath)
+      ) {
+        throw new Error("Adopted PR task closure requires its registered task worktree");
+      }
+      const taskCommand = await loadCommandContext({ cwd: owner, rootOverride: null });
+      const { task: currentTask } = await loadBackendTask({
+        ctx: taskCommand,
+        cwd: owner,
+        taskId: operation.params.taskId,
+        preferBranchSnapshot: true,
+      });
+      assertAdoptedPrMergeReadiness(currentTask, operation.params.headSha);
+      if (
+        !(await hasExactAdoptedVerificationRecord({
+          ctx: taskCommand,
+          task: currentTask,
+          headSha: operation.params.headSha,
+        }))
+      ) {
+        throw new Error(
+          "Adopted PR task closure requires the current exact-head native verification record",
+        );
+      }
+      const runtime = await createKernelRuntime({
+        command: taskCommand,
+        task_id: operation.params.taskId,
+        transport: "host",
+        operation_id: `adopted-controller-transfer:${operation.params.mergeCommit}`,
+      });
+      const transferred = await transferCanonicalControllerToBase({
+        command: taskCommand,
+        runtime,
+        task_id: operation.params.taskId,
+        base_checkout: await resolveAdoptionControlRoot(root),
+      });
+      const authoritative = await transferred.taskBackend.getTask(operation.params.taskId);
+      if (authoritative?.status !== "DONE") {
+        throw new Error("Adopted PR canonical completion was not persisted in the base checkout");
+      }
+      return succeeded(
+        operation,
+        `closed adopted PR task ${operation.params.taskId} from provider merge ${operation.params.mergeCommit}`,
+      );
     }
     case "task.branch.sync_base": {
       const result = await synchronizeTaskBranchBase({
@@ -266,6 +446,35 @@ export async function executeBranchWorkflowOperation(opts: {
       );
     }
     case "provider.pr.update_branch": {
+      const controlRoot = await resolveAdoptionControlRoot(command.resolvedProject.gitRoot);
+      const adoptionStore = createExistingPrAdoptionStore({
+        gitRoot: controlRoot,
+        workflowDir: command.config.paths.workflow_dir,
+      });
+      const adoption = await adoptionStore.readTask(operation.params.taskId);
+      if (adoption && adoption.pr_number !== operation.params.prNumber) {
+        throw new Error("Provider update-branch PR differs from immutable adoption receipt");
+      }
+      if (adoption) {
+        const { task: fresh } = await loadBackendTask({
+          ctx: command,
+          cwd,
+          taskId: operation.params.taskId,
+          preferBranchSnapshot: false,
+        });
+        const authority = evaluateWorkflowOperationAuthority({
+          task: await hydrateTaskSideEffectAuthority({
+            gitRoot: command.resolvedProject.gitRoot,
+            taskId: operation.params.taskId,
+            task: fresh,
+          }),
+          operation,
+          fingerprint: operation.preconditionFingerprint,
+        });
+        if (authority.state !== "allowed" || authority.authority?.actor !== "USER") {
+          throw new Error("Adopted PR update requires its own current USER authority");
+        }
+      }
       const result = await updateProviderBranch({
         gitRoot: command.resolvedProject.gitRoot,
         worktreePath: cwd,
@@ -275,16 +484,42 @@ export async function executeBranchWorkflowOperation(opts: {
         baseBranch: operation.params.baseBranch,
         expectedHeadSha: operation.params.expectedHeadSha,
         expectedBaseSha: operation.params.expectedBaseSha,
+        ...(adoption ? { adoption } : {}),
         ...(operation.params.reconcileHeadSha
           ? { reconcileHeadSha: operation.params.reconcileHeadSha }
           : {}),
       });
       if (result.state === "updated") {
+        if (adoption) {
+          const current = await freshHostedPrReadback({
+            gitRoot: command.resolvedProject.gitRoot,
+            identity: {
+              provider: adoption.provider,
+              hostname: adoption.hostname,
+              remote: adoption.remote,
+              source_project: adoption.source_project,
+              target_project: adoption.target_project,
+              pr_number: adoption.pr_number,
+              head_ref: adoption.head_ref,
+              base_ref: adoption.base_ref,
+            },
+          })();
+          if (current.current_head !== result.evidence.observedHeadSha) {
+            throw new Error("Adopted PR updated head changed before durable readback");
+          }
+          await adoptionStore.recordUpdatedHead(
+            operation.params.taskId,
+            operation.params.expectedHeadSha,
+            current.current_head,
+          );
+        }
         return succeeded(
           operation,
           `provider PR #${operation.params.prNumber} update-branch ${result.effect}; ` +
-            `readback proved ${result.evidence.observedHeadSha} contains the exact expected head and base; ` +
-            "the task checkout and tracking head are aligned with that provider head",
+            `readback proved ${result.evidence.observedHeadSha} contains the exact expected head and base` +
+            (adoption
+              ? " under the immutable adoption receipt"
+              : "; the task checkout and tracking head are aligned with that provider head"),
         );
       }
       if (result.state === "not_applied") {

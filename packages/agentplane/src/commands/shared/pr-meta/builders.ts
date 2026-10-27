@@ -67,6 +67,7 @@ export function buildOpenedPrMeta(opts: {
     pr_number: opts.previousMeta?.pr_number,
     pr_url: opts.previousMeta?.pr_url,
     provider: opts.previousMeta?.provider,
+    adoption: opts.previousMeta?.adoption,
     created_at: opts.previousMeta?.created_at ?? opts.at,
     updated_at: changed ? opts.at : (opts.previousMeta?.updated_at ?? opts.at),
     status: opts.previousMeta?.status,

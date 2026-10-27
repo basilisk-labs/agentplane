@@ -1,9 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type * as CoreGit from "@agentplaneorg/core/git";
 
 import { CliError } from "../../shared/errors.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import type { WorkflowOperation } from "../shared/workflow-step.js";
+import type * as SideEffectAuthority from "../shared/side-effect-authority.js";
 import { executeBranchWorkflowOperation } from "./branch-task-supervisor-operations.js";
 
 if (typeof vi.hoisted !== "function") {
@@ -15,6 +17,7 @@ const mocks = vi.hoisted(() => ({
   runNext: vi.fn(),
   loadCommandContext: vi.fn(),
   loadTaskFromContext: vi.fn(),
+  loadBackendTask: vi.fn(),
   loadTaskCommandContext: vi.fn(),
   cmdWorkStart: vi.fn(),
   enqueue: vi.fn(),
@@ -22,6 +25,49 @@ const mocks = vi.hoisted(() => ({
   updateProviderBranch: vi.fn(),
   synchronizeTaskBranchBase: vi.fn(),
   resolveCanonicalWorktreePreparationRoot: vi.fn(),
+  resolveAdoptionControlRoot: vi.fn().mockResolvedValue("/repo"),
+  readAdoption: vi.fn().mockResolvedValue(null),
+  recordUpdatedHead: vi.fn().mockResolvedValue(undefined),
+  freshHostedReadback: vi.fn(),
+  evaluateAuthority: vi.fn(),
+  readMerged: vi.fn(),
+  flowStatus: vi.fn(),
+  findWorktree: vi.fn(),
+  taskBranch: vi.fn(),
+  verification: vi.fn(),
+  readiness: vi.fn(),
+  identityMatch: vi.fn(),
+  runtime: vi.fn(),
+  transfer: vi.fn(),
+}));
+
+vi.mock("@agentplaneorg/core/git", async (importOriginal) => ({
+  ...(await importOriginal<typeof CoreGit>()),
+  findWorktreeForBranch: mocks.findWorktree,
+}));
+
+vi.mock("../pr/adoption-store.js", () => ({
+  resolveAdoptionControlRoot: mocks.resolveAdoptionControlRoot,
+  createExistingPrAdoptionStore: () => ({
+    readTask: mocks.readAdoption,
+    readMerged: mocks.readMerged,
+    recordUpdatedHead: mocks.recordUpdatedHead,
+  }),
+}));
+vi.mock("../pr/flow-status.js", () => ({ resolvePrFlowStatus: mocks.flowStatus }));
+vi.mock("../pr/adoption-task-authority.js", () => ({
+  assertAdoptedPrMergeReadiness: mocks.readiness,
+}));
+vi.mock("../pr/adoption-identity.js", () => ({ matchesAdoptedPrObservation: mocks.identityMatch }));
+vi.mock("../pr/adoption-verification.js", () => ({
+  hasExactAdoptedVerificationRecord: mocks.verification,
+}));
+vi.mock("./kernel-runtime-context.js", () => ({ createKernelRuntime: mocks.runtime }));
+vi.mock("./kernel-controller-handoff.js", () => ({
+  transferCanonicalControllerToBase: mocks.transfer,
+}));
+vi.mock("./kernel-hosted-readback.js", () => ({
+  freshHostedPrReadback: () => mocks.freshHostedReadback,
 }));
 
 vi.mock("../shared/worktree-topology.js", () => ({
@@ -31,6 +77,15 @@ vi.mock("../shared/worktree-topology.js", () => ({
 vi.mock("../shared/task-backend.js", () => ({
   loadCommandContext: mocks.loadCommandContext,
   loadTaskFromContext: mocks.loadTaskFromContext,
+  loadBackendTask: mocks.loadBackendTask,
+  resolveTaskBranchFromContext: mocks.taskBranch,
+}));
+vi.mock("../shared/side-effect-authority.js", async (importOriginal) => ({
+  ...(await importOriginal<typeof SideEffectAuthority>()),
+  evaluateWorkflowOperationAuthority: mocks.evaluateAuthority,
+}));
+vi.mock("../shared/side-effect-authority-store.js", () => ({
+  hydrateTaskSideEffectAuthority: ({ task }: { task: unknown }) => Promise.resolve(task),
 }));
 
 vi.mock("../../runtime/task-execution-context/index.js", () => ({
@@ -207,6 +262,14 @@ function syncBaseOperation(): Extract<WorkflowOperation, { id: "task.branch.sync
 describe("branch task supervisor operations", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mocks.readAdoption.mockResolvedValue(null);
+    mocks.loadBackendTask.mockResolvedValue({ task: { extensions: {} } });
+    mocks.evaluateAuthority.mockReturnValue({ state: "allowed", authority: { actor: "USER" } });
+    mocks.identityMatch.mockReturnValue(true);
+    mocks.verification.mockResolvedValue(true);
+    mocks.taskBranch.mockResolvedValue("task/T-adopted/controller");
+    mocks.findWorktree.mockResolvedValue("/repo/task");
+    mocks.freshHostedReadback.mockResolvedValue({ current_head: "c".repeat(40) });
     mocks.loadCommandContext.mockResolvedValue({
       config: {
         workflow_mode: "branch_pr",
@@ -296,6 +359,97 @@ describe("branch task supervisor operations", () => {
       });
     },
   );
+
+  it("records an adopted update only after a second exact provider readback", async () => {
+    const operation = updateBranchOperation();
+    mocks.readAdoption.mockResolvedValue({
+      schema_version: 1,
+      task_id: operation.params.taskId,
+      provider: "github",
+      hostname: "github.com",
+      remote: "origin",
+      source_project: "owner/repo",
+      target_project: "owner/repo",
+      pr_number: 42,
+      head_ref: operation.params.branch,
+      base_ref: "main",
+      head_sha: operation.params.expectedHeadSha,
+      base_sha: operation.params.expectedBaseSha,
+    });
+    await expect(
+      executeBranchWorkflowOperation({
+        decision: routeDecision(operation),
+        operation,
+      }),
+    ).resolves.toMatchObject({ status: "succeeded" });
+    expect(mocks.recordUpdatedHead).toHaveBeenCalledWith(
+      operation.params.taskId,
+      operation.params.expectedHeadSha,
+      "c".repeat(40),
+    );
+    mocks.freshHostedReadback.mockResolvedValueOnce({ current_head: "d".repeat(40) });
+    await expect(
+      executeBranchWorkflowOperation({
+        decision: routeDecision(operation),
+        operation,
+      }),
+    ).rejects.toThrow("changed before durable readback");
+    expect(mocks.recordUpdatedHead).toHaveBeenCalledTimes(1);
+  });
+
+  it("transfers a provider-merged adopted task to primary and requires DONE readback", async () => {
+    const taskId = "T-adopted";
+    const headSha = "b".repeat(40);
+    const mergeCommit = "d".repeat(40);
+    const mergedAt = "2026-10-27T10:00:00Z";
+    const operation = {
+      ...preMergeCloseOperation(),
+      id: "task.adopted.finish",
+      type: "task_adopted_finish",
+      params: { taskId, prNumber: 42, headSha, mergeCommit, mergedAt },
+    } as Extract<WorkflowOperation, { id: "task.adopted.finish" }>;
+    const decision = routeDecision(operation);
+    decision.workspace.taskWorktreePath = "/repo/task";
+    const adoption = { task_id: taskId, pr_number: 42 };
+    mocks.readAdoption.mockResolvedValue(adoption);
+    mocks.readMerged.mockResolvedValue({ headSha, mergeCommit, mergedAt });
+    mocks.flowStatus.mockResolvedValue({
+      providerObservation: {
+        state: "found",
+        pr: { status: "MERGED", headSha, mergeCommit, mergedAt },
+      },
+    });
+    mocks.loadBackendTask.mockResolvedValue({
+      task: { id: taskId, status: "DONE", extensions: {} },
+    });
+    const base = {
+      resolvedProject: { gitRoot: "/repo" },
+      config: { paths: { workflow_dir: ".agentplane/tasks" } },
+    } as CommandContext;
+    const source = { ...base, resolvedProject: { gitRoot: "/repo/task" } } as CommandContext;
+    mocks.loadCommandContext.mockResolvedValueOnce(base).mockResolvedValueOnce(source);
+    mocks.runtime.mockResolvedValue({ adapter: {} });
+    const getTask = vi.fn().mockResolvedValue({ status: "DONE" });
+    mocks.transfer.mockResolvedValue({ taskBackend: { getTask } });
+
+    await expect(executeBranchWorkflowOperation({ decision, operation })).resolves.toMatchObject({
+      status: "succeeded",
+    });
+    expect(mocks.transfer).toHaveBeenCalledWith(
+      expect.objectContaining({
+        command: source,
+        task_id: taskId,
+        base_checkout: "/repo",
+      }),
+    );
+    expect(getTask).toHaveBeenCalledWith(taskId);
+
+    mocks.loadCommandContext.mockResolvedValueOnce(base).mockResolvedValueOnce(source);
+    getTask.mockResolvedValueOnce({ status: "DOING" });
+    await expect(executeBranchWorkflowOperation({ decision, operation })).rejects.toThrow(
+      "not persisted in the base checkout",
+    );
+  });
 
   it("requires a distinct supervisor operation after a pre-effect provider failure", async () => {
     const operation = updateBranchOperation();

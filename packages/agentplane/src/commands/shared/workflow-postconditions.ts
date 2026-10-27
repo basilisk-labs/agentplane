@@ -5,6 +5,7 @@ type WorkflowPostconditionId =
   | "included_batch_closure_reconciled"
   | "integration_queue_worker_cycle_completed"
   | "integration_queue_contains_task"
+  | "adopted_pr_merged"
   | "pr_artifacts_current"
   | "provider_branch_updated"
   | "provider_state_observed"
@@ -98,6 +99,11 @@ export const POSTCONDITION = {
     id: "integration_queue_contains_task",
     subject: "task",
     expected: "integration queue contains the exact task branch head",
+  },
+  adoptedPrMerged: {
+    id: "adopted_pr_merged",
+    subject: "provider",
+    expected: "the adopted PR is merged and the provider confirms the exact approved head",
   },
   integrationQueueWorkerCycleCompleted: {
     id: "integration_queue_worker_cycle_completed",

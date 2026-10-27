@@ -25,8 +25,13 @@ import {
 } from "./kernel-exchange.js";
 import { readDirectTaskHead } from "./direct-task-finalization.js";
 import { readKernelRepositoryEvidence } from "./kernel-repository-coordinator.js";
+import { resolveKernelAdoptedValidationRoute } from "./kernel-adopted-pr-route.js";
 import { projectKernelOperationalEvidence } from "./kernel-operational-projection.js";
 import { canonicalNoExecutableChecksAllowed } from "./kernel-no-check-policy.js";
+import {
+  assertCurrentHostedHead,
+  type HostedValidationRoute,
+} from "./kernel-hosted-head-evidence.js";
 import {
   kernelCheckReviewDisposition,
   nativeValidationInput,
@@ -53,6 +58,7 @@ export async function issueKernelInspection(
   runtime: Runtime,
   record: KernelRecord,
   workItemId: string,
+  hostedRoute?: HostedValidationRoute,
 ) {
   const item = record.aggregate.work_items[workItemId];
   const plan = record.aggregate.current_plan;
@@ -101,11 +107,27 @@ export async function issueKernelInspection(
     }
   }
   if (!resultPath) throw new Error("Canonical received implementation evidence missing");
+  let retainedRepositoryEvidence = null;
+  try {
+    retainedRepositoryEvidence = await readKernelRepositoryEvidence(resultDirectory!);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+  }
+  const resolvedHostedRoute =
+    hostedRoute ??
+    (retainedRepositoryEvidence?.origin === "adopted_hosted_pr"
+      ? await resolveKernelAdoptedValidationRoute(
+          command,
+          record.aggregate.id,
+          retainedRepositoryEvidence,
+        )
+      : undefined);
   const resolvedRepositoryEvidence = await resolveInspectionRepositoryEvidence(
     command,
     record,
     workItemId,
     resultDirectory!,
+    resolvedHostedRoute,
   );
   const repositoryEvidence = resolvedRepositoryEvidence?.evidence ?? null;
   const operationalTask = await command.taskBackend.getTask(record.aggregate.id);
@@ -118,6 +140,12 @@ export async function issueKernelInspection(
     noExecutableChecks: canonicalNoExecutableChecksAllowed(operationalTask, record),
     directory: resultDirectory!,
     repositoryEvidence,
+    ...(repositoryEvidence?.origin === "adopted_hosted_pr" && resolvedHostedRoute
+      ? {
+          verificationCheckout: resolvedHostedRoute.checkout,
+          freshHostedReadback: resolvedHostedRoute.fresh_readback,
+        }
+      : {}),
   });
   if (native.kind === "retry") {
     return {
@@ -197,7 +225,10 @@ export async function issueKernelInspection(
       id: record.aggregate.id,
       revision: record.aggregate.revision,
       work_item_id: workItemId,
-      objective: `Independently inspect the implementation: ${contract.objective}`,
+      objective:
+        repositoryEvidence?.origin === "adopted_hosted_pr"
+          ? `Independently inspect hosted PR head ${repositoryEvidence.implementation_commit} against base ${repositoryEvidence.base_commit}: ${contract.objective}`
+          : `Independently inspect the implementation: ${contract.objective}`,
       acceptance_criteria: contract.acceptance_criteria.map((description, index) => ({
         id: `criterion-${index + 1}`,
         description,
@@ -266,7 +297,9 @@ export async function issueKernelInspection(
               path: path.join(resolvedRepositoryEvidence!.directory, "repository-evidence.json"),
               digest: repositoryEvidence.digest,
               description:
-                "AgentPlane-owned commit, tree, changed-path, and evaluator-target evidence.",
+                repositoryEvidence.origin === "adopted_hosted_pr"
+                  ? "Exact hosted PR head, base, tree, changed paths, provider readback and evaluator target. Inspect this commit, not the task metadata checkout."
+                  : "AgentPlane-owned commit, tree, changed-path, and evaluator-target evidence.",
               required: true,
             },
           ]
@@ -335,6 +368,7 @@ export async function acceptKernelInspection(
   directory: string,
   semantic: AgentSemanticResult,
   workOrder?: AgentWorkOrderV2,
+  hostedRoute?: HostedValidationRoute,
 ) {
   const binding = semantic.canonical_binding;
   if (binding?.phase !== "inspection" || !semantic.review)
@@ -360,6 +394,26 @@ export async function acceptKernelInspection(
     throw new Error("Canonical inspection authority changed");
   await writeKernelArtifact(directory, "inspection-result.json", semantic);
   if (item.state === "COMPLETED") {
+    const retainedInput = workOrder?.required_inputs.find(
+      (input) => input.id === "repository-evidence",
+    );
+    const retained = retainedInput?.path
+      ? await readKernelRepositoryEvidence(path.dirname(retainedInput.path))
+      : null;
+    const route =
+      retained?.origin === "adopted_hosted_pr"
+        ? (hostedRoute ??
+          (await resolveKernelAdoptedValidationRoute(command, binding.task_id, retained)))
+        : undefined;
+    if (retained?.origin === "adopted_hosted_pr") {
+      if (!route) throw new Error("Canonical hosted inspection exact-head route is unavailable");
+      await assertCurrentHostedHead({
+        repository_root: command.resolvedProject.gitRoot,
+        checkout: retained.checkout,
+        evidence: retained.hosted_head,
+        fresh_readback: route.fresh_readback,
+      });
+    }
     const recovery = await recoverKernelOperationalProjection(command, read.record, read.task);
     return recovery.kind === "stop" ? recovery.action : undefined;
   }
@@ -384,11 +438,38 @@ export async function acceptKernelInspection(
   const repositoryEvidence = repositoryEvidenceInput?.path
     ? await readKernelRepositoryEvidence(path.dirname(repositoryEvidenceInput.path))
     : null;
+  if (repositoryEvidence?.origin === "adopted_hosted_pr") {
+    hostedRoute ??= await resolveKernelAdoptedValidationRoute(
+      command,
+      binding.task_id,
+      repositoryEvidence,
+    );
+  }
+  const hostedEvidence =
+    repositoryEvidence?.origin === "adopted_hosted_pr" ? repositoryEvidence : null;
+  const assertHosted = async () => {
+    if (!hostedEvidence) return;
+    if (
+      !hostedRoute ||
+      path.resolve(hostedRoute.checkout) !== path.resolve(hostedEvidence.checkout) ||
+      path.resolve(hostedEvidence.control_checkout) !==
+        path.resolve(command.resolvedProject.gitRoot)
+    ) {
+      throw new Error("Canonical hosted inspection exact-head route is unavailable");
+    }
+    await assertCurrentHostedHead({
+      repository_root: command.resolvedProject.gitRoot,
+      checkout: hostedEvidence.checkout,
+      evidence: hostedEvidence.hosted_head,
+      fresh_readback: hostedRoute.fresh_readback,
+    });
+  };
+  await assertHosted();
   if (
     repositoryEvidence &&
     (repositoryEvidence.digest !== repositoryEvidenceInput?.digest ||
       repositoryEvidence.evaluator_target !== repositoryEvidence.implementation_commit ||
-      (await readDirectTaskHead(command.resolvedProject.gitRoot)) !==
+      (await readDirectTaskHead(hostedEvidence?.checkout ?? command.resolvedProject.gitRoot)) !==
         repositoryEvidence.implementation_commit)
   ) {
     throw new Error("Canonical inspection commit identity changed");
@@ -403,6 +484,7 @@ export async function acceptKernelInspection(
     binding,
     commands: contract.verification_commands,
     repositoryEvidence,
+    ...(hostedEvidence ? { verificationCheckout: hostedEvidence.checkout } : {}),
     noExecutableChecks: canonicalNoExecutableChecksAllowed(read.task, read.record),
   });
   const nativeEvidence = requireNativeValidationEvidence({
@@ -423,6 +505,7 @@ export async function acceptKernelInspection(
   const observed = await runtime.observe();
   if (observed.fingerprint !== binding.repository_fingerprint)
     throw new Error("Canonical repository changed after native validation");
+  await assertHosted();
   const evidencePath = path.join(directory, "validation.json");
   let evidence: KernelValidationEvidence;
   try {
@@ -447,7 +530,7 @@ export async function acceptKernelInspection(
     };
     if (
       repositoryEvidence &&
-      (await readDirectTaskHead(command.resolvedProject.gitRoot)) !==
+      (await readDirectTaskHead(hostedEvidence?.checkout ?? command.resolvedProject.gitRoot)) !==
         repositoryEvidence.implementation_commit
     )
       throw new Error("Canonical evaluator target changed during validation");

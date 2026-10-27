@@ -31,13 +31,30 @@ export type ProtectedBaseGitLabMergeResult = {
   detail: string;
 };
 
+export function assertGitLabExactBaseMergeCapability(project: {
+  merge_method?: string | null;
+}): void {
+  if (project.merge_method !== "merge") {
+    throw new Error("GitLab exact-base merge requires the merge-commit method");
+  }
+}
+
 export async function runProtectedBaseGitLabMerge(opts: {
   gitRoot: string;
   identity: GitHostIdentity;
   prNumber: number;
   expectedHeadSha: string;
   preMutationGuard: PreMutationGuard;
+  exactBaseParentProof?: boolean;
 }): Promise<ProtectedBaseGitLabMergeResult> {
+  if (opts.exactBaseParentProof) {
+    const project = await runGlabApiJson<{ merge_method?: string | null }>({
+      cwd: opts.gitRoot,
+      hostname: opts.identity.hostname,
+      endpoint: `projects/${encodeURIComponent(opts.identity.targetProject)}`,
+    });
+    assertGitLabExactBaseMergeCapability(project);
+  }
   const directory = await mkdtemp(path.join(os.tmpdir(), "agentplane-gitlab-merge-"));
   const payloadPath = path.join(directory, "payload.json");
   try {

@@ -33,6 +33,12 @@ import { computePrDiffstat } from "./internal/sync-branch.js";
 import { tryLookupExistingChangeRequestByBranch } from "./internal/change-request-provider.js";
 import { waitForHostedChecks } from "./hosted-checks.js";
 import { ghEnv } from "./internal/gh-api.js";
+import { parsePrMeta } from "../shared/pr-meta.js";
+import type { AdoptedPrIdentity } from "./adoption-identity.js";
+import { assertAdoptedPrMergeReadiness } from "./adoption-task-authority.js";
+import { hasExactAdoptedVerificationRecord } from "./adoption-verification.js";
+import { createExistingPrAdoptionStore, resolveAdoptionControlRoot } from "./adoption-store.js";
+import { resolvePrFlowStatus } from "./flow-status.js";
 
 type GithubMergeDiagnostic = {
   mergeStateStatus?: string | null;
@@ -128,6 +134,92 @@ export async function cmdPrCheck(opts: {
         code: "E_USAGE",
         message: workflowModeMessage(config.workflow_mode, "branch_pr"),
       });
+    }
+
+    const localMetaText = await readLocalPrArtifactText(prDir, "meta.json");
+    const localMeta = localMetaText ? parsePrMeta(localMetaText, task.id) : null;
+    const controlRoot = await resolveAdoptionControlRoot(resolved.gitRoot);
+    const controlMeta = await createExistingPrAdoptionStore({
+      gitRoot: controlRoot,
+      workflowDir: config.paths.workflow_dir,
+    }).readMetadata(task.id);
+    const adoptedMeta = controlMeta?.adoption ? controlMeta : localMeta;
+    const adoption = (adoptedMeta as (typeof adoptedMeta & { adoption?: AdoptedPrIdentity }) | null)
+      ?.adoption;
+    if (adoption) {
+      if (opts.branch && opts.branch !== adoption.head_ref) {
+        throw new Error("Adopted PR branch override does not match its immutable source ref");
+      }
+      const report = await resolvePrFlowStatus({
+        ctx,
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride,
+        taskId: task.id,
+      });
+      const observed = report.providerObservation;
+      const expectedHead = adoptedMeta?.head_sha ?? adoption.head_sha;
+      assertAdoptedPrMergeReadiness(task, expectedHead);
+      if (!(await hasExactAdoptedVerificationRecord({ ctx, task, headSha: expectedHead }))) {
+        throw new Error(
+          "Adopted PR has no current native verification record for its exact hosted head",
+        );
+      }
+      if (
+        observed?.state !== "found" ||
+        observed.pr.status !== "OPEN" ||
+        observed.pr.headSha !== expectedHead ||
+        observed.pr.mergeability?.state === "conflicting"
+      ) {
+        throw new Error("Adopted PR has no matching open exact-head provider readback");
+      }
+      if (report.pr.provider === "github") {
+        if (!report.reviewThreads.checked) {
+          throw new Error("Adopted PR review-thread status could not be confirmed");
+        }
+        if (report.reviewThreads.unresolved > 0) {
+          throw new Error("Adopted PR has unresolved review threads");
+        }
+      }
+      if (config.acr.require_for_pr_check) {
+        if (!config.acr.enabled) {
+          throw new Error("ACR is required for pr check but acr.enabled=false");
+        }
+        await validateAcrTarget({
+          ctx,
+          target: task.id,
+          mode: "ci",
+          strict: true,
+          requirePlanApproved: true,
+          requireVerification: true,
+          requirePolicyPass: true,
+          allowWaivedVerification: false,
+          allowManualOverride: false,
+        });
+      }
+      if (opts.hosted === true) {
+        const hosted = await waitForHostedChecks({
+          gitRoot: resolved.gitRoot,
+          prNumber: adoption.pr_number,
+          branch: adoption.head_ref,
+          expectedHeadSha: expectedHead,
+          recordedProvider: adoptedMeta?.provider ?? null,
+          stablePolls: opts.stablePolls ?? 2,
+          pollIntervalMs: opts.pollIntervalMs ?? null,
+          timeoutMs: opts.timeoutMs ?? null,
+          requiredChecks: opts.requiredChecks ?? [],
+        });
+        output.success(
+          "hosted checks",
+          `#${adoption.pr_number}`,
+          `total=${hosted.total} passing=${hosted.passing}`,
+        );
+      }
+      output.success(
+        "pr check",
+        path.relative(resolved.gitRoot, prDir),
+        `adopted #${adoption.pr_number} head=${expectedHead}`,
+      );
+      return 0;
     }
 
     const errors: string[] = [];
