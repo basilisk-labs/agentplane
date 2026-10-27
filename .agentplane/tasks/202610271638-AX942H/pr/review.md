@@ -6,7 +6,7 @@ Created: 2026-10-27T17:23:52.054Z
 
 - Task: `202610271638-AX942H`
 - Title: Make native PR publication converge with clean, published task artifacts
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610271638-AX942H/make-native-pr-publication-converge-with-clean-p`
 - Canonical task record: `.agentplane/tasks/202610271638-AX942H/README.md`
 
