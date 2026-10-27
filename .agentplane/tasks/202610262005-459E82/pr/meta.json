@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202610262005-459E82/require-supported-node-versions-for-tsup-9-devel",
+  "created_at": "2026-10-27T03:45:19.959Z",
+  "diffstat_sha256": "sha256:17eff7c732272168dcaab21b66dc73d67ba4ea0c8ccb2d46fdf61f7d9c49897b",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610262005-459E82",
+  "updated_at": "2026-10-27T03:45:19.959Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
