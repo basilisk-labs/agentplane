@@ -578,6 +578,55 @@ describe("task-artifact-schema", () => {
     ).not.toThrow();
   });
 
+  it("validates the immutable identity of an adopted same-repository PR", () => {
+    const adoption = {
+      schema_version: 1,
+      task_id: "202610270555-MY0JZE",
+      provider: "github",
+      hostname: "github.com",
+      remote: "origin",
+      source_project: "example/project",
+      target_project: "example/project",
+      pr_number: 42,
+      head_ref: "automation/upgrade",
+      base_ref: "main",
+      head_sha: "a".repeat(40),
+      base_sha: "b".repeat(40),
+      observed_at: "2026-10-27T10:00:00.000Z",
+      readback_digest: `sha256:${"c".repeat(64)}`,
+      authority_digest: `sha256:${"d".repeat(64)}`,
+    };
+    const meta = {
+      schema_version: 1,
+      task_id: adoption.task_id,
+      created_at: adoption.observed_at,
+      updated_at: adoption.observed_at,
+      adoption,
+    };
+    expect(validateTaskPrMeta(meta).adoption).toEqual(adoption);
+    for (const invalid of [
+      { source_project: "another/project" },
+      { target_project: "another/project" },
+      { task_id: "another-task" },
+      { pr_number: 0 },
+      { pr_number: 1.5 },
+      { head_ref: "" },
+      { base_ref: "" },
+      { head_sha: "not-a-sha" },
+      { base_sha: "not-a-sha" },
+      { observed_at: "not-a-timestamp" },
+      { readback_digest: "sha256:invalid" },
+      { authority_digest: "sha256:invalid" },
+      { provider: "unknown" },
+      { unexpected: true },
+      { hostname: undefined },
+    ]) {
+      expect(() =>
+        validateTaskPrMeta({ ...meta, adoption: { ...adoption, ...invalid } }),
+      ).toThrow();
+    }
+  });
+
   it("accepts short non-git commit hashes in task README frontmatter", () => {
     expect(() =>
       validateTaskReadmeFrontmatter({

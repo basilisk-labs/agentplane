@@ -1,0 +1,247 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610271140-974JNN/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610271140-974JNN Verification Contract check affected_unit_integration (1/4)\n\nCheck: affected_unit_integration\nCommand: bun run format:check\nResult: pass\nEvidence: .agentplane/tasks/202610271140-974JNN/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610271140-974JNN Verification Contract check affected_unit_integration (2/4)\n\nCheck: affected_unit_integration\nCommand: bun run schemas:check\nResult: pass\nEvidence: .agentplane/tasks/202610271140-974JNN/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610271140-974JNN Verification Contract check affected_unit_integration (3/4)\n\nCheck: affected_unit_integration\nCommand: bunx vitest run packages/core/src/tasks/task-artifact-schema.test.ts --pool=forks --maxWorkers 1\nResult: pass\nEvidence: .agentplane/tasks/202610271140-974JNN/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610271140-974JNN Verification Contract check affected_unit_integration (4/4)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610271140-974JNN/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610271140-974JNN Verification Contract check critical_paths (1/4)\n\nCheck: critical_paths\nCommand: bun run format:check\nResult: pass\nEvidence: .agentplane/tasks/202610271140-974JNN/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610271140-974JNN Verification Contract check critical_paths (2/4)\n\nCheck: critical_paths\nCommand: bun run schemas:check\nResult: pass\nEvidence: .agentplane/tasks/202610271140-974JNN/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610271140-974JNN Verification Contract check critical_paths (3/4)\n\nCheck: critical_paths\nCommand: bunx vitest run packages/core/src/tasks/task-artifact-schema.test.ts --pool=forks --maxWorkers 1\nResult: pass\nEvidence: .agentplane/tasks/202610271140-974JNN/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610271140-974JNN Verification Contract check critical_paths (4/4)\n\nCheck: docs_contract\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610271140-974JNN/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610271140-974JNN Verification Contract check docs_contract (1/4)\n\nCheck: docs_contract\nCommand: bun run format:check\nResult: pass\nEvidence: .agentplane/tasks/202610271140-974JNN/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610271140-974JNN Verification Contract check docs_contract (2/4)\n\nCheck: docs_contract\nCommand: bun run schemas:check\nResult: pass\nEvidence: .agentplane/tasks/202610271140-974JNN/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610271140-974JNN Verification Contract check docs_contract (3/4)\n\nCheck: docs_contract\nCommand: bunx vitest run packages/core/src/tasks/task-artifact-schema.test.ts --pool=forks --maxWorkers 1\nResult: pass\nEvidence: .agentplane/tasks/202610271140-974JNN/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610271140-974JNN Verification Contract check docs_contract (4/4)\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610271140-974JNN/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610271140-974JNN Verification Contract check full_regression\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610271140-974JNN/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610271140-974JNN Verification Contract check task_outcome (1/4)\n\nCheck: task_outcome\nCommand: bun run format:check\nResult: pass\nEvidence: .agentplane/tasks/202610271140-974JNN/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610271140-974JNN Verification Contract check task_outcome (2/4)\n\nCheck: task_outcome\nCommand: bun run schemas:check\nResult: pass\nEvidence: .agentplane/tasks/202610271140-974JNN/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610271140-974JNN Verification Contract check task_outcome (3/4)\n\nCheck: task_outcome\nCommand: bunx vitest run packages/core/src/tasks/task-artifact-schema.test.ts --pool=forks --maxWorkers 1\nResult: pass\nEvidence: .agentplane/tasks/202610271140-974JNN/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610271140-974JNN Verification Contract check task_outcome (4/4)",
+  "digest": "sha256:b86ee483baa0630156213210a5faa40bdd0b3d17a2ba667eb7cc69b7c3defb0f",
+  "implementation_sha": "bb105886a8b379e74f53a25c5621711a4a98c576",
+  "input": {
+    "checked_input": {
+      "commands": {
+        "digest": "sha256:37fc716b8e2e02679c4966a4bb6eca8df47e03e9782ee7aa768dcebfa480b3c0",
+        "entries": [
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run format:check"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run schemas:check"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bunx vitest run packages/core/src/tasks/task-artifact-schema.test.ts --pool=forks --maxWorkers 1"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run format:check"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run schemas:check"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bunx vitest run packages/core/src/tasks/task-artifact-schema.test.ts --pool=forks --maxWorkers 1"
+          },
+          {
+            "check_id": "docs_contract",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "docs_contract",
+            "command": "bun run format:check"
+          },
+          {
+            "check_id": "docs_contract",
+            "command": "bun run schemas:check"
+          },
+          {
+            "check_id": "docs_contract",
+            "command": "bunx vitest run packages/core/src/tasks/task-artifact-schema.test.ts --pool=forks --maxWorkers 1"
+          },
+          {
+            "check_id": "full_regression",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run format:check"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run schemas:check"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bunx vitest run packages/core/src/tasks/task-artifact-schema.test.ts --pool=forks --maxWorkers 1"
+          }
+        ]
+      },
+      "context": {
+        "digest": "sha256:0473bb9d71aca6f0286d65d878ac866b05eda7dabbcfa2bd6d92488c43a78eb6",
+        "paths": [
+          ".agentplane/WORKFLOW.md",
+          ".github/ISSUE_TEMPLATE/config.yml",
+          "bun.lock",
+          "depcruise.config.cjs",
+          "eslint.config.cjs",
+          "knip.json",
+          "package.json",
+          "packages/agentplane/package.json",
+          "packages/agentplane/src/cli/run-cli/commands/config.ts",
+          "packages/agentplane/src/runner/config.test.ts",
+          "packages/agentplane/src/runner/config.ts",
+          "packages/agentplane/tsconfig.json",
+          "packages/agentplane/tsup.config.ts",
+          "packages/core/package.json",
+          "packages/core/schemas/config.schema.json",
+          "packages/core/src/config/config.test.ts",
+          "packages/core/src/config/config.ts",
+          "packages/core/tsconfig.json",
+          "packages/core/tsup.config.ts",
+          "packages/recipes/package.json",
+          "packages/recipes/tsconfig.json",
+          "packages/recipes/tsup.config.ts",
+          "packages/spec/examples/config.json",
+          "packages/spec/package.json",
+          "packages/spec/schemas/config.schema.json",
+          "packages/testkit/package.json",
+          "packages/testkit/tsconfig.json",
+          "schemas/config.schema.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package-lock.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package.json",
+          "tsconfig.json",
+          "turbo.json",
+          "vitest.config.ts",
+          "vitest.workspace.ts"
+        ]
+      },
+      "digest": "sha256:d99b75fb060be3ccf0f116e0e096274f0e9ffa69e1db6038873e1913ab617fd7",
+      "environment": {
+        "digest": "sha256:9ec5bf2323cd53a84a354760f7a2e04adc570a2f8a0452d4311892dcb83d880b",
+        "runtime": {
+          "architecture": "x64",
+          "bun_major": null,
+          "node_major": "24",
+          "platform": "linux"
+        }
+      },
+      "evidence": {
+        "details_digest": "sha256:5273f61b5aa23d159150237b4da3916c9be6624a237b4ed4d5140b1695d56986",
+        "digest": "sha256:929572a1b14c4593db6e09fd67428ea012064a15bc6a464d33e58f055b6eb49e",
+        "references": [
+          {
+            "digest": "sha256:279e91a0897a87a5608bc8f0befb540378b315244bcb2ae0762149a5d2883472",
+            "fragment": "check-1",
+            "path": ".agentplane/tasks/202610271140-974JNN/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610271140-974JNN/supervision/declared-checks.json#check-1",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:279e91a0897a87a5608bc8f0befb540378b315244bcb2ae0762149a5d2883472",
+            "fragment": "check-2",
+            "path": ".agentplane/tasks/202610271140-974JNN/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610271140-974JNN/supervision/declared-checks.json#check-2",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:279e91a0897a87a5608bc8f0befb540378b315244bcb2ae0762149a5d2883472",
+            "fragment": "check-3",
+            "path": ".agentplane/tasks/202610271140-974JNN/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610271140-974JNN/supervision/declared-checks.json#check-3",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:279e91a0897a87a5608bc8f0befb540378b315244bcb2ae0762149a5d2883472",
+            "fragment": "check-4",
+            "path": ".agentplane/tasks/202610271140-974JNN/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610271140-974JNN/supervision/declared-checks.json#check-4",
+            "source": "filesystem"
+          }
+        ]
+      },
+      "implementation": {
+        "base_sha": "3a5d69bd47e56d65e6928d6a16beb0586b056f04",
+        "digest": "sha256:7c39df1f3ff3cfce0fcde0ce3e04201dd854af84a645287a8bf8a1b0e600ff77",
+        "strategy": "branch_diff",
+        "target_sha": "bb105886a8b379e74f53a25c5621711a4a98c576"
+      }
+    },
+    "concurrency": {
+      "digest": "sha256:78a32297e1fa7e7d5aa1e606bcce4174c3adfff92fad7e1725f38cad6d89500b",
+      "execution": {
+        "authoritative_task_source": "task_worktree",
+        "base_ref": "main",
+        "base_sha": "3a5d69bd47e56d65e6928d6a16beb0586b056f04",
+        "digest": "sha256:e3b918df6f4387626930818987c797cb60e44185c5a95624a5aa4acb09c28d43",
+        "primary_task_id": "202610271140-974JNN",
+        "reason_codes": [
+          "agent_preferred_branch_pr",
+          "effect_schema",
+          "repository_branch_pr_floor"
+        ],
+        "repository_mode": "branch_pr",
+        "requested_mode": "branch_pr",
+        "route_source": "execution_contract",
+        "selected_mode": "branch_pr",
+        "task_ids": [
+          "202610271140-974JNN"
+        ]
+      },
+      "task": {
+        "capability": {
+          "digest": "sha256:6c970394a93463a9c247c3cb1c4fc5b3ec046734b890a9770281242de8b24063"
+        },
+        "checks": {
+          "digest": "sha256:54bcf0bfecdb9879c268494eaa4a6c8c0d96f642a6145f59f4b58a052a55907a",
+          "required_check_ids": [
+            "affected_unit_integration",
+            "critical_paths",
+            "docs_contract",
+            "full_regression",
+            "task_outcome"
+          ],
+          "verification_contract_digest": "sha256:5f227e4d54fdb04c1d556bf36a4535ab20c5d1f52721747d3be2d2484081936e"
+        },
+        "digest": "sha256:5a96491376080d73c6942cbd4c0afbe3ec4c1a6e62e551ac1e6543a88aee74b5",
+        "kind": "agentplane.native_task_identity",
+        "plan": {
+          "approval_state": "approved",
+          "approved_digest": "sha256:3b8955cde33da369bf5cf3219525f6ddd742a292e6c55ecbd229dbd0b60f8b21",
+          "digest": "sha256:3b8955cde33da369bf5cf3219525f6ddd742a292e6c55ecbd229dbd0b60f8b21",
+          "revision": 1
+        },
+        "policy": {
+          "digest": "sha256:3b5b5903062969509d5420ca62b20e57741c010df15310850d2ca4a00e8119fc"
+        },
+        "schema_version": 1,
+        "task_id": "202610271140-974JNN"
+      }
+    },
+    "digest": "sha256:3762a346f64fdfb7ae13c38efe94daabecae1f6131ea6c4eb46eb09dbe600aed",
+    "kind": "task_verification_input",
+    "obligations": {
+      "digest": "sha256:8be2bc233c2eedeb20f47754140d7a5878fef4d12bd7f5eb48d97d3f79c52e1a",
+      "required_check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "full_regression",
+        "task_outcome"
+      ],
+      "verification_contract_digest": "sha256:5f227e4d54fdb04c1d556bf36a4535ab20c5d1f52721747d3be2d2484081936e",
+      "verify_steps_digest": "sha256:a58d3f4be76d415ddb4dfe110db65e61892c5481d8b6363ff7164f87032de0b7"
+    },
+    "schema_version": 5
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.",
+  "recorded_at": "2026-10-27T16:55:21.262Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun run schemas:check`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bunx vitest run packages/core/src/tasks/task-artifact-schema.test.ts --pool=forks --maxWorkers 1`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Run `bun run format:check`. Expected: it succeeds and confirms the requested outcome for this task.\n4. Run `bun run ci:local:full`. Expected: it succeeds and confirms the requested outcome for this task.\n5. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n6. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.",
+  "scope_digest": "sha256:a58d3f4be76d415ddb4dfe110db65e61892c5481d8b6363ff7164f87032de0b7",
+  "task_id": "202610271140-974JNN",
+  "verification_command": "agentplane verify 202610271140-974JNN --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
