@@ -29,9 +29,9 @@ Created: 2026-10-27T09:16:56.607Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../agentplane/src/commands/doctor/archive.test.ts | 74 +++++++++++++++++++++-
- packages/agentplane/src/commands/doctor/archive.ts | 12 +++-
- 2 files changed, 84 insertions(+), 2 deletions(-)
+ .../agentplane/src/commands/doctor/archive.test.ts | 191 ++++++++++++++++++++-
+ packages/agentplane/src/commands/doctor/archive.ts |  12 +-
+ 2 files changed, 201 insertions(+), 2 deletions(-)
 ```
 
 </details>
