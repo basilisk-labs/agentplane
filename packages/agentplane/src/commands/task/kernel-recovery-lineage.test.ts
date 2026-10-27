@@ -34,6 +34,8 @@ import {
 } from "./kernel-inspection-validation.js";
 import { withKernelReworkEvidence } from "./kernel-exchange.js";
 import { authenticNativePlanCorrection } from "./kernel-recovery-lineage.js";
+import { kernelRecoveryInputs } from "./kernel-recovery-evidence.js";
+import { failedRequiredCheckEvidence } from "./kernel-failed-check-evidence.js";
 
 const hash = k.kernelDigest;
 const repo = hash("repo");
@@ -249,11 +251,46 @@ function fixtureState(status: Parameters<typeof runtime>[0], claim = "claim-1") 
     }),
   };
 }
-async function nativeFixture() {
+async function nativeFixture(correctedPlan = false) {
   const { root, kernelRoot } = await fixtureRoot("kernel-native-recovery-");
   const { item, initial } = fixtureState("INSPECTING");
+  const oldContract = correctedPlan
+    ? {
+        role: "EXECUTOR" as const,
+        objective: "Validate implementation",
+        acceptance_criteria: ["Validation passes"],
+        verification_commands: ["missing-check"],
+      }
+    : null;
+  if (oldContract) {
+    item.definition = { ...item.definition, contract_digest: hash(oldContract) };
+    const workItems = [item.definition];
+    initial.current_plan = {
+      ...initial.current_plan!,
+      work_items: workItems,
+      digest: hash({ revision: 1, work_items: workItems }),
+      approval_actor_id: "USER",
+    };
+    const parentContents = {
+      ...authority,
+      plan_digest: initial.current_plan.digest,
+      repository_identity: repo,
+      scope_roots: item.definition.execution_requirements.scope_roots,
+      provenance: { ...authority.provenance, actor_id: "USER" },
+    };
+    const parent = { ...parentContents, digest: k.authorityDigest(parentContents) };
+    initial.authority_lineage = [
+      { authority: parent, approval_mode: "manual_operator", observation: null },
+    ];
+  }
   const oldId = hash("native-previous-order");
-  const binding = bindingFor(initial, "kernel", repo, fp, authority.digest);
+  const binding = bindingFor(
+    initial,
+    "kernel",
+    repo,
+    fp,
+    initial.authority_lineage?.at(-1)?.authority.digest ?? authority.digest,
+  );
   const result = {
     schema_version: 2,
     kind: "agent_semantic_result",
@@ -313,7 +350,19 @@ async function nativeFixture() {
     checks: native.checks,
     repository_evidence: null,
   };
-  const state = { record: makeKernelRecord(binding.repository_identity, initial, []) };
+  const state = {
+    record: makeKernelRecord(
+      binding.repository_identity,
+      initial,
+      [],
+      oldContract
+        ? {
+            intent: { objective: oldContract.objective, context: "Test" },
+            contracts: { [hash(oldContract)]: oldContract },
+          }
+        : undefined,
+    ),
+  };
   mockRuntime(root, state);
   const directory = path.join(kernelRoot, "exchanges", initial.id, oldId.slice(7));
   await recordKernelValidation({
@@ -347,7 +396,165 @@ async function nativeFixture() {
   await writeJSON(files.order, issued);
   await writeJSON(files.result, result);
   await writeJSON(files.native, native);
-  return { ...operatorFixture(root, kernelRoot, state.record, binding, true), files };
+  if (oldContract)
+    await writeJSON(path.join(directory, "command-input.json"), {
+      command: { kind: "accept_work_item_result", plan_digest: binding.plan_digest },
+    });
+  return {
+    ...operatorFixture(root, kernelRoot, state.record, binding, true),
+    files,
+    binding,
+    oldContract,
+    oldId,
+    kernelRoot,
+  };
+}
+async function correctedNativeIssuanceFixture() {
+  const f = await nativeFixture(true);
+  const record = f.record;
+  const oldContract = f.oldContract!;
+  const source = { ...record.aggregate.current_plan!, state: "SUPERSEDED" as const };
+  const newContract = {
+    ...oldContract,
+    verification_commands: [
+      "bunx vitest run packages/agentplane/src/commands/task/kernel-recovery-lineage.test.ts",
+    ],
+  };
+  const newDefinition = {
+    ...source.work_items[0]!,
+    contract_digest: hash(newContract),
+  };
+  const amended = {
+    revision: source.revision + 1,
+    work_items: [newDefinition],
+    digest: hash({ revision: source.revision + 1, work_items: [newDefinition] }),
+  };
+  const approval = k.planScopeExpansionApprovalDigest({
+    task_id: record.aggregate.id,
+    current_plan_digest: source.digest,
+    amended_plan_digest: amended.digest,
+    actor_id: "USER",
+  });
+  const current = {
+    ...source,
+    ...amended,
+    state: "APPROVED" as const,
+    approval_actor_id: "USER",
+    approval_evidence_digest: approval,
+  };
+  const parent = record.aggregate.authority_lineage![0]!.authority;
+  const childContents = {
+    ...parent,
+    plan_revision: current.revision,
+    plan_digest: current.digest,
+    provenance: { ...parent.provenance, parent_authority_digest: parent.digest },
+  };
+  const child = { ...childContents, digest: k.authorityDigest(childContents) };
+  const oldDirectory = path.dirname(f.files.order);
+  const contracts = {
+    [hash(oldContract)]: oldContract,
+    [hash(newContract)]: newContract,
+  };
+  record.documents = {
+    intent: { objective: "Validate implementation", context: "Test" },
+    contracts,
+  };
+  const proof = await failedRequiredCheckEvidence(
+    oldDirectory,
+    f.oldId,
+    source,
+    { work_items: [{ id: "kernel", contract: newContract }] },
+    contracts,
+  );
+  const stop = record.aggregate.mutation_receipts[`validation:${f.oldId}`]!;
+  const amendmentRevision = stop.after_revision + 1;
+  const command: k.TaskCommand = {
+    kind: "amend_plan",
+    task_id: record.aggregate.id,
+    expected_task_revision: amendmentRevision - 1,
+    expected_state_fingerprint: fp,
+    plan_revision: source.revision,
+    plan_digest: source.digest,
+    amended_plan: amended,
+    amendment_digest: hash(amended),
+    authority_delta_digest: approval,
+    work_contracts: contracts,
+    required_check_correction: proof,
+  };
+  const event: k.DomainEvent = {
+    id: "correction-amendment:plan_amended",
+    task_id: record.aggregate.id,
+    mutation_id: "correction-amendment",
+    task_revision: amendmentRevision,
+    kind: "plan_amended",
+    command_digest: hash(command),
+    payload_digest: hash({ kind: "amend_plan", aggregate_revision: amendmentRevision }),
+    occurred_at: "2026-10-27T00:00:00.000Z",
+  };
+  record.events.push(event);
+  record.aggregate.mutation_receipts[event.mutation_id] = {
+    mutation_id: event.mutation_id,
+    command_digest: event.command_digest,
+    before_revision: amendmentRevision - 1,
+    after_revision: amendmentRevision,
+    aggregate_digest: hash("amended aggregate"),
+    event_digests: [hash(event)],
+    effect_ids: [],
+  };
+  record.aggregate.plan_history = [source];
+  record.aggregate.current_plan = current;
+  record.aggregate.authority_lineage = [
+    record.aggregate.authority_lineage![0]!,
+    {
+      authority: child,
+      approval_mode: null,
+      observation: {
+        kind: "plan_amendment",
+        previous_fingerprint: fp,
+        changed_paths: [],
+        added_scope_roots: [],
+        evidence_digest: hash("correction observation"),
+      },
+    },
+  ];
+  record.aggregate.work_items.kernel = {
+    ...record.aggregate.work_items.kernel!,
+    definition: newDefinition,
+    attempt: 2,
+    claim_id: "claim-2",
+    state: "EXECUTING",
+    validation: null,
+    result_digest: null,
+  };
+  record.aggregate.revision = amendmentRevision + 2;
+  const order = buildAgentWorkOrderV2ValidFixture();
+  order.work_order_id = hash("corrected-native-next-order");
+  order.task.id = record.aggregate.id;
+  order.task.work_item_id = "kernel";
+  order.task.revision = record.aggregate.revision;
+  const { digest: _digest, ...fingerprint } = order.state_fingerprint;
+  const updated = {
+    ...fingerprint,
+    task_id: record.aggregate.id,
+    task_revision: record.aggregate.revision,
+  };
+  order.state_fingerprint = { ...updated, digest: hash(updated) };
+  order.canonical_binding = {
+    ...f.binding,
+    plan_revision: current.revision,
+    plan_digest: current.digest,
+    contract_digest: newDefinition.contract_digest!,
+    authority_digest: child.digest,
+    attempt: 2,
+    claim_id: "claim-2",
+  };
+  const directory = path.join(
+    f.kernelRoot,
+    "exchanges",
+    record.aggregate.id,
+    order.work_order_id.slice(7),
+  );
+  return { ...f, record, order, directory, oldDirectory, event };
 }
 async function correctedNativePlanFixture() {
   const { kernelRoot } = await fixtureRoot("native-check-correction-");
@@ -524,6 +731,84 @@ async function correctedNativePlanFixture() {
   };
   return { record, oldDirectory, oldOrderId, oldBinding, newBinding, event };
 }
+describe("approved native check correction issuance", () => {
+  it("retains the original BLOCKED validation and WorkOrder for the next Plan attempt", async () => {
+    const f = await correctedNativeIssuanceFixture();
+    const before = await Promise.all([
+      readFile(f.files.validation, "utf8"),
+      readFile(f.files.order, "utf8"),
+    ]);
+    const inputs = await kernelRecoveryInputs(f.order, f.directory, f.record);
+    expect(inputs.map((entry) => entry.id)).toEqual([
+      `native-validation:${f.oldId}`,
+      `native-work-order:${f.oldId}`,
+    ]);
+    expect(inputs.map((entry) => entry.path)).toEqual([f.files.validation, f.files.order]);
+    expect(inputs.every((entry) => entry.required)).toBe(true);
+    const issued = await withKernelReworkEvidence(f.order, f.directory, f.record);
+    expect(issued.required_inputs.slice(-2)).toEqual(inputs);
+    expect(
+      await Promise.all([readFile(f.files.validation, "utf8"), readFile(f.files.order, "utf8")]),
+    ).toEqual(before);
+  });
+  it.each([
+    "old-claim",
+    "old-task",
+    "old-work-item",
+    "missing-order",
+    "tampered-order",
+    "missing-validation-receipt",
+    "tampered-validation-receipt",
+    "missing-amendment-receipt",
+    "tampered-amendment-receipt",
+    "unapproved-plan",
+    "unrelated-lineage",
+    "unrelated-successor",
+  ] as const)("rejects %s at corrected WorkOrder issuance", async (kind) => {
+    const f = await correctedNativeIssuanceFixture();
+    const old = await readJSON(f.files.order);
+    if (kind === "old-claim")
+      (old.canonical_binding as Record<string, unknown>).claim_id = hash("other-claim");
+    if (kind === "old-task") old.task = { ...(old.task as object), id: "other-task" };
+    if (kind === "old-work-item")
+      old.task = { ...(old.task as object), work_item_id: "other-item" };
+    if (["old-claim", "old-task", "old-work-item", "tampered-order"].includes(kind)) {
+      if (kind === "tampered-order") old.work_order_id = hash("other-order");
+      await writeJSON(f.files.order, old);
+    }
+    if (kind === "missing-order") await rm(f.files.order);
+    const validationId = `validation:${f.oldId}`;
+    if (kind === "missing-validation-receipt")
+      delete f.record.aggregate.mutation_receipts[validationId];
+    if (kind === "tampered-validation-receipt")
+      f.record.aggregate.mutation_receipts[validationId]!.command_digest = hash("wrong");
+    if (kind === "missing-amendment-receipt")
+      delete f.record.aggregate.mutation_receipts[f.event.mutation_id];
+    if (kind === "tampered-amendment-receipt")
+      f.record.aggregate.mutation_receipts[f.event.mutation_id]!.command_digest = hash("wrong");
+    if (kind === "unapproved-plan") f.record.aggregate.current_plan!.approval_actor_id = "SYSTEM";
+    if (kind === "unrelated-lineage")
+      f.record.aggregate.authority_lineage![1]!.authority.plan_digest = hash("wrong");
+    if (kind === "unrelated-successor") {
+      const previous = f.record.aggregate.current_plan!;
+      const work_items = [...previous.work_items, { ...previous.work_items[0]!, id: "other" }];
+      const plan = {
+        ...previous,
+        revision: 3,
+        work_items,
+        digest: hash({ revision: 3, work_items }),
+      };
+      f.record.aggregate.plan_history.push({ ...previous, state: "SUPERSEDED" });
+      f.record.aggregate.current_plan = plan;
+      f.order.canonical_binding = {
+        ...f.order.canonical_binding!,
+        plan_revision: 3,
+        plan_digest: plan.digest,
+      };
+    }
+    await expect(withKernelReworkEvidence(f.order, f.directory, f.record)).rejects.toThrow();
+  });
+});
 describe("approved native check correction lineage", () => {
   it("accepts the original failed check only through the exact USER amendment receipt", async () => {
     const f = await correctedNativePlanFixture();
