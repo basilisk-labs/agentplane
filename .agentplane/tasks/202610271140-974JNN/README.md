@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 27
+revision: 28
 origin:
   system: "manual"
 depends_on: []
@@ -34,18 +34,31 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-10-27T14:27:16.405Z"
+  updated_at: "2026-10-27T16:58:05.761Z"
   updated_by: "EVALUATOR"
-  note: "Canonical EVALUATOR review passed."
-  evaluated_sha: "d853f22e10f43aa371c6281af4d97bb136b26b55"
-  review_identity_digest: "sha256:d5bafd817765376f390e3eed553e4c1e6b8ad07189d152abb4810f9f211a5fa0"
+  note: "EVALUATOR returned pass with 3 typed finding(s)."
+  evaluated_sha: "bb105886a8b379e74f53a25c5621711a4a98c576"
+  review_identity_digest: "sha256:3bc4bbccacfc6e687892de1a5f7a4109e933776b39afdad90dc1fe629f190d46"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202610271140-974JNN/a526a5e105082d9fb4b16759a1f867093f6b291094785a7c462a7856212b48a5/quality-report.json"
+    - ".agentplane/tasks/202610271140-974JNN/quality/20261027-165555220-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202610271140-974JNN/quality/20261027-165555220-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202610271140-974JNN/quality/objects/sha256/2b8be9d98e88f42ff90f08c756343ad88269c42de8493a2ddb4169ede17e75df.md"
+    - ".agentplane/tasks/202610271140-974JNN/quality/20261027-165555220-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202610271140-974JNN/quality/20261027-165555220-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202610271140-974JNN/quality/20261027-165555220-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202610271140-974JNN/README.md"
+    - ".agentplane/tasks/202610271140-974JNN/quality/objects/sha256/043a561f775d11da9f044288e2bce738eb2f6ae59074fdc02c3bbe797798246f.patch"
+    - ".agentplane/tasks/202610271140-974JNN/quality/objects/sha256/624504d6e6cd5ae46c5c4727433cf5b0084a77dcce7bc31b435e670d22db2b82.json"
+    - ".agentplane/tasks/202610271140-974JNN/verification/20261027165521262-b86ee483baa06301.json"
+    - ".agentplane/tasks/202610271140-974JNN/quality/objects/sha256/d638eb6df5074efdb2be4f6d2fb316fe05e7f0da3429832734a9c8442bb1fda4.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Runtime Zod validation accepts a complete same-repository adoption identity and rejects mismatched task/project identity, invalid PR number, refs, SHA/digest/timestamp/provider, missing fields, and unknown nested fields."
-    - "The three generated pr-meta.schema.json snapshots are byte-identical and contain the optional adoption structure. The generator uses Prettier-stable JSON output."
-    - "The implementation changes exactly the six approved source/schema/test/generator paths, with no MY0JZE changes or hosted PR mutation."
-    - "AgentPlane retained exit code 0 for schemas:check, 29 focused schema tests, typecheck, format:check, and ci:local:full on the exact implementation head. The prior failed oversized-test receipt remains retained and the revised test stays within the file budget."
+    - "The six-file patch adds a strict same-repository adopted-PR identity, validates task identity and provider observations, updates negative tests, formats generated JSON, and synchronizes all three schema snapshots."
+    - "Native declared checks and post-branch-update full CI passed; the exact bb105886 head also passed hosted checks."
+    - "Residual risk: The provider adoption lifecycle is a separate downstream task; this prerequisite only establishes the metadata contract."
 token_usage:
   agent_runs: 1
   input_tokens: null
@@ -1282,7 +1295,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-10-27T16:55:29.685Z"
+doc_updated_at: "2026-10-27T16:58:05.791Z"
 doc_updated_by: "CODER"
 description: "Provide the typed provider-neutral adopted-PR metadata schema prerequisite for MY0JZE. Add strict core schema and tests, make canonical pr-meta schema generation Prettier-stable, and sync exactly three pr-meta.schema.json snapshots. Supersedes RSHVSQ because its immutable five-file criterion omitted the generator. Merge before MY0JZE finalization; do not edit MY0JZE artifacts or add a task-graph depends_on edge."
 sections:
@@ -1567,6 +1580,14 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.completed_native_review:
+    applied_at: "2026-10-27T16:58:05.761Z"
+    kernel_digest: "sha256:29baaa5e6a9ca7ad96f302ecdf37813f10664a2ccde382a1e4db2d98d62bf75a"
+    quality_digest: "sha256:5c319b0598abacf0d9743c68d2361a09c56ce54de546fab936c87c3550619dee"
+    result_digest: "sha256:58f4ce3f1df9beeaf756d44bbdcb8b83310439bf51882971efab3754c9bbb374"
+    schema_version: 1
+    state_fingerprint: "sha256:6adcaffbbfe33072a15e2417025c24ea12bbdcfe848af0ac36d084990501a49b"
+    transition_id: "tr_811f9d7d607f54eaa558b1a270d02242"
   agentplane.kernel_operational_projection:
     digest: "sha256:a085d50731dc1c2c037084bcad463082245a5f41b089df8e68d5c18ad85d9cff"
     evidence_refs:

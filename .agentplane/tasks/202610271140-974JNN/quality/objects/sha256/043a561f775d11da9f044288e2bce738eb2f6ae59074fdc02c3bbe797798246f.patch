@@ -1,0 +1,418 @@
+diff --git a/packages/core/schemas/pr-meta.schema.json b/packages/core/schemas/pr-meta.schema.json
+index 382d0feb5..d3620c27f 100644
+--- a/packages/core/schemas/pr-meta.schema.json
++++ b/packages/core/schemas/pr-meta.schema.json
+@@ -101,6 +101,91 @@
+       ],
+       "additionalProperties": false
+     },
++    "adoption": {
++      "type": "object",
++      "properties": {
++        "schema_version": {
++          "type": "number",
++          "const": 1
++        },
++        "task_id": {
++          "type": "string",
++          "minLength": 1
++        },
++        "provider": {
++          "type": "string",
++          "enum": ["github", "gitlab"]
++        },
++        "hostname": {
++          "type": "string",
++          "minLength": 1
++        },
++        "remote": {
++          "type": "string",
++          "minLength": 1
++        },
++        "source_project": {
++          "type": "string",
++          "minLength": 1
++        },
++        "target_project": {
++          "type": "string",
++          "minLength": 1
++        },
++        "pr_number": {
++          "type": "integer",
++          "exclusiveMinimum": 0,
++          "maximum": 9007199254740991
++        },
++        "head_ref": {
++          "type": "string",
++          "minLength": 1
++        },
++        "base_ref": {
++          "type": "string",
++          "minLength": 1
++        },
++        "head_sha": {
++          "type": "string",
++          "pattern": "^[0-9a-f]{40,64}$"
++        },
++        "base_sha": {
++          "type": "string",
++          "pattern": "^[0-9a-f]{40,64}$"
++        },
++        "observed_at": {
++          "type": "string",
++          "format": "date-time",
++          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
++        },
++        "readback_digest": {
++          "type": "string",
++          "pattern": "^sha256:[0-9a-f]{64}$"
++        },
++        "authority_digest": {
++          "type": "string",
++          "pattern": "^sha256:[0-9a-f]{64}$"
++        }
++      },
++      "required": [
++        "schema_version",
++        "task_id",
++        "provider",
++        "hostname",
++        "remote",
++        "source_project",
++        "target_project",
++        "pr_number",
++        "head_ref",
++        "base_ref",
++        "head_sha",
++        "base_sha",
++        "observed_at",
++        "readback_digest",
++        "authority_digest"
++      ],
++      "additionalProperties": false
++    },
+     "created_at": {
+       "type": "string",
+       "format": "date-time",
+diff --git a/packages/core/src/tasks/task-artifact-schema.pr-metadata.ts b/packages/core/src/tasks/task-artifact-schema.pr-metadata.ts
+index 8eb5d1d35..1918ba471 100644
+--- a/packages/core/src/tasks/task-artifact-schema.pr-metadata.ts
++++ b/packages/core/src/tasks/task-artifact-schema.pr-metadata.ts
+@@ -17,6 +17,32 @@ const PR_ARTIFACT_STATE_VALUES = [
+ const MERGE_STRATEGY_VALUES = ["squash", "merge", "rebase"] as const;
+ const PR_VERIFY_STATUS_VALUES = ["pass", "fail", "skipped"] as const;
+ const PR_BATCH_CLOSURE_POLICY_VALUES = ["all_or_fail"] as const;
++const GIT_OBJECT_ID = /^[0-9a-f]{40,64}$/u;
++const SHA256_DIGEST = /^sha256:[0-9a-f]{64}$/u;
++
++/** Immutable provider observation retained when a task adopts an existing PR. */
++const ADOPTED_PR_IDENTITY_SCHEMA = z
++  .object({
++    schema_version: z.literal(1),
++    task_id: NON_EMPTY_STRING,
++    provider: z.enum(["github", "gitlab"]),
++    hostname: NON_EMPTY_STRING,
++    remote: NON_EMPTY_STRING,
++    source_project: NON_EMPTY_STRING,
++    target_project: NON_EMPTY_STRING,
++    pr_number: z.number().int().positive(),
++    head_ref: NON_EMPTY_STRING,
++    base_ref: NON_EMPTY_STRING,
++    head_sha: z.string().regex(GIT_OBJECT_ID),
++    base_sha: z.string().regex(GIT_OBJECT_ID),
++    observed_at: ISO_UTC_TIMESTAMP,
++    readback_digest: z.string().regex(SHA256_DIGEST),
++    authority_digest: z.string().regex(SHA256_DIGEST),
++  })
++  .strict()
++  .refine((identity) => identity.source_project === identity.target_project, {
++    message: "Adopted PR must have a same-repository source and target",
++  });
+ 
+ export const TASK_PR_META_ZOD_SCHEMA = z
+   .object({
+@@ -47,6 +73,7 @@ export const TASK_PR_META_ZOD_SCHEMA = z
+       })
+       .strict()
+       .optional(),
++    adoption: ADOPTED_PR_IDENTITY_SCHEMA.optional(),
+     created_at: ISO_UTC_TIMESTAMP,
+     updated_at: ISO_UTC_TIMESTAMP,
+     status: z.enum(PR_STATUS_VALUES).optional(),
+@@ -67,6 +94,10 @@ export const TASK_PR_META_ZOD_SCHEMA = z
+       .passthrough()
+       .optional(),
+   })
+-  .passthrough();
++  .passthrough()
++  .refine((meta) => !meta.adoption || meta.adoption.task_id === meta.task_id, {
++    message: "Adopted PR task ID must match PR metadata task ID",
++    path: ["adoption", "task_id"],
++  });
+ 
+ export type TaskPrMeta = z.infer<typeof TASK_PR_META_ZOD_SCHEMA>;
+diff --git a/packages/core/src/tasks/task-artifact-schema.test.ts b/packages/core/src/tasks/task-artifact-schema.test.ts
+index 253e6ed07..d12d7c6ed 100644
+--- a/packages/core/src/tasks/task-artifact-schema.test.ts
++++ b/packages/core/src/tasks/task-artifact-schema.test.ts
+@@ -578,6 +578,55 @@ describe("task-artifact-schema", () => {
+     ).not.toThrow();
+   });
+ 
++  it("validates the immutable identity of an adopted same-repository PR", () => {
++    const adoption = {
++      schema_version: 1,
++      task_id: "202610270555-MY0JZE",
++      provider: "github",
++      hostname: "github.com",
++      remote: "origin",
++      source_project: "example/project",
++      target_project: "example/project",
++      pr_number: 42,
++      head_ref: "automation/upgrade",
++      base_ref: "main",
++      head_sha: "a".repeat(40),
++      base_sha: "b".repeat(40),
++      observed_at: "2026-10-27T10:00:00.000Z",
++      readback_digest: `sha256:${"c".repeat(64)}`,
++      authority_digest: `sha256:${"d".repeat(64)}`,
++    };
++    const meta = {
++      schema_version: 1,
++      task_id: adoption.task_id,
++      created_at: adoption.observed_at,
++      updated_at: adoption.observed_at,
++      adoption,
++    };
++    expect(validateTaskPrMeta(meta).adoption).toEqual(adoption);
++    for (const invalid of [
++      { source_project: "another/project" },
++      { target_project: "another/project" },
++      { task_id: "another-task" },
++      { pr_number: 0 },
++      { pr_number: 1.5 },
++      { head_ref: "" },
++      { base_ref: "" },
++      { head_sha: "not-a-sha" },
++      { base_sha: "not-a-sha" },
++      { observed_at: "not-a-timestamp" },
++      { readback_digest: "sha256:invalid" },
++      { authority_digest: "sha256:invalid" },
++      { provider: "unknown" },
++      { unexpected: true },
++      { hostname: undefined },
++    ]) {
++      expect(() =>
++        validateTaskPrMeta({ ...meta, adoption: { ...adoption, ...invalid } }),
++      ).toThrow();
++    }
++  });
++
+   it("accepts short non-git commit hashes in task README frontmatter", () => {
+     expect(() =>
+       validateTaskReadmeFrontmatter({
+diff --git a/packages/spec/schemas/pr-meta.schema.json b/packages/spec/schemas/pr-meta.schema.json
+index 382d0feb5..d3620c27f 100644
+--- a/packages/spec/schemas/pr-meta.schema.json
++++ b/packages/spec/schemas/pr-meta.schema.json
+@@ -101,6 +101,91 @@
+       ],
+       "additionalProperties": false
+     },
++    "adoption": {
++      "type": "object",
++      "properties": {
++        "schema_version": {
++          "type": "number",
++          "const": 1
++        },
++        "task_id": {
++          "type": "string",
++          "minLength": 1
++        },
++        "provider": {
++          "type": "string",
++          "enum": ["github", "gitlab"]
++        },
++        "hostname": {
++          "type": "string",
++          "minLength": 1
++        },
++        "remote": {
++          "type": "string",
++          "minLength": 1
++        },
++        "source_project": {
++          "type": "string",
++          "minLength": 1
++        },
++        "target_project": {
++          "type": "string",
++          "minLength": 1
++        },
++        "pr_number": {
++          "type": "integer",
++          "exclusiveMinimum": 0,
++          "maximum": 9007199254740991
++        },
++        "head_ref": {
++          "type": "string",
++          "minLength": 1
++        },
++        "base_ref": {
++          "type": "string",
++          "minLength": 1
++        },
++        "head_sha": {
++          "type": "string",
++          "pattern": "^[0-9a-f]{40,64}$"
++        },
++        "base_sha": {
++          "type": "string",
++          "pattern": "^[0-9a-f]{40,64}$"
++        },
++        "observed_at": {
++          "type": "string",
++          "format": "date-time",
++          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
++        },
++        "readback_digest": {
++          "type": "string",
++          "pattern": "^sha256:[0-9a-f]{64}$"
++        },
++        "authority_digest": {
++          "type": "string",
++          "pattern": "^sha256:[0-9a-f]{64}$"
++        }
++      },
++      "required": [
++        "schema_version",
++        "task_id",
++        "provider",
++        "hostname",
++        "remote",
++        "source_project",
++        "target_project",
++        "pr_number",
++        "head_ref",
++        "base_ref",
++        "head_sha",
++        "base_sha",
++        "observed_at",
++        "readback_digest",
++        "authority_digest"
++      ],
++      "additionalProperties": false
++    },
+     "created_at": {
+       "type": "string",
+       "format": "date-time",
+diff --git a/schemas/pr-meta.schema.json b/schemas/pr-meta.schema.json
+index 382d0feb5..d3620c27f 100644
+--- a/schemas/pr-meta.schema.json
++++ b/schemas/pr-meta.schema.json
+@@ -101,6 +101,91 @@
+       ],
+       "additionalProperties": false
+     },
++    "adoption": {
++      "type": "object",
++      "properties": {
++        "schema_version": {
++          "type": "number",
++          "const": 1
++        },
++        "task_id": {
++          "type": "string",
++          "minLength": 1
++        },
++        "provider": {
++          "type": "string",
++          "enum": ["github", "gitlab"]
++        },
++        "hostname": {
++          "type": "string",
++          "minLength": 1
++        },
++        "remote": {
++          "type": "string",
++          "minLength": 1
++        },
++        "source_project": {
++          "type": "string",
++          "minLength": 1
++        },
++        "target_project": {
++          "type": "string",
++          "minLength": 1
++        },
++        "pr_number": {
++          "type": "integer",
++          "exclusiveMinimum": 0,
++          "maximum": 9007199254740991
++        },
++        "head_ref": {
++          "type": "string",
++          "minLength": 1
++        },
++        "base_ref": {
++          "type": "string",
++          "minLength": 1
++        },
++        "head_sha": {
++          "type": "string",
++          "pattern": "^[0-9a-f]{40,64}$"
++        },
++        "base_sha": {
++          "type": "string",
++          "pattern": "^[0-9a-f]{40,64}$"
++        },
++        "observed_at": {
++          "type": "string",
++          "format": "date-time",
++          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
++        },
++        "readback_digest": {
++          "type": "string",
++          "pattern": "^sha256:[0-9a-f]{64}$"
++        },
++        "authority_digest": {
++          "type": "string",
++          "pattern": "^sha256:[0-9a-f]{64}$"
++        }
++      },
++      "required": [
++        "schema_version",
++        "task_id",
++        "provider",
++        "hostname",
++        "remote",
++        "source_project",
++        "target_project",
++        "pr_number",
++        "head_ref",
++        "base_ref",
++        "head_sha",
++        "base_sha",
++        "observed_at",
++        "readback_digest",
++        "authority_digest"
++      ],
++      "additionalProperties": false
++    },
+     "created_at": {
+       "type": "string",
+       "format": "date-time",
+diff --git a/scripts/generate/sync-schemas.mjs b/scripts/generate/sync-schemas.mjs
+index 843fafcd6..be072c22f 100644
+--- a/scripts/generate/sync-schemas.mjs
++++ b/scripts/generate/sync-schemas.mjs
+@@ -173,7 +173,7 @@ const main = defineScript({
+       },
+       {
+         label: "pr meta schema",
+-        rendered: renderTaskPrMetaSchemaJson(),
++        rendered: await format(renderTaskPrMetaSchemaJson(), { parser: "json", printWidth: 100 }),
+         targets: schemaTargets("pr-meta.schema.json"),
+       },
+       {
