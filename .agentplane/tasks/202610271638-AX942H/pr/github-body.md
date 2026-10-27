@@ -27,9 +27,9 @@ Generic AgentPlane fix: after pr.open or pr.head.publish creates or links a host
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/pr/open.convergence.test.ts       | 208 +++++++++++++++++++++
- packages/agentplane/src/commands/pr/open.ts        |  71 +++++++
- 2 files changed, 279 insertions(+)
+ .../src/commands/pr/open.convergence.test.ts       | 212 +++++++++++++++++++++
+ packages/agentplane/src/commands/pr/open.ts        |  72 +++++++
+ 2 files changed, 284 insertions(+)
 ```
 
 </details>
