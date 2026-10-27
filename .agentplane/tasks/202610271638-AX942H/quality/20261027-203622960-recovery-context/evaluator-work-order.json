@@ -1,0 +1,123 @@
+{
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202610271638-AX942H-7236446b24cda969d6c45ff3",
+  "prepared_at": "2026-10-27T20:36:22.960Z",
+  "task": {
+    "id": "202610271638-AX942H",
+    "revision": 27,
+    "objective": "Make native PR publication converge with clean, published task artifacts\n\nGeneric AgentPlane fix: after pr.open or pr.head.publish creates or links a hosted PR, persist final observed PR link/status metadata and publish the resulting exact task branch head. Ensure repeated publication with an already linked PR does not churn timestamps or create dirty task artifacts. Add focused negative tests for newly created and linked PRs, failed/uncertain publication, and exact-head alignment. Preserve hosted effect authority and do not bypass protected integration.",
+    "acceptance_criteria": [
+      "bun run --filter=agentplane test -- open.convergence.test.ts",
+      "bun run --filter=agentplane typecheck",
+      "bun run ci:local:full",
+      "- In scope: Generic AgentPlane fix: after pr.open or pr.head.publish creates or links a hosted PR, persist final observed PR link/status metadata and publish the resulting exact task branch head. Ensure repeated publication with an already linked PR does not churn timestamps or create dirty task artifacts. Add focused negative tests for newly created and linked PRs, failed/uncertain publication, and exact-head alignment. Preserve hosted effect authority and do not bypass protected integration.\n- Out of scope: unrelated refactors not required for \"Make native PR publication converge with clean, published task artifacts\".",
+      "1. Execute approved WorkItem pr-publication-artifact-convergence.",
+      "PLANNER fallback scaffold for \"Make native PR publication converge with clean, published task artifacts\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Make native PR publication converge with clean, published task artifacts\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "7c1525619fbf8f314d42d64827b3a412a5adccf2",
+  "diff_base_sha": "012d9785c47ebe3d9d78e75f658281c039de9ee2",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202610271638-AX942H/quality/20261027-203622960-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:2a028a075c40f011fce1abdad83579527b683fa1fc42ce55f86863b521a4536c",
+    "prompt_path": ".agentplane/tasks/202610271638-AX942H/quality/objects/sha256/09e4ed45a9ddf5679345c6e78d8b552cdd195e4eb8b2b89b6a03e5350dbc32f7.md",
+    "result_schema_path": ".agentplane/tasks/202610271638-AX942H/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "schema_version": 2,
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202610271638-AX942H",
+    "plan_digest": "sha256:2eeec8f1d1495c476bb254d1257c4ade4d4992ca4507677c09064b74569a7483",
+    "policy_digest": "sha256:1150ba6caefe9e829c30b3520b9246ed1ec7ebbeedbe788c63cf7989015dbb46",
+    "capability_digest": "sha256:660aa6e3ea6c6723e1fc7d710dc69921d58cd6264260f32f75f8435f4504bd01",
+    "checks_digest": "sha256:bc288b6f44f78ccb1a8594f09998250f3390c1788fdc0c9e6fae1d0a7e2c3009",
+    "verification_input_digest": "sha256:f37353b90faaa58fee7d989e08d0a91414b865b851b5f3a33fa56d301c74dfe6",
+    "acceptance_digest": "sha256:9181bd56530e849716d7b3fae4e9eef8d8e42161aa0cb2f14c421f587b49d196",
+    "implementation_sha": "7c1525619fbf8f314d42d64827b3a412a5adccf2",
+    "digest": "sha256:5cd094a33838c2b92d4bc69d8a65019ced6b05296ef4b11ac6e354b3a7e7fe21"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202610271638-AX942H/README.md",
+      "sha256": "sha256:35481e776550414552b3d42510d091611cf127b565ffad6b9ba5a9040fde5175",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202610271638-AX942H/quality/objects/sha256/4846a768b83acea5e9ce110201ec957ce858cb2b6d6d5b939eef0acde2c42ed9.patch",
+      "sha256": "sha256:4846a768b83acea5e9ce110201ec957ce858cb2b6d6d5b939eef0acde2c42ed9",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202610271638-AX942H/quality/objects/sha256/b1aa912094e08f4d10c012c4de7694b0d3f4fd034b9902a5364a6ae8c908f723.json",
+      "sha256": "sha256:b1aa912094e08f4d10c012c4de7694b0d3f4fd034b9902a5364a6ae8c908f723",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202610271638-AX942H/verification/20261027203544399-947e0e8d829cfa7c.json",
+      "sha256": "sha256:9edb6f7f5dadf53ff78a76a7449ae71f9e06022c893c037f7ba5bc753790cbce",
+      "required": true
+    },
+    {
+      "id": "native-identity",
+      "kind": "plan",
+      "path": ".agentplane/tasks/202610271638-AX942H/quality/objects/sha256/19379f7808eb19960e2b8d477a837f06145ac882c5aa57ff9df24739f397dfa1.json",
+      "sha256": "sha256:19379f7808eb19960e2b8d477a837f06145ac882c5aa57ff9df24739f397dfa1",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:35a4c7a567a9b658a31feed9e096276ede95ad0c82198f362c302fe7bd20b612",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:6e5cb34ada84017778c43c3d057edcc68d3ccb60840c805e412f7dc6781070ee",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:d3dfd4eb0293213ab49d32c6f199066f2bc7c954cada6465aab458b1a9c7ee25",
+      "required": true
+    }
+  ]
+}

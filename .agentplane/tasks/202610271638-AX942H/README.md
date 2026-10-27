@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 27
+revision: 28
 origin:
   system: "manual"
 depends_on: []
@@ -31,18 +31,32 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-10-27T18:23:58.606Z"
+  updated_at: "2026-10-27T20:39:30.052Z"
   updated_by: "EVALUATOR"
-  note: "Canonical EVALUATOR review passed."
-  evaluated_sha: "ce20192025905765deb3d79e8e386c9a23be6f2b"
-  review_identity_digest: "sha256:115f4ae99dc56c42638c0780c9db3d7b2da8981ca1ce8f1492d6628bd4110c70"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "7c1525619fbf8f314d42d64827b3a412a5adccf2"
+  review_identity_digest: "sha256:5cd094a33838c2b92d4bc69d8a65019ced6b05296ef4b11ac6e354b3a7e7fe21"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202610271638-AX942H/1ec945f62c8f6f570ba917022590366a2c48037c3ed03a3931868012a130aedc/quality-report.json"
+    - ".agentplane/tasks/202610271638-AX942H/quality/20261027-203622960-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202610271638-AX942H/quality/20261027-203622960-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202610271638-AX942H/quality/objects/sha256/09e4ed45a9ddf5679345c6e78d8b552cdd195e4eb8b2b89b6a03e5350dbc32f7.md"
+    - ".agentplane/tasks/202610271638-AX942H/quality/20261027-203622960-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202610271638-AX942H/quality/20261027-203622960-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202610271638-AX942H/quality/20261027-203622960-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202610271638-AX942H/README.md"
+    - ".agentplane/tasks/202610271638-AX942H/quality/objects/sha256/4846a768b83acea5e9ce110201ec957ce858cb2b6d6d5b939eef0acde2c42ed9.patch"
+    - ".agentplane/tasks/202610271638-AX942H/quality/objects/sha256/b1aa912094e08f4d10c012c4de7694b0d3f4fd034b9902a5364a6ae8c908f723.json"
+    - ".agentplane/tasks/202610271638-AX942H/verification/20261027203544399-947e0e8d829cfa7c.json"
+    - ".agentplane/tasks/202610271638-AX942H/quality/objects/sha256/19379f7808eb19960e2b8d477a837f06145ac882c5aa57ff9df24739f397dfa1.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The source change commits the observed PR metadata after hosted creation, checks that PR artifacts are no longer dirty, publishes the resulting task-branch commit, and requires provider flow status to report the same open PR and aligned local, upstream, and hosted head."
-    - "The no-change retry path avoids a second artifact commit and the existing metadata builder preserves updated_at when the observed PR identity and state are unchanged. Staged creation, failed commit, failed final push, and hosted-head mismatch do not claim aligned publication."
-    - "The eight focused fake-provider tests cover creation, linkage, no-op retry, stable metadata, failed commit, failed final push, mismatched hosted head, staged creation, and sync-only mode. The source diff is limited to open.ts and open.convergence.test.ts, within the approved four-path boundary; EPC #6947 artifacts are absent from the implementation diff."
-    - "Native retained checks passed at ce20192025905765deb3d79e8e386c9a23be6f2b: focused tests, package typecheck, and full CI all exited zero. Earlier failed lint evidence remains recorded and the second attempt corrected only scoped lint errors."
+    - "The reviewed source diff from main 012d9785 to implementation head 7c152561 changes only packages/agentplane/src/commands/pr/open.ts and open.convergence.test.ts; the first PR sync is committed and pushed before hosted creation, and observed PR metadata is committed, published and checked for local/upstream/hosted head alignment afterward."
+    - "The focused tests cover creation, linked-PR no-op retry and stable metadata, uncommitted artifacts, failed final push, hosted-head mismatch, staged creation and sync-only behavior. The native declared-check receipt run-011 binds ci:local:full exit 0 to implementation head 7c152561; both retained critical checks also exited 0."
+    - "Hosted PR #6948 remains OPEN and CLEAN at exact head 7c152561 with verify-contract, verify-static, verify-tests, verify-security, PR verification and CodeQL successful. Protected integration and Hosted Close remain supervisor/operator work after this semantic review."
+    - "Residual risk: The hosted PR is not yet merged; branch protection and final provider readback must still gate integration."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -1365,7 +1379,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-10-27T20:35:58.331Z"
+doc_updated_at: "2026-10-27T20:39:30.112Z"
 doc_updated_by: "CODER"
 description: "Generic AgentPlane fix: after pr.open or pr.head.publish creates or links a hosted PR, persist final observed PR link/status metadata and publish the resulting exact task branch head. Ensure repeated publication with an already linked PR does not churn timestamps or create dirty task artifacts. Add focused negative tests for newly created and linked PRs, failed/uncertain publication, and exact-head alignment. Preserve hosted effect authority and do not bypass protected integration."
 sections:
@@ -1581,6 +1595,14 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.completed_native_review:
+    applied_at: "2026-10-27T20:39:30.052Z"
+    kernel_digest: "sha256:73f50873037daf4b6db93cd0dbf62384b99e6e16b36c4de403c992c05599b732"
+    quality_digest: "sha256:0a7c34c1a318112ea899b58dcdca05d842bd00842e517873b6f8d7f94f3483c2"
+    result_digest: "sha256:84d1e6ff09c0c2313cac5835a009b02289ecd30fb22c1bef20bd13a26feed0b5"
+    schema_version: 1
+    state_fingerprint: "sha256:1c37e7be7c638025f4ae70426541900c197e13940ce5b149eb0c340a78a379ed"
+    transition_id: "tr_b0e7a1c416d4536571c1f853ea9f3c97"
   agentplane.kernel_operational_projection:
     digest: "sha256:e039f11bb355685120571e75d780dc8870fc872f4c0086ce7615b4388e228c0d"
     evidence_refs:
