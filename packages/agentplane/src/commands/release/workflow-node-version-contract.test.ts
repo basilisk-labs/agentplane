@@ -7,7 +7,7 @@ import { parse as parseYaml } from "yaml";
 const WORKFLOWS_DIR = path.resolve(process.cwd(), ".github/workflows");
 const CI_WORKFLOW_PATH = path.join(WORKFLOWS_DIR, "ci.yml");
 const NODE_ENGINE_CONTRACTS = {
-  "package.json": ">=24",
+  "package.json": "^24.11.0 || >=26.0.0",
   "packages/agentplane/package.json": ">=24",
   "packages/core/package.json": ">=20.5.0",
   "packages/recipes/package.json": ">=20.5.0",
