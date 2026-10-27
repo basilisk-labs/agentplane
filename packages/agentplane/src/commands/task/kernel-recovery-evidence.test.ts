@@ -34,7 +34,10 @@ import {
   type KernelNativeValidationEvidence,
 } from "./kernel-inspection-validation.js";
 import { withKernelReworkEvidence } from "./kernel-exchange.js";
-import { captureKernelSemanticStop } from "./kernel-recovery-evidence.js";
+import {
+  authenticNativePlanCorrection,
+  captureKernelSemanticStop,
+} from "./kernel-recovery-evidence.js";
 
 const hash = k.kernelDigest;
 const manualActor = { id: "USER", kind: "USER", transport: "manual" } as const;
@@ -924,14 +927,283 @@ async function nativeFixture() {
   });
   const files = {
     result: path.join(directory, "received-result.json"),
+    order: path.join(directory, "work-order.json"),
     validation: path.join(directory, "validation.json"),
     command: path.join(directory, "validation-command.json"),
     native: path.join(directory, `native-validation-${native.input_digest.slice(7)}.json`),
   };
+  const issued = buildAgentWorkOrderV2ValidFixture();
+  issued.work_order_id = oldId;
+  issued.task.id = initial.id;
+  issued.task.work_item_id = "kernel";
+  issued.task.revision = initial.revision;
+  const { digest: _issuedDigest, ...issuedFingerprint } = issued.state_fingerprint;
+  const issuedState = {
+    ...issuedFingerprint,
+    task_id: initial.id,
+    task_revision: initial.revision,
+  };
+  issued.state_fingerprint = { ...issuedState, digest: hash(issuedState) };
+  issued.canonical_binding = binding;
+  await writeJSON(files.order, issued);
   await writeJSON(files.result, result);
   await writeJSON(files.native, native);
   return { ...operatorFixture(root, kernelRoot, state.record, binding, true), files };
 }
+
+async function correctedNativePlanFixture() {
+  const { kernelRoot } = await fixtureRoot("native-check-correction-");
+  const oldCheck = "Unlaunchable declared check";
+  const newCheck =
+    "bunx vitest run packages/agentplane/src/commands/task/kernel-recovery-evidence.test.ts";
+  const oldContract = {
+    role: "EXECUTOR" as const,
+    objective: "Validate implementation",
+    acceptance_criteria: ["Validation passes"],
+    verification_commands: [oldCheck],
+  };
+  const newContract = { ...oldContract, verification_commands: [newCheck] };
+  const oldDefinition = { ...runtime("READY").definition, contract_digest: hash(oldContract) };
+  const newDefinition = { ...oldDefinition, contract_digest: hash(newContract) };
+  const source = {
+    ...aggregate().current_plan!,
+    work_items: [oldDefinition],
+    digest: hash({ revision: 1, work_items: [oldDefinition] }),
+    state: "SUPERSEDED" as const,
+    approval_actor_id: "USER",
+  };
+  const amended = {
+    revision: 2,
+    work_items: [newDefinition],
+    digest: hash({ revision: 2, work_items: [newDefinition] }),
+  };
+  const approval = k.planScopeExpansionApprovalDigest({
+    task_id: "task-1",
+    current_plan_digest: source.digest,
+    amended_plan_digest: amended.digest,
+    actor_id: "USER",
+  });
+  const current = {
+    ...source,
+    ...amended,
+    state: "APPROVED" as const,
+    approval_actor_id: "USER",
+    approval_evidence_digest: approval,
+  };
+  const parentContents = {
+    ...authority,
+    plan_digest: source.digest,
+    repository_identity: repo,
+    scope_roots: oldDefinition.execution_requirements.scope_roots,
+    provenance: { ...authority.provenance, actor_id: "USER" },
+  };
+  const parent = { ...parentContents, digest: k.authorityDigest(parentContents) };
+  const childContents = {
+    ...parent,
+    plan_revision: 2,
+    plan_digest: current.digest,
+    provenance: { ...parent.provenance, parent_authority_digest: parent.digest },
+  };
+  const child = { ...childContents, digest: k.authorityDigest(childContents) };
+  const oldOrderId = hash("historical-native-check-order");
+  const native = { checks: { status: "unsupported", checks: [] } };
+  const failedWorkOrder = {
+    work_order_id: oldOrderId,
+    canonical_binding: { plan_digest: source.digest },
+  };
+  const acceptedResult = {
+    command: { kind: "accept_work_item_result", plan_digest: source.digest },
+  };
+  const validation = { command: { validation: { evidence_digests: [hash(native)] } } };
+  const proof = {
+    work_item_id: "kernel",
+    failed_work_order_id: oldOrderId,
+    previous_command: oldCheck,
+    replacement_command: newCheck,
+    failed_work_order: failedWorkOrder,
+    accepted_result_command_input: acceptedResult,
+    validation_command_input: validation,
+    native_validation: native,
+  };
+  const contracts = { [hash(oldContract)]: oldContract, [hash(newContract)]: newContract };
+  const command: k.TaskCommand = {
+    kind: "amend_plan",
+    task_id: "task-1",
+    expected_task_revision: 7,
+    expected_state_fingerprint: fp,
+    plan_revision: 1,
+    plan_digest: source.digest,
+    amended_plan: amended,
+    amendment_digest: hash(amended),
+    authority_delta_digest: approval,
+    work_contracts: contracts,
+    required_check_correction: proof,
+  };
+  const event: k.DomainEvent = {
+    id: "amendment:plan_amended",
+    task_id: "task-1",
+    mutation_id: "amendment",
+    task_revision: 8,
+    kind: "plan_amended",
+    command_digest: hash(command),
+    payload_digest: hash({ kind: "amend_plan", aggregate_revision: 8 }),
+    occurred_at: "2026-10-27T00:00:00.000Z",
+  };
+  const record = makeKernelRecord(
+    repo,
+    aggregate({
+      revision: 8,
+      plan_history: [source],
+      current_plan: current,
+      work_items: { kernel: { ...runtime("READY"), definition: newDefinition, attempt: 2 } },
+      authority_lineage: [
+        { authority: parent, approval_mode: "manual_operator", observation: null },
+        {
+          authority: child,
+          approval_mode: null,
+          observation: {
+            kind: "plan_amendment",
+            previous_fingerprint: fp,
+            changed_paths: [],
+            added_scope_roots: [],
+            evidence_digest: hash("amendment observation"),
+          },
+        },
+      ],
+      mutation_receipts: {
+        amendment: {
+          mutation_id: "amendment",
+          command_digest: event.command_digest,
+          before_revision: 7,
+          after_revision: 8,
+          aggregate_digest: hash("after amendment"),
+          event_digests: [hash(event)],
+          effect_ids: [],
+        },
+        [`validation:${oldOrderId}`]: {
+          mutation_id: `validation:${oldOrderId}`,
+          command_digest: hash(validation),
+          before_revision: 6,
+          after_revision: 7,
+          aggregate_digest: hash("blocked validation"),
+          event_digests: [],
+          effect_ids: [],
+        },
+      },
+    }),
+    [event],
+    { intent: { objective: "Validate implementation", context: "Test" }, contracts },
+  );
+  const oldDirectory = path.join(kernelRoot, "exchanges", "task-1", oldOrderId.slice(7));
+  await mkdir(oldDirectory, { recursive: true });
+  await Promise.all([
+    writeJSON(path.join(oldDirectory, "command-input.json"), acceptedResult),
+    writeJSON(path.join(oldDirectory, "work-order.json"), failedWorkOrder),
+    writeJSON(path.join(oldDirectory, "validation-command.json"), validation),
+    writeJSON(path.join(oldDirectory, `native-validation-${hash(native).slice(7)}.json`), native),
+  ]);
+  const oldBinding = {
+    task_id: "task-1",
+    repository_identity: repo,
+    repository_fingerprint: fp,
+    plan_revision: 1,
+    plan_digest: source.digest,
+    phase: "implementation" as const,
+    work_item_id: "kernel",
+    attempt: 1,
+    claim_id: "old-claim",
+    contract_digest: hash(oldContract),
+    authority_digest: parent.digest,
+  };
+  const newBinding = {
+    ...oldBinding,
+    plan_revision: 2,
+    plan_digest: current.digest,
+    attempt: 2,
+    claim_id: "new-claim",
+    contract_digest: hash(newContract),
+    authority_digest: child.digest,
+  };
+  return { record, oldDirectory, oldOrderId, oldBinding, newBinding, event };
+}
+
+describe("approved native check correction lineage", () => {
+  it("accepts the original failed check only through the exact USER amendment receipt", async () => {
+    const f = await correctedNativePlanFixture();
+    expect(
+      await authenticNativePlanCorrection(
+        f.oldDirectory,
+        f.record,
+        f.oldBinding,
+        f.newBinding,
+        7,
+        f.oldOrderId,
+      ),
+    ).toBe(true);
+    f.record.aggregate.mutation_receipts.amendment!.command_digest = hash("forged amendment");
+    expect(
+      await authenticNativePlanCorrection(
+        f.oldDirectory,
+        f.record,
+        f.oldBinding,
+        f.newBinding,
+        7,
+        f.oldOrderId,
+      ),
+    ).toBe(false);
+  });
+  it.each([
+    "missing-proof",
+    "wrong-old-contract",
+    "stale-attempt",
+    "unapproved-plan",
+    "wrong-old-order",
+    "wrong-parent-plan",
+    "missing-approval-evidence",
+  ] as const)("rejects %s before accepting historical validation", async (kind) => {
+    const f = await correctedNativePlanFixture();
+    switch (kind) {
+      case "missing-proof": {
+        await rm(path.join(f.oldDirectory, "validation-command.json"));
+        break;
+      }
+      case "wrong-old-contract": {
+        f.oldBinding.contract_digest = hash("unrelated contract");
+        break;
+      }
+      case "stale-attempt": {
+        f.newBinding.attempt = 4;
+        break;
+      }
+      case "unapproved-plan": {
+        f.record.aggregate.current_plan!.approval_actor_id = "SYSTEM";
+        break;
+      }
+      case "wrong-old-order": {
+        f.oldOrderId = hash("unrelated native WorkOrder");
+        break;
+      }
+      case "wrong-parent-plan": {
+        f.record.aggregate.authority_lineage![0]!.authority.plan_digest = hash("unrelated Plan");
+        break;
+      }
+      case "missing-approval-evidence": {
+        f.record.aggregate.current_plan!.approval_evidence_digest = hash("unrelated approval");
+        break;
+      }
+    }
+    expect(
+      await authenticNativePlanCorrection(
+        f.oldDirectory,
+        f.record,
+        f.oldBinding,
+        f.newBinding,
+        7,
+        f.oldOrderId,
+      ),
+    ).toBe(false);
+  });
+});
 
 describe("native infrastructure recovery evidence", () => {
   it("retains the exact BLOCKED evidence through USER recovery and fresh rework issuance", async () => {
@@ -954,18 +1226,52 @@ describe("native infrastructure recovery evidence", () => {
     await expect(cmdWorkItemResume({} as never, f.opts)).rejects.toThrow("stale");
     expect(f.apply).toHaveBeenCalledOnce();
   });
+  it("does not use the correction route to bypass USER resume under the same Plan", async () => {
+    const f = await nativeFixture();
+    const next = await f.recover();
+    delete next.record.aggregate.mutation_receipts[next.receiptId];
+    await expect(withKernelReworkEvidence(next.order, next.directory, next.record)).rejects.toThrow(
+      "retained review",
+    );
+  });
+  it("rejects a historical WorkOrder with a different claim", async () => {
+    const f = await nativeFixture();
+    const order = await readJSON(f.files.order);
+    const binding = order.canonical_binding as Record<string, unknown>;
+    binding.claim_id = hash("unrelated claim");
+    await writeJSON(f.files.order, order);
+    await expect(cmdWorkItemResume({} as never, f.opts)).rejects.toThrow();
+    expect(f.apply).not.toHaveBeenCalled();
+  });
   it.each(
     ["missing", "tampered"].flatMap((operation) =>
-      (["result", "validation", "command", "native"] as const).map((file) => ({ operation, file })),
+      (["order", "result", "validation", "command", "native"] as const).map((file) => ({
+        operation,
+        file,
+      })),
     ),
   )("rejects $operation $file before mutation", async ({ operation, file }) => {
     const f = await nativeFixture();
     if (operation === "missing") await rm(f.files[file]);
     else {
       const value = await readJSON(f.files[file]);
-      if (file === "validation") value.result_digest = hash("wrong");
-      else if (file === "command") value.command = {};
-      else value.tampered = true;
+      switch (file) {
+        case "order": {
+          value.work_order_id = hash("wrong");
+          break;
+        }
+        case "validation": {
+          value.result_digest = hash("wrong");
+          break;
+        }
+        case "command": {
+          value.command = {};
+          break;
+        }
+        default: {
+          value.tampered = true;
+        }
+      }
       await writeJSON(f.files[file], value);
     }
     await expect(cmdWorkItemResume({} as never, f.opts)).rejects.toThrow();
