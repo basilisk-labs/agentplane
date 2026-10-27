@@ -3,7 +3,8 @@
   "branch": "task/202610262151-J96KWH/authenticate-sibling-delegated-authorities-acros",
   "created_at": "2026-10-27T00:32:49.190Z",
   "diffstat_sha256": "sha256:43b764dc0e43e1bf0e41294c208b64c53e0fd887ada5679c607c8c5a7ba185f5",
-  "last_verified_at": null,
+  "last_verified_at": "2026-10-27T03:42:35.646Z",
+  "last_verified_diffstat_sha256": "sha256:43b764dc0e43e1bf0e41294c208b64c53e0fd887ada5679c607c8c5a7ba185f5",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202610262151-J96KWH",
   "updated_at": "2026-10-27T00:32:49.190Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
