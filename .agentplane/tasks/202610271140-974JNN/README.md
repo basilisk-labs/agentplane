@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 28
+revision: 29
 origin:
   system: "manual"
 depends_on: []
@@ -60,9 +60,11 @@ quality_review:
     - "Native declared checks and post-branch-update full CI passed; the exact bb105886 head also passed hosted checks."
     - "Residual risk: The provider adoption lifecycle is a separate downstream task; this prerequisite only establishes the metadata contract."
 token_usage:
-  agent_runs: 1
+  agent_runs: 2
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
   input_tokens: null
-  journal_digest: "sha256:d8897010fc1f9b1ca6b5651dea47e71a84c0acd0d14f72257cdf419913de160f"
+  journal_digest: "sha256:0956dc539359ac39159a1ad144504613606da706d2dc01e51d95a181e6136887"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -71,8 +73,8 @@ token_usage:
   source: "supervisor_journal"
   state: "unavailable"
   total_tokens: null
-  unavailable_reason: "provider_token_telemetry_unavailable"
-  updated_at: "2026-10-27T15:21:11.883Z"
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-27T16:58:30.594Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -1267,9 +1269,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "aabdf11491f4193cf8099acba878e63fc95296d7"
-  message: "🧩 974JNN task: record opened PR metadata"
+  hash: "401e63bdcf6b95ee3c20fca9815e61d77c64a12c"
+  message: "🚧 974JNN task: record external evaluator result"
 comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -1294,8 +1299,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-10-27T16:58:30.594Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "401e63bdcf6b95ee3c20fca9815e61d77c64a12c"
 doc_version: 3
-doc_updated_at: "2026-10-27T16:58:05.791Z"
+doc_updated_at: "2026-10-27T16:58:30.606Z"
 doc_updated_by: "CODER"
 description: "Provide the typed provider-neutral adopted-PR metadata schema prerequisite for MY0JZE. Add strict core schema and tests, make canonical pr-meta schema generation Prettier-stable, and sync exactly three pr-meta.schema.json snapshots. Supersedes RSHVSQ because its immutable five-file criterion omitted the generator. Merge before MY0JZE finalization; do not edit MY0JZE artifacts or add a task-graph depends_on edge."
 sections:
@@ -1606,8 +1619,8 @@ extensions:
     verification_evidence_digest: "sha256:e2461afdec5ff164e524d24f157ebe9ddda102f5c21c7fa65195c6c2d156dc87"
     work_order_id: "sha256:6ea6617719e8779c1cfa5b7801f8c6e13cfdfe15db6edc6573e6ad10760cc515"
   implementation_commit:
-    hash: "d853f22e10f43aa371c6281af4d97bb136b26b55"
-    message: "🚧 974JNN task: apply canonical agent result"
+    hash: "bb105886a8b379e74f53a25c5621711a4a98c576"
+    message: "Merge branch 'main' into task/202610271140-974JNN/synchronize-adopted-pr-metadata-schema-with-form"
   task_execution_context:
     base_ref: "main"
     base_sha: "3a5d69bd47e56d65e6928d6a16beb0586b056f04"
@@ -2601,12 +2614,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/1` agent runs
+- Completeness: `0/2` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:d8897010fc1f9b1ca6b5651dea47e71a84c0acd0d14f72257cdf419913de160f`
-- Unavailable reason: `provider_token_telemetry_unavailable`
-- Updated at: `2026-10-27T15:21:11.883Z`
+- Journal digest: `sha256:0956dc539359ac39159a1ad144504613606da706d2dc01e51d95a181e6136887`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-27T16:58:30.594Z`

@@ -8,10 +8,10 @@
   "pr_number": 6946,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6946",
   "pre_merge_closure": {
-    "basis_commit": "aabdf11491f4193cf8099acba878e63fc95296d7",
+    "basis_commit": "401e63bdcf6b95ee3c20fca9815e61d77c64a12c",
     "branch": "task/202610271140-974JNN/synchronize-adopted-pr-metadata-schema-with-form",
     "pr_number": 6946,
-    "recorded_at": "2026-10-27T15:21:12.167Z",
+    "recorded_at": "2026-10-27T16:58:30.721Z",
     "state": "closed_before_merge"
   },
   "provider": {
