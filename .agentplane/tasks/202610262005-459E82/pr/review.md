@@ -6,7 +6,7 @@ Created: 2026-10-27T03:45:19.959Z
 
 - Task: `202610262005-459E82`
 - Title: Require supported Node versions for tsup 9 development
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610262005-459E82/require-supported-node-versions-for-tsup-9-devel`
 - Canonical task record: `.agentplane/tasks/202610262005-459E82/README.md`
 
