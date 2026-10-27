@@ -13,7 +13,7 @@ Created: 2026-10-27T17:23:52.054Z
 ## Verification
 
 - State: ok
-- Note: Verified: canonical Task Kernel final checks passed.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-10-27T17:23:52.054Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-10-27T17:23:52.054Z
+- Updated: 2026-10-27T19:15:26.284Z
 - Branch: task/202610271638-AX942H/make-native-pr-publication-converge-with-clean-p
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
