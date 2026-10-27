@@ -1,0 +1,3 @@
+ packages/core/src/tasks/task-kernel/kernel.ts      | 145 +++++++++++++-
+ .../task-kernel/required-check-correction.test.ts  | 219 +++++++++++++++++++--
+ 2 files changed, 342 insertions(+), 22 deletions(-)

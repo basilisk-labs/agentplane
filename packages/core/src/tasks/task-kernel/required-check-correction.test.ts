@@ -41,6 +41,8 @@ describe("required check correction", () => {
       ...plan,
       work_items: [oldDefinition],
       digest: kernelDigest({ revision: plan.revision, work_items: [oldDefinition] }),
+      approval_actor_id: "agentplane:kernel-controller",
+      approval_evidence_digest: kernelDigest("delegation"),
     };
     const workOrderId = kernelDigest("failed-work-order");
     // Retained native shape: two checks completed, then the third declared check was unsupported.
@@ -65,7 +67,7 @@ describe("required check correction", () => {
     const priorCommand: TaskCommand = {
       kind: "record_work_item_validation",
       task_id: "task-1",
-      expected_task_revision: 6,
+      expected_task_revision: 9,
       expected_state_fingerprint: fingerprint,
       work_item_id: "kernel",
       validation: {
@@ -86,7 +88,7 @@ describe("required check correction", () => {
     const acceptedResultCommand: TaskCommand = {
       kind: "accept_work_item_result",
       task_id: "task-1",
-      expected_task_revision: 4,
+      expected_task_revision: 7,
       expected_state_fingerprint: fingerprint,
       plan_revision: current.revision,
       plan_digest: current.digest,
@@ -95,28 +97,71 @@ describe("required check correction", () => {
       output_manifests: [],
     };
     const issuedFingerprint = kernelDigest("repository-before-implementation");
-    const issuedAuthority = kernelDigest("issued-authority");
-    const acceptedAuthorityContents = {
+    const approvedParentContents = {
       ...authority,
       task_id: "task-1",
       plan_revision: current.revision,
       plan_digest: current.digest,
-      work_item_id: "kernel",
-      repository_fingerprint: fingerprint,
+      work_item_id: null,
+      repository_fingerprint: issuedFingerprint,
       provenance: {
-        kind: "DELEGATED" as const,
+        kind: "SYSTEM" as const,
         actor_id: "agentplane:kernel-controller",
         evidence_digest: kernelDigest("delegation"),
-        parent_authority_digest: issuedAuthority,
+        parent_authority_digest: null,
       },
     };
+    const approvedParent = {
+      ...approvedParentContents,
+      digest: authorityDigest(approvedParentContents),
+    };
+    const continuedParentContents = {
+      ...approvedParent,
+      repository_fingerprint: fingerprint,
+      provenance: {
+        ...approvedParent.provenance,
+        parent_authority_digest: approvedParent.digest,
+      },
+    };
+    const continuedParent = {
+      ...continuedParentContents,
+      digest: authorityDigest(continuedParentContents),
+    };
+    const approvalRecord = {
+      authority: approvedParent,
+      approval_mode: "repository_policy" as const,
+      observation: null,
+    };
+    const continuationRecord = {
+      authority: continuedParent,
+      approval_mode: null,
+      observation: {
+        kind: "repository_implementation" as const,
+        previous_fingerprint: issuedFingerprint,
+        changed_paths: ["packages/core/src/tasks/task-kernel/kernel.ts"],
+        evidence_digest: kernelDigest("repository-observation"),
+      },
+    };
+    const delegate = (parent: typeof approvedParent) => {
+      const contents = {
+        ...parent,
+        ...oldDefinition.execution_requirements,
+        work_item_id: "kernel",
+        provenance: {
+          ...parent.provenance,
+          kind: "DELEGATED" as const,
+          actor_id: "agentplane:kernel-controller",
+          parent_authority_digest: parent.digest,
+        },
+      };
+      return { ...contents, digest: authorityDigest(contents) };
+    };
+    const issuedAuthority = delegate(approvedParent).digest;
+    const acceptedResultAuthority = delegate(continuedParent);
     const acceptedResult = {
       mutation_id: `result:${workOrderId}`,
       repository_fingerprint: fingerprint,
-      authority: {
-        ...acceptedAuthorityContents,
-        digest: authorityDigest(acceptedAuthorityContents),
-      },
+      authority: acceptedResultAuthority,
       command: acceptedResultCommand,
     };
     const workBinding = {
@@ -132,6 +177,17 @@ describe("required check correction", () => {
     const failedWorkOrder = {
       work_order_id: workOrderId,
       task: { id: "task-1", revision: acceptedResultCommand.expected_task_revision - 1 },
+      state_fingerprint: {
+        components: {
+          authority: {
+            digest: kernelDigest({
+              state: "present",
+              source: "canonical_authority",
+              value: { issued: issuedAuthority, lineage: approvedParent.digest },
+            }),
+          },
+        },
+      },
       canonical_binding: {
         ...workBinding,
         phase: "implementation",
@@ -145,8 +201,8 @@ describe("required check correction", () => {
         ...acceptedResultCommand,
         binding_digest: kernelDigest(workBinding),
       }),
-      before_revision: 4,
-      after_revision: 5,
+      before_revision: 7,
+      after_revision: 8,
       aggregate_digest: kernelDigest("after-result"),
       event_digests: [],
       effect_ids: [],
@@ -154,14 +210,49 @@ describe("required check correction", () => {
     const receipt = {
       mutation_id: `validation:${workOrderId}`,
       command_digest: kernelDigest(priorCommand),
-      before_revision: 6,
-      after_revision: 7,
+      before_revision: 9,
+      after_revision: 10,
       aggregate_digest: kernelDigest("after-failure"),
       event_digests: [],
       effect_ids: [],
     };
+    const approvalReceipt = {
+      mutation_id: "approve-plan",
+      command_digest: kernelDigest({
+        kind: "approve_plan",
+        task_id: "task-1",
+        expected_task_revision: 2,
+        expected_state_fingerprint: issuedFingerprint,
+        plan_revision: current.revision,
+        plan_digest: current.digest,
+        approval_evidence_digest: approvedParent.provenance.evidence_digest,
+        authority_mode: "repository_policy",
+      }),
+      before_revision: 2,
+      after_revision: 3,
+      aggregate_digest: kernelDigest("after-approval"),
+      event_digests: [kernelDigest("approval-event")],
+      effect_ids: [],
+    };
+    const continuationReceipt = {
+      mutation_id: "repository-continuation",
+      command_digest: kernelDigest({
+        kind: "continue_authority",
+        task_id: "task-1",
+        expected_task_revision: 6,
+        expected_state_fingerprint: fingerprint,
+        record: continuationRecord,
+      }),
+      before_revision: 6,
+      after_revision: 7,
+      aggregate_digest: kernelDigest("after-continuation"),
+      event_digests: [kernelDigest("continuation-event")],
+      effect_ids: [],
+    };
     const state = aggregate({
+      revision: 11,
       current_plan: current,
+      authority_lineage: [approvalRecord, continuationRecord],
       work_items: {
         kernel: {
           ...runtime("REWORK_READY"),
@@ -173,6 +264,8 @@ describe("required check correction", () => {
         },
       },
       mutation_receipts: {
+        [approvalReceipt.mutation_id]: approvalReceipt,
+        [continuationReceipt.mutation_id]: continuationReceipt,
         [resultReceipt.mutation_id]: resultReceipt,
         [receipt.mutation_id]: receipt,
       },
@@ -208,7 +301,7 @@ describe("required check correction", () => {
     const invocation = {
       ...input(state, serializedCommand),
       actor: { id: "USER", kind: "USER" as const, transport: "manual" as const, capabilities: [] },
-      authority: { ...authority, plan_digest: current.digest },
+      authority: continuedParent,
     };
     const accepted = reduceTaskCommand(invocation);
     if (accepted.kind === "rejected") throw new Error(JSON.stringify(accepted));
@@ -223,6 +316,94 @@ describe("required check correction", () => {
         },
       },
     });
+    for (const mutated of [
+      { ...continuationReceipt, command_digest: kernelDigest("forged-continuation") },
+      { ...continuationReceipt, before_revision: 5, after_revision: 6 },
+      { ...continuationReceipt, before_revision: 7, after_revision: 8 },
+      { ...continuationReceipt, event_digests: [] },
+    ]) {
+      expectRejection(
+        {
+          ...invocation,
+          aggregate: {
+            ...state,
+            mutation_receipts: {
+              ...state.mutation_receipts,
+              [continuationReceipt.mutation_id]: mutated,
+            },
+          },
+        },
+        "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
+      );
+    }
+    const { [continuationReceipt.mutation_id]: _removedContinuation, ...withoutContinuation } =
+      state.mutation_receipts;
+    expectRejection(
+      { ...invocation, aggregate: { ...state, mutation_receipts: withoutContinuation } },
+      "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
+    );
+    expectRejection(
+      {
+        ...invocation,
+        aggregate: {
+          ...state,
+          mutation_receipts: {
+            ...state.mutation_receipts,
+            "replayed-continuation": {
+              ...continuationReceipt,
+              mutation_id: "replayed-continuation",
+            },
+          },
+        },
+      },
+      "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
+    );
+    for (const observation of [
+      { ...continuationRecord.observation, previous_fingerprint: kernelDigest("other-head") },
+      { ...continuationRecord.observation, changed_paths: ["outside-approved-scope"] },
+    ]) {
+      expectRejection(
+        {
+          ...invocation,
+          aggregate: {
+            ...state,
+            authority_lineage: [approvalRecord, { ...continuationRecord, observation }],
+          },
+        },
+        "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
+      );
+    }
+    for (const authorityAlias of [acceptedResultAuthority.digest, approvedParent.digest])
+      expectRejection(
+        {
+          ...invocation,
+          command: {
+            ...command,
+            required_check_correction: {
+              ...command.required_check_correction!,
+              failed_work_order: {
+                ...failedWorkOrder,
+                canonical_binding: {
+                  ...failedWorkOrder.canonical_binding,
+                  authority_digest: authorityAlias,
+                },
+                state_fingerprint: {
+                  components: {
+                    authority: {
+                      digest: kernelDigest({
+                        state: "present",
+                        source: "canonical_authority",
+                        value: { issued: authorityAlias, lineage: approvedParent.digest },
+                      }),
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
+      );
     expectRejection(
       {
         ...invocation,
@@ -355,9 +536,9 @@ describe("required check correction", () => {
       );
     }
     const forgedAuthorityContents = {
-      ...acceptedAuthorityContents,
+      ...acceptedResultAuthority,
       provenance: {
-        ...acceptedAuthorityContents.provenance,
+        ...acceptedResultAuthority.provenance,
         parent_authority_digest: kernelDigest("other-parent"),
       },
     };

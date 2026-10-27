@@ -676,6 +676,140 @@ function object(value: unknown): Record<string, unknown> | null {
     : null;
 }
 
+/** Issuance and result may be sibling delegations around a native repository continuation. */
+function requiredCheckAuthorityLineage(
+  aggregate: TaskAggregate,
+  definition: PlanRecord["work_items"][number],
+  failedWorkOrder: Record<string, unknown>,
+  issuedBinding: Record<string, unknown>,
+  acceptedResultAuthority: Record<string, unknown>,
+  resultRevision: number,
+): boolean {
+  const issuedRevision = object(failedWorkOrder.task)?.revision;
+  const records = aggregate.authority_lineage ?? [];
+  if (
+    !Number.isInteger(issuedRevision) ||
+    !Number.isInteger(resultRevision) ||
+    Number(issuedRevision) > resultRevision ||
+    records.length === 0 ||
+    canonicalAuthorityIssues(aggregate).length > 0
+  )
+    return false;
+
+  // The task adapter validates each receipt's event digests against retained events before
+  // constructing KernelInput; the reducer can use the validated aggregate here.
+  const receipts = Object.values(aggregate.mutation_receipts);
+  const origins = records.flatMap((record, index) => {
+    const parent = record.authority;
+    if (
+      parent.task_id !== aggregate.id ||
+      parent.plan_revision !== issuedBinding.plan_revision ||
+      parent.plan_digest !== issuedBinding.plan_digest ||
+      parent.repository_identity !== issuedBinding.repository_identity ||
+      parent.work_item_id !== null
+    )
+      return [];
+    const approval = record.approval_mode !== null && record.observation === null;
+    const continuation =
+      record.approval_mode === null && record.observation?.kind === "repository_implementation";
+    if (!approval && !continuation) return [];
+    const matching = receipts.filter((receipt) => {
+      if (
+        receipt.after_revision !== receipt.before_revision + 1 ||
+        receipt.after_revision > aggregate.revision ||
+        receipt.event_digests.length !== 1
+      )
+        return false;
+      const command: TaskCommand = approval
+        ? {
+            kind: "approve_plan",
+            task_id: aggregate.id,
+            expected_task_revision: receipt.before_revision,
+            expected_state_fingerprint: parent.repository_fingerprint,
+            plan_revision: parent.plan_revision,
+            plan_digest: parent.plan_digest,
+            approval_evidence_digest: parent.provenance.evidence_digest,
+            authority_mode: record.approval_mode!,
+          }
+        : {
+            kind: "continue_authority",
+            task_id: aggregate.id,
+            expected_task_revision: receipt.before_revision,
+            expected_state_fingerprint: parent.repository_fingerprint,
+            record,
+          };
+      return receipt.command_digest === kernelDigest(command);
+    });
+    return matching.length === 1 ? [{ record, index, receipt: matching[0]! }] : [];
+  });
+  const issued = origins
+    .filter(
+      ({ record, receipt }) =>
+        receipt.after_revision <= Number(issuedRevision) &&
+        record.authority.repository_fingerprint === issuedBinding.repository_fingerprint,
+    )
+    .toSorted((left, right) => right.receipt.after_revision - left.receipt.after_revision);
+  if (
+    issued.length === 0 ||
+    (issued[1] && issued[1].receipt.after_revision === issued[0]!.receipt.after_revision)
+  )
+    return false;
+  const original = issued[0]!;
+  const delegated = (parent: ExecutionAuthority) => {
+    const contents = {
+      ...parent,
+      ...definition.execution_requirements,
+      work_item_id: definition.id,
+      provenance: {
+        ...parent.provenance,
+        kind: "DELEGATED" as const,
+        actor_id: "agentplane:kernel-controller",
+        parent_authority_digest: parent.digest,
+      },
+    };
+    return { ...contents, digest: authorityDigest(contents) };
+  };
+  const issuedParent = original.record.authority;
+  const issuedDigest = issuedBinding.authority_digest;
+  if (
+    issuedDigest !== delegated(issuedParent).digest ||
+    object(object(failedWorkOrder.state_fingerprint)?.components)?.authority === undefined ||
+    object(object(object(failedWorkOrder.state_fingerprint)?.components)?.authority)?.digest !==
+      kernelDigest({
+        state: "present",
+        source: "canonical_authority",
+        value: { issued: issuedDigest, lineage: issuedParent.digest },
+      })
+  )
+    return false;
+
+  let cursor = Number(issuedRevision);
+  let parent = issuedParent;
+  let index = original.index;
+  for (const next of origins
+    .filter(
+      ({ receipt }) => receipt.after_revision > cursor && receipt.after_revision <= resultRevision,
+    )
+    .toSorted((left, right) => left.receipt.after_revision - right.receipt.after_revision)) {
+    if (
+      next.index !== index + 1 ||
+      next.receipt.before_revision !== cursor ||
+      next.record.observation?.kind !== "repository_implementation" ||
+      next.record.authority.provenance.parent_authority_digest !== parent.digest ||
+      next.record.observation.previous_fingerprint !== parent.repository_fingerprint
+    )
+      return false;
+    cursor = next.receipt.after_revision;
+    parent = next.record.authority;
+    index = next.index;
+  }
+  return (
+    cursor === resultRevision &&
+    parent.repository_fingerprint === acceptedResultAuthority.repository_fingerprint &&
+    kernelDigest(acceptedResultAuthority) === kernelDigest(delegated(parent))
+  );
+}
+
 /** A failed executable test is never eligible. Only an unlaunched declared check may be corrected. */
 function validRequiredCheckCorrection(
   input: KernelInput,
@@ -746,7 +880,6 @@ function validRequiredCheckCorrection(
   const acceptedResult = object(proof.accepted_result_command_input);
   const acceptedResultCommand = object(acceptedResult?.command);
   const acceptedResultAuthority = object(acceptedResult?.authority);
-  const acceptedResultProvenance = object(acceptedResultAuthority?.provenance);
   const acceptedAuthorityDigest = acceptedResultAuthority
     ? authorityDigest(acceptedResultAuthority as unknown as ExecutionAuthority)
     : null;
@@ -804,8 +937,14 @@ function validRequiredCheckCorrection(
     acceptedResultAuthority.plan_revision !== current.revision ||
     acceptedResultAuthority.plan_digest !== current.digest ||
     acceptedResultAuthority.work_item_id !== proof.work_item_id ||
-    (issuedBinding.authority_digest !== acceptedResultAuthority?.digest &&
-      issuedBinding.authority_digest !== acceptedResultProvenance?.parent_authority_digest) ||
+    !requiredCheckAuthorityLineage(
+      input.aggregate,
+      before,
+      failedWorkOrder,
+      issuedBinding,
+      acceptedResultAuthority,
+      Number(acceptedResultCommand?.expected_task_revision),
+    ) ||
     acceptedResultAuthority?.repository_fingerprint !== acceptedResult?.repository_fingerprint ||
     acceptedResult?.repository_fingerprint !== nativeInput?.repository_fingerprint ||
     !Number.isInteger(issuedBinding.attempt) ||

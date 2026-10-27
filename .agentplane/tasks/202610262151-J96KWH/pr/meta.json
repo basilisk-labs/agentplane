@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202610262151-J96KWH/authenticate-sibling-delegated-authorities-acros",
+  "created_at": "2026-10-27T00:32:49.190Z",
+  "diffstat_sha256": "sha256:43b764dc0e43e1bf0e41294c208b64c53e0fd887ada5679c607c8c5a7ba185f5",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610262151-J96KWH",
+  "updated_at": "2026-10-27T00:32:49.190Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
