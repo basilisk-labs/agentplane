@@ -15,8 +15,8 @@ Generic AgentPlane fix: after pr.open or pr.head.publish creates or links a host
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>

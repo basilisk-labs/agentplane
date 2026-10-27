@@ -3,7 +3,8 @@
   "branch": "task/202610271638-AX942H/make-native-pr-publication-converge-with-clean-p",
   "created_at": "2026-10-27T17:23:52.054Z",
   "diffstat_sha256": "sha256:006fce805e82cf948080f70d2cde66d1f10ff193beb201d8106ad5372884424a",
-  "last_verified_at": null,
+  "last_verified_at": "2026-10-27T19:12:35.852Z",
+  "last_verified_diffstat_sha256": "sha256:006fce805e82cf948080f70d2cde66d1f10ff193beb201d8106ad5372884424a",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202610271638-AX942H",
   "updated_at": "2026-10-27T17:23:52.054Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
