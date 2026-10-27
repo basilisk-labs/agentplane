@@ -1,4 +1,4 @@
-import { mkdtemp, writeFile } from "node:fs/promises";
+import { chmod, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
@@ -56,4 +56,76 @@ describe("doctor archive commit invariants", () => {
       ),
     ]);
   });
+
+  it("reports an unavailable historical commit as INFO", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-doctor-archive-"));
+    await gitInitWithCommit(root, "current commit", "Current body");
+    const missingHash = "a".repeat(40);
+    const ctx = {
+      memo: {},
+      taskBackend: {
+        listTasks: () =>
+          Promise.resolve([
+            { id: "202602111827-ABC123", status: "DONE", commit: { hash: missingHash } },
+          ]),
+      },
+    } as unknown as CommandContext;
+
+    await expect(checkDoneTaskCommitInvariants(root, { ctx })).resolves.toEqual([
+      `[INFO] DONE task references unknown historical commit hash: 202602111827-ABC123 -> ${missingHash}`,
+    ]);
+  });
+
+  it.skipIf(process.platform === "win32")(
+    "disables lazy fetch and all Git transports for archive lookups",
+    async () => {
+      const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-doctor-promisor-"));
+      const gitPath = path.join(root, "git");
+      const invocationPath = path.join(root, "invoked.txt");
+      const fetchPath = path.join(root, "fetch-attempted.txt");
+      await writeFile(
+        gitPath,
+        [
+          "#!/bin/sh",
+          'printf "invoked" > "$DOCTOR_GIT_INVOCATION"',
+          'if [ "$GIT_NO_LAZY_FETCH" != "1" ] || [ "$GIT_TERMINAL_PROMPT" != "0" ] || [ -n "$GIT_ALLOW_PROTOCOL" ]; then',
+          '  printf "fetch permitted" > "$DOCTOR_GIT_FETCH_ATTEMPT"',
+          "fi",
+          "exit 0",
+          "",
+        ].join("\n"),
+      );
+      await chmod(gitPath, 0o755);
+      const previousPath = process.env.PATH;
+      process.env.PATH = `${root}${path.delimiter}${previousPath ?? ""}`;
+      process.env.DOCTOR_GIT_INVOCATION = invocationPath;
+      process.env.DOCTOR_GIT_FETCH_ATTEMPT = fetchPath;
+      try {
+        const ctx = {
+          memo: {},
+          taskBackend: {
+            listTasks: () =>
+              Promise.resolve([
+                {
+                  id: "202602111828-ABC123",
+                  status: "DONE",
+                  commit: { hash: "b".repeat(40) },
+                },
+              ]),
+          },
+        } as unknown as CommandContext;
+        const findings = await checkDoneTaskCommitInvariants(root, { ctx });
+        expect(findings).toEqual([
+          expect.stringContaining("[INFO] DONE task references unknown historical commit hash"),
+        ]);
+        expect(await readFile(invocationPath, "utf8")).toBe("invoked");
+        await expect(readFile(fetchPath, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
+      } finally {
+        if (previousPath === undefined) delete process.env.PATH;
+        else process.env.PATH = previousPath;
+        delete process.env.DOCTOR_GIT_INVOCATION;
+        delete process.env.DOCTOR_GIT_FETCH_ATTEMPT;
+      }
+    },
+  );
 });
