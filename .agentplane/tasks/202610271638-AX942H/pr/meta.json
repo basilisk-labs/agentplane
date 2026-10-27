@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202610271638-AX942H/make-native-pr-publication-converge-with-clean-p",
+  "created_at": "2026-10-27T17:23:52.054Z",
+  "diffstat_sha256": "sha256:d68570dd3a15c883980b718bb3d02ccd32163e62f63b5e2714209347baab7451",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610271638-AX942H",
+  "updated_at": "2026-10-27T17:23:52.054Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
