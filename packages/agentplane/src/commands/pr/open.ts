@@ -176,7 +176,8 @@ export async function cmdPrOpen(opts: {
       const prArtifactPrefix = `${commandCtx.config.paths.workflow_dir}/${opts.taskId}/pr/`
         .replaceAll("\\", "/")
         .replace(/^\.\//u, "");
-      const remainingPrArtifacts = (await commandCtx.git.statusChangedPaths()).filter((changed) =>
+      const changedPaths = await commandCtx.git.statusChangedPaths();
+      const remainingPrArtifacts = changedPaths.filter((changed) =>
         changed.replaceAll("\\", "/").startsWith(prArtifactPrefix),
       );
       if (remainingPrArtifacts.length > 0) {

@@ -85,10 +85,14 @@ describe("native PR publication artifact convergence", () => {
       expect.objectContaining({ branch, prNumber: 6947 }),
     );
     expect(mocks.resolvePrFlowStatus).toHaveBeenCalledTimes(1);
-    expect(mocks.syncPrArtifacts.mock.calls.map((call) => call[0].remoteMode)).toEqual([
-      "sync-only",
-      "auto",
-    ]);
+    expect(mocks.syncPrArtifacts).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({ remoteMode: "sync-only" }),
+    );
+    expect(mocks.syncPrArtifacts).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({ remoteMode: "auto" }),
+    );
   });
 
   it("does not create a second commit or push when the linked PR artifacts are unchanged", async () => {
