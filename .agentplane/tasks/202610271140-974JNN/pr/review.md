@@ -13,7 +13,7 @@ Created: 2026-10-27T12:28:36.271Z
 ## Verification
 
 - State: ok
-- Note: Verified: canonical Task Kernel final checks passed.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-10-27T12:28:36.271Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-10-27T12:28:36.271Z
+- Updated: 2026-10-27T15:14:12.198Z
 - Branch: task/202610271140-974JNN/synchronize-adopted-pr-metadata-schema-with-form
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
