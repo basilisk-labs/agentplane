@@ -173,7 +173,7 @@ const main = defineScript({
       },
       {
         label: "pr meta schema",
-        rendered: renderTaskPrMetaSchemaJson(),
+        rendered: await format(renderTaskPrMetaSchemaJson(), { parser: "json", printWidth: 100 }),
         targets: schemaTargets("pr-meta.schema.json"),
       },
       {

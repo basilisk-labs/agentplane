@@ -1,0 +1,44 @@
+{
+  "native_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_task_identity",
+    "task_id": "202610271140-974JNN",
+    "plan": {
+      "revision": 1,
+      "digest": "sha256:3b8955cde33da369bf5cf3219525f6ddd742a292e6c55ecbd229dbd0b60f8b21",
+      "approval_state": "approved",
+      "approved_digest": "sha256:3b8955cde33da369bf5cf3219525f6ddd742a292e6c55ecbd229dbd0b60f8b21"
+    },
+    "policy": {
+      "digest": "sha256:3b5b5903062969509d5420ca62b20e57741c010df15310850d2ca4a00e8119fc"
+    },
+    "capability": {
+      "digest": "sha256:6c970394a93463a9c247c3cb1c4fc5b3ec046734b890a9770281242de8b24063"
+    },
+    "checks": {
+      "verification_contract_digest": "sha256:5f227e4d54fdb04c1d556bf36a4535ab20c5d1f52721747d3be2d2484081936e",
+      "required_check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "full_regression",
+        "task_outcome"
+      ],
+      "digest": "sha256:54bcf0bfecdb9879c268494eaa4a6c8c0d96f642a6145f59f4b58a052a55907a"
+    },
+    "digest": "sha256:5a96491376080d73c6942cbd4c0afbe3ec4c1a6e62e551ac1e6543a88aee74b5"
+  },
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202610271140-974JNN",
+    "plan_digest": "sha256:3b8955cde33da369bf5cf3219525f6ddd742a292e6c55ecbd229dbd0b60f8b21",
+    "policy_digest": "sha256:3b5b5903062969509d5420ca62b20e57741c010df15310850d2ca4a00e8119fc",
+    "capability_digest": "sha256:6c970394a93463a9c247c3cb1c4fc5b3ec046734b890a9770281242de8b24063",
+    "checks_digest": "sha256:54bcf0bfecdb9879c268494eaa4a6c8c0d96f642a6145f59f4b58a052a55907a",
+    "verification_input_digest": "sha256:3762a346f64fdfb7ae13c38efe94daabecae1f6131ea6c4eb46eb09dbe600aed",
+    "acceptance_digest": "sha256:6f45cde22e2186918fbf6987928fa8d3163a99b71b34989f465a20fb11453f0c",
+    "implementation_sha": "bb105886a8b379e74f53a25c5621711a4a98c576",
+    "digest": "sha256:3bc4bbccacfc6e687892de1a5f7a4109e933776b39afdad90dc1fe629f190d46"
+  }
+}
