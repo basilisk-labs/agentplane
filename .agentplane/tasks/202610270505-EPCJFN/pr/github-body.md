@@ -16,13 +16,13 @@ Generic recovery: preserve original WorkOrder and immutable validation proof, ve
 ## Verification
 
 - State: ok
-- Note: Verified: canonical Task Kernel final checks passed.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-10-27T16:04:31.947Z
+- Updated: 2026-10-27T16:07:55.773Z
 - Branch: task/202610270505-EPCJFN/authenticate-retained-native-validation-across-a
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
