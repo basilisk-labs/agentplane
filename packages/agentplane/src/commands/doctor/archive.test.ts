@@ -172,13 +172,14 @@ describe("doctor archive commit invariants", () => {
       );
     await clone(checkout);
     await clone(probe);
-    expect(
-      (
-        await execFileAsync("git", ["config", "--get", "remote.origin.promisor"], {
-          cwd: checkout,
-        })
-      ).stdout.trim(),
-    ).toBe("true");
+    const promisorConfig = await execFileAsync(
+      "git",
+      ["config", "--get", "remote.origin.promisor"],
+      {
+        cwd: checkout,
+      },
+    );
+    expect(promisorConfig.stdout.trim()).toBe("true");
     const noFetchEnv = {
       ...process.env,
       GIT_NO_LAZY_FETCH: "1",
@@ -237,7 +238,8 @@ describe("doctor archive commit invariants", () => {
         env: noFetchEnv,
       }),
     ).rejects.toThrow();
-    const events = (await readFile(trace, "utf8"))
+    const traceContent = await readFile(trace, "utf8");
+    const events = traceContent
       .trim()
       .split("\n")
       .map((line) => JSON.parse(line) as { event?: string; argv?: string[] });
