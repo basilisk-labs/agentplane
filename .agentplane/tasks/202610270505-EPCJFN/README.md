@@ -1,10 +1,11 @@
 ---
 id: "202610270505-EPCJFN"
 title: "Authenticate retained native validation across approved Plan corrections"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 50
+revision: 51
 origin:
   system: "manual"
 depends_on: []
@@ -58,6 +59,22 @@ quality_review:
     - "Historical recovery re-reads the original WorkOrder and BLOCKED validation, checks the original contract and semantic stop, and accepts the successor only through the native USER-approved amendment and event/receipt lineage; negative tests reject missing proof, changed claims, stale attempts, wrong parent Plan, and missing approval evidence."
     - "The retained run-017 full CI and both run-015/run-016 critical checks passed for source head 9f2139a; the approved Plan revision 3 and frozen review identity bind that same implementation SHA."
     - "Residual risk: The hosted provider state may change after this offline review; native exact-head hosted checks must be evaluated before integration."
+token_usage:
+  agent_runs: 6
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:e9c420af8ddd530aba8d941dfa63533c37d91846b7977921ad4bca5d37575a46"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-27T22:24:10.190Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -3935,9 +3952,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "e588c8a311d617410f24b277b17770d045a17cbd"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "791821dd7a2f57c7ab4df73bb137f97bbed6d900"
+  message: "🚧 EPCJFN task: record external evaluator result"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -3957,9 +3977,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-10-27T22:24:10.190Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "791821dd7a2f57c7ab4df73bb137f97bbed6d900"
 doc_version: 3
-doc_updated_at: "2026-10-27T22:21:11.332Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-27T22:24:10.190Z"
+doc_updated_by: "CODER"
 description: "Generic recovery: preserve original WorkOrder and immutable validation proof, verify native USER-approved Plan correction lineage, and issue the next bounded action without treating a historical Plan as the current Plan. Add regression tests for missing or tampered transitions."
 sections:
   Summary: |-
@@ -4293,6 +4321,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:43b65d640e348c7b4fcc82bc58b61524cbbee67ff085b83d040898d43c9cf81d"
     work_order_id: "sha256:6df09bd82a07e2f54293e48fea19a5101a72c2ec92c3adec5a9b74249074e380"
+  implementation_commit:
+    hash: "9f2139a40a24b5dec9618915fbe7277d4a950651"
+    message: "Merge branch 'main' into task/202610270505-EPCJFN/authenticate-retained-native-validation-across-a"
   task_execution_context:
     base_ref: "main"
     base_sha: "a4b1534f06f52d10ae96e437a99514abe2629f52"
@@ -6153,3 +6184,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/6` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:e9c420af8ddd530aba8d941dfa63533c37d91846b7977921ad4bca5d37575a46`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-27T22:24:10.190Z`

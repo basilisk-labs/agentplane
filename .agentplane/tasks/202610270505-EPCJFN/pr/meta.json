@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:49aa2eb88f901ef7699dac0c05aaa1b953856c1cfe8708217d56554cad2efdd1",
   "pr_number": 6947,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6947",
+  "pre_merge_closure": {
+    "basis_commit": "791821dd7a2f57c7ab4df73bb137f97bbed6d900",
+    "branch": "task/202610270505-EPCJFN/authenticate-retained-native-validation-across-a",
+    "pr_number": 6947,
+    "recorded_at": "2026-10-27T22:24:10.612Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
