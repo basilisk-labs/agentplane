@@ -1,10 +1,11 @@
 ---
 id: "202610262151-J96KWH"
 title: "Authenticate sibling delegated authorities across repository continuation in required-check correction"
+result_summary: "Authenticated sibling delegated authority continuation for required-check correction."
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 32
+revision: 33
 origin:
   system: "manual"
 depends_on: []
@@ -41,6 +42,22 @@ quality_review:
     - "The committed delta changes only the second-candidate truthiness check to optional chaining in kernel.ts; the uniqueness comparison and authority predicates remain equivalent."
     - "Native work-item validation records the unchanged focused Vitest command and TypeScript build as passed with exit code 0 for commit 5138bbdbedb08e47e5eee8eaf52d522a4ee693d9."
     - "Targeted ESLint, Prettier and diff checks also passed locally after the correction."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:412da34959c441c0eaaff849f4ae3bfa14cee1ba00edcd125419a9b7bdabf368"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-10-27T03:45:54.639Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -233,9 +250,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "5138bbdbedb08e47e5eee8eaf52d522a4ee693d9"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "62ca30ac997a9a48dc548fb31db0d26a4470c6a7"
+  message: "✅ J96KWH task: persist canonical completion"
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Verified: E07 native full CI run-013 passed and required-check authority lineage is authenticated."
 events:
   -
     type: "verify"
@@ -243,9 +263,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-27T03:45:54.639Z"
+    author: "INTEGRATOR"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: E07 native full CI run-013 passed and required-check authority lineage is authenticated."
+    commit: "62ca30ac997a9a48dc548fb31db0d26a4470c6a7"
 doc_version: 3
-doc_updated_at: "2026-10-27T03:42:36.790Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-27T03:45:54.639Z"
+doc_updated_by: "INTEGRATOR"
 description: "An authentic first-attempt unsupported declared check correction is rejected when the failed WorkOrder was issued under an approved parent and the accepted result was recorded after a native repository_implementation authority continuation. Prove both delegated authorities against canonical retained lineage and contiguous native continuation receipts, without digest equality fallback. Use the DMVWHE retained rev6-to-rev7 proof shape; reject tampered parent, receipt, revision, fingerprint, plan, and claim. Preserve all other required-check gates."
 sections:
   Summary: |-
@@ -377,6 +405,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:b541c46a60eb91b17cb29a8d984c511425a36f23fe0426da41e8d487a2aea067"
     work_order_id: "sha256:4e3392faef0d020e44e3967ff97f844e5f2fbc71865cd35d4173a7b4a1375281"
+  implementation_commit:
+    hash: "5138bbdbedb08e47e5eee8eaf52d522a4ee693d9"
+    message: "🚧 J96KWH task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "3741aa3b0f306d9eed766365ee57c1ee63d8b6a1"
@@ -1451,3 +1482,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:412da34959c441c0eaaff849f4ae3bfa14cee1ba00edcd125419a9b7bdabf368`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-10-27T03:45:54.639Z`
