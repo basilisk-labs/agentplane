@@ -15,8 +15,8 @@ An authentic first-attempt unsupported declared check correction is rejected whe
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:4cba6ca54985d10a057d38eaee6b69e4ac8e6bda5396c1a22adb7d29e09c1d76
 - Canonical workflow state lives in the task README.
 
 <details>
