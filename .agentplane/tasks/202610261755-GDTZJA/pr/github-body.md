@@ -22,7 +22,7 @@ When a completed branch-PR task receives an authenticated implementation_rework 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-10-26T23:53:24.219Z
+- Updated: 2026-10-27T01:13:12.350Z
 - Branch: task/202610261755-GDTZJA/authorize-prospective-scope-for-completed-canoni
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
