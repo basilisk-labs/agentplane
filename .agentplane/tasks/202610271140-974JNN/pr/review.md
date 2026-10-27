@@ -6,7 +6,7 @@ Created: 2026-10-27T12:28:36.271Z
 
 - Task: `202610271140-974JNN`
 - Title: Synchronize adopted PR metadata schema with formatted generation
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610271140-974JNN/synchronize-adopted-pr-metadata-schema-with-form`
 - Canonical task record: `.agentplane/tasks/202610271140-974JNN/README.md`
 
