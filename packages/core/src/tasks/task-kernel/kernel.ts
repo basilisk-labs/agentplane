@@ -751,7 +751,7 @@ function requiredCheckAuthorityLineage(
     .toSorted((left, right) => right.receipt.after_revision - left.receipt.after_revision);
   if (
     issued.length === 0 ||
-    (issued[1] && issued[1].receipt.after_revision === issued[0]!.receipt.after_revision)
+    issued[1]?.receipt.after_revision === issued[0]!.receipt.after_revision
   )
     return false;
   const original = issued[0]!;
