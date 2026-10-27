@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 28
+revision: 29
 origin:
   system: "manual"
 depends_on: []
@@ -58,9 +58,11 @@ quality_review:
     - "Hosted PR #6948 remains OPEN and CLEAN at exact head 7c152561 with verify-contract, verify-static, verify-tests, verify-security, PR verification and CodeQL successful. Protected integration and Hosted Close remain supervisor/operator work after this semantic review."
     - "Residual risk: The hosted PR is not yet merged; branch protection and final provider readback must still gate integration."
 token_usage:
-  agent_runs: 0
+  agent_runs: 1
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
   input_tokens: null
-  journal_digest: "sha256:624aa1630292ab3a414651af7950c6fbc4c44cb5a150a69b7280ad703b8a20ea"
+  journal_digest: "sha256:07b3dd2251c669f9aa5f4ff27abb2349d74c43606f830e201835d3d62010a733"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -69,8 +71,8 @@ token_usage:
   source: "supervisor_journal"
   state: "unavailable"
   total_tokens: null
-  unavailable_reason: "no_supervised_agent_runs"
-  updated_at: "2026-10-27T19:20:08.388Z"
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-27T20:39:54.374Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -1351,9 +1353,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "512165795bcef064c303e595bb3938e3902c685d"
-  message: "🧩 AX942H task: refresh task artifacts after commit"
+  hash: "5ced81b5b4e4243cc15a06e7a8346ee3b142b78c"
+  message: "🚧 AX942H task: record external evaluator result"
 comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -1378,8 +1383,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-10-27T20:39:54.374Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "5ced81b5b4e4243cc15a06e7a8346ee3b142b78c"
 doc_version: 3
-doc_updated_at: "2026-10-27T20:39:30.112Z"
+doc_updated_at: "2026-10-27T20:39:54.396Z"
 doc_updated_by: "CODER"
 description: "Generic AgentPlane fix: after pr.open or pr.head.publish creates or links a hosted PR, persist final observed PR link/status metadata and publish the resulting exact task branch head. Ensure repeated publication with an already linked PR does not churn timestamps or create dirty task artifacts. Add focused negative tests for newly created and linked PRs, failed/uncertain publication, and exact-head alignment. Preserve hosted effect authority and do not bypass protected integration."
 sections:
@@ -1621,8 +1634,8 @@ extensions:
     verification_evidence_digest: "sha256:11699533a0e08580debeee9210dbd66d29c99cac20643bc90a26c714bbc8b52e"
     work_order_id: "sha256:b141b7e32828a8dc066fd15735b3655425c31965093a7373fc75d3da7f4352eb"
   implementation_commit:
-    hash: "ce20192025905765deb3d79e8e386c9a23be6f2b"
-    message: "🚧 AX942H task: apply canonical agent result"
+    hash: "7c1525619fbf8f314d42d64827b3a412a5adccf2"
+    message: "Merge branch 'main' into task/202610271638-AX942H/make-native-pr-publication-converge-with-clean-p"
   task_execution_context:
     base_ref: "main"
     base_sha: "8fc5ace3e9cfbc9e5dabf15336b5b1f79bf53e8c"
@@ -2523,12 +2536,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/0` agent runs
+- Completeness: `0/1` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:624aa1630292ab3a414651af7950c6fbc4c44cb5a150a69b7280ad703b8a20ea`
-- Unavailable reason: `no_supervised_agent_runs`
-- Updated at: `2026-10-27T19:20:08.388Z`
+- Journal digest: `sha256:07b3dd2251c669f9aa5f4ff27abb2349d74c43606f830e201835d3d62010a733`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-27T20:39:54.374Z`
