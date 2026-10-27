@@ -1,10 +1,11 @@
 ---
 id: "202610271638-AX942H"
 title: "Make native PR publication converge with clean, published task artifacts"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -42,6 +43,22 @@ quality_review:
     - "The no-change retry path avoids a second artifact commit and the existing metadata builder preserves updated_at when the observed PR identity and state are unchanged. Staged creation, failed commit, failed final push, and hosted-head mismatch do not claim aligned publication."
     - "The eight focused fake-provider tests cover creation, linkage, no-op retry, stable metadata, failed commit, failed final push, mismatched hosted head, staged creation, and sync-only mode. The source diff is limited to open.ts and open.convergence.test.ts, within the approved four-path boundary; EPC #6947 artifacts are absent from the implementation diff."
     - "Native retained checks passed at ce20192025905765deb3d79e8e386c9a23be6f2b: focused tests, package typecheck, and full CI all exited zero. Earlier failed lint evidence remains recorded and the second attempt corrected only scoped lint errors."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:624aa1630292ab3a414651af7950c6fbc4c44cb5a150a69b7280ad703b8a20ea"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-10-27T19:20:08.388Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -223,9 +240,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "ce20192025905765deb3d79e8e386c9a23be6f2b"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "512165795bcef064c303e595bb3938e3902c685d"
+  message: "🧩 AX942H task: refresh task artifacts after commit"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -233,9 +253,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-27T19:20:08.388Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "512165795bcef064c303e595bb3938e3902c685d"
 doc_version: 3
-doc_updated_at: "2026-10-27T19:12:38.150Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-27T19:20:08.388Z"
+doc_updated_by: "CODER"
 description: "Generic AgentPlane fix: after pr.open or pr.head.publish creates or links a hosted PR, persist final observed PR link/status metadata and publish the resulting exact task branch head. Ensure repeated publication with an already linked PR does not churn timestamps or create dirty task artifacts. Add focused negative tests for newly created and linked PRs, failed/uncertain publication, and exact-head alignment. Preserve hosted effect authority and do not bypass protected integration."
 sections:
   Summary: |-
@@ -360,6 +388,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:11699533a0e08580debeee9210dbd66d29c99cac20643bc90a26c714bbc8b52e"
     work_order_id: "sha256:b141b7e32828a8dc066fd15735b3655425c31965093a7373fc75d3da7f4352eb"
+  implementation_commit:
+    hash: "ce20192025905765deb3d79e8e386c9a23be6f2b"
+    message: "🚧 AX942H task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "8fc5ace3e9cfbc9e5dabf15336b5b1f79bf53e8c"
@@ -1149,3 +1180,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:624aa1630292ab3a414651af7950c6fbc4c44cb5a150a69b7280ad703b8a20ea`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-10-27T19:20:08.388Z`

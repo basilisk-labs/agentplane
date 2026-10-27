@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:006fce805e82cf948080f70d2cde66d1f10ff193beb201d8106ad5372884424a",
   "pr_number": 6948,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6948",
+  "pre_merge_closure": {
+    "basis_commit": "512165795bcef064c303e595bb3938e3902c685d",
+    "branch": "task/202610271638-AX942H/make-native-pr-publication-converge-with-clean-p",
+    "pr_number": 6948,
+    "recorded_at": "2026-10-27T19:20:08.517Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
