@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:23ee27ea895ae5fa900f57cea8352de709e7ecf6cb0a02d8631a52bd5ffa8206",
   "pr_number": 6945,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6945",
+  "pre_merge_closure": {
+    "basis_commit": "8685d2e18b06d872447b9b133c504a15701f4958",
+    "branch": "task/202610270849-HC2R85/bound-doctor-archive-commit-inspection-in-partia",
+    "pr_number": 6945,
+    "recorded_at": "2026-10-27T12:39:02.245Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",

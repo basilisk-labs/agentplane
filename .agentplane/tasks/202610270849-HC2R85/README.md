@@ -1,10 +1,11 @@
 ---
 id: "202610270849-HC2R85"
 title: "Bound doctor archive commit inspection in partial clones without lazy object fetch"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 32
+revision: 33
 origin:
   system: "manual"
 depends_on: []
@@ -41,6 +42,22 @@ quality_review:
     - "The archive lookup forces GIT_NO_LAZY_FETCH=1 and GIT_ALLOW_PROTOCOL='', disables prompts, and bounds each Git show process to 30 seconds and 8 MiB of output."
     - "A real local promisor fixture proves the missing parent can be lazily fetched in a control clone; the doctor lookup leaves it absent, creates no pack, emits no fetch child trace, reports its hash as INFO, and still classifies a locally available close commit as WARN."
     - "Native validation is passed at evaluator target bcf0bb2df53f64930178db089625ed0eb32b5a07: focused tests 24/24, typecheck, and full CI run-008 all exited 0."
+token_usage:
+  agent_runs: 2
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:c62ca918f3a37070d69989e935935f55ddf4858c1c1abb5e089b8bf30f625686"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-27T12:39:01.912Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -216,9 +233,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "bcf0bb2df53f64930178db089625ed0eb32b5a07"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "8685d2e18b06d872447b9b133c504a15701f4958"
+  message: "🧩 HC2R85 task: record hosted PR #6945"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -226,9 +246,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-27T12:39:01.912Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "8685d2e18b06d872447b9b133c504a15701f4958"
 doc_version: 3
-doc_updated_at: "2026-10-27T12:26:20.097Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-27T12:39:01.912Z"
+doc_updated_by: "CODER"
 description: "Make the generic DONE-task historical commit summary lookup local-only in promisor/partial clones. Preserve explicit INFO findings when historical commits are unavailable; do not suppress current doctor failures or skip the archive scan. Add focused regression coverage for local commits and unavailable promised objects."
 sections:
   Summary: |-
@@ -352,6 +380,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:59f26f57757fecde2eb5dd43ca03e361a77ec1b3b1f1c27a4cb1d880020e7a0c"
     work_order_id: "sha256:219791174b243674db66ec29262cc6a3cad63974b2dffaed6032f688f79998bd"
+  implementation_commit:
+    hash: "bcf0bb2df53f64930178db089625ed0eb32b5a07"
+    message: "🚧 HC2R85 task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "a4b1534f06f52d10ae96e437a99514abe2629f52"
@@ -1279,3 +1310,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/2` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:c62ca918f3a37070d69989e935935f55ddf4858c1c1abb5e089b8bf30f625686`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-27T12:39:01.912Z`
