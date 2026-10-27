@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202610271140-974JNN/synchronize-adopted-pr-metadata-schema-with-form",
+  "created_at": "2026-10-27T12:28:36.271Z",
+  "diffstat_sha256": "sha256:2c9a54aca4d0ae52d496496fdd5462a5fbffa60b5f54343423b97d984f98e04a",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610271140-974JNN",
+  "updated_at": "2026-10-27T12:28:36.271Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
