@@ -3,7 +3,8 @@
   "branch": "task/202610271140-974JNN/synchronize-adopted-pr-metadata-schema-with-form",
   "created_at": "2026-10-27T12:28:36.271Z",
   "diffstat_sha256": "sha256:3a7fd91fdd7d17410154ecbfcdecac030de5df3d14c796dc9ad01620143a15aa",
-  "last_verified_at": null,
+  "last_verified_at": "2026-10-27T15:09:41.956Z",
+  "last_verified_diffstat_sha256": "sha256:3a7fd91fdd7d17410154ecbfcdecac030de5df3d14c796dc9ad01620143a15aa",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202610271140-974JNN",
   "updated_at": "2026-10-27T12:28:36.271Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
