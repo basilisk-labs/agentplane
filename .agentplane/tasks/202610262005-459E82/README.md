@@ -1,10 +1,11 @@
 ---
 id: "202610262005-459E82"
 title: "Require supported Node versions for tsup 9 development"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -41,6 +42,22 @@ quality_review:
     - "The implementation diff changes only root package.json engines.node from >=24 to ^24.11.0 || >=26.0.0 and the matching expectation in workflow-node-version-contract.test.ts."
     - "Published package.json engine ranges are absent from the implementation diff and remain >=24 for agentplane and >=20.5.0 for core and recipes."
     - "AgentPlane native validation records exit code 0 for the focused contract test (2 tests), typecheck, and full local CI."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:88164343e7583fcf043f77f21865322566d9f5e35108246974adfe0bd81ab679"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-10-27T05:09:42.364Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -232,9 +249,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "4ea089165194c5467b6b7d991e85816aaeb54cf7"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "88610008c8cc892517e26a1765c66dd8872b43fb"
+  message: "📝 459E82 task: record PR #6942 link"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -242,9 +262,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-27T05:09:42.364Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "88610008c8cc892517e26a1765c66dd8872b43fb"
 doc_version: 3
-doc_updated_at: "2026-10-27T05:00:28.615Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-27T05:09:42.364Z"
+doc_updated_by: "CODER"
 description: "Before merging tsup 9, constrain only the repository root development engine to ^24.11.0 || >=26.0.0 and update its exact workflow Node engine contract expectation. Keep published package runtime floors unchanged."
 sections:
   Summary: |-
@@ -374,6 +402,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:fe6f4568114e1f0dbcda8ae891d952b3570fc927e9aa7f7746939fc67ad183a0"
     work_order_id: "sha256:08dfd41c405eedbbef220a424502b4cd60691bf4fe4af0223cac1b803827ff17"
+  implementation_commit:
+    hash: "4ea089165194c5467b6b7d991e85816aaeb54cf7"
+    message: "🚧 459E82 task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "5f3abf24da208b10a3552a869e09ecdb58272e99"
@@ -967,3 +998,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:88164343e7583fcf043f77f21865322566d9f5e35108246974adfe0bd81ab679`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-10-27T05:09:42.364Z`
