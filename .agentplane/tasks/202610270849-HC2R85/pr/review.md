@@ -6,7 +6,7 @@ Created: 2026-10-27T09:16:56.607Z
 
 - Task: `202610270849-HC2R85`
 - Title: Bound doctor archive commit inspection in partial clones without lazy object fetch
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610270849-HC2R85/bound-doctor-archive-commit-inspection-in-partia`
 - Canonical task record: `.agentplane/tasks/202610270849-HC2R85/README.md`
 
