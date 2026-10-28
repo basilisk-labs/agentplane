@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -59,9 +59,11 @@ quality_review:
     - "The change admits worktree_preparation only as a receipt-backed repository continuation and preserves parent authority, revision, fingerprint, and repository identity checks."
     - "The native full CI run-011 passed on the updated task branch. The focused required-check tests and typecheck were recorded earlier in the task evidence."
 token_usage:
-  agent_runs: 0
+  agent_runs: 1
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
   input_tokens: null
-  journal_digest: "sha256:9aa1db7e8e2564ebebe6ae3b6d22fc4f272ecc8a16e35658012cedc06cd29fae"
+  journal_digest: "sha256:10e6c266147e070824dda19eed35cf6e3ad147c2156343b6a06bb40e79569ed0"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -70,8 +72,8 @@ token_usage:
   source: "supervisor_journal"
   state: "unavailable"
   total_tokens: null
-  unavailable_reason: "no_supervised_agent_runs"
-  updated_at: "2026-10-28T07:29:43.921Z"
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-28T10:56:42.622Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -2478,9 +2480,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "11fcef15234918d422a6998bd049ccd0b25908a0"
-  message: "🧩 8RQD6C task: refresh task artifacts after commit"
+  hash: "ef5f531ebbb793c9f2cee2ee2b7503345be8c5b4"
+  message: "🚧 8RQD6C task: record external evaluator result"
 comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -2505,8 +2510,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-10-28T10:56:42.622Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "ef5f531ebbb793c9f2cee2ee2b7503345be8c5b4"
 doc_version: 3
-doc_updated_at: "2026-10-28T10:56:17.762Z"
+doc_updated_at: "2026-10-28T10:56:42.637Z"
 doc_updated_by: "CODER"
 description: "A native required-check correction must validate an issued WorkOrder whose authority lineage includes an exact worktree_preparation continuation, without weakening receipt, parent, fingerprint, revision, or repository identity proof."
 sections:
@@ -2789,8 +2802,8 @@ extensions:
     verification_evidence_digest: "sha256:0d536ac57c4aa9c7d12e683f6b11fbd2493be983d87f1346bf183c25ce03fca4"
     work_order_id: "sha256:125e0138224f2b738785da38c29cd785b1d1ff575d78c8a0e9fbc7bb9549173b"
   implementation_commit:
-    hash: "636637239a9745b2fc796d512e6b159740b9e97c"
-    message: "🚧 8RQD6C task: apply canonical agent result"
+    hash: "8b716596ec7694383428eaa40a77df06b7717b17"
+    message: "Merge branch 'main' into task/202610280304-8RQD6C/recognize-worktree-preparation-in-failed-check-l"
   task_execution_context:
     base_ref: "main"
     base_sha: "9c1ad3fe68b6ce490e72ace285dcea2d316d0364"
@@ -3601,12 +3614,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/0` agent runs
+- Completeness: `0/1` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:9aa1db7e8e2564ebebe6ae3b6d22fc4f272ecc8a16e35658012cedc06cd29fae`
-- Unavailable reason: `no_supervised_agent_runs`
-- Updated at: `2026-10-28T07:29:43.921Z`
+- Journal digest: `sha256:10e6c266147e070824dda19eed35cf6e3ad147c2156343b6a06bb40e79569ed0`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-28T10:56:42.622Z`
