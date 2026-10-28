@@ -1,0 +1,137 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check d51453363dbafa18b79f4c35ed9cc7e76f25b867..8571a451c453369fc1e55f8db63d3a7b7e8f29af",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB d51453363dbafa18b79f4c35ed9cc7e76f25b867..8571a451c453369fc1e55f8db63d3a7b7e8f29af",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202610280840-VPBGBK/README.md",
+        "A\t.agentplane/tasks/202610280840-VPBGBK/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202610280840-VPBGBK/pr/github-body.md",
+        "A\t.agentplane/tasks/202610280840-VPBGBK/pr/github-title.txt",
+        "A\t.agentplane/tasks/202610280840-VPBGBK/pr/meta.json",
+        "A\t.agentplane/tasks/202610280840-VPBGBK/pr/review.md",
+        "A\t.agentplane/tasks/202610280840-VPBGBK/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
+        "A\t.agentplane/tasks/202610280840-VPBGBK/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+        "A\tpackages/agentplane/src/cli/run-cli.core.workflow-recovery.verification-retry.test.ts",
+        "M\tpackages/agentplane/src/commands/task/direct-task-verification-observation.ts",
+        "M\tpackages/agentplane/src/commands/task/direct-task-verification.observability.test.ts",
+        "M\tpackages/agentplane/src/commands/task/direct-task-verification.ts",
+        "A\tpackages/agentplane/src/commands/task/verification-retry-effect-recovery.test.ts",
+        "A\tpackages/agentplane/src/commands/task/verification-retry-effect-recovery.ts",
+        "A\tpackages/agentplane/src/commands/task/verification-retry-source-proof.test.ts",
+        "A\tpackages/agentplane/src/commands/task/verification-retry-source-proof.ts",
+        "M\tpackages/agentplane/src/commands/task/verify-record-execute.ts",
+        "M\tpackages/agentplane/src/commands/task/verify-record.ts",
+        "M\tpackages/agentplane/src/commands/task/verify-record.types.ts",
+        "M\tpackages/agentplane/src/commands/task/workflow-effect-recovery.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "d51453363dbafa18b79f4c35ed9cc7e76f25b867",
+  "implementation_commit": "8571a451c453369fc1e55f8db63d3a7b7e8f29af",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      " M packages/agentplane/src/commands/task/direct-task-verification-observation.ts",
+      " M packages/agentplane/src/commands/task/direct-task-verification.observability.test.ts",
+      " M packages/agentplane/src/commands/task/direct-task-verification.ts",
+      " M packages/agentplane/src/commands/task/workflow-effect-recovery.ts",
+      "?? .agentplane/tasks/202610280840-VPBGBK/README.md",
+      "?? .agentplane/tasks/202610280840-VPBGBK/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
+      "?? .agentplane/tasks/202610280840-VPBGBK/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+      "?? packages/agentplane/src/cli/run-cli.core.workflow-recovery.verification-retry.test.ts",
+      "?? packages/agentplane/src/commands/task/verification-retry-effect-recovery.test.ts",
+      "?? packages/agentplane/src/commands/task/verification-retry-effect-recovery.ts",
+      "?? packages/agentplane/src/commands/task/verification-retry-source-proof.test.ts",
+      "?? packages/agentplane/src/commands/task/verification-retry-source-proof.ts"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/direct-task-verification-observation.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/direct-task-verification.observability.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/direct-task-verification.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/workflow-effect-recovery.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610280840-VPBGBK/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610280840-VPBGBK/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610280840-VPBGBK/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/cli/run-cli.core.workflow-recovery.verification-retry.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/verification-retry-effect-recovery.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/verification-retry-effect-recovery.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/verification-retry-source-proof.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/commands/task/verification-retry-source-proof.ts"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M packages/agentplane/src/commands/task/direct-task-verification-observation.ts",
+      " M packages/agentplane/src/commands/task/direct-task-verification.observability.test.ts",
+      " M packages/agentplane/src/commands/task/direct-task-verification.ts",
+      " M packages/agentplane/src/commands/task/workflow-effect-recovery.ts",
+      "?? .agentplane/tasks/202610280840-VPBGBK/README.md",
+      "?? .agentplane/tasks/202610280840-VPBGBK/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
+      "?? .agentplane/tasks/202610280840-VPBGBK/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+      "?? packages/agentplane/src/cli/run-cli.core.workflow-recovery.verification-retry.test.ts",
+      "?? packages/agentplane/src/commands/task/verification-retry-effect-recovery.test.ts",
+      "?? packages/agentplane/src/commands/task/verification-retry-effect-recovery.ts",
+      "?? packages/agentplane/src/commands/task/verification-retry-source-proof.test.ts",
+      "?? packages/agentplane/src/commands/task/verification-retry-source-proof.ts"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202610280840-VPBGBK"
+}

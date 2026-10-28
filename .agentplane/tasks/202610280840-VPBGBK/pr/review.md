@@ -30,6 +30,7 @@ Created: 2026-10-28T11:38:02.250Z
 
 ```text
  ...re.workflow-recovery.verification-retry.test.ts | 563 +++++++++++++++++++++
+ .../agentplane/src/cli/stale-dist-readonly.test.ts |   2 +
  .../task/direct-task-verification-observation.ts   | 101 +++-
  .../direct-task-verification.observability.test.ts |  88 +++-
  .../src/commands/task/direct-task-verification.ts  |  24 +-
@@ -41,7 +42,7 @@ Created: 2026-10-28T11:38:02.250Z
  .../agentplane/src/commands/task/verify-record.ts  |   2 +
  .../src/commands/task/verify-record.types.ts       |   2 +
  .../src/commands/task/workflow-effect-recovery.ts  |   2 +
- 12 files changed, 2057 insertions(+), 22 deletions(-)
+ 13 files changed, 2059 insertions(+), 22 deletions(-)
 ```
 
 </details>
