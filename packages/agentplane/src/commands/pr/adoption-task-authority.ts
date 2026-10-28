@@ -15,10 +15,12 @@ export function assertAdoptionTaskAuthority(task: TaskData): void {
     !declared.includes("network_read") ||
     !declared.includes("external_write") ||
     !allowed.includes("network_read") ||
-    forbidden.includes("network_read")
+    allowed.includes("external_write") ||
+    forbidden.includes("network_read") ||
+    !forbidden.includes("external_write")
   ) {
     throw new Error(
-      "Existing PR adoption requires an approved branch_pr task whose native execution contract declares network_read and external_write and allows network_read",
+      "Existing PR adoption requires an approved branch_pr task whose native execution contract declares network_read and external_write, allows network_read, and forbids external_write for semantic agents",
     );
   }
 }

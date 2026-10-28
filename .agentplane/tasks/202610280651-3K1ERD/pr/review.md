@@ -12,8 +12,8 @@ Created: 2026-10-28T07:21:56.510Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:7ce801abbcf1baeabbe0b3020e820c35af2c7e45db53cae6efbba3bd5ea5b5bc
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,12 +29,12 @@ Created: 2026-10-28T07:21:56.510Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/pr/adoption-merge.test.ts         |  7 ++-
- .../src/commands/pr/adoption-request.test.ts       |  7 ++-
- .../src/commands/pr/adoption-route.test.ts         | 15 ++---
- .../commands/pr/adoption-task-authority.test.ts    | 69 ++++++++++++++++++----
- .../src/commands/pr/adoption-task-authority.ts     | 11 ++--
- 5 files changed, 83 insertions(+), 26 deletions(-)
+ .../src/commands/pr/adoption-merge.test.ts         |   7 +-
+ .../src/commands/pr/adoption-request.test.ts       |   7 +-
+ .../src/commands/pr/adoption-route.test.ts         |  15 +--
+ .../commands/pr/adoption-task-authority.test.ts    | 107 +++++++++++++++++++--
+ .../src/commands/pr/adoption-task-authority.ts     |  11 ++-
+ 5 files changed, 122 insertions(+), 25 deletions(-)
 ```
 
 </details>

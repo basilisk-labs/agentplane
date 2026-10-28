@@ -46,6 +46,44 @@ describe("adoption task authority", () => {
     expect(() => assertAdoptionTaskAuthority(task)).not.toThrow();
   });
 
+  it("rejects a real contract whose semantic authority is changed to permit external writes", () => {
+    const contract = adoptionContract(["network_read", "external_write"]);
+    expect(() =>
+      assertAdoptionTaskAuthority({ ...task, execution_contract: contract }),
+    ).not.toThrow();
+
+    expect(() =>
+      assertAdoptionTaskAuthority({
+        ...task,
+        execution_contract: {
+          ...contract,
+          authority: {
+            ...contract.authority,
+            allowed_external_effects: [
+              ...contract.authority.allowed_external_effects,
+              "external_write",
+            ],
+          },
+        },
+      }),
+    ).toThrow("native execution contract");
+
+    expect(() =>
+      assertAdoptionTaskAuthority({
+        ...task,
+        execution_contract: {
+          ...contract,
+          authority: {
+            ...contract.authority,
+            forbidden_external_effects: contract.authority.forbidden_external_effects.filter(
+              (effect) => effect !== "external_write",
+            ),
+          },
+        },
+      }),
+    ).toThrow("native execution contract");
+  });
+
   it("rejects missing intent, network authority, plan approval, route, or canonical task", () => {
     expect(() =>
       assertAdoptionTaskAuthority({
