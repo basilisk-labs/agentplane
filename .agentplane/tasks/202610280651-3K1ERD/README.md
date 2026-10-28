@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 57
+revision: 58
 origin:
   system: "manual"
 depends_on: []
@@ -59,9 +59,11 @@ quality_review:
     - "AgentPlane recorded full CI run-037 as passed on b5092cea445ce96a0ed349bcb0dc50499344732c. GitHub checks for the same head are successful and report the PR as CLEAN."
     - "Residual risk: Malformed legacy TaskData can raise a TypeError before the guard's custom error; this remains fail-closed and is outside the approved change."
 token_usage:
-  agent_runs: 0
+  agent_runs: 1
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
   input_tokens: null
-  journal_digest: "sha256:a41622a8a75bf0fc2967bec7fc93abcd64cb0a7fd50cf6a5373fe049193de252"
+  journal_digest: "sha256:68a2c676b28a45f6c993c4180c8a810fed3554907556371aaa6695fdaa3f3006"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -70,8 +72,8 @@ token_usage:
   source: "supervisor_journal"
   state: "unavailable"
   total_tokens: null
-  unavailable_reason: "no_supervised_agent_runs"
-  updated_at: "2026-10-28T13:04:19.920Z"
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-28T14:07:26.743Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -1632,9 +1634,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "060732637c66a63f67a4d434662a2a78cf723aff"
-  message: "🧩 3K1ERD task: refresh task artifacts after commit"
+  hash: "db0f97c38ddf8bcb11f9bd8924d68347ce375c2b"
+  message: "🚧 3K1ERD task: record external evaluator result"
 comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -1659,8 +1664,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-10-28T14:07:26.743Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "db0f97c38ddf8bcb11f9bd8924d68347ce375c2b"
 doc_version: 3
-doc_updated_at: "2026-10-28T14:07:01.081Z"
+doc_updated_at: "2026-10-28T14:07:26.757Z"
 doc_updated_by: "CODER"
 description: "Fix the generic mismatch between existing PR adoption admission and task execution routing: branch_pr tasks declare external_write for operator-owned provider adoption, while semantic WorkOrders correctly forbid that effect. Keep semantic authority unchanged; require the declaration, network-read authority, approved plan, canonical task, and the existing exact USER operation grant. Add a regression test using a real resolved execution contract. This unblocks native adoption of Dependabot PRs #6944 and #6935 for 0.7.13."
 sections:
@@ -1957,8 +1970,8 @@ extensions:
     verification_evidence_digest: "sha256:fd90df55381ead2786abb47b4a37da3c1717c20629c11f99959159d857f1603c"
     work_order_id: "sha256:58ee38a2c4acbd53f5cd050424f0f71ad64e1c7340d460986dd1027735c9165f"
   implementation_commit:
-    hash: "25fdfb18dcecc157a3a4808d0605335af1883e44"
-    message: "🚧 3K1ERD task: apply canonical agent result"
+    hash: "b5092cea445ce96a0ed349bcb0dc50499344732c"
+    message: "Merge branch 'main' into task/202610280651-3K1ERD/allow-exact-user-granted-hosted-pr-adoption-when"
   task_execution_context:
     base_ref: "main"
     base_sha: "8dc7008ea00ef190520168ca16ba9006ccbe378f"
@@ -4061,12 +4074,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/0` agent runs
+- Completeness: `0/1` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:a41622a8a75bf0fc2967bec7fc93abcd64cb0a7fd50cf6a5373fe049193de252`
-- Unavailable reason: `no_supervised_agent_runs`
-- Updated at: `2026-10-28T13:04:19.920Z`
+- Journal digest: `sha256:68a2c676b28a45f6c993c4180c8a810fed3554907556371aaa6695fdaa3f3006`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-28T14:07:26.743Z`

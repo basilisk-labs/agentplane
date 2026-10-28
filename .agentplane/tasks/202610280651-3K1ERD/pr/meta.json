@@ -8,10 +8,10 @@
   "pr_number": 6954,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6954",
   "pre_merge_closure": {
-    "basis_commit": "060732637c66a63f67a4d434662a2a78cf723aff",
+    "basis_commit": "db0f97c38ddf8bcb11f9bd8924d68347ce375c2b",
     "branch": "task/202610280651-3K1ERD/allow-exact-user-granted-hosted-pr-adoption-when",
     "pr_number": 6954,
-    "recorded_at": "2026-10-28T13:04:20.129Z",
+    "recorded_at": "2026-10-28T14:07:26.900Z",
     "state": "closed_before_merge"
   },
   "provider": {
