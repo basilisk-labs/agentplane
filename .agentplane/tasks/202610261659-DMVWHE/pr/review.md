@@ -6,7 +6,7 @@ Created: 2026-10-26T17:05:03.047Z
 
 - Task: `202610261659-DMVWHE`
 - Title: Support provider branch updates in constrained-refspec checkouts
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610261659-DMVWHE/support-provider-branch-updates-in-constrained-r`
 - Canonical task record: `.agentplane/tasks/202610261659-DMVWHE/README.md`
 
