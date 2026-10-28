@@ -1,0 +1,13 @@
+ ...re.workflow-recovery.verification-retry.test.ts | 563 +++++++++++++++++++++
+ .../task/direct-task-verification-observation.ts   | 101 +++-
+ .../direct-task-verification.observability.test.ts |  88 +++-
+ .../src/commands/task/direct-task-verification.ts  |  24 +-
+ .../verification-retry-effect-recovery.test.ts     | 392 ++++++++++++++
+ .../task/verification-retry-effect-recovery.ts     | 479 ++++++++++++++++++
+ .../task/verification-retry-source-proof.test.ts   | 145 ++++++
+ .../task/verification-retry-source-proof.ts        | 276 ++++++++++
+ .../src/commands/task/verify-record-execute.ts     |   5 +-
+ .../agentplane/src/commands/task/verify-record.ts  |   2 +
+ .../src/commands/task/verify-record.types.ts       |   2 +
+ .../src/commands/task/workflow-effect-recovery.ts  |   2 +
+ 12 files changed, 2057 insertions(+), 22 deletions(-)

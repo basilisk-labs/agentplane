@@ -115,6 +115,7 @@ async function recordVerificationResult(opts: {
   verificationSnapshot?: ExecuteVerifyRecordCommandOptions["verificationSnapshot"];
   beforePersist?: ExecuteVerifyRecordCommandOptions["beforePersist"];
   allowCanonicalProjection?: ExecuteVerifyRecordCommandOptions["allowCanonicalProjection"];
+  projectionPolicy?: ExecuteVerifyRecordCommandOptions["projectionPolicy"];
 }): Promise<void> {
   const initialCtx =
     opts.ctx ??
@@ -495,7 +496,8 @@ async function recordVerificationResult(opts: {
     throw error;
   }
 
-  if (workflowMode === "branch_pr") await syncRecordedVerificationArtifacts({ ...opts, ctx, at });
+  if (workflowMode === "branch_pr" && opts.projectionPolicy !== "task-only")
+    await syncRecordedVerificationArtifacts({ ...opts, ctx, at });
 
   let incidentSummary: string | null = null;
   if (opts.collectIncidents === true) {
@@ -577,6 +579,7 @@ export async function executeVerifyRecordCommand(
       verificationSnapshot: opts.verificationSnapshot,
       beforePersist: opts.beforePersist,
       allowCanonicalProjection: opts.allowCanonicalProjection,
+      projectionPolicy: opts.projectionPolicy,
     });
     return 0;
   } catch (err) {

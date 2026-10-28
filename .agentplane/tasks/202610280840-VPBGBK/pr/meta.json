@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202610280840-VPBGBK/terminal-verification-retry",
+  "created_at": "2026-10-28T11:38:02.250Z",
+  "diffstat_sha256": "sha256:05cbb64ff6f162a11910dec925db88a1a09537bdd54f36fa016c754c390ff10b",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610280840-VPBGBK",
+  "updated_at": "2026-10-28T11:38:02.250Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

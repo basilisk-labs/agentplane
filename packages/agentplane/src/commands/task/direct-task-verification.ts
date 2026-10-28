@@ -10,6 +10,7 @@ import path from "node:path";
 import { verificationRedactor } from "./verification-observation.js";
 import {
   verificationImplementationIdentity,
+  preflightVerificationRetryArtifact,
   executeObservedCheck,
   verificationObservationEnv,
   writeCheckArtifact,
@@ -37,6 +38,11 @@ export {
   type DirectTaskVerificationInputIdentity,
   type DirectTaskVerificationResult,
 } from "./direct-task-verification-checks.js";
+
+type VerificationTask = Pick<
+  TaskData,
+  "verify" | "task_kind" | "mutation_scope" | "execution_contract" | "sections"
+>;
 
 const BUN_UNMATCHED_FILTER_PATTERN = /following filters did not match any test files/iu;
 const BUN_ZERO_TEST_PATTERNS = [
@@ -67,9 +73,8 @@ async function verificationCheckout(
   parsedSequence: readonly ParsedDirectTaskCheck[],
   env: NodeJS.ProcessEnv,
 ) {
-  if (!requiresIsolatedQualificationCheckout(command, parsedSequence)) {
+  if (!requiresIsolatedQualificationCheckout(command, parsedSequence))
     return { cwd, cleanup: () => Promise.resolve() };
-  }
   const checkout = await mkdtemp(path.join(os.tmpdir(), "agentplane-verification-"));
   const added = await runProcess({
     command: "git",
@@ -182,10 +187,7 @@ function bunTestReportedZeroTests(opts: {
 }
 
 function directTaskVerificationCommands(
-  task: Pick<
-    TaskData,
-    "verify" | "task_kind" | "mutation_scope" | "execution_contract" | "sections"
-  >,
+  task: VerificationTask,
   additionalCommands: readonly AdditionalDirectTaskCommand[] = [],
 ): string[] {
   const commands = [...(task.verify ?? [])];
@@ -314,12 +316,10 @@ function resolvePlannerFallbackCommand(opts: {
  */
 export async function runDirectTaskVerification(opts: {
   command: CommandContext;
-  task: Pick<
-    TaskData,
-    "verify" | "task_kind" | "mutation_scope" | "execution_contract" | "sections"
-  >;
+  task: VerificationTask;
   task_id: string;
   cwd: string;
+  retry_artifact_key?: string;
   additional_commands?: readonly AdditionalDirectTaskCommand[];
   additional_only?: boolean;
   allow_empty?: boolean;
@@ -331,6 +331,7 @@ export async function runDirectTaskVerification(opts: {
   run_process?: typeof runProcess;
   now?: () => number;
 }): Promise<DirectTaskVerificationResult> {
+  await preflightVerificationRetryArtifact(opts);
   const profile = taskCheckTimeoutProfile(verificationChildEnv());
   const checks: DirectTaskCheck[] = [];
   const commands = opts.additional_only
@@ -356,8 +357,7 @@ export async function runDirectTaskVerification(opts: {
       ? await readRootPackageInfo(opts.command.resolvedProject.gitRoot)
       : null;
   let missingRequiredCheckReason: string | null = null;
-  const hasFullRegressionCommand = commands.some((command) => isFullRegressionCommand(command));
-  if (requiresFullRegression && !hasFullRegressionCommand) {
+  if (requiresFullRegression && !commands.some(isFullRegressionCommand)) {
     if (rootPackage?.scripts.has("ci:local:full")) {
       commands.push(`${rootPackage.runner} run ci:local:full`);
     } else if (rootPackage?.scripts.has("test")) {

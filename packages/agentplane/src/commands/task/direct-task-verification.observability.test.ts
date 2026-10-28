@@ -1,6 +1,6 @@
 import type * as FsPromises from "node:fs/promises";
 import { mkGitRepoRoot } from "@agentplane/testkit";
-import { readFile, rename, rm, symlink, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rename, rm, symlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { afterEach, expect, it, vi } from "vitest";
 import { runDirectTaskVerification } from "./direct-task-verification.js";
@@ -146,4 +146,90 @@ it("does not bind symlinks or files replaced after descriptor acquisition", asyn
   const identity = await verificationImplementationIdentity(root, ".agentplane/tasks");
   expect(identity.untracked_inventory).toContainEqual({ path: "candidate.txt", unavailable: true });
   expect(identity.untracked_inventory).toContainEqual({ path: "alias.txt", unavailable: true });
+});
+
+it("retains the failed projection while a retry writes one distinct result", async () => {
+  const root = await mkGitRepoRoot();
+  roots.push(root);
+  await writeFile(path.join(root, "check.mjs"), "process.exit(1);");
+  const options = {
+    command: {
+      config: { paths: { workflow_dir: ".agentplane/tasks" } },
+      resolvedProject: { gitRoot: root },
+    } as never,
+    cwd: root,
+    task_id: "202610100440-WK8124",
+    task: { verify: ["node check.mjs"] },
+  };
+  const failed = await runDirectTaskVerification(options);
+  const retained = await readFile(path.join(root, failed.artifact_path), "utf8");
+  await writeFile(path.join(root, "check.mjs"), "process.exit(0);");
+  const retry = await runDirectTaskVerification({ ...options, retry_artifact_key: "a".repeat(64) });
+  expect(retry.status).toBe("passed");
+  expect(retry.artifact_path).not.toBe(failed.artifact_path);
+  expect(await readFile(path.join(root, failed.artifact_path), "utf8")).toBe(retained);
+  const firstResult = await readFile(path.join(root, retry.artifact_path), "utf8");
+  const duplicate = vi.fn();
+  await expect(
+    runDirectTaskVerification({
+      ...options,
+      retry_artifact_key: "a".repeat(64),
+      run_process: duplicate,
+    }),
+  ).rejects.toThrow("pre-existing");
+  expect(duplicate).not.toHaveBeenCalled();
+  expect(await readFile(path.join(root, retry.artifact_path), "utf8")).toBe(firstResult);
+});
+
+it("rejects invalid retry identities before starting a check", async () => {
+  const root = await mkGitRepoRoot();
+  roots.push(root);
+  await writeFile(path.join(root, "check.mjs"), "throw new Error('must not run');");
+  for (const retry_artifact_key of ["", "../outside", "/tmp/outside", "A".repeat(64)]) {
+    await expect(
+      runDirectTaskVerification({
+        command: {
+          config: { paths: { workflow_dir: ".agentplane/tasks" } },
+          resolvedProject: { gitRoot: root },
+        } as never,
+        cwd: root,
+        task_id: "202610100440-WK8124",
+        task: { verify: ["node check.mjs"] },
+        retry_artifact_key,
+      }),
+    ).rejects.toThrow("Invalid verification retry");
+  }
+  await expect(
+    readFile(
+      path.join(root, ".agentplane/tasks/202610100440-WK8124/supervision/declared-checks.json"),
+    ),
+  ).rejects.toMatchObject({ code: "ENOENT" });
+});
+
+it("refuses a symlinked retry receipt directory without changing the target", async () => {
+  const root = await mkGitRepoRoot();
+  roots.push(root);
+  const task = ".agentplane/tasks/202610100440-WK8124/supervision";
+  await mkdir(path.join(root, task), { recursive: true });
+  await mkdir(path.join(root, "outside"));
+  await symlink(path.join(root, "outside"), path.join(root, task, "verification-retries"));
+  await writeFile(path.join(root, "check.mjs"), "process.exit(0);");
+  const execute = vi.fn();
+  await expect(
+    runDirectTaskVerification({
+      command: {
+        config: { paths: { workflow_dir: ".agentplane/tasks" } },
+        resolvedProject: { gitRoot: root },
+      } as never,
+      cwd: root,
+      task_id: "202610100440-WK8124",
+      task: { verify: ["node check.mjs"] },
+      retry_artifact_key: "b".repeat(64),
+      run_process: execute,
+    }),
+  ).rejects.toThrow("Unsafe verification retry artifact directory");
+  expect(execute).not.toHaveBeenCalled();
+  await expect(
+    readFile(path.join(root, "outside", "b".repeat(64), "declared-checks.json")),
+  ).rejects.toMatchObject({ code: "ENOENT" });
 });

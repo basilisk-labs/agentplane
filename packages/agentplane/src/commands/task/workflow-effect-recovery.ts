@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 
 import { CliError } from "../../shared/errors.js";
 import { reconcileIntegrationEffect } from "./external-agent-workflow-recovery.js";
+import { reconcileVerificationRetry } from "./verification-retry-effect-recovery.js";
 import { reconcileProviderUpdateEffect } from "./provider-update-effect-recovery.js";
 
 export async function reconcileWorkflowEffect(
@@ -14,6 +15,7 @@ export async function reconcileWorkflowEffect(
   } catch {
     throw new CliError({ code: "E_VALIDATION", message: "Invalid workflow recovery input." });
   }
+  if (kind === "verification_retry_request") return await reconcileVerificationRetry(opts);
   if (kind === "integration_effect_resolution") return await reconcileIntegrationEffect(opts);
   if (kind === "provider_update_branch_effect_resolution") {
     return await reconcileProviderUpdateEffect(opts);
