@@ -29,9 +29,10 @@ Created: 2026-10-28T02:57:22.708Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ ...rnal-agent-workflow-recovery-provider-update.ts | 124 ++++++++++++
  .../task/external-agent-workflow-recovery.test.ts  | 225 +++++++++++++++++++++
- .../task/external-agent-workflow-recovery.ts       | 105 +++++++++-
- 2 files changed, 329 insertions(+), 1 deletion(-)
+ .../task/external-agent-workflow-recovery.ts       |  16 +-
+ 3 files changed, 355 insertions(+), 10 deletions(-)
 ```
 
 </details>
