@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:45a1b755c937e9f3bdeefccc8628fdc09e72fbf057617eb80ae3d9d65e35cf62",
   "pr_number": 6955,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6955",
+  "pre_merge_closure": {
+    "basis_commit": "fbed5c73c62d80351f3a8cee33a1c53390fc6cfa",
+    "branch": "task/202610280201-Z9MAPZ/allow-exact-provider-update-after-failed-integra",
+    "pr_number": 6955,
+    "recorded_at": "2026-10-28T17:07:36.363Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
