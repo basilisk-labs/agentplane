@@ -6,7 +6,7 @@ Created: 2026-10-27T22:38:48.859Z
 
 - Task: `202610272137-T6KC8D`
 - Title: Complete generic hosted PR adoption with exact-base-safe merge and CLI reference
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610272137-T6KC8D/complete-generic-hosted-pr-adoption-with-exact-b`
 - Canonical task record: `.agentplane/tasks/202610272137-T6KC8D/README.md`
 
