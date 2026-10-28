@@ -20,10 +20,7 @@ import {
 } from "./kernel-effect-coordinator.js";
 import { commitCanonicalTerminalTaskArtifacts } from "./kernel-repository-coordinator.js";
 import { listKernelRepositoryEvidence } from "./kernel-accepted-repository-evidence.js";
-import {
-  readKernelAdoption,
-  resolveKernelAdoptedValidationRoute,
-} from "./kernel-adopted-pr-route.js";
+import { resolveKernelAdoptedValidationRoute } from "./kernel-adopted-pr-route.js";
 import { assertCurrentHostedHead } from "./kernel-hosted-head-evidence.js";
 import { decideCanonicalWorkflowEffect } from "./kernel-provider-effect-coordinator.js";
 import {
@@ -55,6 +52,7 @@ export { canonicalCompletionPrecedesWorkflow } from "./ordinary-advance-step.js"
 
 import { authorityDeltaStop } from "./kernel-authority-delta-stop.js";
 import { recoverAdoptedProviderEffect } from "./adopted-provider-effect-recovery.js";
+import { advanceAdoptedPreclaimUpdate } from "./kernel-adopted-preclaim-update.js";
 
 async function advanceCanonicalRoute(opts: {
   command: CommandContext;
@@ -461,90 +459,21 @@ async function advanceCanonicalRoute(opts: {
         route.reason_code === "kernel_work_item_rework_claim_required") &&
       route.work_item_id
     ) {
-      // A hosted provider update changes the implementation tree. Admit it only before the
-      // first WorkItem claim, so every subsequent TESTER/EVALUATOR/final check sees its new SHA.
-      if (
-        route.reason_code === "kernel_work_item_claim_required" &&
-        Object.values(record.aggregate.work_items).every((item) =>
-          ["PLANNED", "READY"].includes(item.state),
-        ) &&
-        (await readKernelAdoption(opts.command, opts.task_id))
-      ) {
-        if (!opts.allow_provider_effects) {
-          return {
-            schema_version: 1,
-            task_id: opts.task_id,
-            action: { kind: "external_wait", reason: "canonical_provider_access_required" },
-          };
-        }
-        const workflow = await decideCanonicalWorkflowEffect(opts.command, opts.task_id, true);
-        const step = workflow.workflowStep;
-        if (
-          step.kind === "approval" &&
-          step.request.type === "side_effect" &&
-          step.request.operationId === "provider.pr.update_branch"
-        ) {
-          return {
-            schema_version: 1,
-            task_id: opts.task_id,
-            action: { kind: "approval_required", reason: "adopted_provider_update_required" },
-            operator_action: {
-              kind: "grant_side_effect_authority",
-              required_role: "USER",
-              cwd: workflow.executionPacket.mustRunFrom,
-              argv: [
-                "agentplane",
-                "task",
-                "authority",
-                "grant",
-                opts.task_id,
-                "--remote",
-                "--operation",
-                step.request.operationId,
-                "--operation-digest",
-                step.request.operationDigest,
-                "--state-fingerprint",
-                step.request.stateFingerprintDigest,
-                "--state-scope-digest",
-                step.request.stateScopeDigest,
-                "--by",
-                "USER",
-              ],
-              authority_reference: step.request.authorityRef,
-            },
-          };
-        }
-        if (step.kind === "cli_operation" && step.operation.id === "provider.pr.update_branch") {
-          const updated = await advanceCompletedProviderWorkflow({
-            command: opts.command,
-            decision: workflow,
-            task_id: opts.task_id,
-          });
-          if (updated?.kind === "progress") {
-            anomalyTracker.reset();
-            continue;
-          }
-          return {
-            schema_version: 1,
-            task_id: opts.task_id,
-            action:
-              updated?.kind === "stop"
-                ? updated.action
-                : { kind: "human_required", reason: "adopted_provider_update_unavailable" },
-          };
-        }
-        if (step.id !== "terminal.adopted_kernel_incomplete") {
-          return {
-            schema_version: 1,
-            task_id: opts.task_id,
-            action: {
-              kind: step.kind === "cli_operation" ? "external_wait" : "human_required",
-              reason: "adopted_provider_prevalidation_unavailable",
-              workflow_step: step.id,
-            },
-          };
-        }
+      const providerUpdate = await advanceAdoptedPreclaimUpdate({
+        command: opts.command,
+        task_id: opts.task_id,
+        allow_provider_effects: opts.allow_provider_effects,
+        first_claim:
+          route.reason_code === "kernel_work_item_claim_required" &&
+          Object.values(record.aggregate.work_items).every((item) =>
+            ["PLANNED", "READY"].includes(item.state),
+          ),
+      });
+      if (providerUpdate.kind === "progress") {
+        anomalyTracker.reset();
+        continue;
       }
+      if (providerUpdate.kind === "stop") return providerUpdate.response;
       await runtime.checkpoint(await runtime.observe());
       requireKernelCommit(
         await runtime.lifecycle.apply(

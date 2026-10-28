@@ -54,7 +54,8 @@ Created: 2026-10-27T22:38:48.859Z
  .../src/commands/pr/adoption-verification.ts       |  13 +
  .../agentplane/src/commands/pr/adoption.command.ts | 321 ++++++++++++++
  packages/agentplane/src/commands/pr/check.ts       |  92 ++++
- packages/agentplane/src/commands/pr/flow-status.ts | 124 +++++-
+ .../src/commands/pr/flow-status-close-tail.ts      | 145 ++++++
+ packages/agentplane/src/commands/pr/flow-status.ts | 279 ++++++------
  .../internal/github-pr-merge-strategy.test.ts      |  85 ++++
  .../pr/integrate/internal/github-pr-merge.ts       |  54 ++-
  .../pr/integrate/internal/gitlab-mr-merge.test.ts  |  25 +-
@@ -72,26 +73,30 @@ Created: 2026-10-27T22:38:48.859Z
  .../src/commands/shared/side-effect-authority.ts   |  24 +-
  .../shared/supervisor-execution-episode.ts         |  21 +-
  .../commands/shared/workflow-operation-effects.ts  |   3 +
+ .../commands/shared/workflow-operation-params.ts   |  69 +++
  .../commands/shared/workflow-operation-prefix.ts   |   3 +
  .../shared/workflow-operation-projection.ts        |  17 +
  .../src/commands/shared/workflow-postconditions.ts |   6 +
  .../shared/workflow-step-adopted-pr.test.ts        | 359 +++++++++++++++
  .../commands/shared/workflow-step-adopted-pr.ts    | 169 +++++++
  .../src/commands/shared/workflow-step-reducer.ts   |  10 +-
- .../src/commands/shared/workflow-step.ts           |  61 +++
+ .../src/commands/shared/workflow-step.ts           | 104 +++--
  .../task/adopted-provider-effect-recovery.test.ts  | 486 +++++++++++++++++++++
  .../task/adopted-provider-effect-recovery.ts       | 327 ++++++++++++++
- .../src/commands/task/advance-task-step.ts         | 112 +++++
+ .../src/commands/task/advance-task-step.ts         |  41 ++
+ .../branch-task-supervisor-adopted-operations.ts   | 187 ++++++++
  .../task/branch-task-supervisor-operations.test.ts | 154 +++++++
- .../task/branch-task-supervisor-operations.ts      | 243 ++++++++++-
+ .../task/branch-task-supervisor-operations.ts      |  89 +++-
  ...nel-accepted-repository-evidence.hosted.test.ts | 102 +++++
  .../task/kernel-accepted-repository-evidence.ts    |  33 ++
  .../commands/task/kernel-adopted-pr-route.test.ts  |  67 +++
  .../src/commands/task/kernel-adopted-pr-route.ts   | 125 ++++++
+ .../task/kernel-adopted-preclaim-update.ts         | 102 +++++
  .../task/kernel-controller-handoff.test.ts         |  39 +-
  .../src/commands/task/kernel-controller-handoff.ts |  17 +
+ .../commands/task/kernel-final-corrective-plan.ts  |  62 +++
  .../commands/task/kernel-final-validation.test.ts  |  20 +
- .../src/commands/task/kernel-final-validation.ts   |  77 +++-
+ .../src/commands/task/kernel-final-validation.ts   | 138 +++---
  .../commands/task/kernel-hosted-checkout.test.ts   | 116 +++++
  .../src/commands/task/kernel-hosted-checkout.ts    | 126 ++++++
  .../task/kernel-hosted-head-evidence.test.ts       | 134 ++++++
@@ -99,19 +104,24 @@ Created: 2026-10-27T22:38:48.859Z
  .../commands/task/kernel-hosted-readback.test.ts   |  87 ++++
  .../src/commands/task/kernel-hosted-readback.ts    |  80 ++++
  .../commands/task/kernel-inspection-validation.ts  |  94 +++-
+ .../commands/task/kernel-inspection-work-order.ts  | 205 +++++++++
  .../src/commands/task/kernel-inspection.test.ts    |   9 +-
- .../src/commands/task/kernel-inspection.ts         |  91 +++-
- .../commands/task/kernel-repository-coordinator.ts | 116 ++++-
+ .../src/commands/task/kernel-inspection.ts         | 260 ++++-------
+ .../task/kernel-repository-commit-intents.ts       |  96 ++++
+ .../commands/task/kernel-repository-coordinator.ts | 208 +++++----
  .../src/commands/task/kernel-repository-types.ts   |  19 +-
  .../src/commands/task/kernel-semantic-result.ts    |  25 +-
  .../commands/task/roadmap-terminal-noop.test.ts    |  73 +++-
- .../task-kernel/hosted-pr-head-evidence.test.ts    | 103 +++++
+ .../task-kernel/hosted-pr-head-evidence.test.ts    | 175 ++++++++
  .../tasks/task-kernel/hosted-pr-head-evidence.ts   | 110 +++++
  packages/core/src/tasks/task-kernel/index.ts       |   5 +
- packages/core/src/tasks/task-kernel/kernel.test.ts |  60 +++
+ packages/core/src/tasks/task-kernel/kernel.test.ts |   1 +
  packages/core/src/tasks/task-kernel/kernel.ts      |  29 +-
  packages/core/src/tasks/task-kernel/model.ts       |   2 +
- 82 files changed, 7300 insertions(+), 70 deletions(-)
+ .../baselines/v0.7-compatibility-candidate.json    |  91 +++-
+ .../check-compatibility-contract-baseline.mjs      |  36 +-
+ .../check-compatibility-contract-baseline.test.mjs |  39 ++
+ 92 files changed, 8120 insertions(+), 590 deletions(-)
 ```
 
 </details>

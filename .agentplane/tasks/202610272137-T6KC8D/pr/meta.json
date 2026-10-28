@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202610272137-T6KC8D/complete-generic-hosted-pr-adoption-with-exact-b",
   "created_at": "2026-10-27T22:38:48.859Z",
-  "diffstat_sha256": "sha256:ee708875ede0c7c8d89e8986f67a3a63190066c2d6a51bb11ce0344aab65540c",
+  "diffstat_sha256": "sha256:4e14aea40069a654aafcdbc491d3f72acc657876044e4267998b61beb20baf7a",
   "last_verified_at": null,
   "provider": {
     "hostname": "github.com",
