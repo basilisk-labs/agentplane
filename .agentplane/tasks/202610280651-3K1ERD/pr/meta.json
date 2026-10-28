@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202610280651-3K1ERD/allow-exact-user-granted-hosted-pr-adoption-when",
+  "created_at": "2026-10-28T07:21:56.510Z",
+  "diffstat_sha256": "sha256:88f2ba429d159d11c238e9f6007c596afe4796f15b7fa73cff28ad613933de37",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610280651-3K1ERD",
+  "updated_at": "2026-10-28T07:21:56.510Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
