@@ -30,10 +30,11 @@ Created: 2026-10-28T07:21:56.510Z
 
 ```text
  .../src/commands/pr/adoption-merge.test.ts         |  7 ++-
+ .../src/commands/pr/adoption-request.test.ts       |  7 ++-
  .../src/commands/pr/adoption-route.test.ts         | 15 ++---
  .../commands/pr/adoption-task-authority.test.ts    | 69 ++++++++++++++++++----
  .../src/commands/pr/adoption-task-authority.ts     | 11 ++--
- 4 files changed, 78 insertions(+), 24 deletions(-)
+ 5 files changed, 83 insertions(+), 26 deletions(-)
 ```
 
 </details>
