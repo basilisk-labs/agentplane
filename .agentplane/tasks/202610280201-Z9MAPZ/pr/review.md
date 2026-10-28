@@ -6,7 +6,7 @@ Created: 2026-10-28T02:57:22.708Z
 
 - Task: `202610280201-Z9MAPZ`
 - Title: Allow exact provider update after failed integration
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610280201-Z9MAPZ/allow-exact-provider-update-after-failed-integra`
 - Canonical task record: `.agentplane/tasks/202610280201-Z9MAPZ/README.md`
 
