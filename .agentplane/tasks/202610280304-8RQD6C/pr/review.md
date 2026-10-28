@@ -6,7 +6,7 @@ Created: 2026-10-28T03:58:56.468Z
 
 - Task: `202610280304-8RQD6C`
 - Title: Recognize worktree preparation in failed-check lineage
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610280304-8RQD6C/recognize-worktree-preparation-in-failed-check-l`
 - Canonical task record: `.agentplane/tasks/202610280304-8RQD6C/README.md`
 
