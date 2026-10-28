@@ -87,6 +87,36 @@ const resolutionSchema = z.strictObject({
 type WorkflowEffectResolution = z.infer<typeof resolutionSchema>;
 type Operation = SupervisorExecutionEpisodeJournal["operations"][number];
 
+const failedIntegrationUpdateContext = z.looseObject({
+  schema_version: z.literal(1),
+  kind: z.literal("integration_run_next"),
+  task_id: text,
+  repository_root: text,
+  queue: z.looseObject({
+    present: z.literal(true),
+    status: z.literal("queued"),
+    branch: text,
+    base: text,
+    headSha: sha,
+    baseSha: sha,
+    prNumber: z.number().int().positive(),
+  }),
+  provider: z.looseObject({
+    state: z.literal("found"),
+    pr: z.looseObject({
+      status: z.literal("OPEN"),
+      prNumber: z.number().int().positive(),
+      prUrl: text,
+      headSha: sha,
+      baseSha: sha,
+      headRef: text,
+      base: text,
+      identity: providerIdentity,
+    }),
+  }),
+  branch: z.looseObject({ name: text, headSha: sha }),
+});
+
 function reject(message: string): never {
   throw new CliError({ code: "E_VALIDATION", message: `Integration effect recovery: ${message}` });
 }
@@ -110,6 +140,78 @@ function unresolvedIntegrationIntent(journal: SupervisorExecutionEpisodeJournal)
     : null;
 }
 
+function exactProviderUpdateAfterFailedIntegration(opts: {
+  journal: SupervisorExecutionEpisodeJournal;
+  latest: Operation;
+  decision: TaskRouteDecision;
+}): boolean {
+  const step = opts.decision.workflowStep;
+  if (
+    step.kind !== "cli_operation" ||
+    step.operation.id !== "provider.pr.update_branch" ||
+    !opts.decision.executionPacket.safeToMutate
+  )
+    return false;
+  const original = z
+    .looseObject({
+      id: z.literal("integration.run_next"),
+      type: z.literal("integration_run_next"),
+      params: z.looseObject({ taskId: text }),
+      preconditionFingerprint: z.looseObject({ digest }),
+      authorityRef: text,
+      idempotencyKey: text,
+    })
+    .safeParse(opts.latest.recovery?.operation_identity);
+  const context = failedIntegrationUpdateContext.safeParse(opts.latest.recovery?.context);
+  if (!original.success || !context.success) return false;
+  const { queue, provider, branch } = context.data;
+  const params = step.operation.params;
+  const currentPr = opts.decision.prFlow?.pr;
+  const observedPr = opts.decision.prFlow?.providerObservation;
+  const registeredCheckouts = [
+    opts.decision.workspace.baseCheckoutPath,
+    opts.decision.workspace.taskWorktreePath,
+  ].filter(
+    (checkout): checkout is string => typeof checkout === "string" && checkout.trim() !== "",
+  );
+  return (
+    !params.reconcileHeadSha &&
+    registeredCheckouts.some(
+      (checkout) => path.resolve(context.data.repository_root) === path.resolve(checkout),
+    ) &&
+    opts.journal.task_id === opts.decision.task.id &&
+    opts.journal.task_id === original.data.params.taskId &&
+    opts.journal.task_id === context.data.task_id &&
+    original.data.preconditionFingerprint.digest === opts.latest.precondition_fingerprint_digest &&
+    original.data.preconditionFingerprint.digest === opts.latest.authority_digest &&
+    original.data.authorityRef ===
+      `route:${opts.journal.task_id}:${opts.latest.precondition_fingerprint_digest}` &&
+    original.data.idempotencyKey === opts.latest.effect_ref &&
+    opts.latest.effect_ref?.startsWith(
+      `integration.run_next:${opts.journal.task_id}:${opts.latest.precondition_fingerprint_digest}:`,
+    ) === true &&
+    currentPr?.state === "OPEN" &&
+    currentPr.prUrl === provider.pr.prUrl &&
+    observedPr?.state === "found" &&
+    observedPr.pr.prUrl === provider.pr.prUrl &&
+    params.taskId === opts.journal.task_id &&
+    params.prNumber === queue.prNumber &&
+    params.prNumber === provider.pr.prNumber &&
+    params.branch === queue.branch &&
+    params.branch === branch.name &&
+    params.branch === provider.pr.headRef &&
+    params.baseBranch === queue.base &&
+    params.baseBranch === provider.pr.base &&
+    params.expectedHeadSha === queue.headSha &&
+    params.expectedHeadSha === branch.headSha &&
+    params.expectedHeadSha === provider.pr.headSha &&
+    params.expectedBaseSha === queue.baseSha &&
+    params.expectedBaseSha === provider.pr.baseSha &&
+    digestSupervisorEpisodeValue(params.identity) ===
+      digestSupervisorEpisodeValue(provider.pr.identity)
+  );
+}
+
 export function requireIntegrationEffectResolution(opts: {
   journal: SupervisorExecutionEpisodeJournal;
   decision: TaskRouteDecision;
@@ -121,7 +223,8 @@ export function requireIntegrationEffectResolution(opts: {
     opts.journal.cursor.phase === "ready" &&
     opts.journal.cursor.replacement_of_operation_key === latest.operation_key &&
     (opts.decision.workflowStep.kind !== "agent_episode" ||
-      opts.decision.workflowStep.episode.purpose !== "implementation_rework")
+      opts.decision.workflowStep.episode.purpose !== "implementation_rework") &&
+    !exactProviderUpdateAfterFailedIntegration({ ...opts, latest })
   ) {
     reject("the recovered integration successor must remain semantic implementation rework.");
   }
