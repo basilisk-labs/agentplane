@@ -1,1 +1,1 @@
-🚧 8RQD6C task: Recognize worktree preparation in failed-check lineage [202610280304-8RQD6C]
+✅ 8RQD6C task: Recognize worktree preparation in failed-check lineage [202610280304-8RQD6C]
