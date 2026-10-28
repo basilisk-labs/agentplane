@@ -1,10 +1,11 @@
 ---
 id: "202610261659-DMVWHE"
 title: "Support provider branch updates in constrained-refspec checkouts"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -39,6 +40,22 @@ quality_review:
     - "The implementation checks the configured branch remote and merge ref against the authorized identity, then verifies the explicit remote-tracking ref SHA; missing, duplicate, or changed configuration fails before provider mutation."
     - "A real-Git regression proves a main-only fetch refspec makes @{upstream} unavailable while the exact tracking ref permits one guarded provider update and local fast-forward."
     - "Existing dirty-tree, wrong branch/head, remote URL, tracking-head drift, and provider race tests remain in the focused suite. Native focused tests (21), typecheck, and full local CI passed on implementation commit 0ea85570661b4dc29628e9a8132d538102544c24."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:6b6c3bfaf394bf1d343445d17ecb70028343f7f902ecf191a8fcaf1b204dcb2b"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-10-28T01:26:28.004Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -214,9 +231,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "0ea85570661b4dc29628e9a8132d538102544c24"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "620c9adee6620441a90a882d62d788f28ed191d6"
+  message: "🧩 DMVWHE task: refresh task artifacts after commit"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -224,9 +244,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-28T01:26:28.004Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "620c9adee6620441a90a882d62d788f28ed191d6"
 doc_version: 3
-doc_updated_at: "2026-10-28T01:11:18.545Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-28T01:26:28.004Z"
+doc_updated_by: "CODER"
 description: "Validate exact task branch remote and merge metadata plus remote-tracking ref without requiring @{upstream} through a broad fetch refspec. Preserve fail-closed branch, head, clean tree, remote URL, and tracking SHA checks. Add single-branch fetch regression."
 sections:
   Summary: |-
@@ -350,6 +378,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:6932fdfa533d750b186425415fed7bf287a58c21016afbd2a16598a3e08d8800"
     work_order_id: "sha256:9c5960d3b418bcdb1a8e6f416125ba3b57d2f376446f614934c9adbac90d25ad"
+  implementation_commit:
+    hash: "0ea85570661b4dc29628e9a8132d538102544c24"
+    message: "🚧 DMVWHE task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "8727d85da7df97573e3d95842654ac57ce25766b"
@@ -1161,3 +1192,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:6b6c3bfaf394bf1d343445d17ecb70028343f7f902ecf191a8fcaf1b204dcb2b`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-10-28T01:26:28.004Z`
