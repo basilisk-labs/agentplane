@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202610280651-3K1ERD",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-10-28T14:07:01.022Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 4 typed finding(s).",
+  "evaluated_sha": "b5092cea445ce96a0ed349bcb0dc50499344732c",
+  "review_identity_digest": "sha256:54cf69a7331c07009a5b3bd88fefabe33853c5d947c7cf2d90cfc0450805e4f5",
+  "findings": [
+    "The five changed source and test files match the approved adoption scope. The guard requires declared network_read and external_write, permits semantic network_read, rejects semantic external_write, and requires its explicit prohibition.",
+    "The real resolved execution-contract test admits unchanged operator adoption and rejects hostile semantic authority mutations. Route, request, and merge fixtures reflect the declared-versus-semantic distinction.",
+    "AgentPlane recorded full CI run-037 as passed on b5092cea445ce96a0ed349bcb0dc50499344732c. GitHub checks for the same head are successful and report the PR as CLEAN.",
+    "Residual risk: Malformed legacy TaskData can raise a TypeError before the guard's custom error; this remains fail-closed and is outside the approved change."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202610280651-3K1ERD/quality/objects/sha256/5b42383141d8883252b88ea3200b7c4b3103c373f4fe5472b5abf90584b107fc.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
