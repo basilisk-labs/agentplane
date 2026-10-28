@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202610280201-Z9MAPZ/allow-exact-provider-update-after-failed-integra",
+  "created_at": "2026-10-28T02:57:22.708Z",
+  "diffstat_sha256": "sha256:d519fd67403639757a076b5faa21c96f46286cc957a2ab31ba5408ada155f7a4",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610280201-Z9MAPZ",
+  "updated_at": "2026-10-28T02:57:22.708Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
