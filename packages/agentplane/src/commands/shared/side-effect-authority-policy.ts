@@ -15,6 +15,8 @@ export const CANONICAL_EFFECT_KIND_BY_OPERATION = {
   "provider.pr.update_branch": "integration",
   "route.remote.refresh": "pull_request",
   "integration.enqueue": "integration",
+  "integration.adopted_merge": "integration",
+  "task.adopted.finish": "integration",
   "integration.run_next": "integration",
   "task.hosted_close.open": "hosted_ci",
   "task.hosted_close.finalize": "hosted_ci",
@@ -93,6 +95,11 @@ export const WORKFLOW_OPERATION_AUTHORITY_POLICY = {
   "integration.adopt_legacy_protected_conflict": EXTERNAL_HIGH_RISK,
   "worktree.prepare": LOCAL_REVERSIBLE,
   "pr.artifacts.update": EXTERNAL_REVERSIBLE,
+  "pr.existing.adopt": {
+    class: "semantic_decision",
+    policyRule: "workflow.existing_pr_adoption.user_only",
+    requiresAuthority: true,
+  },
   "pr.open": EXTERNAL_REVERSIBLE,
   "pr.head.publish": EXTERNAL_REVERSIBLE,
   "provider.pr.refresh": EXTERNAL_REVERSIBLE,
@@ -101,6 +108,12 @@ export const WORKFLOW_OPERATION_AUTHORITY_POLICY = {
   "route.remote.refresh": EXTERNAL_REVERSIBLE,
   "task.pre_merge_close": EXTERNAL_HIGH_RISK,
   "integration.enqueue": EXTERNAL_HIGH_RISK,
+  "integration.adopted_merge": {
+    class: "semantic_decision",
+    policyRule: "workflow.adopted_pr_merge.user_only",
+    requiresAuthority: true,
+  },
+  "task.adopted.finish": EXTERNAL_PRE_AUTHORIZED,
   "integration.run_next": EXTERNAL_PRE_AUTHORIZED,
   "task.hosted_close.open": EXTERNAL_REVERSIBLE,
   // The protected merge and task completion have already been recorded before

@@ -19,6 +19,7 @@ vi.mock("./provider-update-branch-local.js", () => ({
 import type { ObservedChangeRequest } from "./internal/change-request-model.js";
 import type { GitHostIdentity } from "./internal/git-host-identity.js";
 import { updateProviderBranch } from "./provider-update-branch.js";
+import type { AdoptedPrIdentity } from "./adoption-identity.js";
 
 const oldHead = "1".repeat(40);
 const baseHead = "2".repeat(40);
@@ -31,6 +32,23 @@ const identity: GitHostIdentity = {
   targetProject: "owner/repo",
   sourceUrl: "git@github.com:owner/repo.git",
   targetUrl: "https://github.com/owner/repo.git",
+};
+const adoption: AdoptedPrIdentity = {
+  schema_version: 1,
+  task_id: "T-1",
+  provider: "github",
+  hostname: identity.hostname,
+  remote: identity.remote,
+  source_project: identity.sourceProject,
+  target_project: identity.targetProject,
+  pr_number: 42,
+  head_ref: "task/T-1/work",
+  base_ref: "main",
+  head_sha: oldHead,
+  base_sha: baseHead,
+  observed_at: "2026-10-27T10:00:00.000Z",
+  readback_digest: `sha256:${"a".repeat(64)}`,
+  authority_digest: `sha256:${"b".repeat(64)}`,
 };
 
 function observed(overrides: Partial<ObservedChangeRequest> = {}): ObservedChangeRequest {
@@ -77,6 +95,36 @@ describe("provider update-branch effect", () => {
     vi.resetAllMocks();
     mocks.validateLocal.mockResolvedValue(null);
     mocks.reconcileLocal.mockResolvedValue(null);
+  });
+
+  it("updates an adopted PR with exact provider ancestry and no task-branch reconciliation", async () => {
+    mocks.observeExistingChangeRequestByNumber
+      .mockResolvedValueOnce({ state: "found", pr: observed() })
+      .mockResolvedValueOnce({ state: "found", pr: observed({ headSha: newHead }) });
+    mocks.runGhApiJson
+      .mockResolvedValueOnce({ message: "Updating pull request branch." })
+      .mockResolvedValueOnce(comparison(oldHead))
+      .mockResolvedValueOnce(comparison(baseHead));
+    await expect(updateProviderBranch({ ...request(), adoption })).resolves.toMatchObject({
+      state: "updated",
+      evidence: {
+        observedHeadSha: newHead,
+        containsExpectedHead: true,
+        containsExpectedBase: true,
+      },
+    });
+    expect(mocks.validateLocal).not.toHaveBeenCalled();
+    expect(mocks.reconcileLocal).not.toHaveBeenCalled();
+  });
+
+  it("rejects a changed adopted PR identity before any provider mutation", async () => {
+    const result = await updateProviderBranch({
+      ...request(),
+      adoption: { ...adoption, pr_number: 43 },
+    });
+    expect(result).toMatchObject({ state: "not_applied", reason: "invalid_request" });
+    expect(mocks.observeExistingChangeRequestByNumber).not.toHaveBeenCalled();
+    expect(mocks.runGhApiJson).not.toHaveBeenCalled();
   });
 
   it("binds the GitHub mutation to the expected head and proves both ancestors", async () => {

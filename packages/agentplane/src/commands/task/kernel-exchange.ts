@@ -1,7 +1,7 @@
 import { scopeReplanInputs } from "./kernel-scope-replan-inputs.js";
 import {
   findReworkLineage,
-  historicalAmendment,
+  historicalAmendmentWithFailedCheck,
   retainedIssuanceAuthority,
   authenticReworkEvent,
   precedingStopContinuation,
@@ -301,16 +301,22 @@ async function approvedAmendmentInputs(
       entry.observation?.kind === "plan_amendment" &&
       entry.authority.plan_digest === history.origin.digest,
   );
-  const amendment = record.events.find(
-    (event) =>
+  let amendment;
+  for (const event of record.events) {
+    if (
       originAuthority?.observation &&
-      historicalAmendment(
+      (await historicalAmendmentWithFailedCheck(
         record,
         history.origin,
         event,
         originAuthority.observation.previous_fingerprint,
-      ),
-  );
+        directory,
+      ))
+    ) {
+      amendment = event;
+      break;
+    }
+  }
   if (!amendment) return [];
   if (!(await authenticatedAmendmentHistory(order, directory, record, amendment))) return [];
   for (const [id, receipt] of Object.entries(record.aggregate.mutation_receipts).toSorted(

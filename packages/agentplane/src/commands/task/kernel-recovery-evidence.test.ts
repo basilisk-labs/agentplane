@@ -26,13 +26,6 @@ vi.mock("../shared/task-backend.js", async (original) => ({
   resolveCommandGitCommonDir: mocks.commonDir,
 }));
 import { cmdWorkItemResume } from "./kernel-work-item-resume.js";
-import {
-  validationRecord,
-  nativeValidationInput,
-  recordKernelValidation,
-  type InspectionBinding,
-  type KernelNativeValidationEvidence,
-} from "./kernel-inspection-validation.js";
 import { withKernelReworkEvidence } from "./kernel-exchange.js";
 import { captureKernelSemanticStop } from "./kernel-recovery-evidence.js";
 
@@ -40,7 +33,6 @@ const hash = k.kernelDigest;
 const manualActor = { id: "USER", kind: "USER", transport: "manual" } as const;
 const repo = hash("repo");
 const contractDigest = hash("contract");
-const fp = hash("repository-state");
 const unrelatedFields = [
   "task_id",
   "repository_identity",
@@ -458,7 +450,6 @@ function approveReplan(
   );
   return record;
 }
-
 async function unchangedHistoryFixture(amendIntermediate = false, finalAmendment = false) {
   const { kernelRoot } = await fixtureRoot("kernel-target-recovery-");
   const contract = {
@@ -629,7 +620,6 @@ async function unchangedHistoryFixture(amendIntermediate = false, finalAmendment
   });
   return { record, kernelRoot, target, unrelated };
 }
-
 describe("target-preserving approved Plan recovery", () => {
   it.each(["approved", "intermediate", "final"])(
     "selects the authentic target with %s plan history",
@@ -715,7 +705,6 @@ describe("target-preserving approved Plan recovery", () => {
     },
   );
 });
-
 describe("semantic stop recovery evidence", () => {
   it("recovers an authenticated old stop after genuine USER scope approval and approved replan", async () => {
     const f = await fixture(true, true);
@@ -845,155 +834,4 @@ describe("semantic stop recovery evidence", () => {
       "retained review",
     );
   });
-});
-
-async function nativeFixture() {
-  const { root, kernelRoot } = await fixtureRoot("kernel-native-recovery-");
-  const { item, initial } = fixtureState("INSPECTING");
-  const oldId = hash("native-previous-order");
-  const binding = bindingFor(initial, "kernel", repo, fp, authority.digest);
-  const result = {
-    schema_version: 2,
-    kind: "agent_semantic_result",
-    work_order_id: oldId,
-    status: "completed",
-    summary: "Implementation ready",
-    findings: [],
-    uncertainty: [],
-    canonical_binding: binding,
-    canonical_outputs: [{ id: "kernel-source", kind: "source", digest: hash("source") }],
-  };
-  item.result_digest = hash(result);
-  const inspection: InspectionBinding = {
-    ...binding,
-    phase: "inspection",
-    result_digest: item.result_digest,
-  };
-  const { input: nativeInput } = nativeValidationInput({
-    command: { resolvedProject: { gitRoot: root } } as Parameters<
-      typeof nativeValidationInput
-    >[0]["command"],
-    binding: inspection,
-    commands: ["missing-check"],
-    repositoryEvidence: null,
-  });
-  const native: KernelNativeValidationEvidence = {
-    schema_version: 1,
-    kind: "kernel_native_validation",
-    input: nativeInput,
-    input_digest: hash(nativeInput),
-    checks: {
-      status: "unsupported",
-      checks: [],
-      reason: "Unsupported declared check",
-      artifact_path: "checks.json",
-    },
-    repository_evidence: null,
-  };
-  const validation = validationRecord({
-    binding: inspection,
-    contractCommands: nativeInput.verification.commands,
-    native,
-    reviewDigest: null,
-    status: "BLOCKED",
-    observedAt: "2026-08-29T20:00:00.000Z",
-  });
-  const evidence = {
-    task_id: initial.id,
-    work_item_id: "kernel",
-    attempt: 1,
-    contract_digest: binding.contract_digest,
-    repository_fingerprint: binding.repository_fingerprint,
-    result_digest: item.result_digest,
-    review_digest: null,
-    native_evidence_digest: hash(native),
-    status: "BLOCKED",
-    checks: native.checks,
-    repository_evidence: null,
-  };
-  const state = { record: makeKernelRecord(binding.repository_identity, initial, []) };
-  mockRuntime(root, state);
-  const directory = path.join(kernelRoot, "exchanges", initial.id, oldId.slice(7));
-  await recordKernelValidation({
-    runtime: (await mocks.create()) as Parameters<typeof recordKernelValidation>[0]["runtime"],
-    directory,
-    binding: inspection,
-    evidence,
-    validation,
-    mutationId: `validation:${oldId}`,
-  });
-  const files = {
-    result: path.join(directory, "received-result.json"),
-    validation: path.join(directory, "validation.json"),
-    command: path.join(directory, "validation-command.json"),
-    native: path.join(directory, `native-validation-${native.input_digest.slice(7)}.json`),
-  };
-  await writeJSON(files.result, result);
-  await writeJSON(files.native, native);
-  return { ...operatorFixture(root, kernelRoot, state.record, binding, true), files };
-}
-
-describe("native infrastructure recovery evidence", () => {
-  it("retains the exact BLOCKED evidence through USER recovery and fresh rework issuance", async () => {
-    const f = await nativeFixture();
-    const before = await readFile(f.files.validation, "utf8");
-    const originalRecord = structuredClone(f.record);
-    const next = await f.recover();
-    const order = await withKernelReworkEvidence(next.order, next.directory, next.record);
-    expectInputs(order, [f.files.validation, next.receiptPath]);
-    expect(await readFile(f.files.validation, "utf8")).toBe(before);
-    expect(f.record).toEqual(originalRecord);
-    expect(next.record.aggregate.work_items.kernel).toMatchObject({
-      state: "EXECUTING",
-      attempt: 2,
-      validation: null,
-    });
-    expect(Object.keys(next.record.aggregate.mutation_receipts)).toEqual(
-      expect.arrayContaining(Object.keys(originalRecord.aggregate.mutation_receipts)),
-    );
-    await expect(cmdWorkItemResume({} as never, f.opts)).rejects.toThrow("stale");
-    expect(f.apply).toHaveBeenCalledOnce();
-  });
-  it.each(
-    ["missing", "tampered"].flatMap((operation) =>
-      (["result", "validation", "command", "native"] as const).map((file) => ({ operation, file })),
-    ),
-  )("rejects $operation $file before mutation", async ({ operation, file }) => {
-    const f = await nativeFixture();
-    if (operation === "missing") await rm(f.files[file]);
-    else {
-      const value = await readJSON(f.files[file]);
-      if (file === "validation") value.result_digest = hash("wrong");
-      else if (file === "command") value.command = {};
-      else value.tampered = true;
-      await writeJSON(f.files[file], value);
-    }
-    await expect(cmdWorkItemResume({} as never, f.opts)).rejects.toThrow();
-    expect(f.apply).not.toHaveBeenCalled();
-  });
-  it.each(unrelatedFields)("rejects unrelated rework %s", async (field) => {
-    const f = await nativeFixture();
-    const next = await f.recover();
-    next.order.canonical_binding = {
-      ...next.order.canonical_binding!,
-      [field]: field === "plan_revision" ? 99 : hash("wrong"),
-    };
-    await expect(
-      withKernelReworkEvidence(next.order, next.directory, next.record),
-    ).rejects.toThrow();
-  });
-  it.each(["receipt", "native", "validation"] as const)(
-    "rejects %s tampering at use time",
-    async (which) => {
-      const f = await nativeFixture();
-      const next = await f.recover();
-      const file = which === "receipt" ? next.receiptPath : f.files[which];
-      const value = await readJSON(file);
-      value.tampered = true;
-      await writeJSON(file, value);
-      await expect(
-        withKernelReworkEvidence(next.order, next.directory, next.record),
-      ).rejects.toThrow();
-    },
-  );
 });

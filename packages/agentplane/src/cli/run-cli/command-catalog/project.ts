@@ -39,6 +39,7 @@ import { flowSpec } from "../../../commands/flow/flow.command.js";
 import { workStartSpec } from "../../../commands/branch/work-start.command.js";
 import { workResumeSpec } from "../../../commands/branch/work-resume.command.js";
 import { integrateSpec } from "../../../commands/integrate.spec.js";
+import { prAdoptSpec } from "../../../commands/pr/adoption.command.js";
 import {
   prCheckSpec,
   prCloseSpec,
@@ -120,6 +121,7 @@ import {
   loadSyncSpec,
   loadPrSpec,
   loadPrOpenSpec,
+  loadPrAdoptSpec,
   loadPrUpdateSpec,
   loadPrCheckSpec,
   loadPrConflictReworkSpec,
@@ -318,6 +320,10 @@ export const PROJECT_COMMANDS = [
   }),
   declareSessionCommand(prOpenSpec, {
     load: loadPrOpenSpec,
+    requirements: PROVIDER_WRITE_REQUIREMENTS,
+  }),
+  declareSessionCommand(prAdoptSpec, {
+    load: loadPrAdoptSpec,
     requirements: PROVIDER_WRITE_REQUIREMENTS,
   }),
   declareSessionCommand(prUpdateSpec, {

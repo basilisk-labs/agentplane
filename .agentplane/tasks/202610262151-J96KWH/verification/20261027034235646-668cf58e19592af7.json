@@ -1,0 +1,210 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bunx vitest run packages/core/src/tasks/task-kernel/required-check-correction.test.ts --pool=forks --maxWorkers 2\nResult: pass\nEvidence: .agentplane/tasks/202610262151-J96KWH/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610262151-J96KWH Verification Contract check affected_unit_integration (1/3)\n\nCheck: affected_unit_integration\nCommand: bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202610262151-J96KWH/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610262151-J96KWH Verification Contract check affected_unit_integration (2/3)\n\nCheck: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610262151-J96KWH/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610262151-J96KWH Verification Contract check affected_unit_integration (3/3)\n\nCheck: critical_paths\nCommand: bunx vitest run packages/core/src/tasks/task-kernel/required-check-correction.test.ts --pool=forks --maxWorkers 2\nResult: pass\nEvidence: .agentplane/tasks/202610262151-J96KWH/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610262151-J96KWH Verification Contract check critical_paths (1/3)\n\nCheck: critical_paths\nCommand: bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202610262151-J96KWH/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610262151-J96KWH Verification Contract check critical_paths (2/3)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610262151-J96KWH/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610262151-J96KWH Verification Contract check critical_paths (3/3)\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610262151-J96KWH/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610262151-J96KWH Verification Contract check full_regression\n\nCheck: task_outcome\nCommand: bunx vitest run packages/core/src/tasks/task-kernel/required-check-correction.test.ts --pool=forks --maxWorkers 2\nResult: pass\nEvidence: .agentplane/tasks/202610262151-J96KWH/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610262151-J96KWH Verification Contract check task_outcome (1/3)\n\nCheck: task_outcome\nCommand: bun run typecheck\nResult: pass\nEvidence: .agentplane/tasks/202610262151-J96KWH/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610262151-J96KWH Verification Contract check task_outcome (2/3)\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610262151-J96KWH/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610262151-J96KWH Verification Contract check task_outcome (3/3)",
+  "digest": "sha256:668cf58e19592af71aa769b1cdb02d6044f7c856da35f85c316a15dd42bea138",
+  "implementation_sha": "5138bbdbedb08e47e5eee8eaf52d522a4ee693d9",
+  "input": {
+    "checked_input": {
+      "commands": {
+        "digest": "sha256:6968547498273dfef0da6715135d656ce7dfb5a6fb42969b8f7af0e222606023",
+        "entries": [
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run typecheck"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bunx vitest run packages/core/src/tasks/task-kernel/required-check-correction.test.ts --pool=forks --maxWorkers 2"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run typecheck"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bunx vitest run packages/core/src/tasks/task-kernel/required-check-correction.test.ts --pool=forks --maxWorkers 2"
+          },
+          {
+            "check_id": "full_regression",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run typecheck"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bunx vitest run packages/core/src/tasks/task-kernel/required-check-correction.test.ts --pool=forks --maxWorkers 2"
+          }
+        ]
+      },
+      "context": {
+        "digest": "sha256:99daad1395e800c14511aa93bdd1543575521f4ee89189529a3fb84c4b785e2b",
+        "paths": [
+          ".agentplane/WORKFLOW.md",
+          ".github/ISSUE_TEMPLATE/config.yml",
+          "bun.lock",
+          "depcruise.config.cjs",
+          "eslint.config.cjs",
+          "knip.json",
+          "package.json",
+          "packages/agentplane/package.json",
+          "packages/agentplane/src/cli/run-cli/commands/config.ts",
+          "packages/agentplane/src/runner/config.test.ts",
+          "packages/agentplane/src/runner/config.ts",
+          "packages/agentplane/tsconfig.json",
+          "packages/agentplane/tsup.config.ts",
+          "packages/core/package.json",
+          "packages/core/schemas/config.schema.json",
+          "packages/core/src/config/config.test.ts",
+          "packages/core/src/config/config.ts",
+          "packages/core/tsconfig.json",
+          "packages/core/tsup.config.ts",
+          "packages/recipes/package.json",
+          "packages/recipes/tsconfig.json",
+          "packages/recipes/tsup.config.ts",
+          "packages/spec/examples/config.json",
+          "packages/spec/package.json",
+          "packages/spec/schemas/config.schema.json",
+          "packages/testkit/package.json",
+          "packages/testkit/tsconfig.json",
+          "schemas/config.schema.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package-lock.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package.json",
+          "tsconfig.json",
+          "turbo.json",
+          "vitest.config.ts",
+          "vitest.workspace.ts"
+        ]
+      },
+      "digest": "sha256:dd8cb07eb394fbb75e41b8f2e45c88a3c0b8aafc1b23fcdf5d02f12817118935",
+      "environment": {
+        "digest": "sha256:9ec5bf2323cd53a84a354760f7a2e04adc570a2f8a0452d4311892dcb83d880b",
+        "runtime": {
+          "architecture": "x64",
+          "bun_major": null,
+          "node_major": "24",
+          "platform": "linux"
+        }
+      },
+      "evidence": {
+        "details_digest": "sha256:c1f02aa7ccbc4d647f653cb1ac9cf32bc5ac56cea2c53fdbb44a91c26bed1153",
+        "digest": "sha256:82a27bffada1991f05b454d8541fcee8250ed324da91310c986b7cda8316400b",
+        "references": [
+          {
+            "digest": "sha256:ecc8dfa99d013b99894b8ac03f6af1cfc6e4983b8fcfdbbfbc254bb7e0ea3acf",
+            "fragment": "check-1",
+            "path": ".agentplane/tasks/202610262151-J96KWH/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610262151-J96KWH/supervision/declared-checks.json#check-1",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:ecc8dfa99d013b99894b8ac03f6af1cfc6e4983b8fcfdbbfbc254bb7e0ea3acf",
+            "fragment": "check-2",
+            "path": ".agentplane/tasks/202610262151-J96KWH/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610262151-J96KWH/supervision/declared-checks.json#check-2",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:ecc8dfa99d013b99894b8ac03f6af1cfc6e4983b8fcfdbbfbc254bb7e0ea3acf",
+            "fragment": "check-3",
+            "path": ".agentplane/tasks/202610262151-J96KWH/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610262151-J96KWH/supervision/declared-checks.json#check-3",
+            "source": "filesystem"
+          }
+        ]
+      },
+      "implementation": {
+        "base_sha": "3741aa3b0f306d9eed766365ee57c1ee63d8b6a1",
+        "digest": "sha256:dad7f90f6d1ea87501a70e14c1682f56a3cfe2705ff41a3d671957b537312150",
+        "strategy": "branch_diff",
+        "target_sha": "5138bbdbedb08e47e5eee8eaf52d522a4ee693d9"
+      }
+    },
+    "concurrency": {
+      "digest": "sha256:48eaf1ae6c40c7dbc5db87655377efe84c5a179b5a05f24cd8d9e2b9486c9c60",
+      "execution": {
+        "authoritative_task_source": "task_worktree",
+        "base_ref": "main",
+        "base_sha": "3741aa3b0f306d9eed766365ee57c1ee63d8b6a1",
+        "digest": "sha256:5a98736c1a50a77a969191d0387e5cf6ec75424fa82a55e8d9c5653052418400",
+        "primary_task_id": "202610262151-J96KWH",
+        "reason_codes": [
+          "agent_preferred_branch_pr",
+          "effect_security_boundary",
+          "repository_branch_pr_floor"
+        ],
+        "repository_mode": "branch_pr",
+        "requested_mode": "branch_pr",
+        "route_source": "execution_contract",
+        "selected_mode": "branch_pr",
+        "task_ids": [
+          "202610262151-J96KWH"
+        ]
+      },
+      "task": {
+        "capability": {
+          "digest": "sha256:da3fc02533c6c5c23a4b8fc56d450d407c3c6a17060b02ca1470eeea940c14e2"
+        },
+        "checks": {
+          "digest": "sha256:3c0706460fb65840b272a1ad62680a4d0300abd40279ddaa073cae4c1e526d0b",
+          "required_check_ids": [
+            "affected_unit_integration",
+            "critical_paths",
+            "full_regression",
+            "task_outcome"
+          ],
+          "verification_contract_digest": "sha256:7251c2a79023dd7687751fb67983d9a1bf50ceac2217e86040d096ec620bcae9"
+        },
+        "digest": "sha256:0d0512b3859543a495b663c4708f564ff41d616d9db62c058fd7bc1a1569f1a6",
+        "kind": "agentplane.native_task_identity",
+        "plan": {
+          "approval_state": "approved",
+          "approved_digest": "sha256:0ef82655cf01a46a643442267e54a856cfc3f284775e3ba1bded888b1dfafb21",
+          "digest": "sha256:0ef82655cf01a46a643442267e54a856cfc3f284775e3ba1bded888b1dfafb21",
+          "revision": 2
+        },
+        "policy": {
+          "digest": "sha256:b0f3ed8717357e14968093aaf83e3059ba55a248477be0e758cb9ae571d6f7ac"
+        },
+        "schema_version": 1,
+        "task_id": "202610262151-J96KWH"
+      }
+    },
+    "digest": "sha256:977bd7fde3c9c6145ce11fc701231191120ef6b7aad1a043eb8db35165fa06bb",
+    "kind": "task_verification_input",
+    "obligations": {
+      "digest": "sha256:5bade3681a48581fd8daaffa565fdbaa6a6a56e2c502cd5dbd6b1426ff9a58dd",
+      "required_check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "full_regression",
+        "task_outcome"
+      ],
+      "verification_contract_digest": "sha256:7251c2a79023dd7687751fb67983d9a1bf50ceac2217e86040d096ec620bcae9",
+      "verify_steps_digest": "sha256:85003521c0d470fa1a7823e7f04cd64433b787b16411e6a5094a9997d609404d"
+    },
+    "schema_version": 5
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: canonical Task Kernel final checks passed.",
+  "recorded_at": "2026-10-27T03:42:35.646Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold for \"Authenticate sibling delegated authorities across repository continuation in required-check correction\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Authenticate sibling delegated authorities across repository continuation in required-check correction\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:85003521c0d470fa1a7823e7f04cd64433b787b16411e6a5094a9997d609404d",
+  "task_id": "202610262151-J96KWH",
+  "verification_command": "agentplane verify 202610262151-J96KWH --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}

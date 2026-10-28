@@ -3,13 +3,11 @@ import {
   PR_HEAD_PUBLICATION_SPEC,
 } from "./workflow-step-publication-spec.js";
 import type { StateFingerprint } from "@agentplaneorg/core/schemas";
-import type { TaskRepositoryEffect } from "@agentplaneorg/core/tasks";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import type { PrFlowStatusReport } from "../pr/flow-status.js";
 import type { ConflictReworkPreparation } from "../pr/conflict-rework.js";
 import type { TaskResumeContext } from "../task/handoff.shared.js";
-import type { ProviderUpdateBranchOperationParams } from "./provider-update-branch-route.js";
 import type { RouteBatchOwnership } from "./route-batch-ownership.js";
 import type { RouteCleanupProbe, RouteNextAction } from "./route-decision-types.js";
 import type { RouteBlocker, RouteExecutionPacket, RouteOracle } from "./route-oracle.js";
@@ -17,9 +15,10 @@ import type { TaskWorktreeCleanliness } from "./task-worktree-cleanliness.js";
 import type { ForeignTaskReadmeReplicaRepair } from "./task-worktree-foreign-artifact-repair.js";
 import type { BranchBaseSyncObservation } from "./branch-base-sync-route.js";
 import { foreignTaskReadmeReplicaRepairOperation } from "./workflow-step-foreign-task-readme-repair.js";
-import { BASE_SYNC_SPEC, type BaseSyncParams } from "./workflow-step-branch-base-sync-spec.js";
+import { BASE_SYNC_SPEC } from "./workflow-step-branch-base-sync-spec.js";
 import { PROVIDER_UPDATE_BRANCH_OPERATION_SPEC } from "./workflow-step-provider-update-branch-spec.js";
 import { POSTCONDITION, type WorkflowPostcondition } from "./workflow-postconditions.js";
+import type { WorkflowOperationParams } from "./workflow-operation-params.js";
 
 export type WorkflowRole = RouteExecutionPacket["recommendedRole"];
 export type WorkflowCheckout = RouteOracle["authoritativeCheckout"];
@@ -56,8 +55,11 @@ type WorkflowOperationType =
   | "hosted_close_prepare"
   | "integration_legacy_conflict_adoption"
   | "integration_enqueue"
+  | "integration_adopted_merge"
+  | "adopted_finish"
   | "integration_run_next"
   | "pr_sync"
+  | "pr_adopt"
   | "provider_refresh"
   | "provider_update_branch"
   | "runner_follow"
@@ -76,8 +78,11 @@ export type WorkflowOperationId =
   | "batch.reconcile_included"
   | "integration.adopt_legacy_protected_conflict"
   | "integration.enqueue"
+  | "integration.adopted_merge"
+  | "task.adopted.finish"
   | "integration.run_next"
   | "pr.artifacts.update"
+  | "pr.existing.adopt"
   | "pr.head.publish"
   | "pr.open"
   | "pr.sync_or_verify"
@@ -98,57 +103,7 @@ export type WorkflowOperationId =
   | "task.worktree.cleanup"
   | "worktree.prepare";
 
-export type WorkflowOperationParams = {
-  "candidate.publish": { taskId: string; requestDigest: string };
-  "batch.collect_included": { taskId: string };
-  "batch.follow_primary": { taskId: string };
-  "batch.reconcile_included": { taskId: string };
-  "integration.adopt_legacy_protected_conflict": {
-    taskId: string;
-    expectedAdoptionToken: string;
-  };
-  "integration.enqueue": { taskId: string; branch: string };
-  "integration.run_next": { taskId: string };
-  "pr.artifacts.update": { taskId: string; includeTaskIds: readonly string[] };
-  "pr.head.publish": {
-    taskId: string;
-    author: string;
-    includeTaskIds: readonly string[];
-  };
-  "pr.open": { taskId: string; author: string; includeTaskIds: readonly string[] };
-  "pr.sync_or_verify": { taskId: string; includeTaskIds: readonly string[] };
-  "provider.pr.refresh": { taskId: string };
-  "provider.pr.update_branch": ProviderUpdateBranchOperationParams;
-  "flow.repair.foreign_task_readme": { taskId: string };
-  "route.remote.refresh": { taskId: string };
-  "runner.follow":
-    | { mode: "reclaim"; taskId: string; author: string; reason: string }
-    | { mode: "status"; taskId: string; runId: string | null }
-    | { mode: "run"; taskId: string };
-  "task.artifacts.commit": { taskId: string };
-  "task.branch.sync_base": BaseSyncParams;
-  "task.branch.start": { taskId: string; author: string; body: string };
-  "task.hosted_close.open": { taskId: string };
-  "task.hosted_close.finalize": { taskId: string; base: string };
-  "task.pre_merge_close": {
-    taskId: string;
-    author: string;
-    body: string;
-    result: string;
-    commit: string;
-    force: boolean;
-  };
-  "task.scope.extend": {
-    taskId: string;
-    requestDigest: string;
-    scopeRoots: readonly string[];
-    repositoryEffects: readonly TaskRepositoryEffect[];
-  };
-  "task.start": { taskId: string; author: string; body: string };
-  "task.verify.show": { taskId: string };
-  "task.worktree.cleanup": { taskId: string; base: string };
-  "worktree.prepare": { taskId: string; agent: string; slug: string };
-};
+export type { WorkflowOperationParams } from "./workflow-operation-params.js";
 
 export type WorkflowOperationSpec = {
   type: WorkflowOperationType;
@@ -300,6 +255,20 @@ export const WORKFLOW_OPERATION_REGISTRY = {
     verificationCandidate: "agentplane pr check <task-id>",
     needsVerificationRecord: false,
   },
+  "pr.existing.adopt": {
+    type: "pr_adopt",
+    phase: "existing_pr_adoption_pending",
+    checkout: "task_worktree",
+    role: "INTEGRATOR",
+    expectedPostconditions: [POSTCONDITION.remotePrLinked, POSTCONDITION.routeRecomputed],
+    mustNot: [
+      "do not publish, edit, or merge the existing PR branch during adoption",
+      "do not reuse the adoption grant for a later branch update or merge",
+    ],
+    triggersGitHooks: false,
+    verificationCandidate: null,
+    needsVerificationRecord: false,
+  },
   "pr.open": {
     type: "pr_sync",
     phase: "pr_needed",
@@ -373,6 +342,33 @@ export const WORKFLOW_OPERATION_REGISTRY = {
     ],
     triggersGitHooks: false,
     verificationCandidate: "agentplane pr check <task-id>",
+    needsVerificationRecord: false,
+  },
+  "integration.adopted_merge": {
+    type: "integration_adopted_merge",
+    phase: "adopted_pr_ready_to_merge",
+    checkout: "base_checkout",
+    role: "INTEGRATOR",
+    expectedPostconditions: [POSTCONDITION.adoptedPrMerged, POSTCONDITION.routeRecomputed],
+    mustNot: [
+      "do not reuse the PR adoption grant as merge authority",
+      "do not merge without exact-head task verification, independent review, and hosted checks",
+    ],
+    triggersGitHooks: false,
+    verificationCandidate: "agentplane pr check <task-id> --hosted",
+    needsVerificationRecord: false,
+  },
+  "task.adopted.finish": {
+    type: "adopted_finish",
+    phase: "adopted_pr_merged_pending_task_close",
+    checkout: "base_checkout",
+    role: "INTEGRATOR",
+    expectedPostconditions: [POSTCONDITION.taskDone, POSTCONDITION.routeRecomputed],
+    mustNot: [
+      "do not close the task without a matching merged provider readback and exact adopted head",
+    ],
+    triggersGitHooks: false,
+    verificationCandidate: null,
     needsVerificationRecord: false,
   },
   "integration.run_next": {

@@ -14,6 +14,10 @@ const mocks = vi.hoisted(() => ({
   target: vi.fn(),
   status: vi.fn(),
   recover: vi.fn(),
+  adoptedRoute: vi.fn(),
+}));
+vi.mock("./kernel-adopted-pr-route.js", () => ({
+  resolveKernelAdoptedValidationRoute: mocks.adoptedRoute,
 }));
 vi.mock("./kernel-operational-projection-recovery.js", () => ({
   recoverKernelOperationalProjection: mocks.recover,
@@ -234,6 +238,22 @@ describe("canonical final Verification Contract projection", () => {
     mocks.target.mockResolvedValue(evaluatorTarget);
     mocks.status.mockResolvedValue({ lines: [] });
     mocks.project.mockResolvedValue(0);
+    mocks.adoptedRoute.mockResolvedValue(undefined);
+  });
+
+  it("refuses to run final checks in the task checkout for adopted hosted evidence", async () => {
+    const f = fixture();
+    mocks.repositoryEvidence.mockResolvedValue([
+      {
+        origin: "adopted_hosted_pr",
+        checkout: "/repo/.agentplane/worktrees/exact-head",
+        control_checkout: "/repo",
+        implementation_commit: evaluatorTarget,
+      },
+    ]);
+    mocks.adoptedRoute.mockRejectedValueOnce(new Error("Canonical adopted PR metadata is missing"));
+    await expect(f.run()).rejects.toThrow("Canonical adopted PR metadata is missing");
+    expect(mocks.checks).not.toHaveBeenCalled();
   });
 
   it("persists FAILED evidence and requires a USER corrective Plan for an old completed code item with no commands", async () => {

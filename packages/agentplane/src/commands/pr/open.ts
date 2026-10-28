@@ -8,6 +8,7 @@ import { loadTaskCommandContext } from "../../runtime/task-execution-context/ind
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 
 import { pushTaskBranchUpstreamIfConfigured } from "./branch-publication.js";
+import { resolvePrFlowStatus } from "./flow-status.js";
 import { maybeAutoCommitTaskPrArtifacts } from "./internal/auto-commit.js";
 import { resolveChangeRequestIdentity } from "./internal/change-request-provider.js";
 import { resolveProviderBaseBranch } from "./internal/provider-base.js";
@@ -162,6 +163,77 @@ export async function cmdPrOpen(opts: {
           workflowMode,
           base: taskCommand.execution.base_ref,
         });
+
+    if (!opts.syncOnly && meta.branch) {
+      const committed = await maybeAutoCommitTaskPrArtifacts({
+        ctx: commandCtx,
+        taskId: opts.taskId,
+        relatedTaskIds: opts.includeTaskIds,
+        branch: meta.branch,
+        baseBranch: meta.base ?? null,
+        strategy: "auto",
+      });
+      const prArtifactPrefix = `${commandCtx.config.paths.workflow_dir}/${opts.taskId}/pr/`
+        .replaceAll("\\", "/")
+        .replace(/^\.\//u, "");
+      const changedPaths = await commandCtx.git.statusChangedPaths();
+      const remainingPrArtifacts = changedPaths.filter((changed) =>
+        changed.replaceAll("\\", "/").startsWith(prArtifactPrefix),
+      );
+      if (remainingPrArtifacts.length > 0) {
+        throw new CliError({
+          exitCode: exitCodeForError("E_GIT"),
+          code: "E_GIT",
+          message: `PR publication left uncommitted task artifacts: ${remainingPrArtifacts.join(", ")}`,
+        });
+      }
+      if (committed) {
+        let published: boolean;
+        try {
+          published = await pushTaskBranchUpstreamIfConfigured({
+            gitRoot: commandCtx.resolvedProject.gitRoot,
+            branch: meta.branch,
+            baseBranch: meta.base ?? null,
+            prNumber: meta.pr_number ?? null,
+            taskId: opts.taskId,
+            workflowDir: commandCtx.config.paths.workflow_dir,
+            tasksPath: commandCtx.config.paths.tasks_path,
+          });
+        } catch (err) {
+          throw new CliError({
+            exitCode: exitCodeForError("E_GIT"),
+            code: "E_GIT",
+            message: `Unable to publish the final PR artifact commit (${summarizePrOpenFailure(err)}).`,
+          });
+        }
+        if (!published && meta.pr_number) {
+          throw new CliError({
+            exitCode: exitCodeForError("E_GIT"),
+            code: "E_GIT",
+            message: "The final PR artifact commit has no published task branch.",
+          });
+        }
+      }
+      if (meta.pr_number) {
+        const report = await resolvePrFlowStatus({
+          ctx: commandCtx,
+          cwd: opts.cwd,
+          rootOverride: opts.rootOverride,
+          taskId: opts.taskId,
+        });
+        if (
+          report.pr.state !== "OPEN" ||
+          report.pr.prNumber !== meta.pr_number ||
+          report.publication?.state !== "aligned"
+        ) {
+          throw new CliError({
+            exitCode: exitCodeForError("E_GIT"),
+            code: "E_GIT",
+            message: `Hosted PR #${meta.pr_number} does not confirm the final local and upstream head.`,
+          });
+        }
+      }
+    }
 
     if (!opts.quiet) {
       output.success(

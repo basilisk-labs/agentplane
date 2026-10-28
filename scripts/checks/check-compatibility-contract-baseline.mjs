@@ -56,14 +56,14 @@ function candidatePathFromArgs(argv) {
 const REVIEWED_SECTION_DIGESTS = {
   agent_facing_context_contracts:
     "4926aed50aea235e24310e39404f7b939bc4caa7fc763a98387992822a2101c5",
-  cli_topology: "142372fde652c457e2d9667498b08bfbd6aa5e357fe7ee83598aac394ce599b3",
+  cli_topology: "8e8ea9209fca864b11e85217dece11593f9510f52d82c821fe9061aa0b3e302d",
   exit_error_contract: "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
   machine_output_contract: "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
   package_manifests: "6052feb72f5eee6eaa1a503bb10074492350a164de683adf50bf2b092ce647b9",
   tarball_policy: "10e8c7b78d3166955320b6fa787d7564b5bba1f67b3ce1736dca46673528716d",
   workflow_schema: "1003207ce9df63cccac8761565f0d1264c094fd3fda5609012a6716c82842451",
 };
-function assertReviewedSectionDigests(sectionDigests) {
+export function assertReviewedSectionDigests(sectionDigests) {
   assert(
     hashJson(sectionDigests) === hashJson(REVIEWED_SECTION_DIGESTS),
     "reviewed Recipe V2 section inventory drift",
@@ -407,6 +407,8 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
     "202610101128-35N0ZK",
     "202610101141-AGRARP",
     "202610160500-6RCQSY",
+    "202610260157-ZDEE0D",
+    "202610270555-MY0JZE",
   ];
 
   assert(
@@ -1023,6 +1025,8 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
       "202610101128-35N0ZK",
       "202610101141-AGRARP",
       "202610160500-6RCQSY",
+      "202610260157-ZDEE0D",
+      "202610270555-MY0JZE",
     ],
     agent_facing_context_contracts: [
       "202607221848-1HWR0R",
@@ -1043,6 +1047,7 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
       "202610041748-K43XFE",
       "202610060956-42J54D",
       "202610011624-MP3J6N",
+      "202610270555-MY0JZE",
     ],
     machine_output_contract: [
       "202607221848-ABG7SD",
@@ -3829,6 +3834,19 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
       name: "revision",
       source_task: "202610160500-6RCQSY",
     },
+    {
+      kind: "option",
+      command: "task plan set",
+      name: "failed-check-work-order",
+      source_task: "202610260157-ZDEE0D",
+    },
+    { kind: "command", command: "pr adopt", source_task: "202610270555-MY0JZE" },
+    ...["approval-digest", "by", "file", "request-digest", "ttl-minutes"].map((name) => ({
+      kind: "option",
+      command: "pr adopt",
+      name,
+      source_task: "202610270555-MY0JZE",
+    })),
   ];
   const activeExpectedAddedCommandDescriptors = expectedAddedCommandDescriptors
     .filter((command) => command.id.join(" ") !== "task supervisor budget-epoch")
@@ -3844,6 +3862,22 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
         : command,
     );
   activeExpectedAddedCommandDescriptors.push(
+    {
+      args: [
+        { name: "task-id", required: true, valueHint: "<task-id>", variadic: false },
+        { name: "action", required: true, valueHint: "<prepare|approve|apply>", variadic: false },
+      ],
+      group: "PR",
+      id: ["pr", "adopt"],
+      options: [
+        { kind: "string", name: "file", valueHint: "<json>" },
+        { kind: "string", name: "request-digest", valueHint: "<sha256>" },
+        { kind: "string", name: "approval-digest", valueHint: "<sha256>" },
+        { kind: "string", name: "by", valueHint: "USER" },
+        { kind: "string", name: "ttl-minutes", valueHint: "<1-60>" },
+      ],
+      visibility: "user",
+    },
     {
       args: [{ name: "task-id", required: true, valueHint: "<task-id>", variadic: false }],
       group: "Task",
@@ -4077,6 +4111,7 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
         "evidence gc",
         "evidence stats",
         "integrate queue adopt-legacy-protected-conflict",
+        "pr adopt",
         "pr conflict-rework",
         "recipes preview-v1",
         "recipes preview-v2",
@@ -4111,6 +4146,17 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
     "new CLI command descriptor is not in the approved delta",
   );
   const activeExpectedAddedOptions = [
+    { command: "pr adopt", kind: "string", name: "approval-digest", valueHint: "<sha256>" },
+    { command: "pr adopt", kind: "string", name: "by", valueHint: "USER" },
+    { command: "pr adopt", kind: "string", name: "file", valueHint: "<json>" },
+    { command: "pr adopt", kind: "string", name: "request-digest", valueHint: "<sha256>" },
+    { command: "pr adopt", kind: "string", name: "ttl-minutes", valueHint: "<1-60>" },
+    {
+      command: "task plan set",
+      kind: "string",
+      name: "failed-check-work-order",
+      valueHint: "<sha256:digest>",
+    },
     {
       command: "task cancel",
       kind: "string",

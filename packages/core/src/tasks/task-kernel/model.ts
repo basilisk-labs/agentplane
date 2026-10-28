@@ -181,6 +181,8 @@ export type ExecutionRequirements = Pick<
 
 export type ValidationIdentity = Readonly<{
   implementation_identity: Sha256Digest;
+  /** Exact externally hosted head accepted by native WorkItem verification, when applicable. */
+  hosted_head_evidence_digest?: Sha256Digest;
   check_id: string;
   command_digest: Sha256Digest;
   toolchain_digest: Sha256Digest;
@@ -472,6 +474,16 @@ export type TaskCommand =
         authority_delta_digest: Sha256Digest | null;
         corrective_grant_digest?: Sha256Digest;
         verification_contract_digest?: Sha256Digest;
+        required_check_correction?: Readonly<{
+          work_item_id: string;
+          failed_work_order_id: Sha256Digest;
+          previous_command: string;
+          replacement_command: string;
+          failed_work_order: unknown;
+          accepted_result_command_input: unknown;
+          validation_command_input: unknown;
+          native_validation: unknown;
+        }>;
       }
     >
   | CommandEnvelope<

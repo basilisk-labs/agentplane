@@ -18,6 +18,46 @@ const GIT_OBJECT_ID = /^[0-9a-f]{40,64}$/u;
 export function providerUpdateBranchParams(
   prFlow: PrFlowStatusReport | null,
 ): ProviderUpdateBranchOperationParams | null {
+  if (prFlow?.adoption) {
+    const adoption = prFlow.adoption;
+    const observed =
+      prFlow.providerObservation?.state === "found" ? prFlow.providerObservation.pr : null;
+    const mergeability = observed?.mergeability;
+    const headSha = prFlow.branch.metaHeadSha ?? adoption.head_sha;
+    if (
+      prFlow.pr.state !== "OPEN" ||
+      prFlow.pr.source !== "lookup" ||
+      prFlow.pr.prNumber !== adoption.pr_number ||
+      observed?.provider !== "github" ||
+      observed.identity.provider !== adoption.provider ||
+      observed.identity.hostname !== adoption.hostname ||
+      observed.identity.remote !== adoption.remote ||
+      observed.identity.sourceProject !== adoption.source_project ||
+      observed.identity.targetProject !== adoption.target_project ||
+      adoption.source_project !== adoption.target_project ||
+      observed.status !== "OPEN" ||
+      observed.prNumber !== adoption.pr_number ||
+      observed.headRef !== adoption.head_ref ||
+      observed.base !== adoption.base_ref ||
+      observed.headSha !== headSha ||
+      !GIT_OBJECT_ID.test(headSha) ||
+      !GIT_OBJECT_ID.test(observed.baseSha ?? "") ||
+      !hasCoherentGithubPrMergeability(mergeability) ||
+      mergeability?.state !== "not_conflicting" ||
+      mergeability.mergeable !== true ||
+      mergeability.providerState?.trim().toLowerCase() !== "behind"
+    )
+      return null;
+    return {
+      taskId: prFlow.task.id,
+      identity: observed.identity,
+      prNumber: adoption.pr_number,
+      branch: adoption.head_ref,
+      baseBranch: adoption.base_ref,
+      expectedHeadSha: headSha,
+      expectedBaseSha: observed.baseSha!,
+    };
+  }
   if (
     prFlow?.pr.state !== "OPEN" ||
     prFlow.pr.provider !== "github" ||

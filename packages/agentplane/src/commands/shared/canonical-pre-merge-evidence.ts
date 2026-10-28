@@ -48,3 +48,36 @@ export function hasCanonicalPreMergeEvidence(task: TaskData): boolean {
     projection.findings.length > 0
   );
 }
+
+/** Canonical adopted work is ready only for the exact head validated by Task Kernel. */
+export function hasCanonicalAdoptedHeadEvidence(task: TaskData, headSha: string): boolean {
+  const aggregate = validatedCanonicalAggregate(task);
+  const projection = task.extensions?.["agentplane.kernel_operational_projection"];
+  const validation = aggregate?.final_validation;
+  const identity = isRecord(validation) ? validation.identity : null;
+  const workItems = aggregate?.work_items;
+  const completed = isRecord(workItems)
+    ? Object.values(workItems).filter((item) => isRecord(item) && item.state === "COMPLETED")
+    : [];
+  const hostedDigest = isRecord(identity) ? identity.hosted_head_evidence_digest : null;
+  return (
+    hasCanonicalPreMergeEvidence(task) &&
+    aggregate?.state === "COMPLETED" &&
+    isRecord(projection) &&
+    projection.implementation_commit === headSha &&
+    typeof projection.implementation_tree === "string" &&
+    projection.implementation_tree.length > 0 &&
+    isRecord(identity) &&
+    typeof hostedDigest === "string" &&
+    /^sha256:[a-f0-9]{64}$/u.test(hostedDigest) &&
+    completed.length > 0 &&
+    completed.every((item) => {
+      if (!isRecord(item) || !isRecord(item.validation)) return false;
+      return (
+        item.validation.status === "PASSED" &&
+        isRecord(item.validation.identity) &&
+        item.validation.identity.hosted_head_evidence_digest === hostedDigest
+      );
+    })
+  );
+}
