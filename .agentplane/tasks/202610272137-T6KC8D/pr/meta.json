@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:4e14aea40069a654aafcdbc491d3f72acc657876044e4267998b61beb20baf7a",
   "pr_number": 6951,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6951",
+  "pre_merge_closure": {
+    "basis_commit": "d23ce4d43f0d786189e9f3fd02dda5f39bdf7faf",
+    "branch": "task/202610272137-T6KC8D/complete-generic-hosted-pr-adoption-with-exact-b",
+    "pr_number": 6951,
+    "recorded_at": "2026-10-28T04:55:55.898Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",

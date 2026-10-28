@@ -1,10 +1,11 @@
 ---
 id: "202610272137-T6KC8D"
 title: "Complete generic hosted PR adoption with exact-base-safe merge and CLI reference"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 42
+revision: 43
 origin:
   system: "manual"
 depends_on: []
@@ -46,6 +47,22 @@ quality_review:
     - "Adopted GitHub uses one merge-commit request after capability preflight; GitLab rejects non-merge strategies. Fresh merged readback and immutable merge-commit first-parent proof prevent recording a drifted base as success."
     - "Native declared checks run-008 through run-023 all passed on implementation commit 5a8eefacbee2325e2a9014c2675ae77327249bed, including typecheck, focused negative tests, ordinary-route regressions, docs, hotspots, compatibility ratchet, and full local CI."
     - "The immutable v0.6.24 baseline is unchanged; the reviewed candidate and strict validator include the pr adopt CLI surface with source-task provenance."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:f32cfe525e0a2433bd392bc77bc25c5c9fbe5ed1e8d209578c2131589c9fa756"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-10-28T04:55:55.487Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -736,9 +753,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "5a8eefacbee2325e2a9014c2675ae77327249bed"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "d23ce4d43f0d786189e9f3fd02dda5f39bdf7faf"
+  message: "🧩 T6KC8D task: refresh task artifacts after commit"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -746,9 +766,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-28T04:55:55.487Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "d23ce4d43f0d786189e9f3fd02dda5f39bdf7faf"
 doc_version: 3
-doc_updated_at: "2026-10-28T04:48:49.457Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-28T04:55:55.487Z"
+doc_updated_by: "CODER"
 description: "Successor to 202610271739-EWNMG7 after failed full CI. Transfer approved generic adoption implementation from c61813ce2946a7aabcc7f2c8fd67c724398f3ea7 under a fresh WorkOrder; fix exact-base-safe provider method selection, ordinary-route regressions, and generated CLI reference. Preserve prior task history and independent verification."
 sections:
   Summary: |-
@@ -1367,6 +1395,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:fec7626dd34f0a1f2603491b5aa443f37df0abd4bd2c1777ae08ff3ed6b33b4b"
     work_order_id: "sha256:3bbf643ad2c23580684e919bba4d985ad298c7b69816d73c6d022219fce5b400"
+  implementation_commit:
+    hash: "5a8eefacbee2325e2a9014c2675ae77327249bed"
+    message: "🚧 T6KC8D task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "6b0a86164c6cf94466b527c70c8da3fed76b6dfc"
@@ -3542,3 +3573,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:f32cfe525e0a2433bd392bc77bc25c5c9fbe5ed1e8d209578c2131589c9fa756`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-10-28T04:55:55.487Z`
