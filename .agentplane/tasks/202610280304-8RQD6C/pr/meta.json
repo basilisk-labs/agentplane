@@ -3,7 +3,8 @@
   "branch": "task/202610280304-8RQD6C/recognize-worktree-preparation-in-failed-check-l",
   "created_at": "2026-10-28T03:58:56.468Z",
   "diffstat_sha256": "sha256:1a132716f8dfd8ea81b6763a489e404259f009cc61a653fb65d343e0fb976c9d",
-  "last_verified_at": null,
+  "last_verified_at": "2026-10-28T07:18:43.207Z",
+  "last_verified_diffstat_sha256": "sha256:1a132716f8dfd8ea81b6763a489e404259f009cc61a653fb65d343e0fb976c9d",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202610280304-8RQD6C",
   "updated_at": "2026-10-28T03:58:56.468Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
