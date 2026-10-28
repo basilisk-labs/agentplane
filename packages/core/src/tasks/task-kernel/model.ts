@@ -181,6 +181,8 @@ export type ExecutionRequirements = Pick<
 
 export type ValidationIdentity = Readonly<{
   implementation_identity: Sha256Digest;
+  /** Exact externally hosted head accepted by native WorkItem verification, when applicable. */
+  hosted_head_evidence_digest?: Sha256Digest;
   check_id: string;
   command_digest: Sha256Digest;
   toolchain_digest: Sha256Digest;

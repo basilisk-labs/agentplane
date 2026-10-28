@@ -1,0 +1,1 @@
+✅ T6KC8D task: Complete generic hosted PR adoption with exact-base-safe merge and CLI reference [202610272137-T6KC8D]

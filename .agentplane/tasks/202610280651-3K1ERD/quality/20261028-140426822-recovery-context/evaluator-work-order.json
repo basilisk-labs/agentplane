@@ -1,0 +1,120 @@
+{
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202610280651-3K1ERD-9d0e1adc7735816d2af74782",
+  "prepared_at": "2026-10-28T14:04:26.822Z",
+  "task": {
+    "id": "202610280651-3K1ERD",
+    "revision": 56,
+    "objective": "Allow exact USER-granted hosted PR adoption when external write is declared but withheld from semantic agents\n\nFix the generic mismatch between existing PR adoption admission and task execution routing: branch_pr tasks declare external_write for operator-owned provider adoption, while semantic WorkOrders correctly forbid that effect. Keep semantic authority unchanged; require the declaration, network-read authority, approved plan, canonical task, and the existing exact USER operation grant. Add a regression test using a real resolved execution contract. This unblocks native adoption of Dependabot PRs #6944 and #6935 for 0.7.13.",
+    "acceptance_criteria": [
+      "- In scope: Fix the generic mismatch between existing PR adoption admission and task execution routing: branch_pr tasks declare external_write for operator-owned provider adoption, while semantic WorkOrders correctly forbid that effect. Keep semantic authority unchanged; require the declaration, network-read authority, approved plan, canonical task, and the existing exact USER operation grant. Add a regression test using a real resolved execution contract. This unblocks native adoption of Dependabot PRs #6944 and #6935 for 0.7.13.\n- Out of scope: unrelated refactors not required for \"Allow exact USER-granted hosted PR adoption when external write is declared but withheld from semantic agents\".",
+      "1. Execute approved WorkItem admit-declared-operator-adoption.\n2. Execute approved WorkItem reject-semantic-external-write-adoption.",
+      "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n2. Run the most relevant validation step for the `code` task. Expected: it succeeds without unexpected regressions in touched scope.\n3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings."
+    ]
+  },
+  "evaluated_sha": "b5092cea445ce96a0ed349bcb0dc50499344732c",
+  "diff_base_sha": "a8dd146ea444bc29dbe35897159fd61cb0d9f607",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202610280651-3K1ERD/quality/20261028-140426822-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:d3656d9a05007d26b1839f78ee5a7d29bb46b742297b47e81ef29723af0e0652",
+    "prompt_path": ".agentplane/tasks/202610280651-3K1ERD/quality/objects/sha256/b696763193b0800f39f8bf67d81dd07a0fd48c5efc59142100c21e89c25bc25f.md",
+    "result_schema_path": ".agentplane/tasks/202610280651-3K1ERD/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "schema_version": 2,
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202610280651-3K1ERD",
+    "plan_digest": "sha256:4db4d93899874e801c49b1e26b2480dd22f460ca2e0c11929e16b8a1d46e957f",
+    "policy_digest": "sha256:26cbf60e57ff6118b5cdcfaa5b7bbd07e2f7c8f2e02112dc5e98fe4437e2fe64",
+    "capability_digest": "sha256:eb8eedac9b601484ae5121878bec7ea6dcc1aa715553024b521087a57b6dd1e3",
+    "checks_digest": "sha256:ff2828ced8da20e145fe29841813e21d88e084cce907a3e162598fb143f3b389",
+    "verification_input_digest": "sha256:c8b112d88cf0ca05806ccf43b0ec3ae39ddd8ec22b69bb000c5acb825d5936c3",
+    "acceptance_digest": "sha256:3ee656ed9176ac5600a6309c0b19aaa65588f6c870cc7af12a2f7786211bd7ad",
+    "implementation_sha": "b5092cea445ce96a0ed349bcb0dc50499344732c",
+    "digest": "sha256:54cf69a7331c07009a5b3bd88fefabe33853c5d947c7cf2d90cfc0450805e4f5"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202610280651-3K1ERD/README.md",
+      "sha256": "sha256:78f2ad5690b5f7d785f8a6e75065dcaef389b611fe19e03ac6116b79fca5baf7",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202610280651-3K1ERD/quality/objects/sha256/5b42383141d8883252b88ea3200b7c4b3103c373f4fe5472b5abf90584b107fc.patch",
+      "sha256": "sha256:5b42383141d8883252b88ea3200b7c4b3103c373f4fe5472b5abf90584b107fc",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202610280651-3K1ERD/quality/objects/sha256/c0f7b941865446abeebfb0055c8e002eec9b70db5a202def71c84294f0df4901.json",
+      "sha256": "sha256:c0f7b941865446abeebfb0055c8e002eec9b70db5a202def71c84294f0df4901",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202610280651-3K1ERD/verification/20261028140353255-f72790ca73f6b20c.json",
+      "sha256": "sha256:7c480bbecc140ac5974cf347b002d5721c5d04db65faf5f2931846800b1a7971",
+      "required": true
+    },
+    {
+      "id": "native-identity",
+      "kind": "plan",
+      "path": ".agentplane/tasks/202610280651-3K1ERD/quality/objects/sha256/e36c169f792bbd75fff250e8d96f447483a413e18ed301b2b2b9cde7823e2da8.json",
+      "sha256": "sha256:e36c169f792bbd75fff250e8d96f447483a413e18ed301b2b2b9cde7823e2da8",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:35a4c7a567a9b658a31feed9e096276ede95ad0c82198f362c302fe7bd20b612",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:6e5cb34ada84017778c43c3d057edcc68d3ccb60840c805e412f7dc6781070ee",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:d3dfd4eb0293213ab49d32c6f199066f2bc7c954cada6465aab458b1a9c7ee25",
+      "required": true
+    }
+  ]
+}

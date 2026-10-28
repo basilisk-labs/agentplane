@@ -1,0 +1,114 @@
+{
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202610272137-T6KC8D-463b249bdeb5afb350623763",
+  "prepared_at": "2026-10-28T06:18:33.625Z",
+  "task": {
+    "id": "202610272137-T6KC8D",
+    "revision": 44,
+    "objective": "Complete generic hosted PR adoption with exact-base-safe merge and CLI reference\n\nSuccessor to 202610271739-EWNMG7 after failed full CI. Transfer approved generic adoption implementation from c61813ce2946a7aabcc7f2c8fd67c724398f3ea7 under a fresh WorkOrder; fix exact-base-safe provider method selection, ordinary-route regressions, and generated CLI reference. Preserve prior task history and independent verification.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "- In scope: Successor to 202610271739-EWNMG7 after failed full CI. Transfer approved generic adoption implementation from c61813ce2946a7aabcc7f2c8fd67c724398f3ea7 under a fresh WorkOrder; fix exact-base-safe provider method selection, ordinary-route regressions, and generated CLI reference. Preserve prior task history and independent verification.\n- Out of scope: unrelated refactors not required for \"Complete generic hosted PR adoption with exact-base-safe merge and CLI reference\".",
+      "1. Execute approved WorkItem generic-adopted-hosted-pr-lifecycle.",
+      "PLANNER fallback scaffold for \"Complete generic hosted PR adoption with exact-base-safe merge and CLI reference\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Complete generic hosted PR adoption with exact-base-safe merge and CLI reference\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "ea8f7539b9e8aaea77c243bfa62e53b748a0e64b",
+  "diff_base_sha": "9c1ad3fe68b6ce490e72ace285dcea2d316d0364",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202610272137-T6KC8D/quality/20261028-061833625-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:ac3315f8b38498dd43261386723242842e639599754a3a818f9dea6cece5cdde",
+    "prompt_path": ".agentplane/tasks/202610272137-T6KC8D/quality/objects/sha256/cc34f870edc1f23e0f04cddc9f3c196bc727cee173f08bb8940aa5494bfd2b87.md",
+    "result_schema_path": ".agentplane/tasks/202610272137-T6KC8D/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "schema_version": 2,
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202610272137-T6KC8D",
+    "plan_digest": "sha256:e91967dc1c0e051ca34cfb1ff0a7e8ea1141be93525121e535bca184227ce794",
+    "policy_digest": "sha256:56c15d063dc6e53d67c5a07a2bd0d1d3284f746df6836fee6537019292e27f84",
+    "capability_digest": "sha256:98093504b32ab58751ed21c72f8cf65a8bb98b59c30f65ae5daa1cb7c941f207",
+    "checks_digest": "sha256:f6f3b716419e5feb50f9109af4416e3a8a12d228da51e92d55d254442649d3d9",
+    "verification_input_digest": "sha256:26e761cdccfebeab6ee5f28b420ce8d952f500cbd8d53497a9757f87c5f0959e",
+    "acceptance_digest": "sha256:4337ea4cce0263d37f9a67a66341fd9db6d9b360c632f6295050c260f152b220",
+    "implementation_sha": "ea8f7539b9e8aaea77c243bfa62e53b748a0e64b",
+    "digest": "sha256:a62ca2fa3cc0c32952958519755d0ee6d516810bb9831a73523205ed53e53faa"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202610272137-T6KC8D/README.md",
+      "sha256": "sha256:4ec8ab6c55975d141a62758b213bacbba7e44d1870d151191a1ac7f8a57d8e67",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202610272137-T6KC8D/quality/objects/sha256/fb8cab28461ba91001321366728b9b1c709fed4d926799c5c43646963f81a3a0.patch",
+      "sha256": "sha256:fb8cab28461ba91001321366728b9b1c709fed4d926799c5c43646963f81a3a0",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202610272137-T6KC8D/quality/objects/sha256/bf751247a75445b92c1b94db8f2f25849c5a2b8dc03bafae15277a4b33663fdd.json",
+      "sha256": "sha256:bf751247a75445b92c1b94db8f2f25849c5a2b8dc03bafae15277a4b33663fdd",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202610272137-T6KC8D/verification/20261028061801734-0d92bd623ebe2a29.json",
+      "sha256": "sha256:8acd274d7108609443a51f463504b3e3da3c456e97b6f4fc1156053bbbcf2c03",
+      "required": true
+    },
+    {
+      "id": "native-identity",
+      "kind": "plan",
+      "path": ".agentplane/tasks/202610272137-T6KC8D/quality/objects/sha256/c931dd59fda7cdedaa0e0200788a1cb960c70d0e24ad328e6e9f0556adc1914f.json",
+      "sha256": "sha256:c931dd59fda7cdedaa0e0200788a1cb960c70d0e24ad328e6e9f0556adc1914f",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:35a4c7a567a9b658a31feed9e096276ede95ad0c82198f362c302fe7bd20b612",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:6e5cb34ada84017778c43c3d057edcc68d3ccb60840c805e412f7dc6781070ee",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:d3dfd4eb0293213ab49d32c6f199066f2bc7c954cada6465aab458b1a9c7ee25",
+      "required": true
+    }
+  ]
+}

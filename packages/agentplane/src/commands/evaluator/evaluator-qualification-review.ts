@@ -7,6 +7,12 @@ import {
 } from "../shared/quality-review-target.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
+import { createExistingPrAdoptionStore, resolveAdoptionControlRoot } from "../pr/adoption-store.js";
+import { matchesAdoptedPrObservation } from "../pr/adoption-identity.js";
+import {
+  observeExistingChangeRequestByNumber,
+  resolveChangeRequestIdentity,
+} from "../pr/internal/change-request-provider.js";
 import {
   isQualificationTask,
   readCurrentQualificationPacket,
@@ -27,6 +33,36 @@ export async function resolveEvaluatorReviewTarget(opts: {
 }): Promise<ResolvedEvaluatorReviewTarget> {
   const gitRoot = opts.ctx.resolvedProject.gitRoot;
   const workflowDir = opts.ctx.config.paths.workflow_dir;
+  const controlRoot = await resolveAdoptionControlRoot(gitRoot);
+  const adoption = await createExistingPrAdoptionStore({
+    gitRoot: controlRoot,
+    workflowDir,
+  }).readTask(opts.task.id);
+  if (adoption) {
+    const identity = await resolveChangeRequestIdentity({
+      gitRoot: controlRoot,
+      branch: adoption.head_ref,
+    });
+    const observed = await observeExistingChangeRequestByNumber({
+      gitRoot: controlRoot,
+      branch: adoption.head_ref,
+      baseBranch: adoption.base_ref,
+      prNumber: adoption.pr_number,
+      identity,
+    });
+    if (
+      observed.state !== "found" ||
+      !matchesAdoptedPrObservation(adoption, observed.pr) ||
+      (observed.pr.status !== "OPEN" && observed.pr.status !== "MERGED") ||
+      !observed.pr.headSha
+    ) {
+      throw new CliError({
+        code: "E_VALIDATION",
+        message: "Adopted PR evaluator target has no matching exact hosted head",
+      });
+    }
+    return { evaluatedSha: observed.pr.headSha, qualificationPacket: null };
+  }
   const qualificationPacket = await readCurrentQualificationPacket({
     gitRoot,
     workflowDir,

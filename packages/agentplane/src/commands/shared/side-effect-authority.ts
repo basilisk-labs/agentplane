@@ -255,8 +255,14 @@ export function createSideEffectAuthorityRecord(opts: {
   operationLease?: OperationLease;
   id?: string;
 }): SideEffectAuthorityRecord {
-  if (opts.operation.id === "candidate.publish" && opts.actor !== "USER")
-    throw new Error("Candidate publication requires a separate USER approval.");
+  if (
+    (opts.operation.id === "candidate.publish" ||
+      opts.operation.id === "pr.existing.adopt" ||
+      opts.operation.id === "provider.pr.update_branch" ||
+      opts.operation.id === "integration.adopted_merge") &&
+    opts.actor !== "USER"
+  )
+    throw new Error(`${opts.operation.id} requires a separate USER approval.`);
   const requirement = workflowOperationAuthorityRequirement(opts.operation.id);
   if (!requirement.requiresAuthority) {
     throw new Error(`Operation ${opts.operation.id} does not require side-effect authority.`);
@@ -370,7 +376,13 @@ export function evaluateWorkflowOperationAuthority(opts: {
       opts.operation.id as keyof typeof CANONICAL_EFFECT_KIND_BY_OPERATION
     ];
   const kernel = opts.task.extensions?.[TASK_KERNEL_EXTENSION];
-  if (canonicalKind && isRecord(kernel) && kernel.kind === "canonical_task") {
+  if (
+    canonicalKind &&
+    opts.operation.id !== "provider.pr.update_branch" &&
+    opts.operation.id !== "integration.adopted_merge" &&
+    isRecord(kernel) &&
+    kernel.kind === "canonical_task"
+  ) {
     const { digest, ...contents } = kernel;
     const aggregate = isRecord(kernel.aggregate) ? kernel.aggregate : null;
     const plan = aggregate && isRecord(aggregate.current_plan) ? aggregate.current_plan : null;
@@ -437,7 +449,11 @@ export function evaluateWorkflowOperationAuthority(opts: {
   const now = (opts.now ?? new Date()).getTime();
   const matching = state.grants.find(
     (grant) =>
-      (opts.operation.id !== "candidate.publish" || grant.actor === "USER") &&
+      ((opts.operation.id !== "candidate.publish" &&
+        opts.operation.id !== "pr.existing.adopt" &&
+        opts.operation.id !== "provider.pr.update_branch" &&
+        opts.operation.id !== "integration.adopted_merge") ||
+        grant.actor === "USER") &&
       grant.policyRule === requirement.policyRule &&
       grant.operationId === opts.operation.id &&
       grant.operationDigest === operationDigest &&

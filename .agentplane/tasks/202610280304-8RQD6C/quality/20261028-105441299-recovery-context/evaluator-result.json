@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The change admits worktree_preparation only as a receipt-backed repository continuation and preserves parent authority, revision, fingerprint, and repository identity checks.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610280304-8RQD6C/quality/objects/sha256/b94ff9485548aaad21c8e6a3cb7ae1741057214f970b4f8a559795baf10e22ec.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The native full CI run-011 passed on the updated task branch. The focused required-check tests and typecheck were recorded earlier in the task evidence.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610280304-8RQD6C/quality/objects/sha256/b94ff9485548aaad21c8e6a3cb7ae1741057214f970b4f8a559795baf10e22ec.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

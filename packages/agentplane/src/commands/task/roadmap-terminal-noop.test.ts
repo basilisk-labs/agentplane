@@ -28,6 +28,12 @@ const mocks = vi.hoisted(() => ({
   runKernelFinalValidation: vi.fn(),
   ensureKernelOperationalProjectionEvidence: vi.fn().mockResolvedValue(undefined),
   recoverKernelOperationalProjection: vi.fn().mockResolvedValue({ kind: "unchanged" }),
+  adoptedValidationRoute: vi.fn().mockResolvedValue(undefined),
+  readKernelAdoption: vi.fn().mockResolvedValue(null),
+}));
+vi.mock("./kernel-adopted-pr-route.js", () => ({
+  readKernelAdoption: mocks.readKernelAdoption,
+  resolveKernelAdoptedValidationRoute: mocks.adoptedValidationRoute,
 }));
 
 vi.mock("../shared/task-backend.js", async (original) => ({
@@ -62,6 +68,9 @@ vi.mock("./kernel-completed-provider-workflow.js", () => ({
 vi.mock("./kernel-repository-coordinator.js", () => ({
   commitCanonicalTerminalTaskArtifacts: mocks.commitCanonicalTerminalTaskArtifacts,
 }));
+vi.mock("./kernel-accepted-repository-evidence.js", () => ({
+  listKernelRepositoryEvidence: vi.fn().mockResolvedValue([]),
+}));
 vi.mock("./kernel-operational-projection.js", () => ({
   ensureKernelOperationalProjectionEvidence: mocks.ensureKernelOperationalProjectionEvidence,
 }));
@@ -89,6 +98,8 @@ afterEach(async () => {
   mocks.ensureKernelOperationalProjectionEvidence.mockResolvedValue(undefined);
   mocks.recoverKernelOperationalProjection.mockResolvedValue({ kind: "unchanged" });
   mocks.advanceCompletedProviderWorkflow.mockResolvedValue(null);
+  mocks.adoptedValidationRoute.mockResolvedValue(undefined);
+  mocks.readKernelAdoption.mockResolvedValue(null);
   await Promise.all(
     temporaryRoots.splice(0).map((root) => rm(root, { recursive: true, force: true })),
   );
@@ -152,6 +163,65 @@ async function repositorySnapshot(root: string, evidencePath: string, record: un
     status: status.stdout,
   };
 }
+
+describe("adopted PR pre-validation provider gate", () => {
+  it("asks for an exact USER update grant before the first WorkItem claim", async () => {
+    const record = {
+      digest: "sha256:record",
+      aggregate: {
+        id: "task-1",
+        revision: 4,
+        state: "ACTIVE",
+        current_plan: { state: "APPROVED", digest: "sha256:plan" },
+        authority_lineage: [{ authority: { repository_fingerprint: "sha256:repo" } }],
+        work_items: { W1: { state: "READY" } },
+        effects: [],
+      },
+    };
+    const task = { execution_route: { repository_mode: "branch_pr" } };
+    mocks.createKernelRuntime.mockResolvedValue({
+      adapter: { read: vi.fn().mockResolvedValue({ kind: "canonical", record, task }) },
+      native: { readContext: vi.fn().mockResolvedValue({ repository_fingerprint: "sha256:repo" }) },
+      lifecycle: {
+        read: vi.fn().mockResolvedValue({
+          read: { kind: "canonical", record, task },
+          next_action: { reason_code: "kernel_work_item_claim_required", work_item_id: "W1" },
+        }),
+      },
+      checkpoint: vi.fn(),
+    });
+    mocks.readKernelAdoption.mockResolvedValue({ receipt: { task_id: "task-1" } });
+    mocks.decideCanonicalWorkflowEffect.mockResolvedValue({
+      executionPacket: { mustRunFrom: "/repo/task" },
+      workflowStep: {
+        kind: "approval",
+        request: {
+          type: "side_effect",
+          operationId: "provider.pr.update_branch",
+          operationDigest: "sha256:operation",
+          stateFingerprintDigest: "sha256:state",
+          stateScopeDigest: "sha256:scope",
+          authorityRef: "sha256:authority",
+        },
+      },
+    });
+    const result = await advanceTaskStep({
+      command: { resolvedProject: { gitRoot: "/repo" } } as never,
+      task_id: "task-1",
+      transport: "host",
+      allow_provider_effects: true,
+    });
+    expect(result).toMatchObject({
+      action: { kind: "approval_required", reason: "adopted_provider_update_required" },
+      operator_action: {
+        kind: "grant_side_effect_authority",
+        required_role: "USER",
+        authority_reference: "sha256:authority",
+      },
+    });
+    expect(mocks.advanceCompletedProviderWorkflow).not.toHaveBeenCalled();
+  });
+});
 
 describe("LC-20 terminal replay", () => {
   it.each([
@@ -359,7 +429,7 @@ describe("LC-20 terminal replay", () => {
     );
   });
 
-  it("commits terminal task artifacts only after complete_task is persisted", async () => {
+  it("completes an ordinary task without adopted metadata lookup before terminal artifacts", async () => {
     const events: string[] = [];
     const evidenceDigest = `sha256:${"e".repeat(64)}`;
     const planDigest = `sha256:${"p".repeat(64)}`;
@@ -423,6 +493,7 @@ describe("LC-20 terminal replay", () => {
     ).rejects.toThrow("stop after ordering proof");
 
     expect(events).toEqual(["complete_task", "terminal_artifacts"]);
+    expect(mocks.adoptedValidationRoute).not.toHaveBeenCalled();
   });
 
   it("does not commit terminal task artifacts when complete_task fails", async () => {

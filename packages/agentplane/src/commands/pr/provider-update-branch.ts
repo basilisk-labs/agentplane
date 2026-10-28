@@ -9,6 +9,7 @@ import type { ObservedChangeRequest } from "./internal/change-request-model.js";
 import { observeExistingChangeRequestByNumber } from "./internal/change-request-provider.js";
 import { runGhApiJson } from "./internal/gh-api.js";
 import type { GitHostIdentity } from "./internal/git-host-identity.js";
+import type { AdoptedPrIdentity } from "./adoption-identity.js";
 
 const GIT_OBJECT_ID = /^[0-9a-f]{40,64}$/u;
 
@@ -22,6 +23,8 @@ export type ProviderUpdateBranchRequest = Readonly<{
   expectedHeadSha: string;
   expectedBaseSha: string;
   reconcileHeadSha?: string;
+  /** A bound external PR uses provider ancestry readback without a task-owned checkout. */
+  adoption?: AdoptedPrIdentity;
 }>;
 
 type ProviderUpdateBranchEvidence = Readonly<{
@@ -105,6 +108,23 @@ function validateRequest(opts: ProviderUpdateBranchRequest): string | null {
   }
   if (!/^[-A-Za-z0-9_.]+\/[-A-Za-z0-9_.]+$/u.test(opts.identity.targetProject)) {
     return "target project identity is invalid";
+  }
+  if (opts.adoption) {
+    const receipt = opts.adoption;
+    if (
+      receipt.provider !== opts.identity.provider ||
+      receipt.hostname !== opts.identity.hostname ||
+      receipt.remote !== opts.identity.remote ||
+      receipt.source_project !== opts.identity.sourceProject ||
+      receipt.target_project !== opts.identity.targetProject ||
+      receipt.source_project !== receipt.target_project ||
+      receipt.pr_number !== opts.prNumber ||
+      receipt.head_ref !== opts.branch ||
+      receipt.base_ref !== opts.baseBranch ||
+      !GIT_OBJECT_ID.test(receipt.head_sha) ||
+      !GIT_OBJECT_ID.test(receipt.base_sha)
+    )
+      return "adopted PR identity does not match this provider update";
   }
   return null;
 }
@@ -251,11 +271,9 @@ async function reconcileUpdatedHead(opts: {
         observed: opts.observed,
       };
     }
-    const localFailure = await reconcileProviderUpdateLocalHead(
-      opts.request,
-      observedHeadSha,
-      observedBase,
-    );
+    const localFailure = opts.request.adoption
+      ? null
+      : await reconcileProviderUpdateLocalHead(opts.request, observedHeadSha, observedBase);
     if (localFailure) {
       return {
         state: "effect_in_doubt",
@@ -356,6 +374,43 @@ export async function updateProviderBranch(
 
   const before = await observeAuthorizedPullRequest(opts);
   if (before.state === "not_applied") return before.result;
+  if (opts.adoption) {
+    try {
+      const anchor = {
+        gitRoot: opts.gitRoot,
+        project: opts.identity.targetProject,
+      };
+      if (
+        (opts.adoption.head_sha !== opts.expectedHeadSha &&
+          !(await provesAncestor({
+            ...anchor,
+            ancestor: opts.adoption.head_sha,
+            descendant: opts.expectedHeadSha,
+          }))) ||
+        (opts.adoption.base_sha !== opts.expectedBaseSha &&
+          !(await provesAncestor({
+            ...anchor,
+            ancestor: opts.adoption.base_sha,
+            descendant: opts.expectedBaseSha,
+          })))
+      ) {
+        return {
+          state: "not_applied",
+          reason: "head_drift",
+          detail:
+            "Current provider head/base are not descendants of the immutable adopted observation.",
+          observed: before.observed,
+        };
+      }
+    } catch (error) {
+      return {
+        state: "not_applied",
+        reason: "observation_unavailable",
+        detail: `Adopted PR ancestry could not be proven: ${normalizeGhTransportError(error)}`,
+        observed: before.observed,
+      };
+    }
+  }
   if (opts.reconcileHeadSha !== undefined && before.observed.headSha !== opts.reconcileHeadSha) {
     return {
       state: "not_applied",
@@ -364,10 +419,12 @@ export async function updateProviderBranch(
       observed: before.observed,
     };
   }
-  const localFailure = await validateProviderUpdateLocalState(opts, [
-    opts.expectedHeadSha,
-    ...(before.observed.headSha ? [before.observed.headSha] : []),
-  ]);
+  const localFailure = opts.adoption
+    ? null
+    : await validateProviderUpdateLocalState(opts, [
+        opts.expectedHeadSha,
+        ...(before.observed.headSha ? [before.observed.headSha] : []),
+      ]);
   if (localFailure) {
     return {
       state: "not_applied",

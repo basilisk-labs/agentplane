@@ -30,6 +30,7 @@ import {
   validateWorkItemDefinitions,
 } from "./invariants.js";
 import type {
+  CanonicalAuthorityRecord,
   DomainEvent,
   EffectState,
   ExecutionAuthority,
@@ -339,6 +340,8 @@ function validationIdentityMatchesResult(
     resultDigest !== null &&
     isSha256Digest(resultDigest) &&
     identity.implementation_identity === resultDigest &&
+    (identity.hosted_head_evidence_digest === undefined ||
+      isSha256Digest(identity.hosted_head_evidence_digest)) &&
     identity.check_id.trim().length > 0 &&
     isSha256Digest(identity.command_digest) &&
     isSha256Digest(identity.toolchain_digest) &&
@@ -676,6 +679,14 @@ function object(value: unknown): Record<string, unknown> | null {
     : null;
 }
 
+function isRepositoryContinuation(record: CanonicalAuthorityRecord): boolean {
+  return (
+    record.approval_mode === null &&
+    (record.observation?.kind === "repository_implementation" ||
+      record.observation?.kind === "worktree_preparation")
+  );
+}
+
 /** Issuance and result may be sibling delegations around a native repository continuation. */
 function requiredCheckAuthorityLineage(
   aggregate: TaskAggregate,
@@ -710,8 +721,7 @@ function requiredCheckAuthorityLineage(
     )
       return [];
     const approval = record.approval_mode !== null && record.observation === null;
-    const continuation =
-      record.approval_mode === null && record.observation?.kind === "repository_implementation";
+    const continuation = isRepositoryContinuation(record);
     if (!approval && !continuation) return [];
     const matching = receipts.filter((receipt) => {
       if (
@@ -794,9 +804,9 @@ function requiredCheckAuthorityLineage(
     if (
       next.index !== index + 1 ||
       next.receipt.before_revision !== cursor ||
-      next.record.observation?.kind !== "repository_implementation" ||
+      !isRepositoryContinuation(next.record) ||
       next.record.authority.provenance.parent_authority_digest !== parent.digest ||
-      next.record.observation.previous_fingerprint !== parent.repository_fingerprint
+      next.record.observation?.previous_fingerprint !== parent.repository_fingerprint
     )
       return false;
     cursor = next.receipt.after_revision;
@@ -1659,6 +1669,9 @@ export function reduceTaskCommand(input: KernelInput): KernelResult {
       if (!validationIdentityMatchesResult(command.validation, input.repository_fingerprint)) {
         return rejected("VALIDATION_IDENTITY_MISMATCH", ["final_validation"]);
       }
+      if (!hostedFinalValidationMatchesCompletedWork(aggregate, command.validation)) {
+        return rejected("VALIDATION_IDENTITY_MISMATCH", ["hosted_head_evidence"]);
+      }
       if (command.validation.status === "STALE") {
         return rejected("FINAL_VALIDATION_MISSING", [command.validation.status]);
       }
@@ -1922,7 +1935,8 @@ export function isTaskCompletionEligible(
     aggregate.state !== "FINAL_VALIDATION" ||
     aggregate.current_plan?.state !== "APPROVED" ||
     aggregate.final_validation?.status !== "PASSED" ||
-    !validationIdentityMatchesResult(aggregate.final_validation, repositoryFingerprint)
+    !validationIdentityMatchesResult(aggregate.final_validation, repositoryFingerprint) ||
+    !hostedFinalValidationMatchesCompletedWork(aggregate, aggregate.final_validation)
   ) {
     return false;
   }
@@ -1932,6 +1946,27 @@ export function isTaskCompletionEligible(
       ["APPLIED", "NOT_APPLIED", "RECONCILED", "SUPERSEDED"].includes(effect.state),
     )
   );
+}
+
+function hostedFinalValidationMatchesCompletedWork(
+  aggregate: TaskAggregate,
+  finalValidation: ValidationRecord,
+): boolean {
+  const hosted = new Set<Sha256Digest>(
+    aggregate.current_plan?.work_items
+      .filter(
+        (definition) =>
+          !definition.optional || aggregate.work_items[definition.id]?.state === "COMPLETED",
+      )
+      .map(
+        (definition) =>
+          aggregate.work_items[definition.id]?.validation?.identity.hosted_head_evidence_digest,
+      )
+      .filter((value): value is Sha256Digest => value !== undefined),
+  );
+  if (hosted.size > 1) return false;
+  const accepted = hosted.values().next().value;
+  return accepted === finalValidation.identity.hosted_head_evidence_digest;
 }
 
 function requiredWorkComplete(aggregate: TaskAggregate): boolean {

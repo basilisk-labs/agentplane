@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import path from "node:path";
-import { taskKernel as k, kernelPlanProposalSchema } from "@agentplaneorg/core/tasks";
+import { taskKernel as k } from "@agentplaneorg/core/tasks";
 import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { verificationChildEnv } from "../shared/pr-meta/verify-log.js";
@@ -23,6 +23,12 @@ import { listKernelRepositoryEvidence } from "./kernel-repository-coordinator.js
 import { resolveQualityReviewTargetSha } from "../shared/quality-review-target.js";
 import { recoverKernelOperationalProjection } from "./kernel-operational-projection-recovery.js";
 import { canonicalNoExecutableChecksAllowed } from "./kernel-no-check-policy.js";
+import {
+  assertCurrentHostedHead,
+  type HostedValidationRoute,
+} from "./kernel-hosted-head-evidence.js";
+import { resolveKernelAdoptedValidationRoute } from "./kernel-adopted-pr-route.js";
+import { writeCorrectivePlan } from "./kernel-final-corrective-plan.js";
 
 type Runtime = Awaited<ReturnType<typeof createKernelRuntime>>;
 const FINAL_VALIDATION_CHECK_ID = "canonical-final-contracts-v2";
@@ -100,6 +106,36 @@ export async function restoreKernelFinalValidation(
   const evidenceDigest = validation?.evidence_digests.at(-1);
   const environmentDigest = k.kernelDigest(verificationChildEnv());
   const repositoryEvidence = await listKernelRepositoryEvidence(command, record);
+  const latest = repositoryEvidence.at(-1) ?? null;
+  const hostedRoute =
+    latest?.origin === "adopted_hosted_pr"
+      ? await resolveKernelAdoptedValidationRoute(command, record.aggregate.id, latest)
+      : undefined;
+  if (latest?.origin === "adopted_hosted_pr") {
+    if (
+      !hostedRoute ||
+      plan?.state !== "APPROVED" ||
+      validation?.status !== "PASSED" ||
+      validation.identity.check_id !== FINAL_VALIDATION_CHECK_ID ||
+      validation.identity.hosted_head_evidence_digest !== latest.hosted_head.digest ||
+      validation.identity.environment_digest !== environmentDigest ||
+      validation.identity.command_digest !== k.kernelDigest(finalValidationCommands(record)) ||
+      !evidenceDigest
+    )
+      return null;
+    await assertCurrentHostedHead({
+      repository_root: command.resolvedProject.gitRoot,
+      checkout: latest.checkout,
+      evidence: latest.hosted_head,
+      fresh_readback: hostedRoute.fresh_readback,
+    });
+    return {
+      fingerprint: repositoryFingerprint,
+      environment_digest: environmentDigest,
+      evidence_digest: evidenceDigest,
+      plan_digest: plan.digest,
+    };
+  }
   const previousEvaluatorTarget = repositoryEvidence.at(-1)?.implementation_commit ?? null;
   const resolvedEvaluatorTarget = await resolveEvaluatorTarget(
     command,
@@ -160,6 +196,7 @@ export async function runKernelFinalValidation(
   command: CommandContext,
   runtime: Runtime,
   record: KernelRecord,
+  hostedRoute?: HostedValidationRoute,
 ) {
   const taskId = record.aggregate.id;
   const plan = record.aggregate.current_plan;
@@ -171,8 +208,39 @@ export async function runKernelFinalValidation(
     throw new Error("Canonical final validation authority is stale");
   const commands = finalValidationCommands(record);
   const repositoryEvidence = await listKernelRepositoryEvidence(command, record);
+  const latestEvidence = repositoryEvidence.at(-1);
+  if (!hostedRoute && latestEvidence?.origin === "adopted_hosted_pr") {
+    hostedRoute = await resolveKernelAdoptedValidationRoute(command, taskId, latestEvidence);
+  }
+  const hostedEvidence = latestEvidence?.origin === "adopted_hosted_pr" ? latestEvidence : null;
+  if (hostedRoute && !hostedEvidence) {
+    throw new Error("Adopted hosted PR final validation route has no accepted evidence");
+  }
+  if (
+    repositoryEvidence.some((evidence) => evidence.origin === "adopted_hosted_pr") &&
+    (!hostedEvidence ||
+      !hostedRoute ||
+      path.resolve(hostedRoute.checkout) !== path.resolve(hostedEvidence.checkout) ||
+      path.resolve(command.resolvedProject.gitRoot) !==
+        path.resolve(hostedEvidence.control_checkout))
+  ) {
+    throw new Error("Adopted hosted PR final validation requires its exact-head checkout route");
+  }
+  const assertHosted = async () => {
+    if (hostedEvidence?.origin !== "adopted_hosted_pr") return;
+    await assertCurrentHostedHead({
+      repository_root: command.resolvedProject.gitRoot,
+      checkout: hostedEvidence.checkout,
+      evidence: hostedEvidence.hosted_head,
+      fresh_readback: hostedRoute!.fresh_readback,
+    });
+  };
+  await assertHosted();
   const previousEvaluatorTarget = repositoryEvidence.at(-1)?.implementation_commit ?? null;
-  const evaluatorTarget = await resolveEvaluatorTarget(command, taskId, previousEvaluatorTarget);
+  const evaluatorTarget =
+    hostedEvidence?.origin === "adopted_hosted_pr"
+      ? hostedEvidence.evaluator_target
+      : await resolveEvaluatorTarget(command, taskId, previousEvaluatorTarget);
   if (previousEvaluatorTarget && !evaluatorTarget)
     throw new Error("Canonical final validation commit identity is unavailable");
   let operationalTask = await command.taskBackend.getTask(taskId);
@@ -184,6 +252,7 @@ export async function runKernelFinalValidation(
     if (!operationalTask) throw new Error("Recovered operational task is unavailable");
   }
   const verification =
+    !hostedEvidence &&
     operationalTask.execution_route?.repository_mode === "branch_pr" &&
     recovery.kind !== "report_only"
       ? await resolveImplementationVerificationTask({
@@ -229,7 +298,7 @@ export async function runKernelFinalValidation(
     command,
     task: canonicalFinalValidationTask(projectionTask),
     task_id: taskId,
-    cwd: command.resolvedProject.gitRoot,
+    cwd: hostedEvidence ? hostedRoute!.checkout : command.resolvedProject.gitRoot,
     additional_commands: commands.map((check) => ({ command: check })),
     // A historical empty canonical contract cannot be rescued by an implicit policy fallback.
     additional_only: commands.length === 0 && !noExecutableChecks,
@@ -238,11 +307,13 @@ export async function runKernelFinalValidation(
   });
   const current = await runtime.adapter.read(taskId);
   const observed = await runtime.observe();
+  await assertHosted();
   if (
     current.kind !== "canonical" ||
     current.record.digest !== record.digest ||
     observed.fingerprint !== binding.repository_fingerprint ||
-    (evaluatorTarget !== null &&
+    (!hostedEvidence &&
+      evaluatorTarget !== null &&
       !(await evaluatorTargetRemainsCurrent(command, taskId, evaluatorTarget))) ||
     k.kernelDigest(verificationChildEnv()) !== environmentDigest
   )
@@ -254,6 +325,7 @@ export async function runKernelFinalValidation(
       checks.status === "passed" ? "PASSED" : checks.status === "failed" ? "FAILED" : "BLOCKED",
     identity: {
       implementation_identity: binding.repository_fingerprint,
+      ...(hostedEvidence ? { hosted_head_evidence_digest: hostedEvidence.hosted_head.digest } : {}),
       check_id: FINAL_VALIDATION_CHECK_ID,
       command_digest: k.kernelDigest(commands),
       environment_digest: environmentDigest,
@@ -474,62 +546,4 @@ export async function runKernelFinalValidation(
     evidence_digest: k.kernelDigest(evidence),
     plan_digest: plan.digest,
   };
-}
-
-async function writeCorrectivePlan(
-  directory: string,
-  record: KernelRecord,
-  commands: string[],
-  evidenceDigest: string,
-  missingCommands = false,
-) {
-  const plan = record.aggregate.current_plan!;
-  const items = plan.work_items.map(({ contract_digest, ...definition }) => {
-    const contract = record.documents!.contracts[String(contract_digest)];
-    if (!contract) throw new Error("Corrective Plan requires every retained contract");
-    return { ...definition, contract };
-  });
-  const union = (key: keyof k.ExecutionRequirements) =>
-    [...new Set(plan.work_items.flatMap((item) => item.execution_requirements[key]))].toSorted();
-  const id = `final-correction-${evidenceDigest.slice(7, 19)}`;
-  const proposal = {
-    work_items: [
-      ...items,
-      {
-        id,
-        depends_on: plan.work_items
-          .filter((item) => record.aggregate.work_items[item.id]?.state === "COMPLETED")
-          .map((item) => item.id),
-        required_inputs: [],
-        expected_outputs: [id + "-evidence"],
-        optional: false,
-        execution_requirements: {
-          scope_roots: union("scope_roots"),
-          repository_effects: union("repository_effects"),
-          external_effects: [],
-          capabilities: union("capabilities"),
-          resources: union("resources"),
-        },
-        contract: {
-          objective: missingCommands
-            ? `Add executable final verification for the approved implementation evidenced by ${evidenceDigest}. Read ${path.join(directory, "final-validation.json")} before edits.`
-            : `Repair the failed final validation evidenced by ${evidenceDigest}. Read ${path.join(directory, "final-validation.json")} before edits.`,
-          acceptance_criteria: [
-            missingCommands
-              ? "Select and run an executable local verification command for the existing approved code. Preserve completed work and all prior evidence."
-              : "Correct the reproduced regression within the existing approved scope. Preserve completed work and all prior evidence.",
-            missingCommands
-              ? "Record the selected executable command in this WorkItem contract before Plan submission. Return concrete results for independent native review."
-              : "Run the unchanged required validation commands. Return implementation evidence for independent native review.",
-            "Do not bypass checks, expand authority, discard effects or claim that infrastructure failures are code defects.",
-          ],
-          verification_commands: commands,
-          role: "EXECUTOR",
-        },
-      },
-    ],
-  };
-  const filename = missingCommands ? "corrective-plan.template.json" : "corrective-plan.json";
-  await writeKernelArtifact(directory, filename, kernelPlanProposalSchema.parse(proposal));
-  return path.join(directory, filename);
 }
