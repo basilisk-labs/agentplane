@@ -1,0 +1,3 @@
+ .../src/commands/pr/open.convergence.test.ts       | 212 +++++++++++++++++++++
+ packages/agentplane/src/commands/pr/open.ts        |  72 +++++++
+ 2 files changed, 284 insertions(+)

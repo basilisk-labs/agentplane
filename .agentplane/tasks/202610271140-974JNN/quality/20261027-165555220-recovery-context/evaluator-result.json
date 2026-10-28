@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The six-file patch adds a strict same-repository adopted-PR identity, validates task identity and provider observations, updates negative tests, formats generated JSON, and synchronizes all three schema snapshots.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610271140-974JNN/quality/objects/sha256/043a561f775d11da9f044288e2bce738eb2f6ae59074fdc02c3bbe797798246f.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Native declared checks and post-branch-update full CI passed; the exact bb105886 head also passed hosted checks.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610271140-974JNN/quality/objects/sha256/043a561f775d11da9f044288e2bce738eb2f6ae59074fdc02c3bbe797798246f.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Residual risk: The provider adoption lifecycle is a separate downstream task; this prerequisite only establishes the metadata contract.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610271140-974JNN/quality/objects/sha256/043a561f775d11da9f044288e2bce738eb2f6ae59074fdc02c3bbe797798246f.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

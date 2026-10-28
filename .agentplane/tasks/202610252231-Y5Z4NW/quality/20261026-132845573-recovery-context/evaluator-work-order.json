@@ -1,0 +1,122 @@
+{
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202610252231-Y5Z4NW-bca30fdb896d37e57af468cb",
+  "prepared_at": "2026-10-26T13:28:45.573Z",
+  "task": {
+    "id": "202610252231-Y5Z4NW",
+    "revision": 32,
+    "objective": "Ratchet compatibility candidate for release versions\n\nGeneric release ratchet with digest-sealed reviewed-version anchor, immutable historical Zod delta and v0.6.24 baseline, version-parity recapture in release mutation, and negative drift tests. Successor to non-executable 94ATB0/B4RATB plans.",
+    "acceptance_criteria": [
+      "bun run bench:compatibility:candidate:check",
+      "node --test scripts/lib/compatibility-incremental-package-delta.test.mjs",
+      "- In scope: Generic release ratchet with digest-sealed reviewed-version anchor, immutable historical Zod delta and v0.6.24 baseline, version-parity recapture in release mutation, and negative drift tests. Successor to non-executable 94ATB0/B4RATB plans.\n- Out of scope: unrelated refactors not required for \"Ratchet compatibility candidate for release versions\".",
+      "1. Execute approved WorkItem ratchet-reviewed-release-compatibility-candidate.",
+      "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `node --test scripts/lib/compatibility-incremental-package-delta.test.mjs`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run bench:compatibility:candidate:check`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings."
+    ]
+  },
+  "evaluated_sha": "34292ac692a4809386f080fd2204a3b3bc9834fa",
+  "diff_base_sha": "d2221032ea2b5301203166e941b2db9a072de56e",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202610252231-Y5Z4NW/quality/20261026-132845573-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:2203d210421d12621a41ecf308420f4bf5f18a7c4406422e280ce0a217f5640a",
+    "prompt_path": ".agentplane/tasks/202610252231-Y5Z4NW/quality/objects/sha256/e4a22e6273cf159947390cc220e9922db0c824a7755c81770a4fc2a169cd587b.md",
+    "result_schema_path": ".agentplane/tasks/202610252231-Y5Z4NW/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "schema_version": 2,
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202610252231-Y5Z4NW",
+    "plan_digest": "sha256:d6fdfecb90d7da838397ac13f772c37fc8bbbe1fa8f8d9e3dd299ae640fee0d9",
+    "policy_digest": "sha256:26cbf60e57ff6118b5cdcfaa5b7bbd07e2f7c8f2e02112dc5e98fe4437e2fe64",
+    "capability_digest": "sha256:9d4f8cb1398929141f948ef917855b028d8bbf512d22b539e9e8475efe48189f",
+    "checks_digest": "sha256:0285a9642a0b07cb847e35289b59e893a0751a74cdd01f14c454b160d1dfe9a6",
+    "verification_input_digest": "sha256:9d146f72b517dcc937edb528a8bf8063c1ba1e796ffb895aa495afbb73c54280",
+    "acceptance_digest": "sha256:dde578cc780407109a0b501740301495601a8cdf1fa506eb8b138a7f5128ab3f",
+    "implementation_sha": "34292ac692a4809386f080fd2204a3b3bc9834fa",
+    "digest": "sha256:6662fb0b569b67f5c51bbc060cfd3b5ef2188d6f7bbd583ca623061735b40cca"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202610252231-Y5Z4NW/README.md",
+      "sha256": "sha256:acd6f372510d9ffa2d30197f5a41c68d0fa1b3cadb3d248351b793651af08053",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202610252231-Y5Z4NW/quality/objects/sha256/177e76bf5dd36be33991f358b1cb53f23a2cf862349f9ab82975a6a9ae559a71.patch",
+      "sha256": "sha256:177e76bf5dd36be33991f358b1cb53f23a2cf862349f9ab82975a6a9ae559a71",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202610252231-Y5Z4NW/quality/objects/sha256/b70746c9776588ace974d5ab7f4306de221533dba52a3e9540236f1822c88e32.json",
+      "sha256": "sha256:b70746c9776588ace974d5ab7f4306de221533dba52a3e9540236f1822c88e32",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202610252231-Y5Z4NW/verification/20261026132553289-5e96392459ba33ab.json",
+      "sha256": "sha256:af66c9d6f9b5ad329c52ddf47cd5020b880950e0b0b2f3da7efd0ff75e81a8e9",
+      "required": true
+    },
+    {
+      "id": "native-identity",
+      "kind": "plan",
+      "path": ".agentplane/tasks/202610252231-Y5Z4NW/quality/objects/sha256/202041555a19415865b10234280268c1e86b58a9804c091ebe357e466e555d89.json",
+      "sha256": "sha256:202041555a19415865b10234280268c1e86b58a9804c091ebe357e466e555d89",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:35a4c7a567a9b658a31feed9e096276ede95ad0c82198f362c302fe7bd20b612",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:6e5cb34ada84017778c43c3d057edcc68d3ccb60840c805e412f7dc6781070ee",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:d3dfd4eb0293213ab49d32c6f199066f2bc7c954cada6465aab458b1a9c7ee25",
+      "required": true
+    }
+  ]
+}

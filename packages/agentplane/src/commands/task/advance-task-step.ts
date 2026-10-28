@@ -19,6 +19,9 @@ import {
   type KernelEffectPortResolver,
 } from "./kernel-effect-coordinator.js";
 import { commitCanonicalTerminalTaskArtifacts } from "./kernel-repository-coordinator.js";
+import { listKernelRepositoryEvidence } from "./kernel-accepted-repository-evidence.js";
+import { resolveKernelAdoptedValidationRoute } from "./kernel-adopted-pr-route.js";
+import { assertCurrentHostedHead } from "./kernel-hosted-head-evidence.js";
 import { decideCanonicalWorkflowEffect } from "./kernel-provider-effect-coordinator.js";
 import {
   advanceCompletedProviderWorkflow,
@@ -48,6 +51,8 @@ export { kernelPlanApprovalOperatorAction } from "./kernel-plan-authority.js";
 export { canonicalCompletionPrecedesWorkflow } from "./ordinary-advance-step.js";
 
 import { authorityDeltaStop } from "./kernel-authority-delta-stop.js";
+import { recoverAdoptedProviderEffect } from "./adopted-provider-effect-recovery.js";
+import { advanceAdoptedPreclaimUpdate } from "./kernel-adopted-preclaim-update.js";
 
 async function advanceCanonicalRoute(opts: {
   command: CommandContext;
@@ -89,6 +94,11 @@ async function advanceCanonicalRoute(opts: {
     plan_digest: string;
   } | null = null;
   for (let step = 0; step < INTERNAL_ORCHESTRATOR_TRANSITION_FUSE; step++) {
+    if (
+      opts.allow_provider_effects &&
+      (await recoverAdoptedProviderEffect({ command: opts.command, task_id: opts.task_id }))
+    )
+      continue;
     const context = await runtime.native.readContext(opts.task_id);
     const current = await runtime.lifecycle.read(opts.task_id, context.repository_fingerprint);
     if (current.read.kind !== "canonical")
@@ -133,29 +143,6 @@ async function advanceCanonicalRoute(opts: {
       record,
       context.repository_fingerprint,
     );
-    const persistedValidationEvidence =
-      record.aggregate.final_validation?.status === "PASSED"
-        ? record.aggregate.final_validation.evidence_digests.at(-1)
-        : undefined;
-    if (
-      needsPullRequest &&
-      !finalValidation &&
-      persistedValidationEvidence &&
-      ["kernel_final_validation_required", "kernel_task_completion_required"].includes(
-        route.reason_code,
-      )
-    ) {
-      await ensureKernelOperationalProjectionEvidence({
-        command: opts.command,
-        task_id: opts.task_id,
-        verification_evidence_digest: persistedValidationEvidence,
-      });
-      const completion = await runtime.input({ kind: "complete_task" }, operationId);
-      if (completion.command.expected_task_revision !== record.aggregate.revision)
-        throw new Error("Canonical task changed before completion");
-      requireKernelCommit(await runtime.lifecycle.apply(completion));
-      continue;
-    }
     if (route.reason_code === "kernel_task_completed" && !needsPullRequest) {
       if (!reportOnlyCompletion)
         await commitCanonicalTerminalTaskArtifacts(opts.command, opts.task_id);
@@ -356,6 +343,22 @@ async function advanceCanonicalRoute(opts: {
           finalValidation.evidence_digest,
         )
       ) {
+        const evidence = await listKernelRepositoryEvidence(opts.command, record);
+        const acceptedEvidence = evidence.at(-1) ?? null;
+        if (acceptedEvidence?.origin === "adopted_hosted_pr") {
+          const hostedRoute = await resolveKernelAdoptedValidationRoute(
+            opts.command,
+            opts.task_id,
+            acceptedEvidence,
+          );
+          if (!hostedRoute) throw new Error("Canonical adopted completion has no exact-head route");
+          await assertCurrentHostedHead({
+            repository_root: opts.command.resolvedProject.gitRoot,
+            checkout: acceptedEvidence.checkout,
+            evidence: acceptedEvidence.hosted_head,
+            fresh_readback: hostedRoute.fresh_readback,
+          });
+        }
         if (needsPullRequest) {
           if (!opts.allow_provider_effects) {
             return {
@@ -456,6 +459,21 @@ async function advanceCanonicalRoute(opts: {
         route.reason_code === "kernel_work_item_rework_claim_required") &&
       route.work_item_id
     ) {
+      const providerUpdate = await advanceAdoptedPreclaimUpdate({
+        command: opts.command,
+        task_id: opts.task_id,
+        allow_provider_effects: opts.allow_provider_effects,
+        first_claim:
+          route.reason_code === "kernel_work_item_claim_required" &&
+          Object.values(record.aggregate.work_items).every((item) =>
+            ["PLANNED", "READY"].includes(item.state),
+          ),
+      });
+      if (providerUpdate.kind === "progress") {
+        anomalyTracker.reset();
+        continue;
+      }
+      if (providerUpdate.kind === "stop") return providerUpdate.response;
       await runtime.checkpoint(await runtime.observe());
       requireKernelCommit(
         await runtime.lifecycle.apply(

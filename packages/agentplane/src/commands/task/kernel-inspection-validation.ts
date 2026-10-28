@@ -23,6 +23,11 @@ import {
   isInfrastructureVerification,
   prepareInfrastructureVerificationForCheckout,
 } from "./verification-infrastructure.js";
+import {
+  assertCurrentHostedHead,
+  type FreshHostedReadback,
+  type HostedValidationRoute,
+} from "./kernel-hosted-head-evidence.js";
 
 import { assertWorkItemResume, workItemResumeOperatorAction } from "./kernel-work-item-resume.js";
 
@@ -49,6 +54,7 @@ type KernelNativeValidationInput = Readonly<{
   result_digest: string;
   repository_fingerprint: string;
   repository_evidence_digest: string | null;
+  no_executable_checks: boolean;
   verification: DirectTaskVerificationInputIdentity;
 }>;
 
@@ -81,6 +87,7 @@ export async function resolveInspectionRepositoryEvidence(
   record: KernelRecord,
   workItemId: string,
   resultDirectory: string,
+  hostedRoute?: HostedValidationRoute,
 ): Promise<ResolvedRepositoryEvidence | null> {
   const head = await readDirectTaskHead(command.resolvedProject.gitRoot);
   const currentOrderId = `sha256:${path.basename(resultDirectory)}`;
@@ -91,6 +98,26 @@ export async function resolveInspectionRepositoryEvidence(
     if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
   }
   if (current) {
+    if (current.origin === "adopted_hosted_pr") {
+      if (
+        !hostedRoute ||
+        path.resolve(hostedRoute.checkout) !== path.resolve(current.checkout) ||
+        path.resolve(current.control_checkout) !== path.resolve(command.resolvedProject.gitRoot) ||
+        current.task_id !== record.aggregate.id ||
+        current.work_item_id !== workItemId ||
+        current.work_order_id !== currentOrderId ||
+        current.evaluator_target !== current.implementation_commit
+      ) {
+        throw new Error("Adopted hosted PR inspection requires a fresh exact-head readback route");
+      }
+      await assertCurrentHostedHead({
+        repository_root: command.resolvedProject.gitRoot,
+        checkout: current.checkout,
+        evidence: current.hosted_head,
+        fresh_readback: hostedRoute.fresh_readback,
+      });
+      return { directory: resultDirectory, evidence: current };
+    }
     if (
       current.task_id !== record.aggregate.id ||
       current.work_item_id !== workItemId ||
@@ -122,6 +149,26 @@ export async function resolveInspectionRepositoryEvidence(
     }
     if (candidate.task_id !== record.aggregate.id || candidate.work_item_id !== workItemId)
       continue;
+    if (candidate.origin === "adopted_hosted_pr") {
+      if (
+        !hostedRoute ||
+        path.resolve(hostedRoute.checkout) !== path.resolve(candidate.checkout) ||
+        path.resolve(candidate.control_checkout) !==
+          path.resolve(command.resolvedProject.gitRoot) ||
+        candidate.work_order_id !== `sha256:${path.basename(directory)}` ||
+        candidate.task_revision > record.aggregate.revision ||
+        candidate.evaluator_target !== candidate.implementation_commit
+      ) {
+        throw new Error("Adopted hosted PR inspection requires a fresh exact-head readback route");
+      }
+      await assertCurrentHostedHead({
+        repository_root: command.resolvedProject.gitRoot,
+        checkout: candidate.checkout,
+        evidence: candidate.hosted_head,
+        fresh_readback: hostedRoute.fresh_readback,
+      });
+      return { directory, evidence: candidate };
+    }
     if (
       candidate.work_order_id !== `sha256:${path.basename(directory)}` ||
       candidate.task_revision > record.aggregate.revision ||
@@ -142,6 +189,8 @@ export function nativeValidationInput(opts: {
   binding: InspectionBinding;
   commands: readonly string[];
   repositoryEvidence: KernelRepositoryEvidence | null;
+  verificationCheckout?: string;
+  noExecutableChecks?: boolean;
 }): { input: KernelNativeValidationInput; digest: k.Sha256Digest; path: string } {
   const input: KernelNativeValidationInput = {
     schema_version: 1,
@@ -151,8 +200,9 @@ export function nativeValidationInput(opts: {
     result_digest: opts.binding.result_digest,
     repository_fingerprint: opts.binding.repository_fingerprint,
     repository_evidence_digest: opts.repositoryEvidence?.digest ?? null,
+    no_executable_checks: opts.noExecutableChecks === true,
     verification: directTaskVerificationInputIdentity({
-      cwd: opts.command.resolvedProject.gitRoot,
+      cwd: opts.verificationCheckout ?? opts.command.resolvedProject.gitRoot,
       commands: opts.commands,
     }),
   };
@@ -186,14 +236,18 @@ export function requireNativeValidationEvidence(opts: {
   input: KernelNativeValidationInput;
   digest: k.Sha256Digest;
 }) {
+  const repository = opts.evidence.repository_evidence;
+  const repositoryContents = repository
+    ? (({ digest: _digest, ...contents }) => contents)(repository)
+    : null;
   if (
     opts.evidence.schema_version !== 1 ||
     opts.evidence.kind !== "kernel_native_validation" ||
     opts.evidence.input_digest !== opts.digest ||
     k.kernelDigest(opts.evidence.input) !== opts.digest ||
     k.kernelDigest(opts.evidence.input) !== k.kernelDigest(opts.input) ||
-    opts.evidence.repository_evidence?.digest !==
-      (opts.input.repository_evidence_digest ?? undefined)
+    repository?.digest !== (opts.input.repository_evidence_digest ?? undefined) ||
+    (repository !== null && k.kernelDigest(repositoryContents) !== repository.digest)
   ) {
     throw new Error("Canonical native validation input identity mismatch");
   }
@@ -207,13 +261,38 @@ export async function runKernelNativeValidation(opts: {
   commands: readonly string[];
   directory: string;
   repositoryEvidence: KernelRepositoryEvidence | null;
+  verificationCheckout?: string;
+  freshHostedReadback?: FreshHostedReadback;
+  noExecutableChecks?: boolean;
 }): Promise<
   | { kind: "observed"; evidence: KernelNativeValidationEvidence; path: string }
   | { kind: "retry"; reason: string | null }
 > {
+  const hosted =
+    opts.repositoryEvidence?.origin === "adopted_hosted_pr" ? opts.repositoryEvidence : null;
+  if (
+    hosted &&
+    (!opts.verificationCheckout ||
+      !opts.freshHostedReadback ||
+      path.resolve(opts.verificationCheckout) !== path.resolve(hosted.checkout) ||
+      path.resolve(opts.command.resolvedProject.gitRoot) !== path.resolve(hosted.control_checkout))
+  ) {
+    throw new Error("Adopted hosted PR native validation requires its exact-head checkout");
+  }
+  const assertHostedCheckout = async () => {
+    if (!hosted) return;
+    await assertCurrentHostedHead({
+      repository_root: opts.command.resolvedProject.gitRoot,
+      checkout: hosted.checkout,
+      evidence: hosted.hosted_head,
+      fresh_readback: opts.freshHostedReadback!,
+    });
+  };
+  await assertHostedCheckout();
   const identity = nativeValidationInput(opts);
   const retained = await readNativeValidation(opts.directory, identity.path);
   if (retained) {
+    await assertHostedCheckout();
     return {
       kind: "observed",
       evidence: requireNativeValidationEvidence({
@@ -235,16 +314,17 @@ export async function runKernelNativeValidation(opts: {
     implementation_commit: implementationCommit,
     verification_scope: opts.binding.work_item_id,
     identity: identity.input,
-    checkout: opts.command.resolvedProject.gitRoot,
+    checkout: opts.verificationCheckout ?? opts.command.resolvedProject.gitRoot,
   });
   const checks = await runDirectTaskVerification({
     command: opts.command,
     task: { verify: [] },
     task_id: opts.binding.task_id,
-    cwd: opts.command.resolvedProject.gitRoot,
+    cwd: opts.verificationCheckout ?? opts.command.resolvedProject.gitRoot,
     additional_only: true,
     additional_commands: opts.commands.map((check) => ({ command: check })),
-    allow_empty: true,
+    allow_empty: opts.noExecutableChecks === true,
+    empty_is_failure: opts.noExecutableChecks !== true,
   });
   if (kernelCheckReviewDisposition(checks) === "retry") {
     await retainInfrastructure({
@@ -257,10 +337,12 @@ export async function runKernelNativeValidation(opts: {
   const observed = await opts.runtime.observe();
   if (observed.fingerprint !== opts.binding.repository_fingerprint)
     throw new Error("Canonical repository changed during native validation");
+  await assertHostedCheckout();
   if (
     opts.repositoryEvidence &&
-    (await readDirectTaskHead(opts.command.resolvedProject.gitRoot)) !==
-      opts.repositoryEvidence.implementation_commit
+    (await readDirectTaskHead(
+      opts.verificationCheckout ?? opts.command.resolvedProject.gitRoot,
+    )) !== opts.repositoryEvidence.implementation_commit
   )
     throw new Error("Canonical evaluator target changed during native validation");
   const evidence: KernelNativeValidationEvidence = {
@@ -287,6 +369,9 @@ export function validationRecord(opts: {
     status: opts.status,
     identity: {
       implementation_identity: opts.binding.result_digest as k.Sha256Digest,
+      ...(opts.native.repository_evidence?.origin === "adopted_hosted_pr"
+        ? { hosted_head_evidence_digest: opts.native.repository_evidence.hosted_head.digest }
+        : {}),
       check_id:
         opts.reviewDigest === null
           ? "canonical-native-checks"

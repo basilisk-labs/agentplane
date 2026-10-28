@@ -1,0 +1,1 @@
+"$ node scripts/checks/run-local-ci.mjs --mode full"

@@ -406,6 +406,7 @@ describe("canonical task kernel reducer", () => {
       expectRejection(input(completed, malformed), "VALIDATION_IDENTITY_MISMATCH");
     }
   });
+
   it.each(["2026-08-29T19:00:00.000Z", "2026-08-29T20:00:00.000Z", "not-a-date"])(
     "rejects expired or malformed authority expiry %s",
     (expires_at) => {

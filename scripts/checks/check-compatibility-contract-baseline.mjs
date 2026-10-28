@@ -26,7 +26,15 @@ import {
   resolveReviewedCompatibilitySurfaceMode,
   surfaceSectionDigests,
 } from "../lib/compatibility-contract.mjs";
-import { reconstructHistoricalPackageSurface } from "../lib/compatibility-incremental-package-delta.mjs";
+import {
+  normalizePackageVersions,
+  reconstructHistoricalPackageSurface,
+  reviewedPackageVersion,
+} from "../lib/compatibility-incremental-package-delta.mjs";
+import {
+  readCompatibilityCandidate,
+  resolveCompatibilityCandidatePath,
+} from "../lib/compatibility-candidate-path.mjs";
 
 const scriptPath = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(scriptPath), "../..");
@@ -36,25 +44,26 @@ const baselinePath = path.join(
   "baselines",
   "v0.6.24-compatibility-contract.json",
 );
-const candidatePath = path.join(
-  repoRoot,
-  "scripts",
-  "baselines",
-  "v0.7-compatibility-candidate.json",
-);
+function candidatePathFromArgs(argv) {
+  if (argv.length === 0) return resolveCompatibilityCandidatePath(repoRoot);
+  if (argv.length !== 2 || argv[0] !== "--candidate-path") {
+    throw new Error("Expected --candidate-path <scripts/baselines/*-compatibility-candidate.json>");
+  }
+  return resolveCompatibilityCandidatePath(repoRoot, argv[1]);
+}
 
 // Exact reviewed Recipe V2 surface. Recapturing an unexpected change is not approval.
 const REVIEWED_SECTION_DIGESTS = {
   agent_facing_context_contracts:
     "4926aed50aea235e24310e39404f7b939bc4caa7fc763a98387992822a2101c5",
-  cli_topology: "142372fde652c457e2d9667498b08bfbd6aa5e357fe7ee83598aac394ce599b3",
+  cli_topology: "8e8ea9209fca864b11e85217dece11593f9510f52d82c821fe9061aa0b3e302d",
   exit_error_contract: "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
   machine_output_contract: "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
   package_manifests: "6052feb72f5eee6eaa1a503bb10074492350a164de683adf50bf2b092ce647b9",
   tarball_policy: "10e8c7b78d3166955320b6fa787d7564b5bba1f67b3ce1736dca46673528716d",
   workflow_schema: "1003207ce9df63cccac8761565f0d1264c094fd3fda5609012a6716c82842451",
 };
-function assertReviewedSectionDigests(sectionDigests) {
+export function assertReviewedSectionDigests(sectionDigests) {
   assert(
     hashJson(sectionDigests) === hashJson(REVIEWED_SECTION_DIGESTS),
     "reviewed Recipe V2 section inventory drift",
@@ -66,7 +75,7 @@ function readBaseline() {
 }
 
 function readCandidate() {
-  return JSON.parse(readFileSync(candidatePath, "utf8"));
+  return JSON.parse(readCompatibilityCandidate(candidatePathFromArgs(process.argv.slice(2))));
 }
 
 function assert(condition, message) {
@@ -320,7 +329,7 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
       "review",
       "deltas",
     ],
-    [],
+    ["incremental_package_delta_reviewed_version"],
     "compatibility candidate",
   );
   assert(
@@ -398,6 +407,8 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
     "202610101128-35N0ZK",
     "202610101141-AGRARP",
     "202610160500-6RCQSY",
+    "202610260157-ZDEE0D",
+    "202610270555-MY0JZE",
   ];
 
   assert(
@@ -488,6 +499,7 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
   const historicalSurface = reconstructHistoricalPackageSurface(
     currentSurface,
     incrementalPackageDelta,
+    reviewedPackageVersion(candidate),
   );
   const historicalSectionDigests = surfaceSectionDigests(historicalSurface);
   const historicalDigest = compatibilitySurfaceDigest(historicalSectionDigests);
@@ -595,31 +607,10 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
     "baseline package versions must resolve to one semantic version",
   );
   const baselinePackageVersion = baselinePackageVersions[0];
-  const preReleasePackageManifests = historicalSurface.package_manifests.map((manifest) => {
-    const normalizedManifest = structuredClone(manifest);
-    delete normalizedManifest.path;
-    delete normalizedManifest.normalized_sha256;
-    normalizedManifest.version = baselinePackageVersion;
-    const internalDependencies =
-      manifest.path === "packages/agentplane/package.json"
-        ? ["@agentplaneorg/core", "@agentplaneorg/recipes"]
-        : manifest.path === "packages/recipes/package.json"
-          ? ["@agentplaneorg/core"]
-          : [];
-    for (const name of internalDependencies) {
-      if (manifest.dependencies?.[name] !== manifest.version) {
-        throw new Error(`${manifest.path}: unexpected internal dependency version for ${name}`);
-      }
-    }
-    if (manifest.path === "packages/agentplane/package.json") {
-      normalizedManifest.dependencies["@agentplaneorg/core"] = baselinePackageVersion;
-      normalizedManifest.dependencies["@agentplaneorg/recipes"] = baselinePackageVersion;
-    }
-    if (manifest.path === "packages/recipes/package.json") {
-      normalizedManifest.dependencies["@agentplaneorg/core"] = baselinePackageVersion;
-    }
-    return packageSurface(manifest.path, normalizedManifest);
-  });
+  const preReleasePackageManifests = normalizePackageVersions(
+    historicalSurface.package_manifests,
+    baselinePackageVersion,
+  );
   assert(
     hashJson(preReleasePackageManifests) === preReleasePackageDelta.to_sha256,
     "pre-release package manifest reconstruction drift",
@@ -1034,6 +1025,8 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
       "202610101128-35N0ZK",
       "202610101141-AGRARP",
       "202610160500-6RCQSY",
+      "202610260157-ZDEE0D",
+      "202610270555-MY0JZE",
     ],
     agent_facing_context_contracts: [
       "202607221848-1HWR0R",
@@ -1054,6 +1047,7 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
       "202610041748-K43XFE",
       "202610060956-42J54D",
       "202610011624-MP3J6N",
+      "202610270555-MY0JZE",
     ],
     machine_output_contract: [
       "202607221848-ABG7SD",
@@ -3840,6 +3834,19 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
       name: "revision",
       source_task: "202610160500-6RCQSY",
     },
+    {
+      kind: "option",
+      command: "task plan set",
+      name: "failed-check-work-order",
+      source_task: "202610260157-ZDEE0D",
+    },
+    { kind: "command", command: "pr adopt", source_task: "202610270555-MY0JZE" },
+    ...["approval-digest", "by", "file", "request-digest", "ttl-minutes"].map((name) => ({
+      kind: "option",
+      command: "pr adopt",
+      name,
+      source_task: "202610270555-MY0JZE",
+    })),
   ];
   const activeExpectedAddedCommandDescriptors = expectedAddedCommandDescriptors
     .filter((command) => command.id.join(" ") !== "task supervisor budget-epoch")
@@ -3855,6 +3862,22 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
         : command,
     );
   activeExpectedAddedCommandDescriptors.push(
+    {
+      args: [
+        { name: "task-id", required: true, valueHint: "<task-id>", variadic: false },
+        { name: "action", required: true, valueHint: "<prepare|approve|apply>", variadic: false },
+      ],
+      group: "PR",
+      id: ["pr", "adopt"],
+      options: [
+        { kind: "string", name: "file", valueHint: "<json>" },
+        { kind: "string", name: "request-digest", valueHint: "<sha256>" },
+        { kind: "string", name: "approval-digest", valueHint: "<sha256>" },
+        { kind: "string", name: "by", valueHint: "USER" },
+        { kind: "string", name: "ttl-minutes", valueHint: "<1-60>" },
+      ],
+      visibility: "user",
+    },
     {
       args: [{ name: "task-id", required: true, valueHint: "<task-id>", variadic: false }],
       group: "Task",
@@ -4088,6 +4111,7 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
         "evidence gc",
         "evidence stats",
         "integrate queue adopt-legacy-protected-conflict",
+        "pr adopt",
         "pr conflict-rework",
         "recipes preview-v1",
         "recipes preview-v2",
@@ -4122,6 +4146,17 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
     "new CLI command descriptor is not in the approved delta",
   );
   const activeExpectedAddedOptions = [
+    { command: "pr adopt", kind: "string", name: "approval-digest", valueHint: "<sha256>" },
+    { command: "pr adopt", kind: "string", name: "by", valueHint: "USER" },
+    { command: "pr adopt", kind: "string", name: "file", valueHint: "<json>" },
+    { command: "pr adopt", kind: "string", name: "request-digest", valueHint: "<sha256>" },
+    { command: "pr adopt", kind: "string", name: "ttl-minutes", valueHint: "<1-60>" },
+    {
+      command: "task plan set",
+      kind: "string",
+      name: "failed-check-work-order",
+      valueHint: "<sha256:digest>",
+    },
     {
       command: "task cancel",
       kind: "string",

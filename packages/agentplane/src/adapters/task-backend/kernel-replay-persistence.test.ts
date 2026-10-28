@@ -15,7 +15,7 @@ import {
   kernelEffectReplayCases,
   observeKernelEffectReplay,
 } from "./kernel-effect-replay.testkit.js";
-import { makeKernelRecord } from "./kernel-record.js";
+import { kernelValidationSchema, makeKernelRecord } from "./kernel-record.js";
 import {
   compareKernelReadPaths,
   compareReplayObservations,
@@ -56,6 +56,43 @@ afterEach(async () => {
   await Promise.all(roots.splice(0).map((root) => rm(root, { recursive: true, force: true })));
 });
 const storage = (kind: ReplayBackendKind) => kernelReplayStorage(kind, roots);
+
+describe("adopted hosted validation persistence", () => {
+  const digest = `sha256:${"a".repeat(64)}`;
+  const validation = {
+    status: "PASSED" as const,
+    identity: {
+      implementation_identity: digest,
+      hosted_head_evidence_digest: digest,
+      check_id: "canonical-contract-and-inspection",
+      command_digest: digest,
+      toolchain_digest: digest,
+      environment_digest: digest,
+    },
+    evidence_digests: [digest],
+    observed_at: "2026-10-27T17:00:00.000Z",
+  };
+
+  it("round-trips the exact hosted head digest through strict validation records", () => {
+    const parsed = kernelValidationSchema.parse(structuredClone(validation));
+    expect(parsed.identity.hosted_head_evidence_digest).toBe(digest);
+  });
+
+  it("rejects malformed hosted digests and unknown identity fields", () => {
+    expect(() =>
+      kernelValidationSchema.parse({
+        ...validation,
+        identity: { ...validation.identity, hosted_head_evidence_digest: "other" },
+      }),
+    ).toThrow();
+    expect(() =>
+      kernelValidationSchema.parse({
+        ...validation,
+        identity: { ...validation.identity, unknown_proof: digest },
+      }),
+    ).toThrow();
+  });
+});
 
 // The isolated driver alone supplies this destination. Normal tests never update frozen inputs.
 const captureOutput = process.env.AGENTPLANE_KERNEL_CAPTURE_OUTPUT;

@@ -18,7 +18,7 @@ export type KernelRepositoryBaseline = Readonly<{
   status: DirectRepositoryStatus;
 }>;
 
-export type KernelRepositoryEvidence = Readonly<{
+type KernelRepositoryEvidenceCommon = Readonly<{
   schema_version: 1;
   kind: "canonical_repository_evidence";
   task_id: string;
@@ -32,9 +32,24 @@ export type KernelRepositoryEvidence = Readonly<{
   implementation_tree: string;
   changed_paths: readonly string[];
   evaluator_target: string;
-  implementation_evidence: DirectImplementationEvidence;
   digest: k.Sha256Digest;
 }>;
+
+export type KernelRepositoryEvidence =
+  | (KernelRepositoryEvidenceCommon &
+      Readonly<{
+        origin?: "task_branch";
+        implementation_evidence: DirectImplementationEvidence;
+        hosted_head?: never;
+        control_checkout?: never;
+      }>)
+  | (KernelRepositoryEvidenceCommon &
+      Readonly<{
+        origin: "adopted_hosted_pr";
+        implementation_evidence?: never;
+        hosted_head: k.HostedPrHeadEvidence;
+        control_checkout: string;
+      }>);
 
 export type KernelRepositoryCommitIntent = Readonly<{
   schema_version: 1;

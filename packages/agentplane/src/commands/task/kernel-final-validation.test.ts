@@ -14,6 +14,10 @@ const mocks = vi.hoisted(() => ({
   target: vi.fn(),
   status: vi.fn(),
   recover: vi.fn(),
+  adoptedRoute: vi.fn(),
+}));
+vi.mock("./kernel-adopted-pr-route.js", () => ({
+  resolveKernelAdoptedValidationRoute: mocks.adoptedRoute,
 }));
 vi.mock("./kernel-operational-projection-recovery.js", () => ({
   recoverKernelOperationalProjection: mocks.recover,
@@ -45,6 +49,7 @@ import {
   restoreKernelFinalValidation,
   runKernelFinalValidation,
 } from "./kernel-final-validation.js";
+import { assertCanonicalPlanVerificationPolicy } from "./kernel-plan-authority.js";
 
 const evaluatorTarget = "a".repeat(40);
 const storedIdentity = "sha256:" + "a".repeat(64);
@@ -233,6 +238,184 @@ describe("canonical final Verification Contract projection", () => {
     mocks.target.mockResolvedValue(evaluatorTarget);
     mocks.status.mockResolvedValue({ lines: [] });
     mocks.project.mockResolvedValue(0);
+    mocks.adoptedRoute.mockResolvedValue(undefined);
+  });
+
+  it("refuses to run final checks in the task checkout for adopted hosted evidence", async () => {
+    const f = fixture();
+    mocks.repositoryEvidence.mockResolvedValue([
+      {
+        origin: "adopted_hosted_pr",
+        checkout: "/repo/.agentplane/worktrees/exact-head",
+        control_checkout: "/repo",
+        implementation_commit: evaluatorTarget,
+      },
+    ]);
+    mocks.adoptedRoute.mockRejectedValueOnce(new Error("Canonical adopted PR metadata is missing"));
+    await expect(f.run()).rejects.toThrow("Canonical adopted PR metadata is missing");
+    expect(mocks.checks).not.toHaveBeenCalled();
+  });
+
+  it("persists FAILED evidence and requires a USER corrective Plan for an old completed code item with no commands", async () => {
+    const f = fixture();
+    f.task.mutation_scope = "code";
+    Object.values(f.record.documents.contracts)[0]!.verification_commands = [];
+    const historicalContract = Object.values(f.record.documents.contracts)[0]!;
+    const historicalDigest = k.kernelDigest(historicalContract);
+    f.record.documents.contracts[historicalDigest] = historicalContract;
+    f.record.aggregate.current_plan.work_items[0]!.contract_digest = historicalDigest;
+    mocks.checks.mockResolvedValue({
+      status: "failed",
+      reason: "No executable checks",
+      checks: [],
+      artifact_path: "checks.json",
+    });
+    const result = await f.run();
+    expect(mocks.checks.mock.calls[0]?.[0]).toMatchObject({
+      allow_empty: false,
+      empty_is_failure: true,
+      additional_commands: [],
+    });
+    expect(f.runtime.input.mock.calls[0]?.[0].validation.status).toBe("FAILED");
+    expect(result).toMatchObject({
+      stop: {
+        kind: "human_required",
+        recovery: {
+          required_role: "USER",
+          plan_template: "/repo/exchange/corrective-plan.template.json",
+          plan_amendment_argv: [
+            "agentplane",
+            "task",
+            "plan",
+            "set",
+            "T-1",
+            "--file",
+            "/repo/exchange/corrective-plan.template.json",
+            "--scope-expansion-approved-by",
+            "USER",
+          ],
+        },
+      },
+    });
+    const template = kernelPlanProposalSchema.parse(
+      mocks.write.mock.calls.find((call) => call[1] === "corrective-plan.template.json")?.[2],
+    );
+    expect(template.work_items).toHaveLength(2);
+    expect(template.work_items[0]!.contract).toEqual(
+      Object.values(f.record.documents.contracts)[0],
+    );
+    expect(template.work_items[1]!.contract.verification_commands).toEqual([]);
+    expect(() =>
+      assertCanonicalPlanVerificationPolicy(
+        f.task as never,
+        template,
+        f.record.aggregate.current_plan as never,
+      ),
+    ).toThrow("executable verification");
+    const amended = {
+      work_items: template.work_items.map((item, index) =>
+        index === 1
+          ? {
+              ...item,
+              contract: { ...item.contract, verification_commands: ["bun run ci:local:full"] },
+            }
+          : item,
+      ),
+    };
+    expect(() =>
+      assertCanonicalPlanVerificationPolicy(
+        f.task as never,
+        amended,
+        f.record.aggregate.current_plan as never,
+      ),
+    ).not.toThrow();
+    expect(mocks.project).not.toHaveBeenCalled();
+  });
+
+  it("records an explicit no-process disposition for an analysis report", async () => {
+    const f = fixture();
+    f.task.mutation_scope = "none";
+    f.record.aggregate.current_plan.work_items[0]!.execution_requirements.repository_effects = [];
+    Object.values(f.record.documents.contracts)[0]!.verification_commands = [];
+    mocks.repositoryEvidence.mockResolvedValue([]);
+    mocks.recover.mockResolvedValue({ kind: "report_only" });
+    mocks.checks.mockResolvedValue({
+      status: "passed",
+      reason: "No executable checks required",
+      checks: [],
+      artifact_path: "checks.json",
+    });
+    const result = await f.run();
+    expect(result).toHaveProperty("evidence_digest");
+    expect(mocks.checks.mock.calls[0]?.[0]).toMatchObject({
+      allow_empty: true,
+      empty_is_failure: false,
+      additional_commands: [],
+    });
+    expect(f.runtime.input.mock.calls[0]?.[0].validation.status).toBe("PASSED");
+    expect(
+      mocks.write.mock.calls.find((call) => call[1] === "final-validation-inputs.json")?.[2],
+    ).toMatchObject({ no_executable_checks: true, commands: [] });
+    expect(mocks.project).not.toHaveBeenCalled();
+  });
+
+  it("fails before PASS persistence when projection strengthens a report to local regression checks", async () => {
+    const f = fixture();
+    f.task.mutation_scope = "none";
+    f.record.aggregate.current_plan.work_items[0]!.execution_requirements.repository_effects = [];
+    Object.values(f.record.documents.contracts)[0]!.verification_commands = [];
+    mocks.repositoryEvidence.mockResolvedValue([]);
+    mocks.resolve.mockResolvedValue({
+      task: { ...f.task, execution_contract: f.resolvedTask.execution_contract },
+      snapshot: f.snapshot,
+    });
+    mocks.checks.mockResolvedValue({
+      status: "failed",
+      reason: "No executable checks",
+      checks: [],
+      artifact_path: "checks.json",
+    });
+    const result = await f.run();
+    expect(mocks.checks.mock.calls[0]?.[0]).toMatchObject({
+      allow_empty: false,
+      empty_is_failure: true,
+      additional_only: true,
+    });
+    expect(f.runtime.input.mock.calls[0]?.[0].validation.status).toBe("FAILED");
+    expect(result).toHaveProperty("stop.kind", "human_required");
+    expect(mocks.project).not.toHaveBeenCalled();
+  });
+
+  it("invalidates persisted no-check PASS when projection observes a changed contract", async () => {
+    const f = fixture();
+    f.task.mutation_scope = "none";
+    f.record.aggregate.current_plan.work_items[0]!.execution_requirements.repository_effects = [];
+    Object.values(f.record.documents.contracts)[0]!.verification_commands = [];
+    mocks.repositoryEvidence.mockResolvedValue([]);
+    mocks.resolve.mockResolvedValue({ task: f.task, snapshot: f.snapshot });
+    mocks.checks.mockResolvedValue({
+      status: "passed",
+      reason: "Report contract",
+      checks: [],
+      artifact_path: "checks.json",
+    });
+    f.command.taskBackend.getTask
+      .mockResolvedValueOnce(f.task)
+      .mockResolvedValueOnce({ ...f.task, execution_contract: f.resolvedTask.execution_contract });
+    f.apply.mockImplementation((...args: unknown[]) => {
+      const input = args[0] as { command: { validation: k.ValidationRecord } };
+      f.record.aggregate.revision += 1;
+      f.record.aggregate.final_validation = input.command.validation;
+      return Promise.resolve({ kind: "committed", record: f.record });
+    });
+    const result = await f.run();
+    expect(result).toHaveProperty("stop.reason", "canonical_no_check_projection_rejected");
+    expect(f.runtime.input.mock.calls.map((call) => call[0].validation.status)).toEqual([
+      "PASSED",
+      "FAILED",
+    ]);
+    expect(f.record.aggregate.final_validation?.status).toBe("FAILED");
+    expect(mocks.project).not.toHaveBeenCalled();
   });
 
   it.each(["failed", "unsupported"] as const)(
@@ -407,5 +590,25 @@ describe("canonical final Verification Contract projection", () => {
     await expect(
       restoreKernelFinalValidation(f.command as never, record as never, storedIdentity),
     ).resolves.toBeNull();
+  });
+
+  it("does not restore a historical zero-command PASS for a code task", async () => {
+    const f = fixture();
+    f.task.mutation_scope = "code";
+    Object.values(f.record.documents.contracts)[0]!.verification_commands = [];
+    const record = {
+      ...f.record,
+      aggregate: {
+        ...f.record.aggregate,
+        final_validation: {
+          status: "PASSED",
+          identity: { check_id: "canonical-final-contracts-v2" },
+          evidence_digests: [k.kernelDigest("historical-empty-check")],
+        },
+      },
+    };
+    expect(
+      await restoreKernelFinalValidation(f.command as never, record as never, storedIdentity),
+    ).toBeNull();
   });
 });

@@ -9,10 +9,15 @@ import {
 } from "@agentplaneorg/core/tasks";
 import type { CommandContext } from "../shared/task-backend.js";
 import { createKernelRuntime, requireKernelCommit } from "./kernel-runtime-context.js";
-import { assertCanonicalPlanWithinExecutionContract } from "./kernel-plan-authority.js";
+import {
+  assertCanonicalPlanVerificationPolicy,
+  assertCanonicalPlanWithinExecutionContract,
+} from "./kernel-plan-authority.js";
 import { parseSuppliedPlanInput, prepareSuppliedPlan } from "./create-plan-input.js";
 import { suppliedKernelProposal } from "./create-plan-proposal.js";
 import { canonicalPlanFromProposal } from "./kernel-plan-proposal.js";
+import { kernelExchangeDirectory } from "./kernel-exchange.js";
+import { failedRequiredCheckEvidence } from "./kernel-failed-check-evidence.js";
 export { canonicalPlanFromProposal } from "./kernel-plan-proposal.js";
 
 /** Explicit native planning entrypoint. The input describes intent and never carries approval. */
@@ -24,6 +29,7 @@ export async function setCanonicalPlan(
     scopeExpansionApprovedBy?: string;
     expectedSuppliedInputDigest?: string;
     correctiveGrantDigest?: k.Sha256Digest;
+    failedCheckWorkOrder?: string;
   } = {},
 ) {
   const supplied =
@@ -74,6 +80,7 @@ export async function setCanonicalPlan(
   )
     throw new Error("Supplied Plan observation changed before proposal admission");
   const planInputs = input ? { [String(k.kernelDigest(input))]: input } : undefined;
+  assertCanonicalPlanVerificationPolicy(read.task, proposal, current);
   const plan = canonicalPlanFromProposal(proposal, (current?.revision ?? 0) + 1);
   assertCanonicalPlanWithinExecutionContract(read.task, plan);
   const contracts = proposal.work_items.map((item) => item.contract);
@@ -114,6 +121,17 @@ export async function setCanonicalPlan(
     );
   }
   const amended = { revision: plan.revision, digest: plan.digest, work_items: plan.work_items };
+  if (options.failedCheckWorkOrder && options.scopeExpansionApprovedBy !== "USER")
+    throw new Error("Required check correction requires exact USER authority");
+  const checkCorrection = options.failedCheckWorkOrder
+    ? await failedRequiredCheckEvidence(
+        await kernelExchangeDirectory(command, taskId, options.failedCheckWorkOrder),
+        options.failedCheckWorkOrder,
+        current,
+        proposal,
+        read.record.documents?.contracts ?? {},
+      )
+    : null;
   const approvalDigest = options.scopeExpansionApprovedBy
     ? k.planScopeExpansionApprovalDigest({
         task_id: taskId,
@@ -143,6 +161,7 @@ export async function setCanonicalPlan(
       amended_plan: amended,
       amendment_digest: k.kernelDigest(amended),
       authority_delta_digest: approvalDigest,
+      ...(checkCorrection ? { required_check_correction: checkCorrection } : {}),
       ...(options.correctiveGrantDigest
         ? {
             corrective_grant_digest: options.correctiveGrantDigest,

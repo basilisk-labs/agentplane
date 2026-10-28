@@ -286,6 +286,14 @@ async function resolveCommitSummaries(
 ): Promise<Map<string, CommitSummary>> {
   const commitByHash = new Map<string, CommitSummary>();
   if (hashes.length === 0) return commitByHash;
+  // Historical archive checks are diagnostic. A partial clone must not download
+  // missing objects merely to classify old DONE-task commit references.
+  const env = {
+    ...gitEnv(),
+    GIT_NO_LAZY_FETCH: "1",
+    GIT_TERMINAL_PROMPT: "0",
+    GIT_ALLOW_PROTOCOL: "",
+  };
 
   for (const chunk of chunked(hashes, 200)) {
     try {
@@ -294,7 +302,9 @@ async function resolveCommitSummaries(
         ["show", "-s", "--no-patch", "--format=%H%x00%s%x00%b%x00", "--ignore-missing", ...chunk],
         {
           cwd: repoRoot,
-          env: gitEnv(),
+          env,
+          timeout: 30_000,
+          maxBuffer: 8 * 1024 * 1024,
         },
       );
       const parts = String(stdout ?? "").split("\u0000");

@@ -81,7 +81,14 @@ describe("evaluator exchange identity", () => {
           }),
       },
     };
-    mocks.read.mockResolvedValue(JSON.stringify(implementation));
+    mocks.read.mockImplementation((filePath: string) => {
+      if (filePath.endsWith("repository-evidence.json")) {
+        throw Object.assign(new Error("optional repository evidence is absent"), {
+          code: "ENOENT",
+        });
+      }
+      return JSON.stringify(implementation);
+    });
     const evidence = (environment: string) => ({
       input: { environment },
       input_digest: k.kernelDigest(environment),
@@ -105,7 +112,10 @@ describe("evaluator exchange identity", () => {
     });
     const issue = () =>
       issueKernelInspection(
-        { resolvedProject: { gitRoot: "/repo" } } as never,
+        {
+          resolvedProject: { gitRoot: "/repo" },
+          taskBackend: { getTask: () => Promise.resolve({ mutation_scope: "code" }) },
+        } as never,
         runtime as never,
         record as never,
         "build",

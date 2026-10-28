@@ -100,6 +100,7 @@ Field names and casing are exact. Optional fields are omitted when no value is a
   - [integrate queue list](#integrate-queue-list)
   - [integrate queue release](#integrate-queue-release)
   - [integrate queue run-next](#integrate-queue-run-next)
+  - [pr adopt](#pr-adopt)
   - [pr check](#pr-check)
   - [pr close](#pr-close)
   - [pr close-superseded](#pr-close-superseded)
@@ -851,6 +852,7 @@ Options:
 - `--file <path>`: Read plan text from a file path (relative to cwd).
 - `--updated-by <id>`: Optional. Sets doc_updated_by when writing the plan.
 - `--scope-expansion-approved-by <role>`: Explicit manual approval for an additive canonical WorkItem scope expansion. Requires USER.
+- `--failed-check-work-order <sha256:digest>`: Correct one native-proven unlaunchable required check in this WorkOrder. Requires --scope-expansion-approved-by USER and a revised Plan file.
 
 Examples:
 
@@ -1533,6 +1535,24 @@ Options:
 - `--hosted-poll-interval-ms <ms>`: Delay between hosted-check polls when --hosted is enabled.
 - `--hosted-timeout-ms <ms>`: Maximum hosted-check wait time when --hosted is enabled.
 - `--required-check <name>`: Repeatable hosted check name that must appear in the PR rollup. (repeatable)
+
+### pr adopt
+
+Prepare, explicitly approve, or apply an exact existing same-repository hosted PR adoption.
+
+Usage:
+
+```text
+agentplane pr adopt <task-id> <prepare|approve|apply> [options]
+```
+
+Options:
+
+- `--file <json>`: Exact adoption claim for prepare.
+- `--request-digest <sha256>`: Retained request digest for approve or apply.
+- `--approval-digest <sha256>`: Exact reviewed approval digest for approve.
+- `--by USER`: Explicit USER actor for approve.
+- `--ttl-minutes <1-60>`: Approval lifetime, default 15 minutes.
 
 ### pr check
 

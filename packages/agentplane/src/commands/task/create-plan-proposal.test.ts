@@ -236,6 +236,9 @@ describe("phase-local supplied Plan conversion", () => {
   it("preserves legacy single-item conversion and accepts old contracts without a marker", () => {
     const proposal = suppliedKernelProposal(normalized(compactPlanInput()), task);
     expect(proposal.work_items).toHaveLength(1);
+    expect(proposal.work_items[0]!.contract.verification_commands).toEqual([
+      "node visible.test.mjs",
+    ]);
     expect(proposal.work_items[0]!.contract.generated_origin).toBeUndefined();
     expect(kernelWorkContractSchema.parse(proposal.work_items[0]!.contract)).toEqual(
       proposal.work_items[0]!.contract,

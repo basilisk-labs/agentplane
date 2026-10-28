@@ -11,9 +11,15 @@ import type { CommandContext } from "../shared/task-backend.js";
 import { readDirectTaskHead } from "./direct-task-finalization.js";
 import { acceptKernelInspection } from "./kernel-inspection.js";
 import { canonicalPlanFromProposal } from "./kernel-plan.js";
-import { assertCanonicalPlanWithinExecutionContract } from "./kernel-plan-authority.js";
+import {
+  assertCanonicalPlanVerificationPolicy,
+  assertCanonicalPlanWithinExecutionContract,
+} from "./kernel-plan-authority.js";
 import { readKernelOrderResult, writeKernelArtifact } from "./kernel-exchange.js";
-import { commitCanonicalImplementation } from "./kernel-repository-coordinator.js";
+import {
+  captureCanonicalAdoptedImplementation,
+  commitCanonicalImplementation,
+} from "./kernel-repository-coordinator.js";
 import type { createKernelRuntime } from "./kernel-runtime-context.js";
 import { requireKernelCommit } from "./kernel-runtime-context.js";
 
@@ -207,6 +213,7 @@ export async function acceptKernelSemanticResult(
         : read.record.aggregate.current_plan,
       contracts: read.record.documents?.contracts ?? {},
     });
+    assertCanonicalPlanVerificationPolicy(read.task, proposal, read.record.aggregate.current_plan);
     const plan = canonicalPlanFromProposal(proposal, binding.plan_revision + 1);
     assertCanonicalPlanWithinExecutionContract(read.task, plan);
     await validateKernelRecipeBindings({
@@ -315,13 +322,19 @@ export async function acceptKernelSemanticResult(
       }
       await writeKernelArtifact(directory, "received-result.json", semantic);
       await runtime.native.readContext(taskId);
-      const evidence = await commitCanonicalImplementation({
-        command: runtime.command,
-        directory,
-        work_order: workOrder,
-        changed_paths: changedPaths,
-        repository_effects: item.definition.execution_requirements.repository_effects,
-      });
+      const evidence =
+        (await captureCanonicalAdoptedImplementation({
+          command: runtime.command,
+          directory,
+          work_order: workOrder,
+        })) ??
+        (await commitCanonicalImplementation({
+          command: runtime.command,
+          directory,
+          work_order: workOrder,
+          changed_paths: changedPaths,
+          repository_effects: item.definition.execution_requirements.repository_effects,
+        }));
       if (evidence) await writeKernelArtifact(directory, "repository-evidence.json", evidence);
       if (continueAuthority) requireKernelCommit(await runtime.authority.continue(taskId));
     }

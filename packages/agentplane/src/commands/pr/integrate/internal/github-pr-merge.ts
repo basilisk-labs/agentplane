@@ -8,7 +8,7 @@ import {
   checkGithubUnresolvedReviewThreads,
   throwIfGithubReviewThreadsUnresolved,
 } from "../../internal/github-review-threads.js";
-import { ghEnv, resolveDefaultGithubRepo } from "../../internal/gh-api.js";
+import { ghEnv, resolveDefaultGithubRepo, runGhApiJson } from "../../internal/gh-api.js";
 
 type GithubPrRef = {
   owner: string;
@@ -27,6 +27,14 @@ type ProtectedBaseGithubMergeResult = {
 };
 
 type PreMutationGuard = () => Promise<void>;
+
+export function assertGithubExactBaseMergeCapability(repository: {
+  allow_merge_commit?: boolean | null;
+}): void {
+  if (repository.allow_merge_commit !== true) {
+    throw new Error("GitHub exact-base merge requires an enabled merge-commit method");
+  }
+}
 
 class PreMutationGuardFailure extends Error {
   readonly originalError: Error;
@@ -316,6 +324,7 @@ export async function runProtectedBaseGithubMerge(opts: {
   prTarget: string;
   expectedHeadSha: string;
   preMutationGuard: PreMutationGuard;
+  exactBaseParentProof?: boolean;
 }): Promise<ProtectedBaseGithubMergeResult> {
   const prNumber = /^[1-9]\d*$/.test(opts.prTarget.trim())
     ? Number(opts.prTarget.trim())
@@ -340,6 +349,49 @@ export async function runProtectedBaseGithubMerge(opts: {
     prNumber,
     unresolved: reviewThreads.unresolved,
   });
+
+  if (opts.exactBaseParentProof) {
+    const pr = await resolveGithubPrRef(opts);
+    const repository = await runGhApiJson<{ allow_merge_commit?: boolean | null }>(opts.gitRoot, [
+      `repos/${pr.owner}/${pr.repo}`,
+    ]);
+    assertGithubExactBaseMergeCapability(repository);
+    await runPreMutationGuard(opts.preMutationGuard);
+    const token = getGithubToken();
+    if (token) {
+      const receipt = await githubRestJson<{ merged?: unknown; message?: unknown }>({
+        token,
+        method: "PUT",
+        path: `/repos/${encodeURIComponent(pr.owner)}/${encodeURIComponent(pr.repo)}/pulls/${pr.number}/merge`,
+        body: { merge_method: "merge", sha: opts.expectedHeadSha },
+      });
+      if (receipt.merged !== true) {
+        throw new Error("GitHub exact-base merge lacks an immediate provider receipt");
+      }
+    } else {
+      const gh = resolveGhCommand();
+      const { stdout } = await execFileAsync(
+        gh.command,
+        [
+          ...gh.argsPrefix,
+          "api",
+          "-X",
+          "PUT",
+          `repos/${pr.owner}/${pr.repo}/pulls/${pr.number}/merge`,
+          "-f",
+          "merge_method=merge",
+          "-f",
+          `sha=${opts.expectedHeadSha}`,
+        ],
+        { cwd: opts.gitRoot, env: ghEnv() },
+      );
+      assertImmediateMergeReceipt(stdout, "gh api exact-base merge");
+    }
+    return {
+      status: "merged",
+      detail: `GitHub PR merge-committed with exact-base proof: ${opts.prTarget}`,
+    };
+  }
 
   const failures: string[] = [];
   try {

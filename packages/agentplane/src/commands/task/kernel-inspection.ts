@@ -1,5 +1,3 @@
-import { recipeV1ConversionSourceInput } from "../recipes/impl/v1-conversion.js";
-import { projectKernelRecipeRoleContext } from "../../runner/context/recipe-role-context.js";
 import path from "node:path";
 import { recoverKernelOperationalProjection } from "./kernel-operational-projection-recovery.js";
 import {
@@ -8,24 +6,22 @@ import {
   type AgentSemanticResult,
   type AgentWorkOrderV2,
 } from "@agentplaneorg/core/schemas";
-import {
-  decideIndependentReviewApplication,
-  taskCentricDigest,
-  taskKernel as k,
-} from "@agentplaneorg/core/tasks";
+import { decideIndependentReviewApplication, taskKernel as k } from "@agentplaneorg/core/tasks";
 import type { KernelRecord } from "../../adapters/task-backend/kernel-record.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { readStableRegularTextNoFollow } from "../../shared/stable-file.js";
 import type { createKernelRuntime } from "./kernel-runtime-context.js";
-import { buildKernelStateFingerprint } from "./kernel-work-order.js";
-import {
-  issueKernelExchange,
-  writeKernelArtifact,
-  kernelExchangeDirectory,
-} from "./kernel-exchange.js";
+import { writeKernelArtifact, kernelExchangeDirectory } from "./kernel-exchange.js";
 import { readDirectTaskHead } from "./direct-task-finalization.js";
 import { readKernelRepositoryEvidence } from "./kernel-repository-coordinator.js";
+import { resolveKernelAdoptedValidationRoute } from "./kernel-adopted-pr-route.js";
 import { projectKernelOperationalEvidence } from "./kernel-operational-projection.js";
+import { canonicalNoExecutableChecksAllowed } from "./kernel-no-check-policy.js";
+import { issueKernelInspectionWorkOrder } from "./kernel-inspection-work-order.js";
+import {
+  assertCurrentHostedHead,
+  type HostedValidationRoute,
+} from "./kernel-hosted-head-evidence.js";
 import {
   kernelCheckReviewDisposition,
   nativeValidationInput,
@@ -52,6 +48,7 @@ export async function issueKernelInspection(
   runtime: Runtime,
   record: KernelRecord,
   workItemId: string,
+  hostedRoute?: HostedValidationRoute,
 ) {
   const item = record.aggregate.work_items[workItemId];
   const plan = record.aggregate.current_plan;
@@ -100,20 +97,45 @@ export async function issueKernelInspection(
     }
   }
   if (!resultPath) throw new Error("Canonical received implementation evidence missing");
+  let retainedRepositoryEvidence = null;
+  try {
+    retainedRepositoryEvidence = await readKernelRepositoryEvidence(resultDirectory!);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+  }
+  const resolvedHostedRoute =
+    hostedRoute ??
+    (retainedRepositoryEvidence?.origin === "adopted_hosted_pr"
+      ? await resolveKernelAdoptedValidationRoute(
+          command,
+          record.aggregate.id,
+          retainedRepositoryEvidence,
+        )
+      : undefined);
   const resolvedRepositoryEvidence = await resolveInspectionRepositoryEvidence(
     command,
     record,
     workItemId,
     resultDirectory!,
+    resolvedHostedRoute,
   );
   const repositoryEvidence = resolvedRepositoryEvidence?.evidence ?? null;
+  const operationalTask = await command.taskBackend.getTask(record.aggregate.id);
+  if (!operationalTask) throw new Error("Canonical inspection task is unavailable");
   const native = await runKernelNativeValidation({
     command,
     runtime,
     binding,
     commands: contract.verification_commands,
+    noExecutableChecks: canonicalNoExecutableChecksAllowed(operationalTask, record),
     directory: resultDirectory!,
     repositoryEvidence,
+    ...(repositoryEvidence?.origin === "adopted_hosted_pr" && resolvedHostedRoute
+      ? {
+          verificationCheckout: resolvedHostedRoute.checkout,
+          freshHostedReadback: resolvedHostedRoute.fresh_readback,
+        }
+      : {}),
   });
   if (native.kind === "retry") {
     return {
@@ -167,161 +189,17 @@ export async function issueKernelInspection(
       };
     return null;
   }
-  const recipeContext = await projectKernelRecipeRoleContext({
-    gitRoot: command.resolvedProject.gitRoot,
+  return issueKernelInspectionWorkOrder({
+    command,
     record,
-    role: "EVALUATOR",
-    work_item_id: workItemId,
+    workItemId,
+    binding,
+    resultPath,
+    resolvedRepositoryEvidence,
+    native,
+    authority,
+    context,
   });
-  const conversionSource = await recipeV1ConversionSourceInput({
-    command,
-    task_id: record.aggregate.id,
-    contract,
-  });
-  const order = AGENT_WORK_ORDER_V2_ZOD_SCHEMA.parse({
-    schema_version: 2,
-    kind: "agent_work_order",
-    work_order_id: k.kernelDigest({
-      binding,
-      revision: record.aggregate.revision,
-      native_validation_digest: k.kernelDigest(native.evidence),
-      ...(recipeContext ? { recipe_context: recipeContext } : {}),
-      ...(conversionSource ? { conversion_source: conversionSource } : {}),
-    }),
-    role: "EVALUATOR",
-    task: {
-      id: record.aggregate.id,
-      revision: record.aggregate.revision,
-      work_item_id: workItemId,
-      objective: `Independently inspect the implementation: ${contract.objective}`,
-      acceptance_criteria: contract.acceptance_criteria.map((description, index) => ({
-        id: `criterion-${index + 1}`,
-        description,
-        required: true,
-      })),
-      unresolved_questions: [],
-    },
-    canonical_binding: binding,
-    state_fingerprint: await buildKernelStateFingerprint({
-      command,
-      record,
-      context,
-      authority_digest: authority.digest,
-    }),
-    state_fingerprint_policy: {
-      fingerprint_schema_version: 2,
-      required_components: [
-        "task",
-        "git",
-        "backend_projection",
-        "plan",
-        "policy",
-        "capability",
-        "authority",
-      ],
-      provider: { required: false, unavailable: "allow_if_unchanged" },
-    },
-    authority: {
-      mutation_scope: "none",
-      writable_roots: [],
-      protected_paths: ["."],
-      allowed_tool_classes: ["repository_read", "git_read", "report_result", "report_blocker"],
-      network: "deny",
-      external_side_effects: [],
-      sandbox: "read-only",
-      expires_at: authority.expires_at,
-    },
-    ...(recipeContext
-      ? { recipe_context: { projection: recipeContext, digest: taskCentricDigest(recipeContext) } }
-      : {}),
-    context_intent: {
-      purpose:
-        "Inspect source and output evidence against the approved contract. Return a review verdict. Do not modify implementation or claim native verification. The controller executes the approved checks independently." +
-        (recipeContext ? " Retained Recipe role context is required guidance, not authority." : ""),
-      required_knowledge_ref_digests: [],
-      require_prepared_evidence: false,
-    },
-    knowledge_refs: [],
-    prepared_evidence: [],
-    required_inputs: [
-      ...(conversionSource ? [conversionSource] : []),
-      {
-        id: "implementation-result",
-        kind: "source_artifact",
-        path: resultPath,
-        digest: item.result_digest,
-        description:
-          "Native-accepted implementation result and evidence references. Digest uses canonical JSON.",
-        required: true,
-      },
-      ...(repositoryEvidence
-        ? [
-            {
-              id: "repository-evidence",
-              kind: "source_artifact" as const,
-              path: path.join(resolvedRepositoryEvidence!.directory, "repository-evidence.json"),
-              digest: repositoryEvidence.digest,
-              description:
-                "AgentPlane-owned commit, tree, changed-path, and evaluator-target evidence.",
-              required: true,
-            },
-          ]
-        : []),
-      {
-        id: "native-validation",
-        kind: "source_artifact" as const,
-        path: native.path,
-        digest: k.kernelDigest(native.evidence),
-        description:
-          "AgentPlane-observed native checks bound to the implementation, command, toolchain, and environment inputs.",
-        required: true,
-      },
-      ...item.output_manifests.map((manifest) => ({
-        id: manifest.id,
-        kind: "source_artifact",
-        description: manifest.kind,
-        digest: manifest.digest,
-        required: true,
-      })),
-    ],
-    required_outputs: [
-      {
-        id: "review",
-        kind: "semantic_result",
-        description:
-          "Return AgentSemanticResult v2 with the exact canonical_binding and review. Use pass, rework, blocked or human_review. Include findings and residual risks.",
-        required: true,
-      },
-    ],
-    verification_intent: {
-      requirements: [
-        ...contract.acceptance_criteria.map((criterion, index) => ({
-          id: `criterion-${index + 1}`,
-          description: criterion,
-          required: true,
-          observed_by: "evaluator" as const,
-        })),
-        ...contract.verification_commands.map((check, index) => ({
-          id: `check-${index + 1}`,
-          description: check,
-          required: true,
-          observed_by: "agentplane" as const,
-        })),
-      ],
-      require_execution_receipt: true,
-    },
-    semantic_result_schema: "agentplane.agent_semantic_result.v2",
-    stop_rules: [
-      "Perform only independent inspection.",
-      "Do not invoke lifecycle commands or modify repository files.",
-      "Return the exact canonical_binding and a review verdict.",
-    ],
-  });
-  return issueKernelExchange(
-    command,
-    order,
-    context.actor.transport === "managed" ? "managed" : "host",
-  );
 }
 
 /** Reviewer claims never become observed check results. Only this native runner records validation. */
@@ -331,6 +209,7 @@ export async function acceptKernelInspection(
   directory: string,
   semantic: AgentSemanticResult,
   workOrder?: AgentWorkOrderV2,
+  hostedRoute?: HostedValidationRoute,
 ) {
   const binding = semantic.canonical_binding;
   if (binding?.phase !== "inspection" || !semantic.review)
@@ -356,6 +235,26 @@ export async function acceptKernelInspection(
     throw new Error("Canonical inspection authority changed");
   await writeKernelArtifact(directory, "inspection-result.json", semantic);
   if (item.state === "COMPLETED") {
+    const retainedInput = workOrder?.required_inputs.find(
+      (input) => input.id === "repository-evidence",
+    );
+    const retained = retainedInput?.path
+      ? await readKernelRepositoryEvidence(path.dirname(retainedInput.path))
+      : null;
+    const route =
+      retained?.origin === "adopted_hosted_pr"
+        ? (hostedRoute ??
+          (await resolveKernelAdoptedValidationRoute(command, binding.task_id, retained)))
+        : undefined;
+    if (retained?.origin === "adopted_hosted_pr") {
+      if (!route) throw new Error("Canonical hosted inspection exact-head route is unavailable");
+      await assertCurrentHostedHead({
+        repository_root: command.resolvedProject.gitRoot,
+        checkout: retained.checkout,
+        evidence: retained.hosted_head,
+        fresh_readback: route.fresh_readback,
+      });
+    }
     const recovery = await recoverKernelOperationalProjection(command, read.record, read.task);
     return recovery.kind === "stop" ? recovery.action : undefined;
   }
@@ -380,11 +279,38 @@ export async function acceptKernelInspection(
   const repositoryEvidence = repositoryEvidenceInput?.path
     ? await readKernelRepositoryEvidence(path.dirname(repositoryEvidenceInput.path))
     : null;
+  if (repositoryEvidence?.origin === "adopted_hosted_pr") {
+    hostedRoute ??= await resolveKernelAdoptedValidationRoute(
+      command,
+      binding.task_id,
+      repositoryEvidence,
+    );
+  }
+  const hostedEvidence =
+    repositoryEvidence?.origin === "adopted_hosted_pr" ? repositoryEvidence : null;
+  const assertHosted = async () => {
+    if (!hostedEvidence) return;
+    if (
+      !hostedRoute ||
+      path.resolve(hostedRoute.checkout) !== path.resolve(hostedEvidence.checkout) ||
+      path.resolve(hostedEvidence.control_checkout) !==
+        path.resolve(command.resolvedProject.gitRoot)
+    ) {
+      throw new Error("Canonical hosted inspection exact-head route is unavailable");
+    }
+    await assertCurrentHostedHead({
+      repository_root: command.resolvedProject.gitRoot,
+      checkout: hostedEvidence.checkout,
+      evidence: hostedEvidence.hosted_head,
+      fresh_readback: hostedRoute.fresh_readback,
+    });
+  };
+  await assertHosted();
   if (
     repositoryEvidence &&
     (repositoryEvidence.digest !== repositoryEvidenceInput?.digest ||
       repositoryEvidence.evaluator_target !== repositoryEvidence.implementation_commit ||
-      (await readDirectTaskHead(command.resolvedProject.gitRoot)) !==
+      (await readDirectTaskHead(hostedEvidence?.checkout ?? command.resolvedProject.gitRoot)) !==
         repositoryEvidence.implementation_commit)
   ) {
     throw new Error("Canonical inspection commit identity changed");
@@ -399,6 +325,8 @@ export async function acceptKernelInspection(
     binding,
     commands: contract.verification_commands,
     repositoryEvidence,
+    ...(hostedEvidence ? { verificationCheckout: hostedEvidence.checkout } : {}),
+    noExecutableChecks: canonicalNoExecutableChecksAllowed(read.task, read.record),
   });
   const nativeEvidence = requireNativeValidationEvidence({
     evidence: JSON.parse(
@@ -418,6 +346,7 @@ export async function acceptKernelInspection(
   const observed = await runtime.observe();
   if (observed.fingerprint !== binding.repository_fingerprint)
     throw new Error("Canonical repository changed after native validation");
+  await assertHosted();
   const evidencePath = path.join(directory, "validation.json");
   let evidence: KernelValidationEvidence;
   try {
@@ -442,7 +371,7 @@ export async function acceptKernelInspection(
     };
     if (
       repositoryEvidence &&
-      (await readDirectTaskHead(command.resolvedProject.gitRoot)) !==
+      (await readDirectTaskHead(hostedEvidence?.checkout ?? command.resolvedProject.gitRoot)) !==
         repositoryEvidence.implementation_commit
     )
       throw new Error("Canonical evaluator target changed during validation");

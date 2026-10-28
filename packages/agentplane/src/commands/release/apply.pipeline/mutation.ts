@@ -1,3 +1,6 @@
+import { randomUUID } from "node:crypto";
+import { constants } from "node:fs";
+import { lstat, open, readdir, rename, unlink } from "node:fs/promises";
 import path from "node:path";
 
 import { extractTaskSuffix } from "@agentplaneorg/core/commit";
@@ -5,6 +8,7 @@ import { loadConfig } from "@agentplaneorg/core/config";
 import { execFileAsync } from "@agentplaneorg/core/process";
 import { gitEnv, GitContext, parseTaskIdFromBranch } from "@agentplaneorg/core/git";
 import { appendDcoSignoff } from "../../guard/impl/dco.js";
+import { readStableRegularFileNoFollow } from "../../../shared/stable-file.js";
 import {
   cleanHookEnv,
   maybePersistExpectedCliVersion,
@@ -20,6 +24,48 @@ import {
 import { fileExists } from "../apply.preflight.plan.js";
 import type { ReleaseCommandMutation, ReleaseCommandState } from "../apply.types.js";
 import { emitReleaseLine } from "./shared.js";
+
+async function restoreCompatibilityCandidate(
+  candidatePath: string,
+  previous: Buffer,
+): Promise<void> {
+  const temporaryPath = `${candidatePath}.${randomUUID()}.tmp`;
+  let temporaryExists = false;
+  try {
+    const original = await lstat(candidatePath, { bigint: true });
+    if (original.isSymbolicLink() || !original.isFile()) {
+      throw new Error("Compatibility candidate changed to a non-regular file before rollback");
+    }
+    const handle = await open(
+      temporaryPath,
+      constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | (constants.O_NOFOLLOW ?? 0),
+      Number(original.mode & 0o777n),
+    );
+    temporaryExists = true;
+    try {
+      await handle.writeFile(previous);
+    } finally {
+      await handle.close();
+    }
+    const current = await lstat(candidatePath, { bigint: true });
+    if (
+      current.isSymbolicLink() ||
+      !current.isFile() ||
+      current.dev !== original.dev ||
+      current.ino !== original.ino
+    ) {
+      throw new Error("Compatibility candidate changed before rollback");
+    }
+    await rename(temporaryPath, candidatePath);
+    temporaryExists = false;
+  } finally {
+    if (temporaryExists) {
+      await unlink(temporaryPath).catch((error: unknown) => {
+        if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+      });
+    }
+  }
+}
 
 async function applyReleaseMutation(opts: {
   agentplaneDir: string;
@@ -83,12 +129,73 @@ async function applyReleaseMutation(opts: {
   await maybeUpdateBunLockfile(opts.gitRoot, fileExists);
   const generatedReferenceExists = await maybeRefreshGeneratedReference(opts.gitRoot, fileExists);
 
+  const scriptsDir = path.join(opts.gitRoot, "scripts");
+  const baselineDir = path.join(scriptsDir, "baselines");
+  let candidateNames: string[] = [];
+  try {
+    for (const directory of [scriptsDir, baselineDir]) {
+      const stat = await lstat(directory);
+      if (stat.isSymbolicLink() || !stat.isDirectory()) {
+        throw new Error("Compatibility candidate directory must be a regular repository directory");
+      }
+    }
+    const entries = await readdir(baselineDir);
+    candidateNames = entries.filter((name) => name.endsWith("-compatibility-candidate.json"));
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+  }
+  if (candidateNames.length > 1) {
+    throw new Error("Multiple compatibility candidates require an unambiguous release contract");
+  }
+  const compatibilityCandidate = candidateNames[0]
+    ? `scripts/baselines/${candidateNames[0]}`
+    : null;
+  const capturePath = path.join(opts.gitRoot, "scripts/bench/capture-compatibility-candidate.mjs");
+  const checkPath = path.join(
+    opts.gitRoot,
+    "scripts/checks/check-compatibility-contract-baseline.mjs",
+  );
+  if (compatibilityCandidate) {
+    if (!(await fileExists(capturePath)) || !(await fileExists(checkPath))) {
+      throw new Error("Compatibility candidate requires its capture and validation scripts");
+    }
+    const candidatePath = path.join(opts.gitRoot, compatibilityCandidate);
+    const candidateStat = await lstat(candidatePath);
+    if (candidateStat.isSymbolicLink() || !candidateStat.isFile()) {
+      throw new Error("Compatibility candidate must be a regular repository file");
+    }
+    const previousCandidate = await readStableRegularFileNoFollow(
+      candidatePath,
+      "compatibility candidate",
+    );
+    try {
+      await execFileAsync(
+        process.execPath,
+        [capturePath, "--write", "--candidate-path", compatibilityCandidate],
+        { cwd: opts.gitRoot },
+      );
+      await execFileAsync(
+        process.execPath,
+        [checkPath, "--candidate-path", compatibilityCandidate],
+        { cwd: opts.gitRoot },
+      );
+    } catch (error) {
+      try {
+        await restoreCompatibilityCandidate(candidatePath, previousCandidate);
+      } catch (rollbackError) {
+        throw new AggregateError([error, rollbackError], "Compatibility candidate rollback failed");
+      }
+      throw error;
+    }
+  }
+
   const stagePaths = [
     "packages/core/package.json",
     "packages/agentplane/package.json",
     "packages/recipes/package.json",
     path.relative(opts.gitRoot, opts.notesPath),
   ];
+  if (compatibilityCandidate) stagePaths.push(compatibilityCandidate);
   if (shouldUpdateRecipesRuntimeVersion) {
     stagePaths.push("packages/recipes/src/index.ts");
   }
