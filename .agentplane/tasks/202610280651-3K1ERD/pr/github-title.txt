@@ -1,0 +1,1 @@
+🚧 3K1ERD task: Allow exact USER-granted hosted PR adoption when external write is declared but withheld from... [202610280651-3K1ERD]

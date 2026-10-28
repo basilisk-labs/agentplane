@@ -1,0 +1,3 @@
+ .../commands/pr/adoption-task-authority.test.ts    | 69 ++++++++++++++++++----
+ .../src/commands/pr/adoption-task-authority.ts     | 11 ++--
+ 2 files changed, 65 insertions(+), 15 deletions(-)
