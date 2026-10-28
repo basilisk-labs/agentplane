@@ -6,7 +6,7 @@ Created: 2026-10-28T07:21:56.510Z
 
 - Task: `202610280651-3K1ERD`
 - Title: Allow exact USER-granted hosted PR adoption when external write is declared but withheld from semantic agents
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610280651-3K1ERD/allow-exact-user-granted-hosted-pr-adoption-when`
 - Canonical task record: `.agentplane/tasks/202610280651-3K1ERD/README.md`
 
