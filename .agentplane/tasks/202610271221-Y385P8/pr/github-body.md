@@ -15,8 +15,8 @@ Fix issue #6943: in direct repositories, canonical final validation must resolve
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>
