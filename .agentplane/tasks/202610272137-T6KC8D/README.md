@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 44
+revision: 45
 origin:
   system: "manual"
 depends_on: []
@@ -33,20 +33,29 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-10-28T03:59:12.664Z"
+  updated_at: "2026-10-28T06:21:45.271Z"
   updated_by: "EVALUATOR"
-  note: "Canonical EVALUATOR review passed."
-  evaluated_sha: "5a8eefacbee2325e2a9014c2675ae77327249bed"
-  review_identity_digest: "sha256:0d94bb8780650aeadbad7a1850ea8782a1476c0de933b720357543fe9be926aa"
+  note: "EVALUATOR returned pass with 2 typed finding(s)."
+  evaluated_sha: "ea8f7539b9e8aaea77c243bfa62e53b748a0e64b"
+  review_identity_digest: "sha256:a62ca2fa3cc0c32952958519755d0ee6d516810bb9831a73523205ed53e53faa"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202610272137-T6KC8D/28d413f91c52f495504235e637092476128f8c973c99dc41dcee115fa8ccd3fc/quality-report.json"
+    - ".agentplane/tasks/202610272137-T6KC8D/quality/20261028-061833625-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202610272137-T6KC8D/quality/20261028-061833625-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202610272137-T6KC8D/quality/objects/sha256/cc34f870edc1f23e0f04cddc9f3c196bc727cee173f08bb8940aa5494bfd2b87.md"
+    - ".agentplane/tasks/202610272137-T6KC8D/quality/20261028-061833625-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202610272137-T6KC8D/quality/20261028-061833625-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202610272137-T6KC8D/quality/20261028-061833625-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202610272137-T6KC8D/README.md"
+    - ".agentplane/tasks/202610272137-T6KC8D/quality/objects/sha256/fb8cab28461ba91001321366728b9b1c709fed4d926799c5c43646963f81a3a0.patch"
+    - ".agentplane/tasks/202610272137-T6KC8D/quality/objects/sha256/bf751247a75445b92c1b94db8f2f25849c5a2b8dc03bafae15277a4b33663fdd.json"
+    - ".agentplane/tasks/202610272137-T6KC8D/verification/20261028061801734-0d92bd623ebe2a29.json"
+    - ".agentplane/tasks/202610272137-T6KC8D/quality/objects/sha256/c931dd59fda7cdedaa0e0200788a1cb960c70d0e24ad328e6e9f0556adc1914f.json"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The authoritative primary control store retains exact same-repository provider, PR, branch, base, head, tree and task identity; strict metadata and replay checks reject mismatches."
-    - "Canonical TESTER, EVALUATOR, final validation, and merge readiness bind the accepted hosted head and tree to the approved task and current provider readback. Ordinary PR routes stay gated away from adopted-only recovery."
-    - "Separate USER authority gates provider update and merge. A retained running intent is reconciled under the original grant; ambiguous responses are not retried as a second remote effect."
-    - "Adopted GitHub uses one merge-commit request after capability preflight; GitLab rejects non-merge strategies. Fresh merged readback and immutable merge-commit first-parent proof prevent recording a drifted base as success."
-    - "Native declared checks run-008 through run-023 all passed on implementation commit 5a8eefacbee2325e2a9014c2675ae77327249bed, including typecheck, focused negative tests, ordinary-route regressions, docs, hotspots, compatibility ratchet, and full local CI."
-    - "The immutable v0.6.24 baseline is unchanged; the reviewed candidate and strict validator include the pr adopt CLI surface with source-task provenance."
+    - "No blocking defect found: the reviewed generic hosted PR route retains exact task and provider identity checks, fail-closed merge proof and transport recovery, and focused negative tests. The fresh local and hosted verification evidence binds to ea8f7539b9e8aaea77c243bfa62e53b748a0e64b."
+    - "Residual risk: The base branch can change before integration; the native protected merge route must require fresh exact-head and exact-base evidence."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -2222,7 +2231,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-10-28T06:18:09.913Z"
+doc_updated_at: "2026-10-28T06:21:45.352Z"
 doc_updated_by: "CODER"
 description: "Successor to 202610271739-EWNMG7 after failed full CI. Transfer approved generic adoption implementation from c61813ce2946a7aabcc7f2c8fd67c724398f3ea7 under a fresh WorkOrder; fix exact-base-safe provider method selection, ordinary-route regressions, and generated CLI reference. Preserve prior task history and independent verification."
 sections:
@@ -2948,6 +2957,14 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.completed_native_review:
+    applied_at: "2026-10-28T06:21:45.271Z"
+    kernel_digest: "sha256:e0996df33796e6195688a5ce0bb92fb12d3ebe6a60f91b2b3c1ab990c61328e5"
+    quality_digest: "sha256:ac0fb7a9d9d4ff3d3858edf2d12e32bedd08e782d470b14c4908f0f9f5745a05"
+    result_digest: "sha256:5df1998d488b77c3e530f40388af0f6ee4f776b230a8c2f792f7b659a16204db"
+    schema_version: 1
+    state_fingerprint: "sha256:24cdea8b1e0e0506d0bf6470758d1418fb57abcae656f975ce6c2fdfa1c59937"
+    transition_id: "tr_0d7b17a8ca6e41df4128aa5737a09cb4"
   agentplane.kernel_operational_projection:
     digest: "sha256:37fbf9da9e4160b24496c13d01e743453aabb000a9e08bb0f9358510dee10581"
     evidence_refs:
