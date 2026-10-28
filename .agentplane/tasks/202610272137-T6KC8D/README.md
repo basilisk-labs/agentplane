@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 45
+revision: 46
 origin:
   system: "manual"
 depends_on: []
@@ -57,9 +57,11 @@ quality_review:
     - "No blocking defect found: the reviewed generic hosted PR route retains exact task and provider identity checks, fail-closed merge proof and transport recovery, and focused negative tests. The fresh local and hosted verification evidence binds to ea8f7539b9e8aaea77c243bfa62e53b748a0e64b."
     - "Residual risk: The base branch can change before integration; the native protected merge route must require fresh exact-head and exact-base evidence."
 token_usage:
-  agent_runs: 0
+  agent_runs: 1
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
   input_tokens: null
-  journal_digest: "sha256:f32cfe525e0a2433bd392bc77bc25c5c9fbe5ed1e8d209578c2131589c9fa756"
+  journal_digest: "sha256:508f9fc61cdf1b0f5b6ce185eebbcb046085f35cb12cc3e8e0a8012a4111de69"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -68,8 +70,8 @@ token_usage:
   source: "supervisor_journal"
   state: "unavailable"
   total_tokens: null
-  unavailable_reason: "no_supervised_agent_runs"
-  updated_at: "2026-10-28T04:55:55.487Z"
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-28T06:22:10.867Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -2203,9 +2205,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "d23ce4d43f0d786189e9f3fd02dda5f39bdf7faf"
-  message: "🧩 T6KC8D task: refresh task artifacts after commit"
+  hash: "548ef318d76a070e08b9f2bf18b3e27918b60445"
+  message: "🚧 T6KC8D task: record external evaluator result"
 comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -2230,8 +2235,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
+  -
+    type: "status"
+    at: "2026-10-28T06:22:10.867Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "548ef318d76a070e08b9f2bf18b3e27918b60445"
 doc_version: 3
-doc_updated_at: "2026-10-28T06:21:45.352Z"
+doc_updated_at: "2026-10-28T06:22:10.897Z"
 doc_updated_by: "CODER"
 description: "Successor to 202610271739-EWNMG7 after failed full CI. Transfer approved generic adoption implementation from c61813ce2946a7aabcc7f2c8fd67c724398f3ea7 under a fresh WorkOrder; fix exact-base-safe provider method selection, ordinary-route regressions, and generated CLI reference. Preserve prior task history and independent verification."
 sections:
@@ -2985,8 +2998,8 @@ extensions:
     verification_evidence_digest: "sha256:fec7626dd34f0a1f2603491b5aa443f37df0abd4bd2c1777ae08ff3ed6b33b4b"
     work_order_id: "sha256:3bbf643ad2c23580684e919bba4d985ad298c7b69816d73c6d022219fce5b400"
   implementation_commit:
-    hash: "5a8eefacbee2325e2a9014c2675ae77327249bed"
-    message: "🚧 T6KC8D task: apply canonical agent result"
+    hash: "ea8f7539b9e8aaea77c243bfa62e53b748a0e64b"
+    message: "Merge branch 'main' into task/202610272137-T6KC8D/complete-generic-hosted-pr-adoption-with-exact-b"
   task_execution_context:
     base_ref: "main"
     base_sha: "6b0a86164c6cf94466b527c70c8da3fed76b6dfc"
@@ -5291,12 +5304,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/0` agent runs
+- Completeness: `0/1` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:f32cfe525e0a2433bd392bc77bc25c5c9fbe5ed1e8d209578c2131589c9fa756`
-- Unavailable reason: `no_supervised_agent_runs`
-- Updated at: `2026-10-28T04:55:55.487Z`
+- Journal digest: `sha256:508f9fc61cdf1b0f5b6ce185eebbcb046085f35cb12cc3e8e0a8012a4111de69`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-28T06:22:10.867Z`
