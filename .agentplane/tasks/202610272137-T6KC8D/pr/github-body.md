@@ -15,8 +15,8 @@ Successor to 202610271739-EWNMG7 after failed full CI. Transfer approved generic
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>

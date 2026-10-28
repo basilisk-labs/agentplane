@@ -1,10 +1,10 @@
 ---
 id: "202610272137-T6KC8D"
 title: "Complete generic hosted PR adoption with exact-base-safe merge and CLI reference"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 42
 origin:
   system: "manual"
 depends_on: []
@@ -20,15 +20,32 @@ verify:
   - "bun run ci:local:full"
 plan_approval:
   state: "approved"
-  updated_at: "2026-10-27T21:40:50.770Z"
+  updated_at: "2026-10-28T03:59:12.664Z"
   updated_by: "USER"
-  note: null
+  note: "Projected from the approved canonical Task Kernel plan."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-10-28T04:48:47.815Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: canonical Task Kernel final checks passed."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-10-28T03:59:12.664Z"
+  updated_by: "EVALUATOR"
+  note: "Canonical EVALUATOR review passed."
+  evaluated_sha: "5a8eefacbee2325e2a9014c2675ae77327249bed"
+  review_identity_digest: "sha256:0d94bb8780650aeadbad7a1850ea8782a1476c0de933b720357543fe9be926aa"
+  evidence_refs:
+    - "../../../.git/agentplane/kernel/exchanges/202610272137-T6KC8D/28d413f91c52f495504235e637092476128f8c973c99dc41dcee115fa8ccd3fc/quality-report.json"
+  findings:
+    - "The authoritative primary control store retains exact same-repository provider, PR, branch, base, head, tree and task identity; strict metadata and replay checks reject mismatches."
+    - "Canonical TESTER, EVALUATOR, final validation, and merge readiness bind the accepted hosted head and tree to the approved task and current provider readback. Ordinary PR routes stay gated away from adopted-only recovery."
+    - "Separate USER authority gates provider update and merge. A retained running intent is reconciled under the original grant; ambiguous responses are not retried as a second remote effect."
+    - "Adopted GitHub uses one merge-commit request after capability preflight; GitLab rejects non-merge strategies. Fresh merged readback and immutable merge-commit first-parent proof prevent recording a drifted base as success."
+    - "Native declared checks run-008 through run-023 all passed on implementation commit 5a8eefacbee2325e2a9014c2675ae77327249bed, including typecheck, focused negative tests, ordinary-route regressions, docs, hotspots, compatibility ratchet, and full local CI."
+    - "The immutable v0.6.24 baseline is unchanged; the reviewed candidate and strict validator include the pr adopt CLI surface with source-task provenance."
 execution_route:
   frozen: true
   reason_codes:
@@ -101,11 +118,387 @@ execution_contract:
       - "scripts/checks/check-compatibility-contract-baseline.test.mjs"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "docs"
+      - "packages/agentplane"
+      - "packages/core"
+      - "scripts"
+    changed_paths:
+      - "docs/user/cli-reference.generated.mdx"
+      - "packages/agentplane/src/adapters/task-backend/kernel-record.ts"
+      - "packages/agentplane/src/adapters/task-backend/kernel-replay-persistence.test.ts"
+      - "packages/agentplane/src/cli/run-cli/command-catalog/project.ts"
+      - "packages/agentplane/src/cli/run-cli/command-loaders/project.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-qualification-review.adoption.test.ts"
+      - "packages/agentplane/src/commands/evaluator/evaluator-qualification-review.ts"
+      - "packages/agentplane/src/commands/pr/adoption-identity.test.ts"
+      - "packages/agentplane/src/commands/pr/adoption-identity.ts"
+      - "packages/agentplane/src/commands/pr/adoption-merge-base-proof.test.ts"
+      - "packages/agentplane/src/commands/pr/adoption-merge.test.ts"
+      - "packages/agentplane/src/commands/pr/adoption-merge.ts"
+      - "packages/agentplane/src/commands/pr/adoption-observe.test.ts"
+      - "packages/agentplane/src/commands/pr/adoption-observe.ts"
+      - "packages/agentplane/src/commands/pr/adoption-request.test.ts"
+      - "packages/agentplane/src/commands/pr/adoption-request.ts"
+      - "packages/agentplane/src/commands/pr/adoption-route.test.ts"
+      - "packages/agentplane/src/commands/pr/adoption-route.ts"
+      - "packages/agentplane/src/commands/pr/adoption-store.test.ts"
+      - "packages/agentplane/src/commands/pr/adoption-store.ts"
+      - "packages/agentplane/src/commands/pr/adoption-task-authority.test.ts"
+      - "packages/agentplane/src/commands/pr/adoption-task-authority.ts"
+      - "packages/agentplane/src/commands/pr/adoption-verification.ts"
+      - "packages/agentplane/src/commands/pr/adoption.command.ts"
+      - "packages/agentplane/src/commands/pr/check.ts"
+      - "packages/agentplane/src/commands/pr/flow-status-close-tail.ts"
+      - "packages/agentplane/src/commands/pr/flow-status.ts"
+      - "packages/agentplane/src/commands/pr/integrate/internal/github-pr-merge-strategy.test.ts"
+      - "packages/agentplane/src/commands/pr/integrate/internal/github-pr-merge.ts"
+      - "packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.test.ts"
+      - "packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.ts"
+      - "packages/agentplane/src/commands/pr/internal/sync.ts"
+      - "packages/agentplane/src/commands/pr/pr.spec.ts"
+      - "packages/agentplane/src/commands/pr/provider-update-branch.test.ts"
+      - "packages/agentplane/src/commands/pr/provider-update-branch.ts"
+      - "packages/agentplane/src/commands/shared/canonical-pre-merge-evidence.ts"
+      - "packages/agentplane/src/commands/shared/pr-meta/builders.adoption.test.ts"
+      - "packages/agentplane/src/commands/shared/pr-meta/builders.ts"
+      - "packages/agentplane/src/commands/shared/provider-update-branch-route.ts"
+      - "packages/agentplane/src/commands/shared/side-effect-authority-policy.ts"
+      - "packages/agentplane/src/commands/shared/side-effect-authority.test.ts"
+      - "packages/agentplane/src/commands/shared/side-effect-authority.ts"
+      - "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+      - "packages/agentplane/src/commands/shared/workflow-operation-effects.ts"
+      - "packages/agentplane/src/commands/shared/workflow-operation-params.ts"
+      - "packages/agentplane/src/commands/shared/workflow-operation-prefix.ts"
+      - "packages/agentplane/src/commands/shared/workflow-operation-projection.ts"
+      - "packages/agentplane/src/commands/shared/workflow-postconditions.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-adopted-pr.test.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-adopted-pr.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-reducer.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step.ts"
+      - "packages/agentplane/src/commands/task/adopted-provider-effect-recovery.test.ts"
+      - "packages/agentplane/src/commands/task/adopted-provider-effect-recovery.ts"
+      - "packages/agentplane/src/commands/task/advance-task-step.ts"
+      - "packages/agentplane/src/commands/task/branch-task-supervisor-adopted-operations.ts"
+      - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+      - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts"
+      - "packages/agentplane/src/commands/task/kernel-accepted-repository-evidence.hosted.test.ts"
+      - "packages/agentplane/src/commands/task/kernel-accepted-repository-evidence.ts"
+      - "packages/agentplane/src/commands/task/kernel-adopted-pr-route.test.ts"
+      - "packages/agentplane/src/commands/task/kernel-adopted-pr-route.ts"
+      - "packages/agentplane/src/commands/task/kernel-adopted-preclaim-update.ts"
+      - "packages/agentplane/src/commands/task/kernel-controller-handoff.test.ts"
+      - "packages/agentplane/src/commands/task/kernel-controller-handoff.ts"
+      - "packages/agentplane/src/commands/task/kernel-final-corrective-plan.ts"
+      - "packages/agentplane/src/commands/task/kernel-final-validation.test.ts"
+      - "packages/agentplane/src/commands/task/kernel-final-validation.ts"
+      - "packages/agentplane/src/commands/task/kernel-hosted-checkout.test.ts"
+      - "packages/agentplane/src/commands/task/kernel-hosted-checkout.ts"
+      - "packages/agentplane/src/commands/task/kernel-hosted-head-evidence.test.ts"
+      - "packages/agentplane/src/commands/task/kernel-hosted-head-evidence.ts"
+      - "packages/agentplane/src/commands/task/kernel-hosted-readback.test.ts"
+      - "packages/agentplane/src/commands/task/kernel-hosted-readback.ts"
+      - "packages/agentplane/src/commands/task/kernel-inspection-validation.ts"
+      - "packages/agentplane/src/commands/task/kernel-inspection-work-order.ts"
+      - "packages/agentplane/src/commands/task/kernel-inspection.test.ts"
+      - "packages/agentplane/src/commands/task/kernel-inspection.ts"
+      - "packages/agentplane/src/commands/task/kernel-repository-commit-intents.ts"
+      - "packages/agentplane/src/commands/task/kernel-repository-coordinator.ts"
+      - "packages/agentplane/src/commands/task/kernel-repository-types.ts"
+      - "packages/agentplane/src/commands/task/kernel-semantic-result.ts"
+      - "packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts"
+      - "packages/core/src/tasks/task-kernel/hosted-pr-head-evidence.test.ts"
+      - "packages/core/src/tasks/task-kernel/hosted-pr-head-evidence.ts"
+      - "packages/core/src/tasks/task-kernel/index.ts"
+      - "packages/core/src/tasks/task-kernel/kernel.test.ts"
+      - "packages/core/src/tasks/task-kernel/kernel.ts"
+      - "packages/core/src/tasks/task-kernel/model.ts"
+      - "scripts/baselines/v0.7-compatibility-candidate.json"
+      - "scripts/checks/check-compatibility-contract-baseline.mjs"
+      - "scripts/checks/check-compatibility-contract-baseline.test.mjs"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "documentation"
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-10"
+        result: "pass"
+      -
+        id: "recorded-check-11"
+        result: "pass"
+      -
+        id: "recorded-check-12"
+        result: "pass"
+      -
+        id: "recorded-check-13"
+        result: "pass"
+      -
+        id: "recorded-check-14"
+        result: "pass"
+      -
+        id: "recorded-check-15"
+        result: "pass"
+      -
+        id: "recorded-check-16"
+        result: "pass"
+      -
+        id: "recorded-check-17"
+        result: "pass"
+      -
+        id: "recorded-check-18"
+        result: "pass"
+      -
+        id: "recorded-check-19"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-20"
+        result: "pass"
+      -
+        id: "recorded-check-21"
+        result: "pass"
+      -
+        id: "recorded-check-22"
+        result: "pass"
+      -
+        id: "recorded-check-23"
+        result: "pass"
+      -
+        id: "recorded-check-24"
+        result: "pass"
+      -
+        id: "recorded-check-25"
+        result: "pass"
+      -
+        id: "recorded-check-26"
+        result: "pass"
+      -
+        id: "recorded-check-27"
+        result: "pass"
+      -
+        id: "recorded-check-28"
+        result: "pass"
+      -
+        id: "recorded-check-29"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-30"
+        result: "pass"
+      -
+        id: "recorded-check-31"
+        result: "pass"
+      -
+        id: "recorded-check-32"
+        result: "pass"
+      -
+        id: "recorded-check-33"
+        result: "pass"
+      -
+        id: "recorded-check-34"
+        result: "pass"
+      -
+        id: "recorded-check-35"
+        result: "pass"
+      -
+        id: "recorded-check-36"
+        result: "pass"
+      -
+        id: "recorded-check-37"
+        result: "pass"
+      -
+        id: "recorded-check-38"
+        result: "pass"
+      -
+        id: "recorded-check-39"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-40"
+        result: "pass"
+      -
+        id: "recorded-check-41"
+        result: "pass"
+      -
+        id: "recorded-check-42"
+        result: "pass"
+      -
+        id: "recorded-check-43"
+        result: "pass"
+      -
+        id: "recorded-check-44"
+        result: "pass"
+      -
+        id: "recorded-check-45"
+        result: "pass"
+      -
+        id: "recorded-check-46"
+        result: "pass"
+      -
+        id: "recorded-check-47"
+        result: "pass"
+      -
+        id: "recorded-check-48"
+        result: "pass"
+      -
+        id: "recorded-check-49"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-50"
+        result: "pass"
+      -
+        id: "recorded-check-51"
+        result: "pass"
+      -
+        id: "recorded-check-52"
+        result: "pass"
+      -
+        id: "recorded-check-53"
+        result: "pass"
+      -
+        id: "recorded-check-54"
+        result: "pass"
+      -
+        id: "recorded-check-55"
+        result: "pass"
+      -
+        id: "recorded-check-56"
+        result: "pass"
+      -
+        id: "recorded-check-57"
+        result: "pass"
+      -
+        id: "recorded-check-58"
+        result: "pass"
+      -
+        id: "recorded-check-59"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-60"
+        result: "pass"
+      -
+        id: "recorded-check-61"
+        result: "pass"
+      -
+        id: "recorded-check-62"
+        result: "pass"
+      -
+        id: "recorded-check-63"
+        result: "pass"
+      -
+        id: "recorded-check-64"
+        result: "pass"
+      -
+        id: "recorded-check-65"
+        result: "pass"
+      -
+        id: "recorded-check-66"
+        result: "pass"
+      -
+        id: "recorded-check-67"
+        result: "pass"
+      -
+        id: "recorded-check-68"
+        result: "pass"
+      -
+        id: "recorded-check-69"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-70"
+        result: "pass"
+      -
+        id: "recorded-check-71"
+        result: "pass"
+      -
+        id: "recorded-check-72"
+        result: "pass"
+      -
+        id: "recorded-check-73"
+        result: "pass"
+      -
+        id: "recorded-check-74"
+        result: "pass"
+      -
+        id: "recorded-check-75"
+        result: "pass"
+      -
+        id: "recorded-check-76"
+        result: "pass"
+      -
+        id: "recorded-check-77"
+        result: "pass"
+      -
+        id: "recorded-check-78"
+        result: "pass"
+      -
+        id: "recorded-check-79"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-80"
+        result: "pass"
+      -
+        id: "recorded-check-81"
+        result: "pass"
+      -
+        id: "recorded-check-82"
+        result: "pass"
+      -
+        id: "recorded-check-83"
+        result: "pass"
+      -
+        id: "recorded-check-84"
+        result: "pass"
+      -
+        id: "recorded-check-85"
+        result: "pass"
+      -
+        id: "recorded-check-86"
+        result: "pass"
+      -
+        id: "recorded-check-87"
+        result: "pass"
+      -
+        id: "recorded-check-88"
+        result: "pass"
+      -
+        id: "recorded-check-89"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
+      -
+        id: "recorded-check-90"
+        result: "pass"
+      -
+        id: "recorded-check-91"
+        result: "pass"
+      -
+        id: "verification-record"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_external_write"
@@ -157,25 +550,153 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:70bfc2c8bb635753795794d0e068263c7c024982d3e60083e87410e3e17bd01a"
+      digest: "sha256:d9fd3a11d0d5857a360051cb0381f694b4e9f9c9ef380d6d604c37a360623b7c"
       escalation_reasons:
         - "central_component:packages/core/src/tasks/task-kernel"
         - "central_component:scripts/checks/check-compatibility-contract-baseline.mjs"
         - "central_component:scripts/checks/check-compatibility-contract-baseline.test.mjs"
+        - "central_path:packages/agentplane/src/cli/run-cli/command-catalog/project.ts"
+        - "central_path:packages/agentplane/src/cli/run-cli/command-loaders/project.ts"
+        - "central_path:packages/agentplane/src/commands/shared/canonical-pre-merge-evidence.ts"
+        - "central_path:packages/agentplane/src/commands/shared/pr-meta/builders.adoption.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/pr-meta/builders.ts"
+        - "central_path:packages/agentplane/src/commands/shared/provider-update-branch-route.ts"
+        - "central_path:packages/agentplane/src/commands/shared/side-effect-authority-policy.ts"
+        - "central_path:packages/agentplane/src/commands/shared/side-effect-authority.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/side-effect-authority.ts"
+        - "central_path:packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-operation-effects.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-operation-params.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-operation-prefix.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-operation-projection.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-postconditions.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-adopted-pr.test.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-adopted-pr.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step-reducer.ts"
+        - "central_path:packages/agentplane/src/commands/shared/workflow-step.ts"
+        - "central_path:packages/core/src/tasks/task-kernel/hosted-pr-head-evidence.test.ts"
+        - "central_path:packages/core/src/tasks/task-kernel/hosted-pr-head-evidence.ts"
+        - "central_path:packages/core/src/tasks/task-kernel/index.ts"
+        - "central_path:packages/core/src/tasks/task-kernel/kernel.test.ts"
+        - "central_path:packages/core/src/tasks/task-kernel/kernel.ts"
+        - "central_path:packages/core/src/tasks/task-kernel/model.ts"
+        - "central_path:scripts/checks/check-compatibility-contract-baseline.mjs"
+        - "central_path:scripts/checks/check-compatibility-contract-baseline.test.mjs"
         - "effect_release_metadata"
         - "effect_schema"
         - "external_effect_requires_real_e2e"
         - "reversibility_recovery_required"
+        - "unknown_path:scripts/baselines/v0.7-compatibility-candidate.json"
       execution_groups:
         - "docs-schema"
         - "core"
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "docs"
+          - "packages/agentplane"
+          - "packages/core"
+          - "scripts"
+        changed_files:
+          - "docs/user/cli-reference.generated.mdx"
+          - "packages/agentplane/src/adapters/task-backend/kernel-record.ts"
+          - "packages/agentplane/src/adapters/task-backend/kernel-replay-persistence.test.ts"
+          - "packages/agentplane/src/cli/run-cli/command-catalog/project.ts"
+          - "packages/agentplane/src/cli/run-cli/command-loaders/project.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-qualification-review.adoption.test.ts"
+          - "packages/agentplane/src/commands/evaluator/evaluator-qualification-review.ts"
+          - "packages/agentplane/src/commands/pr/adoption-identity.test.ts"
+          - "packages/agentplane/src/commands/pr/adoption-identity.ts"
+          - "packages/agentplane/src/commands/pr/adoption-merge-base-proof.test.ts"
+          - "packages/agentplane/src/commands/pr/adoption-merge.test.ts"
+          - "packages/agentplane/src/commands/pr/adoption-merge.ts"
+          - "packages/agentplane/src/commands/pr/adoption-observe.test.ts"
+          - "packages/agentplane/src/commands/pr/adoption-observe.ts"
+          - "packages/agentplane/src/commands/pr/adoption-request.test.ts"
+          - "packages/agentplane/src/commands/pr/adoption-request.ts"
+          - "packages/agentplane/src/commands/pr/adoption-route.test.ts"
+          - "packages/agentplane/src/commands/pr/adoption-route.ts"
+          - "packages/agentplane/src/commands/pr/adoption-store.test.ts"
+          - "packages/agentplane/src/commands/pr/adoption-store.ts"
+          - "packages/agentplane/src/commands/pr/adoption-task-authority.test.ts"
+          - "packages/agentplane/src/commands/pr/adoption-task-authority.ts"
+          - "packages/agentplane/src/commands/pr/adoption-verification.ts"
+          - "packages/agentplane/src/commands/pr/adoption.command.ts"
+          - "packages/agentplane/src/commands/pr/check.ts"
+          - "packages/agentplane/src/commands/pr/flow-status-close-tail.ts"
+          - "packages/agentplane/src/commands/pr/flow-status.ts"
+          - "packages/agentplane/src/commands/pr/integrate/internal/github-pr-merge-strategy.test.ts"
+          - "packages/agentplane/src/commands/pr/integrate/internal/github-pr-merge.ts"
+          - "packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.test.ts"
+          - "packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.ts"
+          - "packages/agentplane/src/commands/pr/internal/sync.ts"
+          - "packages/agentplane/src/commands/pr/pr.spec.ts"
+          - "packages/agentplane/src/commands/pr/provider-update-branch.test.ts"
+          - "packages/agentplane/src/commands/pr/provider-update-branch.ts"
+          - "packages/agentplane/src/commands/shared/canonical-pre-merge-evidence.ts"
+          - "packages/agentplane/src/commands/shared/pr-meta/builders.adoption.test.ts"
+          - "packages/agentplane/src/commands/shared/pr-meta/builders.ts"
+          - "packages/agentplane/src/commands/shared/provider-update-branch-route.ts"
+          - "packages/agentplane/src/commands/shared/side-effect-authority-policy.ts"
+          - "packages/agentplane/src/commands/shared/side-effect-authority.test.ts"
+          - "packages/agentplane/src/commands/shared/side-effect-authority.ts"
+          - "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+          - "packages/agentplane/src/commands/shared/workflow-operation-effects.ts"
+          - "packages/agentplane/src/commands/shared/workflow-operation-params.ts"
+          - "packages/agentplane/src/commands/shared/workflow-operation-prefix.ts"
+          - "packages/agentplane/src/commands/shared/workflow-operation-projection.ts"
+          - "packages/agentplane/src/commands/shared/workflow-postconditions.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-adopted-pr.test.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-adopted-pr.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-reducer.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step.ts"
+          - "packages/agentplane/src/commands/task/adopted-provider-effect-recovery.test.ts"
+          - "packages/agentplane/src/commands/task/adopted-provider-effect-recovery.ts"
+          - "packages/agentplane/src/commands/task/advance-task-step.ts"
+          - "packages/agentplane/src/commands/task/branch-task-supervisor-adopted-operations.ts"
+          - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts"
+          - "packages/agentplane/src/commands/task/branch-task-supervisor-operations.ts"
+          - "packages/agentplane/src/commands/task/kernel-accepted-repository-evidence.hosted.test.ts"
+          - "packages/agentplane/src/commands/task/kernel-accepted-repository-evidence.ts"
+          - "packages/agentplane/src/commands/task/kernel-adopted-pr-route.test.ts"
+          - "packages/agentplane/src/commands/task/kernel-adopted-pr-route.ts"
+          - "packages/agentplane/src/commands/task/kernel-adopted-preclaim-update.ts"
+          - "packages/agentplane/src/commands/task/kernel-controller-handoff.test.ts"
+          - "packages/agentplane/src/commands/task/kernel-controller-handoff.ts"
+          - "packages/agentplane/src/commands/task/kernel-final-corrective-plan.ts"
+          - "packages/agentplane/src/commands/task/kernel-final-validation.test.ts"
+          - "packages/agentplane/src/commands/task/kernel-final-validation.ts"
+          - "packages/agentplane/src/commands/task/kernel-hosted-checkout.test.ts"
+          - "packages/agentplane/src/commands/task/kernel-hosted-checkout.ts"
+          - "packages/agentplane/src/commands/task/kernel-hosted-head-evidence.test.ts"
+          - "packages/agentplane/src/commands/task/kernel-hosted-head-evidence.ts"
+          - "packages/agentplane/src/commands/task/kernel-hosted-readback.test.ts"
+          - "packages/agentplane/src/commands/task/kernel-hosted-readback.ts"
+          - "packages/agentplane/src/commands/task/kernel-inspection-validation.ts"
+          - "packages/agentplane/src/commands/task/kernel-inspection-work-order.ts"
+          - "packages/agentplane/src/commands/task/kernel-inspection.test.ts"
+          - "packages/agentplane/src/commands/task/kernel-inspection.ts"
+          - "packages/agentplane/src/commands/task/kernel-repository-commit-intents.ts"
+          - "packages/agentplane/src/commands/task/kernel-repository-coordinator.ts"
+          - "packages/agentplane/src/commands/task/kernel-repository-types.ts"
+          - "packages/agentplane/src/commands/task/kernel-semantic-result.ts"
+          - "packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts"
+          - "packages/core/src/tasks/task-kernel/hosted-pr-head-evidence.test.ts"
+          - "packages/core/src/tasks/task-kernel/hosted-pr-head-evidence.ts"
+          - "packages/core/src/tasks/task-kernel/index.ts"
+          - "packages/core/src/tasks/task-kernel/kernel.test.ts"
+          - "packages/core/src/tasks/task-kernel/kernel.ts"
+          - "packages/core/src/tasks/task-kernel/model.ts"
+          - "scripts/baselines/v0.7-compatibility-candidate.json"
+          - "scripts/checks/check-compatibility-contract-baseline.mjs"
+          - "scripts/checks/check-compatibility-contract-baseline.test.mjs"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "documentation"
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -214,12 +735,20 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "5a8eefacbee2325e2a9014c2675ae77327249bed"
+  message: "AgentPlane-owned canonical implementation commit"
 comments: []
-events: []
+events:
+  -
+    type: "verify"
+    at: "2026-10-28T04:48:47.815Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: canonical Task Kernel final checks passed."
 doc_version: 3
-doc_updated_at: "2026-10-27T21:37:41.744Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-10-28T04:48:49.457Z"
+doc_updated_by: "SUPERVISOR"
 description: "Successor to 202610271739-EWNMG7 after failed full CI. Transfer approved generic adoption implementation from c61813ce2946a7aabcc7f2c8fd67c724398f3ea7 under a fresh WorkOrder; fix exact-base-safe provider method selection, ordinary-route regressions, and generated CLI reference. Preserve prior task history and independent verification."
 sections:
   Summary: |-
@@ -238,12 +767,606 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-10-28T04:48:47.815Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: canonical Task Kernel final checks passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:80f30dd25dd86dd101316aa024f4caeef4099dda9cba50fb881f825a28c8651e, input_digest=sha256:5561f657f6c503a30db63b284b1fc87401e2ead42ae817ea5cb5ea24d7b8ee27
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/core/src/tasks/task-kernel/hosted-pr-head-evidence.test.ts packages/core/src/tasks/task-kernel/kernel.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check affected_unit_integration (1/18)
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/adapters/task-backend/kernel-replay-persistence.test.ts packages/agentplane/src/commands/evaluator/evaluator-qualification-review.adoption.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check affected_unit_integration (2/18)
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/commands/task/kernel-hosted-checkout.test.ts packages/agentplane/src/commands/task/kernel-hosted-readback.test.ts packages/agentplane/src/commands/task/kernel-hosted-head-evidence.test.ts packages/agentplane/src/commands/task/kernel-accepted-repository-evidence.hosted.test.ts packages/agentplane/src/commands/task/kernel-final-validation.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check affected_unit_integration (3/18)
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/commands/shared/pr-meta/builders.adoption.test.ts packages/agentplane/src/commands/shared/workflow-step-adopted-pr.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check affected_unit_integration (4/18)
+
+    Check: affected_unit_integration
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check affected_unit_integration (5/18)
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/commands/task/adopted-provider-effect-recovery.test.ts packages/agentplane/src/commands/task/kernel-controller-handoff.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check affected_unit_integration (6/18)
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/commands/pr/adoption-merge-base-proof.test.ts packages/agentplane/src/commands/shared/side-effect-authority.test.ts packages/agentplane/src/commands/shared/workflow-step-adopted-pr.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check affected_unit_integration (7/18)
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/github-pr-merge-strategy.test.ts packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.test.ts packages/agentplane/src/commands/pr/adoption-merge.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check affected_unit_integration (8/18)
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts packages/agentplane/src/commands/task/roadmap-common-review-application.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts packages/agentplane/src/commands/task/kernel-inspection.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check affected_unit_integration (9/18)
+
+    Check: affected_unit_integration
+    Command: bun run docs:cli:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-10
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check affected_unit_integration (10/18)
+
+    Check: affected_unit_integration
+    Command: bunx vitest run packages/agentplane/src/commands/pr/flow-status.pre-merge.test.ts packages/agentplane/src/commands/shared/workflow-step.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/task/kernel-inspection.test.ts packages/agentplane/src/commands/task/kernel-final-validation.test.ts packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-11
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check affected_unit_integration (11/18)
+
+    Check: affected_unit_integration
+    Command: bun run hotspots:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-12
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check affected_unit_integration (12/18)
+
+    Check: affected_unit_integration
+    Command: node --test scripts/checks/check-compatibility-contract-baseline.test.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-13
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check affected_unit_integration (13/18)
+
+    Check: affected_unit_integration
+    Command: node scripts/bench/capture-compatibility-candidate.mjs --check
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-14
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check affected_unit_integration (14/18)
+
+    Check: affected_unit_integration
+    Command: node scripts/checks/check-compatibility-contract-baseline.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-15
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check affected_unit_integration (15/18)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-16
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check affected_unit_integration (16/18)
+
+    Check: affected_unit_integration
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-17
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check affected_unit_integration (17/18)
+
+    Check: affected_unit_integration
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-18
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check affected_unit_integration (18/18)
+
+    Check: critical_paths
+    Command: bunx vitest run packages/core/src/tasks/task-kernel/hosted-pr-head-evidence.test.ts packages/core/src/tasks/task-kernel/kernel.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check critical_paths (1/18)
+
+    Check: critical_paths
+    Command: bunx vitest run packages/agentplane/src/adapters/task-backend/kernel-replay-persistence.test.ts packages/agentplane/src/commands/evaluator/evaluator-qualification-review.adoption.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check critical_paths (2/18)
+
+    Check: critical_paths
+    Command: bunx vitest run packages/agentplane/src/commands/task/kernel-hosted-checkout.test.ts packages/agentplane/src/commands/task/kernel-hosted-readback.test.ts packages/agentplane/src/commands/task/kernel-hosted-head-evidence.test.ts packages/agentplane/src/commands/task/kernel-accepted-repository-evidence.hosted.test.ts packages/agentplane/src/commands/task/kernel-final-validation.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check critical_paths (3/18)
+
+    Check: critical_paths
+    Command: bunx vitest run packages/agentplane/src/commands/shared/pr-meta/builders.adoption.test.ts packages/agentplane/src/commands/shared/workflow-step-adopted-pr.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check critical_paths (4/18)
+
+    Check: critical_paths
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check critical_paths (5/18)
+
+    Check: critical_paths
+    Command: bunx vitest run packages/agentplane/src/commands/task/adopted-provider-effect-recovery.test.ts packages/agentplane/src/commands/task/kernel-controller-handoff.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check critical_paths (6/18)
+
+    Check: critical_paths
+    Command: bunx vitest run packages/agentplane/src/commands/pr/adoption-merge-base-proof.test.ts packages/agentplane/src/commands/shared/side-effect-authority.test.ts packages/agentplane/src/commands/shared/workflow-step-adopted-pr.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check critical_paths (7/18)
+
+    Check: critical_paths
+    Command: bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/github-pr-merge-strategy.test.ts packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.test.ts packages/agentplane/src/commands/pr/adoption-merge.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check critical_paths (8/18)
+
+    Check: critical_paths
+    Command: bunx vitest run packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts packages/agentplane/src/commands/task/roadmap-common-review-application.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts packages/agentplane/src/commands/task/kernel-inspection.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check critical_paths (9/18)
+
+    Check: critical_paths
+    Command: bun run docs:cli:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-10
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check critical_paths (10/18)
+
+    Check: critical_paths
+    Command: bunx vitest run packages/agentplane/src/commands/pr/flow-status.pre-merge.test.ts packages/agentplane/src/commands/shared/workflow-step.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/task/kernel-inspection.test.ts packages/agentplane/src/commands/task/kernel-final-validation.test.ts packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-11
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check critical_paths (11/18)
+
+    Check: critical_paths
+    Command: bun run hotspots:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-12
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check critical_paths (12/18)
+
+    Check: critical_paths
+    Command: node --test scripts/checks/check-compatibility-contract-baseline.test.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-13
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check critical_paths (13/18)
+
+    Check: critical_paths
+    Command: node scripts/bench/capture-compatibility-candidate.mjs --check
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-14
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check critical_paths (14/18)
+
+    Check: critical_paths
+    Command: node scripts/checks/check-compatibility-contract-baseline.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-15
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check critical_paths (15/18)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-16
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check critical_paths (16/18)
+
+    Check: critical_paths
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-17
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check critical_paths (17/18)
+
+    Check: critical_paths
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-18
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check critical_paths (18/18)
+
+    Check: docs_contract
+    Command: bunx vitest run packages/core/src/tasks/task-kernel/hosted-pr-head-evidence.test.ts packages/core/src/tasks/task-kernel/kernel.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check docs_contract (1/18)
+
+    Check: docs_contract
+    Command: bunx vitest run packages/agentplane/src/adapters/task-backend/kernel-replay-persistence.test.ts packages/agentplane/src/commands/evaluator/evaluator-qualification-review.adoption.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check docs_contract (2/18)
+
+    Check: docs_contract
+    Command: bunx vitest run packages/agentplane/src/commands/task/kernel-hosted-checkout.test.ts packages/agentplane/src/commands/task/kernel-hosted-readback.test.ts packages/agentplane/src/commands/task/kernel-hosted-head-evidence.test.ts packages/agentplane/src/commands/task/kernel-accepted-repository-evidence.hosted.test.ts packages/agentplane/src/commands/task/kernel-final-validation.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check docs_contract (3/18)
+
+    Check: docs_contract
+    Command: bunx vitest run packages/agentplane/src/commands/shared/pr-meta/builders.adoption.test.ts packages/agentplane/src/commands/shared/workflow-step-adopted-pr.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check docs_contract (4/18)
+
+    Check: docs_contract
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check docs_contract (5/18)
+
+    Check: docs_contract
+    Command: bunx vitest run packages/agentplane/src/commands/task/adopted-provider-effect-recovery.test.ts packages/agentplane/src/commands/task/kernel-controller-handoff.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check docs_contract (6/18)
+
+    Check: docs_contract
+    Command: bunx vitest run packages/agentplane/src/commands/pr/adoption-merge-base-proof.test.ts packages/agentplane/src/commands/shared/side-effect-authority.test.ts packages/agentplane/src/commands/shared/workflow-step-adopted-pr.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check docs_contract (7/18)
+
+    Check: docs_contract
+    Command: bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/github-pr-merge-strategy.test.ts packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.test.ts packages/agentplane/src/commands/pr/adoption-merge.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check docs_contract (8/18)
+
+    Check: docs_contract
+    Command: bunx vitest run packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts packages/agentplane/src/commands/task/roadmap-common-review-application.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts packages/agentplane/src/commands/task/kernel-inspection.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check docs_contract (9/18)
+
+    Check: docs_contract
+    Command: bun run docs:cli:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-10
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check docs_contract (10/18)
+
+    Check: docs_contract
+    Command: bunx vitest run packages/agentplane/src/commands/pr/flow-status.pre-merge.test.ts packages/agentplane/src/commands/shared/workflow-step.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/task/kernel-inspection.test.ts packages/agentplane/src/commands/task/kernel-final-validation.test.ts packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-11
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check docs_contract (11/18)
+
+    Check: docs_contract
+    Command: bun run hotspots:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-12
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check docs_contract (12/18)
+
+    Check: docs_contract
+    Command: node --test scripts/checks/check-compatibility-contract-baseline.test.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-13
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check docs_contract (13/18)
+
+    Check: docs_contract
+    Command: node scripts/bench/capture-compatibility-candidate.mjs --check
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-14
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check docs_contract (14/18)
+
+    Check: docs_contract
+    Command: node scripts/checks/check-compatibility-contract-baseline.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-15
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check docs_contract (15/18)
+
+    Check: docs_contract
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-16
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check docs_contract (16/18)
+
+    Check: docs_contract
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-17
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check docs_contract (17/18)
+
+    Check: docs_contract
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-18
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check docs_contract (18/18)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-16
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check full_regression
+
+    Check: real_e2e
+    Command: bunx vitest run packages/core/src/tasks/task-kernel/hosted-pr-head-evidence.test.ts packages/core/src/tasks/task-kernel/kernel.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check real_e2e (1/18)
+
+    Check: real_e2e
+    Command: bunx vitest run packages/agentplane/src/adapters/task-backend/kernel-replay-persistence.test.ts packages/agentplane/src/commands/evaluator/evaluator-qualification-review.adoption.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check real_e2e (2/18)
+
+    Check: real_e2e
+    Command: bunx vitest run packages/agentplane/src/commands/task/kernel-hosted-checkout.test.ts packages/agentplane/src/commands/task/kernel-hosted-readback.test.ts packages/agentplane/src/commands/task/kernel-hosted-head-evidence.test.ts packages/agentplane/src/commands/task/kernel-accepted-repository-evidence.hosted.test.ts packages/agentplane/src/commands/task/kernel-final-validation.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check real_e2e (3/18)
+
+    Check: real_e2e
+    Command: bunx vitest run packages/agentplane/src/commands/shared/pr-meta/builders.adoption.test.ts packages/agentplane/src/commands/shared/workflow-step-adopted-pr.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check real_e2e (4/18)
+
+    Check: real_e2e
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check real_e2e (5/18)
+
+    Check: real_e2e
+    Command: bunx vitest run packages/agentplane/src/commands/task/adopted-provider-effect-recovery.test.ts packages/agentplane/src/commands/task/kernel-controller-handoff.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check real_e2e (6/18)
+
+    Check: real_e2e
+    Command: bunx vitest run packages/agentplane/src/commands/pr/adoption-merge-base-proof.test.ts packages/agentplane/src/commands/shared/side-effect-authority.test.ts packages/agentplane/src/commands/shared/workflow-step-adopted-pr.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check real_e2e (7/18)
+
+    Check: real_e2e
+    Command: bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/github-pr-merge-strategy.test.ts packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.test.ts packages/agentplane/src/commands/pr/adoption-merge.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check real_e2e (8/18)
+
+    Check: real_e2e
+    Command: bunx vitest run packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts packages/agentplane/src/commands/task/roadmap-common-review-application.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts packages/agentplane/src/commands/task/kernel-inspection.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check real_e2e (9/18)
+
+    Check: real_e2e
+    Command: bun run docs:cli:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-10
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check real_e2e (10/18)
+
+    Check: real_e2e
+    Command: bunx vitest run packages/agentplane/src/commands/pr/flow-status.pre-merge.test.ts packages/agentplane/src/commands/shared/workflow-step.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/task/kernel-inspection.test.ts packages/agentplane/src/commands/task/kernel-final-validation.test.ts packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-11
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check real_e2e (11/18)
+
+    Check: real_e2e
+    Command: bun run hotspots:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-12
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check real_e2e (12/18)
+
+    Check: real_e2e
+    Command: node --test scripts/checks/check-compatibility-contract-baseline.test.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-13
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check real_e2e (13/18)
+
+    Check: real_e2e
+    Command: node scripts/bench/capture-compatibility-candidate.mjs --check
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-14
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check real_e2e (14/18)
+
+    Check: real_e2e
+    Command: node scripts/checks/check-compatibility-contract-baseline.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-15
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check real_e2e (15/18)
+
+    Check: real_e2e
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-16
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check real_e2e (16/18)
+
+    Check: real_e2e
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-17
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check real_e2e (17/18)
+
+    Check: real_e2e
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-18
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check real_e2e (18/18)
+
+    Check: task_outcome
+    Command: bunx vitest run packages/core/src/tasks/task-kernel/hosted-pr-head-evidence.test.ts packages/core/src/tasks/task-kernel/kernel.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check task_outcome (1/18)
+
+    Check: task_outcome
+    Command: bunx vitest run packages/agentplane/src/adapters/task-backend/kernel-replay-persistence.test.ts packages/agentplane/src/commands/evaluator/evaluator-qualification-review.adoption.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check task_outcome (2/18)
+
+    Check: task_outcome
+    Command: bunx vitest run packages/agentplane/src/commands/task/kernel-hosted-checkout.test.ts packages/agentplane/src/commands/task/kernel-hosted-readback.test.ts packages/agentplane/src/commands/task/kernel-hosted-head-evidence.test.ts packages/agentplane/src/commands/task/kernel-accepted-repository-evidence.hosted.test.ts packages/agentplane/src/commands/task/kernel-final-validation.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check task_outcome (3/18)
+
+    Check: task_outcome
+    Command: bunx vitest run packages/agentplane/src/commands/shared/pr-meta/builders.adoption.test.ts packages/agentplane/src/commands/shared/workflow-step-adopted-pr.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check task_outcome (4/18)
+
+    Check: task_outcome
+    Command: bun run typecheck
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check task_outcome (5/18)
+
+    Check: task_outcome
+    Command: bunx vitest run packages/agentplane/src/commands/task/adopted-provider-effect-recovery.test.ts packages/agentplane/src/commands/task/kernel-controller-handoff.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check task_outcome (6/18)
+
+    Check: task_outcome
+    Command: bunx vitest run packages/agentplane/src/commands/pr/adoption-merge-base-proof.test.ts packages/agentplane/src/commands/shared/side-effect-authority.test.ts packages/agentplane/src/commands/shared/workflow-step-adopted-pr.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check task_outcome (7/18)
+
+    Check: task_outcome
+    Command: bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/github-pr-merge-strategy.test.ts packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.test.ts packages/agentplane/src/commands/pr/adoption-merge.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-8
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check task_outcome (8/18)
+
+    Check: task_outcome
+    Command: bunx vitest run packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts packages/agentplane/src/commands/task/roadmap-common-review-application.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts packages/agentplane/src/commands/task/kernel-inspection.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-9
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check task_outcome (9/18)
+
+    Check: task_outcome
+    Command: bun run docs:cli:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-10
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check task_outcome (10/18)
+
+    Check: task_outcome
+    Command: bunx vitest run packages/agentplane/src/commands/pr/flow-status.pre-merge.test.ts packages/agentplane/src/commands/shared/workflow-step.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/task/kernel-inspection.test.ts packages/agentplane/src/commands/task/kernel-final-validation.test.ts packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts --pool=forks --maxWorkers 1
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-11
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check task_outcome (11/18)
+
+    Check: task_outcome
+    Command: bun run hotspots:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-12
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check task_outcome (12/18)
+
+    Check: task_outcome
+    Command: node --test scripts/checks/check-compatibility-contract-baseline.test.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-13
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check task_outcome (13/18)
+
+    Check: task_outcome
+    Command: node scripts/bench/capture-compatibility-candidate.mjs --check
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-14
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check task_outcome (14/18)
+
+    Check: task_outcome
+    Command: node scripts/checks/check-compatibility-contract-baseline.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-15
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check task_outcome (15/18)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-16
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check task_outcome (16/18)
+
+    Check: task_outcome
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-17
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check task_outcome (17/18)
+
+    Check: task_outcome
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-18
+    Scope: branch_pr task 202610272137-T6KC8D Verification Contract check task_outcome (18/18)
+
+    NativeTaskIdentityRef:
+    - plan_digest: sha256:e91967dc1c0e051ca34cfb1ff0a7e8ea1141be93525121e535bca184227ce794
+    - policy_digest: sha256:56c15d063dc6e53d67c5a07a2bd0d1d3284f746df6836fee6537019292e27f84
+    - capability_digest: sha256:98093504b32ab58751ed21c72f8cf65a8bb98b59c30f65ae5daa1cb7c941f207
+    - checks_digest: sha256:dc219ffbdeaf8ffc71ea14bd1ca7edf0354a3ae845a5c7532d8f57485a3d6c11
+    - identity_digest: sha256:35064f7f00149849d2b2c867b9890ee60651d071c4e1404ab16adb1b0d8364d5
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202610272137-T6KC8D
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.kernel_operational_projection:
+    digest: "sha256:37fbf9da9e4160b24496c13d01e743453aabb000a9e08bb0f9358510dee10581"
+    evidence_refs:
+      - "../../../.git/agentplane/kernel/exchanges/202610272137-T6KC8D/28d413f91c52f495504235e637092476128f8c973c99dc41dcee115fa8ccd3fc/quality-report.json"
+    findings:
+      - "The authoritative primary control store retains exact same-repository provider, PR, branch, base, head, tree and task identity; strict metadata and replay checks reject mismatches."
+      - "Canonical TESTER, EVALUATOR, final validation, and merge readiness bind the accepted hosted head and tree to the approved task and current provider readback. Ordinary PR routes stay gated away from adopted-only recovery."
+      - "Separate USER authority gates provider update and merge. A retained running intent is reconciled under the original grant; ambiguous responses are not retried as a second remote effect."
+      - "Adopted GitHub uses one merge-commit request after capability preflight; GitLab rejects non-merge strategies. Fresh merged readback and immutable merge-commit first-parent proof prevent recording a drifted base as success."
+      - "Native declared checks run-008 through run-023 all passed on implementation commit 5a8eefacbee2325e2a9014c2675ae77327249bed, including typecheck, focused negative tests, ordinary-route regressions, docs, hotspots, compatibility ratchet, and full local CI."
+      - "The immutable v0.6.24 baseline is unchanged; the reviewed candidate and strict validator include the pr adopt CLI surface with source-task provenance."
+    implementation_commit: "5a8eefacbee2325e2a9014c2675ae77327249bed"
+    implementation_tree: "ce1596a2bbc2bfd0e23f7a5a20a64a965e84a2a0"
+    projected_at: "2026-10-28T03:59:12.664Z"
+    review_identity_digest: "sha256:0d94bb8780650aeadbad7a1850ea8782a1476c0de933b720357543fe9be926aa"
+    schema_version: 1
+    source: "task_kernel"
+    verification_evidence_digest: "sha256:fec7626dd34f0a1f2603491b5aa443f37df0abd4bd2c1777ae08ff3ed6b33b4b"
+    work_order_id: "sha256:3bbf643ad2c23580684e919bba4d985ad298c7b69816d73c6d022219fce5b400"
   task_execution_context:
     base_ref: "main"
     base_sha: "6b0a86164c6cf94466b527c70c8da3fed76b6dfc"
@@ -698,6 +1821,66 @@ extensions:
               - "task_outcome"
             work_item_id: null
           observation: null
+        -
+          approval_mode: null
+          authority:
+            capabilities:
+              - "repository_write"
+            completion_requirements:
+              - "work_item_validation"
+              - "final_validation"
+            digest: "sha256:f8b61e376c166a5b0d7c68fae3f2a67a04ebe247bb11bfea4b2334b45acfc010"
+            expires_at: null
+            external_effects:
+              - "network_read"
+            plan_digest: "sha256:e91967dc1c0e051ca34cfb1ff0a7e8ea1141be93525121e535bca184227ce794"
+            plan_revision: 3
+            policy_digests:
+              - "sha256:37492408e7e56de75241cc87a953f635dd9852af3cd93225899233274890938c"
+            provenance:
+              actor_id: "agentplane:kernel-controller"
+              evidence_digest: "sha256:34b36ada43da9c918df7ea872ffea298937988665f5706dcf20d0b64f7ad07b4"
+              kind: "SYSTEM"
+              parent_authority_digest: "sha256:c149a23d712b98d6084d5b44fff24c2e91c19b932da014ddae73031e5a814da0"
+            repository_effects:
+              - "documentation"
+              - "release_metadata"
+              - "repository_write"
+              - "schema"
+              - "source_code"
+              - "tests"
+            repository_fingerprint: "sha256:5436171500ac31bfe777059aff4c085e5eb413e0497f3678431372b127cf12f6"
+            repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+            resources: []
+            risk:
+              implementation: "bounded"
+              requirements: "bounded"
+              reversibility: "recovery_required"
+            scope_roots:
+              - "docs/user/cli-reference.generated.mdx"
+              - "packages/agentplane/src"
+              - "packages/core/src/tasks/task-kernel"
+              - "scripts/baselines/v0.7-compatibility-candidate.json"
+              - "scripts/checks/check-compatibility-contract-baseline.mjs"
+              - "scripts/checks/check-compatibility-contract-baseline.test.mjs"
+            task_id: "202610272137-T6KC8D"
+            validation_requirements:
+              - "affected_unit_integration"
+              - "critical_paths"
+              - "docs_contract"
+              - "full_regression"
+              - "hosted_integration"
+              - "real_e2e"
+              - "task_outcome"
+            work_item_id: null
+          observation:
+            changed_paths:
+              - "scripts/baselines/v0.7-compatibility-candidate.json"
+              - "scripts/checks/check-compatibility-contract-baseline.mjs"
+              - "scripts/checks/check-compatibility-contract-baseline.test.mjs"
+            evidence_digest: "sha256:bf83fa03fa83c9bdf00b5757725518f2ec77d18f43aa0fed31122b7e961ef36d"
+            kind: "repository_implementation"
+            previous_fingerprint: "sha256:f12f5c6f1191b6bf17891452adbfe10936314bf1929572dc92e768a0a19ce6f9"
       controller_transfer: null
       current_plan:
         approval_actor_id: "USER"
@@ -741,7 +1924,17 @@ extensions:
             optional: false
             required_inputs: []
       effects: []
-      final_validation: null
+      final_validation:
+        evidence_digests:
+          - "sha256:fec7626dd34f0a1f2603491b5aa443f37df0abd4bd2c1777ae08ff3ed6b33b4b"
+        identity:
+          check_id: "canonical-final-contracts-v2"
+          command_digest: "sha256:7bbe2d172380421a5aa350e3764ad3af7cde32ea5ff2fdc25e0553a3de30e1e3"
+          environment_digest: "sha256:9e03376a9c2f2c275cea17d2db02f233977366ea5fc0de18a0f5502b99a2fb78"
+          implementation_identity: "sha256:5436171500ac31bfe777059aff4c085e5eb413e0497f3678431372b127cf12f6"
+          toolchain_digest: "sha256:49346b02e50c0e49b8819e6d73dbc7f9f42ac4939687bcc0bd5f51be00b451b1"
+        observed_at: "2026-10-28T04:00:09.948Z"
+        status: "PASSED"
       id: "202610272137-T6KC8D"
       intent_digest: "sha256:96d10d5a43221a3c17ac7cc18478add576738aa3bae9aab6d786e759d567d17f"
       migration_receipts: []
@@ -764,6 +1957,24 @@ extensions:
           event_digests:
             - "sha256:57570ba16d916094c4144a7cfe08433f4ce8c7f6a427c3a6bd51d33c4551a7a4"
           mutation_id: "capture:202610272137-T6KC8D"
+        final-validation:sha256:fec7626dd34f0a1f2603491b5aa443f37df0abd4bd2c1777ae08ff3ed6b33b4b:36:
+          after_revision: 37
+          aggregate_digest: "sha256:7b421d07a2e8af325626b3b25b2464ae64c6639bcfc1ca9fec82a13d7be32b55"
+          before_revision: 36
+          command_digest: "sha256:b34e59f05fc042d294864760444617300eae296955b4f4a540f3371eef2b055c"
+          effect_ids: []
+          event_digests:
+            - "sha256:cf187a87b4335fb51e15d8f51967b9742d1281cd9215813dd3f2da9c0f6335c5"
+          mutation_id: "final-validation:sha256:fec7626dd34f0a1f2603491b5aa443f37df0abd4bd2c1777ae08ff3ed6b33b4b:36"
+        kernel_task_completion_required:sha256:1539e3ea3b6aef8885febdbbd733d54fb26dd012b2e54ea8f6e8c867441b7f3e:sha256:5436171500ac31bfe777059aff4c085e5eb413e0497f3678431372b127cf12f6:
+          after_revision: 38
+          aggregate_digest: "sha256:727f8c109dcf819a41ca2709741ec8d4171b24995c7c7fe97e2951af1923bb00"
+          before_revision: 37
+          command_digest: "sha256:5feed73f1992263875f4d7d11981b62957f8854353c6c40284a28227407469e8"
+          effect_ids: []
+          event_digests:
+            - "sha256:e14e052bb41df0bc966d0acb99fece0a9543117d871fa9d086a6da0564434222"
+          mutation_id: "kernel_task_completion_required:sha256:1539e3ea3b6aef8885febdbbd733d54fb26dd012b2e54ea8f6e8c867441b7f3e:sha256:5436171500ac31bfe777059aff4c085e5eb413e0497f3678431372b127cf12f6"
         kernel_work_item_claim_required:sha256:00d3639cbe01b50918cc6364904850c9f711375cd095b042976bd8b822df8789:sha256:f12f5c6f1191b6bf17891452adbfe10936314bf1929572dc92e768a0a19ce6f9:
           after_revision: 24
           aggregate_digest: "sha256:e46cb64be3766937e381e55f29c644ecfabe8689fca91a3068b63737f4e4057c"
@@ -791,6 +2002,15 @@ extensions:
           event_digests:
             - "sha256:fa91bcee00594ac84ee30b79a58734a50472bd84ca5f1e88cc49118cbae8435c"
           mutation_id: "kernel_work_item_claim_required:sha256:add1212d22374b0c0f06d61da788e1bc8c38255fb5bf76fa7ebac561a4d8d50f:sha256:070de341c089ba5573646f17cf8aab98efca672c90eb9c34d6cf96d16d129f9f"
+        kernel_work_item_execution_required:sha256:127360968d975db0dd75fcb5fa6866f0a69be4e87b1b700cdf405ed912fd1f2b:sha256:5436171500ac31bfe777059aff4c085e5eb413e0497f3678431372b127cf12f6:
+          after_revision: 32
+          aggregate_digest: "sha256:3e97a31dfe6297245ac1cc195864cf6a0f61b9d5a2154c4ba8d76f6e0d1e69ef"
+          before_revision: 31
+          command_digest: "sha256:825bea3387e2526830acb7bcb303b6272548af323e8a44ed18fb77e168e50629"
+          effect_ids: []
+          event_digests:
+            - "sha256:eb8e3f3820380e21569d55b4968d9f08ea75c177728c9e63e3e11f126a77b408"
+          mutation_id: "kernel_work_item_execution_required:sha256:127360968d975db0dd75fcb5fa6866f0a69be4e87b1b700cdf405ed912fd1f2b:sha256:5436171500ac31bfe777059aff4c085e5eb413e0497f3678431372b127cf12f6"
         kernel_work_item_execution_required:sha256:425fa8fc2335ff387fe9760dd6186c491c329674ade89e19da38333513870bec:sha256:070de341c089ba5573646f17cf8aab98efca672c90eb9c34d6cf96d16d129f9f:
           after_revision: 18
           aggregate_digest: "sha256:470ffa53ccb63dcb74726f5302e5719059efea048ada813186a6f0aef2e23cb8"
@@ -827,6 +2047,24 @@ extensions:
           event_digests:
             - "sha256:26996274de0375e22af342fb0d176c89c6cca1c502ae5edab055199e2044eb15"
           mutation_id: "kernel_work_item_execution_required:sha256:ce6b8e8399b6aa087bec86f287376b417628594fec87f6ebeb68e6e9c2e232f5:sha256:070de341c089ba5573646f17cf8aab98efca672c90eb9c34d6cf96d16d129f9f"
+        kernel_work_item_inspection_required:sha256:3b56f94c15897b0eee9469ec6a9871dc2d52d2adaab7e9a9a3877b6e1ff2ff22:sha256:5436171500ac31bfe777059aff4c085e5eb413e0497f3678431372b127cf12f6:
+          after_revision: 28
+          aggregate_digest: "sha256:4678ae310d8e651e80c567a04d2fa5cbfef8867a20b8c5f9d2f98fefdbe14f19"
+          before_revision: 27
+          command_digest: "sha256:03cd232856e50ad120169dc87ac4b7908bb15c7df791495733dfff8c1eabc708"
+          effect_ids: []
+          event_digests:
+            - "sha256:71312c5714f60005ce6f4f31c39dd26d9d14a2e3ea12d2609d58c063f332bf5c"
+          mutation_id: "kernel_work_item_inspection_required:sha256:3b56f94c15897b0eee9469ec6a9871dc2d52d2adaab7e9a9a3877b6e1ff2ff22:sha256:5436171500ac31bfe777059aff4c085e5eb413e0497f3678431372b127cf12f6"
+        kernel_work_item_inspection_required:sha256:a49752460fc98998e21943c5e47300afcc1358216d0239ea0e797696388034b6:sha256:5436171500ac31bfe777059aff4c085e5eb413e0497f3678431372b127cf12f6:
+          after_revision: 34
+          aggregate_digest: "sha256:55c1f0c5574381915b6049ac373ef037c00c6311f26610f646b90b8bb1e601cd"
+          before_revision: 33
+          command_digest: "sha256:fd1003c9eade748fe3c743c6139c555e1a0a719d386d84794e9fdb6699cbb809"
+          effect_ids: []
+          event_digests:
+            - "sha256:962c6c09a71938408b52e4efa9f352cad6ff3ac8229be7e9acf56e9818df6060"
+          mutation_id: "kernel_work_item_inspection_required:sha256:a49752460fc98998e21943c5e47300afcc1358216d0239ea0e797696388034b6:sha256:5436171500ac31bfe777059aff4c085e5eb413e0497f3678431372b127cf12f6"
         kernel_work_item_inspection_required:sha256:d3bf23895be83506cd16bd239c43d0db881844d643024a085be8cd126633a057:sha256:070de341c089ba5573646f17cf8aab98efca672c90eb9c34d6cf96d16d129f9f:
           after_revision: 9
           aggregate_digest: "sha256:2bc3365d8447e8ccae38dbc1285ad3e99c84e1919a5960db426fa86bd5f9d2a5"
@@ -845,6 +2083,15 @@ extensions:
           event_digests:
             - "sha256:29b73af9ad7b58874aba9a38f207c51e40ac86890d42b2cd7c424f74fcc87cac"
           mutation_id: "kernel_work_item_materialization_required:sha256:5f5b2398e2e2032ed4da5c6b9a7623f16e3a4e9ffc6aa88bb980a2ee23cfba0a:sha256:b2b5c425b0948c105d734bcef1e7747404348480ab2fcba9e761fbe1d007e45d"
+        kernel_work_item_rework_claim_required:sha256:067c5c57a484dd2a615542e99951f88202d671dfbf7da4ce6e4d2e23253d18df:sha256:5436171500ac31bfe777059aff4c085e5eb413e0497f3678431372b127cf12f6:
+          after_revision: 31
+          aggregate_digest: "sha256:7c5169d716252f6cfe6bf706eb2874d7cf796fe4d1e184d154ae719e77904a66"
+          before_revision: 30
+          command_digest: "sha256:37946e333097a834128b53cda236781f187b254b85dce7ac7539ba12b1091d4f"
+          effect_ids: []
+          event_digests:
+            - "sha256:4e535cd817084cc0061fe5ccb78c400723dc76d7fc767a3792bf2233102c2274"
+          mutation_id: "kernel_work_item_rework_claim_required:sha256:067c5c57a484dd2a615542e99951f88202d671dfbf7da4ce6e4d2e23253d18df:sha256:5436171500ac31bfe777059aff4c085e5eb413e0497f3678431372b127cf12f6"
         kernel_work_item_rework_claim_required:sha256:1ff7d02f99790afbf1aac9cc1d9164ea86e8a2d3a3f10dbf694b61ae99e806d9:sha256:070de341c089ba5573646f17cf8aab98efca672c90eb9c34d6cf96d16d129f9f:
           after_revision: 12
           aggregate_digest: "sha256:db4f4002cb717c15d93a5953e55179f7203404e7662a09d1bb499b679513be3d"
@@ -854,6 +2101,15 @@ extensions:
           event_digests:
             - "sha256:9b2b2a4c0dbeaa3a0686b7363e8198fc0d393dfd32554874990862529bad1837"
           mutation_id: "kernel_work_item_rework_claim_required:sha256:1ff7d02f99790afbf1aac9cc1d9164ea86e8a2d3a3f10dbf694b61ae99e806d9:sha256:070de341c089ba5573646f17cf8aab98efca672c90eb9c34d6cf96d16d129f9f"
+        result:sha256:3bbf643ad2c23580684e919bba4d985ad298c7b69816d73c6d022219fce5b400:
+          after_revision: 27
+          aggregate_digest: "sha256:508b95b575fee2dfab5e125c671d65403ed4aa32096675c8596377201b1157de"
+          before_revision: 26
+          command_digest: "sha256:93176c10d5ff1c5806d87ccb15f1f9fa0c75ba25126770c3b4f3dff2bbf992b4"
+          effect_ids: []
+          event_digests:
+            - "sha256:894a9fb2408a56996b5380c6bd88d357244b39a7f9574ac44c87fe804bb25fb2"
+          mutation_id: "result:sha256:3bbf643ad2c23580684e919bba4d985ad298c7b69816d73c6d022219fce5b400"
         result:sha256:6d33227814666d5afa1c36613fc151f1c6fb88ae4728ee9fa97348b773e33e9f:
           after_revision: 8
           aggregate_digest: "sha256:ba9add581bd548a8ccd7df02c3fef525e969093052a5f0f7ab91a1e323e03f80"
@@ -863,6 +2119,15 @@ extensions:
           event_digests:
             - "sha256:e9315a43e449eb11fd0785dc5f223520ca38708cec3bcd64a32206e1f178f9ee"
           mutation_id: "result:sha256:6d33227814666d5afa1c36613fc151f1c6fb88ae4728ee9fa97348b773e33e9f"
+        result:sha256:70348abe2ef786e7f0531dbce6c1e13564c459a4ffaef69c5851100567af3473:
+          after_revision: 33
+          aggregate_digest: "sha256:01cf5ca359c0ff1ce061798f55a6d5639b332a138b81efa4fbc3f31dadcf06d3"
+          before_revision: 32
+          command_digest: "sha256:84db106f96218342287719e059140f652ab9b15c5719a02799e6936addefa2a9"
+          effect_ids: []
+          event_digests:
+            - "sha256:ad00c697c731e873eefc245402daf0e2aa8bcf063e983e5aff9ff3802c13c209"
+          mutation_id: "result:sha256:70348abe2ef786e7f0531dbce6c1e13564c459a4ffaef69c5851100567af3473"
         result:sha256:8237d9d484a3a01ce2ddbd06624acdebf4366cbe731e416ddf761934f684f69b:
           after_revision: 22
           aggregate_digest: "sha256:be9c0a02986bbbe8afd328c66538fe5bcde0a9bc7719a6e80e6bcbcb3db45fa7"
@@ -944,6 +2209,15 @@ extensions:
           event_digests:
             - "sha256:ba1e74af30251d6891396cdaecc98afeb37a72d7b3479129dc53167f1ed811e8"
           mutation_id: "sha256:7cab8fe9c96ad064e4d9c3a9862e8774ada766f98203b420b0da7b7a94f25199"
+        sha256:90d90759490aa5c770a91bcf02d4c69ef6b574a5f25d6e48612ab3c077cf08a6:
+          after_revision: 26
+          aggregate_digest: "sha256:01752178696044e2f416bee5d48b9e409fd78a3131a30b217bce983eaee6def7"
+          before_revision: 25
+          command_digest: "sha256:7cfc7fc664f38d7dada671a0e31fe20b09ecfee076f294528b489c661b947df1"
+          effect_ids: []
+          event_digests:
+            - "sha256:a4626caa35906bd78e1de45d82dc4265f92fce7238c0b96f8346daa3dc150995"
+          mutation_id: "sha256:90d90759490aa5c770a91bcf02d4c69ef6b574a5f25d6e48612ab3c077cf08a6"
         sha256:c4ffa1f48ef72db8a3d88dc804ff2519b288d7981e2e724578fb1038d3a2acbe:
           after_revision: 23
           aggregate_digest: "sha256:65cc8035da20f227232c63e3c329b4cb1ff5517f1c96752e6739ebf9d7262cb6"
@@ -953,6 +2227,15 @@ extensions:
           event_digests:
             - "sha256:917e68cdd98b6b5198b81a86850faf22e1ea98ceded3fc555f2103a2b289a7ec"
           mutation_id: "sha256:c4ffa1f48ef72db8a3d88dc804ff2519b288d7981e2e724578fb1038d3a2acbe"
+        validation-resolution:sha256:48034ef2b73b7b6151e701423c3d07325eb43410e5fb9422cec64ce68fd97c76:
+          after_revision: 36
+          aggregate_digest: "sha256:d43118f7bfb9c8e8b6bbdd9a067f0de4d95b1df6e2a68f0d89206d12ef37d1f2"
+          before_revision: 35
+          command_digest: "sha256:89e7211ca30aa5db27dfb87513fa69c05797569ef33a622cae016a3e9a904c32"
+          effect_ids: []
+          event_digests:
+            - "sha256:e3b279119e54feb538795e78d3cc3f701994043b077952d77fc8674974c72349"
+          mutation_id: "validation-resolution:sha256:48034ef2b73b7b6151e701423c3d07325eb43410e5fb9422cec64ce68fd97c76"
         validation-resolution:sha256:7b7b53626da7ea453fea4cb6807f795e8b48108ff1c8a2be707ba7b636532974:
           after_revision: 11
           aggregate_digest: "sha256:30bc6b52cc432bab6a53e2113641ed0c3d0a291af58fe1ed9e12da188ae559b2"
@@ -962,6 +2245,33 @@ extensions:
           event_digests:
             - "sha256:d7103efd08269736bcd3eae1e37c3825bba72c8e8fecec0e2d198f97c207ca39"
           mutation_id: "validation-resolution:sha256:7b7b53626da7ea453fea4cb6807f795e8b48108ff1c8a2be707ba7b636532974"
+        validation-resolution:sha256:dd57d21a136064c6107338c9901318f18d6fb1da0667555e830c2605fe0618bf:
+          after_revision: 30
+          aggregate_digest: "sha256:24ae5782751ea4637e2b205355426a43cab994dd64516b883518eac3e2080f9c"
+          before_revision: 29
+          command_digest: "sha256:31d84d9215bf023f154003ce5f79a62ec616089907d555cb3a9c874083d723ce"
+          effect_ids: []
+          event_digests:
+            - "sha256:5243fe765d50070ea8a18227da6183dbdba9b2983549ef1232d9566f1b412f0c"
+          mutation_id: "validation-resolution:sha256:dd57d21a136064c6107338c9901318f18d6fb1da0667555e830c2605fe0618bf"
+        validation:sha256:28d413f91c52f495504235e637092476128f8c973c99dc41dcee115fa8ccd3fc:
+          after_revision: 35
+          aggregate_digest: "sha256:e3e23afe83d38267a348f38d38fbf5dcb52f22f45033db1b11c1ec304816bfee"
+          before_revision: 34
+          command_digest: "sha256:83b9a38e30e4690d7c38250f1afbe89bd4acccf1754fdb90b736fd4e0c9057c2"
+          effect_ids: []
+          event_digests:
+            - "sha256:7405274a561bb4f0ba844d6faed5f810ec411df1aa6a5ee0ddf0cd628c2b9b35"
+          mutation_id: "validation:sha256:28d413f91c52f495504235e637092476128f8c973c99dc41dcee115fa8ccd3fc"
+        validation:sha256:3bbf643ad2c23580684e919bba4d985ad298c7b69816d73c6d022219fce5b400:
+          after_revision: 29
+          aggregate_digest: "sha256:66d6edaf60198901014bee238865155d680b55c8a7cf24329cced01404472013"
+          before_revision: 28
+          command_digest: "sha256:0717ffb2312b9f52feb91f8db27c3441847821b81c63f9487e4f9c572fac1754"
+          effect_ids: []
+          event_digests:
+            - "sha256:8a58cbfd64068c5276fde2f214e4da2c82baaeaca51040517a0241fe38a7b52e"
+          mutation_id: "validation:sha256:3bbf643ad2c23580684e919bba4d985ad298c7b69816d73c6d022219fce5b400"
         validation:sha256:6d33227814666d5afa1c36613fc151f1c6fb88ae4728ee9fa97348b773e33e9f:
           after_revision: 10
           aggregate_digest: "sha256:c23c8eaeb0557fdb04f51d1cb047a86699a5e5622442572cda9dfb8b2674fd48"
@@ -1048,13 +2358,13 @@ extensions:
               id: "generic-adopted-hosted-pr-lifecycle"
               optional: false
               required_inputs: []
-      revision: 25
+      revision: 38
       schema_version: 1
-      state: "ACTIVE"
+      state: "COMPLETED"
       work_items:
         generic-adopted-hosted-pr-lifecycle:
-          attempt: 4
-          claim_id: "sha256:ebbf2b5f7c9fb0c5bf8a3350282a57124b55ce11bc45bc2bc2facbfcf2c0074e"
+          attempt: 5
+          claim_id: "sha256:ec063658a34119dad1da5b38ceacc71968012832b1ce4b299867f267e52cf3fc"
           definition:
             contract_digest: "sha256:e9c8057ee1df3ba60c0e418d1a2b1d8e69a53ec2b9cc4df4003af2e6affedbc4"
             depends_on: []
@@ -1089,12 +2399,86 @@ extensions:
             id: "generic-adopted-hosted-pr-lifecycle"
             optional: false
             required_inputs: []
-          output_manifests: []
-          result_digest: null
-          revision: 19
-          state: "EXECUTING"
-          validation: null
-    digest: "sha256:dbcbeaf0962137a7aa4fb36727e36e583bdaec651c8530cace3ce8bdbe317f4d"
+          output_manifests:
+            -
+              attempt: 5
+              digest: "sha256:f601fd32c09d2013ad6baddd9c65d610aa2f2a02bc3b899b216054301559512b"
+              id: "authoritative-adoption-identity-and-strict-persistence"
+              kind: "report"
+              plan_revision: 3
+              repository_fingerprint: "sha256:5436171500ac31bfe777059aff4c085e5eb413e0497f3678431372b127cf12f6"
+              task_id: "202610272137-T6KC8D"
+              work_item_id: "generic-adopted-hosted-pr-lifecycle"
+            -
+              attempt: 5
+              digest: "sha256:33870b5fbf306354c369bc5cd1ff82d2b3ecdf120e04f0763701ae3dafd9a00c"
+              id: "canonical-exact-head-evidence-and-independent-review"
+              kind: "report"
+              plan_revision: 3
+              repository_fingerprint: "sha256:5436171500ac31bfe777059aff4c085e5eb413e0497f3678431372b127cf12f6"
+              task_id: "202610272137-T6KC8D"
+              work_item_id: "generic-adopted-hosted-pr-lifecycle"
+            -
+              attempt: 5
+              digest: "sha256:2dce50227d2340b2a9db18df704c75cfea32e5435bad423840f217532810085c"
+              id: "supervisor-owned-provider-update-merge-close-route"
+              kind: "report"
+              plan_revision: 3
+              repository_fingerprint: "sha256:5436171500ac31bfe777059aff4c085e5eb413e0497f3678431372b127cf12f6"
+              task_id: "202610272137-T6KC8D"
+              work_item_id: "generic-adopted-hosted-pr-lifecycle"
+            -
+              attempt: 5
+              digest: "sha256:2cadf99e31b16e698e50d4bd85bd47b718e9e5e0b67602d0f6158bd904e63202"
+              id: "focused-negative-tests-and-full-ci-receipt"
+              kind: "report"
+              plan_revision: 3
+              repository_fingerprint: "sha256:5436171500ac31bfe777059aff4c085e5eb413e0497f3678431372b127cf12f6"
+              task_id: "202610272137-T6KC8D"
+              work_item_id: "generic-adopted-hosted-pr-lifecycle"
+            -
+              attempt: 5
+              digest: "sha256:5bb1766834192dd83f11eba8d2dd56dd10f85d02c50f8f2e13f5f76d69a40a10"
+              id: "exact-base-safe-provider-merge-strategy"
+              kind: "report"
+              plan_revision: 3
+              repository_fingerprint: "sha256:5436171500ac31bfe777059aff4c085e5eb413e0497f3678431372b127cf12f6"
+              task_id: "202610272137-T6KC8D"
+              work_item_id: "generic-adopted-hosted-pr-lifecycle"
+            -
+              attempt: 5
+              digest: "sha256:3f864ce5474495d775badd99ee062037ed393722772a4738a87e890888c44908"
+              id: "fresh-generated-cli-reference"
+              kind: "report"
+              plan_revision: 3
+              repository_fingerprint: "sha256:5436171500ac31bfe777059aff4c085e5eb413e0497f3678431372b127cf12f6"
+              task_id: "202610272137-T6KC8D"
+              work_item_id: "generic-adopted-hosted-pr-lifecycle"
+            -
+              attempt: 5
+              digest: "sha256:6147a58b0fd49f20140c2bd3aa4d7322a2a79425a9c57781b8a83964c44902e7"
+              id: "ordinary-route-regression-repair"
+              kind: "report"
+              plan_revision: 3
+              repository_fingerprint: "sha256:5436171500ac31bfe777059aff4c085e5eb413e0497f3678431372b127cf12f6"
+              task_id: "202610272137-T6KC8D"
+              work_item_id: "generic-adopted-hosted-pr-lifecycle"
+          result_digest: "sha256:fa484dbf52189099cbc8edebcdfd65380493ba8856f7b751fae6f5b8bd55a1c3"
+          revision: 29
+          state: "COMPLETED"
+          validation:
+            evidence_digests:
+              - "sha256:c3af255d7954ed68b9bd1f9612477eafe09c2188910b4b841004c2c7d6024658"
+              - "sha256:0d94bb8780650aeadbad7a1850ea8782a1476c0de933b720357543fe9be926aa"
+            identity:
+              check_id: "canonical-contract-and-inspection"
+              command_digest: "sha256:7bbe2d172380421a5aa350e3764ad3af7cde32ea5ff2fdc25e0553a3de30e1e3"
+              environment_digest: "sha256:10768f5e07aa1b944a311bb4a7b16b4278185f4fdc5ca57877783aa66254cd76"
+              implementation_identity: "sha256:fa484dbf52189099cbc8edebcdfd65380493ba8856f7b751fae6f5b8bd55a1c3"
+              toolchain_digest: "sha256:448759e7caf250db316c04cbd8e9e23f06a5f6123e1a0141498fb0c790ae87dc"
+            observed_at: "2026-10-28T03:59:12.664Z"
+            status: "PASSED"
+    digest: "sha256:bd059d2d2b9ee40b4efa3085d1b6721de5f571ca93577f2e2d2700376d418a16"
     documents:
       contracts:
         sha256:115b189ea5b4d4cb9d6ffeab274eb3a980302f0dd863e3e2f410f90f23adc2df:
@@ -1427,6 +2811,123 @@ extensions:
         payload_digest: "sha256:6f7fa4a9665ce45767c85b4efd855646bf5c972b9e91436a9268ab0e1e87d948"
         task_id: "202610272137-T6KC8D"
         task_revision: 25
+      -
+        command_digest: "sha256:7cfc7fc664f38d7dada671a0e31fe20b09ecfee076f294528b489c661b947df1"
+        id: "sha256:90d90759490aa5c770a91bcf02d4c69ef6b574a5f25d6e48612ab3c077cf08a6:authority_continued"
+        kind: "authority_continued"
+        mutation_id: "sha256:90d90759490aa5c770a91bcf02d4c69ef6b574a5f25d6e48612ab3c077cf08a6"
+        occurred_at: "2026-10-28T01:23:01.032Z"
+        payload_digest: "sha256:e515dd67f29fabcc44230f03aaf662b946fef29b3e12a5a456dc58320deb0c60"
+        task_id: "202610272137-T6KC8D"
+        task_revision: 26
+      -
+        command_digest: "sha256:93176c10d5ff1c5806d87ccb15f1f9fa0c75ba25126770c3b4f3dff2bbf992b4"
+        id: "result:sha256:3bbf643ad2c23580684e919bba4d985ad298c7b69816d73c6d022219fce5b400:work_item_result_accepted"
+        kind: "work_item_result_accepted"
+        mutation_id: "result:sha256:3bbf643ad2c23580684e919bba4d985ad298c7b69816d73c6d022219fce5b400"
+        occurred_at: "2026-10-28T01:23:14.670Z"
+        payload_digest: "sha256:99979d7fb35021c8f89dd8b3270171cc301d881d8ddd5c68e281e5f37b439a7a"
+        task_id: "202610272137-T6KC8D"
+        task_revision: 27
+      -
+        command_digest: "sha256:03cd232856e50ad120169dc87ac4b7908bb15c7df791495733dfff8c1eabc708"
+        id: "kernel_work_item_inspection_required:sha256:3b56f94c15897b0eee9469ec6a9871dc2d52d2adaab7e9a9a3877b6e1ff2ff22:sha256:5436171500ac31bfe777059aff4c085e5eb413e0497f3678431372b127cf12f6:work_item_transitioned"
+        kind: "work_item_transitioned"
+        mutation_id: "kernel_work_item_inspection_required:sha256:3b56f94c15897b0eee9469ec6a9871dc2d52d2adaab7e9a9a3877b6e1ff2ff22:sha256:5436171500ac31bfe777059aff4c085e5eb413e0497f3678431372b127cf12f6"
+        occurred_at: "2026-10-28T01:23:23.642Z"
+        payload_digest: "sha256:23532dbce000d1f0f79e31749079afe2ef833ccc76bde8a0b5d96138f25c1d3e"
+        task_id: "202610272137-T6KC8D"
+        task_revision: 28
+      -
+        command_digest: "sha256:0717ffb2312b9f52feb91f8db27c3441847821b81c63f9487e4f9c572fac1754"
+        id: "validation:sha256:3bbf643ad2c23580684e919bba4d985ad298c7b69816d73c6d022219fce5b400:work_item_validation_recorded"
+        kind: "work_item_validation_recorded"
+        mutation_id: "validation:sha256:3bbf643ad2c23580684e919bba4d985ad298c7b69816d73c6d022219fce5b400"
+        occurred_at: "2026-10-28T01:32:25.686Z"
+        payload_digest: "sha256:66a6ece8521c99a7d73b972a13c969be2a3d4e7285d31f9668737ea9ccaef195"
+        task_id: "202610272137-T6KC8D"
+        task_revision: 29
+      -
+        command_digest: "sha256:31d84d9215bf023f154003ce5f79a62ec616089907d555cb3a9c874083d723ce"
+        id: "validation-resolution:sha256:dd57d21a136064c6107338c9901318f18d6fb1da0667555e830c2605fe0618bf:work_item_transitioned"
+        kind: "work_item_transitioned"
+        mutation_id: "validation-resolution:sha256:dd57d21a136064c6107338c9901318f18d6fb1da0667555e830c2605fe0618bf"
+        occurred_at: "2026-10-28T01:32:55.944Z"
+        payload_digest: "sha256:44c3de5777bf215ed1a66d03400a5882bd2b21bcf1a90ddddd59360976ed1d5b"
+        task_id: "202610272137-T6KC8D"
+        task_revision: 30
+      -
+        command_digest: "sha256:37946e333097a834128b53cda236781f187b254b85dce7ac7539ba12b1091d4f"
+        id: "kernel_work_item_rework_claim_required:sha256:067c5c57a484dd2a615542e99951f88202d671dfbf7da4ce6e4d2e23253d18df:sha256:5436171500ac31bfe777059aff4c085e5eb413e0497f3678431372b127cf12f6:work_item_transitioned"
+        kind: "work_item_transitioned"
+        mutation_id: "kernel_work_item_rework_claim_required:sha256:067c5c57a484dd2a615542e99951f88202d671dfbf7da4ce6e4d2e23253d18df:sha256:5436171500ac31bfe777059aff4c085e5eb413e0497f3678431372b127cf12f6"
+        occurred_at: "2026-10-28T01:33:08.984Z"
+        payload_digest: "sha256:cac95643937fd25416f45c4356b26d3f20cb571c4937d94e0404190a032538aa"
+        task_id: "202610272137-T6KC8D"
+        task_revision: 31
+      -
+        command_digest: "sha256:825bea3387e2526830acb7bcb303b6272548af323e8a44ed18fb77e168e50629"
+        id: "kernel_work_item_execution_required:sha256:127360968d975db0dd75fcb5fa6866f0a69be4e87b1b700cdf405ed912fd1f2b:sha256:5436171500ac31bfe777059aff4c085e5eb413e0497f3678431372b127cf12f6:work_item_transitioned"
+        kind: "work_item_transitioned"
+        mutation_id: "kernel_work_item_execution_required:sha256:127360968d975db0dd75fcb5fa6866f0a69be4e87b1b700cdf405ed912fd1f2b:sha256:5436171500ac31bfe777059aff4c085e5eb413e0497f3678431372b127cf12f6"
+        occurred_at: "2026-10-28T01:33:25.270Z"
+        payload_digest: "sha256:49bdd090620950f51eadc2a68b5a833b4b57257079afebef6f5ba57461c9e6eb"
+        task_id: "202610272137-T6KC8D"
+        task_revision: 32
+      -
+        command_digest: "sha256:84db106f96218342287719e059140f652ab9b15c5719a02799e6936addefa2a9"
+        id: "result:sha256:70348abe2ef786e7f0531dbce6c1e13564c459a4ffaef69c5851100567af3473:work_item_result_accepted"
+        kind: "work_item_result_accepted"
+        mutation_id: "result:sha256:70348abe2ef786e7f0531dbce6c1e13564c459a4ffaef69c5851100567af3473"
+        occurred_at: "2026-10-28T03:05:24.489Z"
+        payload_digest: "sha256:4e6ec474019f9f32fede48c2482516e9f75081f1db21ed0ffa7571504c3beefb"
+        task_id: "202610272137-T6KC8D"
+        task_revision: 33
+      -
+        command_digest: "sha256:fd1003c9eade748fe3c743c6139c555e1a0a719d386d84794e9fdb6699cbb809"
+        id: "kernel_work_item_inspection_required:sha256:a49752460fc98998e21943c5e47300afcc1358216d0239ea0e797696388034b6:sha256:5436171500ac31bfe777059aff4c085e5eb413e0497f3678431372b127cf12f6:work_item_transitioned"
+        kind: "work_item_transitioned"
+        mutation_id: "kernel_work_item_inspection_required:sha256:a49752460fc98998e21943c5e47300afcc1358216d0239ea0e797696388034b6:sha256:5436171500ac31bfe777059aff4c085e5eb413e0497f3678431372b127cf12f6"
+        occurred_at: "2026-10-28T03:05:43.739Z"
+        payload_digest: "sha256:2c8825f2df1e5d586f549f034a6d8d55cf0206c93a79a641b229b209ac66991e"
+        task_id: "202610272137-T6KC8D"
+        task_revision: 34
+      -
+        command_digest: "sha256:83b9a38e30e4690d7c38250f1afbe89bd4acccf1754fdb90b736fd4e0c9057c2"
+        id: "validation:sha256:28d413f91c52f495504235e637092476128f8c973c99dc41dcee115fa8ccd3fc:work_item_validation_recorded"
+        kind: "work_item_validation_recorded"
+        mutation_id: "validation:sha256:28d413f91c52f495504235e637092476128f8c973c99dc41dcee115fa8ccd3fc"
+        occurred_at: "2026-10-28T03:59:41.250Z"
+        payload_digest: "sha256:f32cb43ac4dc4e8451aa0a1807099f16fb062a8b8f0c027384e9fd99102cfad4"
+        task_id: "202610272137-T6KC8D"
+        task_revision: 35
+      -
+        command_digest: "sha256:89e7211ca30aa5db27dfb87513fa69c05797569ef33a622cae016a3e9a904c32"
+        id: "validation-resolution:sha256:48034ef2b73b7b6151e701423c3d07325eb43410e5fb9422cec64ce68fd97c76:work_item_transitioned"
+        kind: "work_item_transitioned"
+        mutation_id: "validation-resolution:sha256:48034ef2b73b7b6151e701423c3d07325eb43410e5fb9422cec64ce68fd97c76"
+        occurred_at: "2026-10-28T03:59:51.832Z"
+        payload_digest: "sha256:2084d650d60628b69a6d243d48c76aa0d22b9d65927a8ff32ce6527ccf564ad9"
+        task_id: "202610272137-T6KC8D"
+        task_revision: 36
+      -
+        command_digest: "sha256:b34e59f05fc042d294864760444617300eae296955b4f4a540f3371eef2b055c"
+        id: "final-validation:sha256:fec7626dd34f0a1f2603491b5aa443f37df0abd4bd2c1777ae08ff3ed6b33b4b:36:final_validation_recorded"
+        kind: "final_validation_recorded"
+        mutation_id: "final-validation:sha256:fec7626dd34f0a1f2603491b5aa443f37df0abd4bd2c1777ae08ff3ed6b33b4b:36"
+        occurred_at: "2026-10-28T04:48:42.551Z"
+        payload_digest: "sha256:92a4fab225c857dfcce5484cce459df722f79ef35103384e34d0cf6a014be1b7"
+        task_id: "202610272137-T6KC8D"
+        task_revision: 37
+      -
+        command_digest: "sha256:5feed73f1992263875f4d7d11981b62957f8854353c6c40284a28227407469e8"
+        id: "kernel_task_completion_required:sha256:1539e3ea3b6aef8885febdbbd733d54fb26dd012b2e54ea8f6e8c867441b7f3e:sha256:5436171500ac31bfe777059aff4c085e5eb413e0497f3678431372b127cf12f6:task_completed"
+        kind: "task_completed"
+        mutation_id: "kernel_task_completion_required:sha256:1539e3ea3b6aef8885febdbbd733d54fb26dd012b2e54ea8f6e8c867441b7f3e:sha256:5436171500ac31bfe777059aff4c085e5eb413e0497f3678431372b127cf12f6"
+        occurred_at: "2026-10-28T04:49:48.903Z"
+        payload_digest: "sha256:f4d6e90952e9f7d90475e026da2ecf95a0b54cdfba4523d85546b4d2c549e5ea"
+        task_id: "202610272137-T6KC8D"
+        task_revision: 38
     kind: "canonical_task"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
@@ -1458,6 +2959,581 @@ PLANNER fallback scaffold for "Complete generic hosted PR adoption with exact-ba
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-10-28T04:48:47.815Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: canonical Task Kernel final checks passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:80f30dd25dd86dd101316aa024f4caeef4099dda9cba50fb881f825a28c8651e, input_digest=sha256:5561f657f6c503a30db63b284b1fc87401e2ead42ae817ea5cb5ea24d7b8ee27
+
+Details:
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/core/src/tasks/task-kernel/hosted-pr-head-evidence.test.ts packages/core/src/tasks/task-kernel/kernel.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check affected_unit_integration (1/18)
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/adapters/task-backend/kernel-replay-persistence.test.ts packages/agentplane/src/commands/evaluator/evaluator-qualification-review.adoption.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check affected_unit_integration (2/18)
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/commands/task/kernel-hosted-checkout.test.ts packages/agentplane/src/commands/task/kernel-hosted-readback.test.ts packages/agentplane/src/commands/task/kernel-hosted-head-evidence.test.ts packages/agentplane/src/commands/task/kernel-accepted-repository-evidence.hosted.test.ts packages/agentplane/src/commands/task/kernel-final-validation.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check affected_unit_integration (3/18)
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/commands/shared/pr-meta/builders.adoption.test.ts packages/agentplane/src/commands/shared/workflow-step-adopted-pr.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check affected_unit_integration (4/18)
+
+Check: affected_unit_integration
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check affected_unit_integration (5/18)
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/commands/task/adopted-provider-effect-recovery.test.ts packages/agentplane/src/commands/task/kernel-controller-handoff.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check affected_unit_integration (6/18)
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/commands/pr/adoption-merge-base-proof.test.ts packages/agentplane/src/commands/shared/side-effect-authority.test.ts packages/agentplane/src/commands/shared/workflow-step-adopted-pr.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check affected_unit_integration (7/18)
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/github-pr-merge-strategy.test.ts packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.test.ts packages/agentplane/src/commands/pr/adoption-merge.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check affected_unit_integration (8/18)
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts packages/agentplane/src/commands/task/roadmap-common-review-application.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts packages/agentplane/src/commands/task/kernel-inspection.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check affected_unit_integration (9/18)
+
+Check: affected_unit_integration
+Command: bun run docs:cli:check
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-10
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check affected_unit_integration (10/18)
+
+Check: affected_unit_integration
+Command: bunx vitest run packages/agentplane/src/commands/pr/flow-status.pre-merge.test.ts packages/agentplane/src/commands/shared/workflow-step.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/task/kernel-inspection.test.ts packages/agentplane/src/commands/task/kernel-final-validation.test.ts packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-11
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check affected_unit_integration (11/18)
+
+Check: affected_unit_integration
+Command: bun run hotspots:check
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-12
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check affected_unit_integration (12/18)
+
+Check: affected_unit_integration
+Command: node --test scripts/checks/check-compatibility-contract-baseline.test.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-13
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check affected_unit_integration (13/18)
+
+Check: affected_unit_integration
+Command: node scripts/bench/capture-compatibility-candidate.mjs --check
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-14
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check affected_unit_integration (14/18)
+
+Check: affected_unit_integration
+Command: node scripts/checks/check-compatibility-contract-baseline.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-15
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check affected_unit_integration (15/18)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-16
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check affected_unit_integration (16/18)
+
+Check: affected_unit_integration
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-17
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check affected_unit_integration (17/18)
+
+Check: affected_unit_integration
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-18
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check affected_unit_integration (18/18)
+
+Check: critical_paths
+Command: bunx vitest run packages/core/src/tasks/task-kernel/hosted-pr-head-evidence.test.ts packages/core/src/tasks/task-kernel/kernel.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check critical_paths (1/18)
+
+Check: critical_paths
+Command: bunx vitest run packages/agentplane/src/adapters/task-backend/kernel-replay-persistence.test.ts packages/agentplane/src/commands/evaluator/evaluator-qualification-review.adoption.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check critical_paths (2/18)
+
+Check: critical_paths
+Command: bunx vitest run packages/agentplane/src/commands/task/kernel-hosted-checkout.test.ts packages/agentplane/src/commands/task/kernel-hosted-readback.test.ts packages/agentplane/src/commands/task/kernel-hosted-head-evidence.test.ts packages/agentplane/src/commands/task/kernel-accepted-repository-evidence.hosted.test.ts packages/agentplane/src/commands/task/kernel-final-validation.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check critical_paths (3/18)
+
+Check: critical_paths
+Command: bunx vitest run packages/agentplane/src/commands/shared/pr-meta/builders.adoption.test.ts packages/agentplane/src/commands/shared/workflow-step-adopted-pr.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check critical_paths (4/18)
+
+Check: critical_paths
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check critical_paths (5/18)
+
+Check: critical_paths
+Command: bunx vitest run packages/agentplane/src/commands/task/adopted-provider-effect-recovery.test.ts packages/agentplane/src/commands/task/kernel-controller-handoff.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check critical_paths (6/18)
+
+Check: critical_paths
+Command: bunx vitest run packages/agentplane/src/commands/pr/adoption-merge-base-proof.test.ts packages/agentplane/src/commands/shared/side-effect-authority.test.ts packages/agentplane/src/commands/shared/workflow-step-adopted-pr.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check critical_paths (7/18)
+
+Check: critical_paths
+Command: bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/github-pr-merge-strategy.test.ts packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.test.ts packages/agentplane/src/commands/pr/adoption-merge.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check critical_paths (8/18)
+
+Check: critical_paths
+Command: bunx vitest run packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts packages/agentplane/src/commands/task/roadmap-common-review-application.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts packages/agentplane/src/commands/task/kernel-inspection.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check critical_paths (9/18)
+
+Check: critical_paths
+Command: bun run docs:cli:check
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-10
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check critical_paths (10/18)
+
+Check: critical_paths
+Command: bunx vitest run packages/agentplane/src/commands/pr/flow-status.pre-merge.test.ts packages/agentplane/src/commands/shared/workflow-step.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/task/kernel-inspection.test.ts packages/agentplane/src/commands/task/kernel-final-validation.test.ts packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-11
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check critical_paths (11/18)
+
+Check: critical_paths
+Command: bun run hotspots:check
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-12
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check critical_paths (12/18)
+
+Check: critical_paths
+Command: node --test scripts/checks/check-compatibility-contract-baseline.test.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-13
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check critical_paths (13/18)
+
+Check: critical_paths
+Command: node scripts/bench/capture-compatibility-candidate.mjs --check
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-14
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check critical_paths (14/18)
+
+Check: critical_paths
+Command: node scripts/checks/check-compatibility-contract-baseline.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-15
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check critical_paths (15/18)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-16
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check critical_paths (16/18)
+
+Check: critical_paths
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-17
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check critical_paths (17/18)
+
+Check: critical_paths
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-18
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check critical_paths (18/18)
+
+Check: docs_contract
+Command: bunx vitest run packages/core/src/tasks/task-kernel/hosted-pr-head-evidence.test.ts packages/core/src/tasks/task-kernel/kernel.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check docs_contract (1/18)
+
+Check: docs_contract
+Command: bunx vitest run packages/agentplane/src/adapters/task-backend/kernel-replay-persistence.test.ts packages/agentplane/src/commands/evaluator/evaluator-qualification-review.adoption.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check docs_contract (2/18)
+
+Check: docs_contract
+Command: bunx vitest run packages/agentplane/src/commands/task/kernel-hosted-checkout.test.ts packages/agentplane/src/commands/task/kernel-hosted-readback.test.ts packages/agentplane/src/commands/task/kernel-hosted-head-evidence.test.ts packages/agentplane/src/commands/task/kernel-accepted-repository-evidence.hosted.test.ts packages/agentplane/src/commands/task/kernel-final-validation.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check docs_contract (3/18)
+
+Check: docs_contract
+Command: bunx vitest run packages/agentplane/src/commands/shared/pr-meta/builders.adoption.test.ts packages/agentplane/src/commands/shared/workflow-step-adopted-pr.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check docs_contract (4/18)
+
+Check: docs_contract
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check docs_contract (5/18)
+
+Check: docs_contract
+Command: bunx vitest run packages/agentplane/src/commands/task/adopted-provider-effect-recovery.test.ts packages/agentplane/src/commands/task/kernel-controller-handoff.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check docs_contract (6/18)
+
+Check: docs_contract
+Command: bunx vitest run packages/agentplane/src/commands/pr/adoption-merge-base-proof.test.ts packages/agentplane/src/commands/shared/side-effect-authority.test.ts packages/agentplane/src/commands/shared/workflow-step-adopted-pr.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check docs_contract (7/18)
+
+Check: docs_contract
+Command: bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/github-pr-merge-strategy.test.ts packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.test.ts packages/agentplane/src/commands/pr/adoption-merge.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check docs_contract (8/18)
+
+Check: docs_contract
+Command: bunx vitest run packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts packages/agentplane/src/commands/task/roadmap-common-review-application.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts packages/agentplane/src/commands/task/kernel-inspection.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check docs_contract (9/18)
+
+Check: docs_contract
+Command: bun run docs:cli:check
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-10
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check docs_contract (10/18)
+
+Check: docs_contract
+Command: bunx vitest run packages/agentplane/src/commands/pr/flow-status.pre-merge.test.ts packages/agentplane/src/commands/shared/workflow-step.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/task/kernel-inspection.test.ts packages/agentplane/src/commands/task/kernel-final-validation.test.ts packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-11
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check docs_contract (11/18)
+
+Check: docs_contract
+Command: bun run hotspots:check
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-12
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check docs_contract (12/18)
+
+Check: docs_contract
+Command: node --test scripts/checks/check-compatibility-contract-baseline.test.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-13
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check docs_contract (13/18)
+
+Check: docs_contract
+Command: node scripts/bench/capture-compatibility-candidate.mjs --check
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-14
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check docs_contract (14/18)
+
+Check: docs_contract
+Command: node scripts/checks/check-compatibility-contract-baseline.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-15
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check docs_contract (15/18)
+
+Check: docs_contract
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-16
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check docs_contract (16/18)
+
+Check: docs_contract
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-17
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check docs_contract (17/18)
+
+Check: docs_contract
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-18
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check docs_contract (18/18)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-16
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check full_regression
+
+Check: real_e2e
+Command: bunx vitest run packages/core/src/tasks/task-kernel/hosted-pr-head-evidence.test.ts packages/core/src/tasks/task-kernel/kernel.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check real_e2e (1/18)
+
+Check: real_e2e
+Command: bunx vitest run packages/agentplane/src/adapters/task-backend/kernel-replay-persistence.test.ts packages/agentplane/src/commands/evaluator/evaluator-qualification-review.adoption.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check real_e2e (2/18)
+
+Check: real_e2e
+Command: bunx vitest run packages/agentplane/src/commands/task/kernel-hosted-checkout.test.ts packages/agentplane/src/commands/task/kernel-hosted-readback.test.ts packages/agentplane/src/commands/task/kernel-hosted-head-evidence.test.ts packages/agentplane/src/commands/task/kernel-accepted-repository-evidence.hosted.test.ts packages/agentplane/src/commands/task/kernel-final-validation.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check real_e2e (3/18)
+
+Check: real_e2e
+Command: bunx vitest run packages/agentplane/src/commands/shared/pr-meta/builders.adoption.test.ts packages/agentplane/src/commands/shared/workflow-step-adopted-pr.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check real_e2e (4/18)
+
+Check: real_e2e
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check real_e2e (5/18)
+
+Check: real_e2e
+Command: bunx vitest run packages/agentplane/src/commands/task/adopted-provider-effect-recovery.test.ts packages/agentplane/src/commands/task/kernel-controller-handoff.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check real_e2e (6/18)
+
+Check: real_e2e
+Command: bunx vitest run packages/agentplane/src/commands/pr/adoption-merge-base-proof.test.ts packages/agentplane/src/commands/shared/side-effect-authority.test.ts packages/agentplane/src/commands/shared/workflow-step-adopted-pr.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check real_e2e (7/18)
+
+Check: real_e2e
+Command: bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/github-pr-merge-strategy.test.ts packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.test.ts packages/agentplane/src/commands/pr/adoption-merge.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check real_e2e (8/18)
+
+Check: real_e2e
+Command: bunx vitest run packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts packages/agentplane/src/commands/task/roadmap-common-review-application.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts packages/agentplane/src/commands/task/kernel-inspection.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check real_e2e (9/18)
+
+Check: real_e2e
+Command: bun run docs:cli:check
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-10
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check real_e2e (10/18)
+
+Check: real_e2e
+Command: bunx vitest run packages/agentplane/src/commands/pr/flow-status.pre-merge.test.ts packages/agentplane/src/commands/shared/workflow-step.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/task/kernel-inspection.test.ts packages/agentplane/src/commands/task/kernel-final-validation.test.ts packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-11
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check real_e2e (11/18)
+
+Check: real_e2e
+Command: bun run hotspots:check
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-12
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check real_e2e (12/18)
+
+Check: real_e2e
+Command: node --test scripts/checks/check-compatibility-contract-baseline.test.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-13
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check real_e2e (13/18)
+
+Check: real_e2e
+Command: node scripts/bench/capture-compatibility-candidate.mjs --check
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-14
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check real_e2e (14/18)
+
+Check: real_e2e
+Command: node scripts/checks/check-compatibility-contract-baseline.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-15
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check real_e2e (15/18)
+
+Check: real_e2e
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-16
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check real_e2e (16/18)
+
+Check: real_e2e
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-17
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check real_e2e (17/18)
+
+Check: real_e2e
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-18
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check real_e2e (18/18)
+
+Check: task_outcome
+Command: bunx vitest run packages/core/src/tasks/task-kernel/hosted-pr-head-evidence.test.ts packages/core/src/tasks/task-kernel/kernel.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check task_outcome (1/18)
+
+Check: task_outcome
+Command: bunx vitest run packages/agentplane/src/adapters/task-backend/kernel-replay-persistence.test.ts packages/agentplane/src/commands/evaluator/evaluator-qualification-review.adoption.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check task_outcome (2/18)
+
+Check: task_outcome
+Command: bunx vitest run packages/agentplane/src/commands/task/kernel-hosted-checkout.test.ts packages/agentplane/src/commands/task/kernel-hosted-readback.test.ts packages/agentplane/src/commands/task/kernel-hosted-head-evidence.test.ts packages/agentplane/src/commands/task/kernel-accepted-repository-evidence.hosted.test.ts packages/agentplane/src/commands/task/kernel-final-validation.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check task_outcome (3/18)
+
+Check: task_outcome
+Command: bunx vitest run packages/agentplane/src/commands/shared/pr-meta/builders.adoption.test.ts packages/agentplane/src/commands/shared/workflow-step-adopted-pr.test.ts packages/agentplane/src/commands/pr/provider-update-branch.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check task_outcome (4/18)
+
+Check: task_outcome
+Command: bun run typecheck
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check task_outcome (5/18)
+
+Check: task_outcome
+Command: bunx vitest run packages/agentplane/src/commands/task/adopted-provider-effect-recovery.test.ts packages/agentplane/src/commands/task/kernel-controller-handoff.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check task_outcome (6/18)
+
+Check: task_outcome
+Command: bunx vitest run packages/agentplane/src/commands/pr/adoption-merge-base-proof.test.ts packages/agentplane/src/commands/shared/side-effect-authority.test.ts packages/agentplane/src/commands/shared/workflow-step-adopted-pr.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check task_outcome (7/18)
+
+Check: task_outcome
+Command: bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/github-pr-merge-strategy.test.ts packages/agentplane/src/commands/pr/integrate/internal/gitlab-mr-merge.test.ts packages/agentplane/src/commands/pr/adoption-merge.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-8
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check task_outcome (8/18)
+
+Check: task_outcome
+Command: bunx vitest run packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts packages/agentplane/src/commands/task/roadmap-common-review-application.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/runner/usecases/kernel-task-lifecycle.test.ts packages/agentplane/src/commands/task/kernel-inspection.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-9
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check task_outcome (9/18)
+
+Check: task_outcome
+Command: bun run docs:cli:check
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-10
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check task_outcome (10/18)
+
+Check: task_outcome
+Command: bunx vitest run packages/agentplane/src/commands/pr/flow-status.pre-merge.test.ts packages/agentplane/src/commands/shared/workflow-step.test.ts packages/agentplane/src/commands/task/kernel-repository-coordinator.test.ts packages/agentplane/src/commands/task/branch-task-supervisor-operations.test.ts packages/agentplane/src/commands/task/kernel-inspection.test.ts packages/agentplane/src/commands/task/kernel-final-validation.test.ts packages/agentplane/src/commands/task/roadmap-terminal-noop.test.ts --pool=forks --maxWorkers 1
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-11
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check task_outcome (11/18)
+
+Check: task_outcome
+Command: bun run hotspots:check
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-12
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check task_outcome (12/18)
+
+Check: task_outcome
+Command: node --test scripts/checks/check-compatibility-contract-baseline.test.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-13
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check task_outcome (13/18)
+
+Check: task_outcome
+Command: node scripts/bench/capture-compatibility-candidate.mjs --check
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-14
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check task_outcome (14/18)
+
+Check: task_outcome
+Command: node scripts/checks/check-compatibility-contract-baseline.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-15
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check task_outcome (15/18)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-16
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check task_outcome (16/18)
+
+Check: task_outcome
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-17
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check task_outcome (17/18)
+
+Check: task_outcome
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202610272137-T6KC8D/supervision/declared-checks.json#check-18
+Scope: branch_pr task 202610272137-T6KC8D Verification Contract check task_outcome (18/18)
+
+NativeTaskIdentityRef:
+- plan_digest: sha256:e91967dc1c0e051ca34cfb1ff0a7e8ea1141be93525121e535bca184227ce794
+- policy_digest: sha256:56c15d063dc6e53d67c5a07a2bd0d1d3284f746df6836fee6537019292e27f84
+- capability_digest: sha256:98093504b32ab58751ed21c72f8cf65a8bb98b59c30f65ae5daa1cb7c941f207
+- checks_digest: sha256:dc219ffbdeaf8ffc71ea14bd1ca7edf0354a3ae845a5c7532d8f57485a3d6c11
+- identity_digest: sha256:35064f7f00149849d2b2c867b9890ee60651d071c4e1404ab16adb1b0d8364d5
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202610272137-T6KC8D
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
