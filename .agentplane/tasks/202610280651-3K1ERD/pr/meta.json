@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202610280651-3K1ERD/allow-exact-user-granted-hosted-pr-adoption-when",
   "created_at": "2026-10-28T07:21:56.510Z",
-  "diffstat_sha256": "sha256:ab7b1329d2544a3204c35d2fd819a45a9cc5162846b6597d05668cd28c0bba01",
+  "diffstat_sha256": "sha256:f43438198746cc3485da41ccf41128c7f9c7b6261d9e121ef13bfeee9d02e43c",
   "last_verified_at": null,
   "provider": {
     "hostname": "github.com",
