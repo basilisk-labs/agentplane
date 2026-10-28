@@ -16,13 +16,13 @@ Fix the generic mismatch between existing PR adoption admission and task executi
 ## Verification
 
 - State: ok
-- Note: Verified: canonical Task Kernel final checks passed.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-10-28T07:21:56.510Z
+- Updated: 2026-10-28T12:58:42.208Z
 - Branch: task/202610280651-3K1ERD/allow-exact-user-granted-hosted-pr-adoption-when
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
