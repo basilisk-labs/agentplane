@@ -24,6 +24,10 @@ import {
 import { observeExistingChangeRequestByNumber } from "../pr/internal/change-request-provider.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import {
+  exactProviderUpdateAfterFailedIntegration,
+  providerIdentity,
+} from "./external-agent-workflow-recovery-provider-update.js";
+import {
   createSupervisorEpisodeStore,
   resolveSupervisorExecutionEpisodePath,
   tryAcquireSupervisorExecutionLease,
@@ -33,15 +37,6 @@ import { resolveCommandGitCommonDir, type CommandContext } from "../shared/task-
 const text = z.string().trim().min(1);
 const digest = z.string().regex(/^sha256:[a-f0-9]{64}$/u);
 const sha = z.string().regex(/^(?:[a-f0-9]{40}|[a-f0-9]{64})$/u);
-const providerIdentity = z.strictObject({
-  provider: z.enum(["github", "gitlab"]),
-  hostname: text,
-  remote: text,
-  sourceProject: text,
-  targetProject: text,
-  sourceUrl: text,
-  targetUrl: text,
-});
 const identitySchema = z.strictObject({
   branch: text,
   head_sha: sha,
@@ -121,7 +116,8 @@ export function requireIntegrationEffectResolution(opts: {
     opts.journal.cursor.phase === "ready" &&
     opts.journal.cursor.replacement_of_operation_key === latest.operation_key &&
     (opts.decision.workflowStep.kind !== "agent_episode" ||
-      opts.decision.workflowStep.episode.purpose !== "implementation_rework")
+      opts.decision.workflowStep.episode.purpose !== "implementation_rework") &&
+    !exactProviderUpdateAfterFailedIntegration({ ...opts, latest })
   ) {
     reject("the recovered integration successor must remain semantic implementation rework.");
   }

@@ -2,22 +2,25 @@ import type { TaskData } from "../../backends/task-backend.js";
 import { hasCanonicalAdoptedHeadEvidence } from "../shared/canonical-pre-merge-evidence.js";
 import { assertEvaluatorQualityReviewPassed } from "../task/quality-review-gate.js";
 
-/** Adoption cannot launder a task whose native execution contract forbids provider effects. */
+/** Operator adoption requires declared provider intent without delegating writes to semantic agents. */
 export function assertAdoptionTaskAuthority(task: TaskData): void {
   const contract = task.execution_contract;
+  const declared = contract?.declaration.external_effects ?? [];
   const allowed = contract?.authority.allowed_external_effects ?? [];
   const forbidden = contract?.authority.forbidden_external_effects ?? [];
   if (
     task.plan_approval?.state !== "approved" ||
     !task.extensions?.task_kernel ||
     contract?.selected_mode !== "branch_pr" ||
+    !declared.includes("network_read") ||
+    !declared.includes("external_write") ||
     !allowed.includes("network_read") ||
-    !allowed.includes("external_write") ||
+    allowed.includes("external_write") ||
     forbidden.includes("network_read") ||
-    forbidden.includes("external_write")
+    !forbidden.includes("external_write")
   ) {
     throw new Error(
-      "Existing PR adoption requires an approved branch_pr task whose native execution contract allows network_read and external_write",
+      "Existing PR adoption requires an approved branch_pr task whose native execution contract declares network_read and external_write, allows network_read, and forbids external_write for semantic agents",
     );
   }
 }
