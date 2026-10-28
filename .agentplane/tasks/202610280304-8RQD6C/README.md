@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -34,17 +34,30 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-10-28T06:31:49.557Z"
+  updated_at: "2026-10-28T10:56:17.645Z"
   updated_by: "EVALUATOR"
-  note: "Canonical EVALUATOR review passed."
-  evaluated_sha: "636637239a9745b2fc796d512e6b159740b9e97c"
-  review_identity_digest: "sha256:43de17590722aa3e66fca06ca732a772a296d4c7215a9ec4d34b38c380eb263f"
+  note: "EVALUATOR returned pass with 2 typed finding(s)."
+  evaluated_sha: "8b716596ec7694383428eaa40a77df06b7717b17"
+  review_identity_digest: "sha256:7827a64e107a551ebb51efb0a26b1462d35ab67ecfce1f87019f5134d05b04bb"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202610280304-8RQD6C/c85c4b7d079a61a1982a9ae7f54540760f4e1f7d3e3c0e7bffdc1a67c1c54d99/quality-report.json"
+    - ".agentplane/tasks/202610280304-8RQD6C/quality/20261028-105441299-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202610280304-8RQD6C/quality/20261028-105441299-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202610280304-8RQD6C/quality/objects/sha256/2e6b458f1cf300f7e965c99bd9880b163ba24f18f4d501e49fde1583f05ef8d6.md"
+    - ".agentplane/tasks/202610280304-8RQD6C/quality/20261028-105441299-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202610280304-8RQD6C/quality/20261028-105441299-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202610280304-8RQD6C/quality/20261028-105441299-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202610280304-8RQD6C/README.md"
+    - ".agentplane/tasks/202610280304-8RQD6C/quality/objects/sha256/b94ff9485548aaad21c8e6a3cb7ae1741057214f970b4f8a559795baf10e22ec.patch"
+    - ".agentplane/tasks/202610280304-8RQD6C/quality/objects/sha256/8e8467690cfc070407e78c9d7877b0c489938ecc617960c4a5e3eee3a705e53c.json"
+    - ".agentplane/tasks/202610280304-8RQD6C/verification/20261028105411017-b549d7a38887782b.json"
+    - ".agentplane/tasks/202610280304-8RQD6C/quality/objects/sha256/5de2823fbaab3b12eee54c97b49d8eaba6cca476cd3e16c1b3cf3cb4f8824d7f.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The implementation adds worktree_preparation only to the existing repository-continuation predicate. Approval mode must remain null; issuance and successor receipt command digests, exact revision sequence, parent authority digest, prior repository fingerprint, repository identity, and delegated result authority remain enforced."
-    - "The scoped regression exercises a worktree_preparation origin and successor, preserves repository_implementation, and rejects missing or forged receipts, changed revision, parent, prior fingerprint, repository identity, and unrelated observation kind. The existing failed executable check denial remains present."
-    - "AgentPlane repository evidence binds the two changed implementation paths to commit 636637239a9745b2fc796d512e6b159740b9e97c; native validation passed the focused test, typecheck, and full local CI as run-003 through run-005."
+    - "The change admits worktree_preparation only as a receipt-backed repository continuation and preserves parent authority, revision, fingerprint, and repository identity checks."
+    - "The native full CI run-011 passed on the updated task branch. The focused required-check tests and typecheck were recorded earlier in the task evidence."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -2493,7 +2506,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-10-28T10:54:19.078Z"
+doc_updated_at: "2026-10-28T10:56:17.762Z"
 doc_updated_by: "CODER"
 description: "A native required-check correction must validate an issued WorkOrder whose authority lineage includes an exact worktree_preparation continuation, without weakening receipt, parent, fingerprint, revision, or repository identity proof."
 sections:
@@ -2751,6 +2764,14 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.completed_native_review:
+    applied_at: "2026-10-28T10:56:17.645Z"
+    kernel_digest: "sha256:54e6791d51055295727b1dbd03c3b0eb6fe6ddfe37457d91167b5c9f3a5dad64"
+    quality_digest: "sha256:e8b91b1950c83504eaeb1d37385a25830ac94499ff820527d51172bf811be3cf"
+    result_digest: "sha256:612b506dd28b991e4e5dce51b321d459ce38de700728a2af668bc3f667b0f51e"
+    schema_version: 1
+    state_fingerprint: "sha256:21a5ddbe15b7ea8ecbc8f2642c99c4fd23c710e6b773598922b0a09a62d9c21c"
+    transition_id: "tr_8134658a3a96e67b41656ed7feb9fbe2"
   agentplane.kernel_operational_projection:
     digest: "sha256:c3014e6a29c9eaa224436d606fd9da63228a29be56d9fd3ed0065dbad71435ce"
     evidence_refs:
