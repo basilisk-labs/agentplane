@@ -1,10 +1,11 @@
 ---
 id: "202610280304-8RQD6C"
 title: "Recognize worktree preparation in failed-check lineage"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -44,6 +45,22 @@ quality_review:
     - "The implementation adds worktree_preparation only to the existing repository-continuation predicate. Approval mode must remain null; issuance and successor receipt command digests, exact revision sequence, parent authority digest, prior repository fingerprint, repository identity, and delegated result authority remain enforced."
     - "The scoped regression exercises a worktree_preparation origin and successor, preserves repository_implementation, and rejects missing or forged receipts, changed revision, parent, prior fingerprint, repository identity, and unrelated observation kind. The existing failed executable check denial remains present."
     - "AgentPlane repository evidence binds the two changed implementation paths to commit 636637239a9745b2fc796d512e6b159740b9e97c; native validation passed the focused test, typecheck, and full local CI as run-003 through run-005."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:9aa1db7e8e2564ebebe6ae3b6d22fc4f272ecc8a16e35658012cedc06cd29fae"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-10-28T07:29:43.921Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -261,9 +278,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "636637239a9745b2fc796d512e6b159740b9e97c"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "11fcef15234918d422a6998bd049ccd0b25908a0"
+  message: "🧩 8RQD6C task: refresh task artifacts after commit"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -271,9 +291,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-28T07:29:43.921Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "11fcef15234918d422a6998bd049ccd0b25908a0"
 doc_version: 3
-doc_updated_at: "2026-10-28T07:18:44.262Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-28T07:29:43.921Z"
+doc_updated_by: "CODER"
 description: "A native required-check correction must validate an issued WorkOrder whose authority lineage includes an exact worktree_preparation continuation, without weakening receipt, parent, fingerprint, revision, or repository identity proof."
 sections:
   Summary: |-
@@ -421,6 +449,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:0d536ac57c4aa9c7d12e683f6b11fbd2493be983d87f1346bf183c25ce03fca4"
     work_order_id: "sha256:125e0138224f2b738785da38c29cd785b1d1ff575d78c8a0e9fbc7bb9549173b"
+  implementation_commit:
+    hash: "636637239a9745b2fc796d512e6b159740b9e97c"
+    message: "🚧 8RQD6C task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "9c1ad3fe68b6ce490e72ace285dcea2d316d0364"
@@ -1102,3 +1133,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:9aa1db7e8e2564ebebe6ae3b6d22fc4f272ecc8a16e35658012cedc06cd29fae`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-10-28T07:29:43.921Z`

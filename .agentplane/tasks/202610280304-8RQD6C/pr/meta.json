@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:1a132716f8dfd8ea81b6763a489e404259f009cc61a653fb65d343e0fb976c9d",
   "pr_number": 6953,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6953",
+  "pre_merge_closure": {
+    "basis_commit": "11fcef15234918d422a6998bd049ccd0b25908a0",
+    "branch": "task/202610280304-8RQD6C/recognize-worktree-preparation-in-failed-check-l",
+    "pr_number": 6953,
+    "recorded_at": "2026-10-28T07:29:44.140Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
