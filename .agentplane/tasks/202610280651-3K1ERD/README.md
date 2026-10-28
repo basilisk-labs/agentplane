@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 56
+revision: 57
 origin:
   system: "manual"
 depends_on: []
@@ -32,17 +32,32 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-10-28T12:08:59.721Z"
+  updated_at: "2026-10-28T14:07:01.022Z"
   updated_by: "EVALUATOR"
-  note: "Canonical EVALUATOR review passed."
-  evaluated_sha: "25fdfb18dcecc157a3a4808d0605335af1883e44"
-  review_identity_digest: "sha256:77a0cee4698613f335e77464a6c5c4b44c2499416f159b80fe9c99a4b2112478"
+  note: "EVALUATOR returned pass with 4 typed finding(s)."
+  evaluated_sha: "b5092cea445ce96a0ed349bcb0dc50499344732c"
+  review_identity_digest: "sha256:54cf69a7331c07009a5b3bd88fefabe33853c5d947c7cf2d90cfc0450805e4f5"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202610280651-3K1ERD/ad6f93c3f94258d652f89251a5e1529c79e7119af5264781893772529906a0dc/quality-report.json"
+    - ".agentplane/tasks/202610280651-3K1ERD/quality/20261028-140426822-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202610280651-3K1ERD/quality/20261028-140426822-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202610280651-3K1ERD/quality/objects/sha256/b696763193b0800f39f8bf67d81dd07a0fd48c5efc59142100c21e89c25bc25f.md"
+    - ".agentplane/tasks/202610280651-3K1ERD/quality/20261028-140426822-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202610280651-3K1ERD/quality/20261028-140426822-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202610280651-3K1ERD/quality/20261028-140426822-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202610280651-3K1ERD/README.md"
+    - ".agentplane/tasks/202610280651-3K1ERD/quality/objects/sha256/5b42383141d8883252b88ea3200b7c4b3103c373f4fe5472b5abf90584b107fc.patch"
+    - ".agentplane/tasks/202610280651-3K1ERD/quality/objects/sha256/c0f7b941865446abeebfb0055c8e002eec9b70db5a202def71c84294f0df4901.json"
+    - ".agentplane/tasks/202610280651-3K1ERD/verification/20261028140353255-f72790ca73f6b20c.json"
+    - ".agentplane/tasks/202610280651-3K1ERD/quality/objects/sha256/e36c169f792bbd75fff250e8d96f447483a413e18ed301b2b2b9cde7823e2da8.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The generic adoption guard now rejects allowed external_write and requires forbidden external_write while still requiring declared network_read and external_write plus allowed network_read."
-    - "The focused test admits an unchanged contract from resolveTaskExecutionContract, then rejects hostile changes that allow external_write or remove its semantic prohibition."
-    - "AgentPlane repository evidence binds only the two approved source paths to commit 25fdfb18d; exact USER grants and provider identity logic were not changed. AgentPlane-native diff check, focused four-test run, typecheck, and full CI run-024 all passed on that implementation."
+    - "The five changed source and test files match the approved adoption scope. The guard requires declared network_read and external_write, permits semantic network_read, rejects semantic external_write, and requires its explicit prohibition."
+    - "The real resolved execution-contract test admits unchanged operator adoption and rejects hostile semantic authority mutations. Route, request, and merge fixtures reflect the declared-versus-semantic distinction."
+    - "AgentPlane recorded full CI run-037 as passed on b5092cea445ce96a0ed349bcb0dc50499344732c. GitHub checks for the same head are successful and report the PR as CLEAN."
+    - "Residual risk: Malformed legacy TaskData can raise a TypeError before the guard's custom error; this remains fail-closed and is outside the approved change."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -1645,7 +1660,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-10-28T14:04:02.146Z"
+doc_updated_at: "2026-10-28T14:07:01.081Z"
 doc_updated_by: "CODER"
 description: "Fix the generic mismatch between existing PR adoption admission and task execution routing: branch_pr tasks declare external_write for operator-owned provider adoption, while semantic WorkOrders correctly forbid that effect. Keep semantic authority unchanged; require the declaration, network-read authority, approved plan, canonical task, and the existing exact USER operation grant. Add a regression test using a real resolved execution contract. This unblocks native adoption of Dependabot PRs #6944 and #6935 for 0.7.13."
 sections:
@@ -1917,6 +1932,14 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.completed_native_review:
+    applied_at: "2026-10-28T14:07:01.022Z"
+    kernel_digest: "sha256:883847364d720700b9e9b79a0f4dc6590fdbc3b9e1a49efb7df6b7160dc7e842"
+    quality_digest: "sha256:809963c6dafc3593ccaccc8cdfe2fef6af575a73253ba06a36b654fe0ce9e818"
+    result_digest: "sha256:40e9f8fdb7be9eda226d226419d3ea663428f2646cf27d05c5daea98b96dfc3e"
+    schema_version: 1
+    state_fingerprint: "sha256:d44bbe606fca40a625b8f26ed8a912ebd7077c7e9c0eaa81a8950d8dd2909d9a"
+    transition_id: "tr_b7513d331251994cf671f724a69ed9d0"
   agentplane.kernel_operational_projection:
     digest: "sha256:50934af2984f2355dfeb51bfa3c656c14f30e2ae3e85481aa058144d90e9a489"
     evidence_refs:
