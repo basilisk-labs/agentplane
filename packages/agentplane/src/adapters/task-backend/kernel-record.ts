@@ -48,6 +48,7 @@ export const kernelValidationSchema = z.strictObject({
   status: z.enum(["PASSED", "FAILED", "BLOCKED", "STALE"]),
   identity: z.strictObject({
     implementation_identity: digest,
+    hosted_head_evidence_digest: digest.optional(),
     check_id: z.string().min(1),
     command_digest: digest,
     toolchain_digest: digest,

@@ -7,6 +7,7 @@ import {
 } from "@agentplaneorg/core/tasks";
 import { hasCanonicalPreMergeEvidence } from "./canonical-pre-merge-evidence.js";
 import { branchStep, doneBranchStep } from "./workflow-step-branch.js";
+import { adoptedPrStep } from "./workflow-step-adopted-pr.js";
 import {
   approvalStep,
   agentEpisodeStep,
@@ -57,7 +58,11 @@ export function reduceRouteState(state: WorkflowRouteState): WorkflowStep {
   if (
     (state.task.status === "DONE" || canonicalPreMergeReady) &&
     state.workflowMode === "branch_pr" &&
-    state.batchOwnership.role !== "included"
+    state.batchOwnership.role !== "included" &&
+    (!state.prFlow?.adoption ||
+      (state.prFlow.adoptedControllerTransferred === true &&
+        state.prFlow.providerObservation?.state === "found" &&
+        state.prFlow.providerObservation.pr.status === "MERGED"))
   ) {
     return doneBranchStep(state);
   }
@@ -165,5 +170,8 @@ export function reduceRouteState(state: WorkflowRouteState): WorkflowStep {
     return includedBatchStep(state);
   }
   if (state.workflowMode !== "branch_pr") return directStep(state);
+  if (state.prFlow?.adoption && (state.task.status === "DOING" || state.task.status === "DONE")) {
+    return adoptedPrStep(state) ?? branchStep(state);
+  }
   return branchStep(state);
 }

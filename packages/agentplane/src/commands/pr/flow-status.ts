@@ -1,4 +1,5 @@
-import { gitRevParse, taskCloseBranchName } from "@agentplaneorg/core/git";
+import path from "node:path";
+import { gitRevParse } from "@agentplaneorg/core/git";
 
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";
@@ -8,16 +9,8 @@ import {
   resolveTaskBranchFromContext,
   type CommandContext,
 } from "../shared/task-backend.js";
-import {
-  taskCloseAlreadyRecordedOnBase,
-  taskPreMergeClosureRecordedOnBase,
-} from "../task/close-tail-state.js";
+import { taskPreMergeClosureRecordedOnBase } from "../task/close-tail-state.js";
 import { parsePrMeta, type PrMeta } from "../shared/pr-meta.js";
-import {
-  preMergeClosureAllowsMissingBasisCommit,
-  preMergeClosureBasisIsAncestor,
-  taskIsClosedByPreMergeClosure,
-} from "../task/hosted-close.command.js";
 import { readTaskHandoffForTask } from "../shared/task-handoff-reader.js";
 import {
   readIntegrationQueue,
@@ -37,35 +30,28 @@ import {
   observeExistingChangeRequestByNumber,
 } from "./internal/change-request-provider.js";
 import type { ChangeRequestLookupResult } from "./internal/change-request-model.js";
+import { matchesAdoptedPrObservation, type AdoptedPrIdentity } from "./adoption-identity.js";
+import { hasExactAdoptedVerificationRecord } from "./adoption-verification.js";
+import { createExistingPrAdoptionStore, resolveAdoptionControlRoot } from "./adoption-store.js";
+import {
+  readKernelRecord,
+  TASK_KERNEL_EXTENSION,
+} from "../../adapters/task-backend/kernel-record.js";
+import { taskKernel as k } from "@agentplaneorg/core/tasks";
+import { loadCommandContext } from "../shared/task-backend.js";
+import {
+  resolveCloseTailStatus,
+  type RemotePrStatus,
+  type CloseTailStatus,
+} from "./flow-status-close-tail.js";
+import * as closeTailHelpers from "./flow-status-close-tail.js";
 
-type ProviderName = "github" | "gitlab";
-
-type RemotePrStatus =
-  | { provider: ProviderName; state: "not_found"; source: "lookup" | "metadata" }
-  | {
-      provider: ProviderName;
-      state: "OPEN" | "CLOSED" | "MERGED";
-      source: "lookup" | "metadata";
-      prNumber: number | null;
-      prUrl: string | null;
-      base: string | null;
-      headSha: string | null;
-      mergeCommit: string | null;
-    };
-
-type CloseTailStatus =
-  | { state: "not_applicable"; reason: string }
-  | { state: "recorded_on_base"; base: string }
-  | { state: "unavailable"; provider: ProviderName; branch: string; reason: string }
-  | {
-      state: "open" | "merged" | "not_found";
-      provider: ProviderName;
-      branch: string;
-      prNumber: number | null;
-      prUrl: string | null;
-    };
+export { matchesMergedPreMergeClosure } from "./flow-status-close-tail.js";
 
 export type PrFlowStatusReport = {
+  adoption?: AdoptedPrIdentity | null;
+  adoptedVerificationCurrent?: boolean;
+  adoptedControllerTransferred?: boolean;
   task: {
     id: string;
     status: string;
@@ -149,41 +135,6 @@ type HandoffStatus =
 function trimmed(value: string | null | undefined): string | null {
   const normalized = value?.trim() ?? "";
   return normalized.length > 0 ? normalized : null;
-}
-
-export async function matchesMergedPreMergeClosure(opts: {
-  gitRoot: string;
-  task: Awaited<ReturnType<typeof loadBackendTask>>["task"];
-  meta: PrMeta | null;
-  pr: {
-    state: "not_found" | "OPEN" | "CLOSED" | "MERGED";
-    prNumber?: number | null;
-    headSha?: string | null;
-  };
-  branch: string | null;
-}): Promise<boolean> {
-  const prNumber = opts.pr.prNumber ?? null;
-  if (opts.pr.state !== "MERGED" || !opts.meta || !opts.branch || prNumber === null) return false;
-  if (
-    !taskIsClosedByPreMergeClosure({
-      task: opts.task,
-      meta: opts.meta,
-      branch: opts.branch,
-      prNumber,
-    })
-  ) {
-    return false;
-  }
-  return preMergeClosureBasisIsAncestor({
-    gitRoot: opts.gitRoot,
-    meta: opts.meta,
-    mergedHeadSha: opts.pr.headSha,
-    allowMissingBasisCommit: preMergeClosureAllowsMissingBasisCommit({
-      task: opts.task,
-      meta: opts.meta,
-      prNumber,
-    }),
-  });
 }
 
 function parsePrMetaIfPresent(content: string | null, taskId: string): PrMeta | null {
@@ -312,79 +263,6 @@ function normalizeBaseBranch(value: string | null | undefined): string | null {
   return branch.startsWith("origin/") ? branch.slice("origin/".length) : branch;
 }
 
-async function resolveCloseTailStatus(opts: {
-  gitRoot: string;
-  workflowDir: string;
-  taskId: string;
-  taskClosePrefix: string;
-  baseBranch: string | null;
-  remotePr: RemotePrStatus;
-  preMergeClosureRecorded: boolean;
-  preMergeClosureRecordedOnBase: boolean;
-  meta: PrMeta | null;
-}): Promise<CloseTailStatus> {
-  const base = opts.baseBranch?.trim() ?? "";
-  if (base) {
-    const recorded = await taskCloseAlreadyRecordedOnBase({
-      gitRoot: opts.gitRoot,
-      workflowDir: opts.workflowDir,
-      taskId: opts.taskId,
-      baseBranch: base,
-    }).catch(() => false);
-    if (recorded || opts.preMergeClosureRecordedOnBase) {
-      return { state: "recorded_on_base", base };
-    }
-    if (opts.remotePr.state === "MERGED" && opts.preMergeClosureRecorded) {
-      return { state: "recorded_on_base", base };
-    }
-  }
-
-  const mergeCommit = opts.remotePr.state === "MERGED" ? opts.remotePr.mergeCommit : null;
-  if (!mergeCommit) {
-    return {
-      state: "not_applicable",
-      reason: "implementation PR is not merged or merge commit is unavailable",
-    };
-  }
-
-  const branch = taskCloseBranchName({
-    taskClosePrefix: opts.taskClosePrefix,
-    taskId: opts.taskId,
-    commit: mergeCommit,
-  });
-  const observation = await observeExistingChangeRequestByBranch({
-    gitRoot: opts.gitRoot,
-    branch,
-    baseBranch: base || null,
-    recorded: opts.meta?.provider ?? null,
-  });
-  if (observation.state === "unavailable") {
-    return {
-      state: "unavailable",
-      provider: opts.meta?.provider?.kind ?? "github",
-      branch,
-      reason: observation.reason,
-    };
-  }
-  const observed = observation.state === "found" ? observation.pr : null;
-  if (observed?.status === "OPEN" || observed?.status === "MERGED") {
-    return {
-      state: observed.status === "MERGED" ? "merged" : "open",
-      provider: observed.provider,
-      branch,
-      prNumber: observed.prNumber,
-      prUrl: observed.prUrl,
-    };
-  }
-  return {
-    state: "not_found",
-    provider: opts.meta?.provider?.kind ?? "github",
-    branch,
-    prNumber: null,
-    prUrl: null,
-  };
-}
-
 function deriveNextAction(report: PrFlowStatusReport): string {
   if (report.queue.present && report.queue.status === "superseded") {
     return `semantic conflict outcome is superseded by ${
@@ -437,14 +315,78 @@ export async function resolvePrFlowStatus(opts: {
     preferBranchSnapshot: true,
   });
 
-  const taskMeta = await readTaskPrArtifact({
+  let taskMeta = await readTaskPrArtifact({
     ctx: opts.ctx,
     taskId: task.id,
     prDir,
     fileName: "meta.json",
     preferBranchSnapshot: true,
   });
-  const meta = parsePrMetaIfPresent(taskMeta.content, task.id);
+  // Adoption metadata is control-plane evidence and is never published into
+  // the pre-existing hosted branch. Prefer it only when that branch has no
+  // task-owned metadata snapshot.
+  if (taskMeta.content === null) {
+    const local = await readTaskPrArtifact({
+      ctx: opts.ctx,
+      taskId: task.id,
+      prDir,
+      fileName: "meta.json",
+      preferBranchSnapshot: false,
+    });
+    const localMeta = parsePrMetaIfPresent(local.content, task.id);
+    if ((localMeta as (PrMeta & { adoption?: AdoptedPrIdentity }) | null)?.adoption) {
+      taskMeta = local;
+    }
+  }
+  const controlRoot = await resolveAdoptionControlRoot(resolved.gitRoot);
+  const controlMeta = await createExistingPrAdoptionStore({
+    gitRoot: controlRoot,
+    workflowDir: config.paths.workflow_dir,
+  }).readMetadata(task.id);
+  const branchMeta = parsePrMetaIfPresent(taskMeta.content, task.id);
+  if (
+    controlMeta?.adoption &&
+    taskMeta.content !== null &&
+    (!branchMeta ||
+      (branchMeta.pr_number && branchMeta.pr_number !== controlMeta.adoption.pr_number))
+  ) {
+    throw new Error("Adopted PR has conflicting or malformed task-branch metadata");
+  }
+  const meta = controlMeta?.adoption ? controlMeta : branchMeta;
+  const adoption = (meta as (PrMeta & { adoption?: AdoptedPrIdentity }) | null)?.adoption ?? null;
+  let adoptedControllerTransferred = false;
+  if (adoption) {
+    const controlCommand =
+      path.resolve(controlRoot) === path.resolve(opts.ctx.resolvedProject.gitRoot)
+        ? opts.ctx
+        : await loadCommandContext({ cwd: controlRoot, rootOverride: null });
+    const controlTask = await controlCommand.taskBackend.getTask(task.id);
+    const sourceValue = task.extensions?.[TASK_KERNEL_EXTENSION];
+    if (
+      controlMeta?.status === "MERGED" &&
+      controlTask?.status === "DONE" &&
+      isRecord(sourceValue) &&
+      typeof sourceValue.repository_identity === "string" &&
+      /^sha256:[a-f0-9]{64}$/u.test(sourceValue.repository_identity) &&
+      controlTask
+    ) {
+      const identity = sourceValue.repository_identity as k.Sha256Digest;
+      const source = readKernelRecord(task, identity);
+      const target = readKernelRecord(controlTask, identity);
+      adoptedControllerTransferred =
+        source.kind === "canonical" &&
+        target.kind === "canonical" &&
+        target.record.aggregate.state === "COMPLETED" &&
+        source.record.aggregate.controller_transfer?.to_controller ===
+          `checkout:${path.resolve(controlRoot)}` &&
+        target.record.aggregate.controller_transfer?.to_controller ===
+          `checkout:${path.resolve(controlRoot)}` &&
+        source.record.events.length <= target.record.events.length &&
+        source.record.events.every(
+          (event, index) => k.kernelDigest(event) === k.kernelDigest(target.record.events[index]),
+        );
+    }
+  }
   const queue = await readIntegrationQueue(opts.integrationQueueRoot ?? resolved.gitRoot);
   const queueEntry = queue.entries.find((candidate) => candidate.task_id === task.id) ?? null;
   const metaBranch = meta?.branch?.trim() ?? "";
@@ -458,7 +400,9 @@ export async function resolvePrFlowStatus(opts: {
       ? metaBranch
       : (queueEntry?.branch.trim() ?? inferredTaskBranch?.trim() ?? "");
   const branch = rawBranch.length > 0 ? rawBranch : null;
-  const branchHeadSha = await resolveBranchHeadSha(resolved.gitRoot, branch);
+  const branchHeadSha = adoption
+    ? (meta?.head_sha ?? adoption.head_sha)
+    : await resolveBranchHeadSha(resolved.gitRoot, branch);
   const baseHint = normalizeBaseBranch(meta?.base) ?? normalizeBaseBranch(queueEntry?.base);
   const storedPrNumber = Number(meta?.pr_number ?? queueEntry?.pr_number ?? 0);
   const observedByNumber: ChangeRequestLookupResult | null =
@@ -471,7 +415,7 @@ export async function resolvePrFlowStatus(opts: {
           recorded: meta?.provider ?? null,
         })
       : null;
-  const providerObservation: ChangeRequestLookupResult =
+  const unverifiedObservation: ChangeRequestLookupResult =
     observedByNumber?.state === "found" || observedByNumber?.state === "unavailable" || !branch
       ? (observedByNumber ?? {
           state: "unavailable",
@@ -483,11 +427,17 @@ export async function resolvePrFlowStatus(opts: {
           baseBranch: baseHint,
           recorded: meta?.provider ?? null,
         });
+  const providerObservation: ChangeRequestLookupResult =
+    adoption &&
+    unverifiedObservation.state === "found" &&
+    !matchesAdoptedPrObservation(adoption, unverifiedObservation.pr)
+      ? { state: "unavailable", reason: "Adopted PR provider identity or refs changed" }
+      : unverifiedObservation;
   const pr = remoteStatusFromObservation(providerObservation, meta, queueEntry);
   const publication = await resolvePrHeadPublicationStatus({
     gitRoot: resolved.gitRoot,
     branch,
-    localHeadSha: branchHeadSha,
+    localHeadSha: adoption ? null : branchHeadSha,
     providerObservation:
       providerObservation.state === "found"
         ? { state: "found", headSha: providerObservation.pr.headSha }
@@ -497,7 +447,7 @@ export async function resolvePrFlowStatus(opts: {
     pr.state === "not_found"
       ? (normalizeBaseBranch(meta?.base) ?? "main")
       : (normalizeBaseBranch(pr.base) ?? normalizeBaseBranch(meta?.base) ?? "main");
-  const preMergeClosureRecorded = await matchesMergedPreMergeClosure({
+  const preMergeClosureRecorded = await closeTailHelpers.matchesMergedPreMergeClosure({
     gitRoot: resolved.gitRoot,
     task,
     meta,
@@ -528,13 +478,18 @@ export async function resolvePrFlowStatus(opts: {
   });
   const prNumber = pr.state === "not_found" ? null : pr.prNumber;
   const [hostedChecks, reviewThreads, handoff] = await Promise.all([
-    resolveHostedChecksStatus({
-      gitRoot: resolved.gitRoot,
-      prNumber,
-      branch,
-      expectedHeadSha: branchHeadSha,
-      recordedProvider: meta?.provider ?? null,
-    }),
+    adoption && providerObservation.state !== "found"
+      ? Promise.resolve({
+          checked: false as const,
+          reason: "Adopted PR has no matching fresh provider identity readback",
+        })
+      : resolveHostedChecksStatus({
+          gitRoot: resolved.gitRoot,
+          prNumber,
+          branch,
+          expectedHeadSha: branchHeadSha,
+          recordedProvider: meta?.provider ?? null,
+        }),
     pr.provider === "gitlab"
       ? Promise.resolve({ checked: false as const, reason: "GitHub review threads do not apply" })
       : resolveReviewThreadsStatus({ gitRoot: resolved.gitRoot, prNumber }),
@@ -558,6 +513,16 @@ export async function resolvePrFlowStatus(opts: {
       metaHeadSha: meta?.head_sha ?? null,
     },
     pr,
+    adoption,
+    adoptedControllerTransferred,
+    adoptedVerificationCurrent:
+      adoption && providerObservation.state === "found" && providerObservation.pr.headSha
+        ? await hasExactAdoptedVerificationRecord({
+            ctx: opts.ctx,
+            task,
+            headSha: providerObservation.pr.headSha,
+          }).catch(() => false)
+        : false,
     providerObservation,
     publication,
     closeTail,

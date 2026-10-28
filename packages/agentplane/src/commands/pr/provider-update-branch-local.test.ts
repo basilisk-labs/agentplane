@@ -143,6 +143,52 @@ describe("provider update local continuity", () => {
     },
   );
 
+  it("updates a task branch when the fetch refspec tracks only main", async () => {
+    const f = await fixture();
+    await git(
+      f.root,
+      "config",
+      "--replace-all",
+      "remote.origin.fetch",
+      "+refs/heads/main:refs/remotes/origin/main",
+    );
+    await expect(git(f.root, "rev-parse", "@{upstream}")).rejects.toThrow();
+    expect(await git(f.root, "rev-parse", `refs/remotes/origin/${f.branch}`)).toBe(f.oldHead);
+    mocks.observe
+      .mockResolvedValueOnce({ state: "found", pr: f.observed(f.oldHead) })
+      .mockResolvedValue({ state: "found", pr: f.observed(f.newHead) });
+
+    expect(await updateProviderBranch(f.request)).toMatchObject({
+      state: "updated",
+      effect: "applied",
+    });
+    expect(await git(f.root, "rev-parse", "HEAD")).toBe(f.newHead);
+    expect(await git(f.root, "rev-parse", `refs/remotes/origin/${f.branch}`)).toBe(f.newHead);
+    expect(mocks.api.mock.calls.filter(([, args]) => args.includes("PUT"))).toHaveLength(1);
+  });
+
+  it.each(["missing-remote", "missing-merge", "duplicate-remote", "duplicate-merge"])(
+    "rejects %s tracking configuration before provider mutation",
+    async (drift) => {
+      const f = await fixture();
+      const remoteKey = `branch.${f.branch}.remote`;
+      const mergeKey = `branch.${f.branch}.merge`;
+      if (drift === "missing-remote") await git(f.root, "config", "--unset-all", remoteKey);
+      if (drift === "missing-merge") await git(f.root, "config", "--unset-all", mergeKey);
+      if (drift === "duplicate-remote") await git(f.root, "config", "--add", remoteKey, "origin");
+      if (drift === "duplicate-merge")
+        await git(f.root, "config", "--add", mergeKey, `refs/heads/${f.branch}`);
+      mocks.observe.mockResolvedValue({ state: "found", pr: f.observed(f.oldHead) });
+
+      expect(await updateProviderBranch(f.request)).toMatchObject({
+        state: "not_applied",
+        reason: "local_state_unavailable",
+      });
+      expect(mocks.api).not.toHaveBeenCalled();
+      expect(await git(f.root, "rev-parse", "HEAD")).toBe(f.oldHead);
+    },
+  );
+
   it("preserves dirty work and performs no provider mutation", async () => {
     const f = await fixture();
     await writeFile(path.join(f.root, "task.txt"), "uncommitted user work\n");

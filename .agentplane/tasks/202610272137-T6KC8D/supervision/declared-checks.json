@@ -1,0 +1,91 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "full_regression",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run ci:local:full",
+      "duration_ms": 2412492,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:893a57377db8fd3c9c080110667075ad0ca0873959370efe8242049f5531bb1f",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/tmp/adopted-pr-safe-merge-0713/.agentplane/worktrees/202610272137-T6KC8D-complete-generic-hosted-pr-adoption-with-exact-b/.agentplane/tasks/202610272137-T6KC8D/supervision/verification-runs/run-042/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:785862a80e09374507aa174f261930ee0152807018e8aea5c2c33eb6bf9a1ee5",
+        "executable_digest": "sha256:a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": "ci:local:full",
+      "stderr_tail": "tate may be incomplete\n- 202601010101-ABCDE: task README frontmatter schema validation failed: Invalid input: expected string, received number at \"title\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"tags[1]\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"verify[1]\"; task README frontmatter schema validation failed: Too small: expected string to have >=1 characters at \"commit.hash\"; task README frontmatter schema validation failed: Too small: expected string to have >=1 characters at \"commit.message\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"description\"\nℹ️ task doc set outcome=section-updated section=Summary\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Summary\nℹ️ task doc set outcome=full-doc-updated section=Summary\n{\"ts\":\"2026-10-28T06:11:13.754Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-N2htFw/agentplane-workflow-trdYMh/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/tmp/agentplane-vitest-run-N2htFw/agentplane-workflow-trdYMh/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-28T06:11:13.821Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-N2htFw/agentplane-workflow-MQwZhX/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/tmp/agentplane-vitest-run-N2htFw/agentplane-workflow-MQwZhX/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-28T06:11:13.857Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-N2htFw/agentplane-workflow-MQwZhX/.agentplane/WORKFLOW.md\",\"from\":\"/tmp/agentplane-vitest-run-N2htFw/agentplane-workflow-MQwZhX/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-28T06:11:13.883Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/tmp/agentplane-vitest-run-N2htFw/agentplane-workflow-ztw65D/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/tmp/agentplane-vitest-run-N2htFw/agentplane-workflow-ztw65D/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-28T06:11:13.914Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_failed\",\"code\":\"WF_UNSUPPORTED_VERSION\",\"details\":{\"reason\":\"Unsupported WORKFLOW version 3; supported versions: 1, 2.\"}}\n{\"ts\":\"2026-10-28T06:11:51.795Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-10-28T06:11:51.972Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":1}}\n{\"ts\":\"2026-10-28T06:11:51.979Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-10-28T06:11:52.044Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":2}}\n{\"ts\":\"2026-10-28T06:11:52.053Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-10-28T06:11:52.080Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_completed\",\"details\":{\"diagnostics\":0}}\n$ node scripts/checks/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 3 --fixture local-basic [REDACTED] 10000\n$ node scripts/checks/run-vitest-suite.mjs critical-cli\n$ bun run docs:ia:check && bun run docs:reference:check && bun run docs:onboarding:check\n$ node scripts/checks/check-docs-ia.mjs\n$ node scripts/generate/generate-package-reference.mjs --check\n$ node scripts/checks/check-agent-onboarding-scenario.mjs\n$ node scripts/workflow/run-workflows-lint.mjs && node scripts/checks/check-workflow-command-contract.mjs && bun scripts/checks/check-lifecycle-parity.ts && node scripts/checks/check-critical-test-route.mjs\n$ node scripts/checks/run-vitest-suite.mjs platform-critical\n$ node scripts/checks/check-significant-coverage.mjs\n",
+      "stdout_tail": "rvation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202610272137-T6KC8D/supervision/verification-runs/run-042/children/run-001/manifest.json\",\"digest\":\"sha256:2d794f7dc13effaaff74c635faf7926a31a08ed41b0733c1f561430508c93df2\"}},{\"id\":\"docs-schema\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":75425,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202610272137-T6KC8D/supervision/verification-runs/run-042/children/run-002/manifest.json\",\"digest\":\"sha256:cef38bf46a24fc6a3e3c385279c5c324fbd76a2255a1d122671392e74d4bf7e0\"}},{\"id\":\"core\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":2028706,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202610272137-T6KC8D/supervision/verification-runs/run-042/children/run-003/manifest.json\",\"digest\":\"sha256:ad3abd59515b63293b2c7eee0eb1fe5405476e79f187cf0ec47a1937a78a0504\"}},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":102184,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202610272137-T6KC8D/supervision/verification-runs/run-042/children/run-004/manifest.json\",\"digest\":\"sha256:7878fb238c7dc51a1d5aa5dae406086ace36aac1c826d74c833952f0a555a6c7\"}}]}\n{\"schema_version\":1,\"kind\":\"verification_metrics\",\"route\":\"full-fast\",\"wall_clock_ms\":2335415,\"selected_groups\":5,\"executed_groups\":5,\"parallel_group_concurrency\":1,\"build_invocations\":1,\"ok\":true}\n\n== Documentation contracts ==\nok: docs index and current path references are aligned\nok: docs/reference/generated-reference.mdx is fresh\nok: agent onboarding scenario surfaces are aligned\n\n== Workflows lint (actionlint) ==\nworkflow and command guidance contract OK\nworkflow lifecycle parity OK\ncritical Vitest route OK\n\n== Windows platform-critical tests ==\n\n RUN  v5.0.5 /tmp/agentplane-verification-djHjgX\n\n\n Test Files  7 passed (7)\n      Tests  98 passed (98)\n   Start at  09:16:27\n   Duration  53.03s (tests 86%, transform 7%, import 7%)\n\n\n== Significant file coverage (guard) ==\n\n RUN  v5.0.5 /tmp/agentplane-verification-djHjgX\n      Coverage enabled with v8\n\n ✓ packages/agentplane/src/cli/run-cli.core.guard.test.ts (25 tests) 6652ms\n   ✓ runCli (25)\n     ✓ guard clean succeeds when no staged files 2527ms\n     ✓ guard commit allows active task artifacts with --allow-tasks and no explicit --allow 653ms\n     ✓ guard commit allows CI-only scope with --allow-ci and no explicit --allow 549ms\n     ✓ guard commit fails when AGENTS.md is staged without allow-policy 343ms\n     ✓ guard commit allows AGENTS.md with allow-policy 367ms\n     ✓ guard commit quiet suppresses output 338ms\n     ✓ guard commit fails with --require-clean and unstaged changes 701ms\n ✓ packages/agentplane/src/commands/guard/impl/commands.commit-close.unit.test.ts (12 tests) 464ms\n   ✓ guard command implementations: commit close (12)\n     ✓ cmdCommit close path stages absolute README when outside gitRoot 433ms\n ✓ packages/agentplane/src/commands/guard/impl/close-message.test.ts (18 tests) 492ms\n ✓ packages/agentplane/src/commands/guard/impl/commands.commit-non-close.unit.test.ts (19 tests) 547ms\n   ✓ guard command implementations: commit non-close (19)\n     ✓ cmdCommit non-close path commits with env and provided ctx 485ms\n ✓ packages/agentplane/src/commands/guard/impl/commands.guard.unit.test.ts (3 tests) 144ms\n ✓ packages/agentplane/src/commands/guard/impl/comment-commit.test.ts (12 tests) 98ms\n ✓ packages/agentplane/src/commands/guard/impl/allow.test.ts (13 tests) 63ms\n ✓ packages/agentplane/src/commands/guard/impl/policy.test.ts (3 tests) 16ms\n\n Test Files  8 passed (8)\n      Tests  105 passed (105)\n   Start at  09:17:21\n   Duration  19.94s (tests 47%, transform 29%, import 21%, worker 1%, setup 1%)\n\n    Isolate  8 workers spawned · ~153ms startup each (spawn + environment, per file)\n             at least ~1.07s faster with isolate: false — reuses workers across files instead of one per file\n\n\n== Coverage threshold (significant) ==\nSignificant suite contract OK (17 source targets).\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "node .agentplane/policy/check-routing.mjs",
+      "duration_ms": 737,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:3fc20e320991d89e65f758bb2357d37f094ea65165deed23f323c8c09f1cd0bc",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/tmp/adopted-pr-safe-merge-0713/.agentplane/worktrees/202610272137-T6KC8D-complete-generic-hosted-pr-adoption-with-exact-b/.agentplane/tasks/202610272137-T6KC8D/supervision/verification-runs/run-043/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:c43a9c19a1dc945c7f09f74dd4bbc47add1b2baa5b4e7a7d14fb0af26d9fce2c",
+        "executable_digest": "sha256:7fde7b8afa198da66257f42ee2001d874c7355631e6d1579a5fb5ef1f246df4c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "policy routing OK\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "agentplane doctor",
+      "duration_ms": 18937,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:20f6ec929c366003cd4a0c438d8aebe3cd546f514066420f9f005c8776b259f0",
+        "manifest_path": "/home/agentplane/workspace/agentplane/.agentplane/tmp/adopted-pr-safe-merge-0713/.agentplane/worktrees/202610272137-T6KC8D-complete-generic-hosted-pr-adoption-with-exact-b/.agentplane/tasks/202610272137-T6KC8D/supervision/verification-runs/run-044/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:c43a9c19a1dc945c7f09f74dd4bbc47add1b2baa5b4e7a7d14fb0af26d9fce2c",
+        "executable_digest": "sha256:7fde7b8afa198da66257f42ee2001d874c7355631e6d1579a5fb5ef1f246df4c",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:dd60156d9911955f8afb9dd9e2c2abfa39c7d58cbb141ab87ab5c5075c0d70f6"
+      },
+      "script": null,
+      "stderr_tail": "ℹ️ doctor: checking workflow contract\n{\"ts\":\"2026-10-28T06:17:44.479Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_doctor_check\",\"details\":{\"ok\":true,\"findings\":0}}\nℹ️ doctor: checking workspace\nℹ️ doctor: checking branch_pr drift\nℹ️ doctor: checking runtime source\nℹ️ doctor: checking prompt graph\nℹ️ doctor: checking recent task archive\n⚠️ doctor findings: errors=0 warnings=4 info=9\n- [INFO] State: local plan approval requires a host-originated user decision\nLikely cause: no trusted signed-receipt issuer is configured\nNext action: ap task advance <task-id> --agent-json (present the emitted host_user_decision request in Codex; use task plan approve --by USER only as explicit manual compatibility)\nDetails: Reason code: host_user_decision_required\n  - AgentPlane will not emit an unavailable signed_user_receipt transport.\n  - A managed runner cannot synthesize the user decision and stops at the plan boundary.\n- [INFO] Runtime mode: repo-local (repo-local framework binary)\n- [INFO] Active binary: <repo>/packages/agentplane/bin/agentplane.js\n- [INFO] Resolved agentplane: 0.7.12 @ <repo>/packages/agentplane\n- [INFO] Resolved @agentplaneorg/core: 0.7.12 @ <repo>/packages/core\n- [INFO] Framework repo root: <repo>\n- [INFO] Framework agentplane root: <repo>/packages/agentplane\n- [INFO] Framework core root: <repo>/packages/core\n- [WARN] DONE task is missing implementation commit hash: 202610020159-60QH9J (finish with --commit <hash>).\n- [WARN] DONE task is missing implementation commit hash: 202610100342-PXH679 (finish with --commit <hash>).\n- [WARN] DONE task is missing implementation commit hash: 202610230455-T4280J (finish with --commit <hash>).\n- [INFO] Historical task archive contains 158 DONE tasks with unknown implementation commit hashes across 158 distinct commit hashes. Examples: 042f68391d3b51915e07f648cc6f02bf54579bd6 (1 task: 202608271544-1TDVPJ); 08be56971aec26c3366d50e67b4043b47e142377 (1 task: 202609190050-3MJ7GQ); 08c437b3d19e21c6e85de277fc47ef9e269651ec (1 task: 202609111339-NGDG6V); +155 more hash groups\n- [WARN] Historical task archive contains 2 DONE tasks with implementation commits that point to close commits across 2 distinct commit hashes. Examples: 1ba5f91889ec572fed21608451478e618fae943e (1 task: 202610142156-4MGWZM; subject: ✅ 4MGWZM task: bound GitHub CI aggregate job-output projection); 3c45166b31d0a9960f52aa11c3259afd472dd691 (1 task: 202609071219-QV0SX9; subject: 🚧 QV0SX9 task: pre-merge closure)\n",
+      "stdout_tail": "✅ doctor (OK)\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202610272137-T6KC8D"
+}

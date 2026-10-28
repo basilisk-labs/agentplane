@@ -49,6 +49,12 @@ function operationArgv(operation: WorkflowOperation): string[] {
         operation.params.branch,
       ];
     }
+    case "integration.adopted_merge": {
+      return ["agentplane", "task", "run", operation.params.taskId, "--remote", "--json"];
+    }
+    case "task.adopted.finish": {
+      return ["agentplane", "task", "run", operation.params.taskId, "--remote", "--json"];
+    }
     case "integration.run_next": {
       return ["agentplane", "integrate", "queue", "run-next", "--wait", "--hosted", "--quiet"];
     }
@@ -60,6 +66,17 @@ function operationArgv(operation: WorkflowOperation): string[] {
         "update",
         operation.params.taskId,
         ...includeTaskArgv(operation.params.includeTaskIds),
+      ];
+    }
+    case "pr.existing.adopt": {
+      return [
+        "agentplane",
+        "pr",
+        "adopt",
+        operation.params.taskId,
+        "apply",
+        "--request-digest",
+        operation.params.requestDigest,
       ];
     }
     case "pr.head.publish":

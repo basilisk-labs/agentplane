@@ -49,4 +49,9 @@ export {
 export type { ProspectiveScopeRequest } from "./prospective-scope.js";
 export { completionRestorationIssues } from "./completion-restoration.js";
 export type { CompletionRestorationProof } from "./completion-restoration.js";
+export {
+  bindHostedPrHeadEvidence,
+  validateHostedPrHeadEvidence,
+} from "./hosted-pr-head-evidence.js";
+export type { HostedPrHeadEvidence, HostedPrIdentity } from "./hosted-pr-head-evidence.js";
 export { authenticatedScopeReplanHistory } from "./replan-work-items.js";

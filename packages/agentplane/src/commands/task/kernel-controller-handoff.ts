@@ -290,6 +290,23 @@ async function copyCanonicalControllerTask(opts: {
   const projection = readKernelOperationalProjection(opts.source_task.extensions);
   if (!projection) throw new Error("Canonical controller transfer has no operational projection");
   if (targetRecord.digest === opts.source_record.digest) return;
+  const sharedEvents = Math.min(targetRecord.events.length, opts.source_record.events.length);
+  const commonPrefix = targetRecord.events
+    .slice(0, sharedEvents)
+    .every(
+      (event, index) => k.kernelDigest(event) === k.kernelDigest(opts.source_record.events[index]),
+    );
+  if (!commonPrefix) {
+    throw new Error("Canonical controller transfer target diverged from source history");
+  }
+  if (targetRecord.events.length > opts.source_record.events.length) {
+    // The base controller has advanced since transfer. A stale worktree must
+    // never roll its canonical record or DONE projection back.
+    return;
+  }
+  if (targetRecord.events.length === opts.source_record.events.length) {
+    throw new Error("Canonical controller transfer target has divergent same-revision state");
+  }
   const targetRevision = targetTask?.revision ?? 0;
   await opts.target_command.taskBackend.writeTask(
     {

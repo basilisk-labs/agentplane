@@ -43,6 +43,7 @@ import { runPrOpenSync } from "./sync-open-step.js";
 import { nowIso, readTextIfExists, restoreIncidentRegistryIfNeeded } from "./sync-support.js";
 import { runPrUpdateSync } from "./sync-update-step.js";
 import { assertBranchTaskArtifactOwnership } from "./branch-task-artifact-ownership.js";
+import { assertTaskOwnedPrSync } from "../adoption-store.js";
 
 type PrSyncMode = "open" | "update";
 export type { PrOpenOutcome, PrRemoteMode } from "./sync-model.js";
@@ -161,6 +162,7 @@ export async function ensurePrArtifactsSynced(opts: {
   const existingMeta = (await fileExists(metaPath))
     ? parsePrMeta(await readFile(metaPath, "utf8"), opts.taskId)
     : null;
+  assertTaskOwnedPrSync(existingMeta);
   const preservedIncludedTaskIds = normalizeRelatedTaskIds(
     [
       ...(existingMeta?.batch?.included_task_ids ?? []),
@@ -286,6 +288,7 @@ export async function syncPrArtifacts(opts: {
         metaExists && (await fileExists(metaPath))
           ? parsePrMeta(await readFile(metaPath, "utf8"), task.id)
           : null;
+      assertTaskOwnedPrSync(existingMeta);
       const taskBase = taskExecutionBaseFromExtensions(task.extensions)?.base_ref;
       const frozenBase = await resolveBaseBranch({
         cwd: opts.cwd,
