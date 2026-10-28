@@ -15,8 +15,8 @@ When integration.run_next fails because a hosted PR becomes behind, the recovere
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>
