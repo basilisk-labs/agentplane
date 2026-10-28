@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202610280304-8RQD6C",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-10-28T10:56:17.645Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "8b716596ec7694383428eaa40a77df06b7717b17",
+  "review_identity_digest": "sha256:7827a64e107a551ebb51efb0a26b1462d35ab67ecfce1f87019f5134d05b04bb",
+  "findings": [
+    "The change admits worktree_preparation only as a receipt-backed repository continuation and preserves parent authority, revision, fingerprint, and repository identity checks.",
+    "The native full CI run-011 passed on the updated task branch. The focused required-check tests and typecheck were recorded earlier in the task evidence."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202610280304-8RQD6C/quality/objects/sha256/b94ff9485548aaad21c8e6a3cb7ae1741057214f970b4f8a559795baf10e22ec.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

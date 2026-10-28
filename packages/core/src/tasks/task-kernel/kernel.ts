@@ -30,6 +30,7 @@ import {
   validateWorkItemDefinitions,
 } from "./invariants.js";
 import type {
+  CanonicalAuthorityRecord,
   DomainEvent,
   EffectState,
   ExecutionAuthority,
@@ -678,6 +679,14 @@ function object(value: unknown): Record<string, unknown> | null {
     : null;
 }
 
+function isRepositoryContinuation(record: CanonicalAuthorityRecord): boolean {
+  return (
+    record.approval_mode === null &&
+    (record.observation?.kind === "repository_implementation" ||
+      record.observation?.kind === "worktree_preparation")
+  );
+}
+
 /** Issuance and result may be sibling delegations around a native repository continuation. */
 function requiredCheckAuthorityLineage(
   aggregate: TaskAggregate,
@@ -712,8 +721,7 @@ function requiredCheckAuthorityLineage(
     )
       return [];
     const approval = record.approval_mode !== null && record.observation === null;
-    const continuation =
-      record.approval_mode === null && record.observation?.kind === "repository_implementation";
+    const continuation = isRepositoryContinuation(record);
     if (!approval && !continuation) return [];
     const matching = receipts.filter((receipt) => {
       if (
@@ -796,9 +804,9 @@ function requiredCheckAuthorityLineage(
     if (
       next.index !== index + 1 ||
       next.receipt.before_revision !== cursor ||
-      next.record.observation?.kind !== "repository_implementation" ||
+      !isRepositoryContinuation(next.record) ||
       next.record.authority.provenance.parent_authority_digest !== parent.digest ||
-      next.record.observation.previous_fingerprint !== parent.repository_fingerprint
+      next.record.observation?.previous_fingerprint !== parent.repository_fingerprint
     )
       return false;
     cursor = next.receipt.after_revision;

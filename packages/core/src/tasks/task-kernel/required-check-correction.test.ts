@@ -316,6 +316,200 @@ describe("required check correction", () => {
         },
       },
     });
+    // A prepared worktree can change the repository fingerprint before WorkOrder issuance.
+    // Its retained continuation is then the issued authority origin, not a post-result edit.
+    const preparationRecord = {
+      ...continuationRecord,
+      observation: {
+        ...continuationRecord.observation,
+        kind: "worktree_preparation" as const,
+        changed_paths: [],
+      },
+    };
+    const preparationReceipt = {
+      ...continuationReceipt,
+      command_digest: kernelDigest({
+        kind: "continue_authority",
+        task_id: "task-1",
+        expected_task_revision: 6,
+        expected_state_fingerprint: fingerprint,
+        record: preparationRecord,
+      }),
+    };
+    const preparedIssuedAuthority = delegate(continuedParent).digest;
+    const preparedWorkOrder = {
+      ...failedWorkOrder,
+      task: { ...failedWorkOrder.task, revision: 7 },
+      state_fingerprint: {
+        components: {
+          authority: {
+            digest: kernelDigest({
+              state: "present",
+              source: "canonical_authority",
+              value: { issued: preparedIssuedAuthority, lineage: continuedParent.digest },
+            }),
+          },
+        },
+      },
+      canonical_binding: {
+        ...failedWorkOrder.canonical_binding,
+        repository_fingerprint: fingerprint,
+        authority_digest: preparedIssuedAuthority,
+      },
+    };
+    const preparedCommand: TaskCommand = {
+      ...command,
+      required_check_correction: {
+        ...command.required_check_correction!,
+        failed_work_order: preparedWorkOrder,
+      },
+    };
+    const preparedState = {
+      ...state,
+      authority_lineage: [approvalRecord, preparationRecord],
+      mutation_receipts: {
+        ...state.mutation_receipts,
+        [preparationReceipt.mutation_id]: preparationReceipt,
+        [resultReceipt.mutation_id]: {
+          ...resultReceipt,
+          command_digest: kernelDigest({
+            ...acceptedResultCommand,
+            binding_digest: kernelDigest({ ...workBinding, repository_fingerprint: fingerprint }),
+          }),
+        },
+      },
+    };
+    const preparedInvocation = {
+      ...invocation,
+      aggregate: preparedState,
+      command: preparedCommand,
+    };
+    expect(reduceTaskCommand(preparedInvocation)).toMatchObject({ kind: "accepted" });
+    expect(
+      reduceTaskCommand({
+        ...invocation,
+        aggregate: {
+          ...state,
+          authority_lineage: [approvalRecord, preparationRecord],
+          mutation_receipts: {
+            ...state.mutation_receipts,
+            [preparationReceipt.mutation_id]: preparationReceipt,
+          },
+        },
+      }),
+    ).toMatchObject({ kind: "accepted" });
+    for (const mutation of [
+      { ...preparationReceipt, command_digest: kernelDigest("forged-preparation") },
+      { ...preparationReceipt, before_revision: 5, after_revision: 6 },
+      { ...preparationReceipt, event_digests: [] },
+    ]) {
+      expectRejection(
+        {
+          ...preparedInvocation,
+          aggregate: {
+            ...preparedState,
+            mutation_receipts: {
+              ...preparedState.mutation_receipts,
+              [preparationReceipt.mutation_id]: mutation,
+            },
+          },
+        },
+        "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
+      );
+    }
+    const { [preparationReceipt.mutation_id]: _missingPreparation, ...otherPreparedReceipts } =
+      preparedState.mutation_receipts;
+    expectRejection(
+      {
+        ...preparedInvocation,
+        aggregate: { ...preparedState, mutation_receipts: otherPreparedReceipts },
+      },
+      "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
+    );
+    for (const canonical_binding of [
+      { ...preparedWorkOrder.canonical_binding, repository_identity: kernelDigest("other-repo") },
+      { ...preparedWorkOrder.canonical_binding, repository_fingerprint: issuedFingerprint },
+    ]) {
+      expectRejection(
+        {
+          ...preparedInvocation,
+          command: {
+            ...preparedCommand,
+            required_check_correction: {
+              ...preparedCommand.required_check_correction!,
+              failed_work_order: { ...preparedWorkOrder, canonical_binding },
+            },
+          },
+        },
+        "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
+      );
+    }
+    for (const observation of [
+      { ...preparationRecord.observation, previous_fingerprint: fingerprint },
+      { ...preparationRecord.observation, kind: "policy_renewal" as const },
+    ]) {
+      const changedRecord = { ...preparationRecord, observation };
+      expectRejection(
+        {
+          ...preparedInvocation,
+          aggregate: {
+            ...preparedState,
+            authority_lineage: [approvalRecord, changedRecord],
+            mutation_receipts: {
+              ...preparedState.mutation_receipts,
+              [preparationReceipt.mutation_id]: {
+                ...preparationReceipt,
+                command_digest: kernelDigest({
+                  kind: "continue_authority",
+                  task_id: "task-1",
+                  expected_task_revision: 6,
+                  expected_state_fingerprint: fingerprint,
+                  record: changedRecord,
+                }),
+              },
+            },
+          },
+        },
+        "PLAN_SCOPE_EXPANSION_REQUIRES_USER",
+      );
+    }
+    const forgedParentContents = {
+      ...continuedParent,
+      provenance: {
+        ...continuedParent.provenance,
+        parent_authority_digest: kernelDigest("other-parent"),
+      },
+    };
+    const forgedParentRecord = {
+      ...preparationRecord,
+      authority: {
+        ...forgedParentContents,
+        digest: authorityDigest(forgedParentContents),
+      },
+    };
+    expectRejection(
+      {
+        ...preparedInvocation,
+        aggregate: {
+          ...preparedState,
+          authority_lineage: [approvalRecord, forgedParentRecord],
+          mutation_receipts: {
+            ...preparedState.mutation_receipts,
+            [preparationReceipt.mutation_id]: {
+              ...preparationReceipt,
+              command_digest: kernelDigest({
+                kind: "continue_authority",
+                task_id: "task-1",
+                expected_task_revision: 6,
+                expected_state_fingerprint: fingerprint,
+                record: forgedParentRecord,
+              }),
+            },
+          },
+        },
+      },
+      "AUTHORITY_SCOPE_EXCEEDED",
+    );
     for (const mutated of [
       { ...continuationReceipt, command_digest: kernelDigest("forged-continuation") },
       { ...continuationReceipt, before_revision: 5, after_revision: 6 },

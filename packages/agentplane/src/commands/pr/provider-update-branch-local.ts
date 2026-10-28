@@ -31,24 +31,30 @@ export async function validateProviderUpdateLocalState(
   try {
     await git(cwd, ["check-ref-format", `refs/heads/${request.branch}`]);
     await git(cwd, ["check-ref-format", trackingRef(request)]);
-    const [branch, head, status, upstream, fetchUrl, pushUrl] = await Promise.all([
-      git(cwd, ["symbolic-ref", "--quiet", "HEAD"]),
-      git(cwd, ["rev-parse", "--verify", "HEAD"]),
-      git(cwd, ["status", "--porcelain", "--untracked-files=all"]),
-      git(cwd, ["rev-parse", "--symbolic-full-name", "@{upstream}"]),
-      git(cwd, ["remote", "get-url", "--all", request.identity.remote]),
-      git(cwd, ["remote", "get-url", "--push", "--all", request.identity.remote]),
-    ]);
+    const [branch, head, status, configuredRemote, configuredMerge, fetchUrl, pushUrl] =
+      await Promise.all([
+        git(cwd, ["symbolic-ref", "--quiet", "HEAD"]),
+        git(cwd, ["rev-parse", "--verify", "HEAD"]),
+        git(cwd, ["status", "--porcelain", "--untracked-files=all"]),
+        git(cwd, ["config", "--get-all", `branch.${request.branch}.remote`]),
+        git(cwd, ["config", "--get-all", `branch.${request.branch}.merge`]),
+        git(cwd, ["remote", "get-url", "--all", request.identity.remote]),
+        git(cwd, ["remote", "get-url", "--push", "--all", request.identity.remote]),
+      ]);
     if (branch !== `refs/heads/${request.branch}`)
       return "The authoritative checkout is not on the task branch.";
     if (!allowedHeads.includes(head))
       return "The local task head changed outside the authorized update.";
     if (status) return "The task checkout contains uncommitted or untracked work.";
-    if (upstream !== trackingRef(request)) return "The task branch tracking identity changed.";
+    if (
+      configuredRemote !== request.identity.remote ||
+      configuredMerge !== `refs/heads/${request.branch}`
+    )
+      return "The task branch tracking identity changed.";
     if (fetchUrl !== request.identity.targetUrl || pushUrl !== request.identity.sourceUrl) {
       return "The task remote URLs changed after provider identity was authorized.";
     }
-    const upstreamHead = await git(cwd, ["rev-parse", "--verify", upstream]);
+    const upstreamHead = await git(cwd, ["rev-parse", "--verify", trackingRef(request)]);
     if (!allowedHeads.includes(upstreamHead))
       return "The task tracking head changed outside the authorized update.";
     return null;
