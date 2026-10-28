@@ -16,13 +16,13 @@ A native required-check correction must validate an issued WorkOrder whose autho
 ## Verification
 
 - State: ok
-- Note: Verified: canonical Task Kernel final checks passed.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-10-28T03:58:56.468Z
+- Updated: 2026-10-28T07:23:29.605Z
 - Branch: task/202610280304-8RQD6C/recognize-worktree-preparation-in-failed-check-l
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
