@@ -1,10 +1,11 @@
 ---
 id: "202610280201-Z9MAPZ"
 title: "Allow exact provider update after failed integration"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 40
+revision: 41
 origin:
   system: "manual"
 depends_on: []
@@ -43,6 +44,22 @@ quality_review:
     - "The production diff changes the recovered-successor gate only and moves the existing provider identity schema into a generic helper; the remaining integration resolution paths are unchanged."
     - "The guard requires a ready, safe-to-mutate provider.pr.update_branch route, a parsed frozen integration snapshot, matching task/PR/branch/base/head/base SHA/provider identity/URL, and a registered checkout."
     - "The regression suite covers two matching checkout forms, 16 identity/authority/snapshot drift cases, and the prior semantic rework successor. AgentPlane recorded focused tests 20/20, typecheck, and full local CI as passed on implementation head 0233c55c1."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:6821d9f278c7d99e6fb5d71798927275cdcea62ad1ddadfd21ecd1273f223883"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-10-28T17:07:36.178Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -261,9 +278,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "0233c55c130788e4c0b859717e4254e72a28d12b"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "fbed5c73c62d80351f3a8cee33a1c53390fc6cfa"
+  message: "🧩 Z9MAPZ task: refresh task artifacts after commit"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -271,9 +291,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-28T17:07:36.178Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "fbed5c73c62d80351f3a8cee33a1c53390fc6cfa"
 doc_version: 3
-doc_updated_at: "2026-10-28T16:57:53.033Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-28T17:07:36.178Z"
+doc_updated_by: "CODER"
 description: "When integration.run_next fails because a hosted PR becomes behind, the recovered supervisor successor should admit the exact provider.pr.update_branch step bound to the original integration identity. Preserve fail-closed mismatch handling and semantic rework for other successors."
 sections:
   Summary: |-
@@ -421,6 +449,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:2ecaea7b0a1e4eea8c2acc77a6e7c10fa57dd99604bf09ede4164cdf911bbe5d"
     work_order_id: "sha256:62a5ac636c39a2376c9507337df11f8915100a9204a65ded2ba9cd3ebb615371"
+  implementation_commit:
+    hash: "0233c55c130788e4c0b859717e4254e72a28d12b"
+    message: "🚧 Z9MAPZ task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "9c1ad3fe68b6ce490e72ace285dcea2d316d0364"
@@ -1773,3 +1804,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:6821d9f278c7d99e6fb5d71798927275cdcea62ad1ddadfd21ecd1273f223883`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-10-28T17:07:36.178Z`
