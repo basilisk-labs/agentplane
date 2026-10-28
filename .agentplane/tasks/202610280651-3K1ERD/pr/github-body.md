@@ -27,9 +27,11 @@ Fix the generic mismatch between existing PR adoption admission and task executi
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .../src/commands/pr/adoption-merge.test.ts         |  7 ++-
+ .../src/commands/pr/adoption-route.test.ts         | 15 ++---
  .../commands/pr/adoption-task-authority.test.ts    | 69 ++++++++++++++++++----
  .../src/commands/pr/adoption-task-authority.ts     | 11 ++--
- 2 files changed, 65 insertions(+), 15 deletions(-)
+ 4 files changed, 78 insertions(+), 24 deletions(-)
 ```
 
 </details>
