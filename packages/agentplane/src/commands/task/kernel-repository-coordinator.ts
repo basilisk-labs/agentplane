@@ -7,7 +7,6 @@ import { protectedPathKindForFile } from "../../shared/protected-paths.js";
 import { CliError } from "../../shared/errors.js";
 import { assertHookRunnerReady } from "../shared/hook-shim-template.js";
 import path from "node:path";
-import { mkdir } from "node:fs/promises";
 import { parseTaskIdFromBranch } from "@agentplaneorg/core/git";
 import { runProcess } from "@agentplaneorg/core/process";
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
@@ -28,14 +27,18 @@ import {
   type DirectRepositoryStatus,
 } from "./direct-task-finalization.js";
 import { pathFromStatusLine } from "./external-agent-implementation-finalization.js";
+import {
+  readCommitIntent,
+  readFollowupCommitIntent,
+  writeCommitIntent,
+  writeFollowupCommitIntent,
+} from "./kernel-repository-commit-intents.js";
 
 export { commitCanonicalTerminalTaskArtifacts } from "./kernel-terminal-artifacts.js";
 
 import type {
   KernelRepositoryBaseline,
   KernelRepositoryEvidence,
-  KernelRepositoryCommitIntent,
-  KernelRepositoryFollowupCommitIntent,
 } from "./kernel-repository-types.js";
 export type {
   KernelRepositoryBaseline,
@@ -69,89 +72,6 @@ function nonTaskStatusLines(
     const candidate = pathFromStatusLine(line);
     return !candidate || !taskArtifactPath(command, taskId, candidate);
   });
-}
-
-async function writeCommitIntent(directory: string, intent: KernelRepositoryCommitIntent) {
-  await mkdir(directory, { recursive: true, mode: 0o700 });
-  const target = path.join(directory, "repository-commit-intent.json");
-  try {
-    await writeNewStableRegularFileNoFollow(
-      target,
-      `${JSON.stringify(intent, null, 2)}\n`,
-      "canonical repository commit intent",
-    );
-  } catch (error) {
-    const stored = JSON.parse(
-      await readStableRegularTextNoFollow(target, "canonical repository commit intent"),
-    ) as KernelRepositoryCommitIntent;
-    if (k.kernelDigest(stored) !== k.kernelDigest(intent)) throw error;
-  }
-}
-
-async function readCommitIntent(directory: string): Promise<KernelRepositoryCommitIntent | null> {
-  try {
-    const intent = JSON.parse(
-      await readStableRegularTextNoFollow(
-        path.join(directory, "repository-commit-intent.json"),
-        "canonical repository commit intent",
-      ),
-    ) as KernelRepositoryCommitIntent;
-    const { digest, ...contents } = intent;
-    if (k.kernelDigest(contents) !== digest)
-      throw new Error("Canonical repository commit intent is invalid");
-    return intent;
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === "ENOENT") return null;
-    throw error;
-  }
-}
-
-async function writeFollowupCommitIntent(
-  directory: string,
-  intent: KernelRepositoryFollowupCommitIntent,
-) {
-  await writeKernelIntent(directory, "repository-followup-commit-intent.json", intent);
-}
-
-async function readFollowupCommitIntent(
-  directory: string,
-): Promise<KernelRepositoryFollowupCommitIntent | null> {
-  try {
-    const intent = JSON.parse(
-      await readStableRegularTextNoFollow(
-        path.join(directory, "repository-followup-commit-intent.json"),
-        "canonical repository followup commit intent",
-      ),
-    ) as KernelRepositoryFollowupCommitIntent;
-    const { digest, ...contents } = intent;
-    if (k.kernelDigest(contents) !== digest)
-      throw new Error("Canonical repository followup commit intent is invalid");
-    return intent;
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === "ENOENT") return null;
-    throw error;
-  }
-}
-
-async function writeKernelIntent(
-  directory: string,
-  name: string,
-  intent: KernelRepositoryCommitIntent | KernelRepositoryFollowupCommitIntent,
-) {
-  await mkdir(directory, { recursive: true, mode: 0o700 });
-  const target = path.join(directory, name);
-  try {
-    await writeNewStableRegularFileNoFollow(
-      target,
-      `${JSON.stringify(intent, null, 2)}\n`,
-      "canonical repository commit intent",
-    );
-  } catch (error) {
-    const stored = JSON.parse(
-      await readStableRegularTextNoFollow(target, "canonical repository commit intent"),
-    ) as typeof intent;
-    if (k.kernelDigest(stored) !== k.kernelDigest(intent)) throw error;
-  }
 }
 
 async function assertCanonicalCheckout(

@@ -3,13 +3,11 @@ import {
   PR_HEAD_PUBLICATION_SPEC,
 } from "./workflow-step-publication-spec.js";
 import type { StateFingerprint } from "@agentplaneorg/core/schemas";
-import type { TaskRepositoryEffect } from "@agentplaneorg/core/tasks";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import type { PrFlowStatusReport } from "../pr/flow-status.js";
 import type { ConflictReworkPreparation } from "../pr/conflict-rework.js";
 import type { TaskResumeContext } from "../task/handoff.shared.js";
-import type { ProviderUpdateBranchOperationParams } from "./provider-update-branch-route.js";
 import type { RouteBatchOwnership } from "./route-batch-ownership.js";
 import type { RouteCleanupProbe, RouteNextAction } from "./route-decision-types.js";
 import type { RouteBlocker, RouteExecutionPacket, RouteOracle } from "./route-oracle.js";
@@ -17,9 +15,10 @@ import type { TaskWorktreeCleanliness } from "./task-worktree-cleanliness.js";
 import type { ForeignTaskReadmeReplicaRepair } from "./task-worktree-foreign-artifact-repair.js";
 import type { BranchBaseSyncObservation } from "./branch-base-sync-route.js";
 import { foreignTaskReadmeReplicaRepairOperation } from "./workflow-step-foreign-task-readme-repair.js";
-import { BASE_SYNC_SPEC, type BaseSyncParams } from "./workflow-step-branch-base-sync-spec.js";
+import { BASE_SYNC_SPEC } from "./workflow-step-branch-base-sync-spec.js";
 import { PROVIDER_UPDATE_BRANCH_OPERATION_SPEC } from "./workflow-step-provider-update-branch-spec.js";
 import { POSTCONDITION, type WorkflowPostcondition } from "./workflow-postconditions.js";
+import type { WorkflowOperationParams } from "./workflow-operation-params.js";
 
 export type WorkflowRole = RouteExecutionPacket["recommendedRole"];
 export type WorkflowCheckout = RouteOracle["authoritativeCheckout"];
@@ -104,71 +103,7 @@ export type WorkflowOperationId =
   | "task.worktree.cleanup"
   | "worktree.prepare";
 
-export type WorkflowOperationParams = {
-  "candidate.publish": { taskId: string; requestDigest: string };
-  "batch.collect_included": { taskId: string };
-  "batch.follow_primary": { taskId: string };
-  "batch.reconcile_included": { taskId: string };
-  "integration.adopt_legacy_protected_conflict": {
-    taskId: string;
-    expectedAdoptionToken: string;
-  };
-  "integration.enqueue": { taskId: string; branch: string };
-  "integration.adopted_merge": {
-    taskId: string;
-    prNumber: number;
-    headSha: string;
-    baseSha: string;
-  };
-  "task.adopted.finish": {
-    taskId: string;
-    prNumber: number;
-    headSha: string;
-    mergeCommit: string;
-    mergedAt: string;
-  };
-  "integration.run_next": { taskId: string };
-  "pr.artifacts.update": { taskId: string; includeTaskIds: readonly string[] };
-  "pr.existing.adopt": { taskId: string; requestDigest: string };
-  "pr.head.publish": {
-    taskId: string;
-    author: string;
-    includeTaskIds: readonly string[];
-  };
-  "pr.open": { taskId: string; author: string; includeTaskIds: readonly string[] };
-  "pr.sync_or_verify": { taskId: string; includeTaskIds: readonly string[] };
-  "provider.pr.refresh": { taskId: string };
-  "provider.pr.update_branch": ProviderUpdateBranchOperationParams;
-  "flow.repair.foreign_task_readme": { taskId: string };
-  "route.remote.refresh": { taskId: string };
-  "runner.follow":
-    | { mode: "reclaim"; taskId: string; author: string; reason: string }
-    | { mode: "status"; taskId: string; runId: string | null }
-    | { mode: "run"; taskId: string };
-  "task.artifacts.commit": { taskId: string };
-  "task.branch.sync_base": BaseSyncParams;
-  "task.branch.start": { taskId: string; author: string; body: string };
-  "task.hosted_close.open": { taskId: string };
-  "task.hosted_close.finalize": { taskId: string; base: string };
-  "task.pre_merge_close": {
-    taskId: string;
-    author: string;
-    body: string;
-    result: string;
-    commit: string;
-    force: boolean;
-  };
-  "task.scope.extend": {
-    taskId: string;
-    requestDigest: string;
-    scopeRoots: readonly string[];
-    repositoryEffects: readonly TaskRepositoryEffect[];
-  };
-  "task.start": { taskId: string; author: string; body: string };
-  "task.verify.show": { taskId: string };
-  "task.worktree.cleanup": { taskId: string; base: string };
-  "worktree.prepare": { taskId: string; agent: string; slug: string };
-};
+export type { WorkflowOperationParams } from "./workflow-operation-params.js";
 
 export type WorkflowOperationSpec = {
   type: WorkflowOperationType;

@@ -407,65 +407,6 @@ describe("canonical task kernel reducer", () => {
     }
   });
 
-  it("binds final validation to the exact hosted head accepted by WorkItem review", () => {
-    const acceptedHead = kernelDigest("hosted-head-a");
-    const changedHead = kernelDigest("hosted-head-b");
-    const itemValidation = {
-      ...validation(resultDigest),
-      identity: {
-        ...validation(resultDigest).identity,
-        hosted_head_evidence_digest: acceptedHead,
-      },
-    };
-    const completed = aggregate({
-      work_items: {
-        kernel: {
-          ...runtime("COMPLETED"),
-          result_digest: resultDigest,
-          output_manifests: [manifest()],
-          validation: itemValidation,
-        },
-      },
-    });
-    const command: Extract<TaskCommand, { kind: "record_final_validation" }> = {
-      kind: "record_final_validation",
-      task_id: completed.id,
-      expected_task_revision: completed.revision,
-      expected_state_fingerprint: fingerprint,
-      validation: {
-        ...validation(fingerprint),
-        identity: {
-          ...validation(fingerprint).identity,
-          hosted_head_evidence_digest: changedHead,
-        },
-      },
-    };
-    expectRejection(input(completed, command), "VALIDATION_IDENTITY_MISMATCH");
-    const matching = {
-      ...command,
-      validation: {
-        ...command.validation,
-        identity: {
-          ...command.validation.identity,
-          hosted_head_evidence_digest: acceptedHead,
-        },
-      },
-    };
-    expect(reduceTaskCommand(input(completed, matching))).toMatchObject({
-      kind: "accepted",
-      aggregate: { state: "FINAL_VALIDATION" },
-    });
-    expect(
-      isTaskCompletionEligible(
-        {
-          ...completed,
-          state: "FINAL_VALIDATION",
-          final_validation: command.validation,
-        },
-        fingerprint,
-      ),
-    ).toBe(false);
-  });
   it.each(["2026-08-29T19:00:00.000Z", "2026-08-29T20:00:00.000Z", "not-a-date"])(
     "rejects expired or malformed authority expiry %s",
     (expires_at) => {

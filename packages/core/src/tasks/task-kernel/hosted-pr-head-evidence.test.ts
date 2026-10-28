@@ -4,7 +4,17 @@ import {
   validateHostedPrHeadEvidence,
   type HostedPrHeadEvidence,
 } from "./hosted-pr-head-evidence.js";
-import type { Sha256Digest } from "./model.js";
+import { isTaskCompletionEligible, kernelDigest, reduceTaskCommand } from "./kernel.js";
+import type { Sha256Digest, TaskCommand } from "./model.js";
+import {
+  aggregate,
+  fingerprint,
+  input as kernelInput,
+  manifest,
+  resultDigest,
+  runtime,
+  validation,
+} from "./kernel.test-fixtures.js";
 
 const sha = (character: string) => character.repeat(40);
 const digest = (character: string) => `sha256:${character.repeat(64)}` as Sha256Digest;
@@ -98,6 +108,68 @@ describe("canonical adopted hosted PR head evidence", () => {
         current_base: bound.current_base,
         current_readback_digest: bound.current_readback_digest,
       }),
+    ).toBe(false);
+  });
+  it("binds final validation to the exact hosted head accepted by WorkItem review", () => {
+    const acceptedHead = kernelDigest("hosted-head-a");
+    const changedHead = kernelDigest("hosted-head-b");
+    const itemValidation = {
+      ...validation(resultDigest),
+      identity: {
+        ...validation(resultDigest).identity,
+        hosted_head_evidence_digest: acceptedHead,
+      },
+    };
+    const completed = aggregate({
+      work_items: {
+        kernel: {
+          ...runtime("COMPLETED"),
+          result_digest: resultDigest,
+          output_manifests: [manifest()],
+          validation: itemValidation,
+        },
+      },
+    });
+    const command: Extract<TaskCommand, { kind: "record_final_validation" }> = {
+      kind: "record_final_validation",
+      task_id: completed.id,
+      expected_task_revision: completed.revision,
+      expected_state_fingerprint: fingerprint,
+      validation: {
+        ...validation(fingerprint),
+        identity: {
+          ...validation(fingerprint).identity,
+          hosted_head_evidence_digest: changedHead,
+        },
+      },
+    };
+    expect(reduceTaskCommand(kernelInput(completed, command))).toMatchObject({
+      kind: "rejected",
+      code: "VALIDATION_IDENTITY_MISMATCH",
+    });
+    const matching = {
+      ...command,
+      validation: {
+        ...command.validation,
+        identity: {
+          ...command.validation.identity,
+          hosted_head_evidence_digest: acceptedHead,
+        },
+      },
+    };
+    expect(reduceTaskCommand(kernelInput(completed, matching))).toMatchObject({
+      kind: "accepted",
+      aggregate: { state: "FINAL_VALIDATION" },
+    });
+    expect(
+      isTaskCompletionEligible(
+        {
+          ...completed,
+          state: "FINAL_VALIDATION",
+          final_validation: command.validation,
+        },
+        fingerprint,
+      ),
     ).toBe(false);
   });
 });
