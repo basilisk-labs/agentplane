@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202610272137-T6KC8D",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-10-28T06:21:45.271Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "ea8f7539b9e8aaea77c243bfa62e53b748a0e64b",
+  "review_identity_digest": "sha256:a62ca2fa3cc0c32952958519755d0ee6d516810bb9831a73523205ed53e53faa",
+  "findings": [
+    "No blocking defect found: the reviewed generic hosted PR route retains exact task and provider identity checks, fail-closed merge proof and transport recovery, and focused negative tests. The fresh local and hosted verification evidence binds to ea8f7539b9e8aaea77c243bfa62e53b748a0e64b.",
+    "Residual risk: The base branch can change before integration; the native protected merge route must require fresh exact-head and exact-base evidence."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202610272137-T6KC8D/quality/objects/sha256/fb8cab28461ba91001321366728b9b1c709fed4d926799c5c43646963f81a3a0.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
