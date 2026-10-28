@@ -16,13 +16,13 @@ Successor to 202610271739-EWNMG7 after failed full CI. Transfer approved generic
 ## Verification
 
 - State: ok
-- Note: Verified: canonical Task Kernel final checks passed.
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-10-27T22:38:48.859Z
+- Updated: 2026-10-28T04:52:28.633Z
 - Branch: task/202610272137-T6KC8D/complete-generic-hosted-pr-adoption-with-exact-b
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
