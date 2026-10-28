@@ -1,10 +1,11 @@
 ---
 id: "202610280651-3K1ERD"
 title: "Allow exact USER-granted hosted PR adoption when external write is declared but withheld from semantic agents"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 54
+revision: 55
 origin:
   system: "manual"
 depends_on: []
@@ -42,6 +43,22 @@ quality_review:
     - "The generic adoption guard now rejects allowed external_write and requires forbidden external_write while still requiring declared network_read and external_write plus allowed network_read."
     - "The focused test admits an unchanged contract from resolveTaskExecutionContract, then rejects hostile changes that allow external_write or remove its semantic prohibition."
     - "AgentPlane repository evidence binds only the two approved source paths to commit 25fdfb18d; exact USER grants and provider identity logic were not changed. AgentPlane-native diff check, focused four-test run, typecheck, and full CI run-024 all passed on that implementation."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:a41622a8a75bf0fc2967bec7fc93abcd64cb0a7fd50cf6a5373fe049193de252"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-10-28T13:04:19.920Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -299,9 +316,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "25fdfb18dcecc157a3a4808d0605335af1883e44"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "060732637c66a63f67a4d434662a2a78cf723aff"
+  message: "🧩 3K1ERD task: refresh task artifacts after commit"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -309,9 +329,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-28T13:04:19.920Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "060732637c66a63f67a4d434662a2a78cf723aff"
 doc_version: 3
-doc_updated_at: "2026-10-28T12:51:59.542Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-28T13:04:19.920Z"
+doc_updated_by: "CODER"
 description: "Fix the generic mismatch between existing PR adoption admission and task execution routing: branch_pr tasks declare external_write for operator-owned provider adoption, while semantic WorkOrders correctly forbid that effect. Keep semantic authority unchanged; require the declaration, network-read authority, approved plan, canonical task, and the existing exact USER operation grant. Add a regression test using a real resolved execution contract. This unblocks native adoption of Dependabot PRs #6944 and #6935 for 0.7.13."
 sections:
   Summary: |-
@@ -533,6 +561,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:fd90df55381ead2786abb47b4a37da3c1717c20629c11f99959159d857f1603c"
     work_order_id: "sha256:58ee38a2c4acbd53f5cd050424f0f71ad64e1c7340d460986dd1027735c9165f"
+  implementation_commit:
+    hash: "25fdfb18dcecc157a3a4808d0605335af1883e44"
+    message: "🚧 3K1ERD task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "8dc7008ea00ef190520168ca16ba9006ccbe378f"
@@ -2566,3 +2597,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:a41622a8a75bf0fc2967bec7fc93abcd64cb0a7fd50cf6a5373fe049193de252`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-10-28T13:04:19.920Z`
