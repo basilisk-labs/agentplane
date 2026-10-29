@@ -6,7 +6,7 @@ Created: 2026-10-29T13:39:22.946Z
 
 - Task: `202610291229-M9S7RY`
 - Title: Repair completed-task scope admission and authenticated canonical import review
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610291229-M9S7RY/repair-completed-task-scope-admission-and-authen`
 - Canonical task record: `.agentplane/tasks/202610291229-M9S7RY/README.md`
 
