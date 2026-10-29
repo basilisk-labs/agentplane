@@ -28,11 +28,11 @@ Unblock genuine completed-Task scope admission and current-head review after aut
 
 ```text
  .../branch-task-artifact-ownership.test.ts         |  96 +++++-
- .../pr/internal/branch-task-artifact-ownership.ts  |  70 +++-
+ .../pr/internal/branch-task-artifact-ownership.ts  |  71 +++-
  .../pr/internal/sync-open-provider-base.test.ts    |  68 +++-
  .../agentplane/src/commands/pr/internal/sync.ts    |  11 +-
- .../pr/provider-update-verification-proof.test.ts  | 181 +++++++++-
- .../pr/provider-update-verification-proof.ts       |  95 ++++--
+ .../pr/provider-update-verification-proof.test.ts  | 241 ++++++++++++-
+ .../pr/provider-update-verification-proof.ts       |  96 ++++--
  .../commands/shared/workflow-policy-projection.ts  |  66 ++++
  .../commands/shared/workflow-step-fingerprint.ts   |  11 +-
  .../shared/workflow-step-policy-scope.test.ts      |  87 ++++-
@@ -41,7 +41,7 @@ Unblock genuine completed-Task scope admission and current-head review after aut
  .../agentplane/src/commands/task/scope-extend.ts   | 137 ++++++--
  .../src/runtime/task-obligations/resolve.test.ts   |  26 ++
  .../src/runtime/task-obligations/resolve.ts        |   3 +-
- 14 files changed, 1272 insertions(+), 83 deletions(-)
+ 14 files changed, 1334 insertions(+), 83 deletions(-)
 ```
 
 </details>

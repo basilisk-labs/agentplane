@@ -309,6 +309,7 @@ export async function inheritedProviderUpdatePaths(opts: {
           "--name-only",
           "-z",
           "--full-history",
+          "--diff-merges=separate",
           "--no-renames",
           range,
         ]).then((text) => new Set(text.split("\0").filter(Boolean))),

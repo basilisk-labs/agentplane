@@ -519,3 +519,63 @@ it("does not inherit a foreign mode change reverted to the exact canonical tree"
   f.git("commit", "-m", "restore canonical mode");
   expect(await f.inherited()).toEqual([]);
 });
+
+it.each([
+  { foreignDrift: false, absentCanonical: false },
+  { foreignDrift: true, absentCanonical: false },
+  { foreignDrift: false, absentCanonical: true },
+  { foreignDrift: true, absentCanonical: true },
+])(
+  "checks inherited Task history across merge resolutions (foreignDrift=$foreignDrift, absentCanonical=$absentCanonical)",
+  async ({ foreignDrift, absentCanonical }) => {
+    const foreign = ".agentplane/tasks/FOREIGN/README.md";
+    const f = await fixture(absentCanonical ? "canonical.txt" : foreign);
+    await mkdir(path.dirname(path.join(f.root, foreign)), { recursive: true });
+    await f.retain();
+    await f.complete();
+    f.git("config", "--local", "log.diffMerges", "off");
+    for (const [index, content] of ["unapproved", "canonical"].entries()) {
+      const branch = f.git("branch", "--show-current");
+      f.git("checkout", "-b", `own-side-${index}`);
+      await writeFile(path.join(f.root, "own.txt"), `side-${index}`);
+      f.git("add", "own.txt");
+      f.git("commit", "-m", "side source rework");
+      f.git("checkout", branch);
+      await writeFile(path.join(f.root, "own.txt"), `main-${index}`);
+      f.git("add", "own.txt");
+      f.git("commit", "-m", "main source rework");
+      f.git("merge", `own-side-${index}`, "--no-ff", "--no-commit", "-s", "ours");
+      if (foreignDrift) {
+        if (absentCanonical && index === 1) await unlink(path.join(f.root, foreign));
+        else await writeFile(path.join(f.root, foreign), content);
+      }
+      f.git("add", "-A");
+      f.git("commit", "-m", "merge resolution");
+    }
+    expect(f.git("ls-tree", "HEAD", "--", foreign)).toBe(f.git("ls-tree", f.R, "--", foreign));
+    expect
+      .soft(
+        await inheritedProviderUpdatePaths({
+          command: f.command,
+          task_id: taskId,
+          frozen_base: f.B,
+          evaluated_sha: f.git("rev-parse", "HEAD"),
+          changed_paths: [foreign],
+          workflow_dir: ".agentplane/tasks",
+          tasks_path: ".agentplane/tasks.json",
+        }),
+      )
+      .toEqual(foreignDrift || absentCanonical ? [] : [foreign]);
+    const ownership = assertBranchTaskArtifactOwnership({
+      gitRoot: f.root,
+      baseBranch: f.B,
+      branch: "task/proof",
+      workflowDir: ".agentplane/tasks",
+      tasksPath: ".agentplane/tasks.json",
+      primaryTaskId: taskId,
+      providerUpdate: { command: f.command, frozenBase: f.B },
+    });
+    if (foreignDrift) await expect(ownership).rejects.toThrow(/other tasks/);
+    else await expect(ownership).resolves.toBeUndefined();
+  },
+);
