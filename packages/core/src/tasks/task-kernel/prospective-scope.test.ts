@@ -89,6 +89,20 @@ describe("prospective scope authority", () => {
     const f = fixture();
     expect(prospectiveScopeAdmissionIssues(f.call, f.record)).toEqual([]);
   });
+  it("keeps the ACTIVE/BLOCKED grant separate from completed rework", () => {
+    const f = fixture();
+    const completed = {
+      ...f.call.aggregate,
+      state: "COMPLETED" as const,
+      work_items: {
+        ...f.call.aggregate.work_items,
+        kernel: { ...f.call.aggregate.work_items.kernel!, state: "COMPLETED" as const },
+      },
+    };
+    expect(prospectiveScopeAdmissionIssues({ ...f.call, aggregate: completed }, f.record)).toEqual([
+      "scope_request_binding",
+    ]);
+  });
   it.each([
     "attempt",
     "claim_id",

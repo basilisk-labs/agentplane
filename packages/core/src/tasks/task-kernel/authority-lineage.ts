@@ -1,4 +1,7 @@
-import { prospectiveScopeLineageIssues } from "./prospective-scope.js";
+import {
+  completedReworkScopeLineageIssues,
+  prospectiveScopeLineageIssues,
+} from "./prospective-scope.js";
 import { isCorrectivePlanContinuation } from "./corrective-authority.js";
 import { compareExecutionAuthority, executionRequirementsAreSubset } from "./invariants.js";
 import { kernelDigest } from "./digest.js";
@@ -321,6 +324,7 @@ export function canonicalAuthorityIssues(aggregate: TaskAggregate): string[] {
     if (
       record.observation?.kind !== "authority_delta" &&
       record.observation?.kind !== "prospective_scope_request" &&
+      record.observation?.kind !== "completed_rework_scope_request" &&
       plan?.approval_evidence_digest !== authority.provenance.evidence_digest &&
       !approvedPlanAmendment &&
       !continuedApprovedPlanAuthority &&
@@ -335,6 +339,14 @@ export function canonicalAuthorityIssues(aggregate: TaskAggregate): string[] {
           issues.push("scope_request_parent");
         }
 
+        break;
+      }
+      case "completed_rework_scope_request": {
+        if (parent) {
+          issues.push(...completedReworkScopeLineageIssues(parent, record));
+        } else {
+          issues.push("completed_rework_scope_parent");
+        }
         break;
       }
       case "policy_renewal": {

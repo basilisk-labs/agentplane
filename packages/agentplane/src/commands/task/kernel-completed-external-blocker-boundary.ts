@@ -20,6 +20,7 @@ import {
   readExternalAgentWorkOrder,
 } from "./external-agent-exchange.js";
 import { readCompletedReworkRecord } from "./kernel-completed-external-rework.js";
+import { parseTaskScopeExtensionRequestState } from "../shared/task-scope-extension-request.js";
 
 /** Result acceptance already authenticated and consumed this exact exchange. */
 export async function completedBlockerBoundary(opts: {
@@ -38,8 +39,17 @@ export async function completedBlockerBoundary(opts: {
     return null;
   const order = await readExternalAgentWorkOrder(exchange.work_order_ref);
   const task = await loadTaskFromContext({ ctx: opts.command, taskId: exchange.task_id });
-  if (!(await readCompletedReworkRecord({ command: opts.command, task, work_order: order })))
-    return null;
+  const record = await readCompletedReworkRecord({
+    command: opts.command,
+    task,
+    work_order: order,
+  });
+  if (!record) return null;
+  const pending = parseTaskScopeExtensionRequestState(task);
+  const scopeCommand =
+    pending?.status === "pending" && pending.work_item_id === null
+      ? ` Run agentplane task scope extend ${task.id} ${pending.request.scope_roots.map((root) => `--scope-root ${root}`).join(" ")} ${pending.request.repository_effects.map((effect) => `--repository-effect ${effect}`).join(" ")} --request-digest ${pending.request_digest} --state-scope-digest ${pending.request_digest} --by USER to admit this exact request before re-planning.`
+      : "";
   return {
     schema_version: 1,
     task_id: task.id,
@@ -48,7 +58,8 @@ export async function completedBlockerBoundary(opts: {
     action: {
       kind: "human_input_required",
       instruction:
-        "The blocked result is retained. Return control to the operator to resolve its recorded blocker before requesting another episode.",
+        "The blocked result is retained. Return control to the operator to resolve its recorded blocker before requesting another episode." +
+        scopeCommand,
     },
     authority: {
       role: order.role,
@@ -73,6 +84,15 @@ export async function currentCompletedBlockerBoundary(opts: {
   command: CommandContext;
   decision: TaskRouteDecision;
 }): Promise<AgentActionPacket | null> {
+  const exchange = await currentCompletedBlockerExchange(opts);
+  return exchange ? completedBlockerBoundary({ ...opts, result_path: exchange.result_ref }) : null;
+}
+
+/** Return only the latest journal-authenticated completed-task blocker. */
+export async function currentCompletedBlockerExchange(opts: {
+  command: CommandContext;
+  decision: TaskRouteDecision;
+}) {
   const journalPath = await resolveSupervisorExecutionEpisodePath({
     git_root: opts.command.resolvedProject.gitRoot,
     common_git_dir: await resolveCommandGitCommonDir(opts.command),
@@ -107,5 +127,15 @@ export async function currentCompletedBlockerBoundary(opts: {
     exchange.postcondition_fingerprint !== opts.decision.workflowStep.preconditionFingerprint.digest
   )
     return null;
-  return completedBlockerBoundary({ ...opts, result_path: exchange.result_ref });
+  if (
+    exchange.purpose !== "implementation_rework" ||
+    exchange.status !== "consumed" ||
+    exchange.result?.result.status !== "blocked"
+  )
+    return null;
+  const order = await readExternalAgentWorkOrder(exchange.work_order_ref);
+  const task = await loadTaskFromContext({ ctx: opts.command, taskId: exchange.task_id });
+  return (await readCompletedReworkRecord({ command: opts.command, task, work_order: order }))
+    ? exchange
+    : null;
 }

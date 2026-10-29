@@ -45,8 +45,10 @@ export {
 export {
   prospectiveScopeApprovalEvidence,
   prospectiveScopeLineageIssues,
+  completedReworkScopeApprovalEvidence,
+  completedReworkScopeLineageIssues,
 } from "./prospective-scope.js";
-export type { ProspectiveScopeRequest } from "./prospective-scope.js";
+export type { ProspectiveScopeRequest, CompletedReworkScopeRequest } from "./prospective-scope.js";
 export { completionRestorationIssues } from "./completion-restoration.js";
 export type { CompletionRestorationProof } from "./completion-restoration.js";
 export {

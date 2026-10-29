@@ -27,6 +27,8 @@ import { defaultConfig } from "@agentplaneorg/core/config";
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
 import type { TaskData } from "../../backends/task-backend.js";
 import { KernelBackendAdapter } from "../../adapters/task-backend/kernel-backend-adapter.js";
+import { makeKernelRecord, readKernelRecord } from "../../adapters/task-backend/kernel-record.js";
+import { createKernelRuntime } from "./kernel-runtime-context.js";
 import { kernelReplayJourney } from "../../adapters/task-backend/kernel-replay-journey.test-fixtures.js";
 import { loadCommandContext } from "../shared/task-backend.js";
 import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
@@ -42,6 +44,7 @@ export async function fixture(
   repositoryMode: "direct" | "branch_pr" = "branch_pr",
   securityCi = false,
   leaveReviewDirty = false,
+  withCanonicalAuthority = false,
 ) {
   const root = await mkGitRepoRootWithBranch("main");
   await configureGitUser(root);
@@ -159,6 +162,54 @@ export async function fixture(
   task.doc =
     "## Summary\nRepair source.\n\n## Plan\nRepair the approved source.\n\n## Verify Steps\n- git diff --check\n\n## Verification\nPrevious checks passed.\n";
   await command.taskBackend.writeTask(task);
+  if (withCanonicalAuthority) {
+    const current = (await command.taskBackend.getTask(id))!;
+    const read = readKernelRecord(current, identity);
+    expect(read.kind).toBe("canonical");
+    if (read.kind !== "canonical") throw new Error("Fixture canonical record missing");
+    const runtime = await createKernelRuntime({
+      command,
+      task_id: id,
+      transport: "manual",
+      operation_id: "fixture-scope-authority",
+    });
+    const context = await runtime.native.readContext(id);
+    const observation = await runtime.observe();
+    const plan = read.record.aggregate.current_plan!;
+    const unsigned = {
+      ...context.ceiling,
+      task_id: id,
+      plan_revision: plan.revision,
+      plan_digest: plan.digest,
+      work_item_id: null,
+      repository_identity: identity,
+      repository_fingerprint: observation.fingerprint,
+      provenance: {
+        kind: "USER" as const,
+        actor_id: plan.approval_actor_id!,
+        evidence_digest: plan.approval_evidence_digest!,
+        parent_authority_digest: null,
+      },
+    };
+    const parent = { ...unsigned, digest: k.authorityDigest(unsigned) };
+    await command.taskBackend.writeTask({
+      ...current,
+      extensions: {
+        ...current.extensions,
+        task_kernel: makeKernelRecord(
+          identity,
+          {
+            ...read.record.aggregate,
+            authority_lineage: [
+              { authority: parent, approval_mode: "manual_operator", observation: null },
+            ],
+          },
+          read.record.events,
+          read.record.documents,
+        ),
+      },
+    });
+  }
   const prDir = path.join(root, ".agentplane", "tasks", id, "pr");
   await mkdir(prDir, { recursive: true });
   const at = "2026-10-06T00:00:00.000Z";
