@@ -75,7 +75,9 @@ export async function assertBranchTaskArtifactOwnership(opts: {
   // also reports paths added on an advanced base as deletions from an older
   // task branch, which can falsely attribute unrelated base task artifacts to
   // the candidate. The merge-base anchored diff is the branch-side delta.
-  const evaluatedSha = await gitRevParse(opts.gitRoot, ["--verify", `${opts.branch}^{commit}`]);
+  const evaluatedSha = opts.providerUpdate
+    ? await gitRevParse(opts.gitRoot, ["--verify", `${opts.branch}^{commit}`])
+    : opts.branch;
   const mergeBase = await gitMergeBase(opts.gitRoot, comparisonBase, evaluatedSha);
   const changedEntries = await gitDiffNameStatus(opts.gitRoot, mergeBase, evaluatedSha);
   const allowed = new Set([opts.primaryTaskId, ...(opts.includedTaskIds ?? [])]);
@@ -116,6 +118,15 @@ export async function assertBranchTaskArtifactOwnership(opts: {
         changedEntries.push({ statusCode: "M", path: file });
         known.add(file);
       }
+    // Native import authority is relevant only to foreign Task artifacts. Keep
+    // the history scan above: a deleted or renamed import can be absent from the net diff.
+    if (
+      !changedEntries.some((entry) => {
+        const taskId = taskIdFromArtifactPath(entry.path, roots);
+        return taskId !== null && !allowed.has(taskId);
+      })
+    )
+      return;
     for (const file of await inheritedProviderUpdatePaths({
       command: opts.providerUpdate.command,
       task_id: opts.primaryTaskId,
