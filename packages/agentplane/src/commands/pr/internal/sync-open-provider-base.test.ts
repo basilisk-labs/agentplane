@@ -1,3 +1,12 @@
+import type * as ProviderBase from "./provider-base.js";
+import type * as SyncBranch from "./sync-branch.js";
+import type * as StableWriter from "../../../shared/write-if-changed.js";
+import * as ownership from "./branch-task-artifact-ownership.js";
+import { syncPrArtifacts } from "./sync.js";
+import { fixture } from "../../task/kernel-completed-external-rework.testkit.js";
+import { loadCommandContext } from "../../shared/task-backend.js";
+import { taskExecutionBaseFromExtensions } from "@agentplaneorg/core/tasks";
+
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
@@ -6,14 +15,27 @@ const mocks = vi.hoisted(() => ({
   identity: vi.fn(),
   observe: vi.fn(),
   create: vi.fn(),
-  write: vi.fn(),
+  write: vi.fn<(...args: unknown[]) => Promise<boolean>>().mockResolvedValue(false),
+  realWrites: false,
 }));
-vi.mock("./provider-base.js", () => ({ resolveProviderBaseBranch: mocks.base }));
-vi.mock("./sync-branch.js", () => ({ computePrDiffstat: mocks.diffstat }));
-vi.mock("../../../shared/write-if-changed.js", () => ({
-  writeJsonStableIfChanged: mocks.write,
-  writeTextIfChanged: mocks.write,
+vi.mock("./provider-base.js", async (original) => ({
+  ...(await original<typeof ProviderBase>()),
+  resolveProviderBaseBranch: mocks.base,
 }));
+vi.mock("./sync-branch.js", async (original) => ({
+  ...(await original<typeof SyncBranch>()),
+  computePrDiffstat: mocks.diffstat,
+}));
+vi.mock("../../../shared/write-if-changed.js", async (original) => {
+  const actual = await original<typeof StableWriter>();
+  return {
+    ...actual,
+    writeJsonStableIfChanged: (...args: Parameters<typeof actual.writeJsonStableIfChanged>) =>
+      mocks.realWrites ? actual.writeJsonStableIfChanged(...args) : mocks.write(...args),
+    writeTextIfChanged: (...args: Parameters<typeof actual.writeTextIfChanged>) =>
+      mocks.realWrites ? actual.writeTextIfChanged(...args) : mocks.write(...args),
+  };
+});
 vi.mock("./change-request-provider.js", () => ({
   resolveChangeRequestIdentity: mocks.identity,
   observeExistingChangeRequestByBranch: mocks.observe,
@@ -83,6 +105,7 @@ function common(): PrSyncCommonState {
 
 beforeEach(() => {
   vi.resetAllMocks();
+  mocks.realWrites = false;
   mocks.base.mockResolvedValue("main");
   mocks.diffstat.mockResolvedValue("1 file changed");
   mocks.identity.mockResolvedValue(identity);
@@ -122,3 +145,36 @@ describe("provider base resolution phase", () => {
     expect(mocks.write).not.toHaveBeenCalled();
   });
 });
+
+it(
+  "routes the exact frozen Task context to ownership before PR artifact writes",
+  { timeout: 120_000 },
+  async () => {
+    mocks.realWrites = true;
+    const f = await fixture();
+    mocks.realWrites = false;
+    mocks.write.mockClear();
+    const ctx = await loadCommandContext({ cwd: f.root, rootOverride: null });
+    const task = (await ctx.taskBackend.getTask(f.id))!;
+    const base = taskExecutionBaseFromExtensions(task.extensions)!;
+    const spy = vi
+      .spyOn(ownership, "assertBranchTaskArtifactOwnership")
+      .mockRejectedValueOnce(new Error("ownership boundary reached"));
+    try {
+      await expect(
+        syncPrArtifacts({ ctx, cwd: f.root, taskId: f.id, mode: "open", remoteMode: "sync-only" }),
+      ).rejects.toThrow(/ownership boundary reached/);
+      expect(spy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          primaryTaskId: f.id,
+          baseBranch: base.base_ref,
+          providerUpdate: { command: ctx, frozenBase: base.base_sha },
+        }),
+      );
+      expect(mocks.create).not.toHaveBeenCalled();
+      expect(mocks.write).not.toHaveBeenCalled();
+    } finally {
+      spy.mockRestore();
+    }
+  },
+);

@@ -1,4 +1,8 @@
-import { gitDiffNameStatus, gitMergeBase } from "@agentplaneorg/core/git";
+import { execFileAsync } from "@agentplaneorg/core/process";
+import { gitDiffNameStatus, gitMergeBase, gitProofEnv } from "@agentplaneorg/core/git";
+
+import { inheritedProviderUpdatePaths } from "../provider-update-verification-proof.js";
+import type { CommandContext } from "../../shared/task-backend.js";
 
 import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { CliError } from "../../../shared/errors.js";
@@ -50,6 +54,7 @@ export async function assertBranchTaskArtifactOwnership(opts: {
   tasksPath: string;
   primaryTaskId: string;
   includedTaskIds?: readonly string[];
+  providerUpdate?: { command: CommandContext; frozenBase: string };
   authorizedForeignArtifactCleanupRoots?: readonly string[];
 }): Promise<void> {
   const roots = [...new Set([normalizedRoot(opts.workflowDir), normalizedRoot(opts.tasksPath)])]
@@ -70,8 +75,9 @@ export async function assertBranchTaskArtifactOwnership(opts: {
   // also reports paths added on an advanced base as deletions from an older
   // task branch, which can falsely attribute unrelated base task artifacts to
   // the candidate. The merge-base anchored diff is the branch-side delta.
-  const mergeBase = await gitMergeBase(opts.gitRoot, comparisonBase, opts.branch);
-  const changedEntries = await gitDiffNameStatus(opts.gitRoot, mergeBase, opts.branch);
+  const evaluatedSha = await gitRevParse(opts.gitRoot, ["--verify", `${opts.branch}^{commit}`]);
+  const mergeBase = await gitMergeBase(opts.gitRoot, comparisonBase, evaluatedSha);
+  const changedEntries = await gitDiffNameStatus(opts.gitRoot, mergeBase, evaluatedSha);
   const allowed = new Set([opts.primaryTaskId, ...(opts.includedTaskIds ?? [])]);
   const authorizedCleanupRoots = [
     ...new Set(
@@ -80,10 +86,55 @@ export async function assertBranchTaskArtifactOwnership(opts: {
         .filter(Boolean),
     ),
   ];
+  const inherited = new Set<string>();
+  if (opts.providerUpdate) {
+    if (opts.providerUpdate.command.resolvedProject.gitRoot !== opts.gitRoot)
+      throw new Error("Provider update ownership checkout changed");
+    // Net B..H misses a canonical artifact added after B and subsequently deleted
+    // or moved into an owned root. Keep every historical path until proof classifies it.
+    const observedHistory = await execFileAsync(
+      "git",
+      [
+        "log",
+        "--format=",
+        "--name-only",
+        "-z",
+        "--full-history",
+        "--no-renames",
+        `${mergeBase}..${evaluatedSha}`,
+      ],
+      {
+        cwd: opts.gitRoot,
+        env: gitProofEnv(),
+        maxBuffer: 16 * 1024 * 1024,
+      },
+    );
+    const history = observedHistory.stdout.split("\0").filter(Boolean);
+    const known = new Set(changedEntries.map((entry) => entry.path));
+    for (const file of history)
+      if (!known.has(file)) {
+        changedEntries.push({ statusCode: "M", path: file });
+        known.add(file);
+      }
+    for (const file of await inheritedProviderUpdatePaths({
+      command: opts.providerUpdate.command,
+      task_id: opts.primaryTaskId,
+      frozen_base: opts.providerUpdate.frozenBase,
+      evaluated_sha: evaluatedSha,
+      changed_paths: changedEntries.map((entry) => entry.path),
+      workflow_dir: opts.workflowDir,
+      tasks_path: opts.tasksPath,
+    }))
+      inherited.add(file);
+  }
   const foreignTaskIds = [
     ...new Set(
       changedEntries
-        .filter((entry) => !isVolatileTaskArtifactDeletion(entry, roots, authorizedCleanupRoots))
+        .filter(
+          (entry) =>
+            !inherited.has(entry.path) &&
+            !isVolatileTaskArtifactDeletion(entry, roots, authorizedCleanupRoots),
+        )
         .map((entry) => taskIdFromArtifactPath(entry.path, roots))
         .filter((taskId): taskId is string => Boolean(taskId && !allowed.has(taskId))),
     ),

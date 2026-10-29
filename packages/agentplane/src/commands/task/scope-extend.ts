@@ -1,3 +1,5 @@
+import { completedRepairScopeRequest } from "./completed-repair-scope-request.js";
+import { applyTaskMutation } from "../shared/task-mutation.js";
 import {
   computeLogicalCompletionContractDigest,
   EXECUTION_GRANT_EXTENSION_KEY,
@@ -26,6 +28,7 @@ import {
   applyApprovedTaskScopeExtension,
   normalizeTaskScopeRoot,
   parseTaskScopeExtensionRequestState,
+  TASK_SCOPE_EXTENSION_REQUEST_KEY,
   scopeExtensionReceiptForState,
 } from "../shared/task-scope-extension-request.js";
 import {
@@ -110,6 +113,7 @@ export function extendBlockedTaskExecutionContract(opts: {
   repository_effects: readonly TaskRepositoryEffect[];
   request_digest: string;
   by: string;
+  completedRework?: boolean;
 }) {
   const current = opts.task.execution_contract;
   if (!current) {
@@ -118,7 +122,7 @@ export function extendBlockedTaskExecutionContract(opts: {
       message: "Task execution scope cannot be extended without a persisted execution contract.",
     });
   }
-  if (opts.task.status !== "BLOCKED") {
+  if (opts.task.status !== "BLOCKED" && !(opts.completedRework && opts.task.status === "DONE")) {
     throw new CliError({
       code: "E_VALIDATION",
       message:
@@ -278,6 +282,88 @@ export function taskWithRebasedExecutionGrant(opts: {
   };
 }
 
+async function commitScope(ctx: CommandContext, cwd: string, taskId: string, message: string) {
+  const exit = await cmdCommit({
+    ctx,
+    cwd,
+    taskId,
+    message,
+    close: false,
+    allow: [],
+    autoAllow: false,
+    allowTasks: true,
+    allowBase: false,
+    allowPolicy: false,
+    allowConfig: false,
+    allowHooks: false,
+    allowCI: false,
+    requireClean: false,
+    quiet: true,
+    closeUnstageOthers: false,
+    closeCheckOnly: false,
+  });
+  if (exit !== 0) throw new Error(`Task scope extension commit exited ${exit}.`);
+}
+
+/** Admit task-level repair scope without reopening or rewriting the completed Kernel. */
+async function extendCompletedRepair(opts: {
+  command: CommandContext;
+  task: TaskData;
+  scopeRoots: string[];
+  repositoryEffects: TaskRepositoryEffect[];
+  requestDigest: string;
+  by: string;
+}) {
+  const { command, task } = opts;
+  const pending = await completedRepairScopeRequest(command, task);
+  if (!pending) return false;
+  const root = command.resolvedProject.gitRoot;
+  const executionContract = extendBlockedTaskExecutionContract({
+    command,
+    task,
+    scope_roots: opts.scopeRoots,
+    repository_effects: opts.repositoryEffects,
+    request_digest: opts.requestDigest,
+    by: opts.by,
+    completedRework: true,
+  });
+  await applyTaskMutation({
+    ctx: command,
+    taskId: task.id,
+    allowCanonicalProjection: true,
+    writeOptions: { expectedRevision: task.revision },
+    build: (current) => ({
+      nextTask: {
+        ...current,
+        execution_contract: executionContract,
+        extensions: {
+          ...current.extensions,
+          [TASK_SCOPE_EXTENSION_REQUEST_KEY]: {
+            ...pending,
+            status: "applied",
+            applied_at: new Date().toISOString(),
+            applied_by: opts.by,
+          },
+        },
+        comments: [
+          ...(current.comments ?? []),
+          {
+            author: opts.by,
+            body: `Approved state-bound execution scope extension: ${opts.scopeRoots.join(", ")}; repository effects: ${opts.repositoryEffects.join(", ") || "unchanged"}.`,
+          },
+        ],
+      },
+    }),
+  });
+  await commitScope(
+    command,
+    root,
+    task.id,
+    `🚧 ${task.id.split("-").at(-1)} task: extend completed repair scope`,
+  );
+  return true;
+}
+
 export async function cmdTaskScopeExtend(opts: {
   ctx: CommandContext;
   cwd: string;
@@ -306,8 +392,34 @@ export async function cmdTaskScopeExtend(opts: {
           code: "E_VALIDATION",
           message: "Canonical authority delta state scope must equal its exact request digest.",
         });
+      const owner = await resolveTaskOwnerCommandContext({ ctx: opts.ctx, taskId: opts.taskId });
+      const task = await owner.taskBackend.getTask(opts.taskId);
+      if (task?.id !== opts.taskId)
+        throw new CliError({
+          code: "E_VALIDATION",
+          message: "Canonical scope owner Task identity changed.",
+        });
+      if (
+        task &&
+        (await extendCompletedRepair({
+          command: owner,
+          task,
+          scopeRoots: opts.scopeRoots,
+          repositoryEffects: opts.repositoryEffects,
+          requestDigest: opts.requestDigest,
+          by: opts.by,
+        }))
+      ) {
+        if (!opts.quiet)
+          emitCommandResult(output, {
+            kind: "success",
+            action: "completed repair scope extended",
+            target: opts.taskId,
+          });
+        return 0;
+      }
       const runtime = await createKernelRuntime({
-        command: await resolveTaskOwnerCommandContext({ ctx: opts.ctx, taskId: opts.taskId }),
+        command: owner,
         task_id: opts.taskId,
         transport: "manual",
         operation_id: `authority-delta:${opts.requestDigest}`,
@@ -416,26 +528,7 @@ export async function cmdTaskScopeExtend(opts: {
     );
 
     const subject = `🚧 ${opts.taskId.split("-").at(-1) ?? opts.taskId} task: extend approved execution scope`;
-    const exitCode = await cmdCommit({
-      ctx: command,
-      cwd: checkout,
-      taskId: opts.taskId,
-      message: subject,
-      close: false,
-      allow: [],
-      autoAllow: false,
-      allowTasks: true,
-      allowBase: false,
-      allowPolicy: false,
-      allowConfig: false,
-      allowHooks: false,
-      allowCI: false,
-      requireClean: false,
-      quiet: true,
-      closeUnstageOthers: false,
-      closeCheckOnly: false,
-    });
-    if (exitCode !== 0) throw new Error(`Task scope extension commit exited ${exitCode}.`);
+    await commitScope(command, checkout, opts.taskId, subject);
     await refreshBranchPrArtifactsAfterTaskCommit({
       ctx: command,
       cwd: checkout,

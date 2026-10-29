@@ -174,6 +174,32 @@ describe("native task obligations", () => {
     },
   );
 
+  it.each([{ risk_flags: ["publish"] }, { risk_flags: ["security", "publish", "merge"] }])(
+    "keeps code publication risk on code obligations: %s",
+    ({ risk_flags }) => {
+      const request = input({ risk_flags });
+      const resolved = resolveNativeTaskObligations(request);
+      expect(resolved.profile).toBe("code");
+      expect(resolved.stop_rules.map((rule) => rule.id)).not.toContain("task_kind_incompatible");
+      expect(resolved.mandatory_stages.find((stage) => stage.id === "user_approval")).toMatchObject(
+        { required: true, protected: true },
+      );
+      expect(request.risk_flags).toEqual(risk_flags);
+    },
+  );
+
+  it("keeps package release publication on release obligations", () => {
+    const resolved = resolveNativeTaskObligations(
+      input({
+        task_kind: "release",
+        mutation_scope: "release",
+        risk_flags: ["publish"],
+      }),
+    );
+    expect(resolved.profile).toBe("release");
+    expect(resolved.policy_modules).toContain(".agentplane/policy/workflow.release.md");
+  });
+
   it("admits semantic capabilities only from native authority inputs", () => {
     expect(
       resolveNativeSemanticToolClasses({

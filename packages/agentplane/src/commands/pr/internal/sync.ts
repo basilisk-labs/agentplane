@@ -289,7 +289,8 @@ export async function syncPrArtifacts(opts: {
           ? parsePrMeta(await readFile(metaPath, "utf8"), task.id)
           : null;
       assertTaskOwnedPrSync(existingMeta);
-      const taskBase = taskExecutionBaseFromExtensions(task.extensions)?.base_ref;
+      const executionBase = taskExecutionBaseFromExtensions(task.extensions);
+      const taskBase = executionBase?.base_ref;
       const frozenBase = await resolveBaseBranch({
         cwd: opts.cwd,
         rootOverride: opts.rootOverride ?? null,
@@ -317,6 +318,14 @@ export async function syncPrArtifacts(opts: {
           workflowDir: config.paths.workflow_dir,
           tasksPath: config.paths.tasks_path,
           primaryTaskId: task.id,
+          ...(executionBase?.base_sha
+            ? {
+                providerUpdate: {
+                  command: ctx,
+                  frozenBase: executionBase.base_sha,
+                },
+              }
+            : {}),
           includedTaskIds: validatedIncludedTaskIds,
           authorizedForeignArtifactCleanupRoots:
             task.execution_contract?.authority.writable_roots ?? [],
