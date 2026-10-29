@@ -1,3 +1,4 @@
+import { retainProviderUpdateVerificationProof } from "../pr/provider-update-verification-proof.js";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { z } from "zod";
@@ -324,6 +325,34 @@ export async function reconcileProviderUpdateEffect(opts: {
     ) {
       reject("the route changed during provider proof.");
     }
+    const completion = {
+      kind: "provider_update_branch_effect_resolution",
+      verdict: "applied",
+      original_operation_digest: operationDigest,
+      grant_digest: grant.digest,
+      grant_state_fingerprint_digest: grant.stateFingerprintDigest,
+      grant_state_scope_digest: grant.stateScopeDigest,
+      observed_head_sha: resolution.observed_head_sha,
+      original_base_sha: resolution.original_base_sha,
+      observed_base_sha: pr.baseSha,
+      operator: resolution.operator,
+      evidence: resolution.evidence,
+    };
+    const retainedCompletion = await retainProviderUpdateVerificationProof({
+      command: opts.command,
+      params: {
+        taskId: opts.task_id,
+        identity: resolution.identity,
+        prNumber: resolution.pr_number,
+        branch: resolution.branch,
+        baseBranch: resolution.base_branch,
+        expectedHeadSha: resolution.original_head_sha,
+        expectedBaseSha: resolution.original_base_sha,
+      },
+      authority_digest: resolution.precondition_fingerprint_digest,
+      observed_head_sha: resolution.observed_head_sha,
+      completion,
+    });
     const reopened = reopenSupervisorExecutionEpisodeAfterEffectEvidence({
       journal,
       operation_key: resolution.operation_key,
@@ -331,18 +360,7 @@ export async function reconcileProviderUpdateEffect(opts: {
     const completed = completeSupervisorExecutionEpisode({
       journal: reopened,
       operation_key: resolution.operation_key,
-      result: {
-        kind: "provider_update_branch_effect_resolution",
-        verdict: "applied",
-        original_operation_digest: operationDigest,
-        grant_digest: grant.digest,
-        grant_state_fingerprint_digest: grant.stateFingerprintDigest,
-        grant_state_scope_digest: grant.stateScopeDigest,
-        observed_head_sha: resolution.observed_head_sha,
-        observed_base_sha: pr.baseSha,
-        operator: resolution.operator,
-        evidence: resolution.evidence,
-      },
+      result: retainedCompletion,
     });
     const advanced = advanceSupervisorExecutionEpisodeState({
       journal: completed,

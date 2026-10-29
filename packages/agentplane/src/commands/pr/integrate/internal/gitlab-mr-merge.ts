@@ -46,6 +46,8 @@ export async function runProtectedBaseGitLabMerge(opts: {
   expectedHeadSha: string;
   preMutationGuard: PreMutationGuard;
   exactBaseParentProof?: boolean;
+  baseBranch?: string;
+  expectedBaseSha?: string;
 }): Promise<ProtectedBaseGitLabMergeResult> {
   if (opts.exactBaseParentProof) {
     const project = await runGlabApiJson<{ merge_method?: string | null }>({
@@ -64,6 +66,7 @@ export async function runProtectedBaseGitLabMerge(opts: {
         {
           sha: opts.expectedHeadSha,
           should_remove_source_branch: true,
+          ...(!opts.exactBaseParentProof ? { squash: false } : {}),
         },
         null,
         2,
@@ -71,6 +74,40 @@ export async function runProtectedBaseGitLabMerge(opts: {
       "utf8",
     );
     try {
+      if (!opts.exactBaseParentProof) {
+        if (!opts.baseBranch || !opts.expectedBaseSha) {
+          throw new CliError({
+            code: "E_VALIDATION",
+            message: "Qualified integration base is required before GitLab merge.",
+          });
+        }
+        try {
+          const project = await runGlabApiJson<{
+            merge_method?: string;
+            auto_rebase_enabled?: boolean;
+          } | null>({
+            cwd: opts.gitRoot,
+            hostname: opts.identity.hostname,
+            endpoint: `projects/${encodeURIComponent(opts.identity.targetProject)}`,
+          });
+          // H-only SHA is insufficient for merge commits. A server fast-forward
+          // requirement rejects a base that advances beyond the qualified head.
+          if (project?.merge_method !== "ff" || project.auto_rebase_enabled !== false)
+            throw new Error(
+              "Server fast-forward enforcement with automatic rebase explicitly disabled is required.",
+            );
+        } catch (error) {
+          throw new CliError({
+            code: "E_HANDOFF",
+            message: "Cannot qualify GitLab server enforcement of the current integration base.",
+            context: {
+              reason_code: "provider_current_base_merge_contract_unavailable",
+              target_project: opts.identity.targetProject,
+              provider_reason: error instanceof Error ? error.message : String(error),
+            },
+          });
+        }
+      }
       await opts.preMutationGuard();
     } catch (error) {
       throw new PreMutationGuardFailure(error);

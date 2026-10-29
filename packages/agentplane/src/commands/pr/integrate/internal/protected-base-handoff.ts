@@ -1,5 +1,9 @@
 import path from "node:path";
 
+import { gitProofIsAncestor } from "@agentplaneorg/core/git";
+import { gitRevParse } from "../../../shared/git-ops.js";
+import { resolveCurrentProviderBaseHead } from "../../internal/provider-base.js";
+
 import { exitCodeForError } from "../../../../cli/exit-codes.js";
 import { withDiagnosticContext } from "../../../shared/diagnostics.js";
 import { CliError } from "../../../../shared/errors.js";
@@ -12,7 +16,6 @@ import {
 import { requireOpenGithubPrAtHead } from "../../provider-head.js";
 import { runProtectedBaseGithubMerge } from "./github-pr-merge.js";
 import { runProtectedBaseGitLabMerge } from "./gitlab-mr-merge.js";
-import { resolveChangeRequestIdentity } from "../../internal/change-request-provider.js";
 import type { RecordedGitHostIdentity } from "../../internal/git-host-identity.js";
 
 type IntegratePrMetaSource = {
@@ -96,6 +99,7 @@ export async function handleProtectedBaseIntegrate(opts: {
   branch: string;
   base: string;
   branchHeadSha: string | null;
+  expectedBaseSha: string;
   metaSource: IntegratePrMetaSource;
   preMutationGuard: () => Promise<void>;
 }): Promise<never> {
@@ -123,15 +127,50 @@ export async function handleProtectedBaseIntegrate(opts: {
   const prUrl = observedPr.prUrl;
   const provider = observedPr.provider === "gitlab" ? "gitlab" : "github";
   const providerBaseSha = observedPr.baseSha?.trim() ?? "";
-  if (!providerBaseSha) {
+  if (!providerBaseSha || providerBaseSha !== opts.expectedBaseSha) {
     throw new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),
       code: "E_VALIDATION",
       message:
         `Cannot record protected-base handoff for ${opts.taskId}: ` +
-        `${provider === "gitlab" ? "GitLab MR" : "GitHub PR"} base SHA is unavailable`,
+        `${provider === "gitlab" ? "GitLab MR" : "GitHub PR"} base differs from the qualified integration base`,
+      context: { reason_code: "integration_current_base_unqualified" },
     });
   }
+  const identity = observedPr.identity;
+  if (!identity)
+    throw new CliError({ code: "E_VALIDATION", message: "Hosted merge identity is unavailable." });
+  const preMutationGuard = async (): Promise<void> => {
+    await opts.preMutationGuard();
+    const fresh = await requireOpenGithubPrAtHead({
+      gitRoot: opts.ctx.resolvedProject.gitRoot,
+      branch: opts.branch,
+      base: opts.base,
+      expectedHeadSha,
+      prNumber,
+      ...(opts.metaSource.provider ? { recorded: opts.metaSource.provider } : {}),
+    });
+    const root = opts.ctx.resolvedProject.gitRoot;
+    if (
+      fresh.identity?.provider !== identity.provider ||
+      fresh.identity?.targetUrl !== identity.targetUrl ||
+      fresh.identity?.targetProject !== identity.targetProject ||
+      fresh.identity?.hostname !== identity.hostname ||
+      fresh.baseSha !== opts.expectedBaseSha ||
+      fresh.headSha !== expectedHeadSha ||
+      (await gitRevParse(root, [opts.branch])) !== expectedHeadSha ||
+      (await resolveCurrentProviderBaseHead({ gitRoot: root, branch: opts.base, identity })) !==
+        opts.expectedBaseSha ||
+      !(await gitProofIsAncestor(root, opts.expectedBaseSha, expectedHeadSha)) ||
+      (await gitRevParse(root, [opts.branch])) !== expectedHeadSha
+    ) {
+      throw new CliError({
+        code: "E_GIT_RACE",
+        message: "Qualified integration head or canonical base changed before provider merge.",
+        context: { reason_code: "integration_current_base_unqualified" },
+      });
+    }
+  };
   const providerLabel = provider === "gitlab" ? "GitLab MR" : "GitHub PR";
   const prUrlTarget = prUrl?.trim() ?? "";
   const prTarget =
@@ -153,14 +192,12 @@ export async function handleProtectedBaseIntegrate(opts: {
           ? {
               ...(await runProtectedBaseGitLabMerge({
                 gitRoot: opts.ctx.resolvedProject.gitRoot,
-                identity: await resolveChangeRequestIdentity({
-                  gitRoot: opts.ctx.resolvedProject.gitRoot,
-                  branch: opts.branch,
-                  recorded: opts.metaSource.provider ?? null,
-                }),
+                identity,
                 prNumber,
                 expectedHeadSha,
-                preMutationGuard: opts.preMutationGuard,
+                preMutationGuard,
+                baseBranch: opts.base,
+                expectedBaseSha: opts.expectedBaseSha,
               })),
               provider: "gitlab" as const,
             }
@@ -169,7 +206,9 @@ export async function handleProtectedBaseIntegrate(opts: {
                 gitRoot: opts.ctx.resolvedProject.gitRoot,
                 prTarget,
                 expectedHeadSha,
-                preMutationGuard: opts.preMutationGuard,
+                preMutationGuard,
+                baseBranch: opts.base,
+                expectedBaseSha: opts.expectedBaseSha,
               })),
               provider: "github" as const,
             };
@@ -238,7 +277,9 @@ export async function handleProtectedBaseIntegrate(opts: {
       if (
         err.context?.reason_code === "protected_base_auto_merge_enabled" ||
         err.context?.reason_code === "protected_base_github_merge_completed" ||
-        err.context?.reason_code === "protected_base_gitlab_merge_completed"
+        err.context?.reason_code === "protected_base_gitlab_merge_completed" ||
+        err.context?.reason_code === "provider_current_base_merge_contract_unavailable" ||
+        err.context?.reason_code === "github_target_review_authority_unavailable"
       ) {
         throw err;
       }

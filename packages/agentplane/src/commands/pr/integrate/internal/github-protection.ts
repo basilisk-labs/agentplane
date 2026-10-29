@@ -75,3 +75,58 @@ export async function requiresPullRequestMergePath(opts: {
   // unprotected bases.
   return true;
 }
+
+/** Strict checks bind server-side merge eligibility to an up-to-date branch.
+ * enforce_admins applies those rules to actors who could otherwise bypass them.
+ * Rulesets can add restrictions; they cannot relax this classic protection.
+ */
+export async function requireGithubCurrentBaseMergeProtection(opts: {
+  gitRoot: string;
+  targetProject: string;
+  baseBranch: string;
+}): Promise<void> {
+  try {
+    if (!/^[^/\s]+\/[^/\s]+$/u.test(opts.targetProject) || !opts.baseBranch) {
+      throw new Error("Exact hosted repository and base branch are required.");
+    }
+    const protection = await runGhApiJson<{
+      required_status_checks?: { strict?: unknown; contexts?: unknown; checks?: unknown };
+      enforce_admins?: { enabled?: unknown };
+    }>(opts.gitRoot, [
+      `repos/${opts.targetProject}/branches/${encodeURIComponent(opts.baseBranch)}/protection`,
+    ]);
+    const checks = protection?.required_status_checks;
+    if (
+      checks?.strict !== true ||
+      protection?.enforce_admins?.enabled !== true ||
+      !(
+        (Array.isArray(checks.contexts) &&
+          checks.contexts.some((value) => typeof value === "string" && value.trim().length > 0)) ||
+        (Array.isArray(checks.checks) &&
+          checks.checks.some(
+            (value: unknown) =>
+              typeof value === "object" &&
+              value !== null &&
+              "context" in value &&
+              typeof value.context === "string" &&
+              value.context.trim().length > 0,
+          ))
+      )
+    ) {
+      throw new Error(
+        "Strict required status checks enforced for bypass-capable actors are required.",
+      );
+    }
+  } catch (error) {
+    throw new CliError({
+      code: "E_HANDOFF",
+      message: "Cannot qualify GitHub server enforcement of the current integration base.",
+      context: {
+        reason_code: "provider_current_base_merge_contract_unavailable",
+        target_project: opts.targetProject,
+        base_branch: opts.baseBranch,
+        provider_reason: error instanceof Error ? error.message : String(error),
+      },
+    });
+  }
+}

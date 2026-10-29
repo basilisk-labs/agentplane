@@ -7,6 +7,10 @@ const mocks = vi.hoisted(() => ({
   execFileAsync: vi.fn(),
   finalizeIntegrate: vi.fn(),
   gitRevParse: vi.fn(),
+  gitProofIsAncestor: vi.fn(),
+  resolveCurrentProviderBaseHead: vi.fn(),
+  runGhApiJson: vi.fn(),
+  resolveDefaultGithubRepo: vi.fn(),
   buildTaskHandoffArtifact: vi.fn(),
   maybeRunPreIntegrateBootstrap: vi.fn(),
   maybeRunPostIntegrateBootstrap: vi.fn(),
@@ -23,6 +27,19 @@ const mocks = vi.hoisted(() => ({
   throwIfGithubReviewThreadsUnresolved: vi.fn(),
   writeTaskHandoff: vi.fn(),
   requireCleanTaskWorktree: vi.fn(),
+}));
+
+vi.mock("@agentplaneorg/core/git", async (original) => ({
+  ...(await original<Record<string, unknown>>()),
+  gitProofIsAncestor: mocks.gitProofIsAncestor,
+}));
+vi.mock("../internal/provider-base.js", () => ({
+  resolveCurrentProviderBaseHead: mocks.resolveCurrentProviderBaseHead,
+}));
+vi.mock("../internal/gh-api.js", async (original) => ({
+  ...(await original<Record<string, unknown>>()),
+  runGhApiJson: mocks.runGhApiJson,
+  resolveDefaultGithubRepo: mocks.resolveDefaultGithubRepo,
 }));
 
 vi.mock("../../../cli/output.js", () => ({
@@ -102,6 +119,13 @@ describe("pr/integrate/cmd", () => {
   beforeEach(() => {
     vi.unstubAllGlobals();
     vi.clearAllMocks();
+    mocks.resolveDefaultGithubRepo.mockResolvedValue("example/repo");
+    mocks.gitProofIsAncestor.mockResolvedValue(true);
+    mocks.resolveCurrentProviderBaseHead.mockReset().mockResolvedValue("base-sha");
+    mocks.runGhApiJson.mockResolvedValue({
+      required_status_checks: { strict: true, contexts: ["ci"] },
+      enforce_admins: { enabled: true },
+    });
     emitter = {
       line: vi.fn(),
       lines: vi.fn(),
@@ -131,8 +155,17 @@ describe("pr/integrate/cmd", () => {
       mergedAt: null,
       mergeCommit: null,
       base: "main",
-      baseSha: "provider-base-sha",
+      baseSha: "base-sha",
       headSha: "head-sha",
+      identity: {
+        provider: "github",
+        hostname: "github.com",
+        remote: "origin",
+        sourceProject: "example/repo",
+        targetProject: "example/repo",
+        sourceUrl: "https://github.com/example/repo.git",
+        targetUrl: "https://github.com/example/repo.git",
+      },
     });
     mocks.prepareIntegrate.mockResolvedValue({
       ctx: { config: {}, git: {}, taskBackend: {}, resolvedProject: { gitRoot: "/repo" } },
@@ -171,7 +204,11 @@ describe("pr/integrate/cmd", () => {
       tempWorktreePath: null,
       createdTempWorktree: false,
     });
-    mocks.gitRevParse.mockResolvedValueOnce("base-sha").mockResolvedValueOnce("head-sha");
+    mocks.gitRevParse
+      .mockReset()
+      .mockImplementation((_root: string, args: string[]) =>
+        Promise.resolve(args[0] === "main" ? "base-sha" : "head-sha"),
+      );
     mocks.runSquashMerge.mockResolvedValue("merge-sha");
     mocks.finalizeIntegrate.mockResolvedValue(null);
     mocks.resolveTaskHandoffPaths.mockReturnValue({
@@ -438,7 +475,7 @@ describe("pr/integrate/cmd", () => {
       finalize_via: "github_task_pr_merge_then_hosted_close",
       pr_number: 338,
       pr_url: "https://github.com/example/repo/pull/338",
-      provider_base_sha: "provider-base-sha",
+      provider_base_sha: "base-sha",
     });
     expect(mocks.writeTaskHandoff).toHaveBeenCalled();
     expect(mocks.runSquashMerge).not.toHaveBeenCalled();

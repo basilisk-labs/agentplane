@@ -13,6 +13,7 @@ if (typeof vi.hoisted !== "function") {
 }
 
 const mocks = vi.hoisted(() => ({
+  retainProof: vi.fn().mockResolvedValue(undefined),
   cmdFinish: vi.fn(),
   runNext: vi.fn(),
   loadCommandContext: vi.fn(),
@@ -41,6 +42,9 @@ const mocks = vi.hoisted(() => ({
   transfer: vi.fn(),
 }));
 
+vi.mock("../pr/provider-update-verification-proof.js", () => ({
+  retainProviderUpdateVerificationProof: mocks.retainProof,
+}));
 vi.mock("@agentplaneorg/core/git", async (importOriginal) => ({
   ...(await importOriginal<typeof CoreGit>()),
   findWorktreeForBranch: mocks.findWorktree,
@@ -346,6 +350,16 @@ describe("branch task supervisor operations", () => {
 
       expect(result.status).toBe("succeeded");
       expect(result.observed_postconditions).toContain("provider_branch_updated");
+      expect(mocks.retainProof).toHaveBeenCalledWith(
+        expect.objectContaining({
+          observed_head_sha: "c".repeat(40),
+          completion: {
+            status: "succeeded",
+            observed_postconditions: result.observed_postconditions,
+            exit_code: 0,
+          },
+        }),
+      );
       expect(mocks.updateProviderBranch).toHaveBeenCalledWith({
         gitRoot: "/repo",
         worktreePath: "/repo/task",
@@ -468,6 +482,8 @@ describe("branch task supervisor operations", () => {
     expect(result.status).toBe("failed");
     expect(result.detail).toContain("stopped before a proven effect");
     expect(result.detail).toContain("distinct fresh supervisor operation");
+    expect(mocks.retainProof).not.toHaveBeenCalled();
+    expect(result.observed_postconditions).toEqual([]);
     expect(mocks.updateProviderBranch).toHaveBeenCalledOnce();
   });
 
@@ -487,6 +503,7 @@ describe("branch task supervisor operations", () => {
 
     expect(result.status).toBe("failed");
     expect(result.detail).toContain("effect-in-doubt");
+    expect(mocks.retainProof).not.toHaveBeenCalled();
     expect(result.detail).toContain("do not repeat the effect blindly");
     expect(mocks.updateProviderBranch).toHaveBeenCalledOnce();
   });

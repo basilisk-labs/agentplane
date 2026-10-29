@@ -4,7 +4,8 @@ import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
 
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import * as coreProcess from "@agentplaneorg/core/process";
 import { cleanGitEnv } from "@agentplane/testkit/cli-core-pr-flow";
 
 import type { GitHostIdentity } from "./git-host-identity.js";
@@ -13,6 +14,7 @@ import { resolveProviderBaseBranch } from "./provider-base.js";
 const exec = promisify(execFile);
 const roots: string[] = [];
 afterEach(async () => {
+  vi.restoreAllMocks();
   for (const root of roots.splice(0)) await rm(root, { recursive: true, force: true });
 });
 
@@ -92,12 +94,68 @@ describe("exact-SHA provider base", () => {
     await expect(resolveProviderBaseBranch(opts)).rejects.toThrow("live provider evidence");
   });
 
-  it("rejects local drift and a moved provider base", async () => {
+  it.each(["github", "gitlab"] as const)(
+    "accepts repeated forward %s advancement without rebasing the frozen comparison",
+    async (provider) => {
+      const { git, opts, sha } = await fixture(provider);
+      await git("commit", "--allow-empty", "-m", "base moved");
+      await expect(resolveProviderBaseBranch(opts)).rejects.toThrow("ambiguous");
+      await git("push", "upstream", "main");
+      await expect(resolveProviderBaseBranch(opts)).resolves.toBe("main");
+      await git("commit", "--allow-empty", "-m", "base moved again");
+      await git("push", "upstream", "main");
+      await expect(resolveProviderBaseBranch(opts)).resolves.toBe("main");
+      expect(opts.baseRef).toBe(sha);
+      expect(opts.baseSha).toBe(sha);
+    },
+  );
+
+  it("rejects a rewritten target and missing frozen objects", async () => {
     const { git, opts } = await fixture();
-    await git("commit", "--allow-empty", "-m", "base moved");
-    await expect(resolveProviderBaseBranch(opts)).rejects.toThrow("ambiguous");
-    await git("push", "upstream", "main");
-    await expect(resolveProviderBaseBranch(opts)).rejects.toThrow("does not match");
+    await git("checkout", "--orphan", "replacement");
+    await git("commit", "--allow-empty", "-m", "unrelated history");
+    const unrelated = await git("rev-parse", "HEAD");
+    await git("update-ref", "refs/heads/main", unrelated);
+    await git("push", "--force", "upstream", "main");
+    await expect(resolveProviderBaseBranch(opts)).rejects.toThrow("not a proven ancestor");
+    await expect(
+      resolveProviderBaseBranch({ ...opts, baseRef: "f".repeat(40), baseSha: "f".repeat(40) }),
+    ).rejects.toThrow("not a proven ancestor");
+  });
+
+  it("rejects a live branch rewound behind the frozen boundary", async () => {
+    const { git, sha, opts } = await fixture();
+    await git("commit", "--allow-empty", "-m", "frozen execution begins here");
+    const frozen = await git("rev-parse", "HEAD");
+    await git("update-ref", "refs/heads/main", sha);
+    await expect(
+      resolveProviderBaseBranch({ ...opts, baseRef: frozen, baseSha: frozen }),
+    ).rejects.toThrow("not a proven ancestor");
+  });
+
+  it("rejects target movement during ancestry proof, even when local and live move together", async () => {
+    const { git, opts } = await fixture();
+    const original = coreProcess.execFileAsync;
+    vi.spyOn(coreProcess, "execFileAsync").mockImplementation(async (...args) => {
+      const result = await original(...args);
+      if (args[1]?.[0] === "merge-base") {
+        await git("commit", "--allow-empty", "-m", "raced target");
+        await git("push", "upstream", "main");
+      }
+      return result;
+    });
+    await expect(resolveProviderBaseBranch(opts)).rejects.toThrow("changed during ancestry");
+  });
+
+  it("rejects ambiguous live rows without relying on stale tracking refs", async () => {
+    const { opts, sha } = await fixture();
+    const original = coreProcess.execFileAsync;
+    vi.spyOn(coreProcess, "execFileAsync").mockImplementation(async (...args) => {
+      if (args[1]?.[0] === "ls-remote")
+        return { stdout: `${sha}\trefs/heads/main\n${sha}\trefs/heads/main\n`, stderr: "" };
+      return await original(...args);
+    });
+    await expect(resolveProviderBaseBranch(opts)).rejects.toThrow("live provider evidence");
   });
 
   it("rejects remote drift despite stale matching local and tracking refs", async () => {

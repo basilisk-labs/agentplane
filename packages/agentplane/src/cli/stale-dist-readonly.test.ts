@@ -413,6 +413,7 @@ describe("stale-dist warn-and-run command policy", { timeout: 180_000 }, () => {
       encoding: "utf8",
       env: {
         ...process.env,
+        AGENTPLANE_DEV_AUTO_BOOTSTRAP: undefined,
         PATH: `${fakeBinRoot}${path.delimiter}${process.env.PATH ?? ""}`,
       },
     });
@@ -436,6 +437,7 @@ describe("stale-dist warn-and-run command policy", { timeout: 180_000 }, () => {
       await execFileAsync(process.execPath, [repoBin, "config", "show"], {
         cwd: repoRoot,
         encoding: "utf8",
+        env: { ...process.env, AGENTPLANE_DEV_AUTO_BOOTSTRAP: undefined },
       });
     } catch (caught) {
       error = caught;

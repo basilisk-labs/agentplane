@@ -7,6 +7,11 @@ const mocks = vi.hoisted(() => ({
   execFileAsync: vi.fn(),
   finalizeIntegrate: vi.fn(),
   gitRevParse: vi.fn(),
+  gitProofIsAncestor: vi.fn(),
+  resolveCurrentProviderBaseHead: vi.fn(),
+  runGhApiJson: vi.fn(),
+  resolveDefaultGithubRepo: vi.fn(),
+  runGlabApiJson: vi.fn(),
   buildTaskHandoffArtifact: vi.fn(),
   maybeRunPreIntegrateBootstrap: vi.fn(),
   maybeRunPostIntegrateBootstrap: vi.fn(),
@@ -23,6 +28,20 @@ const mocks = vi.hoisted(() => ({
   throwIfGithubReviewThreadsUnresolved: vi.fn(),
   writeTaskHandoff: vi.fn(),
   requireCleanTaskWorktree: vi.fn(),
+}));
+
+vi.mock("@agentplaneorg/core/git", async (original) => ({
+  ...(await original<Record<string, unknown>>()),
+  gitProofIsAncestor: mocks.gitProofIsAncestor,
+}));
+vi.mock("../internal/glab-api.js", () => ({ runGlabApiJson: mocks.runGlabApiJson }));
+vi.mock("../internal/provider-base.js", () => ({
+  resolveCurrentProviderBaseHead: mocks.resolveCurrentProviderBaseHead,
+}));
+vi.mock("../internal/gh-api.js", async (original) => ({
+  ...(await original<Record<string, unknown>>()),
+  runGhApiJson: mocks.runGhApiJson,
+  resolveDefaultGithubRepo: mocks.resolveDefaultGithubRepo,
 }));
 
 vi.mock("../../../cli/output.js", () => ({
@@ -98,6 +117,13 @@ describe("pr/integrate/cmd protected-base", () => {
   beforeEach(() => {
     vi.unstubAllGlobals();
     vi.clearAllMocks();
+    mocks.resolveDefaultGithubRepo.mockResolvedValue("example/repo");
+    mocks.gitProofIsAncestor.mockResolvedValue(true);
+    mocks.resolveCurrentProviderBaseHead.mockReset().mockResolvedValue("base-sha");
+    mocks.runGhApiJson.mockResolvedValue({
+      required_status_checks: { strict: true, contexts: ["ci"] },
+      enforce_admins: { enabled: true },
+    });
     emitter = {
       line: vi.fn(),
       lines: vi.fn(),
@@ -127,8 +153,17 @@ describe("pr/integrate/cmd protected-base", () => {
       mergedAt: null,
       mergeCommit: null,
       base: "main",
-      baseSha: "provider-base-sha",
+      baseSha: "base-sha",
       headSha: "head-sha",
+      identity: {
+        provider: "github",
+        hostname: "github.com",
+        remote: "origin",
+        sourceProject: "example/repo",
+        targetProject: "example/repo",
+        sourceUrl: "https://github.com/example/repo.git",
+        targetUrl: "https://github.com/example/repo.git",
+      },
     });
     mocks.prepareIntegrate.mockResolvedValue({
       ctx: { config: {}, git: {}, taskBackend: {}, resolvedProject: { gitRoot: "/repo" } },
@@ -167,7 +202,11 @@ describe("pr/integrate/cmd protected-base", () => {
       tempWorktreePath: null,
       createdTempWorktree: false,
     });
-    mocks.gitRevParse.mockResolvedValueOnce("base-sha").mockResolvedValueOnce("head-sha");
+    mocks.gitRevParse
+      .mockReset()
+      .mockImplementation((_root: string, args: string[]) =>
+        Promise.resolve(args[0] === "main" ? "base-sha" : "head-sha"),
+      );
     mocks.runSquashMerge.mockResolvedValue("merge-sha");
     mocks.finalizeIntegrate.mockResolvedValue(null);
     mocks.resolveTaskHandoffPaths.mockReturnValue({
@@ -269,6 +308,15 @@ describe("pr/integrate/cmd protected-base", () => {
       base: "main",
       baseSha: null,
       headSha: "head-sha",
+      identity: {
+        provider: "github",
+        hostname: "github.com",
+        remote: "origin",
+        sourceProject: "example/repo",
+        targetProject: "example/repo",
+        sourceUrl: "https://github.com/example/repo.git",
+        targetUrl: "https://github.com/example/repo.git",
+      },
     });
     mocks.prepareIntegrate.mockResolvedValue({
       ctx: {
@@ -315,7 +363,9 @@ describe("pr/integrate/cmd protected-base", () => {
     }).catch((err: unknown) => err);
 
     expect(caught).toMatchObject({ code: "E_VALIDATION" });
-    expect(String((caught as Error).message)).toContain("GitHub PR base SHA is unavailable");
+    expect(String((caught as Error).message)).toContain(
+      "GitHub PR base differs from the qualified integration base",
+    );
     expect(mocks.buildTaskHandoffArtifact).not.toHaveBeenCalled();
     expect(mocks.writeTaskHandoff).not.toHaveBeenCalled();
     expect(
@@ -334,8 +384,17 @@ describe("pr/integrate/cmd protected-base", () => {
       mergedAt: null,
       mergeCommit: null,
       base: "main",
-      baseSha: "provider-base-sha",
+      baseSha: "base-sha",
       headSha: "head-sha",
+      identity: {
+        provider: "github",
+        hostname: "github.com",
+        remote: "origin",
+        sourceProject: "example/repo",
+        targetProject: "example/repo",
+        sourceUrl: "https://github.com/example/repo.git",
+        targetUrl: "https://github.com/example/repo.git",
+      },
     });
     mocks.prepareIntegrate.mockResolvedValue({
       ctx: {
@@ -412,7 +471,100 @@ describe("pr/integrate/cmd protected-base", () => {
     expect(handoffCall?.route).toMatchObject({
       pr_number: 339,
       pr_url: "https://github.com/example/repo/pull/339",
-      provider_base_sha: "provider-base-sha",
+      provider_base_sha: "base-sha",
     });
   });
+  it.each([
+    ["github", "base"],
+    ["github", "head"],
+    ["github", "identity"],
+    ["gitlab", "base"],
+    ["gitlab", "head"],
+    ["gitlab", "identity"],
+  ])("refuses %s hosted %s drift before mutation", async (provider, drift) => {
+    const identity = {
+      provider,
+      hostname: provider === "github" ? "github.com" : "gitlab.example.test",
+      remote: "origin",
+      sourceProject: "example/repo",
+      targetProject: "example/repo",
+      sourceUrl: "https://example.test/example/repo.git",
+      targetUrl: "https://example.test/example/repo.git",
+    };
+    const initial = {
+      prNumber: 338,
+      prUrl: "https://github.com/example/repo/pull/338",
+      provider,
+      baseSha: "base-sha",
+      headSha: "head-sha",
+      identity,
+    };
+    mocks.requireOpenGithubPrAtHead
+      .mockReset()
+      .mockResolvedValueOnce(initial)
+      .mockResolvedValue({
+        ...initial,
+        baseSha: drift === "base" ? "advanced-base" : "base-sha",
+        headSha: drift === "head" ? "advanced-head" : "head-sha",
+        identity: drift === "identity" ? { ...identity, targetProject: "foreign/repo" } : identity,
+      });
+    mocks.runGlabApiJson.mockResolvedValue({ merge_method: "ff", auto_rebase_enabled: false });
+    mocks.gitRevParse.mockReset().mockResolvedValue("head-sha");
+    const { handleProtectedBaseIntegrate } = await import("./internal/protected-base-handoff.js");
+    await expect(
+      handleProtectedBaseIntegrate({
+        ctx: {
+          config: { paths: { workflow_dir: ".agentplane/tasks" } },
+          resolvedProject: { gitRoot: "/repo" },
+        } as never,
+        taskId: "T-1",
+        branch: "task/T-1",
+        base: "main",
+        branchHeadSha: "head-sha",
+        expectedBaseSha: "base-sha",
+        metaSource: {},
+        preMutationGuard: () => Promise.resolve(),
+      }),
+    ).rejects.toMatchObject({ code: "E_GIT_RACE" });
+    expect(
+      mocks.execFileAsync.mock.calls.some(([, args]) => (args as string[]).includes("PUT")),
+    ).toBe(false);
+    expect(
+      mocks.runGlabApiJson.mock.calls.some(
+        ([call]) => (call as { method?: string }).method === "PUT",
+      ),
+    ).toBe(false);
+  });
+
+  it.each(["head", "base", "containment"])(
+    "refuses qualified %s drift during merge handoff",
+    async (drift) => {
+      mocks.gitRevParse
+        .mockReset()
+        .mockResolvedValue(drift === "head" ? "advanced-head" : "head-sha");
+      mocks.resolveCurrentProviderBaseHead.mockResolvedValue(
+        drift === "base" ? "advanced-base" : "base-sha",
+      );
+      mocks.gitProofIsAncestor.mockResolvedValue(drift !== "containment");
+      const { handleProtectedBaseIntegrate } = await import("./internal/protected-base-handoff.js");
+      await expect(
+        handleProtectedBaseIntegrate({
+          ctx: {
+            config: { paths: { workflow_dir: ".agentplane/tasks" } },
+            resolvedProject: { gitRoot: "/repo" },
+          } as never,
+          taskId: "T-1",
+          branch: "task/T-1",
+          base: "main",
+          branchHeadSha: "head-sha",
+          expectedBaseSha: "base-sha",
+          metaSource: {},
+          preMutationGuard: () => Promise.resolve(),
+        }),
+      ).rejects.toMatchObject({ code: "E_GIT_RACE" });
+      expect(
+        mocks.execFileAsync.mock.calls.some(([, args]) => (args as string[]).includes("PUT")),
+      ).toBe(false);
+    },
+  );
 });
