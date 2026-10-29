@@ -6,7 +6,7 @@ Created: 2026-10-28T11:38:02.250Z
 
 - Task: `202610280840-VPBGBK`
 - Title: Allow one admitted verification retry for immutable completed Kernel followups
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610280840-VPBGBK/terminal-verification-retry`
 - Canonical task record: `.agentplane/tasks/202610280840-VPBGBK/README.md`
 
