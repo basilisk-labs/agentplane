@@ -1,10 +1,11 @@
 ---
 id: "202610290115-HZ4C0W"
 title: "Preserve frozen execution base while revalidating publication after main advances"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 69
+revision: 70
 origin:
   system: "manual"
 depends_on: []
@@ -46,6 +47,22 @@ quality_review:
     - "C6/C14/C20-C22: approved stale-dist and three hook-runner fixture changes retain assertions/controller guards. Seven Git preflight reads start once and all settle before the original typed value/error path; held-status regression failed before the production fix and passes with all21 prior cases retained. No exact ENOTEMPTY writer claim. Private case-sensitive test environment and three completed artifact holdings remain preserved; absent oldTMP is an explicit limitation."
     - "Fresh native003 focused199/14files and004CLI16 pass. Native005 mandatory full passes1250203ms on unchanged b97ba766: core7623/1existingSkip, runtime36,criticalCLI34,platform98,coverage105/17targets and docs/workflows. Old native002 FAIL is byte-exact; its mocked EPERM condition remains unconfirmed. Focused18PASS and the successful full do not prove the old failure was harmless or exclusively timing-related. No test/guard weakening or source edits were made for the one retry."
     - "Independent existing peer completed bounded READONLY review of all13blocks/4inputs/schema, both full reports, exact27SHA (rechecked after review), critical source/mutation guards and all23 retained native manifests/file digests; CLEAN with no new P1 or contract mismatch. Nested negative-fixture failures are expected within passing parent core; real prior native002 FAIL remains distinct. No source/provider/host mutations or tests were performed during this EVALUATOR episode."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:ae0d6bdd5e644691ffd9b5bfcbf0e74892545409f1d84298d223f367eb818175"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-10-29T08:03:16.601Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -388,9 +405,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "b97ba766d42b93e35f8ecca034492c57c5ecba20"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "da06db9aac3318b7d766c5924d353602642bd695"
+  message: "🧩 HZ4C0W task: refresh task artifacts after commit"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -404,9 +424,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-29T08:03:16.601Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "da06db9aac3318b7d766c5924d353602642bd695"
 doc_version: 3
-doc_updated_at: "2026-10-29T07:56:30.222Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-29T08:03:16.601Z"
+doc_updated_by: "CODER"
 description: "The user explicitly authorizes a separate native AP Task to fix publication when canonical main advances, preserve the original execution base, revalidate, and continue PR/merge then SB recovery. Reproduce the real VPBGBK prepublication failure: frozen execution base d51453363dbafa18b79f4c35ed9cc7e76f25b867, verified source5745f9b7b0014b8ecd7def0688dec8aeb27137a2, native full011 and genuine EVAL778c84 PASS; live canonical main52302393b857dc213764c7a22ba06df1d48afa01. Native approval.pr.open grant was accepted but exact pr open refused before push: Exact-SHA PR base is ambiguous: local and live main differ. Updating local main alone cannot satisfy local==live==frozen. First inspect fresh canonical primitives and select the smallest complete prospective correction. Keep immutable execution/comparison base and old Task/Kernel/failed/full/EVAL history. Authenticate live canonical provider target and descendant ancestry; reject unrelated/rewritten/ambiguous/stale/missing/racing evidence before publish. Require fresh current-main verification and review rather than carrying an old PASS across a changed integration state. A normal advancing main must not produce an endless sequence of corrective tasks. Do not disable exact-base guards, forge Task/import/receipt authority, rewrite frozen bases, or manually open a PR. Use native task lifecycle, mandatory full regression and genuine evaluator before canonical PR/merge. Preserve original VPBGBK and Factory DRG36R worktrees, all untracked files, privateTMP, credentials, runtime guards. No host effects, auth, installation, global environment/config or cleanup in this AP Task. Plan may propose bounded necessary publication/recovery roots under this explicit corrective scope; do not silently expand to unrelated mechanisms. Prior boundary evidence is Factory YMR artifacts/semantic-assimilation/sb-post121845-vpbgbk-authorized-pr-open-frozen-base-blocked.json."
 sections:
   Summary: |-
@@ -665,6 +693,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:ce94f5c169647a28e120ea32c6adbd760d481eabfd205f375a7e23707f90bc6a"
     work_order_id: "sha256:b72c8f6713e038bba4648fc5b453fdc43ba0506dc093e9b5122ed514cbee6bfe"
+  implementation_commit:
+    hash: "b97ba766d42b93e35f8ecca034492c57c5ecba20"
+    message: "🚧 HZ4C0W task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "52302393b857dc213764c7a22ba06df1d48afa01"
@@ -3982,3 +4013,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:ae0d6bdd5e644691ffd9b5bfcbf0e74892545409f1d84298d223f367eb818175`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-10-29T08:03:16.601Z`
