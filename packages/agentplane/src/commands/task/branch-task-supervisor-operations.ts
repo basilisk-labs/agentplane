@@ -14,6 +14,7 @@ import { resolvePrFlowStatus } from "../pr/flow-status.js";
 import { createExistingPrAdoptionStore, resolveAdoptionControlRoot } from "../pr/adoption-store.js";
 import { cmdPrOpen } from "../pr/open.js";
 import { cmdPrUpdate } from "../pr/update.js";
+import { retainProviderUpdateVerificationProof } from "../pr/provider-update-verification-proof.js";
 import { updateProviderBranch } from "../pr/provider-update-branch.js";
 import { freshHostedPrReadback } from "./kernel-hosted-readback.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
@@ -359,7 +360,7 @@ export async function executeBranchWorkflowOperation(opts: {
             current.current_head,
           );
         }
-        return succeeded(
+        const completion = succeeded(
           operation,
           `provider PR #${operation.params.prNumber} update-branch ${result.effect}; ` +
             `readback proved ${result.evidence.observedHeadSha} contains the exact expected head and base` +
@@ -367,6 +368,24 @@ export async function executeBranchWorkflowOperation(opts: {
               ? " under the immutable adoption receipt"
               : "; the task checkout and tracking head are aligned with that provider head"),
         );
+        if (!adoption) {
+          completion.observed_postconditions = [
+            ...completion.observed_postconditions,
+            `provider_update_head:${result.evidence.observedHeadSha}`,
+          ];
+          await retainProviderUpdateVerificationProof({
+            command,
+            params: operation.params,
+            authority_digest: operation.preconditionFingerprint.digest,
+            observed_head_sha: result.evidence.observedHeadSha,
+            completion: {
+              status: completion.status,
+              observed_postconditions: completion.observed_postconditions,
+              exit_code: completion.exit_code,
+            },
+          });
+        }
+        return completion;
       }
       if (result.state === "not_applied") {
         return succeeded(

@@ -10,6 +10,8 @@ import {
 } from "../../internal/github-review-threads.js";
 import { ghEnv, resolveDefaultGithubRepo, runGhApiJson } from "../../internal/gh-api.js";
 
+import { requireGithubCurrentBaseMergeProtection } from "./github-protection.js";
+
 type GithubPrRef = {
   owner: string;
   repo: string;
@@ -325,6 +327,8 @@ export async function runProtectedBaseGithubMerge(opts: {
   expectedHeadSha: string;
   preMutationGuard: PreMutationGuard;
   exactBaseParentProof?: boolean;
+  baseBranch?: string;
+  expectedBaseSha?: string;
 }): Promise<ProtectedBaseGithubMergeResult> {
   const prNumber = /^[1-9]\d*$/.test(opts.prTarget.trim())
     ? Number(opts.prTarget.trim())
@@ -393,15 +397,42 @@ export async function runProtectedBaseGithubMerge(opts: {
     };
   }
 
+  const pr = await resolveGithubPrRef(opts);
+  if (!opts.baseBranch || !opts.expectedBaseSha) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: "Qualified integration base is required before GitHub merge.",
+    });
+  }
+  // The existing review-thread reader resolves origin. Until it supports an
+  // explicit target, a fork observation cannot authorize this target's merge.
+  if ((await resolveDefaultGithubRepo(opts.gitRoot)) !== `${pr.owner}/${pr.repo}`) {
+    throw new CliError({
+      code: "E_HANDOFF",
+      message: "GitHub target review-thread authority is unavailable for a source fork.",
+      context: { reason_code: "github_target_review_authority_unavailable" },
+    });
+  }
+  const guarded = {
+    ...opts,
+    preMutationGuard: async (): Promise<void> => {
+      await requireGithubCurrentBaseMergeProtection({
+        gitRoot: opts.gitRoot,
+        targetProject: `${pr.owner}/${pr.repo}`,
+        baseBranch: opts.baseBranch!,
+      });
+      await opts.preMutationGuard();
+    },
+  };
   const failures: string[] = [];
   try {
-    return await runGhCliMerge(opts);
+    return await runGhCliMerge(guarded);
   } catch (err) {
     throwOriginalPreMutationGuardFailure(err);
     failures.push(summarizeGithubFailure(err));
   }
   try {
-    return await runGithubApiMerge(opts);
+    return await runGithubApiMerge(guarded);
   } catch (err) {
     throwOriginalPreMutationGuardFailure(err);
     failures.push(summarizeGithubFailure(err));

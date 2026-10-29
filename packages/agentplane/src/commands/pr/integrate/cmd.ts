@@ -128,6 +128,7 @@ export async function cmdIntegrate(opts: {
         branch,
         base,
         branchHeadSha,
+        expectedBaseSha,
         metaSource,
         preMutationGuard,
       });

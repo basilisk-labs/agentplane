@@ -4,6 +4,8 @@ import { CliError } from "../../../../shared/errors.js";
 
 const mocks = vi.hoisted(() => ({
   resolveBaseBranch: vi.fn(),
+  gitProofIsAncestor: vi.fn(),
+  resolveCurrentProviderBaseHead: vi.fn(),
   fileExists: vi.fn(),
   readFile: vi.fn(),
   ensureGitClean: vi.fn(),
@@ -45,6 +47,7 @@ vi.mock("../../../guard/index.js", () => ({ ensureGitClean: mocks.ensureGitClean
 vi.mock("@agentplaneorg/core/git", () => ({
   findWorktreeForBranch: mocks.findWorktreeForBranch,
   gitDiffNames: mocks.gitDiffNames,
+  gitProofIsAncestor: mocks.gitProofIsAncestor,
   gitDiffNameStatus: mocks.gitDiffNameStatus,
   gitMergeBase: mocks.gitMergeBase,
   gitDiffStat: mocks.gitDiffStat,
@@ -66,6 +69,9 @@ vi.mock("../../../shared/task-backend.js", () => ({
 vi.mock("../../../task/shared.js", () => ({
   ensurePlanApprovedIfRequired: mocks.ensurePlanApprovedIfRequired,
   ensureVerificationSatisfiedIfRequired: mocks.ensureVerificationSatisfiedIfRequired,
+}));
+vi.mock("../../internal/provider-base.js", () => ({
+  resolveCurrentProviderBaseHead: mocks.resolveCurrentProviderBaseHead,
 }));
 vi.mock("../../internal/pr-paths.js", () => ({
   resolvePrPaths: mocks.resolvePrPaths,
@@ -147,6 +153,8 @@ function qualityReview(evaluatedSha = "deadbeef") {
 }
 
 function seedCommon(): void {
+  mocks.gitProofIsAncestor.mockReset().mockResolvedValue(true);
+  mocks.resolveCurrentProviderBaseHead.mockReset().mockResolvedValue("deadbeef");
   mocks.loadTaskFromContext.mockResolvedValue({
     id: "T-1",
     verify: [],
@@ -181,7 +189,7 @@ function seedCommon(): void {
   );
   mocks.gitRevParse.mockReset().mockResolvedValue("deadbeef");
   mocks.resolveTaskBranchFromContext.mockResolvedValue(null);
-  mocks.computeVerifyState.mockReturnValue({
+  mocks.computeVerifyState.mockReset().mockReturnValue({
     verifyCommands: [],
     alreadyVerifiedSha: null,
     shouldRunVerify: false,
@@ -218,6 +226,23 @@ function seedCommon(): void {
 
 describe("pr/integrate/internal/prepare", () => {
   beforeEach(() => vi.clearAllMocks());
+
+  it.each(["head", "base"])("refuses %s movement during final qualification", async (moved) => {
+    const { prepareIntegrate } = await import("./prepare.js");
+    seedCommon();
+    mocks.loadCommandContext.mockResolvedValue(mkCtx("branch_pr"));
+    mocks.requiresPullRequestMergePath.mockResolvedValue(true);
+    mocks.computeVerifyState.mockImplementationOnce(() => {
+      if (moved === "head") mocks.gitRevParse.mockResolvedValue("changed-head");
+      else mocks.resolveCurrentProviderBaseHead.mockResolvedValue("changed-base");
+      return { verifyCommands: [], alreadyVerifiedSha: null, shouldRunVerify: false };
+    });
+    await expect(
+      prepareIntegrate({ cwd: "/repo", taskId: "T-1", runVerify: false }),
+    ).rejects.toMatchObject({
+      code: "E_GIT_RACE",
+    });
+  });
 
   it("routes GitLab integration preparation through GitLab protection", async () => {
     const { prepareIntegrate } = await import("./prepare.js");
@@ -260,6 +285,48 @@ describe("pr/integrate/internal/prepare", () => {
     expect(mocks.requireOpenGithubPrAtHead).toHaveBeenCalledWith(
       expect.objectContaining({ recorded: provider }),
     );
+  });
+
+  it.each(["github", "gitlab"])(
+    "refuses a %s CLEAN head which omits current canonical main",
+    async (provider) => {
+      const { prepareIntegrate } = await import("./prepare.js");
+      seedCommon();
+      mocks.parsePrMeta.mockReturnValue({
+        branch: "task/T-1",
+        head_sha: "deadbeef",
+        last_verified_sha: null,
+      });
+      mocks.requireOpenGithubPrAtHead.mockResolvedValue({
+        prNumber: 101,
+        headSha: "deadbeef",
+        identity: { provider },
+        mergeability: { providerState: "CLEAN" },
+      });
+      mocks.loadCommandContext.mockResolvedValue(mkCtx());
+      mocks.gitProofIsAncestor.mockResolvedValue(false);
+      await expect(
+        prepareIntegrate({ cwd: "/repo", taskId: "T-1", runVerify: false }),
+      ).rejects.toMatchObject({ context: { reason_code: "integration_current_base_unqualified" } });
+      expect(mocks.computeVerifyState).not.toHaveBeenCalled();
+    },
+  );
+
+  it("refuses canonical base drift during containment proof", async () => {
+    const { prepareIntegrate } = await import("./prepare.js");
+    seedCommon();
+    mocks.parsePrMeta.mockReturnValue({
+      branch: "task/T-1",
+      head_sha: "deadbeef",
+      last_verified_sha: null,
+    });
+    mocks.loadCommandContext.mockResolvedValue(mkCtx());
+    mocks.resolveCurrentProviderBaseHead
+      .mockResolvedValueOnce("deadbeef")
+      .mockResolvedValueOnce("advanced");
+    await expect(
+      prepareIntegrate({ cwd: "/repo", taskId: "T-1", runVerify: false }),
+    ).rejects.toMatchObject({ context: { reason_code: "integration_current_base_unqualified" } });
   });
 
   it("rejects when workflow mode is not branch_pr", async () => {
@@ -585,11 +652,13 @@ describe("pr/integrate/internal/prepare", () => {
       last_verified_sha: null,
     });
     mocks.gitRevParse
+      .mockResolvedValue("artifactsha")
       .mockResolvedValueOnce("base-ref")
       .mockResolvedValueOnce("artifactsha")
       .mockResolvedValueOnce("basesha")
       .mockResolvedValueOnce("artifactsha");
     mocks.gitDiffNames.mockResolvedValueOnce(["src/app.ts", ".agentplane/tasks/T-1/README.md"]);
+    mocks.resolveCurrentProviderBaseHead.mockResolvedValue("basesha");
     mocks.resolveQualityReviewTargetSha.mockResolvedValueOnce("implsha");
 
     await expect(
@@ -618,11 +687,13 @@ describe("pr/integrate/internal/prepare", () => {
       verify: { status: "pass" },
     });
     mocks.gitRevParse
+      .mockResolvedValue("closure-head")
       .mockResolvedValueOnce("base-ref")
       .mockResolvedValueOnce("closure-head")
       .mockResolvedValueOnce("base-head")
       .mockResolvedValueOnce("closure-head");
     mocks.gitDiffNames.mockResolvedValueOnce(["src/app.ts"]);
+    mocks.resolveCurrentProviderBaseHead.mockResolvedValue("base-head");
     mocks.resolveQualityReviewTargetSha.mockResolvedValueOnce("previous-head");
 
     await expect(

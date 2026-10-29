@@ -3,10 +3,14 @@ import { mkdtemp, readFile, rename, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { execFileAsync } from "@agentplaneorg/core/process";
+import * as coreProcess from "@agentplaneorg/core/process";
 import { gitEnv } from "@agentplaneorg/core/git";
 import { updateProviderBranch } from "./provider-update-branch.js";
 import { resolvePrHeadPublicationStatus } from "./head-publication.js";
-import { reconcileProviderUpdateLocalHead } from "./provider-update-branch-local.js";
+import {
+  reconcileProviderUpdateLocalHead,
+  validateProviderUpdateLocalState,
+} from "./provider-update-branch-local.js";
 import type { ObservedChangeRequest } from "./internal/change-request-model.js";
 import { providerUpdateBranchParams } from "../shared/provider-update-branch-route.js";
 
@@ -113,6 +117,55 @@ describe("provider update local continuity", () => {
     await Promise.all(
       directories.splice(0).map((directory) => rm(directory, { recursive: true, force: true })),
     );
+  });
+
+  it("waits for every started local read before returning a failed preflight", async () => {
+    const f = await fixture();
+    const original = coreProcess.execFileAsync;
+    let releaseStatus!: () => void;
+    let markStatusStarted!: () => void;
+    const statusStarted = new Promise<void>((resolve) => {
+      markStatusStarted = resolve;
+    });
+    const pendingStatus = new Promise<{ stdout: string; stderr: string }>((resolve) => {
+      releaseStatus = () => resolve({ stdout: "", stderr: "" });
+    });
+    const processSpy = vi
+      .spyOn(coreProcess, "execFileAsync")
+      .mockImplementation(async (...args) => {
+        const argv = args[1];
+        if (Array.isArray(argv) && argv[0] === "status") {
+          markStatusStarted();
+          return await pendingStatus;
+        }
+        if (
+          Array.isArray(argv) &&
+          argv[0] === "config" &&
+          argv.at(-1) === `branch.${f.branch}.remote`
+        ) {
+          throw new Error("missing remote");
+        }
+        return await original(...args);
+      });
+    let returned = false;
+    const result = validateProviderUpdateLocalState(f.request, [f.oldHead]).then((value) => {
+      returned = true;
+      return value;
+    });
+    let failure: string | null = null;
+    try {
+      await statusStarted;
+      await new Promise<void>((resolve) => setImmediate(resolve));
+      expect(returned).toBe(false);
+    } finally {
+      releaseStatus();
+      try {
+        failure = await result;
+      } finally {
+        processSpy.mockRestore();
+      }
+    }
+    expect(failure).toContain("could not be verified");
   });
 
   it.each(["applied", "reconciled"] as const)(

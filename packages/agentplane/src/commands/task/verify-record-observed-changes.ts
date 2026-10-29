@@ -2,6 +2,7 @@ import {
   resolveActualDiffNames,
   resolveEvaluatorDiffBase,
 } from "../evaluator/evaluator-diff-evidence.js";
+import { inheritedProviderUpdatePaths } from "../pr/provider-update-verification-proof.js";
 import { isRecord } from "../../shared/guards.js";
 import type { TaskExecutionContext } from "../../runtime/task-execution-context/index.js";
 import type { CommandContext } from "../shared/task-backend.js";
@@ -120,6 +121,19 @@ export async function resolveInheritedVerificationPaths(
   ) {
     return [];
   }
+  const nativeInherited =
+    opts.execution.base_ref === opts.execution.base_sha
+      ? await inheritedProviderUpdatePaths({
+          command: opts.ctx,
+          task_id: opts.task.id,
+          frozen_base: opts.execution.base_sha,
+          evaluated_sha: opts.evaluatedSha,
+          changed_paths: opts.changed_paths,
+          workflow_dir: opts.ctx.config.paths.workflow_dir,
+          tasks_path: opts.ctx.config.paths.tasks_path,
+        })
+      : [];
+  if (nativeInherited.length > 0) return nativeInherited;
   const root = opts.ctx.resolvedProject.gitRoot;
   const base = await resolveEvaluatorDiffBase({
     gitRoot: root,
