@@ -1,0 +1,114 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check cdc68137f324840b306f26b78e7c5dc9587b51e6..fde6051afe8102f6df30c6a432f193f4c0fc3ca5",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB cdc68137f324840b306f26b78e7c5dc9587b51e6..fde6051afe8102f6df30c6a432f193f4c0fc3ca5",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202610252200-AFM63A/README.md",
+        "A\t.agentplane/tasks/202610252200-AFM63A/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202610252200-AFM63A/pr/github-body.md",
+        "A\t.agentplane/tasks/202610252200-AFM63A/pr/github-title.txt",
+        "A\t.agentplane/tasks/202610252200-AFM63A/pr/meta.json",
+        "A\t.agentplane/tasks/202610252200-AFM63A/pr/review.md",
+        "A\t.agentplane/tasks/202610252200-AFM63A/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
+        "A\t.agentplane/tasks/202610252200-AFM63A/quality/objects/sha256/3843bff288bb14b89e3366c8d7dec5532bcc3f35106b624f48f00047b3593844.json",
+        "A\t.agentplane/tasks/202610252200-AFM63A/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+        "M\tpackages/agentplane/src/commands/shared/provider-update-branch-route.ts",
+        "M\tpackages/agentplane/src/commands/task/authority-grant.command.test.ts",
+        "M\tpackages/agentplane/src/commands/task/authority-grant.command.ts",
+        "M\tpackages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts",
+        "M\tpackages/agentplane/src/commands/task/provider-update-effect-recovery.ts",
+        "A\tpackages/agentplane/src/commands/task/provider-update-recovery-grant.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "cdc68137f324840b306f26b78e7c5dc9587b51e6",
+  "implementation_commit": "fde6051afe8102f6df30c6a432f193f4c0fc3ca5",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      " M packages/agentplane/src/commands/shared/provider-update-branch-route.ts",
+      " M packages/agentplane/src/commands/task/authority-grant.command.test.ts",
+      " M packages/agentplane/src/commands/task/authority-grant.command.ts",
+      " M packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts",
+      " M packages/agentplane/src/commands/task/provider-update-effect-recovery.ts",
+      "?? .agentplane/tasks/202610252200-AFM63A/README.md",
+      "?? .agentplane/tasks/202610252200-AFM63A/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
+      "?? .agentplane/tasks/202610252200-AFM63A/quality/objects/sha256/3843bff288bb14b89e3366c8d7dec5532bcc3f35106b624f48f00047b3593844.json",
+      "?? .agentplane/tasks/202610252200-AFM63A/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/provider-update-branch-route.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/authority-grant.command.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/authority-grant.command.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/provider-update-effect-recovery.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610252200-AFM63A/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610252200-AFM63A/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610252200-AFM63A/quality/objects/sha256/3843bff288bb14b89e3366c8d7dec5532bcc3f35106b624f48f00047b3593844.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610252200-AFM63A/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M packages/agentplane/src/commands/shared/provider-update-branch-route.ts",
+      " M packages/agentplane/src/commands/task/authority-grant.command.test.ts",
+      " M packages/agentplane/src/commands/task/authority-grant.command.ts",
+      " M packages/agentplane/src/commands/task/provider-update-effect-recovery.test.ts",
+      " M packages/agentplane/src/commands/task/provider-update-effect-recovery.ts",
+      "?? .agentplane/tasks/202610252200-AFM63A/README.md",
+      "?? .agentplane/tasks/202610252200-AFM63A/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
+      "?? .agentplane/tasks/202610252200-AFM63A/quality/objects/sha256/3843bff288bb14b89e3366c8d7dec5532bcc3f35106b624f48f00047b3593844.json",
+      "?? .agentplane/tasks/202610252200-AFM63A/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202610252200-AFM63A"
+}
