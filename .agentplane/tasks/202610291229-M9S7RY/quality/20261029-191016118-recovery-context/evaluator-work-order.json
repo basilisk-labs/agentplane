@@ -1,0 +1,121 @@
+{
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202610291229-M9S7RY-87afaad3904acdc3588bd9b3",
+  "prepared_at": "2026-10-29T19:10:16.118Z",
+  "task": {
+    "id": "202610291229-M9S7RY",
+    "revision": 39,
+    "objective": "Repair completed-task scope admission and authenticated canonical import review\n\nUnblock genuine completed-Task scope admission and current-head review after authenticated canonical base import, then resume the existing VPBGBK P2 repair. Actual human approved the exact twelve framework roots on 2026-10-29 via call_0bf521676b0e44d69e82dc6c22fbc484. This is a separate framework repair, not replacement or imported acceptance of VPBGBK or DRG36R. Admit only an authenticated consumed task-level implementation_rework scope request under exact current state and genuine USER approval. Extend only the repair execution scope; preserve the completed Kernel, Plan, WorkItems and old reviews/receipts. Keep active Kernel prospective scope and retrospective authority-delta paths unchanged. Keep code Tasks with publish risk on the code verification profile. Preserve publication approval and external-effect gates. Package release Tasks retain release obligations. Observe the tracked, contained AGENTS.md policy projection by a bounded symlink-aware policy path contract. Bind link and target identity/bytes, reject outside-root, dangling, directory, swapped, cyclic or unauthorized policy aliases. Do not change the repository symlink or weaken the generic no-follow reader. Consume authenticated completed provider-update proof in the independent foreign Task ownership check. Keep frozen execution base. Retain pre-update source ownership and overlap. Require canonical R ancestry and exact current mode/blob/path lineage for inherited foreign artifacts. Approved semantic source changes must remain owned and pass fresh checks/EVAL; do not use a blanket inherited allowlist or skip foreign bytes. Preserve all original Tasks, immutable Kernel and old results. Native fresh checks and independent EVAL are mandatory. No Factory or host effects. Return to original VPBGBK after canonical framework merge.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "- In scope: Unblock genuine completed-Task scope admission and current-head review after authenticated canonical base import, then resume the existing VPBGBK P2 repair. Actual human approved the exact twelve framework roots on 2026-10-29 via call_0bf521676b0e44d69e82dc6c22fbc484. This is a separate framework repair, not replacement or imported acceptance of VPBGBK or DRG36R. Admit only an authenticated consumed task-level implementation_rework scope request under exact current state and genuine USER approval. Extend only the repair execution scope; preserve the completed Kernel, Plan, WorkItems and old reviews/receipts. Keep active Kernel prospective scope and retrospective authority-delta paths unchanged. Keep code Tasks with publish risk on the code verification profile. Preserve publication approval and external-effect gates. Package release Tasks retain release obligations. Observe the tracked, contained AGENTS.md policy projection by a bounded symlink-aware policy path contract. Bind link and target identity/bytes, reject outside-root, dangling, directory, swapped, cyclic or unauthorized policy aliases. Do not change the repository symlink or weaken the generic no-follow reader. Consume authenticated completed provider-update proof in the independent foreign Task ownership check. Keep frozen execution base. Retain pre-update source ownership and overlap. Require canonical R ancestry and exact current mode/blob/path lineage for inherited foreign artifacts. Approved semantic source changes must remain owned and pass fresh checks/EVAL; do not use a blanket inherited allowlist or skip foreign bytes. Preserve all original Tasks, immutable Kernel and old results. Native fresh checks and independent EVAL are mandatory. No Factory or host effects. Return to original VPBGBK after canonical framework merge.\n- Out of scope: unrelated refactors not required for \"Repair completed-task scope admission and authenticated canonical import review\".",
+      "1. Execute approved WorkItem repair-completed-task-review-admission.",
+      "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun run ci:local:full`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n3. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings."
+    ]
+  },
+  "evaluated_sha": "3191e6690e5b2ef026b1cb7bd99dff5e41d929d4",
+  "diff_base_sha": "ab84dde0feba3c72718596205ff06b9de3cfb7ed",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202610291229-M9S7RY/quality/20261029-191016118-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:366659f07c5d0594fd147c5298ea8c82f3beb7e24853c860c8f21d444cc1a7b6",
+    "prompt_path": ".agentplane/tasks/202610291229-M9S7RY/quality/objects/sha256/25c2b850b0f1dc43973dd0864c47d12acc7f1b9bbfd72ed5bd6ea5cf2118b224.md",
+    "result_schema_path": ".agentplane/tasks/202610291229-M9S7RY/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "schema_version": 2,
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202610291229-M9S7RY",
+    "plan_digest": "sha256:b033a3193e909983f07d72a71225ac1260e94857bf34b8b00ff25edcd9bcceba",
+    "policy_digest": "sha256:3da35d0eb2a904e33ac783c271bf7ea6c8e24b5406c8a001553074709b5ef3a2",
+    "capability_digest": "sha256:26f97a6414451449712a1acad9c34174df2d333f1cb9194ed4b8ea7b498360f7",
+    "checks_digest": "sha256:97fe9a50926421fb5d2560868a3c305b1b4eaa53ce4618e090eca2c3eb1b1b4f",
+    "verification_input_digest": "sha256:3409239d0539245afe41faa967f0671e45243bab2cf3f9e4324e7064266ede7a",
+    "acceptance_digest": "sha256:c8e8a03780076e7e4bbc29caf2aa8a870bf15351dad7bb7a0098dc1f30162a01",
+    "implementation_sha": "3191e6690e5b2ef026b1cb7bd99dff5e41d929d4",
+    "digest": "sha256:14fcd9a986c09679513fe3d04d2f7f0ddad0b4cabda8202082cc927cb3c71dd1"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202610291229-M9S7RY/README.md",
+      "sha256": "sha256:a85253bd42d2c6cdf8c098add782774637e4e610456b913e18f53104a3b5fb23",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202610291229-M9S7RY/quality/objects/sha256/282f026c6e5b9bb16dbbb0e382f26713fc97a75f709d5258d8251ba3151f41a2.patch",
+      "sha256": "sha256:282f026c6e5b9bb16dbbb0e382f26713fc97a75f709d5258d8251ba3151f41a2",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202610291229-M9S7RY/quality/objects/sha256/cc5d1d91744ab4b2ac033b37f7ff494a9830dca05aa325d04d689a071deda2d7.json",
+      "sha256": "sha256:cc5d1d91744ab4b2ac033b37f7ff494a9830dca05aa325d04d689a071deda2d7",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202610291229-M9S7RY/verification/20261029190935251-31729206e485640c.json",
+      "sha256": "sha256:0ca4892549fee779c1826236938930ef76072ea1bab2d612a06da21cf6a7b66f",
+      "required": true
+    },
+    {
+      "id": "native-identity",
+      "kind": "plan",
+      "path": ".agentplane/tasks/202610291229-M9S7RY/quality/objects/sha256/a9407e65e40fea821c4fd9b32051e6289d03f7912ef6d78e1c662518307f023b.json",
+      "sha256": "sha256:a9407e65e40fea821c4fd9b32051e6289d03f7912ef6d78e1c662518307f023b",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:35a4c7a567a9b658a31feed9e096276ede95ad0c82198f362c302fe7bd20b612",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:6e5cb34ada84017778c43c3d057edcc68d3ccb60840c805e412f7dc6781070ee",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:d3dfd4eb0293213ab49d32c6f199066f2bc7c954cada6465aab458b1a9c7ee25",
+      "required": true
+    }
+  ]
+}
