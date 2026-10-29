@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 49
+revision: 50
 origin:
   system: "manual"
 depends_on: []
@@ -4949,6 +4949,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. The directly human-approved P2 repair requires one helper file outside the issued writable roots. Native scope admission and a compatible code packet are required before source edits. Recommended action: Consume this preserved structured request through the supported native scope-admission route using the existing direct human approval. Then issue a fresh compatible code EXECUTOR packet. Preserve the completed Kernel and all historical results. Do not ask for the same helper permission again or expand scope to other framework files. Requested scope: roots=packages/agentplane/src/commands/task/external-agent-task-artifact-baseline.ts; repository effects=unchanged; request digest=sha256:d014753d0d26653191d427f2ac8e0982066178ef97664436dfafc46b7f572ea9. Agentplane receipt: external-agent-blocker/tr_a754a68f06d0d4426366f46547687380/sha256:ca49469cee23c255e57f9854f7bac855a907a866b1493f1c3c990cb4c336de84/sha256:d014753d0d26653191d427f2ac8e0982066178ef97664436dfafc46b7f572ea9."
 events:
   -
     type: "verify"
@@ -4977,8 +4980,8 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-10-29T12:08:02.574Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-10-29T12:11:44.356Z"
+doc_updated_by: "SUPERVISOR"
 description: "Actual HUMAN explicitly approved in SB thread01a17c58-b597-78a1-abed-517855b3f393 message01a181a3-ef22-7af0-b6ce-e9f9b00f8d23: narrow AgentPlane fix, separate Task ID, checks and PR/merge, then sb recovery preserving data credentials runtime guards. Exact reviewed design SHA9bda08b6d37c2badb985ac8c8c823651cd0a5edcfd0db8c856dfdedf68964794 in Factory YMR EVID sb-post121845-terminal-verification-retry-reviewable-design.json. Real case Factory completedKernel DRG36R, source48a/currentmanagedhead d906: native run028failed environmental localhost proxy501; corrected commandlocaltransport and actual canonical72PASS685.829/5441/4partitions, but completed no-source-change rework84699 refuses; legacy recovery requires missing current_plan. First qualify CURRENTcanonical d514 mechanisms; do not duplicate a newly existing supported route. Implement one public typed verification_retry_request through existing task advance workflow recovery. Controller authenticates exact repository/terminalKernel digest/approvedcheckcontract/realfailedsupervisorattempt/source or audited managedmetadata-only descendant; when bindingmissing create fresh controller adoption observation, never backfill oldreceipt. One statebound durable retry/attempt, all original mandatorychecks actualnativeexecutor once, fresh before/after source/scope/contract pins; PASS only after actualsuccess, then freshEVALUATOR current-source. Immutable completedKernel/plan/workitems/oldEVAL/failed028 remain byteexact. No general reopen/forceOK/internalAPIcaller/manualTaskJSON/fake sourcediff/import of independentPASS as authority. Drift/unknown/interrupt/duplicate refuse, old no-diff and publicationfrozenbaseguards unchanged. Publicationbase mismatch3f31-vs94 is separate blocker, not permission to disable it. Nearest fault/CLI tests cover canonicalcompleted/no legacy/envfail recovery and exactKernel preservation, source/head/scope/command drift, oldevidence non-adoption, interrupted/failed idempotence/no duplicateexecutor, unchangedlegacy/no-diff/provider guard. Scope exacteight listed roots; native plan may narrow or propose necessary bounded refinement under actual user authorization, not silently broaden. Preserve all originalAP/Factory worktrees and untracked native artifacts, foreignFactoryshim cfab, all privateTMP; no install/globalenv/auth/credential/ACL/runtime effects. Only source repair/checks/authorizedcanonicalGitHubPRmerge in this APTask; no Beta host access. Full mandatory native validation and independent review before publication. Existing source/currentbase CDC stale; canonicalremote d514 verified by ls-remote+scopedfetch. Base pinned d514. Previous N1E7M3 scope is not reused/reopened. This is genuinely new framework repair, not replacementFactoryTask or fakeclosure."
 sections:
   Summary: |-
@@ -5310,6 +5313,20 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:f6a134a3c4fae3927c3f1528b1fd7d007b34a1dc8141b3d713c7f9bfabc6f2af"
     work_order_id: "sha256:ed0c46e6c7b8f42e409e96f822bee7d73ff8f25d0e22ba2956630ee55cf3413c"
+  agentplane.scope_extension_request:
+    blocker_state_fingerprint: "sha256:ca49469cee23c255e57f9854f7bac855a907a866b1493f1c3c990cb4c336de84"
+    kind: "task_scope_extension_request"
+    request:
+      rationale: "The production custom-workflow failure is reproduced and its responsible artifact-baseline helper is outside the issued 15 roots. The human explicitly approved this exact additional root and the P2 repair with new native checks/EVAL in reply to call_8b81dc37ddb64f269de75362ff17f0a6. The other two P2 repair/test roots are already approved. No new repository effect is needed."
+      repository_effects: []
+      schema_version: 1
+      scope_roots:
+        - "packages/agentplane/src/commands/task/external-agent-task-artifact-baseline.ts"
+    request_digest: "sha256:d014753d0d26653191d427f2ac8e0982066178ef97664436dfafc46b7f572ea9"
+    schema_version: 1
+    status: "pending"
+    transition_id: "tr_a754a68f06d0d4426366f46547687380"
+    work_item_id: null
   implementation_commit:
     hash: "5745f9b7b0014b8ecd7def0688dec8aeb27137a2"
     message: "🚧 VPBGBK task: apply canonical agent result"
