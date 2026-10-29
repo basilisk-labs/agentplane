@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 45
+revision: 46
 origin:
   system: "manual"
 depends_on: []
@@ -64,9 +64,11 @@ quality_review:
     - "Residual risk: Original VPB P2/Knip and original Factory GL16/native publication gates remain pending before SB recovery."
     - "Residual risk: No deployed runtime, SB health or exact live semantic acceptance is established by this evaluation."
 token_usage:
-  agent_runs: 0
+  agent_runs: 8
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
   input_tokens: null
-  journal_digest: "sha256:d90bca115165c60f26d9810c2c7a376f7b2ea94866817d27280951d41800c193"
+  journal_digest: "sha256:debbf8f751dffdb9bb9f30a2501cd045a88dae32950336c651ec3ea06bbf45b1"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -75,8 +77,8 @@ token_usage:
   source: "supervisor_journal"
   state: "unavailable"
   total_tokens: null
-  unavailable_reason: "no_supervised_agent_runs"
-  updated_at: "2026-10-29T16:31:23.848Z"
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-29T21:55:06.501Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -327,8 +329,13 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "34b6af01d2583c06e3878a64b79b96d276eefab9"
+  message: "🚧 M9S7RY task: record external evaluator result"
 comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -377,8 +384,16 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-10-29T21:55:06.501Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "34b6af01d2583c06e3878a64b79b96d276eefab9"
 doc_version: 3
-doc_updated_at: "2026-10-29T21:54:50.867Z"
+doc_updated_at: "2026-10-29T21:55:06.511Z"
 doc_updated_by: "CODER"
 description: "Unblock genuine completed-Task scope admission and current-head review after authenticated canonical base import, then resume the existing VPBGBK P2 repair. Actual human approved the exact twelve framework roots on 2026-10-29 via call_0bf521676b0e44d69e82dc6c22fbc484. This is a separate framework repair, not replacement or imported acceptance of VPBGBK or DRG36R. Admit only an authenticated consumed task-level implementation_rework scope request under exact current state and genuine USER approval. Extend only the repair execution scope; preserve the completed Kernel, Plan, WorkItems and old reviews/receipts. Keep active Kernel prospective scope and retrospective authority-delta paths unchanged. Keep code Tasks with publish risk on the code verification profile. Preserve publication approval and external-effect gates. Package release Tasks retain release obligations. Observe the tracked, contained AGENTS.md policy projection by a bounded symlink-aware policy path contract. Bind link and target identity/bytes, reject outside-root, dangling, directory, swapped, cyclic or unauthorized policy aliases. Do not change the repository symlink or weaken the generic no-follow reader. Consume authenticated completed provider-update proof in the independent foreign Task ownership check. Keep frozen execution base. Retain pre-update source ownership and overlap. Require canonical R ancestry and exact current mode/blob/path lineage for inherited foreign artifacts. Approved semantic source changes must remain owned and pass fresh checks/EVAL; do not use a blanket inherited allowlist or skip foreign bytes. Preserve all original Tasks, immutable Kernel and old results. Native fresh checks and independent EVAL are mandatory. No Factory or host effects. Return to original VPBGBK after canonical framework merge."
 sections:
@@ -809,6 +824,7 @@ extensions:
     work_order_id: "sha256:894b6ad6ddd7a623bd8d45c7ea65ed5b7215416972e2fd12a87aa22e84d30c5c"
   implementation_commit:
     hash: "f32796a86f4765a7bb3f6d3b416e2ddff37027ab"
+    message: "🚧 M9S7RY task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "ab84dde0feba3c72718596205ff06b9de3cfb7ed"
@@ -2342,12 +2358,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/0` agent runs
+- Completeness: `0/8` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:d90bca115165c60f26d9810c2c7a376f7b2ea94866817d27280951d41800c193`
-- Unavailable reason: `no_supervised_agent_runs`
-- Updated at: `2026-10-29T16:31:23.848Z`
+- Journal digest: `sha256:debbf8f751dffdb9bb9f30a2501cd045a88dae32950336c651ec3ea06bbf45b1`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-29T21:55:06.501Z`
