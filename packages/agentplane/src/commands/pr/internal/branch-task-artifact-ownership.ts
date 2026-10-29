@@ -1,7 +1,9 @@
-import { execFileAsync } from "@agentplaneorg/core/process";
-import { gitDiffNameStatus, gitMergeBase, gitProofEnv } from "@agentplaneorg/core/git";
+import { gitDiffNameStatus, gitMergeBase } from "@agentplaneorg/core/git";
 
-import { inheritedProviderUpdatePaths } from "../provider-update-verification-proof.js";
+import {
+  inheritedProviderUpdatePaths,
+  taskOriginHistoryPaths,
+} from "../provider-update-verification-proof.js";
 import type { CommandContext } from "../../shared/task-backend.js";
 
 import { exitCodeForError } from "../../../cli/exit-codes.js";
@@ -94,25 +96,7 @@ export async function assertBranchTaskArtifactOwnership(opts: {
       throw new Error("Provider update ownership checkout changed");
     // Net B..H misses a canonical artifact added after B and subsequently deleted
     // or moved into an owned root. Keep every historical path until proof classifies it.
-    const observedHistory = await execFileAsync(
-      "git",
-      [
-        "log",
-        "--format=",
-        "--name-only",
-        "-z",
-        "--full-history",
-        "--diff-merges=separate",
-        "--no-renames",
-        `${mergeBase}..${evaluatedSha}`,
-      ],
-      {
-        cwd: opts.gitRoot,
-        env: gitProofEnv(),
-        maxBuffer: 16 * 1024 * 1024,
-      },
-    );
-    const history = observedHistory.stdout.split("\0").filter(Boolean);
+    const history = await taskOriginHistoryPaths(opts.gitRoot, mergeBase, evaluatedSha);
     const known = new Set(changedEntries.map((entry) => entry.path));
     for (const file of history)
       if (!known.has(file)) {
