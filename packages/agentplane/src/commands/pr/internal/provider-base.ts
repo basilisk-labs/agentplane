@@ -1,4 +1,4 @@
-import { resolveBaseBranch, gitEnv } from "@agentplaneorg/core/git";
+import { resolveBaseBranch, gitEnv, gitProofEnv } from "@agentplaneorg/core/git";
 import { execFileAsync } from "@agentplaneorg/core/process";
 
 import { exitCodeForError } from "../../../cli/exit-codes.js";
@@ -44,20 +44,18 @@ export async function resolvePrMetadataBaseBranch(opts: {
   return branch;
 }
 
-export async function resolveProviderBaseBranch(opts: {
+/** A live target observation does not change the Task's immutable comparison boundary. */
+export async function resolveCurrentProviderBaseHead(opts: {
   gitRoot: string;
-  baseRef: string | null;
-  baseSha: string | null;
+  branch: string;
   identity: GitHostIdentity;
-}): Promise<string | null> {
-  const branch = await resolvePrMetadataBaseBranch(opts);
-  const baseRef = opts.baseRef?.trim() ?? "";
-  const exactBase = commitOid(baseRef);
-  if (!exactBase) return branch;
+}): Promise<string> {
+  const branch = opts.branch;
   const ref = `refs/heads/${branch}`;
   let localHead: string | null = null;
   let providerHead: string | null = null;
   try {
+    await execFileAsync("git", ["check-ref-format", ref], { cwd: opts.gitRoot, env: gitEnv() });
     const local = await execFileAsync("git", ["rev-parse", "--verify", `${ref}^{commit}`], {
       cwd: opts.gitRoot,
       env: gitEnv(),
@@ -87,10 +85,31 @@ export async function resolveProviderBaseBranch(opts: {
   if (localHead !== providerHead) {
     return invalidBase(`Exact-SHA PR base is ambiguous: local and live ${branch} differ.`);
   }
-  if (localHead !== exactBase) {
+  return localHead;
+}
+
+export async function resolveProviderBaseBranch(opts: {
+  gitRoot: string;
+  baseRef: string | null;
+  baseSha: string | null;
+  identity: GitHostIdentity;
+}): Promise<string | null> {
+  const branch = await resolvePrMetadataBaseBranch(opts);
+  const exactBase = commitOid(opts.baseRef?.trim() ?? "");
+  if (!exactBase) return branch;
+  const current = { gitRoot: opts.gitRoot, branch: branch!, identity: opts.identity };
+  const head = await resolveCurrentProviderBaseHead(current);
+  try {
+    await execFileAsync("git", ["merge-base", "--is-ancestor", exactBase, head], {
+      cwd: opts.gitRoot,
+      env: gitProofEnv(),
+    });
+  } catch {
     return invalidBase(
-      `Exact-SHA PR base ${baseRef} does not match provider base branch ${branch}.`,
+      `Exact-SHA PR base ${exactBase} is not a proven ancestor of provider base branch ${branch}.`,
     );
   }
+  if ((await resolveCurrentProviderBaseHead(current)) !== head)
+    return invalidBase(`Provider base branch ${branch} changed during ancestry observation.`);
   return branch;
 }

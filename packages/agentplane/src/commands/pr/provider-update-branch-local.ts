@@ -31,16 +31,19 @@ export async function validateProviderUpdateLocalState(
   try {
     await git(cwd, ["check-ref-format", `refs/heads/${request.branch}`]);
     await git(cwd, ["check-ref-format", trackingRef(request)]);
+    const reads = [
+      git(cwd, ["symbolic-ref", "--quiet", "HEAD"]),
+      git(cwd, ["rev-parse", "--verify", "HEAD"]),
+      git(cwd, ["status", "--porcelain", "--untracked-files=all"]),
+      git(cwd, ["config", "--get-all", `branch.${request.branch}.remote`]),
+      git(cwd, ["config", "--get-all", `branch.${request.branch}.merge`]),
+      git(cwd, ["remote", "get-url", "--all", request.identity.remote]),
+      git(cwd, ["remote", "get-url", "--push", "--all", request.identity.remote]),
+    ] as const;
+    // A failed read must not leave sibling Git processes running after this function returns.
+    await Promise.allSettled(reads);
     const [branch, head, status, configuredRemote, configuredMerge, fetchUrl, pushUrl] =
-      await Promise.all([
-        git(cwd, ["symbolic-ref", "--quiet", "HEAD"]),
-        git(cwd, ["rev-parse", "--verify", "HEAD"]),
-        git(cwd, ["status", "--porcelain", "--untracked-files=all"]),
-        git(cwd, ["config", "--get-all", `branch.${request.branch}.remote`]),
-        git(cwd, ["config", "--get-all", `branch.${request.branch}.merge`]),
-        git(cwd, ["remote", "get-url", "--all", request.identity.remote]),
-        git(cwd, ["remote", "get-url", "--push", "--all", request.identity.remote]),
-      ]);
+      await Promise.all(reads);
     if (branch !== `refs/heads/${request.branch}`)
       return "The authoritative checkout is not on the task branch.";
     if (!allowedHeads.includes(head))

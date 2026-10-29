@@ -78,9 +78,12 @@ const task = {
   plan_approval: { state: "approved" },
   execution_contract: {
     selected_mode: "branch_pr",
+    declaration: {
+      external_effects: ["network_read", "external_write"],
+    },
     authority: {
-      allowed_external_effects: ["network_read", "external_write"],
-      forbidden_external_effects: [],
+      allowed_external_effects: ["network_read"],
+      forbidden_external_effects: ["external_write"],
     },
   },
   extensions: withSideEffectAuthorityState(
@@ -165,16 +168,14 @@ describe("existing PR adoption route", () => {
     expect(f.createIfUnbound).not.toHaveBeenCalled();
   });
 
-  it("rejects a task that forbids external writes even with a matching USER grant", async () => {
+  it("rejects a task without declared external write even with a matching USER grant", async () => {
     const f = fixture();
     const denied = {
       ...task,
       execution_contract: {
         ...task.execution_contract!,
-        authority: {
-          ...task.execution_contract!.authority,
-          allowed_external_effects: ["network_read"],
-          forbidden_external_effects: ["external_write"],
+        declaration: {
+          external_effects: ["network_read"],
         },
       },
     } as TaskData;

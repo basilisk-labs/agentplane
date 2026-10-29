@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import {
   findWorktreeForBranch,
   gitDiffNames,
+  gitProofIsAncestor,
   gitRefreshBranchTrackingRef,
 } from "@agentplaneorg/core/git";
 import type { TaskData } from "../../../../backends/task-backend.js";
@@ -32,6 +33,7 @@ import { assertEvaluatorQualityReviewPassed } from "../../../task/quality-review
 import { assessPreMergeClosureFreshness } from "../../../task/hosted-close-premerge.js";
 import { resolveQualityReviewTargetSha } from "../../../shared/quality-review-target.js";
 
+import { resolveCurrentProviderBaseHead } from "../../internal/provider-base.js";
 import { readPrArtifact, resolvePrPaths } from "../../internal/pr-paths.js";
 import { requireOpenGithubPrAtHead } from "../../provider-head.js";
 import { ensurePrArtifactsSynced } from "../../internal/sync.js";
@@ -429,6 +431,20 @@ export async function prepareIntegrate(opts: {
         : null,
     recorded: metaSource.provider ?? null,
   });
+  // Hosted CLEAN and head-only checks do not establish qualification against current main.
+  const providerBase = { gitRoot: resolved.gitRoot, branch: base, identity: hostedPr.identity };
+  const currentBase = await resolveCurrentProviderBaseHead(providerBase);
+  if (
+    currentBase !== baseHeadSha ||
+    !(await gitProofIsAncestor(resolved.gitRoot, currentBase, branchHeadSha)) ||
+    (await resolveCurrentProviderBaseHead(providerBase)) !== currentBase
+  ) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: `Integration requires the current canonical base in the qualified task head for ${opts.taskId}`,
+      context: { reason_code: "integration_current_base_unqualified" },
+    });
+  }
   const closureFreshness = await assessPreMergeClosureFreshness({
     gitRoot: resolved.gitRoot,
     task,
@@ -453,6 +469,16 @@ export async function prepareIntegrate(opts: {
     runVerify: opts.runVerify,
   });
 
+  if (
+    (await gitRevParse(resolved.gitRoot, [branch])) !== branchHeadSha ||
+    (await resolveCurrentProviderBaseHead(providerBase)) !== currentBase
+  ) {
+    throw new CliError({
+      code: "E_GIT_RACE",
+      message: "Integration head or canonical base changed during preparation.",
+      context: { reason_code: "integration_current_base_unqualified" },
+    });
+  }
   return {
     ctx,
     resolved,

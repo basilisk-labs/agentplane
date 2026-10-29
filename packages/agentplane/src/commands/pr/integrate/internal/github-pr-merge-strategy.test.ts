@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   execFileAsync: vi.fn(),
   runGhApiJson: vi.fn(),
+  resolveDefaultGithubRepo: vi.fn(),
   checkThreads: vi.fn(),
 }));
 vi.mock("@agentplaneorg/core/process", async (original) => ({
@@ -12,6 +13,7 @@ vi.mock("@agentplaneorg/core/process", async (original) => ({
 vi.mock("../../internal/gh-api.js", async (original) => ({
   ...(await original<Record<string, unknown>>()),
   runGhApiJson: mocks.runGhApiJson,
+  resolveDefaultGithubRepo: mocks.resolveDefaultGithubRepo,
 }));
 vi.mock("../../internal/github-review-threads.js", async (original) => ({
   ...(await original<Record<string, unknown>>()),
@@ -81,5 +83,77 @@ describe("GitHub exact-base merge strategy", () => {
       }),
     ).rejects.toThrow("transport dropped");
     expect(mocks.execFileAsync).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("ordinary GitHub current-base mutation boundary", () => {
+  const options = {
+    gitRoot: "/repo",
+    prTarget: "https://github.com/canonical/target/pull/42",
+    expectedHeadSha: "a".repeat(40),
+    baseBranch: "main",
+    expectedBaseSha: "b".repeat(40),
+  };
+  beforeEach(() => {
+    vi.resetAllMocks();
+    mocks.resolveDefaultGithubRepo.mockResolvedValue("canonical/target");
+    vi.stubEnv("GH_TOKEN", "");
+    vi.stubEnv("GITHUB_TOKEN", "");
+    mocks.checkThreads.mockResolvedValue({ checked: true, unresolved: [] });
+    mocks.runGhApiJson.mockResolvedValue({
+      required_status_checks: { strict: true, contexts: ["ci"] },
+      enforce_admins: { enabled: true },
+    });
+    mocks.execFileAsync.mockResolvedValue({ stdout: JSON.stringify({ merged: true }) });
+  });
+  afterEach(() => vi.unstubAllEnvs());
+  it("rechecks qualified H/R after reviews and before the first PUT", async () => {
+    const race = new Error("R advanced during review");
+    await expect(
+      runProtectedBaseGithubMerge({ ...options, preMutationGuard: () => Promise.reject(race) }),
+    ).rejects.toBe(race);
+    expect(
+      mocks.execFileAsync.mock.calls.filter((c) => (c[1] as string[]).includes("PUT")),
+    ).toHaveLength(0);
+  });
+  it("does not reuse qualification after a failed method", async () => {
+    const guard = vi
+      .fn()
+      .mockResolvedValueOnce(undefined)
+      .mockRejectedValueOnce(new Error("R advanced before fallback"));
+    mocks.execFileAsync.mockImplementation((_cmd: string, args: string[]) =>
+      args.includes("PUT") ? Promise.reject(new Error("405")) : Promise.resolve({ stdout: "" }),
+    );
+    await expect(
+      runProtectedBaseGithubMerge({ ...options, preMutationGuard: guard }),
+    ).rejects.toThrow("R advanced before fallback");
+    expect(
+      mocks.execFileAsync.mock.calls.filter((c) => (c[1] as string[]).includes("PUT")),
+    ).toHaveLength(1);
+    expect(mocks.runGhApiJson).toHaveBeenCalledTimes(2);
+  });
+  it("refuses a server policy that no longer enforces strict checks", async () => {
+    mocks.runGhApiJson.mockResolvedValue({
+      required_status_checks: { strict: false, contexts: ["ci"] },
+      enforce_admins: { enabled: true },
+    });
+    await expect(
+      runProtectedBaseGithubMerge({ ...options, preMutationGuard: vi.fn() }),
+    ).rejects.toMatchObject({ code: "E_HANDOFF" });
+    expect(
+      mocks.execFileAsync.mock.calls.filter((c) => (c[1] as string[]).includes("PUT")),
+    ).toHaveLength(0);
+  });
+  it("does not use source-fork review authority for a different target", async () => {
+    mocks.resolveDefaultGithubRepo.mockResolvedValue("fork/source");
+    await expect(
+      runProtectedBaseGithubMerge({ ...options, preMutationGuard: vi.fn() }),
+    ).rejects.toMatchObject({
+      code: "E_HANDOFF",
+      context: { reason_code: "github_target_review_authority_unavailable" },
+    });
+    expect(
+      mocks.execFileAsync.mock.calls.filter((c) => (c[1] as string[]).includes("PUT")),
+    ).toHaveLength(0);
   });
 });

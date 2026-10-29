@@ -214,6 +214,45 @@ function event(
 }
 
 describe("TaskCentricBackendAdapter", () => {
+  it("refuses ordinary CAS against an already split 15/14 projection", async () => {
+    const aggregate = pendingAggregate(14);
+    const initial = {
+      ...taskData(aggregate),
+      revision: 15,
+      description: "Foreign projection content",
+      commit: { hash: "b".repeat(40), message: "Retained implementation" },
+      verification: {
+        state: "needs_rework" as const,
+        attempts: 1,
+        updated_at: NOW,
+        updated_by: "EVALUATOR",
+        note: "Timed out without a product assertion failure",
+      },
+      plan_approval: {
+        state: "approved" as const,
+        updated_at: NOW,
+        updated_by: "USER",
+        note: "Retained approval",
+      },
+    };
+    const backend = memoryBackend(initial);
+    const adapter = new TaskCentricBackendAdapter({
+      backend,
+      observeRepository: () => Promise.resolve(repository()),
+    });
+    const snapshot = (await adapter.readTask(TASK_ID))!;
+    const mutation = {
+      task_id: TASK_ID,
+      expected_revision: 15,
+      next: { ...snapshot, lifecycle: "ACTIVE" },
+      mutation_id: "ordinary-cas-on-split",
+      event: event(snapshot, "ordinary-cas-on-split", "ACTIVE"),
+    } as const;
+    await expect(adapter.compareAndSwap(mutation)).rejects.toThrow(/revision mismatch/u);
+    await expect(adapter.compareAndSwap(mutation)).rejects.toThrow(/revision mismatch/u);
+    expect(backend.current()).toEqual(initial);
+  });
+
   it("retains the winning revision when concurrent writers share a snapshot", async () => {
     const initial = taskData(approvedAggregate());
     const backend = memoryBackend(initial);

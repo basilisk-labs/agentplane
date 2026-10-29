@@ -9,6 +9,7 @@ vi.mock("../../internal/gh-api.js", () => mocks);
 
 import {
   requiresPullRequestMergePath,
+  requireGithubCurrentBaseMergeProtection,
   resolveGithubBasePullRequestProtection,
 } from "./github-protection.js";
 
@@ -134,5 +135,62 @@ describe("GitHub branch observation validation", () => {
       resolveGithubBasePullRequestProtection({ gitRoot: "/repo", baseBranch: "main" }),
     ).resolves.toEqual({ state: "unavailable", baseBranch: "main", reason: "Unknown repository" });
     expect(mocks.runGhApiJson).not.toHaveBeenCalled();
+  });
+});
+
+describe("current-base server merge contract", () => {
+  beforeEach(() => vi.resetAllMocks());
+  it("uses the exact hosted target rather than the default source fork", async () => {
+    mocks.resolveDefaultGithubRepo.mockResolvedValue("fork/source");
+    mocks.runGhApiJson.mockResolvedValue({
+      required_status_checks: { strict: true, contexts: ["PR verification"] },
+      enforce_admins: { enabled: true },
+    });
+    await expect(
+      requireGithubCurrentBaseMergeProtection({
+        gitRoot: "/repo",
+        targetProject: "canonical/target",
+        baseBranch: "release/main",
+      }),
+    ).resolves.toBeUndefined();
+    expect(mocks.runGhApiJson).toHaveBeenCalledWith("/repo", [
+      "repos/canonical/target/branches/release%2Fmain/protection",
+    ]);
+    expect(mocks.resolveDefaultGithubRepo).not.toHaveBeenCalled();
+  });
+  it.each([
+    {},
+    null,
+    {
+      required_status_checks: { strict: false, contexts: ["ci"] },
+      enforce_admins: { enabled: true },
+    },
+    {
+      required_status_checks: { strict: true, contexts: ["ci"] },
+      enforce_admins: { enabled: false },
+    },
+    { required_status_checks: { strict: true, contexts: [] }, enforce_admins: { enabled: true } },
+  ])("refuses missing, loose or bypassable protection %j", async (value) => {
+    mocks.runGhApiJson.mockResolvedValue(value);
+    await expect(
+      requireGithubCurrentBaseMergeProtection({
+        gitRoot: "/repo",
+        targetProject: "canonical/target",
+        baseBranch: "main",
+      }),
+    ).rejects.toMatchObject({
+      code: "E_HANDOFF",
+      context: { reason_code: "provider_current_base_merge_contract_unavailable" },
+    });
+  });
+  it("refuses an unavailable effective policy", async () => {
+    mocks.runGhApiJson.mockRejectedValue(new Error("403"));
+    await expect(
+      requireGithubCurrentBaseMergeProtection({
+        gitRoot: "/repo",
+        targetProject: "canonical/target",
+        baseBranch: "main",
+      }),
+    ).rejects.toMatchObject({ code: "E_HANDOFF" });
   });
 });

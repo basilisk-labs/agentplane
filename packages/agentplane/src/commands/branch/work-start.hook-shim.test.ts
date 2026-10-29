@@ -179,7 +179,11 @@ describe("worktree hook shim", () => {
     try {
       await execFileNodeAsync(shimPath, ["hooks", "run", "pre-commit"], {
         cwd: worktreePath,
-        env: { ...process.env, AGENTPLANE_HOOK_SHIM_TIMEOUT_SECONDS: "1" },
+        env: {
+          ...process.env,
+          AGENTPLANE_HOOK_RUNNER: "",
+          AGENTPLANE_HOOK_SHIM_TIMEOUT_SECONDS: "1",
+        },
         timeout: 5000,
       });
     } catch (err) {
@@ -217,6 +221,7 @@ describe("worktree hook shim", () => {
     try {
       await execFileNodeAsync(shimPath, ["hooks", "run", "pre-commit"], {
         cwd: worktreePath,
+        env: { ...process.env, AGENTPLANE_HOOK_RUNNER: "" },
         timeout: 5000,
       });
     } catch (err) {
@@ -258,7 +263,7 @@ describe("worktree hook shim", () => {
       ["-c", 'printf "%s" "$HOOK_INPUT" | "$1" hooks run pre-push', "sh", shimPath],
       {
         cwd: worktreePath,
-        env: { ...process.env, HOOK_INPUT: hookInput },
+        env: { ...process.env, AGENTPLANE_HOOK_RUNNER: "", HOOK_INPUT: hookInput },
       },
     );
     expect(stdout).toBe(hookInput);

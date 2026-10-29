@@ -1,0 +1,259 @@
+diff --git a/packages/agentplane/src/commands/pr/adoption-merge.test.ts b/packages/agentplane/src/commands/pr/adoption-merge.test.ts
+index 83b965054..b01911907 100644
+--- a/packages/agentplane/src/commands/pr/adoption-merge.test.ts
++++ b/packages/agentplane/src/commands/pr/adoption-merge.test.ts
+@@ -70,9 +70,12 @@ const task = {
+   plan_approval: { state: "approved" },
+   execution_contract: {
+     selected_mode: "branch_pr",
++    declaration: {
++      external_effects: ["network_read", "external_write"],
++    },
+     authority: {
+-      allowed_external_effects: ["network_read", "external_write"],
+-      forbidden_external_effects: [],
++      allowed_external_effects: ["network_read"],
++      forbidden_external_effects: ["external_write"],
+     },
+   },
+   quality_review: {
+diff --git a/packages/agentplane/src/commands/pr/adoption-request.test.ts b/packages/agentplane/src/commands/pr/adoption-request.test.ts
+index e23b51bc9..3350bf657 100644
+--- a/packages/agentplane/src/commands/pr/adoption-request.test.ts
++++ b/packages/agentplane/src/commands/pr/adoption-request.test.ts
+@@ -125,9 +125,12 @@ describe("existing PR adoption operator request", () => {
+       plan_approval: { state: "approved" },
+       execution_contract: {
+         selected_mode: "branch_pr",
++        declaration: {
++          external_effects: ["network_read", "external_write"],
++        },
+         authority: {
+-          allowed_external_effects: ["network_read", "external_write"],
+-          forbidden_external_effects: [],
++          allowed_external_effects: ["network_read"],
++          forbidden_external_effects: ["external_write"],
+         },
+       },
+       extensions: withSideEffectAuthorityState(
+diff --git a/packages/agentplane/src/commands/pr/adoption-route.test.ts b/packages/agentplane/src/commands/pr/adoption-route.test.ts
+index c4d3356db..0127d06a8 100644
+--- a/packages/agentplane/src/commands/pr/adoption-route.test.ts
++++ b/packages/agentplane/src/commands/pr/adoption-route.test.ts
+@@ -78,9 +78,12 @@ const task = {
+   plan_approval: { state: "approved" },
+   execution_contract: {
+     selected_mode: "branch_pr",
++    declaration: {
++      external_effects: ["network_read", "external_write"],
++    },
+     authority: {
+-      allowed_external_effects: ["network_read", "external_write"],
+-      forbidden_external_effects: [],
++      allowed_external_effects: ["network_read"],
++      forbidden_external_effects: ["external_write"],
+     },
+   },
+   extensions: withSideEffectAuthorityState(
+@@ -165,16 +168,14 @@ describe("existing PR adoption route", () => {
+     expect(f.createIfUnbound).not.toHaveBeenCalled();
+   });
+ 
+-  it("rejects a task that forbids external writes even with a matching USER grant", async () => {
++  it("rejects a task without declared external write even with a matching USER grant", async () => {
+     const f = fixture();
+     const denied = {
+       ...task,
+       execution_contract: {
+         ...task.execution_contract!,
+-        authority: {
+-          ...task.execution_contract!.authority,
+-          allowed_external_effects: ["network_read"],
+-          forbidden_external_effects: ["external_write"],
++        declaration: {
++          external_effects: ["network_read"],
+         },
+       },
+     } as TaskData;
+diff --git a/packages/agentplane/src/commands/pr/adoption-task-authority.test.ts b/packages/agentplane/src/commands/pr/adoption-task-authority.test.ts
+index b7e3e1757..719ab3016 100644
+--- a/packages/agentplane/src/commands/pr/adoption-task-authority.test.ts
++++ b/packages/agentplane/src/commands/pr/adoption-task-authority.test.ts
+@@ -1,33 +1,108 @@
+ import { describe, expect, it } from "vitest";
+ import { taskKernel } from "@agentplaneorg/core/tasks";
++import { defaultConfig } from "@agentplaneorg/core/config";
+ 
+ import type { TaskData } from "../../backends/task-backend.js";
++import { resolveTaskExecutionContract } from "../../runtime/task-routing/resolve.js";
+ import {
+   assertAdoptedPrMergeReadiness,
+   assertAdoptionTaskAuthority,
+ } from "./adoption-task-authority.js";
+ 
++function adoptionContract(externalEffects: ("network_read" | "external_write")[]) {
++  const config = defaultConfig();
++  config.workflow_mode = "branch_pr";
++  return resolveTaskExecutionContract({
++    config,
++    task: { task_kind: "code", mutation_scope: "code", risk_flags: ["merge", "network"] },
++    requestedMode: "branch_pr",
++    declaration: {
++      schema_version: 2,
++      preferred_mode: "branch_pr",
++      scope_roots: ["package.json", "bun.lock"],
++      repository_effects: ["repository_write", "dependencies"],
++      external_effects: externalEffects,
++      requirements_uncertainty: "bounded",
++      implementation_uncertainty: "bounded",
++      reversibility: "recovery_required",
++      rationale: ["adopt a same-repository hosted PR through an exact operator grant"],
++    },
++  });
++}
++
+ const task = {
+   plan_approval: { state: "approved" },
+-  execution_contract: {
+-    selected_mode: "branch_pr",
+-    authority: {
+-      allowed_external_effects: ["network_read", "external_write"],
+-      forbidden_external_effects: [],
+-    },
+-  },
++  execution_contract: adoptionContract(["network_read", "external_write"]),
+   extensions: { task_kernel: { kind: "canonical_task" } },
+ } as TaskData;
+ 
+ describe("adoption task authority", () => {
+-  it("requires an approved native contract before an operator can bind or mutate a hosted PR", () => {
++  it("admits declared operator adoption without granting external writes to semantic agents", () => {
++    expect(task.execution_contract?.declaration.external_effects).toContain("external_write");
++    expect(task.execution_contract?.authority.allowed_external_effects).toEqual(["network_read"]);
++    expect(task.execution_contract?.authority.forbidden_external_effects).toContain(
++      "external_write",
++    );
+     expect(() => assertAdoptionTaskAuthority(task)).not.toThrow();
++  });
++
++  it("rejects a real contract whose semantic authority is changed to permit external writes", () => {
++    const contract = adoptionContract(["network_read", "external_write"]);
++    expect(() =>
++      assertAdoptionTaskAuthority({ ...task, execution_contract: contract }),
++    ).not.toThrow();
++
++    expect(() =>
++      assertAdoptionTaskAuthority({
++        ...task,
++        execution_contract: {
++          ...contract,
++          authority: {
++            ...contract.authority,
++            allowed_external_effects: [
++              ...contract.authority.allowed_external_effects,
++              "external_write",
++            ],
++          },
++        },
++      }),
++    ).toThrow("native execution contract");
++
++    expect(() =>
++      assertAdoptionTaskAuthority({
++        ...task,
++        execution_contract: {
++          ...contract,
++          authority: {
++            ...contract.authority,
++            forbidden_external_effects: contract.authority.forbidden_external_effects.filter(
++              (effect) => effect !== "external_write",
++            ),
++          },
++        },
++      }),
++    ).toThrow("native execution contract");
++  });
++
++  it("rejects missing intent, network authority, plan approval, route, or canonical task", () => {
+     expect(() =>
+       assertAdoptionTaskAuthority({
+         ...task,
+         plan_approval: { ...task.plan_approval, state: "pending" },
+       }),
+     ).toThrow("native execution contract");
++    expect(() =>
++      assertAdoptionTaskAuthority({
++        ...task,
++        execution_contract: adoptionContract(["network_read"]),
++      }),
++    ).toThrow("native execution contract");
++    expect(() =>
++      assertAdoptionTaskAuthority({
++        ...task,
++        execution_contract: adoptionContract(["external_write"]),
++      }),
++    ).toThrow("native execution contract");
+     expect(() =>
+       assertAdoptionTaskAuthority({
+         ...task,
+@@ -35,12 +110,24 @@ describe("adoption task authority", () => {
+           ...task.execution_contract!,
+           authority: {
+             ...task.execution_contract!.authority,
+-            allowed_external_effects: ["network_read"],
+-            forbidden_external_effects: ["external_write"],
++            allowed_external_effects: [],
++            forbidden_external_effects: ["network_read", "external_write"],
+           },
+         },
+       }),
+     ).toThrow("native execution contract");
++    expect(() =>
++      assertAdoptionTaskAuthority({
++        ...task,
++        execution_contract: { ...task.execution_contract!, selected_mode: "direct" },
++      }),
++    ).toThrow("native execution contract");
++    expect(() =>
++      assertAdoptionTaskAuthority({
++        ...task,
++        extensions: {},
++      }),
++    ).toThrow("native execution contract");
+   });
+ 
+   it("requires verification and independent review on the exact hosted head before merge", () => {
+diff --git a/packages/agentplane/src/commands/pr/adoption-task-authority.ts b/packages/agentplane/src/commands/pr/adoption-task-authority.ts
+index 6de921d65..441ae1a98 100644
+--- a/packages/agentplane/src/commands/pr/adoption-task-authority.ts
++++ b/packages/agentplane/src/commands/pr/adoption-task-authority.ts
+@@ -2,22 +2,25 @@ import type { TaskData } from "../../backends/task-backend.js";
+ import { hasCanonicalAdoptedHeadEvidence } from "../shared/canonical-pre-merge-evidence.js";
+ import { assertEvaluatorQualityReviewPassed } from "../task/quality-review-gate.js";
+ 
+-/** Adoption cannot launder a task whose native execution contract forbids provider effects. */
++/** Operator adoption requires declared provider intent without delegating writes to semantic agents. */
+ export function assertAdoptionTaskAuthority(task: TaskData): void {
+   const contract = task.execution_contract;
++  const declared = contract?.declaration.external_effects ?? [];
+   const allowed = contract?.authority.allowed_external_effects ?? [];
+   const forbidden = contract?.authority.forbidden_external_effects ?? [];
+   if (
+     task.plan_approval?.state !== "approved" ||
+     !task.extensions?.task_kernel ||
+     contract?.selected_mode !== "branch_pr" ||
++    !declared.includes("network_read") ||
++    !declared.includes("external_write") ||
+     !allowed.includes("network_read") ||
+-    !allowed.includes("external_write") ||
++    allowed.includes("external_write") ||
+     forbidden.includes("network_read") ||
+-    forbidden.includes("external_write")
++    !forbidden.includes("external_write")
+   ) {
+     throw new Error(
+-      "Existing PR adoption requires an approved branch_pr task whose native execution contract allows network_read and external_write",
++      "Existing PR adoption requires an approved branch_pr task whose native execution contract declares network_read and external_write, allows network_read, and forbids external_write for semantic agents",
+     );
+   }
+ }

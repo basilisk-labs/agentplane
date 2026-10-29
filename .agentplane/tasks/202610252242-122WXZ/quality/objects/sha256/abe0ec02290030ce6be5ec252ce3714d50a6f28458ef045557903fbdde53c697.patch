@@ -1,0 +1,544 @@
+diff --git a/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts b/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts
+index 118cea69e..1d9e3635b 100644
+--- a/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts
++++ b/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.test.ts
+@@ -214,6 +214,45 @@ function event(
+ }
+ 
+ describe("TaskCentricBackendAdapter", () => {
++  it("refuses ordinary CAS against an already split 15/14 projection", async () => {
++    const aggregate = pendingAggregate(14);
++    const initial = {
++      ...taskData(aggregate),
++      revision: 15,
++      description: "Foreign projection content",
++      commit: { hash: "b".repeat(40), message: "Retained implementation" },
++      verification: {
++        state: "needs_rework" as const,
++        attempts: 1,
++        updated_at: NOW,
++        updated_by: "EVALUATOR",
++        note: "Timed out without a product assertion failure",
++      },
++      plan_approval: {
++        state: "approved" as const,
++        updated_at: NOW,
++        updated_by: "USER",
++        note: "Retained approval",
++      },
++    };
++    const backend = memoryBackend(initial);
++    const adapter = new TaskCentricBackendAdapter({
++      backend,
++      observeRepository: () => Promise.resolve(repository()),
++    });
++    const snapshot = (await adapter.readTask(TASK_ID))!;
++    const mutation = {
++      task_id: TASK_ID,
++      expected_revision: 15,
++      next: { ...snapshot, lifecycle: "ACTIVE" },
++      mutation_id: "ordinary-cas-on-split",
++      event: event(snapshot, "ordinary-cas-on-split", "ACTIVE"),
++    } as const;
++    await expect(adapter.compareAndSwap(mutation)).rejects.toThrow(/revision mismatch/u);
++    await expect(adapter.compareAndSwap(mutation)).rejects.toThrow(/revision mismatch/u);
++    expect(backend.current()).toEqual(initial);
++  });
++
+   it("retains the winning revision when concurrent writers share a snapshot", async () => {
+     const initial = taskData(approvedAggregate());
+     const backend = memoryBackend(initial);
+diff --git a/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts b/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts
+index 0bf22de7c..3219f6ae9 100644
+--- a/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts
++++ b/packages/agentplane/src/adapters/task-backend/task-centric-backend-adapter.ts
+@@ -5,6 +5,7 @@ import {
+   materializeApprovedWorkItems,
+   projectTaskLifecycleToLegacyStatus,
+   TASK_CENTRIC_REPLAN_REQUIRED_EXTENSION_KEY,
++  taskCentricAggregateFromExtensions,
+   withTaskCentricAggregate,
+   type DomainEvent,
+   type ExecutionLease,
+@@ -85,7 +86,13 @@ export class TaskCentricBackendAdapter implements TaskRepositoryPort {
+   }): Promise<TransitionReceipt> {
+     const current = await this.backend.getTask(opts.task_id);
+     if (!current) throw new Error(`Task not found: ${opts.task_id}`);
+-    const currentRevision = current.revision ?? 1;
++    const embedded = taskCentricAggregateFromExtensions(current.extensions);
++    const currentRevision = current.revision ?? embedded?.revision ?? 1;
++    if (embedded && embedded.revision !== currentRevision) {
++      throw new Error(
++        `Task-centric mutation revision mismatch: expected ${currentRevision}, observed ${embedded.revision}.`,
++      );
++    }
+     const runtime = opts.runtime ?? runtimeFrom(current);
+     const already = runtime.mutation_receipts[opts.mutation_id];
+     if (already) return already;
+diff --git a/packages/agentplane/src/commands/doctor/workspace-task-state.test.ts b/packages/agentplane/src/commands/doctor/workspace-task-state.test.ts
+index 77fdc2b50..0d55cb084 100644
+--- a/packages/agentplane/src/commands/doctor/workspace-task-state.test.ts
++++ b/packages/agentplane/src/commands/doctor/workspace-task-state.test.ts
+@@ -34,10 +34,10 @@ describe("task-centric projection integrity diagnostics", () => {
+     expect(findings[0]).toContain("task plan recover-rejection");
+   });
+ 
+-  it("does not treat ordinary README revision drift as a rejected-plan corruption", () => {
++  it("blocks ambiguous 15/14 drift without proposing rejected-plan recovery", () => {
+     const aggregate = createLegacyTaskAggregate({
+       id: "ordinary-active-task",
+-      revision: 11,
++      revision: 14,
+       title: "Ordinary task",
+       description: "Fixture",
+       status: "DOING",
+@@ -51,12 +51,99 @@ describe("task-centric projection integrity diagnostics", () => {
+         id: aggregate.id,
+         status: "DOING",
+         doc_version: 3,
+-        revision: 29,
++        revision: 15,
+         plan_approval: { state: "approved" },
+         extensions: withTaskCentricAggregate({}, aggregate),
+       },
+     ]);
+ 
+-    expect(findings).toEqual([]);
++    expect(findings).toHaveLength(1);
++    expect(findings[0]).toContain("[ERROR]");
++    expect(findings[0]).toContain("task-centric revision split blocks");
++    expect(findings[0]).toContain("README revision/state: 15/approved");
++    expect(findings[0]).toContain("Aggregate revision/state: 14/missing");
++    expect(findings[0]).toContain("task show ordinary-active-task");
++    expect(findings[0]).not.toContain("recover-rejection");
++  });
++
++  it("reports a completed historical split without failing the workspace doctor", () => {
++    const aggregate = createLegacyTaskAggregate({
++      id: "archived-task",
++      revision: 38,
++      title: "Archived task",
++      description: "Fixture",
++      status: "DONE",
++      acceptance_criteria: ["complete"],
++      captured_at: "2026-08-22T07:00:00.000Z",
++      updated_at: "2026-08-22T07:00:00.000Z",
++    });
++    const findings = buildTaskCentricProjectionIntegrityFindings([
++      {
++        id: aggregate.id,
++        status: "DONE",
++        doc_version: 3,
++        revision: 44,
++        plan_approval: { state: "approved" },
++        extensions: withTaskCentricAggregate({}, aggregate),
++      },
++    ]);
++
++    expect(findings).toHaveLength(1);
++    expect(findings[0]).toContain("[WARN]");
++    expect(findings[0]).toContain("archived task-centric revision split");
++    expect(findings[0]).toContain("README revision/state: 44/approved");
++    expect(findings[0]).toContain("Aggregate revision/state: 38/missing");
++    expect(findings[0]).toContain("task show archived-task");
++  });
++
++  it("blocks a DONE README when the aggregate is still active", () => {
++    const aggregate = createLegacyTaskAggregate({
++      id: "unfinished-aggregate",
++      revision: 14,
++      title: "Unfinished aggregate",
++      description: "Fixture",
++      status: "DOING",
++      acceptance_criteria: ["complete"],
++      captured_at: "2026-09-03T10:00:00.000Z",
++      updated_at: "2026-09-03T10:00:00.000Z",
++    });
++    const findings = buildTaskCentricProjectionIntegrityFindings([
++      {
++        id: aggregate.id,
++        status: "DONE",
++        doc_version: 3,
++        revision: 15,
++        plan_approval: { state: "approved" },
++        extensions: withTaskCentricAggregate({}, aggregate),
++      },
++    ]);
++
++    expect(findings).toHaveLength(1);
++    expect(findings[0]).toContain("[ERROR]");
++    expect(findings[0]).toContain("task-centric revision split blocks unfinished-aggregate");
++  });
++
++  it("does not report synchronized projection revisions", () => {
++    const aggregate = createLegacyTaskAggregate({
++      id: "coherent-task",
++      revision: 14,
++      title: "Coherent task",
++      description: "Fixture",
++      status: "DOING",
++      acceptance_criteria: [],
++      captured_at: "2026-09-03T10:00:00.000Z",
++      updated_at: "2026-09-03T10:00:00.000Z",
++    });
++    expect(
++      buildTaskCentricProjectionIntegrityFindings([
++        {
++          id: aggregate.id,
++          status: "DOING",
++          revision: 14,
++          plan_approval: { state: "approved" },
++          extensions: withTaskCentricAggregate({}, aggregate),
++        },
++      ]),
++    ).toEqual([]);
+   });
+ });
+diff --git a/packages/agentplane/src/commands/doctor/workspace-task-state.ts b/packages/agentplane/src/commands/doctor/workspace-task-state.ts
+index b492ea986..f82e7d2d8 100644
+--- a/packages/agentplane/src/commands/doctor/workspace-task-state.ts
++++ b/packages/agentplane/src/commands/doctor/workspace-task-state.ts
+@@ -176,27 +176,56 @@ export function buildTaskCentricProjectionIntegrityFindings(
+     const readmePlanState =
+       typeof readmePlanStateValue === "string" ? readmePlanStateValue : "pending";
+     const aggregatePlanState = aggregate.current_plan?.approval.state ?? "missing";
+-    if (readmePlanState !== "rejected" || aggregatePlanState === "rejected") continue;
++    if (readmePlanState === "rejected" && aggregatePlanState !== "rejected") {
++      findings.push(
++        renderDiagnosticFinding({
++          severity: "WARN",
++          state: `task-centric plan projection mismatch for ${taskId}`,
++          likelyCause:
++            "the task README and canonical aggregate did not commit the same plan mutation",
++          nextAction: {
++            command:
++              `agentplane task plan recover-rejection ${taskId} ` +
++              `--expected-readme-revision ${readmeRevision} ` +
++              `--expected-aggregate-revision ${aggregate.revision} ` +
++              `--rejected-plan-digest ${aggregate.current_plan?.digest ?? "<sha256>"} ` +
++              "--expected-state-fingerprint <sha256> --by USER --note <reason>",
++            reason:
++              "use the guarded receipt-backed recovery only after confirming the rejected README state",
++          },
++          details: [
++            `Task: ${taskId}`,
++            `README revision/state: ${readmeRevision}/${readmePlanState}`,
++            `Aggregate revision/state: ${aggregate.revision}/${aggregatePlanState}`,
++          ],
++        }),
++      );
++      continue;
++    }
++    if (readmeRevision === aggregate.revision) continue;
++    const completedArchive =
++      normalizeTaskStatus(task.status) === "DONE" && aggregate.lifecycle === "COMPLETED";
+     findings.push(
+       renderDiagnosticFinding({
+-        severity: "WARN",
+-        state: `task-centric plan projection mismatch for ${taskId}`,
+-        likelyCause:
+-          "the task README and canonical aggregate did not commit the same plan mutation",
++        severity: completedArchive ? "WARN" : "ERROR",
++        state: completedArchive
++          ? `archived task-centric revision split for ${taskId}`
++          : `task-centric revision split blocks ${taskId}`,
++        likelyCause: completedArchive
++          ? "the completed task archive retains different README and aggregate revisions; its historical afterimage must be reviewed before reuse"
++          : "the task README and embedded aggregate have different revisions; the correct afterimage is not established",
+         nextAction: {
+-          command:
+-            `agentplane task plan recover-rejection ${taskId} ` +
+-            `--expected-readme-revision ${readmeRevision} ` +
+-            `--expected-aggregate-revision ${aggregate.revision} ` +
+-            `--rejected-plan-digest ${aggregate.current_plan?.digest ?? "<sha256>"} ` +
+-            "--expected-state-fingerprint <sha256> --by USER --note <reason>",
++          command: `agentplane task show ${taskId}`,
+           reason:
+-            "use the guarded receipt-backed recovery only after confirming the rejected README state",
++            "inspect retained plan, verification, implementation, and mutation receipts; use only an evidence-specific recovery",
+         },
+         details: [
+           `Task: ${taskId}`,
+           `README revision/state: ${readmeRevision}/${readmePlanState}`,
+           `Aggregate revision/state: ${aggregate.revision}/${aggregatePlanState}`,
++          completedArchive
++            ? "This completed archive is diagnostic history; do not normalize its revisions without evidence."
++            : "Ordinary transitions must not normalize this split or run start-ready.",
+         ],
+       }),
+     );
+diff --git a/packages/agentplane/src/commands/task/next-action.command.ts b/packages/agentplane/src/commands/task/next-action.command.ts
+index 10bd8065f..8556398c5 100644
+--- a/packages/agentplane/src/commands/task/next-action.command.ts
++++ b/packages/agentplane/src/commands/task/next-action.command.ts
+@@ -1,4 +1,6 @@
+ import { readTaskKernel, reportTaskKernelRead } from "./kernel-read.js";
++import { taskCentricAggregateFromExtensions } from "@agentplaneorg/core/tasks";
++import { CliError } from "../../shared/errors.js";
+ import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
+ import { createCliEmitter, infoMessage } from "../../cli/output.js";
+ import {
+@@ -163,6 +165,30 @@ export function makeRunTaskNextActionHandler(session: {
+       ? session.getRemoteContext("task next-action")
+       : session.getLocalContext("task next-action"));
+     const canonical = await readTaskKernel(commandCtx, parsed.taskId);
++    if (canonical.kind === "legacy_unmigrated") {
++      const projected = await commandCtx.taskBackend.getTask(parsed.taskId);
++      const embedded = projected ? taskCentricAggregateFromExtensions(projected.extensions) : null;
++      if (
++        projected?.revision !== undefined &&
++        embedded &&
++        projected.revision !== embedded.revision
++      ) {
++        throw new CliError({
++          code: "E_VALIDATION",
++          message:
++            `Task-centric revision split blocks ${parsed.taskId}: ` +
++            `README ${String(projected.revision)}, aggregate ${embedded.revision}. ` +
++            `Run agentplane doctor and inspect task show ${parsed.taskId} --json; ` +
++            "use only an evidence-specific recovery before a lifecycle transition.",
++          context: {
++            reason_code: "task_centric_revision_split",
++            task_id: parsed.taskId,
++            readme_revision: projected.revision ?? null,
++            aggregate_revision: embedded.revision,
++          },
++        });
++      }
++    }
+     if (canonical.kind !== "legacy_unmigrated" && !parsed.remote) {
+       return reportTaskKernelRead(canonical, parsed.taskId, parsed.json, commandCtx);
+     }
+diff --git a/packages/agentplane/src/commands/task/revision-consistency.integration.test.ts b/packages/agentplane/src/commands/task/revision-consistency.integration.test.ts
+new file mode 100644
+index 000000000..f2e6350fa
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/revision-consistency.integration.test.ts
+@@ -0,0 +1,227 @@
++import { readFile } from "node:fs/promises";
++import path from "node:path";
++import { describe, expect, it } from "vitest";
++import { defaultConfig } from "@agentplaneorg/core/config";
++import {
++  createTask as createLegacyTask,
++  createLegacyTaskAggregate,
++  createRepositorySnapshot,
++  createTaskPlanRevision,
++  parseTaskReadme,
++  setTaskDocSection,
++  taskCentricAggregateFromExtensions,
++  taskCentricDigest,
++  withTaskCentricAggregate,
++} from "@agentplaneorg/core/tasks";
++import {
++  captureStdIO,
++  installRunCliIntegrationHarness,
++  mkGitRepoRootWithCommit,
++  writeConfig,
++} from "@agentplane/testkit";
++
++import { runCli } from "../../cli/run-cli.js";
++import { loadCommandContext } from "../shared/task-backend.js";
++
++installRunCliIntegrationHarness();
++
++async function invoke(argv: string[]): Promise<{ code: number; stderr: string; stdout: string }> {
++  const io = captureStdIO();
++  try {
++    const code = await runCli(argv);
++    return { code, stderr: io.stderr, stdout: io.stdout };
++  } finally {
++    io.restore();
++  }
++}
++
++describe("verification-only replanning revision consistency", () => {
++  it.each([false, true])(
++    "keeps one revision after a verification-only replan (replace=%s)",
++    async (replace) => {
++      const root = await mkGitRepoRootWithCommit();
++      const config = defaultConfig();
++      config.workflow_mode = "direct";
++      await writeConfig(root, config);
++      const task = await createLegacyTask({
++        cwd: root,
++        rootOverride: root,
++        title: "Verification-only replan",
++        description: "Preserve revision coherence",
++        priority: "med",
++        owner: "CODER",
++        tags: ["code"],
++        dependsOn: [],
++        verify: ["bun --version"],
++      });
++      for (const [section, text] of [
++        ["Summary", "Preserve revision coherence"],
++        ["Scope", "- Verification-only refinement"],
++        ["Plan", "Implement then verify"],
++        ["Verify Steps", "Run bun --version; expect exit 0."],
++        ["Rollback Plan", "Restore the previous plan."],
++      ] as const) {
++        await setTaskDocSection({
++          cwd: root,
++          rootOverride: root,
++          taskId: task.id,
++          section,
++          text,
++          updatedBy: "PLANNER",
++        });
++      }
++      const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
++      const current = (await ctx.taskBackend.getTask(task.id))!;
++      const revision = current.revision ?? 1;
++      const now = "2026-09-05T00:00:00.000Z";
++      const plan = createTaskPlanRevision({
++        revision: 1,
++        created_at: now,
++        proposal: {
++          schema_version: 1,
++          task_id: task.id,
++          planning_baseline: createRepositorySnapshot({
++            git: { kind: "commit", sha: "a".repeat(40), ref: "main" },
++            dirty_paths: [],
++            policy_digest: null,
++            config_digest: null,
++            context_digest: null,
++            task_history_cursor: null,
++            captured_at: now,
++          }),
++          work_items: { schema_version: 1, work_items: [] },
++          assumptions: [],
++          unresolved_questions: [],
++          top_level_validation: {
++            schema_version: 1,
++            criteria: [],
++            checks: [],
++            evidence_fingerprint: taskCentricDigest("revision-coherence"),
++          },
++        },
++      });
++      await ctx.taskBackend.writeTask(
++        {
++          ...current,
++          extensions: withTaskCentricAggregate(current.extensions, {
++            ...createLegacyTaskAggregate({
++              id: task.id,
++              revision: revision + 1,
++              title: current.title,
++              description: current.description,
++              status: current.status,
++              acceptance_criteria: [],
++              captured_at: now,
++              updated_at: now,
++            }),
++            lifecycle: "AWAITING_PLAN_APPROVAL",
++            current_plan: plan,
++          }),
++        },
++        { expectedRevision: revision },
++      );
++      const pathToReadme = path.join(root, ".agentplane", "tasks", task.id, "README.md");
++      const revisions: [number, number][] = [];
++      const observe = async () => {
++        const current = parseTaskReadme(await readFile(pathToReadme, "utf8")).frontmatter;
++        const embedded = taskCentricAggregateFromExtensions(current.extensions);
++        expect(embedded).not.toBeNull();
++        revisions.push([current.revision!, embedded!.revision]);
++        expect(current.revision, JSON.stringify(revisions)).toBe(embedded!.revision);
++      };
++      await observe();
++      for (const command of [
++        [
++          "task",
++          "plan",
++          "approve",
++          task.id,
++          "--by",
++          "USER",
++          "--note",
++          "Initial approval",
++          "--root",
++          root,
++        ],
++        [
++          "task",
++          "plan",
++          "set",
++          task.id,
++          "--text",
++          "Keep implementation; refine verification",
++          "--updated-by",
++          "PLANNER",
++          "--root",
++          root,
++        ],
++        [
++          "task",
++          "update",
++          task.id,
++          "--verify",
++          "bun --version",
++          ...(replace ? ["--replace-verify"] : []),
++          "--root",
++          root,
++        ],
++      ]) {
++        const result = await invoke(command);
++        expect(result.code, `${command.join(" ")}: ${result.stderr}`).toBe(0);
++        await observe();
++      }
++      const approval = await invoke([
++        "task",
++        "plan",
++        "approve",
++        task.id,
++        "--by",
++        "USER",
++        "--note",
++        "Reapproved verification",
++        "--root",
++        root,
++      ]);
++      expect(approval.code).not.toBe(0);
++      expect(approval.stderr).toMatch(/replan|replacement|planning/iu);
++      await observe();
++      const route = await invoke(["task", "next-action", task.id, "--explain", "--root", root]);
++      expect(route.code).not.toBe(0);
++      expect(route.stderr).toContain("explicit kernel migration");
++      expect(route.stdout + route.stderr).not.toContain("task start-ready");
++      const startReady = await invoke([
++        "task",
++        "start-ready",
++        task.id,
++        "--author",
++        "CODER",
++        "--body",
++        "Start: verification-only replan",
++        "--root",
++        root,
++      ]);
++      expect(startReady.code).not.toBe(0);
++      expect(startReady.stdout + startReady.stderr).not.toContain("✅ ready");
++      await observe();
++      expect(revisions).toHaveLength(6);
++
++      const beforeSplit = (await ctx.taskBackend.getTask(task.id))!;
++      await ctx.taskBackend.writeTask(
++        { ...beforeSplit, description: "Retained foreign projection write" },
++        { expectedRevision: beforeSplit.revision },
++      );
++      const splitReadme = await readFile(pathToReadme, "utf8");
++      const split = parseTaskReadme(splitReadme).frontmatter;
++      expect(split.revision).toBe(
++        taskCentricAggregateFromExtensions(split.extensions)!.revision + 1,
++      );
++      const blocked = await invoke(["task", "next-action", task.id, "--explain", "--root", root]);
++      expect(blocked.code).not.toBe(0);
++      expect(blocked.stderr).toContain("Task-centric revision split blocks");
++      expect(blocked.stderr).toContain("use only an evidence-specific recovery");
++      expect(blocked.stdout + blocked.stderr).not.toContain("task start-ready");
++      expect(await readFile(pathToReadme, "utf8")).toBe(splitReadme);
++    },
++    120_000,
++  );
++});

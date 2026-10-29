@@ -176,27 +176,56 @@ export function buildTaskCentricProjectionIntegrityFindings(
     const readmePlanState =
       typeof readmePlanStateValue === "string" ? readmePlanStateValue : "pending";
     const aggregatePlanState = aggregate.current_plan?.approval.state ?? "missing";
-    if (readmePlanState !== "rejected" || aggregatePlanState === "rejected") continue;
+    if (readmePlanState === "rejected" && aggregatePlanState !== "rejected") {
+      findings.push(
+        renderDiagnosticFinding({
+          severity: "WARN",
+          state: `task-centric plan projection mismatch for ${taskId}`,
+          likelyCause:
+            "the task README and canonical aggregate did not commit the same plan mutation",
+          nextAction: {
+            command:
+              `agentplane task plan recover-rejection ${taskId} ` +
+              `--expected-readme-revision ${readmeRevision} ` +
+              `--expected-aggregate-revision ${aggregate.revision} ` +
+              `--rejected-plan-digest ${aggregate.current_plan?.digest ?? "<sha256>"} ` +
+              "--expected-state-fingerprint <sha256> --by USER --note <reason>",
+            reason:
+              "use the guarded receipt-backed recovery only after confirming the rejected README state",
+          },
+          details: [
+            `Task: ${taskId}`,
+            `README revision/state: ${readmeRevision}/${readmePlanState}`,
+            `Aggregate revision/state: ${aggregate.revision}/${aggregatePlanState}`,
+          ],
+        }),
+      );
+      continue;
+    }
+    if (readmeRevision === aggregate.revision) continue;
+    const completedArchive =
+      normalizeTaskStatus(task.status) === "DONE" && aggregate.lifecycle === "COMPLETED";
     findings.push(
       renderDiagnosticFinding({
-        severity: "WARN",
-        state: `task-centric plan projection mismatch for ${taskId}`,
-        likelyCause:
-          "the task README and canonical aggregate did not commit the same plan mutation",
+        severity: completedArchive ? "WARN" : "ERROR",
+        state: completedArchive
+          ? `archived task-centric revision split for ${taskId}`
+          : `task-centric revision split blocks ${taskId}`,
+        likelyCause: completedArchive
+          ? "the completed task archive retains different README and aggregate revisions; its historical afterimage must be reviewed before reuse"
+          : "the task README and embedded aggregate have different revisions; the correct afterimage is not established",
         nextAction: {
-          command:
-            `agentplane task plan recover-rejection ${taskId} ` +
-            `--expected-readme-revision ${readmeRevision} ` +
-            `--expected-aggregate-revision ${aggregate.revision} ` +
-            `--rejected-plan-digest ${aggregate.current_plan?.digest ?? "<sha256>"} ` +
-            "--expected-state-fingerprint <sha256> --by USER --note <reason>",
+          command: `agentplane task show ${taskId}`,
           reason:
-            "use the guarded receipt-backed recovery only after confirming the rejected README state",
+            "inspect retained plan, verification, implementation, and mutation receipts; use only an evidence-specific recovery",
         },
         details: [
           `Task: ${taskId}`,
           `README revision/state: ${readmeRevision}/${readmePlanState}`,
           `Aggregate revision/state: ${aggregate.revision}/${aggregatePlanState}`,
+          completedArchive
+            ? "This completed archive is diagnostic history; do not normalize its revisions without evidence."
+            : "Ordinary transitions must not normalize this split or run start-ready.",
         ],
       }),
     );

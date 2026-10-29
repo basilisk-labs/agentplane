@@ -1,0 +1,42 @@
+{
+  "native_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_task_identity",
+    "task_id": "202610252242-122WXZ",
+    "plan": {
+      "revision": 2,
+      "digest": "sha256:2cd740521347ce805824bbc83426f76f012c65f0f44a87e4ba230264b2517d8e",
+      "approval_state": "approved",
+      "approved_digest": "sha256:2cd740521347ce805824bbc83426f76f012c65f0f44a87e4ba230264b2517d8e"
+    },
+    "policy": {
+      "digest": "sha256:1150ba6caefe9e829c30b3520b9246ed1ec7ebbeedbe788c63cf7989015dbb46"
+    },
+    "capability": {
+      "digest": "sha256:f3724675b80d5bc85968b9d7a588cf8ccec326b5ba4c8eeeb5426465e83b7ff4"
+    },
+    "checks": {
+      "verification_contract_digest": "sha256:5a1b5dd144a102eaf17462f942f101b8e6a98656bc280d232bb4854e56155abd",
+      "required_check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "task_outcome"
+      ],
+      "digest": "sha256:1663a3bf7ed675baa1089cae8f78cc54d65c19d9e37554316646d51ffdb5ba12"
+    },
+    "digest": "sha256:ff957d1f701f2bd52ffd2512c37b89dd94e038feb00b67457d1a3da7ceb73336"
+  },
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202610252242-122WXZ",
+    "plan_digest": "sha256:2cd740521347ce805824bbc83426f76f012c65f0f44a87e4ba230264b2517d8e",
+    "policy_digest": "sha256:1150ba6caefe9e829c30b3520b9246ed1ec7ebbeedbe788c63cf7989015dbb46",
+    "capability_digest": "sha256:f3724675b80d5bc85968b9d7a588cf8ccec326b5ba4c8eeeb5426465e83b7ff4",
+    "checks_digest": "sha256:1663a3bf7ed675baa1089cae8f78cc54d65c19d9e37554316646d51ffdb5ba12",
+    "verification_input_digest": "sha256:ccb03234881b65bfe7421f3f9c794d70f39d054d8cf9f12ee27864c2949f3ba8",
+    "acceptance_digest": "sha256:20a51adcae67263936e32c2299b324a81ce9072e33c51bb114f16513e6b8fcd5",
+    "implementation_sha": "c99e268b5ffbc525d272f5dfd87080a53ecf7c85",
+    "digest": "sha256:a09357139eded43e2366441f9ebb36e38e38f2829b7c1222a359c42a7146bd45"
+  }
+}

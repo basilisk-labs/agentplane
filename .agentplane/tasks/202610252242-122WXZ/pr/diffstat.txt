@@ -1,0 +1,7 @@
+ .../task-centric-backend-adapter.test.ts           |  39 ++++
+ .../task-backend/task-centric-backend-adapter.ts   |   9 +-
+ .../commands/doctor/workspace-task-state.test.ts   |  95 ++++++++-
+ .../src/commands/doctor/workspace-task-state.ts    |  53 +++--
+ .../src/commands/task/next-action.command.ts       |  26 +++
+ .../task/revision-consistency.integration.test.ts  | 227 +++++++++++++++++++++
+ 6 files changed, 432 insertions(+), 17 deletions(-)

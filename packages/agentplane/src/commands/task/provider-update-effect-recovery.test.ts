@@ -17,15 +17,25 @@ import {
   resolveSupervisorExecutionEpisodePath,
 } from "../shared/supervisor-execution-episode.js";
 import { operationPayloadDigest } from "../shared/workflow-step-authority.js";
+import type * as UpdateProof from "../pr/provider-update-verification-proof.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import { reconcileProviderUpdateEffect } from "./provider-update-effect-recovery.js";
 
 const mocks = vi.hoisted(() => ({
+  retainProof: vi
+    .fn()
+    .mockImplementation(
+      (opts: Parameters<typeof UpdateProof.retainProviderUpdateVerificationProof>[0]) =>
+        Promise.resolve(opts.completion),
+    ),
   observe: vi.fn(),
   compare: vi.fn(),
   local: vi.fn(),
   authority: vi.fn(),
+}));
+vi.mock("../pr/provider-update-verification-proof.js", () => ({
+  retainProviderUpdateVerificationProof: mocks.retainProof,
 }));
 vi.mock("../pr/internal/change-request-provider.js", () => ({
   observeExistingChangeRequestByNumber: mocks.observe,
@@ -65,7 +75,13 @@ const budget = {
 
 type Fixture = Awaited<ReturnType<typeof fixture>>;
 
-async function fixture(authorityRef = "workflow-operation:provider.pr.update_branch") {
+async function fixture(
+  authorityRef = "workflow-operation:provider.pr.update_branch",
+  realMerge = false,
+  advanceBase = false,
+) {
+  let fixtureOriginalHead = originalHead;
+  let fixtureObservedHead = observedHead;
   const root = await mkGitRepoRoot();
   execFileSync(
     "git",
@@ -81,13 +97,44 @@ async function fixture(authorityRef = "workflow-operation:provider.pr.update_bra
     ],
     { cwd: root },
   );
-  const base = execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim();
-  execFileSync("git", ["update-ref", "refs/remotes/origin/main", base], { cwd: root });
+  let base = execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim();
+  if (realMerge) {
+    const git = (...args: string[]) =>
+      execFileSync("git", args, { cwd: root, encoding: "utf8" }).trim();
+    git("config", "user.name", "Fixture");
+    git("config", "user.email", "fixture@example.test");
+    git("remote", "add", "origin", identity.targetUrl);
+    git("checkout", "-b", branch);
+    await writeFile(path.join(root, "own.ts"), "task");
+    git("add", ".");
+    git("commit", "-m", "task");
+    fixtureOriginalHead = git("rev-parse", "HEAD");
+    git("checkout", "main");
+    await writeFile(path.join(root, "foreign.ts"), "canonical");
+    git("add", ".");
+    git("commit", "-m", "canonical");
+    base = git("rev-parse", "HEAD");
+    git("checkout", branch);
+    git("merge", "--no-ff", "main", "-m", "provider update");
+    fixtureObservedHead = git("rev-parse", "HEAD");
+  }
+  let currentBase = base;
+  if (advanceBase) {
+    const git = (...args: string[]) =>
+      execFileSync("git", args, { cwd: root, encoding: "utf8" }).trim();
+    git("checkout", "main");
+    await writeFile(path.join(root, "next-canonical.ts"), "later canonical change");
+    git("add", "next-canonical.ts");
+    git("commit", "-m", "canonical advanced after interrupted update");
+    currentBase = git("rev-parse", "HEAD");
+    git("checkout", branch);
+  }
+  execFileSync("git", ["update-ref", "refs/remotes/origin/main", currentBase], { cwd: root });
   const currentFingerprint = `sha256:${"c".repeat(64)}`;
   const originalFingerprint = buildStateFingerprint({
     task_id: taskId,
     task_revision: 1,
-    git_head: originalHead,
+    git_head: fixtureOriginalHead,
     worktree: root,
     components: Object.fromEntries(
       [
@@ -108,7 +155,7 @@ async function fixture(authorityRef = "workflow-operation:provider.pr.update_bra
     prNumber: 42,
     branch,
     baseBranch: "main",
-    expectedHeadSha: originalHead,
+    expectedHeadSha: fixtureOriginalHead,
     expectedBaseSha: base,
   };
   const payloadDigest = `sha256:${operationPayloadDigest({
@@ -194,16 +241,16 @@ async function fixture(authorityRef = "workflow-operation:provider.pr.update_bra
       prUrl: "https://github.com/example/repo/pull/42",
       headRef: branch,
       base: "main",
-      baseSha: base,
-      headSha: observedHead,
+      baseSha: currentBase,
+      headSha: fixtureObservedHead,
       identity,
     },
   });
   mocks.compare.mockImplementation((_root: string, args: string[]) => {
     if (args[0]!.includes("/git/commits/"))
       return Promise.resolve({
-        sha: observedHead,
-        parents: [{ sha: originalHead }, { sha: base }],
+        sha: fixtureObservedHead,
+        parents: [{ sha: fixtureOriginalHead }, { sha: base }],
       });
     const [older] = args[0]!.split("/compare/")[1]!.split("...");
     return Promise.resolve({
@@ -242,9 +289,9 @@ async function fixture(authorityRef = "workflow-operation:provider.pr.update_bra
     pr_url: "https://github.com/example/repo/pull/42",
     branch,
     base_branch: "main",
-    original_head_sha: originalHead,
+    original_head_sha: fixtureOriginalHead,
     original_base_sha: base,
-    observed_head_sha: observedHead,
+    observed_head_sha: fixtureObservedHead,
     operator: {
       kind: "operator_decision",
       actor: "release operator",
@@ -254,9 +301,9 @@ async function fixture(authorityRef = "workflow-operation:provider.pr.update_bra
     evidence: [
       {
         ref: "hosted-pr-observation",
-        content: `PR 42 head ${observedHead} is the provider-published update merge`,
+        content: `PR 42 head ${fixtureObservedHead} is the provider-published update merge`,
         digest: digestSupervisorEpisodeValue(
-          `PR 42 head ${observedHead} is the provider-published update merge`,
+          `PR 42 head ${fixtureObservedHead} is the provider-published update merge`,
         ),
       },
     ],
@@ -274,11 +321,17 @@ async function fixture(authorityRef = "workflow-operation:provider.pr.update_bra
       decide: () => Promise.resolve(route),
     });
   };
-  return { root, journalPath, input, invoke, grant, authorityState };
+  return { root, journalPath, input, invoke, grant, authorityState, command, params, currentBase };
 }
 
 describe("interrupted provider update recovery", () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mocks.retainProof.mockImplementation(
+      (opts: Parameters<typeof UpdateProof.retainProviderUpdateVerificationProof>[0]) =>
+        Promise.resolve(opts.completion),
+    );
+  });
   afterEach(() => vi.restoreAllMocks());
 
   it("settles the exact applied intent once without another provider PUT or changing hosted truth", async () => {
@@ -413,4 +466,74 @@ describe("interrupted provider update recovery", () => {
     });
     await expect(f.invoke()).rejects.toThrow("supervisor journal changed during recovery");
   });
+  it.each([
+    [false, false],
+    [true, false],
+    [false, true],
+    [true, true],
+  ])(
+    "publishes usable native proof during real-Git recovery, provisional=%s, advanced base=%s",
+    async (provisional, advanceBase) => {
+      const f = await fixture("workflow-operation:provider.pr.update_branch", true, advanceBase);
+      const actual = await vi.importActual<typeof UpdateProof>(
+        "../pr/provider-update-verification-proof.js",
+      );
+      mocks.retainProof.mockImplementation(actual.retainProviderUpdateVerificationProof);
+      if (provisional)
+        await actual.retainProviderUpdateVerificationProof({
+          command: f.command,
+          params: f.params,
+          authority_digest: f.input.precondition_fingerprint_digest,
+          observed_head_sha: f.input.observed_head_sha,
+          completion: {
+            status: "succeeded",
+            observed_postconditions: [`provider_update_head:${f.input.observed_head_sha}`],
+            exit_code: 0,
+          },
+        });
+      const before = await actual.inheritedProviderUpdatePaths({
+        command: f.command,
+        task_id: taskId,
+        frozen_base: execFileSync(
+          "git",
+          ["merge-base", f.params.expectedHeadSha, f.params.expectedBaseSha],
+          { cwd: f.root, encoding: "utf8" },
+        ).trim(),
+        evaluated_sha: f.input.observed_head_sha,
+        changed_paths: ["foreign.ts", "next-canonical.ts"],
+        workflow_dir: ".agentplane/tasks",
+        tasks_path: ".agentplane/tasks.json",
+      });
+      expect(before).toEqual([]);
+      await f.invoke();
+      const inherited = await actual.inheritedProviderUpdatePaths({
+        command: f.command,
+        task_id: taskId,
+        frozen_base: execFileSync(
+          "git",
+          ["merge-base", f.params.expectedHeadSha, f.params.expectedBaseSha],
+          { cwd: f.root, encoding: "utf8" },
+        ).trim(),
+        evaluated_sha: f.input.observed_head_sha,
+        changed_paths: ["foreign.ts", "next-canonical.ts"],
+        workflow_dir: ".agentplane/tasks",
+        tasks_path: ".agentplane/tasks.json",
+      });
+      expect(inherited).toEqual(["foreign.ts"]);
+      if (advanceBase)
+        expect(() =>
+          execFileSync(
+            "git",
+            ["merge-base", "--is-ancestor", f.currentBase, f.input.observed_head_sha],
+            {
+              cwd: f.root,
+              stdio: "ignore",
+            },
+          ),
+        ).toThrow();
+      expect(mocks.compare.mock.calls.every((call) => !(call[1] as string[]).includes("-X"))).toBe(
+        true,
+      );
+    },
+  );
 });

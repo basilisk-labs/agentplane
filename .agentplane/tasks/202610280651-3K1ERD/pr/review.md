@@ -1,0 +1,41 @@
+# PR Review
+
+Created: 2026-10-28T07:21:56.510Z
+
+## Task
+
+- Task: `202610280651-3K1ERD`
+- Title: Allow exact USER-granted hosted PR adoption when external write is declared but withheld from semantic agents
+- Status: DONE
+- Branch: `task/202610280651-3K1ERD/allow-exact-user-granted-hosted-pr-adoption-when`
+- Canonical task record: `.agentplane/tasks/202610280651-3K1ERD/README.md`
+
+## Verification
+
+- State: ok
+- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- Canonical workflow state lives in the task README.
+
+## Handoff Notes
+
+- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
+
+<!-- BEGIN AUTO SUMMARY -->
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-10-28T12:58:42.208Z
+- Branch: task/202610280651-3K1ERD/allow-exact-user-granted-hosted-pr-adoption-when
+- Head: computed live by `agentplane pr check` / `agentplane integrate`
+
+```text
+ .../src/commands/pr/adoption-merge.test.ts         |   7 +-
+ .../src/commands/pr/adoption-request.test.ts       |   7 +-
+ .../src/commands/pr/adoption-route.test.ts         |  15 +--
+ .../commands/pr/adoption-task-authority.test.ts    | 107 +++++++++++++++++++--
+ .../src/commands/pr/adoption-task-authority.ts     |  11 ++-
+ 5 files changed, 122 insertions(+), 25 deletions(-)
+```
+
+</details>
+<!-- END AUTO SUMMARY -->

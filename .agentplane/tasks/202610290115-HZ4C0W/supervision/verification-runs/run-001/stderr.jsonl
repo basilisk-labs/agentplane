@@ -1,0 +1,1 @@
+"$ vitest --config vitest.workspace.ts run --project cli-core --run packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.validation.test.ts"

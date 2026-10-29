@@ -213,6 +213,7 @@ describe("pr open provider-base publication order", () => {
     const sha = "a".repeat(40);
     const order: string[] = [];
     const ctx = {
+      git: { statusChangedPaths: vi.fn().mockResolvedValue([]) },
       resolvedProject: { gitRoot: "/repo" },
       config: {
         paths: { workflow_dir: ".agentplane/tasks", tasks_path: ".agentplane/tasks.json" },
@@ -329,7 +330,7 @@ const reviewedGit = async (root: string, ...args: string[]) => {
   return result.stdout.trim();
 };
 
-async function reviewedPublicationFixture() {
+async function reviewedPublicationFixture(providerAtFrozen = false) {
   const root = await mkdtemp(path.join(os.tmpdir(), "reviewed-publication-"));
   await reviewedGit(root, "init", "-b", "main");
   await reviewedGit(root, "config", "user.name", "Fixture");
@@ -347,7 +348,7 @@ async function reviewedPublicationFixture() {
   const remote = path.join(root, "remote.git");
   // The mock isolates only provider URL discovery. The live ref query uses real Git.
   await reviewedGit(root, "init", "--bare", remote);
-  await reviewedGit(root, "push", remote, `${head}:refs/heads/main`);
+  await reviewedGit(root, "push", remote, `${providerAtFrozen ? old : head}:refs/heads/main`);
   await writeFile(path.join(root, ".git", "info", "exclude"), "remote.git/\n");
   const identity = (await resolveLogicalRepositoryIdentity({
     git_root: root,
@@ -357,6 +358,7 @@ async function reviewedPublicationFixture() {
   const config = defaultConfig();
   config.workflow_mode = "branch_pr";
   const command = {
+    git: { statusChangedPaths: vi.fn().mockResolvedValue([]) },
     resolvedProject: { gitRoot: root, agentplaneDir: path.join(root, ".agentplane") },
     config,
     memo: {},
@@ -604,4 +606,88 @@ describe("pr open authenticated reviewed-publication preflight", () => {
       await rm(f.root, { recursive: true, force: true });
     }
   });
+});
+
+describe("pr open immutable base on an advancing canonical branch", () => {
+  it.each([false, true])(
+    "uses actual ancestry before publication, local mismatch=%s",
+    async (mismatch) => {
+      const f = await reviewedPublicationFixture(true);
+      // This is an ordinary frozen-base task, without reviewed-import lineage.
+      delete f.task.extensions!.task_kernel;
+      await reviewedGit(f.root, "checkout", "main");
+      await writeFile(path.join(f.root, "foreign.ts"), "canonical source\n");
+      await reviewedGit(f.root, "add", "foreign.ts");
+      await reviewedGit(f.root, "commit", "-m", "canonical advance");
+      const R = await reviewedGit(f.root, "rev-parse", "HEAD");
+      await reviewedGit(f.root, "push", f.remote, `${R}:refs/heads/main`);
+      await reviewedGit(f.root, "checkout", f.options.branch);
+      if (mismatch) await reviewedGit(f.root, "update-ref", "refs/heads/main", f.old);
+      const execution = await import("../runtime/task-execution-context/index.js");
+      const sync = await import("../commands/pr/internal/sync.js");
+      const artifacts = await import("../commands/pr/internal/auto-commit.js");
+      const publication = await import("../commands/pr/branch-publication.js");
+      const provider = await import("../commands/pr/internal/change-request-provider.js");
+      const { resolveProviderBaseBranch } =
+        await import("../commands/pr/internal/provider-base.js");
+      const { cmdPrOpen } = await import("../commands/pr/open.js");
+      const order: string[] = [];
+      const identity = { targetUrl: f.remote } as never;
+      const spies = [
+        vi.spyOn(execution, "loadTaskCommandContext").mockResolvedValue({
+          command: f.command,
+          primary_task: f.task,
+          execution: { selected_mode: "branch_pr", base_ref: f.old, base_sha: f.old },
+        } as never),
+        vi.spyOn(artifacts, "maybeAutoCommitTaskPrArtifacts").mockResolvedValue(undefined),
+        vi.spyOn(provider, "resolveChangeRequestIdentity").mockResolvedValue(identity),
+        vi.spyOn(sync, "syncPrArtifacts").mockImplementation(async (opts) => {
+          if (opts.remoteMode === "auto") {
+            expect(
+              await resolveProviderBaseBranch({
+                gitRoot: f.root,
+                baseRef: f.old,
+                baseSha: f.old,
+                identity,
+              }),
+            ).toBe("main");
+            order.push("hosted-create");
+          }
+          return {
+            meta: { branch: f.options.branch, base: "main" },
+            prDir: path.join(f.root, "pr"),
+            resolved: f.command.resolvedProject,
+          } as never;
+        }),
+        vi.spyOn(publication, "pushTaskBranchUpstreamIfConfigured").mockImplementation(() => {
+          order.push("push");
+          return Promise.resolve(true);
+        }),
+      ];
+      const before = JSON.stringify(f.task);
+      try {
+        const opened = cmdPrOpen({
+          ctx: f.command,
+          cwd: f.root,
+          taskId: f.task.id,
+          author: "CODER",
+          quiet: true,
+        });
+        if (mismatch) {
+          await expect(opened).rejects.toThrow(/local and live main differ/);
+          expect(order).toEqual([]);
+        } else {
+          await expect(opened).resolves.toBe(0);
+          expect(order).toEqual(["push", "hosted-create"]);
+        }
+        expect(JSON.stringify(f.task)).toBe(before);
+        expect(f.task.extensions!.task_execution_context).toEqual({
+          base_ref: f.old,
+          base_sha: f.old,
+        });
+      } finally {
+        for (const spy of spies) spy.mockRestore();
+      }
+    },
+  );
 });

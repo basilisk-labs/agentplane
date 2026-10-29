@@ -1,0 +1,6 @@
+"@agentplaneorg/core build:bundle: CLI Building entry: {\"commit/index\":\"src/commit/index.ts\",\"config/index\":\"src/config/index.ts\",\"index\":\"src/index.ts\",\"fs/index\":\"src/fs/index.ts\",\"git/index\":\"src/git/index.ts\",\"logger\":\"src/logger.ts\",\"process/index\":\"src/process/index.ts\",\"project/index\":\"src/project/index.ts\",\"schemas/index\":\"src/schemas/index.ts\",\"tasks/index\":\"src/tasks/index.ts\",\"tasks/verification-contract-kernel\":\"src/tasks/verification-contract.ts\"}"
+"@agentplaneorg/core build:bundle: CLI Using tsconfig: tsconfig.tsup.json"
+"@agentplaneorg/core build:bundle: CLI tsup v8.5.1"
+"@agentplaneorg/core build:bundle: CLI Using tsup config: <repo>/packages/core/tsup.config.ts"
+"@agentplaneorg/core build:bundle: CLI Target: node20"
+"@agentplaneorg/core build:bundle: ESM Build start"

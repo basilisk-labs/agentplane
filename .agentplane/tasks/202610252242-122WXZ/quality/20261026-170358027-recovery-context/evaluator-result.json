@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The CLI regression covers both replace-verify variants and asserts revision equality through approval, replan, verification, invalid reapproval, route, and start-ready.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610252242-122WXZ/quality/objects/sha256/abe0ec02290030ce6be5ec252ce3714d50a6f28458ef045557903fbdde53c697.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The adapter rejects the 15/14 split before mutation receipt replay or CAS; the regression asserts repeated rejection and preservation of unrelated task fields. Existing concurrent-writer coverage remains in place.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610252242-122WXZ/quality/objects/sha256/abe0ec02290030ce6be5ec252ce3714d50a6f28458ef045557903fbdde53c697.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Doctor treats active or unfinished projection splits as errors and completed historical splits as warnings. The route refuses an active split. The dedicated five-file regression run passed 60 tests, including the new archive diagnostic cases.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610252242-122WXZ/quality/objects/sha256/abe0ec02290030ce6be5ec252ce3714d50a6f28458ef045557903fbdde53c697.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "A historical split cannot be repaired safely without task-specific provenance; the change deliberately leaves those bytes untouched and directs inspection.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610252242-122WXZ/quality/objects/sha256/abe0ec02290030ce6be5ec252ce3714d50a6f28458ef045557903fbdde53c697.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Residual risk: The original historical 15/14 state was not causally reproduced on current main; recovery of an already split task still requires task-specific provenance.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610252242-122WXZ/quality/objects/sha256/abe0ec02290030ce6be5ec252ce3714d50a6f28458ef045557903fbdde53c697.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

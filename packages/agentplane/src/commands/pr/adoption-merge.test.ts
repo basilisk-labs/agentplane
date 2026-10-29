@@ -70,9 +70,12 @@ const task = {
   plan_approval: { state: "approved" },
   execution_contract: {
     selected_mode: "branch_pr",
+    declaration: {
+      external_effects: ["network_read", "external_write"],
+    },
     authority: {
-      allowed_external_effects: ["network_read", "external_write"],
-      forbidden_external_effects: [],
+      allowed_external_effects: ["network_read"],
+      forbidden_external_effects: ["external_write"],
     },
   },
   quality_review: {
