@@ -407,6 +407,44 @@ it(
   },
 );
 
+it.each([false, true])(
+  "refuses merge-resolution-only source drift after the consumed blocker (reverted=%s)",
+  { timeout: 120_000 },
+  async (reverted) => {
+    const { f, args, command, before } = await completedScopeFixture();
+    const branch = git(f.root, "branch", "--show-current");
+    const readme = `.agentplane/tasks/${f.id}/README.md`;
+    const original = await readFile(path.join(f.root, readme), "utf8");
+    git(f.root, "checkout", "-b", "readme-only-side");
+    await writeFile(path.join(f.root, readme), `${original}\nSide metadata.\n`);
+    git(f.root, "add", readme);
+    git(f.root, "commit", "-m", "side metadata only");
+    git(f.root, "checkout", branch);
+    await writeFile(path.join(f.root, readme), `${original}\nMain metadata.\n`);
+    git(f.root, "add", readme);
+    git(f.root, "commit", "-m", "main metadata only");
+    git(f.root, "merge", "readme-only-side", "--no-ff", "--no-commit", "-s", "ours");
+    await writeFile(path.join(f.root, readme), original);
+    await writeFile(path.join(f.root, "source.txt"), "merge-resolution source drift\n");
+    git(f.root, "add", readme, "source.txt");
+    git(f.root, "commit", "-m", "merge with source resolution");
+    if (reverted) {
+      await writeFile(path.join(f.root, "source.txt"), "before\n");
+      git(f.root, "add", "source.txt");
+      git(f.root, "commit", "-m", "restore source bytes");
+    }
+    const head = git(f.root, "rev-parse", "HEAD");
+    const result = await invoke(f.root, args);
+    expect(result.stderr).toContain("Completed repair scope requires");
+    expect(result.code).not.toBe(0);
+    expect(git(f.root, "rev-parse", "HEAD")).toBe(head);
+    const after = await command.taskBackend.getTask(f.id);
+    expect(after?.execution_contract).toEqual(before.execution_contract);
+    expect(after?.extensions?.task_kernel).toEqual(before.extensions?.task_kernel);
+    expect(parseTaskScopeExtensionRequestState(after!)).toMatchObject({ status: "pending" });
+  },
+);
+
 it(
   "preserves one admitted scope after interrupted metadata commit without replaying approval",
   { timeout: 120_000 },
