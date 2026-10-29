@@ -1,7 +1,7 @@
 import path from "node:path";
 import { readdir } from "node:fs/promises";
 import { z } from "zod";
-import { gitProofEnv, gitProofIsAncestor } from "@agentplaneorg/core/git";
+import { gitProofEnv, gitProofIsAncestor, gitMergeBase } from "@agentplaneorg/core/git";
 import { execFileAsync } from "@agentplaneorg/core/process";
 import {
   digestSupervisorEpisodeValue,
@@ -218,6 +218,38 @@ export async function retainProviderUpdateVerificationProof(opts: {
   return proof.completion;
 }
 
+export async function taskOriginHistoryPaths(
+  gitRoot: string,
+  from: string,
+  head: string,
+  canonicalBase = from,
+) {
+  const read = (args: string[]) => git(gitRoot, args);
+  const range = `${from}..${head}`;
+  const history = await read([
+    "log",
+    "--format=",
+    "--name-only",
+    "-z",
+    "--full-history",
+    "--no-merges",
+    "--no-renames",
+    range,
+  ]);
+  const paths = new Set(history.split("\0").filter(Boolean));
+  const merges = await read(["rev-list", "--min-parents=2", range]);
+  for (const merge of merges.trim().split("\n").filter(Boolean)) {
+    const intersection = await gitMergeBase(gitRoot, canonicalBase, merge);
+    // Compare each resolution to its immutable canonical intersection. A clean
+    // base import can arrive through an intermediate Task parent. Every Task-side
+    // commit and earlier merge remains in this union, so a later restoration of
+    // canonical bytes cannot erase an earlier foreign edit or deletion.
+    const changed = await read(["diff", "--name-only", "-z", "--no-renames", intersection, merge]);
+    for (const file of changed.split("\0").filter(Boolean)) paths.add(file);
+  }
+  return [...paths];
+}
+
 /** Return only canonical imports backed by a completed native update and exact Git tree entries. */
 export async function inheritedProviderUpdatePaths(opts: {
   command: CommandContext;
@@ -279,6 +311,7 @@ export async function inheritedProviderUpdatePaths(opts: {
   // must not spawn several Git processes for every inherited artifact.
   const trees = new Map<string, Promise<Map<string, string>>>();
   const histories = new Map<string, Promise<Set<string>>>();
+  const taskHistories = new Map<string, Promise<Set<string>>>();
   const entry = async (ref: string, file: string) => {
     if (!trees.has(ref))
       trees.set(
@@ -296,8 +329,8 @@ export async function inheritedProviderUpdatePaths(opts: {
     const tree = await trees.get(ref)!;
     return tree.get(file) ?? "";
   };
-  // Own source rework still needs fresh validation. An imported path is inherited
-  // only if no intervening commit touched it, including edits subsequently reverted.
+  // Raw history preserves pre-update ownership and canonical candidate discovery.
+  // A later update proof cannot retroactively authenticate the origin of a prior local import.
   const history = (from: string, to: string) => {
     const range = `${from}..${to}`;
     if (!histories.has(range))
@@ -316,8 +349,17 @@ export async function inheritedProviderUpdatePaths(opts: {
       );
     return histories.get(range)!;
   };
-  const untouched = async (from: string, to: string, file: string) => {
-    const paths = await history(from, to);
+  const taskHistory = (from: string, to: string, canonicalBase: string) => {
+    const key = `${from}..${to}:${canonicalBase}`;
+    if (!taskHistories.has(key))
+      taskHistories.set(
+        key,
+        taskOriginHistoryPaths(root, from, to, canonicalBase).then((paths) => new Set(paths)),
+      );
+    return taskHistories.get(key)!;
+  };
+  const untouched = async (from: string, to: string, canonicalBase: string, file: string) => {
+    const paths = await taskHistory(from, to, canonicalBase);
     return !paths.has(file);
   };
   for (const { proof } of proofs) {
@@ -342,7 +384,12 @@ export async function inheritedProviderUpdatePaths(opts: {
         !owned.has(file) &&
         (!previous ||
           !previouslyInherited.has(file) ||
-          (await untouched(previous.observed_head_sha, proof.params.expectedHeadSha, file))) &&
+          (await untouched(
+            previous.observed_head_sha,
+            proof.params.expectedHeadSha,
+            previous.params.expectedBaseSha,
+            file,
+          ))) &&
         (await entry(proof.observed_head_sha, file)) ===
           (await entry(proof.params.expectedBaseSha, file))
       )
@@ -355,7 +402,12 @@ export async function inheritedProviderUpdatePaths(opts: {
   for (const file of opts.changed_paths) {
     if (
       inherited.has(file) &&
-      (await untouched(previous.observed_head_sha, opts.evaluated_sha, file)) &&
+      (await untouched(
+        previous.observed_head_sha,
+        opts.evaluated_sha,
+        previous.params.expectedBaseSha,
+        file,
+      )) &&
       (await entry(opts.evaluated_sha, file)) ===
         (await entry(previous.params.expectedBaseSha, file))
     )

@@ -1,4 +1,5 @@
 import type * as Process from "@agentplaneorg/core/process";
+import type * as ProviderUpdateProof from "../provider-update-verification-proof.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
@@ -11,7 +12,8 @@ const mocks = vi.hoisted(() => ({
   history: vi.fn(),
 }));
 
-vi.mock("../provider-update-verification-proof.js", () => ({
+vi.mock("../provider-update-verification-proof.js", async (original) => ({
+  ...(await original<typeof ProviderUpdateProof>()),
   inheritedProviderUpdatePaths: mocks.inherited,
 }));
 
@@ -141,9 +143,11 @@ describe("committed task artifact ownership", () => {
       { statusCode: "M", path: "source.ts" },
       { statusCode: "M", path: ".agentplane/tasks/T-PRIMARY/README.md" },
     ]);
-    mocks.history.mockResolvedValue({
-      stdout: "source.ts\0.agentplane/tasks/T-PRIMARY/README.md\0",
-    });
+    mocks.history.mockImplementation((_command: string, args: string[]) =>
+      Promise.resolve({
+        stdout: args[0] === "log" ? "source.ts\0.agentplane/tasks/T-PRIMARY/README.md\0" : "",
+      }),
+    );
     mocks.inherited.mockRejectedValue(new Error("native journal must not be needed"));
     await expect(
       assertBranchTaskArtifactOwnership({
@@ -166,7 +170,11 @@ describe("committed task artifact ownership", () => {
   it("still authenticates foreign history hidden by an empty net diff", async () => {
     const file = ".agentplane/tasks/T-FOREIGN/README.md";
     mocks.gitDiffNameStatus.mockResolvedValue([]);
-    mocks.history.mockResolvedValue({ stdout: `${file}\0` });
+    mocks.history.mockImplementation((_command: string, args: string[]) =>
+      Promise.resolve({
+        stdout: args[0] === "log" ? `${file}\0` : "",
+      }),
+    );
     mocks.inherited.mockRejectedValue(new Error("invalid native proof"));
     await expect(
       assertBranchTaskArtifactOwnership({
