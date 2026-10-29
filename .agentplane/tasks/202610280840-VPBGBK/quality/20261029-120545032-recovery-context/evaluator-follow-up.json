@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202610280840-VPBGBK-156c295d2a642e945f897562",
+  "task_id": "202610280840-VPBGBK",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "The bounded control review is blocked by the issued release/code gate and unavailable required policy observation. Use the supported supervisor recovery route to prepare a compatible code Task packet and native admission of the directly human-approved helper scope. Preserve the old Kernel, old EVALUATOR, failed operations, retired result and provider-update proof. Do not infer source acceptance, rerun full checks, repeat provider update, rewrite Task JSON or bypass policy.",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "summary": "The Task document declares task_kind code and risk_flags publish. This issued WorkOrder selects incompatible release obligations and contains the approval_required task_kind_incompatible stop rule. The EVALUATOR cannot remove this gate or reinterpret the code Task as a package release.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610280840-VPBGBK/quality/objects/sha256/bf19f6163c58f9624371b0510c646ced692957bceb776b2df90bd56625a36e47.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "summary": "The WorkOrder requires a policy fingerprint component but reports policy_module_observation_unavailable. The five frozen policy files exist and their raw digests match. Those file reads do not establish the missing supervisor-owned observation.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610280840-VPBGBK/quality/objects/sha256/bf19f6163c58f9624371b0510c646ced692957bceb776b2df90bd56625a36e47.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "summary": "Residual risk: The reproduced custom-workflow P2 remains unpatched.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610280840-VPBGBK/quality/objects/sha256/bf19f6163c58f9624371b0510c646ced692957bceb776b2df90bd56625a36e47.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "summary": "Residual risk: The unused-export Knip failure and canonical-import Task artifact ownership gap remain unresolved.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610280840-VPBGBK/quality/objects/sha256/bf19f6163c58f9624371b0510c646ced692957bceb776b2df90bd56625a36e47.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202610280840-VPBGBK/quality/20261029-120545032-recovery-context/evaluator-result.json"
+}

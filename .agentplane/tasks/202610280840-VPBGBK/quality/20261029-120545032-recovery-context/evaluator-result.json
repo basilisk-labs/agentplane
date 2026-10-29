@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "The Task document declares task_kind code and risk_flags publish. This issued WorkOrder selects incompatible release obligations and contains the approval_required task_kind_incompatible stop rule. The EVALUATOR cannot remove this gate or reinterpret the code Task as a package release.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610280840-VPBGBK/quality/objects/sha256/bf19f6163c58f9624371b0510c646ced692957bceb776b2df90bd56625a36e47.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "The WorkOrder requires a policy fingerprint component but reports policy_module_observation_unavailable. The five frozen policy files exist and their raw digests match. Those file reads do not establish the missing supervisor-owned observation.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610280840-VPBGBK/quality/objects/sha256/bf19f6163c58f9624371b0510c646ced692957bceb776b2df90bd56625a36e47.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Residual risk: The reproduced custom-workflow P2 remains unpatched.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610280840-VPBGBK/quality/objects/sha256/bf19f6163c58f9624371b0510c646ced692957bceb776b2df90bd56625a36e47.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "Residual risk: The unused-export Knip failure and canonical-import Task artifact ownership gap remain unresolved.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610280840-VPBGBK/quality/objects/sha256/bf19f6163c58f9624371b0510c646ced692957bceb776b2df90bd56625a36e47.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "A publish risk on a code Task does not establish package-release authority.",
+    "A local full test PASS does not satisfy an incompatible semantic packet or the failed hosted static gate."
+  ],
+  "recovery_context": "The bounded control review is blocked by the issued release/code gate and unavailable required policy observation. Use the supported supervisor recovery route to prepare a compatible code Task packet and native admission of the directly human-approved helper scope. Preserve the old Kernel, old EVALUATOR, failed operations, retired result and provider-update proof. Do not infer source acceptance, rerun full checks, repeat provider update, rewrite Task JSON or bypass policy."
+}
