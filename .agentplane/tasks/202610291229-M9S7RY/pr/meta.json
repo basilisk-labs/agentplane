@@ -3,7 +3,8 @@
   "branch": "task/202610291229-M9S7RY/repair-completed-task-scope-admission-and-authen",
   "created_at": "2026-10-29T13:39:22.946Z",
   "diffstat_sha256": "sha256:a3e17bee4c03fc1171ab7a00aab36048d1035ee46e83e398b91c0beb61ac6718",
-  "last_verified_at": null,
+  "last_verified_at": "2026-10-29T16:11:45.628Z",
+  "last_verified_diffstat_sha256": "sha256:a3e17bee4c03fc1171ab7a00aab36048d1035ee46e83e398b91c0beb61ac6718",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202610291229-M9S7RY",
   "updated_at": "2026-10-29T13:39:22.946Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
