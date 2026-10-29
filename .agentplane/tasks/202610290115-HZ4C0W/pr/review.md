@@ -6,7 +6,7 @@ Created: 2026-10-29T06:12:32.546Z
 
 - Task: `202610290115-HZ4C0W`
 - Title: Preserve frozen execution base while revalidating publication after main advances
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610290115-HZ4C0W/preserve-frozen-execution-base-while-revalidatin`
 - Canonical task record: `.agentplane/tasks/202610290115-HZ4C0W/README.md`
 
