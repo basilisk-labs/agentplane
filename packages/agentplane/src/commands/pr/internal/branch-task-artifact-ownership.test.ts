@@ -73,7 +73,7 @@ describe("committed task artifact ownership", () => {
     expect(mocks.gitDiffNameStatus).toHaveBeenCalledWith(
       "/repo",
       "merge-base-sha",
-      "candidate-sha",
+      "task/T-PRIMARY/change",
     );
     expect(mocks.gitRevParse).toHaveBeenCalledWith("/repo", ["--verify", "origin/main^{commit}"]);
     expect(mocks.gitBranchExists).toHaveBeenCalledTimes(1);
@@ -124,11 +124,66 @@ describe("committed task artifact ownership", () => {
       }),
     ).resolves.toBeUndefined();
 
-    expect(mocks.gitMergeBase).toHaveBeenCalledWith("/repo", "origin/main", "candidate-sha");
+    expect(mocks.gitMergeBase).toHaveBeenCalledWith(
+      "/repo",
+      "origin/main",
+      "task/T-PRIMARY/change",
+    );
     expect(mocks.gitDiffNameStatus).toHaveBeenCalledWith(
       "/repo",
       "merge-base-sha",
-      "candidate-sha",
+      "task/T-PRIMARY/change",
+    );
+  });
+
+  it("does not resolve native import proof for source and own-only history", async () => {
+    mocks.gitDiffNameStatus.mockResolvedValue([
+      { statusCode: "M", path: "source.ts" },
+      { statusCode: "M", path: ".agentplane/tasks/T-PRIMARY/README.md" },
+    ]);
+    mocks.history.mockResolvedValue({
+      stdout: "source.ts\0.agentplane/tasks/T-PRIMARY/README.md\0",
+    });
+    mocks.inherited.mockRejectedValue(new Error("native journal must not be needed"));
+    await expect(
+      assertBranchTaskArtifactOwnership({
+        gitRoot: "/repo",
+        baseBranch: "frozen-B",
+        branch: "task/T-PRIMARY/change",
+        workflowDir: ".agentplane/tasks",
+        tasksPath: ".agentplane/tasks.json",
+        primaryTaskId: "T-PRIMARY",
+        providerUpdate: {
+          command: { resolvedProject: { gitRoot: "/repo" } } as never,
+          frozenBase: "frozen-B",
+        },
+      }),
+    ).resolves.toBeUndefined();
+    expect(mocks.inherited).not.toHaveBeenCalled();
+    expect(mocks.history).toHaveBeenCalled();
+  });
+
+  it("still authenticates foreign history hidden by an empty net diff", async () => {
+    const file = ".agentplane/tasks/T-FOREIGN/README.md";
+    mocks.gitDiffNameStatus.mockResolvedValue([]);
+    mocks.history.mockResolvedValue({ stdout: `${file}\0` });
+    mocks.inherited.mockRejectedValue(new Error("invalid native proof"));
+    await expect(
+      assertBranchTaskArtifactOwnership({
+        gitRoot: "/repo",
+        baseBranch: "frozen-B",
+        branch: "task/T-PRIMARY/change",
+        workflowDir: ".agentplane/tasks",
+        tasksPath: ".agentplane/tasks.json",
+        primaryTaskId: "T-PRIMARY",
+        providerUpdate: {
+          command: { resolvedProject: { gitRoot: "/repo" } } as never,
+          frozenBase: "frozen-B",
+        },
+      }),
+    ).rejects.toThrow("invalid native proof");
+    expect(mocks.inherited).toHaveBeenCalledWith(
+      expect.objectContaining({ changed_paths: [file], evaluated_sha: "candidate-sha" }),
     );
   });
 

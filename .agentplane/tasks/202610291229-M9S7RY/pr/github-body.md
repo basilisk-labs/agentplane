@@ -27,8 +27,8 @@ Unblock genuine completed-Task scope admission and current-head review after aut
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../branch-task-artifact-ownership.test.ts         |  55 +++-
- .../pr/internal/branch-task-artifact-ownership.ts  |  59 +++-
+ .../branch-task-artifact-ownership.test.ts         |  96 +++++-
+ .../pr/internal/branch-task-artifact-ownership.ts  |  70 ++++-
  .../pr/internal/sync-open-provider-base.test.ts    |  68 ++++-
  .../agentplane/src/commands/pr/internal/sync.ts    |  11 +-
  .../pr/provider-update-verification-proof.test.ts  | 181 +++++++++++-
@@ -41,7 +41,7 @@ Unblock genuine completed-Task scope admission and current-head review after aut
  .../agentplane/src/commands/task/scope-extend.ts   | 137 +++++++--
  .../src/runtime/task-obligations/resolve.test.ts   |  26 ++
  .../src/runtime/task-obligations/resolve.ts        |   3 +-
- 14 files changed, 1156 insertions(+), 90 deletions(-)
+ 14 files changed, 1215 insertions(+), 83 deletions(-)
 ```
 
 </details>
