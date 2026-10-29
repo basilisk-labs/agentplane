@@ -407,11 +407,16 @@ it(
   },
 );
 
-it.each([false, true])(
-  "refuses merge-resolution-only source drift after the consumed blocker (reverted=%s)",
+it.each([
+  { sourceDrift: true, reverted: false },
+  { sourceDrift: true, reverted: true },
+  { sourceDrift: false, reverted: false },
+])(
+  "checks merge history with log.diffMerges=off (sourceDrift=$sourceDrift, reverted=$reverted)",
   { timeout: 120_000 },
-  async (reverted) => {
+  async ({ sourceDrift, reverted }) => {
     const { f, args, command, before } = await completedScopeFixture();
+    git(f.root, "config", "--local", "log.diffMerges", "off");
     const branch = git(f.root, "branch", "--show-current");
     const readme = `.agentplane/tasks/${f.id}/README.md`;
     const original = await readFile(path.join(f.root, readme), "utf8");
@@ -425,7 +430,8 @@ it.each([false, true])(
     git(f.root, "commit", "-m", "main metadata only");
     git(f.root, "merge", "readme-only-side", "--no-ff", "--no-commit", "-s", "ours");
     await writeFile(path.join(f.root, readme), original);
-    await writeFile(path.join(f.root, "source.txt"), "merge-resolution source drift\n");
+    if (sourceDrift)
+      await writeFile(path.join(f.root, "source.txt"), "merge-resolution source drift\n");
     git(f.root, "add", readme, "source.txt");
     git(f.root, "commit", "-m", "merge with source resolution");
     if (reverted) {
@@ -435,13 +441,25 @@ it.each([false, true])(
     }
     const head = git(f.root, "rev-parse", "HEAD");
     const result = await invoke(f.root, args);
-    expect(result.stderr).toContain("Completed repair scope requires");
-    expect(result.code).not.toBe(0);
-    expect(git(f.root, "rev-parse", "HEAD")).toBe(head);
-    const after = await command.taskBackend.getTask(f.id);
-    expect(after?.execution_contract).toEqual(before.execution_contract);
-    expect(after?.extensions?.task_kernel).toEqual(before.extensions?.task_kernel);
-    expect(parseTaskScopeExtensionRequestState(after!)).toMatchObject({ status: "pending" });
+    const after = (await command.taskBackend.getTask(f.id))!;
+    expect(after.extensions?.task_kernel).toEqual(before.extensions?.task_kernel);
+    if (sourceDrift) {
+      expect(result.code).not.toBe(0);
+      expect(result.stderr).toContain("Completed repair scope requires");
+      expect(git(f.root, "rev-parse", "HEAD")).toBe(head);
+      expect(after.execution_contract).toEqual(before.execution_contract);
+      expect(parseTaskScopeExtensionRequestState(after)).toMatchObject({ status: "pending" });
+    } else {
+      expect(result.code, result.stdout + result.stderr).toBe(0);
+      expect(after.execution_contract?.authority.writable_roots).toContain("helper.txt");
+      expect(parseTaskScopeExtensionRequestState(after)).toMatchObject({ status: "applied" });
+      expect(after.commit).toEqual(before.commit);
+      expect(after.quality_review).toEqual(before.quality_review);
+      expect(after.extensions?.task_execution_context).toEqual(
+        before.extensions?.task_execution_context,
+      );
+      expect(await readFile(path.join(f.root, "source.txt"), "utf8")).toBe("before\n");
+    }
   },
 );
 
