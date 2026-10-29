@@ -102,6 +102,7 @@ export async function assertBranchTaskArtifactOwnership(opts: {
         "--name-only",
         "-z",
         "--full-history",
+        "--diff-merges=separate",
         "--no-renames",
         `${mergeBase}..${evaluatedSha}`,
       ],
