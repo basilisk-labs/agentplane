@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 34
+revision: 35
 origin:
   system: "manual"
 depends_on: []
@@ -47,8 +47,6 @@ quality_review:
     - "Independent peer fully read13requiredblocks/4inputs/schema, verified exactsource and all7criteria without material findings. Helpers preserve module budgets without exceptions. Local111/8suites and log pins corroborate regressions; own metadata is the only dirt, and no source outside14 changed."
 token_usage:
   agent_runs: 0
-  cached_input_observed_agent_runs: 0
-  cached_input_tokens: null
   input_tokens: null
   journal_digest: "sha256:d90bca115165c60f26d9810c2c7a376f7b2ea94866817d27280951d41800c193"
   observed_agent_runs: 0
@@ -352,7 +350,7 @@ events:
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
     commit: "69a53a9fd6e66e59b413256074dfe4c4a89d1713"
 doc_version: 3
-doc_updated_at: "2026-10-29T16:31:23.848Z"
+doc_updated_at: "2026-10-29T18:05:43.893Z"
 doc_updated_by: "CODER"
 description: "Unblock genuine completed-Task scope admission and current-head review after authenticated canonical base import, then resume the existing VPBGBK P2 repair. Actual human approved the exact twelve framework roots on 2026-10-29 via call_0bf521676b0e44d69e82dc6c22fbc484. This is a separate framework repair, not replacement or imported acceptance of VPBGBK or DRG36R. Admit only an authenticated consumed task-level implementation_rework scope request under exact current state and genuine USER approval. Extend only the repair execution scope; preserve the completed Kernel, Plan, WorkItems and old reviews/receipts. Keep active Kernel prospective scope and retrospective authority-delta paths unchanged. Keep code Tasks with publish risk on the code verification profile. Preserve publication approval and external-effect gates. Package release Tasks retain release obligations. Observe the tracked, contained AGENTS.md policy projection by a bounded symlink-aware policy path contract. Bind link and target identity/bytes, reject outside-root, dangling, directory, swapped, cyclic or unauthorized policy aliases. Do not change the repository symlink or weaken the generic no-follow reader. Consume authenticated completed provider-update proof in the independent foreign Task ownership check. Keep frozen execution base. Retain pre-update source ownership and overlap. Require canonical R ancestry and exact current mode/blob/path lineage for inherited foreign artifacts. Approved semantic source changes must remain owned and pass fresh checks/EVAL; do not use a blanket inherited allowlist or skip foreign bytes. Preserve all original Tasks, immutable Kernel and old results. Native fresh checks and independent EVAL are mandatory. No Factory or host effects. Return to original VPBGBK after canonical framework merge."
 sections:
@@ -563,8 +561,7 @@ extensions:
     verification_evidence_digest: "sha256:643edcbe8b399e31cd38f0a677bca7afda1af2081fdb324d2ea92e6f2df33db5"
     work_order_id: "sha256:894b6ad6ddd7a623bd8d45c7ea65ed5b7215416972e2fd12a87aa22e84d30c5c"
   implementation_commit:
-    hash: "80150c4e1861bd75fb0b810921d4499b2984af1c"
-    message: "🚧 M9S7RY task: apply canonical agent result"
+    hash: "42d9e88b3fafa8d09bee2b8e740a2e1ba14e5ee8"
   task_execution_context:
     base_ref: "main"
     base_sha: "ab84dde0feba3c72718596205ff06b9de3cfb7ed"
