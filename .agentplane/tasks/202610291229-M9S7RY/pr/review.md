@@ -33,17 +33,17 @@ Created: 2026-10-29T13:39:22.946Z
  .../pr/internal/branch-task-artifact-ownership.ts  |  70 +++-
  .../pr/internal/sync-open-provider-base.test.ts    |  68 +++-
  .../agentplane/src/commands/pr/internal/sync.ts    |  11 +-
- .../pr/provider-update-verification-proof.test.ts  | 181 ++++++++++-
+ .../pr/provider-update-verification-proof.test.ts  | 181 +++++++++-
  .../pr/provider-update-verification-proof.ts       |  95 ++++--
  .../commands/shared/workflow-policy-projection.ts  |  66 ++++
  .../commands/shared/workflow-step-fingerprint.ts   |  11 +-
  .../shared/workflow-step-policy-scope.test.ts      |  87 ++++-
- .../task/completed-repair-scope-request.ts         | 127 ++++++++
- .../src/commands/task/scope-extend.command.test.ts | 359 ++++++++++++++++++++-
+ .../task/completed-repair-scope-request.ts         | 127 +++++++
+ .../src/commands/task/scope-extend.command.test.ts | 377 ++++++++++++++++++++-
  .../agentplane/src/commands/task/scope-extend.ts   | 137 ++++++--
  .../src/runtime/task-obligations/resolve.test.ts   |  26 ++
  .../src/runtime/task-obligations/resolve.ts        |   3 +-
- 14 files changed, 1254 insertions(+), 83 deletions(-)
+ 14 files changed, 1272 insertions(+), 83 deletions(-)
 ```
 
 </details>

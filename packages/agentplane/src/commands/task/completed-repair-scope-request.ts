@@ -110,7 +110,7 @@ export async function completedRepairScopeRequest(command: CommandContext, task:
       "--name-only",
       "--no-renames",
       "--full-history",
-      "-m",
+      "--diff-merges=separate",
       `${exchange.baseline.head}..HEAD`,
     ],
     {
