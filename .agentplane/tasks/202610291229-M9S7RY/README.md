@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 43
+revision: 44
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +24,11 @@ plan_approval:
   updated_by: "USER"
   note: "Projected from the approved canonical Task Kernel plan."
 verification:
-  state: "needs_rework"
-  updated_at: "2026-10-29T19:52:19.024Z"
+  state: "ok"
+  updated_at: "2026-10-29T21:35:24.067Z"
   updated_by: "SUPERVISOR"
-  note: "Rework: Declared check failed: bun run ci:local:full"
-  attempts: 1
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  attempts: 0
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
@@ -154,9 +154,7 @@ execution_contract:
       - "packages/agentplane/src/runtime/task-obligations/resolve.test.ts"
       - "packages/agentplane/src/runtime/task-obligations/resolve.ts"
   observed:
-    authority_violations:
-      - "verification:recorded-check-1:fail"
-      - "verification:verification-record:fail"
+    authority_violations: []
     changed_components:
       - "packages/agentplane"
     changed_paths:
@@ -182,10 +180,22 @@ execution_contract:
     verification_results:
       -
         id: "recorded-check-1"
-        result: "fail"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
       -
         id: "verification-record"
-        result: "fail"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_release_metadata"
@@ -311,8 +321,6 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-      - "verification_recovery:recorded-check-1"
-      - "verification_recovery:verification-record"
 commit: null
 comments:
   -
@@ -357,8 +365,14 @@ events:
     author: "SUPERVISOR"
     state: "needs_rework"
     note: "Rework: Declared check failed: bun run ci:local:full"
+  -
+    type: "verify"
+    at: "2026-10-29T21:35:24.067Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-10-29T21:09:48.041Z"
+doc_updated_at: "2026-10-29T21:35:27.554Z"
 doc_updated_by: "CODER"
 description: "Unblock genuine completed-Task scope admission and current-head review after authenticated canonical base import, then resume the existing VPBGBK P2 repair. Actual human approved the exact twelve framework roots on 2026-10-29 via call_0bf521676b0e44d69e82dc6c22fbc484. This is a separate framework repair, not replacement or imported acceptance of VPBGBK or DRG36R. Admit only an authenticated consumed task-level implementation_rework scope request under exact current state and genuine USER approval. Extend only the repair execution scope; preserve the completed Kernel, Plan, WorkItems and old reviews/receipts. Keep active Kernel prospective scope and retrospective authority-delta paths unchanged. Keep code Tasks with publish risk on the code verification profile. Preserve publication approval and external-effect gates. Package release Tasks retain release obligations. Observe the tracked, contained AGENTS.md policy projection by a bounded symlink-aware policy path contract. Bind link and target identity/bytes, reject outside-root, dangling, directory, swapped, cyclic or unauthorized policy aliases. Do not change the repository symlink or weaken the generic no-follow reader. Consume authenticated completed provider-update proof in the independent foreign Task ownership check. Keep frozen execution base. Retain pre-update source ownership and overlap. Require canonical R ancestry and exact current mode/blob/path lineage for inherited foreign artifacts. Approved semantic source changes must remain owned and pass fresh checks/EVAL; do not use a blanket inherited allowlist or skip foreign bytes. Preserve all original Tasks, immutable Kernel and old results. Native fresh checks and independent EVAL are mandatory. No Factory or host effects. Return to original VPBGBK after canonical framework merge."
 sections:
@@ -677,6 +691,65 @@ sections:
     Result: fail
     Evidence: .agentplane/tasks/202610291229-M9S7RY/supervision/declared-checks.json#check-1
     Scope: branch_pr task 202610291229-M9S7RY declared verification
+
+    NativeTaskIdentityRef:
+    - plan_digest: sha256:b033a3193e909983f07d72a71225ac1260e94857bf34b8b00ff25edcd9bcceba
+    - policy_digest: sha256:3da35d0eb2a904e33ac783c271bf7ea6c8e24b5406c8a001553074709b5ef3a2
+    - capability_digest: sha256:26f97a6414451449712a1acad9c34174df2d333f1cb9194ed4b8ea7b498360f7
+    - checks_digest: sha256:97fe9a50926421fb5d2560868a3c305b1b4eaa53ce4618e090eca2c3eb1b1b4f
+    - identity_digest: sha256:4a21df33ca498b3e2be128b811b88feee021aa63777bc5d2935779e677e598be
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-10-29T21:35:24.067Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c7f40471aab7f29cb33117fa69b09c04daf0ab903aa1dd9b971374c6efdb5765, input_digest=sha256:d5ee3a8e6dbd63e8f633340def4fa5d1272a80a611508c12680f94ee5e2e6e97
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610291229-M9S7RY/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610291229-M9S7RY Verification Contract check affected_unit_integration
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610291229-M9S7RY/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610291229-M9S7RY Verification Contract check critical_paths
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610291229-M9S7RY/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610291229-M9S7RY Verification Contract check full_regression
+
+    Check: real_e2e
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610291229-M9S7RY/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610291229-M9S7RY Verification Contract check real_e2e
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610291229-M9S7RY/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610291229-M9S7RY Verification Contract check task_outcome
 
     NativeTaskIdentityRef:
     - plan_digest: sha256:b033a3193e909983f07d72a71225ac1260e94857bf34b8b00ff25edcd9bcceba
@@ -2173,6 +2246,65 @@ Command: bun run ci:local:full
 Result: fail
 Evidence: .agentplane/tasks/202610291229-M9S7RY/supervision/declared-checks.json#check-1
 Scope: branch_pr task 202610291229-M9S7RY declared verification
+
+NativeTaskIdentityRef:
+- plan_digest: sha256:b033a3193e909983f07d72a71225ac1260e94857bf34b8b00ff25edcd9bcceba
+- policy_digest: sha256:3da35d0eb2a904e33ac783c271bf7ea6c8e24b5406c8a001553074709b5ef3a2
+- capability_digest: sha256:26f97a6414451449712a1acad9c34174df2d333f1cb9194ed4b8ea7b498360f7
+- checks_digest: sha256:97fe9a50926421fb5d2560868a3c305b1b4eaa53ce4618e090eca2c3eb1b1b4f
+- identity_digest: sha256:4a21df33ca498b3e2be128b811b88feee021aa63777bc5d2935779e677e598be
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-10-29T21:35:24.067Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:c7f40471aab7f29cb33117fa69b09c04daf0ab903aa1dd9b971374c6efdb5765, input_digest=sha256:d5ee3a8e6dbd63e8f633340def4fa5d1272a80a611508c12680f94ee5e2e6e97
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610291229-M9S7RY/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610291229-M9S7RY Verification Contract check affected_unit_integration
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610291229-M9S7RY/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610291229-M9S7RY Verification Contract check critical_paths
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610291229-M9S7RY/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610291229-M9S7RY Verification Contract check full_regression
+
+Check: real_e2e
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610291229-M9S7RY/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610291229-M9S7RY Verification Contract check real_e2e
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610291229-M9S7RY/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610291229-M9S7RY Verification Contract check task_outcome
 
 NativeTaskIdentityRef:
 - plan_digest: sha256:b033a3193e909983f07d72a71225ac1260e94857bf34b8b00ff25edcd9bcceba
