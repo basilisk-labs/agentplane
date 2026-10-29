@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:9a3675b06cbd50df6ca4daee27ea0bda550d129a7e0c1b1ab4ce04be0334e9af",
   "pr_number": 6957,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6957",
+  "pre_merge_closure": {
+    "basis_commit": "1a5c608730f9fcc4701f08db7ba8b29fa4d6c097",
+    "branch": "task/202610280840-VPBGBK/terminal-verification-retry",
+    "pr_number": 6957,
+    "recorded_at": "2026-10-29T09:03:20.677Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
