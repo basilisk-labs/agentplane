@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 44
+revision: 45
 origin:
   system: "manual"
 depends_on: []
@@ -30,33 +30,39 @@ verification:
   note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-10-29T19:20:14.464Z"
+  updated_at: "2026-10-29T21:54:50.857Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 2 typed finding(s)."
-  evaluated_sha: "3191e6690e5b2ef026b1cb7bd99dff5e41d929d4"
-  review_identity_digest: "sha256:14fcd9a986c09679513fe3d04d2f7f0ddad0b4cabda8202082cc927cb3c71dd1"
+  note: "EVALUATOR returned pass with 9 typed finding(s)."
+  evaluated_sha: "f32796a86f4765a7bb3f6d3b416e2ddff37027ab"
+  review_identity_digest: "sha256:6c2b26a9262acdac5f6f8c6db5d70fd9a9c273eccc6a067431180b2757900e00"
   evidence_refs:
-    - ".agentplane/tasks/202610291229-M9S7RY/quality/20261029-191016118-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202610291229-M9S7RY/quality/20261029-191016118-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202610291229-M9S7RY/quality/objects/sha256/25c2b850b0f1dc43973dd0864c47d12acc7f1b9bbfd72ed5bd6ea5cf2118b224.md"
-    - ".agentplane/tasks/202610291229-M9S7RY/quality/20261029-191016118-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202610291229-M9S7RY/quality/20261029-191016118-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202610291229-M9S7RY/quality/20261029-191016118-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202610291229-M9S7RY/quality/20261029-191016118-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202610291229-M9S7RY/quality/20261029-214231256-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202610291229-M9S7RY/quality/20261029-214231256-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202610291229-M9S7RY/quality/objects/sha256/218add39ffc6cc7ac55e516cff637f2a6cf70a3035013a7b6f9568110bf80ff9.md"
+    - ".agentplane/tasks/202610291229-M9S7RY/quality/20261029-214231256-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202610291229-M9S7RY/quality/20261029-214231256-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202610291229-M9S7RY/quality/20261029-214231256-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202610291229-M9S7RY/README.md"
-    - ".agentplane/tasks/202610291229-M9S7RY/quality/objects/sha256/282f026c6e5b9bb16dbbb0e382f26713fc97a75f709d5258d8251ba3151f41a2.patch"
-    - ".agentplane/tasks/202610291229-M9S7RY/quality/objects/sha256/cc5d1d91744ab4b2ac033b37f7ff494a9830dca05aa325d04d689a071deda2d7.json"
-    - ".agentplane/tasks/202610291229-M9S7RY/verification/20261029190935251-31729206e485640c.json"
-    - ".agentplane/tasks/202610291229-M9S7RY/quality/objects/sha256/a9407e65e40fea821c4fd9b32051e6289d03f7912ef6d78e1c662518307f023b.json"
+    - ".agentplane/tasks/202610291229-M9S7RY/quality/objects/sha256/03d4fa75de5b80742180c2e3944d2a5c14556ddaa9b6fc684259ed9d83b3fac0.patch"
+    - ".agentplane/tasks/202610291229-M9S7RY/quality/objects/sha256/c5ccff2d3d2ab42d699d61f1c84dd96ab305c471766fac19b57a35023fe90f9f.json"
+    - ".agentplane/tasks/202610291229-M9S7RY/verification/20261029213524067-9a8854e847a966d1.json"
+    - ".agentplane/tasks/202610291229-M9S7RY/quality/objects/sha256/e7601bb171f3512e993e605bfc3ee5db58fab3f9de5578521a4da6879036bcee.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "P2: inheritedProviderUpdatePaths.history and the provider-aware branch ownership history scan use git log --full-history without explicit merge diffs. An isolated fixture using the production proof and ownership functions changed a canonical foreign Task README only in one merge resolution and restored it only in another merge resolution. Final bytes matched R. The plain history contained only own.txt; inheritedProviderUpdatePaths incorrectly returned the foreign README and assertBranchTaskArtifactOwnership accepted it. This violates the required preservation of pre-update ownership and complete path lineage. Add explicit --diff-merges=separate to both remaining history scans and add a genuine two-merge edit/restore regression using the existing provider proof test fixture."
-    - "The completed scope admission helper now explicitly selects separate merge diffs. Its source-only/reverted refusal and README-only positive cases under log.diffMerges=off passed focused checks. Native full009 passed on30e2df44. Those results do not cover the newly reproduced provider lineage bypass."
+    - "Authenticated completed-task scope repair preserves consumed request/current-state/USER binding, completed Kernel/Plan/frozen base and prior records."
+    - "Code publication retains code obligations and protected user approval; genuine release remains release. Tracked contained AGENTS projection binds stable link/index/target while generic no-follow remains unchanged."
+    - "Canonical attribution unions task non-merge and per-merge canonical-intersection deltas; authenticated untouched intervals use distinct I/H/previousR. Original RAW pre-update ownership and canonical candidate discovery remain strict; late proof cannot authenticate an earlier unattested local import."
+    - "All14 source hashes match at evaluated f32796a8, native full source45ed6796 and prepared HEAD12166513. Root read-only Git evidence c363f331 confirms adjacent ancestry and only own Task metadata changes; peer checked its hashes/provenance without claiming independent Git execution."
+    - "Native full011 passed1532743ms: six direct groups, core7669PASS/1existingSKIP across812 files, runtime36, criticalCLI34, platform98, coverage105. Root and peer checked21 manifests/63 streams/370532B; deliberate nested exit2/3 fixtures remain failed. Old full010 remains byte-exact FAILED."
+    - "Root and independent peer verified55 context block digests/bytes,34 required values,11 excerpts, current native EW and frozen inputs/schema/review identity; no remaining material findings within approved scope."
+    - "Residual risk: Fresh current-head hosted checks, unresolved PR review and canonical merge remain required."
+    - "Residual risk: Original VPB P2/Knip and original Factory GL16/native publication gates remain pending before SB recovery."
+    - "Residual risk: No deployed runtime, SB health or exact live semantic acceptance is established by this evaluation."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -372,7 +378,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-10-29T21:35:27.554Z"
+doc_updated_at: "2026-10-29T21:54:50.867Z"
 doc_updated_by: "CODER"
 description: "Unblock genuine completed-Task scope admission and current-head review after authenticated canonical base import, then resume the existing VPBGBK P2 repair. Actual human approved the exact twelve framework roots on 2026-10-29 via call_0bf521676b0e44d69e82dc6c22fbc484. This is a separate framework repair, not replacement or imported acceptance of VPBGBK or DRG36R. Admit only an authenticated consumed task-level implementation_rework scope request under exact current state and genuine USER approval. Extend only the repair execution scope; preserve the completed Kernel, Plan, WorkItems and old reviews/receipts. Keep active Kernel prospective scope and retrospective authority-delta paths unchanged. Keep code Tasks with publish risk on the code verification profile. Preserve publication approval and external-effect gates. Package release Tasks retain release obligations. Observe the tracked, contained AGENTS.md policy projection by a bounded symlink-aware policy path contract. Bind link and target identity/bytes, reject outside-root, dangling, directory, swapped, cyclic or unauthorized policy aliases. Do not change the repository symlink or weaken the generic no-follow reader. Consume authenticated completed provider-update proof in the independent foreign Task ownership check. Keep frozen execution base. Retain pre-update source ownership and overlap. Require canonical R ancestry and exact current mode/blob/path lineage for inherited foreign artifacts. Approved semantic source changes must remain owned and pass fresh checks/EVAL; do not use a blanket inherited allowlist or skip foreign bytes. Preserve all original Tasks, immutable Kernel and old results. Native fresh checks and independent EVAL are mandatory. No Factory or host effects. Return to original VPBGBK after canonical framework merge."
 sections:
@@ -776,13 +782,13 @@ sections:
   Findings: ""
 extensions:
   agentplane.completed_native_review:
-    applied_at: "2026-10-29T19:20:14.464Z"
+    applied_at: "2026-10-29T21:54:50.857Z"
     kernel_digest: "sha256:0dadb733df459ce784deab3d1f5798e916459311955d71cd2ea77e44fb13d94c"
-    quality_digest: "sha256:c9e3792e37e04210e11a2ecc4a6a891d1c2e49c3290807f1fb92ae913a1eb45e"
-    result_digest: "sha256:0fb52901863337427c0378a7b937238dd4c939a9f6b23fb07992e4f0cd5b2ddc"
+    quality_digest: "sha256:b99804d3eb0725bfdf9ba2e7bf9a2a8f379fd44e3e3d0710bf59e93f50485a43"
+    result_digest: "sha256:96d808ec5b29f29c8c9263714bc2a8a84996183fa2fa70131e01713644bba26f"
     schema_version: 1
-    state_fingerprint: "sha256:1cb331b6ed3453aef4b705ee7e0ab323b759b0f6fdf68840486eff8057966c71"
-    transition_id: "tr_77bd0568f769ae984819619f35040348"
+    state_fingerprint: "sha256:415682bba301d847302d09dc89ee3fe10d0871db96055c217b9d43a08acd0376"
+    transition_id: "tr_61cc3a347de8559aa4e2656d32067a64"
   agentplane.kernel_operational_projection:
     digest: "sha256:10a3b615b34079b791385577813b65c035946bf8d0e4ee8115cd73fbf534a06f"
     evidence_refs:

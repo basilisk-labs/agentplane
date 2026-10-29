@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "severity": "medium",
+      "summary": "Authenticated completed-task scope repair preserves consumed request/current-state/USER binding, completed Kernel/Plan/frozen base and prior records.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610291229-M9S7RY/quality/objects/sha256/03d4fa75de5b80742180c2e3944d2a5c14556ddaa9b6fc684259ed9d83b3fac0.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "severity": "medium",
+      "summary": "Code publication retains code obligations and protected user approval; genuine release remains release. Tracked contained AGENTS projection binds stable link/index/target while generic no-follow remains unchanged.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610291229-M9S7RY/quality/objects/sha256/03d4fa75de5b80742180c2e3944d2a5c14556ddaa9b6fc684259ed9d83b3fac0.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-3",
+      "severity": "medium",
+      "summary": "Canonical attribution unions task non-merge and per-merge canonical-intersection deltas; authenticated untouched intervals use distinct I/H/previousR. Original RAW pre-update ownership and canonical candidate discovery remain strict; late proof cannot authenticate an earlier unattested local import.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610291229-M9S7RY/quality/objects/sha256/03d4fa75de5b80742180c2e3944d2a5c14556ddaa9b6fc684259ed9d83b3fac0.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-4",
+      "severity": "medium",
+      "summary": "All14 source hashes match at evaluated f32796a8, native full source45ed6796 and prepared HEAD12166513. Root read-only Git evidence c363f331 confirms adjacent ancestry and only own Task metadata changes; peer checked its hashes/provenance without claiming independent Git execution.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610291229-M9S7RY/quality/objects/sha256/03d4fa75de5b80742180c2e3944d2a5c14556ddaa9b6fc684259ed9d83b3fac0.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-5",
+      "severity": "medium",
+      "summary": "Native full011 passed1532743ms: six direct groups, core7669PASS/1existingSKIP across812 files, runtime36, criticalCLI34, platform98, coverage105. Root and peer checked21 manifests/63 streams/370532B; deliberate nested exit2/3 fixtures remain failed. Old full010 remains byte-exact FAILED.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610291229-M9S7RY/quality/objects/sha256/03d4fa75de5b80742180c2e3944d2a5c14556ddaa9b6fc684259ed9d83b3fac0.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-6",
+      "severity": "medium",
+      "summary": "Root and independent peer verified55 context block digests/bytes,34 required values,11 excerpts, current native EW and frozen inputs/schema/review identity; no remaining material findings within approved scope.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610291229-M9S7RY/quality/objects/sha256/03d4fa75de5b80742180c2e3944d2a5c14556ddaa9b6fc684259ed9d83b3fac0.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-7",
+      "severity": "medium",
+      "summary": "Residual risk: Fresh current-head hosted checks, unresolved PR review and canonical merge remain required.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610291229-M9S7RY/quality/objects/sha256/03d4fa75de5b80742180c2e3944d2a5c14556ddaa9b6fc684259ed9d83b3fac0.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-8",
+      "severity": "medium",
+      "summary": "Residual risk: Original VPB P2/Knip and original Factory GL16/native publication gates remain pending before SB recovery.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610291229-M9S7RY/quality/objects/sha256/03d4fa75de5b80742180c2e3944d2a5c14556ddaa9b6fc684259ed9d83b3fac0.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-9",
+      "severity": "medium",
+      "summary": "Residual risk: No deployed runtime, SB health or exact live semantic acceptance is established by this evaluation.",
+      "broken_invariant": "External EVALUATOR review requires evidence-backed semantic judgement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610291229-M9S7RY/quality/objects/sha256/03d4fa75de5b80742180c2e3944d2a5c14556ddaa9b6fc684259ed9d83b3fac0.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "No retrospective origin authority is inferred for an unattested local merge preceding the first genuine provider proof."
+  ]
+}
