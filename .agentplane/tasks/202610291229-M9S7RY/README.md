@@ -1,0 +1,967 @@
+---
+id: "202610291229-M9S7RY"
+title: "Repair completed-task scope admission and authenticated canonical import review"
+status: "DOING"
+priority: "med"
+owner: "CODER"
+revision: 14
+origin:
+  system: "manual"
+depends_on: []
+tags:
+  - "code"
+task_kind: "code"
+mutation_scope: "code"
+risk_flags:
+  - "merge"
+  - "security"
+verify:
+  - "bun run ci:local:full"
+plan_approval:
+  state: "approved"
+  updated_at: "2026-10-29T12:33:33.279Z"
+  updated_by: "USER"
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+  attempts: 0
+execution_route:
+  frozen: true
+  reason_codes:
+    - "agent_preferred_branch_pr"
+    - "effect_release_metadata"
+    - "effect_security_boundary"
+    - "repository_branch_pr_floor"
+    - "reversibility_recovery_required"
+  repository_mode: "branch_pr"
+  requested_mode: "branch_pr"
+  schema_version: 1
+  selected_mode: "branch_pr"
+execution_contract:
+  authority:
+    allowed_capabilities:
+      - "repository_write"
+    allowed_external_effects: []
+    allowed_repository_effects:
+      - "release_metadata"
+      - "repository_write"
+      - "security_boundary"
+      - "source_code"
+      - "tests"
+    allowed_resources: []
+    forbidden_external_effects:
+      - "network_read"
+      - "external_write"
+      - "credentials"
+      - "publish"
+      - "deploy"
+      - "destructive_git"
+    forbidden_repository_effects:
+      - "documentation"
+      - "public_api"
+      - "schema"
+      - "dependencies"
+      - "ci"
+    writable_roots:
+      - "packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts"
+      - "packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.ts"
+      - "packages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts"
+      - "packages/agentplane/src/commands/pr/internal/sync.ts"
+      - "packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts"
+      - "packages/agentplane/src/commands/pr/provider-update-verification-proof.ts"
+      - "packages/agentplane/src/commands/shared/workflow-policy-projection.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-policy-scope.test.ts"
+      - "packages/agentplane/src/commands/task/completed-repair-scope-request.ts"
+      - "packages/agentplane/src/commands/task/scope-extend.command.test.ts"
+      - "packages/agentplane/src/commands/task/scope-extend.ts"
+      - "packages/agentplane/src/runtime/task-obligations/resolve.test.ts"
+      - "packages/agentplane/src/runtime/task-obligations/resolve.ts"
+  declaration:
+    external_effects: []
+    implementation_uncertainty: "bounded"
+    preferred_mode: "branch_pr"
+    rationale:
+      - "explicit structured task intake"
+    repository_effects:
+      - "release_metadata"
+      - "repository_write"
+      - "security_boundary"
+      - "source_code"
+      - "tests"
+    requirements_uncertainty: "bounded"
+    reversibility: "recovery_required"
+    schema_version: 2
+    scope_roots:
+      - "packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts"
+      - "packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.ts"
+      - "packages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts"
+      - "packages/agentplane/src/commands/pr/internal/sync.ts"
+      - "packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts"
+      - "packages/agentplane/src/commands/pr/provider-update-verification-proof.ts"
+      - "packages/agentplane/src/commands/shared/workflow-policy-projection.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts"
+      - "packages/agentplane/src/commands/shared/workflow-step-policy-scope.test.ts"
+      - "packages/agentplane/src/commands/task/completed-repair-scope-request.ts"
+      - "packages/agentplane/src/commands/task/scope-extend.command.test.ts"
+      - "packages/agentplane/src/commands/task/scope-extend.ts"
+      - "packages/agentplane/src/runtime/task-obligations/resolve.test.ts"
+      - "packages/agentplane/src/runtime/task-obligations/resolve.ts"
+  observed:
+    authority_violations: []
+    changed_components: []
+    changed_paths: []
+    external_effects: []
+    repository_effects: []
+    verification_results: []
+  reason_codes:
+    - "agent_preferred_branch_pr"
+    - "effect_release_metadata"
+    - "effect_security_boundary"
+    - "repository_branch_pr_floor"
+    - "reversibility_recovery_required"
+  repository_mode: "branch_pr"
+  safety:
+    approval_effects: []
+    requires_user_approval: false
+    requires_worktree: true
+  schema_version: 1
+  selected_mode: "branch_pr"
+  source: "agent_declared"
+  verification:
+    contract:
+      declared:
+        components:
+          - "packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts"
+          - "packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.ts"
+          - "packages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts"
+          - "packages/agentplane/src/commands/pr/internal/sync.ts"
+          - "packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts"
+          - "packages/agentplane/src/commands/pr/provider-update-verification-proof.ts"
+          - "packages/agentplane/src/commands/shared/workflow-policy-projection.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts"
+          - "packages/agentplane/src/commands/shared/workflow-step-policy-scope.test.ts"
+          - "packages/agentplane/src/commands/task/completed-repair-scope-request.ts"
+          - "packages/agentplane/src/commands/task/scope-extend.command.test.ts"
+          - "packages/agentplane/src/commands/task/scope-extend.ts"
+          - "packages/agentplane/src/runtime/task-obligations/resolve.test.ts"
+          - "packages/agentplane/src/runtime/task-obligations/resolve.ts"
+        evidence_requirements:
+          - "hosted_integration"
+          - "repository_effect:release_metadata"
+          - "repository_effect:repository_write"
+          - "repository_effect:security_boundary"
+          - "repository_effect:source_code"
+          - "repository_effect:tests"
+          - "task_outcome"
+        external_effects: []
+        repository_effects:
+          - "release_metadata"
+          - "repository_write"
+          - "security_boundary"
+          - "source_code"
+          - "tests"
+        risk:
+          implementation_uncertainty: "bounded"
+          requirements_uncertainty: "bounded"
+          reversibility: "recovery_required"
+      digest: "sha256:53d2434ee154d1976d9b53f64c202985d45bbe80f5e7e040d73c3741e2da6c35"
+      escalation_reasons:
+        - "central_component:packages/agentplane/src/commands/shared/workflow-policy-projection.ts"
+        - "central_component:packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts"
+        - "central_component:packages/agentplane/src/commands/shared/workflow-step-policy-scope.test.ts"
+        - "effect_release_metadata"
+        - "effect_security_boundary"
+        - "external_effect_requires_real_e2e"
+        - "reversibility_recovery_required"
+      execution_groups:
+        - "docs-schema"
+        - "core"
+        - "runtime"
+        - "cli"
+      observed:
+        changed_components: []
+        changed_files: []
+        external_effects: []
+        repository_effects: []
+      phase: "task"
+      policy_floor:
+        monotonic_strengthening: true
+        pr_full_regression: true
+        unknown_or_central_full_regression: true
+      requires_full_regression: true
+      requires_real_e2e: true
+      schema_version: 2
+      selected_checks:
+        - "affected_unit_integration"
+        - "critical_paths"
+        - "full_regression"
+        - "hosted_integration"
+        - "real_e2e"
+        - "task_outcome"
+      selector:
+        bucket: null
+        buckets: []
+        execution_mode: "semantic"
+        kind: "semantic"
+        lint_targets: []
+        reason: "execution_declaration"
+        run_cli_docs_check: false
+        selected_test_files: []
+        vitest_pool: "forks"
+      source: "execution_contract"
+    required_evidence:
+      - "hosted_integration"
+      - "repository_effect:release_metadata"
+      - "repository_effect:repository_write"
+      - "repository_effect:security_boundary"
+      - "repository_effect:source_code"
+      - "repository_effect:tests"
+      - "task_outcome"
+commit: null
+comments: []
+events: []
+doc_version: 3
+doc_updated_at: "2026-10-29T12:30:04.595Z"
+doc_updated_by: "CODER"
+description: "Unblock genuine completed-Task scope admission and current-head review after authenticated canonical base import, then resume the existing VPBGBK P2 repair. Actual human approved the exact twelve framework roots on 2026-10-29 via call_0bf521676b0e44d69e82dc6c22fbc484. This is a separate framework repair, not replacement or imported acceptance of VPBGBK or DRG36R. Admit only an authenticated consumed task-level implementation_rework scope request under exact current state and genuine USER approval. Extend only the repair execution scope; preserve the completed Kernel, Plan, WorkItems and old reviews/receipts. Keep active Kernel prospective scope and retrospective authority-delta paths unchanged. Keep code Tasks with publish risk on the code verification profile. Preserve publication approval and external-effect gates. Package release Tasks retain release obligations. Observe the tracked, contained AGENTS.md policy projection by a bounded symlink-aware policy path contract. Bind link and target identity/bytes, reject outside-root, dangling, directory, swapped, cyclic or unauthorized policy aliases. Do not change the repository symlink or weaken the generic no-follow reader. Consume authenticated completed provider-update proof in the independent foreign Task ownership check. Keep frozen execution base. Retain pre-update source ownership and overlap. Require canonical R ancestry and exact current mode/blob/path lineage for inherited foreign artifacts. Approved semantic source changes must remain owned and pass fresh checks/EVAL; do not use a blanket inherited allowlist or skip foreign bytes. Preserve all original Tasks, immutable Kernel and old results. Native fresh checks and independent EVAL are mandatory. No Factory or host effects. Return to original VPBGBK after canonical framework merge."
+sections:
+  Summary: |-
+    Repair completed-task scope admission and authenticated canonical import review
+
+    Unblock genuine completed-Task scope admission and current-head review after authenticated canonical base import, then resume the existing VPBGBK P2 repair. Actual human approved the exact twelve framework roots on 2026-10-29 via call_0bf521676b0e44d69e82dc6c22fbc484. This is a separate framework repair, not replacement or imported acceptance of VPBGBK or DRG36R. Admit only an authenticated consumed task-level implementation_rework scope request under exact current state and genuine USER approval. Extend only the repair execution scope; preserve the completed Kernel, Plan, WorkItems and old reviews/receipts. Keep active Kernel prospective scope and retrospective authority-delta paths unchanged. Keep code Tasks with publish risk on the code verification profile. Preserve publication approval and external-effect gates. Package release Tasks retain release obligations. Observe the tracked, contained AGENTS.md policy projection by a bounded symlink-aware policy path contract. Bind link and target identity/bytes, reject outside-root, dangling, directory, swapped, cyclic or unauthorized policy aliases. Do not change the repository symlink or weaken the generic no-follow reader. Consume authenticated completed provider-update proof in the independent foreign Task ownership check. Keep frozen execution base. Retain pre-update source ownership and overlap. Require canonical R ancestry and exact current mode/blob/path lineage for inherited foreign artifacts. Approved semantic source changes must remain owned and pass fresh checks/EVAL; do not use a blanket inherited allowlist or skip foreign bytes. Preserve all original Tasks, immutable Kernel and old results. Native fresh checks and independent EVAL are mandatory. No Factory or host effects. Return to original VPBGBK after canonical framework merge.
+  Scope: |-
+    - In scope: Unblock genuine completed-Task scope admission and current-head review after authenticated canonical base import, then resume the existing VPBGBK P2 repair. Actual human approved the exact twelve framework roots on 2026-10-29 via call_0bf521676b0e44d69e82dc6c22fbc484. This is a separate framework repair, not replacement or imported acceptance of VPBGBK or DRG36R. Admit only an authenticated consumed task-level implementation_rework scope request under exact current state and genuine USER approval. Extend only the repair execution scope; preserve the completed Kernel, Plan, WorkItems and old reviews/receipts. Keep active Kernel prospective scope and retrospective authority-delta paths unchanged. Keep code Tasks with publish risk on the code verification profile. Preserve publication approval and external-effect gates. Package release Tasks retain release obligations. Observe the tracked, contained AGENTS.md policy projection by a bounded symlink-aware policy path contract. Bind link and target identity/bytes, reject outside-root, dangling, directory, swapped, cyclic or unauthorized policy aliases. Do not change the repository symlink or weaken the generic no-follow reader. Consume authenticated completed provider-update proof in the independent foreign Task ownership check. Keep frozen execution base. Retain pre-update source ownership and overlap. Require canonical R ancestry and exact current mode/blob/path lineage for inherited foreign artifacts. Approved semantic source changes must remain owned and pass fresh checks/EVAL; do not use a blanket inherited allowlist or skip foreign bytes. Preserve all original Tasks, immutable Kernel and old results. Native fresh checks and independent EVAL are mandatory. No Factory or host effects. Return to original VPBGBK after canonical framework merge.
+    - Out of scope: unrelated refactors not required for "Repair completed-task scope admission and authenticated canonical import review".
+  Plan: "1. Execute approved WorkItem repair-completed-task-review-admission."
+  Verify Steps: |-
+    PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
+
+    1. Run `bun run ci:local:full`. Expected: it succeeds and confirms the requested outcome for this task.
+    2. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
+    3. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
+  Verification: |-
+    <!-- BEGIN VERIFICATION RESULTS -->
+    <!-- END VERIFICATION RESULTS -->
+  Rollback Plan: |-
+    - Revert task-related commit(s).
+    - Re-run required checks to confirm rollback safety.
+  Findings: ""
+extensions:
+  task_execution_context:
+    base_ref: "main"
+    base_sha: "ab84dde0feba3c72718596205ff06b9de3cfb7ed"
+    repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+    schema_version: 1
+    source: "explicit"
+  task_kernel:
+    aggregate:
+      authority_lineage:
+        -
+          approval_mode: "manual_operator"
+          authority:
+            capabilities:
+              - "repository_write"
+            completion_requirements:
+              - "work_item_validation"
+              - "final_validation"
+            digest: "sha256:c8ed918f10b9f59a89f7482607e309ec7eb32764992fc77ea297ca4ddad4f828"
+            expires_at: null
+            external_effects: []
+            plan_digest: "sha256:798c970d5d9e62cb346663f783348295390d7bc67b94283836512c1b2bd13291"
+            plan_revision: 1
+            policy_digests:
+              - "sha256:37492408e7e56de75241cc87a953f635dd9852af3cd93225899233274890938c"
+            provenance:
+              actor_id: "USER"
+              evidence_digest: "sha256:0e4fad0f0894e626c23a18ce4178d4983895e4288a935f0a08457849c6e36de7"
+              kind: "USER"
+              parent_authority_digest: null
+            repository_effects:
+              - "release_metadata"
+              - "repository_write"
+              - "security_boundary"
+              - "source_code"
+              - "tests"
+            repository_fingerprint: "sha256:a33aff011036e99331fd630e3e36922636321114291eb0e306e6e589b5e90d27"
+            repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+            resources: []
+            risk:
+              implementation: "bounded"
+              requirements: "bounded"
+              reversibility: "recovery_required"
+            scope_roots:
+              - "packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts"
+              - "packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.ts"
+              - "packages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts"
+              - "packages/agentplane/src/commands/pr/internal/sync.ts"
+              - "packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts"
+              - "packages/agentplane/src/commands/pr/provider-update-verification-proof.ts"
+              - "packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts"
+              - "packages/agentplane/src/commands/shared/workflow-step-policy-scope.test.ts"
+              - "packages/agentplane/src/commands/task/scope-extend.command.test.ts"
+              - "packages/agentplane/src/commands/task/scope-extend.ts"
+              - "packages/agentplane/src/runtime/task-obligations/resolve.test.ts"
+              - "packages/agentplane/src/runtime/task-obligations/resolve.ts"
+            task_id: "202610291229-M9S7RY"
+            validation_requirements:
+              - "affected_unit_integration"
+              - "critical_paths"
+              - "full_regression"
+              - "hosted_integration"
+              - "real_e2e"
+              - "task_outcome"
+            work_item_id: null
+          observation: null
+        -
+          approval_mode: null
+          authority:
+            capabilities:
+              - "repository_write"
+            completion_requirements:
+              - "work_item_validation"
+              - "final_validation"
+            digest: "sha256:4e2bf1038d3d4a27d1bb1d9e87a1d65e14f72e554535c8370419ed0e0f8ff01b"
+            expires_at: null
+            external_effects: []
+            plan_digest: "sha256:798c970d5d9e62cb346663f783348295390d7bc67b94283836512c1b2bd13291"
+            plan_revision: 1
+            policy_digests:
+              - "sha256:37492408e7e56de75241cc87a953f635dd9852af3cd93225899233274890938c"
+            provenance:
+              actor_id: "agentplane:kernel-controller"
+              evidence_digest: "sha256:0e4fad0f0894e626c23a18ce4178d4983895e4288a935f0a08457849c6e36de7"
+              kind: "SYSTEM"
+              parent_authority_digest: "sha256:c8ed918f10b9f59a89f7482607e309ec7eb32764992fc77ea297ca4ddad4f828"
+            repository_effects:
+              - "release_metadata"
+              - "repository_write"
+              - "security_boundary"
+              - "source_code"
+              - "tests"
+            repository_fingerprint: "sha256:111e576d8705b630d75c77fa9718420a4087329f436dc0b9532c6219b06ef86e"
+            repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+            resources: []
+            risk:
+              implementation: "bounded"
+              requirements: "bounded"
+              reversibility: "recovery_required"
+            scope_roots:
+              - "packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts"
+              - "packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.ts"
+              - "packages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts"
+              - "packages/agentplane/src/commands/pr/internal/sync.ts"
+              - "packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts"
+              - "packages/agentplane/src/commands/pr/provider-update-verification-proof.ts"
+              - "packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts"
+              - "packages/agentplane/src/commands/shared/workflow-step-policy-scope.test.ts"
+              - "packages/agentplane/src/commands/task/scope-extend.command.test.ts"
+              - "packages/agentplane/src/commands/task/scope-extend.ts"
+              - "packages/agentplane/src/runtime/task-obligations/resolve.test.ts"
+              - "packages/agentplane/src/runtime/task-obligations/resolve.ts"
+            task_id: "202610291229-M9S7RY"
+            validation_requirements:
+              - "affected_unit_integration"
+              - "critical_paths"
+              - "full_regression"
+              - "hosted_integration"
+              - "real_e2e"
+              - "task_outcome"
+            work_item_id: null
+          observation:
+            changed_paths:
+              - "packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts"
+              - "packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.ts"
+              - "packages/agentplane/src/commands/pr/internal/sync.ts"
+              - "packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts"
+              - "packages/agentplane/src/commands/pr/provider-update-verification-proof.ts"
+              - "packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts"
+              - "packages/agentplane/src/commands/shared/workflow-step-policy-scope.test.ts"
+              - "packages/agentplane/src/commands/task/scope-extend.command.test.ts"
+              - "packages/agentplane/src/commands/task/scope-extend.ts"
+              - "packages/agentplane/src/runtime/task-obligations/resolve.test.ts"
+              - "packages/agentplane/src/runtime/task-obligations/resolve.ts"
+            evidence_digest: "sha256:61eb23f9bb67c41d3e5885514cb9837221511dfca1f42d3d464ab18ecaccbbcc"
+            kind: "repository_implementation"
+            previous_fingerprint: "sha256:a33aff011036e99331fd630e3e36922636321114291eb0e306e6e589b5e90d27"
+        -
+          approval_mode: "manual_operator"
+          authority:
+            capabilities:
+              - "repository_write"
+            completion_requirements:
+              - "work_item_validation"
+              - "final_validation"
+            digest: "sha256:14c47651188e1c286aecf0c09b6f1102a9d5b20fa91041357050248efdeac0e4"
+            expires_at: null
+            external_effects: []
+            plan_digest: "sha256:798c970d5d9e62cb346663f783348295390d7bc67b94283836512c1b2bd13291"
+            plan_revision: 1
+            policy_digests:
+              - "sha256:37492408e7e56de75241cc87a953f635dd9852af3cd93225899233274890938c"
+            provenance:
+              actor_id: "USER"
+              evidence_digest: "sha256:0e4fad0f0894e626c23a18ce4178d4983895e4288a935f0a08457849c6e36de7"
+              kind: "USER"
+              parent_authority_digest: "sha256:4e2bf1038d3d4a27d1bb1d9e87a1d65e14f72e554535c8370419ed0e0f8ff01b"
+            repository_effects:
+              - "release_metadata"
+              - "repository_write"
+              - "security_boundary"
+              - "source_code"
+              - "tests"
+            repository_fingerprint: "sha256:111e576d8705b630d75c77fa9718420a4087329f436dc0b9532c6219b06ef86e"
+            repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+            resources: []
+            risk:
+              implementation: "bounded"
+              requirements: "bounded"
+              reversibility: "recovery_required"
+            scope_roots:
+              - "packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts"
+              - "packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.ts"
+              - "packages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts"
+              - "packages/agentplane/src/commands/pr/internal/sync.ts"
+              - "packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts"
+              - "packages/agentplane/src/commands/pr/provider-update-verification-proof.ts"
+              - "packages/agentplane/src/commands/shared/workflow-policy-projection.ts"
+              - "packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts"
+              - "packages/agentplane/src/commands/shared/workflow-step-policy-scope.test.ts"
+              - "packages/agentplane/src/commands/task/completed-repair-scope-request.ts"
+              - "packages/agentplane/src/commands/task/scope-extend.command.test.ts"
+              - "packages/agentplane/src/commands/task/scope-extend.ts"
+              - "packages/agentplane/src/runtime/task-obligations/resolve.test.ts"
+              - "packages/agentplane/src/runtime/task-obligations/resolve.ts"
+            task_id: "202610291229-M9S7RY"
+            validation_requirements:
+              - "affected_unit_integration"
+              - "critical_paths"
+              - "full_regression"
+              - "hosted_integration"
+              - "real_e2e"
+              - "task_outcome"
+            work_item_id: null
+          observation:
+            changed_paths: []
+            evidence_digest: "sha256:689f92d1d4b28c590a09573bf09e7b0ae58501a85b78d4f58c5f22e89e9c3449"
+            kind: "prospective_scope_request"
+            previous_fingerprint: "sha256:111e576d8705b630d75c77fa9718420a4087329f436dc0b9532c6219b06ef86e"
+            request_digest: "sha256:b9020666cf140b57876636668fb590bc07d451f97c4566d86914eff8240fed8c"
+            scope_request:
+              attempt: 1
+              claim_id: "sha256:304b33359c8472d6d482e3c8520b905a3a8a33dd064dfca1fe63bc1426ab3b68"
+              contract_digest: "sha256:b40f185413c93e63152bfb0196840adcfedeee87f78b42c12b60b407b0e93f3e"
+              intake_after_digest: "sha256:4afa379c87a103b88b97a121d0404efcacf938a8ed4adaf266d66518c98b24d2"
+              intake_before_digest: "sha256:ed1985f03c509cef6d04a953ec4243bc0e760a1dd3bf29db08cdc7d6f013a034"
+              parent_authority_digest: "sha256:4e2bf1038d3d4a27d1bb1d9e87a1d65e14f72e554535c8370419ed0e0f8ff01b"
+              plan_digest: "sha256:798c970d5d9e62cb346663f783348295390d7bc67b94283836512c1b2bd13291"
+              plan_revision: 1
+              record_digest: "sha256:49df538ed0fcf3410d12ee4fa6a8aa7258cee63cdd967a34470b88fefc4739a6"
+              repository_effects: []
+              repository_fingerprint: "sha256:111e576d8705b630d75c77fa9718420a4087329f436dc0b9532c6219b06ef86e"
+              result_authentication: "native_stop_receipt"
+              result_digest: "sha256:ccad6666d97126847a5944f248842f446492ee2961510bf18dab6a0236670c3b"
+              scope_roots:
+                - "packages/agentplane/src/commands/shared/workflow-policy-projection.ts"
+                - "packages/agentplane/src/commands/task/completed-repair-scope-request.ts"
+              stop_receipt_digest: "sha256:9a29b6de4231e403ef20f3e08c084ca64d885d2daae81f8133d14c0105b1dbf3"
+              task_id: "202610291229-M9S7RY"
+              task_revision: 8
+              work_item_id: "repair-completed-task-review-admission"
+              work_order_id: "sha256:99d33a0aae2900b9ef8c217d6e083f3433b0bda534bfd102d6cb3bee99e6f206"
+        -
+          approval_mode: "manual_operator"
+          authority:
+            capabilities:
+              - "repository_write"
+            completion_requirements:
+              - "work_item_validation"
+              - "final_validation"
+            digest: "sha256:fce43c3441db27792d998008cb32efb23f6881e1427f0378d4aebd752b91c8d6"
+            expires_at: null
+            external_effects: []
+            plan_digest: "sha256:b033a3193e909983f07d72a71225ac1260e94857bf34b8b00ff25edcd9bcceba"
+            plan_revision: 2
+            policy_digests:
+              - "sha256:37492408e7e56de75241cc87a953f635dd9852af3cd93225899233274890938c"
+            provenance:
+              actor_id: "USER"
+              evidence_digest: "sha256:117b14e8b54c4dd2d50cfce85540b09ad39fec4741fe8d486cce0e49692e1a6c"
+              kind: "USER"
+              parent_authority_digest: null
+            repository_effects:
+              - "release_metadata"
+              - "repository_write"
+              - "security_boundary"
+              - "source_code"
+              - "tests"
+            repository_fingerprint: "sha256:111e576d8705b630d75c77fa9718420a4087329f436dc0b9532c6219b06ef86e"
+            repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+            resources: []
+            risk:
+              implementation: "bounded"
+              requirements: "bounded"
+              reversibility: "recovery_required"
+            scope_roots:
+              - "packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts"
+              - "packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.ts"
+              - "packages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts"
+              - "packages/agentplane/src/commands/pr/internal/sync.ts"
+              - "packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts"
+              - "packages/agentplane/src/commands/pr/provider-update-verification-proof.ts"
+              - "packages/agentplane/src/commands/shared/workflow-policy-projection.ts"
+              - "packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts"
+              - "packages/agentplane/src/commands/shared/workflow-step-policy-scope.test.ts"
+              - "packages/agentplane/src/commands/task/completed-repair-scope-request.ts"
+              - "packages/agentplane/src/commands/task/scope-extend.command.test.ts"
+              - "packages/agentplane/src/commands/task/scope-extend.ts"
+              - "packages/agentplane/src/runtime/task-obligations/resolve.test.ts"
+              - "packages/agentplane/src/runtime/task-obligations/resolve.ts"
+            task_id: "202610291229-M9S7RY"
+            validation_requirements:
+              - "affected_unit_integration"
+              - "critical_paths"
+              - "full_regression"
+              - "hosted_integration"
+              - "real_e2e"
+              - "task_outcome"
+            work_item_id: null
+          observation: null
+      controller_transfer: null
+      current_plan:
+        approval_actor_id: "USER"
+        approval_evidence_digest: "sha256:117b14e8b54c4dd2d50cfce85540b09ad39fec4741fe8d486cce0e49692e1a6c"
+        digest: "sha256:b033a3193e909983f07d72a71225ac1260e94857bf34b8b00ff25edcd9bcceba"
+        revision: 2
+        state: "APPROVED"
+        work_items:
+          -
+            contract_digest: "sha256:279ce032f4f350b34beef270d0f7b500395bcda1b2e5502136bfd8be1fd96145"
+            depends_on: []
+            execution_requirements:
+              capabilities:
+                - "repository_write"
+              external_effects: []
+              repository_effects:
+                - "source_code"
+                - "tests"
+                - "security_boundary"
+              resources: []
+              scope_roots:
+                - "packages/agentplane/src/commands/task/scope-extend.ts"
+                - "packages/agentplane/src/commands/task/scope-extend.command.test.ts"
+                - "packages/agentplane/src/runtime/task-obligations/resolve.ts"
+                - "packages/agentplane/src/runtime/task-obligations/resolve.test.ts"
+                - "packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts"
+                - "packages/agentplane/src/commands/shared/workflow-step-policy-scope.test.ts"
+                - "packages/agentplane/src/commands/pr/provider-update-verification-proof.ts"
+                - "packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts"
+                - "packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.ts"
+                - "packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts"
+                - "packages/agentplane/src/commands/pr/internal/sync.ts"
+                - "packages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts"
+                - "packages/agentplane/src/commands/task/completed-repair-scope-request.ts"
+                - "packages/agentplane/src/commands/shared/workflow-policy-projection.ts"
+            expected_outputs:
+              - "framework-admission-repair-and-regression-evidence"
+            id: "repair-completed-task-review-admission"
+            optional: false
+            required_inputs: []
+      effects: []
+      final_validation: null
+      id: "202610291229-M9S7RY"
+      intent_digest: "sha256:b0b565379cc5cb83c8f4f32344bc04aab0edbd5df3a88dac807005401b8c2470"
+      migration_receipts: []
+      mutation_receipts:
+        capture:202610291229-M9S7RY:
+          after_revision: 1
+          aggregate_digest: "sha256:f1afa14bb643a8e60e6dc6840c283e5d303846a799e9c451a519dfeaa35cfd01"
+          before_revision: 0
+          command_digest: "sha256:e7c3c3ddfcce48c5d6c52fa4bd44604a68d7b19dffef9648a7bf9b36297dad58"
+          effect_ids: []
+          event_digests:
+            - "sha256:302bebbc85b9c3b428fc93481d67ad14ce08dc0f6dc3e33908194cc894ae2b12"
+          mutation_id: "capture:202610291229-M9S7RY"
+        kernel_work_item_claim_required:sha256:933bbaf2ffe6698def683c794d3ea7091958a0cb845f4980692c548bcbd7ce24:sha256:a33aff011036e99331fd630e3e36922636321114291eb0e306e6e589b5e90d27:
+          after_revision: 5
+          aggregate_digest: "sha256:8c2fb9923ef248c7c220e19821cf93cd9b5cbf832963d12a53bfe837b7c70bbc"
+          before_revision: 4
+          command_digest: "sha256:2afda04d9b289290aa44797f83f26c40f55e06a90ebc59626b121e2c96a5a9a1"
+          effect_ids: []
+          event_digests:
+            - "sha256:ab2eb2c5d2905b67a06e63245f42fb01ce02db618f299ecdd9e3c68c29013da3"
+          mutation_id: "kernel_work_item_claim_required:sha256:933bbaf2ffe6698def683c794d3ea7091958a0cb845f4980692c548bcbd7ce24:sha256:a33aff011036e99331fd630e3e36922636321114291eb0e306e6e589b5e90d27"
+        kernel_work_item_claim_required:sha256:baf98bc52c091fa6b8f86fedf6a2cfa9d6b17ef45c280b4481a71008d221fcb8:sha256:111e576d8705b630d75c77fa9718420a4087329f436dc0b9532c6219b06ef86e:
+          after_revision: 12
+          aggregate_digest: "sha256:c412211df9d02355d71a63b799ccdf641b3bc59cd3b41dcb2267bcf9ffda4644"
+          before_revision: 11
+          command_digest: "sha256:bebdf49e32012c16cce487323fd25526598b55f4a5217afcc705b3582d674d1b"
+          effect_ids: []
+          event_digests:
+            - "sha256:b3b622883351014ade0ec2c5c04e572540711da1649bdb37efc58f68badfb60f"
+          mutation_id: "kernel_work_item_claim_required:sha256:baf98bc52c091fa6b8f86fedf6a2cfa9d6b17ef45c280b4481a71008d221fcb8:sha256:111e576d8705b630d75c77fa9718420a4087329f436dc0b9532c6219b06ef86e"
+        kernel_work_item_execution_required:sha256:64ad66f12730c85e4f7e7bfb1eb85d89551e306004fa2a1fa851de96fc905675:sha256:a33aff011036e99331fd630e3e36922636321114291eb0e306e6e589b5e90d27:
+          after_revision: 6
+          aggregate_digest: "sha256:e0fa174efca5327c3086854f518fe299be320a401b8625ae9e1dce3147e2ac50"
+          before_revision: 5
+          command_digest: "sha256:b9467ec8d88d7091ea21f8f2eaedfdc2939ba491ba6b3d55b46174e9411a8389"
+          effect_ids: []
+          event_digests:
+            - "sha256:f5e3a82f68ec3b1f7f476fae6a30f5a1fe71a75a3c5793ecfa55fd1c91146f89"
+          mutation_id: "kernel_work_item_execution_required:sha256:64ad66f12730c85e4f7e7bfb1eb85d89551e306004fa2a1fa851de96fc905675:sha256:a33aff011036e99331fd630e3e36922636321114291eb0e306e6e589b5e90d27"
+        kernel_work_item_execution_required:sha256:ed9d68be3dd6918d3e2ff3842b62abeeaa7b025ee7f6c896cd842a5fd2d6fd48:sha256:111e576d8705b630d75c77fa9718420a4087329f436dc0b9532c6219b06ef86e:
+          after_revision: 13
+          aggregate_digest: "sha256:f969a55ff3be57507bd0d4f65da02a37221284f9528a68791f9594964c110213"
+          before_revision: 12
+          command_digest: "sha256:d0e8f8836f112677eb98e48233af19ba38d40386b29c3dc81d05e32b420c2486"
+          effect_ids: []
+          event_digests:
+            - "sha256:f0ce58828dbdbd67c13f2b845c43ad5e82640c488017b5a35daf5bcf068590f7"
+          mutation_id: "kernel_work_item_execution_required:sha256:ed9d68be3dd6918d3e2ff3842b62abeeaa7b025ee7f6c896cd842a5fd2d6fd48:sha256:111e576d8705b630d75c77fa9718420a4087329f436dc0b9532c6219b06ef86e"
+        kernel_work_item_materialization_required:sha256:c244ec34df39c5c718fcd30af7594dc8ace07c739d07aa942291a1fa8068e36a:sha256:a33aff011036e99331fd630e3e36922636321114291eb0e306e6e589b5e90d27:
+          after_revision: 4
+          aggregate_digest: "sha256:eb8f14e1ca2a105a5064de09e4d63b3c0e44111bab309c721cacca7583884181"
+          before_revision: 3
+          command_digest: "sha256:bf08187b68b8611b5dfa247ca1c5e38ca7eef9504e96f62f699452cd5c491b0c"
+          effect_ids: []
+          event_digests:
+            - "sha256:90c374b0cb912f0f6257ed755554ad61e415b629218c5379504f2507c9168181"
+          mutation_id: "kernel_work_item_materialization_required:sha256:c244ec34df39c5c718fcd30af7594dc8ace07c739d07aa942291a1fa8068e36a:sha256:a33aff011036e99331fd630e3e36922636321114291eb0e306e6e589b5e90d27"
+        result:sha256:69d7c4c21fe88edcfc1609e08ecc3b6645ccda1c2160f270b043916c25e2f92c:
+          after_revision: 10
+          aggregate_digest: "sha256:a4a41bc488b8a5c9ef4f96044b97b9d14bff5ee9f863ea4ceb993d6d38305aac"
+          before_revision: 9
+          command_digest: "sha256:3c1c0ac646fb93608de4c1ad03501c38adffe0a30610ab05e969d02f3c1e63d7"
+          effect_ids: []
+          event_digests:
+            - "sha256:38b3856b5f043bd4a6a6c8317efb6108a8bed0f0e6fccb1b7f1f7c08fe6f40e3"
+          mutation_id: "result:sha256:69d7c4c21fe88edcfc1609e08ecc3b6645ccda1c2160f270b043916c25e2f92c"
+        result:sha256:95fb7eecf4b6f3f79dfc1541f905358772accc3026c7ab11bf96d42c749dc5a3:
+          after_revision: 2
+          aggregate_digest: "sha256:4fec10cf1f092fb34fa74fbe1e4e37af994b1cb836bf3f4ad9226ba0efc9dbbe"
+          before_revision: 1
+          command_digest: "sha256:68833899c7032ef32b97e22efe0598eb28fa42457e1d5d035fefd3ba66b940e2"
+          effect_ids: []
+          event_digests:
+            - "sha256:d4b2fae32e33ca19b01aee7e966f812b11d79282ca2f9ecfd1d57e28cde9816e"
+          mutation_id: "result:sha256:95fb7eecf4b6f3f79dfc1541f905358772accc3026c7ab11bf96d42c749dc5a3"
+        scope-request:sha256:b9020666cf140b57876636668fb590bc07d451f97c4566d86914eff8240fed8c:
+          after_revision: 9
+          aggregate_digest: "sha256:8f704d5dda324a644d90827bd8a4b5c18c761e8a6823c204828d8fd635ab267c"
+          before_revision: 8
+          command_digest: "sha256:80142481aaec23cfe9e576b31bcf5a5b4d1968a8ae5aa791f71543863fb93c75"
+          effect_ids: []
+          event_digests:
+            - "sha256:389858d5ae0d6e0c30ca5bc42b038ddada3607dd455ee7e0aa2c1a02ad700ba2"
+          mutation_id: "scope-request:sha256:b9020666cf140b57876636668fb590bc07d451f97c4566d86914eff8240fed8c"
+        semantic-stop:sha256:99d33a0aae2900b9ef8c217d6e083f3433b0bda534bfd102d6cb3bee99e6f206:
+          after_revision: 8
+          aggregate_digest: "sha256:cb3d9b51f0b531a9651bf7cba2f5a78cc51b10fb75efdc97dbdf3677653b4b5d"
+          before_revision: 7
+          command_digest: "sha256:6f1e75c1465049eba665e1ea36d49611b6bcaf7a89e35dd75acdf3ec5f72ebf9"
+          effect_ids: []
+          event_digests:
+            - "sha256:5a2bda15bd4d61bbcd7b8a40ff05071c6db0a16dc8689242b93caf539e2c7af8"
+          mutation_id: "semantic-stop:sha256:99d33a0aae2900b9ef8c217d6e083f3433b0bda534bfd102d6cb3bee99e6f206"
+        sha256:2b295f64f1e98c076c1cbeab0e782521a22b5f34997be2f3a202fe29d5c7f689:
+          after_revision: 7
+          aggregate_digest: "sha256:544770f93674b9d5da0141d3d679195e3a7631d3961603b837e8d349aa85d2f7"
+          before_revision: 6
+          command_digest: "sha256:458810041a36f4e652132d6f18ff7013ad4e2d6aaed3bf47315393c689df29bf"
+          effect_ids: []
+          event_digests:
+            - "sha256:8cc5e920738ff4e0faf811b47b87c7d68b893a248788c102dd590015b62c6294"
+          mutation_id: "sha256:2b295f64f1e98c076c1cbeab0e782521a22b5f34997be2f3a202fe29d5c7f689"
+        sha256:4050fa12acdc51209c269b65f1ba675fa47436b8533535c8c9589766f154776c:
+          after_revision: 3
+          aggregate_digest: "sha256:7e06516b6bd1ca4244c902e03b49984dc75c36d1fb4a7de017bcf43c98a719ca"
+          before_revision: 2
+          command_digest: "sha256:89302fe944f579d239a1d0229fb7fa38db2d886e192071696cef1a54364dedc5"
+          effect_ids: []
+          event_digests:
+            - "sha256:41122ad8cb053b3a489e6325eaadf6278af5102fe7fe8748d1efec54715ea0ea"
+          mutation_id: "sha256:4050fa12acdc51209c269b65f1ba675fa47436b8533535c8c9589766f154776c"
+        sha256:d1408e738b803f9f3a73fecbe3509c7c7e78349fc95ea92df88983fb879b7fcb:
+          after_revision: 11
+          aggregate_digest: "sha256:c0ba07cdc7112e21b2760cb64a35eed6cee007cce65aa812807171f97197a918"
+          before_revision: 10
+          command_digest: "sha256:412a8f1dd9fdd1ae0ad2ceab0f29f83b2e16553cf15bdd48bd9cffe25651c9d4"
+          effect_ids: []
+          event_digests:
+            - "sha256:f8e3a1818c66c8b9c1433a1303a9c9aa223db59fe0b17e99e96f31d191ef61a1"
+          mutation_id: "sha256:d1408e738b803f9f3a73fecbe3509c7c7e78349fc95ea92df88983fb879b7fcb"
+      plan_history:
+        -
+          approval_actor_id: "USER"
+          approval_evidence_digest: "sha256:0e4fad0f0894e626c23a18ce4178d4983895e4288a935f0a08457849c6e36de7"
+          digest: "sha256:798c970d5d9e62cb346663f783348295390d7bc67b94283836512c1b2bd13291"
+          revision: 1
+          state: "REJECTED"
+          work_items:
+            -
+              contract_digest: "sha256:b40f185413c93e63152bfb0196840adcfedeee87f78b42c12b60b407b0e93f3e"
+              depends_on: []
+              execution_requirements:
+                capabilities:
+                  - "repository_write"
+                external_effects: []
+                repository_effects:
+                  - "source_code"
+                  - "tests"
+                  - "security_boundary"
+                resources: []
+                scope_roots:
+                  - "packages/agentplane/src/commands/task/scope-extend.ts"
+                  - "packages/agentplane/src/commands/task/scope-extend.command.test.ts"
+                  - "packages/agentplane/src/runtime/task-obligations/resolve.ts"
+                  - "packages/agentplane/src/runtime/task-obligations/resolve.test.ts"
+                  - "packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts"
+                  - "packages/agentplane/src/commands/shared/workflow-step-policy-scope.test.ts"
+                  - "packages/agentplane/src/commands/pr/provider-update-verification-proof.ts"
+                  - "packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts"
+                  - "packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.ts"
+                  - "packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts"
+                  - "packages/agentplane/src/commands/pr/internal/sync.ts"
+                  - "packages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts"
+              expected_outputs:
+                - "framework-admission-repair-and-regression-evidence"
+              id: "repair-completed-task-review-admission"
+              optional: false
+              required_inputs: []
+      revision: 13
+      schema_version: 1
+      state: "ACTIVE"
+      work_items:
+        repair-completed-task-review-admission:
+          attempt: 2
+          claim_id: "sha256:eb406da8e8a423ed3a66b348f125b435ac24d055c6ceb26aec5e0892cb1f3adf"
+          definition:
+            contract_digest: "sha256:279ce032f4f350b34beef270d0f7b500395bcda1b2e5502136bfd8be1fd96145"
+            depends_on: []
+            execution_requirements:
+              capabilities:
+                - "repository_write"
+              external_effects: []
+              repository_effects:
+                - "source_code"
+                - "tests"
+                - "security_boundary"
+              resources: []
+              scope_roots:
+                - "packages/agentplane/src/commands/task/scope-extend.ts"
+                - "packages/agentplane/src/commands/task/scope-extend.command.test.ts"
+                - "packages/agentplane/src/runtime/task-obligations/resolve.ts"
+                - "packages/agentplane/src/runtime/task-obligations/resolve.test.ts"
+                - "packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts"
+                - "packages/agentplane/src/commands/shared/workflow-step-policy-scope.test.ts"
+                - "packages/agentplane/src/commands/pr/provider-update-verification-proof.ts"
+                - "packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts"
+                - "packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.ts"
+                - "packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts"
+                - "packages/agentplane/src/commands/pr/internal/sync.ts"
+                - "packages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts"
+                - "packages/agentplane/src/commands/task/completed-repair-scope-request.ts"
+                - "packages/agentplane/src/commands/shared/workflow-policy-projection.ts"
+            expected_outputs:
+              - "framework-admission-repair-and-regression-evidence"
+            id: "repair-completed-task-review-admission"
+            optional: false
+            required_inputs: []
+          output_manifests: []
+          result_digest: null
+          revision: 8
+          state: "EXECUTING"
+          validation: null
+    digest: "sha256:7bb7648fe7092d7b7310f31e8bb346ab06dd2d27a62a9b9f56c3ad0f45c61257"
+    documents:
+      contracts:
+        sha256:279ce032f4f350b34beef270d0f7b500395bcda1b2e5502136bfd8be1fd96145:
+          acceptance_criteria:
+            - "Only the exact authenticated consumed completed-Task implementation_rework request can extend task-level repair scope with matching current state, exact roots/effects and explicit USER authority. Preserve completed Kernel, Plan, WorkItems, execution base, previous reviews and failed receipts. Reject stale, tampered, wrong-purpose, dirty, expanded and replay-mismatched requests before effects. Keep active-Kernel retrospective delta approval unchanged."
+            - "Code Tasks declaring publish risk retain code verification and publication approval gates; genuine release Tasks retain release obligations. No risk flag is removed to obtain admission."
+            - "Workflow policy fingerprints observe the canonical tracked contained AGENTS.md symlink and its exact target bytes using bounded stable identities. Reject outside-root, arbitrary aliases, dangling, cyclic, swapped or directory targets. Generic stable-file no-follow remains unchanged."
+            - "Foreign Task artifact ownership consumes only authenticated completed native provider-update proof, without rebinding frozen execution base. Preserve pre-update ownership and overlap; require proved canonical ancestry, exact mode/blob, no foreign path edits or deceptive delete/rename/revert lineage. Approved semantic descendants may change owned implementation, but never inherit old acceptance."
+            - "Nearest existing regression tests reproduce the original failures and test positive, negative, interruption and replay invariants. Focused checks and mandatory native full pass on the same source, followed by fresh independent native EVAL. Report static, native, hosted and runtime evidence separately."
+            - "No source outside the approved fourteen roots is modified; no old Task/Kernel/results are rewritten. Preserve all original worktrees, untracked evidence, credentials, guards and holdings. No Factory/host operations. The GitLab16 merge-method publication boundary remains unresolved and must be qualified before another Factory full or provider effect."
+            - "Keep every runtime module within the enforced600-line budget without exemptions or compression for the counter. Place completed-repair blocker authentication in completed-repair-scope-request.ts and contained policy projection reading in workflow-policy-projection.ts. Keep command mutation orchestration in scope-extend.ts and workflow assembly in workflow-step-fingerprint.ts. Existing tests remain in admitted test files."
+          objective: "Unblock genuine completed-Task scope admission and current-head review after authenticated canonical base import, then resume the existing VPBGBK P2 repair."
+          role: "EXECUTOR"
+          verification_commands:
+            - "bun run test:project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/runtime/task-obligations/resolve.test.ts packages/agentplane/src/commands/shared/workflow-step-policy-scope.test.ts packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts packages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts"
+            - "bun run ci:local:full"
+        sha256:b40f185413c93e63152bfb0196840adcfedeee87f78b42c12b60b407b0e93f3e:
+          acceptance_criteria:
+            - "Only the exact authenticated consumed completed-Task implementation_rework request can extend task-level repair scope with matching current state, exact roots/effects and explicit USER authority. Preserve completed Kernel, Plan, WorkItems, execution base, previous reviews and failed receipts. Reject stale, tampered, wrong-purpose, dirty, expanded and replay-mismatched requests before effects. Keep active-Kernel retrospective delta approval unchanged."
+            - "Code Tasks declaring publish risk retain code verification and publication approval gates; genuine release Tasks retain release obligations. No risk flag is removed to obtain admission."
+            - "Workflow policy fingerprints observe the canonical tracked contained AGENTS.md symlink and its exact target bytes using bounded stable identities. Reject outside-root, arbitrary aliases, dangling, cyclic, swapped or directory targets. Generic stable-file no-follow remains unchanged."
+            - "Foreign Task artifact ownership consumes only authenticated completed native provider-update proof, without rebinding frozen execution base. Preserve pre-update ownership and overlap; require proved canonical ancestry, exact mode/blob, no foreign path edits or deceptive delete/rename/revert lineage. Approved semantic descendants may change owned implementation, but never inherit old acceptance."
+            - "Nearest existing regression tests reproduce the original failures and test positive, negative, interruption and replay invariants. Focused checks and mandatory native full pass on the same source, followed by fresh independent native EVAL. Report static, native, hosted and runtime evidence separately."
+            - "No source outside the approved twelve roots is modified; no old Task/Kernel/results are rewritten. Preserve all original worktrees, untracked evidence, credentials, guards and holdings. No Factory/host operations. The GitLab16 merge-method publication boundary remains unresolved and must be qualified before another Factory full or provider effect."
+          objective: "Unblock genuine completed-Task scope admission and current-head review after authenticated canonical base import, then resume the existing VPBGBK P2 repair."
+          role: "EXECUTOR"
+          verification_commands:
+            - "bun run test:project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/runtime/task-obligations/resolve.test.ts packages/agentplane/src/commands/shared/workflow-step-policy-scope.test.ts packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts packages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts"
+            - "bun run ci:local:full"
+      intent:
+        context: "Unblock genuine completed-Task scope admission and current-head review after authenticated canonical base import, then resume the existing VPBGBK P2 repair. Actual human approved the exact twelve framework roots on 2026-10-29 via call_0bf521676b0e44d69e82dc6c22fbc484. This is a separate framework repair, not replacement or imported acceptance of VPBGBK or DRG36R. Admit only an authenticated consumed task-level implementation_rework scope request under exact current state and genuine USER approval. Extend only the repair execution scope; preserve the completed Kernel, Plan, WorkItems and old reviews/receipts. Keep active Kernel prospective scope and retrospective authority-delta paths unchanged. Keep code Tasks with publish risk on the code verification profile. Preserve publication approval and external-effect gates. Package release Tasks retain release obligations. Observe the tracked, contained AGENTS.md policy projection by a bounded symlink-aware policy path contract. Bind link and target identity/bytes, reject outside-root, dangling, directory, swapped, cyclic or unauthorized policy aliases. Do not change the repository symlink or weaken the generic no-follow reader. Consume authenticated completed provider-update proof in the independent foreign Task ownership check. Keep frozen execution base. Retain pre-update source ownership and overlap. Require canonical R ancestry and exact current mode/blob/path lineage for inherited foreign artifacts. Approved semantic source changes must remain owned and pass fresh checks/EVAL; do not use a blanket inherited allowlist or skip foreign bytes. Preserve all original Tasks, immutable Kernel and old results. Native fresh checks and independent EVAL are mandatory. No Factory or host effects. Return to original VPBGBK after canonical framework merge."
+        objective: "Repair completed-task scope admission and authenticated canonical import review"
+    events:
+      -
+        command_digest: "sha256:e7c3c3ddfcce48c5d6c52fa4bd44604a68d7b19dffef9648a7bf9b36297dad58"
+        id: "capture:202610291229-M9S7RY:intent_captured"
+        kind: "intent_captured"
+        mutation_id: "capture:202610291229-M9S7RY"
+        occurred_at: "2026-10-29T12:30:04.515Z"
+        payload_digest: "sha256:dd4b9a1b01bc6ba26cb38ee8708732b4697168f9f1efd11ab69e8c59d1d7e5e5"
+        task_id: "202610291229-M9S7RY"
+        task_revision: 1
+      -
+        command_digest: "sha256:68833899c7032ef32b97e22efe0598eb28fa42457e1d5d035fefd3ba66b940e2"
+        id: "result:sha256:95fb7eecf4b6f3f79dfc1541f905358772accc3026c7ab11bf96d42c749dc5a3:plan_proposed"
+        kind: "plan_proposed"
+        mutation_id: "result:sha256:95fb7eecf4b6f3f79dfc1541f905358772accc3026c7ab11bf96d42c749dc5a3"
+        occurred_at: "2026-10-29T12:32:31.289Z"
+        payload_digest: "sha256:eb072bc87a56778129f2249262798ac4529cbb4dc23135c33a7bf51f80d80ac9"
+        task_id: "202610291229-M9S7RY"
+        task_revision: 2
+      -
+        command_digest: "sha256:89302fe944f579d239a1d0229fb7fa38db2d886e192071696cef1a54364dedc5"
+        id: "sha256:4050fa12acdc51209c269b65f1ba675fa47436b8533535c8c9589766f154776c:plan_approved"
+        kind: "plan_approved"
+        mutation_id: "sha256:4050fa12acdc51209c269b65f1ba675fa47436b8533535c8c9589766f154776c"
+        occurred_at: "2026-10-29T12:33:30.765Z"
+        payload_digest: "sha256:8b894fd1d9eede9fa4fff43cf8cf98a83ed8217946a44dad0bb15931ffd5d322"
+        task_id: "202610291229-M9S7RY"
+        task_revision: 3
+      -
+        command_digest: "sha256:bf08187b68b8611b5dfa247ca1c5e38ca7eef9504e96f62f699452cd5c491b0c"
+        id: "kernel_work_item_materialization_required:sha256:c244ec34df39c5c718fcd30af7594dc8ace07c739d07aa942291a1fa8068e36a:sha256:a33aff011036e99331fd630e3e36922636321114291eb0e306e6e589b5e90d27:work_items_materialized"
+        kind: "work_items_materialized"
+        mutation_id: "kernel_work_item_materialization_required:sha256:c244ec34df39c5c718fcd30af7594dc8ace07c739d07aa942291a1fa8068e36a:sha256:a33aff011036e99331fd630e3e36922636321114291eb0e306e6e589b5e90d27"
+        occurred_at: "2026-10-29T12:34:19.039Z"
+        payload_digest: "sha256:65712c2a1da8380d008f22d3ef7a3bcd55819e440c88d04b41b962e540b4341f"
+        task_id: "202610291229-M9S7RY"
+        task_revision: 4
+      -
+        command_digest: "sha256:2afda04d9b289290aa44797f83f26c40f55e06a90ebc59626b121e2c96a5a9a1"
+        id: "kernel_work_item_claim_required:sha256:933bbaf2ffe6698def683c794d3ea7091958a0cb845f4980692c548bcbd7ce24:sha256:a33aff011036e99331fd630e3e36922636321114291eb0e306e6e589b5e90d27:work_item_transitioned"
+        kind: "work_item_transitioned"
+        mutation_id: "kernel_work_item_claim_required:sha256:933bbaf2ffe6698def683c794d3ea7091958a0cb845f4980692c548bcbd7ce24:sha256:a33aff011036e99331fd630e3e36922636321114291eb0e306e6e589b5e90d27"
+        occurred_at: "2026-10-29T12:34:30.724Z"
+        payload_digest: "sha256:bc18f549bd285e143a017087b2bb0a7ed067d6adc7d081a7e0aaa4082dfc205d"
+        task_id: "202610291229-M9S7RY"
+        task_revision: 5
+      -
+        command_digest: "sha256:b9467ec8d88d7091ea21f8f2eaedfdc2939ba491ba6b3d55b46174e9411a8389"
+        id: "kernel_work_item_execution_required:sha256:64ad66f12730c85e4f7e7bfb1eb85d89551e306004fa2a1fa851de96fc905675:sha256:a33aff011036e99331fd630e3e36922636321114291eb0e306e6e589b5e90d27:work_item_transitioned"
+        kind: "work_item_transitioned"
+        mutation_id: "kernel_work_item_execution_required:sha256:64ad66f12730c85e4f7e7bfb1eb85d89551e306004fa2a1fa851de96fc905675:sha256:a33aff011036e99331fd630e3e36922636321114291eb0e306e6e589b5e90d27"
+        occurred_at: "2026-10-29T12:35:18.267Z"
+        payload_digest: "sha256:132bb5e03b9f4837e802aa9da83aa6998677794bad2eb82007248a052e674692"
+        task_id: "202610291229-M9S7RY"
+        task_revision: 6
+      -
+        command_digest: "sha256:458810041a36f4e652132d6f18ff7013ad4e2d6aaed3bf47315393c689df29bf"
+        id: "sha256:2b295f64f1e98c076c1cbeab0e782521a22b5f34997be2f3a202fe29d5c7f689:authority_continued"
+        kind: "authority_continued"
+        mutation_id: "sha256:2b295f64f1e98c076c1cbeab0e782521a22b5f34997be2f3a202fe29d5c7f689"
+        occurred_at: "2026-10-29T12:48:12.380Z"
+        payload_digest: "sha256:c97e0b7c28b597183c806dd3531d44e9e175cf1adbd5b10e93bc8f226ad56d16"
+        task_id: "202610291229-M9S7RY"
+        task_revision: 7
+      -
+        command_digest: "sha256:6f1e75c1465049eba665e1ea36d49611b6bcaf7a89e35dd75acdf3ec5f72ebf9"
+        id: "semantic-stop:sha256:99d33a0aae2900b9ef8c217d6e083f3433b0bda534bfd102d6cb3bee99e6f206:work_item_transitioned"
+        kind: "work_item_transitioned"
+        mutation_id: "semantic-stop:sha256:99d33a0aae2900b9ef8c217d6e083f3433b0bda534bfd102d6cb3bee99e6f206"
+        occurred_at: "2026-10-29T12:48:16.634Z"
+        payload_digest: "sha256:c53cf778255870672bee6c6fb158f072e8ec07580e66553e9f5a5fd1dab69ca6"
+        task_id: "202610291229-M9S7RY"
+        task_revision: 8
+      -
+        command_digest: "sha256:80142481aaec23cfe9e576b31bcf5a5b4d1968a8ae5aa791f71543863fb93c75"
+        id: "scope-request:sha256:b9020666cf140b57876636668fb590bc07d451f97c4566d86914eff8240fed8c:authority_continued"
+        kind: "authority_continued"
+        mutation_id: "scope-request:sha256:b9020666cf140b57876636668fb590bc07d451f97c4566d86914eff8240fed8c"
+        occurred_at: "2026-10-29T12:48:52.797Z"
+        payload_digest: "sha256:bec87061be9379a9ea1fc77858fc43505702f7d8bef87d93c34b738a6b6ca0fc"
+        task_id: "202610291229-M9S7RY"
+        task_revision: 9
+      -
+        command_digest: "sha256:3c1c0ac646fb93608de4c1ad03501c38adffe0a30610ab05e969d02f3c1e63d7"
+        id: "result:sha256:69d7c4c21fe88edcfc1609e08ecc3b6645ccda1c2160f270b043916c25e2f92c:plan_proposed"
+        kind: "plan_proposed"
+        mutation_id: "result:sha256:69d7c4c21fe88edcfc1609e08ecc3b6645ccda1c2160f270b043916c25e2f92c"
+        occurred_at: "2026-10-29T12:50:36.557Z"
+        payload_digest: "sha256:a200efd88c358847aed34923407883595221c720840e41bd1412cae4e9432e62"
+        task_id: "202610291229-M9S7RY"
+        task_revision: 10
+      -
+        command_digest: "sha256:412a8f1dd9fdd1ae0ad2ceab0f29f83b2e16553cf15bdd48bd9cffe25651c9d4"
+        id: "sha256:d1408e738b803f9f3a73fecbe3509c7c7e78349fc95ea92df88983fb879b7fcb:plan_approved"
+        kind: "plan_approved"
+        mutation_id: "sha256:d1408e738b803f9f3a73fecbe3509c7c7e78349fc95ea92df88983fb879b7fcb"
+        occurred_at: "2026-10-29T12:51:47.236Z"
+        payload_digest: "sha256:40ea801a3b3d94ae0a4312f5d0eb788c21e80b2b0d9e7c74104b7be5a3c387f9"
+        task_id: "202610291229-M9S7RY"
+        task_revision: 11
+      -
+        command_digest: "sha256:bebdf49e32012c16cce487323fd25526598b55f4a5217afcc705b3582d674d1b"
+        id: "kernel_work_item_claim_required:sha256:baf98bc52c091fa6b8f86fedf6a2cfa9d6b17ef45c280b4481a71008d221fcb8:sha256:111e576d8705b630d75c77fa9718420a4087329f436dc0b9532c6219b06ef86e:work_item_transitioned"
+        kind: "work_item_transitioned"
+        mutation_id: "kernel_work_item_claim_required:sha256:baf98bc52c091fa6b8f86fedf6a2cfa9d6b17ef45c280b4481a71008d221fcb8:sha256:111e576d8705b630d75c77fa9718420a4087329f436dc0b9532c6219b06ef86e"
+        occurred_at: "2026-10-29T12:52:25.882Z"
+        payload_digest: "sha256:b83c4c946cac7783bed014ea352f67089dcfd09b95fed414ae40f161efb9c63d"
+        task_id: "202610291229-M9S7RY"
+        task_revision: 12
+      -
+        command_digest: "sha256:d0e8f8836f112677eb98e48233af19ba38d40386b29c3dc81d05e32b420c2486"
+        id: "kernel_work_item_execution_required:sha256:ed9d68be3dd6918d3e2ff3842b62abeeaa7b025ee7f6c896cd842a5fd2d6fd48:sha256:111e576d8705b630d75c77fa9718420a4087329f436dc0b9532c6219b06ef86e:work_item_transitioned"
+        kind: "work_item_transitioned"
+        mutation_id: "kernel_work_item_execution_required:sha256:ed9d68be3dd6918d3e2ff3842b62abeeaa7b025ee7f6c896cd842a5fd2d6fd48:sha256:111e576d8705b630d75c77fa9718420a4087329f436dc0b9532c6219b06ef86e"
+        occurred_at: "2026-10-29T12:52:35.696Z"
+        payload_digest: "sha256:c99093fdb97ef2eb5de5b2df7e2a077423371426056b882cd2eac763ce27eb04"
+        task_id: "202610291229-M9S7RY"
+        task_revision: 13
+    kind: "canonical_task"
+    repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+    schema_version: 1
+id_source: "generated"
+---
+## Summary
+
+Repair completed-task scope admission and authenticated canonical import review
+
+Unblock genuine completed-Task scope admission and current-head review after authenticated canonical base import, then resume the existing VPBGBK P2 repair. Actual human approved the exact twelve framework roots on 2026-10-29 via call_0bf521676b0e44d69e82dc6c22fbc484. This is a separate framework repair, not replacement or imported acceptance of VPBGBK or DRG36R. Admit only an authenticated consumed task-level implementation_rework scope request under exact current state and genuine USER approval. Extend only the repair execution scope; preserve the completed Kernel, Plan, WorkItems and old reviews/receipts. Keep active Kernel prospective scope and retrospective authority-delta paths unchanged. Keep code Tasks with publish risk on the code verification profile. Preserve publication approval and external-effect gates. Package release Tasks retain release obligations. Observe the tracked, contained AGENTS.md policy projection by a bounded symlink-aware policy path contract. Bind link and target identity/bytes, reject outside-root, dangling, directory, swapped, cyclic or unauthorized policy aliases. Do not change the repository symlink or weaken the generic no-follow reader. Consume authenticated completed provider-update proof in the independent foreign Task ownership check. Keep frozen execution base. Retain pre-update source ownership and overlap. Require canonical R ancestry and exact current mode/blob/path lineage for inherited foreign artifacts. Approved semantic source changes must remain owned and pass fresh checks/EVAL; do not use a blanket inherited allowlist or skip foreign bytes. Preserve all original Tasks, immutable Kernel and old results. Native fresh checks and independent EVAL are mandatory. No Factory or host effects. Return to original VPBGBK after canonical framework merge.
+
+## Scope
+
+- In scope: Unblock genuine completed-Task scope admission and current-head review after authenticated canonical base import, then resume the existing VPBGBK P2 repair. Actual human approved the exact twelve framework roots on 2026-10-29 via call_0bf521676b0e44d69e82dc6c22fbc484. This is a separate framework repair, not replacement or imported acceptance of VPBGBK or DRG36R. Admit only an authenticated consumed task-level implementation_rework scope request under exact current state and genuine USER approval. Extend only the repair execution scope; preserve the completed Kernel, Plan, WorkItems and old reviews/receipts. Keep active Kernel prospective scope and retrospective authority-delta paths unchanged. Keep code Tasks with publish risk on the code verification profile. Preserve publication approval and external-effect gates. Package release Tasks retain release obligations. Observe the tracked, contained AGENTS.md policy projection by a bounded symlink-aware policy path contract. Bind link and target identity/bytes, reject outside-root, dangling, directory, swapped, cyclic or unauthorized policy aliases. Do not change the repository symlink or weaken the generic no-follow reader. Consume authenticated completed provider-update proof in the independent foreign Task ownership check. Keep frozen execution base. Retain pre-update source ownership and overlap. Require canonical R ancestry and exact current mode/blob/path lineage for inherited foreign artifacts. Approved semantic source changes must remain owned and pass fresh checks/EVAL; do not use a blanket inherited allowlist or skip foreign bytes. Preserve all original Tasks, immutable Kernel and old results. Native fresh checks and independent EVAL are mandatory. No Factory or host effects. Return to original VPBGBK after canonical framework merge.
+- Out of scope: unrelated refactors not required for "Repair completed-task scope admission and authenticated canonical import review".
+
+## Plan
+
+1. Execute approved WorkItem repair-completed-task-review-admission.
+
+## Verify Steps
+
+PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
+
+1. Run `bun run ci:local:full`. Expected: it succeeds and confirms the requested outcome for this task.
+2. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
+3. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+- Revert task-related commit(s).
+- Re-run required checks to confirm rollback safety.
+
+## Findings

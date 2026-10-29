@@ -58,7 +58,8 @@ function resolveProfile(input: NativeTaskObligationInput, taskKind: string): Nat
   ) {
     return "ops";
   }
-  if (risks.has("publish")) return "release";
+  // Publication is an approval risk, not a change to the semantic task kind.
+  if (risks.has("publish") && taskKind !== "code") return "release";
   return baseProfile(taskKind);
 }
 

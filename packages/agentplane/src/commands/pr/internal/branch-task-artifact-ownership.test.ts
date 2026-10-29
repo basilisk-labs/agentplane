@@ -1,3 +1,4 @@
+import type * as Process from "@agentplaneorg/core/process";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
@@ -6,9 +7,20 @@ const mocks = vi.hoisted(() => ({
   gitBranchExists: vi.fn(),
   gitBranchUpstream: vi.fn(),
   gitRevParse: vi.fn(),
+  inherited: vi.fn(),
+  history: vi.fn(),
 }));
 
+vi.mock("../provider-update-verification-proof.js", () => ({
+  inheritedProviderUpdatePaths: mocks.inherited,
+}));
+
+vi.mock("@agentplaneorg/core/process", async (original) => ({
+  ...(await original<typeof Process>()),
+  execFileAsync: mocks.history,
+}));
 vi.mock("@agentplaneorg/core/git", () => ({
+  gitProofEnv: () => ({}),
   gitDiffNameStatus: mocks.gitDiffNameStatus,
   gitMergeBase: mocks.gitMergeBase,
 }));
@@ -23,9 +35,13 @@ import { assertBranchTaskArtifactOwnership } from "./branch-task-artifact-owners
 describe("committed task artifact ownership", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mocks.history.mockResolvedValue({ stdout: "" });
+    mocks.inherited.mockResolvedValue([]);
     mocks.gitBranchExists.mockResolvedValue(true);
     mocks.gitBranchUpstream.mockResolvedValue("origin/main");
-    mocks.gitRevParse.mockResolvedValue("base-sha");
+    mocks.gitRevParse.mockImplementation((_root: string, args: string[]) =>
+      Promise.resolve(args[1]?.startsWith("task/") ? "candidate-sha" : "base-sha"),
+    );
     mocks.gitMergeBase.mockResolvedValue("merge-base-sha");
   });
 
@@ -57,11 +73,38 @@ describe("committed task artifact ownership", () => {
     expect(mocks.gitDiffNameStatus).toHaveBeenCalledWith(
       "/repo",
       "merge-base-sha",
-      "task/T-PRIMARY/change",
+      "candidate-sha",
     );
     expect(mocks.gitRevParse).toHaveBeenCalledWith("/repo", ["--verify", "origin/main^{commit}"]);
     expect(mocks.gitBranchExists).toHaveBeenCalledTimes(1);
     expect(mocks.gitBranchExists).toHaveBeenCalledWith("/repo", "task/T-PRIMARY/change");
+  });
+
+  it("filters only paths authenticated by the native canonical import proof", async () => {
+    const file = ".agentplane/tasks/T-FOREIGN/README.md";
+    mocks.gitDiffNameStatus.mockResolvedValue([{ statusCode: "M", path: file }]);
+    mocks.inherited.mockResolvedValue([file]);
+    const command = { resolvedProject: { gitRoot: "/repo" } } as never;
+    const options = {
+      gitRoot: "/repo",
+      baseBranch: "frozen-B",
+      branch: "task/T-PRIMARY/change",
+      workflowDir: ".agentplane/tasks",
+      tasksPath: ".agentplane/tasks.json",
+      primaryTaskId: "T-PRIMARY",
+      providerUpdate: { command, frozenBase: "frozen-B" },
+    };
+    await expect(assertBranchTaskArtifactOwnership(options)).resolves.toBeUndefined();
+    expect(mocks.inherited).toHaveBeenCalledWith(
+      expect.objectContaining({
+        command,
+        frozen_base: "frozen-B",
+        task_id: "T-PRIMARY",
+        changed_paths: [file],
+      }),
+    );
+    mocks.inherited.mockResolvedValue([]);
+    await expect(assertBranchTaskArtifactOwnership(options)).rejects.toThrow(/other tasks/);
   });
 
   it("ignores task artifacts introduced only by an advanced base", async () => {
@@ -81,15 +124,11 @@ describe("committed task artifact ownership", () => {
       }),
     ).resolves.toBeUndefined();
 
-    expect(mocks.gitMergeBase).toHaveBeenCalledWith(
-      "/repo",
-      "origin/main",
-      "task/T-PRIMARY/change",
-    );
+    expect(mocks.gitMergeBase).toHaveBeenCalledWith("/repo", "origin/main", "candidate-sha");
     expect(mocks.gitDiffNameStatus).toHaveBeenCalledWith(
       "/repo",
       "merge-base-sha",
-      "task/T-PRIMARY/change",
+      "candidate-sha",
     );
   });
 
