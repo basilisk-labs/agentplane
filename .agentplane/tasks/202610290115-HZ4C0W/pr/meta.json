@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:63a1be014a19300670140dd45ab0f9bb529df8a73d6c3cee522387b547cd1228",
   "pr_number": 6956,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6956",
+  "pre_merge_closure": {
+    "basis_commit": "da06db9aac3318b7d766c5924d353602642bd695",
+    "branch": "task/202610290115-HZ4C0W/preserve-frozen-execution-base-while-revalidatin",
+    "pr_number": 6956,
+    "recorded_at": "2026-10-29T08:03:16.695Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
