@@ -3,7 +3,8 @@
   "branch": "task/202610300658-XWWWX5/preserve-exact-native-task-payload-strings-durin",
   "created_at": "2026-10-30T08:26:55.427Z",
   "diffstat_sha256": "sha256:102f3549864c33ff1a1738ddd092dd7a7f86a57cea59e871530708690a461600",
-  "last_verified_at": null,
+  "last_verified_at": "2026-10-30T13:01:58.291Z",
+  "last_verified_diffstat_sha256": "sha256:102f3549864c33ff1a1738ddd092dd7a7f86a57cea59e871530708690a461600",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202610300658-XWWWX5",
   "updated_at": "2026-10-30T08:26:55.427Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

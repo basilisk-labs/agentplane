@@ -15,8 +15,8 @@ Direct HUMAN grant in root reply call_4b00c5c5b38a4cbb88ab0589e3b146b4 authorize
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: canonical Task Kernel final checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>
