@@ -1,10 +1,11 @@
 ---
 id: "202610301450-9XQEAE"
 title: "Authenticate native worktree-preparation lineage for retained scope replanning"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 34
+revision: 35
 origin:
   system: "manual"
 depends_on: []
@@ -45,6 +46,22 @@ quality_review:
     - "The accepted-kind filter adds only worktree_preparation. Canonical authority validation, exact native continuation event/receipt and uniqueness checks, latest eligible issuance revision, repository fingerprint and delegated authority binding remain mandatory."
     - "The reducer-backed fixture produces a genuine accepted continuation before retained issuance; full scope-replan enrichment succeeds. Missing/tampered events or receipts, duplicate events, wrong fingerprint and unauthorized changed paths remain rejected. Original fixture operations and prior assertions are retained."
     - "Controller-owned build, 58 focused tests and full local CI passed on implementation commit 3509794e13d3c107ff495942edc116df4820b74d. All six full-CI groups passed, including workflow/platform/coverage guards. Reviewed 23 authenticated manifests and 69 log-file hashes; deliberate exit-2/3 descendant fixtures belong to passing failure-handling tests. Both size limits and unchanged baselines are satisfied."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:6d8a7497311e67b4f2147d96bc7376b3d9442a475bf18a1003ebe26fd333e8d1"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-10-30T17:05:29.206Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -263,9 +280,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "3509794e13d3c107ff495942edc116df4820b74d"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "be96f183e51bddb18e9d3b0793b5cda7933258c6"
+  message: "🧩 9XQEAE task: refresh task artifacts after commit"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -279,9 +299,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-30T17:05:29.206Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "be96f183e51bddb18e9d3b0793b5cda7933258c6"
 doc_version: 3
-doc_updated_at: "2026-10-30T17:01:21.334Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-30T17:05:29.206Z"
+doc_updated_by: "CODER"
 description: "Required prerequisite for the explicitly user-authorized eight-step sb recovery. Original MRJ9WH remains canonical and its native scope request plus full replacement Plan are approved, but issuance of implementation attempt 2 fails in scopeReplanInputs because retainedIssuanceAuthority excludes native worktree_preparation continuations. Read-only diagnosis verified every other preceding-stop binding: authentic native event/receipt, exact result digest, old WorkOrder/binding/claim/contract/Plan/attempt and original immutable history. The old issuance genuinely used the native d70 worktree-preparation authority, whose fingerprint differs from initial approval. Narrowly admit this existing native continuation kind through the same authentic event, unique receipt, canonical authority, delegated projection and fingerprint checks; no blanket acceptance or new trust source. Extend the existing native lineage fixture to issue a real reducer-accepted worktree-preparation continuation before retained issuance, qualify complete scope-replan input enrichment and reject tampered/missing/ambiguous event/receipt, wrong fingerprint or unauthorized changed paths. Do not alter MRJ9WH, original VPBGBK, native evidence, Kernel/base metadata, existing receipts or runtime guards; no host, credential, cleanup or global effects. After native build/focused/full, independent EVALUATOR and canonical PR/merge/postmerge checks, resume the exact original MRJ invocation using the corrected canonical CLI. Two roots only; retain all worktrees and historical evidence."
 sections:
   Summary: |-
@@ -537,6 +565,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:b79c8ee2d2c534a173ffb7daf4ba2a4f7cd1fca8408651ea1f52413eeb71b593"
     work_order_id: "sha256:e011ce5d5ec8c5336f462b095dd7bb4f4887bada5bdc61aadf2f1dba684bac0e"
+  implementation_commit:
+    hash: "3509794e13d3c107ff495942edc116df4820b74d"
+    message: "🚧 9XQEAE task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "05ef163bed56eb17adef1eceecd9f1ff34aaff15"
@@ -1853,3 +1884,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:6d8a7497311e67b4f2147d96bc7376b3d9442a475bf18a1003ebe26fd333e8d1`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-10-30T17:05:29.206Z`
