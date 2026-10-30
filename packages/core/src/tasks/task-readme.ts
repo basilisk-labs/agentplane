@@ -145,20 +145,28 @@ function renderMapLines(
   value: Record<string, unknown>,
   indent: string,
   preferredKeyOrder: readonly string[] | null,
+  preserveStrings = false,
 ): string[] {
   const keys = orderedKeys(value, preferredKeyOrder);
   const lines: string[] = [];
   for (const k of keys) {
     const v = value[k];
     if (v === undefined) continue;
-    lines.push(...renderValueLines(k, v, indent));
+    lines.push(...renderValueLines(k, v, indent, preserveStrings));
   }
   return lines;
 }
 
-function renderValueLines(key: string, value: unknown, indent: string): string[] {
+function renderValueLines(
+  key: string,
+  value: unknown,
+  indent: string,
+  preserveStrings = false,
+): string[] {
   if (value === undefined) return [];
   if (typeof value === "string") {
+    // Native extensions contain hash-bound values, not presentation text.
+    if (preserveStrings) return [`${indent}${key}: ${renderScalar(value)}`];
     const normalized = normalizeReadableMultilineString(key, value);
     if (normalized.includes("\n")) return renderBlockScalar(key, normalized, indent);
     return [`${indent}${key}: ${renderScalar(normalized)}`];
@@ -184,7 +192,7 @@ function renderValueLines(key: string, value: unknown, indent: string): string[]
             : key === "events"
               ? (["type", "at", "author", "from", "to", "state", "note", "body"] as const)
               : null;
-        const itemLines = renderMapLines(item, `${indent}    `, preferred);
+        const itemLines = renderMapLines(item, `${indent}    `, preferred, preserveStrings);
         if (itemLines.length === 0) return [`${indent}  - {}`];
         return [`${indent}  -`, ...itemLines];
       }),
@@ -250,7 +258,7 @@ function renderValueLines(key: string, value: unknown, indent: string): string[]
                       : key === "sections"
                         ? TASK_DOC_SECTION_ORDER
                         : null;
-    const inner = renderMapLines(value, `${indent}  `, preferred);
+    const inner = renderMapLines(value, `${indent}  `, preferred, preserveStrings);
     if (inner.length === 0) return [`${indent}${key}: {}`];
     return [`${indent}${key}:`, ...inner];
   }
@@ -304,7 +312,7 @@ export function renderTaskFrontmatter(frontmatter: Record<string, unknown>): str
   for (const k of ordered) {
     const value = frontmatter[k];
     if (value === undefined) continue;
-    lines.push(...renderValueLines(k, value, ""));
+    lines.push(...renderValueLines(k, value, "", k === "extensions"));
   }
 
   return `---\n${lines.join("\n")}\n---\n`;

@@ -1,5 +1,8 @@
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import { readFile, writeFile } from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { configureGitUser, mockConfig, tempRepo } from "@agentplane/testkit";
 import { makeTaskFixture } from "@agentplane/testkit/task";
@@ -14,6 +17,69 @@ import { resolveExplicitExecutionContract } from "./execution-contract-intake.js
 const git = promisify(execFile);
 
 describe("canonical bookkeeping command routes", { timeout: 120_000 }, () => {
+  it("preserves a body-file comment across distinct native writes and cold reads", async () => {
+    const repo = await tempRepo({ branch: "main" });
+    await configureGitUser(repo.root);
+    await repo.writeConfig(mockConfig());
+    await git("git", ["add", "."], { cwd: repo.root });
+    await git("git", ["-c", "core.hooksPath=/dev/null", "commit", "-m", "seed roundtrip"], {
+      cwd: repo.root,
+    });
+    const taskId = "202610090003-ABC345";
+    const ctx = await loadCommandContext({ cwd: repo.root });
+    await createCanonicalTask(
+      ctx,
+      makeTaskFixture({
+        id: taskId,
+        priority: "med",
+        task_kind: "analysis",
+        mutation_scope: "none",
+        execution_contract: resolveExplicitExecutionContract({
+          config: ctx.config,
+          parsed: { verify: [] },
+          intent: { taskKind: "analysis", mutationScope: "none" },
+        }),
+      }),
+    );
+    const body = "Exact audit value  \r\nsecond line\t\n" + String.raw`literal\n\nvalue` + "\n\n";
+    const bodyFile = path.join(repo.root, "audit-body.txt");
+    await writeFile(bodyFile, body);
+    const cli = fileURLToPath(new URL("../../../bin/agentplane.js", import.meta.url));
+    const run = async (args: string[]) =>
+      await git(process.execPath, [cli, "task", ...args, "--root", repo.root], {
+        cwd: repo.root,
+        env: { ...process.env, AGENTPLANE_DEV_AUTO_BOOTSTRAP: "0" },
+      });
+    const coldRead = async () => {
+      const result = await run(["show", taskId]);
+      const observed: unknown = JSON.parse(result.stdout);
+      expect(observed).toHaveProperty("source", "task_kernel");
+      expect(observed).toHaveProperty("canonical_record.aggregate.audit_comments.0.body", body);
+      const fresh = await loadCommandContext({ cwd: repo.root });
+      const read = await readTaskKernel(fresh, taskId);
+      expect(read.kind).toBe("canonical");
+      if (read.kind !== "canonical") throw new Error("Native read was not canonical");
+      expect(observed).toHaveProperty("canonical_record.digest", read.record.digest);
+      expect(read.record.aggregate.audit_comments?.[0]?.body).toBe(body);
+      return read.record;
+    };
+    await run(["comment", taskId, "--author", "ORCHESTRATOR", "--body-file", bodyFile]);
+    const first = await coldRead();
+    const firstMutation = first.aggregate.audit_comments![0]!.mutation_id;
+    const firstReceipt = first.aggregate.mutation_receipts[firstMutation];
+    await run(["comment", taskId, "--author", "ORCHESTRATOR", "--body", "Second distinct write"]);
+    const second = await coldRead();
+    expect(second.aggregate.revision).toBe(first.aggregate.revision + 1);
+    expect(second.aggregate.audit_comments).toHaveLength(2);
+    expect(second.aggregate.mutation_receipts[firstMutation]).toEqual(firstReceipt);
+    const readme = path.join(repo.root, ".agentplane", "tasks", taskId, "README.md");
+    const beforeReplay = await readFile(readme);
+    await run(["comment", taskId, "--author", "ORCHESTRATOR", "--body-file", bodyFile]);
+    const replayed = await coldRead();
+    expect(replayed.digest).toBe(second.digest);
+    expect(await readFile(readme)).toEqual(beforeReplay);
+  });
+
   it.each(["noop", "duplicate", "superseded"] as const)(
     "records an audit comment and requires separate approval for %s",
     async (kind) => {
