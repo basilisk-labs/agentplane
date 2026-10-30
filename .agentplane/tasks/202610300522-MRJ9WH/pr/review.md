@@ -6,7 +6,7 @@ Created: 2026-10-30T19:38:43.432Z
 
 - Task: `202610300522-MRJ9WH`
 - Title: Authenticate completed repair intake transitions and reconcile partial scope admission
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610300522-MRJ9WH/authenticate-completed-repair-intake-transitions`
 - Canonical task record: `.agentplane/tasks/202610300522-MRJ9WH/README.md`
 
