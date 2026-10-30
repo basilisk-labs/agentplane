@@ -248,7 +248,9 @@ export function retainedIssuanceAuthority(record: KernelRecord, order: AgentWork
     if (
       !approval &&
       !renewal &&
-      !["repository_implementation", "plan_amendment"].includes(entry.observation?.kind ?? "")
+      !["repository_implementation", "plan_amendment", "worktree_preparation"].includes(
+        entry.observation?.kind ?? "",
+      )
     )
       continue;
     const matches = record.events.filter((event) => {

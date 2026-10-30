@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202610301450-9XQEAE/authenticate-native-worktree-preparation-lineage",
+  "created_at": "2026-10-30T15:12:16.212Z",
+  "diffstat_sha256": "sha256:e2e7f516fece1a706764ee10de5f371285baf95aad486e00a4191f2109c71757",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610301450-9XQEAE",
+  "updated_at": "2026-10-30T15:12:16.212Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
