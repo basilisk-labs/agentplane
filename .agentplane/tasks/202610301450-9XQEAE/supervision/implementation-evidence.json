@@ -1,0 +1,86 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 05ef163bed56eb17adef1eceecd9f1ff34aaff15..f90a9a042ab0f65721d10ef4d75ee7822bc2a3ae",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 05ef163bed56eb17adef1eceecd9f1ff34aaff15..f90a9a042ab0f65721d10ef4d75ee7822bc2a3ae",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202610301450-9XQEAE/README.md",
+        "A\t.agentplane/tasks/202610301450-9XQEAE/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202610301450-9XQEAE/pr/github-body.md",
+        "A\t.agentplane/tasks/202610301450-9XQEAE/pr/github-title.txt",
+        "A\t.agentplane/tasks/202610301450-9XQEAE/pr/meta.json",
+        "A\t.agentplane/tasks/202610301450-9XQEAE/pr/review.md",
+        "A\t.agentplane/tasks/202610301450-9XQEAE/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
+        "A\t.agentplane/tasks/202610301450-9XQEAE/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+        "M\tpackages/agentplane/src/commands/task/kernel-rework-lineage.test.ts",
+        "A\tpackages/agentplane/src/commands/task/kernel-rework-lineage.testkit.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-rework-lineage.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "05ef163bed56eb17adef1eceecd9f1ff34aaff15",
+  "implementation_commit": "f90a9a042ab0f65721d10ef4d75ee7822bc2a3ae",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      " M packages/agentplane/src/commands/task/kernel-rework-lineage.test.ts",
+      " M packages/agentplane/src/commands/task/kernel-rework-lineage.ts",
+      "?? .agentplane/tasks/202610301450-9XQEAE/README.md",
+      "?? .agentplane/tasks/202610301450-9XQEAE/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
+      "?? .agentplane/tasks/202610301450-9XQEAE/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-rework-lineage.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-rework-lineage.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610301450-9XQEAE/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610301450-9XQEAE/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610301450-9XQEAE/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M packages/agentplane/src/commands/task/kernel-rework-lineage.test.ts",
+      " M packages/agentplane/src/commands/task/kernel-rework-lineage.ts",
+      "?? .agentplane/tasks/202610301450-9XQEAE/README.md",
+      "?? .agentplane/tasks/202610301450-9XQEAE/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
+      "?? .agentplane/tasks/202610301450-9XQEAE/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202610301450-9XQEAE"
+}
