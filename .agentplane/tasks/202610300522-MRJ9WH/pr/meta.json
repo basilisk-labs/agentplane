@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:398c4731471f9b7d91f9b90f2e716f7ac786b6c54fab4da393113f3ebd79b8ef",
   "pr_number": 6961,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6961",
+  "pre_merge_closure": {
+    "basis_commit": "226275e2c97b55212c5c9597e88afc8ac52e8943",
+    "branch": "task/202610300522-MRJ9WH/authenticate-completed-repair-intake-transitions",
+    "pr_number": 6961,
+    "recorded_at": "2026-10-30T20:58:22.886Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",

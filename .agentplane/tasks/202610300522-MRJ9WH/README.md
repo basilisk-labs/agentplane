@@ -1,10 +1,11 @@
 ---
 id: "202610300522-MRJ9WH"
 title: "Authenticate completed repair intake transitions and reconcile partial scope admission"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 47
+revision: 48
 origin:
   system: "manual"
 depends_on: []
@@ -47,6 +48,22 @@ quality_review:
     - "Meaningful regression coverage includes genuine historical prospective scope with explicit grants, two independent completed admissions, actual native verification and resumed EXECUTOR routing, fresh OS-process owner/base/compact-history/Git-ref reads, incomplete intent, forged or missing proof, source/base drift, symlink storage and competing-writer refusal. Core/backend tests cover absent, empty, nonempty and malformed optional grants."
     - "Resolved and digest-checked all required WorkOrder blocks and inputs. Inspected AgentPlane-owned validation: all five approved commands have exit 0 and retained observation manifests bound to the native implementation. Recursively verified 25 manifests and 75 log-file digests. Four failed descendant subprocesses are the explicit exit-2/exit-3 negative fixtures in verification-contract.test.ts; their enclosing Core suite passed."
     - "The operator command spec documents the exact recovery schema, byte digest and example. Standard generation and native docs:cli:check pass; the existing generated user-reference filter intentionally excludes operator-only commands. No unrelated docs-engine or verification-policy change was introduced."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:6bca12deeb2bd81cb31f81bc15d981227aa39ae53dc29879969cb2f15a3c6c55"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-10-30T20:58:22.798Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -432,12 +449,15 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "e3dad53d9e8f3e6f83e3605ce1b28579e27fbb77"
-  message: "AgentPlane-owned canonical implementation commit"
+  hash: "226275e2c97b55212c5c9597e88afc8ac52e8943"
+  message: "🧩 MRJ9WH task: refresh task artifacts after commit"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Operator provenance note, not a native scope-admission receipt. The human directly answered request_user_input_async call_20b02dec42144babbd752193bd9ec462: \"Разрешаю эти дополнительные 4 файла\". This supplements the prior explicit seven-root authorization and permits exactly packages/agentplane/src/commands/shared/task-backend.ts, packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts, packages/agentplane/src/commands/shared/task-backend.test.ts and packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts, for eleven roots total. Existing checks/EVAL/PR/merge authorization persists. The initial native PLANNER result11563d94 remains blocked and immutable. Source writes still require native scope admission and a matching fresh WorkOrder. Preserve the original VPB partial47946, Kernel/Plan/base/old receipts, all user work, data, credentials and runtime guards. Do not repeat the human authorization question."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -451,9 +471,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-30T20:58:22.798Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "226275e2c97b55212c5c9597e88afc8ac52e8943"
 doc_version: 3
-doc_updated_at: "2026-10-30T20:53:05.891Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-10-30T20:58:22.798Z"
+doc_updated_by: "CODER"
 description: "Direct HUMAN authorization verified in existing SB chat 01a17c58-b597-78a1-abed-517855b3f393 userMessage01a18b16-dbae-7380-9db4-c0081c8fdd00: narrow AgentPlane intake-projection fix including kernel-record.ts, separate Task ID, checks and PR/merge, continue coordinator to live SB acceptance preserving data credentials runtime guards. Implement exactly the seven-root audited prospective proposal vpb-completed-intake-native-reconcile-proposal.json. Root cause: original completed VPBGBK native scope extend47946 preserved Kernel but wrote Taskrev51 helper-root intake then failed reconcile: scope_request_intake_projection; before intake477810a9 equals old prospective lineage, after6bee824f differs and fresh resolver dropped native caps/resources. Preserve original partial README0665dece and canonical beforeimagee090edc6, all immutable Kernel/Plan/base/old results and failedoperation; no manual metadata rewrite/reset/replacement original Task. Correct future writer/reader together: preserve authority fields and exact approved delta, append-only native intake-transition proof bound to immutable Kernel/predecessor/nativeconsumedblocker/USER/currentstate, full candidate validation before write; no blanket COMPLETED skip. Add explicit controller-owned state-bound once-only public reconcile for exact retained partialafterimage, durable intent/afterimage/result+replay/refusal, no retrospective47946PASS. Qualify real completed Kernel with historical prospective intake marker/caps/resources, strict public getTask/list/show/resume, second repair request chain, forged receipt/drift/stalestate refusal and interruption/replay. Seven roots only; fresh native Planner must finalize public interface and verification contract before implementation. Require current native full/EVAL/currenthosted canonical PR/merge before applying public recovery to originalVPB. No Factory/host effects or credential/global changes. All original worktrees/untracked/privateTMP/holdings retained; no cleanup."
 sections:
   Summary: |-
@@ -989,6 +1017,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:c463b772dba2c00653edf74dab91fb756d8c8e83c39075da185efdf87cd0054a"
     work_order_id: "sha256:83306d1fc1be56e945302aec53683def7987d78db7343e6959d97a13f4484881"
+  implementation_commit:
+    hash: "e3dad53d9e8f3e6f83e3605ce1b28579e27fbb77"
+    message: "🚧 MRJ9WH task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "ac55b72faf90391d04f29a8aa3b03817d92603a4"
@@ -3648,3 +3679,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:6bca12deeb2bd81cb31f81bc15d981227aa39ae53dc29879969cb2f15a3c6c55`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-10-30T20:58:22.798Z`
