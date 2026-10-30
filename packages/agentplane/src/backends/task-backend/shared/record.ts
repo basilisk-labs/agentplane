@@ -24,6 +24,11 @@ import { toStringArray } from "./strings.js";
 import type { TaskData } from "./types.js";
 import { MUTATION_SCOPE_VALUES, RISK_FLAG_VALUES, TASK_KIND_VALUES } from "./domain-values.js";
 
+/** Native verification details regenerate these IDs; durable verification records retain history. */
+export function isRecordedVerificationProjectionId(id: string): boolean {
+  return id === "verification-record" || /^recorded-check-\d+$/u.test(id);
+}
+
 function normalizeRevision(value: unknown): number | undefined {
   return Number.isInteger(value) && Number(value) > 0 ? Number(value) : undefined;
 }

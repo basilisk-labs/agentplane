@@ -1,3 +1,4 @@
+import { isRecordedVerificationProjectionId } from "../../backends/task-backend/shared/record.js";
 import { createHash } from "node:crypto";
 import { transferCompletedScopePermit } from "../../adapters/task-backend/completed-scope-admission.js";
 import { authenticateTaskMetadataProjection } from "../shared/task-backend-branch-snapshot.js";
@@ -434,7 +435,7 @@ async function recordVerificationResult(opts: {
               ...observedExecutionContract.observed,
               // This transition replaces this owner's current results; durable records retain history.
               verification_results: observedExecutionContract.observed.verification_results.filter(
-                ({ id }) => id !== "verification-record" && !/^recorded-check-\d+$/u.test(id),
+                ({ id }) => !isRecordedVerificationProjectionId(id),
               ),
             },
           },

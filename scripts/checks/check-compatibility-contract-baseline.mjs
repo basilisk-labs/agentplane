@@ -56,7 +56,7 @@ function candidatePathFromArgs(argv) {
 const REVIEWED_SECTION_DIGESTS = {
   agent_facing_context_contracts:
     "4926aed50aea235e24310e39404f7b939bc4caa7fc763a98387992822a2101c5",
-  cli_topology: "8e8ea9209fca864b11e85217dece11593f9510f52d82c821fe9061aa0b3e302d",
+  cli_topology: "525568244a7470b00644ad255c1dc384369a96a875e7ac25873ae041d89084bc",
   exit_error_contract: "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
   machine_output_contract: "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
   package_manifests: "6052feb72f5eee6eaa1a503bb10074492350a164de683adf50bf2b092ce647b9",
@@ -409,6 +409,7 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
     "202610160500-6RCQSY",
     "202610260157-ZDEE0D",
     "202610270555-MY0JZE",
+    "202610300522-MRJ9WH",
   ];
 
   assert(
@@ -1027,6 +1028,7 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
       "202610160500-6RCQSY",
       "202610260157-ZDEE0D",
       "202610270555-MY0JZE",
+      "202610300522-MRJ9WH",
     ],
     agent_facing_context_contracts: [
       "202607221848-1HWR0R",
@@ -1869,6 +1871,7 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
       group: "Task",
       args: [{ name: "task-id", required: true, variadic: false, valueHint: "<task-id>" }],
       options: [
+        { name: "reconcile-request", kind: "string", valueHint: "<private-json>" },
         { name: "scope-root", kind: "string", valueHint: "<path>", repeatable: true },
         {
           name: "repository-effect",
@@ -1968,6 +1971,12 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
     },
   ];
   const expectedAddedOptions = [
+    {
+      command: "task scope extend",
+      name: "reconcile-request",
+      kind: "string",
+      valueHint: "<private-json>",
+    },
     {
       command: "backend sync",
       name: "adopt-projection-identity",
@@ -3847,6 +3856,12 @@ function validateReviewedCandidate({ baseline, candidate, exactMainSurface, curr
       name,
       source_task: "202610270555-MY0JZE",
     })),
+    {
+      kind: "option",
+      command: "task scope extend",
+      name: "reconcile-request",
+      source_task: "202610300522-MRJ9WH",
+    },
   ];
   const activeExpectedAddedCommandDescriptors = expectedAddedCommandDescriptors
     .filter((command) => command.id.join(" ") !== "task supervisor budget-epoch")
