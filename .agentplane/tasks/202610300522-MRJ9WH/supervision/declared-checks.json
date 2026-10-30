@@ -1,0 +1,199 @@
+{
+  "checks": [
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run build",
+      "duration_ms": 5926,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:012285e69e3f2d097c2052c170ade111282b8546a15df702d0a958e02f877ee8",
+        "manifest_path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202610300522-MRJ9WH-authenticate-completed-repair-intake-transitions/.agentplane/tasks/202610300522-MRJ9WH/supervision/verification-runs/run-012/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:e6a1b68cd3d2d952c735cfc04dcef99115d2ba9a4ccb12daab51fa8356ba0a54",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:69dee6fae78464f167d32bf7d43ecfbd83a4b1321d8e98459e9d03c0225b4e25"
+      },
+      "script": "build",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs && bun run --filter=@agentplaneorg/core build:bundle && bun run --filter=@agentplaneorg/recipes build:bundle && bun run --filter=agentplane build:bundle\n",
+      "stdout_tail": "atalog/task-read.js\".\nagentplane build:bundle: \"classifyPlanChange\" is imported from external module \"@agentplaneorg/core/tasks\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"generateKeyPairSync\" and \"sign\" are imported from external module \"crypto\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"refreshPendingReplacementSupervisorExecutionEpisode\", \"assertAgentWorkOrderReadyForInvocation\", \"EXECUTION_RECEIPT_SCHEMA_VERSION\", \"validateExecutionReceipt\", \"createRunnerEffectOperation\", \"digestRunnerEffectValue\", \"createRunnerEffectClaim\", \"createRunnerEffectJournal\", \"createRunnerEffectOperationRef\", \"validateRunnerEffectClaim\", \"validateRunnerEffectJournal\", \"validateRunnerEffectOperation\", \"StateFingerprintPreconditionError\", \"assertStateFingerprintPrecondition\", \"createRunnerEffectResolution\", \"createRunnerEffectResolutionIntent\", \"createRunnerEffectResolutionLease\", \"createRunnerEffectResolutionRef\", \"validateRunnerEffectResolution\", \"validateRunnerEffectResolutionIntent\" and \"validateRunnerEffectResolutionLease\" are imported from external module \"@agentplaneorg/core/schemas\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"appendFileSync\", \"lstatSync\", \"renameSync\" and \"writeFileSync\" are imported from external module \"fs\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"stripVTControlCharacters\" is imported from external module \"util\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"gitAddPaths\", \"gitCommit\", \"gitListBranches\", \"gitStagedPaths\", \"gitInitRepo\" and \"resolveInitBaseBranch\" are imported from external module \"@agentplaneorg/core/git\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"StringDecoder\" is imported from external module \"string_decoder\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"RECIPE_V1_CONVERSION_RESULT_SCHEMA\" and \"validateRecipeV1ConversionResult\" are imported from external module \"@agentplaneorg/recipes\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"performance\" is imported from external module \"perf_hooks\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"kernelMigrationSemanticAssessmentRequestSchema\", \"mapTaskCentricKernelMigration\", \"recipeSourcePlanSemanticDigest\", \"createExecutionGrant\", \"createPlanProposal\", \"lintTaskVerifyStepsSection\", \"lintTasksSnapshot\" and \"parseDocSections\" are imported from external module \"@agentplaneorg/core/tasks\" but never used in \"dist/deferred-runtime.js\".\nagentplane build:bundle: \"validateTasksExportSnapshot\", \"renderAcrSchemaJson\" and \"assertAgentWorkOrderReadyForInvocation\" are imported from external module \"@agentplaneorg/core/schemas\" but never used in \"dist/deferred-runtime.js\".\nagentplane build:bundle: \"parseWorkflowFrontMatter\" is imported from external module \"@agentplaneorg/core/config\" but never used in \"dist/deferred-runtime.js\".\nagentplane build:bundle: \"DEFAULT_TASK_BRANCH_PREFIX\" and \"clearPinnedBaseBranch\" are imported from external module \"@agentplaneorg/core/git\" but never used in \"dist/deferred-runtime.js\".\nagentplane build:bundle: \"assertAgentWorkOrderReadyForInvocation\" is imported from external module \"@agentplaneorg/core/schemas\" but never used in \"dist/cli-bun.js\".\nagentplane build:bundle: ESM dist/recipe-api.js                335.61 KB\nagentplane build:bundle: ESM dist/command-catalog/core-fast.js 173.47 KB\nagentplane build:bundle: ESM dist/command-catalog/task-read.js 252.55 KB\nagentplane build:bundle: ESM dist/cli.js                       439.50 KB\nagentplane build:bundle: ESM dist/command-catalog.js           2.56 MB\nagentplane build:bundle: ESM dist/deferred-runtime.js          2.74 MB\nagentplane build:bundle: ESM dist/cli-bun.js                   4.14 MB\nagentplane build:bundle: ESM ⚡️ Build success in 3528ms\nagentplane build:bundle: generated dist/command-help.json (263 commands)\nagentplane build:bundle: Exited with code 0\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run test:project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts",
+      "duration_ms": 111607,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:1bc72bfde95a6261e64ff1960535fec0d7d4c0a1f59168149fc517f745c64ca3",
+        "manifest_path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202610300522-MRJ9WH-authenticate-completed-repair-intake-transitions/.agentplane/tasks/202610300522-MRJ9WH/supervision/verification-runs/run-013/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:e6a1b68cd3d2d952c735cfc04dcef99115d2ba9a4ccb12daab51fa8356ba0a54",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:69dee6fae78464f167d32bf7d43ecfbd83a4b1321d8e98459e9d03c0225b4e25"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts\n",
+      "stdout_tail": "\n RUN  v5.0.5 <repo>\n\n\n Test Files  4 passed (4)\n      Tests  68 passed (68)\n   Start at  04:29:18\n   Duration  111.04s (tests 99%, import 1%, transform 1%)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run test:project core --run packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts",
+      "duration_ms": 735,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:2df009f0bfb95281efbe3211f46f55d06072e7930636791279b6dec2b499aeae",
+        "manifest_path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202610300522-MRJ9WH-authenticate-completed-repair-intake-transitions/.agentplane/tasks/202610300522-MRJ9WH/supervision/verification-runs/run-014/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:e6a1b68cd3d2d952c735cfc04dcef99115d2ba9a4ccb12daab51fa8356ba0a54",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:69dee6fae78464f167d32bf7d43ecfbd83a4b1321d8e98459e9d03c0225b4e25"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project core --run packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts\n",
+      "stdout_tail": "\n RUN  v5.0.5 <repo>\n\n\n Test Files  1 passed (1)\n      Tests  4 passed (4)\n   Start at  04:31:09\n   Duration  253ms (import 73%, transform 18%, tests 5%, setup 3%, worker 1%)\n\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run docs:cli:check",
+      "duration_ms": 652,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:f4b500cbec33d0bf2492fcb3ec1df1e174c7575e738f56c1b7e8aeff0e3a4aeb",
+        "manifest_path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202610300522-MRJ9WH-authenticate-completed-repair-intake-transitions/.agentplane/tasks/202610300522-MRJ9WH/supervision/verification-runs/run-015/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:e6a1b68cd3d2d952c735cfc04dcef99115d2ba9a4ccb12daab51fa8356ba0a54",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:69dee6fae78464f167d32bf7d43ecfbd83a4b1321d8e98459e9d03c0225b4e25"
+      },
+      "script": "docs:cli:check",
+      "stderr_tail": "$ node scripts/checks/check-cli-reference-fresh.mjs\n",
+      "stdout_tail": "/private/tmp/af-sb-recovery-20261030-hip5o0or/mount/tests/agentplane-cli-docs-5dmUoQ/cli-reference.generated.mdx\n../../../../../../../private/tmp/af-sb-recovery-20261030-hip5o0or/mount/tests/agentplane-cli-docs-5dmUoQ/cli-reference.generated.mdx 120ms (unchanged)\nok: docs/user/cli-reference.generated.mdx is up to date\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "full_regression",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "bun run ci:local:full",
+      "duration_ms": 1306174,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:fc89b7b42a4682de394eb670787099f2ffc7a1d3b83d7d1c5edd54c5ef777b9a",
+        "manifest_path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202610300522-MRJ9WH-authenticate-completed-repair-intake-transitions/.agentplane/tasks/202610300522-MRJ9WH/supervision/verification-runs/run-016/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:a30956b39978c56a452cf9d18c77bc3c795809c001703920458caed506b8f3d7",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:69dee6fae78464f167d32bf7d43ecfbd83a4b1321d8e98459e9d03c0225b4e25"
+      },
+      "script": "ci:local:full",
+      "stderr_tail": "ailed: Too small: expected string to have >=1 characters at \"commit.hash\"; task README frontmatter schema validation failed: Too small: expected string to have >=1 characters at \"commit.message\"; task README frontmatter schema validation failed: Invalid input: expected string, received number at \"description\"\nℹ️ task doc set outcome=section-updated section=Summary\nℹ️ task doc set outcome=section-updated section=Verify Steps\nℹ️ task doc set outcome=section-updated section=Summary\nℹ️ task doc set outcome=full-doc-updated section=Summary\n{\"ts\":\"2026-10-30T20:50:12.827Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/private/tmp/af-sb-recovery-20261030-hip5o0or/mount/tests/agentplane-vitest-run-VfMlR8/agentplane-workflow-vBfjry/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/private/tmp/af-sb-recovery-20261030-hip5o0or/mount/tests/agentplane-vitest-run-VfMlR8/agentplane-workflow-vBfjry/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-30T20:50:12.839Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/private/tmp/af-sb-recovery-20261030-hip5o0or/mount/tests/agentplane-vitest-run-VfMlR8/agentplane-workflow-h20gEF/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/private/tmp/af-sb-recovery-20261030-hip5o0or/mount/tests/agentplane-vitest-run-VfMlR8/agentplane-workflow-h20gEF/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-30T20:50:12.846Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_completed\",\"details\":{\"workflowPath\":\"/private/tmp/af-sb-recovery-20261030-hip5o0or/mount/tests/agentplane-vitest-run-VfMlR8/agentplane-workflow-h20gEF/.agentplane/WORKFLOW.md\",\"from\":\"/private/tmp/af-sb-recovery-20261030-hip5o0or/mount/tests/agentplane-vitest-run-VfMlR8/agentplane-workflow-h20gEF/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-30T20:50:12.853Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_publish_completed\",\"details\":{\"workflowPath\":\"/private/tmp/af-sb-recovery-20261030-hip5o0or/mount/tests/agentplane-vitest-run-VfMlR8/agentplane-workflow-r3q4Ft/.agentplane/WORKFLOW.md\",\"lastKnownGoodPath\":\"/private/tmp/af-sb-recovery-20261030-hip5o0or/mount/tests/agentplane-vitest-run-VfMlR8/agentplane-workflow-r3q4Ft/.agentplane/workflows/last-known-good.md\"}}\n{\"ts\":\"2026-10-30T20:50:12.857Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_restore_failed\",\"code\":\"WF_UNSUPPORTED_VERSION\",\"details\":{\"reason\":\"Unsupported WORKFLOW version 3; supported versions: 1, 2.\"}}\n{\"ts\":\"2026-10-30T20:50:23.189Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-10-30T20:50:23.215Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":1}}\n{\"ts\":\"2026-10-30T20:50:23.216Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-10-30T20:50:23.220Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_failed\",\"details\":{\"diagnostics\":2}}\n{\"ts\":\"2026-10-30T20:50:23.221Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_started\"}\n{\"ts\":\"2026-10-30T20:50:23.224Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_build_completed\",\"details\":{\"diagnostics\":0}}\n$ node scripts/checks/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 3 --fixture local-basic [REDACTED] 10000\n$ node scripts/checks/run-vitest-suite.mjs critical-cli\n$ bun run docs:ia:check && bun run docs:reference:check && bun run docs:onboarding:check\n$ node scripts/checks/check-docs-ia.mjs\n$ node scripts/generate/generate-package-reference.mjs --check\n$ node scripts/checks/check-agent-onboarding-scenario.mjs\n$ node scripts/workflow/run-workflows-lint.mjs && node scripts/checks/check-workflow-command-contract.mjs && bun scripts/checks/check-lifecycle-parity.ts && node scripts/checks/check-critical-test-route.mjs\n$ node scripts/checks/run-vitest-suite.mjs platform-critical\n$ node scripts/checks/check-significant-coverage.mjs\n",
+      "stdout_tail": "sform 9%))\nVitest suite critical-cli: chunk 4/5 (2 files): packages/agentplane/src/cli/run-cli.critical.task-centric.test.ts, packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet-regressions.test.ts\nVitest suite critical-cli: chunk 4/5 passed in 29455ms (Test Files  2 passed (2); Tests  7 passed (7); Duration  29.13s (tests 96%, import 3%, transform 2%))\nVitest suite critical-cli: chunk 5/5 (1 files): packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts\nVitest suite critical-cli: chunk 5/5 passed in 4520ms (Test Files  1 passed (1); Tests  12 passed (12); Duration  4.31s (tests 89%, import 6%, transform 4%))\n{\"schema_version\":1,\"kind\":\"verification_group_summary\",\"ok\":true,\"groups\":[{\"id\":\"runtime\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":65701,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202610300522-MRJ9WH/supervision/verification-runs/run-016/children/run-001/manifest.json\",\"digest\":\"sha256:65afbfdaea9b6056a79c6d3f52c6336c1bedd2cadf19694efc69af11a695d6e9\"}},{\"id\":\"docs-schema\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":18933,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202610300522-MRJ9WH/supervision/verification-runs/run-016/children/run-002/manifest.json\",\"digest\":\"sha256:88ea0751859b9edfc7851a67ac937bbbccdbc1144f54f6ffa1f6e9ba6fa5cbc5\"}},{\"id\":\"core\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":1104825,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202610300522-MRJ9WH/supervision/verification-runs/run-016/children/run-003/manifest.json\",\"digest\":\"sha256:1e26e3cfc9aa58d3f25987d52e696ebf1764b2d7fcece1a82b067738c7b6e3f8\"}},{\"id\":\"cli\",\"exit_code\":0,\"timed_out\":false,\"duration_ms\":50563,\"observation\":{\"status\":\"retained\",\"manifest_path\":\"<repo>/.agentplane/tasks/202610300522-MRJ9WH/supervision/verification-runs/run-016/children/run-004/manifest.json\",\"digest\":\"sha256:a1ce6ffffc04d907631eddfad114c7337e0f2190b5884abaf6f72ba7e0c91a46\"}}]}\n{\"schema_version\":1,\"kind\":\"verification_metrics\",\"route\":\"full-fast\",\"wall_clock_ms\":1247767,\"selected_groups\":5,\"executed_groups\":5,\"parallel_group_concurrency\":1,\"build_invocations\":1,\"ok\":true}\n\n== Documentation contracts ==\nok: docs index and current path references are aligned\nok: docs/reference/generated-reference.mdx is fresh\nok: agent onboarding scenario surfaces are aligned\n\n== Workflows lint (actionlint) ==\nworkflow and command guidance contract OK\nworkflow lifecycle parity OK\ncritical Vitest route OK\n\n== Windows platform-critical tests ==\n\n RUN  v5.0.5 /private/tmp/af-sb-recovery-20261030-hip5o0or/mount/tests/agentplane-verification-4cLjBu\n\n\n Test Files  7 passed (7)\n      Tests  98 passed (98)\n   Start at  04:52:01\n   Duration  51.87s (tests 98%, import 1%, transform 1%)\n\n\n== Significant file coverage (guard) ==\n\n RUN  v5.0.5 /private/tmp/af-sb-recovery-20261030-hip5o0or/mount/tests/agentplane-verification-4cLjBu\n      Coverage enabled with v8\n\n ✓ packages/agentplane/src/commands/guard/impl/policy.test.ts (3 tests) 16ms\n ✓ packages/agentplane/src/commands/guard/impl/allow.test.ts (13 tests) 85ms\n ✓ packages/agentplane/src/commands/guard/impl/commands.guard.unit.test.ts (3 tests) 119ms\n ✓ packages/agentplane/src/commands/guard/impl/commands.commit-close.unit.test.ts (12 tests) 300ms\n ✓ packages/agentplane/src/commands/guard/impl/commands.commit-non-close.unit.test.ts (19 tests) 305ms\n ✓ packages/agentplane/src/commands/guard/impl/comment-commit.test.ts (12 tests) 43ms\n ✓ packages/agentplane/src/commands/guard/impl/close-message.test.ts (18 tests) 980ms\n ✓ packages/agentplane/src/cli/run-cli.core.guard.test.ts (25 tests) 1770ms\n   ✓ runCli (25)\n     ✓ guard clean succeeds when no staged files 863ms\n\n Test Files  8 passed (8)\n      Tests  105 passed (105)\n   Start at  04:52:53\n   Duration  3.58s (transform 43%, tests 42%, import 14%, worker 1%, setup 1%)\n\n\n== Coverage threshold (significant) ==\nSignificant suite contract OK (17 source targets).\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "node .agentplane/policy/check-routing.mjs",
+      "duration_ms": 146,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:3c199ca468f2dcf4d3d79aa5165c223e0e72c5ca672f2e33021cc7e6ba129ce6",
+        "manifest_path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202610300522-MRJ9WH-authenticate-completed-repair-intake-transitions/.agentplane/tasks/202610300522-MRJ9WH/supervision/verification-runs/run-017/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:3d221260324dfd4f34a26a44a0b96d69a409b86005253116e4a828988e8dca17",
+        "executable_digest": "sha256:7296c3dda88793e08d1089d839a782178c4bba6bb22f5c40ab2a75263fb071bd",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:69dee6fae78464f167d32bf7d43ecfbd83a4b1321d8e98459e9d03c0225b4e25"
+      },
+      "script": null,
+      "stderr_tail": "",
+      "stdout_tail": "policy routing OK\n"
+    },
+    {
+      "check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "command": "agentplane doctor",
+      "duration_ms": 5186,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:df1d0b92441a2cc46de25c0ba749dac835a9adb7350fdf51ffb4a12fe5c61f6a",
+        "manifest_path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202610300522-MRJ9WH-authenticate-completed-repair-intake-transitions/.agentplane/tasks/202610300522-MRJ9WH/supervision/verification-runs/run-018/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:3d221260324dfd4f34a26a44a0b96d69a409b86005253116e4a828988e8dca17",
+        "executable_digest": "sha256:7296c3dda88793e08d1089d839a782178c4bba6bb22f5c40ab2a75263fb071bd",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:69dee6fae78464f167d32bf7d43ecfbd83a4b1321d8e98459e9d03c0225b4e25"
+      },
+      "script": null,
+      "stderr_tail": "info: detected framework checkout; delegating to repo-local binary: <repo>/packages/agentplane/bin/agentplane.js\nℹ️ doctor: checking workflow contract\n{\"ts\":\"2026-10-30T20:52:57.896Z\",\"component\":\"workflow-runtime\",\"event\":\"workflow_doctor_check\",\"details\":{\"ok\":true,\"findings\":0}}\nℹ️ doctor: checking workspace\nℹ️ doctor: checking branch_pr drift\nℹ️ doctor: checking runtime source\nℹ️ doctor: checking prompt graph\nℹ️ doctor: checking recent task archive\n⚠️ doctor findings: errors=0 warnings=0 info=9\n- [INFO] State: local plan approval requires a host-originated user decision\nLikely cause: no trusted signed-receipt issuer is configured\nNext action: ap task advance <task-id> --agent-json (present the emitted host_user_decision request in Codex; use task plan approve --by USER only as explicit manual compatibility)\nDetails: Reason code: host_user_decision_required\n  - AgentPlane will not emit an unavailable signed_user_receipt transport.\n  - A managed runner cannot synthesize the user decision and stops at the plan boundary.\n- [INFO] Runtime mode: repo-local-handoff (repo-local binary reached via handoff from a global install)\n- [INFO] Active binary: <repo>/packages/agentplane/bin/agentplane.js\n- [INFO] Handoff source binary: /Users/densmirnov/Github/agentplane/packages/agentplane/bin/agentplane.js\n- [INFO] Resolved agentplane: 0.7.12 @ <repo>/packages/agentplane\n- [INFO] Resolved @agentplaneorg/core: 0.7.12 @ <repo>/packages/core\n- [INFO] Framework repo root: <repo>\n- [INFO] Framework agentplane root: <repo>/packages/agentplane\n- [INFO] Framework core root: <repo>/packages/core\n",
+      "stdout_tail": "✅ doctor (OK)\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": null,
+  "schema_version": 1,
+  "status": "passed",
+  "task_id": "202610300522-MRJ9WH"
+}

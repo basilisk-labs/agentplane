@@ -1,10 +1,10 @@
 ---
 id: "202610300522-MRJ9WH"
 title: "Authenticate completed repair intake transitions and reconcile partial scope admission"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 35
+revision: 47
 origin:
   system: "manual"
 depends_on: []
@@ -20,15 +20,33 @@ verify:
   - "bun run test:project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts"
 plan_approval:
   state: "approved"
-  updated_at: "2026-10-30T14:08:20.849Z"
+  updated_at: "2026-10-30T20:05:38.690Z"
   updated_by: "USER"
-  note: null
+  note: "Projected from the approved canonical Task Kernel plan."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-10-30T20:53:05.013Z"
+  updated_by: "SUPERVISOR"
+  note: "Verified: canonical Task Kernel final checks passed."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-10-30T20:05:38.690Z"
+  updated_by: "EVALUATOR"
+  note: "Canonical EVALUATOR review passed."
+  evaluated_sha: "e3dad53d9e8f3e6f83e3605ce1b28579e27fbb77"
+  review_identity_digest: "sha256:d49b54c201923ed62573d44c9c34f45d0fe784a981bb39e6b230c37e09790b1e"
+  evidence_refs:
+    - "../../../.git/agentplane/kernel/exchanges/202610300522-MRJ9WH/b239bb548d4f78f48cc627c48b8401364f7e47900636260bade58a8e5f79dbd9/quality-report.json"
+  findings:
+    - "Inspected the native implementation target e3dad53d9e8f3e6f83e3605ce1b28579e27fbb77 and tree 5959c7814c22469d5675c2d3dd7326f5b6b9e29d. All nineteen source-file digests match the implementation report; current changes outside native Task metadata are absent."
+    - "The writer and cold readers share exact before/after and immutable authority checks. Prepared validation is pure, publication uses the existing single-writer fence and one durable native effect, independent readback precedes completion, and only a completed protected receipt authorizes cold intake."
+    - "The permit is object-bound and pins Kernel, frozen base, route, intake and proof chain. Serialized or implicit copies remain unproven. The owning side-effect hydration and raw verification metadata calls transfer it only after checking their unchanged bound authority."
+    - "The legacy route validates the strict private byte-bound request, genuine consumed blocker, immutable Git beforeimage and full exact known partial projection. Original before/partial bytes and the failed main journal remain retained; replay resumes the same intent/effect or performs a completed readback without a second approval."
+    - "Meaningful regression coverage includes genuine historical prospective scope with explicit grants, two independent completed admissions, actual native verification and resumed EXECUTOR routing, fresh OS-process owner/base/compact-history/Git-ref reads, incomplete intent, forged or missing proof, source/base drift, symlink storage and competing-writer refusal. Core/backend tests cover absent, empty, nonempty and malformed optional grants."
+    - "Resolved and digest-checked all required WorkOrder blocks and inputs. Inspected AgentPlane-owned validation: all five approved commands have exit 0 and retained observation manifests bound to the native implementation. Recursively verified 25 manifests and 75 log-file digests. Four failed descendant subprocesses are the explicit exit-2/exit-3 negative fixtures in verification-contract.test.ts; their enclosing Core suite passed."
+    - "The operator command spec documents the exact recovery schema, byte digest and example. Standard generation and native docs:cli:check pass; the existing generated user-reference filter intentionally excludes operator-only commands. No unrelated docs-engine or verification-policy change was introduced."
 execution_route:
   frozen: true
   reason_codes:
@@ -126,11 +144,143 @@ execution_contract:
       - "packages/core/src/tasks/task-artifact-schema.task.ts"
   observed:
     authority_violations: []
-    changed_components: []
-    changed_paths: []
+    changed_components:
+      - "packages/agentplane"
+      - "packages/core"
+    changed_paths:
+      - "packages/agentplane/src/adapters/task-backend/completed-scope-admission.ts"
+      - "packages/agentplane/src/adapters/task-backend/kernel-record.ts"
+      - "packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts"
+      - "packages/agentplane/src/adapters/task-backend/kernel-scope-intake.ts"
+      - "packages/agentplane/src/backends/task-backend/shared/record.ts"
+      - "packages/agentplane/src/commands/shared/side-effect-authority-store.ts"
+      - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
+      - "packages/agentplane/src/commands/shared/task-backend.ts"
+      - "packages/agentplane/src/commands/task/completed-repair-scope-request.ts"
+      - "packages/agentplane/src/commands/task/kernel-completed-external-rework.testkit.ts"
+      - "packages/agentplane/src/commands/task/scope-extend.command.test.ts"
+      - "packages/agentplane/src/commands/task/scope-extend.command.ts"
+      - "packages/agentplane/src/commands/task/scope-extend.ts"
+      - "packages/agentplane/src/commands/task/verify-record-execute.ts"
+      - "packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts"
+      - "packages/core/src/tasks/task-artifact-schema.task.ts"
     external_effects: []
-    repository_effects: []
-    verification_results: []
+    repository_effects:
+      - "repository_write"
+      - "source_code"
+      - "tests"
+    verification_results:
+      -
+        id: "recorded-check-1"
+        result: "pass"
+      -
+        id: "recorded-check-10"
+        result: "pass"
+      -
+        id: "recorded-check-11"
+        result: "pass"
+      -
+        id: "recorded-check-12"
+        result: "pass"
+      -
+        id: "recorded-check-13"
+        result: "pass"
+      -
+        id: "recorded-check-14"
+        result: "pass"
+      -
+        id: "recorded-check-15"
+        result: "pass"
+      -
+        id: "recorded-check-16"
+        result: "pass"
+      -
+        id: "recorded-check-17"
+        result: "pass"
+      -
+        id: "recorded-check-18"
+        result: "pass"
+      -
+        id: "recorded-check-19"
+        result: "pass"
+      -
+        id: "recorded-check-2"
+        result: "pass"
+      -
+        id: "recorded-check-20"
+        result: "pass"
+      -
+        id: "recorded-check-21"
+        result: "pass"
+      -
+        id: "recorded-check-22"
+        result: "pass"
+      -
+        id: "recorded-check-23"
+        result: "pass"
+      -
+        id: "recorded-check-24"
+        result: "pass"
+      -
+        id: "recorded-check-25"
+        result: "pass"
+      -
+        id: "recorded-check-26"
+        result: "pass"
+      -
+        id: "recorded-check-27"
+        result: "pass"
+      -
+        id: "recorded-check-28"
+        result: "pass"
+      -
+        id: "recorded-check-29"
+        result: "pass"
+      -
+        id: "recorded-check-3"
+        result: "pass"
+      -
+        id: "recorded-check-30"
+        result: "pass"
+      -
+        id: "recorded-check-31"
+        result: "pass"
+      -
+        id: "recorded-check-32"
+        result: "pass"
+      -
+        id: "recorded-check-33"
+        result: "pass"
+      -
+        id: "recorded-check-34"
+        result: "pass"
+      -
+        id: "recorded-check-35"
+        result: "pass"
+      -
+        id: "recorded-check-36"
+        result: "pass"
+      -
+        id: "recorded-check-4"
+        result: "pass"
+      -
+        id: "recorded-check-5"
+        result: "pass"
+      -
+        id: "recorded-check-6"
+        result: "pass"
+      -
+        id: "recorded-check-7"
+        result: "pass"
+      -
+        id: "recorded-check-8"
+        result: "pass"
+      -
+        id: "recorded-check-9"
+        result: "pass"
+      -
+        id: "verification-record"
+        result: "pass"
   reason_codes:
     - "agent_preferred_branch_pr"
     - "effect_publish"
@@ -194,7 +344,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:a6350f49633c6e78e2e56911983dde9ae4a237bd893d3988ccae38b02b67e24d"
+      digest: "sha256:e553ce3df1fc1c4dac6eeaa645f9aae02363a7387a97c76fc7e2de82be417e05"
       escalation_reasons:
         - "central_component:packages/agentplane/src/commands/shared/side-effect-authority-store.ts"
         - "central_component:packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
@@ -203,6 +353,11 @@ execution_contract:
         - "central_component:packages/agentplane/src/commands/shared/task-backend.ts"
         - "central_component:packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts"
         - "central_component:packages/core/src/tasks/task-artifact-schema.task.ts"
+        - "central_path:packages/agentplane/src/commands/shared/side-effect-authority-store.ts"
+        - "central_path:packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
+        - "central_path:packages/agentplane/src/commands/shared/task-backend.ts"
+        - "central_path:packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts"
+        - "central_path:packages/core/src/tasks/task-artifact-schema.task.ts"
         - "effect_public_api"
         - "effect_security_boundary"
         - "external_effect_requires_real_e2e"
@@ -213,10 +368,31 @@ execution_contract:
         - "runtime"
         - "cli"
       observed:
-        changed_components: []
-        changed_files: []
+        changed_components:
+          - "packages/agentplane"
+          - "packages/core"
+        changed_files:
+          - "packages/agentplane/src/adapters/task-backend/completed-scope-admission.ts"
+          - "packages/agentplane/src/adapters/task-backend/kernel-record.ts"
+          - "packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts"
+          - "packages/agentplane/src/adapters/task-backend/kernel-scope-intake.ts"
+          - "packages/agentplane/src/backends/task-backend/shared/record.ts"
+          - "packages/agentplane/src/commands/shared/side-effect-authority-store.ts"
+          - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
+          - "packages/agentplane/src/commands/shared/task-backend.ts"
+          - "packages/agentplane/src/commands/task/completed-repair-scope-request.ts"
+          - "packages/agentplane/src/commands/task/kernel-completed-external-rework.testkit.ts"
+          - "packages/agentplane/src/commands/task/scope-extend.command.test.ts"
+          - "packages/agentplane/src/commands/task/scope-extend.command.ts"
+          - "packages/agentplane/src/commands/task/scope-extend.ts"
+          - "packages/agentplane/src/commands/task/verify-record-execute.ts"
+          - "packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts"
+          - "packages/core/src/tasks/task-artifact-schema.task.ts"
         external_effects: []
-        repository_effects: []
+        repository_effects:
+          - "repository_write"
+          - "source_code"
+          - "tests"
       phase: "task"
       policy_floor:
         monotonic_strengthening: true
@@ -255,15 +431,29 @@ execution_contract:
       - "repository_effect:source_code"
       - "repository_effect:tests"
       - "task_outcome"
-commit: null
+commit:
+  hash: "e3dad53d9e8f3e6f83e3605ce1b28579e27fbb77"
+  message: "AgentPlane-owned canonical implementation commit"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Operator provenance note, not a native scope-admission receipt. The human directly answered request_user_input_async call_20b02dec42144babbd752193bd9ec462: \"Разрешаю эти дополнительные 4 файла\". This supplements the prior explicit seven-root authorization and permits exactly packages/agentplane/src/commands/shared/task-backend.ts, packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts, packages/agentplane/src/commands/shared/task-backend.test.ts and packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts, for eleven roots total. Existing checks/EVAL/PR/merge authorization persists. The initial native PLANNER result11563d94 remains blocked and immutable. Source writes still require native scope admission and a matching fresh WorkOrder. Preserve the original VPB partial47946, Kernel/Plan/base/old receipts, all user work, data, credentials and runtime guards. Do not repeat the human authorization question."
-events: []
+events:
+  -
+    type: "verify"
+    at: "2026-10-30T20:28:41.055Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "verify"
+    at: "2026-10-30T20:53:05.013Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: canonical Task Kernel final checks passed."
 doc_version: 3
-doc_updated_at: "2026-10-30T05:22:46.340Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-10-30T20:53:05.891Z"
+doc_updated_by: "ORCHESTRATOR"
 description: "Direct HUMAN authorization verified in existing SB chat 01a17c58-b597-78a1-abed-517855b3f393 userMessage01a18b16-dbae-7380-9db4-c0081c8fdd00: narrow AgentPlane intake-projection fix including kernel-record.ts, separate Task ID, checks and PR/merge, continue coordinator to live SB acceptance preserving data credentials runtime guards. Implement exactly the seven-root audited prospective proposal vpb-completed-intake-native-reconcile-proposal.json. Root cause: original completed VPBGBK native scope extend47946 preserved Kernel but wrote Taskrev51 helper-root intake then failed reconcile: scope_request_intake_projection; before intake477810a9 equals old prospective lineage, after6bee824f differs and fresh resolver dropped native caps/resources. Preserve original partial README0665dece and canonical beforeimagee090edc6, all immutable Kernel/Plan/base/old results and failedoperation; no manual metadata rewrite/reset/replacement original Task. Correct future writer/reader together: preserve authority fields and exact approved delta, append-only native intake-transition proof bound to immutable Kernel/predecessor/nativeconsumedblocker/USER/currentstate, full candidate validation before write; no blanket COMPLETED skip. Add explicit controller-owned state-bound once-only public reconcile for exact retained partialafterimage, durable intent/afterimage/result+replay/refusal, no retrospective47946PASS. Qualify real completed Kernel with historical prospective intake marker/caps/resources, strict public getTask/list/show/resume, second repair request chain, forged receipt/drift/stalestate refusal and interruption/replay. Seven roots only; fresh native Planner must finalize public interface and verification contract before implementation. Require current native full/EVAL/currenthosted canonical PR/merge before applying public recovery to originalVPB. No Factory/host effects or credential/global changes. All original worktrees/untracked/privateTMP/holdings retained; no cleanup."
 sections:
   Summary: |-
@@ -283,12 +473,522 @@ sections:
     4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-10-30T20:28:41.055Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: canonical Task Kernel final checks passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:90aa55dabbed23d5a34b80c02daa235d7554404b9785dd83bccb2d6d7399e720, input_digest=sha256:41efa6857c3834ed49017716688a5e5f0638fbef564186297d2b8f0f29affcd1
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run build
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check affected_unit_integration (1/7)
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check affected_unit_integration (2/7)
+
+    Check: affected_unit_integration
+    Command: bun run test:project core --run packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check affected_unit_integration (3/7)
+
+    Check: affected_unit_integration
+    Command: bun run docs:cli:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check affected_unit_integration (4/7)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check affected_unit_integration (5/7)
+
+    Check: affected_unit_integration
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check affected_unit_integration (6/7)
+
+    Check: affected_unit_integration
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check affected_unit_integration (7/7)
+
+    Check: critical_paths
+    Command: bun run build
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check critical_paths (1/7)
+
+    Check: critical_paths
+    Command: bun run test:project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check critical_paths (2/7)
+
+    Check: critical_paths
+    Command: bun run test:project core --run packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check critical_paths (3/7)
+
+    Check: critical_paths
+    Command: bun run docs:cli:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check critical_paths (4/7)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check critical_paths (5/7)
+
+    Check: critical_paths
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check critical_paths (6/7)
+
+    Check: critical_paths
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check critical_paths (7/7)
+
+    Check: docs_contract
+    Command: bun run build
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check docs_contract (1/7)
+
+    Check: docs_contract
+    Command: bun run test:project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check docs_contract (2/7)
+
+    Check: docs_contract
+    Command: bun run test:project core --run packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check docs_contract (3/7)
+
+    Check: docs_contract
+    Command: bun run docs:cli:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check docs_contract (4/7)
+
+    Check: docs_contract
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check docs_contract (5/7)
+
+    Check: docs_contract
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check docs_contract (6/7)
+
+    Check: docs_contract
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check docs_contract (7/7)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check full_regression
+
+    Check: real_e2e
+    Command: bun run build
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check real_e2e (1/7)
+
+    Check: real_e2e
+    Command: bun run test:project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check real_e2e (2/7)
+
+    Check: real_e2e
+    Command: bun run test:project core --run packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check real_e2e (3/7)
+
+    Check: real_e2e
+    Command: bun run docs:cli:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check real_e2e (4/7)
+
+    Check: real_e2e
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check real_e2e (5/7)
+
+    Check: real_e2e
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check real_e2e (6/7)
+
+    Check: real_e2e
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check real_e2e (7/7)
+
+    Check: task_outcome
+    Command: bun run build
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check task_outcome (1/7)
+
+    Check: task_outcome
+    Command: bun run test:project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check task_outcome (2/7)
+
+    Check: task_outcome
+    Command: bun run test:project core --run packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check task_outcome (3/7)
+
+    Check: task_outcome
+    Command: bun run docs:cli:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check task_outcome (4/7)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check task_outcome (5/7)
+
+    Check: task_outcome
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check task_outcome (6/7)
+
+    Check: task_outcome
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check task_outcome (7/7)
+
+    NativeTaskIdentityRef:
+    - plan_digest: sha256:bc5924fde90ab61a1f69886b23402b95437ffd38e3140d154ebf6c8a0334e447
+    - policy_digest: sha256:35781f355aaa21293eb931f34639e0e5cad5380fea760bef8ef8e0fa5ae1c536
+    - capability_digest: sha256:401e75ff42d396ed117ce5dc0397c059b8768889e1614f00f5b7de4653f893e9
+    - checks_digest: sha256:81f04a15f4eef3cc583454587a689d7c7bd70916c29fa51734f16c278c8d4bbc
+    - identity_digest: sha256:2512bb12eaddf50cda6a1a0371106a91358949c73a26be8c0aa67a1778379916
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202610300522-MRJ9WH
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-10-30T20:53:05.013Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: canonical Task Kernel final checks passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:90aa55dabbed23d5a34b80c02daa235d7554404b9785dd83bccb2d6d7399e720, input_digest=sha256:1326e2d68ef94f66189624af85f7f01d3850fadc26f16985b4b44bc8b92b2339
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run build
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check affected_unit_integration (1/7)
+
+    Check: affected_unit_integration
+    Command: bun run test:project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check affected_unit_integration (2/7)
+
+    Check: affected_unit_integration
+    Command: bun run test:project core --run packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check affected_unit_integration (3/7)
+
+    Check: affected_unit_integration
+    Command: bun run docs:cli:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check affected_unit_integration (4/7)
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check affected_unit_integration (5/7)
+
+    Check: affected_unit_integration
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check affected_unit_integration (6/7)
+
+    Check: affected_unit_integration
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check affected_unit_integration (7/7)
+
+    Check: critical_paths
+    Command: bun run build
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check critical_paths (1/7)
+
+    Check: critical_paths
+    Command: bun run test:project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check critical_paths (2/7)
+
+    Check: critical_paths
+    Command: bun run test:project core --run packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check critical_paths (3/7)
+
+    Check: critical_paths
+    Command: bun run docs:cli:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check critical_paths (4/7)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check critical_paths (5/7)
+
+    Check: critical_paths
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check critical_paths (6/7)
+
+    Check: critical_paths
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check critical_paths (7/7)
+
+    Check: docs_contract
+    Command: bun run build
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check docs_contract (1/7)
+
+    Check: docs_contract
+    Command: bun run test:project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check docs_contract (2/7)
+
+    Check: docs_contract
+    Command: bun run test:project core --run packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check docs_contract (3/7)
+
+    Check: docs_contract
+    Command: bun run docs:cli:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check docs_contract (4/7)
+
+    Check: docs_contract
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check docs_contract (5/7)
+
+    Check: docs_contract
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check docs_contract (6/7)
+
+    Check: docs_contract
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check docs_contract (7/7)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check full_regression
+
+    Check: real_e2e
+    Command: bun run build
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check real_e2e (1/7)
+
+    Check: real_e2e
+    Command: bun run test:project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check real_e2e (2/7)
+
+    Check: real_e2e
+    Command: bun run test:project core --run packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check real_e2e (3/7)
+
+    Check: real_e2e
+    Command: bun run docs:cli:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check real_e2e (4/7)
+
+    Check: real_e2e
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check real_e2e (5/7)
+
+    Check: real_e2e
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check real_e2e (6/7)
+
+    Check: real_e2e
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check real_e2e (7/7)
+
+    Check: task_outcome
+    Command: bun run build
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check task_outcome (1/7)
+
+    Check: task_outcome
+    Command: bun run test:project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check task_outcome (2/7)
+
+    Check: task_outcome
+    Command: bun run test:project core --run packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check task_outcome (3/7)
+
+    Check: task_outcome
+    Command: bun run docs:cli:check
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check task_outcome (4/7)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check task_outcome (5/7)
+
+    Check: task_outcome
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-6
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check task_outcome (6/7)
+
+    Check: task_outcome
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-7
+    Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check task_outcome (7/7)
+
+    NativeTaskIdentityRef:
+    - plan_digest: sha256:bc5924fde90ab61a1f69886b23402b95437ffd38e3140d154ebf6c8a0334e447
+    - policy_digest: sha256:35781f355aaa21293eb931f34639e0e5cad5380fea760bef8ef8e0fa5ae1c536
+    - capability_digest: sha256:401e75ff42d396ed117ce5dc0397c059b8768889e1614f00f5b7de4653f893e9
+    - checks_digest: sha256:7c388ea90b141bfddc6c44313524789acf5e32106b8e9609baa9e35f90f8f6bc
+    - identity_digest: sha256:d76e36423e71fe35ffd07a423c11af3342bdef949665a8f74e269cbd5913232a
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202610300522-MRJ9WH
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.kernel_operational_projection:
+    digest: "sha256:08b6c3b25ac39024e79c4352a1b7722e8b90056ab881a5504cef498233cb06d7"
+    evidence_refs:
+      - "../../../.git/agentplane/kernel/exchanges/202610300522-MRJ9WH/b239bb548d4f78f48cc627c48b8401364f7e47900636260bade58a8e5f79dbd9/quality-report.json"
+    findings:
+      - "Inspected the native implementation target e3dad53d9e8f3e6f83e3605ce1b28579e27fbb77 and tree 5959c7814c22469d5675c2d3dd7326f5b6b9e29d. All nineteen source-file digests match the implementation report; current changes outside native Task metadata are absent."
+      - "The writer and cold readers share exact before/after and immutable authority checks. Prepared validation is pure, publication uses the existing single-writer fence and one durable native effect, independent readback precedes completion, and only a completed protected receipt authorizes cold intake."
+      - "The permit is object-bound and pins Kernel, frozen base, route, intake and proof chain. Serialized or implicit copies remain unproven. The owning side-effect hydration and raw verification metadata calls transfer it only after checking their unchanged bound authority."
+      - "The legacy route validates the strict private byte-bound request, genuine consumed blocker, immutable Git beforeimage and full exact known partial projection. Original before/partial bytes and the failed main journal remain retained; replay resumes the same intent/effect or performs a completed readback without a second approval."
+      - "Meaningful regression coverage includes genuine historical prospective scope with explicit grants, two independent completed admissions, actual native verification and resumed EXECUTOR routing, fresh OS-process owner/base/compact-history/Git-ref reads, incomplete intent, forged or missing proof, source/base drift, symlink storage and competing-writer refusal. Core/backend tests cover absent, empty, nonempty and malformed optional grants."
+      - "Resolved and digest-checked all required WorkOrder blocks and inputs. Inspected AgentPlane-owned validation: all five approved commands have exit 0 and retained observation manifests bound to the native implementation. Recursively verified 25 manifests and 75 log-file digests. Four failed descendant subprocesses are the explicit exit-2/exit-3 negative fixtures in verification-contract.test.ts; their enclosing Core suite passed."
+      - "The operator command spec documents the exact recovery schema, byte digest and example. Standard generation and native docs:cli:check pass; the existing generated user-reference filter intentionally excludes operator-only commands. No unrelated docs-engine or verification-policy change was introduced."
+    implementation_commit: "e3dad53d9e8f3e6f83e3605ce1b28579e27fbb77"
+    implementation_tree: "5959c7814c22469d5675c2d3dd7326f5b6b9e29d"
+    projected_at: "2026-10-30T20:05:38.690Z"
+    review_identity_digest: "sha256:d49b54c201923ed62573d44c9c34f45d0fe784a981bb39e6b230c37e09790b1e"
+    schema_version: 1
+    source: "task_kernel"
+    verification_evidence_digest: "sha256:c463b772dba2c00653edf74dab91fb756d8c8e83c39075da185efdf87cd0054a"
+    work_order_id: "sha256:83306d1fc1be56e945302aec53683def7987d78db7343e6959d97a13f4484881"
   task_execution_context:
     base_ref: "main"
     base_sha: "ac55b72faf90391d04f29a8aa3b03817d92603a4"
@@ -1196,6 +1896,86 @@ extensions:
               - "task_outcome"
             work_item_id: null
           observation: null
+        -
+          approval_mode: null
+          authority:
+            capabilities:
+              - "repository_write"
+            completion_requirements:
+              - "work_item_validation"
+              - "final_validation"
+            digest: "sha256:a98404a4e771ab005b1f761fc8050a8f187e62c2cb3b1bb71ed80a65ee679898"
+            expires_at: null
+            external_effects:
+              - "network_read"
+            plan_digest: "sha256:bc5924fde90ab61a1f69886b23402b95437ffd38e3140d154ebf6c8a0334e447"
+            plan_revision: 5
+            policy_digests:
+              - "sha256:37492408e7e56de75241cc87a953f635dd9852af3cd93225899233274890938c"
+            provenance:
+              actor_id: "agentplane:kernel-controller"
+              evidence_digest: "sha256:2c2215fc0853bd922918aabfe3af6fc06fe2c00b4ac476bf134724550adbe850"
+              kind: "SYSTEM"
+              parent_authority_digest: "sha256:5bb7df0ac3862cea3233c007df13b2ea3e134f2a7d798bfe29743ee56963667a"
+            repository_effects:
+              - "documentation"
+              - "public_api"
+              - "repository_write"
+              - "security_boundary"
+              - "source_code"
+              - "tests"
+            repository_fingerprint: "sha256:a99f2e98562119122376c4a25f5581d3a7bc4806f84a8b3e73c4c26cf974d3fc"
+            repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+            resources: []
+            risk:
+              implementation: "bounded"
+              requirements: "bounded"
+              reversibility: "recovery_required"
+            scope_roots:
+              - "docs/user/cli-reference.generated.mdx"
+              - "packages/agentplane/src/adapters/task-backend/completed-scope-admission.ts"
+              - "packages/agentplane/src/adapters/task-backend/kernel-record.ts"
+              - "packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts"
+              - "packages/agentplane/src/adapters/task-backend/kernel-scope-intake.ts"
+              - "packages/agentplane/src/backends/task-backend/shared/record.ts"
+              - "packages/agentplane/src/commands/shared/side-effect-authority-store.ts"
+              - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
+              - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts"
+              - "packages/agentplane/src/commands/shared/task-backend.test.ts"
+              - "packages/agentplane/src/commands/shared/task-backend.ts"
+              - "packages/agentplane/src/commands/task/completed-repair-scope-request.ts"
+              - "packages/agentplane/src/commands/task/kernel-completed-external-rework.testkit.ts"
+              - "packages/agentplane/src/commands/task/scope-extend.command.test.ts"
+              - "packages/agentplane/src/commands/task/scope-extend.command.ts"
+              - "packages/agentplane/src/commands/task/scope-extend.ts"
+              - "packages/agentplane/src/commands/task/verify-record-execute.ts"
+              - "packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts"
+              - "packages/core/src/tasks/task-artifact-schema.task.ts"
+            task_id: "202610300522-MRJ9WH"
+            validation_requirements:
+              - "affected_unit_integration"
+              - "critical_paths"
+              - "docs_contract"
+              - "full_regression"
+              - "hosted_integration"
+              - "real_e2e"
+              - "task_outcome"
+            work_item_id: null
+          observation:
+            changed_paths:
+              - "packages/agentplane/src/adapters/task-backend/completed-scope-admission.ts"
+              - "packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts"
+              - "packages/agentplane/src/adapters/task-backend/kernel-scope-intake.ts"
+              - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
+              - "packages/agentplane/src/commands/task/completed-repair-scope-request.ts"
+              - "packages/agentplane/src/commands/task/kernel-completed-external-rework.testkit.ts"
+              - "packages/agentplane/src/commands/task/scope-extend.command.test.ts"
+              - "packages/agentplane/src/commands/task/scope-extend.command.ts"
+              - "packages/agentplane/src/commands/task/scope-extend.ts"
+              - "packages/agentplane/src/commands/task/verify-record-execute.ts"
+            evidence_digest: "sha256:5f38a4a319e6387b0cea8d81a4740cf69f2cd524629de6f6839e8816480d522a"
+            kind: "repository_implementation"
+            previous_fingerprint: "sha256:1aa9f63e3608f5716830c440e7401ebbcc2ee58bb8add93d9cd60d4fe1b427ee"
       controller_transfer: null
       current_plan:
         approval_actor_id: "USER"
@@ -1245,7 +2025,17 @@ extensions:
             optional: false
             required_inputs: []
       effects: []
-      final_validation: null
+      final_validation:
+        evidence_digests:
+          - "sha256:c463b772dba2c00653edf74dab91fb756d8c8e83c39075da185efdf87cd0054a"
+        identity:
+          check_id: "canonical-final-contracts-v2"
+          command_digest: "sha256:2a9534f27da1f0381958dfab7720e65afe8a24bb5a0d23d2d6511a1692d76c6e"
+          environment_digest: "sha256:87bf3c7a78415d956f826c8edade718ab804debbd989633a98a01e72c97b7b8b"
+          implementation_identity: "sha256:a99f2e98562119122376c4a25f5581d3a7bc4806f84a8b3e73c4c26cf974d3fc"
+          toolchain_digest: "sha256:91d211635bcf37c9f76bc180c658da55c09dbe47689a9a266a3e7f5372016b81"
+        observed_at: "2026-10-30T20:29:10.925Z"
+        status: "PASSED"
       id: "202610300522-MRJ9WH"
       intent_digest: "sha256:de78495036428a2216db08a677c10f14270fed040f01855e7c3ad212e2d129b0"
       migration_receipts: []
@@ -1268,6 +2058,33 @@ extensions:
           event_digests:
             - "sha256:0d827533225a242c084ce974dc320ca704c711fcd7436f491b0e0b73a697a21b"
           mutation_id: "capture:202610300522-MRJ9WH"
+        final-validation:sha256:7b6cd082a7f1696a266cf1ed8c70da9e5c9c00a7e4627dcd8197f5b6376b0f52:39:
+          after_revision: 40
+          aggregate_digest: "sha256:a4d5be385eb7792b60c8ec9b4576c61894b353434886b57f73b5eda8a799c559"
+          before_revision: 39
+          command_digest: "sha256:60fd736c936cec52e378aa7e85584f3fccac7c49d4d537d63b4d27b9e0f30fe2"
+          effect_ids: []
+          event_digests:
+            - "sha256:1e5523515f2fcc6000544c047421b60331e78badd30afb337670fb8e777de2b8"
+          mutation_id: "final-validation:sha256:7b6cd082a7f1696a266cf1ed8c70da9e5c9c00a7e4627dcd8197f5b6376b0f52:39"
+        final-validation:sha256:c463b772dba2c00653edf74dab91fb756d8c8e83c39075da185efdf87cd0054a:40:
+          after_revision: 41
+          aggregate_digest: "sha256:47081ae66bd37b262f86d11541b8c39a1d0b3ba06448b076f652a67b756b513d"
+          before_revision: 40
+          command_digest: "sha256:3c09decc5017e029f1829aef12e8d073afbf7b8729c2e9f66655e43c9ccb34d0"
+          effect_ids: []
+          event_digests:
+            - "sha256:7b5b03654c8be4040988241a0607517fb8ac58e09ea9fdf1474a450ed1237d85"
+          mutation_id: "final-validation:sha256:c463b772dba2c00653edf74dab91fb756d8c8e83c39075da185efdf87cd0054a:40"
+        kernel_task_completion_required:sha256:66da4b65d4fbfeaac823763774944209c615a32db8db89ac9ffd0fb85f8a9452:sha256:a99f2e98562119122376c4a25f5581d3a7bc4806f84a8b3e73c4c26cf974d3fc:
+          after_revision: 42
+          aggregate_digest: "sha256:16238e107df61de37da2e2153e4503a7d07e7b6c1df552e7b0032eb37e60642d"
+          before_revision: 41
+          command_digest: "sha256:a45cc4266b9b018d2b5bf3fd9b3043ebabf84075b8434e9552620d553288d97d"
+          effect_ids: []
+          event_digests:
+            - "sha256:9f7648e810741fe1578e09aaff2b130abbdfd7ea76151a7562ca0e0218cd9e34"
+          mutation_id: "kernel_task_completion_required:sha256:66da4b65d4fbfeaac823763774944209c615a32db8db89ac9ffd0fb85f8a9452:sha256:a99f2e98562119122376c4a25f5581d3a7bc4806f84a8b3e73c4c26cf974d3fc"
         kernel_work_item_claim_required:sha256:47b866098276b0783348649f662dfc88d5ccce05c44f117dae9652befbbce233:sha256:5bb1f0341f993c2c547efc6cbb27a585561f2864d61484ee82a89e6823e6d98a:
           after_revision: 13
           aggregate_digest: "sha256:985c031513ce9a334f22d10e7d3fc41bb326776a6e533788922276a6806361c9"
@@ -1358,6 +2175,15 @@ extensions:
           event_digests:
             - "sha256:53dddb5e1666e85d6028b4d693987f06c4dddca323a05a445c539e15e154584c"
           mutation_id: "kernel_work_item_execution_required:sha256:c9d6d11e0c4ef6cc1b93528959f69fd6154e3318ed03c1715bf028e43ea2f66c:sha256:5bb1f0341f993c2c547efc6cbb27a585561f2864d61484ee82a89e6823e6d98a"
+        kernel_work_item_inspection_required:sha256:5bd928f442d1dbf641d54bef23589a1c62148522114af50ded3d27516b04a8c0:sha256:a99f2e98562119122376c4a25f5581d3a7bc4806f84a8b3e73c4c26cf974d3fc:
+          after_revision: 37
+          aggregate_digest: "sha256:a9fe7bfbd58b1991df6897ec4c99b3587dfc1c7c92d54af75a2e7617e6783763"
+          before_revision: 36
+          command_digest: "sha256:5086ddee85beafb5da6466b200ca208928d47d064f2f94e57ae911b181de285e"
+          effect_ids: []
+          event_digests:
+            - "sha256:fb6e8e51765dc2a2e6856856f0a6cd53bf5654b4a73453b4f9868b69917ca18c"
+          mutation_id: "kernel_work_item_inspection_required:sha256:5bd928f442d1dbf641d54bef23589a1c62148522114af50ded3d27516b04a8c0:sha256:a99f2e98562119122376c4a25f5581d3a7bc4806f84a8b3e73c4c26cf974d3fc"
         kernel_work_item_materialization_required:sha256:e52d71a905fd9e43f4aab6111b782e653c70fbbf85c1cecbdd7116a8a81eae43:sha256:92f5a79528553bb453f791ed8860be0b8ac6964f934506ed4890233bf30a3ea2:
           after_revision: 5
           aggregate_digest: "sha256:dcc18320c3d8efdd6bc1e5b0578372429cf11c48980b29544b9f0eed9540bce6"
@@ -1394,6 +2220,15 @@ extensions:
           event_digests:
             - "sha256:f46fbbf7b1817a83dd21ac43ba8f6f89f714f9d473f4b54831c2d93cbcec939c"
           mutation_id: "result:sha256:6b2d17bcf11b5ebdca5fe0a7d4640e78c38bd6ded3feb22395d02e16f7f951e8"
+        result:sha256:83306d1fc1be56e945302aec53683def7987d78db7343e6959d97a13f4484881:
+          after_revision: 36
+          aggregate_digest: "sha256:2aa8f752bf78b23978d80442b085d3d74fd1e7e9ce08ba283f730f7f4b248952"
+          before_revision: 35
+          command_digest: "sha256:2f9800d30b237c59bdd218ea4bf7d5da3f928ded1728b2f54268eb4662ce8432"
+          effect_ids: []
+          event_digests:
+            - "sha256:9c987958794b618862957df671cf43c8bfa0c3748b92bf9a39982de3af7cadd1"
+          mutation_id: "result:sha256:83306d1fc1be56e945302aec53683def7987d78db7343e6959d97a13f4484881"
         result:sha256:ae1e9871f757088ca73ca0b2ad5a34e66720b4e01de8afbcc8ef1db85b461bed:
           after_revision: 17
           aggregate_digest: "sha256:ca33b87717ac2501c2319edaed3eb75c6ec91ff4cfc149ba250f17ca2345abb6"
@@ -1493,6 +2328,15 @@ extensions:
           event_digests:
             - "sha256:e696ba57945de70796e1e51341ee61ba5a72331b3a9d5fa3a6543079ed95e120"
           mutation_id: "sha256:023e54cce6f21909e9798ea3b367ba91e781b13dcc20e2bf97f686adc8a85557"
+        sha256:10ac21252e18d052672cfa1b819bf17776e4dc5e8f4e2b3ed2723addfa233eea:
+          after_revision: 35
+          aggregate_digest: "sha256:6934257663ab3f751f316dbbb469a2ef8b34d91aae0841ae881fac8be8851849"
+          before_revision: 34
+          command_digest: "sha256:61244955856f3f9f88cf3514edeacd1ac9fa77043ac5f271dc6a2aa1cb97dc5a"
+          effect_ids: []
+          event_digests:
+            - "sha256:9a07b9113ae476a01a24dd62d96724dc23c57dbe78e19c146648894918c477aa"
+          mutation_id: "sha256:10ac21252e18d052672cfa1b819bf17776e4dc5e8f4e2b3ed2723addfa233eea"
         sha256:3696eb2373078464fdee27d7160059830baeeccae5c44775f3df54fe52281163:
           after_revision: 12
           aggregate_digest: "sha256:c50ee5ec6e981b7215599d7484ae89b51bda186c390d167beab8cd7fae03e350"
@@ -1556,6 +2400,24 @@ extensions:
           event_digests:
             - "sha256:adab597135fb4e62e329a130901a6ca992465a8b66f49a517a7a763575e6532e"
           mutation_id: "sha256:edbb90c412ee7ae61f078568a8ed163a8c0ba870d74deb3f684cdd9cb22fdaea"
+        validation-resolution:sha256:bbe6b0fe9947e3d7e7be853c1289a3238066fa489c1b3875d1a1e035d39e45fb:
+          after_revision: 39
+          aggregate_digest: "sha256:d72d3666810f5ac21bc073a1163f68604146693fac505adabd42ef5250cb73bd"
+          before_revision: 38
+          command_digest: "sha256:7441dd880945e3572c484302be4575cfb4fee398b5ff8631a721b6cc1c92aa83"
+          effect_ids: []
+          event_digests:
+            - "sha256:d1acc9e709de61d0b33a876e5e4cee762d7decc9435b107c5979fc399fe5f726"
+          mutation_id: "validation-resolution:sha256:bbe6b0fe9947e3d7e7be853c1289a3238066fa489c1b3875d1a1e035d39e45fb"
+        validation:sha256:b239bb548d4f78f48cc627c48b8401364f7e47900636260bade58a8e5f79dbd9:
+          after_revision: 38
+          aggregate_digest: "sha256:13e8e55eb8390ad186397662e30e523fa5985d7258b6bf247e02affd928ff0a5"
+          before_revision: 37
+          command_digest: "sha256:99656071943c948864cc48a6cdef0bc857e045a224395d809fac5c0d442495c8"
+          effect_ids: []
+          event_digests:
+            - "sha256:cde4a7ac3fd38c471dff62cd41f5fa1f19051b129cccc513181a7655be96b875"
+          mutation_id: "validation:sha256:b239bb548d4f78f48cc627c48b8401364f7e47900636260bade58a8e5f79dbd9"
       plan_history:
         -
           approval_actor_id: "USER"
@@ -1709,9 +2571,9 @@ extensions:
               id: "repair-completed-intake"
               optional: false
               required_inputs: []
-      revision: 34
+      revision: 42
       schema_version: 1
-      state: "ACTIVE"
+      state: "COMPLETED"
       work_items:
         repair-completed-intake:
           attempt: 5
@@ -1756,12 +2618,32 @@ extensions:
             id: "repair-completed-intake"
             optional: false
             required_inputs: []
-          output_manifests: []
-          result_digest: null
-          revision: 23
-          state: "EXECUTING"
-          validation: null
-    digest: "sha256:60e26becb2daede127c7192aefdaa2f10aabb058080db15adc565d05cc30f783"
+          output_manifests:
+            -
+              attempt: 5
+              digest: "sha256:7690ecc36681b36ed71ef8546f3be9f1ffb696e01da9ab0b10b723616eb0e232"
+              id: "completed-intake-repair-report"
+              kind: "report"
+              plan_revision: 5
+              repository_fingerprint: "sha256:a99f2e98562119122376c4a25f5581d3a7bc4806f84a8b3e73c4c26cf974d3fc"
+              task_id: "202610300522-MRJ9WH"
+              work_item_id: "repair-completed-intake"
+          result_digest: "sha256:f5b37edd15bab9229d0fe5325d51ccb10bf7e776160668fd0142301570d1d510"
+          revision: 27
+          state: "COMPLETED"
+          validation:
+            evidence_digests:
+              - "sha256:2fdd382ab3afefe0aacc7ae72959868d407a8ae8c92770acb77aad9ffe930c7e"
+              - "sha256:d49b54c201923ed62573d44c9c34f45d0fe784a981bb39e6b230c37e09790b1e"
+            identity:
+              check_id: "canonical-contract-and-inspection"
+              command_digest: "sha256:2a9534f27da1f0381958dfab7720e65afe8a24bb5a0d23d2d6511a1692d76c6e"
+              environment_digest: "sha256:41191d45370e3a2ddb6a3a4bd553427a5887c3ee736aba97b964bd85dfb4231e"
+              implementation_identity: "sha256:f5b37edd15bab9229d0fe5325d51ccb10bf7e776160668fd0142301570d1d510"
+              toolchain_digest: "sha256:e0af97e8bdfa248b82e8d4617e4dbe515abe65d0cfdc64a331f2c4a2524a638c"
+            observed_at: "2026-10-30T20:05:38.690Z"
+            status: "PASSED"
+    digest: "sha256:002b15e4bc7f86ead02e5e246dca5189b7b29cb885559b8bef8926817f8e4e8e"
     documents:
       contracts:
         sha256:8a862b97bdf7e276a7b7055e21d6247358bfbb7849f6767a37eebaf7b59e8ad5:
@@ -2164,6 +3046,78 @@ extensions:
         payload_digest: "sha256:2c8825f2df1e5d586f549f034a6d8d55cf0206c93a79a641b229b209ac66991e"
         task_id: "202610300522-MRJ9WH"
         task_revision: 34
+      -
+        command_digest: "sha256:61244955856f3f9f88cf3514edeacd1ac9fa77043ac5f271dc6a2aa1cb97dc5a"
+        id: "sha256:10ac21252e18d052672cfa1b819bf17776e4dc5e8f4e2b3ed2723addfa233eea:authority_continued"
+        kind: "authority_continued"
+        mutation_id: "sha256:10ac21252e18d052672cfa1b819bf17776e4dc5e8f4e2b3ed2723addfa233eea"
+        occurred_at: "2026-10-30T19:38:49.552Z"
+        payload_digest: "sha256:75eef70cc13c1d872989b912fbe0608a2ada7fb14cc4e2cf8fdb81e61d77e7bd"
+        task_id: "202610300522-MRJ9WH"
+        task_revision: 35
+      -
+        command_digest: "sha256:2f9800d30b237c59bdd218ea4bf7d5da3f928ded1728b2f54268eb4662ce8432"
+        id: "result:sha256:83306d1fc1be56e945302aec53683def7987d78db7343e6959d97a13f4484881:work_item_result_accepted"
+        kind: "work_item_result_accepted"
+        mutation_id: "result:sha256:83306d1fc1be56e945302aec53683def7987d78db7343e6959d97a13f4484881"
+        occurred_at: "2026-10-30T19:38:52.076Z"
+        payload_digest: "sha256:8990de18788eac1b647063cc67369527cd577cd88373ad4467b29eb26335d20f"
+        task_id: "202610300522-MRJ9WH"
+        task_revision: 36
+      -
+        command_digest: "sha256:5086ddee85beafb5da6466b200ca208928d47d064f2f94e57ae911b181de285e"
+        id: "kernel_work_item_inspection_required:sha256:5bd928f442d1dbf641d54bef23589a1c62148522114af50ded3d27516b04a8c0:sha256:a99f2e98562119122376c4a25f5581d3a7bc4806f84a8b3e73c4c26cf974d3fc:work_item_transitioned"
+        kind: "work_item_transitioned"
+        mutation_id: "kernel_work_item_inspection_required:sha256:5bd928f442d1dbf641d54bef23589a1c62148522114af50ded3d27516b04a8c0:sha256:a99f2e98562119122376c4a25f5581d3a7bc4806f84a8b3e73c4c26cf974d3fc"
+        occurred_at: "2026-10-30T19:38:54.081Z"
+        payload_digest: "sha256:4b57ae96bbb30b8ddf86b349a9cf7ad9ef25bfaba3a6768eec3e07df7deebdc0"
+        task_id: "202610300522-MRJ9WH"
+        task_revision: 37
+      -
+        command_digest: "sha256:99656071943c948864cc48a6cdef0bc857e045a224395d809fac5c0d442495c8"
+        id: "validation:sha256:b239bb548d4f78f48cc627c48b8401364f7e47900636260bade58a8e5f79dbd9:work_item_validation_recorded"
+        kind: "work_item_validation_recorded"
+        mutation_id: "validation:sha256:b239bb548d4f78f48cc627c48b8401364f7e47900636260bade58a8e5f79dbd9"
+        occurred_at: "2026-10-30T20:05:40.732Z"
+        payload_digest: "sha256:e54a4e7e5e4e37ef294132d346c963c552dc30d06a9927b8e14630857aacde9e"
+        task_id: "202610300522-MRJ9WH"
+        task_revision: 38
+      -
+        command_digest: "sha256:7441dd880945e3572c484302be4575cfb4fee398b5ff8631a721b6cc1c92aa83"
+        id: "validation-resolution:sha256:bbe6b0fe9947e3d7e7be853c1289a3238066fa489c1b3875d1a1e035d39e45fb:work_item_transitioned"
+        kind: "work_item_transitioned"
+        mutation_id: "validation-resolution:sha256:bbe6b0fe9947e3d7e7be853c1289a3238066fa489c1b3875d1a1e035d39e45fb"
+        occurred_at: "2026-10-30T20:05:42.051Z"
+        payload_digest: "sha256:1614312eb58103f4c7640f85f8c8390d8b08424d5dc30404b86eb726e683b1d7"
+        task_id: "202610300522-MRJ9WH"
+        task_revision: 39
+      -
+        command_digest: "sha256:60fd736c936cec52e378aa7e85584f3fccac7c49d4d537d63b4d27b9e0f30fe2"
+        id: "final-validation:sha256:7b6cd082a7f1696a266cf1ed8c70da9e5c9c00a7e4627dcd8197f5b6376b0f52:39:final_validation_recorded"
+        kind: "final_validation_recorded"
+        mutation_id: "final-validation:sha256:7b6cd082a7f1696a266cf1ed8c70da9e5c9c00a7e4627dcd8197f5b6376b0f52:39"
+        occurred_at: "2026-10-30T20:28:40.161Z"
+        payload_digest: "sha256:00b9607cb3582ea728e71caa27d8cbdc64b8b81c5e58400c1134e690f412a6e1"
+        task_id: "202610300522-MRJ9WH"
+        task_revision: 40
+      -
+        command_digest: "sha256:3c09decc5017e029f1829aef12e8d073afbf7b8729c2e9f66655e43c9ccb34d0"
+        id: "final-validation:sha256:c463b772dba2c00653edf74dab91fb756d8c8e83c39075da185efdf87cd0054a:40:final_validation_recorded"
+        kind: "final_validation_recorded"
+        mutation_id: "final-validation:sha256:c463b772dba2c00653edf74dab91fb756d8c8e83c39075da185efdf87cd0054a:40"
+        occurred_at: "2026-10-30T20:53:04.075Z"
+        payload_digest: "sha256:0d6dbc590a3aedc45986e5e494ee2e9265c0bb1fd8c955817593ae40bb0e99ff"
+        task_id: "202610300522-MRJ9WH"
+        task_revision: 41
+      -
+        command_digest: "sha256:a45cc4266b9b018d2b5bf3fd9b3043ebabf84075b8434e9552620d553288d97d"
+        id: "kernel_task_completion_required:sha256:66da4b65d4fbfeaac823763774944209c615a32db8db89ac9ffd0fb85f8a9452:sha256:a99f2e98562119122376c4a25f5581d3a7bc4806f84a8b3e73c4c26cf974d3fc:task_completed"
+        kind: "task_completed"
+        mutation_id: "kernel_task_completion_required:sha256:66da4b65d4fbfeaac823763774944209c615a32db8db89ac9ffd0fb85f8a9452:sha256:a99f2e98562119122376c4a25f5581d3a7bc4806f84a8b3e73c4c26cf974d3fc"
+        occurred_at: "2026-10-30T20:53:09.517Z"
+        payload_digest: "sha256:efc14d672416d83058d2fee3d83308db5cfd2c79e5c048b47673b36d0bfe2f1f"
+        task_id: "202610300522-MRJ9WH"
+        task_revision: 42
     kind: "canonical_task"
     repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
     schema_version: 1
@@ -2196,6 +3150,496 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-10-30T20:28:41.055Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: canonical Task Kernel final checks passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:90aa55dabbed23d5a34b80c02daa235d7554404b9785dd83bccb2d6d7399e720, input_digest=sha256:41efa6857c3834ed49017716688a5e5f0638fbef564186297d2b8f0f29affcd1
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run build
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check affected_unit_integration (1/7)
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check affected_unit_integration (2/7)
+
+Check: affected_unit_integration
+Command: bun run test:project core --run packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check affected_unit_integration (3/7)
+
+Check: affected_unit_integration
+Command: bun run docs:cli:check
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check affected_unit_integration (4/7)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check affected_unit_integration (5/7)
+
+Check: affected_unit_integration
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check affected_unit_integration (6/7)
+
+Check: affected_unit_integration
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check affected_unit_integration (7/7)
+
+Check: critical_paths
+Command: bun run build
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check critical_paths (1/7)
+
+Check: critical_paths
+Command: bun run test:project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check critical_paths (2/7)
+
+Check: critical_paths
+Command: bun run test:project core --run packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check critical_paths (3/7)
+
+Check: critical_paths
+Command: bun run docs:cli:check
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check critical_paths (4/7)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check critical_paths (5/7)
+
+Check: critical_paths
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check critical_paths (6/7)
+
+Check: critical_paths
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check critical_paths (7/7)
+
+Check: docs_contract
+Command: bun run build
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check docs_contract (1/7)
+
+Check: docs_contract
+Command: bun run test:project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check docs_contract (2/7)
+
+Check: docs_contract
+Command: bun run test:project core --run packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check docs_contract (3/7)
+
+Check: docs_contract
+Command: bun run docs:cli:check
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check docs_contract (4/7)
+
+Check: docs_contract
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check docs_contract (5/7)
+
+Check: docs_contract
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check docs_contract (6/7)
+
+Check: docs_contract
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check docs_contract (7/7)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check full_regression
+
+Check: real_e2e
+Command: bun run build
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check real_e2e (1/7)
+
+Check: real_e2e
+Command: bun run test:project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check real_e2e (2/7)
+
+Check: real_e2e
+Command: bun run test:project core --run packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check real_e2e (3/7)
+
+Check: real_e2e
+Command: bun run docs:cli:check
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check real_e2e (4/7)
+
+Check: real_e2e
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check real_e2e (5/7)
+
+Check: real_e2e
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check real_e2e (6/7)
+
+Check: real_e2e
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check real_e2e (7/7)
+
+Check: task_outcome
+Command: bun run build
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check task_outcome (1/7)
+
+Check: task_outcome
+Command: bun run test:project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check task_outcome (2/7)
+
+Check: task_outcome
+Command: bun run test:project core --run packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check task_outcome (3/7)
+
+Check: task_outcome
+Command: bun run docs:cli:check
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check task_outcome (4/7)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check task_outcome (5/7)
+
+Check: task_outcome
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check task_outcome (6/7)
+
+Check: task_outcome
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check task_outcome (7/7)
+
+NativeTaskIdentityRef:
+- plan_digest: sha256:bc5924fde90ab61a1f69886b23402b95437ffd38e3140d154ebf6c8a0334e447
+- policy_digest: sha256:35781f355aaa21293eb931f34639e0e5cad5380fea760bef8ef8e0fa5ae1c536
+- capability_digest: sha256:401e75ff42d396ed117ce5dc0397c059b8768889e1614f00f5b7de4653f893e9
+- checks_digest: sha256:81f04a15f4eef3cc583454587a689d7c7bd70916c29fa51734f16c278c8d4bbc
+- identity_digest: sha256:2512bb12eaddf50cda6a1a0371106a91358949c73a26be8c0aa67a1778379916
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202610300522-MRJ9WH
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-10-30T20:53:05.013Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: canonical Task Kernel final checks passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:90aa55dabbed23d5a34b80c02daa235d7554404b9785dd83bccb2d6d7399e720, input_digest=sha256:1326e2d68ef94f66189624af85f7f01d3850fadc26f16985b4b44bc8b92b2339
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run build
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check affected_unit_integration (1/7)
+
+Check: affected_unit_integration
+Command: bun run test:project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check affected_unit_integration (2/7)
+
+Check: affected_unit_integration
+Command: bun run test:project core --run packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check affected_unit_integration (3/7)
+
+Check: affected_unit_integration
+Command: bun run docs:cli:check
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check affected_unit_integration (4/7)
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check affected_unit_integration (5/7)
+
+Check: affected_unit_integration
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check affected_unit_integration (6/7)
+
+Check: affected_unit_integration
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check affected_unit_integration (7/7)
+
+Check: critical_paths
+Command: bun run build
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check critical_paths (1/7)
+
+Check: critical_paths
+Command: bun run test:project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check critical_paths (2/7)
+
+Check: critical_paths
+Command: bun run test:project core --run packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check critical_paths (3/7)
+
+Check: critical_paths
+Command: bun run docs:cli:check
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check critical_paths (4/7)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check critical_paths (5/7)
+
+Check: critical_paths
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check critical_paths (6/7)
+
+Check: critical_paths
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check critical_paths (7/7)
+
+Check: docs_contract
+Command: bun run build
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check docs_contract (1/7)
+
+Check: docs_contract
+Command: bun run test:project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check docs_contract (2/7)
+
+Check: docs_contract
+Command: bun run test:project core --run packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check docs_contract (3/7)
+
+Check: docs_contract
+Command: bun run docs:cli:check
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check docs_contract (4/7)
+
+Check: docs_contract
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check docs_contract (5/7)
+
+Check: docs_contract
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check docs_contract (6/7)
+
+Check: docs_contract
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check docs_contract (7/7)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check full_regression
+
+Check: real_e2e
+Command: bun run build
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check real_e2e (1/7)
+
+Check: real_e2e
+Command: bun run test:project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check real_e2e (2/7)
+
+Check: real_e2e
+Command: bun run test:project core --run packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check real_e2e (3/7)
+
+Check: real_e2e
+Command: bun run docs:cli:check
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check real_e2e (4/7)
+
+Check: real_e2e
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check real_e2e (5/7)
+
+Check: real_e2e
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check real_e2e (6/7)
+
+Check: real_e2e
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check real_e2e (7/7)
+
+Check: task_outcome
+Command: bun run build
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check task_outcome (1/7)
+
+Check: task_outcome
+Command: bun run test:project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check task_outcome (2/7)
+
+Check: task_outcome
+Command: bun run test:project core --run packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check task_outcome (3/7)
+
+Check: task_outcome
+Command: bun run docs:cli:check
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check task_outcome (4/7)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check task_outcome (5/7)
+
+Check: task_outcome
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-6
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check task_outcome (6/7)
+
+Check: task_outcome
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202610300522-MRJ9WH/supervision/declared-checks.json#check-7
+Scope: branch_pr task 202610300522-MRJ9WH Verification Contract check task_outcome (7/7)
+
+NativeTaskIdentityRef:
+- plan_digest: sha256:bc5924fde90ab61a1f69886b23402b95437ffd38e3140d154ebf6c8a0334e447
+- policy_digest: sha256:35781f355aaa21293eb931f34639e0e5cad5380fea760bef8ef8e0fa5ae1c536
+- capability_digest: sha256:401e75ff42d396ed117ce5dc0397c059b8768889e1614f00f5b7de4653f893e9
+- checks_digest: sha256:7c388ea90b141bfddc6c44313524789acf5e32106b8e9609baa9e35f90f8f6bc
+- identity_digest: sha256:d76e36423e71fe35ffd07a423c11af3342bdef949665a8f74e269cbd5913232a
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202610300522-MRJ9WH
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

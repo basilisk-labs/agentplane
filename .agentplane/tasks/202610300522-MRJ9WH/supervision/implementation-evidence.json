@@ -1,0 +1,177 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check ac55b72faf90391d04f29a8aa3b03817d92603a4..e3dad53d9e8f3e6f83e3605ce1b28579e27fbb77",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB ac55b72faf90391d04f29a8aa3b03817d92603a4..e3dad53d9e8f3e6f83e3605ce1b28579e27fbb77",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "A\t.agentplane/tasks/202610300522-MRJ9WH/README.md",
+        "A\t.agentplane/tasks/202610300522-MRJ9WH/pr/diffstat.txt",
+        "A\t.agentplane/tasks/202610300522-MRJ9WH/pr/github-body.md",
+        "A\t.agentplane/tasks/202610300522-MRJ9WH/pr/github-title.txt",
+        "A\t.agentplane/tasks/202610300522-MRJ9WH/pr/meta.json",
+        "A\t.agentplane/tasks/202610300522-MRJ9WH/pr/review.md",
+        "A\t.agentplane/tasks/202610300522-MRJ9WH/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
+        "A\t.agentplane/tasks/202610300522-MRJ9WH/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+        "A\tpackages/agentplane/src/adapters/task-backend/completed-scope-admission.ts",
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-record.ts",
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts",
+        "M\tpackages/agentplane/src/adapters/task-backend/kernel-scope-intake.ts",
+        "M\tpackages/agentplane/src/backends/task-backend/shared/record.ts",
+        "M\tpackages/agentplane/src/commands/shared/side-effect-authority-store.ts",
+        "M\tpackages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts",
+        "M\tpackages/agentplane/src/commands/shared/task-backend.ts",
+        "M\tpackages/agentplane/src/commands/task/completed-repair-scope-request.ts",
+        "M\tpackages/agentplane/src/commands/task/kernel-completed-external-rework.testkit.ts",
+        "M\tpackages/agentplane/src/commands/task/scope-extend.command.test.ts",
+        "M\tpackages/agentplane/src/commands/task/scope-extend.command.ts",
+        "M\tpackages/agentplane/src/commands/task/scope-extend.ts",
+        "M\tpackages/agentplane/src/commands/task/verify-record-execute.ts",
+        "A\tpackages/core/src/tasks/task-artifact-schema.execution-contract.test.ts",
+        "M\tpackages/core/src/tasks/task-artifact-schema.task.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "ac55b72faf90391d04f29a8aa3b03817d92603a4",
+  "implementation_commit": "e3dad53d9e8f3e6f83e3605ce1b28579e27fbb77",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [
+      " M packages/agentplane/src/adapters/task-backend/kernel-record.ts",
+      " M packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts",
+      " M packages/agentplane/src/adapters/task-backend/kernel-scope-intake.ts",
+      " M packages/agentplane/src/backends/task-backend/shared/record.ts",
+      " M packages/agentplane/src/commands/shared/side-effect-authority-store.ts",
+      " M packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts",
+      " M packages/agentplane/src/commands/shared/task-backend.ts",
+      " M packages/agentplane/src/commands/task/completed-repair-scope-request.ts",
+      " M packages/agentplane/src/commands/task/kernel-completed-external-rework.testkit.ts",
+      " M packages/agentplane/src/commands/task/scope-extend.command.test.ts",
+      " M packages/agentplane/src/commands/task/scope-extend.command.ts",
+      " M packages/agentplane/src/commands/task/scope-extend.ts",
+      " M packages/core/src/tasks/task-artifact-schema.task.ts",
+      "?? .agentplane/tasks/202610300522-MRJ9WH/README.md",
+      "?? .agentplane/tasks/202610300522-MRJ9WH/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
+      "?? .agentplane/tasks/202610300522-MRJ9WH/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+      "?? packages/agentplane/src/adapters/task-backend/completed-scope-admission.ts",
+      "?? packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts"
+    ],
+    "classification": [
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/adapters/task-backend/kernel-record.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/adapters/task-backend/kernel-scope-intake.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/backends/task-backend/shared/record.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/side-effect-authority-store.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/shared/task-backend.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/completed-repair-scope-request.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/kernel-completed-external-rework.testkit.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/scope-extend.command.test.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/scope-extend.command.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/agentplane/src/commands/task/scope-extend.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": " M packages/core/src/tasks/task-artifact-schema.task.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610300522-MRJ9WH/README.md"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610300522-MRJ9WH/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? .agentplane/tasks/202610300522-MRJ9WH/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/agentplane/src/adapters/task-backend/completed-scope-admission.ts"
+      },
+      {
+        "classification": "removed_during_execution",
+        "line": "?? packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts"
+      }
+    ],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [
+      " M packages/agentplane/src/adapters/task-backend/kernel-record.ts",
+      " M packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts",
+      " M packages/agentplane/src/adapters/task-backend/kernel-scope-intake.ts",
+      " M packages/agentplane/src/backends/task-backend/shared/record.ts",
+      " M packages/agentplane/src/commands/shared/side-effect-authority-store.ts",
+      " M packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts",
+      " M packages/agentplane/src/commands/shared/task-backend.ts",
+      " M packages/agentplane/src/commands/task/completed-repair-scope-request.ts",
+      " M packages/agentplane/src/commands/task/kernel-completed-external-rework.testkit.ts",
+      " M packages/agentplane/src/commands/task/scope-extend.command.test.ts",
+      " M packages/agentplane/src/commands/task/scope-extend.command.ts",
+      " M packages/agentplane/src/commands/task/scope-extend.ts",
+      " M packages/core/src/tasks/task-artifact-schema.task.ts",
+      "?? .agentplane/tasks/202610300522-MRJ9WH/README.md",
+      "?? .agentplane/tasks/202610300522-MRJ9WH/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
+      "?? .agentplane/tasks/202610300522-MRJ9WH/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
+      "?? packages/agentplane/src/adapters/task-backend/completed-scope-admission.ts",
+      "?? packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts"
+    ],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202610300522-MRJ9WH"
+}
