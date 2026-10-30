@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:102f3549864c33ff1a1738ddd092dd7a7f86a57cea59e871530708690a461600",
   "pr_number": 6959,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6959",
+  "pre_merge_closure": {
+    "basis_commit": "198d7a377c541fd0a9380f53630ff41bfaf84e18",
+    "branch": "task/202610300658-XWWWX5/preserve-exact-native-task-payload-strings-durin",
+    "pr_number": 6959,
+    "recorded_at": "2026-10-30T13:14:07.854Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
