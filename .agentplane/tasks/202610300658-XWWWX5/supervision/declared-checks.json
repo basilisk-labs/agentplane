@@ -1,0 +1,72 @@
+{
+  "checks": [
+    {
+      "check_ids": [],
+      "command": "bun run build",
+      "duration_ms": 6494,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:ab2324b73a2ffde8d8fd897e9ea56cb1954c37961b1ddd6c4f6ca289429c99a8",
+        "manifest_path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202610300658-XWWWX5-preserve-exact-native-task-payload-strings-durin/.agentplane/tasks/202610300658-XWWWX5/supervision/verification-runs/run-004/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:e6a1b68cd3d2d952c735cfc04dcef99115d2ba9a4ccb12daab51fa8356ba0a54",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:69dee6fae78464f167d32bf7d43ecfbd83a4b1321d8e98459e9d03c0225b4e25"
+      },
+      "script": "build",
+      "stderr_tail": "$ node scripts/checks/run-typescript-build.mjs && bun run --filter=@agentplaneorg/core build:bundle && bun run --filter=@agentplaneorg/recipes build:bundle && bun run --filter=agentplane build:bundle\n",
+      "stdout_tail": "atalog/task-read.js\".\nagentplane build:bundle: \"classifyPlanChange\" is imported from external module \"@agentplaneorg/core/tasks\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"generateKeyPairSync\" and \"sign\" are imported from external module \"crypto\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"refreshPendingReplacementSupervisorExecutionEpisode\", \"assertAgentWorkOrderReadyForInvocation\", \"EXECUTION_RECEIPT_SCHEMA_VERSION\", \"validateExecutionReceipt\", \"createRunnerEffectOperation\", \"digestRunnerEffectValue\", \"createRunnerEffectClaim\", \"createRunnerEffectJournal\", \"createRunnerEffectOperationRef\", \"validateRunnerEffectClaim\", \"validateRunnerEffectJournal\", \"validateRunnerEffectOperation\", \"StateFingerprintPreconditionError\", \"assertStateFingerprintPrecondition\", \"createRunnerEffectResolution\", \"createRunnerEffectResolutionIntent\", \"createRunnerEffectResolutionLease\", \"createRunnerEffectResolutionRef\", \"validateRunnerEffectResolution\", \"validateRunnerEffectResolutionIntent\" and \"validateRunnerEffectResolutionLease\" are imported from external module \"@agentplaneorg/core/schemas\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"appendFileSync\", \"lstatSync\", \"renameSync\" and \"writeFileSync\" are imported from external module \"fs\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"stripVTControlCharacters\" is imported from external module \"util\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"gitAddPaths\", \"gitCommit\", \"gitListBranches\", \"gitStagedPaths\", \"gitInitRepo\" and \"resolveInitBaseBranch\" are imported from external module \"@agentplaneorg/core/git\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"StringDecoder\" is imported from external module \"string_decoder\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"RECIPE_V1_CONVERSION_RESULT_SCHEMA\" and \"validateRecipeV1ConversionResult\" are imported from external module \"@agentplaneorg/recipes\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"performance\" is imported from external module \"perf_hooks\" but never used in \"dist/command-catalog.js\".\nagentplane build:bundle: \"kernelMigrationSemanticAssessmentRequestSchema\", \"mapTaskCentricKernelMigration\", \"recipeSourcePlanSemanticDigest\", \"createExecutionGrant\", \"createPlanProposal\", \"lintTaskVerifyStepsSection\", \"lintTasksSnapshot\" and \"parseDocSections\" are imported from external module \"@agentplaneorg/core/tasks\" but never used in \"dist/deferred-runtime.js\".\nagentplane build:bundle: \"validateTasksExportSnapshot\", \"renderAcrSchemaJson\" and \"assertAgentWorkOrderReadyForInvocation\" are imported from external module \"@agentplaneorg/core/schemas\" but never used in \"dist/deferred-runtime.js\".\nagentplane build:bundle: \"parseWorkflowFrontMatter\" is imported from external module \"@agentplaneorg/core/config\" but never used in \"dist/deferred-runtime.js\".\nagentplane build:bundle: \"DEFAULT_TASK_BRANCH_PREFIX\" and \"clearPinnedBaseBranch\" are imported from external module \"@agentplaneorg/core/git\" but never used in \"dist/deferred-runtime.js\".\nagentplane build:bundle: \"assertAgentWorkOrderReadyForInvocation\" is imported from external module \"@agentplaneorg/core/schemas\" but never used in \"dist/cli-bun.js\".\nagentplane build:bundle: ESM dist/recipe-api.js                310.80 KB\nagentplane build:bundle: ESM dist/cli.js                       406.61 KB\nagentplane build:bundle: ESM dist/command-catalog/task-read.js 208.80 KB\nagentplane build:bundle: ESM dist/command-catalog/core-fast.js 173.25 KB\nagentplane build:bundle: ESM dist/command-catalog.js           2.53 MB\nagentplane build:bundle: ESM dist/deferred-runtime.js          2.72 MB\nagentplane build:bundle: ESM dist/cli-bun.js                   4.12 MB\nagentplane build:bundle: ESM ⚡️ Build success in 3865ms\nagentplane build:bundle: generated dist/command-help.json (263 commands)\nagentplane build:bundle: Exited with code 0\n"
+    },
+    {
+      "check_ids": [],
+      "command": "bun run test:project core --run packages/core/src/tasks/task-readme.test.ts",
+      "duration_ms": 802,
+      "exit_code": 0,
+      "observation": {
+        "digest": "sha256:13af9e4314d7e4bba0c26ea4504580e351fcdc835390b90800b53ea0560f1437",
+        "manifest_path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202610300658-XWWWX5-preserve-exact-native-task-payload-strings-durin/.agentplane/tasks/202610300658-XWWWX5/supervision/verification-runs/run-005/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:e6a1b68cd3d2d952c735cfc04dcef99115d2ba9a4ccb12daab51fa8356ba0a54",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:69dee6fae78464f167d32bf7d43ecfbd83a4b1321d8e98459e9d03c0225b4e25"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project core --run packages/core/src/tasks/task-readme.test.ts\n",
+      "stdout_tail": "\n RUN  v5.0.5 <repo>\n\n\n Test Files  1 passed (1)\n      Tests  37 passed (37)\n   Start at  19:50:16\n   Duration  211ms (tests 44%, transform 27%, import 17%, setup 9%, worker 3%)\n\n"
+    },
+    {
+      "check_ids": [],
+      "command": "bun run test:project agentplane --run packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts",
+      "duration_ms": 5334,
+      "exit_code": 1,
+      "observation": {
+        "digest": "sha256:870521fc1e7772fdfd63fa899125df15c740145ebfb39f5d14e669ceacc5fa5b",
+        "manifest_path": "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202610300658-XWWWX5-preserve-exact-native-task-payload-strings-durin/.agentplane/tasks/202610300658-XWWWX5/supervision/verification-runs/run-006/manifest.json",
+        "status": "retained"
+      },
+      "runtime": {
+        "environment_digest": "sha256:e6a1b68cd3d2d952c735cfc04dcef99115d2ba9a4ccb12daab51fa8356ba0a54",
+        "executable_digest": "sha256:35d20dd0263e5c950194434b925454fdfa9ba6e4467da960410fa05b08a7a5b5",
+        "kind": "local_runtime_resolution",
+        "status": "resolved",
+        "toolchain_digest": "sha256:69dee6fae78464f167d32bf7d43ecfbd83a4b1321d8e98459e9d03c0225b4e25"
+      },
+      "script": "test:project",
+      "stderr_tail": "$ vitest --config vitest.workspace.ts run --project agentplane --run packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  |agentplane| packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts > canonical bookkeeping command routes > preserves a body-file comment across distinct native writes and cold reads\nError: Command failed: /opt/homebrew/Cellar/node/26.13.0/bin/node <repo>/packages/agentplane/bin/agentplane.js task comment 202610090003-ABC345 --author ORCHESTRATOR --body-file /Users/densmirnov/Github/agentplane/.agentplane/tmp/sb-recovery-20261030/mount/tests/agentplane-vitest-run-AmpiCD/agentplane-cli-test-UM4Xnp/audit-body.txt --root /Users/densmirnov/Github/agentplane/.agentplane/tmp/sb-recovery-20261030/mount/tests/agentplane-vitest-run-AmpiCD/agentplane-cli-test-UM4Xnp\ninfo: detected framework checkout; delegating to repo-local binary: /Users/densmirnov/Github/agentplane/packages/agentplane/bin/agentplane.js\nerror [E_HANDOFF]: Canonical write requires reconciliation: readback_mismatch. Preserve mutation audit:sha256:d453ad9b469ba8f83bcf131a0d6b9b4d560d2a31f1c37605a0a86400c31974bd for task 202610090003-ABC345. Restore storage reads and retry the exact original invocation; retained mutation receipts are checked before another write. Do not migrate or scaffold this task.\nhint: This is an intentional handoff route, not a local mutation failure.\nnext_action: agentplane help (inspect the persisted finalize route and continue through the external handoff path)\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\nerror: script \"test:project\" exited with code 1\n",
+      "stdout_tail": "\n RUN  v5.0.5 <repo>\n\n ❯ |agentplane| packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts (4 tests | 1 failed) 4029ms\n   ❯ canonical bookkeeping command routes (4)\n     × preserves a body-file comment across distinct native writes and cold reads 1114ms\n\n Test Files  1 failed (1)\n      Tests  1 failed | 3 passed (4)\n   Start at  19:50:16\n   Duration  4.81s (tests 86%, transform 8%, import 6%)\n\n"
+    }
+  ],
+  "kind": "direct_task_declared_checks",
+  "reason": "Declared check failed: bun run test:project agentplane --run packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts",
+  "schema_version": 1,
+  "status": "failed",
+  "task_id": "202610300658-XWWWX5"
+}

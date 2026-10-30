@@ -67,6 +67,7 @@ describe("canonical bookkeeping command routes", { timeout: 120_000 }, () => {
     const first = await coldRead();
     const firstMutation = first.aggregate.audit_comments![0]!.mutation_id;
     const firstReceipt = first.aggregate.mutation_receipts[firstMutation];
+    expect(firstReceipt).toBeDefined();
     await run(["comment", taskId, "--author", "ORCHESTRATOR", "--body", "Second distinct write"]);
     const second = await coldRead();
     expect(second.aggregate.revision).toBe(first.aggregate.revision + 1);

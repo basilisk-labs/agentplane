@@ -126,7 +126,8 @@ function renderBlockScalar(key: string, value: string, indent: string): string[]
   ];
 }
 
-function renderFlowSeq(value: unknown[]): string {
+function renderFlowSeq(value: unknown[], preserveStrings = false): string {
+  if (preserveStrings) return JSON.stringify(value);
   const parts = value
     .filter((v) => v !== undefined)
     .map((v) => {
@@ -180,7 +181,7 @@ function renderValueLines(
     }
 
     const allObjects = value.every((v) => isRecord(v));
-    if (!allObjects) return [`${indent}${key}: ${renderFlowSeq(value)}`];
+    if (!allObjects) return [`${indent}${key}: ${renderFlowSeq(value, preserveStrings)}`];
 
     return [
       `${indent}${key}:`,

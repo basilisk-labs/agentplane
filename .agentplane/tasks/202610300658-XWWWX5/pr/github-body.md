@@ -27,10 +27,10 @@ Direct HUMAN grant in root reply call_4b00c5c5b38a4cbb88ab0589e3b146b4 authorize
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/task/kernel-bookkeeping.test.ts   | 66 ++++++++++++++++++++++
- packages/core/src/tasks/task-readme.test.ts        | 35 ++++++++++++
- packages/core/src/tasks/task-readme.ts             | 18 ++++--
- 3 files changed, 114 insertions(+), 5 deletions(-)
+ .../src/commands/task/kernel-bookkeeping.test.ts   | 67 ++++++++++++++++++++++
+ packages/core/src/tasks/task-readme.test.ts        | 39 +++++++++++++
+ packages/core/src/tasks/task-readme.ts             | 23 +++++---
+ 3 files changed, 122 insertions(+), 7 deletions(-)
 ```
 
 </details>
