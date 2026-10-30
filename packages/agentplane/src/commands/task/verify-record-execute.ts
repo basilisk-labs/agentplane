@@ -1,4 +1,6 @@
 import { createHash } from "node:crypto";
+import { transferCompletedScopePermit } from "../../adapters/task-backend/completed-scope-admission.js";
+import { authenticateTaskMetadataProjection } from "../shared/task-backend-branch-snapshot.js";
 import { mkdir, rm } from "node:fs/promises";
 import path from "node:path";
 import { gitRevParse } from "@agentplaneorg/core/git";
@@ -149,6 +151,7 @@ async function recordVerificationResult(opts: {
       beforePersist: opts.beforePersist,
       allowCanonicalProjection: opts.allowCanonicalProjection,
       build: async (current) => {
+        await authenticateTaskMetadataProjection(ctx, current);
         const baseExecutionContract =
           opts.verificationSnapshot?.execution_contract ??
           current.execution_contract ??
@@ -215,7 +218,10 @@ async function recordVerificationResult(opts: {
           inherited_paths: inheritedPaths,
           observed_repository_effects: observedChanges.repository_effects,
         });
-        const contractTask = { ...current, execution_contract: observedExecutionContract };
+        const contractTask = transferCompletedScopePermit(current, {
+          ...current,
+          execution_contract: observedExecutionContract,
+        });
         const parsedDetails = parseVerificationCheckDetails(opts.details);
         const requiresConcreteDetails =
           workflowMode === "branch_pr" &&
@@ -444,10 +450,12 @@ async function recordVerificationResult(opts: {
           }),
         );
         if (opts.by === "EVALUATOR") {
-          const nativeIdentity = resolveNativeTaskIdentity({
-            ...current,
-            execution_contract: reconciledContract,
-          });
+          const nativeIdentity = resolveNativeTaskIdentity(
+            transferCompletedScopePermit(current, {
+              ...current,
+              execution_contract: reconciledContract,
+            }),
+          );
           if (!nativeIdentity) {
             throw new CliError({
               code: "E_VALIDATION",
@@ -455,7 +463,10 @@ async function recordVerificationResult(opts: {
             });
           }
           const reviewIdentity = buildNativeQualityReviewIdentity({
-            task: { ...current, execution_contract: reconciledContract },
+            task: transferCompletedScopePermit(current, {
+              ...current,
+              execution_contract: reconciledContract,
+            }),
             native_identity: nativeIdentity,
             verification_input_digest: verificationInput?.digest ?? null,
             acceptance_criteria: evaluatorAcceptanceCriteria(current),

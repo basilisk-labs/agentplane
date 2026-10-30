@@ -679,12 +679,14 @@ function legacyExecutionContractDefaults(value: unknown): unknown {
         )
       : TASK_EXTERNAL_EFFECT_SCHEMA.options
     ).filter((effect) => effect !== "network_read" || !allowedExternalEffects.includes(effect)),
-    allowed_capabilities: Array.isArray(authoritySource.allowed_capabilities)
-      ? authoritySource.allowed_capabilities
-      : [],
-    allowed_resources: Array.isArray(authoritySource.allowed_resources)
-      ? authoritySource.allowed_resources
-      : [],
+    // Optional grants are part of the signed intake. Preserve absence and let
+    // the schema reject malformed present values instead of inventing grants.
+    ...(Object.hasOwn(authoritySource, "allowed_capabilities")
+      ? { allowed_capabilities: authoritySource.allowed_capabilities }
+      : {}),
+    ...(Object.hasOwn(authoritySource, "allowed_resources")
+      ? { allowed_resources: authoritySource.allowed_resources }
+      : {}),
   };
   return {
     ...value,

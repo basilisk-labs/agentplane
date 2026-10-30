@@ -38,6 +38,7 @@ import {
   resolveAuthoritativeTaskWorktree,
   resolveTaskBranchFromContext,
   taskBranchHasLocalRef,
+  installCompletedScopeReaders,
 } from "./task-backend-branch-snapshot.js";
 
 export {
@@ -210,7 +211,7 @@ export async function loadCommandContext(opts: {
       canonical_source: backend.capabilities?.canonical_source ?? null,
     },
   });
-  return {
+  const command: CommandContext = {
     resolvedProject: resolved,
     config,
     taskBackend: backend,
@@ -220,6 +221,8 @@ export async function loadCommandContext(opts: {
     preparationTrace: opts.preparationTrace ?? null,
     memo: {},
   };
+  installCompletedScopeReaders(command);
+  return command;
 }
 
 /**
@@ -367,12 +370,22 @@ export async function loadTaskFromContext(opts: {
   const canonical = (candidate: TaskData | null) =>
     candidate && Object.hasOwn(candidate.extensions ?? {}, TASK_KERNEL_EXTENSION);
   const task = await opts.ctx.taskBackend.getTask(opts.taskId).catch((error: unknown) => {
+    if (
+      error instanceof CliError &&
+      error.context?.reason_code === "completed_scope_admission_unproven"
+    )
+      throw error;
     if (canonical(preferredBranchTask)) return null;
     throw error;
   });
   const primary = canonical(task)
     ? null
     : await primaryCanonical().catch((error: unknown) => {
+        if (
+          error instanceof CliError &&
+          error.context?.reason_code === "completed_scope_admission_unproven"
+        )
+          throw error;
         if (canonical(preferredBranchTask)) return null;
         throw error;
       });
