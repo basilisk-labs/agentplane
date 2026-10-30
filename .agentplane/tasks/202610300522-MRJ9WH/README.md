@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 55
+revision: 56
 origin:
   system: "manual"
 depends_on: []
@@ -63,9 +63,11 @@ quality_review:
     - "Residual risk: The local ci:contract aggregate has pre-existing sparse-fixture and textual lifecycle-check limitations. This review relies on the approved native full and focused checks; hosted gates must independently qualify the final publication."
     - "Residual risk: This Task has not changed Factory or deployed runtime, and provides no live SB model/MCP acceptance claim."
 token_usage:
-  agent_runs: 0
+  agent_runs: 4
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
   input_tokens: null
-  journal_digest: "sha256:6bca12deeb2bd81cb31f81bc15d981227aa39ae53dc29879969cb2f15a3c6c55"
+  journal_digest: "sha256:ab22370c2d0965eadb49ca8ae5dc7d381441971dfca381d37102d735082e748a"
   observed_agent_runs: 0
   observed_by: "agentplane"
   output_tokens: null
@@ -74,8 +76,8 @@ token_usage:
   source: "supervisor_journal"
   state: "unavailable"
   total_tokens: null
-  unavailable_reason: "no_supervised_agent_runs"
-  updated_at: "2026-10-30T20:58:22.798Z"
+  unavailable_reason: "external_host_turn_unallocatable"
+  updated_at: "2026-10-30T23:48:10.874Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -2286,8 +2288,8 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "226275e2c97b55212c5c9597e88afc8ac52e8943"
-  message: "🧩 MRJ9WH task: refresh task artifacts after commit"
+  hash: "546075ad6b39a8121f00f79b326ed6b825abd089"
+  message: "🚧 MRJ9WH task: record external evaluator result"
 comments:
   -
     author: "ORCHESTRATOR"
@@ -2301,6 +2303,9 @@ comments:
   -
     author: "USER"
     body: "Approved state-bound execution scope extension: packages/agentplane/src/adapters/task-backend/completed-scope-permit.ts, packages/agentplane/src/commands/shared/canonical-blocker-readme-projection.ts, packages/agentplane/src/commands/shared/completed-repair-scope-source.ts, packages/agentplane/src/commands/shared/task-scope-extension-request-state.ts, packages/agentplane/src/commands/shared/task-scope-extension-request.ts, packages/agentplane/src/commands/task/kernel-completed-external-blocker.ts, scripts/baselines/v0.7-compatibility-candidate.json, scripts/checks/check-compatibility-contract-baseline.mjs, scripts/checks/check-compatibility-contract-baseline.test.mjs; repository effects: unchanged."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -2334,9 +2339,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
+  -
+    type: "status"
+    at: "2026-10-30T23:48:10.874Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "546075ad6b39a8121f00f79b326ed6b825abd089"
 doc_version: 3
-doc_updated_at: "2026-10-30T23:12:48.065Z"
-doc_updated_by: "USER"
+doc_updated_at: "2026-10-30T23:48:10.889Z"
+doc_updated_by: "CODER"
 description: "Direct HUMAN authorization verified in existing SB chat 01a17c58-b597-78a1-abed-517855b3f393 userMessage01a18b16-dbae-7380-9db4-c0081c8fdd00: narrow AgentPlane intake-projection fix including kernel-record.ts, separate Task ID, checks and PR/merge, continue coordinator to live SB acceptance preserving data credentials runtime guards. Implement exactly the seven-root audited prospective proposal vpb-completed-intake-native-reconcile-proposal.json. Root cause: original completed VPBGBK native scope extend47946 preserved Kernel but wrote Taskrev51 helper-root intake then failed reconcile: scope_request_intake_projection; before intake477810a9 equals old prospective lineage, after6bee824f differs and fresh resolver dropped native caps/resources. Preserve original partial README0665dece and canonical beforeimagee090edc6, all immutable Kernel/Plan/base/old results and failedoperation; no manual metadata rewrite/reset/replacement original Task. Correct future writer/reader together: preserve authority fields and exact approved delta, append-only native intake-transition proof bound to immutable Kernel/predecessor/nativeconsumedblocker/USER/currentstate, full candidate validation before write; no blanket COMPLETED skip. Add explicit controller-owned state-bound once-only public reconcile for exact retained partialafterimage, durable intent/afterimage/result+replay/refusal, no retrospective47946PASS. Qualify real completed Kernel with historical prospective intake marker/caps/resources, strict public getTask/list/show/resume, second repair request chain, forged receipt/drift/stalestate refusal and interruption/replay. Seven roots only; fresh native Planner must finalize public interface and verification contract before implementation. Require current native full/EVAL/currenthosted canonical PR/merge before applying public recovery to originalVPB. No Factory/host effects or credential/global changes. All original worktrees/untracked/privateTMP/holdings retained; no cleanup."
 sections:
   Summary: |-
@@ -3218,6 +3231,7 @@ extensions:
     work_item_id: null
   implementation_commit:
     hash: "7753cd91a03bf28ec9653e31a4a0f54ca30c8b72"
+    message: "🚧 MRJ9WH task: apply external agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "ac55b72faf90391d04f29a8aa3b03817d92603a4"
@@ -6191,12 +6205,12 @@ DecisionContextRef:
 ## Token Usage
 
 - State: `unavailable`
-- Completeness: `0/0` agent runs
+- Completeness: `0/4` agent runs
 - Input tokens: `unavailable`
 - Output tokens: `unavailable`
 - Reasoning tokens: `unavailable`
 - Total tokens: `unavailable`
 - Provenance: `supervisor_journal/agentplane`
-- Journal digest: `sha256:6bca12deeb2bd81cb31f81bc15d981227aa39ae53dc29879969cb2f15a3c6c55`
-- Unavailable reason: `no_supervised_agent_runs`
-- Updated at: `2026-10-30T20:58:22.798Z`
+- Journal digest: `sha256:ab22370c2d0965eadb49ca8ae5dc7d381441971dfca381d37102d735082e748a`
+- Unavailable reason: `external_host_turn_unallocatable`
+- Updated at: `2026-10-30T23:48:10.874Z`
