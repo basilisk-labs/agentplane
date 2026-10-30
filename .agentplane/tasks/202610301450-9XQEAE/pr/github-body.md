@@ -27,10 +27,10 @@ Required prerequisite for the explicitly user-authorized eight-step sb recovery.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../commands/task/kernel-rework-lineage.test.ts    | 815 ++-------------------
- .../commands/task/kernel-rework-lineage.testkit.ts | 777 ++++++++++++++++++++
+ .../commands/task/kernel-rework-lineage.test.ts    | 156 +++++++++++----------
+ .../commands/task/kernel-rework-lineage.testkit.ts |  81 +++++++++++
  .../src/commands/task/kernel-rework-lineage.ts     |   4 +-
- 3 files changed, 835 insertions(+), 761 deletions(-)
+ 3 files changed, 163 insertions(+), 78 deletions(-)
 ```
 
 </details>
