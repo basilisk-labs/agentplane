@@ -16,7 +16,7 @@ Direct HUMAN authorization verified in existing SB chat 01a17c58-b597-78a1-abed-
 ## Verification
 
 - State: ok
-- Note: Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending.
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
