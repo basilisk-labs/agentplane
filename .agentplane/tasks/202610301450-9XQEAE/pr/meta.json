@@ -3,7 +3,8 @@
   "branch": "task/202610301450-9XQEAE/authenticate-native-worktree-preparation-lineage",
   "created_at": "2026-10-30T15:12:16.212Z",
   "diffstat_sha256": "sha256:957840d7857a159c0f125c790e1514b2c9388f786f7edb466c97cda5bcd81db7",
-  "last_verified_at": null,
+  "last_verified_at": "2026-10-30T17:01:20.504Z",
+  "last_verified_diffstat_sha256": "sha256:957840d7857a159c0f125c790e1514b2c9388f786f7edb466c97cda5bcd81db7",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -16,6 +17,6 @@
   "task_id": "202610301450-9XQEAE",
   "updated_at": "2026-10-30T15:12:16.212Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
