@@ -291,7 +291,11 @@ Hello world.
         nested: { description: value },
         records: [{ note: value }],
         strings: [value],
-        mixed: [value, { message: value }],
+        mixed: [
+          value,
+          { message: value, nested: { body: value, arrays: [false, [{ note: value }]] } },
+          [null, { nested: [0, { description: value }] }],
+        ],
       },
     };
     const digest = kernelDigest(extensions);
