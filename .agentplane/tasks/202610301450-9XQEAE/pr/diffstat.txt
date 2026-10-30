@@ -1,0 +1,4 @@
+ .../commands/task/kernel-rework-lineage.test.ts    | 815 ++-------------------
+ .../commands/task/kernel-rework-lineage.testkit.ts | 777 ++++++++++++++++++++
+ .../src/commands/task/kernel-rework-lineage.ts     |   4 +-
+ 3 files changed, 835 insertions(+), 761 deletions(-)
