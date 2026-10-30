@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 48
+revision: 49
 origin:
   system: "manual"
 depends_on: []
@@ -50,8 +50,6 @@ quality_review:
     - "The operator command spec documents the exact recovery schema, byte digest and example. Standard generation and native docs:cli:check pass; the existing generated user-reference filter intentionally excludes operator-only commands. No unrelated docs-engine or verification-policy change was introduced."
 token_usage:
   agent_runs: 0
-  cached_input_observed_agent_runs: 0
-  cached_input_tokens: null
   input_tokens: null
   journal_digest: "sha256:6bca12deeb2bd81cb31f81bc15d981227aa39ae53dc29879969cb2f15a3c6c55"
   observed_agent_runs: 0
@@ -458,6 +456,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    author: "SUPERVISOR"
+    body: "Blocked: external EXECUTOR could not complete the scoped implementation. Hosted CI requires acyclic completed-scope proof readers and an exact reviewed compatibility entry for the typed reconcile option. The required lower-layer extraction and contract evidence are outside the current nineteen-root authority. No source or lifecycle mutation was performed. Recommended action: Admit the exact additional roots through the native USER scope-request route, refine the native plan if required, then issue fresh implementation authority. Preserve the frozen base, original Kernel, historical verification and original VPB partial evidence. Requested scope: roots=packages/agentplane/src/adapters/task-backend/completed-scope-permit.ts,packages/agentplane/src/commands/shared/canonical-blocker-readme-projection.ts,packages/agentplane/src/commands/shared/completed-repair-scope-source.ts,packages/agentplane/src/commands/shared/task-scope-extension-request-state.ts,packages/agentplane/src/commands/shared/task-scope-extension-request.ts,packages/agentplane/src/commands/task/kernel-completed-external-blocker.ts,scripts/baselines/v0.7-compatibility-candidate.json,scripts/checks/check-compatibility-contract-baseline.mjs,scripts/checks/check-compatibility-contract-baseline.test.mjs; repository effects=unchanged; request digest=sha256:1fcebacbf47680dc4f946634a5ffbd0075133a09ee908b5b0700cf762e88e0b5. Agentplane receipt: external-agent-blocker/tr_8f0ecb43cccfac849cdbef22484ed7a8/sha256:2685724993e860af38c0003fe2e908070024267e3526fb8bb57c15fde86b05af/sha256:1fcebacbf47680dc4f946634a5ffbd0075133a09ee908b5b0700cf762e88e0b5."
 events:
   -
     type: "verify"
@@ -480,8 +481,8 @@ events:
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
     commit: "226275e2c97b55212c5c9597e88afc8ac52e8943"
 doc_version: 3
-doc_updated_at: "2026-10-30T20:58:22.798Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-10-30T21:30:36.852Z"
+doc_updated_by: "SUPERVISOR"
 description: "Direct HUMAN authorization verified in existing SB chat 01a17c58-b597-78a1-abed-517855b3f393 userMessage01a18b16-dbae-7380-9db4-c0081c8fdd00: narrow AgentPlane intake-projection fix including kernel-record.ts, separate Task ID, checks and PR/merge, continue coordinator to live SB acceptance preserving data credentials runtime guards. Implement exactly the seven-root audited prospective proposal vpb-completed-intake-native-reconcile-proposal.json. Root cause: original completed VPBGBK native scope extend47946 preserved Kernel but wrote Taskrev51 helper-root intake then failed reconcile: scope_request_intake_projection; before intake477810a9 equals old prospective lineage, after6bee824f differs and fresh resolver dropped native caps/resources. Preserve original partial README0665dece and canonical beforeimagee090edc6, all immutable Kernel/Plan/base/old results and failedoperation; no manual metadata rewrite/reset/replacement original Task. Correct future writer/reader together: preserve authority fields and exact approved delta, append-only native intake-transition proof bound to immutable Kernel/predecessor/nativeconsumedblocker/USER/currentstate, full candidate validation before write; no blanket COMPLETED skip. Add explicit controller-owned state-bound once-only public reconcile for exact retained partialafterimage, durable intent/afterimage/result+replay/refusal, no retrospective47946PASS. Qualify real completed Kernel with historical prospective intake marker/caps/resources, strict public getTask/list/show/resume, second repair request chain, forged receipt/drift/stalestate refusal and interruption/replay. Seven roots only; fresh native Planner must finalize public interface and verification contract before implementation. Require current native full/EVAL/currenthosted canonical PR/merge before applying public recovery to originalVPB. No Factory/host effects or credential/global changes. All original worktrees/untracked/privateTMP/holdings retained; no cleanup."
 sections:
   Summary: |-
@@ -1017,6 +1018,28 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:c463b772dba2c00653edf74dab91fb756d8c8e83c39075da185efdf87cd0054a"
     work_order_id: "sha256:83306d1fc1be56e945302aec53683def7987d78db7343e6959d97a13f4484881"
+  agentplane.scope_extension_request:
+    blocker_state_fingerprint: "sha256:2685724993e860af38c0003fe2e908070024267e3526fb8bb57c15fde86b05af"
+    kind: "task_scope_extension_request"
+    request:
+      rationale: "The current public typed reconcile option changes CLI topology and must be reviewed in the existing exact contract ratchet. Existing cold-reader imports pull lifecycle controllers into task-backend construction and form dependency cycles. These nine roots permit bounded pure-module extraction and exact contract fixture/test updates. No CI workflow, protection, baseline anchor, provider settings, credentials, original VPB Task or host changes are requested."
+      repository_effects: []
+      schema_version: 1
+      scope_roots:
+        - "packages/agentplane/src/adapters/task-backend/completed-scope-permit.ts"
+        - "packages/agentplane/src/commands/shared/canonical-blocker-readme-projection.ts"
+        - "packages/agentplane/src/commands/shared/completed-repair-scope-source.ts"
+        - "packages/agentplane/src/commands/shared/task-scope-extension-request-state.ts"
+        - "packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
+        - "packages/agentplane/src/commands/task/kernel-completed-external-blocker.ts"
+        - "scripts/baselines/v0.7-compatibility-candidate.json"
+        - "scripts/checks/check-compatibility-contract-baseline.mjs"
+        - "scripts/checks/check-compatibility-contract-baseline.test.mjs"
+    request_digest: "sha256:1fcebacbf47680dc4f946634a5ffbd0075133a09ee908b5b0700cf762e88e0b5"
+    schema_version: 1
+    status: "pending"
+    transition_id: "tr_8f0ecb43cccfac849cdbef22484ed7a8"
+    work_item_id: null
   implementation_commit:
     hash: "e3dad53d9e8f3e6f83e3605ce1b28579e27fbb77"
     message: "🚧 MRJ9WH task: apply canonical agent result"
