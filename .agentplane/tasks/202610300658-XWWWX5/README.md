@@ -1,10 +1,11 @@
 ---
 id: "202610300658-XWWWX5"
 title: "Preserve exact native Task payload strings during README serialization"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -47,6 +48,22 @@ quality_review:
     - "Criterion5: pinned red evidence reproduces12 failures on the prior mixed renderer; corrected core suite passes37/37. No Kernel digest validation was changed."
     - "Criterion6: native validation aaade0f0 is bound to source0d9058f0 and all four contract commands exit0, including full1240258ms. All six direct groups pass. Independently checked21 manifests and63 retained files/370720bytes; expected process.exit2/3 fixture children are not aggregate failures."
     - "Criterion7: implementation effects remain scoped; failed006 and interrupted003 history are retained. The later explicitly user-authorized MRJ representation repair is a separate parent operator action with exact before/after evidence and unchanged Kernel digest, not a serializer source effect. VPB source state is preserved."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:c60ee21dc7f4e4a4fa95d11091cf7a708bd84536b564054dcff41e5a078a18ea"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-10-30T13:14:07.777Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -279,9 +296,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "0d9058f0c9a73ac24830153f66e199ecf9eb8619"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "198d7a377c541fd0a9380f53630ff41bfaf84e18"
+  message: "🧩 XWWWX5 task: refresh task artifacts after commit"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -295,9 +315,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-30T13:14:07.777Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "198d7a377c541fd0a9380f53630ff41bfaf84e18"
 doc_version: 3
-doc_updated_at: "2026-10-30T13:01:59.195Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-30T13:14:07.777Z"
+doc_updated_by: "CODER"
 description: "Direct HUMAN grant in root reply call_4b00c5c5b38a4cbb88ab0589e3b146b4 authorizes exactly three files, separate genuine serializer prerequisite Task, native checks/full CI/EVAL/PR merge. Preserve existing MRJ9WH and original VPB; this prerequisite does not replace either Task. Existing Task renderer emits YAML block scalar strip chomping and trims line endings inside hashed native extension payloads. In-memory production roundtrip of a valid MRJ candidate changes its audit body960 to959 and produces canonical_identity_mismatch with unchanged stored Kernel digest. Fix exact native extension string preservation including terminal LF count, internal trailing whitespace, CRLF and literal escaped newlines, while retaining existing human-facing formatting semantics. Use existing renderer and tests; no new dependency or hash validation bypass. Qualify at least two successive real native writes plus cold readback; duplicate no-op alone is insufficient. Keep original native receipts, Kernel/Plan/base history, untracked user files, worktrees, private snapshots and runtime guards. No manual MRJ byte recovery under this grant; separate exception remains pending. No MRJ or VPB writes, no host/data/credentials effects. All task description and semantic reports must avoid newline normalization hazards until corrected renderer is active. Mandatory focused core and native bookkeeping checks plus full native validation and fresh EVAL/current-head hosted PR merge. Do not cleanup any worktree or holding."
 sections:
   Summary: |-
@@ -605,6 +633,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:caf7500f997012a6e70445d08e024ca8f57752308b36a0e762e292227ab5b67b"
     work_order_id: "sha256:97ae29bd3971b21150b274fa8c0389d79e91a13fe5139d991f338219b68dca27"
+  implementation_commit:
+    hash: "0d9058f0c9a73ac24830153f66e199ecf9eb8619"
+    message: "🚧 XWWWX5 task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "ac55b72faf90391d04f29a8aa3b03817d92603a4"
@@ -1571,3 +1602,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:c60ee21dc7f4e4a4fa95d11091cf7a708bd84536b564054dcff41e5a078a18ea`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-10-30T13:14:07.777Z`
