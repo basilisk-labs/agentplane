@@ -1,0 +1,3091 @@
+diff --git a/packages/agentplane/src/adapters/task-backend/completed-scope-admission.ts b/packages/agentplane/src/adapters/task-backend/completed-scope-admission.ts
+new file mode 100644
+index 000000000..76322bb7f
+--- /dev/null
++++ b/packages/agentplane/src/adapters/task-backend/completed-scope-admission.ts
+@@ -0,0 +1,481 @@
++import { createHash } from "node:crypto";
++import { constants } from "node:fs";
++import { lstat, mkdir, open } from "node:fs/promises";
++import path from "node:path";
++import { z } from "zod";
++import { syncDirectory } from "@agentplaneorg/core/fs";
++import { parseTaskReadme, taskKernel as k, type TaskRecord } from "@agentplaneorg/core/tasks";
++import {
++  digestSupervisorEpisodeValue,
++  validateSupervisorExecutionEpisodeJournal,
++  validateTaskReadmeFrontmatter,
++  withTaskReadmeFrontmatterDefaults,
++} from "@agentplaneorg/core/schemas";
++import { taskRecordToData, type TaskData } from "../../backends/task-backend.js";
++import { readContainedStableTextNoFollow } from "../../shared/contained-stable-file.js";
++import { completedScopeIntake, scopeIntakeDigest } from "./kernel-scope-intake.js";
++import { readKernelRecord } from "./kernel-record.js";
++
++export const COMPLETED_SCOPE_ADMISSIONS = "agentplane.completed_scope_admissions";
++const ADMISSION_DIRECTORY = "agentplane/completed-scope";
++const SCOPE_REQUEST = "agentplane.scope_extension_request";
++const digest = z.string().regex(/^sha256:[a-f0-9]{64}$/u);
++const commit = z.string().regex(/^(?:[a-f0-9]{40}|[a-f0-9]{64})$/u);
++const identitySchema = z.strictObject({
++  schema_version: z.literal(1),
++  kind: z.literal("completed_scope_admission"),
++  task_id: z.string().min(1),
++  repository_identity: digest,
++  kernel_digest: digest,
++  checkout: z.string().min(1),
++  readme_relative: z.string().min(1),
++  head_sha: commit,
++  before_commit: commit,
++  before_digest: digest,
++  partial_digest: digest.nullable(),
++  request_digest: digest,
++  state_scope_digest: digest,
++  roots: z.array(z.string().min(1)),
++  effects: z.array(z.string().min(1)),
++  previous: z.array(digest).max(64),
++  applied_at: z.iso.datetime(),
++  blocker_operation_key: digest,
++  blocker_work_order_ref: z.string().min(1),
++});
++const payloadSchema = z.strictObject({
++  identity: identitySchema,
++  before_readme: z.string().min(1),
++  partial_readme: z.string().nullable(),
++  after: z.custom<TaskData>(),
++  after_digest: digest,
++});
++export type CompletedScopeIdentity = z.infer<typeof identitySchema>;
++export type CompletedScopeAdmission = z.infer<typeof payloadSchema>;
++export type CompletedScopeSource = {
++  git_root: string;
++  common_git_dir: string;
++  repository_identity: string;
++  readme_path: string;
++  raw: string;
++};
++export type AuthenticateCompletedBlocker = (
++  before: TaskData,
++  admission: CompletedScopeAdmission,
++) => Promise<void>;
++const permits = new WeakMap<object, string>();
++export const completedScopeBytesDigest = (value: string) =>
++  `sha256:${createHash("sha256").update(value).digest("hex")}`;
++
++function fail(reason: string): never {
++  throw new Error(`Completed scope admission rejected (${reason})`);
++}
++export function completedScopeAdmissionIds(task: Pick<TaskData, "extensions">): string[] {
++  const raw = task.extensions?.[COMPLETED_SCOPE_ADMISSIONS];
++  if (raw === undefined) return [];
++  const ids = z.array(digest).min(1).max(64).parse(raw);
++  if (new Set(ids).size !== ids.length) fail("duplicate proof");
++  return ids;
++}
++function binding(task: TaskData, repositoryIdentity: string) {
++  return k.kernelDigest({
++    repositoryIdentity,
++    id: task.id,
++    status: task.status,
++    kernel: task.extensions?.task_kernel,
++    base: task.extensions?.task_execution_context,
++    route: task.execution_route,
++    intake: scopeIntakeDigest(task.execution_contract),
++    proofs: completedScopeAdmissionIds(task),
++  });
++}
++export function hasCompletedScopePermit(task: TaskData, repositoryIdentity: string): boolean {
++  return permits.get(task) === binding(task, repositoryIdentity);
++}
++/** Only an explicitly checked metadata projection may inherit an object-bound permit. */
++export function transferCompletedScopePermit<T extends TaskData>(source: TaskData, next: T): T {
++  const pin = permits.get(source);
++  const identity = (source.extensions?.task_kernel as { repository_identity?: string } | undefined)
++    ?.repository_identity;
++  if (pin && identity && pin === binding(source, identity) && pin === binding(next, identity))
++    permits.set(next, pin);
++  return next;
++}
++export function decodeCompletedScopeTask(
++  raw: string,
++  readmePath: string,
++  taskId: string,
++): TaskData {
++  const parsed = parseTaskReadme(raw);
++  const frontmatter = validateTaskReadmeFrontmatter(
++    withTaskReadmeFrontmatterDefaults(parsed.frontmatter),
++  );
++  if (frontmatter.id !== taskId) fail("source Task identity");
++  return taskRecordToData({
++    id: taskId,
++    frontmatter: frontmatter as unknown as TaskRecord["frontmatter"],
++    body: parsed.body,
++    readmePath,
++  });
++}
++export function completedScopeProofId(identity: CompletedScopeIdentity): string {
++  const { applied_at: _at, ...stable } = identity;
++  return k.kernelDigest(stable);
++}
++export function completedScopeProofDirectory(
++  commonGitDir: string,
++  taskId: string,
++  proofId: string,
++) {
++  if (!/^[a-zA-Z0-9_-]+$/u.test(taskId)) fail("Task path");
++  digest.parse(proofId);
++  return path.join(commonGitDir, ADMISSION_DIRECTORY, taskId, proofId.slice(7));
++}
++export async function readCompletedScopePrivateFile(
++  commonGitDir: string,
++  file: string,
++): Promise<string> {
++  const raw = await readContainedStableTextNoFollow({
++    repository_root: commonGitDir,
++    file_path: file,
++    label: "completed scope proof",
++    max_bytes: 64 * 1024 * 1024,
++  });
++  const stat = await lstat(file);
++  if ((stat.mode & 0o077) !== 0 || stat.uid !== process.getuid?.())
++    fail("private proof owner/mode");
++  const privateRoot = path.join(commonGitDir, ADMISSION_DIRECTORY);
++  let parent = path.dirname(file);
++  while (parent === privateRoot || parent.startsWith(`${privateRoot}${path.sep}`)) {
++    const directory = await lstat(parent);
++    if (
++      !directory.isDirectory() ||
++      directory.isSymbolicLink() ||
++      (directory.mode & 0o077) !== 0 ||
++      directory.uid !== process.getuid?.()
++    )
++      fail("private proof directory owner/mode");
++    parent = path.dirname(parent);
++  }
++  return raw;
++}
++const privateFile = readCompletedScopePrivateFile;
++/** Append-only private evidence; an existing different payload is never overwritten. */
++export async function writeCompletedScopeFile(commonGitDir: string, file: string, value: unknown) {
++  const relative = path.relative(commonGitDir, file);
++  if (!relative || relative.startsWith("..") || path.isAbsolute(relative))
++    fail("proof containment");
++  let parent = commonGitDir;
++  const privateRoot = path.join(commonGitDir, ADMISSION_DIRECTORY);
++  for (const part of relative.split(path.sep).slice(0, -1)) {
++    parent = path.join(parent, part);
++    try {
++      await mkdir(parent, { mode: 0o700 });
++      await syncDirectory(path.dirname(parent));
++    } catch (error) {
++      if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
++    }
++    const stat = await lstat(parent);
++    if (stat.isSymbolicLink() || !stat.isDirectory()) fail("proof ancestor");
++    if (
++      (parent === privateRoot || parent.startsWith(`${privateRoot}${path.sep}`)) &&
++      ((stat.mode & 0o077) !== 0 || stat.uid !== process.getuid?.())
++    )
++      fail("private proof directory");
++  }
++  const raw = `${JSON.stringify(value, null, 2)}\n`;
++  let handle;
++  try {
++    handle = await open(
++      file,
++      constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | constants.O_NOFOLLOW,
++      0o600,
++    );
++  } catch (error) {
++    if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
++    if ((await privateFile(commonGitDir, file)) !== raw) fail("conflicting retained evidence");
++    return;
++  }
++  try {
++    await handle.writeFile(raw);
++    await handle.sync();
++    await syncDirectory(path.dirname(file));
++  } finally {
++    await handle.close();
++  }
++}
++export async function readCompletedScopeAdmission(
++  commonGitDir: string,
++  taskId: string,
++  proofId: string,
++) {
++  const dir = completedScopeProofDirectory(commonGitDir, taskId, proofId);
++  const admission = payloadSchema.parse(
++    JSON.parse(await privateFile(commonGitDir, path.join(dir, "intent.json"))),
++  );
++  if (
++    completedScopeProofId(admission.identity) !== proofId ||
++    admission.identity.task_id !== taskId ||
++    admission.after_digest !== k.kernelDigest(admission.after) ||
++    completedScopeBytesDigest(admission.before_readme) !== admission.identity.before_digest ||
++    (admission.partial_readme === null
++      ? null
++      : completedScopeBytesDigest(admission.partial_readme)) !== admission.identity.partial_digest
++  )
++    fail("payload pins");
++  return admission;
++}
++function authorityMatches(before: TaskData, after: TaskData) {
++  return (
++    k.kernelDigest(before.extensions?.task_execution_context) ===
++      k.kernelDigest(after.extensions?.task_execution_context) &&
++    k.kernelDigest(before.execution_route) === k.kernelDigest(after.execution_route) &&
++    k.kernelDigest(before.extensions?.task_kernel) ===
++      k.kernelDigest(after.extensions?.task_kernel) &&
++    before.id === after.id &&
++    before.status === after.status &&
++    scopeIntakeDigest(before.execution_contract) === scopeIntakeDigest(after.execution_contract)
++  );
++}
++function assertVerificationRetained(floor: TaskData, task: TaskData) {
++  const before = floor.execution_contract!,
++    after = task.execution_contract!;
++  for (const key of [
++    "changed_paths",
++    "changed_components",
++    "repository_effects",
++    "external_effects",
++  ] as const)
++    if (before.observed[key].some((entry) => !after.observed[key].includes(entry as never)))
++      fail(`historical ${key}`);
++  if (
++    before.observed.verification_results.some(
++      (result) =>
++        !after.observed.verification_results.some(
++          (next) => k.kernelDigest(next) === k.kernelDigest(result),
++        ),
++    )
++  )
++    fail("historical verification result");
++  if (
++    before.verification.required_evidence.some(
++      (entry) => !after.verification.required_evidence.includes(entry),
++    ) ||
++    before.verification.contract?.selected_checks.some(
++      (entry) => !after.verification.contract?.selected_checks.includes(entry),
++    )
++  )
++    fail("verification floor");
++}
++/** Validate the whole bounded afterimage without granting a completed-read permit. */
++export function validatePreparedCompletedScope(
++  admission: CompletedScopeAdmission,
++  authenticatedBefore?: TaskData,
++): TaskData {
++  const { identity: pin, after } = admission;
++  const decodedBefore = decodeCompletedScopeTask(
++    admission.before_readme,
++    path.join(pin.checkout, pin.readme_relative),
++    pin.task_id,
++  );
++  const before = authenticatedBefore ?? decodedBefore;
++  if (k.kernelDigest(before) !== k.kernelDigest(decodedBefore)) fail("prepared source identity");
++  const request = before.extensions?.[SCOPE_REQUEST] as
++    | {
++        status?: string;
++        request_digest?: string;
++        request?: { scope_roots: string[]; repository_effects: string[] };
++      }
++    | undefined;
++  if (
++    before.status !== "DONE" ||
++    request?.status !== "pending" ||
++    request.request_digest !== pin.request_digest ||
++    k.kernelDigest(request.request?.scope_roots) !== k.kernelDigest(pin.roots) ||
++    k.kernelDigest(request.request?.repository_effects) !== k.kernelDigest(pin.effects)
++  )
++    fail("approved request");
++  const contract = completedScopeIntake(before, pin.roots, pin.effects);
++  if (
++    k.kernelDigest(contract) !== k.kernelDigest(after.execution_contract) ||
++    k.kernelDigest(after.extensions?.task_kernel) !==
++      k.kernelDigest(before.extensions?.task_kernel) ||
++    (before.extensions?.task_kernel as { digest?: string })?.digest !== pin.kernel_digest
++  )
++    fail("prepared authority");
++  const proofId = completedScopeProofId(pin);
++  if (
++    k.kernelDigest(completedScopeAdmissionIds(before)) !== k.kernelDigest(pin.previous) ||
++    k.kernelDigest(completedScopeAdmissionIds(after)) !== k.kernelDigest([...pin.previous, proofId])
++  )
++    fail("append-only predecessor");
++  const approval = completedScopeApprovalComment(pin.roots, pin.effects);
++  const expected = {
++    ...before,
++    execution_contract: contract,
++    comments: [...(before.comments ?? []), approval],
++    extensions: {
++      ...before.extensions,
++      [SCOPE_REQUEST]: {
++        ...request,
++        status: "applied",
++        applied_at: pin.applied_at,
++        applied_by: "USER",
++      },
++      [COMPLETED_SCOPE_ADMISSIONS]: [...pin.previous, proofId],
++    },
++  };
++  const stable = (task: TaskData) => {
++    const {
++      revision: _revision,
++      doc: _doc,
++      doc_updated_at: _at,
++      doc_updated_by: _by,
++      ...rest
++    } = task;
++    return rest;
++  };
++  if (
++    k.kernelDigest(stable(expected)) !== k.kernelDigest(stable(after)) ||
++    after.revision !== (before.revision ?? 0) + (pin.partial_digest ? 2 : 1)
++  )
++    fail("prepared complete Task projection");
++  assertVerificationRetained(before, after);
++  // Every other Kernel guard reads the unchanged id, status and Kernel above.
++  // The evolving intake is checked separately against the exact monotonic delta.
++  const read = readKernelRecord(before, pin.repository_identity as k.Sha256Digest);
++  if (read.kind !== "canonical" || read.record.aggregate.state !== "COMPLETED") {
++    fail("prepared Kernel invariants");
++  }
++  return before;
++}
++export function completedScopeObservedResult(
++  admission: CompletedScopeAdmission,
++  rawDigest: string,
++) {
++  return {
++    schema_version: 1,
++    kind: "completed_scope_afterimage",
++    proof_id: completedScopeProofId(admission.identity),
++    task_digest: admission.after_digest,
++    raw_digest: rawDigest,
++    kernel_digest: admission.identity.kernel_digest,
++  };
++}
++/** Cold authority requires a complete protected native effect and its independently read result. */
++export async function authenticateCompletedScopeTask(opts: {
++  task: TaskData;
++  source: CompletedScopeSource;
++  authenticate_blocker: AuthenticateCompletedBlocker;
++}): Promise<TaskData> {
++  const ids = completedScopeAdmissionIds(opts.task);
++  if (ids.length === 0) return opts.task;
++  const decoded = decodeCompletedScopeTask(opts.source.raw, opts.source.readme_path, opts.task.id);
++  if (k.kernelDigest(decoded) !== k.kernelDigest(opts.task)) fail("explicit source projection");
++  let previous: TaskData | null = null;
++  for (const [index, proofId] of ids.entries()) {
++    const a = await readCompletedScopeAdmission(opts.source.common_git_dir, opts.task.id, proofId);
++    const pin = a.identity;
++    if (
++      pin.repository_identity !== opts.source.repository_identity ||
++      pin.readme_relative !==
++        path.relative(opts.source.git_root, opts.source.readme_path).split(path.sep).join("/") ||
++      k.kernelDigest(pin.previous) !== k.kernelDigest(ids.slice(0, index))
++    )
++      fail("repository/source/predecessor identity");
++    const before = decodeCompletedScopeTask(
++      a.before_readme,
++      path.join(pin.checkout, pin.readme_relative),
++      pin.task_id,
++    );
++    if (previous) {
++      if (!authorityMatches(previous, before)) fail("predecessor authority");
++      assertVerificationRetained(previous, before);
++      permits.set(before, binding(before, pin.repository_identity));
++    }
++    const original = readKernelRecord(before, pin.repository_identity as k.Sha256Digest);
++    if (original.kind !== "canonical" || original.record.aggregate.state !== "COMPLETED")
++      fail("predecessor Kernel");
++    await opts.authenticate_blocker(before, a);
++    validatePreparedCompletedScope(a, before);
++    const dir = completedScopeProofDirectory(opts.source.common_git_dir, pin.task_id, proofId);
++    const journal = validateSupervisorExecutionEpisodeJournal(
++      JSON.parse(await privateFile(opts.source.common_git_dir, path.join(dir, "journal.json"))),
++    );
++    const result = JSON.parse(
++      await privateFile(opts.source.common_git_dir, path.join(dir, "result.json")),
++    ) as { raw_digest?: string };
++    const op = journal.operations.at(-1);
++    const identity = {
++      kind: "completed_scope_admission",
++      proof_id: proofId,
++      payload_digest: k.kernelDigest(a),
++    };
++    if (
++      journal.task_id !== pin.task_id ||
++      journal.operations.length !== 1 ||
++      journal.status !== "running" ||
++      journal.cursor.phase !== "completed" ||
++      op?.status !== "completed" ||
++      op.kind !== "side_effect" ||
++      op.role !== "EXECUTOR" ||
++      op.effect_ref !== `completed-scope:${proofId}` ||
++      op.authority_ref !== "USER:completed-scope" ||
++      op.authority_digest !== pin.state_scope_digest ||
++      op.precondition_fingerprint_digest !== pin.before_digest ||
++      k.kernelDigest(op.recovery?.operation_identity) !== k.kernelDigest(identity) ||
++      op.result_digest !== digestSupervisorEpisodeValue(result) ||
++      !digest.safeParse(result.raw_digest).success ||
++      k.kernelDigest(result) !== k.kernelDigest(completedScopeObservedResult(a, result.raw_digest!))
++    )
++      fail("native completion receipt");
++    permits.set(a.after, binding(a.after, pin.repository_identity));
++    previous = a.after;
++  }
++  if (!previous || !authorityMatches(previous, opts.task)) fail("current authority");
++  assertVerificationRetained(previous, opts.task);
++  permits.set(opts.task, binding(opts.task, opts.source.repository_identity));
++  return opts.task;
++}
++
++const reconcileSchema = z.strictObject({
++  schema_version: z.literal(1),
++  kind: z.literal("completed_scope_admission_reconcile"),
++  task_id: z.string().min(1),
++  repository_identity: digest,
++  kernel_digest: digest,
++  head_sha: commit,
++  before_commit: commit,
++  before_readme_digest: digest,
++  partial_readme_digest: digest,
++  request_digest: digest,
++});
++export async function readCompletedScopeReconcileRequest(
++  file: string,
++  stateDigest: string | undefined,
++) {
++  const absolute = path.resolve(file);
++  const raw = await readContainedStableTextNoFollow({
++    repository_root: path.parse(absolute).root,
++    file_path: absolute,
++    label: "private scope reconciliation request",
++    max_bytes: 64 * 1024,
++  });
++  const stat = await lstat(absolute);
++  if (
++    (stat.mode & 0o077) !== 0 ||
++    stat.uid !== process.getuid?.() ||
++    completedScopeBytesDigest(raw) !== stateDigest
++  )
++    fail("reconciliation request digest/owner/mode");
++  return reconcileSchema.parse(JSON.parse(raw));
++}
++
++export function completedScopeApprovalComment(
++  roots: readonly string[],
++  effects: readonly string[],
++) {
++  return {
++    author: "USER",
++    body: `Approved state-bound execution scope extension: ${roots.join(", ")}; repository effects: ${effects.join(", ") || "unchanged"}.`,
++  };
++}
+diff --git a/packages/agentplane/src/adapters/task-backend/kernel-record.ts b/packages/agentplane/src/adapters/task-backend/kernel-record.ts
+index 5039293a6..6dde8370d 100644
+--- a/packages/agentplane/src/adapters/task-backend/kernel-record.ts
++++ b/packages/agentplane/src/adapters/task-backend/kernel-record.ts
+@@ -1,4 +1,8 @@
+ import { scopeIntakeDigest } from "./kernel-scope-intake.js";
++import {
++  COMPLETED_SCOPE_ADMISSIONS,
++  hasCompletedScopePermit,
++} from "./completed-scope-admission.js";
+ import { isoTimestampSchema } from "@agentplaneorg/core/schemas";
+ import { kernelAuthorityRecordSchema } from "./kernel-authority-schema.js";
+ import { kernelRecordIssues } from "./kernel-record-invariants.js";
+@@ -317,6 +321,21 @@ export function readKernelRecord(
+     };
+   }
+   const aggregate = contents.aggregate;
++  let completedScopePermit = false;
++  if (Object.hasOwn(task.extensions ?? {}, COMPLETED_SCOPE_ADMISSIONS)) {
++    try {
++      completedScopePermit =
++        aggregate.state === "COMPLETED" && hasCompletedScopePermit(task, repositoryIdentity);
++    } catch {
++      /* Malformed serialized references confer no authority. */
++    }
++    if (!completedScopePermit)
++      return {
++        kind: "malformed",
++        reason: "completed_scope_admission_unproven",
++        fields: [COMPLETED_SCOPE_ADMISSIONS],
++      };
++  }
+   if (task.status !== projectKernelTask(aggregate).status) {
+     return {
+       kind: "malformed",
+@@ -329,7 +348,8 @@ export function readKernelRecord(
+   )?.observation?.scope_request;
+   if (
+     lastScopeRequest &&
+-    scopeIntakeDigest(task.execution_contract) !== lastScopeRequest.intake_after_digest
++    scopeIntakeDigest(task.execution_contract) !== lastScopeRequest.intake_after_digest &&
++    !completedScopePermit
+   )
+     return {
+       kind: "malformed",
+diff --git a/packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts b/packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts
+index ed9fd1199..e20083776 100644
+--- a/packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts
++++ b/packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts
+@@ -1,8 +1,17 @@
+ import { describe, expect, it } from "vitest";
+ import { defaultConfig } from "@agentplaneorg/core/config";
+ import type { TaskData } from "../../backends/task-backend.js";
+-import { resolveTaskExecutionContract } from "../../runtime/task-routing/resolve.js";
+-import { amendedScopeIntake, scopeIntakeDigest } from "./kernel-scope-intake.js";
++import {
++  resolveTaskExecutionContract,
++  reconcileTaskExecutionContract,
++} from "../../runtime/task-routing/resolve.js";
++import { taskRecordToData } from "../../backends/task-backend.js";
++import { normalizeVerificationContract } from "../../backends/task-backend/shared/normalize-verification-contract.js";
++import {
++  amendedScopeIntake,
++  completedScopeIntake,
++  scopeIntakeDigest,
++} from "./kernel-scope-intake.js";
+ 
+ function fixture(
+   mode: "direct" | "branch_pr" = "direct",
+@@ -125,3 +134,89 @@ describe("prospective scope intake security", () => {
+     );
+   });
+ });
++
++const decodeContract = (contract: TaskData["execution_contract"]) =>
++  taskRecordToData({
++    id: "T-1",
++    frontmatter: {
++      id: "T-1",
++      title: "Authority fixture",
++      status: "DONE",
++      priority: "med",
++      owner: "EXECUTOR",
++      execution_contract: contract,
++    } as never,
++    body: "",
++    readmePath: "fixture",
++  });
++
++describe("completed intake authority and historical verification", () => {
++  it("retains optional grant presence, independent restrictions and a broader historical floor", () => {
++    const task = fixture("branch_pr");
++    const contract = task.execution_contract!;
++    contract.authority.allowed_capabilities = ["repository_write"];
++    contract.authority.allowed_resources = [];
++    // This deny is independent of the generated complement and must remain exact.
++    contract.authority.forbidden_repository_effects = ["ci"];
++    contract.observed.verification_results = [{ id: "prior", result: "pass" }];
++    const historical = reconcileTaskExecutionContract({
++      contract,
++      changed_paths: ["packages/core/src/tasks/task-kernel/kernel.ts"],
++    }).contract;
++    contract.verification.contract = historical.verification.contract;
++    const before = structuredClone(contract);
++    const next = completedScopeIntake(task, ["helper.test.ts"], ["tests"]);
++    expect(next.authority.allowed_capabilities).toEqual(["repository_write"]);
++    expect(Object.hasOwn(next.authority, "allowed_resources")).toBe(true);
++    expect(next.authority.forbidden_repository_effects).toEqual(
++      before.authority.forbidden_repository_effects,
++    );
++    expect(next.observed.verification_results).toEqual(before.observed.verification_results);
++    expect(next.observed.changed_paths).toEqual(before.observed.changed_paths);
++    expect(next.verification.contract?.selected_checks).toEqual(
++      expect.arrayContaining(before.verification.contract!.selected_checks),
++    );
++    expect(next.verification.contract?.observed.changed_files).toContain(
++      "packages/core/src/tasks/task-kernel/kernel.ts",
++    );
++    expect(normalizeVerificationContract(next.verification.contract)).not.toBeNull();
++    expect(task.execution_contract).toEqual(before);
++    const absent = fixture("branch_pr");
++    delete absent.execution_contract!.authority.allowed_capabilities;
++    delete absent.execution_contract!.authority.allowed_resources;
++    const projected = completedScopeIntake(absent, ["helper.ts"], []);
++    expect(Object.hasOwn(projected.authority, "allowed_capabilities")).toBe(false);
++    expect(Object.hasOwn(projected.authority, "allowed_resources")).toBe(false);
++  });
++  it("keeps an independent denial effective against a requested effect or required path effect", () => {
++    const task = fixture("branch_pr");
++    task.execution_contract!.authority.forbidden_repository_effects = ["tests"];
++    expect(() => completedScopeIntake(task, ["helper.test.ts"], ["tests"])).toThrow(
++      "independent effect restriction",
++    );
++    expect(() => completedScopeIntake(task, ["helper.test.ts"], [])).toThrow(
++      "forbidden or unrequested",
++    );
++  });
++  it.each(["allowed_capabilities", "allowed_resources"] as const)(
++    "backend preserves exact presence of %s and rejects malformed grants",
++    (field) => {
++      const task = fixture("branch_pr");
++      for (const value of [undefined, [], ["repository_write"]]) {
++        const contract = structuredClone(task.execution_contract!);
++        delete contract.authority[field];
++        if (value !== undefined) contract.authority[field] = value;
++        const decoded = decodeContract(contract).execution_contract!.authority;
++        expect(Object.hasOwn(decoded, field)).toBe(value !== undefined);
++        if (value !== undefined) expect(decoded[field]).toEqual(value);
++      }
++      for (const value of [null, "repository_write", {}, [null], [""]]) {
++        const contract = structuredClone(task.execution_contract!);
++        Object.assign(contract.authority, { [field]: value });
++        expect(() => decodeContract(contract)).toThrow(
++          `Malformed execution authority field: ${field}`,
++        );
++      }
++    },
++  );
++});
+diff --git a/packages/agentplane/src/adapters/task-backend/kernel-scope-intake.ts b/packages/agentplane/src/adapters/task-backend/kernel-scope-intake.ts
+index bc76568f6..205e7a87d 100644
+--- a/packages/agentplane/src/adapters/task-backend/kernel-scope-intake.ts
++++ b/packages/agentplane/src/adapters/task-backend/kernel-scope-intake.ts
+@@ -1,6 +1,7 @@
+ import {
+   taskKernel as k,
+   repositoryEffectsForPath,
++  computeVerificationContractKernel,
+   type TaskRepositoryEffect,
+ } from "@agentplaneorg/core/tasks";
+ import { reconcileTaskExecutionContract } from "../../runtime/task-routing/resolve.js";
+@@ -14,6 +15,9 @@ export function scopeIntakeDigest(contract: TaskData["execution_contract"]) {
+   );
+ }
+ 
++const union = <T extends string>(...values: readonly (readonly T[])[]) =>
++  [...new Set(values.flat())].toSorted();
++
+ const safeEffects = new Set([
+   "repository_write",
+   "source_code",
+@@ -27,16 +31,17 @@ export function amendedScopeIntake(
+   task: TaskData,
+   roots: readonly string[],
+   effects: readonly string[],
++  completedRepair = false,
+ ) {
+   const contract = task.execution_contract;
+   if (!contract) throw new Error("Scope request requires a trusted intake contract");
+   const generatedForbidden = ALL_REPOSITORY_EFFECTS.filter(
+     (effect) => !contract.authority.allowed_repository_effects.includes(effect),
+   );
+-  if (
++  const independentDeny =
+     k.kernelDigest([...contract.authority.forbidden_repository_effects].toSorted()) !==
+-    k.kernelDigest([...generatedForbidden].toSorted())
+-  )
++    k.kernelDigest([...generatedForbidden].toSorted());
++  if (independentDeny && !completedRepair)
+     throw new Error("Scope request cannot replace an independently constrained effect policy");
+   for (const root of roots) {
+     if (
+@@ -60,16 +65,24 @@ export function amendedScopeIntake(
+   )
+     throw new Error("Public API scope approval requires an already isolated branch_pr task");
+   const allowed = new Set([...contract.authority.allowed_repository_effects, ...effects]);
++  if (
++    independentDeny &&
++    effects.some((effect) =>
++      contract.authority.forbidden_repository_effects.includes(effect as TaskRepositoryEffect),
++    )
++  )
++    throw new Error("Scope request conflicts with an independent effect restriction");
+   for (const root of roots) {
+     if (
+       repositoryEffectsForPath(root).some(
+-        (effect) => !allowed.has(effect) || (!existing.has(effect) && !safeEffects.has(effect)),
++        (effect) =>
++          !allowed.has(effect) ||
++          (!existing.has(effect) && !safeEffects.has(effect)) ||
++          (independentDeny && contract.authority.forbidden_repository_effects.includes(effect)),
+       )
+     )
+       throw new Error("Scope root requires a forbidden or unrequested repository effect");
+   }
+-  const union = <T extends string>(a: readonly T[], b: readonly T[]) =>
+-    [...new Set([...a, ...b])].toSorted();
+   const next = structuredClone(contract);
+   next.declaration.scope_roots = union(next.declaration.scope_roots, roots);
+   next.declaration.repository_effects = union(
+@@ -82,15 +95,77 @@ export function amendedScopeIntake(
+     effects as TaskRepositoryEffect[],
+   );
+   // This list is the resolver-generated complement of allowed effects, not an independent policy grant.
+-  next.authority.forbidden_repository_effects = next.authority.forbidden_repository_effects.filter(
+-    (effect) => !effects.includes(effect),
+-  );
++  if (!independentDeny)
++    next.authority.forbidden_repository_effects =
++      next.authority.forbidden_repository_effects.filter((effect) => !effects.includes(effect));
+   return reconcileTaskExecutionContract({
+     contract: next,
+     changed_paths: next.observed.changed_paths,
+   }).contract;
+ }
+ 
++/** Monotonic completed intake: retain grants and all historical verification obligations. */
++export function completedScopeIntake(
++  task: TaskData,
++  roots: readonly string[],
++  effects: readonly string[],
++) {
++  const before = task.execution_contract!;
++  const next = amendedScopeIntake(task, roots, effects, true);
++  next.verification.required_evidence = union(
++    before.verification.required_evidence,
++    next.verification.required_evidence,
++  );
++  const prior = before.verification.contract,
++    fresh = next.verification.contract;
++  if (prior?.schema_version === 2 && fresh?.schema_version === 2) {
++    const { kind: _kind, ...floor } = computeVerificationContractKernel({
++      phase: prior.phase,
++      changedFiles: union(prior.observed.changed_files, fresh.observed.changed_files),
++      declaredRepositoryEffects: fresh.declared.repository_effects,
++      declaredExternalEffects: fresh.declared.external_effects,
++      observedRepositoryEffects: union(
++        prior.observed.repository_effects,
++        fresh.observed.repository_effects,
++      ),
++      observedExternalEffects: union(
++        prior.observed.external_effects,
++        fresh.observed.external_effects,
++      ),
++      changedComponents: union(
++        prior.observed.changed_components,
++        fresh.observed.changed_components,
++      ),
++      declaredComponents: union(prior.declared.components, fresh.declared.components),
++      requirementsUncertainty: prior.declared.risk.requirements_uncertainty,
++      implementationUncertainty: prior.declared.risk.implementation_uncertainty,
++      reversibility: prior.declared.risk.reversibility,
++      evidenceRequirements: union(
++        prior.declared.evidence_requirements,
++        fresh.declared.evidence_requirements,
++        next.verification.required_evidence,
++      ),
++      selectorKind: prior.selector.kind,
++      selectorReason: prior.selector.reason,
++      selectorExecutionMode: prior.selector.execution_mode,
++      selectorBucket: prior.selector.bucket,
++      selectorBuckets: prior.selector.buckets,
++      selectorLintTargets: prior.selector.lint_targets,
++      selectorVitestPool: prior.selector.vitest_pool,
++      selectorRunCliDocsCheck: prior.selector.run_cli_docs_check,
++      selectedTestFiles: prior.selector.selected_test_files,
++    });
++    next.verification.contract = floor;
++  }
++  if (
++    prior?.selected_checks.some(
++      (check) => !next.verification.contract?.selected_checks.includes(check),
++    )
++  )
++    throw new Error("Completed scope cannot reduce the historical verification floor");
++  return next;
++}
++
+ export function projectApprovedScopeIntake(task: TaskData, request: k.ProspectiveScopeRequest) {
+   if (scopeIntakeDigest(task.execution_contract) !== request.intake_before_digest)
+     throw new Error("Scope request intake changed");
+diff --git a/packages/agentplane/src/backends/task-backend/shared/record.ts b/packages/agentplane/src/backends/task-backend/shared/record.ts
+index 0bb459a6b..effc51488 100644
+--- a/packages/agentplane/src/backends/task-backend/shared/record.ts
++++ b/packages/agentplane/src/backends/task-backend/shared/record.ts
+@@ -190,8 +190,10 @@ function normalizeExecutionContract(value: unknown): TaskData["execution_contrac
+       (effect) => effect !== "network_read" || !allowedExternalEffects?.includes(effect),
+     ),
+   );
+-  const allowedCapabilities = normalizeStringList(authority.allowed_capabilities ?? []) ?? [];
+-  const allowedResources = normalizeStringList(authority.allowed_resources ?? []) ?? [];
++  for (const key of ["allowed_capabilities", "allowed_resources"] as const) {
++    if (Object.hasOwn(authority, key) && normalizeStringList(authority[key]) === null)
++      throw new Error(`Malformed execution authority field: ${key}`);
++  }
+   const approvalEffects = normalizeStringList(value.safety.approval_effects);
+   const requiredEvidence = normalizeStringList(value.verification.required_evidence);
+   const rawVerificationContract = value.verification.contract;
+@@ -297,8 +299,12 @@ function normalizeExecutionContract(value: unknown): TaskData["execution_contrac
+       forbidden_external_effects: forbiddenExternalEffects as NonNullable<
+         TaskData["execution_contract"]
+       >["authority"]["forbidden_external_effects"],
+-      allowed_capabilities: allowedCapabilities,
+-      allowed_resources: allowedResources,
++      ...(Object.hasOwn(authority, "allowed_capabilities")
++        ? { allowed_capabilities: [...(authority.allowed_capabilities as string[])] }
++        : {}),
++      ...(Object.hasOwn(authority, "allowed_resources")
++        ? { allowed_resources: [...(authority.allowed_resources as string[])] }
++        : {}),
+     },
+     safety: {
+       requires_worktree: value.safety.requires_worktree,
+diff --git a/packages/agentplane/src/commands/shared/side-effect-authority-store.ts b/packages/agentplane/src/commands/shared/side-effect-authority-store.ts
+index 2d9677d0b..f4d1f4297 100644
+--- a/packages/agentplane/src/commands/shared/side-effect-authority-store.ts
++++ b/packages/agentplane/src/commands/shared/side-effect-authority-store.ts
+@@ -1,3 +1,4 @@
++import { transferCompletedScopePermit } from "../../adapters/task-backend/completed-scope-admission.js";
+ import { randomUUID } from "node:crypto";
+ import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
+ import path from "node:path";
+@@ -124,19 +125,19 @@ export async function hydrateTaskSideEffectAuthority(opts: {
+ }): Promise<TaskData> {
+   const authority = await loadSideEffectAuthorityState(opts);
+   if (authority.state) {
+-    return {
++    return transferCompletedScopePermit(opts.task, {
+       ...opts.task,
+       extensions: withSideEffectAuthorityState(opts.task, authority.state),
+-    };
++    });
+   }
+   if (authority.source === "invalid") {
+-    return {
++    return transferCompletedScopePermit(opts.task, {
+       ...opts.task,
+       extensions: {
+         ...(opts.task.extensions ?? {}),
+         [SIDE_EFFECT_AUTHORITY_EXTENSION_KEY]: null,
+       },
+-    };
++    });
+   }
+   return opts.task;
+ }
+diff --git a/packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts b/packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts
+index 588819e2a..4e9afccb3 100644
+--- a/packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts
++++ b/packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts
+@@ -1,17 +1,17 @@
+-import { readFile } from "node:fs/promises";
++import { lstat } from "node:fs/promises";
+ import path from "node:path";
+ 
+ import {
+   gitEnv,
+   gitListTaskBranches,
+   gitShowFile,
++  gitRevParse,
+   listWorktrees,
+   parseTaskIdFromBranch,
+   toGitPath,
+ } from "@agentplaneorg/core/git";
+ import { execFileAsync } from "@agentplaneorg/core/process";
+-import type { TaskRecord } from "@agentplaneorg/core/tasks";
+-import { parseTaskReadme } from "@agentplaneorg/core/tasks";
++import { taskKernel as k, parseTaskReadme, type TaskRecord } from "@agentplaneorg/core/tasks";
+ import {
+   validateTaskReadmeFrontmatter,
+   withTaskReadmeFrontmatterDefaults,
+@@ -19,13 +19,150 @@ import {
+ 
+ import {
+   taskRecordToData,
++  LocalBackend,
+   toTaskSummary,
+   type TaskData,
+   type TaskSummary,
+ } from "../../backends/task-backend.js";
+ import { CliError } from "../../shared/errors.js";
+-import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
+-import type { CommandContext } from "./task-backend.js";
++import {
++  TASK_KERNEL_EXTENSION,
++  readKernelRecord,
++} from "../../adapters/task-backend/kernel-record.js";
++import {
++  COMPLETED_SCOPE_ADMISSIONS,
++  decodeCompletedScopeTask,
++  transferCompletedScopePermit,
++  type CompletedScopeSource,
++} from "../../adapters/task-backend/completed-scope-admission.js";
++import { readContainedStableTextNoFollow } from "../../shared/contained-stable-file.js";
++import { authenticateCompletedScopeSource } from "../task/completed-repair-scope-request.js";
++import { resolveLogicalRepositoryIdentity } from "../task/execution-authority-context.js";
++import { resolveCommandGitCommonDir, type CommandContext } from "./task-backend.js";
++
++export async function readCompletedScopeCommandSource(
++  command: CommandContext,
++  taskId: string,
++): Promise<CompletedScopeSource> {
++  const root = command.resolvedProject.gitRoot;
++  const readmePath = path.resolve(root, command.config.paths.workflow_dir, taskId, "README.md");
++  const raw = await readContainedStableTextNoFollow({
++    repository_root: root,
++    file_path: readmePath,
++    label: "completed scope Task",
++    max_bytes: 64 * 1024 * 1024,
++  });
++  const task = decodeCompletedScopeTask(raw, readmePath, taskId);
++  return {
++    git_root: root,
++    common_git_dir: await resolveCommandGitCommonDir(command),
++    repository_identity: await resolveLogicalRepositoryIdentity({ git_root: root, task }),
++    readme_path: readmePath,
++    raw,
++  };
++}
++
++function needsCompletedScopeAuthentication(task: TaskData): boolean {
++  const record = task.extensions?.task_kernel as
++    { aggregate?: { authority_lineage?: { observation?: { kind?: string } }[] } } | undefined;
++  return (
++    Object.hasOwn(task.extensions ?? {}, COMPLETED_SCOPE_ADMISSIONS) ||
++    record?.aggregate?.authority_lineage?.some(
++      (entry) => entry.observation?.kind === "prospective_scope_request",
++    ) === true
++  );
++}
++async function authenticateSource(
++  ctx: CommandContext,
++  task: TaskData,
++  raw: string,
++  readmePath: string,
++  sourceRoot = ctx.resolvedProject.gitRoot,
++) {
++  if (!needsCompletedScopeAuthentication(task)) return task;
++  try {
++    const identity = await resolveLogicalRepositoryIdentity({
++      git_root: sourceRoot,
++      task,
++    });
++    await authenticateCompletedScopeSource(ctx, task, {
++      git_root: sourceRoot,
++      common_git_dir: await resolveCommandGitCommonDir(ctx),
++      repository_identity: identity,
++      raw,
++      readme_path: readmePath,
++    });
++    const read = readKernelRecord(task, identity as k.Sha256Digest);
++    if (read.kind !== "canonical")
++      throw new Error(read.kind === "malformed" ? read.reason : read.kind);
++    return task;
++  } catch (error) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: `Completed scope source authentication failed: ${error instanceof Error ? error.message : String(error)}`,
++      context: { reason_code: "completed_scope_admission_unproven", task_id: task.id },
++    });
++  }
++}
++
++/** Preserve LocalBackend identity and authenticate each explicit raw source before exposing it. */
++export function installCompletedScopeReaders(ctx: CommandContext) {
++  const backend = ctx.taskBackend;
++  if (!(backend instanceof LocalBackend)) return;
++  const getTask = backend.getTask.bind(backend);
++  const authenticate = async (task: TaskData | null) => {
++    if (!task || !needsCompletedScopeAuthentication(task)) return task;
++    let file = path.join(backend.root, task.id, "README.md");
++    let sourceRoot = ctx.resolvedProject.gitRoot;
++    try {
++      await lstat(file);
++    } catch (error) {
++      if ((error as NodeJS.ErrnoException).code !== "ENOENT" || !backend.historyRoot) throw error;
++      file = path.join(backend.historyRoot, task.id, "README.md");
++      sourceRoot = path.resolve(backend.historyRoot, "../..");
++    }
++    const raw = await readContainedStableTextNoFollow({
++      repository_root: sourceRoot,
++      file_path: file,
++      label: "completed scope source Task",
++      max_bytes: 64 * 1024 * 1024,
++    });
++    return await authenticateSource(ctx, task, raw, file, sourceRoot);
++  };
++  backend.getTask = async (id) => await authenticate(await getTask(id));
++  const list = backend.listTasksWithWarnings.bind(backend);
++  backend.listTasksWithWarnings = async (opts) => {
++    const result = await list(opts);
++    return {
++      ...result,
++      tasks: await Promise.all(result.tasks.map(async (task) => (await authenticate(task))!)),
++    };
++  };
++  const projection = backend.listProjectionTasks.bind(backend);
++  backend.listProjectionTasks = async (opts) => {
++    const summaries = await projection(opts);
++    return await Promise.all(
++      summaries.map(async (summary) => {
++        if (!needsCompletedScopeAuthentication(summary)) return summary;
++        const full = await authenticate(await getTask(summary.id));
++        if (!full) throw new Error(`Completed scope source Task is missing: ${summary.id}`);
++        return transferCompletedScopePermit(full, toTaskSummary(full));
++      }),
++    );
++  };
++}
++
++/** A raw transactional copy needs its own source check before native metadata work. */
++export async function authenticateTaskMetadataProjection(ctx: CommandContext, task: TaskData) {
++  if (!Object.hasOwn(task.extensions ?? {}, COMPLETED_SCOPE_ADMISSIONS)) return task;
++  const source = await ctx.taskBackend.getTask(task.id);
++  if (!source || k.kernelDigest(source) !== k.kernelDigest(task))
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Completed scope metadata projection differs from its current authenticated source.",
++    });
++  return transferCompletedScopePermit(source, task);
++}
+ 
+ function backendSupportsTaskBranchSnapshots(ctx: CommandContext): boolean {
+   const capabilities = ctx.taskBackend?.capabilities;
+@@ -262,13 +399,30 @@ export async function loadTaskFromBranchSnapshot(opts: {
+       path.relative(opts.ctx.resolvedProject.gitRoot, opts.readmePath),
+     );
+     try {
+-      const liveText = await readFile(liveReadmePath, "utf8");
+-      return taskDataFromReadmeText({
++      const liveText = await readContainedStableTextNoFollow({
++        repository_root: authoritativeWorktree.path,
++        file_path: liveReadmePath,
++        label: "authoritative Task README",
++        max_bytes: 64 * 1024 * 1024,
++      });
++      const task = taskDataFromReadmeText({
+         taskId: opts.taskId,
+         readmePath: opts.readmePath,
+         text: liveText,
+       });
+-    } catch {
++      return await authenticateSource(
++        opts.ctx,
++        task,
++        liveText,
++        liveReadmePath,
++        authoritativeWorktree.path,
++      );
++    } catch (error) {
++      if (
++        error instanceof CliError &&
++        error.context?.reason_code === "completed_scope_admission_unproven"
++      )
++        throw error;
+       throw new CliError({
+         exitCode: 4,
+         code: "E_IO",
+@@ -295,16 +449,20 @@ export async function loadTaskFromBranchSnapshot(opts: {
+   );
+ 
+   for (const ref of refsToTry) {
++    let text: string;
+     try {
+-      const text = await gitShowFile(opts.ctx.resolvedProject.gitRoot, ref, relReadmePath);
+-      return taskDataFromReadmeText({
+-        taskId: opts.taskId,
+-        readmePath: opts.readmePath,
+-        text,
+-      });
++      const commit = await gitRevParse(opts.ctx.resolvedProject.gitRoot, [`${ref}^{commit}`]);
++      text = await gitShowFile(opts.ctx.resolvedProject.gitRoot, commit, relReadmePath);
+     } catch {
+-      // Try the next candidate ref.
++      // Only unavailable Git candidates may fall back. Authentication failures are terminal.
++      continue;
+     }
++    const task = taskDataFromReadmeText({
++      taskId: opts.taskId,
++      readmePath: opts.readmePath,
++      text,
++    });
++    return await authenticateSource(opts.ctx, task, text, opts.readmePath);
+   }
+   return null;
+ }
+@@ -342,16 +500,19 @@ export async function supplementTaskProjectionFromWorktrees(opts: {
+     const task = await opts.loadTask(taskId, branch);
+     if (!task) continue;
+     if (known && !Object.hasOwn(task.extensions ?? {}, TASK_KERNEL_EXTENSION)) continue;
+-    tasks.set(taskId, {
+-      ...toTaskSummary(task),
+-      extensions: {
+-        ...task.extensions,
+-        "agentplane.task_projection_source": {
+-          state: known ? "authoritative_worktree" : "local_projection_unavailable",
+-          readme_path: path.join(owner.path, relativeReadme),
++    tasks.set(
++      taskId,
++      transferCompletedScopePermit(task, {
++        ...toTaskSummary(task),
++        extensions: {
++          ...task.extensions,
++          "agentplane.task_projection_source": {
++            state: known ? "authoritative_worktree" : "local_projection_unavailable",
++            readme_path: path.join(owner.path, relativeReadme),
++          },
+         },
+-      },
+-    });
++      }),
++    );
+   }
+   return [...tasks.values()];
+ }
+diff --git a/packages/agentplane/src/commands/shared/task-backend.ts b/packages/agentplane/src/commands/shared/task-backend.ts
+index c83890ffa..769c3fafa 100644
+--- a/packages/agentplane/src/commands/shared/task-backend.ts
++++ b/packages/agentplane/src/commands/shared/task-backend.ts
+@@ -38,6 +38,7 @@ import {
+   resolveAuthoritativeTaskWorktree,
+   resolveTaskBranchFromContext,
+   taskBranchHasLocalRef,
++  installCompletedScopeReaders,
+ } from "./task-backend-branch-snapshot.js";
+ 
+ export {
+@@ -210,7 +211,7 @@ export async function loadCommandContext(opts: {
+       canonical_source: backend.capabilities?.canonical_source ?? null,
+     },
+   });
+-  return {
++  const command: CommandContext = {
+     resolvedProject: resolved,
+     config,
+     taskBackend: backend,
+@@ -220,6 +221,8 @@ export async function loadCommandContext(opts: {
+     preparationTrace: opts.preparationTrace ?? null,
+     memo: {},
+   };
++  installCompletedScopeReaders(command);
++  return command;
+ }
+ 
+ /**
+@@ -367,12 +370,22 @@ export async function loadTaskFromContext(opts: {
+   const canonical = (candidate: TaskData | null) =>
+     candidate && Object.hasOwn(candidate.extensions ?? {}, TASK_KERNEL_EXTENSION);
+   const task = await opts.ctx.taskBackend.getTask(opts.taskId).catch((error: unknown) => {
++    if (
++      error instanceof CliError &&
++      error.context?.reason_code === "completed_scope_admission_unproven"
++    )
++      throw error;
+     if (canonical(preferredBranchTask)) return null;
+     throw error;
+   });
+   const primary = canonical(task)
+     ? null
+     : await primaryCanonical().catch((error: unknown) => {
++        if (
++          error instanceof CliError &&
++          error.context?.reason_code === "completed_scope_admission_unproven"
++        )
++          throw error;
+         if (canonical(preferredBranchTask)) return null;
+         throw error;
+       });
+diff --git a/packages/agentplane/src/commands/task/completed-repair-scope-request.ts b/packages/agentplane/src/commands/task/completed-repair-scope-request.ts
+index a3a06d445..e9bce02ed 100644
+--- a/packages/agentplane/src/commands/task/completed-repair-scope-request.ts
++++ b/packages/agentplane/src/commands/task/completed-repair-scope-request.ts
+@@ -1,20 +1,61 @@
+ import path from "node:path";
+ import { execFileAsync } from "@agentplaneorg/core/process";
+-import { gitProofIsAncestor, gitProofEnv } from "@agentplaneorg/core/git";
++import { gitProofIsAncestor, gitProofEnv, gitRevParse, gitShowFile } from "@agentplaneorg/core/git";
++import { taskKernel as k } from "@agentplaneorg/core/tasks";
+ import {
++  createSupervisorExecutionEpisodeJournal,
++  startSupervisorExecutionEpisode,
++  completeSupervisorExecutionEpisode,
+   digestSupervisorEpisodeValue,
+   validateSupervisorExecutionEpisodeJournal,
+ } from "@agentplaneorg/core/schemas";
+-import type { TaskData } from "../../backends/task-backend.js";
++import { LocalBackend, type TaskData } from "../../backends/task-backend.js";
+ import { CliError } from "../../shared/errors.js";
++import {
++  COMPLETED_SCOPE_ADMISSIONS,
++  completedScopeAdmissionIds,
++  completedScopeBytesDigest,
++  completedScopeProofId,
++  completedScopeProofDirectory,
++  decodeCompletedScopeTask,
++  readCompletedScopeAdmission,
++  writeCompletedScopeFile,
++  readCompletedScopePrivateFile,
++  validatePreparedCompletedScope,
++  authenticateCompletedScopeTask,
++  completedScopeObservedResult,
++  readCompletedScopeReconcileRequest,
++  completedScopeApprovalComment,
++  type CompletedScopeAdmission,
++  type CompletedScopeIdentity,
++  type CompletedScopeSource,
++} from "../../adapters/task-backend/completed-scope-admission.js";
++import { readKernelRecord } from "../../adapters/task-backend/kernel-record.js";
++import { completedScopeIntake } from "../../adapters/task-backend/kernel-scope-intake.js";
+ import {
+   createSupervisorEpisodeStore,
+   resolveSupervisorExecutionEpisodePath,
++  withSupervisorExecutionAdmissionFence,
+ } from "../shared/supervisor-execution-episode.js";
+-import { parseTaskScopeExtensionRequestState } from "../shared/task-scope-extension-request.js";
+-import { resolveCommandGitCommonDir, type CommandContext } from "../shared/task-backend.js";
++import {
++  parseTaskScopeExtensionRequestState,
++  createTaskScopeExtensionRequestState,
++  TASK_SCOPE_EXTENSION_REQUEST_KEY,
++  scopeExtensionReceiptForState,
++} from "../shared/task-scope-extension-request.js";
++import {
++  resolveCommandGitCommonDir,
++  loadCommandContext,
++  type CommandContext,
++} from "../shared/task-backend.js";
++import {
++  resolveTaskBranchFromContext,
++  resolveAuthoritativeTaskWorktree,
++  readCompletedScopeCommandSource,
++} from "../shared/task-backend-branch-snapshot.js";
++import { applyTaskMutation } from "../shared/task-mutation.js";
+ import { readDirectRepositoryStatus } from "./direct-task-finalization.js";
+-import { isExternalBlockedResultRecorded } from "./external-agent-blocked-result.js";
++import { canonicalBlockerReadmeProjection } from "./kernel-completed-external-blocker.js";
+ import {
+   externalAgentResultDigest,
+   externalAgentIssueDigest,
+@@ -23,105 +64,524 @@ import {
+   validateExternalAgentResultEnvelope,
+ } from "./external-agent-exchange.js";
+ 
+-function fail(): never {
++function fail(reason = "native blocker/source"): never {
+   throw new CliError({
+     code: "E_VALIDATION",
+-    message:
+-      "Completed repair scope requires the exact consumed native blocker and unchanged checkout.",
++    message: `Completed repair scope requires the exact consumed native blocker and unchanged checkout (${reason}).`,
+   });
+ }
+ 
+-/** Authenticate the preserved native blocker before task-level scope admission. */
+-export async function completedRepairScopeRequest(command: CommandContext, task: TaskData) {
++/** Authenticate raw native evidence. Never recurse through a decorated backend. */
++async function completedRepairScopeRequest(
++  command: CommandContext,
++  task: TaskData,
++  source: {
++    raw: string;
++    head: string;
++    checkout: string;
++    retained?: boolean;
++    operation_key?: string;
++    work_order_ref?: string;
++  },
++) {
+   const pending = parseTaskScopeExtensionRequestState(task);
+   if (task.status !== "DONE" || pending?.status !== "pending" || pending.work_item_id !== null)
+     return null;
+-  const root = command.resolvedProject.gitRoot;
++  const root = command.resolvedProject.gitRoot,
++    common = await resolveCommandGitCommonDir(command);
+   const journalPath = await resolveSupervisorExecutionEpisodePath({
+     git_root: root,
+-    common_git_dir: await resolveCommandGitCommonDir(command),
++    common_git_dir: common,
+     task_id: task.id,
+   });
+   const journal = validateSupervisorExecutionEpisodeJournal(
+-    await createSupervisorEpisodeStore(journalPath).read(),
+-  );
+-  const op = journal.operations.at(-1);
+-  if (
+-    journal.task_id !== task.id ||
+-    journal.status !== "running" ||
+-    journal.cursor.phase !== "ready" ||
+-    op?.status !== "completed" ||
+-    op.kind !== "agent_episode" ||
+-    op.role !== "EXECUTOR" ||
+-    !op.work_order_ref
+-  )
+-    return fail();
+-  const exchange = await readExternalAgentExchange(
+-    path.join(path.dirname(op.work_order_ref), "exchange.json"),
++    JSON.parse(await readCompletedScopePrivateFile(common, journalPath)),
+   );
+-  if (
+-    exchange?.status !== "consumed" ||
+-    exchange.purpose !== "implementation_rework" ||
+-    exchange.task_id !== task.id ||
+-    exchange.checkout !== root ||
+-    exchange.transition_id !== pending.transition_id ||
+-    exchange.state_fingerprint !== pending.blocker_state_fingerprint ||
+-    exchange.work_order_ref !== op.work_order_ref ||
+-    op.precondition_fingerprint_digest !== exchange.state_fingerprint ||
+-    !exchange.baseline.head ||
+-    exchange.result?.result.status !== "blocked" ||
+-    exchange.result_digest !== externalAgentResultDigest(exchange.result) ||
+-    op.postcondition_fingerprint_digest !== exchange.postcondition_fingerprint ||
+-    op.result_digest !==
+-      digestSupervisorEpisodeValue({
+-        work_order_id: exchange.work_order_id,
+-        semantic_status: "blocked",
+-        result_digest: exchange.result_digest,
++  if (journal.task_id !== task.id) return fail("journal Task");
++  if (!source.retained && (journal.status !== "running" || journal.cursor.phase !== "ready"))
++    return fail("busy journal");
++  for (const op of journal.operations.toReversed()) {
++    if (
++      op.status !== "completed" ||
++      op.kind !== "agent_episode" ||
++      op.role !== "EXECUTOR" ||
++      !op.work_order_ref
++    )
++      continue;
++    if (source.operation_key && op.operation_key !== source.operation_key) continue;
++    if (source.work_order_ref && op.work_order_ref !== source.work_order_ref) continue;
++    const exchangePath = path.join(path.dirname(op.work_order_ref), "exchange.json");
++    await readCompletedScopePrivateFile(common, exchangePath);
++    await readCompletedScopePrivateFile(common, op.work_order_ref);
++    const exchange = await readExternalAgentExchange(exchangePath);
++    if (exchange?.transition_id !== pending.transition_id) continue;
++    if (
++      !exchange ||
++      !["consumed", "retired"].includes(exchange.status) ||
++      exchange.purpose !== "implementation_rework" ||
++      exchange.task_id !== task.id ||
++      exchange.checkout !== (source.checkout ?? root) ||
++      exchange.state_fingerprint !== pending.blocker_state_fingerprint ||
++      exchange.work_order_ref !== op.work_order_ref ||
++      op.precondition_fingerprint_digest !== exchange.state_fingerprint ||
++      !exchange.baseline.head ||
++      exchange.baseline.changed_paths.length > 0 ||
++      exchange.result?.result.status !== "blocked" ||
++      exchange.result_digest !== externalAgentResultDigest(exchange.result) ||
++      op.postcondition_fingerprint_digest !== exchange.postcondition_fingerprint ||
++      op.result_digest !==
++        digestSupervisorEpisodeValue({
++          work_order_id: exchange.work_order_id,
++          semantic_status: "blocked",
++          result_digest: exchange.result_digest,
++        })
++    )
++      return fail();
++    const order = await readExternalAgentWorkOrder(exchange.work_order_ref);
++    const envelope = validateExternalAgentResultEnvelope({
++      raw: exchange.result,
++      exchange,
++      work_order: order,
++    });
++    const request = envelope.result.blocker?.scope_extension_request;
++    if (
++      order.task.work_item_id ||
++      !request ||
++      externalAgentResultDigest(envelope) !== exchange.result_digest ||
++      op.effect_ref !==
++        `external-agent-issue:${externalAgentIssueDigest({ exchange, work_order: order })}`
++    )
++      return fail("issue receipt");
++    const expectedPending = createTaskScopeExtensionRequestState({
++      request,
++      transition_id: exchange.transition_id,
++      state_fingerprint: exchange.state_fingerprint,
++      work_item_id: null,
++    });
++    if (k.kernelDigest(expectedPending) !== k.kernelDigest(pending)) return fail("request binding");
++    const recommendation = envelope.result.blocker?.recommended_action?.trim();
++    const body =
++      `Blocked: external ${exchange.role} could not complete the scoped implementation. ${envelope.result.summary.trim()}` +
++      (recommendation ? ` Recommended action: ${recommendation}` : "") +
++      ` Requested scope: roots=${pending.request.scope_roots.join(",") || "unchanged"}; repository effects=${pending.request.repository_effects.join(",") || "unchanged"}; request digest=${pending.request_digest}. ${scopeExtensionReceiptForState(pending)}`;
++    const relative = `${command.config.paths.workflow_dir}/${task.id}/README.md`;
++    const baseline = await gitShowFile(root, exchange.baseline.head, relative);
++    if (
++      exchange.baseline.task_artifacts?.["README.md"]?.split(":").at(-1) !==
++      completedScopeBytesDigest(baseline).slice(7)
++    )
++      return fail("issued beforeimage");
++    if (
++      !canonicalBlockerReadmeProjection({
++        baseline,
++        current: source.raw,
++        body,
++        pending: expectedPending,
+       })
+-  )
+-    return fail();
+-  const order = await readExternalAgentWorkOrder(exchange.work_order_ref);
+-  const envelope = validateExternalAgentResultEnvelope({
+-    raw: exchange.result,
+-    exchange,
+-    work_order: order,
++    )
++      return fail("unrecorded blocker");
++    const head = source.head;
++    if (!(await gitProofIsAncestor(root, exchange.baseline.head, head)))
++      return fail("source ancestry");
++    const history = await execFileAsync(
++      "git",
++      [
++        "log",
++        "--format=",
++        "--name-only",
++        "--no-renames",
++        "--full-history",
++        "--diff-merges=separate",
++        `${exchange.baseline.head}..${head}`,
++      ],
++      { cwd: root, env: gitProofEnv(), maxBuffer: 16 * 1024 * 1024 },
++    );
++    if (
++      history.stdout
++        .split("\n")
++        .filter(Boolean)
++        .some((file) => file !== relative)
++    )
++      return fail("changed source history");
++    if (!source.retained) {
++      const status = await readDirectRepositoryStatus(root);
++      if (!status || status.lines.length > 0) return fail("dirty checkout");
++    }
++    return { pending, operation_key: op.operation_key, work_order_ref: op.work_order_ref, journal };
++  }
++  return fail("consumed operation missing");
++}
++
++export async function authenticateCompletedScopeSource(
++  command: CommandContext,
++  task: TaskData,
++  source: CompletedScopeSource,
++) {
++  return await authenticateCompletedScopeTask({
++    task,
++    source,
++    authenticate_blocker: async (before, admission) => {
++      const pin = admission.identity;
++      if (
++        (await gitShowFile(
++          command.resolvedProject.gitRoot,
++          pin.before_commit,
++          pin.readme_relative,
++        )) !== admission.before_readme
++      )
++        fail("Git beforeimage");
++      const native = await completedRepairScopeRequest(command, before, {
++        raw: admission.before_readme,
++        head: pin.head_sha,
++        checkout: pin.checkout,
++        retained: true,
++        operation_key: pin.blocker_operation_key,
++        work_order_ref: pin.blocker_work_order_ref,
++      });
++      if (!native) fail("retained blocker");
++    },
+   });
++}
++/** Controller entry before cold reads: exact own intent recovery and typed legacy recovery only. */
++export async function tryCompletedScopeAdmission(opts: {
++  ctx: CommandContext;
++  taskId: string;
++  scopeRoots: string[];
++  repositoryEffects: string[];
++  requestDigest: string;
++  stateScopeDigest?: string;
++  stateFingerprint?: string;
++  reconcileRequest?: string;
++  by: string;
++  legacy_afterimage: (command: CommandContext, beforeRaw: string, partialRaw: string) => string;
++  commit: (command: CommandContext) => Promise<void>;
++}): Promise<boolean> {
++  if (!(opts.ctx.taskBackend instanceof LocalBackend)) {
++    if (opts.reconcileRequest) fail("native local owner required");
++    return false;
++  }
++  const branch = await resolveTaskBranchFromContext({ ctx: opts.ctx, taskId: opts.taskId });
++  const owner = branch
++    ? await resolveAuthoritativeTaskWorktree({
++        ctx: opts.ctx,
++        taskId: opts.taskId,
++        branch,
++        requireRegistration: true,
++      })
++    : null;
++  const command =
++    owner && path.resolve(owner.path) !== path.resolve(opts.ctx.resolvedProject.gitRoot)
++      ? await loadCommandContext({ cwd: owner.path, rootOverride: null })
++      : opts.ctx;
+   if (
+-    externalAgentResultDigest(envelope) !== exchange.result_digest ||
+-    op.effect_ref !==
+-      `external-agent-issue:${externalAgentIssueDigest({ exchange, work_order: order })}`
++    command.taskBackend instanceof LocalBackend &&
++    command.taskBackend.root !==
++      path.resolve(command.resolvedProject.gitRoot, command.config.paths.workflow_dir)
+   )
+-    return fail();
++    fail("native Task store/source path mismatch");
++  let source: CompletedScopeSource;
++  try {
++    source = await readCompletedScopeCommandSource(command, opts.taskId);
++  } catch (error) {
++    if ((error as NodeJS.ErrnoException).code === "ENOENT" && !opts.reconcileRequest) return false;
++    throw error;
++  }
++  const initial = decodeCompletedScopeTask(source.raw, source.readme_path, opts.taskId);
++  const record = initial.extensions?.task_kernel as
++    { aggregate?: { state?: string }; digest?: string } | undefined;
++  if (record?.aggregate?.state !== "COMPLETED") {
++    if (opts.reconcileRequest) fail("completed Kernel required");
++    return false;
++  }
++  if (opts.by !== "USER" || !/^sha256:[a-f0-9]{64}$/u.test(opts.requestDigest))
++    fail("explicit USER authority");
++  const reconcile = opts.reconcileRequest
++    ? await readCompletedScopeReconcileRequest(opts.reconcileRequest, opts.stateScopeDigest)
++    : null;
++  if (!reconcile && (opts.stateScopeDigest ?? opts.stateFingerprint) !== opts.requestDigest)
++    fail("state scope/request binding");
+   if (
+-    !(await isExternalBlockedResultRecorded({
+-      command,
+-      exchange,
+-      semantic: exchange.result.result,
+-    }))
++    reconcile &&
++    (reconcile.task_id !== opts.taskId ||
++      reconcile.repository_identity !== source.repository_identity ||
++      reconcile.kernel_digest !== record.digest ||
++      reconcile.request_digest !== opts.requestDigest)
+   )
+-    return fail();
+-  const status = await readDirectRepositoryStatus(root);
+-  if (!(await gitProofIsAncestor(root, exchange.baseline.head, "HEAD"))) return fail();
+-  const observedHistory = await execFileAsync(
+-    "git",
+-    [
+-      "log",
+-      "--format=",
+-      "--name-only",
+-      "--no-renames",
+-      "--full-history",
+-      "--diff-merges=separate",
+-      `${exchange.baseline.head}..HEAD`,
+-    ],
+-    {
+-      cwd: root,
+-      env: gitProofEnv(),
+-      maxBuffer: 16 * 1024 * 1024,
++    fail("reconciliation identity");
++  const roots = [...new Set(opts.scopeRoots)].toSorted(),
++    effects = [...new Set(opts.repositoryEffects)].toSorted();
++  const journalPath = await resolveSupervisorExecutionEpisodePath({
++    git_root: source.git_root,
++    common_git_dir: source.common_git_dir,
++    task_id: opts.taskId,
++  });
++  const fenced = await withSupervisorExecutionAdmissionFence({
++    journal_path: journalPath,
++    run: async () => {
++      const main = validateSupervisorExecutionEpisodeJournal(
++        JSON.parse(await readCompletedScopePrivateFile(source.common_git_dir, journalPath)),
++      );
++      if (main.cursor.phase === "intent_recorded") fail("another native effect is pending");
++      const currentSource = await readCompletedScopeCommandSource(command, opts.taskId);
++      if (currentSource.raw !== source.raw) fail("source changed before fence");
++      const current = decodeCompletedScopeTask(source.raw, source.readme_path, opts.taskId);
++      const ids = completedScopeAdmissionIds(current);
++      let admission: CompletedScopeAdmission | null = null;
++      const last = ids.at(-1);
++      if (last) {
++        const retained = await readCompletedScopeAdmission(
++          source.common_git_dir,
++          opts.taskId,
++          last,
++        );
++        if (retained.identity.request_digest === opts.requestDigest) admission = retained;
++        else await authenticateCompletedScopeSource(command, current, source);
++      }
++      if (!admission) {
++        const head = await gitRevParse(source.git_root, ["HEAD"]);
++        let beforeRaw = source.raw,
++          beforeCommit = head,
++          partialRaw: string | null = null;
++        if (reconcile) {
++          if (
++            head !== reconcile.head_sha ||
++            completedScopeBytesDigest(source.raw) !== reconcile.partial_readme_digest
++          )
++            fail("legacy source/head drift");
++          beforeCommit = reconcile.before_commit;
++          beforeRaw = await gitShowFile(
++            source.git_root,
++            beforeCommit,
++            path.relative(source.git_root, source.readme_path).split(path.sep).join("/"),
++          );
++          if (completedScopeBytesDigest(beforeRaw) !== reconcile.before_readme_digest)
++            fail("legacy Git beforeimage");
++          partialRaw = source.raw;
++        }
++        const before = decodeCompletedScopeTask(beforeRaw, source.readme_path, opts.taskId);
++        if (completedScopeAdmissionIds(before).length > 0)
++          await authenticateCompletedScopeSource(command, before, { ...source, raw: beforeRaw });
++        const original = readKernelRecord(before, source.repository_identity as k.Sha256Digest);
++        if (original.kind !== "canonical" || original.record.aggregate.state !== "COMPLETED")
++          fail("original Kernel");
++        const native = await completedRepairScopeRequest(command, before, {
++          raw: beforeRaw,
++          head,
++          checkout: source.git_root,
++          ...(reconcile ? { retained: true } : {}),
++        });
++        if (
++          native?.pending.request_digest !== opts.requestDigest ||
++          k.kernelDigest(native.pending.request.scope_roots) !== k.kernelDigest(roots) ||
++          k.kernelDigest(native.pending.request.repository_effects) !== k.kernelDigest(effects)
++        )
++          fail("exact approved delta");
++        const appliedAt = partialRaw
++          ? opts.legacy_afterimage(command, beforeRaw, partialRaw)
++          : new Date().toISOString();
++        if (
++          !partialRaw &&
++          (await gitShowFile(
++            source.git_root,
++            head,
++            path.relative(source.git_root, source.readme_path).split(path.sep).join("/"),
++          )) !== beforeRaw
++        )
++          fail("uncommitted beforeimage");
++        const pin: CompletedScopeIdentity = {
++          schema_version: 1,
++          kind: "completed_scope_admission",
++          task_id: opts.taskId,
++          repository_identity: source.repository_identity,
++          kernel_digest: original.record.digest,
++          checkout: source.git_root,
++          readme_relative: path
++            .relative(source.git_root, source.readme_path)
++            .split(path.sep)
++            .join("/"),
++          head_sha: head,
++          before_commit: beforeCommit,
++          before_digest: completedScopeBytesDigest(beforeRaw),
++          partial_digest: partialRaw ? completedScopeBytesDigest(partialRaw) : null,
++          request_digest: opts.requestDigest,
++          state_scope_digest: opts.stateScopeDigest ?? opts.stateFingerprint!,
++          roots,
++          effects,
++          previous: completedScopeAdmissionIds(before),
++          applied_at: appliedAt,
++          blocker_operation_key: native.operation_key,
++          blocker_work_order_ref: native.work_order_ref,
++        };
++        const proofId = completedScopeProofId(pin);
++        try {
++          admission = await readCompletedScopeAdmission(
++            source.common_git_dir,
++            opts.taskId,
++            proofId,
++          );
++        } catch (error) {
++          if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
++        }
++        admission ??= {
++          identity: pin,
++          before_readme: beforeRaw,
++          partial_readme: partialRaw,
++          after: current,
++          after_digest: "",
++        };
++      }
++      const a = admission,
++        pin = a.identity,
++        proofId = completedScopeProofId(pin);
++      if (
++        pin.request_digest !== opts.requestDigest ||
++        pin.state_scope_digest !== (opts.stateScopeDigest ?? opts.stateFingerprint) ||
++        k.kernelDigest(pin.roots) !== k.kernelDigest(roots) ||
++        k.kernelDigest(pin.effects) !== k.kernelDigest(effects)
++      )
++        fail("retained approval binding");
++      const dir = completedScopeProofDirectory(source.common_git_dir, opts.taskId, proofId);
++      const store = createSupervisorEpisodeStore(path.join(dir, "journal.json"));
++      const startIntent = async () => {
++        await writeCompletedScopeFile(source.common_git_dir, path.join(dir, "intent.json"), a);
++        const existing = await store.read();
++        if (existing) {
++          await readCompletedScopePrivateFile(source.common_git_dir, store.path);
++          return validateSupervisorExecutionEpisodeJournal(existing);
++        }
++        const main = validateSupervisorExecutionEpisodeJournal(
++          JSON.parse(await readCompletedScopePrivateFile(source.common_git_dir, journalPath)),
++        );
++        const empty = createSupervisorExecutionEpisodeJournal({
++          task_id: opts.taskId,
++          task_revision: current.revision ?? null,
++          state_fingerprint_digest: pin.before_digest,
++          budget: main.budget,
++        });
++        const started = startSupervisorExecutionEpisode({
++          journal: empty,
++          role: "EXECUTOR",
++          kind: "side_effect",
++          operation_identity: {
++            kind: "completed_scope_admission",
++            proof_id: proofId,
++            payload_digest: k.kernelDigest(a),
++          },
++          recovery_context: {
++            schema_version: 1,
++            kind: "completed_scope_admission",
++            proof_id: proofId,
++          },
++          precondition_fingerprint_digest: pin.before_digest,
++          authority_ref: "USER:completed-scope",
++          authority_digest: pin.state_scope_digest,
++          effect_ref: `completed-scope:${proofId}`,
++        });
++        if (started.status !== "started" || !(await store.compareAndSwap(null, started.journal)))
++          fail("native intent CAS");
++        return started.journal;
++      };
++      const before = await authenticateCompletedScopeSource(
++        command,
++        decodeCompletedScopeTask(a.before_readme, source.readme_path, opts.taskId),
++        { ...source, raw: a.before_readme },
++      );
++      const beforeWrite =
++        completedScopeBytesDigest(source.raw) === (pin.partial_digest ?? pin.before_digest);
++      let journal;
++      if (beforeWrite) {
++        if ((await gitRevParse(source.git_root, ["HEAD"])) !== pin.head_sha)
++          fail("retained head drift");
++        const pending = parseTaskScopeExtensionRequestState(before)!;
++        await applyTaskMutation({
++          ctx: command,
++          taskId: opts.taskId,
++          allowCanonicalProjection: true,
++          writeOptions: { expectedRevision: current.revision },
++          build: (observed) => {
++            if (k.kernelDigest(observed) !== k.kernelDigest(current)) fail("current Task drift");
++            return {
++              nextTask: {
++                ...before,
++                revision: current.revision,
++                doc: undefined,
++                execution_contract: completedScopeIntake(before, roots, effects),
++                extensions: {
++                  ...before.extensions,
++                  [TASK_SCOPE_EXTENSION_REQUEST_KEY]: {
++                    ...pending,
++                    status: "applied",
++                    applied_at: pin.applied_at,
++                    applied_by: "USER",
++                  },
++                  [COMPLETED_SCOPE_ADMISSIONS]: [...pin.previous, proofId],
++                },
++                comments: [
++                  ...(before.comments ?? []),
++                  completedScopeApprovalComment(roots, effects),
++                ],
++              },
++            };
++          },
++          beforePersist: async ({ next }) => {
++            const prepared = { ...a, after: next, after_digest: k.kernelDigest(next) };
++            validatePreparedCompletedScope(prepared, before);
++            if (a.after_digest && a.after_digest !== prepared.after_digest)
++              fail("retained prepared afterimage");
++            Object.assign(a, prepared);
++            journal = await startIntent();
++          },
++        });
++      } else {
++        journal = await startIntent();
++        if (journal.cursor.phase === "completed") {
++          await authenticateCompletedScopeSource(command, current, source);
++          return;
++        }
++        if (
++          k.kernelDigest(current) !== a.after_digest ||
++          (await gitRevParse(source.git_root, ["HEAD"])) !== pin.head_sha
++        )
++          fail("unknown interrupted afterimage");
++      }
++      if (!journal) fail("missing native intent");
++      const observed = await readCompletedScopeCommandSource(command, opts.taskId);
++      const actual = decodeCompletedScopeTask(observed.raw, observed.readme_path, opts.taskId);
++      if (k.kernelDigest(actual) !== a.after_digest) fail("independent afterimage observation");
++      validatePreparedCompletedScope({ ...a, after: actual }, before);
++      const result = completedScopeObservedResult(a, completedScopeBytesDigest(observed.raw));
++      await writeCompletedScopeFile(source.common_git_dir, path.join(dir, "result.json"), result);
++      const operation = journal.operations.at(-1);
++      if (
++        journal.operations.length !== 1 ||
++        operation?.status !== "intent" ||
++        operation.effect_ref !== `completed-scope:${proofId}` ||
++        k.kernelDigest(operation.recovery?.operation_identity) !==
++          k.kernelDigest({
++            kind: "completed_scope_admission",
++            proof_id: proofId,
++            payload_digest: k.kernelDigest(a),
++          })
++      )
++        fail("retained native intent binding");
++      const completed = completeSupervisorExecutionEpisode({
++        journal,
++        operation_key: operation.operation_key,
++        result,
++      });
++      if (!(await store.compareAndSwap(journal.digest, completed))) fail("native completion CAS");
++      await authenticateCompletedScopeSource(command, actual, observed);
+     },
+-  );
+-  const history = observedHistory.stdout.split("\n").filter(Boolean);
+-  if (history.some((file) => file !== `${command.config.paths.workflow_dir}/${task.id}/README.md`))
+-    return fail();
+-  if (!status || status.lines.length > 0) return fail();
+-  return pending;
++  });
++  if (fenced.kind === "busy") fail("competing writer fence");
++  // Complete proof publication precedes commit hooks and all cold public reads.
++  const status = await readDirectRepositoryStatus(source.git_root);
++  if (!status) fail("checkout status unavailable");
++  if (status?.lines.length) {
++    const relative = path.relative(source.git_root, source.readme_path).split(path.sep).join("/");
++    if (status.lines.some((line) => line.slice(3) !== relative))
++      fail("unrelated checkout changes before commit");
++    await opts.commit(command);
++  }
++  return true;
+ }
+diff --git a/packages/agentplane/src/commands/task/kernel-completed-external-rework.testkit.ts b/packages/agentplane/src/commands/task/kernel-completed-external-rework.testkit.ts
+index 6e5190f47..652b46a0a 100644
+--- a/packages/agentplane/src/commands/task/kernel-completed-external-rework.testkit.ts
++++ b/packages/agentplane/src/commands/task/kernel-completed-external-rework.testkit.ts
+@@ -25,7 +25,14 @@ import {
+ import { makeTaskBackendDouble } from "@agentplane/testkit/task";
+ import { defaultConfig } from "@agentplaneorg/core/config";
+ import { taskKernel as k } from "@agentplaneorg/core/tasks";
+-import type { TaskData } from "../../backends/task-backend.js";
++import type { TaskData, TaskBackend } from "../../backends/task-backend.js";
++import {
++  amendedScopeIntake,
++  scopeIntakeDigest,
++} from "../../adapters/task-backend/kernel-scope-intake.js";
++import type { KernelDocuments } from "../../adapters/task-backend/kernel-documents.js";
++import type { KernelCommandInput } from "../../adapters/task-backend/kernel-backend-adapter.js";
++import { observeKernelRepository } from "../../runner/observation/kernel-repository.js";
+ import { KernelBackendAdapter } from "../../adapters/task-backend/kernel-backend-adapter.js";
+ import { kernelReplayJourney } from "../../adapters/task-backend/kernel-replay-journey.test-fixtures.js";
+ import { loadCommandContext } from "../shared/task-backend.js";
+@@ -38,10 +45,251 @@ import { projectKernelOperationalEvidence } from "./kernel-operational-projectio
+ export function git(root: string, ...args: string[]) {
+   return execFileSync("git", args, { cwd: root, encoding: "utf8" }).trim();
+ }
++/** Build genuine reducer/adapter history before completion; never patch a terminal record. */
++async function completeWithHistoricalScope(
++  root: string,
++  backend: TaskBackend,
++  identity: k.Sha256Digest,
++  journey: ReturnType<typeof kernelReplayJourney>,
++  contract: NonNullable<TaskData["execution_contract"]>,
++) {
++  const intent = { objective: "Completed intake", context: "Prior scope fixture" };
++  const workContract = {
++    objective: "Change source",
++    acceptance_criteria: ["Source behavior is checked"],
++    verification_commands: ["git diff --check"],
++    role: "EXECUTOR" as const,
++  };
++  const workDigest = k.kernelDigest(workContract);
++  const claim = k.kernelDigest("historical fixture claim");
++  let documents: KernelDocuments = { intent, contracts: {} };
++  const first = structuredClone(journey.steps[0]!.input);
++  const { config } = await loadCommandContext({ cwd: root, rootOverride: null });
++  const observation = await observeKernelRepository({
++    repository_root: root,
++    repository_identity: identity,
++    operational_paths: [
++      config.paths.workflow_dir,
++      config.paths.tasks_path,
++      config.paths.worktrees_dir,
++    ],
++  });
++  first.repository_fingerprint = observation.fingerprint;
++  const policy = k.kernelDigest({
++    config,
++    files: observation.files.filter(
++      (file) => file.path === "AGENTS.md" || file.path.startsWith(".agentplane/policy/"),
++    ),
++  });
++  const seed = first.authority!;
++  let authority: k.ExecutionAuthority = {
++    ...seed,
++    repository_identity: identity,
++    repository_fingerprint: observation.fingerprint,
++    policy_digests: [policy],
++    scope_roots: ["source.txt"],
++    repository_effects: contract.authority.allowed_repository_effects,
++    external_effects: contract.authority.allowed_external_effects,
++    capabilities: ["repository_write"],
++    provenance: { ...seed.provenance, actor_id: "USER", parent_authority_digest: null },
++  };
++  authority = { ...authority, digest: k.authorityDigest(authority) };
++  let expectedRequest: k.ProspectiveScopeRequest | null = null;
++  const adapter = new KernelBackendAdapter(backend, identity, (request) =>
++    Promise.resolve(expect(request).toEqual(expectedRequest)),
++  );
++  let revision = 0;
++  const execute = async (
++    command: k.TaskCommand,
++    mutation: string,
++    grant: k.ExecutionAuthority | null = authority,
++  ) => {
++    const input: KernelCommandInput = {
++      ...first,
++      command: {
++        ...command,
++        expected_task_revision: revision,
++        expected_state_fingerprint: first.repository_fingerprint,
++      },
++      authority: grant,
++      actor: { id: "USER", kind: "USER", transport: "manual", capabilities: ["repository_write"] },
++      mutation_id: mutation,
++    };
++    const result =
++      revision === 0
++        ? await adapter.create({ ...journey.task, execution_contract: contract }, input, documents)
++        : await adapter.execute(input, documents);
++    expect(result.kind, JSON.stringify(result)).toBe("committed");
++    if (result.kind !== "committed") throw new Error("Historical fixture command rejected");
++    revision = result.record.aggregate.revision;
++    return result.record;
++  };
++  const command = (value: object) =>
++    ({
++      task_id: journey.task.id,
++      expected_task_revision: revision,
++      expected_state_fingerprint: first.repository_fingerprint,
++      ...value,
++    }) as k.TaskCommand;
++  const planned = journey.steps[1]!.input.command;
++  if (planned.kind !== "propose_plan") throw new Error("Missing fixture Plan");
++  const original = planned.plan.work_items[0]!;
++  const definition = {
++    ...original,
++    contract_digest: workDigest,
++    execution_requirements: { ...original.execution_requirements, scope_roots: ["source.txt"] },
++  };
++  let plan: k.PlanRecord = {
++    ...planned.plan,
++    work_items: [definition],
++    digest: k.kernelDigest({ revision: 1, work_items: [definition] }),
++  };
++  for (const [index, step] of journey.steps.slice(0, 6).entries()) {
++    const next = structuredClone(step.input.command);
++    if (next.kind === "capture_intent") next.intent_digest = k.kernelDigest(intent);
++    if (next.kind === "propose_plan") {
++      next.plan = plan;
++      documents = { ...documents, contracts: { [workDigest]: workContract } };
++    }
++    if (index >= 2) {
++      authority = { ...authority, plan_revision: 1, plan_digest: plan.digest };
++      authority = { ...authority, digest: k.authorityDigest(authority) };
++    }
++    if (next.kind === "approve_plan") {
++      next.plan_digest = plan.digest;
++      next.authority_mode = "manual_operator";
++      next.approval_evidence_digest = authority.provenance.evidence_digest;
++    }
++    if (next.kind === "materialize_work_items") next.plan_digest = plan.digest;
++    if (next.kind === "transition_work_item") next.claim_id = claim;
++    await execute(next, next.kind === "propose_plan" ? `plan:${plan.digest}` : step.label);
++  }
++  const order = k.kernelDigest("historical native scope order");
++  const blocked = await execute(
++    command({
++      kind: "transition_work_item",
++      work_item_id: "build",
++      action: "block",
++      claim_id: claim,
++    }),
++    `semantic-stop:${order}`,
++  );
++  const before = await backend.getTask(journey.task.id);
++  if (!before) throw new Error("Missing historical fixture Task");
++  const projected = amendedScopeIntake(before, ["prior.txt"], []);
++  const request: k.ProspectiveScopeRequest = {
++    task_id: journey.task.id,
++    record_digest: blocked.digest,
++    task_revision: revision,
++    plan_revision: 1,
++    plan_digest: plan.digest,
++    work_item_id: "build",
++    attempt: 1,
++    claim_id: claim,
++    contract_digest: workDigest,
++    work_order_id: order,
++    result_authentication: "native_stop_receipt",
++    result_digest: k.kernelDigest("historical blocked result"),
++    stop_receipt_digest: k.kernelDigest(
++      blocked.aggregate.mutation_receipts[`semantic-stop:${order}`],
++    ),
++    parent_authority_digest: authority.digest,
++    repository_fingerprint: first.repository_fingerprint,
++    intake_before_digest: scopeIntakeDigest(before.execution_contract),
++    intake_after_digest: scopeIntakeDigest(projected),
++    scope_roots: ["prior.txt"],
++    repository_effects: [],
++  };
++  expectedRequest = request;
++  const child = {
++    ...authority,
++    scope_roots: ["prior.txt", "source.txt"],
++    provenance: { ...authority.provenance, parent_authority_digest: authority.digest },
++  };
++  const grant: k.CanonicalAuthorityRecord = {
++    authority: { ...child, digest: k.authorityDigest(child) },
++    approval_mode: "manual_operator",
++    observation: {
++      kind: "prospective_scope_request",
++      evidence_digest: k.prospectiveScopeApprovalEvidence(request, "USER"),
++      previous_fingerprint: authority.repository_fingerprint,
++      changed_paths: [],
++      request_digest: k.kernelDigest(request),
++      scope_request: request,
++    },
++  };
++  await execute(
++    command({ kind: "approve_scope_request", record: grant }),
++    `scope-request:${k.kernelDigest(request)}`,
++    null,
++  );
++  authority = grant.authority;
++  const replacement = {
++    ...definition,
++    execution_requirements: {
++      ...definition.execution_requirements,
++      scope_roots: grant.authority.scope_roots,
++    },
++  };
++  plan = {
++    ...plan,
++    revision: 2,
++    work_items: [replacement],
++    digest: k.kernelDigest({ revision: 2, work_items: [replacement] }),
++  };
++  await execute(command({ kind: "propose_plan", plan }), `plan:${plan.digest}`);
++  authority = {
++    ...authority,
++    plan_revision: 2,
++    plan_digest: plan.digest,
++    provenance: {
++      ...authority.provenance,
++      parent_authority_digest: null,
++      evidence_digest: k.kernelDigest("fresh fixture USER approval"),
++    },
++  };
++  authority = { ...authority, digest: k.authorityDigest(authority) };
++  await execute(
++    command({
++      kind: "approve_plan",
++      plan_revision: 2,
++      plan_digest: plan.digest,
++      authority_mode: "manual_operator",
++      approval_evidence_digest: authority.provenance.evidence_digest,
++    }),
++    "approval-2",
++  );
++  for (const action of ["claim", "begin"] as const)
++    await execute(
++      command({ kind: "transition_work_item", work_item_id: "build", action, claim_id: claim }),
++      `${action}-2`,
++    );
++  for (const step of journey.steps.slice(6)) {
++    const next = structuredClone(step.input.command);
++    if (next.kind === "transition_work_item") next.claim_id = claim;
++    if (next.kind === "accept_work_item_result") {
++      next.plan_revision = 2;
++      next.plan_digest = plan.digest;
++      next.output_manifests = next.output_manifests.map((output) => ({
++        ...output,
++        plan_revision: 2,
++        attempt: 2,
++        repository_fingerprint: observation.fingerprint,
++      }));
++    }
++    if (next.kind === "record_final_validation")
++      next.validation = {
++        ...next.validation,
++        identity: { ...next.validation.identity, implementation_identity: observation.fingerprint },
++      };
++    await execute(next, step.label);
++  }
++}
+ export async function fixture(
+   repositoryMode: "direct" | "branch_pr" = "branch_pr",
+   securityCi = false,
+   leaveReviewDirty = false,
++  historicalScope = false,
+ ) {
+   const root = await mkGitRepoRootWithBranch("main");
+   await configureGitUser(root);
+@@ -92,16 +340,7 @@ export async function fixture(
+       return Promise.resolve();
+     },
+   });
+-  const adapter = new KernelBackendAdapter(backend, identity);
+-  for (const [index, step] of journey.steps.entries()) {
+-    const input = structuredClone(step.input);
+-    input.authority = { ...input.authority!, repository_identity: identity };
+-    const result =
+-      index === 0 ? await adapter.create(journey.task, input) : await adapter.execute(input);
+-    expect(result.kind, JSON.stringify(result)).toBe("committed");
+-  }
+-  const task = saved! as TaskData;
+-  task.execution_contract = resolveExplicitExecutionContract({
++  const intake = resolveExplicitExecutionContract({
+     config,
+     parsed: {
+       route: "branch_pr",
+@@ -111,6 +350,22 @@ export async function fixture(
+     },
+     intent: { taskKind: "code", mutationScope: "code" },
+   });
++  if (historicalScope) {
++    intake.authority.allowed_capabilities = ["repository_write"];
++    intake.authority.allowed_resources = [];
++    await completeWithHistoricalScope(root, backend, identity, journey, intake);
++  } else {
++    const adapter = new KernelBackendAdapter(backend, identity);
++    for (const [index, step] of journey.steps.entries()) {
++      const input = structuredClone(step.input);
++      input.authority = { ...input.authority!, repository_identity: identity };
++      const result =
++        index === 0 ? await adapter.create(journey.task, input) : await adapter.execute(input);
++      expect(result.kind, JSON.stringify(result)).toBe("committed");
++    }
++  }
++  const task = saved! as TaskData;
++  if (!historicalScope) task.execution_contract = intake;
+   task.execution_route = {
+     requested_mode: "branch_pr",
+     selected_mode: "branch_pr",
+diff --git a/packages/agentplane/src/commands/task/scope-extend.command.test.ts b/packages/agentplane/src/commands/task/scope-extend.command.test.ts
+index 2dfd1f8b7..9f3e0618f 100644
+--- a/packages/agentplane/src/commands/task/scope-extend.command.test.ts
++++ b/packages/agentplane/src/commands/task/scope-extend.command.test.ts
+@@ -1,3 +1,5 @@
++import { validateSupervisorExecutionEpisodeJournal } from "@agentplaneorg/core/schemas";
++import type { TaskData } from "../../backends/task-backend.js";
+ import type * as Testkit from "@agentplane/testkit";
+ import type { AgentActionPacket } from "./agent-action-packet.js";
+ import {
+@@ -7,7 +9,13 @@ import {
+ type Packet = { action: { kind: string }; exchange: NonNullable<AgentActionPacket["exchange"]> };
+ import * as commitOwner from "../guard/impl/commit.js";
+ import { CliError } from "../../shared/errors.js";
+-import { readFile, writeFile, mkdir, symlink } from "node:fs/promises";
++import { readFile, writeFile, mkdir, symlink, rename, readdir, chmod } from "node:fs/promises";
++import { execFileSync } from "node:child_process";
++import { fileURLToPath } from "node:url";
++import * as proof from "../../adapters/task-backend/completed-scope-admission.js";
++import * as writes from "../../shared/write-if-changed.js";
++import { applyTaskMutation } from "../shared/task-mutation.js";
++import { tryAcquireSupervisorExecutionLease } from "../shared/supervisor-execution-episode.js";
+ import path from "node:path";
+ import { captureStdIO, installRunCliIntegrationHarness } from "@agentplane/testkit";
+ import { runCli } from "../../cli/run-cli.js";
+@@ -79,8 +87,12 @@ async function invoke(root: string, args: string[]) {
+ import { afterEach, describe, expect, it, vi } from "vitest";
+ import * as taskBackend from "../shared/task-backend.js";
+ import * as kernelRuntime from "./kernel-runtime-context.js";
+-import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
+-import { cmdTaskScopeExtend } from "./scope-extend.js";
++import {
++  TASK_KERNEL_EXTENSION,
++  readKernelRecord,
++  type KernelRecord,
++} from "../../adapters/task-backend/kernel-record.js";
++import { cmdTaskScopeExtend, extendBlockedTaskExecutionContract } from "./scope-extend.js";
+ import { parseCommandArgv } from "../../cli/spec/parse.js";
+ import { taskScopeExtendSpec } from "./scope-extend.command.js";
+ 
+@@ -256,8 +268,8 @@ describe("task scope extend command parsing", () => {
+   );
+ });
+ 
+-async function completedScopeFixture(authenticatedReview = false) {
+-  const f = await fixture("branch_pr", false, authenticatedReview);
++async function completedScopeFixture(authenticatedReview = false, historicalScope = false) {
++  const f = await fixture("branch_pr", false, authenticatedReview, historicalScope);
+   const issued = await invoke(f.root, ["task", "advance", f.id, "--agent-json"]);
+   expect(issued.code, issued.stdout + issued.stderr).toBe(0);
+   const packet = JSON.parse(issued.stdout) as Packet;
+@@ -314,9 +326,32 @@ async function completedScopeFixture(authenticatedReview = false) {
+   return { f, packet, payload, command, before, pending, head, args };
+ }
+ 
++function coldProcess(root: string, id: string) {
++  const backend = fileURLToPath(new URL("../shared/task-backend.ts", import.meta.url));
++  const kernel = fileURLToPath(
++    new URL("../../adapters/task-backend/kernel-record.ts", import.meta.url),
++  );
++  const script = `const b=await import(${JSON.stringify(backend)});const k=await import(${JSON.stringify(kernel)});
++    const c=await b.loadCommandContext({cwd:${JSON.stringify(root)},rootOverride:null});
++    const t=await c.taskBackend.getTask(${JSON.stringify(id)});
++    const all=await c.taskBackend.getTasks([t.id]);const list=await c.taskBackend.listTasks();
++    const projected=await c.taskBackend.listProjectionTasks();
++    const classify=t=>k.readKernelRecord(t,t.extensions.task_kernel.repository_identity).kind;
++    console.log(JSON.stringify({pid:process.pid,one:classify(t),batch:classify(all[0]),list:classify(list.find(x=>x.id===t.id)),projection:classify(projected.find(x=>x.id===t.id))}));`;
++  return JSON.parse(
++    execFileSync("bun", ["--eval", script], { cwd: root, encoding: "utf8", timeout: 30_000 }),
++  ) as {
++    pid: number;
++    one: string;
++    batch: string;
++    list: string;
++    projection: string;
++  };
++}
++
+ describe("completed native repair prospective scope admission", { timeout: 120_000 }, () => {
+   it("authenticates the consumed blocker, admits exact scope, and preserves terminal history", async () => {
+-    const { f, packet, payload, command, before, args } = await completedScopeFixture(true);
++    const { f, packet, payload, command, before, args } = await completedScopeFixture(true, true);
+     const admitted = await invoke(f.root, args);
+     expect(admitted.code, admitted.stdout + admitted.stderr).toBe(0);
+     const observation6 = await command.taskBackend.getTask(f.id);
+@@ -333,9 +368,66 @@ describe("completed native repair prospective scope admission", { timeout: 120_0
+       status: "applied",
+       applied_by: "USER",
+     });
++    expect(before.execution_contract?.authority.allowed_capabilities).toEqual(["repository_write"]);
++    expect(after.execution_contract?.authority.allowed_capabilities).toEqual(["repository_write"]);
++    expect(Object.hasOwn(after.execution_contract!.authority, "allowed_resources")).toBe(true);
++    expect(after.execution_contract?.observed.verification_results).toEqual(
++      before.execution_contract?.observed.verification_results,
++    );
++    const historical = before.extensions?.task_kernel as KernelRecord;
++    expect(
++      historical.aggregate.authority_lineage?.some(
++        (entry) => entry.observation?.kind === "prospective_scope_request",
++      ),
++    ).toBe(true);
++    const identity = historical.repository_identity;
++    const authenticateBlocker = vi.fn(() => Promise.resolve());
++    await expect(
++      proof.authenticateCompletedScopeTask({
++        task: structuredClone(after),
++        source: {
++          git_root: f.root,
++          common_git_dir: await taskBackend.resolveCommandGitCommonDir(command),
++          repository_identity: identity,
++          readme_path: path.join(f.root, "copied", f.id, "README.md"),
++          raw: await readFile(
++            path.join(f.root, command.config.paths.workflow_dir, f.id, "README.md"),
++            "utf8",
++          ),
++        },
++        authenticate_blocker: authenticateBlocker,
++      }),
++    ).rejects.toThrow(/source/u);
++    expect(authenticateBlocker).not.toHaveBeenCalled();
++    const serialized = JSON.stringify(after);
++    const decoded = JSON.parse(serialized) as TaskData;
++    for (const copied of [{ ...after }, structuredClone(after), decoded])
++      expect(readKernelRecord(copied, identity)).toMatchObject({
++        kind: "malformed",
++        reason: "completed_scope_admission_unproven",
++      });
++    expect(
++      readKernelRecord(
++        proof.transferCompletedScopePermit(after, { ...after, doc: "Metadata projection" }),
++        identity,
++      ).kind,
++    ).toBe("canonical");
++    const changed = structuredClone(after);
++    changed.execution_contract!.authority.writable_roots.push("unapproved.txt");
++    expect(
++      readKernelRecord(proof.transferCompletedScopePermit(after, changed), identity).kind,
++    ).toBe("malformed");
++    const changedBase = structuredClone(after);
++    changedBase.extensions!.task_execution_context = {
++      ...(changedBase.extensions!.task_execution_context as object),
++      base_sha: "0".repeat(40),
++    };
++    expect(
++      readKernelRecord(proof.transferCompletedScopePermit(after, changedBase), identity).kind,
++    ).toBe("malformed");
+     const replayHead = git(f.root, "rev-parse", "HEAD");
+     const replay = await invoke(f.root, args);
+-    expect(replay.code).not.toBe(0);
++    expect(replay.code, replay.stdout + replay.stderr).toBe(0);
+     expect(git(f.root, "rev-parse", "HEAD")).toBe(replayHead);
+     expect(await readFile(packet.exchange.result_path, "utf8")).toBe(JSON.stringify(payload));
+     expect(await readFile(path.join(f.root, "source.txt"), "utf8")).toBe("before\n");
+@@ -384,6 +476,62 @@ describe("completed native repair prospective scope admission", { timeout: 120_0
+     expect(fresh.stop_rules.join(" ")).not.toContain("Execution profile release is incompatible");
+     const observation7 = await command.taskBackend.getTask(f.id);
+     expect(observation7?.extensions?.task_kernel).toEqual(before.extensions?.task_kernel);
++    // A second genuine blocker extends the same immutable completed Kernel.
++    await writeFile(
++      successor.exchange.result_path,
++      JSON.stringify({
++        ...payload,
++        work_order_id: fresh.work_order_id,
++        blocker: {
++          ...payload.blocker,
++          scope_extension_request: {
++            ...payload.blocker.scope_extension_request,
++            scope_roots: ["second.txt"],
++          },
++        },
++      }),
++    );
++    const blockedAgain = await invoke(f.root, successor.exchange.resume_argv.slice(1));
++    expect(blockedAgain.code, blockedAgain.stdout + blockedAgain.stderr).toBe(0);
++    const second = parseTaskScopeExtensionRequestState((await command.taskBackend.getTask(f.id))!)!;
++    const secondArgs = args.map((arg, index) =>
++      index === 5 ? "second.txt" : index === 7 || index === 9 ? second.request_digest : arg,
++    );
++    const extended = await invoke(f.root, secondArgs);
++    expect(extended.code, extended.stdout + extended.stderr).toBe(0);
++    const twice = (await command.taskBackend.getTask(f.id))!;
++    expect(proof.completedScopeAdmissionIds(twice)).toHaveLength(2);
++    expect(twice.extensions?.task_kernel).toEqual(before.extensions?.task_kernel);
++    const expectedCold = {
++      one: "canonical",
++      batch: "canonical",
++      list: "canonical",
++      projection: "canonical",
++    };
++    const cold = coldProcess(f.root, f.id);
++    expect(cold).toMatchObject(expectedCold);
++    expect(cold.pid).not.toBe(process.pid);
++    const oldBase = (before.extensions!.task_execution_context as { base_sha: string }).base_sha;
++    const main = path.join(f.root, ".agentplane/worktrees/cold-main");
++    git(f.root, "worktree", "add", main, "main");
++    git(main, "merge", "--ff-only", git(f.root, "branch", "--show-current"));
++    expect(coldProcess(main, f.id)).toMatchObject(expectedCold);
++    const compact = path.join(f.root, ".agentplane/worktrees/cold-history");
++    git(f.root, "worktree", "add", "--detach", compact, oldBase);
++    await mkdir(path.join(compact, ".agentplane/tasks"), { recursive: true });
++    git(f.root, "config", "extensions.worktreeConfig", "true");
++    git(compact, "config", "--worktree", "agentplane.compactTaskHistory", "true");
++    expect(coldProcess(compact, f.id)).toMatchObject(expectedCold);
++    const snapshot = await taskBackend.loadCommandContext({ cwd: main, rootOverride: null });
++    snapshot.memo.taskWorktreeInventory = Promise.resolve([]);
++    const historicalTask = await taskBackend.loadTaskFromBranchSnapshot({
++      ctx: snapshot,
++      taskId: f.id,
++      readmePath: path.join(main, snapshot.config.paths.workflow_dir, f.id, "README.md"),
++      branch: git(f.root, "branch", "--show-current"),
++      requireWorktree: false,
++    });
++    expect(readKernelRecord(historicalTask, identity).kind).toBe("canonical");
+   });
+ });
+ 
+@@ -493,7 +641,7 @@ it(
+     );
+     expect(comments).toHaveLength(1);
+     const observation5 = await invoke(f.root, args);
+-    expect(observation5.code).not.toBe(0);
++    expect(observation5.code, observation5.stdout + observation5.stderr).toBe(0);
+     const observation10 = await command.taskBackend.getTask(f.id);
+     const replayed = observation10!;
+     expect(replayed.comments).toEqual(admitted.comments);
+@@ -546,3 +694,265 @@ it(
+     expect(parseTaskScopeExtensionRequestState(after!)).toMatchObject({ status: "pending" });
+   },
+ );
++
++it.each([false, true])(
++  "reconciles the same protected intent after a write interruption (written=%s)",
++  { timeout: 120_000 },
++  async (written) => {
++    const { f, args, command, before } = await completedScopeFixture(false, true);
++    const file = path.join(f.root, command.config.paths.workflow_dir, f.id, "README.md");
++    const original = writes.writeTextIfChanged;
++    let interrupt = true;
++    const stop = vi.spyOn(writes, "writeTextIfChanged").mockImplementation(async (...call) => {
++      if (call[0] === file && interrupt) {
++        interrupt = false;
++        if (written) await original(...call);
++        throw new Error("Injected interruption at Task publication");
++      }
++      return await original(...call);
++    });
++    const failed = await invoke(f.root, args);
++    stop.mockRestore();
++    expect(failed.code).not.toBe(0);
++    const common = await taskBackend.resolveCommandGitCommonDir(command);
++    const parent = path.join(common, "agentplane/completed-scope", f.id);
++    const entries = await readdir(parent);
++    expect(entries).toHaveLength(1);
++    const journal = path.join(parent, entries[0]!, "journal.json");
++    const intent = validateSupervisorExecutionEpisodeJournal(
++      JSON.parse(await readFile(journal, "utf8")),
++    );
++    expect(intent.operations).toHaveLength(1);
++    expect(intent.cursor.phase).toBe("intent_recorded");
++    const retained = await proof.readCompletedScopeAdmission(common, f.id, `sha256:${entries[0]!}`);
++    proof.validatePreparedCompletedScope(retained);
++    expect(
++      readKernelRecord(
++        retained.after,
++        (before.extensions!.task_kernel as KernelRecord).repository_identity,
++      ).kind,
++    ).toBe("malformed");
++    if (written) await expect(command.taskBackend.getTask(f.id)).rejects.toThrow();
++    else {
++      const unchanged = await command.taskBackend.getTask(f.id);
++      expect(unchanged?.execution_contract).toEqual(before.execution_contract);
++    }
++    const resumed = await invoke(f.root, args);
++    expect(resumed.code, resumed.stdout + resumed.stderr).toBe(0);
++    const completed = validateSupervisorExecutionEpisodeJournal(
++      JSON.parse(await readFile(journal, "utf8")),
++    );
++    expect(completed.operations).toHaveLength(1);
++    expect(completed.operations[0].operation_key).toBe(intent.operations[0].operation_key);
++    expect(completed.cursor.phase).toBe("completed");
++    const after = (await command.taskBackend.getTask(f.id))!;
++    expect(after.extensions?.task_kernel).toEqual(before.extensions?.task_kernel);
++    expect(
++      after.comments?.filter((comment) =>
++        comment.body.startsWith("Approved state-bound execution scope extension:"),
++      ),
++    ).toHaveLength(1);
++  },
++);
++
++it(
++  "rejects escaping proof storage, a competing writer, missing and forged native proof",
++  { timeout: 120_000 },
++  async () => {
++    const { f, args, command, before, head } = await completedScopeFixture(false, true);
++    const common = await taskBackend.resolveCommandGitCommonDir(command);
++    const proofRoot = path.join(common, "agentplane/completed-scope");
++    const escaped = path.join(common, "escaped-proof");
++    await mkdir(escaped);
++    await symlink(escaped, proofRoot);
++    const escapedResult = await invoke(f.root, args);
++    expect(escapedResult.code).not.toBe(0);
++    expect(await readdir(escaped)).toEqual([]);
++    await rename(proofRoot, `${proofRoot}.symlink-retained`);
++    const lease = await tryAcquireSupervisorExecutionLease({
++      journal_path: path.join(common, "agentplane/supervisor/episodes", f.id, "journal.json"),
++    });
++    expect(lease).not.toBeNull();
++    try {
++      const busy = await invoke(f.root, args);
++      expect(busy.code).not.toBe(0);
++    } finally {
++      await lease!.release();
++    }
++    expect(git(f.root, "rev-parse", "HEAD")).toBe(head);
++    const unchanged = await command.taskBackend.getTask(f.id);
++    expect(unchanged?.execution_contract).toEqual(before.execution_contract);
++    const admitted = await invoke(f.root, args);
++    expect(admitted.code, admitted.stdout + admitted.stderr).toBe(0);
++    const task = (await command.taskBackend.getTask(f.id))!;
++    const dir = proof.completedScopeProofDirectory(
++      common,
++      f.id,
++      proof.completedScopeAdmissionIds(task)[0]!,
++    );
++    const stableHead = git(f.root, "rev-parse", "HEAD");
++    for (const name of ["intent.json", "result.json", "journal.json"]) {
++      const file = path.join(dir, name),
++        raw = await readFile(file, "utf8");
++      await rename(file, `${file}.retained`);
++      await expect(command.taskBackend.getTask(f.id)).rejects.toThrow();
++      for (const argv of [
++        ["task", "show", f.id],
++        ["task", "list", "--all"],
++        ["task", "resume-context", f.id, "--json"],
++      ]) {
++        const missing = await invoke(f.root, argv);
++        expect(missing.code, name).not.toBe(0);
++      }
++      await writeFile(
++        file,
++        JSON.stringify({ ...(JSON.parse(raw) as Record<string, unknown>), forged: true }),
++        { mode: 0o600 },
++      );
++      await expect(command.taskBackend.listTasks()).rejects.toThrow();
++      await expect(command.taskBackend.listProjectionTasks!()).rejects.toThrow();
++      await rename(file, `${file}.forged-retained`);
++      await rename(`${file}.retained`, file);
++      const restored = await command.taskBackend.getTask(f.id);
++      expect(restored?.extensions?.task_kernel).toEqual(before.extensions?.task_kernel);
++      expect(git(f.root, "rev-parse", "HEAD")).toBe(stableHead);
++    }
++    await chmod(dir, 0o755);
++    await expect(command.taskBackend.getTask(f.id)).rejects.toThrow("directory owner/mode");
++    await chmod(dir, 0o700);
++    const restored = await command.taskBackend.getTask(f.id);
++    expect(restored?.extensions?.task_kernel).toEqual(before.extensions?.task_kernel);
++  },
++);
++
++it(
++  "recovers only the exact typed legacy partial and retains all original evidence",
++  { timeout: 120_000 },
++  async () => {
++    const { f, command, before, pending, head, args } = await completedScopeFixture(false, true);
++    const relative = `${command.config.paths.workflow_dir}/${f.id}/README.md`;
++    const file = path.join(f.root, relative),
++      beforeRaw = await readFile(file, "utf8");
++    const kernel = before.extensions!.task_kernel as KernelRecord;
++    const legacyContract = extendBlockedTaskExecutionContract({
++      command,
++      task: before,
++      scope_roots: pending.request.scope_roots,
++      repository_effects: pending.request.repository_effects,
++      request_digest: pending.request_digest,
++      by: "USER",
++      completedRework: true,
++    });
++    const appliedAt = new Date().toISOString();
++    await applyTaskMutation({
++      ctx: command,
++      taskId: f.id,
++      allowCanonicalProjection: true,
++      build: (current) => ({
++        nextTask: {
++          ...current,
++          doc: undefined,
++          doc_updated_at: appliedAt,
++          doc_updated_by: "USER",
++          execution_contract: legacyContract,
++          extensions: {
++            ...current.extensions,
++            ["agentplane.scope_extension_request"]: {
++              ...pending,
++              status: "applied",
++              applied_at: appliedAt,
++              applied_by: "USER",
++            },
++          },
++          comments: [
++            ...(current.comments ?? []),
++            proof.completedScopeApprovalComment(
++              pending.request.scope_roots,
++              pending.request.repository_effects,
++            ),
++          ],
++        },
++      }),
++    });
++    const partialRaw = await readFile(file, "utf8");
++    await expect(command.taskBackend.getTask(f.id)).rejects.toThrow(
++      "scope_request_intake_projection",
++    );
++    const untyped = await invoke(f.root, args);
++    expect(untyped.code).not.toBe(0);
++    const common = await taskBackend.resolveCommandGitCommonDir(command);
++    const journalPath = path.join(common, "agentplane/supervisor/episodes", f.id, "journal.json");
++    const originalJournal = await readFile(journalPath, "utf8");
++    const requestFile = path.join(common, "legacy-reconcile-request.json");
++    const request = {
++      schema_version: 1,
++      kind: "completed_scope_admission_reconcile",
++      task_id: f.id,
++      repository_identity: kernel.repository_identity,
++      kernel_digest: kernel.digest,
++      head_sha: head,
++      before_commit: head,
++      before_readme_digest: proof.completedScopeBytesDigest(beforeRaw),
++      partial_readme_digest: proof.completedScopeBytesDigest(partialRaw),
++      request_digest: pending.request_digest,
++    };
++    const recoverArgs = async (value: object) => {
++      const raw = JSON.stringify(value) + "\n";
++      await writeFile(requestFile, raw, { mode: 0o600 });
++      return [
++        ...args.map((arg, index) => (index === 9 ? proof.completedScopeBytesDigest(raw) : arg)),
++        "--reconcile-request",
++        requestFile,
++      ];
++    };
++    for (const invalid of [
++      { ...request, extra: true },
++      { ...request, kernel_digest: REQUEST_DIGEST },
++      { ...request, head_sha: "1".repeat(40) },
++      { ...request, before_readme_digest: REQUEST_DIGEST },
++      { ...request, partial_readme_digest: REQUEST_DIGEST },
++    ]) {
++      const refused = await invoke(f.root, await recoverArgs(invalid));
++      expect(refused.code).not.toBe(0);
++      expect(await readFile(file, "utf8")).toBe(partialRaw);
++      expect(await readFile(journalPath, "utf8")).toBe(originalJournal);
++    }
++    const recover = await recoverArgs(request);
++    const result = await invoke(f.root, recover);
++    expect(result.code, result.stdout + result.stderr).toBe(0);
++    const after = (await command.taskBackend.getTask(f.id))!;
++    expect(after.extensions?.task_kernel).toEqual(before.extensions?.task_kernel);
++    expect(after.execution_contract?.authority.allowed_capabilities).toEqual(
++      before.execution_contract?.authority.allowed_capabilities,
++    );
++    expect(after.execution_contract?.observed.verification_results).toEqual(
++      before.execution_contract?.observed.verification_results,
++    );
++    expect(after.execution_contract?.verification.contract?.selected_checks).toEqual(
++      expect.arrayContaining(before.execution_contract!.verification.contract!.selected_checks),
++    );
++    const dir = proof.completedScopeProofDirectory(
++      common,
++      f.id,
++      proof.completedScopeAdmissionIds(after)[0]!,
++    );
++    const evidence = await proof.readCompletedScopeAdmission(
++      common,
++      f.id,
++      proof.completedScopeAdmissionIds(after)[0]!,
++    );
++    expect(evidence.before_readme).toBe(beforeRaw);
++    expect(evidence.partial_readme).toBe(partialRaw);
++    expect(await readFile(journalPath, "utf8")).toBe(originalJournal);
++    const replayHead = git(f.root, "rev-parse", "HEAD"),
++      afterRaw = await readFile(file, "utf8");
++    const replay = await invoke(f.root, recover);
++    expect(replay.code).toBe(0);
++    expect(await readFile(file, "utf8")).toBe(afterRaw);
++    expect(git(f.root, "rev-parse", "HEAD")).toBe(replayHead);
++    const finalJournal = validateSupervisorExecutionEpisodeJournal(
++      JSON.parse(await readFile(path.join(dir, "journal.json"), "utf8")),
++    );
++    expect(finalJournal.operations).toHaveLength(1);
++  },
++);
+diff --git a/packages/agentplane/src/commands/task/scope-extend.command.ts b/packages/agentplane/src/commands/task/scope-extend.command.ts
+index ecbfe2e1c..601df4536 100644
+--- a/packages/agentplane/src/commands/task/scope-extend.command.ts
++++ b/packages/agentplane/src/commands/task/scope-extend.command.ts
+@@ -34,6 +34,7 @@ export type TaskScopeExtendParsed = {
+   requestDigest: string;
+   stateFingerprint?: string;
+   stateScopeDigest?: string;
++  reconcileRequest?: string;
+   by: string;
+ };
+ 
+@@ -43,6 +44,13 @@ export const taskScopeExtendSpec: CommandSpec<TaskScopeExtendParsed> = {
+   summary: "Extend blocked task repository scope with state-bound USER authority.",
+   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
+   options: [
++    {
++      kind: "string",
++      name: "reconcile-request",
++      valueHint: "<private-json>",
++      description:
++        "Strict v1 completed_scope_admission_reconcile JSON: schema_version, kind, task_id, repository_identity, kernel_digest, head_sha, before_commit, before_readme_digest, partial_readme_digest, request_digest. Commit IDs are full Git SHAs; digests are sha256:<64 lowercase hex>. --state-scope-digest binds the exact request bytes. Reconcile only the pinned legacy partial or retained native intent; preserve original Kernel and failed evidence. Exact replay is a durable no-op.",
++    },
+     {
+       kind: "string",
+       name: "scope-root",
+@@ -90,6 +98,10 @@ export const taskScopeExtendSpec: CommandSpec<TaskScopeExtendParsed> = {
+       cmd: "agentplane task scope extend T-1 --scope-root website --repository-effect documentation --request-digest sha256:... --state-scope-digest sha256:... --by USER",
+       why: "Approve a monotonic repository-scope extension after a typed blocker.",
+     },
++    {
++      cmd: "agentplane task scope extend T-1 --scope-root helper.ts --request-digest sha256:... --state-scope-digest sha256:... --reconcile-request private-reconcile.json --by USER",
++      why: "Recover the exact retained completed-task partial using its private typed request and byte digest.",
++    },
+   ],
+   validateRaw: (raw) => {
+     if (
+@@ -101,6 +113,16 @@ export const taskScopeExtendSpec: CommandSpec<TaskScopeExtendParsed> = {
+         message: "At least one --scope-root or --repository-effect is required.",
+       });
+     }
++    if (
++      optionalStringOption(raw.opts["reconcile-request"]) &&
++      (!optionalStringOption(raw.opts["state-scope-digest"]) ||
++        optionalStringOption(raw.opts["state-fingerprint"]))
++    )
++      throw usageError({
++        spec: taskScopeExtendSpec,
++        message:
++          "--reconcile-request requires --state-scope-digest and excludes --state-fingerprint.",
++      });
+     const stateFingerprint = optionalStringOption(raw.opts["state-fingerprint"]);
+     const stateScopeDigest = optionalStringOption(raw.opts["state-scope-digest"]);
+     if (stateFingerprint === undefined && stateScopeDigest === undefined) {
+@@ -138,6 +160,9 @@ export const taskScopeExtendSpec: CommandSpec<TaskScopeExtendParsed> = {
+     ...(optionalStringOption(raw.opts["state-scope-digest"])
+       ? { stateScopeDigest: optionalStringOption(raw.opts["state-scope-digest"]) }
+       : {}),
++    ...(optionalStringOption(raw.opts["reconcile-request"])
++      ? { reconcileRequest: optionalStringOption(raw.opts["reconcile-request"]) }
++      : {}),
+     by: String(raw.opts.by),
+   }),
+ };
+@@ -153,6 +178,7 @@ export function makeRunTaskScopeExtendHandler(getCtx: (cmd: string) => Promise<C
+       requestDigest: parsed.requestDigest,
+       ...(parsed.stateFingerprint ? { stateFingerprint: parsed.stateFingerprint } : {}),
+       ...(parsed.stateScopeDigest ? { stateScopeDigest: parsed.stateScopeDigest } : {}),
++      ...(parsed.reconcileRequest ? { reconcileRequest: parsed.reconcileRequest } : {}),
+       by: parsed.by,
+     });
+ }
+diff --git a/packages/agentplane/src/commands/task/scope-extend.ts b/packages/agentplane/src/commands/task/scope-extend.ts
+index 002d0f603..b4b97731b 100644
+--- a/packages/agentplane/src/commands/task/scope-extend.ts
++++ b/packages/agentplane/src/commands/task/scope-extend.ts
+@@ -1,5 +1,10 @@
+-import { completedRepairScopeRequest } from "./completed-repair-scope-request.js";
+-import { applyTaskMutation } from "../shared/task-mutation.js";
++import { z } from "zod";
++import { parseTaskReadme, taskKernel as k } from "@agentplaneorg/core/tasks";
++import {
++  decodeCompletedScopeTask,
++  completedScopeApprovalComment,
++} from "../../adapters/task-backend/completed-scope-admission.js";
++import { tryCompletedScopeAdmission } from "./completed-repair-scope-request.js";
+ import {
+   computeLogicalCompletionContractDigest,
+   EXECUTION_GRANT_EXTENSION_KEY,
+@@ -305,63 +310,70 @@ async function commitScope(ctx: CommandContext, cwd: string, taskId: string, mes
+   if (exit !== 0) throw new Error(`Task scope extension commit exited ${exit}.`);
+ }
+ 
+-/** Admit task-level repair scope without reopening or rewriting the completed Kernel. */
+-async function extendCompletedRepair(opts: {
+-  command: CommandContext;
+-  task: TaskData;
+-  scopeRoots: string[];
+-  repositoryEffects: TaskRepositoryEffect[];
+-  requestDigest: string;
+-  by: string;
+-}) {
+-  const { command, task } = opts;
+-  const pending = await completedRepairScopeRequest(command, task);
+-  if (!pending) return false;
+-  const root = command.resolvedProject.gitRoot;
+-  const executionContract = extendBlockedTaskExecutionContract({
++function legacyMismatch(reason: string): never {
++  throw new CliError({
++    code: "E_VALIDATION",
++    message: `Legacy completed scope reconciliation rejected (${reason}).`,
++  });
++}
++function validateLegacyAfterimage(command: CommandContext, beforeRaw: string, partialRaw: string) {
++  const before = parseTaskReadme(beforeRaw),
++    partial = parseTaskReadme(partialRaw);
++  const b = decodeCompletedScopeTask(beforeRaw, "retained-before", String(before.frontmatter.id));
++  const p = decodeCompletedScopeTask(partialRaw, "retained-partial", b.id);
++  const pending = parseTaskScopeExtensionRequestState(b),
++    applied = parseTaskScopeExtensionRequestState(p);
++  if (!pending) throw new Error("Legacy reconciliation has no pending native scope request");
++  const contract = extendBlockedTaskExecutionContract({
+     command,
+-    task,
+-    scope_roots: opts.scopeRoots,
+-    repository_effects: opts.repositoryEffects,
+-    request_digest: opts.requestDigest,
+-    by: opts.by,
++    task: b,
++    scope_roots: pending.request.scope_roots,
++    repository_effects: pending.request.repository_effects,
++    request_digest: pending.request_digest,
++    by: "USER",
+     completedRework: true,
+   });
+-  await applyTaskMutation({
+-    ctx: command,
+-    taskId: task.id,
+-    allowCanonicalProjection: true,
+-    writeOptions: { expectedRevision: task.revision },
+-    build: (current) => ({
+-      nextTask: {
+-        ...current,
+-        execution_contract: executionContract,
+-        extensions: {
+-          ...current.extensions,
+-          [TASK_SCOPE_EXTENSION_REQUEST_KEY]: {
+-            ...pending,
+-            status: "applied",
+-            applied_at: new Date().toISOString(),
+-            applied_by: opts.by,
+-          },
+-        },
+-        comments: [
+-          ...(current.comments ?? []),
+-          {
+-            author: opts.by,
+-            body: `Approved state-bound execution scope extension: ${opts.scopeRoots.join(", ")}; repository effects: ${opts.repositoryEffects.join(", ") || "unchanged"}.`,
+-          },
+-        ],
++  if (
++    applied?.status !== "applied" ||
++    applied.applied_by !== "USER" ||
++    !applied.applied_at ||
++    !z.iso.datetime().safeParse(applied.applied_at).success ||
++    k.kernelDigest({
++      ...applied,
++      status: "pending",
++      applied_at: undefined,
++      applied_by: undefined,
++    }) !== k.kernelDigest(pending) ||
++    partial.frontmatter.doc_updated_by !== "USER" ||
++    !z.iso.datetime().safeParse(partial.frontmatter.doc_updated_at).success
++  )
++    legacyMismatch("applied request");
++  const expected = {
++    frontmatter: {
++      ...before.frontmatter,
++      revision: Number(before.frontmatter.revision) + 1,
++      doc_updated_at: partial.frontmatter.doc_updated_at,
++      doc_updated_by: "USER",
++      execution_contract: contract,
++      extensions: {
++        ...(before.frontmatter.extensions as object),
++        [TASK_SCOPE_EXTENSION_REQUEST_KEY]: (
++          partial.frontmatter.extensions as Record<string, unknown>
++        )[TASK_SCOPE_EXTENSION_REQUEST_KEY],
+       },
+-    }),
+-  });
+-  await commitScope(
+-    command,
+-    root,
+-    task.id,
+-    `🚧 ${task.id.split("-").at(-1)} task: extend completed repair scope`,
+-  );
+-  return true;
++      comments: [
++        ...((before.frontmatter.comments as object[]) ?? []),
++        completedScopeApprovalComment(
++          pending.request.scope_roots,
++          pending.request.repository_effects,
++        ),
++      ],
++    },
++    body: before.body,
++  };
++  if (k.kernelDigest(expected) !== k.kernelDigest(partial))
++    legacyMismatch("exact partial afterimage");
++  return applied.applied_at;
+ }
+ 
+ export async function cmdTaskScopeExtend(opts: {
+@@ -373,10 +385,32 @@ export async function cmdTaskScopeExtend(opts: {
+   requestDigest: string;
+   stateFingerprint?: string;
+   stateScopeDigest?: string;
++  reconcileRequest?: string;
+   by: string;
+   quiet?: boolean;
+ }): Promise<number> {
+   try {
++    if (
++      await tryCompletedScopeAdmission({
++        ...opts,
++        legacy_afterimage: validateLegacyAfterimage,
++        commit: (command) =>
++          commitScope(
++            command,
++            command.resolvedProject.gitRoot,
++            opts.taskId,
++            `🚧 ${opts.taskId.split("-").at(-1)} task: extend completed repair scope`,
++          ),
++      })
++    ) {
++      if (!opts.quiet)
++        emitCommandResult(output, {
++          kind: "success",
++          action: "completed repair scope admitted",
++          target: opts.taskId,
++        });
++      return 0;
++    }
+     const canonical = await opts.ctx.taskBackend.getTask(opts.taskId);
+     if (canonical?.extensions && Object.hasOwn(canonical.extensions, TASK_KERNEL_EXTENSION)) {
+       if (opts.by !== "USER")
+@@ -399,25 +433,6 @@ export async function cmdTaskScopeExtend(opts: {
+           code: "E_VALIDATION",
+           message: "Canonical scope owner Task identity changed.",
+         });
+-      if (
+-        task &&
+-        (await extendCompletedRepair({
+-          command: owner,
+-          task,
+-          scopeRoots: opts.scopeRoots,
+-          repositoryEffects: opts.repositoryEffects,
+-          requestDigest: opts.requestDigest,
+-          by: opts.by,
+-        }))
+-      ) {
+-        if (!opts.quiet)
+-          emitCommandResult(output, {
+-            kind: "success",
+-            action: "completed repair scope extended",
+-            target: opts.taskId,
+-          });
+-        return 0;
+-      }
+       const runtime = await createKernelRuntime({
+         command: owner,
+         task_id: opts.taskId,
+diff --git a/packages/agentplane/src/commands/task/verify-record-execute.ts b/packages/agentplane/src/commands/task/verify-record-execute.ts
+index 3999dd8ca..dac2dc8be 100644
+--- a/packages/agentplane/src/commands/task/verify-record-execute.ts
++++ b/packages/agentplane/src/commands/task/verify-record-execute.ts
+@@ -1,4 +1,6 @@
+ import { createHash } from "node:crypto";
++import { transferCompletedScopePermit } from "../../adapters/task-backend/completed-scope-admission.js";
++import { authenticateTaskMetadataProjection } from "../shared/task-backend-branch-snapshot.js";
+ import { mkdir, rm } from "node:fs/promises";
+ import path from "node:path";
+ import { gitRevParse } from "@agentplaneorg/core/git";
+@@ -149,6 +151,7 @@ async function recordVerificationResult(opts: {
+       beforePersist: opts.beforePersist,
+       allowCanonicalProjection: opts.allowCanonicalProjection,
+       build: async (current) => {
++        await authenticateTaskMetadataProjection(ctx, current);
+         const baseExecutionContract =
+           opts.verificationSnapshot?.execution_contract ??
+           current.execution_contract ??
+@@ -215,7 +218,10 @@ async function recordVerificationResult(opts: {
+           inherited_paths: inheritedPaths,
+           observed_repository_effects: observedChanges.repository_effects,
+         });
+-        const contractTask = { ...current, execution_contract: observedExecutionContract };
++        const contractTask = transferCompletedScopePermit(current, {
++          ...current,
++          execution_contract: observedExecutionContract,
++        });
+         const parsedDetails = parseVerificationCheckDetails(opts.details);
+         const requiresConcreteDetails =
+           workflowMode === "branch_pr" &&
+@@ -444,10 +450,12 @@ async function recordVerificationResult(opts: {
+           }),
+         );
+         if (opts.by === "EVALUATOR") {
+-          const nativeIdentity = resolveNativeTaskIdentity({
+-            ...current,
+-            execution_contract: reconciledContract,
+-          });
++          const nativeIdentity = resolveNativeTaskIdentity(
++            transferCompletedScopePermit(current, {
++              ...current,
++              execution_contract: reconciledContract,
++            }),
++          );
+           if (!nativeIdentity) {
+             throw new CliError({
+               code: "E_VALIDATION",
+@@ -455,7 +463,10 @@ async function recordVerificationResult(opts: {
+             });
+           }
+           const reviewIdentity = buildNativeQualityReviewIdentity({
+-            task: { ...current, execution_contract: reconciledContract },
++            task: transferCompletedScopePermit(current, {
++              ...current,
++              execution_contract: reconciledContract,
++            }),
+             native_identity: nativeIdentity,
+             verification_input_digest: verificationInput?.digest ?? null,
+             acceptance_criteria: evaluatorAcceptanceCriteria(current),
+diff --git a/packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts b/packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts
+new file mode 100644
+index 000000000..c14e3c93e
+--- /dev/null
++++ b/packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts
+@@ -0,0 +1,63 @@
++import { describe, expect, it } from "vitest";
++import { validateTaskReadmeFrontmatter, withTaskReadmeFrontmatterDefaults } from "../index.js";
++
++function fixture(authority: Record<string, unknown>) {
++  return {
++    id: "202610300000-AUTH01",
++    title: "Retain authority presence",
++    status: "TODO",
++    priority: "med",
++    owner: "EXECUTOR",
++    doc_version: 3,
++    doc_updated_at: "2026-10-30T00:00:00.000Z",
++    doc_updated_by: "EXECUTOR",
++    description: "Bounded authority fixture",
++    execution_contract: {
++      schema_version: 1,
++      source: "agent_declared",
++      declaration: {
++        schema_version: 2,
++        preferred_mode: "direct",
++        scope_roots: ["source.ts"],
++        repository_effects: ["source_code"],
++        external_effects: [],
++        requirements_uncertainty: "bounded",
++        implementation_uncertainty: "bounded",
++        reversibility: "reversible",
++        rationale: ["Bounded fixture"],
++      },
++      selected_mode: "direct",
++      repository_mode: "direct",
++      reason_codes: ["explicit_direct"],
++      authority,
++      safety: { requires_worktree: false, requires_user_approval: false, approval_effects: [] },
++      verification: { required_evidence: ["task_outcome"] },
++      observed: { repository_effects: [], changed_paths: [] },
++    },
++  };
++}
++
++describe("optional execution authority fields", () => {
++  it.each(["allowed_capabilities", "allowed_resources"])(
++    "preserves absent and explicit %s through defaults and validation",
++    (field) => {
++      for (const value of [undefined, [], ["repository_write", "fixture"]]) {
++        const authority = value === undefined ? {} : { [field]: value };
++        const normalized = withTaskReadmeFrontmatterDefaults(fixture(authority));
++        const validated = validateTaskReadmeFrontmatter(normalized);
++        const actual = validated.execution_contract!.authority;
++        expect(Object.hasOwn(actual, field)).toBe(value !== undefined);
++        if (value !== undefined) expect(actual[field as keyof typeof actual]).toEqual(value);
++      }
++    },
++  );
++  it.each(["allowed_capabilities", "allowed_resources"])(
++    "rejects malformed present %s instead of converting it to empty authority",
++    (field) => {
++      for (const value of [null, "repository_write", 1, {}, [null], [""]]) {
++        const normalized = withTaskReadmeFrontmatterDefaults(fixture({ [field]: value }));
++        expect(() => validateTaskReadmeFrontmatter(normalized), JSON.stringify(value)).toThrow();
++      }
++    },
++  );
++});
+diff --git a/packages/core/src/tasks/task-artifact-schema.task.ts b/packages/core/src/tasks/task-artifact-schema.task.ts
+index 5678e834e..4693ecdf7 100644
+--- a/packages/core/src/tasks/task-artifact-schema.task.ts
++++ b/packages/core/src/tasks/task-artifact-schema.task.ts
+@@ -679,12 +679,14 @@ function legacyExecutionContractDefaults(value: unknown): unknown {
+         )
+       : TASK_EXTERNAL_EFFECT_SCHEMA.options
+     ).filter((effect) => effect !== "network_read" || !allowedExternalEffects.includes(effect)),
+-    allowed_capabilities: Array.isArray(authoritySource.allowed_capabilities)
+-      ? authoritySource.allowed_capabilities
+-      : [],
+-    allowed_resources: Array.isArray(authoritySource.allowed_resources)
+-      ? authoritySource.allowed_resources
+-      : [],
++    // Optional grants are part of the signed intake. Preserve absence and let
++    // the schema reject malformed present values instead of inventing grants.
++    ...(Object.hasOwn(authoritySource, "allowed_capabilities")
++      ? { allowed_capabilities: authoritySource.allowed_capabilities }
++      : {}),
++    ...(Object.hasOwn(authoritySource, "allowed_resources")
++      ? { allowed_resources: authoritySource.allowed_resources }
++      : {}),
+   };
+   return {
+     ...value,
