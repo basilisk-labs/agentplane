@@ -1,3 +1,14 @@
+import { isRecordedVerificationProjectionId } from "../../backends/task-backend/shared/record.js";
+import {
+  COMPLETED_SCOPE_ADMISSIONS,
+  completedScopeAdmissionIds,
+  retainAuthenticatedCompletedScopePermit,
+} from "./completed-scope-permit.js";
+export {
+  COMPLETED_SCOPE_ADMISSIONS,
+  completedScopeAdmissionIds,
+  transferCompletedScopePermit,
+} from "./completed-scope-permit.js";
 import { createHash } from "node:crypto";
 import { constants } from "node:fs";
 import { lstat, mkdir, open } from "node:fs/promises";
@@ -16,7 +27,6 @@ import { readContainedStableTextNoFollow } from "../../shared/contained-stable-f
 import { completedScopeIntake, scopeIntakeDigest } from "./kernel-scope-intake.js";
 import { readKernelRecord } from "./kernel-record.js";
 
-export const COMPLETED_SCOPE_ADMISSIONS = "agentplane.completed_scope_admissions";
 const ADMISSION_DIRECTORY = "agentplane/completed-scope";
 const SCOPE_REQUEST = "agentplane.scope_extension_request";
 const digest = z.string().regex(/^sha256:[a-f0-9]{64}$/u);
@@ -62,43 +72,11 @@ export type AuthenticateCompletedBlocker = (
   before: TaskData,
   admission: CompletedScopeAdmission,
 ) => Promise<void>;
-const permits = new WeakMap<object, string>();
 export const completedScopeBytesDigest = (value: string) =>
   `sha256:${createHash("sha256").update(value).digest("hex")}`;
 
 function fail(reason: string): never {
   throw new Error(`Completed scope admission rejected (${reason})`);
-}
-export function completedScopeAdmissionIds(task: Pick<TaskData, "extensions">): string[] {
-  const raw = task.extensions?.[COMPLETED_SCOPE_ADMISSIONS];
-  if (raw === undefined) return [];
-  const ids = z.array(digest).min(1).max(64).parse(raw);
-  if (new Set(ids).size !== ids.length) fail("duplicate proof");
-  return ids;
-}
-function binding(task: TaskData, repositoryIdentity: string) {
-  return k.kernelDigest({
-    repositoryIdentity,
-    id: task.id,
-    status: task.status,
-    kernel: task.extensions?.task_kernel,
-    base: task.extensions?.task_execution_context,
-    route: task.execution_route,
-    intake: scopeIntakeDigest(task.execution_contract),
-    proofs: completedScopeAdmissionIds(task),
-  });
-}
-export function hasCompletedScopePermit(task: TaskData, repositoryIdentity: string): boolean {
-  return permits.get(task) === binding(task, repositoryIdentity);
-}
-/** Only an explicitly checked metadata projection may inherit an object-bound permit. */
-export function transferCompletedScopePermit<T extends TaskData>(source: TaskData, next: T): T {
-  const pin = permits.get(source);
-  const identity = (source.extensions?.task_kernel as { repository_identity?: string } | undefined)
-    ?.repository_identity;
-  if (pin && identity && pin === binding(source, identity) && pin === binding(next, identity))
-    permits.set(next, pin);
-  return next;
 }
 export function decodeCompletedScopeTask(
   raw: string,
@@ -247,9 +225,13 @@ function assertVerificationRetained(floor: TaskData, task: TaskData) {
   ] as const)
     if (before.observed[key].some((entry) => !after.observed[key].includes(entry as never)))
       fail(`historical ${key}`);
+  // Scope admission validates the complete before/after Task, including all results.
+  // Later native verification refreshes its projected IDs. The protected proof retains
+  // their original values; durable observations and the verification floor remain guarded.
   if (
     before.observed.verification_results.some(
       (result) =>
+        !isRecordedVerificationProjectionId(result.id) &&
         !after.observed.verification_results.some(
           (next) => k.kernelDigest(next) === k.kernelDigest(result),
         ),
@@ -390,7 +372,7 @@ export async function authenticateCompletedScopeTask(opts: {
     if (previous) {
       if (!authorityMatches(previous, before)) fail("predecessor authority");
       assertVerificationRetained(previous, before);
-      permits.set(before, binding(before, pin.repository_identity));
+      retainAuthenticatedCompletedScopePermit(before, pin.repository_identity);
     }
     const original = readKernelRecord(before, pin.repository_identity as k.Sha256Digest);
     if (original.kind !== "canonical" || original.record.aggregate.state !== "COMPLETED")
@@ -428,12 +410,12 @@ export async function authenticateCompletedScopeTask(opts: {
       k.kernelDigest(result) !== k.kernelDigest(completedScopeObservedResult(a, result.raw_digest!))
     )
       fail("native completion receipt");
-    permits.set(a.after, binding(a.after, pin.repository_identity));
+    retainAuthenticatedCompletedScopePermit(a.after, pin.repository_identity);
     previous = a.after;
   }
   if (!previous || !authorityMatches(previous, opts.task)) fail("current authority");
   assertVerificationRetained(previous, opts.task);
-  permits.set(opts.task, binding(opts.task, opts.source.repository_identity));
+  retainAuthenticatedCompletedScopePermit(opts.task, opts.source.repository_identity);
   return opts.task;
 }
 

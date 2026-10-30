@@ -36,9 +36,10 @@ import {
   type CompletedScopeSource,
 } from "../../adapters/task-backend/completed-scope-admission.js";
 import { readContainedStableTextNoFollow } from "../../shared/contained-stable-file.js";
-import { authenticateCompletedScopeSource } from "../task/completed-repair-scope-request.js";
+import { authenticateCompletedScopeSource } from "./completed-repair-scope-source.js";
 import { resolveLogicalRepositoryIdentity } from "../task/execution-authority-context.js";
-import { resolveCommandGitCommonDir, type CommandContext } from "./task-backend.js";
+import type { CommandContext } from "./task-backend.js";
+import { resolveCommonGitDirectory } from "../../shared/env.js";
 
 export async function readCompletedScopeCommandSource(
   command: CommandContext,
@@ -55,7 +56,7 @@ export async function readCompletedScopeCommandSource(
   const task = decodeCompletedScopeTask(raw, readmePath, taskId);
   return {
     git_root: root,
-    common_git_dir: await resolveCommandGitCommonDir(command),
+    common_git_dir: await resolveCommonGitDirectory(command.resolvedProject.gitRoot),
     repository_identity: await resolveLogicalRepositoryIdentity({ git_root: root, task }),
     readme_path: readmePath,
     raw,
@@ -85,13 +86,21 @@ async function authenticateSource(
       git_root: sourceRoot,
       task,
     });
-    await authenticateCompletedScopeSource(ctx, task, {
-      git_root: sourceRoot,
-      common_git_dir: await resolveCommandGitCommonDir(ctx),
-      repository_identity: identity,
-      raw,
-      readme_path: readmePath,
-    });
+    await authenticateCompletedScopeSource(
+      {
+        git_root: ctx.resolvedProject.gitRoot,
+        common_git_dir: await resolveCommonGitDirectory(ctx.resolvedProject.gitRoot),
+        workflow_dir: ctx.config.paths.workflow_dir,
+      },
+      task,
+      {
+        git_root: sourceRoot,
+        common_git_dir: await resolveCommonGitDirectory(ctx.resolvedProject.gitRoot),
+        repository_identity: identity,
+        raw,
+        readme_path: readmePath,
+      },
+    );
     const read = readKernelRecord(task, identity as k.Sha256Digest);
     if (read.kind !== "canonical")
       throw new Error(read.kind === "malformed" ? read.reason : read.kind);

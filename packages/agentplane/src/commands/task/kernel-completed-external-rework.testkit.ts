@@ -351,8 +351,7 @@ export async function fixture(
     intent: { taskKind: "code", mutationScope: "code" },
   });
   if (historicalScope) {
-    intake.authority.allowed_capabilities = ["repository_write"];
-    intake.authority.allowed_resources = [];
+    intake.observed.verification_results.push({ id: "fixture-native-check", result: "pass" });
     await completeWithHistoricalScope(root, backend, identity, journey, intake);
   } else {
     const adapter = new KernelBackendAdapter(backend, identity);

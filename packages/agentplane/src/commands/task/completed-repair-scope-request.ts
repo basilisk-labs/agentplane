@@ -1,12 +1,14 @@
+import {
+  completedRepairScopeRequest,
+  authenticateCompletedScopeSource as authenticateScopeSource,
+} from "../shared/completed-repair-scope-source.js";
 import path from "node:path";
-import { execFileAsync } from "@agentplaneorg/core/process";
-import { gitProofIsAncestor, gitProofEnv, gitRevParse, gitShowFile } from "@agentplaneorg/core/git";
+import { gitRevParse, gitShowFile } from "@agentplaneorg/core/git";
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
 import {
   createSupervisorExecutionEpisodeJournal,
   startSupervisorExecutionEpisode,
   completeSupervisorExecutionEpisode,
-  digestSupervisorEpisodeValue,
   validateSupervisorExecutionEpisodeJournal,
 } from "@agentplaneorg/core/schemas";
 import { LocalBackend, type TaskData } from "../../backends/task-backend.js";
@@ -22,7 +24,6 @@ import {
   writeCompletedScopeFile,
   readCompletedScopePrivateFile,
   validatePreparedCompletedScope,
-  authenticateCompletedScopeTask,
   completedScopeObservedResult,
   readCompletedScopeReconcileRequest,
   completedScopeApprovalComment,
@@ -39,10 +40,8 @@ import {
 } from "../shared/supervisor-execution-episode.js";
 import {
   parseTaskScopeExtensionRequestState,
-  createTaskScopeExtensionRequestState,
   TASK_SCOPE_EXTENSION_REQUEST_KEY,
-  scopeExtensionReceiptForState,
-} from "../shared/task-scope-extension-request.js";
+} from "../shared/task-scope-extension-request-state.js";
 import {
   resolveCommandGitCommonDir,
   loadCommandContext,
@@ -55,14 +54,6 @@ import {
 } from "../shared/task-backend-branch-snapshot.js";
 import { applyTaskMutation } from "../shared/task-mutation.js";
 import { readDirectRepositoryStatus } from "./direct-task-finalization.js";
-import { canonicalBlockerReadmeProjection } from "./kernel-completed-external-blocker.js";
-import {
-  externalAgentResultDigest,
-  externalAgentIssueDigest,
-  readExternalAgentExchange,
-  readExternalAgentWorkOrder,
-  validateExternalAgentResultEnvelope,
-} from "./external-agent-exchange.js";
 
 function fail(reason = "native blocker/source"): never {
   throw new CliError({
@@ -71,176 +62,19 @@ function fail(reason = "native blocker/source"): never {
   });
 }
 
-/** Authenticate raw native evidence. Never recurse through a decorated backend. */
-async function completedRepairScopeRequest(
-  command: CommandContext,
-  task: TaskData,
-  source: {
-    raw: string;
-    head: string;
-    checkout: string;
-    retained?: boolean;
-    operation_key?: string;
-    work_order_ref?: string;
-  },
-) {
-  const pending = parseTaskScopeExtensionRequestState(task);
-  if (task.status !== "DONE" || pending?.status !== "pending" || pending.work_item_id !== null)
-    return null;
-  const root = command.resolvedProject.gitRoot,
-    common = await resolveCommandGitCommonDir(command);
-  const journalPath = await resolveSupervisorExecutionEpisodePath({
-    git_root: root,
-    common_git_dir: common,
-    task_id: task.id,
-  });
-  const journal = validateSupervisorExecutionEpisodeJournal(
-    JSON.parse(await readCompletedScopePrivateFile(common, journalPath)),
-  );
-  if (journal.task_id !== task.id) return fail("journal Task");
-  if (!source.retained && (journal.status !== "running" || journal.cursor.phase !== "ready"))
-    return fail("busy journal");
-  for (const op of journal.operations.toReversed()) {
-    if (
-      op.status !== "completed" ||
-      op.kind !== "agent_episode" ||
-      op.role !== "EXECUTOR" ||
-      !op.work_order_ref
-    )
-      continue;
-    if (source.operation_key && op.operation_key !== source.operation_key) continue;
-    if (source.work_order_ref && op.work_order_ref !== source.work_order_ref) continue;
-    const exchangePath = path.join(path.dirname(op.work_order_ref), "exchange.json");
-    await readCompletedScopePrivateFile(common, exchangePath);
-    await readCompletedScopePrivateFile(common, op.work_order_ref);
-    const exchange = await readExternalAgentExchange(exchangePath);
-    if (exchange?.transition_id !== pending.transition_id) continue;
-    if (
-      !exchange ||
-      !["consumed", "retired"].includes(exchange.status) ||
-      exchange.purpose !== "implementation_rework" ||
-      exchange.task_id !== task.id ||
-      exchange.checkout !== (source.checkout ?? root) ||
-      exchange.state_fingerprint !== pending.blocker_state_fingerprint ||
-      exchange.work_order_ref !== op.work_order_ref ||
-      op.precondition_fingerprint_digest !== exchange.state_fingerprint ||
-      !exchange.baseline.head ||
-      exchange.baseline.changed_paths.length > 0 ||
-      exchange.result?.result.status !== "blocked" ||
-      exchange.result_digest !== externalAgentResultDigest(exchange.result) ||
-      op.postcondition_fingerprint_digest !== exchange.postcondition_fingerprint ||
-      op.result_digest !==
-        digestSupervisorEpisodeValue({
-          work_order_id: exchange.work_order_id,
-          semantic_status: "blocked",
-          result_digest: exchange.result_digest,
-        })
-    )
-      return fail();
-    const order = await readExternalAgentWorkOrder(exchange.work_order_ref);
-    const envelope = validateExternalAgentResultEnvelope({
-      raw: exchange.result,
-      exchange,
-      work_order: order,
-    });
-    const request = envelope.result.blocker?.scope_extension_request;
-    if (
-      order.task.work_item_id ||
-      !request ||
-      externalAgentResultDigest(envelope) !== exchange.result_digest ||
-      op.effect_ref !==
-        `external-agent-issue:${externalAgentIssueDigest({ exchange, work_order: order })}`
-    )
-      return fail("issue receipt");
-    const expectedPending = createTaskScopeExtensionRequestState({
-      request,
-      transition_id: exchange.transition_id,
-      state_fingerprint: exchange.state_fingerprint,
-      work_item_id: null,
-    });
-    if (k.kernelDigest(expectedPending) !== k.kernelDigest(pending)) return fail("request binding");
-    const recommendation = envelope.result.blocker?.recommended_action?.trim();
-    const body =
-      `Blocked: external ${exchange.role} could not complete the scoped implementation. ${envelope.result.summary.trim()}` +
-      (recommendation ? ` Recommended action: ${recommendation}` : "") +
-      ` Requested scope: roots=${pending.request.scope_roots.join(",") || "unchanged"}; repository effects=${pending.request.repository_effects.join(",") || "unchanged"}; request digest=${pending.request_digest}. ${scopeExtensionReceiptForState(pending)}`;
-    const relative = `${command.config.paths.workflow_dir}/${task.id}/README.md`;
-    const baseline = await gitShowFile(root, exchange.baseline.head, relative);
-    if (
-      exchange.baseline.task_artifacts?.["README.md"]?.split(":").at(-1) !==
-      completedScopeBytesDigest(baseline).slice(7)
-    )
-      return fail("issued beforeimage");
-    if (
-      !canonicalBlockerReadmeProjection({
-        baseline,
-        current: source.raw,
-        body,
-        pending: expectedPending,
-      })
-    )
-      return fail("unrecorded blocker");
-    const head = source.head;
-    if (!(await gitProofIsAncestor(root, exchange.baseline.head, head)))
-      return fail("source ancestry");
-    const history = await execFileAsync(
-      "git",
-      [
-        "log",
-        "--format=",
-        "--name-only",
-        "--no-renames",
-        "--full-history",
-        "--diff-merges=separate",
-        `${exchange.baseline.head}..${head}`,
-      ],
-      { cwd: root, env: gitProofEnv(), maxBuffer: 16 * 1024 * 1024 },
-    );
-    if (
-      history.stdout
-        .split("\n")
-        .filter(Boolean)
-        .some((file) => file !== relative)
-    )
-      return fail("changed source history");
-    if (!source.retained) {
-      const status = await readDirectRepositoryStatus(root);
-      if (!status || status.lines.length > 0) return fail("dirty checkout");
-    }
-    return { pending, operation_key: op.operation_key, work_order_ref: op.work_order_ref, journal };
-  }
-  return fail("consumed operation missing");
+async function readerContext(command: CommandContext) {
+  return {
+    git_root: command.resolvedProject.gitRoot,
+    common_git_dir: await resolveCommandGitCommonDir(command),
+    workflow_dir: command.config.paths.workflow_dir,
+  };
 }
-
-export async function authenticateCompletedScopeSource(
+async function authenticateCompletedScopeSource(
   command: CommandContext,
   task: TaskData,
   source: CompletedScopeSource,
 ) {
-  return await authenticateCompletedScopeTask({
-    task,
-    source,
-    authenticate_blocker: async (before, admission) => {
-      const pin = admission.identity;
-      if (
-        (await gitShowFile(
-          command.resolvedProject.gitRoot,
-          pin.before_commit,
-          pin.readme_relative,
-        )) !== admission.before_readme
-      )
-        fail("Git beforeimage");
-      const native = await completedRepairScopeRequest(command, before, {
-        raw: admission.before_readme,
-        head: pin.head_sha,
-        checkout: pin.checkout,
-        retained: true,
-        operation_key: pin.blocker_operation_key,
-        work_order_ref: pin.blocker_work_order_ref,
-      });
-      if (!native) fail("retained blocker");
-    },
-  });
+  return await authenticateScopeSource(await readerContext(command), task, source);
 }
 /** Controller entry before cold reads: exact own intent recovery and typed legacy recovery only. */
 export async function tryCompletedScopeAdmission(opts: {
@@ -256,23 +90,30 @@ export async function tryCompletedScopeAdmission(opts: {
   legacy_afterimage: (command: CommandContext, beforeRaw: string, partialRaw: string) => string;
   commit: (command: CommandContext) => Promise<void>;
 }): Promise<boolean> {
-  if (!(opts.ctx.taskBackend instanceof LocalBackend)) {
+  if (opts.ctx.backendId !== "local") {
     if (opts.reconcileRequest) fail("native local owner required");
     return false;
   }
-  const branch = await resolveTaskBranchFromContext({ ctx: opts.ctx, taskId: opts.taskId });
+  // The Node command and context catalogs can contain distinct constructor identities.
+  // Reload through this module's native loader before testing identity or minting a permit.
+  const nativeContext = await loadCommandContext({
+    cwd: opts.ctx.resolvedProject.gitRoot,
+    rootOverride: null,
+  });
+  if (!(nativeContext.taskBackend instanceof LocalBackend)) fail("native local owner required");
+  const branch = await resolveTaskBranchFromContext({ ctx: nativeContext, taskId: opts.taskId });
   const owner = branch
     ? await resolveAuthoritativeTaskWorktree({
-        ctx: opts.ctx,
+        ctx: nativeContext,
         taskId: opts.taskId,
         branch,
         requireRegistration: true,
       })
     : null;
   const command =
-    owner && path.resolve(owner.path) !== path.resolve(opts.ctx.resolvedProject.gitRoot)
+    owner && path.resolve(owner.path) !== path.resolve(nativeContext.resolvedProject.gitRoot)
       ? await loadCommandContext({ cwd: owner.path, rootOverride: null })
-      : opts.ctx;
+      : nativeContext;
   if (
     command.taskBackend instanceof LocalBackend &&
     command.taskBackend.root !==
@@ -364,7 +205,7 @@ export async function tryCompletedScopeAdmission(opts: {
         const original = readKernelRecord(before, source.repository_identity as k.Sha256Digest);
         if (original.kind !== "canonical" || original.record.aggregate.state !== "COMPLETED")
           fail("original Kernel");
-        const native = await completedRepairScopeRequest(command, before, {
+        const native = await completedRepairScopeRequest(await readerContext(command), before, {
           raw: beforeRaw,
           head,
           checkout: source.git_root,

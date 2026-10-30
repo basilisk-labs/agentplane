@@ -1,8 +1,5 @@
 import { scopeIntakeDigest } from "./kernel-scope-intake.js";
-import {
-  COMPLETED_SCOPE_ADMISSIONS,
-  hasCompletedScopePermit,
-} from "./completed-scope-admission.js";
+import { COMPLETED_SCOPE_ADMISSIONS, hasCompletedScopePermit } from "./completed-scope-permit.js";
 import { isoTimestampSchema } from "@agentplaneorg/core/schemas";
 import { kernelAuthorityRecordSchema } from "./kernel-authority-schema.js";
 import { kernelRecordIssues } from "./kernel-record-invariants.js";

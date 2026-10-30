@@ -352,8 +352,20 @@ function coldProcess(root: string, id: string) {
 describe("completed native repair prospective scope admission", { timeout: 120_000 }, () => {
   it("authenticates the consumed blocker, admits exact scope, and preserves terminal history", async () => {
     const { f, packet, payload, command, before, args } = await completedScopeFixture(true, true);
-    const admitted = await invoke(f.root, args);
-    expect(admitted.code, admitted.stdout + admitted.stderr).toBe(0);
+    const cli = fileURLToPath(new URL("../../../bin/agentplane.js", import.meta.url));
+    execFileSync("node", [cli, ...args, "--root", f.root], {
+      cwd: f.root,
+      encoding: "utf8",
+      timeout: 30_000,
+      maxBuffer: 4 * 1024 * 1024,
+      env: {
+        ...process.env,
+        AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK: "1",
+        AGENTPLANE_DEV_AUTO_BOOTSTRAP: "0",
+        AGENTPLANE_NO_UPDATE_CHECK: "1",
+        AGENTPLANE_HOOK_RUNNER: cli,
+      },
+    });
     const observation6 = await command.taskBackend.getTask(f.id);
     const after = observation6!;
     expect(after.status).toBe("DONE");
@@ -532,6 +544,35 @@ describe("completed native repair prospective scope admission", { timeout: 120_0
       requireWorktree: false,
     });
     expect(readKernelRecord(historicalTask, identity).kind).toBe("canonical");
+    const current = (await command.taskBackend.getTask(f.id))!;
+    const common = await taskBackend.resolveCommandGitCommonDir(command);
+    const proofId = proof.completedScopeAdmissionIds(current).at(-1)!;
+    const retained = await proof.readCompletedScopeAdmission(common, f.id, proofId);
+    current.execution_contract!.observed.verification_results = [
+      { id: "fixture-native-check", result: "pass" },
+      { id: "recorded-check-1", result: "pass" },
+      { id: "verification-record", result: "pass" },
+    ];
+    await command.taskBackend.writeTask(current);
+    const coldContext = await taskBackend.loadCommandContext({ cwd: f.root, rootOverride: null });
+    const refreshed = (await coldContext.taskBackend.getTask(f.id))!;
+    expect(readKernelRecord(refreshed, identity).kind).toBe("canonical");
+    expect(refreshed.extensions?.task_kernel).toEqual(before.extensions?.task_kernel);
+    const retainedAfterRefresh = await proof.readCompletedScopeAdmission(common, f.id, proofId);
+    expect(retainedAfterRefresh.after).toEqual(retained.after);
+    const readme = path.join(f.root, command.config.paths.workflow_dir, f.id, "README.md");
+    const validSource = await readFile(readme, "utf8");
+    refreshed.execution_contract!.observed.verification_results =
+      refreshed.execution_contract!.observed.verification_results.filter(
+        (result) => result.id !== "fixture-native-check",
+      );
+    await command.taskBackend.writeTask(refreshed);
+    await expect(coldContext.taskBackend.getTask(f.id)).rejects.toThrow(
+      /historical verification result/u,
+    );
+    await writeFile(readme, validSource);
+    const restored = (await coldContext.taskBackend.getTask(f.id))!;
+    expect(readKernelRecord(restored, identity).kind).toBe("canonical");
   });
 });
 
