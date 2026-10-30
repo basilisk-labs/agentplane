@@ -87,7 +87,7 @@ async function resolveEvaluatorTarget(
     workflowDir: command.config.paths.workflow_dir,
     taskId,
     previousEvaluatedSha,
-    workflowMode: "branch_pr",
+    workflowMode: command.config.workflow_mode,
   });
 }
 
@@ -180,15 +180,7 @@ async function evaluatorTargetRemainsCurrent(
   taskId: string,
   evaluatorTarget: string,
 ): Promise<boolean> {
-  return (
-    (await resolveQualityReviewTargetSha({
-      gitRoot: command.resolvedProject.gitRoot,
-      workflowDir: command.config.paths.workflow_dir,
-      taskId,
-      previousEvaluatedSha: evaluatorTarget,
-      workflowMode: "branch_pr",
-    })) === evaluatorTarget
-  );
+  return (await resolveEvaluatorTarget(command, taskId, evaluatorTarget)) === evaluatorTarget;
 }
 
 /** Native final checks never infer success from an agent result or an earlier WorkItem. */

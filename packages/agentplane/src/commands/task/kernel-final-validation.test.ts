@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { kernelPlanProposalSchema, taskKernel as k } from "@agentplaneorg/core/tasks";
 import type * as VerificationModule from "./direct-task-verification.js";
+import type * as ReviewTargetModule from "../shared/quality-review-target.js";
 
 const mocks = vi.hoisted(() => ({
   resolve: vi.fn(),
@@ -11,7 +12,7 @@ const mocks = vi.hoisted(() => ({
   project: vi.fn<(opts: { details?: string; verificationSnapshot?: unknown }) => Promise<number>>(),
   write: vi.fn(),
   repositoryEvidence: vi.fn(),
-  target: vi.fn(),
+  target: vi.fn<typeof ReviewTargetModule.resolveQualityReviewTargetSha>(),
   status: vi.fn(),
   recover: vi.fn(),
   adoptedRoute: vi.fn(),
@@ -121,12 +122,12 @@ describe("canonical final-validation command ownership", () => {
   });
 });
 
-function fixture() {
+function fixture(workflowMode: "direct" | "branch_pr" = "branch_pr") {
   const contractDigest: string = k.kernelDigest("work-item-contract");
   const task = {
     id: "T-1",
     verify: ["legacy command"],
-    execution_route: { repository_mode: "branch_pr" },
+    execution_route: { repository_mode: workflowMode },
     execution_contract: { verification: { contract: { selected_checks: ["task_outcome"] } } },
   };
   const resolvedTask = {
@@ -195,7 +196,7 @@ function fixture() {
   const command = {
     resolvedProject: { gitRoot: "/repo" },
     taskBackend: { getTask: vi.fn(() => Promise.resolve(task)) },
-    config: { paths: { workflow_dir: ".agentplane/tasks" } },
+    config: { workflow_mode: workflowMode, paths: { workflow_dir: ".agentplane/tasks" } },
   };
   const apply = vi.fn(() => Promise.resolve({ kind: "committed", record }));
   const runtime = {
@@ -254,6 +255,59 @@ describe("canonical final Verification Contract projection", () => {
     mocks.adoptedRoute.mockRejectedValueOnce(new Error("Canonical adopted PR metadata is missing"));
     await expect(f.run()).rejects.toThrow("Canonical adopted PR metadata is missing");
     expect(mocks.checks).not.toHaveBeenCalled();
+  });
+
+  it.each(["direct", "branch_pr"] as const)(
+    "uses the %s repository rules for initial, post-check and restored targets",
+    async (mode) => {
+      const f = fixture(mode);
+      mocks.target.mockImplementation(({ workflowMode }) =>
+        Promise.resolve(workflowMode === mode ? evaluatorTarget : null),
+      );
+      await f.run();
+      expect(mocks.checks).toHaveBeenCalledOnce();
+      expect(f.apply).toHaveBeenCalledOnce();
+      expect(mocks.target.mock.calls.length).toBeGreaterThanOrEqual(2);
+      const validation = f.runtime.input.mock.calls[0]![0].validation;
+      await expect(
+        restoreKernelFinalValidation(
+          f.command as never,
+          {
+            ...f.record,
+            aggregate: { ...f.record.aggregate, final_validation: validation },
+          } as never,
+          storedIdentity,
+        ),
+      ).resolves.toMatchObject({ evidence_digest: validation.evidence_digests[0] });
+      for (const [call] of mocks.target.mock.calls) expect(call.workflowMode).toBe(mode);
+    },
+  );
+
+  it("refuses an unavailable direct-mode commit before running checks", async () => {
+    const f = fixture("direct");
+    mocks.target.mockResolvedValue(null);
+    await expect(f.run()).rejects.toThrow("commit identity is unavailable");
+    expect(mocks.checks).not.toHaveBeenCalled();
+    expect(f.apply).not.toHaveBeenCalled();
+  });
+
+  it.each(["direct", "branch_pr"] as const)(
+    "refuses a changed %s target after checks without persisting success",
+    async (mode) => {
+      const f = fixture(mode);
+      mocks.target.mockResolvedValueOnce(evaluatorTarget).mockResolvedValue("c".repeat(40));
+      await expect(f.run()).rejects.toThrow("inputs changed during checks");
+      expect(mocks.checks).toHaveBeenCalledOnce();
+      expect(f.apply).not.toHaveBeenCalled();
+      expect(mocks.project).not.toHaveBeenCalled();
+    },
+  );
+
+  it("refuses changed direct-mode repository content after checks", async () => {
+    const f = fixture("direct");
+    f.runtime.observe.mockResolvedValue({ fingerprint: changedFingerprint });
+    await expect(f.run()).rejects.toThrow("inputs changed during checks");
+    expect(f.apply).not.toHaveBeenCalled();
   });
 
   it("persists FAILED evidence and requires a USER corrective Plan for an old completed code item with no commands", async () => {

@@ -34,13 +34,14 @@ async function resolveTarget(opts: {
   taskId: string;
   previousEvaluatedSha?: string | null;
   baseRef?: string | null;
+  workflowMode?: "direct" | "branch_pr";
 }): Promise<string | null> {
   return resolveQualityReviewTargetSha({
     gitRoot: opts.root,
     workflowDir: ".agentplane/tasks",
     taskId: opts.taskId,
     previousEvaluatedSha: opts.previousEvaluatedSha,
-    workflowMode: "branch_pr",
+    workflowMode: opts.workflowMode ?? "branch_pr",
     baseRef: opts.baseRef,
   });
 }
@@ -920,26 +921,30 @@ describe("quality review target resolver", () => {
     await expect(resolveTarget({ root, taskId })).resolves.toBeNull();
   });
 
-  it("returns no singular target when unrelated task metadata follows the review", async () => {
-    const root = await mkGitRepoRoot();
-    const taskId = "202607240736-PRIMARY";
-    const reviewedSha = await commitPath(
-      root,
-      `.agentplane/tasks/${taskId}/manual-note.md`,
-      "reviewed primary metadata\n",
-      "docs: review primary metadata",
-    );
-    await commitPath(
-      root,
-      ".agentplane/tasks/202607240736-OTHER/manual-note.md",
-      "unrelated task metadata\n",
-      "docs: update unrelated task",
-    );
+  it.each(["direct", "branch_pr"] as const)(
+    "resolves %s history after another task closes",
+    async (workflowMode) => {
+      const root = await mkGitRepoRoot();
+      const taskId = "202607240736-PRIMARY";
+      const reviewedSha = await commitPath(
+        root,
+        `.agentplane/tasks/${taskId}/manual-note.md`,
+        "reviewed primary metadata\n",
+        "docs: review primary metadata",
+      );
+      const nextSha = await commitPath(root, "src/ci.ts", "export {};\n", "test: full check");
+      await commitPath(
+        root,
+        ".agentplane/tasks/202607240736-OTHER/manual-note.md",
+        "unrelated task metadata\n",
+        "docs: update unrelated task",
+      );
 
-    await expect(
-      resolveTarget({ root, taskId, previousEvaluatedSha: reviewedSha }),
-    ).resolves.toBeNull();
-  });
+      await expect(
+        resolveTarget({ root, taskId, previousEvaluatedSha: reviewedSha, workflowMode }),
+      ).resolves.toBe(workflowMode === "direct" ? nextSha : null);
+    },
+  );
 
   it("treats included-task metadata as a new batch review target", async () => {
     const root = await mkGitRepoRoot();
