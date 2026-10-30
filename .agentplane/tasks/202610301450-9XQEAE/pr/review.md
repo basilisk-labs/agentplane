@@ -6,7 +6,7 @@ Created: 2026-10-30T15:12:16.212Z
 
 - Task: `202610301450-9XQEAE`
 - Title: Authenticate native worktree-preparation lineage for retained scope replanning
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610301450-9XQEAE/authenticate-native-worktree-preparation-lineage`
 - Canonical task record: `.agentplane/tasks/202610301450-9XQEAE/README.md`
 
