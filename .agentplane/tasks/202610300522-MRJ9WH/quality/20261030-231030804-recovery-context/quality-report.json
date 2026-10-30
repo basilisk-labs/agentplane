@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202610300522-MRJ9WH",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-10-30T23:12:48.047Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 7 typed finding(s).",
+  "evaluated_sha": "7753cd91a03bf28ec9653e31a4a0f54ca30c8b72",
+  "review_identity_digest": "sha256:bcb512eac0e26d7969f4e0dfb192b508e13c721d0c5c2665a98d5d4c225998d6",
+  "findings": [
+    "Proof minting remains tied to the genuine consumed BLOCKED exchange, exact immutable Git beforeimage, current operator request, unchanged completed Kernel and frozen execution base. Prepared validation alone does not mint authority. Object-bound permit transfer verifies the same authority binding, and copied or forged records remain untrusted.",
+    "The scope transition still preserves every before/after verification result. Only subsequent cold history comparison recognizes the same generated IDs that the native verification writer replaces. Durable non-projection observations and the required-evidence/check floor remain guarded, while immutable proof afterimages and original durable verification records retain history. The regression rejects durable-result removal.",
+    "Raw source authentication no longer imports mutative controllers, and native Node owner loading retains constructor and source-root validation after reloading its own context. The built Node scope test and a fresh Node read of the real final Task both succeed.",
+    "The exact CLI candidate includes only the reviewed reconcile-request option and Task provenance. Unknown-drift rejection remains enabled. The original failed verification operation is byte-equivalent to its retained beforeimage, while the new native checks have distinct successful evidence.",
+    "Residual risk: Hosted required checks and canonical merge remain mandatory before the public reconcile is used on the original VPB partial Task.",
+    "Residual risk: The local ci:contract aggregate has pre-existing sparse-fixture and textual lifecycle-check limitations. This review relies on the approved native full and focused checks; hosted gates must independently qualify the final publication.",
+    "Residual risk: This Task has not changed Factory or deployed runtime, and provides no live SB model/MCP acceptance claim."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202610300522-MRJ9WH/quality/objects/sha256/0f49897b1e4a5c0cda3b96f07a383c14b587ae070c274efe987aa5e99d5f85d8.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
