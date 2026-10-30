@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 51
+revision: 52
 origin:
   system: "manual"
 depends_on: []
@@ -31,23 +31,36 @@ verification:
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-10-30T20:05:38.690Z"
+  updated_at: "2026-10-30T22:39:11.348Z"
   updated_by: "EVALUATOR"
-  note: "Canonical EVALUATOR review passed."
-  evaluated_sha: "e3dad53d9e8f3e6f83e3605ce1b28579e27fbb77"
-  review_identity_digest: "sha256:d49b54c201923ed62573d44c9c34f45d0fe784a981bb39e6b230c37e09790b1e"
+  note: "EVALUATOR returned rework with 5 typed finding(s)."
+  evaluated_sha: "349fcd6fba25d628bd73d2355d7ea9334c969000"
+  review_identity_digest: "sha256:bc37e0828ef2a8ba3a45cc8aff83e5e35b41b634de058968432a5a3f067608e7"
   evidence_refs:
-    - "../../../.git/agentplane/kernel/exchanges/202610300522-MRJ9WH/b239bb548d4f78f48cc627c48b8401364f7e47900636260bade58a8e5f79dbd9/quality-report.json"
+    - ".agentplane/tasks/202610300522-MRJ9WH/quality/20261030-223755260-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202610300522-MRJ9WH/quality/20261030-223755260-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202610300522-MRJ9WH/quality/objects/sha256/6a9c313c4b6599b041a4ff0ce3470a3a7e2e7beb2506f013595f432bfc9f4d01.md"
+    - ".agentplane/tasks/202610300522-MRJ9WH/quality/20261030-223755260-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202610300522-MRJ9WH/quality/20261030-223755260-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202610300522-MRJ9WH/quality/20261030-223755260-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202610300522-MRJ9WH/quality/20261030-223755260-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202610300522-MRJ9WH/README.md"
+    - ".agentplane/tasks/202610300522-MRJ9WH/quality/objects/sha256/2205875568eb14227149d785a2df7c978fb4fd89b25b89241a5acf9e4114763f.patch"
+    - ".agentplane/tasks/202610300522-MRJ9WH/quality/objects/sha256/08f1dde47ab362ed22ae4bdb6a8f3597102b0ed337cf4141c45b44a29a94cb79.json"
+    - ".agentplane/tasks/202610300522-MRJ9WH/verification/20261030220758731-dc842142a153c4df.json"
+    - ".agentplane/tasks/202610300522-MRJ9WH/quality/objects/sha256/560a216f65631b3eca36976e38864eab8dcd5060b2b0ecd625d3d6831891b505.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Inspected the native implementation target e3dad53d9e8f3e6f83e3605ce1b28579e27fbb77 and tree 5959c7814c22469d5675c2d3dd7326f5b6b9e29d. All nineteen source-file digests match the implementation report; current changes outside native Task metadata are absent."
-    - "The writer and cold readers share exact before/after and immutable authority checks. Prepared validation is pure, publication uses the existing single-writer fence and one durable native effect, independent readback precedes completion, and only a completed protected receipt authorizes cold intake."
-    - "The permit is object-bound and pins Kernel, frozen base, route, intake and proof chain. Serialized or implicit copies remain unproven. The owning side-effect hydration and raw verification metadata calls transfer it only after checking their unchanged bound authority."
-    - "The legacy route validates the strict private byte-bound request, genuine consumed blocker, immutable Git beforeimage and full exact known partial projection. Original before/partial bytes and the failed main journal remain retained; replay resumes the same intent/effect or performs a completed readback without a second approval."
-    - "Meaningful regression coverage includes genuine historical prospective scope with explicit grants, two independent completed admissions, actual native verification and resumed EXECUTOR routing, fresh OS-process owner/base/compact-history/Git-ref reads, incomplete intent, forged or missing proof, source/base drift, symlink storage and competing-writer refusal. Core/backend tests cover absent, empty, nonempty and malformed optional grants."
-    - "Resolved and digest-checked all required WorkOrder blocks and inputs. Inspected AgentPlane-owned validation: all five approved commands have exit 0 and retained observation manifests bound to the native implementation. Recursively verified 25 manifests and 75 log-file digests. Four failed descendant subprocesses are the explicit exit-2/exit-3 negative fixtures in verification-contract.test.ts; their enclosing Core suite passed."
-    - "The operator command spec documents the exact recovery schema, byte digest and example. Standard generation and native docs:cli:check pass; the existing generated user-reference filter intentionally excludes operator-only commands. No unrelated docs-engine or verification-policy change was introduced."
+    - "The cold completed-scope reader requires every historical verification result to survive unchanged. The native verification writer intentionally replaces verification-record and recorded-check-N projections while retaining durable records. A legitimate subsequent verification therefore writes Task metadata and then becomes unreadable. Preserve immutable proof history and all durable observations, but use the same explicit projection classification at the native writer and cold reader."
+    - "The public Node command receives a native context from another built catalog. Its LocalBackend constructor identity differs from the controller catalog, so the leading instanceof check rejects a genuine local owner. Reload through the controller native loader and retain native owner and source-root checks. Add a built Node CLI regression."
+    - "The authentication controller is imported by cold branch readers and imports high-level backend, scope-request, and finalization controllers. This creates dependency cycles across the Task backend boundary. Move pure request/projection/source-authentication responsibilities to existing lower layers while keeping permits object-bound and proof minting authenticated."
+    - "The added public reconcile-request option is absent from the exact reviewed CLI compatibility candidate and its provenance. Admit only this precise option delta and keep all unknown-drift rejection checks."
+    - "Residual risk: The real VPB partial Task must remain untouched until this MRJ correction passes canonical native verification, evaluation, hosted checks, and merge."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -2288,7 +2301,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-10-30T22:08:06.482Z"
+doc_updated_at: "2026-10-30T22:39:11.367Z"
 doc_updated_by: "USER"
 description: "Direct HUMAN authorization verified in existing SB chat 01a17c58-b597-78a1-abed-517855b3f393 userMessage01a18b16-dbae-7380-9db4-c0081c8fdd00: narrow AgentPlane intake-projection fix including kernel-record.ts, separate Task ID, checks and PR/merge, continue coordinator to live SB acceptance preserving data credentials runtime guards. Implement exactly the seven-root audited prospective proposal vpb-completed-intake-native-reconcile-proposal.json. Root cause: original completed VPBGBK native scope extend47946 preserved Kernel but wrote Taskrev51 helper-root intake then failed reconcile: scope_request_intake_projection; before intake477810a9 equals old prospective lineage, after6bee824f differs and fresh resolver dropped native caps/resources. Preserve original partial README0665dece and canonical beforeimagee090edc6, all immutable Kernel/Plan/base/old results and failedoperation; no manual metadata rewrite/reset/replacement original Task. Correct future writer/reader together: preserve authority fields and exact approved delta, append-only native intake-transition proof bound to immutable Kernel/predecessor/nativeconsumedblocker/USER/currentstate, full candidate validation before write; no blanket COMPLETED skip. Add explicit controller-owned state-bound once-only public reconcile for exact retained partialafterimage, durable intent/afterimage/result+replay/refusal, no retrospective47946PASS. Qualify real completed Kernel with historical prospective intake marker/caps/resources, strict public getTask/list/show/resume, second repair request chain, forged receipt/drift/stalestate refusal and interruption/replay. Seven roots only; fresh native Planner must finalize public interface and verification contract before implementation. Require current native full/EVAL/currenthosted canonical PR/merge before applying public recovery to originalVPB. No Factory/host effects or credential/global changes. All original worktrees/untracked/privateTMP/holdings retained; no cleanup."
 sections:
@@ -2960,6 +2973,14 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.completed_native_review:
+    applied_at: "2026-10-30T22:39:11.348Z"
+    kernel_digest: "sha256:874e79be70b9a15bb02d575def0ae079f2ebae1dd75cf0ec89bc940ab145be46"
+    quality_digest: "sha256:f0eacc32139514ff9de37b5f9a3bced4cd640b6626021a2cee950782644757e7"
+    result_digest: "sha256:528a11b670c10d59c303b931cf2e90585368c98b8d609989ef18641f07218a05"
+    schema_version: 1
+    state_fingerprint: "sha256:9bc8d685e1b9ec7772aa576746eb9c06a028c8572f78d6a3bb34f3895ae414f6"
+    transition_id: "tr_c464cd67e7bac993bab2331457d4e302"
   agentplane.completed_scope_admissions:
     - "sha256:2d3c5532f12dd98e35977c03a408e6f20139af4762bcdcca879b994ec701ea4c"
   agentplane.kernel_operational_projection:
