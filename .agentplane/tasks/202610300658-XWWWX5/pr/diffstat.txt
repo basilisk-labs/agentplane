@@ -1,0 +1,4 @@
+ .../src/commands/task/kernel-bookkeeping.test.ts   | 67 ++++++++++++++++++++++
+ packages/core/src/tasks/task-readme.test.ts        | 39 +++++++++++++
+ packages/core/src/tasks/task-readme.ts             | 23 +++++---
+ 3 files changed, 122 insertions(+), 7 deletions(-)

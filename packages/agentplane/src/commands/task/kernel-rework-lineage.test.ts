@@ -3,10 +3,9 @@ import {
   type KernelWorkBinding,
 } from "../../runner/usecases/kernel-task-lifecycle.js";
 import type { KernelCommandInput } from "../../adapters/task-backend/kernel-backend-adapter.js";
-import { mkdtemp, mkdir, writeFile, readFile, rm } from "node:fs/promises";
+import { readFile, writeFile, rm } from "node:fs/promises";
 import path from "node:path";
-import os from "node:os";
-import { afterEach, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
 import {
   aggregate,
@@ -16,58 +15,18 @@ import {
   transitionCommand,
   amendmentCommand,
 } from "../../../../core/src/tasks/task-kernel/kernel.test-fixtures.js";
-import {
-  buildKernelAgentWorkOrder,
-  buildKernelStateFingerprint,
-  resumeKernelWorkOrder,
-} from "./kernel-work-order.js";
-import { makeKernelRecord, type KernelRecord } from "../../adapters/task-backend/kernel-record.js";
+import { buildKernelStateFingerprint } from "./kernel-work-order.js";
+import { makeKernelRecord } from "../../adapters/task-backend/kernel-record.js";
 import { authenticatedAmendmentHistory } from "./kernel-rework-proof.js";
 import { retainedIssuanceAuthority } from "./kernel-rework-lineage.js";
 import { withKernelReworkEvidence } from "./kernel-exchange.js";
-function nativeCommand() {
-  return {
-    backendId: "local",
-    resolvedProject: { gitRoot: process.cwd() },
-    config: { paths: { workflow_dir: ".agentplane/tasks", tasks_path: ".agentplane/tasks.json" } },
-  } as never;
-}
-const roots: string[] = [];
-afterEach(async () => {
-  for (const root of roots.splice(0)) await rm(root, { recursive: true, force: true });
-});
-async function createDirectory(prefix: string) {
-  const dir = await mkdtemp(path.join(os.tmpdir(), prefix));
-  roots.push(dir);
-  return dir;
-}
-async function write(dir: string, name: string, value: unknown) {
-  await mkdir(dir, { recursive: true });
-  await writeFile(path.join(dir, name), JSON.stringify(value));
-}
-async function nativeOrder(
-  record: KernelRecord,
-  authority: k.ExecutionAuthority,
-  workItem = "kernel",
-) {
-  const implementation = resumeKernelWorkOrder({
-    record,
-    work_item_id: workItem,
-    authority,
-    repository_fingerprint: authority.repository_fingerprint,
-  });
-  if (!implementation) throw new Error("Expected native implementation WorkOrder");
-  return buildKernelAgentWorkOrder({
-    command: nativeCommand(),
-    record,
-    implementation,
-    context: {
-      repository_identity: record.repository_identity,
-      repository_fingerprint: authority.repository_fingerprint,
-      ceiling: authority,
-    } as never,
-  });
-}
+import {
+  createDirectory,
+  fixtureDefinitions,
+  nativeCommand,
+  nativeOrder,
+  write,
+} from "./kernel-rework-lineage.testkit.js";
 
 async function fixture(
   directory: string,
@@ -75,26 +34,10 @@ async function fixture(
   postBlockObservation = false,
   freshSeed = false,
   mixedScope = false,
+  preparedWorktree = false,
 ) {
   const oldClaim = k.kernelDigest("old-claim");
-  const contract = {
-    role: "EXECUTOR" as const,
-    objective: "Build source",
-    acceptance_criteria: ["Source is correct"],
-    verification_commands: [],
-  };
-  const nextContract = { ...contract, objective: "Build source with bounded network reads" };
-  const previous = {
-    ...runtime("EXECUTING").definition,
-    contract_digest: k.kernelDigest(contract),
-    execution_requirements: {
-      scope_roots: ["src"],
-      repository_effects: ["source_code"],
-      external_effects: [],
-      capabilities: ["repository_write"],
-      resources: [],
-    },
-  } satisfies k.WorkItemDefinition;
+  const { contract, nextContract, previous, documents } = fixtureDefinitions();
   let prerequisite = {
     ...previous,
     id: "prerequisite",
@@ -126,13 +69,6 @@ async function fixture(
     provenance: { ...rootAuthority.provenance, actor_id: "USER" },
   };
   root.digest = k.authorityDigest(root);
-  const documents = {
-    intent: { objective: "Build source", context: "Bounded exchange recovery." },
-    contracts: Object.fromEntries([
-      [k.kernelDigest(contract), contract],
-      [k.kernelDigest(nextContract), nextContract],
-    ]),
-  };
   let state = aggregate({
     intent_digest: k.kernelDigest(documents.intent),
     revision: 146,
@@ -651,6 +587,17 @@ async function fixture(
   let retainedOrder = oldOrder;
   let retainedStop = stop;
   if (mixedScope) {
+    if (preparedWorktree)
+      continueAuthority(
+        "worktree-preparation",
+        {
+          kind: "worktree_preparation",
+          previous_fingerprint: root.repository_fingerprint,
+          changed_paths: [],
+          evidence_digest: k.kernelDigest("native worktree preparation receipt"),
+        },
+        { repository_fingerprint: k.kernelDigest("prepared worktree") },
+      );
     retainedOrder = await nativeOrder(snapshot(), root);
     const blockedResult = {
       schema_version: 2,
@@ -768,6 +715,61 @@ async function fixture(
 }
 
 describe("authenticated multi-Plan prerequisite lineage", () => {
+  it.each([
+    "valid",
+    "missing-event",
+    "tampered-event",
+    "missing-receipt",
+    "tampered-receipt",
+    "ambiguous-event",
+    "wrong-fingerprint",
+    "changed-paths",
+  ])(
+    "authenticates retained scope issuance after native worktree preparation: %s",
+    async (kind) => {
+      const directory = await createDirectory("kernel-prepared-scope-");
+      const { record, order, oldOrder, target } = await fixture(
+        directory,
+        true,
+        false,
+        false,
+        true,
+        true,
+      );
+      const event = record.events.find((entry) => entry.mutation_id === "worktree-preparation")!;
+      const continuation = record.aggregate.authority_lineage.find(
+        (entry) => entry.observation?.kind === "worktree_preparation",
+      )!;
+      expect(event.task_revision).toBeLessThanOrEqual(oldOrder.task.revision!);
+      if (kind === "missing-event") record.events.splice(record.events.indexOf(event), 1);
+      if (kind === "tampered-event") event.payload_digest = k.kernelDigest("tampered");
+      if (kind === "missing-receipt") delete record.aggregate.mutation_receipts[event.mutation_id];
+      if (kind === "tampered-receipt")
+        record.aggregate.mutation_receipts[event.mutation_id]!.event_digests = [];
+      if (kind === "ambiguous-event") record.events.push(structuredClone(event));
+      if (kind === "wrong-fingerprint")
+        oldOrder.canonical_binding!.repository_fingerprint = k.kernelDigest("unissued worktree");
+      if (kind === "changed-paths")
+        continuation.observation!.changed_paths = ["outside/unauthorized.ts"];
+      expect(retainedIssuanceAuthority(record, oldOrder)).toBe(kind === "valid");
+      await write(
+        path.join(directory, oldOrder.work_order_id.slice(7)),
+        "work-order.json",
+        oldOrder,
+      );
+      const operation = withKernelReworkEvidence(order, target, record);
+      if (kind === "valid") {
+        const enriched = await operation;
+        expect(enriched.required_inputs).toContainEqual(
+          expect.objectContaining({ id: `scope-stop:${oldOrder.work_order_id}` }),
+        );
+        expect(enriched.required_inputs).toContainEqual(
+          expect.objectContaining({ id: "approved-scope-replan" }),
+        );
+      } else await expect(operation).rejects.toThrow();
+    },
+  );
+
   it.each([
     "valid",
     "approval-event",

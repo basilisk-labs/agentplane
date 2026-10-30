@@ -1,0 +1,1 @@
+"$ vitest --config vitest.workspace.ts run --project core --run packages/core/src/tasks/task-readme.test.ts"
