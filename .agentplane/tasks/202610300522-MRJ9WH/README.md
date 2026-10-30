@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 49
+revision: 50
 origin:
   system: "manual"
 depends_on: []
@@ -102,16 +102,22 @@ execution_contract:
     writable_roots:
       - "docs/user/cli-reference.generated.mdx"
       - "packages/agentplane/src/adapters/task-backend/completed-scope-admission.ts"
+      - "packages/agentplane/src/adapters/task-backend/completed-scope-permit.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-record.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-scope-intake.ts"
       - "packages/agentplane/src/backends/task-backend/shared/record.ts"
+      - "packages/agentplane/src/commands/shared/canonical-blocker-readme-projection.ts"
+      - "packages/agentplane/src/commands/shared/completed-repair-scope-source.ts"
       - "packages/agentplane/src/commands/shared/side-effect-authority-store.ts"
       - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
       - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts"
       - "packages/agentplane/src/commands/shared/task-backend.test.ts"
       - "packages/agentplane/src/commands/shared/task-backend.ts"
+      - "packages/agentplane/src/commands/shared/task-scope-extension-request-state.ts"
+      - "packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
       - "packages/agentplane/src/commands/task/completed-repair-scope-request.ts"
+      - "packages/agentplane/src/commands/task/kernel-completed-external-blocker.ts"
       - "packages/agentplane/src/commands/task/kernel-completed-external-rework.testkit.ts"
       - "packages/agentplane/src/commands/task/scope-extend.command.test.ts"
       - "packages/agentplane/src/commands/task/scope-extend.command.ts"
@@ -119,6 +125,9 @@ execution_contract:
       - "packages/agentplane/src/commands/task/verify-record-execute.ts"
       - "packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts"
       - "packages/core/src/tasks/task-artifact-schema.task.ts"
+      - "scripts/baselines/v0.7-compatibility-candidate.json"
+      - "scripts/checks/check-compatibility-contract-baseline.mjs"
+      - "scripts/checks/check-compatibility-contract-baseline.test.mjs"
   declaration:
     external_effects:
       - "network_read"
@@ -140,16 +149,22 @@ execution_contract:
     scope_roots:
       - "docs/user/cli-reference.generated.mdx"
       - "packages/agentplane/src/adapters/task-backend/completed-scope-admission.ts"
+      - "packages/agentplane/src/adapters/task-backend/completed-scope-permit.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-record.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts"
       - "packages/agentplane/src/adapters/task-backend/kernel-scope-intake.ts"
       - "packages/agentplane/src/backends/task-backend/shared/record.ts"
+      - "packages/agentplane/src/commands/shared/canonical-blocker-readme-projection.ts"
+      - "packages/agentplane/src/commands/shared/completed-repair-scope-source.ts"
       - "packages/agentplane/src/commands/shared/side-effect-authority-store.ts"
       - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
       - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts"
       - "packages/agentplane/src/commands/shared/task-backend.test.ts"
       - "packages/agentplane/src/commands/shared/task-backend.ts"
+      - "packages/agentplane/src/commands/shared/task-scope-extension-request-state.ts"
+      - "packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
       - "packages/agentplane/src/commands/task/completed-repair-scope-request.ts"
+      - "packages/agentplane/src/commands/task/kernel-completed-external-blocker.ts"
       - "packages/agentplane/src/commands/task/kernel-completed-external-rework.testkit.ts"
       - "packages/agentplane/src/commands/task/scope-extend.command.test.ts"
       - "packages/agentplane/src/commands/task/scope-extend.command.ts"
@@ -157,6 +172,9 @@ execution_contract:
       - "packages/agentplane/src/commands/task/verify-record-execute.ts"
       - "packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts"
       - "packages/core/src/tasks/task-artifact-schema.task.ts"
+      - "scripts/baselines/v0.7-compatibility-candidate.json"
+      - "scripts/checks/check-compatibility-contract-baseline.mjs"
+      - "scripts/checks/check-compatibility-contract-baseline.test.mjs"
   observed:
     authority_violations: []
     changed_components:
@@ -317,16 +335,22 @@ execution_contract:
         components:
           - "docs/user/cli-reference.generated.mdx"
           - "packages/agentplane/src/adapters/task-backend/completed-scope-admission.ts"
+          - "packages/agentplane/src/adapters/task-backend/completed-scope-permit.ts"
           - "packages/agentplane/src/adapters/task-backend/kernel-record.ts"
           - "packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts"
           - "packages/agentplane/src/adapters/task-backend/kernel-scope-intake.ts"
           - "packages/agentplane/src/backends/task-backend/shared/record.ts"
+          - "packages/agentplane/src/commands/shared/canonical-blocker-readme-projection.ts"
+          - "packages/agentplane/src/commands/shared/completed-repair-scope-source.ts"
           - "packages/agentplane/src/commands/shared/side-effect-authority-store.ts"
           - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
           - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts"
           - "packages/agentplane/src/commands/shared/task-backend.test.ts"
           - "packages/agentplane/src/commands/shared/task-backend.ts"
+          - "packages/agentplane/src/commands/shared/task-scope-extension-request-state.ts"
+          - "packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
           - "packages/agentplane/src/commands/task/completed-repair-scope-request.ts"
+          - "packages/agentplane/src/commands/task/kernel-completed-external-blocker.ts"
           - "packages/agentplane/src/commands/task/kernel-completed-external-rework.testkit.ts"
           - "packages/agentplane/src/commands/task/scope-extend.command.test.ts"
           - "packages/agentplane/src/commands/task/scope-extend.command.ts"
@@ -334,6 +358,9 @@ execution_contract:
           - "packages/agentplane/src/commands/task/verify-record-execute.ts"
           - "packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts"
           - "packages/core/src/tasks/task-artifact-schema.task.ts"
+          - "scripts/baselines/v0.7-compatibility-candidate.json"
+          - "scripts/checks/check-compatibility-contract-baseline.mjs"
+          - "scripts/checks/check-compatibility-contract-baseline.test.mjs"
         evidence_requirements:
           - "external_effect:network_read"
           - "external_effect:publish"
@@ -359,15 +386,21 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:e553ce3df1fc1c4dac6eeaa645f9aae02363a7387a97c76fc7e2de82be417e05"
+      digest: "sha256:7e3d7cbf7cf57e088b90a47b9f462a216201e2bc966f05c684694993dad8219d"
       escalation_reasons:
+        - "central_component:packages/agentplane/src/commands/shared/canonical-blocker-readme-projection.ts"
+        - "central_component:packages/agentplane/src/commands/shared/completed-repair-scope-source.ts"
         - "central_component:packages/agentplane/src/commands/shared/side-effect-authority-store.ts"
         - "central_component:packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
         - "central_component:packages/agentplane/src/commands/shared/task-backend-branch-snapshot.unit.test.ts"
         - "central_component:packages/agentplane/src/commands/shared/task-backend.test.ts"
         - "central_component:packages/agentplane/src/commands/shared/task-backend.ts"
+        - "central_component:packages/agentplane/src/commands/shared/task-scope-extension-request-state.ts"
+        - "central_component:packages/agentplane/src/commands/shared/task-scope-extension-request.ts"
         - "central_component:packages/core/src/tasks/task-artifact-schema.execution-contract.test.ts"
         - "central_component:packages/core/src/tasks/task-artifact-schema.task.ts"
+        - "central_component:scripts/checks/check-compatibility-contract-baseline.mjs"
+        - "central_component:scripts/checks/check-compatibility-contract-baseline.test.mjs"
         - "central_path:packages/agentplane/src/commands/shared/side-effect-authority-store.ts"
         - "central_path:packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
         - "central_path:packages/agentplane/src/commands/shared/task-backend.ts"
@@ -459,6 +492,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. Hosted CI requires acyclic completed-scope proof readers and an exact reviewed compatibility entry for the typed reconcile option. The required lower-layer extraction and contract evidence are outside the current nineteen-root authority. No source or lifecycle mutation was performed. Recommended action: Admit the exact additional roots through the native USER scope-request route, refine the native plan if required, then issue fresh implementation authority. Preserve the frozen base, original Kernel, historical verification and original VPB partial evidence. Requested scope: roots=packages/agentplane/src/adapters/task-backend/completed-scope-permit.ts,packages/agentplane/src/commands/shared/canonical-blocker-readme-projection.ts,packages/agentplane/src/commands/shared/completed-repair-scope-source.ts,packages/agentplane/src/commands/shared/task-scope-extension-request-state.ts,packages/agentplane/src/commands/shared/task-scope-extension-request.ts,packages/agentplane/src/commands/task/kernel-completed-external-blocker.ts,scripts/baselines/v0.7-compatibility-candidate.json,scripts/checks/check-compatibility-contract-baseline.mjs,scripts/checks/check-compatibility-contract-baseline.test.mjs; repository effects=unchanged; request digest=sha256:1fcebacbf47680dc4f946634a5ffbd0075133a09ee908b5b0700cf762e88e0b5. Agentplane receipt: external-agent-blocker/tr_8f0ecb43cccfac849cdbef22484ed7a8/sha256:2685724993e860af38c0003fe2e908070024267e3526fb8bb57c15fde86b05af/sha256:1fcebacbf47680dc4f946634a5ffbd0075133a09ee908b5b0700cf762e88e0b5."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: packages/agentplane/src/adapters/task-backend/completed-scope-permit.ts, packages/agentplane/src/commands/shared/canonical-blocker-readme-projection.ts, packages/agentplane/src/commands/shared/completed-repair-scope-source.ts, packages/agentplane/src/commands/shared/task-scope-extension-request-state.ts, packages/agentplane/src/commands/shared/task-scope-extension-request.ts, packages/agentplane/src/commands/task/kernel-completed-external-blocker.ts, scripts/baselines/v0.7-compatibility-candidate.json, scripts/checks/check-compatibility-contract-baseline.mjs, scripts/checks/check-compatibility-contract-baseline.test.mjs; repository effects: unchanged."
 events:
   -
     type: "verify"
@@ -998,6 +1034,8 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.completed_scope_admissions:
+    - "sha256:2d3c5532f12dd98e35977c03a408e6f20139af4762bcdcca879b994ec701ea4c"
   agentplane.kernel_operational_projection:
     digest: "sha256:08b6c3b25ac39024e79c4352a1b7722e8b90056ab881a5504cef498233cb06d7"
     evidence_refs:
@@ -1019,6 +1057,8 @@ extensions:
     verification_evidence_digest: "sha256:c463b772dba2c00653edf74dab91fb756d8c8e83c39075da185efdf87cd0054a"
     work_order_id: "sha256:83306d1fc1be56e945302aec53683def7987d78db7343e6959d97a13f4484881"
   agentplane.scope_extension_request:
+    applied_at: "2026-10-30T21:40:23.597Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:2685724993e860af38c0003fe2e908070024267e3526fb8bb57c15fde86b05af"
     kind: "task_scope_extension_request"
     request:
@@ -1037,7 +1077,7 @@ extensions:
         - "scripts/checks/check-compatibility-contract-baseline.test.mjs"
     request_digest: "sha256:1fcebacbf47680dc4f946634a5ffbd0075133a09ee908b5b0700cf762e88e0b5"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_8f0ecb43cccfac849cdbef22484ed7a8"
     work_item_id: null
   implementation_commit:
