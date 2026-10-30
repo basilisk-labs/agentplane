@@ -34,6 +34,7 @@ export type TaskScopeExtendParsed = {
   requestDigest: string;
   stateFingerprint?: string;
   stateScopeDigest?: string;
+  reconcileRequest?: string;
   by: string;
 };
 
@@ -43,6 +44,13 @@ export const taskScopeExtendSpec: CommandSpec<TaskScopeExtendParsed> = {
   summary: "Extend blocked task repository scope with state-bound USER authority.",
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
   options: [
+    {
+      kind: "string",
+      name: "reconcile-request",
+      valueHint: "<private-json>",
+      description:
+        "Strict v1 completed_scope_admission_reconcile JSON: schema_version, kind, task_id, repository_identity, kernel_digest, head_sha, before_commit, before_readme_digest, partial_readme_digest, request_digest. Commit IDs are full Git SHAs; digests are sha256:<64 lowercase hex>. --state-scope-digest binds the exact request bytes. Reconcile only the pinned legacy partial or retained native intent; preserve original Kernel and failed evidence. Exact replay is a durable no-op.",
+    },
     {
       kind: "string",
       name: "scope-root",
@@ -90,6 +98,10 @@ export const taskScopeExtendSpec: CommandSpec<TaskScopeExtendParsed> = {
       cmd: "agentplane task scope extend T-1 --scope-root website --repository-effect documentation --request-digest sha256:... --state-scope-digest sha256:... --by USER",
       why: "Approve a monotonic repository-scope extension after a typed blocker.",
     },
+    {
+      cmd: "agentplane task scope extend T-1 --scope-root helper.ts --request-digest sha256:... --state-scope-digest sha256:... --reconcile-request private-reconcile.json --by USER",
+      why: "Recover the exact retained completed-task partial using its private typed request and byte digest.",
+    },
   ],
   validateRaw: (raw) => {
     if (
@@ -101,6 +113,16 @@ export const taskScopeExtendSpec: CommandSpec<TaskScopeExtendParsed> = {
         message: "At least one --scope-root or --repository-effect is required.",
       });
     }
+    if (
+      optionalStringOption(raw.opts["reconcile-request"]) &&
+      (!optionalStringOption(raw.opts["state-scope-digest"]) ||
+        optionalStringOption(raw.opts["state-fingerprint"]))
+    )
+      throw usageError({
+        spec: taskScopeExtendSpec,
+        message:
+          "--reconcile-request requires --state-scope-digest and excludes --state-fingerprint.",
+      });
     const stateFingerprint = optionalStringOption(raw.opts["state-fingerprint"]);
     const stateScopeDigest = optionalStringOption(raw.opts["state-scope-digest"]);
     if (stateFingerprint === undefined && stateScopeDigest === undefined) {
@@ -138,6 +160,9 @@ export const taskScopeExtendSpec: CommandSpec<TaskScopeExtendParsed> = {
     ...(optionalStringOption(raw.opts["state-scope-digest"])
       ? { stateScopeDigest: optionalStringOption(raw.opts["state-scope-digest"]) }
       : {}),
+    ...(optionalStringOption(raw.opts["reconcile-request"])
+      ? { reconcileRequest: optionalStringOption(raw.opts["reconcile-request"]) }
+      : {}),
     by: String(raw.opts.by),
   }),
 };
@@ -153,6 +178,7 @@ export function makeRunTaskScopeExtendHandler(getCtx: (cmd: string) => Promise<C
       requestDigest: parsed.requestDigest,
       ...(parsed.stateFingerprint ? { stateFingerprint: parsed.stateFingerprint } : {}),
       ...(parsed.stateScopeDigest ? { stateScopeDigest: parsed.stateScopeDigest } : {}),
+      ...(parsed.reconcileRequest ? { reconcileRequest: parsed.reconcileRequest } : {}),
       by: parsed.by,
     });
 }

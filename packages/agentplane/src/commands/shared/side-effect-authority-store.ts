@@ -1,3 +1,4 @@
+import { transferCompletedScopePermit } from "../../adapters/task-backend/completed-scope-admission.js";
 import { randomUUID } from "node:crypto";
 import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -124,19 +125,19 @@ export async function hydrateTaskSideEffectAuthority(opts: {
 }): Promise<TaskData> {
   const authority = await loadSideEffectAuthorityState(opts);
   if (authority.state) {
-    return {
+    return transferCompletedScopePermit(opts.task, {
       ...opts.task,
       extensions: withSideEffectAuthorityState(opts.task, authority.state),
-    };
+    });
   }
   if (authority.source === "invalid") {
-    return {
+    return transferCompletedScopePermit(opts.task, {
       ...opts.task,
       extensions: {
         ...(opts.task.extensions ?? {}),
         [SIDE_EFFECT_AUTHORITY_EXTENSION_KEY]: null,
       },
-    };
+    });
   }
   return opts.task;
 }

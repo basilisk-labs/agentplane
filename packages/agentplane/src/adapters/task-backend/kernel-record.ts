@@ -1,4 +1,8 @@
 import { scopeIntakeDigest } from "./kernel-scope-intake.js";
+import {
+  COMPLETED_SCOPE_ADMISSIONS,
+  hasCompletedScopePermit,
+} from "./completed-scope-admission.js";
 import { isoTimestampSchema } from "@agentplaneorg/core/schemas";
 import { kernelAuthorityRecordSchema } from "./kernel-authority-schema.js";
 import { kernelRecordIssues } from "./kernel-record-invariants.js";
@@ -317,6 +321,21 @@ export function readKernelRecord(
     };
   }
   const aggregate = contents.aggregate;
+  let completedScopePermit = false;
+  if (Object.hasOwn(task.extensions ?? {}, COMPLETED_SCOPE_ADMISSIONS)) {
+    try {
+      completedScopePermit =
+        aggregate.state === "COMPLETED" && hasCompletedScopePermit(task, repositoryIdentity);
+    } catch {
+      /* Malformed serialized references confer no authority. */
+    }
+    if (!completedScopePermit)
+      return {
+        kind: "malformed",
+        reason: "completed_scope_admission_unproven",
+        fields: [COMPLETED_SCOPE_ADMISSIONS],
+      };
+  }
   if (task.status !== projectKernelTask(aggregate).status) {
     return {
       kind: "malformed",
@@ -329,7 +348,8 @@ export function readKernelRecord(
   )?.observation?.scope_request;
   if (
     lastScopeRequest &&
-    scopeIntakeDigest(task.execution_contract) !== lastScopeRequest.intake_after_digest
+    scopeIntakeDigest(task.execution_contract) !== lastScopeRequest.intake_after_digest &&
+    !completedScopePermit
   )
     return {
       kind: "malformed",

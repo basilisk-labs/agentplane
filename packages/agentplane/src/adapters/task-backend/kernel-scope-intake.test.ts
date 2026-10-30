@@ -1,8 +1,17 @@
 import { describe, expect, it } from "vitest";
 import { defaultConfig } from "@agentplaneorg/core/config";
 import type { TaskData } from "../../backends/task-backend.js";
-import { resolveTaskExecutionContract } from "../../runtime/task-routing/resolve.js";
-import { amendedScopeIntake, scopeIntakeDigest } from "./kernel-scope-intake.js";
+import {
+  resolveTaskExecutionContract,
+  reconcileTaskExecutionContract,
+} from "../../runtime/task-routing/resolve.js";
+import { taskRecordToData } from "../../backends/task-backend.js";
+import { normalizeVerificationContract } from "../../backends/task-backend/shared/normalize-verification-contract.js";
+import {
+  amendedScopeIntake,
+  completedScopeIntake,
+  scopeIntakeDigest,
+} from "./kernel-scope-intake.js";
 
 function fixture(
   mode: "direct" | "branch_pr" = "direct",
@@ -124,4 +133,90 @@ describe("prospective scope intake security", () => {
       "independently constrained",
     );
   });
+});
+
+const decodeContract = (contract: TaskData["execution_contract"]) =>
+  taskRecordToData({
+    id: "T-1",
+    frontmatter: {
+      id: "T-1",
+      title: "Authority fixture",
+      status: "DONE",
+      priority: "med",
+      owner: "EXECUTOR",
+      execution_contract: contract,
+    } as never,
+    body: "",
+    readmePath: "fixture",
+  });
+
+describe("completed intake authority and historical verification", () => {
+  it("retains optional grant presence, independent restrictions and a broader historical floor", () => {
+    const task = fixture("branch_pr");
+    const contract = task.execution_contract!;
+    contract.authority.allowed_capabilities = ["repository_write"];
+    contract.authority.allowed_resources = [];
+    // This deny is independent of the generated complement and must remain exact.
+    contract.authority.forbidden_repository_effects = ["ci"];
+    contract.observed.verification_results = [{ id: "prior", result: "pass" }];
+    const historical = reconcileTaskExecutionContract({
+      contract,
+      changed_paths: ["packages/core/src/tasks/task-kernel/kernel.ts"],
+    }).contract;
+    contract.verification.contract = historical.verification.contract;
+    const before = structuredClone(contract);
+    const next = completedScopeIntake(task, ["helper.test.ts"], ["tests"]);
+    expect(next.authority.allowed_capabilities).toEqual(["repository_write"]);
+    expect(Object.hasOwn(next.authority, "allowed_resources")).toBe(true);
+    expect(next.authority.forbidden_repository_effects).toEqual(
+      before.authority.forbidden_repository_effects,
+    );
+    expect(next.observed.verification_results).toEqual(before.observed.verification_results);
+    expect(next.observed.changed_paths).toEqual(before.observed.changed_paths);
+    expect(next.verification.contract?.selected_checks).toEqual(
+      expect.arrayContaining(before.verification.contract!.selected_checks),
+    );
+    expect(next.verification.contract?.observed.changed_files).toContain(
+      "packages/core/src/tasks/task-kernel/kernel.ts",
+    );
+    expect(normalizeVerificationContract(next.verification.contract)).not.toBeNull();
+    expect(task.execution_contract).toEqual(before);
+    const absent = fixture("branch_pr");
+    delete absent.execution_contract!.authority.allowed_capabilities;
+    delete absent.execution_contract!.authority.allowed_resources;
+    const projected = completedScopeIntake(absent, ["helper.ts"], []);
+    expect(Object.hasOwn(projected.authority, "allowed_capabilities")).toBe(false);
+    expect(Object.hasOwn(projected.authority, "allowed_resources")).toBe(false);
+  });
+  it("keeps an independent denial effective against a requested effect or required path effect", () => {
+    const task = fixture("branch_pr");
+    task.execution_contract!.authority.forbidden_repository_effects = ["tests"];
+    expect(() => completedScopeIntake(task, ["helper.test.ts"], ["tests"])).toThrow(
+      "independent effect restriction",
+    );
+    expect(() => completedScopeIntake(task, ["helper.test.ts"], [])).toThrow(
+      "forbidden or unrequested",
+    );
+  });
+  it.each(["allowed_capabilities", "allowed_resources"] as const)(
+    "backend preserves exact presence of %s and rejects malformed grants",
+    (field) => {
+      const task = fixture("branch_pr");
+      for (const value of [undefined, [], ["repository_write"]]) {
+        const contract = structuredClone(task.execution_contract!);
+        delete contract.authority[field];
+        if (value !== undefined) contract.authority[field] = value;
+        const decoded = decodeContract(contract).execution_contract!.authority;
+        expect(Object.hasOwn(decoded, field)).toBe(value !== undefined);
+        if (value !== undefined) expect(decoded[field]).toEqual(value);
+      }
+      for (const value of [null, "repository_write", {}, [null], [""]]) {
+        const contract = structuredClone(task.execution_contract!);
+        Object.assign(contract.authority, { [field]: value });
+        expect(() => decodeContract(contract)).toThrow(
+          `Malformed execution authority field: ${field}`,
+        );
+      }
+    },
+  );
 });
