@@ -1,4 +1,7 @@
-import { checkCompletedScopeFinish } from "./finish-completed-scope.testkit.js";
+import {
+  checkCompletedScopeFinish,
+  checkCompletedScopeColdReaders,
+} from "./finish-completed-scope.testkit.js";
 import { validateSupervisorExecutionEpisodeJournal } from "@agentplaneorg/core/schemas";
 import type { TaskData } from "../../backends/task-backend.js";
 import type * as Testkit from "@agentplane/testkit";
@@ -85,7 +88,7 @@ async function invoke(root: string, args: string[]) {
   }
 }
 
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import * as taskBackend from "../shared/task-backend.js";
 import * as kernelRuntime from "./kernel-runtime-context.js";
 import {
@@ -327,29 +330,6 @@ async function completedScopeFixture(authenticatedReview = false, historicalScop
   return { f, packet, payload, command, before, pending, head, args };
 }
 
-function coldProcess(root: string, id: string) {
-  const backend = fileURLToPath(new URL("../shared/task-backend.ts", import.meta.url));
-  const kernel = fileURLToPath(
-    new URL("../../adapters/task-backend/kernel-record.ts", import.meta.url),
-  );
-  const script = `const b=await import(${JSON.stringify(backend)});const k=await import(${JSON.stringify(kernel)});
-    const c=await b.loadCommandContext({cwd:${JSON.stringify(root)},rootOverride:null});
-    const t=await c.taskBackend.getTask(${JSON.stringify(id)});
-    const all=await c.taskBackend.getTasks([t.id]);const list=await c.taskBackend.listTasks();
-    const projected=await c.taskBackend.listProjectionTasks();
-    const classify=t=>k.readKernelRecord(t,t.extensions.task_kernel.repository_identity).kind;
-    console.log(JSON.stringify({pid:process.pid,one:classify(t),batch:classify(all[0]),list:classify(list.find(x=>x.id===t.id)),projection:classify(projected.find(x=>x.id===t.id))}));`;
-  return JSON.parse(
-    execFileSync("bun", ["--eval", script], { cwd: root, encoding: "utf8", timeout: 30_000 }),
-  ) as {
-    pid: number;
-    one: string;
-    batch: string;
-    list: string;
-    projection: string;
-  };
-}
-
 describe("completed native repair prospective scope admission", { timeout: 120_000 }, () => {
   it("authenticates raw finish metadata and keeps foreign backend namespaces isolated", async () => {
     const { f, command, before, args } = await completedScopeFixture(true, true);
@@ -357,7 +337,7 @@ describe("completed native repair prospective scope admission", { timeout: 120_0
     expect(admitted.code, admitted.stdout + admitted.stderr).toBe(0);
     await checkCompletedScopeFinish(command, f.id, before);
   });
-  it("authenticates the consumed blocker, admits exact scope, and preserves terminal history", async () => {
+  it("authenticates the consumed blocker and preserves terminal history and replay", async () => {
     const { f, packet, payload, command, before, args } = await completedScopeFixture(true, true);
     const cli = fileURLToPath(new URL("../../../bin/agentplane.js", import.meta.url));
     execFileSync("node", [cli, ...args, "--root", f.root], {
@@ -449,136 +429,91 @@ describe("completed native repair prospective scope admission", { timeout: 120_0
     expect(git(f.root, "rev-parse", "HEAD")).toBe(replayHead);
     expect(await readFile(packet.exchange.result_path, "utf8")).toBe(JSON.stringify(payload));
     expect(await readFile(path.join(f.root, "source.txt"), "utf8")).toBe("before\n");
-    const next = await invoke(f.root, ["task", "advance", f.id, "--agent-json", "--remote"]);
-    expect(next.code, next.stdout + next.stderr).toBe(0);
-    let successor = JSON.parse(next.stdout) as Packet;
-    expect(successor.action.kind, next.stdout).toBe("agent_episode");
-    let fresh = await readExternalAgentWorkOrder(
-      path.join(successor.exchange.directory, "work-order.json"),
-    );
-    if (fresh.role === "EVALUATOR") {
-      // Scope admission changes review authority. Complete the required fresh
-      // fixture assessment, rather than skipping independent evaluation.
-      expect(await readFile(path.join(f.root, "source.txt"), "utf8")).toBe("before\n");
+  });
+  describe("successive completed-scope admissions", () => {
+    let admitted: Awaited<ReturnType<typeof completedScopeFixture>>;
+    beforeEach(async () => {
+      admitted = await completedScopeFixture(true, true);
+      const result = await invoke(admitted.f.root, admitted.args);
+      expect(result.code, result.stdout + result.stderr).toBe(0);
+    }, 120_000);
+    it("authenticates two admissions and cold Task, main, compact and metadata readers", async () => {
+      const { f, payload, command, before, args } = admitted;
+      const next = await invoke(f.root, ["task", "advance", f.id, "--agent-json", "--remote"]);
+      expect(next.code, next.stdout + next.stderr).toBe(0);
+      let successor = JSON.parse(next.stdout) as Packet;
+      expect(successor.action.kind, next.stdout).toBe("agent_episode");
+      let fresh = await readExternalAgentWorkOrder(
+        path.join(successor.exchange.directory, "work-order.json"),
+      );
+      if (fresh.role === "EVALUATOR") {
+        // Scope admission changes review authority. Complete the required fresh
+        // fixture assessment, rather than skipping independent evaluation.
+        expect(await readFile(path.join(f.root, "source.txt"), "utf8")).toBe("before\n");
+        await writeFile(
+          successor.exchange.result_path,
+          JSON.stringify({
+            work_order_id: fresh.work_order_id,
+            status: "completed",
+            summary: "Fixture helper implementation is unavailable for behavior assessment.",
+            findings: ["The fixture still contains before, so implementation rework is required."],
+            uncertainty: [],
+            review: {
+              verdict: "blocked",
+              missing_tests: [],
+              hidden_assumptions: [],
+              residual_risks: [],
+              recovery_context: "Implement the admitted helper.",
+            },
+          }),
+        );
+        const reviewed = await invoke(f.root, successor.exchange.resume_argv.slice(1));
+        expect(reviewed.code, reviewed.stdout + reviewed.stderr).toBe(0);
+        successor = JSON.parse(reviewed.stdout) as Packet;
+        expect(successor.action.kind, reviewed.stdout).toBe("agent_episode");
+        fresh = await readExternalAgentWorkOrder(
+          path.join(successor.exchange.directory, "work-order.json"),
+        );
+      }
+      expect(fresh.role).toBe("EXECUTOR");
+      expect(
+        fresh.authority.writable_roots.some((root: string) => root.endsWith("helper.txt")),
+      ).toBe(true);
+      expect(fresh.state_fingerprint.components.policy.state).toBe("present");
+      expect(fresh.stop_rules.join(" ")).not.toContain("task_kind_incompatible");
+      expect(fresh.stop_rules.join(" ")).not.toContain("Execution profile release is incompatible");
+      const observation7 = await command.taskBackend.getTask(f.id);
+      expect(observation7?.extensions?.task_kernel).toEqual(before.extensions?.task_kernel);
+      // A second genuine blocker extends the same immutable completed Kernel.
       await writeFile(
         successor.exchange.result_path,
         JSON.stringify({
+          ...payload,
           work_order_id: fresh.work_order_id,
-          status: "completed",
-          summary: "Fixture helper implementation is unavailable for behavior assessment.",
-          findings: ["The fixture still contains before, so implementation rework is required."],
-          uncertainty: [],
-          review: {
-            verdict: "blocked",
-            missing_tests: [],
-            hidden_assumptions: [],
-            residual_risks: [],
-            recovery_context: "Implement the admitted helper.",
+          blocker: {
+            ...payload.blocker,
+            scope_extension_request: {
+              ...payload.blocker.scope_extension_request,
+              scope_roots: ["second.txt"],
+            },
           },
         }),
       );
-      const reviewed = await invoke(f.root, successor.exchange.resume_argv.slice(1));
-      expect(reviewed.code, reviewed.stdout + reviewed.stderr).toBe(0);
-      successor = JSON.parse(reviewed.stdout) as Packet;
-      expect(successor.action.kind, reviewed.stdout).toBe("agent_episode");
-      fresh = await readExternalAgentWorkOrder(
-        path.join(successor.exchange.directory, "work-order.json"),
+      const blockedAgain = await invoke(f.root, successor.exchange.resume_argv.slice(1));
+      expect(blockedAgain.code, blockedAgain.stdout + blockedAgain.stderr).toBe(0);
+      const second = parseTaskScopeExtensionRequestState(
+        (await command.taskBackend.getTask(f.id))!,
+      )!;
+      const secondArgs = args.map((arg, index) =>
+        index === 5 ? "second.txt" : index === 7 || index === 9 ? second.request_digest : arg,
       );
-    }
-    expect(fresh.role).toBe("EXECUTOR");
-    expect(fresh.authority.writable_roots.some((root: string) => root.endsWith("helper.txt"))).toBe(
-      true,
-    );
-    expect(fresh.state_fingerprint.components.policy.state).toBe("present");
-    expect(fresh.stop_rules.join(" ")).not.toContain("task_kind_incompatible");
-    expect(fresh.stop_rules.join(" ")).not.toContain("Execution profile release is incompatible");
-    const observation7 = await command.taskBackend.getTask(f.id);
-    expect(observation7?.extensions?.task_kernel).toEqual(before.extensions?.task_kernel);
-    // A second genuine blocker extends the same immutable completed Kernel.
-    await writeFile(
-      successor.exchange.result_path,
-      JSON.stringify({
-        ...payload,
-        work_order_id: fresh.work_order_id,
-        blocker: {
-          ...payload.blocker,
-          scope_extension_request: {
-            ...payload.blocker.scope_extension_request,
-            scope_roots: ["second.txt"],
-          },
-        },
-      }),
-    );
-    const blockedAgain = await invoke(f.root, successor.exchange.resume_argv.slice(1));
-    expect(blockedAgain.code, blockedAgain.stdout + blockedAgain.stderr).toBe(0);
-    const second = parseTaskScopeExtensionRequestState((await command.taskBackend.getTask(f.id))!)!;
-    const secondArgs = args.map((arg, index) =>
-      index === 5 ? "second.txt" : index === 7 || index === 9 ? second.request_digest : arg,
-    );
-    const extended = await invoke(f.root, secondArgs);
-    expect(extended.code, extended.stdout + extended.stderr).toBe(0);
-    const twice = (await command.taskBackend.getTask(f.id))!;
-    expect(proof.completedScopeAdmissionIds(twice)).toHaveLength(2);
-    expect(twice.extensions?.task_kernel).toEqual(before.extensions?.task_kernel);
-    const expectedCold = {
-      one: "canonical",
-      batch: "canonical",
-      list: "canonical",
-      projection: "canonical",
-    };
-    const cold = coldProcess(f.root, f.id);
-    expect(cold).toMatchObject(expectedCold);
-    expect(cold.pid).not.toBe(process.pid);
-    const oldBase = (before.extensions!.task_execution_context as { base_sha: string }).base_sha;
-    const main = path.join(f.root, ".agentplane/worktrees/cold-main");
-    git(f.root, "worktree", "add", main, "main");
-    git(main, "merge", "--ff-only", git(f.root, "branch", "--show-current"));
-    expect(coldProcess(main, f.id)).toMatchObject(expectedCold);
-    const compact = path.join(f.root, ".agentplane/worktrees/cold-history");
-    git(f.root, "worktree", "add", "--detach", compact, oldBase);
-    await mkdir(path.join(compact, ".agentplane/tasks"), { recursive: true });
-    git(f.root, "config", "extensions.worktreeConfig", "true");
-    git(compact, "config", "--worktree", "agentplane.compactTaskHistory", "true");
-    expect(coldProcess(compact, f.id)).toMatchObject(expectedCold);
-    const snapshot = await taskBackend.loadCommandContext({ cwd: main, rootOverride: null });
-    snapshot.memo.taskWorktreeInventory = Promise.resolve([]);
-    const historicalTask = await taskBackend.loadTaskFromBranchSnapshot({
-      ctx: snapshot,
-      taskId: f.id,
-      readmePath: path.join(main, snapshot.config.paths.workflow_dir, f.id, "README.md"),
-      branch: git(f.root, "branch", "--show-current"),
-      requireWorktree: false,
+      const extended = await invoke(f.root, secondArgs);
+      expect(extended.code, extended.stdout + extended.stderr).toBe(0);
+      const twice = (await command.taskBackend.getTask(f.id))!;
+      expect(proof.completedScopeAdmissionIds(twice)).toHaveLength(2);
+      expect(twice.extensions?.task_kernel).toEqual(before.extensions?.task_kernel);
+      await checkCompletedScopeColdReaders(command, f.id, before);
     });
-    expect(readKernelRecord(historicalTask, identity).kind).toBe("canonical");
-    const current = (await command.taskBackend.getTask(f.id))!;
-    const common = await taskBackend.resolveCommandGitCommonDir(command);
-    const proofId = proof.completedScopeAdmissionIds(current).at(-1)!;
-    const retained = await proof.readCompletedScopeAdmission(common, f.id, proofId);
-    current.execution_contract!.observed.verification_results = [
-      { id: "fixture-native-check", result: "pass" },
-      { id: "recorded-check-1", result: "pass" },
-      { id: "verification-record", result: "pass" },
-    ];
-    await command.taskBackend.writeTask(current);
-    const coldContext = await taskBackend.loadCommandContext({ cwd: f.root, rootOverride: null });
-    const refreshed = (await coldContext.taskBackend.getTask(f.id))!;
-    expect(readKernelRecord(refreshed, identity).kind).toBe("canonical");
-    expect(refreshed.extensions?.task_kernel).toEqual(before.extensions?.task_kernel);
-    const retainedAfterRefresh = await proof.readCompletedScopeAdmission(common, f.id, proofId);
-    expect(retainedAfterRefresh.after).toEqual(retained.after);
-    const readme = path.join(f.root, command.config.paths.workflow_dir, f.id, "README.md");
-    const validSource = await readFile(readme, "utf8");
-    refreshed.execution_contract!.observed.verification_results =
-      refreshed.execution_contract!.observed.verification_results.filter(
-        (result) => result.id !== "fixture-native-check",
-      );
-    await command.taskBackend.writeTask(refreshed);
-    await expect(coldContext.taskBackend.getTask(f.id)).rejects.toThrow(
-      /historical verification result/u,
-    );
-    await writeFile(readme, validSource);
-    const restored = (await coldContext.taskBackend.getTask(f.id))!;
-    expect(readKernelRecord(restored, identity).kind).toBe("canonical");
   });
 });
 
