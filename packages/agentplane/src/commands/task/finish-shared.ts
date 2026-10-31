@@ -1,3 +1,4 @@
+import { authenticateTaskMetadataProjection } from "../shared/task-backend-branch-snapshot.js";
 import {
   createRepositorySnapshot,
   ensureDocSections,
@@ -210,7 +211,10 @@ export async function loadTaskForFinish(opts: {
       });
     }
     return {
-      loaded: { taskId: opts.taskId, task: captured },
+      loaded: {
+        taskId: opts.taskId,
+        task: await authenticateTaskMetadataProjection(opts.ctx, captured),
+      },
       primaryStatusFrom,
       primaryTag,
     };

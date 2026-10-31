@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202610310121-21Y197/fix-completed-scope-metadata-readers-across-node",
+  "created_at": "2026-10-31T01:26:30.608Z",
+  "diffstat_sha256": "sha256:468bc7f6b33943902b02566b252d4552720932862eb15ff860463dfd0e500be2",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610310121-21Y197",
+  "updated_at": "2026-10-31T01:26:30.608Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

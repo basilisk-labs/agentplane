@@ -1,3 +1,4 @@
+import { checkCompletedScopeFinish } from "./finish-completed-scope.testkit.js";
 import { validateSupervisorExecutionEpisodeJournal } from "@agentplaneorg/core/schemas";
 import type { TaskData } from "../../backends/task-backend.js";
 import type * as Testkit from "@agentplane/testkit";
@@ -366,8 +367,8 @@ describe("completed native repair prospective scope admission", { timeout: 120_0
         AGENTPLANE_HOOK_RUNNER: cli,
       },
     });
-    const observation6 = await command.taskBackend.getTask(f.id);
-    const after = observation6!;
+    const after = (await command.taskBackend.getTask(f.id))!;
+    await checkCompletedScopeFinish(command, f.id, before);
     expect(after.status).toBe("DONE");
     expect(after.extensions?.task_kernel).toEqual(before.extensions?.task_kernel);
     expect(after.commit).toEqual(before.commit);
@@ -669,8 +670,7 @@ it(
     } finally {
       stop.mockRestore();
     }
-    const observation9 = await command.taskBackend.getTask(f.id);
-    const admitted = observation9!;
+    const admitted = (await command.taskBackend.getTask(f.id))!;
     expect(parseTaskScopeExtensionRequestState(admitted)).toMatchObject({
       status: "applied",
       applied_by: "USER",
@@ -683,8 +683,7 @@ it(
     expect(comments).toHaveLength(1);
     const observation5 = await invoke(f.root, args);
     expect(observation5.code, observation5.stdout + observation5.stderr).toBe(0);
-    const observation10 = await command.taskBackend.getTask(f.id);
-    const replayed = observation10!;
+    const replayed = (await command.taskBackend.getTask(f.id))!;
     expect(replayed.comments).toEqual(admitted.comments);
     expect(replayed.execution_contract).toEqual(admitted.execution_contract);
     expect(replayed.extensions?.task_kernel).toEqual(before.extensions?.task_kernel);

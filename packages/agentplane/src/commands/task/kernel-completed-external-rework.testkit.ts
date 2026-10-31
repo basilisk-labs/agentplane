@@ -411,7 +411,7 @@ export async function fixture(
   };
   let command = await loadCommandContext({ cwd: root, rootOverride: null });
   task.doc =
-    "## Summary\nRepair source.\n\n## Plan\nRepair the approved source.\n\n## Verify Steps\n- git diff --check\n\n## Verification\nPrevious checks passed.\n";
+    "## Summary\nRepair source.\n\n## Scope\nRepair the approved source.txt and explicitly admitted helper paths.\n\n## Rollback Plan\nRetain the fixture checkout and restore source only through reviewed work.\n\n## Plan\nRepair the approved source.\n\n## Verify Steps\n- git diff --check\n\n## Verification\nPrevious checks passed.\n";
   await command.taskBackend.writeTask(task);
   const prDir = path.join(root, ".agentplane", "tasks", id, "pr");
   await mkdir(prDir, { recursive: true });

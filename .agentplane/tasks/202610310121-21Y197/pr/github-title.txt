@@ -1,0 +1,1 @@
+🚧 21Y197 task: Fix completed-scope metadata readers across Node command bundles [202610310121-21Y197]

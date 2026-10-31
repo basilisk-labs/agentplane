@@ -261,6 +261,24 @@ export async function resolveTaskOwnerCommandContext(opts: {
         dir: path.join(opts.ctx.resolvedProject.gitRoot, ".agentplane/tasks"),
       }).getTask(opts.taskId)
     : await backend.getTask(opts.taskId);
+  if (
+    opts.ctx.backendId === "local" &&
+    Object.hasOwn(localTask?.extensions ?? {}, "agentplane.completed_scope_admissions") &&
+    !(backend instanceof LocalBackend)
+  ) {
+    // A separately bundled command owns a distinct LocalBackend class and permit
+    // map. Reload its native context so proof authentication and Kernel reads share
+    // one module instance; serialized Tasks still cannot confer a permit.
+    return await resolveTaskOwnerCommandContext({
+      ctx: await loadCommandContext({
+        cwd: opts.ctx.resolvedProject.gitRoot,
+        resolvedProject: opts.ctx.resolvedProject,
+        config: opts.ctx.config,
+        preparationTrace: opts.ctx.preparationTrace,
+      }),
+      taskId: opts.taskId,
+    });
+  }
   const taskBranch = await resolveTaskBranchFromContext({ ctx: opts.ctx, taskId: opts.taskId });
   if (taskBranch) {
     const owner = await resolveAuthoritativeTaskWorktree({
