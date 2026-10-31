@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 54
+revision: 56
 origin:
   system: "manual"
 depends_on: []
@@ -168,6 +168,7 @@ execution_contract:
       - "packages/agentplane/src/commands/task/direct-task-verification-observation.ts"
       - "packages/agentplane/src/commands/task/direct-task-verification.observability.test.ts"
       - "packages/agentplane/src/commands/task/direct-task-verification.ts"
+      - "packages/agentplane/src/commands/task/external-agent-task-artifact-baseline.ts"
       - "packages/agentplane/src/commands/task/verification-retry-effect-recovery.test.ts"
       - "packages/agentplane/src/commands/task/verification-retry-effect-recovery.ts"
       - "packages/agentplane/src/commands/task/verification-retry-source-proof.test.ts"
@@ -260,7 +261,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:7917a97ae4cf8a55a9a07391db53483fbeb66efad2545c997ebd87a5fa0326f4"
+      digest: "sha256:f23bb1263403777f417a279edc9b62b0e53863f67d73641c9bfecbe4da084157"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.workflow-recovery.verification-retry.test.ts"
         - "central_component:packages/agentplane/src/cli/stale-dist-readonly.test.ts"
@@ -4880,6 +4881,7 @@ execution_contract:
           - "packages/agentplane/src/commands/task/direct-task-verification-observation.ts"
           - "packages/agentplane/src/commands/task/direct-task-verification.observability.test.ts"
           - "packages/agentplane/src/commands/task/direct-task-verification.ts"
+          - "packages/agentplane/src/commands/task/external-agent-task-artifact-baseline.ts"
           - "packages/agentplane/src/commands/task/external-agent-workflow-recovery-provider-update.ts"
           - "packages/agentplane/src/commands/task/external-agent-workflow-recovery.test.ts"
           - "packages/agentplane/src/commands/task/external-agent-workflow-recovery.ts"
@@ -4989,7 +4991,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-10-31T01:07:40.162Z"
+doc_updated_at: "2026-10-31T16:42:12.398Z"
 doc_updated_by: "USER"
 description: "Actual HUMAN explicitly approved in SB thread01a17c58-b597-78a1-abed-517855b3f393 message01a181a3-ef22-7af0-b6ce-e9f9b00f8d23: narrow AgentPlane fix, separate Task ID, checks and PR/merge, then sb recovery preserving data credentials runtime guards. Exact reviewed design SHA9bda08b6d37c2badb985ac8c8c823651cd0a5edcfd0db8c856dfdedf68964794 in Factory YMR EVID sb-post121845-terminal-verification-retry-reviewable-design.json. Real case Factory completedKernel DRG36R, source48a/currentmanagedhead d906: native run028failed environmental localhost proxy501; corrected commandlocaltransport and actual canonical72PASS685.829/5441/4partitions, but completed no-source-change rework84699 refuses; legacy recovery requires missing current_plan. First qualify CURRENTcanonical d514 mechanisms; do not duplicate a newly existing supported route. Implement one public typed verification_retry_request through existing task advance workflow recovery. Controller authenticates exact repository/terminalKernel digest/approvedcheckcontract/realfailedsupervisorattempt/source or audited managedmetadata-only descendant; when bindingmissing create fresh controller adoption observation, never backfill oldreceipt. One statebound durable retry/attempt, all original mandatorychecks actualnativeexecutor once, fresh before/after source/scope/contract pins; PASS only after actualsuccess, then freshEVALUATOR current-source. Immutable completedKernel/plan/workitems/oldEVAL/failed028 remain byteexact. No general reopen/forceOK/internalAPIcaller/manualTaskJSON/fake sourcediff/import of independentPASS as authority. Drift/unknown/interrupt/duplicate refuse, old no-diff and publicationfrozenbaseguards unchanged. Publicationbase mismatch3f31-vs94 is separate blocker, not permission to disable it. Nearest fault/CLI tests cover canonicalcompleted/no legacy/envfail recovery and exactKernel preservation, source/head/scope/command drift, oldevidence non-adoption, interrupted/failed idempotence/no duplicateexecutor, unchangedlegacy/no-diff/provider guard. Scope exacteight listed roots; native plan may narrow or propose necessary bounded refinement under actual user authorization, not silently broaden. Preserve all originalAP/Factory worktrees and untracked native artifacts, foreignFactoryshim cfab, all privateTMP; no install/globalenv/auth/credential/ACL/runtime effects. Only source repair/checks/authorizedcanonicalGitHubPRmerge in this APTask; no Beta host access. Full mandatory native validation and independent review before publication. Existing source/currentbase CDC stale; canonicalremote d514 verified by ls-remote+scopedfetch. Base pinned d514. Previous N1E7M3 scope is not reused/reopened. This is genuinely new framework repair, not replacementFactoryTask or fakeclosure."
 sections:
@@ -5406,8 +5408,7 @@ extensions:
     transition_id: "tr_a754a68f06d0d4426366f46547687380"
     work_item_id: null
   implementation_commit:
-    hash: "5745f9b7b0014b8ecd7def0688dec8aeb27137a2"
-    message: "🚧 VPBGBK task: apply canonical agent result"
+    hash: "8527b4f9d3d8d7c6c37d638a834d7635afcf9801"
   task_execution_context:
     base_ref: "d51453363dbafa18b79f4c35ed9cc7e76f25b867"
     base_sha: "d51453363dbafa18b79f4c35ed9cc7e76f25b867"
