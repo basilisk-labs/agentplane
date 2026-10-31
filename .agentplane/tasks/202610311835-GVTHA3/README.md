@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -26,9 +26,9 @@ plan_approval:
   note: "Projected from the approved canonical Task Kernel plan."
 verification:
   state: "ok"
-  updated_at: "2026-10-31T20:13:00.529Z"
+  updated_at: "2026-10-31T21:03:58.848Z"
   updated_by: "SUPERVISOR"
-  note: "Verified: canonical Task Kernel final checks passed."
+  note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
   attempts: 0
 quality_review:
   state: "pass"
@@ -418,8 +418,14 @@ events:
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
     commit: "6abac79e88ffbba5d097a00a62b5819791c43e3b"
+  -
+    type: "verify"
+    at: "2026-10-31T21:03:58.848Z"
+    author: "SUPERVISOR"
+    state: "ok"
+    note: "Verified: CLI-owned checks passed before independent EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-10-31T20:43:37.513Z"
+doc_updated_at: "2026-10-31T21:04:04.203Z"
 doc_updated_by: "CODER"
 description: "The user authorized all eight SB recovery items, native code fixes, PR/merge, deployment and live acceptance while preserving data, credentials and runtime guards. Deliver the already approved terminal verification retry feature from current canonical main f89d603f7fa9b70bca5896fef42212c4c1590fe8. The reviewed candidate is the exact 13-source-file diff from that base to 7e8a77981dd9ab67ac9f2771988e613017306831. Preserve original VPB Task 202610280840-VPBGBK, immutable completed Kernel 43c0045943740ec27078f9b25cf0e9a5168f011e6c2e01a1a712f0812b5405df, PR6957, failed native run015 and all source evidence. The old branch imports canonical Task artifacts relative to its older frozen base and the ownership guard refuses publication. Do not relax that guard, rebuild or reset the old branch, include unrelated Tasks in a fake batch, copy protected proofs, or assign a new result to the old Task. This is a genuine current-main implementation Task with its own source diff, tests, review and publication. Import source code only. Keep one typed verification_retry_request through the existing public task advance workflow recovery. Authenticate exact repository, approved completed Kernel and command contracts, source or audited metadata descendant, and retained real supervisor failure. Execute all mandatory real checks once under the existing lease. Preserve old Kernel, original failed journal, prior EVAL, PR artifacts and receipts. Reconcile interruption from exact durable before/afterimages. Refuse unknown outcomes, duplicate execution, source/command/scope drift, and provider or frozen-base guard changes. Require a fresh EVALUATOR after actual native success. Keep default and configured workflow directories, containment and symlink guards. Address the actual merged-candidate hotspots failure: verify-record-execute.ts has 602 lines against the existing 600-line limit. Do not waive budgets. Investigate the full-suite kernel-bookkeeping body-file cold-read readback_mismatch without weakening its exact CR/LF, two-write or duplicate-replay checks. Independent canonical and merged focused tests passed4 each, and related full-config tests passed60; those diagnostics are not native acceptance. Use full native CI and the current source review before canonical protected PR/merge. Do not modify Factory, SB runtime, credentials, global files, old worktrees, branches or archives. Native retirement of four historical Factory intents is a separate pending user scope decision and is excluded."
 sections:
@@ -620,6 +626,191 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202610311835-GVTHA3
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-10-31T21:03:58.848Z — VERIFY — ok
+
+    By: SUPERVISOR
+
+    Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6a3b79a3982bc1af50c26642d91692052ab2e3515457bb3dcebc9c260251d383, input_digest=sha256:b9d2262c87a0dba8c3619f77af5a8fc9857740b609b3c8f8c940899d465e624a
+
+    Details:
+
+    Check: affected_unit_integration
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check affected_unit_integration (1/5)
+
+    Check: affected_unit_integration
+    Command: bun run test:fast packages/agentplane/src/commands/task/verification-retry-effect-recovery.test.ts packages/agentplane/src/commands/task/verification-retry-source-proof.test.ts packages/agentplane/src/commands/task/direct-task-verification.observability.test.ts packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check affected_unit_integration (2/5)
+
+    Check: affected_unit_integration
+    Command: bun run test:project cli-core packages/agentplane/src/cli/run-cli.core.workflow-recovery.verification-retry.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check affected_unit_integration (3/5)
+
+    Check: affected_unit_integration
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check affected_unit_integration (4/5)
+
+    Check: affected_unit_integration
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check affected_unit_integration (5/5)
+
+    Check: critical_paths
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check critical_paths (1/5)
+
+    Check: critical_paths
+    Command: bun run test:fast packages/agentplane/src/commands/task/verification-retry-effect-recovery.test.ts packages/agentplane/src/commands/task/verification-retry-source-proof.test.ts packages/agentplane/src/commands/task/direct-task-verification.observability.test.ts packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check critical_paths (2/5)
+
+    Check: critical_paths
+    Command: bun run test:project cli-core packages/agentplane/src/cli/run-cli.core.workflow-recovery.verification-retry.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check critical_paths (3/5)
+
+    Check: critical_paths
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check critical_paths (4/5)
+
+    Check: critical_paths
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check critical_paths (5/5)
+
+    Check: docs_contract
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check docs_contract (1/5)
+
+    Check: docs_contract
+    Command: bun run test:fast packages/agentplane/src/commands/task/verification-retry-effect-recovery.test.ts packages/agentplane/src/commands/task/verification-retry-source-proof.test.ts packages/agentplane/src/commands/task/direct-task-verification.observability.test.ts packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check docs_contract (2/5)
+
+    Check: docs_contract
+    Command: bun run test:project cli-core packages/agentplane/src/cli/run-cli.core.workflow-recovery.verification-retry.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check docs_contract (3/5)
+
+    Check: docs_contract
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check docs_contract (4/5)
+
+    Check: docs_contract
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check docs_contract (5/5)
+
+    Check: full_regression
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check full_regression
+
+    Check: real_e2e
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check real_e2e (1/5)
+
+    Check: real_e2e
+    Command: bun run test:fast packages/agentplane/src/commands/task/verification-retry-effect-recovery.test.ts packages/agentplane/src/commands/task/verification-retry-source-proof.test.ts packages/agentplane/src/commands/task/direct-task-verification.observability.test.ts packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check real_e2e (2/5)
+
+    Check: real_e2e
+    Command: bun run test:project cli-core packages/agentplane/src/cli/run-cli.core.workflow-recovery.verification-retry.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check real_e2e (3/5)
+
+    Check: real_e2e
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check real_e2e (4/5)
+
+    Check: real_e2e
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check real_e2e (5/5)
+
+    Check: task_outcome
+    Command: bun run ci:local:full
+    Result: pass
+    Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-1
+    Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check task_outcome (1/5)
+
+    Check: task_outcome
+    Command: bun run test:fast packages/agentplane/src/commands/task/verification-retry-effect-recovery.test.ts packages/agentplane/src/commands/task/verification-retry-source-proof.test.ts packages/agentplane/src/commands/task/direct-task-verification.observability.test.ts packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-2
+    Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check task_outcome (2/5)
+
+    Check: task_outcome
+    Command: bun run test:project cli-core packages/agentplane/src/cli/run-cli.core.workflow-recovery.verification-retry.test.ts
+    Result: pass
+    Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-3
+    Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check task_outcome (3/5)
+
+    Check: task_outcome
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-4
+    Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check task_outcome (4/5)
+
+    Check: task_outcome
+    Command: agentplane doctor
+    Result: pass
+    Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-5
+    Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check task_outcome (5/5)
+
+    NativeTaskIdentityRef:
+    - plan_digest: sha256:247f128d7712b891668846042fe7cb8a73bfe27d51864be612710057379c769e
+    - policy_digest: sha256:c339edb6eb46ba89c4e5616e46bad5598c79d78bac2f2ff8f0eff2193a599755
+    - capability_digest: sha256:a64e0beb7f6b45ae1187ea64a0d480dbde87a33c72187aa1f47f6d5692275abb
+    - checks_digest: sha256:2b8bbcc05638abb269ef6e35fd320b2f60782658b818a1aa4894ef0b5568d10d
+    - identity_digest: sha256:ceb4db3b4e02d05353d348d4a668cb0cd5ed7e8398cb35cbe4706e2c13a3f382
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -1506,6 +1697,191 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202610311835-GVTHA3
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-10-31T21:03:58.848Z — VERIFY — ok
+
+By: SUPERVISOR
+
+Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, excerpt_hash=sha256:6a3b79a3982bc1af50c26642d91692052ab2e3515457bb3dcebc9c260251d383, input_digest=sha256:b9d2262c87a0dba8c3619f77af5a8fc9857740b609b3c8f8c940899d465e624a
+
+Details:
+
+Check: affected_unit_integration
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check affected_unit_integration (1/5)
+
+Check: affected_unit_integration
+Command: bun run test:fast packages/agentplane/src/commands/task/verification-retry-effect-recovery.test.ts packages/agentplane/src/commands/task/verification-retry-source-proof.test.ts packages/agentplane/src/commands/task/direct-task-verification.observability.test.ts packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check affected_unit_integration (2/5)
+
+Check: affected_unit_integration
+Command: bun run test:project cli-core packages/agentplane/src/cli/run-cli.core.workflow-recovery.verification-retry.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check affected_unit_integration (3/5)
+
+Check: affected_unit_integration
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check affected_unit_integration (4/5)
+
+Check: affected_unit_integration
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check affected_unit_integration (5/5)
+
+Check: critical_paths
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check critical_paths (1/5)
+
+Check: critical_paths
+Command: bun run test:fast packages/agentplane/src/commands/task/verification-retry-effect-recovery.test.ts packages/agentplane/src/commands/task/verification-retry-source-proof.test.ts packages/agentplane/src/commands/task/direct-task-verification.observability.test.ts packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check critical_paths (2/5)
+
+Check: critical_paths
+Command: bun run test:project cli-core packages/agentplane/src/cli/run-cli.core.workflow-recovery.verification-retry.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check critical_paths (3/5)
+
+Check: critical_paths
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check critical_paths (4/5)
+
+Check: critical_paths
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check critical_paths (5/5)
+
+Check: docs_contract
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check docs_contract (1/5)
+
+Check: docs_contract
+Command: bun run test:fast packages/agentplane/src/commands/task/verification-retry-effect-recovery.test.ts packages/agentplane/src/commands/task/verification-retry-source-proof.test.ts packages/agentplane/src/commands/task/direct-task-verification.observability.test.ts packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check docs_contract (2/5)
+
+Check: docs_contract
+Command: bun run test:project cli-core packages/agentplane/src/cli/run-cli.core.workflow-recovery.verification-retry.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check docs_contract (3/5)
+
+Check: docs_contract
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check docs_contract (4/5)
+
+Check: docs_contract
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check docs_contract (5/5)
+
+Check: full_regression
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check full_regression
+
+Check: real_e2e
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check real_e2e (1/5)
+
+Check: real_e2e
+Command: bun run test:fast packages/agentplane/src/commands/task/verification-retry-effect-recovery.test.ts packages/agentplane/src/commands/task/verification-retry-source-proof.test.ts packages/agentplane/src/commands/task/direct-task-verification.observability.test.ts packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check real_e2e (2/5)
+
+Check: real_e2e
+Command: bun run test:project cli-core packages/agentplane/src/cli/run-cli.core.workflow-recovery.verification-retry.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check real_e2e (3/5)
+
+Check: real_e2e
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check real_e2e (4/5)
+
+Check: real_e2e
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check real_e2e (5/5)
+
+Check: task_outcome
+Command: bun run ci:local:full
+Result: pass
+Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-1
+Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check task_outcome (1/5)
+
+Check: task_outcome
+Command: bun run test:fast packages/agentplane/src/commands/task/verification-retry-effect-recovery.test.ts packages/agentplane/src/commands/task/verification-retry-source-proof.test.ts packages/agentplane/src/commands/task/direct-task-verification.observability.test.ts packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-2
+Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check task_outcome (2/5)
+
+Check: task_outcome
+Command: bun run test:project cli-core packages/agentplane/src/cli/run-cli.core.workflow-recovery.verification-retry.test.ts
+Result: pass
+Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-3
+Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check task_outcome (3/5)
+
+Check: task_outcome
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-4
+Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check task_outcome (4/5)
+
+Check: task_outcome
+Command: agentplane doctor
+Result: pass
+Evidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-5
+Scope: branch_pr task 202610311835-GVTHA3 Verification Contract check task_outcome (5/5)
+
+NativeTaskIdentityRef:
+- plan_digest: sha256:247f128d7712b891668846042fe7cb8a73bfe27d51864be612710057379c769e
+- policy_digest: sha256:c339edb6eb46ba89c4e5616e46bad5598c79d78bac2f2ff8f0eff2193a599755
+- capability_digest: sha256:a64e0beb7f6b45ae1187ea64a0d480dbde87a33c72187aa1f47f6d5692275abb
+- checks_digest: sha256:2b8bbcc05638abb269ef6e35fd320b2f60782658b818a1aa4894ef0b5568d10d
+- identity_digest: sha256:ceb4db3b4e02d05353d348d4a668cb0cd5ed7e8398cb35cbe4706e2c13a3f382
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

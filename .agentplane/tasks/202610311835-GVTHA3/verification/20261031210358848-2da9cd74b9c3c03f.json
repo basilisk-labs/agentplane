@@ -1,0 +1,296 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610311835-GVTHA3 Verification Contract check affected_unit_integration (1/5)\n\nCheck: affected_unit_integration\nCommand: bun run test:fast packages/agentplane/src/commands/task/verification-retry-effect-recovery.test.ts packages/agentplane/src/commands/task/verification-retry-source-proof.test.ts packages/agentplane/src/commands/task/direct-task-verification.observability.test.ts packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610311835-GVTHA3 Verification Contract check affected_unit_integration (2/5)\n\nCheck: affected_unit_integration\nCommand: bun run test:project cli-core packages/agentplane/src/cli/run-cli.core.workflow-recovery.verification-retry.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610311835-GVTHA3 Verification Contract check affected_unit_integration (3/5)\n\nCheck: affected_unit_integration\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610311835-GVTHA3 Verification Contract check affected_unit_integration (4/5)\n\nCheck: affected_unit_integration\nCommand: agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-5\nScope: branch_pr task 202610311835-GVTHA3 Verification Contract check affected_unit_integration (5/5)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610311835-GVTHA3 Verification Contract check critical_paths (1/5)\n\nCheck: critical_paths\nCommand: bun run test:fast packages/agentplane/src/commands/task/verification-retry-effect-recovery.test.ts packages/agentplane/src/commands/task/verification-retry-source-proof.test.ts packages/agentplane/src/commands/task/direct-task-verification.observability.test.ts packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610311835-GVTHA3 Verification Contract check critical_paths (2/5)\n\nCheck: critical_paths\nCommand: bun run test:project cli-core packages/agentplane/src/cli/run-cli.core.workflow-recovery.verification-retry.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610311835-GVTHA3 Verification Contract check critical_paths (3/5)\n\nCheck: critical_paths\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610311835-GVTHA3 Verification Contract check critical_paths (4/5)\n\nCheck: critical_paths\nCommand: agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-5\nScope: branch_pr task 202610311835-GVTHA3 Verification Contract check critical_paths (5/5)\n\nCheck: docs_contract\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610311835-GVTHA3 Verification Contract check docs_contract (1/5)\n\nCheck: docs_contract\nCommand: bun run test:fast packages/agentplane/src/commands/task/verification-retry-effect-recovery.test.ts packages/agentplane/src/commands/task/verification-retry-source-proof.test.ts packages/agentplane/src/commands/task/direct-task-verification.observability.test.ts packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610311835-GVTHA3 Verification Contract check docs_contract (2/5)\n\nCheck: docs_contract\nCommand: bun run test:project cli-core packages/agentplane/src/cli/run-cli.core.workflow-recovery.verification-retry.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610311835-GVTHA3 Verification Contract check docs_contract (3/5)\n\nCheck: docs_contract\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610311835-GVTHA3 Verification Contract check docs_contract (4/5)\n\nCheck: docs_contract\nCommand: agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-5\nScope: branch_pr task 202610311835-GVTHA3 Verification Contract check docs_contract (5/5)\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610311835-GVTHA3 Verification Contract check full_regression\n\nCheck: real_e2e\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610311835-GVTHA3 Verification Contract check real_e2e (1/5)\n\nCheck: real_e2e\nCommand: bun run test:fast packages/agentplane/src/commands/task/verification-retry-effect-recovery.test.ts packages/agentplane/src/commands/task/verification-retry-source-proof.test.ts packages/agentplane/src/commands/task/direct-task-verification.observability.test.ts packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610311835-GVTHA3 Verification Contract check real_e2e (2/5)\n\nCheck: real_e2e\nCommand: bun run test:project cli-core packages/agentplane/src/cli/run-cli.core.workflow-recovery.verification-retry.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610311835-GVTHA3 Verification Contract check real_e2e (3/5)\n\nCheck: real_e2e\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610311835-GVTHA3 Verification Contract check real_e2e (4/5)\n\nCheck: real_e2e\nCommand: agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-5\nScope: branch_pr task 202610311835-GVTHA3 Verification Contract check real_e2e (5/5)\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610311835-GVTHA3 Verification Contract check task_outcome (1/5)\n\nCheck: task_outcome\nCommand: bun run test:fast packages/agentplane/src/commands/task/verification-retry-effect-recovery.test.ts packages/agentplane/src/commands/task/verification-retry-source-proof.test.ts packages/agentplane/src/commands/task/direct-task-verification.observability.test.ts packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610311835-GVTHA3 Verification Contract check task_outcome (2/5)\n\nCheck: task_outcome\nCommand: bun run test:project cli-core packages/agentplane/src/cli/run-cli.core.workflow-recovery.verification-retry.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610311835-GVTHA3 Verification Contract check task_outcome (3/5)\n\nCheck: task_outcome\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-4\nScope: branch_pr task 202610311835-GVTHA3 Verification Contract check task_outcome (4/5)\n\nCheck: task_outcome\nCommand: agentplane doctor\nResult: pass\nEvidence: .agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-5\nScope: branch_pr task 202610311835-GVTHA3 Verification Contract check task_outcome (5/5)",
+  "digest": "sha256:2da9cd74b9c3c03f9987ed15ffcb5b9c8670f199ceb70c578c626740e138dcd9",
+  "implementation_sha": "78e3cdcc5b6155f7f2efdbb66e7b0a75adfad1b8",
+  "input": {
+    "checked_input": {
+      "commands": {
+        "digest": "sha256:c228acb87a9b38878bd1edc7793893a8f9dc79497918e16e2c7370a3592b7baa",
+        "entries": [
+          {
+            "check_id": "affected_unit_integration",
+            "command": "agentplane doctor"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run test:fast packages/agentplane/src/commands/task/verification-retry-effect-recovery.test.ts packages/agentplane/src/commands/task/verification-retry-source-proof.test.ts packages/agentplane/src/commands/task/direct-task-verification.observability.test.ts packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run test:project cli-core packages/agentplane/src/cli/run-cli.core.workflow-recovery.verification-retry.test.ts"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "node .agentplane/policy/check-routing.mjs"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "agentplane doctor"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run test:fast packages/agentplane/src/commands/task/verification-retry-effect-recovery.test.ts packages/agentplane/src/commands/task/verification-retry-source-proof.test.ts packages/agentplane/src/commands/task/direct-task-verification.observability.test.ts packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run test:project cli-core packages/agentplane/src/cli/run-cli.core.workflow-recovery.verification-retry.test.ts"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "node .agentplane/policy/check-routing.mjs"
+          },
+          {
+            "check_id": "docs_contract",
+            "command": "agentplane doctor"
+          },
+          {
+            "check_id": "docs_contract",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "docs_contract",
+            "command": "bun run test:fast packages/agentplane/src/commands/task/verification-retry-effect-recovery.test.ts packages/agentplane/src/commands/task/verification-retry-source-proof.test.ts packages/agentplane/src/commands/task/direct-task-verification.observability.test.ts packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts"
+          },
+          {
+            "check_id": "docs_contract",
+            "command": "bun run test:project cli-core packages/agentplane/src/cli/run-cli.core.workflow-recovery.verification-retry.test.ts"
+          },
+          {
+            "check_id": "docs_contract",
+            "command": "node .agentplane/policy/check-routing.mjs"
+          },
+          {
+            "check_id": "full_regression",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "real_e2e",
+            "command": "agentplane doctor"
+          },
+          {
+            "check_id": "real_e2e",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "real_e2e",
+            "command": "bun run test:fast packages/agentplane/src/commands/task/verification-retry-effect-recovery.test.ts packages/agentplane/src/commands/task/verification-retry-source-proof.test.ts packages/agentplane/src/commands/task/direct-task-verification.observability.test.ts packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts"
+          },
+          {
+            "check_id": "real_e2e",
+            "command": "bun run test:project cli-core packages/agentplane/src/cli/run-cli.core.workflow-recovery.verification-retry.test.ts"
+          },
+          {
+            "check_id": "real_e2e",
+            "command": "node .agentplane/policy/check-routing.mjs"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "agentplane doctor"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run test:fast packages/agentplane/src/commands/task/verification-retry-effect-recovery.test.ts packages/agentplane/src/commands/task/verification-retry-source-proof.test.ts packages/agentplane/src/commands/task/direct-task-verification.observability.test.ts packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run test:project cli-core packages/agentplane/src/cli/run-cli.core.workflow-recovery.verification-retry.test.ts"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "node .agentplane/policy/check-routing.mjs"
+          }
+        ]
+      },
+      "context": {
+        "digest": "sha256:0473bb9d71aca6f0286d65d878ac866b05eda7dabbcfa2bd6d92488c43a78eb6",
+        "paths": [
+          ".agentplane/WORKFLOW.md",
+          ".github/ISSUE_TEMPLATE/config.yml",
+          "bun.lock",
+          "depcruise.config.cjs",
+          "eslint.config.cjs",
+          "knip.json",
+          "package.json",
+          "packages/agentplane/package.json",
+          "packages/agentplane/src/cli/run-cli/commands/config.ts",
+          "packages/agentplane/src/runner/config.test.ts",
+          "packages/agentplane/src/runner/config.ts",
+          "packages/agentplane/tsconfig.json",
+          "packages/agentplane/tsup.config.ts",
+          "packages/core/package.json",
+          "packages/core/schemas/config.schema.json",
+          "packages/core/src/config/config.test.ts",
+          "packages/core/src/config/config.ts",
+          "packages/core/tsconfig.json",
+          "packages/core/tsup.config.ts",
+          "packages/recipes/package.json",
+          "packages/recipes/tsconfig.json",
+          "packages/recipes/tsup.config.ts",
+          "packages/spec/examples/config.json",
+          "packages/spec/package.json",
+          "packages/spec/schemas/config.schema.json",
+          "packages/testkit/package.json",
+          "packages/testkit/tsconfig.json",
+          "schemas/config.schema.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package-lock.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package.json",
+          "tsconfig.json",
+          "turbo.json",
+          "vitest.config.ts",
+          "vitest.workspace.ts"
+        ]
+      },
+      "digest": "sha256:7381e78a4dbbeb3b18e729717fbcde6ce10524859e52d2256bcbcc2f4ee1a6cb",
+      "environment": {
+        "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+        "runtime": {
+          "architecture": "arm64",
+          "bun_major": null,
+          "node_major": "26",
+          "platform": "darwin"
+        }
+      },
+      "evidence": {
+        "details_digest": "sha256:0f3467460d1ac8a48144f778af65909d9ab265d857eae66b7fad85e47446b9d1",
+        "digest": "sha256:209530be54b1e1cbacb5a9a4b8afc8747db2992c045d9bbf7e19d24b56e3f500",
+        "references": [
+          {
+            "digest": "sha256:91a537fda88b75b038f960eca39588673a0d3e5a82ed4a3b523ec7b144732f26",
+            "fragment": "check-1",
+            "path": ".agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-1",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:91a537fda88b75b038f960eca39588673a0d3e5a82ed4a3b523ec7b144732f26",
+            "fragment": "check-2",
+            "path": ".agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-2",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:91a537fda88b75b038f960eca39588673a0d3e5a82ed4a3b523ec7b144732f26",
+            "fragment": "check-3",
+            "path": ".agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-3",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:91a537fda88b75b038f960eca39588673a0d3e5a82ed4a3b523ec7b144732f26",
+            "fragment": "check-4",
+            "path": ".agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-4",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:91a537fda88b75b038f960eca39588673a0d3e5a82ed4a3b523ec7b144732f26",
+            "fragment": "check-5",
+            "path": ".agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610311835-GVTHA3/supervision/declared-checks.json#check-5",
+            "source": "filesystem"
+          }
+        ]
+      },
+      "implementation": {
+        "base_sha": "f89d603f7fa9b70bca5896fef42212c4c1590fe8",
+        "digest": "sha256:3e59aa3c5d4db7957c061682b49010556a14a135091b25df09926827570f6fc8",
+        "strategy": "branch_diff",
+        "target_sha": "78e3cdcc5b6155f7f2efdbb66e7b0a75adfad1b8"
+      }
+    },
+    "concurrency": {
+      "digest": "sha256:6274bc27f1ed489712b8e98d2113accdfa9c8a9a7384c45ae965caa6a17ce2d3",
+      "execution": {
+        "authoritative_task_source": "task_worktree",
+        "base_ref": "main",
+        "base_sha": "f89d603f7fa9b70bca5896fef42212c4c1590fe8",
+        "digest": "sha256:adde676b2d5aee01a0f48fc5eb7ba569200bd4d258ae20acd999e0d5d1009991",
+        "primary_task_id": "202610311835-GVTHA3",
+        "reason_codes": [
+          "agent_preferred_branch_pr",
+          "effect_public_api",
+          "effect_publish",
+          "effect_schema",
+          "effect_security_boundary",
+          "repository_branch_pr_floor",
+          "reversibility_recovery_required"
+        ],
+        "repository_mode": "branch_pr",
+        "requested_mode": "branch_pr",
+        "route_source": "execution_contract",
+        "selected_mode": "branch_pr",
+        "task_ids": [
+          "202610311835-GVTHA3"
+        ]
+      },
+      "task": {
+        "capability": {
+          "digest": "sha256:a64e0beb7f6b45ae1187ea64a0d480dbde87a33c72187aa1f47f6d5692275abb"
+        },
+        "checks": {
+          "digest": "sha256:2b8bbcc05638abb269ef6e35fd320b2f60782658b818a1aa4894ef0b5568d10d",
+          "required_check_ids": [
+            "affected_unit_integration",
+            "critical_paths",
+            "docs_contract",
+            "full_regression",
+            "real_e2e",
+            "task_outcome"
+          ],
+          "verification_contract_digest": "sha256:fb41bb3d1b656ec9450fa1d6814d3ad78fae3b140ce886276b66aa834e675f31"
+        },
+        "digest": "sha256:ceb4db3b4e02d05353d348d4a668cb0cd5ed7e8398cb35cbe4706e2c13a3f382",
+        "kind": "agentplane.native_task_identity",
+        "plan": {
+          "approval_state": "approved",
+          "approved_digest": "sha256:247f128d7712b891668846042fe7cb8a73bfe27d51864be612710057379c769e",
+          "digest": "sha256:247f128d7712b891668846042fe7cb8a73bfe27d51864be612710057379c769e",
+          "revision": 1
+        },
+        "policy": {
+          "digest": "sha256:c339edb6eb46ba89c4e5616e46bad5598c79d78bac2f2ff8f0eff2193a599755"
+        },
+        "schema_version": 1,
+        "task_id": "202610311835-GVTHA3"
+      }
+    },
+    "digest": "sha256:b9d2262c87a0dba8c3619f77af5a8fc9857740b609b3c8f8c940899d465e624a",
+    "kind": "task_verification_input",
+    "obligations": {
+      "digest": "sha256:c395db142b2e1047eacb13d06fbdb050fe364c3d9ee652715839269b508e3eaf",
+      "required_check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "docs_contract",
+        "full_regression",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "verification_contract_digest": "sha256:fb41bb3d1b656ec9450fa1d6814d3ad78fae3b140ce886276b66aa834e675f31",
+      "verify_steps_digest": "sha256:6a3b79a3982bc1af50c26642d91692052ab2e3515457bb3dcebc9c260251d383"
+    },
+    "schema_version": 5
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: CLI-owned checks passed before independent EVALUATOR review.",
+  "recorded_at": "2026-10-31T21:03:58.848Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun run ci:local:full`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run test:fast packages/agentplane/src/commands/task/verification-retry-effect-recovery.test.ts packages/agentplane/src/commands/task/verification-retry-source-proof.test.ts packages/agentplane/src/commands/task/direct-task-verification.observability.test.ts packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Run `bun run test:project cli-core packages/agentplane/src/cli/run-cli.core.workflow-recovery.verification-retry.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.\n4. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.",
+  "scope_digest": "sha256:6a3b79a3982bc1af50c26642d91692052ab2e3515457bb3dcebc9c260251d383",
+  "task_id": "202610311835-GVTHA3",
+  "verification_command": "agentplane verify 202610311835-GVTHA3 --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
