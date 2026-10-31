@@ -1,9 +1,10 @@
+import { createHash } from "node:crypto";
 import type * as TaskBackendModule from "../shared/task-backend.js";
 import type * as KernelRecordModule from "../../adapters/task-backend/kernel-record.js";
 import type * as ImplementationRecoveryModule from "./external-agent-implementation-recovery.js";
 import type { cmdVerifyParsed } from "./verify-record.js";
 import { execFileSync } from "node:child_process";
-import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rename, rm, symlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { mkGitRepoRoot } from "@agentplane/testkit";
 import {
@@ -18,7 +19,8 @@ import {
   taskCentricDigest,
 } from "@agentplaneorg/core/tasks";
 import { taskDataToFrontmatter } from "../shared/task-backend.js";
-import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { captureExternalTaskArtifacts } from "./external-agent-task-artifact-baseline.js";
 import { reconcileVerificationRetry } from "./verification-retry-effect-recovery.js";
 import { verificationRetryContractIdentity } from "./verification-retry-source-proof.js";
 import {
@@ -56,11 +58,11 @@ beforeEach(() => {
   vi.clearAllMocks();
   mocks.prSync.mockResolvedValue(undefined);
 });
-async function fixture(tail = "") {
+async function fixture(tail = "", workflow = ".agentplane/tasks") {
   const root = await mkGitRepoRoot();
   roots.push(root);
   const taskId = "202610280001-RETRY1";
-  const prefix = `.agentplane/tasks/${taskId}`;
+  const prefix = `${workflow}/${taskId}`;
   const failedRelative = `${prefix}/supervision/declared-checks.json`;
   await mkdir(path.join(root, prefix, "supervision"), { recursive: true });
   await mkdir(path.join(root, prefix, "quality"), { recursive: true });
@@ -126,7 +128,7 @@ async function fixture(tail = "") {
   }).trim();
   const command = {
     memo: {},
-    config: { paths: { workflow_dir: ".agentplane/tasks" } },
+    config: { paths: { workflow_dir: workflow } },
     resolvedProject: { gitRoot: root },
     taskBackend: { getTask: vi.fn(() => Promise.resolve(task)) },
   };
@@ -238,155 +240,224 @@ async function fixture(tail = "") {
     prBodyPath,
   };
 }
-it("runs real checks once and preserves terminal Kernel, failed journal, old checks and EVAL", async () => {
-  const f = await fixture();
-  const before = await Promise.all([
-    readFile(f.journalPath, "utf8"),
-    readFile(f.failedPath, "utf8"),
-    readFile(f.evalPath, "utf8"),
-  ]);
-  const kernel = JSON.stringify(f.kernel);
-  const result = await reconcileVerificationRetry(f.opts);
-  expect(result.result).toMatchObject({ status: "passed", fresh_evaluator_required: true });
-  expect(f.task.verification.state).toBe("ok");
-  expect(JSON.stringify(f.kernel)).toBe(kernel);
-  expect(
-    await Promise.all([
-      readFile(f.journalPath, "utf8"),
-      readFile(f.failedPath, "utf8"),
-      readFile(f.evalPath, "utf8"),
-    ]),
-  ).toEqual(before);
-  const replay = await reconcileVerificationRetry(f.opts);
-  expect(replay.replay).toBe(true);
-  expect(await readFile(path.join(f.root, ".git/check-count"), "utf8")).toBe("1");
-  expect(mocks.persist).toHaveBeenCalledTimes(1);
-  expect(mocks.prSync).not.toHaveBeenCalled();
-  expect(await readFile(f.prMetaPath, "utf8")).toBe("retained provider identity");
-  expect(await readFile(f.prBodyPath, "utf8")).toBe("retained PR body");
-});
-it.each([
-  "source_sha",
-  "head_sha",
-  "kernel_digest",
-  "check_contract_digest",
-  "failed_operation_key",
-  "failed_checks_digest",
-])("refuses changed %s without running a check", async (field) => {
-  const f = await fixture();
-  await writeFile(
-    f.inputPath,
-    JSON.stringify({
-      ...f.request,
-      [field]: field.endsWith("sha") ? "f".repeat(40) : `sha256:${"f".repeat(64)}`,
-    }),
-  );
-  await expect(reconcileVerificationRetry(f.opts)).rejects.toThrow();
-  expect(mocks.persist).not.toHaveBeenCalled();
-  await expect(readFile(path.join(f.root, ".git/check-count"))).rejects.toMatchObject({
-    code: "ENOENT",
-  });
-});
-it("does not execute again after an interruption before verification persistence", async () => {
-  const f = await fixture();
-  mocks.persist.mockRejectedValue(new Error("interrupted persistence"));
-  await expect(reconcileVerificationRetry(f.opts)).rejects.toThrow("interrupted persistence");
-  await expect(reconcileVerificationRetry(f.opts)).rejects.toThrow("no final receipt");
-  expect(await readFile(path.join(f.root, ".git/check-count"), "utf8")).toBe("1");
-});
-
-it("retains a real failed retry and never promotes it to PASS", async () => {
-  const f = await fixture("process.exit(1);");
-  const result = await reconcileVerificationRetry(f.opts);
-  expect(result.result).toMatchObject({ status: "failed" });
-  expect(f.task.verification.state).toBe("needs_rework");
-  expect(mocks.persist).not.toHaveBeenCalled();
-  expect(mocks.prSync).not.toHaveBeenCalled();
-  expect(await readFile(f.prMetaPath, "utf8")).toBe("retained provider identity");
-  expect(await readFile(f.prBodyPath, "utf8")).toBe("retained PR body");
-  const replay = await reconcileVerificationRetry(f.opts);
-  expect(replay.replay).toBe(true);
-  expect(await readFile(path.join(f.root, ".git/check-count"), "utf8")).toBe("1");
-});
-
-it("admits one executor when two retry callers compete", async () => {
-  const f = await fixture("await new Promise(r=>setTimeout(r,300));");
-  const outcomes = await Promise.allSettled([
-    reconcileVerificationRetry(f.opts),
-    reconcileVerificationRetry(f.opts),
-  ]);
-  expect(outcomes.filter((item) => item.status === "fulfilled")).toHaveLength(1);
-  expect(outcomes.filter((item) => item.status === "rejected")).toHaveLength(1);
-  expect(await readFile(path.join(f.root, ".git/check-count"), "utf8")).toBe("1");
-});
-
-it.each(["commands", "verification", "old-eval"])(
-  "refuses a completed replay after %s drift",
-  async (kind) => {
-    const f = await fixture();
-    await reconcileVerificationRetry(f.opts);
-    if (kind === "commands") f.task.verify = ["node --version"];
-    if (kind === "verification") f.task.verification = { state: "needs_rework" };
-    if (kind === "old-eval") await writeFile(f.evalPath, "changed historical review");
-    await expect(reconcileVerificationRetry(f.opts)).rejects.toThrow();
-    expect(await readFile(path.join(f.root, ".git/check-count"), "utf8")).toBe("1");
-  },
-);
-
-it("reconciles the durable prepared native afterimage after persistence interruption", async () => {
-  const f = await fixture();
-  const persist = mocks.persist.getMockImplementation()!;
-  mocks.persist.mockImplementationOnce(async (opts) => {
-    await persist(opts);
-    throw new Error("interrupted AFTER native persistence");
-  });
-  await expect(reconcileVerificationRetry(f.opts)).rejects.toThrow("AFTER native persistence");
-  expect(f.task.verification.state).toBe("ok");
-  const recovered = await reconcileVerificationRetry(f.opts);
-  expect(recovered.replay).toBe(true);
-  expect(recovered.result).toMatchObject({ status: "passed", fresh_evaluator_required: true });
-  expect(await readFile(path.join(f.root, ".git/check-count"), "utf8")).toBe("1");
-  expect(mocks.persist).toHaveBeenCalledTimes(1);
-  expect(mocks.prSync).not.toHaveBeenCalled();
-  expect(await readFile(f.prMetaPath, "utf8")).toBe("retained provider identity");
-  expect(await readFile(f.prBodyPath, "utf8")).toBe("retained PR body");
-});
-
-it("does not treat a caller pin as approval for an added command", async () => {
-  const f = await fixture();
-  f.task.verify = ["node check.mjs", "node --version"];
-  await writeFile(
-    f.inputPath,
-    JSON.stringify({
-      ...f.request,
-      check_contract_digest: verificationRetryContractIdentity(f.task as never),
-    }),
-  );
-  await expect(reconcileVerificationRetry(f.opts)).rejects.toThrow(
-    "immutable approved WorkItem contracts",
-  );
-  await expect(readFile(path.join(f.root, ".git/check-count"))).rejects.toMatchObject({
-    code: "ENOENT",
-  });
-});
-
-it.each(["meta", "body"])(
-  "refuses %s tampering after native persistence interruption without PR overwrite",
-  async (kind) => {
-    const f = await fixture();
-    const persist = mocks.persist.getMockImplementation()!;
-    mocks.persist.mockImplementationOnce(async (opts) => {
-      await persist(opts);
-      throw new Error("interrupted AFTER native persistence");
+describe.each([".agentplane/tasks", "operations/native/tasks"])(
+  "verification retry in workflow %s",
+  (workflow) => {
+    it("runs real checks once and preserves terminal Kernel, failed journal, old checks and EVAL", async () => {
+      const f = await fixture("", workflow);
+      const before = await Promise.all([
+        readFile(f.journalPath, "utf8"),
+        readFile(f.failedPath, "utf8"),
+        readFile(f.evalPath, "utf8"),
+      ]);
+      const kernel = JSON.stringify(f.kernel);
+      const result = await reconcileVerificationRetry(f.opts);
+      expect(result.result).toMatchObject({ status: "passed", fresh_evaluator_required: true });
+      expect(f.task.verification.state).toBe("ok");
+      expect(JSON.stringify(f.kernel)).toBe(kernel);
+      expect(
+        await Promise.all([
+          readFile(f.journalPath, "utf8"),
+          readFile(f.failedPath, "utf8"),
+          readFile(f.evalPath, "utf8"),
+        ]),
+      ).toEqual(before);
+      const replay = await reconcileVerificationRetry(f.opts);
+      expect(replay.replay).toBe(true);
+      expect(await readFile(path.join(f.root, ".git/check-count"), "utf8")).toBe("1");
+      expect(mocks.persist).toHaveBeenCalledTimes(1);
+      expect(mocks.prSync).not.toHaveBeenCalled();
+      expect(await readFile(f.prMetaPath, "utf8")).toBe("retained provider identity");
+      expect(await readFile(f.prBodyPath, "utf8")).toBe("retained PR body");
     });
-    await expect(reconcileVerificationRetry(f.opts)).rejects.toThrow("AFTER native persistence");
-    const file = kind === "meta" ? f.prMetaPath : f.prBodyPath;
-    const tampered = kind === "meta" ? '{"provider":{"repository":"foreign"}}' : "foreign PR body";
-    await writeFile(file, tampered);
-    await expect(reconcileVerificationRetry(f.opts)).rejects.toThrow();
-    expect(await readFile(file, "utf8")).toBe(tampered);
-    expect(mocks.prSync).not.toHaveBeenCalled();
-    expect(mocks.persist).toHaveBeenCalledTimes(1);
-    expect(await readFile(path.join(f.root, ".git/check-count"), "utf8")).toBe("1");
+    it.each([
+      "source_sha",
+      "head_sha",
+      "kernel_digest",
+      "check_contract_digest",
+      "failed_operation_key",
+      "failed_checks_digest",
+    ])("refuses changed %s without running a check", async (field) => {
+      const f = await fixture("", workflow);
+      await writeFile(
+        f.inputPath,
+        JSON.stringify({
+          ...f.request,
+          [field]: field.endsWith("sha") ? "f".repeat(40) : `sha256:${"f".repeat(64)}`,
+        }),
+      );
+      await expect(reconcileVerificationRetry(f.opts)).rejects.toThrow();
+      expect(mocks.persist).not.toHaveBeenCalled();
+      await expect(readFile(path.join(f.root, ".git/check-count"))).rejects.toMatchObject({
+        code: "ENOENT",
+      });
+    });
+    it("does not execute again after an interruption before verification persistence", async () => {
+      const f = await fixture("", workflow);
+      mocks.persist.mockRejectedValue(new Error("interrupted persistence"));
+      await expect(reconcileVerificationRetry(f.opts)).rejects.toThrow("interrupted persistence");
+      await expect(reconcileVerificationRetry(f.opts)).rejects.toThrow("no final receipt");
+      expect(await readFile(path.join(f.root, ".git/check-count"), "utf8")).toBe("1");
+    });
+
+    it("retains a real failed retry and never promotes it to PASS", async () => {
+      const f = await fixture("process.exit(1);", workflow);
+      const result = await reconcileVerificationRetry(f.opts);
+      expect(result.result).toMatchObject({ status: "failed" });
+      expect(f.task.verification.state).toBe("needs_rework");
+      expect(mocks.persist).not.toHaveBeenCalled();
+      expect(mocks.prSync).not.toHaveBeenCalled();
+      expect(await readFile(f.prMetaPath, "utf8")).toBe("retained provider identity");
+      expect(await readFile(f.prBodyPath, "utf8")).toBe("retained PR body");
+      const replay = await reconcileVerificationRetry(f.opts);
+      expect(replay.replay).toBe(true);
+      expect(await readFile(path.join(f.root, ".git/check-count"), "utf8")).toBe("1");
+    });
+
+    it("admits one executor when two retry callers compete", async () => {
+      const f = await fixture("await new Promise(r=>setTimeout(r,300));", workflow);
+      const outcomes = await Promise.allSettled([
+        reconcileVerificationRetry(f.opts),
+        reconcileVerificationRetry(f.opts),
+      ]);
+      expect(outcomes.filter((item) => item.status === "fulfilled")).toHaveLength(1);
+      expect(outcomes.filter((item) => item.status === "rejected")).toHaveLength(1);
+      expect(await readFile(path.join(f.root, ".git/check-count"), "utf8")).toBe("1");
+    });
+
+    it.each(["commands", "verification", "old-eval"])(
+      "refuses a completed replay after %s drift",
+      async (kind) => {
+        const f = await fixture("", workflow);
+        await reconcileVerificationRetry(f.opts);
+        if (kind === "commands") f.task.verify = ["node --version"];
+        if (kind === "verification") f.task.verification = { state: "needs_rework" };
+        if (kind === "old-eval") await writeFile(f.evalPath, "changed historical review");
+        await expect(reconcileVerificationRetry(f.opts)).rejects.toThrow();
+        expect(await readFile(path.join(f.root, ".git/check-count"), "utf8")).toBe("1");
+      },
+    );
+
+    it("reconciles the durable prepared native afterimage after persistence interruption", async () => {
+      const f = await fixture("", workflow);
+      const persist = mocks.persist.getMockImplementation()!;
+      mocks.persist.mockImplementationOnce(async (opts) => {
+        await persist(opts);
+        throw new Error("interrupted AFTER native persistence");
+      });
+      await expect(reconcileVerificationRetry(f.opts)).rejects.toThrow("AFTER native persistence");
+      expect(f.task.verification.state).toBe("ok");
+      const recovered = await reconcileVerificationRetry(f.opts);
+      expect(recovered.replay).toBe(true);
+      expect(recovered.result).toMatchObject({ status: "passed", fresh_evaluator_required: true });
+      expect(await readFile(path.join(f.root, ".git/check-count"), "utf8")).toBe("1");
+      expect(mocks.persist).toHaveBeenCalledTimes(1);
+      expect(mocks.prSync).not.toHaveBeenCalled();
+      expect(await readFile(f.prMetaPath, "utf8")).toBe("retained provider identity");
+      expect(await readFile(f.prBodyPath, "utf8")).toBe("retained PR body");
+    });
+
+    it("does not treat a caller pin as approval for an added command", async () => {
+      const f = await fixture("", workflow);
+      f.task.verify = ["node check.mjs", "node --version"];
+      await writeFile(
+        f.inputPath,
+        JSON.stringify({
+          ...f.request,
+          check_contract_digest: verificationRetryContractIdentity(f.task as never),
+        }),
+      );
+      await expect(reconcileVerificationRetry(f.opts)).rejects.toThrow(
+        "immutable approved WorkItem contracts",
+      );
+      await expect(readFile(path.join(f.root, ".git/check-count"))).rejects.toMatchObject({
+        code: "ENOENT",
+      });
+    });
+
+    it.each(["meta", "body"])(
+      "refuses %s tampering after native persistence interruption without PR overwrite",
+      async (kind) => {
+        const f = await fixture("", workflow);
+        const persist = mocks.persist.getMockImplementation()!;
+        mocks.persist.mockImplementationOnce(async (opts) => {
+          await persist(opts);
+          throw new Error("interrupted AFTER native persistence");
+        });
+        await expect(reconcileVerificationRetry(f.opts)).rejects.toThrow(
+          "AFTER native persistence",
+        );
+        const file = kind === "meta" ? f.prMetaPath : f.prBodyPath;
+        const tampered =
+          kind === "meta" ? '{"provider":{"repository":"foreign"}}' : "foreign PR body";
+        await writeFile(file, tampered);
+        await expect(reconcileVerificationRetry(f.opts)).rejects.toThrow();
+        expect(await readFile(file, "utf8")).toBe(tampered);
+        expect(mocks.prSync).not.toHaveBeenCalled();
+        expect(mocks.persist).toHaveBeenCalledTimes(1);
+        expect(await readFile(path.join(f.root, ".git/check-count"), "utf8")).toBe("1");
+      },
+    );
   },
 );
+
+const artifactTask = "202610280002-ARTF01";
+it.each([".agentplane/tasks", "operations/native/tasks"])(
+  "captures configured artifacts and missing roots: %s",
+  async (workflow) => {
+    const root = await mkGitRepoRoot();
+    roots.push(root);
+    expect(await captureExternalTaskArtifacts(root, artifactTask, workflow)).toEqual({});
+    const taskRoot = path.join(root, workflow, artifactTask);
+    await mkdir(taskRoot, { recursive: true });
+    await writeFile(path.join(taskRoot, "README.md"), "native artifact");
+    const entries = await captureExternalTaskArtifacts(root, artifactTask, workflow);
+    expect(entries["README.md"]).toMatch(/^file:[0-9]+:[a-f0-9]{64}$/u);
+  },
+);
+it.each(["../outside", "/absolute", "C:\\absolute", "nested/../../outside"])(
+  "refuses workflow escape before checks: %s",
+  async (workflow) => {
+    const root = await mkGitRepoRoot();
+    roots.push(root);
+    await expect(captureExternalTaskArtifacts(root, artifactTask, workflow)).rejects.toThrow();
+    await expect(readFile(path.join(root, ".git/check-count"))).rejects.toMatchObject({
+      code: "ENOENT",
+    });
+  },
+);
+it.each(["operations", "operations/native", "operations/native/tasks"])(
+  "refuses an intermediate workflow symlink: %s",
+  async (ancestor) => {
+    const root = await mkGitRepoRoot(),
+      outside = await mkGitRepoRoot();
+    roots.push(root, outside);
+    await mkdir(path.join(root, "operations/native/tasks", artifactTask), { recursive: true });
+    const held = path.join(outside, "held");
+    await rename(path.join(root, ancestor), held);
+    await symlink(held, path.join(root, ancestor), "dir");
+    await expect(
+      captureExternalTaskArtifacts(root, artifactTask, "operations/native/tasks"),
+    ).rejects.toThrow(/symlink/u);
+    await expect(readFile(path.join(root, ".git/check-count"))).rejects.toMatchObject({
+      code: "ENOENT",
+    });
+  },
+);
+it("hashes artifact symlink targets without traversing them", async () => {
+  const root = await mkGitRepoRoot(),
+    outside = await mkGitRepoRoot();
+  roots.push(root, outside);
+  const taskRoot = path.join(root, "operations/native/tasks", artifactTask);
+  await mkdir(taskRoot, { recursive: true });
+  const target = path.join(outside, "private.txt");
+  await writeFile(target, "unchanged private bytes");
+  await symlink(target, path.join(taskRoot, "linked.txt"));
+  await symlink(outside, path.join(taskRoot, "linked-directory"), "dir");
+  const entries = await captureExternalTaskArtifacts(root, artifactTask, "operations/native/tasks");
+  expect(entries["linked.txt"]).toMatch(
+    new RegExp(`^link:[0-9]+:${createHash("sha256").update(target).digest("hex")}$`, "u"),
+  );
+  expect(Object.keys(entries)).toEqual(["linked-directory", "linked.txt"]);
+  expect(await readFile(target, "utf8")).toBe("unchanged private bytes");
+});

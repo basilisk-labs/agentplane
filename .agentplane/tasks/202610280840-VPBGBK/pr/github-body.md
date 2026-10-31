@@ -2354,6 +2354,7 @@ Actual HUMAN explicitly approved in SB thread01a17c58-b597-78a1-abed-517855b3f39
  .../task/direct-task-verification-observation.ts   |  101 +-
  .../direct-task-verification.observability.test.ts |   88 +-
  .../src/commands/task/direct-task-verification.ts  |   24 +-
+ .../task/external-agent-task-artifact-baseline.ts  |   42 +-
  ...rnal-agent-workflow-recovery-provider-update.ts |  124 +
  .../task/external-agent-workflow-recovery.test.ts  |  225 ++
  .../task/external-agent-workflow-recovery.ts       |   16 +-
@@ -2361,7 +2362,7 @@ Actual HUMAN explicitly approved in SB thread01a17c58-b597-78a1-abed-517855b3f39
  .../task/provider-update-effect-recovery.test.ts   |  153 +-
  .../task/provider-update-effect-recovery.ts        |   42 +-
  .../task/revision-consistency.integration.test.ts  |  227 ++
- .../verification-retry-effect-recovery.test.ts     |  392 ++
+ .../verification-retry-effect-recovery.test.ts     |  463 +++
  .../task/verification-retry-effect-recovery.ts     |  479 +++
  .../task/verification-retry-source-proof.test.ts   |  145 +
  .../task/verification-retry-source-proof.ts        |  276 ++
@@ -2373,7 +2374,7 @@ Actual HUMAN explicitly approved in SB thread01a17c58-b597-78a1-abed-517855b3f39
  .../src/commands/task/workflow-effect-recovery.ts  |    2 +
  packages/core/src/tasks/task-kernel/kernel.ts      |   16 +-
  .../task-kernel/required-check-correction.test.ts  |  194 +
- 2346 files changed, 102617 insertions(+), 163 deletions(-)
+ 2347 files changed, 102715 insertions(+), 178 deletions(-)
 ```
 
 </details>

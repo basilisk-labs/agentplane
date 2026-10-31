@@ -240,7 +240,7 @@ export async function reconcileVerificationRetry(
         allowed_new_paths: newPaths,
         allowed_modified_paths: modifiedPaths,
       });
-      const artifacts = await captureExternalTaskArtifacts(checkout, opts.task_id);
+      const artifacts = await captureExternalTaskArtifacts(checkout, opts.task_id, workflow);
       if (taskCentricDigest(artifacts) !== taskCentricDigest(prepared.artifacts))
         refuse("the prepared verification artifact afterimage changed.");
       if (!observed.verification?.updated_at || observed.verification.state !== "ok")
@@ -314,7 +314,7 @@ export async function reconcileVerificationRetry(
         taskCentricDigest(current) !== payload.task_digest ||
         taskCentricDigest(current?.quality_review ?? null) !== payload.original_review ||
         taskCentricDigest(await readJson(journalPath)) !== payload.original_journal ||
-        taskCentricDigest(await captureExternalTaskArtifacts(checkout, opts.task_id)) !==
+        taskCentricDigest(await captureExternalTaskArtifacts(checkout, opts.task_id, workflow)) !==
           taskCentricDigest(payload.artifacts)
       )
         refuse("the completed retry afterimage changed.");
@@ -324,7 +324,7 @@ export async function reconcileVerificationRetry(
       refuse("the currently retained validation is not failed.");
     const source = await observeVerificationRetrySource(sourceOptions);
     await prepareVerificationRetryArtifact(command, opts.task_id, key);
-    const protectedArtifacts = await captureExternalTaskArtifacts(checkout, opts.task_id);
+    const protectedArtifacts = await captureExternalTaskArtifacts(checkout, opts.task_id, workflow);
     const originalJournal = taskCentricDigest(journal);
     const originalReview = taskCentricDigest(task.quality_review ?? null);
     await mkdir(directory, { recursive: true, mode: 0o700 });
@@ -383,7 +383,7 @@ export async function reconcileVerificationRetry(
       ],
     });
     await assertUnchanged();
-    const afterChecks = await captureExternalTaskArtifacts(checkout, opts.task_id);
+    const afterChecks = await captureExternalTaskArtifacts(checkout, opts.task_id, workflow);
     for (const [name, value] of Object.entries(protectedArtifacts))
       if (afterChecks[name] !== value) refuse(`historical artifact changed: ${name}`);
     if (checks.status !== "passed") {
@@ -430,7 +430,7 @@ export async function reconcileVerificationRetry(
           next.verification?.state !== "ok"
         )
           refuse("prepared verification changes protected native identity.");
-        const artifacts = await captureExternalTaskArtifacts(checkout, opts.task_id);
+        const artifacts = await captureExternalTaskArtifacts(checkout, opts.task_id, workflow);
         for (const [name, value] of Object.entries(protectedArtifacts))
           if (artifacts[name] !== value)
             refuse(`protected evidence changed before persistence: ${name}`);
