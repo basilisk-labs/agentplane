@@ -113,6 +113,74 @@ async function fixture(workItemCount = 0) {
 
 describe("public Node quarantine operator workflow", () => {
   it(
+    "authenticates quarantined history from a compact worktree without hiding a bad local source",
+    { timeout: 120_000 },
+    async () => {
+      const f = await fixture();
+      const applied = invoke(f.root, [
+        "task",
+        "kernel-migrate",
+        id,
+        "--apply",
+        "--source-digest",
+        taskBytesDigest(f.source),
+        "--yes",
+      ]);
+      expect(applied.code, applied.stdout + applied.stderr).toBe(1);
+      const result = JSON.parse(applied.stdout) as {
+        quarantine_proof: { backup_location: string };
+      };
+      expect(result).toMatchObject({ kind: "quarantined", persisted: true });
+      const after = await readFile(f.file, "utf8");
+      const compact = path.join(f.root, ".agentplane/worktrees/quarantine-doctor");
+      const git = (cwd: string, ...args: string[]) => {
+        const p = spawnSync("git", ["-c", "core.hooksPath=/dev/null", ...args], {
+          cwd,
+          encoding: "utf8",
+          env: cleanGitEnv(),
+        });
+        expect(p.status, p.stdout + p.stderr).toBe(0);
+      };
+      git(f.root, "add", "--all");
+      git(f.root, "add", "--force", "--all", ".agentplane");
+      git(f.root, "commit", "-m", "Retain quarantined fixture history");
+      git(f.root, "config", "extensions.worktreeConfig", "true");
+      git(f.root, "worktree", "add", "--no-checkout", "-b", "compact-history", compact);
+      git(compact, "sparse-checkout", "set", "--no-cone", "/*", "!/.agentplane/tasks/*");
+      git(compact, "config", "--worktree", "agentplane.compactTaskHistory", "true");
+      git(compact, "read-tree", "-mu", "HEAD");
+      await mkdir(path.join(compact, ".agentplane/tasks"), { recursive: true });
+      expect(await readFile(path.join(compact, ".agentplane/WORKFLOW.md"), "utf8")).toBe(
+        await readFile(path.join(f.root, ".agentplane/WORKFLOW.md"), "utf8"),
+      );
+      const local = path.join(compact, ".agentplane/tasks", id, "README.md");
+      await expect(readFile(local, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
+
+      let doctor = invoke(compact, ["doctor"]);
+      expect(doctor.code, doctor.stdout + doctor.stderr).toBe(0);
+      expect(doctor.stdout + doctor.stderr).toContain("retained lifecycle migration quarantine");
+
+      await mkdir(path.dirname(local), { recursive: true });
+      await writeFile(local, after + "\nEdited local afterimage\n");
+      doctor = invoke(compact, ["doctor"]);
+      expect(doctor.code).not.toBe(0);
+      expect(doctor.stdout + doctor.stderr).toContain("quarantine source proof failed");
+      await rm(path.dirname(local), { recursive: true });
+
+      const backup = path.join(
+        f.root,
+        ".agentplane/tasks",
+        result.quarantine_proof.backup_location,
+      );
+      await rm(backup);
+      doctor = invoke(compact, ["doctor"]);
+      expect(doctor.code).not.toBe(0);
+      expect(doctor.stdout + doctor.stderr).toContain("quarantine source proof failed");
+      expect(await readFile(f.file, "utf8")).toBe(after);
+    },
+  );
+
+  it(
     "previews, quarantines, checks diagnostics, refuses work, replays and rolls back exact bytes",
     { timeout: 120_000 },
     async () => {
