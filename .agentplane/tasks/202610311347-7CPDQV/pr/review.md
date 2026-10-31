@@ -6,7 +6,7 @@ Created: 2026-10-31T13:55:43.107Z
 
 - Task: `202610311347-7CPDQV`
 - Title: Qualify bounded native recovery with frozen branch_pr routing
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610311347-7CPDQV/qualify-bounded-native-recovery-with-frozen-bran`
 - Canonical task record: `.agentplane/tasks/202610311347-7CPDQV/README.md`
 
