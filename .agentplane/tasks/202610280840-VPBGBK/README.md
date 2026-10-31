@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 53
+revision: 54
 origin:
   system: "manual"
 depends_on: []
@@ -30,36 +30,33 @@ verification:
   note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
   attempts: 0
 quality_review:
-  state: "blocked"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-10-29T12:08:02.425Z"
+  updated_at: "2026-10-31T01:07:40.133Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned blocked with 4 typed finding(s)."
-  evaluated_sha: "a3f7677863abc581576a78b32a3813ee3259330f"
-  review_identity_digest: "sha256:20387f5c82cfaf889c6c808254ffea46047fc03d35d4cd7d1427d96a9b6c4c0d"
+  note: "EVALUATOR returned rework with 2 typed finding(s)."
+  evaluated_sha: "ee75af7d87bcdd8b07dafc3608b002d8e9015b49"
+  review_identity_digest: "sha256:0d2783c5fbc5981f2bc0a3948464434a91b980bd0a0ef5a5888d840967df8502"
   evidence_refs:
-    - ".agentplane/tasks/202610280840-VPBGBK/quality/20261029-120545032-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202610280840-VPBGBK/quality/20261029-120545032-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202610280840-VPBGBK/quality/objects/sha256/cb2b5fcc687356832c980dd1e8e9f3472459dc7b0d61c53edfbc87cfa8b7837f.md"
-    - ".agentplane/tasks/202610280840-VPBGBK/quality/20261029-120545032-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202610280840-VPBGBK/quality/20261029-120545032-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202610280840-VPBGBK/quality/20261029-120545032-recovery-context/evaluator-follow-up.json"
-    - ".agentplane/tasks/202610280840-VPBGBK/quality/20261029-120545032-recovery-context/evaluator-evidence-manifest.json"
+    - ".agentplane/tasks/202610280840-VPBGBK/quality/20261031-005729926-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202610280840-VPBGBK/quality/20261031-005729926-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202610280840-VPBGBK/quality/objects/sha256/29425866d9c16e8636ac869ee3a41d83648d07bc6e0c9917eb47c6e957c00137.md"
+    - ".agentplane/tasks/202610280840-VPBGBK/quality/20261031-005729926-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202610280840-VPBGBK/quality/20261031-005729926-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202610280840-VPBGBK/quality/20261031-005729926-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202610280840-VPBGBK/quality/20261031-005729926-recovery-context/evaluator-evidence-manifest.json"
     - ".agentplane/tasks/202610280840-VPBGBK/README.md"
     - ".agentplane/tasks/202610280840-VPBGBK/quality/objects/sha256/bf19f6163c58f9624371b0510c646ced692957bceb776b2df90bd56625a36e47.patch"
-    - ".agentplane/tasks/202610280840-VPBGBK/quality/objects/sha256/fb4ee7bc788b285c33a52c311c8cd845383da17786171c3dc9cd62c735ddc4e2.json"
-    - ".agentplane/tasks/202610280840-VPBGBK/verification/20261029094513524-74ea8efc6a786d6e.json"
-    - ".agentplane/tasks/202610280840-VPBGBK/quality/objects/sha256/652ff62ce04c34907a8d59ab1fc2532ff8f81b5fb2281a2f8ab9ceb5161d3611.json"
+    - ".agentplane/tasks/202610280840-VPBGBK/quality/objects/sha256/a2ce9043b4f7b90e16b6fee3389cb43ddaefa7c44530ab9230fb60161ea4ac2a.json"
+    - ".agentplane/tasks/202610280840-VPBGBK/verification/20261031005638119-176c46cd6e9690ff.json"
+    - ".agentplane/tasks/202610280840-VPBGBK/quality/objects/sha256/36b7558e2e194a08962cb0b86df275b7d44740bc0ebd6dd386c92f805c35fe47.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
-    - ".agentplane/policy/workflow.release.md"
   findings:
-    - "The Task document declares task_kind code and risk_flags publish. This issued WorkOrder selects incompatible release obligations and contains the approval_required task_kind_incompatible stop rule. The EVALUATOR cannot remove this gate or reinterpret the code Task as a package release."
-    - "The WorkOrder requires a policy fingerprint component but reports policy_module_observation_unavailable. The five frozen policy files exist and their raw digests match. Those file reads do not establish the missing supervisor-owned observation."
-    - "Residual risk: The reproduced custom-workflow P2 remains unpatched."
-    - "Residual risk: The unused-export Knip failure and canonical-import Task artifact ownership gap remain unresolved."
+    - "P2: captureExternalTaskArtifacts always reads .agentplane/tasks/<taskId>. verification-retry-effect-recovery reads command.config.paths.workflow_dir, but all five artifact capture calls omit that path. With workflow_dir=operations/native/tasks, capture returns an empty artifact map and the typed retry fails because its prepared Task README is unavailable. The source and call sites are present in the frozen actual-diff evidence."
+    - "Residual risk: The current full validation is valid for its covered configuration. It does not establish custom workflow-directory recovery."
 token_usage:
   agent_runs: 0
   input_tokens: null
@@ -4992,7 +4989,7 @@ events:
     state: "ok"
     note: "Verified: CLI-owned declared checks passed; independent EVALUATOR review is pending."
 doc_version: 3
-doc_updated_at: "2026-10-31T00:56:47.896Z"
+doc_updated_at: "2026-10-31T01:07:40.162Z"
 doc_updated_by: "USER"
 description: "Actual HUMAN explicitly approved in SB thread01a17c58-b597-78a1-abed-517855b3f393 message01a181a3-ef22-7af0-b6ce-e9f9b00f8d23: narrow AgentPlane fix, separate Task ID, checks and PR/merge, then sb recovery preserving data credentials runtime guards. Exact reviewed design SHA9bda08b6d37c2badb985ac8c8c823651cd0a5edcfd0db8c856dfdedf68964794 in Factory YMR EVID sb-post121845-terminal-verification-retry-reviewable-design.json. Real case Factory completedKernel DRG36R, source48a/currentmanagedhead d906: native run028failed environmental localhost proxy501; corrected commandlocaltransport and actual canonical72PASS685.829/5441/4partitions, but completed no-source-change rework84699 refuses; legacy recovery requires missing current_plan. First qualify CURRENTcanonical d514 mechanisms; do not duplicate a newly existing supported route. Implement one public typed verification_retry_request through existing task advance workflow recovery. Controller authenticates exact repository/terminalKernel digest/approvedcheckcontract/realfailedsupervisorattempt/source or audited managedmetadata-only descendant; when bindingmissing create fresh controller adoption observation, never backfill oldreceipt. One statebound durable retry/attempt, all original mandatorychecks actualnativeexecutor once, fresh before/after source/scope/contract pins; PASS only after actualsuccess, then freshEVALUATOR current-source. Immutable completedKernel/plan/workitems/oldEVAL/failed028 remain byteexact. No general reopen/forceOK/internalAPIcaller/manualTaskJSON/fake sourcediff/import of independentPASS as authority. Drift/unknown/interrupt/duplicate refuse, old no-diff and publicationfrozenbaseguards unchanged. Publicationbase mismatch3f31-vs94 is separate blocker, not permission to disable it. Nearest fault/CLI tests cover canonicalcompleted/no legacy/envfail recovery and exactKernel preservation, source/head/scope/command drift, oldevidence non-adoption, interrupted/failed idempotence/no duplicateexecutor, unchangedlegacy/no-diff/provider guard. Scope exacteight listed roots; native plan may narrow or propose necessary bounded refinement under actual user authorization, not silently broaden. Preserve all originalAP/Factory worktrees and untracked native artifacts, foreignFactoryshim cfab, all privateTMP; no install/globalenv/auth/credential/ACL/runtime effects. Only source repair/checks/authorizedcanonicalGitHubPRmerge in this APTask; no Beta host access. Full mandatory native validation and independent review before publication. Existing source/currentbase CDC stale; canonicalremote d514 verified by ls-remote+scopedfetch. Base pinned d514. Previous N1E7M3 scope is not reused/reopened. This is genuinely new framework repair, not replacementFactoryTask or fakeclosure."
 sections:
@@ -5363,13 +5360,13 @@ sections:
   Findings: ""
 extensions:
   agentplane.completed_native_review:
-    applied_at: "2026-10-29T12:08:02.425Z"
+    applied_at: "2026-10-31T01:07:40.133Z"
     kernel_digest: "sha256:e719a0a75924b6b94f3601c71bc365602e7771a53d87f385c53bf4f17d9c2058"
-    quality_digest: "sha256:a2fccf9300d99a74dfbb28f241eb29164a2d31158afac777362a72db827f7b05"
-    result_digest: "sha256:1eb6af9ada98c3d706928d6358ccd3272a829a322adf238dfd46bcaa65114714"
+    quality_digest: "sha256:239874776bc72489abe43478abaa5667496834c13add370bf0ff92fba35ab566"
+    result_digest: "sha256:496dbdd0c2b1fad2c8c4d8813d1d458e7d4907d00e3ece251d996b7d159b1d62"
     schema_version: 1
-    state_fingerprint: "sha256:3828ae9ee5da84379658456fa2601796ce9ba3e88ff1a06e25f4f20b569085cb"
-    transition_id: "tr_a5b72a4ac5806992e3ddbd7f9148225f"
+    state_fingerprint: "sha256:8322357e16b4d2b62ea11ef89975df5ec87daa43e004f756c0d6c2bb375f91d5"
+    transition_id: "tr_a1e7a7f7b619e220a99e13aca89fc5fd"
   agentplane.completed_scope_admissions:
     - "sha256:5cbc50a7e3f5b9fd6b1a83bbbfb41be1b6dc9f56a231ec7642df359a23a4ffe9"
   agentplane.kernel_operational_projection:
