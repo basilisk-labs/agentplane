@@ -15,8 +15,8 @@ The user authorized all eight SB recovery items, native framework fixes, PR/merg
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Canonical validation sha256:7c629e37833d71c196f9e89d28fb9f02dcfc059d0db49bf4684b458691a1dbe6
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -33,8 +33,8 @@ The user authorized all eight SB recovery items, native framework fixes, PR/merg
  .../agentplane/src/commands/task/finish-shared.ts  |  6 +-
  .../kernel-completed-external-rework.testkit.ts    |  2 +-
  .../commands/task/kernel-worktree-routing.test.ts  | 58 +++++++++++++++
- .../src/commands/task/scope-extend.command.test.ts | 11 ++-
- 7 files changed, 185 insertions(+), 16 deletions(-)
+ .../src/commands/task/scope-extend.command.test.ts | 16 ++--
+ 7 files changed, 190 insertions(+), 16 deletions(-)
 ```
 
 </details>

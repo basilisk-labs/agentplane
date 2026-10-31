@@ -351,6 +351,12 @@ function coldProcess(root: string, id: string) {
 }
 
 describe("completed native repair prospective scope admission", { timeout: 120_000 }, () => {
+  it("authenticates raw finish metadata and keeps foreign backend namespaces isolated", async () => {
+    const { f, command, before, args } = await completedScopeFixture(true, true);
+    const admitted = await invoke(f.root, args);
+    expect(admitted.code, admitted.stdout + admitted.stderr).toBe(0);
+    await checkCompletedScopeFinish(command, f.id, before);
+  });
   it("authenticates the consumed blocker, admits exact scope, and preserves terminal history", async () => {
     const { f, packet, payload, command, before, args } = await completedScopeFixture(true, true);
     const cli = fileURLToPath(new URL("../../../bin/agentplane.js", import.meta.url));
@@ -368,7 +374,6 @@ describe("completed native repair prospective scope admission", { timeout: 120_0
       },
     });
     const after = (await command.taskBackend.getTask(f.id))!;
-    await checkCompletedScopeFinish(command, f.id, before);
     expect(after.status).toBe("DONE");
     expect(after.extensions?.task_kernel).toEqual(before.extensions?.task_kernel);
     expect(after.commit).toEqual(before.commit);
