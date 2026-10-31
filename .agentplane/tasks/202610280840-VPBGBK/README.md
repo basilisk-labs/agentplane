@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 50
+revision: 52
 origin:
   system: "manual"
 depends_on: []
@@ -119,6 +119,7 @@ execution_contract:
       - "packages/agentplane/src/commands/task/direct-task-verification-observation.ts"
       - "packages/agentplane/src/commands/task/direct-task-verification.observability.test.ts"
       - "packages/agentplane/src/commands/task/direct-task-verification.ts"
+      - "packages/agentplane/src/commands/task/external-agent-task-artifact-baseline.ts"
       - "packages/agentplane/src/commands/task/verification-retry-effect-recovery.test.ts"
       - "packages/agentplane/src/commands/task/verification-retry-effect-recovery.ts"
       - "packages/agentplane/src/commands/task/verification-retry-source-proof.test.ts"
@@ -151,6 +152,7 @@ execution_contract:
       - "packages/agentplane/src/commands/task/direct-task-verification-observation.ts"
       - "packages/agentplane/src/commands/task/direct-task-verification.observability.test.ts"
       - "packages/agentplane/src/commands/task/direct-task-verification.ts"
+      - "packages/agentplane/src/commands/task/external-agent-task-artifact-baseline.ts"
       - "packages/agentplane/src/commands/task/verification-retry-effect-recovery.test.ts"
       - "packages/agentplane/src/commands/task/verification-retry-effect-recovery.ts"
       - "packages/agentplane/src/commands/task/verification-retry-source-proof.test.ts"
@@ -230,6 +232,7 @@ execution_contract:
           - "packages/agentplane/src/commands/task/direct-task-verification-observation.ts"
           - "packages/agentplane/src/commands/task/direct-task-verification.observability.test.ts"
           - "packages/agentplane/src/commands/task/direct-task-verification.ts"
+          - "packages/agentplane/src/commands/task/external-agent-task-artifact-baseline.ts"
           - "packages/agentplane/src/commands/task/verification-retry-effect-recovery.test.ts"
           - "packages/agentplane/src/commands/task/verification-retry-effect-recovery.ts"
           - "packages/agentplane/src/commands/task/verification-retry-source-proof.test.ts"
@@ -260,7 +263,7 @@ execution_contract:
           implementation_uncertainty: "bounded"
           requirements_uncertainty: "bounded"
           reversibility: "recovery_required"
-      digest: "sha256:f2ec2ed70fc8036f18e1c3115d51d96ab5965824d8179729ddbf946d31929c77"
+      digest: "sha256:7917a97ae4cf8a55a9a07391db53483fbeb66efad2545c997ebd87a5fa0326f4"
       escalation_reasons:
         - "central_component:packages/agentplane/src/cli/run-cli.core.workflow-recovery.verification-retry.test.ts"
         - "central_component:packages/agentplane/src/cli/stale-dist-readonly.test.ts"
@@ -4952,6 +4955,9 @@ comments:
   -
     author: "SUPERVISOR"
     body: "Blocked: external EXECUTOR could not complete the scoped implementation. The directly human-approved P2 repair requires one helper file outside the issued writable roots. Native scope admission and a compatible code packet are required before source edits. Recommended action: Consume this preserved structured request through the supported native scope-admission route using the existing direct human approval. Then issue a fresh compatible code EXECUTOR packet. Preserve the completed Kernel and all historical results. Do not ask for the same helper permission again or expand scope to other framework files. Requested scope: roots=packages/agentplane/src/commands/task/external-agent-task-artifact-baseline.ts; repository effects=unchanged; request digest=sha256:d014753d0d26653191d427f2ac8e0982066178ef97664436dfafc46b7f572ea9. Agentplane receipt: external-agent-blocker/tr_a754a68f06d0d4426366f46547687380/sha256:ca49469cee23c255e57f9854f7bac855a907a866b1493f1c3c990cb4c336de84/sha256:d014753d0d26653191d427f2ac8e0982066178ef97664436dfafc46b7f572ea9."
+  -
+    author: "USER"
+    body: "Approved state-bound execution scope extension: packages/agentplane/src/commands/task/external-agent-task-artifact-baseline.ts; repository effects: unchanged."
 events:
   -
     type: "verify"
@@ -5293,6 +5299,8 @@ extensions:
     schema_version: 1
     state_fingerprint: "sha256:3828ae9ee5da84379658456fa2601796ce9ba3e88ff1a06e25f4f20b569085cb"
     transition_id: "tr_a5b72a4ac5806992e3ddbd7f9148225f"
+  agentplane.completed_scope_admissions:
+    - "sha256:5cbc50a7e3f5b9fd6b1a83bbbfb41be1b6dc9f56a231ec7642df359a23a4ffe9"
   agentplane.kernel_operational_projection:
     digest: "sha256:c95341cf1c56703094265e62b6d4198b29dc346265eb2f08e9ac9e0110c43d84"
     evidence_refs:
@@ -5314,6 +5322,8 @@ extensions:
     verification_evidence_digest: "sha256:f6a134a3c4fae3927c3f1528b1fd7d007b34a1dc8141b3d713c7f9bfabc6f2af"
     work_order_id: "sha256:ed0c46e6c7b8f42e409e96f822bee7d73ff8f25d0e22ba2956630ee55cf3413c"
   agentplane.scope_extension_request:
+    applied_at: "2026-10-29T22:32:08.718Z"
+    applied_by: "USER"
     blocker_state_fingerprint: "sha256:ca49469cee23c255e57f9854f7bac855a907a866b1493f1c3c990cb4c336de84"
     kind: "task_scope_extension_request"
     request:
@@ -5324,7 +5334,7 @@ extensions:
         - "packages/agentplane/src/commands/task/external-agent-task-artifact-baseline.ts"
     request_digest: "sha256:d014753d0d26653191d427f2ac8e0982066178ef97664436dfafc46b7f572ea9"
     schema_version: 1
-    status: "pending"
+    status: "applied"
     transition_id: "tr_a754a68f06d0d4426366f46547687380"
     work_item_id: null
   implementation_commit:
