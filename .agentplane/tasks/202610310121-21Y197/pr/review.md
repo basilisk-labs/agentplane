@@ -29,14 +29,14 @@ Created: 2026-10-31T01:26:30.608Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../shared/task-backend-branch-snapshot.ts         | 22 ++++--
- .../agentplane/src/commands/shared/task-backend.ts | 16 +++-
- .../task/finish-completed-scope.testkit.ts         | 86 ++++++++++++++++++++++
- .../agentplane/src/commands/task/finish-shared.ts  |  6 +-
- .../kernel-completed-external-rework.testkit.ts    |  2 +-
- .../commands/task/kernel-worktree-routing.test.ts  | 58 +++++++++++++++
- .../src/commands/task/scope-extend.command.test.ts | 16 ++--
- 7 files changed, 190 insertions(+), 16 deletions(-)
+ .../shared/task-backend-branch-snapshot.ts         |  22 +-
+ .../agentplane/src/commands/shared/task-backend.ts |  16 +-
+ .../task/finish-completed-scope.testkit.ts         | 183 ++++++++++++++++
+ .../agentplane/src/commands/task/finish-shared.ts  |   6 +-
+ .../kernel-completed-external-rework.testkit.ts    |   2 +-
+ .../commands/task/kernel-worktree-routing.test.ts  |  58 +++++
+ .../src/commands/task/scope-extend.command.test.ts | 243 ++++++++-------------
+ 7 files changed, 368 insertions(+), 162 deletions(-)
 ```
 
 </details>

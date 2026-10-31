@@ -3,6 +3,11 @@ import { configureGitUser, tempRepo } from "@agentplane/testkit";
 import { writeFile } from "node:fs/promises";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
+import { readFile, mkdir } from "node:fs/promises";
+import * as taskBackend from "../shared/task-backend.js";
+import * as proof from "../../adapters/task-backend/completed-scope-admission.js";
+import { git } from "./kernel-completed-external-rework.testkit.js";
 import type { TaskData } from "../../backends/task-backend.js";
 import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
 import { readKernelRecord } from "../../adapters/task-backend/kernel-record.js";
@@ -83,4 +88,96 @@ async function checkHistoricalScope(before: TaskData, admitted: TaskData) {
   expect((await owner.taskBackend.getTask(before.id))!.extensions!.task_kernel).toEqual(
     before.extensions!.task_kernel,
   );
+}
+
+export async function checkCompletedScopeColdReaders(
+  command: CommandContext,
+  id: string,
+  before: TaskData,
+) {
+  const root = command.resolvedProject.gitRoot;
+  const identity = (before.extensions!.task_kernel as { repository_identity: `sha256:${string}` })
+    .repository_identity;
+  const expectedCold = {
+    one: "canonical",
+    batch: "canonical",
+    list: "canonical",
+    projection: "canonical",
+  };
+  const cold = coldProcess(root, id);
+  expect(cold).toMatchObject(expectedCold);
+  expect(cold.pid).not.toBe(process.pid);
+  const oldBase = (before.extensions!.task_execution_context as { base_sha: string }).base_sha;
+  const main = path.join(root, ".agentplane/worktrees/cold-main");
+  git(root, "worktree", "add", main, "main");
+  git(main, "merge", "--ff-only", git(root, "branch", "--show-current"));
+  expect(coldProcess(main, id)).toMatchObject(expectedCold);
+  const compact = path.join(root, ".agentplane/worktrees/cold-history");
+  git(root, "worktree", "add", "--detach", compact, oldBase);
+  await mkdir(path.join(compact, ".agentplane/tasks"), { recursive: true });
+  git(root, "config", "extensions.worktreeConfig", "true");
+  git(compact, "config", "--worktree", "agentplane.compactTaskHistory", "true");
+  expect(coldProcess(compact, id)).toMatchObject(expectedCold);
+  const snapshot = await taskBackend.loadCommandContext({ cwd: main, rootOverride: null });
+  snapshot.memo.taskWorktreeInventory = Promise.resolve([]);
+  const historicalTask = await taskBackend.loadTaskFromBranchSnapshot({
+    ctx: snapshot,
+    taskId: id,
+    readmePath: path.join(main, snapshot.config.paths.workflow_dir, id, "README.md"),
+    branch: git(root, "branch", "--show-current"),
+    requireWorktree: false,
+  });
+  expect(readKernelRecord(historicalTask, identity).kind).toBe("canonical");
+  const current = (await command.taskBackend.getTask(id))!;
+  const common = await taskBackend.resolveCommandGitCommonDir(command);
+  const proofId = proof.completedScopeAdmissionIds(current).at(-1)!;
+  const retained = await proof.readCompletedScopeAdmission(common, id, proofId);
+  current.execution_contract!.observed.verification_results = [
+    { id: "fixture-native-check", result: "pass" },
+    { id: "recorded-check-1", result: "pass" },
+    { id: "verification-record", result: "pass" },
+  ];
+  await command.taskBackend.writeTask(current);
+  const coldContext = await taskBackend.loadCommandContext({ cwd: root, rootOverride: null });
+  const refreshed = (await coldContext.taskBackend.getTask(id))!;
+  expect(readKernelRecord(refreshed, identity).kind).toBe("canonical");
+  expect(refreshed.extensions?.task_kernel).toEqual(before.extensions?.task_kernel);
+  const retainedAfterRefresh = await proof.readCompletedScopeAdmission(common, id, proofId);
+  expect(retainedAfterRefresh.after).toEqual(retained.after);
+  const readme = path.join(root, command.config.paths.workflow_dir, id, "README.md");
+  const validSource = await readFile(readme, "utf8");
+  refreshed.execution_contract!.observed.verification_results =
+    refreshed.execution_contract!.observed.verification_results.filter(
+      (result) => result.id !== "fixture-native-check",
+    );
+  await command.taskBackend.writeTask(refreshed);
+  await expect(coldContext.taskBackend.getTask(id)).rejects.toThrow(
+    /historical verification result/u,
+  );
+  await writeFile(readme, validSource);
+  const restored = (await coldContext.taskBackend.getTask(id))!;
+  expect(readKernelRecord(restored, identity).kind).toBe("canonical");
+}
+
+function coldProcess(root: string, id: string) {
+  const backend = fileURLToPath(new URL("../shared/task-backend.ts", import.meta.url));
+  const kernel = fileURLToPath(
+    new URL("../../adapters/task-backend/kernel-record.ts", import.meta.url),
+  );
+  const script = `const b=await import(${JSON.stringify(backend)});const k=await import(${JSON.stringify(kernel)});
+    const c=await b.loadCommandContext({cwd:${JSON.stringify(root)},rootOverride:null});
+    const t=await c.taskBackend.getTask(${JSON.stringify(id)});
+    const all=await c.taskBackend.getTasks([t.id]);const list=await c.taskBackend.listTasks();
+    const projected=await c.taskBackend.listProjectionTasks();
+    const classify=t=>k.readKernelRecord(t,t.extensions.task_kernel.repository_identity).kind;
+    console.log(JSON.stringify({pid:process.pid,one:classify(t),batch:classify(all[0]),list:classify(list.find(x=>x.id===t.id)),projection:classify(projected.find(x=>x.id===t.id))}));`;
+  return JSON.parse(
+    execFileSync("bun", ["--eval", script], { cwd: root, encoding: "utf8", timeout: 30_000 }),
+  ) as {
+    pid: number;
+    one: string;
+    batch: string;
+    list: string;
+    projection: string;
+  };
 }
