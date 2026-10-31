@@ -38,7 +38,7 @@ export const taskAdvanceSpec: CommandSpec<TaskAdvanceParsed> = {
       name: "workflow-recovery",
       valueHint: "<path>",
       description:
-        "Reconcile an exact interrupted integration with operator evidence; requires --remote and runs no lifecycle operation.",
+        "Reconcile an exact interrupted workflow with operator evidence; requires --remote and runs no lifecycle operation.",
     },
     {
       kind: "boolean",

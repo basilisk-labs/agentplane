@@ -38,6 +38,7 @@ import {
   resolveAuthoritativeTaskWorktree,
   resolveTaskBranchFromContext,
   taskBranchHasLocalRef,
+  installCompletedScopeReaders,
 } from "./task-backend-branch-snapshot.js";
 
 export {
@@ -210,7 +211,7 @@ export async function loadCommandContext(opts: {
       canonical_source: backend.capabilities?.canonical_source ?? null,
     },
   });
-  return {
+  const command: CommandContext = {
     resolvedProject: resolved,
     config,
     taskBackend: backend,
@@ -220,6 +221,8 @@ export async function loadCommandContext(opts: {
     preparationTrace: opts.preparationTrace ?? null,
     memo: {},
   };
+  installCompletedScopeReaders(command);
+  return command;
 }
 
 /**
@@ -255,9 +258,23 @@ export async function resolveTaskOwnerCommandContext(opts: {
       "true";
   const localTask = compactHistory
     ? await new LocalBackend({
-        dir: path.join(opts.ctx.resolvedProject.gitRoot, ".agentplane/tasks"),
+        dir: path.join(opts.ctx.resolvedProject.gitRoot, opts.ctx.config.paths.workflow_dir),
       }).getTask(opts.taskId)
     : await backend.getTask(opts.taskId);
+  if (
+    opts.ctx.backendId === "local" &&
+    Object.hasOwn(localTask?.extensions ?? {}, "agentplane.completed_scope_admissions") &&
+    !(backend instanceof LocalBackend)
+  ) {
+    // Reload this bundle's native context so proof authentication shares its permit map.
+    const nativeContext = await loadCommandContext({
+      cwd: opts.ctx.resolvedProject.gitRoot,
+      resolvedProject: opts.ctx.resolvedProject,
+      config: opts.ctx.config,
+      preparationTrace: opts.ctx.preparationTrace,
+    });
+    return await resolveTaskOwnerCommandContext({ ctx: nativeContext, taskId: opts.taskId });
+  }
   const taskBranch = await resolveTaskBranchFromContext({ ctx: opts.ctx, taskId: opts.taskId });
   if (taskBranch) {
     const owner = await resolveAuthoritativeTaskWorktree({
@@ -367,12 +384,22 @@ export async function loadTaskFromContext(opts: {
   const canonical = (candidate: TaskData | null) =>
     candidate && Object.hasOwn(candidate.extensions ?? {}, TASK_KERNEL_EXTENSION);
   const task = await opts.ctx.taskBackend.getTask(opts.taskId).catch((error: unknown) => {
+    if (
+      error instanceof CliError &&
+      error.context?.reason_code === "completed_scope_admission_unproven"
+    )
+      throw error;
     if (canonical(preferredBranchTask)) return null;
     throw error;
   });
   const primary = canonical(task)
     ? null
     : await primaryCanonical().catch((error: unknown) => {
+        if (
+          error instanceof CliError &&
+          error.context?.reason_code === "completed_scope_admission_unproven"
+        )
+          throw error;
         if (canonical(preferredBranchTask)) return null;
         throw error;
       });

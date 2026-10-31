@@ -1,0 +1,1713 @@
+diff --git a/packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts b/packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts
+index 35c83014d..82acd49e7 100644
+--- a/packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts
++++ b/packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts
+@@ -1,3 +1,4 @@
++import type * as Process from "@agentplaneorg/core/process";
+ import { beforeEach, describe, expect, it, vi } from "vitest";
+ 
+ const mocks = vi.hoisted(() => ({
+@@ -6,9 +7,20 @@ const mocks = vi.hoisted(() => ({
+   gitBranchExists: vi.fn(),
+   gitBranchUpstream: vi.fn(),
+   gitRevParse: vi.fn(),
++  inherited: vi.fn(),
++  history: vi.fn(),
+ }));
+ 
++vi.mock("../provider-update-verification-proof.js", () => ({
++  inheritedProviderUpdatePaths: mocks.inherited,
++}));
++
++vi.mock("@agentplaneorg/core/process", async (original) => ({
++  ...(await original<typeof Process>()),
++  execFileAsync: mocks.history,
++}));
+ vi.mock("@agentplaneorg/core/git", () => ({
++  gitProofEnv: () => ({}),
+   gitDiffNameStatus: mocks.gitDiffNameStatus,
+   gitMergeBase: mocks.gitMergeBase,
+ }));
+@@ -23,9 +35,13 @@ import { assertBranchTaskArtifactOwnership } from "./branch-task-artifact-owners
+ describe("committed task artifact ownership", () => {
+   beforeEach(() => {
+     vi.clearAllMocks();
++    mocks.history.mockResolvedValue({ stdout: "" });
++    mocks.inherited.mockResolvedValue([]);
+     mocks.gitBranchExists.mockResolvedValue(true);
+     mocks.gitBranchUpstream.mockResolvedValue("origin/main");
+-    mocks.gitRevParse.mockResolvedValue("base-sha");
++    mocks.gitRevParse.mockImplementation((_root: string, args: string[]) =>
++      Promise.resolve(args[1]?.startsWith("task/") ? "candidate-sha" : "base-sha"),
++    );
+     mocks.gitMergeBase.mockResolvedValue("merge-base-sha");
+   });
+ 
+@@ -64,6 +80,33 @@ describe("committed task artifact ownership", () => {
+     expect(mocks.gitBranchExists).toHaveBeenCalledWith("/repo", "task/T-PRIMARY/change");
+   });
+ 
++  it("filters only paths authenticated by the native canonical import proof", async () => {
++    const file = ".agentplane/tasks/T-FOREIGN/README.md";
++    mocks.gitDiffNameStatus.mockResolvedValue([{ statusCode: "M", path: file }]);
++    mocks.inherited.mockResolvedValue([file]);
++    const command = { resolvedProject: { gitRoot: "/repo" } } as never;
++    const options = {
++      gitRoot: "/repo",
++      baseBranch: "frozen-B",
++      branch: "task/T-PRIMARY/change",
++      workflowDir: ".agentplane/tasks",
++      tasksPath: ".agentplane/tasks.json",
++      primaryTaskId: "T-PRIMARY",
++      providerUpdate: { command, frozenBase: "frozen-B" },
++    };
++    await expect(assertBranchTaskArtifactOwnership(options)).resolves.toBeUndefined();
++    expect(mocks.inherited).toHaveBeenCalledWith(
++      expect.objectContaining({
++        command,
++        frozen_base: "frozen-B",
++        task_id: "T-PRIMARY",
++        changed_paths: [file],
++      }),
++    );
++    mocks.inherited.mockResolvedValue([]);
++    await expect(assertBranchTaskArtifactOwnership(options)).rejects.toThrow(/other tasks/);
++  });
++
+   it("ignores task artifacts introduced only by an advanced base", async () => {
+     mocks.gitDiffNameStatus.mockResolvedValue([
+       { statusCode: "M", path: "packages/agentplane/src/index.ts" },
+@@ -93,6 +136,57 @@ describe("committed task artifact ownership", () => {
+     );
+   });
+ 
++  it("does not resolve native import proof for source and own-only history", async () => {
++    mocks.gitDiffNameStatus.mockResolvedValue([
++      { statusCode: "M", path: "source.ts" },
++      { statusCode: "M", path: ".agentplane/tasks/T-PRIMARY/README.md" },
++    ]);
++    mocks.history.mockResolvedValue({
++      stdout: "source.ts\0.agentplane/tasks/T-PRIMARY/README.md\0",
++    });
++    mocks.inherited.mockRejectedValue(new Error("native journal must not be needed"));
++    await expect(
++      assertBranchTaskArtifactOwnership({
++        gitRoot: "/repo",
++        baseBranch: "frozen-B",
++        branch: "task/T-PRIMARY/change",
++        workflowDir: ".agentplane/tasks",
++        tasksPath: ".agentplane/tasks.json",
++        primaryTaskId: "T-PRIMARY",
++        providerUpdate: {
++          command: { resolvedProject: { gitRoot: "/repo" } } as never,
++          frozenBase: "frozen-B",
++        },
++      }),
++    ).resolves.toBeUndefined();
++    expect(mocks.inherited).not.toHaveBeenCalled();
++    expect(mocks.history).toHaveBeenCalled();
++  });
++
++  it("still authenticates foreign history hidden by an empty net diff", async () => {
++    const file = ".agentplane/tasks/T-FOREIGN/README.md";
++    mocks.gitDiffNameStatus.mockResolvedValue([]);
++    mocks.history.mockResolvedValue({ stdout: `${file}\0` });
++    mocks.inherited.mockRejectedValue(new Error("invalid native proof"));
++    await expect(
++      assertBranchTaskArtifactOwnership({
++        gitRoot: "/repo",
++        baseBranch: "frozen-B",
++        branch: "task/T-PRIMARY/change",
++        workflowDir: ".agentplane/tasks",
++        tasksPath: ".agentplane/tasks.json",
++        primaryTaskId: "T-PRIMARY",
++        providerUpdate: {
++          command: { resolvedProject: { gitRoot: "/repo" } } as never,
++          frozenBase: "frozen-B",
++        },
++      }),
++    ).rejects.toThrow("invalid native proof");
++    expect(mocks.inherited).toHaveBeenCalledWith(
++      expect.objectContaining({ changed_paths: [file], evaluated_sha: "candidate-sha" }),
++    );
++  });
++
+   it("accepts artifacts explicitly owned by a batch", async () => {
+     mocks.gitDiffNameStatus.mockResolvedValue([
+       { statusCode: "M", path: ".agentplane/tasks/T-PRIMARY/README.md" },
+diff --git a/packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.ts b/packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.ts
+index 02d15b209..521620b81 100644
+--- a/packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.ts
++++ b/packages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.ts
+@@ -1,4 +1,8 @@
+-import { gitDiffNameStatus, gitMergeBase } from "@agentplaneorg/core/git";
++import { execFileAsync } from "@agentplaneorg/core/process";
++import { gitDiffNameStatus, gitMergeBase, gitProofEnv } from "@agentplaneorg/core/git";
++
++import { inheritedProviderUpdatePaths } from "../provider-update-verification-proof.js";
++import type { CommandContext } from "../../shared/task-backend.js";
+ 
+ import { exitCodeForError } from "../../../cli/exit-codes.js";
+ import { CliError } from "../../../shared/errors.js";
+@@ -50,6 +54,7 @@ export async function assertBranchTaskArtifactOwnership(opts: {
+   tasksPath: string;
+   primaryTaskId: string;
+   includedTaskIds?: readonly string[];
++  providerUpdate?: { command: CommandContext; frozenBase: string };
+   authorizedForeignArtifactCleanupRoots?: readonly string[];
+ }): Promise<void> {
+   const roots = [...new Set([normalizedRoot(opts.workflowDir), normalizedRoot(opts.tasksPath)])]
+@@ -70,8 +75,11 @@ export async function assertBranchTaskArtifactOwnership(opts: {
+   // also reports paths added on an advanced base as deletions from an older
+   // task branch, which can falsely attribute unrelated base task artifacts to
+   // the candidate. The merge-base anchored diff is the branch-side delta.
+-  const mergeBase = await gitMergeBase(opts.gitRoot, comparisonBase, opts.branch);
+-  const changedEntries = await gitDiffNameStatus(opts.gitRoot, mergeBase, opts.branch);
++  const evaluatedSha = opts.providerUpdate
++    ? await gitRevParse(opts.gitRoot, ["--verify", `${opts.branch}^{commit}`])
++    : opts.branch;
++  const mergeBase = await gitMergeBase(opts.gitRoot, comparisonBase, evaluatedSha);
++  const changedEntries = await gitDiffNameStatus(opts.gitRoot, mergeBase, evaluatedSha);
+   const allowed = new Set([opts.primaryTaskId, ...(opts.includedTaskIds ?? [])]);
+   const authorizedCleanupRoots = [
+     ...new Set(
+@@ -80,10 +88,64 @@ export async function assertBranchTaskArtifactOwnership(opts: {
+         .filter(Boolean),
+     ),
+   ];
++  const inherited = new Set<string>();
++  if (opts.providerUpdate) {
++    if (opts.providerUpdate.command.resolvedProject.gitRoot !== opts.gitRoot)
++      throw new Error("Provider update ownership checkout changed");
++    // Net B..H misses a canonical artifact added after B and subsequently deleted
++    // or moved into an owned root. Keep every historical path until proof classifies it.
++    const observedHistory = await execFileAsync(
++      "git",
++      [
++        "log",
++        "--format=",
++        "--name-only",
++        "-z",
++        "--full-history",
++        "--no-renames",
++        `${mergeBase}..${evaluatedSha}`,
++      ],
++      {
++        cwd: opts.gitRoot,
++        env: gitProofEnv(),
++        maxBuffer: 16 * 1024 * 1024,
++      },
++    );
++    const history = observedHistory.stdout.split("\0").filter(Boolean);
++    const known = new Set(changedEntries.map((entry) => entry.path));
++    for (const file of history)
++      if (!known.has(file)) {
++        changedEntries.push({ statusCode: "M", path: file });
++        known.add(file);
++      }
++    // Native import authority is relevant only to foreign Task artifacts. Keep
++    // the history scan above: a deleted or renamed import can be absent from the net diff.
++    if (
++      !changedEntries.some((entry) => {
++        const taskId = taskIdFromArtifactPath(entry.path, roots);
++        return taskId !== null && !allowed.has(taskId);
++      })
++    )
++      return;
++    for (const file of await inheritedProviderUpdatePaths({
++      command: opts.providerUpdate.command,
++      task_id: opts.primaryTaskId,
++      frozen_base: opts.providerUpdate.frozenBase,
++      evaluated_sha: evaluatedSha,
++      changed_paths: changedEntries.map((entry) => entry.path),
++      workflow_dir: opts.workflowDir,
++      tasks_path: opts.tasksPath,
++    }))
++      inherited.add(file);
++  }
+   const foreignTaskIds = [
+     ...new Set(
+       changedEntries
+-        .filter((entry) => !isVolatileTaskArtifactDeletion(entry, roots, authorizedCleanupRoots))
++        .filter(
++          (entry) =>
++            !inherited.has(entry.path) &&
++            !isVolatileTaskArtifactDeletion(entry, roots, authorizedCleanupRoots),
++        )
+         .map((entry) => taskIdFromArtifactPath(entry.path, roots))
+         .filter((taskId): taskId is string => Boolean(taskId && !allowed.has(taskId))),
+     ),
+diff --git a/packages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts b/packages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts
+index 6d58f5e97..f0c7572bd 100644
+--- a/packages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts
++++ b/packages/agentplane/src/commands/pr/internal/sync-open-provider-base.test.ts
+@@ -1,3 +1,12 @@
++import type * as ProviderBase from "./provider-base.js";
++import type * as SyncBranch from "./sync-branch.js";
++import type * as StableWriter from "../../../shared/write-if-changed.js";
++import * as ownership from "./branch-task-artifact-ownership.js";
++import { syncPrArtifacts } from "./sync.js";
++import { fixture } from "../../task/kernel-completed-external-rework.testkit.js";
++import { loadCommandContext } from "../../shared/task-backend.js";
++import { taskExecutionBaseFromExtensions } from "@agentplaneorg/core/tasks";
++
+ import { beforeEach, describe, expect, it, vi } from "vitest";
+ 
+ const mocks = vi.hoisted(() => ({
+@@ -6,14 +15,27 @@ const mocks = vi.hoisted(() => ({
+   identity: vi.fn(),
+   observe: vi.fn(),
+   create: vi.fn(),
+-  write: vi.fn(),
++  write: vi.fn<(...args: unknown[]) => Promise<boolean>>().mockResolvedValue(false),
++  realWrites: false,
++}));
++vi.mock("./provider-base.js", async (original) => ({
++  ...(await original<typeof ProviderBase>()),
++  resolveProviderBaseBranch: mocks.base,
+ }));
+-vi.mock("./provider-base.js", () => ({ resolveProviderBaseBranch: mocks.base }));
+-vi.mock("./sync-branch.js", () => ({ computePrDiffstat: mocks.diffstat }));
+-vi.mock("../../../shared/write-if-changed.js", () => ({
+-  writeJsonStableIfChanged: mocks.write,
+-  writeTextIfChanged: mocks.write,
++vi.mock("./sync-branch.js", async (original) => ({
++  ...(await original<typeof SyncBranch>()),
++  computePrDiffstat: mocks.diffstat,
+ }));
++vi.mock("../../../shared/write-if-changed.js", async (original) => {
++  const actual = await original<typeof StableWriter>();
++  return {
++    ...actual,
++    writeJsonStableIfChanged: (...args: Parameters<typeof actual.writeJsonStableIfChanged>) =>
++      mocks.realWrites ? actual.writeJsonStableIfChanged(...args) : mocks.write(...args),
++    writeTextIfChanged: (...args: Parameters<typeof actual.writeTextIfChanged>) =>
++      mocks.realWrites ? actual.writeTextIfChanged(...args) : mocks.write(...args),
++  };
++});
+ vi.mock("./change-request-provider.js", () => ({
+   resolveChangeRequestIdentity: mocks.identity,
+   observeExistingChangeRequestByBranch: mocks.observe,
+@@ -83,6 +105,7 @@ function common(): PrSyncCommonState {
+ 
+ beforeEach(() => {
+   vi.resetAllMocks();
++  mocks.realWrites = false;
+   mocks.base.mockResolvedValue("main");
+   mocks.diffstat.mockResolvedValue("1 file changed");
+   mocks.identity.mockResolvedValue(identity);
+@@ -122,3 +145,36 @@ describe("provider base resolution phase", () => {
+     expect(mocks.write).not.toHaveBeenCalled();
+   });
+ });
++
++it(
++  "routes the exact frozen Task context to ownership before PR artifact writes",
++  { timeout: 120_000 },
++  async () => {
++    mocks.realWrites = true;
++    const f = await fixture();
++    mocks.realWrites = false;
++    mocks.write.mockClear();
++    const ctx = await loadCommandContext({ cwd: f.root, rootOverride: null });
++    const task = (await ctx.taskBackend.getTask(f.id))!;
++    const base = taskExecutionBaseFromExtensions(task.extensions)!;
++    const spy = vi
++      .spyOn(ownership, "assertBranchTaskArtifactOwnership")
++      .mockRejectedValueOnce(new Error("ownership boundary reached"));
++    try {
++      await expect(
++        syncPrArtifacts({ ctx, cwd: f.root, taskId: f.id, mode: "open", remoteMode: "sync-only" }),
++      ).rejects.toThrow(/ownership boundary reached/);
++      expect(spy).toHaveBeenCalledWith(
++        expect.objectContaining({
++          primaryTaskId: f.id,
++          baseBranch: base.base_ref,
++          providerUpdate: { command: ctx, frozenBase: base.base_sha },
++        }),
++      );
++      expect(mocks.create).not.toHaveBeenCalled();
++      expect(mocks.write).not.toHaveBeenCalled();
++    } finally {
++      spy.mockRestore();
++    }
++  },
++);
+diff --git a/packages/agentplane/src/commands/pr/internal/sync.ts b/packages/agentplane/src/commands/pr/internal/sync.ts
+index 9c3694ee4..a8bcf0827 100644
+--- a/packages/agentplane/src/commands/pr/internal/sync.ts
++++ b/packages/agentplane/src/commands/pr/internal/sync.ts
+@@ -289,7 +289,8 @@ export async function syncPrArtifacts(opts: {
+           ? parsePrMeta(await readFile(metaPath, "utf8"), task.id)
+           : null;
+       assertTaskOwnedPrSync(existingMeta);
+-      const taskBase = taskExecutionBaseFromExtensions(task.extensions)?.base_ref;
++      const executionBase = taskExecutionBaseFromExtensions(task.extensions);
++      const taskBase = executionBase?.base_ref;
+       const frozenBase = await resolveBaseBranch({
+         cwd: opts.cwd,
+         rootOverride: opts.rootOverride ?? null,
+@@ -317,6 +318,14 @@ export async function syncPrArtifacts(opts: {
+           workflowDir: config.paths.workflow_dir,
+           tasksPath: config.paths.tasks_path,
+           primaryTaskId: task.id,
++          ...(executionBase?.base_sha
++            ? {
++                providerUpdate: {
++                  command: ctx,
++                  frozenBase: executionBase.base_sha,
++                },
++              }
++            : {}),
+           includedTaskIds: validatedIncludedTaskIds,
+           authorizedForeignArtifactCleanupRoots:
+             task.execution_contract?.authority.writable_roots ?? [],
+diff --git a/packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts b/packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts
+index 8827cb480..ea8749196 100644
+--- a/packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts
++++ b/packages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts
+@@ -1,4 +1,5 @@
+-import { mkdtemp, writeFile, readFile, readdir } from "node:fs/promises";
++import { assertBranchTaskArtifactOwnership } from "./internal/branch-task-artifact-ownership.js";
++import { mkdtemp, writeFile, readFile, readdir, unlink, rename, mkdir } from "node:fs/promises";
+ import { execFileSync } from "node:child_process";
+ import os from "node:os";
+ import path from "node:path";
+@@ -22,7 +23,7 @@ import {
+ 
+ const fp = `sha256:${"a".repeat(64)}`;
+ const taskId = "202610290115-PROOFT";
+-async function fixture() {
++async function fixture(foreignPath = "foreign.txt", overlap = false, transient = false) {
+   const root = await mkdtemp(path.join(os.tmpdir(), "provider-update-proof-"));
+   const git = (...args: string[]) =>
+     execFileSync("git", args, {
+@@ -40,13 +41,23 @@ async function fixture() {
+   const B = git("rev-parse", "HEAD");
+   git("checkout", "-b", "task/proof");
+   await writeFile(path.join(root, "own.txt"), "task");
++  if (overlap) {
++    await mkdir(path.dirname(path.join(root, foreignPath)), { recursive: true });
++    await writeFile(path.join(root, foreignPath), "canonical");
++  }
+   git("add", ".");
+   git("commit", "-m", "task");
+   const H = git("rev-parse", "HEAD");
+   git("checkout", "main");
+-  await writeFile(path.join(root, "foreign.txt"), "canonical");
++  await mkdir(path.dirname(path.join(root, foreignPath)), { recursive: true });
++  await writeFile(path.join(root, foreignPath), "canonical");
+   git("add", ".");
+   git("commit", "-m", "canonical");
++  if (transient) {
++    await unlink(path.join(root, foreignPath));
++    git("add", "-A");
++    git("commit", "-m", "canonical artifact retirement");
++  }
+   const R = git("rev-parse", "HEAD");
+   git("checkout", "task/proof");
+   git("merge", "--no-ff", "main", "-m", "provider update");
+@@ -130,7 +141,7 @@ async function fixture() {
+       task_id: taskId,
+       frozen_base: B,
+       evaluated_sha: evaluated,
+-      changed_paths: ["own.txt", "foreign.txt"],
++      changed_paths: ["own.txt", foreignPath],
+       workflow_dir: ".agentplane/tasks",
+       tasks_path: ".agentplane/tasks.json",
+     });
+@@ -194,6 +205,16 @@ describe("native provider update verification proof", () => {
+     f.git("commit", "-m", "task edit");
+     expect(await f.inherited()).toEqual([]);
+   });
++  it("retains exact canonical imports after owned semantic rework", async () => {
++    const f = await fixture();
++    await f.retain();
++    await f.complete();
++    await writeFile(path.join(f.root, "own.txt"), "approved semantic rework");
++    f.git("add", "own.txt");
++    f.git("commit", "-m", "owned semantic rework");
++    expect(await f.inherited()).toEqual(["foreign.txt"]);
++  });
++
+   it("rejects altered identity even when a proof digest is recomputed", async () => {
+     const f = await fixture();
+     await f.retain();
+@@ -346,3 +367,155 @@ describe("native provider update verification proof", () => {
+     expect(f.B).toBe(f.git("merge-base", f.H, f.R));
+   });
+ });
++
++describe("canonical import path lineage", () => {
++  it.each(["edit-revert", "delete-recreate", "rename-revert"])(
++    "does not inherit foreign bytes after %s even if current tree matches R",
++    async (mutation) => {
++      const f = await fixture();
++      await f.retain();
++      await f.complete();
++      const file = path.join(f.root, "foreign.txt");
++      if (mutation === "edit-revert") await writeFile(file, "unapproved");
++      else if (mutation === "delete-recreate") await unlink(file);
++      else await rename(file, path.join(f.root, "renamed.txt"));
++      f.git("add", "-A");
++      f.git("commit", "-m", "foreign change");
++      if (mutation === "rename-revert") await rename(path.join(f.root, "renamed.txt"), file);
++      else await writeFile(file, "canonical");
++      f.git("add", "-A");
++      f.git("commit", "-m", "restore canonical bytes");
++      expect(await f.inherited()).toEqual([]);
++    },
++  );
++});
++
++describe("native import proof in foreign Task ownership", () => {
++  it("uses completed proof through the production ownership guard after semantic rework", async () => {
++    const foreign = ".agentplane/tasks/FOREIGN/README.md";
++    const f = await fixture(foreign);
++    const options = {
++      gitRoot: f.root,
++      baseBranch: f.B,
++      branch: "task/proof",
++      workflowDir: ".agentplane/tasks",
++      tasksPath: ".agentplane/tasks.json",
++      primaryTaskId: taskId,
++      providerUpdate: { command: f.command, frozenBase: f.B },
++    };
++    await expect(assertBranchTaskArtifactOwnership(options)).rejects.toThrow(/other tasks/);
++    await f.retain();
++    await expect(assertBranchTaskArtifactOwnership(options)).rejects.toThrow(/other tasks/);
++    await f.complete();
++    await writeFile(path.join(f.root, "own.txt"), "approved source repair");
++    f.git("add", "own.txt");
++    f.git("commit", "-m", "semantic repair");
++    await expect(assertBranchTaskArtifactOwnership(options)).resolves.toBeUndefined();
++    await writeFile(path.join(f.root, foreign), "foreign tamper");
++    f.git("add", foreign);
++    f.git("commit", "-m", "foreign tamper");
++    await expect(assertBranchTaskArtifactOwnership(options)).rejects.toThrow(/other tasks/);
++    expect(f.git("merge-base", f.B, "HEAD")).toBe(f.B);
++  });
++
++  it("preserves pre-update ownership even when the imported tree matches canonical bytes", async () => {
++    const foreign = ".agentplane/tasks/FOREIGN/README.md";
++    const f = await fixture(foreign, true);
++    await f.retain();
++    await f.complete();
++    expect(await f.inherited()).toEqual([]);
++    await expect(
++      assertBranchTaskArtifactOwnership({
++        gitRoot: f.root,
++        baseBranch: f.B,
++        branch: "task/proof",
++        workflowDir: ".agentplane/tasks",
++        tasksPath: ".agentplane/tasks.json",
++        primaryTaskId: taskId,
++        providerUpdate: { command: f.command, frozenBase: f.B },
++      }),
++    ).rejects.toThrow(/other tasks/);
++  });
++});
++
++describe("ownership of imports absent from the final frozen-base diff", () => {
++  it.each(["delete", "rename-to-own"])(
++    "rejects committed %s of a canonical foreign artifact",
++    async (mutation) => {
++      const foreign = ".agentplane/tasks/FOREIGN/README.md";
++      const f = await fixture(foreign);
++      await f.retain();
++      await f.complete();
++      if (mutation === "delete") await unlink(path.join(f.root, foreign));
++      else {
++        await mkdir(path.join(f.root, `.agentplane/tasks/${taskId}`), { recursive: true });
++        await rename(
++          path.join(f.root, foreign),
++          path.join(f.root, `.agentplane/tasks/${taskId}/stolen.md`),
++        );
++      }
++      f.git("add", "-A");
++      f.git("commit", "-m", "foreign import removal");
++      expect(f.git("diff", "--name-only", f.B, "HEAD")).not.toContain(foreign);
++      await expect(
++        assertBranchTaskArtifactOwnership({
++          gitRoot: f.root,
++          baseBranch: f.B,
++          branch: "task/proof",
++          workflowDir: ".agentplane/tasks",
++          tasksPath: ".agentplane/tasks.json",
++          primaryTaskId: taskId,
++          providerUpdate: { command: f.command, frozenBase: f.B },
++        }),
++      ).rejects.toThrow(/other tasks/);
++    },
++  );
++});
++
++it("attributes canonical-only transient artifact history without charging it to the Task", async () => {
++  const f = await fixture(".agentplane/tasks/FOREIGN/README.md", false, true);
++  await f.retain();
++  await f.complete();
++  await writeFile(path.join(f.root, "own.txt"), "own semantic rework");
++  f.git("add", "own.txt");
++  f.git("commit", "-m", "own semantic rework");
++  await expect(
++    assertBranchTaskArtifactOwnership({
++      gitRoot: f.root,
++      baseBranch: f.B,
++      branch: "task/proof",
++      workflowDir: ".agentplane/tasks",
++      tasksPath: ".agentplane/tasks.json",
++      primaryTaskId: taskId,
++      providerUpdate: { command: f.command, frozenBase: f.B },
++    }),
++  ).resolves.toBeUndefined();
++});
++
++it("refuses actual foreign ownership when the native update failed", async () => {
++  const f = await fixture(".agentplane/tasks/FOREIGN/README.md");
++  await f.retain();
++  await f.complete(true);
++  await expect(
++    assertBranchTaskArtifactOwnership({
++      gitRoot: f.root,
++      baseBranch: f.B,
++      branch: "task/proof",
++      workflowDir: ".agentplane/tasks",
++      tasksPath: ".agentplane/tasks.json",
++      primaryTaskId: taskId,
++      providerUpdate: { command: f.command, frozenBase: f.B },
++    }),
++  ).rejects.toThrow(/other tasks/);
++});
++
++it("does not inherit a foreign mode change reverted to the exact canonical tree", async () => {
++  const f = await fixture();
++  await f.retain();
++  await f.complete();
++  f.git("update-index", "--chmod=+x", "foreign.txt");
++  f.git("commit", "-m", "foreign mode change");
++  f.git("update-index", "--chmod=-x", "foreign.txt");
++  f.git("commit", "-m", "restore canonical mode");
++  expect(await f.inherited()).toEqual([]);
++});
+diff --git a/packages/agentplane/src/commands/pr/provider-update-verification-proof.ts b/packages/agentplane/src/commands/pr/provider-update-verification-proof.ts
+index e5ed45cde..b6eef90d6 100644
+--- a/packages/agentplane/src/commands/pr/provider-update-verification-proof.ts
++++ b/packages/agentplane/src/commands/pr/provider-update-verification-proof.ts
+@@ -1,7 +1,7 @@
+ import path from "node:path";
+ import { readdir } from "node:fs/promises";
+ import { z } from "zod";
+-import { gitProofEnv, gitProofIsAncestor, gitProofDiffNames } from "@agentplaneorg/core/git";
++import { gitProofEnv, gitProofIsAncestor } from "@agentplaneorg/core/git";
+ import { execFileAsync } from "@agentplaneorg/core/process";
+ import {
+   digestSupervisorEpisodeValue,
+@@ -17,7 +17,6 @@ import { resolveCommandGitCommonDir, type CommandContext } from "../shared/task-
+ import { resolveSupervisorExecutionEpisodePath } from "../shared/supervisor-execution-episode.js";
+ import { operationPayloadDigest } from "../shared/workflow-step-authority.js";
+ import type { ProviderUpdateBranchOperationParams } from "../shared/provider-update-branch-route.js";
+-import { isTaskLocalAdvancePath } from "../shared/task-local-freshness.js";
+ 
+ const oid = z.string().regex(/^(?:[a-f0-9]{40}|[a-f0-9]{64})$/u);
+ const digest = z.string().regex(/^sha256:[a-f0-9]{64}$/u);
+@@ -276,19 +275,50 @@ export async function inheritedProviderUpdatePaths(opts: {
+   proofs.sort((a, b) => a.sequence - b.sequence);
+   let previous: Proof | undefined;
+   let inherited = new Set<string>();
+-  const metadataOnly = async (from: string, to: string) => {
+-    const files = await gitProofDiffNames(root, from, to);
+-    return files.every((relPath) =>
+-      isTaskLocalAdvancePath({
+-        workflowDir: opts.workflow_dir,
+-        taskId: opts.task_id,
+-        tasksPath: opts.tasks_path,
+-        relPath,
+-      }),
+-    );
++  // Cache whole observations per immutable commit/range. Large canonical imports
++  // must not spawn several Git processes for every inherited artifact.
++  const trees = new Map<string, Promise<Map<string, string>>>();
++  const histories = new Map<string, Promise<Set<string>>>();
++  const entry = async (ref: string, file: string) => {
++    if (!trees.has(ref))
++      trees.set(
++        ref,
++        git(root, ["ls-tree", "-r", "-z", "--full-tree", ref]).then(
++          (text) =>
++            new Map(
++              text
++                .split("\0")
++                .filter(Boolean)
++                .map((row) => [row.slice(row.indexOf("\t") + 1), row]),
++            ),
++        ),
++      );
++    const tree = await trees.get(ref)!;
++    return tree.get(file) ?? "";
++  };
++  // Own source rework still needs fresh validation. An imported path is inherited
++  // only if no intervening commit touched it, including edits subsequently reverted.
++  const history = (from: string, to: string) => {
++    const range = `${from}..${to}`;
++    if (!histories.has(range))
++      histories.set(
++        range,
++        git(root, [
++          "log",
++          "--format=",
++          "--name-only",
++          "-z",
++          "--full-history",
++          "--no-renames",
++          range,
++        ]).then((text) => new Set(text.split("\0").filter(Boolean))),
++      );
++    return histories.get(range)!;
++  };
++  const untouched = async (from: string, to: string, file: string) => {
++    const paths = await history(from, to);
++    return !paths.has(file);
+   };
+-  const entry = (ref: string, file: string) =>
+-    git(root, ["ls-tree", "-z", ref, "--", `:(literal)${file}`]);
+   for (const { proof } of proofs) {
+     if (!(await gitProofIsAncestor(root, proof.observed_head_sha, opts.evaluated_sha))) continue;
+     if (
+@@ -298,29 +328,20 @@ export async function inheritedProviderUpdatePaths(opts: {
+         previous.params.expectedBaseSha,
+         proof.params.expectedBaseSha,
+       )) ||
+-        !(await gitProofIsAncestor(
+-          root,
+-          previous.observed_head_sha,
+-          proof.params.expectedHeadSha,
+-        )) ||
+-        !(await metadataOnly(previous.observed_head_sha, proof.params.expectedHeadSha)))
++        !(await gitProofIsAncestor(root, previous.observed_head_sha, proof.params.expectedHeadSha)))
+     )
+       throw new Error("Provider update lineage contains unqualified intervening edits");
+-    const headChanges = await gitProofDiffNames(
+-      root,
+-      opts.frozen_base,
+-      proof.params.expectedHeadSha,
+-    );
++    const headChanges = [...(await history(opts.frozen_base, proof.params.expectedHeadSha))];
+     const owned = new Set(headChanges.filter((file) => !inherited.has(file)));
+-    const candidates = await gitProofDiffNames(
+-      root,
+-      opts.frozen_base,
+-      proof.params.expectedBaseSha,
+-    );
++    const candidates = await history(opts.frozen_base, proof.params.expectedBaseSha);
++    const previouslyInherited = inherited;
+     inherited = new Set<string>();
+     for (const file of candidates) {
+       if (
+         !owned.has(file) &&
++        (!previous ||
++          !previouslyInherited.has(file) ||
++          (await untouched(previous.observed_head_sha, proof.params.expectedHeadSha, file))) &&
+         (await entry(proof.observed_head_sha, file)) ===
+           (await entry(proof.params.expectedBaseSha, file))
+       )
+@@ -328,6 +349,16 @@ export async function inheritedProviderUpdatePaths(opts: {
+     }
+     previous = proof;
+   }
+-  if (!previous || !(await metadataOnly(previous.observed_head_sha, opts.evaluated_sha))) return [];
+-  return opts.changed_paths.filter((file) => inherited.has(file));
++  if (!previous) return [];
++  const result: string[] = [];
++  for (const file of opts.changed_paths) {
++    if (
++      inherited.has(file) &&
++      (await untouched(previous.observed_head_sha, opts.evaluated_sha, file)) &&
++      (await entry(opts.evaluated_sha, file)) ===
++        (await entry(previous.params.expectedBaseSha, file))
++    )
++      result.push(file);
++  }
++  return result;
+ }
+diff --git a/packages/agentplane/src/commands/shared/workflow-policy-projection.ts b/packages/agentplane/src/commands/shared/workflow-policy-projection.ts
+new file mode 100644
+index 000000000..c0bb3176b
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/workflow-policy-projection.ts
+@@ -0,0 +1,66 @@
++import { lstat, readlink, realpath } from "node:fs/promises";
++import path from "node:path";
++import { execFileAsync } from "@agentplaneorg/core/process";
++import { gitProofEnv } from "@agentplaneorg/core/git";
++import { readContainedStableTextNoFollow } from "../../shared/contained-stable-file.js";
++const ROUTE_PROJECTION_MAX_BYTES = 16 * 1024 * 1024;
++
++/** Only the framework's tracked AGENTS projection may use a symlink. */
++export async function readPolicyProjection(
++  repositoryRoot: string,
++  relativePath: string,
++  label: string,
++) {
++  const root = await realpath(repositoryRoot);
++  const file = path.join(root, relativePath);
++  const before = await lstat(file, { bigint: true });
++  if (!before.isSymbolicLink()) {
++    return readContainedStableTextNoFollow({
++      repository_root: root,
++      file_path: file,
++      label,
++      max_bytes: ROUTE_PROJECTION_MAX_BYTES,
++    });
++  }
++  const target = "packages/agentplane/assets/AGENTS.md";
++  if (relativePath !== "AGENTS.md" || (await readlink(file)) !== target)
++    throw new Error("Unapproved policy projection alias");
++  const git = async (args: string[]) => {
++    const result = await execFileAsync("git", args, {
++      cwd: root,
++      env: gitProofEnv(),
++      maxBuffer: ROUTE_PROJECTION_MAX_BYTES,
++    });
++    return result.stdout;
++  };
++  const indexArgs = ["ls-files", "--stage", "-z", "--", "AGENTS.md", target];
++  const recordedIndex = await git(indexArgs);
++  const entries = recordedIndex.split("\0").filter(Boolean);
++  const linked = entries.find((entry) => /^120000 [a-f0-9]+ 0\tAGENTS\.md$/u.test(entry));
++  const regular = entries.find(
++    (entry) => /^100(?:644|755) [a-f0-9]+ 0\t/u.test(entry) && entry.endsWith(`\t${target}`),
++  );
++  if (!linked || !regular || (await git(["show", ":AGENTS.md"])) !== target)
++    throw new Error("Policy projection is not the exact tracked link");
++  const content = await readContainedStableTextNoFollow({
++    repository_root: root,
++    file_path: path.join(root, target),
++    label,
++    max_bytes: ROUTE_PROJECTION_MAX_BYTES,
++  });
++  const observedLink = await readlink(file);
++  const observedIndex = await git(indexArgs);
++  const after = await lstat(file, { bigint: true });
++  if (
++    !after.isSymbolicLink() ||
++    before.dev !== after.dev ||
++    before.ino !== after.ino ||
++    before.ctimeNs !== after.ctimeNs ||
++    before.mtimeNs !== after.mtimeNs ||
++    observedLink !== target ||
++    observedIndex !== recordedIndex
++  )
++    throw new Error("Policy projection changed during observation");
++  // Include link identity in the semantic observation without machine-specific inode values.
++  return JSON.stringify({ projection: relativePath, target, tracked: entries, content });
++}
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts b/packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts
+index 5b510b160..41d81d81a 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-fingerprint.ts
+@@ -18,7 +18,7 @@ import { observeBackendProjection } from "../../runner/state-fingerprint-backend
+ import { observeKnowledgeProjection } from "../../runner/state-fingerprint-knowledge.js";
+ import { resolveExecutionProfileRuntime } from "../../runtime/execution-profile/index.js";
+ import { resolveNativeTaskObligations } from "../../runtime/task-obligations/index.js";
+-import { readContainedStableTextNoFollow } from "../../shared/contained-stable-file.js";
++import { readPolicyProjection } from "./workflow-policy-projection.js";
+ import { measurePreparationNode } from "../../shared/preparation-trace.js";
+ import type { CommandContext } from "./task-backend.js";
+ import { SIDE_EFFECT_AUTHORITY_EXTENSION_KEY } from "./side-effect-authority.js";
+@@ -63,8 +63,6 @@ type WorkflowFingerprintPaths = {
+   currentCheckoutPath?: string | null;
+ };
+ 
+-const ROUTE_PROJECTION_MAX_BYTES = 16 * 1024 * 1024;
+-
+ function unavailableComponent(
+   source: string,
+   reason_code: string,
+@@ -198,12 +196,7 @@ async function observeRepositoryFile(
+   source: string,
+ ): Promise<StateFingerprintComponentInput> {
+   try {
+-    const content = await readContainedStableTextNoFollow({
+-      repository_root: repositoryRoot,
+-      file_path: path.join(repositoryRoot, relativePath),
+-      label: source,
+-      max_bytes: ROUTE_PROJECTION_MAX_BYTES,
+-    });
++    const content = await readPolicyProjection(repositoryRoot, relativePath, source);
+     return presentComponent(source, {
+       path: relativePath,
+       sha256: sha256(content),
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-policy-scope.test.ts b/packages/agentplane/src/commands/shared/workflow-step-policy-scope.test.ts
+index dc97294b2..a93e421fc 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-policy-scope.test.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-policy-scope.test.ts
+@@ -1,4 +1,13 @@
+-import { describe, expect, it } from "vitest";
++import { describe, expect, it, vi } from "vitest";
++import { mkdtemp, mkdir, writeFile, symlink, unlink } from "node:fs/promises";
++import { execFileSync } from "node:child_process";
++import os from "node:os";
++import path from "node:path";
++import { defaultConfig } from "@agentplaneorg/core/config";
++import type { CommandContext } from "./task-backend.js";
++import { observeWorkflowPolicy } from "./workflow-step-fingerprint.js";
++
++import * as contained from "../../shared/contained-stable-file.js";
+ 
+ import type { WorkflowRouteStateInput } from "./workflow-step-fingerprint.js";
+ import { observeWorkflowPolicyScope } from "./workflow-step-policy-scope.js";
+@@ -30,3 +39,79 @@ describe("workflow policy scope", () => {
+     });
+   });
+ });
++
++async function policyFixture() {
++  const root = await mkdtemp(path.join(os.tmpdir(), "policy-link-"));
++  const git = (...args: string[]) =>
++    execFileSync("git", args, {
++      cwd: root,
++      encoding: "utf8",
++      env: { ...process.env, GIT_CONFIG_NOSYSTEM: "1", GIT_CONFIG_GLOBAL: os.devNull },
++    });
++  git("init", "-b", "main");
++  await mkdir(path.join(root, "packages/agentplane/assets"), { recursive: true });
++  await writeFile(path.join(root, "packages/agentplane/assets/AGENTS.md"), "policy one");
++  await symlink("packages/agentplane/assets/AGENTS.md", path.join(root, "AGENTS.md"));
++  git("add", ".");
++  const observe = () =>
++    observeWorkflowPolicy({
++      ctx: { config: defaultConfig() } as CommandContext,
++      repositoryRoot: root,
++      policyPaths: ["AGENTS.md"],
++      scope: { state: "present", changedPaths: [], sources: [] },
++    });
++  return { root, observe, git };
++}
++
++describe("canonical policy symlink observation", () => {
++  it("observes the tracked contained projection and binds current target bytes", async () => {
++    const f = await policyFixture();
++    const first = await f.observe();
++    expect(first.state).toBe("present");
++    await writeFile(path.join(f.root, "packages/agentplane/assets/AGENTS.md"), "policy two");
++    const next = await f.observe();
++    expect(next.state).toBe("present");
++    expect(next).not.toEqual(first);
++  });
++});
++
++describe("policy link refusal and observation races", () => {
++  it.each(["outside", "alias", "dangling", "directory", "cycle", "untracked"])(
++    "refuses %s policy aliases without reading their contents",
++    async (kind) => {
++      const f = await policyFixture();
++      const link = path.join(f.root, "AGENTS.md");
++      const target = path.join(f.root, "packages/agentplane/assets/AGENTS.md");
++      if (kind === "untracked") f.git("rm", "--cached", "AGENTS.md");
++      else if (kind === "outside" || kind === "alias") {
++        await unlink(link);
++        await symlink(kind === "outside" ? "/etc/passwd" : "package.json", link);
++      } else {
++        await unlink(target);
++        if (kind === "directory") await mkdir(target);
++        if (kind === "cycle") await symlink("../../../AGENTS.md", target);
++      }
++      const observed = await f.observe();
++      expect(observed.state).toBe("unavailable");
++    },
++  );
++
++  it("refuses a link swapped after contained target observation", async () => {
++    const f = await policyFixture();
++    const original = contained.readContainedStableTextNoFollow;
++    const spy = vi
++      .spyOn(contained, "readContainedStableTextNoFollow")
++      .mockImplementation(async (opts) => {
++        const contents = await original(opts);
++        await unlink(path.join(f.root, "AGENTS.md"));
++        await symlink("packages/agentplane/assets/AGENTS.md", path.join(f.root, "AGENTS.md"));
++        return contents;
++      });
++    try {
++      const observed = await f.observe();
++      expect(observed.state).toBe("unavailable");
++    } finally {
++      spy.mockRestore();
++    }
++  });
++});
+diff --git a/packages/agentplane/src/commands/task/completed-repair-scope-request.ts b/packages/agentplane/src/commands/task/completed-repair-scope-request.ts
+new file mode 100644
+index 000000000..a3a06d445
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/completed-repair-scope-request.ts
+@@ -0,0 +1,127 @@
++import path from "node:path";
++import { execFileAsync } from "@agentplaneorg/core/process";
++import { gitProofIsAncestor, gitProofEnv } from "@agentplaneorg/core/git";
++import {
++  digestSupervisorEpisodeValue,
++  validateSupervisorExecutionEpisodeJournal,
++} from "@agentplaneorg/core/schemas";
++import type { TaskData } from "../../backends/task-backend.js";
++import { CliError } from "../../shared/errors.js";
++import {
++  createSupervisorEpisodeStore,
++  resolveSupervisorExecutionEpisodePath,
++} from "../shared/supervisor-execution-episode.js";
++import { parseTaskScopeExtensionRequestState } from "../shared/task-scope-extension-request.js";
++import { resolveCommandGitCommonDir, type CommandContext } from "../shared/task-backend.js";
++import { readDirectRepositoryStatus } from "./direct-task-finalization.js";
++import { isExternalBlockedResultRecorded } from "./external-agent-blocked-result.js";
++import {
++  externalAgentResultDigest,
++  externalAgentIssueDigest,
++  readExternalAgentExchange,
++  readExternalAgentWorkOrder,
++  validateExternalAgentResultEnvelope,
++} from "./external-agent-exchange.js";
++
++function fail(): never {
++  throw new CliError({
++    code: "E_VALIDATION",
++    message:
++      "Completed repair scope requires the exact consumed native blocker and unchanged checkout.",
++  });
++}
++
++/** Authenticate the preserved native blocker before task-level scope admission. */
++export async function completedRepairScopeRequest(command: CommandContext, task: TaskData) {
++  const pending = parseTaskScopeExtensionRequestState(task);
++  if (task.status !== "DONE" || pending?.status !== "pending" || pending.work_item_id !== null)
++    return null;
++  const root = command.resolvedProject.gitRoot;
++  const journalPath = await resolveSupervisorExecutionEpisodePath({
++    git_root: root,
++    common_git_dir: await resolveCommandGitCommonDir(command),
++    task_id: task.id,
++  });
++  const journal = validateSupervisorExecutionEpisodeJournal(
++    await createSupervisorEpisodeStore(journalPath).read(),
++  );
++  const op = journal.operations.at(-1);
++  if (
++    journal.task_id !== task.id ||
++    journal.status !== "running" ||
++    journal.cursor.phase !== "ready" ||
++    op?.status !== "completed" ||
++    op.kind !== "agent_episode" ||
++    op.role !== "EXECUTOR" ||
++    !op.work_order_ref
++  )
++    return fail();
++  const exchange = await readExternalAgentExchange(
++    path.join(path.dirname(op.work_order_ref), "exchange.json"),
++  );
++  if (
++    exchange?.status !== "consumed" ||
++    exchange.purpose !== "implementation_rework" ||
++    exchange.task_id !== task.id ||
++    exchange.checkout !== root ||
++    exchange.transition_id !== pending.transition_id ||
++    exchange.state_fingerprint !== pending.blocker_state_fingerprint ||
++    exchange.work_order_ref !== op.work_order_ref ||
++    op.precondition_fingerprint_digest !== exchange.state_fingerprint ||
++    !exchange.baseline.head ||
++    exchange.result?.result.status !== "blocked" ||
++    exchange.result_digest !== externalAgentResultDigest(exchange.result) ||
++    op.postcondition_fingerprint_digest !== exchange.postcondition_fingerprint ||
++    op.result_digest !==
++      digestSupervisorEpisodeValue({
++        work_order_id: exchange.work_order_id,
++        semantic_status: "blocked",
++        result_digest: exchange.result_digest,
++      })
++  )
++    return fail();
++  const order = await readExternalAgentWorkOrder(exchange.work_order_ref);
++  const envelope = validateExternalAgentResultEnvelope({
++    raw: exchange.result,
++    exchange,
++    work_order: order,
++  });
++  if (
++    externalAgentResultDigest(envelope) !== exchange.result_digest ||
++    op.effect_ref !==
++      `external-agent-issue:${externalAgentIssueDigest({ exchange, work_order: order })}`
++  )
++    return fail();
++  if (
++    !(await isExternalBlockedResultRecorded({
++      command,
++      exchange,
++      semantic: exchange.result.result,
++    }))
++  )
++    return fail();
++  const status = await readDirectRepositoryStatus(root);
++  if (!(await gitProofIsAncestor(root, exchange.baseline.head, "HEAD"))) return fail();
++  const observedHistory = await execFileAsync(
++    "git",
++    [
++      "log",
++      "--format=",
++      "--name-only",
++      "--no-renames",
++      "--full-history",
++      "--diff-merges=separate",
++      `${exchange.baseline.head}..HEAD`,
++    ],
++    {
++      cwd: root,
++      env: gitProofEnv(),
++      maxBuffer: 16 * 1024 * 1024,
++    },
++  );
++  const history = observedHistory.stdout.split("\n").filter(Boolean);
++  if (history.some((file) => file !== `${command.config.paths.workflow_dir}/${task.id}/README.md`))
++    return fail();
++  if (!status || status.lines.length > 0) return fail();
++  return pending;
++}
+diff --git a/packages/agentplane/src/commands/task/scope-extend.command.test.ts b/packages/agentplane/src/commands/task/scope-extend.command.test.ts
+index 83a852738..2dfd1f8b7 100644
+--- a/packages/agentplane/src/commands/task/scope-extend.command.test.ts
++++ b/packages/agentplane/src/commands/task/scope-extend.command.test.ts
+@@ -1,3 +1,81 @@
++import type * as Testkit from "@agentplane/testkit";
++import type { AgentActionPacket } from "./agent-action-packet.js";
++import {
++  readExternalAgentWorkOrder,
++  type ExternalAgentExchange,
++} from "./external-agent-exchange.js";
++type Packet = { action: { kind: string }; exchange: NonNullable<AgentActionPacket["exchange"]> };
++import * as commitOwner from "../guard/impl/commit.js";
++import { CliError } from "../../shared/errors.js";
++import { readFile, writeFile, mkdir, symlink } from "node:fs/promises";
++import path from "node:path";
++import { captureStdIO, installRunCliIntegrationHarness } from "@agentplane/testkit";
++import { runCli } from "../../cli/run-cli.js";
++import { fixture, git } from "./kernel-completed-external-rework.testkit.js";
++import { parseTaskScopeExtensionRequestState } from "../shared/task-scope-extension-request.js";
++import type * as PrFlowModule from "../pr/flow-status.js";
++
++vi.mock("@agentplane/testkit", async (original) => {
++  const actual = await original<typeof Testkit>();
++  return {
++    ...actual,
++    mkGitRepoRootWithBranch: async (...args: Parameters<typeof actual.mkGitRepoRootWithBranch>) => {
++      const root = await actual.mkGitRepoRootWithBranch(...args);
++      // Seed the same tracked gateway projection before the fixture's frozen base.
++      // Missing gateway policy must not be hidden by weakening the successor check.
++      await mkdir(path.join(root, "packages/agentplane/assets"), { recursive: true });
++      await writeFile(
++        path.join(root, "packages/agentplane/assets/AGENTS.md"),
++        "# Fixture policy\nPreserve native authority and independent review.\n",
++      );
++      await symlink("packages/agentplane/assets/AGENTS.md", path.join(root, "AGENTS.md"));
++      return root;
++    },
++  };
++});
++
++vi.mock("../pr/flow-status.js", async (original) => ({
++  ...(await original<typeof PrFlowModule>()),
++  resolvePrFlowStatus: async (opts: { ctx: taskBackend.CommandContext; taskId: string }) => {
++    const task = (await opts.ctx.taskBackend.getTask(opts.taskId))!;
++    const head = git(opts.ctx.resolvedProject.gitRoot, "rev-parse", "HEAD");
++    return {
++      task: { id: task.id, status: task.status, verification: task.verification?.state ?? null },
++      branch: {
++        name: git(opts.ctx.resolvedProject.gitRoot, "branch", "--show-current"),
++        headSha: head,
++        metaHeadSha: null,
++      },
++      pr: {
++        provider: "github",
++        state: "OPEN",
++        source: "lookup",
++        prNumber: 12,
++        prUrl: "https://github.com/owner/project/pull/12",
++        base: "main",
++        headSha: head,
++        mergeCommit: null,
++      },
++      closeTail: { state: "not_applicable", reason: "Fixture PR" },
++      hostedChecks: { checked: false, reason: "No provider effects in fixture" },
++      reviewThreads: { checked: false, reason: "No provider effects in fixture" },
++      queue: { present: false },
++      handoff: { present: false },
++      nextAction: "Review source",
++    } satisfies PrFlowModule.PrFlowStatusReport;
++  },
++}));
++installRunCliIntegrationHarness();
++async function invoke(root: string, args: string[]) {
++  const io = captureStdIO();
++  try {
++    const code = await runCli([...args, "--root", root]);
++    return { code, stdout: io.stdout, stderr: io.stderr };
++  } finally {
++    io.restore();
++  }
++}
++
+ import { afterEach, describe, expect, it, vi } from "vitest";
+ import * as taskBackend from "../shared/task-backend.js";
+ import * as kernelRuntime from "./kernel-runtime-context.js";
+@@ -16,7 +94,9 @@ describe("canonical scope grant ownership", () => {
+   it("uses the resolved owner context without changing the approval binding", async () => {
+     const ctx = {
+       taskBackend: {
+-        getTask: vi.fn().mockResolvedValue({ extensions: { [TASK_KERNEL_EXTENSION]: {} } }),
++        getTask: vi
++          .fn()
++          .mockResolvedValue({ id: "T-1", extensions: { [TASK_KERNEL_EXTENSION]: {} } }),
+       },
+     } as unknown as taskBackend.CommandContext;
+     const owner = { ...ctx, backendId: "authoritative-test-backend" };
+@@ -64,7 +144,9 @@ describe("canonical scope grant ownership", () => {
+     async (approval) => {
+       const ctx = {
+         taskBackend: {
+-          getTask: vi.fn().mockResolvedValue({ extensions: { [TASK_KERNEL_EXTENSION]: {} } }),
++          getTask: vi
++            .fn()
++            .mockResolvedValue({ id: "T-1", extensions: { [TASK_KERNEL_EXTENSION]: {} } }),
+         },
+       } as unknown as taskBackend.CommandContext;
+       const resolve = vi.spyOn(taskBackend, "resolveTaskOwnerCommandContext");
+@@ -173,3 +255,294 @@ describe("task scope extend command parsing", () => {
+     },
+   );
+ });
++
++async function completedScopeFixture(authenticatedReview = false) {
++  const f = await fixture("branch_pr", false, authenticatedReview);
++  const issued = await invoke(f.root, ["task", "advance", f.id, "--agent-json"]);
++  expect(issued.code, issued.stdout + issued.stderr).toBe(0);
++  const packet = JSON.parse(issued.stdout) as Packet;
++  const order = await readExternalAgentWorkOrder(
++    path.join(packet.exchange.directory, "work-order.json"),
++  );
++  expect(order.role).toBe("EXECUTOR");
++  const payload = {
++    work_order_id: order.work_order_id,
++    status: "blocked",
++    summary: "Need helper",
++    findings: [],
++    uncertainty: [],
++    blocker: {
++      summary: "Helper absent",
++      scope_extension_request: {
++        schema_version: 1,
++        rationale: "Fix helper behavior",
++        scope_roots: ["helper.txt"],
++        repository_effects: [],
++      },
++    },
++  };
++  await writeFile(packet.exchange.result_path, JSON.stringify(payload));
++  const returned = await invoke(f.root, [
++    "task",
++    "advance",
++    f.id,
++    "--result",
++    packet.exchange.result_path,
++    "--agent-json",
++  ]);
++  expect(returned.code, returned.stdout + returned.stderr).toBe(0);
++  expect((JSON.parse(returned.stdout) as Packet).action.kind).toBe("human_input_required");
++  const command = await taskBackend.loadCommandContext({ cwd: f.root, rootOverride: null });
++  const before = (await command.taskBackend.getTask(f.id))!;
++  const pending = parseTaskScopeExtensionRequestState(before)!;
++  expect(pending.status).toBe("pending");
++  const head = git(f.root, "rev-parse", "HEAD");
++  const args = [
++    "task",
++    "scope",
++    "extend",
++    f.id,
++    "--scope-root",
++    "helper.txt",
++    "--request-digest",
++    pending.request_digest,
++    "--state-scope-digest",
++    pending.request_digest,
++    "--by",
++    "USER",
++  ];
++  return { f, packet, payload, command, before, pending, head, args };
++}
++
++describe("completed native repair prospective scope admission", { timeout: 120_000 }, () => {
++  it("authenticates the consumed blocker, admits exact scope, and preserves terminal history", async () => {
++    const { f, packet, payload, command, before, args } = await completedScopeFixture(true);
++    const admitted = await invoke(f.root, args);
++    expect(admitted.code, admitted.stdout + admitted.stderr).toBe(0);
++    const observation6 = await command.taskBackend.getTask(f.id);
++    const after = observation6!;
++    expect(after.status).toBe("DONE");
++    expect(after.extensions?.task_kernel).toEqual(before.extensions?.task_kernel);
++    expect(after.commit).toEqual(before.commit);
++    expect(after.quality_review).toEqual(before.quality_review);
++    expect(after.extensions?.task_execution_context).toEqual(
++      before.extensions?.task_execution_context,
++    );
++    expect(after.execution_contract?.authority.writable_roots).toContain("helper.txt");
++    expect(parseTaskScopeExtensionRequestState(after)).toMatchObject({
++      status: "applied",
++      applied_by: "USER",
++    });
++    const replayHead = git(f.root, "rev-parse", "HEAD");
++    const replay = await invoke(f.root, args);
++    expect(replay.code).not.toBe(0);
++    expect(git(f.root, "rev-parse", "HEAD")).toBe(replayHead);
++    expect(await readFile(packet.exchange.result_path, "utf8")).toBe(JSON.stringify(payload));
++    expect(await readFile(path.join(f.root, "source.txt"), "utf8")).toBe("before\n");
++    const next = await invoke(f.root, ["task", "advance", f.id, "--agent-json", "--remote"]);
++    expect(next.code, next.stdout + next.stderr).toBe(0);
++    let successor = JSON.parse(next.stdout) as Packet;
++    expect(successor.action.kind, next.stdout).toBe("agent_episode");
++    let fresh = await readExternalAgentWorkOrder(
++      path.join(successor.exchange.directory, "work-order.json"),
++    );
++    if (fresh.role === "EVALUATOR") {
++      // Scope admission changes review authority. Complete the required fresh
++      // fixture assessment, rather than skipping independent evaluation.
++      expect(await readFile(path.join(f.root, "source.txt"), "utf8")).toBe("before\n");
++      await writeFile(
++        successor.exchange.result_path,
++        JSON.stringify({
++          work_order_id: fresh.work_order_id,
++          status: "completed",
++          summary: "Fixture helper implementation is unavailable for behavior assessment.",
++          findings: ["The fixture still contains before, so implementation rework is required."],
++          uncertainty: [],
++          review: {
++            verdict: "blocked",
++            missing_tests: [],
++            hidden_assumptions: [],
++            residual_risks: [],
++            recovery_context: "Implement the admitted helper.",
++          },
++        }),
++      );
++      const reviewed = await invoke(f.root, successor.exchange.resume_argv.slice(1));
++      expect(reviewed.code, reviewed.stdout + reviewed.stderr).toBe(0);
++      successor = JSON.parse(reviewed.stdout) as Packet;
++      expect(successor.action.kind, reviewed.stdout).toBe("agent_episode");
++      fresh = await readExternalAgentWorkOrder(
++        path.join(successor.exchange.directory, "work-order.json"),
++      );
++    }
++    expect(fresh.role).toBe("EXECUTOR");
++    expect(fresh.authority.writable_roots.some((root: string) => root.endsWith("helper.txt"))).toBe(
++      true,
++    );
++    expect(fresh.state_fingerprint.components.policy.state).toBe("present");
++    expect(fresh.stop_rules.join(" ")).not.toContain("task_kind_incompatible");
++    expect(fresh.stop_rules.join(" ")).not.toContain("Execution profile release is incompatible");
++    const observation7 = await command.taskBackend.getTask(f.id);
++    expect(observation7?.extensions?.task_kernel).toEqual(before.extensions?.task_kernel);
++  });
++});
++
++it(
++  "refuses source edits reverted after the consumed scope blocker",
++  { timeout: 120_000 },
++  async () => {
++    const { f, args, command, before } = await completedScopeFixture();
++    await writeFile(path.join(f.root, "source.txt"), "changed");
++    git(f.root, "add", "source.txt");
++    git(f.root, "commit", "-m", "source drift");
++    await writeFile(path.join(f.root, "source.txt"), "before\n");
++    git(f.root, "add", "source.txt");
++    git(f.root, "commit", "-m", "restore bytes");
++    const head = git(f.root, "rev-parse", "HEAD");
++    const observation3 = await invoke(f.root, args);
++    expect(observation3.code).not.toBe(0);
++    expect(git(f.root, "rev-parse", "HEAD")).toBe(head);
++    const observation8 = await command.taskBackend.getTask(f.id);
++    expect(observation8?.execution_contract).toEqual(before.execution_contract);
++  },
++);
++
++it.each([
++  { sourceDrift: true, reverted: false },
++  { sourceDrift: true, reverted: true },
++  { sourceDrift: false, reverted: false },
++])(
++  "checks merge history with log.diffMerges=off (sourceDrift=$sourceDrift, reverted=$reverted)",
++  { timeout: 120_000 },
++  async ({ sourceDrift, reverted }) => {
++    const { f, args, command, before } = await completedScopeFixture();
++    git(f.root, "config", "--local", "log.diffMerges", "off");
++    const branch = git(f.root, "branch", "--show-current");
++    const readme = `.agentplane/tasks/${f.id}/README.md`;
++    const original = await readFile(path.join(f.root, readme), "utf8");
++    git(f.root, "checkout", "-b", "readme-only-side");
++    await writeFile(path.join(f.root, readme), `${original}\nSide metadata.\n`);
++    git(f.root, "add", readme);
++    git(f.root, "commit", "-m", "side metadata only");
++    git(f.root, "checkout", branch);
++    await writeFile(path.join(f.root, readme), `${original}\nMain metadata.\n`);
++    git(f.root, "add", readme);
++    git(f.root, "commit", "-m", "main metadata only");
++    git(f.root, "merge", "readme-only-side", "--no-ff", "--no-commit", "-s", "ours");
++    await writeFile(path.join(f.root, readme), original);
++    if (sourceDrift)
++      await writeFile(path.join(f.root, "source.txt"), "merge-resolution source drift\n");
++    git(f.root, "add", readme, "source.txt");
++    git(f.root, "commit", "-m", "merge with source resolution");
++    if (reverted) {
++      await writeFile(path.join(f.root, "source.txt"), "before\n");
++      git(f.root, "add", "source.txt");
++      git(f.root, "commit", "-m", "restore source bytes");
++    }
++    const head = git(f.root, "rev-parse", "HEAD");
++    const result = await invoke(f.root, args);
++    const after = (await command.taskBackend.getTask(f.id))!;
++    expect(after.extensions?.task_kernel).toEqual(before.extensions?.task_kernel);
++    if (sourceDrift) {
++      expect(result.code).not.toBe(0);
++      expect(result.stderr).toContain("Completed repair scope requires");
++      expect(git(f.root, "rev-parse", "HEAD")).toBe(head);
++      expect(after.execution_contract).toEqual(before.execution_contract);
++      expect(parseTaskScopeExtensionRequestState(after)).toMatchObject({ status: "pending" });
++    } else {
++      expect(result.code, result.stdout + result.stderr).toBe(0);
++      expect(after.execution_contract?.authority.writable_roots).toContain("helper.txt");
++      expect(parseTaskScopeExtensionRequestState(after)).toMatchObject({ status: "applied" });
++      expect(after.commit).toEqual(before.commit);
++      expect(after.quality_review).toEqual(before.quality_review);
++      expect(after.extensions?.task_execution_context).toEqual(
++        before.extensions?.task_execution_context,
++      );
++      expect(await readFile(path.join(f.root, "source.txt"), "utf8")).toBe("before\n");
++    }
++  },
++);
++
++it(
++  "preserves one admitted scope after interrupted metadata commit without replaying approval",
++  { timeout: 120_000 },
++  async () => {
++    const { f, args, command, before } = await completedScopeFixture();
++    const stop = vi.spyOn(commitOwner, "cmdCommit").mockRejectedValueOnce(
++      new CliError({
++        code: "E_VALIDATION",
++        message: "Injected commit interruption after scope persistence",
++      }),
++    );
++    try {
++      const observation4 = await invoke(f.root, args);
++      expect(observation4.code).not.toBe(0);
++    } finally {
++      stop.mockRestore();
++    }
++    const observation9 = await command.taskBackend.getTask(f.id);
++    const admitted = observation9!;
++    expect(parseTaskScopeExtensionRequestState(admitted)).toMatchObject({
++      status: "applied",
++      applied_by: "USER",
++    });
++    expect(admitted.execution_contract?.authority.writable_roots).toContain("helper.txt");
++    expect(admitted.extensions?.task_kernel).toEqual(before.extensions?.task_kernel);
++    const comments = admitted.comments?.filter((comment) =>
++      comment.body.startsWith("Approved state-bound execution scope extension:"),
++    );
++    expect(comments).toHaveLength(1);
++    const observation5 = await invoke(f.root, args);
++    expect(observation5.code).not.toBe(0);
++    const observation10 = await command.taskBackend.getTask(f.id);
++    const replayed = observation10!;
++    expect(replayed.comments).toEqual(admitted.comments);
++    expect(replayed.execution_contract).toEqual(admitted.execution_contract);
++    expect(replayed.extensions?.task_kernel).toEqual(before.extensions?.task_kernel);
++  },
++);
++
++it(
++  "refuses invalid scope, altered exchange and dirty source before admission",
++  { timeout: 120_000 },
++  async () => {
++    const { f, packet, command, before, head, args } = await completedScopeFixture();
++    for (const [index, value] of [
++      [5, "expanded.txt"],
++      [7, REQUEST_DIGEST],
++      [11, "EXECUTOR"],
++    ] as const) {
++      const wrong = [...args];
++      wrong[index] = value;
++      const refused = await invoke(f.root, wrong);
++      expect(refused.code, refused.stdout + refused.stderr).not.toBe(0);
++      expect(git(f.root, "rev-parse", "HEAD")).toBe(head);
++    }
++    const exchangeFile = path.join(packet.exchange.directory, "exchange.json");
++    const retained = await readFile(exchangeFile, "utf8");
++    for (const change of [
++      { purpose: "implementation" },
++      { status: "issued" },
++      { transition_id: "tr_" + "0".repeat(32) },
++    ]) {
++      await writeFile(
++        exchangeFile,
++        JSON.stringify({ ...(JSON.parse(retained) as ExternalAgentExchange), ...change }),
++      );
++      const observation1 = await invoke(f.root, args);
++      expect(observation1.code).not.toBe(0);
++      expect(git(f.root, "rev-parse", "HEAD")).toBe(head);
++      await writeFile(exchangeFile, retained);
++    }
++    await writeFile(path.join(f.root, "source.txt"), "dirty source");
++    const observation2 = await invoke(f.root, args);
++    expect(observation2.code).not.toBe(0);
++    expect(git(f.root, "rev-parse", "HEAD")).toBe(head);
++    await writeFile(path.join(f.root, "source.txt"), "before\n");
++
++    const after = await command.taskBackend.getTask(f.id);
++    expect(after?.execution_contract).toEqual(before.execution_contract);
++    expect(after?.extensions?.task_kernel).toEqual(before.extensions?.task_kernel);
++    expect(parseTaskScopeExtensionRequestState(after!)).toMatchObject({ status: "pending" });
++  },
++);
+diff --git a/packages/agentplane/src/commands/task/scope-extend.ts b/packages/agentplane/src/commands/task/scope-extend.ts
+index 2239f4da7..002d0f603 100644
+--- a/packages/agentplane/src/commands/task/scope-extend.ts
++++ b/packages/agentplane/src/commands/task/scope-extend.ts
+@@ -1,3 +1,5 @@
++import { completedRepairScopeRequest } from "./completed-repair-scope-request.js";
++import { applyTaskMutation } from "../shared/task-mutation.js";
+ import {
+   computeLogicalCompletionContractDigest,
+   EXECUTION_GRANT_EXTENSION_KEY,
+@@ -26,6 +28,7 @@ import {
+   applyApprovedTaskScopeExtension,
+   normalizeTaskScopeRoot,
+   parseTaskScopeExtensionRequestState,
++  TASK_SCOPE_EXTENSION_REQUEST_KEY,
+   scopeExtensionReceiptForState,
+ } from "../shared/task-scope-extension-request.js";
+ import {
+@@ -110,6 +113,7 @@ export function extendBlockedTaskExecutionContract(opts: {
+   repository_effects: readonly TaskRepositoryEffect[];
+   request_digest: string;
+   by: string;
++  completedRework?: boolean;
+ }) {
+   const current = opts.task.execution_contract;
+   if (!current) {
+@@ -118,7 +122,7 @@ export function extendBlockedTaskExecutionContract(opts: {
+       message: "Task execution scope cannot be extended without a persisted execution contract.",
+     });
+   }
+-  if (opts.task.status !== "BLOCKED") {
++  if (opts.task.status !== "BLOCKED" && !(opts.completedRework && opts.task.status === "DONE")) {
+     throw new CliError({
+       code: "E_VALIDATION",
+       message:
+@@ -278,6 +282,88 @@ export function taskWithRebasedExecutionGrant(opts: {
+   };
+ }
+ 
++async function commitScope(ctx: CommandContext, cwd: string, taskId: string, message: string) {
++  const exit = await cmdCommit({
++    ctx,
++    cwd,
++    taskId,
++    message,
++    close: false,
++    allow: [],
++    autoAllow: false,
++    allowTasks: true,
++    allowBase: false,
++    allowPolicy: false,
++    allowConfig: false,
++    allowHooks: false,
++    allowCI: false,
++    requireClean: false,
++    quiet: true,
++    closeUnstageOthers: false,
++    closeCheckOnly: false,
++  });
++  if (exit !== 0) throw new Error(`Task scope extension commit exited ${exit}.`);
++}
++
++/** Admit task-level repair scope without reopening or rewriting the completed Kernel. */
++async function extendCompletedRepair(opts: {
++  command: CommandContext;
++  task: TaskData;
++  scopeRoots: string[];
++  repositoryEffects: TaskRepositoryEffect[];
++  requestDigest: string;
++  by: string;
++}) {
++  const { command, task } = opts;
++  const pending = await completedRepairScopeRequest(command, task);
++  if (!pending) return false;
++  const root = command.resolvedProject.gitRoot;
++  const executionContract = extendBlockedTaskExecutionContract({
++    command,
++    task,
++    scope_roots: opts.scopeRoots,
++    repository_effects: opts.repositoryEffects,
++    request_digest: opts.requestDigest,
++    by: opts.by,
++    completedRework: true,
++  });
++  await applyTaskMutation({
++    ctx: command,
++    taskId: task.id,
++    allowCanonicalProjection: true,
++    writeOptions: { expectedRevision: task.revision },
++    build: (current) => ({
++      nextTask: {
++        ...current,
++        execution_contract: executionContract,
++        extensions: {
++          ...current.extensions,
++          [TASK_SCOPE_EXTENSION_REQUEST_KEY]: {
++            ...pending,
++            status: "applied",
++            applied_at: new Date().toISOString(),
++            applied_by: opts.by,
++          },
++        },
++        comments: [
++          ...(current.comments ?? []),
++          {
++            author: opts.by,
++            body: `Approved state-bound execution scope extension: ${opts.scopeRoots.join(", ")}; repository effects: ${opts.repositoryEffects.join(", ") || "unchanged"}.`,
++          },
++        ],
++      },
++    }),
++  });
++  await commitScope(
++    command,
++    root,
++    task.id,
++    `🚧 ${task.id.split("-").at(-1)} task: extend completed repair scope`,
++  );
++  return true;
++}
++
+ export async function cmdTaskScopeExtend(opts: {
+   ctx: CommandContext;
+   cwd: string;
+@@ -306,8 +392,34 @@ export async function cmdTaskScopeExtend(opts: {
+           code: "E_VALIDATION",
+           message: "Canonical authority delta state scope must equal its exact request digest.",
+         });
++      const owner = await resolveTaskOwnerCommandContext({ ctx: opts.ctx, taskId: opts.taskId });
++      const task = await owner.taskBackend.getTask(opts.taskId);
++      if (task?.id !== opts.taskId)
++        throw new CliError({
++          code: "E_VALIDATION",
++          message: "Canonical scope owner Task identity changed.",
++        });
++      if (
++        task &&
++        (await extendCompletedRepair({
++          command: owner,
++          task,
++          scopeRoots: opts.scopeRoots,
++          repositoryEffects: opts.repositoryEffects,
++          requestDigest: opts.requestDigest,
++          by: opts.by,
++        }))
++      ) {
++        if (!opts.quiet)
++          emitCommandResult(output, {
++            kind: "success",
++            action: "completed repair scope extended",
++            target: opts.taskId,
++          });
++        return 0;
++      }
+       const runtime = await createKernelRuntime({
+-        command: await resolveTaskOwnerCommandContext({ ctx: opts.ctx, taskId: opts.taskId }),
++        command: owner,
+         task_id: opts.taskId,
+         transport: "manual",
+         operation_id: `authority-delta:${opts.requestDigest}`,
+@@ -416,26 +528,7 @@ export async function cmdTaskScopeExtend(opts: {
+     );
+ 
+     const subject = `🚧 ${opts.taskId.split("-").at(-1) ?? opts.taskId} task: extend approved execution scope`;
+-    const exitCode = await cmdCommit({
+-      ctx: command,
+-      cwd: checkout,
+-      taskId: opts.taskId,
+-      message: subject,
+-      close: false,
+-      allow: [],
+-      autoAllow: false,
+-      allowTasks: true,
+-      allowBase: false,
+-      allowPolicy: false,
+-      allowConfig: false,
+-      allowHooks: false,
+-      allowCI: false,
+-      requireClean: false,
+-      quiet: true,
+-      closeUnstageOthers: false,
+-      closeCheckOnly: false,
+-    });
+-    if (exitCode !== 0) throw new Error(`Task scope extension commit exited ${exitCode}.`);
++    await commitScope(command, checkout, opts.taskId, subject);
+     await refreshBranchPrArtifactsAfterTaskCommit({
+       ctx: command,
+       cwd: checkout,
+diff --git a/packages/agentplane/src/runtime/task-obligations/resolve.test.ts b/packages/agentplane/src/runtime/task-obligations/resolve.test.ts
+index 1d435ccfe..9ec6ae1bb 100644
+--- a/packages/agentplane/src/runtime/task-obligations/resolve.test.ts
++++ b/packages/agentplane/src/runtime/task-obligations/resolve.test.ts
+@@ -174,6 +174,32 @@ describe("native task obligations", () => {
+     },
+   );
+ 
++  it.each([{ risk_flags: ["publish"] }, { risk_flags: ["security", "publish", "merge"] }])(
++    "keeps code publication risk on code obligations: %s",
++    ({ risk_flags }) => {
++      const request = input({ risk_flags });
++      const resolved = resolveNativeTaskObligations(request);
++      expect(resolved.profile).toBe("code");
++      expect(resolved.stop_rules.map((rule) => rule.id)).not.toContain("task_kind_incompatible");
++      expect(resolved.mandatory_stages.find((stage) => stage.id === "user_approval")).toMatchObject(
++        { required: true, protected: true },
++      );
++      expect(request.risk_flags).toEqual(risk_flags);
++    },
++  );
++
++  it("keeps package release publication on release obligations", () => {
++    const resolved = resolveNativeTaskObligations(
++      input({
++        task_kind: "release",
++        mutation_scope: "release",
++        risk_flags: ["publish"],
++      }),
++    );
++    expect(resolved.profile).toBe("release");
++    expect(resolved.policy_modules).toContain(".agentplane/policy/workflow.release.md");
++  });
++
+   it("admits semantic capabilities only from native authority inputs", () => {
+     expect(
+       resolveNativeSemanticToolClasses({
+diff --git a/packages/agentplane/src/runtime/task-obligations/resolve.ts b/packages/agentplane/src/runtime/task-obligations/resolve.ts
+index 74430cf8f..fce87f729 100644
+--- a/packages/agentplane/src/runtime/task-obligations/resolve.ts
++++ b/packages/agentplane/src/runtime/task-obligations/resolve.ts
+@@ -58,7 +58,8 @@ function resolveProfile(input: NativeTaskObligationInput, taskKind: string): Nat
+   ) {
+     return "ops";
+   }
+-  if (risks.has("publish")) return "release";
++  // Publication is an approval risk, not a change to the semantic task kind.
++  if (risks.has("publish") && taskKind !== "code") return "release";
+   return baseProfile(taskKind);
+ }
+ 

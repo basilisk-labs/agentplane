@@ -93,6 +93,26 @@ const quarantineMarkerSchema = z.strictObject({
 });
 export type LifecycleOwnerMigrationQuarantine = z.infer<typeof quarantineMarkerSchema>;
 
+const quarantineRollbackProofSchema = z.strictObject({
+  schema_version: z.literal(1),
+  kind: z.literal("lifecycle_owner_quarantine_rollback"),
+  task_id: z.string().min(1),
+  repository_identity: digest,
+  backend_identity: z.string().min(1),
+  source_digest: digest,
+  backup_location: z.string().min(1),
+  quarantine_digest: digest,
+  output_bytes_digest: digest,
+});
+export type LifecycleOwnerQuarantineRollbackProof = z.infer<typeof quarantineRollbackProofSchema>;
+
+export function parseLifecycleOwnerQuarantineRollbackProof(
+  value: unknown,
+): LifecycleOwnerQuarantineRollbackProof | null {
+  const parsed = quarantineRollbackProofSchema.safeParse(value);
+  return parsed.success ? parsed.data : null;
+}
+
 export function createLifecycleOwnerMigrationQuarantineMarker(
   contents: Omit<LifecycleOwnerMigrationQuarantine, "quarantine_digest">,
 ): LifecycleOwnerMigrationQuarantine {
@@ -130,6 +150,7 @@ export type LifecycleOwnerMigrationApplyResult =
       reason: string;
       persisted: boolean;
       quarantine_digest: k.Sha256Digest | null;
+      quarantine_proof?: LifecycleOwnerQuarantineRollbackProof;
       audit: {
         task_id: string;
         source_digest: k.Sha256Digest;
@@ -180,7 +201,7 @@ export function quarantine(
   preview: LifecycleOwnerMigrationPreview,
   persisted = false,
   quarantineDigest: k.Sha256Digest | null = null,
-): LifecycleOwnerMigrationApplyResult {
+): Extract<LifecycleOwnerMigrationApplyResult, { kind: "quarantined" }> {
   return {
     kind: "quarantined",
     reason,

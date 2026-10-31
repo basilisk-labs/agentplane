@@ -1,0 +1,32 @@
+{
+  "base": "main",
+  "branch": "task/202610300522-MRJ9WH/authenticate-completed-repair-intake-transitions",
+  "created_at": "2026-10-30T19:38:43.432Z",
+  "diffstat_sha256": "sha256:062a4ed89a0609e159e7b61597f9569eaad9026e3f9b2df1db8590a584cd6ecc",
+  "last_verified_at": "2026-10-30T23:09:52.150Z",
+  "last_verified_diffstat_sha256": "sha256:062a4ed89a0609e159e7b61597f9569eaad9026e3f9b2df1db8590a584cd6ecc",
+  "pr_number": 6961,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6961",
+  "pre_merge_closure": {
+    "basis_commit": "546075ad6b39a8121f00f79b326ed6b825abd089",
+    "branch": "task/202610300522-MRJ9WH/authenticate-completed-repair-intake-transitions",
+    "pr_number": 6961,
+    "recorded_at": "2026-10-30T23:48:10.959Z",
+    "state": "closed_before_merge"
+  },
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202610300522-MRJ9WH",
+  "updated_at": "2026-10-30T20:56:10.847Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -1,7 +1,7 @@
 import path from "node:path";
 import { readdir } from "node:fs/promises";
 import { z } from "zod";
-import { gitProofEnv, gitProofIsAncestor, gitProofDiffNames } from "@agentplaneorg/core/git";
+import { gitProofEnv, gitProofIsAncestor, gitMergeBase } from "@agentplaneorg/core/git";
 import { execFileAsync } from "@agentplaneorg/core/process";
 import {
   digestSupervisorEpisodeValue,
@@ -17,7 +17,6 @@ import { resolveCommandGitCommonDir, type CommandContext } from "../shared/task-
 import { resolveSupervisorExecutionEpisodePath } from "../shared/supervisor-execution-episode.js";
 import { operationPayloadDigest } from "../shared/workflow-step-authority.js";
 import type { ProviderUpdateBranchOperationParams } from "../shared/provider-update-branch-route.js";
-import { isTaskLocalAdvancePath } from "../shared/task-local-freshness.js";
 
 const oid = z.string().regex(/^(?:[a-f0-9]{40}|[a-f0-9]{64})$/u);
 const digest = z.string().regex(/^sha256:[a-f0-9]{64}$/u);
@@ -219,6 +218,38 @@ export async function retainProviderUpdateVerificationProof(opts: {
   return proof.completion;
 }
 
+export async function taskOriginHistoryPaths(
+  gitRoot: string,
+  from: string,
+  head: string,
+  canonicalBase = from,
+) {
+  const read = (args: string[]) => git(gitRoot, args);
+  const range = `${from}..${head}`;
+  const history = await read([
+    "log",
+    "--format=",
+    "--name-only",
+    "-z",
+    "--full-history",
+    "--no-merges",
+    "--no-renames",
+    range,
+  ]);
+  const paths = new Set(history.split("\0").filter(Boolean));
+  const merges = await read(["rev-list", "--min-parents=2", range]);
+  for (const merge of merges.trim().split("\n").filter(Boolean)) {
+    const intersection = await gitMergeBase(gitRoot, canonicalBase, merge);
+    // Compare each resolution to its immutable canonical intersection. A clean
+    // base import can arrive through an intermediate Task parent. Every Task-side
+    // commit and earlier merge remains in this union, so a later restoration of
+    // canonical bytes cannot erase an earlier foreign edit or deletion.
+    const changed = await read(["diff", "--name-only", "-z", "--no-renames", intersection, merge]);
+    for (const file of changed.split("\0").filter(Boolean)) paths.add(file);
+  }
+  return [...paths];
+}
+
 /** Return only canonical imports backed by a completed native update and exact Git tree entries. */
 export async function inheritedProviderUpdatePaths(opts: {
   command: CommandContext;
@@ -276,19 +307,61 @@ export async function inheritedProviderUpdatePaths(opts: {
   proofs.sort((a, b) => a.sequence - b.sequence);
   let previous: Proof | undefined;
   let inherited = new Set<string>();
-  const metadataOnly = async (from: string, to: string) => {
-    const files = await gitProofDiffNames(root, from, to);
-    return files.every((relPath) =>
-      isTaskLocalAdvancePath({
-        workflowDir: opts.workflow_dir,
-        taskId: opts.task_id,
-        tasksPath: opts.tasks_path,
-        relPath,
-      }),
-    );
+  // Cache whole observations per immutable commit/range. Large canonical imports
+  // must not spawn several Git processes for every inherited artifact.
+  const trees = new Map<string, Promise<Map<string, string>>>();
+  const histories = new Map<string, Promise<Set<string>>>();
+  const taskHistories = new Map<string, Promise<Set<string>>>();
+  const entry = async (ref: string, file: string) => {
+    if (!trees.has(ref))
+      trees.set(
+        ref,
+        git(root, ["ls-tree", "-r", "-z", "--full-tree", ref]).then(
+          (text) =>
+            new Map(
+              text
+                .split("\0")
+                .filter(Boolean)
+                .map((row) => [row.slice(row.indexOf("\t") + 1), row]),
+            ),
+        ),
+      );
+    const tree = await trees.get(ref)!;
+    return tree.get(file) ?? "";
   };
-  const entry = (ref: string, file: string) =>
-    git(root, ["ls-tree", "-z", ref, "--", `:(literal)${file}`]);
+  // Raw history preserves pre-update ownership and canonical candidate discovery.
+  // A later update proof cannot retroactively authenticate the origin of a prior local import.
+  const history = (from: string, to: string) => {
+    const range = `${from}..${to}`;
+    if (!histories.has(range))
+      histories.set(
+        range,
+        git(root, [
+          "log",
+          "--format=",
+          "--name-only",
+          "-z",
+          "--full-history",
+          "--diff-merges=separate",
+          "--no-renames",
+          range,
+        ]).then((text) => new Set(text.split("\0").filter(Boolean))),
+      );
+    return histories.get(range)!;
+  };
+  const taskHistory = (from: string, to: string, canonicalBase: string) => {
+    const key = `${from}..${to}:${canonicalBase}`;
+    if (!taskHistories.has(key))
+      taskHistories.set(
+        key,
+        taskOriginHistoryPaths(root, from, to, canonicalBase).then((paths) => new Set(paths)),
+      );
+    return taskHistories.get(key)!;
+  };
+  const untouched = async (from: string, to: string, canonicalBase: string, file: string) => {
+    const paths = await taskHistory(from, to, canonicalBase);
+    return !paths.has(file);
+  };
   for (const { proof } of proofs) {
     if (!(await gitProofIsAncestor(root, proof.observed_head_sha, opts.evaluated_sha))) continue;
     if (
@@ -298,29 +371,25 @@ export async function inheritedProviderUpdatePaths(opts: {
         previous.params.expectedBaseSha,
         proof.params.expectedBaseSha,
       )) ||
-        !(await gitProofIsAncestor(
-          root,
-          previous.observed_head_sha,
-          proof.params.expectedHeadSha,
-        )) ||
-        !(await metadataOnly(previous.observed_head_sha, proof.params.expectedHeadSha)))
+        !(await gitProofIsAncestor(root, previous.observed_head_sha, proof.params.expectedHeadSha)))
     )
       throw new Error("Provider update lineage contains unqualified intervening edits");
-    const headChanges = await gitProofDiffNames(
-      root,
-      opts.frozen_base,
-      proof.params.expectedHeadSha,
-    );
+    const headChanges = [...(await history(opts.frozen_base, proof.params.expectedHeadSha))];
     const owned = new Set(headChanges.filter((file) => !inherited.has(file)));
-    const candidates = await gitProofDiffNames(
-      root,
-      opts.frozen_base,
-      proof.params.expectedBaseSha,
-    );
+    const candidates = await history(opts.frozen_base, proof.params.expectedBaseSha);
+    const previouslyInherited = inherited;
     inherited = new Set<string>();
     for (const file of candidates) {
       if (
         !owned.has(file) &&
+        (!previous ||
+          !previouslyInherited.has(file) ||
+          (await untouched(
+            previous.observed_head_sha,
+            proof.params.expectedHeadSha,
+            previous.params.expectedBaseSha,
+            file,
+          ))) &&
         (await entry(proof.observed_head_sha, file)) ===
           (await entry(proof.params.expectedBaseSha, file))
       )
@@ -328,6 +397,21 @@ export async function inheritedProviderUpdatePaths(opts: {
     }
     previous = proof;
   }
-  if (!previous || !(await metadataOnly(previous.observed_head_sha, opts.evaluated_sha))) return [];
-  return opts.changed_paths.filter((file) => inherited.has(file));
+  if (!previous) return [];
+  const result: string[] = [];
+  for (const file of opts.changed_paths) {
+    if (
+      inherited.has(file) &&
+      (await untouched(
+        previous.observed_head_sha,
+        opts.evaluated_sha,
+        previous.params.expectedBaseSha,
+        file,
+      )) &&
+      (await entry(opts.evaluated_sha, file)) ===
+        (await entry(previous.params.expectedBaseSha, file))
+    )
+      result.push(file);
+  }
+  return result;
 }

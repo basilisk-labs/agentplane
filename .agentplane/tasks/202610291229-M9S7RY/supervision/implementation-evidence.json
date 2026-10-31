@@ -1,0 +1,50 @@
+{
+  "checks": [
+    {
+      "command": "git diff --check 384e3bcbcf0bc3aa0637c364d59fa460c0d6ea2e..f32796a86f4765a7bb3f6d3b416e2ddff37027ab",
+      "id": "committed-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --cached --check",
+      "id": "staged-diff-check",
+      "result": "pass",
+      "stdout": []
+    },
+    {
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 384e3bcbcf0bc3aa0637c364d59fa460c0d6ea2e..f32796a86f4765a7bb3f6d3b416e2ddff37027ab",
+      "id": "commit-paths",
+      "result": "pass",
+      "stdout": [
+        "M\t.agentplane/tasks/202610291229-M9S7RY/pr/diffstat.txt",
+        "M\t.agentplane/tasks/202610291229-M9S7RY/pr/github-body.md",
+        "M\t.agentplane/tasks/202610291229-M9S7RY/pr/meta.json",
+        "M\t.agentplane/tasks/202610291229-M9S7RY/pr/review.md",
+        "M\tpackages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.test.ts",
+        "M\tpackages/agentplane/src/commands/pr/internal/branch-task-artifact-ownership.ts",
+        "M\tpackages/agentplane/src/commands/pr/provider-update-verification-proof.test.ts",
+        "M\tpackages/agentplane/src/commands/pr/provider-update-verification-proof.ts"
+      ]
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "id": "final-repository-status",
+      "result": "pass",
+      "stdout": []
+    }
+  ],
+  "execution_base_commit": "384e3bcbcf0bc3aa0637c364d59fa460c0d6ea2e",
+  "implementation_commit": "f32796a86f4765a7bb3f6d3b416e2ddff37027ab",
+  "kind": "direct_task_implementation_evidence",
+  "repository_status": {
+    "baseline": [],
+    "classification": [],
+    "final": [],
+    "introduced_after_execution_baseline": [],
+    "removed_after_execution_baseline": [],
+    "unchanged_from_execution_baseline": []
+  },
+  "schema_version": 1,
+  "task_id": "202610291229-M9S7RY"
+}

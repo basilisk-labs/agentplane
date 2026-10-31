@@ -1,0 +1,320 @@
+---
+id: "202610311347-7CPDQV"
+title: "Qualify bounded native recovery with frozen branch_pr routing"
+status: "BLOCKED"
+priority: "high"
+owner: "CODER"
+revision: 1
+origin:
+  system: "manual"
+depends_on:
+  - "202610310121-21Y197"
+tags:
+  - "code"
+task_kind: "code"
+mutation_scope: "code"
+risk_flags:
+  - "security"
+verify:
+  - "bun run ci:local:full"
+  - "bun run test:project agentplane --run packages/agentplane/src/commands/task/completed-projection-recovery.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts packages/agentplane/src/commands/task/task-execution-contract-observation.test.ts packages/agentplane/src/commands/task/verify-record.inherited-provider-base.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/task/external-agent-workflow-recovery.test.ts packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/commands/task/migration-quarantine.test.ts packages/agentplane/src/commands/task/kernel-migrate.quarantine.test.ts packages/agentplane/src/commands/task/roadmap-lifecycle-migration-apply.test.ts packages/agentplane/src/commands/doctor/workspace-task-state.test.ts packages/agentplane/src/commands/task/roadmap-integration-parity.test.ts packages/agentplane/src/cli/legacy-cli-regressions.test.ts"
+  - "bun run docs:cli:check"
+  - "node .agentplane/policy/check-routing.mjs"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+  attempts: 0
+execution_route:
+  frozen: true
+  reason_codes:
+    - "agent_preferred_branch_pr"
+    - "effect_public_api"
+    - "effect_publish"
+    - "effect_security_boundary"
+    - "repository_branch_pr_floor"
+    - "reversibility_recovery_required"
+  repository_mode: "branch_pr"
+  requested_mode: "branch_pr"
+  schema_version: 1
+  selected_mode: "branch_pr"
+execution_contract:
+  authority:
+    allowed_capabilities:
+      - "repository_write"
+    allowed_external_effects:
+      - "network_read"
+    allowed_repository_effects:
+      - "documentation"
+      - "public_api"
+      - "repository_write"
+      - "security_boundary"
+      - "source_code"
+      - "tests"
+    allowed_resources: []
+    forbidden_external_effects:
+      - "external_write"
+      - "credentials"
+      - "publish"
+      - "deploy"
+      - "destructive_git"
+    forbidden_repository_effects:
+      - "schema"
+      - "dependencies"
+      - "ci"
+      - "release_metadata"
+    writable_roots:
+      - "docs/user/cli-reference.generated.mdx"
+      - "docs/user/task-lifecycle.mdx"
+      - "packages/agentplane/src/commands/doctor/workspace-task-state.ts"
+      - "packages/agentplane/src/commands/task/advance.command.ts"
+      - "packages/agentplane/src/commands/task/advance.spec.ts"
+      - "packages/agentplane/src/commands/task/completed-fixture-verification.testkit.ts"
+      - "packages/agentplane/src/commands/task/completed-projection-recovery.test.ts"
+      - "packages/agentplane/src/commands/task/completed-projection-recovery.ts"
+      - "packages/agentplane/src/commands/task/kernel-completed-external-rework.testkit.ts"
+      - "packages/agentplane/src/commands/task/kernel-migrate.command.ts"
+      - "packages/agentplane/src/commands/task/kernel-migrate.quarantine.test.ts"
+      - "packages/agentplane/src/commands/task/migration-apply-conversion.ts"
+      - "packages/agentplane/src/commands/task/migration-apply.ts"
+      - "packages/agentplane/src/commands/task/migration-quarantine.test.ts"
+      - "packages/agentplane/src/commands/task/migration-quarantine.ts"
+      - "packages/agentplane/src/commands/task/task-execution-contract-observation.test.ts"
+      - "packages/agentplane/src/commands/task/task-execution-contract-observation.ts"
+      - "packages/agentplane/src/runtime/task-routing/resolve.ts"
+      - "packages/agentplane/src/runtime/task-routing/verification.ts"
+  declaration:
+    external_effects:
+      - "network_read"
+      - "publish"
+    implementation_uncertainty: "bounded"
+    preferred_mode: "branch_pr"
+    rationale:
+      - "explicit structured task intake"
+    repository_effects:
+      - "documentation"
+      - "public_api"
+      - "repository_write"
+      - "security_boundary"
+      - "source_code"
+      - "tests"
+    requirements_uncertainty: "bounded"
+    reversibility: "recovery_required"
+    schema_version: 2
+    scope_roots:
+      - "docs/user/cli-reference.generated.mdx"
+      - "docs/user/task-lifecycle.mdx"
+      - "packages/agentplane/src/commands/doctor/workspace-task-state.ts"
+      - "packages/agentplane/src/commands/task/advance.command.ts"
+      - "packages/agentplane/src/commands/task/advance.spec.ts"
+      - "packages/agentplane/src/commands/task/completed-fixture-verification.testkit.ts"
+      - "packages/agentplane/src/commands/task/completed-projection-recovery.test.ts"
+      - "packages/agentplane/src/commands/task/completed-projection-recovery.ts"
+      - "packages/agentplane/src/commands/task/kernel-completed-external-rework.testkit.ts"
+      - "packages/agentplane/src/commands/task/kernel-migrate.command.ts"
+      - "packages/agentplane/src/commands/task/kernel-migrate.quarantine.test.ts"
+      - "packages/agentplane/src/commands/task/migration-apply-conversion.ts"
+      - "packages/agentplane/src/commands/task/migration-apply.ts"
+      - "packages/agentplane/src/commands/task/migration-quarantine.test.ts"
+      - "packages/agentplane/src/commands/task/migration-quarantine.ts"
+      - "packages/agentplane/src/commands/task/task-execution-contract-observation.test.ts"
+      - "packages/agentplane/src/commands/task/task-execution-contract-observation.ts"
+      - "packages/agentplane/src/runtime/task-routing/resolve.ts"
+      - "packages/agentplane/src/runtime/task-routing/verification.ts"
+  observed:
+    authority_violations: []
+    changed_components: []
+    changed_paths: []
+    external_effects: []
+    repository_effects: []
+    verification_results: []
+  reason_codes:
+    - "agent_preferred_branch_pr"
+    - "effect_public_api"
+    - "effect_publish"
+    - "effect_security_boundary"
+    - "repository_branch_pr_floor"
+    - "reversibility_recovery_required"
+  repository_mode: "branch_pr"
+  safety:
+    approval_effects:
+      - "publish"
+    requires_user_approval: true
+    requires_worktree: true
+  schema_version: 1
+  selected_mode: "branch_pr"
+  source: "agent_declared"
+  verification:
+    contract:
+      declared:
+        components:
+          - "docs/user/cli-reference.generated.mdx"
+          - "docs/user/task-lifecycle.mdx"
+          - "packages/agentplane/src/commands/doctor/workspace-task-state.ts"
+          - "packages/agentplane/src/commands/task/advance.command.ts"
+          - "packages/agentplane/src/commands/task/advance.spec.ts"
+          - "packages/agentplane/src/commands/task/completed-fixture-verification.testkit.ts"
+          - "packages/agentplane/src/commands/task/completed-projection-recovery.test.ts"
+          - "packages/agentplane/src/commands/task/completed-projection-recovery.ts"
+          - "packages/agentplane/src/commands/task/kernel-completed-external-rework.testkit.ts"
+          - "packages/agentplane/src/commands/task/kernel-migrate.command.ts"
+          - "packages/agentplane/src/commands/task/kernel-migrate.quarantine.test.ts"
+          - "packages/agentplane/src/commands/task/migration-apply-conversion.ts"
+          - "packages/agentplane/src/commands/task/migration-apply.ts"
+          - "packages/agentplane/src/commands/task/migration-quarantine.test.ts"
+          - "packages/agentplane/src/commands/task/migration-quarantine.ts"
+          - "packages/agentplane/src/commands/task/task-execution-contract-observation.test.ts"
+          - "packages/agentplane/src/commands/task/task-execution-contract-observation.ts"
+          - "packages/agentplane/src/runtime/task-routing/resolve.ts"
+          - "packages/agentplane/src/runtime/task-routing/verification.ts"
+        evidence_requirements:
+          - "external_effect:network_read"
+          - "external_effect:publish"
+          - "hosted_integration"
+          - "repository_effect:documentation"
+          - "repository_effect:public_api"
+          - "repository_effect:repository_write"
+          - "repository_effect:security_boundary"
+          - "repository_effect:source_code"
+          - "repository_effect:tests"
+          - "task_outcome"
+        external_effects:
+          - "network_read"
+          - "publish"
+        repository_effects:
+          - "documentation"
+          - "public_api"
+          - "repository_write"
+          - "security_boundary"
+          - "source_code"
+          - "tests"
+        risk:
+          implementation_uncertainty: "bounded"
+          requirements_uncertainty: "bounded"
+          reversibility: "recovery_required"
+      digest: "sha256:989a32632656849fcc5284369150e7c39a665d8407917c8345b006c92a075867"
+      escalation_reasons:
+        - "central_component:packages/agentplane/src/runtime/task-routing/resolve.ts"
+        - "central_component:packages/agentplane/src/runtime/task-routing/verification.ts"
+        - "effect_public_api"
+        - "effect_security_boundary"
+        - "external_effect_requires_real_e2e"
+        - "reversibility_recovery_required"
+      execution_groups:
+        - "docs-schema"
+        - "core"
+        - "runtime"
+        - "cli"
+      observed:
+        changed_components: []
+        changed_files: []
+        external_effects: []
+        repository_effects: []
+      phase: "task"
+      policy_floor:
+        monotonic_strengthening: true
+        pr_full_regression: true
+        unknown_or_central_full_regression: true
+      requires_full_regression: true
+      requires_real_e2e: true
+      schema_version: 2
+      selected_checks:
+        - "affected_unit_integration"
+        - "critical_paths"
+        - "docs_contract"
+        - "full_regression"
+        - "hosted_integration"
+        - "real_e2e"
+        - "task_outcome"
+      selector:
+        bucket: null
+        buckets: []
+        execution_mode: "semantic"
+        kind: "semantic"
+        lint_targets: []
+        reason: "execution_declaration"
+        run_cli_docs_check: false
+        selected_test_files: []
+        vitest_pool: "forks"
+      source: "execution_contract"
+    required_evidence:
+      - "external_effect:network_read"
+      - "external_effect:publish"
+      - "hosted_integration"
+      - "repository_effect:documentation"
+      - "repository_effect:public_api"
+      - "repository_effect:repository_write"
+      - "repository_effect:security_boundary"
+      - "repository_effect:source_code"
+      - "repository_effect:tests"
+      - "task_outcome"
+comments:
+  -
+    author: "ORCHESTRATOR"
+    body: "Blocked: Standard intake scans cannot authenticate an unrelated archived Task. This explicit new intent awaits exact native migration to Kernel planning. No implementation or verification has run. The earlier incomplete intake 202610311338-RWNBCR remains blocked and retained."
+doc_version: 3
+doc_updated_at: "2026-10-31T13:47:46.489Z"
+doc_updated_by: "ORCHESTRATOR"
+description: "Completed-scope observations can replace inherited verification coverage and leave an interrupted metadata projection unreadable. A legacy README and embedded aggregate revision split also prevents Factory Doctor and protected integration. Preserve inherited verification contracts, add exact source-bound recovery for the interrupted completed-scope projection, and extend existing kernel-migrate apply with guarded revision-split quarantine and byte-exact rollback. Preserve Kernel completion, original history, evidence, data, credentials and runtime guards. Confine source changes to the nineteen declared roots. Qualify public Node workflows, drift and interruption refusals, replay, retained-source diagnostics and rollback with full native CI and a fresh EVALUATOR before protected canonical PR and merge. Operational repair of original VPB, the ten Factory Tasks and sb remains a separate operator step after publication. Preserve all existing worktrees, branches, archives and unrelated user changes; no cleanup or host effects belong to this source Task."
+sections:
+  Summary: "Completed-scope observations can replace inherited verification coverage and leave an interrupted metadata projection unreadable. A legacy README and embedded aggregate revision split also prevents Factory Doctor and protected integration. Preserve inherited verification contracts, add exact source-bound recovery for the interrupted completed-scope projection, and extend existing kernel-migrate apply with guarded revision-split quarantine and byte-exact rollback. Preserve Kernel completion, original history, evidence, data, credentials and runtime guards. Confine source changes to the nineteen declared roots. Qualify public Node workflows, drift and interruption refusals, replay, retained-source diagnostics and rollback with full native CI and a fresh EVALUATOR before protected canonical PR and merge. Operational repair of original VPB, the ten Factory Tasks and sb remains a separate operator step after publication. Preserve all existing worktrees, branches, archives and unrelated user changes; no cleanup or host effects belong to this source Task."
+  Scope: "Only the nineteen declared source paths. Operational repair of original Tasks, runtime state, credentials and deployment remains separate after publication."
+  Plan: "Pending native PLANNER proposal and admission."
+  Verify Steps: |-
+    - bun run ci:local:full
+    - bun run test:project agentplane --run packages/agentplane/src/commands/task/completed-projection-recovery.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts packages/agentplane/src/commands/task/task-execution-contract-observation.test.ts packages/agentplane/src/commands/task/verify-record.inherited-provider-base.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/task/external-agent-workflow-recovery.test.ts packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/commands/task/migration-quarantine.test.ts packages/agentplane/src/commands/task/kernel-migrate.quarantine.test.ts packages/agentplane/src/commands/task/roadmap-lifecycle-migration-apply.test.ts packages/agentplane/src/commands/doctor/workspace-task-state.test.ts packages/agentplane/src/commands/task/roadmap-integration-parity.test.ts packages/agentplane/src/cli/legacy-cli-regressions.test.ts
+    - bun run docs:cli:check
+    - node .agentplane/policy/check-routing.mjs
+  Verification: "Pending native checks, fresh EVALUATOR and protected publication. No PASS evidence is supplied by this intake."
+  Rollback Plan: "Preserve source, original Task records, protected journals and runtime state. Revert published source through canonical review if necessary. The new native migration retains exact intake backup and guarded CAS rollback."
+  Findings: |-
+    The user authorized temporary canonical CLI5610a273 for this new Task only. Standard task new is blocked by unrelated archived source authentication. The supported single-record import and exact migration route was qualified in a private fixture. This intake grants no approval or execution result.
+
+    The corrected intake declares the frozen branch_pr route in addition to its native-resolved execution contract. The earlier incomplete intake 202610311338-RWNBCR remains BLOCKED. No source code was changed there.
+extensions:
+  task_execution_context:
+    base_ref: "main"
+    base_sha: "6f9a7aff02f8bea3823594154e23f251a56bc58f"
+    repository_identity: "sha256:da6b1bd36fbd8902ecef3732738a9db0fd8478b8fcbe61ce4ba5a648cdccfd3b"
+    schema_version: 1
+    source: "explicit"
+id_source: "explicit"
+---
+## Summary
+
+Completed-scope observations can replace inherited verification coverage and leave an interrupted metadata projection unreadable. A legacy README and embedded aggregate revision split also prevents Factory Doctor and protected integration. Preserve inherited verification contracts, add exact source-bound recovery for the interrupted completed-scope projection, and extend existing kernel-migrate apply with guarded revision-split quarantine and byte-exact rollback. Preserve Kernel completion, original history, evidence, data, credentials and runtime guards. Confine source changes to the nineteen declared roots. Qualify public Node workflows, drift and interruption refusals, replay, retained-source diagnostics and rollback with full native CI and a fresh EVALUATOR before protected canonical PR and merge. Operational repair of original VPB, the ten Factory Tasks and sb remains a separate operator step after publication. Preserve all existing worktrees, branches, archives and unrelated user changes; no cleanup or host effects belong to this source Task.
+
+## Scope
+
+Only the nineteen declared source paths. Operational repair of original Tasks, runtime state, credentials and deployment remains separate after publication.
+
+## Plan
+
+Pending native PLANNER proposal and admission.
+
+## Verify Steps
+
+- bun run ci:local:full
+- bun run test:project agentplane --run packages/agentplane/src/commands/task/completed-projection-recovery.test.ts packages/agentplane/src/runtime/task-routing/resolve.test.ts packages/agentplane/src/commands/task/task-execution-contract-observation.test.ts packages/agentplane/src/commands/task/verify-record.inherited-provider-base.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/task/external-agent-workflow-recovery.test.ts packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/commands/task/migration-quarantine.test.ts packages/agentplane/src/commands/task/kernel-migrate.quarantine.test.ts packages/agentplane/src/commands/task/roadmap-lifecycle-migration-apply.test.ts packages/agentplane/src/commands/doctor/workspace-task-state.test.ts packages/agentplane/src/commands/task/roadmap-integration-parity.test.ts packages/agentplane/src/cli/legacy-cli-regressions.test.ts
+- bun run docs:cli:check
+- node .agentplane/policy/check-routing.mjs
+
+## Verification
+
+Pending native checks, fresh EVALUATOR and protected publication. No PASS evidence is supplied by this intake.
+
+## Rollback Plan
+
+Preserve source, original Task records, protected journals and runtime state. Revert published source through canonical review if necessary. The new native migration retains exact intake backup and guarded CAS rollback.
+
+## Findings
+
+The user authorized temporary canonical CLI5610a273 for this new Task only. Standard task new is blocked by unrelated archived source authentication. The supported single-record import and exact migration route was qualified in a private fixture. This intake grants no approval or execution result.
+
+The corrected intake declares the frozen branch_pr route in addition to its native-resolved execution contract. The earlier incomplete intake 202610311338-RWNBCR remains BLOCKED. No source code was changed there.

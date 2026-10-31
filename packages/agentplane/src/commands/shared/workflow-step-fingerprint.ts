@@ -18,7 +18,7 @@ import { observeBackendProjection } from "../../runner/state-fingerprint-backend
 import { observeKnowledgeProjection } from "../../runner/state-fingerprint-knowledge.js";
 import { resolveExecutionProfileRuntime } from "../../runtime/execution-profile/index.js";
 import { resolveNativeTaskObligations } from "../../runtime/task-obligations/index.js";
-import { readContainedStableTextNoFollow } from "../../shared/contained-stable-file.js";
+import { readPolicyProjection } from "./workflow-policy-projection.js";
 import { measurePreparationNode } from "../../shared/preparation-trace.js";
 import type { CommandContext } from "./task-backend.js";
 import { SIDE_EFFECT_AUTHORITY_EXTENSION_KEY } from "./side-effect-authority.js";
@@ -62,8 +62,6 @@ type WorkflowFingerprintPaths = {
   primaryTaskWorktreePath?: string | null;
   currentCheckoutPath?: string | null;
 };
-
-const ROUTE_PROJECTION_MAX_BYTES = 16 * 1024 * 1024;
 
 function unavailableComponent(
   source: string,
@@ -198,12 +196,7 @@ async function observeRepositoryFile(
   source: string,
 ): Promise<StateFingerprintComponentInput> {
   try {
-    const content = await readContainedStableTextNoFollow({
-      repository_root: repositoryRoot,
-      file_path: path.join(repositoryRoot, relativePath),
-      label: source,
-      max_bytes: ROUTE_PROJECTION_MAX_BYTES,
-    });
+    const content = await readPolicyProjection(repositoryRoot, relativePath, source);
     return presentComponent(source, {
       path: relativePath,
       sha256: sha256(content),

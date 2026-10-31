@@ -1,0 +1,122 @@
+{
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202610300522-MRJ9WH-372729269967e902fded190e",
+  "prepared_at": "2026-10-30T22:37:55.260Z",
+  "task": {
+    "id": "202610300522-MRJ9WH",
+    "revision": 51,
+    "objective": "Authenticate completed repair intake transitions and reconcile partial scope admission\n\nDirect HUMAN authorization verified in existing SB chat 01a17c58-b597-78a1-abed-517855b3f393 userMessage01a18b16-dbae-7380-9db4-c0081c8fdd00: narrow AgentPlane intake-projection fix including kernel-record.ts, separate Task ID, checks and PR/merge, continue coordinator to live SB acceptance preserving data credentials runtime guards. Implement exactly the seven-root audited prospective proposal vpb-completed-intake-native-reconcile-proposal.json. Root cause: original completed VPBGBK native scope extend47946 preserved Kernel but wrote Taskrev51 helper-root intake then failed reconcile: scope_request_intake_projection; before intake477810a9 equals old prospective lineage, after6bee824f differs and fresh resolver dropped native caps/resources. Preserve original partial README0665dece and canonical beforeimagee090edc6, all immutable Kernel/Plan/base/old results and failedoperation; no manual metadata rewrite/reset/replacement original Task. Correct future writer/reader together: preserve authority fields and exact approved delta, append-only native intake-transition proof bound to immutable Kernel/predecessor/nativeconsumedblocker/USER/currentstate, full candidate validation before write; no blanket COMPLETED skip. Add explicit controller-owned state-bound once-only public reconcile for exact retained partialafterimage, durable intent/afterimage/result+replay/refusal, no retrospective47946PASS. Qualify real completed Kernel with historical prospective intake marker/caps/resources, strict public getTask/list/show/resume, second repair request chain, forged receipt/drift/stalestate refusal and interruption/replay. Seven roots only; fresh native Planner must finalize public interface and verification contract before implementation. Require current native full/EVAL/currenthosted canonical PR/merge before applying public recovery to originalVPB. No Factory/host effects or credential/global changes. All original worktrees/untracked/privateTMP/holdings retained; no cleanup.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "bun run test:project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts",
+      "- In scope: Direct HUMAN authorization verified in existing SB chat 01a17c58-b597-78a1-abed-517855b3f393 userMessage01a18b16-dbae-7380-9db4-c0081c8fdd00: narrow AgentPlane intake-projection fix including kernel-record.ts, separate Task ID, checks and PR/merge, continue coordinator to live SB acceptance preserving data credentials runtime guards. Implement exactly the seven-root audited prospective proposal vpb-completed-intake-native-reconcile-proposal.json. Root cause: original completed VPBGBK native scope extend47946 preserved Kernel but wrote Taskrev51 helper-root intake then failed reconcile: scope_request_intake_projection; before intake477810a9 equals old prospective lineage, after6bee824f differs and fresh resolver dropped native caps/resources. Preserve original partial README0665dece and canonical beforeimagee090edc6, all immutable Kernel/Plan/base/old results and failedoperation; no manual metadata rewrite/reset/replacement original Task. Correct future writer/reader together: preserve authority fields and exact approved delta, append-only native intake-transition proof bound to immutable Kernel/predecessor/nativeconsumedblocker/USER/currentstate, full candidate validation before write; no blanket COMPLETED skip. Add explicit controller-owned state-bound once-only public reconcile for exact retained partialafterimage, durable intent/afterimage/result+replay/refusal, no retrospective47946PASS. Qualify real completed Kernel with historical prospective intake marker/caps/resources, strict public getTask/list/show/resume, second repair request chain, forged receipt/drift/stalestate refusal and interruption/replay. Seven roots only; fresh native Planner must finalize public interface and verification contract before implementation. Require current native full/EVAL/currenthosted canonical PR/merge before applying public recovery to originalVPB. No Factory/host effects or credential/global changes. All original worktrees/untracked/privateTMP/holdings retained; no cleanup.\n- Out of scope: unrelated refactors not required for \"Authenticate completed repair intake transitions and reconcile partial scope admission\".",
+      "1. Execute approved WorkItem repair-completed-intake.",
+      "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun run test:project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run ci:local:full`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings."
+    ]
+  },
+  "evaluated_sha": "349fcd6fba25d628bd73d2355d7ea9334c969000",
+  "diff_base_sha": "97a104b404318c58a99222c180f0c33d1281c840",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202610300522-MRJ9WH/quality/20261030-223755260-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:e4acd0012c6e844b4268c2e6f3788419d40345848414f6971c256c3fd4f374d0",
+    "prompt_path": ".agentplane/tasks/202610300522-MRJ9WH/quality/objects/sha256/6a9c313c4b6599b041a4ff0ce3470a3a7e2e7beb2506f013595f432bfc9f4d01.md",
+    "result_schema_path": ".agentplane/tasks/202610300522-MRJ9WH/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "schema_version": 2,
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202610300522-MRJ9WH",
+    "plan_digest": "sha256:bc5924fde90ab61a1f69886b23402b95437ffd38e3140d154ebf6c8a0334e447",
+    "policy_digest": "sha256:35781f355aaa21293eb931f34639e0e5cad5380fea760bef8ef8e0fa5ae1c536",
+    "capability_digest": "sha256:f4bbe97048173cf3e31effdb5d2e8e733875099a775d3110548eb9d35d2398ba",
+    "checks_digest": "sha256:db0ca1b2430a38587e70fc350ba72754110ceea7102e2bbf4a0a9f3e0981b884",
+    "verification_input_digest": "sha256:dc6aa63b30a153a673ceaa78ff38d6ee9e3aac7b2706588fb0852f704ff59e20",
+    "acceptance_digest": "sha256:3028ee643df1e3634a3cab703d1517ad3c299cd021a2085a6254f3e13cda46c3",
+    "implementation_sha": "349fcd6fba25d628bd73d2355d7ea9334c969000",
+    "digest": "sha256:bc37e0828ef2a8ba3a45cc8aff83e5e35b41b634de058968432a5a3f067608e7"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202610300522-MRJ9WH/README.md",
+      "sha256": "sha256:939890a7ebe55f852b99e0db9b2824cca03f18895ab87cb39bcd41dc09188912",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202610300522-MRJ9WH/quality/objects/sha256/2205875568eb14227149d785a2df7c978fb4fd89b25b89241a5acf9e4114763f.patch",
+      "sha256": "sha256:2205875568eb14227149d785a2df7c978fb4fd89b25b89241a5acf9e4114763f",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202610300522-MRJ9WH/quality/objects/sha256/08f1dde47ab362ed22ae4bdb6a8f3597102b0ed337cf4141c45b44a29a94cb79.json",
+      "sha256": "sha256:08f1dde47ab362ed22ae4bdb6a8f3597102b0ed337cf4141c45b44a29a94cb79",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202610300522-MRJ9WH/verification/20261030220758731-dc842142a153c4df.json",
+      "sha256": "sha256:0b9f9b982e108f3ec4a835f01114f6b27deb7f1672b09505822211eff54437b4",
+      "required": true
+    },
+    {
+      "id": "native-identity",
+      "kind": "plan",
+      "path": ".agentplane/tasks/202610300522-MRJ9WH/quality/objects/sha256/560a216f65631b3eca36976e38864eab8dcd5060b2b0ecd625d3d6831891b505.json",
+      "sha256": "sha256:560a216f65631b3eca36976e38864eab8dcd5060b2b0ecd625d3d6831891b505",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:35a4c7a567a9b658a31feed9e096276ede95ad0c82198f362c302fe7bd20b612",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:6e5cb34ada84017778c43c3d057edcc68d3ccb60840c805e412f7dc6781070ee",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:d3dfd4eb0293213ab49d32c6f199066f2bc7c954cada6465aab458b1a9c7ee25",
+      "required": true
+    }
+  ]
+}

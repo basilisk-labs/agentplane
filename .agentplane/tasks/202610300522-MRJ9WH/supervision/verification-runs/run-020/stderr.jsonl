@@ -1,0 +1,1 @@
+"$ vitest --config vitest.workspace.ts run --project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/adapters/task-backend/kernel-scope-intake.test.ts"

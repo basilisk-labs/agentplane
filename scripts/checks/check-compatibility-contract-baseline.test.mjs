@@ -37,3 +37,34 @@ test("pr adopt command and options retain exact source-task provenance", () => {
     })),
   ]);
 });
+
+test("completed repair reconcile retains exact reviewed option and source provenance", () => {
+  const sourceTask = "202610300522-MRJ9WH";
+  const delta = candidate.deltas.find((entry) => entry.section === "cli_topology");
+  assert.ok(candidate.source_tasks.includes(sourceTask));
+  assert.ok(delta.source_tasks.includes(sourceTask));
+  const command = delta.evidence.added_command_descriptors.find(
+    (entry) => entry.id.join(" ") === "task scope extend",
+  );
+  assert.deepEqual(
+    command.options.find((option) => option.name === "reconcile-request"),
+    {
+      kind: "string",
+      name: "reconcile-request",
+      valueHint: "<private-json>",
+    },
+  );
+  assert.deepEqual(
+    delta.evidence.addition_sources.filter(
+      (entry) => entry.command === "task scope extend" && entry.name === "reconcile-request",
+    ),
+    [
+      {
+        command: "task scope extend",
+        kind: "option",
+        name: "reconcile-request",
+        source_task: sourceTask,
+      },
+    ],
+  );
+});

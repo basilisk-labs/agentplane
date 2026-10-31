@@ -24,6 +24,11 @@ import { toStringArray } from "./strings.js";
 import type { TaskData } from "./types.js";
 import { MUTATION_SCOPE_VALUES, RISK_FLAG_VALUES, TASK_KIND_VALUES } from "./domain-values.js";
 
+/** Native verification details regenerate these IDs; durable verification records retain history. */
+export function isRecordedVerificationProjectionId(id: string): boolean {
+  return id === "verification-record" || /^recorded-check-\d+$/u.test(id);
+}
+
 function normalizeRevision(value: unknown): number | undefined {
   return Number.isInteger(value) && Number(value) > 0 ? Number(value) : undefined;
 }
@@ -190,8 +195,10 @@ function normalizeExecutionContract(value: unknown): TaskData["execution_contrac
       (effect) => effect !== "network_read" || !allowedExternalEffects?.includes(effect),
     ),
   );
-  const allowedCapabilities = normalizeStringList(authority.allowed_capabilities ?? []) ?? [];
-  const allowedResources = normalizeStringList(authority.allowed_resources ?? []) ?? [];
+  for (const key of ["allowed_capabilities", "allowed_resources"] as const) {
+    if (Object.hasOwn(authority, key) && normalizeStringList(authority[key]) === null)
+      throw new Error(`Malformed execution authority field: ${key}`);
+  }
   const approvalEffects = normalizeStringList(value.safety.approval_effects);
   const requiredEvidence = normalizeStringList(value.verification.required_evidence);
   const rawVerificationContract = value.verification.contract;
@@ -297,8 +304,12 @@ function normalizeExecutionContract(value: unknown): TaskData["execution_contrac
       forbidden_external_effects: forbiddenExternalEffects as NonNullable<
         TaskData["execution_contract"]
       >["authority"]["forbidden_external_effects"],
-      allowed_capabilities: allowedCapabilities,
-      allowed_resources: allowedResources,
+      ...(Object.hasOwn(authority, "allowed_capabilities")
+        ? { allowed_capabilities: [...(authority.allowed_capabilities as string[])] }
+        : {}),
+      ...(Object.hasOwn(authority, "allowed_resources")
+        ? { allowed_resources: [...(authority.allowed_resources as string[])] }
+        : {}),
     },
     safety: {
       requires_worktree: value.safety.requires_worktree,

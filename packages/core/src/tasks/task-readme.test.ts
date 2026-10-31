@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { renderTaskDocFromSections, taskDocToSectionMap } from "./task-doc.js";
 import { parseTaskReadme, renderTaskReadme, taskReadmeDocBody } from "./task-readme.js";
+import { kernelDigest } from "./task-kernel/digest.js";
 
 describe("task README frontmatter", () => {
   const sample = `---
@@ -267,6 +268,44 @@ Hello world.
     expect((roundtrip.verification as Record<string, unknown>).note).toBe(
       "First line\n\nThird line",
     );
+  });
+
+  it.each([
+    { name: "empty", value: "" },
+    { name: "one LF", value: "\n" },
+    { name: "multiple LF", value: "\n\n" },
+    { name: "multiline without terminal LF", value: "first\nlast" },
+    { name: "multiline with terminal LF", value: "first\nlast\n" },
+    { name: "multiline with multiple terminal LF", value: "first\nlast\n\n" },
+    { name: "line whitespace", value: "first  \n \t\nlast\t\n" },
+    { name: "CRLF", value: "first\r\nlast\r\n" },
+    { name: "literal escapes", value: String.raw`first\n\nlast` },
+    { name: "whitespace only", value: " \t" },
+    { name: "whitespace and LF", value: " \t\n" },
+    { name: "Unicode", value: "Точное значение é\n" },
+  ])("preserves exact native extension strings: $name", ({ value }) => {
+    const parsed = parseTaskReadme(sample);
+    const extensions = {
+      task_kernel: {
+        body: value,
+        nested: { description: value },
+        records: [{ note: value }],
+        strings: [value],
+        mixed: [
+          value,
+          { message: value, nested: { body: value, arrays: [false, [{ note: value }]] } },
+          [null, { nested: [0, { description: value }] }],
+        ],
+      },
+    };
+    const digest = kernelDigest(extensions);
+    let text = renderTaskReadme({ ...parsed.frontmatter, extensions }, parsed.body);
+    for (let pass = 0; pass < 2; pass += 1) {
+      const reread = parseTaskReadme(text);
+      expect(reread.frontmatter.extensions).toEqual(extensions);
+      expect(kernelDigest(reread.frontmatter.extensions)).toBe(digest);
+      text = renderTaskReadme(reread.frontmatter, reread.body);
+    }
   });
 
   it("renders origin metadata in deterministic order and roundtrips it", () => {

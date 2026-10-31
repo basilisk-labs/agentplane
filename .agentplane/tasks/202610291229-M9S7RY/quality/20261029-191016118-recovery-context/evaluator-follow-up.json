@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202610291229-M9S7RY-87afaad3904acdc3588bd9b3",
+  "task_id": "202610291229-M9S7RY",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Continue the original M9 task through a fresh native EXECUTOR episode. Use only existing approved provider-update-verification-proof.ts, branch-task-artifact-ownership.ts and the nearest approved test roots. Preserve native history and the previous scope-helper fix. Require new native full and EVAL. No publication or merge before current acceptance.",
+  "findings": [
+    {
+      "id": "external-agent-finding-1",
+      "summary": "P2: inheritedProviderUpdatePaths.history and the provider-aware branch ownership history scan use git log --full-history without explicit merge diffs. An isolated fixture using the production proof and ownership functions changed a canonical foreign Task README only in one merge resolution and restored it only in another merge resolution. Final bytes matched R. The plain history contained only own.txt; inheritedProviderUpdatePaths incorrectly returned the foreign README and assertBranchTaskArtifactOwnership accepted it. This violates the required preservation of pre-update ownership and complete path lineage. Add explicit --diff-merges=separate to both remaining history scans and add a genuine two-merge edit/restore regression using the existing provider proof test fixture.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610291229-M9S7RY/quality/objects/sha256/282f026c6e5b9bb16dbbb0e382f26713fc97a75f709d5258d8251ba3151f41a2.patch"
+        }
+      ]
+    },
+    {
+      "id": "external-agent-finding-2",
+      "summary": "The completed scope admission helper now explicitly selects separate merge diffs. Its source-only/reverted refusal and README-only positive cases under log.diffMerges=off passed focused checks. Native full009 passed on30e2df44. Those results do not cover the newly reproduced provider lineage bypass.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202610291229-M9S7RY/quality/objects/sha256/282f026c6e5b9bb16dbbb0e382f26713fc97a75f709d5258d8251ba3151f41a2.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202610291229-M9S7RY/quality/20261029-191016118-recovery-context/evaluator-result.json"
+}

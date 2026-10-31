@@ -25,23 +25,274 @@ import {
 import { makeTaskBackendDouble } from "@agentplane/testkit/task";
 import { defaultConfig } from "@agentplaneorg/core/config";
 import { taskKernel as k } from "@agentplaneorg/core/tasks";
-import type { TaskData } from "../../backends/task-backend.js";
+import type { TaskData, TaskBackend } from "../../backends/task-backend.js";
+import {
+  amendedScopeIntake,
+  scopeIntakeDigest,
+} from "../../adapters/task-backend/kernel-scope-intake.js";
+import type { KernelDocuments } from "../../adapters/task-backend/kernel-documents.js";
+import type { KernelCommandInput } from "../../adapters/task-backend/kernel-backend-adapter.js";
+import { observeKernelRepository } from "../../runner/observation/kernel-repository.js";
 import { KernelBackendAdapter } from "../../adapters/task-backend/kernel-backend-adapter.js";
 import { kernelReplayJourney } from "../../adapters/task-backend/kernel-replay-journey.test-fixtures.js";
 import { loadCommandContext } from "../shared/task-backend.js";
 import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
 import { resolveExplicitExecutionContract } from "./execution-contract-intake.js";
 import { buildOpenedPrMeta, buildObservedChangeRequestMeta } from "../shared/pr-meta/builders.js";
-import { cmdVerifyParsed } from "./verify-record.js";
+import { recordFixtureVerification } from "./completed-fixture-verification.testkit.js";
+export { recordFixtureVerification } from "./completed-fixture-verification.testkit.js";
 import { projectKernelOperationalEvidence } from "./kernel-operational-projection.js";
+import { reconcileVerificationExecutionContract } from "./verify-record-observed-changes.js";
 
 export function git(root: string, ...args: string[]) {
   return execFileSync("git", args, { cwd: root, encoding: "utf8" }).trim();
+}
+/** Build genuine reducer/adapter history before completion; never patch a terminal record. */
+async function completeWithHistoricalScope(
+  root: string,
+  backend: TaskBackend,
+  identity: k.Sha256Digest,
+  journey: ReturnType<typeof kernelReplayJourney>,
+  contract: NonNullable<TaskData["execution_contract"]>,
+) {
+  const intent = { objective: "Completed intake", context: "Prior scope fixture" };
+  const workContract = {
+    objective: "Change source",
+    acceptance_criteria: ["Source behavior is checked"],
+    verification_commands: ["git diff --check"],
+    role: "EXECUTOR" as const,
+  };
+  const workDigest = k.kernelDigest(workContract);
+  const claim = k.kernelDigest("historical fixture claim");
+  let documents: KernelDocuments = { intent, contracts: {} };
+  const first = structuredClone(journey.steps[0]!.input);
+  const { config } = await loadCommandContext({ cwd: root, rootOverride: null });
+  const observation = await observeKernelRepository({
+    repository_root: root,
+    repository_identity: identity,
+    operational_paths: [
+      config.paths.workflow_dir,
+      config.paths.tasks_path,
+      config.paths.worktrees_dir,
+    ],
+  });
+  first.repository_fingerprint = observation.fingerprint;
+  const policy = k.kernelDigest({
+    config,
+    files: observation.files.filter(
+      (file) => file.path === "AGENTS.md" || file.path.startsWith(".agentplane/policy/"),
+    ),
+  });
+  const seed = first.authority!;
+  let authority: k.ExecutionAuthority = {
+    ...seed,
+    repository_identity: identity,
+    repository_fingerprint: observation.fingerprint,
+    policy_digests: [policy],
+    scope_roots: ["source.txt"],
+    repository_effects: contract.authority.allowed_repository_effects,
+    external_effects: contract.authority.allowed_external_effects,
+    capabilities: ["repository_write"],
+    provenance: { ...seed.provenance, actor_id: "USER", parent_authority_digest: null },
+  };
+  authority = { ...authority, digest: k.authorityDigest(authority) };
+  let expectedRequest: k.ProspectiveScopeRequest | null = null;
+  const adapter = new KernelBackendAdapter(backend, identity, (request) =>
+    Promise.resolve(expect(request).toEqual(expectedRequest)),
+  );
+  let revision = 0;
+  const execute = async (
+    command: k.TaskCommand,
+    mutation: string,
+    grant: k.ExecutionAuthority | null = authority,
+  ) => {
+    const input: KernelCommandInput = {
+      ...first,
+      command: {
+        ...command,
+        expected_task_revision: revision,
+        expected_state_fingerprint: first.repository_fingerprint,
+      },
+      authority: grant,
+      actor: { id: "USER", kind: "USER", transport: "manual", capabilities: ["repository_write"] },
+      mutation_id: mutation,
+    };
+    const result =
+      revision === 0
+        ? await adapter.create({ ...journey.task, execution_contract: contract }, input, documents)
+        : await adapter.execute(input, documents);
+    expect(result.kind, JSON.stringify(result)).toBe("committed");
+    if (result.kind !== "committed") throw new Error("Historical fixture command rejected");
+    revision = result.record.aggregate.revision;
+    return result.record;
+  };
+  const command = (value: object) =>
+    ({
+      task_id: journey.task.id,
+      expected_task_revision: revision,
+      expected_state_fingerprint: first.repository_fingerprint,
+      ...value,
+    }) as k.TaskCommand;
+  const planned = journey.steps[1]!.input.command;
+  if (planned.kind !== "propose_plan") throw new Error("Missing fixture Plan");
+  const original = planned.plan.work_items[0]!;
+  const definition = {
+    ...original,
+    contract_digest: workDigest,
+    execution_requirements: { ...original.execution_requirements, scope_roots: ["source.txt"] },
+  };
+  let plan: k.PlanRecord = {
+    ...planned.plan,
+    work_items: [definition],
+    digest: k.kernelDigest({ revision: 1, work_items: [definition] }),
+  };
+  for (const [index, step] of journey.steps.slice(0, 6).entries()) {
+    const next = structuredClone(step.input.command);
+    if (next.kind === "capture_intent") next.intent_digest = k.kernelDigest(intent);
+    if (next.kind === "propose_plan") {
+      next.plan = plan;
+      documents = { ...documents, contracts: { [workDigest]: workContract } };
+    }
+    if (index >= 2) {
+      authority = { ...authority, plan_revision: 1, plan_digest: plan.digest };
+      authority = { ...authority, digest: k.authorityDigest(authority) };
+    }
+    if (next.kind === "approve_plan") {
+      next.plan_digest = plan.digest;
+      next.authority_mode = "manual_operator";
+      next.approval_evidence_digest = authority.provenance.evidence_digest;
+    }
+    if (next.kind === "materialize_work_items") next.plan_digest = plan.digest;
+    if (next.kind === "transition_work_item") next.claim_id = claim;
+    await execute(next, next.kind === "propose_plan" ? `plan:${plan.digest}` : step.label);
+  }
+  const order = k.kernelDigest("historical native scope order");
+  const blocked = await execute(
+    command({
+      kind: "transition_work_item",
+      work_item_id: "build",
+      action: "block",
+      claim_id: claim,
+    }),
+    `semantic-stop:${order}`,
+  );
+  const before = await backend.getTask(journey.task.id);
+  if (!before) throw new Error("Missing historical fixture Task");
+  const projected = amendedScopeIntake(before, ["prior.txt"], []);
+  const request: k.ProspectiveScopeRequest = {
+    task_id: journey.task.id,
+    record_digest: blocked.digest,
+    task_revision: revision,
+    plan_revision: 1,
+    plan_digest: plan.digest,
+    work_item_id: "build",
+    attempt: 1,
+    claim_id: claim,
+    contract_digest: workDigest,
+    work_order_id: order,
+    result_authentication: "native_stop_receipt",
+    result_digest: k.kernelDigest("historical blocked result"),
+    stop_receipt_digest: k.kernelDigest(
+      blocked.aggregate.mutation_receipts[`semantic-stop:${order}`],
+    ),
+    parent_authority_digest: authority.digest,
+    repository_fingerprint: first.repository_fingerprint,
+    intake_before_digest: scopeIntakeDigest(before.execution_contract),
+    intake_after_digest: scopeIntakeDigest(projected),
+    scope_roots: ["prior.txt"],
+    repository_effects: [],
+  };
+  expectedRequest = request;
+  const child = {
+    ...authority,
+    scope_roots: ["prior.txt", "source.txt"],
+    provenance: { ...authority.provenance, parent_authority_digest: authority.digest },
+  };
+  const grant: k.CanonicalAuthorityRecord = {
+    authority: { ...child, digest: k.authorityDigest(child) },
+    approval_mode: "manual_operator",
+    observation: {
+      kind: "prospective_scope_request",
+      evidence_digest: k.prospectiveScopeApprovalEvidence(request, "USER"),
+      previous_fingerprint: authority.repository_fingerprint,
+      changed_paths: [],
+      request_digest: k.kernelDigest(request),
+      scope_request: request,
+    },
+  };
+  await execute(
+    command({ kind: "approve_scope_request", record: grant }),
+    `scope-request:${k.kernelDigest(request)}`,
+    null,
+  );
+  authority = grant.authority;
+  const replacement = {
+    ...definition,
+    execution_requirements: {
+      ...definition.execution_requirements,
+      scope_roots: grant.authority.scope_roots,
+    },
+  };
+  plan = {
+    ...plan,
+    revision: 2,
+    work_items: [replacement],
+    digest: k.kernelDigest({ revision: 2, work_items: [replacement] }),
+  };
+  await execute(command({ kind: "propose_plan", plan }), `plan:${plan.digest}`);
+  authority = {
+    ...authority,
+    plan_revision: 2,
+    plan_digest: plan.digest,
+    provenance: {
+      ...authority.provenance,
+      parent_authority_digest: null,
+      evidence_digest: k.kernelDigest("fresh fixture USER approval"),
+    },
+  };
+  authority = { ...authority, digest: k.authorityDigest(authority) };
+  await execute(
+    command({
+      kind: "approve_plan",
+      plan_revision: 2,
+      plan_digest: plan.digest,
+      authority_mode: "manual_operator",
+      approval_evidence_digest: authority.provenance.evidence_digest,
+    }),
+    "approval-2",
+  );
+  for (const action of ["claim", "begin"] as const)
+    await execute(
+      command({ kind: "transition_work_item", work_item_id: "build", action, claim_id: claim }),
+      `${action}-2`,
+    );
+  for (const step of journey.steps.slice(6)) {
+    const next = structuredClone(step.input.command);
+    if (next.kind === "transition_work_item") next.claim_id = claim;
+    if (next.kind === "accept_work_item_result") {
+      next.plan_revision = 2;
+      next.plan_digest = plan.digest;
+      next.output_manifests = next.output_manifests.map((output) => ({
+        ...output,
+        plan_revision: 2,
+        attempt: 2,
+        repository_fingerprint: observation.fingerprint,
+      }));
+    }
+    if (next.kind === "record_final_validation")
+      next.validation = {
+        ...next.validation,
+        identity: { ...next.validation.identity, implementation_identity: observation.fingerprint },
+      };
+    await execute(next, step.label);
+  }
 }
 export async function fixture(
   repositoryMode: "direct" | "branch_pr" = "branch_pr",
   securityCi = false,
   leaveReviewDirty = false,
+  historicalScope = false,
+  retainedCoverage = false,
 ) {
   const root = await mkGitRepoRootWithBranch("main");
   await configureGitUser(root);
@@ -92,16 +343,7 @@ export async function fixture(
       return Promise.resolve();
     },
   });
-  const adapter = new KernelBackendAdapter(backend, identity);
-  for (const [index, step] of journey.steps.entries()) {
-    const input = structuredClone(step.input);
-    input.authority = { ...input.authority!, repository_identity: identity };
-    const result =
-      index === 0 ? await adapter.create(journey.task, input) : await adapter.execute(input);
-    expect(result.kind, JSON.stringify(result)).toBe("committed");
-  }
-  const task = saved! as TaskData;
-  task.execution_contract = resolveExplicitExecutionContract({
+  const intake = resolveExplicitExecutionContract({
     config,
     parsed: {
       route: "branch_pr",
@@ -111,12 +353,35 @@ export async function fixture(
     },
     intent: { taskKind: "code", mutationScope: "code" },
   });
+  if (historicalScope) {
+    intake.observed.verification_results.push({ id: "fixture-native-check", result: "pass" });
+    await completeWithHistoricalScope(root, backend, identity, journey, intake);
+  } else {
+    const adapter = new KernelBackendAdapter(backend, identity);
+    for (const [index, step] of journey.steps.entries()) {
+      const input = structuredClone(step.input);
+      input.authority = { ...input.authority!, repository_identity: identity };
+      const result =
+        index === 0 ? await adapter.create(journey.task, input) : await adapter.execute(input);
+      expect(result.kind, JSON.stringify(result)).toBe("committed");
+    }
+  }
+  const task = saved! as TaskData;
+  if (!historicalScope) task.execution_contract = intake;
+  if (retainedCoverage)
+    task.execution_contract = reconcileVerificationExecutionContract({
+      contract: task.execution_contract!,
+      changed_paths: ["docs/inherited.md"],
+      inherited_paths: ["docs/inherited.md"],
+    });
   task.execution_route = {
     requested_mode: "branch_pr",
     selected_mode: "branch_pr",
     repository_mode: repositoryMode,
     schema_version: 1,
-    reason_codes: ["explicit_branch_pr"],
+    reason_codes: retainedCoverage
+      ? [...task.execution_contract!.reason_codes]
+      : ["explicit_branch_pr"],
     frozen: true,
   };
   task.verify = ["git diff --check"];
@@ -157,7 +422,7 @@ export async function fixture(
   };
   let command = await loadCommandContext({ cwd: root, rootOverride: null });
   task.doc =
-    "## Summary\nRepair source.\n\n## Plan\nRepair the approved source.\n\n## Verify Steps\n- git diff --check\n\n## Verification\nPrevious checks passed.\n";
+    "## Summary\nRepair source.\n\n## Scope\nRepair the approved source.txt and explicitly admitted helper paths.\n\n## Rollback Plan\nRetain the fixture checkout and restore source only through reviewed work.\n\n## Plan\nRepair the approved source.\n\n## Verify Steps\n- git diff --check\n\n## Verification\nPrevious checks passed.\n";
   await command.taskBackend.writeTask(task);
   const prDir = path.join(root, ".agentplane", "tasks", id, "pr");
   await mkdir(prDir, { recursive: true });
@@ -278,29 +543,6 @@ export async function fixture(
   } else await commitAll(root, "record review");
   const persisted = (await command.taskBackend.getTask(id))!;
   return { root, id, kernel: persisted.extensions?.task_kernel };
-}
-
-export async function recordFixtureVerification(root: string, id: string): Promise<void> {
-  git(root, "diff", "--check");
-  expect(
-    await cmdVerifyParsed({
-      ctx: await loadCommandContext({ cwd: root, rootOverride: null }),
-      cwd: root,
-      rootOverride: undefined,
-      taskId: id,
-      state: "ok",
-      by: "SUPERVISOR",
-      note: "Native fixture verification passed.",
-      details: ["affected_unit_integration", "critical_paths", "task_outcome"]
-        .map(
-          (check) =>
-            `Check: ${check}\nCommand: git diff --check\nResult: pass\nEvidence: actual fixture Git check passed\nScope: task implementation`,
-        )
-        .join("\n\n"),
-      quiet: true,
-      allowCanonicalProjection: true,
-    }),
-  ).toBe(0);
 }
 
 export async function expectMergedBaseReviewBindings(

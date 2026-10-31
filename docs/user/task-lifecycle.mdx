@@ -390,10 +390,72 @@ the digest returned by that preview. Unknown versions, ambiguous semantic mappin
 custom graphs, stale bytes, or unresolved effects stop for manual conversion. The compatibility
 reader preserves historical bytes but has no transition or persistence authority.
 
+A quiescent legacy Task can retain different README and embedded aggregate revisions. The dry run
+reports `source_revision_mismatch` and its exact source digest. With explicit operator approval,
+`--apply --source-digest <sha256:digest> --yes` retains this ambiguity in native quarantine. The
+command keeps its non-success quarantine exit status. Confirm `persisted: true` and retain the
+emitted `quarantine_proof`; this result does not mean that migration or verification passed.
+
+This path accepts only that single revision blocker. WorkItems must be unclaimed and remain
+`PLANNED`, `READY` or `REWORK_READY`. Active supervisor work, legacy leases, pending effects,
+canonical Kernel records and other blockers prevent the write. The byte-exact source backup
+retains the original work, documents and history. The current projection becomes `BLOCKED` and
+cannot issue new work. Doctor reports the retained condition and checks the original backup and
+entire expected quarantine projection; missing or edited evidence remains an error.
+
+To restore the exact original bytes, save the emitted result inside the repository and use the
+existing guarded rollback command:
+
+```bash
+agentplane task kernel-migrate <task-id> --rollback <quarantine-result.json> --yes
+```
+
+Rollback uses the existing supervisor execution fence and byte CAS. It requires the exact current
+output digest, repository, marker and retained backup. Changes after quarantine prevent rollback.
+A repeated apply observes the same quarantine without writing again. A changed outer Task body or
+metadata cannot gain authority from an otherwise valid marker.
+
 The 0.7.11 deletion ledger removes the former task-centric orchestrator module and its production
 execution exports. Pure calculations, current named consumers, safety-test fixtures, and cold
 readers remain only where replacement proof requires them. This is a correctness boundary, not a
 latency or cost claim.
+
+### Interrupted completed-scope metadata observations
+
+A completed repair can retain a native implementation commit while its result is still
+`result_received`. An earlier observation producer could drop inherited verification coverage
+when it projected that commit into the Task README. Strict completed-scope readers reject that
+projection. Do not edit the README, Kernel, exchange, or supervisor journal to make it readable.
+
+An explicitly authorized operator can use the same `task advance --workflow-recovery <path>
+--remote --agent-json` interface with a strict `completed_scope_projection_recovery` request.
+This request repairs only the exact earlier metadata projection. It does not execute the Task,
+record passing verification, reopen its Kernel, or resolve another interrupted effect.
+
+| Field                                             | Required value                                                           |
+| ------------------------------------------------- | ------------------------------------------------------------------------ |
+| `schema_version`, `kind`                          | `1`, `"completed_scope_projection_recovery"`                             |
+| `task_id`, `repository_root`                      | Exact Task ID and canonical absolute dedicated Task checkout             |
+| `repository_identity`, `config_digest`            | Native repository identity and canonical configuration digest            |
+| `head_sha`, `baseline_sha`                        | Native implementation commit and its single issued parent                |
+| `current_readme_digest`, `baseline_readme_digest` | SHA-256 digests of the exact UTF-8 README bytes                          |
+| `kernel_digest`                                   | Digest of the unchanged native COMPLETED Kernel record                   |
+| `journal_digest`                                  | SHA-256 digest of the exact original supervisor journal bytes            |
+| `work_order_id`, `result_digest`                  | Exact issued EXECUTOR WorkOrder and received completed-result identities |
+| `by`, `note`                                      | `"USER"` and the actual operator's explanation                           |
+
+Every digest uses `sha256:<64 lowercase hex characters>`. Collect the bindings from the retained
+native source artifacts. Do not manufacture missing evidence or attribute an agent decision to
+an operator. The local Task store must match the configured workflow directory.
+
+Recovery holds the existing supervisor lease. It authenticates the issued result, source commit,
+original completed-scope proof, exact earlier projection, and native TaskStore serialization.
+It retains immutable before/after bytes and a separate native effect journal, then uses one
+source compare-and-swap. It checks the resulting source independently and leaves the original
+Kernel and supervisor journal unchanged. Stale pins, other Task edits, foreign source changes,
+and unknown interrupted outcomes are refused. A repeat can recognize only the exact retained
+afterimage and must not perform a second write. Use the returned `resume_argv` to continue the
+original exchange through fresh native checks and independent evaluation.
 
 ### Interrupted integration effects
 

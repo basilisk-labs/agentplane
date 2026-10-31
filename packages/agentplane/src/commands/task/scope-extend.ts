@@ -1,3 +1,10 @@
+import { z } from "zod";
+import { parseTaskReadme, taskKernel as k } from "@agentplaneorg/core/tasks";
+import {
+  decodeCompletedScopeTask,
+  completedScopeApprovalComment,
+} from "../../adapters/task-backend/completed-scope-admission.js";
+import { tryCompletedScopeAdmission } from "./completed-repair-scope-request.js";
 import {
   computeLogicalCompletionContractDigest,
   EXECUTION_GRANT_EXTENSION_KEY,
@@ -26,6 +33,7 @@ import {
   applyApprovedTaskScopeExtension,
   normalizeTaskScopeRoot,
   parseTaskScopeExtensionRequestState,
+  TASK_SCOPE_EXTENSION_REQUEST_KEY,
   scopeExtensionReceiptForState,
 } from "../shared/task-scope-extension-request.js";
 import {
@@ -110,6 +118,7 @@ export function extendBlockedTaskExecutionContract(opts: {
   repository_effects: readonly TaskRepositoryEffect[];
   request_digest: string;
   by: string;
+  completedRework?: boolean;
 }) {
   const current = opts.task.execution_contract;
   if (!current) {
@@ -118,7 +127,7 @@ export function extendBlockedTaskExecutionContract(opts: {
       message: "Task execution scope cannot be extended without a persisted execution contract.",
     });
   }
-  if (opts.task.status !== "BLOCKED") {
+  if (opts.task.status !== "BLOCKED" && !(opts.completedRework && opts.task.status === "DONE")) {
     throw new CliError({
       code: "E_VALIDATION",
       message:
@@ -278,6 +287,95 @@ export function taskWithRebasedExecutionGrant(opts: {
   };
 }
 
+async function commitScope(ctx: CommandContext, cwd: string, taskId: string, message: string) {
+  const exit = await cmdCommit({
+    ctx,
+    cwd,
+    taskId,
+    message,
+    close: false,
+    allow: [],
+    autoAllow: false,
+    allowTasks: true,
+    allowBase: false,
+    allowPolicy: false,
+    allowConfig: false,
+    allowHooks: false,
+    allowCI: false,
+    requireClean: false,
+    quiet: true,
+    closeUnstageOthers: false,
+    closeCheckOnly: false,
+  });
+  if (exit !== 0) throw new Error(`Task scope extension commit exited ${exit}.`);
+}
+
+function legacyMismatch(reason: string): never {
+  throw new CliError({
+    code: "E_VALIDATION",
+    message: `Legacy completed scope reconciliation rejected (${reason}).`,
+  });
+}
+function validateLegacyAfterimage(command: CommandContext, beforeRaw: string, partialRaw: string) {
+  const before = parseTaskReadme(beforeRaw),
+    partial = parseTaskReadme(partialRaw);
+  const b = decodeCompletedScopeTask(beforeRaw, "retained-before", String(before.frontmatter.id));
+  const p = decodeCompletedScopeTask(partialRaw, "retained-partial", b.id);
+  const pending = parseTaskScopeExtensionRequestState(b),
+    applied = parseTaskScopeExtensionRequestState(p);
+  if (!pending) throw new Error("Legacy reconciliation has no pending native scope request");
+  const contract = extendBlockedTaskExecutionContract({
+    command,
+    task: b,
+    scope_roots: pending.request.scope_roots,
+    repository_effects: pending.request.repository_effects,
+    request_digest: pending.request_digest,
+    by: "USER",
+    completedRework: true,
+  });
+  if (
+    applied?.status !== "applied" ||
+    applied.applied_by !== "USER" ||
+    !applied.applied_at ||
+    !z.iso.datetime().safeParse(applied.applied_at).success ||
+    k.kernelDigest({
+      ...applied,
+      status: "pending",
+      applied_at: undefined,
+      applied_by: undefined,
+    }) !== k.kernelDigest(pending) ||
+    partial.frontmatter.doc_updated_by !== "USER" ||
+    !z.iso.datetime().safeParse(partial.frontmatter.doc_updated_at).success
+  )
+    legacyMismatch("applied request");
+  const expected = {
+    frontmatter: {
+      ...before.frontmatter,
+      revision: Number(before.frontmatter.revision) + 1,
+      doc_updated_at: partial.frontmatter.doc_updated_at,
+      doc_updated_by: "USER",
+      execution_contract: contract,
+      extensions: {
+        ...(before.frontmatter.extensions as object),
+        [TASK_SCOPE_EXTENSION_REQUEST_KEY]: (
+          partial.frontmatter.extensions as Record<string, unknown>
+        )[TASK_SCOPE_EXTENSION_REQUEST_KEY],
+      },
+      comments: [
+        ...((before.frontmatter.comments as object[]) ?? []),
+        completedScopeApprovalComment(
+          pending.request.scope_roots,
+          pending.request.repository_effects,
+        ),
+      ],
+    },
+    body: before.body,
+  };
+  if (k.kernelDigest(expected) !== k.kernelDigest(partial))
+    legacyMismatch("exact partial afterimage");
+  return applied.applied_at;
+}
+
 export async function cmdTaskScopeExtend(opts: {
   ctx: CommandContext;
   cwd: string;
@@ -287,10 +385,32 @@ export async function cmdTaskScopeExtend(opts: {
   requestDigest: string;
   stateFingerprint?: string;
   stateScopeDigest?: string;
+  reconcileRequest?: string;
   by: string;
   quiet?: boolean;
 }): Promise<number> {
   try {
+    if (
+      await tryCompletedScopeAdmission({
+        ...opts,
+        legacy_afterimage: validateLegacyAfterimage,
+        commit: (command) =>
+          commitScope(
+            command,
+            command.resolvedProject.gitRoot,
+            opts.taskId,
+            `🚧 ${opts.taskId.split("-").at(-1)} task: extend completed repair scope`,
+          ),
+      })
+    ) {
+      if (!opts.quiet)
+        emitCommandResult(output, {
+          kind: "success",
+          action: "completed repair scope admitted",
+          target: opts.taskId,
+        });
+      return 0;
+    }
     const canonical = await opts.ctx.taskBackend.getTask(opts.taskId);
     if (canonical?.extensions && Object.hasOwn(canonical.extensions, TASK_KERNEL_EXTENSION)) {
       if (opts.by !== "USER")
@@ -306,8 +426,15 @@ export async function cmdTaskScopeExtend(opts: {
           code: "E_VALIDATION",
           message: "Canonical authority delta state scope must equal its exact request digest.",
         });
+      const owner = await resolveTaskOwnerCommandContext({ ctx: opts.ctx, taskId: opts.taskId });
+      const task = await owner.taskBackend.getTask(opts.taskId);
+      if (task?.id !== opts.taskId)
+        throw new CliError({
+          code: "E_VALIDATION",
+          message: "Canonical scope owner Task identity changed.",
+        });
       const runtime = await createKernelRuntime({
-        command: await resolveTaskOwnerCommandContext({ ctx: opts.ctx, taskId: opts.taskId }),
+        command: owner,
         task_id: opts.taskId,
         transport: "manual",
         operation_id: `authority-delta:${opts.requestDigest}`,
@@ -416,26 +543,7 @@ export async function cmdTaskScopeExtend(opts: {
     );
 
     const subject = `🚧 ${opts.taskId.split("-").at(-1) ?? opts.taskId} task: extend approved execution scope`;
-    const exitCode = await cmdCommit({
-      ctx: command,
-      cwd: checkout,
-      taskId: opts.taskId,
-      message: subject,
-      close: false,
-      allow: [],
-      autoAllow: false,
-      allowTasks: true,
-      allowBase: false,
-      allowPolicy: false,
-      allowConfig: false,
-      allowHooks: false,
-      allowCI: false,
-      requireClean: false,
-      quiet: true,
-      closeUnstageOthers: false,
-      closeCheckOnly: false,
-    });
-    if (exitCode !== 0) throw new Error(`Task scope extension commit exited ${exitCode}.`);
+    await commitScope(command, checkout, opts.taskId, subject);
     await refreshBranchPrArtifactsAfterTaskCommit({
       ctx: command,
       cwd: checkout,

@@ -1,17 +1,18 @@
-import { readFile } from "node:fs/promises";
+import { parseTaskScopeExtensionRequestState } from "./task-scope-extension-request-state.js";
+import { lstat } from "node:fs/promises";
 import path from "node:path";
 
 import {
   gitEnv,
   gitListTaskBranches,
   gitShowFile,
+  gitRevParse,
   listWorktrees,
   parseTaskIdFromBranch,
   toGitPath,
 } from "@agentplaneorg/core/git";
 import { execFileAsync } from "@agentplaneorg/core/process";
-import type { TaskRecord } from "@agentplaneorg/core/tasks";
-import { parseTaskReadme } from "@agentplaneorg/core/tasks";
+import { taskKernel as k, parseTaskReadme, type TaskRecord } from "@agentplaneorg/core/tasks";
 import {
   validateTaskReadmeFrontmatter,
   withTaskReadmeFrontmatterDefaults,
@@ -19,13 +20,166 @@ import {
 
 import {
   taskRecordToData,
+  LocalBackend,
   toTaskSummary,
   type TaskData,
   type TaskSummary,
 } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
-import { TASK_KERNEL_EXTENSION } from "../../adapters/task-backend/kernel-record.js";
+import {
+  TASK_KERNEL_EXTENSION,
+  readKernelRecord,
+} from "../../adapters/task-backend/kernel-record.js";
+import {
+  COMPLETED_SCOPE_ADMISSIONS,
+  decodeCompletedScopeTask,
+  transferCompletedScopePermit,
+  type CompletedScopeSource,
+} from "../../adapters/task-backend/completed-scope-admission.js";
+import { readContainedStableTextNoFollow } from "../../shared/contained-stable-file.js";
+import { authenticateCompletedScopeSource } from "./completed-repair-scope-source.js";
+import { resolveLogicalRepositoryIdentity } from "../task/execution-authority-context.js";
 import type { CommandContext } from "./task-backend.js";
+import { resolveCommonGitDirectory } from "../../shared/env.js";
+
+export async function readCompletedScopeCommandSource(
+  command: CommandContext,
+  taskId: string,
+): Promise<CompletedScopeSource> {
+  const root = command.resolvedProject.gitRoot;
+  const readmePath = path.resolve(root, command.config.paths.workflow_dir, taskId, "README.md");
+  const raw = await readContainedStableTextNoFollow({
+    repository_root: root,
+    file_path: readmePath,
+    label: "completed scope Task",
+    max_bytes: 64 * 1024 * 1024,
+  });
+  const task = decodeCompletedScopeTask(raw, readmePath, taskId);
+  return {
+    git_root: root,
+    common_git_dir: await resolveCommonGitDirectory(command.resolvedProject.gitRoot),
+    repository_identity: await resolveLogicalRepositoryIdentity({ git_root: root, task }),
+    readme_path: readmePath,
+    raw,
+  };
+}
+
+function needsCompletedScopeAuthentication(task: TaskData): boolean {
+  if (Object.hasOwn(task.extensions ?? {}, COMPLETED_SCOPE_ADMISSIONS)) return true;
+  const request = parseTaskScopeExtensionRequestState(task);
+  // A legacy partial is an applied external repair with no Kernel WorkItem.
+  // Ordinary historical WorkItem scope lineage is not a completed-scope proof.
+  const record = task.extensions?.task_kernel as { aggregate?: { state?: string } } | undefined;
+  return (
+    task.status === "DONE" &&
+    record?.aggregate?.state === "COMPLETED" &&
+    request?.status === "applied" &&
+    request.work_item_id === null
+  );
+}
+
+async function authenticateSource(
+  ctx: CommandContext,
+  task: TaskData,
+  raw: string,
+  readmePath: string,
+  sourceRoot = ctx.resolvedProject.gitRoot,
+) {
+  if (!needsCompletedScopeAuthentication(task)) return task;
+  try {
+    const identity = await resolveLogicalRepositoryIdentity({
+      git_root: sourceRoot,
+      task,
+    });
+    await authenticateCompletedScopeSource(
+      {
+        git_root: ctx.resolvedProject.gitRoot,
+        common_git_dir: await resolveCommonGitDirectory(ctx.resolvedProject.gitRoot),
+        workflow_dir: ctx.config.paths.workflow_dir,
+      },
+      task,
+      {
+        git_root: sourceRoot,
+        common_git_dir: await resolveCommonGitDirectory(ctx.resolvedProject.gitRoot),
+        repository_identity: identity,
+        raw,
+        readme_path: readmePath,
+      },
+    );
+    const read = readKernelRecord(task, identity as k.Sha256Digest);
+    if (read.kind !== "canonical")
+      throw new Error(read.kind === "malformed" ? read.reason : read.kind);
+    return task;
+  } catch (error) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: `Completed scope source authentication failed: ${error instanceof Error ? error.message : String(error)}`,
+      context: { reason_code: "completed_scope_admission_unproven", task_id: task.id },
+    });
+  }
+}
+
+/** Preserve LocalBackend identity and authenticate each explicit raw source before exposing it. */
+export function installCompletedScopeReaders(ctx: CommandContext) {
+  const backend = ctx.taskBackend;
+  if (!(backend instanceof LocalBackend)) return;
+  const getTask = backend.getTask.bind(backend);
+  const authenticate = async (task: TaskData | null) => {
+    if (!task || !needsCompletedScopeAuthentication(task)) return task;
+    let file = path.join(backend.root, task.id, "README.md");
+    let sourceRoot = ctx.resolvedProject.gitRoot;
+    try {
+      await lstat(file);
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "ENOENT" || !backend.historyRoot) throw error;
+      file = path.join(backend.historyRoot, task.id, "README.md");
+      sourceRoot = path.resolve(backend.historyRoot, "../..");
+    }
+    const raw = await readContainedStableTextNoFollow({
+      repository_root: sourceRoot,
+      file_path: file,
+      label: "completed scope source Task",
+      max_bytes: 64 * 1024 * 1024,
+    });
+    return await authenticateSource(ctx, task, raw, file, sourceRoot);
+  };
+  backend.getTask = async (id) => await authenticate(await getTask(id));
+  const list = backend.listTasksWithWarnings.bind(backend);
+  backend.listTasksWithWarnings = async (opts) => {
+    const result = await list(opts);
+    return {
+      ...result,
+      tasks: await Promise.all(result.tasks.map(async (task) => (await authenticate(task))!)),
+    };
+  };
+  const projection = backend.listProjectionTasks.bind(backend);
+  backend.listProjectionTasks = async (opts) => {
+    const summaries = await projection(opts);
+    return await Promise.all(
+      summaries.map(async (summary) => {
+        if (!needsCompletedScopeAuthentication(summary)) return summary;
+        const full = await authenticate(await getTask(summary.id));
+        if (!full) throw new Error(`Completed scope source Task is missing: ${summary.id}`);
+        return transferCompletedScopePermit(full, toTaskSummary(full));
+      }),
+    );
+  };
+}
+
+/** A raw transactional copy needs its own source check before native metadata work. */
+export async function authenticateTaskMetadataProjection(ctx: CommandContext, task: TaskData) {
+  if (!Object.hasOwn(task.extensions ?? {}, COMPLETED_SCOPE_ADMISSIONS)) return task;
+  const source = await ctx.taskBackend.getTask(task.id);
+  if (!source || k.kernelDigest(source) !== k.kernelDigest(task))
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: "Completed scope metadata projection differs from its current authenticated source.",
+    });
+  // Command contexts can cross separately bundled Node entry points. Authenticate
+  // the exact bytes here; a permit in another bundle's WeakMap is not transferable.
+  const current = await readCompletedScopeCommandSource(ctx, task.id);
+  return await authenticateSource(ctx, task, current.raw, current.readme_path);
+}
 
 function backendSupportsTaskBranchSnapshots(ctx: CommandContext): boolean {
   const capabilities = ctx.taskBackend?.capabilities;
@@ -262,13 +416,30 @@ export async function loadTaskFromBranchSnapshot(opts: {
       path.relative(opts.ctx.resolvedProject.gitRoot, opts.readmePath),
     );
     try {
-      const liveText = await readFile(liveReadmePath, "utf8");
-      return taskDataFromReadmeText({
+      const liveText = await readContainedStableTextNoFollow({
+        repository_root: authoritativeWorktree.path,
+        file_path: liveReadmePath,
+        label: "authoritative Task README",
+        max_bytes: 64 * 1024 * 1024,
+      });
+      const task = taskDataFromReadmeText({
         taskId: opts.taskId,
         readmePath: opts.readmePath,
         text: liveText,
       });
-    } catch {
+      return await authenticateSource(
+        opts.ctx,
+        task,
+        liveText,
+        liveReadmePath,
+        authoritativeWorktree.path,
+      );
+    } catch (error) {
+      if (
+        error instanceof CliError &&
+        error.context?.reason_code === "completed_scope_admission_unproven"
+      )
+        throw error;
       throw new CliError({
         exitCode: 4,
         code: "E_IO",
@@ -295,16 +466,20 @@ export async function loadTaskFromBranchSnapshot(opts: {
   );
 
   for (const ref of refsToTry) {
+    let text: string;
     try {
-      const text = await gitShowFile(opts.ctx.resolvedProject.gitRoot, ref, relReadmePath);
-      return taskDataFromReadmeText({
-        taskId: opts.taskId,
-        readmePath: opts.readmePath,
-        text,
-      });
+      const commit = await gitRevParse(opts.ctx.resolvedProject.gitRoot, [`${ref}^{commit}`]);
+      text = await gitShowFile(opts.ctx.resolvedProject.gitRoot, commit, relReadmePath);
     } catch {
-      // Try the next candidate ref.
+      // Only unavailable Git candidates may fall back. Authentication failures are terminal.
+      continue;
     }
+    const task = taskDataFromReadmeText({
+      taskId: opts.taskId,
+      readmePath: opts.readmePath,
+      text,
+    });
+    return await authenticateSource(opts.ctx, task, text, opts.readmePath);
   }
   return null;
 }
@@ -342,16 +517,19 @@ export async function supplementTaskProjectionFromWorktrees(opts: {
     const task = await opts.loadTask(taskId, branch);
     if (!task) continue;
     if (known && !Object.hasOwn(task.extensions ?? {}, TASK_KERNEL_EXTENSION)) continue;
-    tasks.set(taskId, {
-      ...toTaskSummary(task),
-      extensions: {
-        ...task.extensions,
-        "agentplane.task_projection_source": {
-          state: known ? "authoritative_worktree" : "local_projection_unavailable",
-          readme_path: path.join(owner.path, relativeReadme),
+    tasks.set(
+      taskId,
+      transferCompletedScopePermit(task, {
+        ...toTaskSummary(task),
+        extensions: {
+          ...task.extensions,
+          "agentplane.task_projection_source": {
+            state: known ? "authoritative_worktree" : "local_projection_unavailable",
+            readme_path: path.join(owner.path, relativeReadme),
+          },
         },
-      },
-    });
+      }),
+    );
   }
   return [...tasks.values()];
 }
