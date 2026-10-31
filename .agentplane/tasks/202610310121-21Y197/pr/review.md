@@ -6,7 +6,7 @@ Created: 2026-10-31T01:26:30.608Z
 
 - Task: `202610310121-21Y197`
 - Title: Fix completed-scope metadata readers across Node command bundles
-- Status: DOING
+- Status: DONE
 - Branch: `task/202610310121-21Y197/fix-completed-scope-metadata-readers-across-node`
 - Canonical task record: `.agentplane/tasks/202610310121-21Y197/README.md`
 
