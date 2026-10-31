@@ -1,0 +1,2596 @@
+diff --git a/packages/agentplane/src/cli/run-cli.core.workflow-recovery.verification-retry.test.ts b/packages/agentplane/src/cli/run-cli.core.workflow-recovery.verification-retry.test.ts
+new file mode 100644
+index 000000000..6d50f128c
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli.core.workflow-recovery.verification-retry.test.ts
+@@ -0,0 +1,563 @@
++import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
++import type { taskKernel } from "@agentplaneorg/core/tasks";
++import { execFileSync } from "node:child_process";
++import { readFile, rm, writeFile } from "node:fs/promises";
++import path from "node:path";
++import { afterEach, expect, it, vi } from "vitest";
++import {
++  captureStdIO,
++  installRunCliIntegrationHarness,
++  mkGitRepoRootWithBranch,
++  writeConfig,
++} from "@agentplane/testkit";
++import { defaultConfig } from "./core-imports.js";
++import { runCli } from "./run-cli.js";
++import { fakeGithubProviderSource } from "./task-advance-effect-recovery.testkit.js";
++import { runJson } from "./task-create-planner-intent.testkit.js";
++import { loadCommandContext } from "../commands/shared/task-backend.js";
++installRunCliIntegrationHarness();
++const roots: string[] = [];
++afterEach(async () => {
++  for (const root of roots.splice(0)) await rm(root, { recursive: true, force: true });
++});
++it("public workflow recovery cannot grant a retry to a nonterminal canonical task", async () => {
++  const root = await mkGitRepoRootWithBranch("main");
++  roots.push(root);
++  execFileSync("git", ["commit", "--allow-empty", "-m", "fixture baseline"], { cwd: root });
++  const config = defaultConfig();
++  config.workflow_mode = "branch_pr";
++  await writeConfig(root, config);
++  const created = await runJson(root, [
++    "task",
++    "create",
++    "Retry boundary fixture",
++    "--description",
++    "Exercise public terminal retry admission",
++    "--task-kind",
++    "code",
++    "--mutation-scope",
++    "code",
++    "--scope-root",
++    "result.txt",
++    "--repository-effect",
++    "source_code",
++    "--verify",
++    "node --version",
++    "--json",
++  ]);
++  const id = String(created.task_id);
++  const command = await loadCommandContext({ cwd: root, rootOverride: root });
++  const before = await command.taskBackend.getTask(id);
++  const head = execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" });
++  const input = path.join(root, ".git/retry.json");
++  await writeFile(
++    input,
++    JSON.stringify({ schema_version: 1, kind: "verification_retry_request", task_id: id }),
++  );
++  const original = await readFile(input, "utf8");
++  for (const remote of [[], ["--remote"]]) {
++    const io = captureStdIO();
++    try {
++      const code = await runCli([
++        "task",
++        "advance",
++        id,
++        "--workflow-recovery",
++        input,
++        ...remote,
++        "--agent-json",
++        "--root",
++        root,
++      ]);
++      expect(code).not.toBe(0);
++      expect(io.stderr).toContain(remote.length > 0 ? "already completed Task" : "--remote");
++    } finally {
++      io.restore();
++    }
++  }
++  expect(await command.taskBackend.getTask(id)).toEqual(before);
++  expect(await readFile(input, "utf8")).toBe(original);
++  expect(execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" })).toBe(head);
++});
++
++// This fixture seeds a valid historical terminal record in an isolated repository.
++// The retry itself must use the public CLI and the real backend/verifier without doubles.
++it("public retry preserves a completed Kernel and executes fresh native checks without a legacy plan", async () => {
++  const { taskKernel: k } = await import("@agentplaneorg/core/tasks");
++  const {
++    createSupervisorExecutionEpisodeJournal,
++    startSupervisorExecutionEpisode,
++    completeSupervisorExecutionEpisode,
++  } = await import("@agentplaneorg/core/schemas");
++  const { resolveSupervisorExecutionEpisodePath, createSupervisorEpisodeStore } =
++    await import("../commands/shared/supervisor-execution-episode.js");
++  const { resolveImplementationVerificationTask } =
++    await import("../commands/task/external-agent-implementation-recovery.js");
++  const { verificationRetryContractIdentity } =
++    await import("../commands/task/verification-retry-source-proof.js");
++  const { mkdir } = await import("node:fs/promises");
++  const root = await mkGitRepoRootWithBranch("main");
++  roots.push(root);
++  const git = (args: string[]) => execFileSync("git", args, { cwd: root, encoding: "utf8" }).trim();
++  git(["commit", "--allow-empty", "-m", "fixture base"]);
++  const config = defaultConfig();
++  config.workflow_mode = "branch_pr";
++  await writeConfig(root, config);
++  const { ensureRuntimeGitignore, ensureRuntimeSqliteGitignore } =
++    await import("../runtime/shared/runtime-gitignore.js");
++  await writeFile(path.join(root, ".gitignore"), ".agentplane/cache/\n");
++  await ensureRuntimeGitignore({ gitRoot: root });
++  await ensureRuntimeSqliteGitignore({ gitRoot: root });
++  await mkdir(path.join(root, ".agentplane/policy"), { recursive: true });
++  for (const name of ["dod.code.md", "dod.core.md", "security.must.md", "workflow.branch_pr.md"]) {
++    await writeFile(
++      path.join(root, ".agentplane/policy", name),
++      "# Fixture policy\nPreserve task authority and require independent review.\n",
++    );
++  }
++  const baseIo = captureStdIO();
++  try {
++    expect(await runCli(["branch", "base", "set", "main", "--root", root]), baseIo.stderr).toBe(0);
++  } finally {
++    baseIo.restore();
++  }
++  git(["add", "."]);
++  git(["commit", "-m", "fixture policy before frozen task intake"]);
++  const created = await runJson(root, [
++    "task",
++    "create",
++    "Terminal retry fixture",
++    "--description",
++    "Qualify public retry persistence with immutable historical evidence",
++    "--task-kind",
++    "code",
++    "--mutation-scope",
++    "code",
++    "--scope-root",
++    "check.mjs",
++    "--scope-root",
++    "package.json",
++    "--repository-effect",
++    "source_code",
++    "--verify",
++    "npm run test",
++    "--json",
++  ]);
++  const taskId = String(created.task_id);
++  const planning = await runJson(root, ["task", "advance", taskId, "--agent-json"]);
++  const exchange = planning.exchange as { directory: string; result_path: string };
++  const order = JSON.parse(
++    await readFile(path.join(exchange.directory, "work-order.json"), "utf8"),
++  ) as AgentWorkOrderV2;
++  await writeFile(
++    exchange.result_path,
++    JSON.stringify({
++      work_order_id: order.work_order_id,
++      status: "completed",
++      summary: "Fixture plan",
++      findings: [],
++      uncertainty: [],
++      canonical_plan: {
++        work_items: [
++          {
++            id: "build",
++            depends_on: [],
++            required_inputs: [],
++            expected_outputs: ["source"],
++            execution_requirements: {
++              scope_roots: ["check.mjs", "package.json"],
++              repository_effects: ["source_code"],
++              external_effects: [],
++              capabilities: ["repository_write"],
++              resources: [],
++            },
++            optional: false,
++            contract: {
++              objective: "Check fixture",
++              acceptance_criteria: ["Native check executes"],
++              verification_commands: ["npm run test"],
++              role: "EXECUTOR",
++            },
++          },
++        ],
++      },
++    }),
++  );
++  await runJson(root, [
++    "task",
++    "advance",
++    taskId,
++    "--result",
++    exchange.result_path,
++    "--agent-json",
++  ]);
++  await runJson(root, [
++    "task",
++    "plan",
++    "approve",
++    taskId,
++    "--by",
++    "USER",
++    "--note",
++    "isolated fixture approval",
++  ]);
++  let command = await loadCommandContext({ cwd: root, rootOverride: root });
++  const task = (await command.taskBackend.getTask(taskId))!;
++  const prior = task.extensions!.task_kernel as {
++    repository_identity: taskKernel.Sha256Digest;
++    aggregate: taskKernel.TaskAggregate;
++    events: readonly taskKernel.DomainEvent[];
++    documents?: Record<string, unknown>;
++  };
++  const plan = prior.aggregate.current_plan!;
++  const identity = k.kernelDigest("isolated historical implementation");
++  const validation = {
++    status: "PASSED" as const,
++    identity: {
++      implementation_identity: identity,
++      check_id: "fixture",
++      command_digest: k.kernelDigest("npm run test"),
++      toolchain_digest: k.kernelDigest("fixture toolchain"),
++      environment_digest: k.kernelDigest("fixture environment"),
++    },
++    evidence_digests: [k.kernelDigest("fixture historical evidence")],
++    observed_at: new Date().toISOString(),
++  };
++  const definition = plan.work_items[0]!;
++  // Seed historical fixture data; the public CLI below validates it through the real adapter.
++  const terminalContents = {
++    schema_version: 1 as const,
++    kind: "canonical_task" as const,
++    repository_identity: prior.repository_identity,
++    aggregate: {
++      ...prior.aggregate,
++      revision: prior.aggregate.revision + 1,
++      state: "COMPLETED" as const,
++      work_items: {
++        build: {
++          definition,
++          state: "COMPLETED" as const,
++          revision: 1,
++          attempt: 1,
++          claim_id: "fixture-claim",
++          result_digest: identity,
++          output_manifests: [
++            {
++              id: "source",
++              kind: "source",
++              digest: identity,
++              task_id: taskId,
++              plan_revision: plan.revision,
++              work_item_id: "build",
++              attempt: 1,
++              repository_fingerprint: k.kernelDigest("fixture repository"),
++            },
++          ],
++          validation,
++        },
++      },
++      final_validation: validation,
++    },
++    events: prior.events,
++    ...(prior.documents ? { documents: prior.documents } : {}),
++  };
++  const terminal = { ...terminalContents, digest: k.kernelDigest(terminalContents) };
++  await command.taskBackend.writeTask(
++    {
++      ...task,
++      status: "DONE",
++      revision: terminal.aggregate.revision,
++      verification: {
++        state: "needs_rework",
++        updated_at: new Date().toISOString(),
++        updated_by: "SUPERVISOR",
++        note: "fixture prior failure",
++      },
++      extensions: { ...task.extensions, task_kernel: terminal },
++    },
++    { expectedRevision: task.revision },
++  );
++  const prefix = `.agentplane/tasks/${taskId}`;
++  await mkdir(path.join(root, prefix, "supervision"), { recursive: true });
++  await mkdir(path.join(root, prefix, "quality"), { recursive: true });
++  const failedRelative = `${prefix}/supervision/declared-checks.json`;
++  const failed = {
++    schema_version: 1,
++    kind: "direct_task_declared_checks",
++    task_id: taskId,
++    status: "failed",
++    checks: [{ command: "npm run test", exit_code: 1 }],
++  };
++  await writeFile(path.join(root, failedRelative), JSON.stringify(failed));
++  await writeFile(path.join(root, prefix, "quality/old-eval.json"), '{"fixture":"old EVAL"}');
++  await writeFile(
++    path.join(root, "package.json"),
++    JSON.stringify({ scripts: { test: "node check.mjs" } }),
++  );
++  await writeFile(
++    path.join(root, "check.mjs"),
++    "import{appendFileSync}from'node:fs';appendFileSync('.git/retry-executions','1');",
++  );
++  git(["switch", "-c", `task/${taskId}/retry-fixture`]);
++  git(["add", "."]);
++  git(["commit", "-m", "fixture terminal source and old receipts"]);
++  const implementationHead = git(["rev-parse", "HEAD"]);
++  command = await loadCommandContext({ cwd: root, rootOverride: root });
++  const { projectKernelOperationalEvidence } =
++    await import("../commands/task/kernel-operational-projection.js");
++  // Seed the historical projection with its native producer. This fixture does not certify a past evaluator.
++  await projectKernelOperationalEvidence({
++    command,
++    task_id: taskId,
++    repository_evidence: {
++      schema_version: 1,
++      kind: "canonical_repository_evidence",
++      task_id: taskId,
++      work_item_id: "build",
++      task_revision: terminal.aggregate.revision,
++      work_order_id: k.kernelDigest("historical fixture inspection"),
++      checkout: root,
++      branch: `task/${taskId}/retry-fixture`,
++      base_commit: git(["rev-parse", `${implementationHead}^`]),
++      implementation_commit: implementationHead,
++      implementation_tree: git(["rev-parse", `${implementationHead}^{tree}`]),
++      changed_paths: ["check.mjs", "package.json"],
++      evaluator_target: implementationHead,
++      digest: k.kernelDigest("historical fixture repository evidence"),
++      implementation_evidence: {
++        artifact_path: "fixture",
++        implementation_commit: implementationHead,
++        changed_paths: ["check.mjs", "package.json"],
++      },
++    },
++    verification_evidence_digest: identity,
++    review_identity_digest: identity,
++    evidence_refs: [`${prefix}/quality/old-eval.json`],
++    findings: ["historical fixture"],
++    projected_at: new Date().toISOString(),
++  });
++  const historical = (await command.taskBackend.getTask(taskId))!;
++  await command.taskBackend.writeTask(
++    {
++      ...historical,
++      revision: historical.revision! + 1,
++      verification: {
++        state: "needs_rework",
++        updated_at: new Date().toISOString(),
++        updated_by: "SUPERVISOR",
++        note: "isolated current native failure",
++      },
++    },
++    { expectedRevision: historical.revision },
++  );
++  git(["add", "--", `${prefix}/README.md`]);
++  git(["commit", "-m", "fixture current failed validation projection"]);
++  const head = git(["rev-parse", "HEAD"]);
++  command = await loadCommandContext({ cwd: root, rootOverride: root });
++  const current = (await command.taskBackend.getTask(taskId))!;
++  expect(current.extensions?.task_kernel).toEqual(terminal);
++  const verification = await resolveImplementationVerificationTask({
++    command,
++    checkout: root,
++    task: current,
++    workflow: "branch_pr",
++  });
++  const sourceSha = verification.snapshot.evaluated_sha!;
++  expect(sourceSha).toBe(head);
++  expect(verification.task.verify).toEqual(["npm run test"]);
++  expect(
++    verification.snapshot.changed_paths
++      .filter((name) => !verification.snapshot.inherited_paths.includes(name))
++      .toSorted(),
++  ).toEqual(["check.mjs", "package.json"]);
++  expect(verification.task.execution_contract?.authority.writable_roots.toSorted()).toEqual([
++    "check.mjs",
++    "package.json",
++  ]);
++  const journalPath = await resolveSupervisorExecutionEpisodePath({
++    git_root: root,
++    task_id: taskId,
++  });
++  const createdJournal = createSupervisorExecutionEpisodeJournal({
++    task_id: taskId,
++    task_revision: current.revision!,
++    state_fingerprint_digest: identity,
++    budget: {
++      max_episodes: 10,
++      max_agent_runs: null,
++      max_input_tokens: null,
++      max_output_tokens: null,
++      max_total_tokens: null,
++      max_wall_time_ms: null,
++      max_changed_files: null,
++      max_diff_lines: null,
++      max_no_progress_episodes: null,
++    },
++  });
++  const started = startSupervisorExecutionEpisode({
++    journal: createdJournal,
++    role: "EXECUTOR",
++    kind: "cli_operation",
++    operation_identity: { direct_task_operation: "task_verify" },
++    precondition_fingerprint_digest: identity,
++    authority_ref: "direct-task-supervisor:task_verify",
++    authority_digest: identity,
++    effect_ref: "task_verify",
++  });
++  if (started.status !== "started") throw new Error("fixture journal admission failed");
++  const journal = completeSupervisorExecutionEpisode({
++    journal: started.journal,
++    operation_key: started.operation_key,
++    result: {
++      direct_task_operation: "task_verify",
++      result: { verification: "needs_rework", declared_checks: failedRelative },
++    },
++  });
++  await createSupervisorEpisodeStore(journalPath).write(journal);
++  const request = {
++    schema_version: 1,
++    kind: "verification_retry_request",
++    task_id: taskId,
++    repository_identity: terminal.repository_identity,
++    kernel_digest: terminal.digest,
++    source_sha: sourceSha,
++    head_sha: head,
++    check_contract_digest: verificationRetryContractIdentity(verification.task),
++    failed_operation_key: started.operation_key,
++    failed_checks_digest: k.kernelDigest(failed),
++  };
++  const inputPath = path.join(root, ".git/retry-request.json");
++  await writeFile(inputPath, JSON.stringify(request));
++  const before = await Promise.all([
++    readFile(journalPath, "utf8"),
++    readFile(path.join(root, failedRelative), "utf8"),
++    readFile(path.join(root, prefix, "quality/old-eval.json"), "utf8"),
++  ]);
++  const { captureExternalTaskArtifacts } =
++    await import("../commands/task/external-agent-task-artifact-baseline.js");
++  const nativePr = await import("../commands/task/verify-record-pr-artifacts.js");
++  const syncSpy = vi.spyOn(nativePr, "syncRecordedVerificationArtifacts");
++  const prBefore = Object.fromEntries(
++    Object.entries(await captureExternalTaskArtifacts(root, taskId)).filter(
++      ([name]) => name === "pr" || name.startsWith("pr/"),
++    ),
++  );
++  const result = await runJson(root, [
++    "task",
++    "advance",
++    taskId,
++    "--workflow-recovery",
++    inputPath,
++    "--remote",
++    "--agent-json",
++  ]);
++  expect(result.result).toMatchObject({ status: "passed", fresh_evaluator_required: true });
++  command = await loadCommandContext({ cwd: root, rootOverride: root });
++  const after = (await command.taskBackend.getTask(taskId))!;
++  expect(after.extensions?.task_kernel).toEqual(terminal);
++  expect(after.extensions?.["agentplane.task_centric"]).toBeUndefined();
++  expect(after.verification?.state).toBe("ok");
++  expect(
++    await Promise.all([
++      readFile(journalPath, "utf8"),
++      readFile(path.join(root, failedRelative), "utf8"),
++      readFile(path.join(root, prefix, "quality/old-eval.json"), "utf8"),
++    ]),
++  ).toEqual(before);
++  expect(await readFile(path.join(root, ".git/retry-executions"), "utf8")).toBe("1");
++  const replay = await runJson(root, [
++    "task",
++    "advance",
++    taskId,
++    "--workflow-recovery",
++    inputPath,
++    "--remote",
++    "--agent-json",
++  ]);
++  expect(replay.replay).toBe(true);
++  expect(await readFile(path.join(root, ".git/retry-executions"), "utf8")).toBe("1");
++  expect(syncSpy).not.toHaveBeenCalled();
++  const prAfter = Object.fromEntries(
++    Object.entries(await captureExternalTaskArtifacts(root, taskId)).filter(
++      ([name]) => name === "pr" || name.startsWith("pr/"),
++    ),
++  );
++  expect(prAfter).toEqual(prBefore);
++  syncSpy.mockRestore();
++  git(["remote", "add", "origin", "https://github.com/example/repo.git"]);
++  const fakeProvider = path.join(root, ".git/retry-provider.mjs");
++  const repo = {
++    full_name: "example/repo",
++    clone_url: "https://github.com/example/repo.git",
++    html_url: "https://github.com/example/repo",
++  };
++  await writeFile(
++    fakeProvider,
++    fakeGithubProviderSource({
++      number: 4626,
++      state: "open",
++      merged: false,
++      mergeable: true,
++      mergeable_state: "clean",
++      draft: false,
++      html_url: "https://github.com/example/repo/pull/4626",
++      head: { ref: `task/${taskId}/retry-fixture`, sha: head, repo },
++      base: { ref: "main", sha: git(["rev-parse", "main"]), repo },
++    }),
++  );
++  const previousBin = process.env.AGENTPLANE_GH_BIN;
++  const previousArgs = process.env.AGENTPLANE_GH_ARGS;
++  let evaluating: Record<string, unknown>;
++  try {
++    process.env.AGENTPLANE_GH_BIN = process.execPath;
++    process.env.AGENTPLANE_GH_ARGS = JSON.stringify([fakeProvider]);
++    evaluating = await runJson(root, ["task", "advance", taskId, "--remote", "--agent-json"]);
++    if ((evaluating.action as { kind: string }).kind !== "agent_episode") {
++      const { buildTaskRouteDecision } = await import("../commands/shared/route-decision.js");
++      const context = await loadCommandContext({ cwd: root, rootOverride: root });
++      const decision = await buildTaskRouteDecision({
++        ctx: context,
++        cwd: root,
++        rootOverride: root,
++        taskId,
++        includeRemote: true,
++        freshHead: true,
++      });
++      expect(
++        evaluating.action,
++        JSON.stringify({ action: evaluating.action, step: decision.workflowStep }),
++      ).toMatchObject({ kind: "agent_episode" });
++    }
++  } finally {
++    if (previousBin === undefined) delete process.env.AGENTPLANE_GH_BIN;
++    else process.env.AGENTPLANE_GH_BIN = previousBin;
++    if (previousArgs === undefined) delete process.env.AGENTPLANE_GH_ARGS;
++    else process.env.AGENTPLANE_GH_ARGS = previousArgs;
++  }
++  expect(evaluating.action, JSON.stringify(evaluating.action)).toMatchObject({
++    kind: "agent_episode",
++  });
++  const evaluationExchange = evaluating.exchange as { directory: string };
++  const evaluationOrder = JSON.parse(
++    await readFile(path.join(evaluationExchange.directory, "work-order.json"), "utf8"),
++  ) as AgentWorkOrderV2;
++  expect(evaluationOrder.role).toBe("EVALUATOR");
++  expect(evaluationOrder.state_fingerprint.git_head).toBe(git(["rev-parse", "HEAD"]));
++  expect(git(["diff", "--name-only", sourceSha, "HEAD", "--", "check.mjs", "package.json"])).toBe(
++    "",
++  );
++  const frozenRef = evaluationOrder.required_inputs.find(
++    (input: { id: string }) => input.id === "evaluator-work-order",
++  );
++  expect(frozenRef).toBeDefined();
++  const frozenBytes = await readFile(path.resolve(root, frozenRef!.path), "utf8");
++  const { externalAgentExchangeDigest } =
++    await import("../commands/task/external-agent-exchange.js");
++  expect(externalAgentExchangeDigest(frozenBytes)).toBe(frozenRef!.digest);
++  const frozenEvaluation = JSON.parse(frozenBytes) as {
++    evaluated_sha: string;
++    review_identity: { implementation_sha: string };
++  };
++  expect(frozenEvaluation.evaluated_sha).toBe(sourceSha);
++  expect(frozenEvaluation.review_identity.implementation_sha).toBe(sourceSha);
++});
+diff --git a/packages/agentplane/src/commands/task/direct-task-verification-observation.ts b/packages/agentplane/src/commands/task/direct-task-verification-observation.ts
+index a5d8c73c2..3acae8041 100644
+--- a/packages/agentplane/src/commands/task/direct-task-verification-observation.ts
++++ b/packages/agentplane/src/commands/task/direct-task-verification-observation.ts
+@@ -2,6 +2,7 @@ import type { CommandContext } from "../shared/task-backend.js";
+ import type { DirectTaskVerificationResult } from "./direct-task-verification-checks.js";
+ import { isInfrastructureVerification } from "./verification-infrastructure.js";
+ import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
++import { writeNewStableRegularFileNoFollow } from "../../shared/stable-file.js";
+ import {
+   runProcess,
+   runProcessSync,
+@@ -169,24 +170,99 @@ export function verificationObservationEnv(
+   };
+ }
+ 
++/** A retry key selects a new receipt slot, never a caller-supplied path. */
++function verificationRetryArtifactPath(workflowDir: string, taskId: string, key: string) {
++  if (!/^[a-f0-9]{64}$/u.test(key) || !/^[A-Za-z0-9_-]+$/u.test(taskId))
++    throw new Error("Invalid verification retry artifact identity.");
++  const workflow = workflowDir.replaceAll("\\", "/");
++  if (
++    path.isAbsolute(workflow) ||
++    workflow.split("/").some((part) => !part || part === "." || part === "..")
++  )
++    throw new Error("Invalid verification retry workflow directory.");
++  return path.join(
++    workflow,
++    taskId,
++    "supervision",
++    "verification-retries",
++    key,
++    "declared-checks.json",
++  );
++}
++
++/** Refuse occupied or unsafe slots before any check process starts. */
++export async function prepareVerificationRetryArtifact(
++  command: CommandContext,
++  taskId: string,
++  key: string,
++) {
++  const relative = verificationRetryArtifactPath(command.config.paths.workflow_dir, taskId, key);
++  const root = command.resolvedProject.gitRoot;
++  const absolute = path.join(root, relative);
++  let directory = root;
++  for (const component of path.relative(root, path.dirname(absolute)).split(path.sep)) {
++    directory = path.join(directory, component);
++    try {
++      await mkdir(directory, { mode: 0o700 });
++    } catch (error) {
++      if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
++    }
++    const entry = await lstat(directory);
++    if (!entry.isDirectory() || entry.isSymbolicLink())
++      throw new Error("Unsafe verification retry artifact directory.");
++  }
++  try {
++    await lstat(absolute);
++  } catch (error) {
++    if ((error as NodeJS.ErrnoException).code === "ENOENT") return relative;
++    throw error;
++  }
++  throw new Error("Refusing pre-existing verification retry result.");
++}
++
++/** Validate the receipt policy before a verifier can launch any process. */
++export async function preflightVerificationRetryArtifact(opts: {
++  command: CommandContext;
++  task_id: string;
++  retry_artifact_key?: string;
++  retain_infrastructure_failure?: unknown;
++}) {
++  if (opts.retry_artifact_key === undefined) return;
++  if (opts.retain_infrastructure_failure)
++    throw new Error("Retry result cannot use an alternate failure artifact writer.");
++  await prepareVerificationRetryArtifact(opts.command, opts.task_id, opts.retry_artifact_key);
++}
++
+ export async function writeCheckArtifact(opts: {
+   command: CommandContext;
+   task_id: string;
+   result: Omit<DirectTaskVerificationResult, "artifact_path">;
++  retry_artifact_key?: string;
+   retain_infrastructure_failure?: (
+     result: Omit<DirectTaskVerificationResult, "artifact_path">,
+   ) => Promise<string>;
+ }): Promise<string> {
+   if (opts.retain_infrastructure_failure && isInfrastructureVerification(opts.result))
+     return opts.retain_infrastructure_failure(opts.result);
+-  const relative = path.join(
+-    opts.command.config.paths.workflow_dir,
+-    opts.task_id,
+-    "supervision",
+-    "declared-checks.json",
+-  );
++  const relative =
++    opts.retry_artifact_key === undefined
++      ? path.join(
++          opts.command.config.paths.workflow_dir,
++          opts.task_id,
++          "supervision",
++          "declared-checks.json",
++        )
++      : verificationRetryArtifactPath(
++          opts.command.config.paths.workflow_dir,
++          opts.task_id,
++          opts.retry_artifact_key,
++        );
+   const absolute = path.join(opts.command.resolvedProject.gitRoot, relative);
+-  await mkdir(path.dirname(absolute), { recursive: true });
++  if (opts.retry_artifact_key !== undefined) {
++    await prepareVerificationRetryArtifact(opts.command, opts.task_id, opts.retry_artifact_key);
++  } else {
++    await mkdir(path.dirname(absolute), { recursive: true });
++  }
+   const artifact = {
+     schema_version: 1,
+     kind: "direct_task_declared_checks",
+@@ -197,7 +273,16 @@ export async function writeCheckArtifact(opts: {
+   };
+   // Equal commands and exit codes do not identify an equal execution or implementation.
+   // Persist this run's observations. The writer already avoids byte-identical rewrites.
+-  await writeJsonStableIfChanged(absolute, artifact);
++  if (opts.retry_artifact_key !== undefined) {
++    // Existing default callers keep their replaceable projection. Retry receipts are append-only.
++    await writeNewStableRegularFileNoFollow(
++      absolute,
++      `${JSON.stringify(artifact, null, 2)}\n`,
++      "verification retry result",
++    );
++  } else {
++    await writeJsonStableIfChanged(absolute, artifact);
++  }
+   return relative;
+ }
+ 
+diff --git a/packages/agentplane/src/commands/task/direct-task-verification.observability.test.ts b/packages/agentplane/src/commands/task/direct-task-verification.observability.test.ts
+index f614fc1c2..ea42b8e15 100644
+--- a/packages/agentplane/src/commands/task/direct-task-verification.observability.test.ts
++++ b/packages/agentplane/src/commands/task/direct-task-verification.observability.test.ts
+@@ -1,6 +1,6 @@
+ import type * as FsPromises from "node:fs/promises";
+ import { mkGitRepoRoot } from "@agentplane/testkit";
+-import { readFile, rename, rm, symlink, writeFile } from "node:fs/promises";
++import { mkdir, readFile, rename, rm, symlink, writeFile } from "node:fs/promises";
+ import path from "node:path";
+ import { afterEach, expect, it, vi } from "vitest";
+ import { runDirectTaskVerification } from "./direct-task-verification.js";
+@@ -147,3 +147,89 @@ it("does not bind symlinks or files replaced after descriptor acquisition", asyn
+   expect(identity.untracked_inventory).toContainEqual({ path: "candidate.txt", unavailable: true });
+   expect(identity.untracked_inventory).toContainEqual({ path: "alias.txt", unavailable: true });
+ });
++
++it("retains the failed projection while a retry writes one distinct result", async () => {
++  const root = await mkGitRepoRoot();
++  roots.push(root);
++  await writeFile(path.join(root, "check.mjs"), "process.exit(1);");
++  const options = {
++    command: {
++      config: { paths: { workflow_dir: ".agentplane/tasks" } },
++      resolvedProject: { gitRoot: root },
++    } as never,
++    cwd: root,
++    task_id: "202610100440-WK8124",
++    task: { verify: ["node check.mjs"] },
++  };
++  const failed = await runDirectTaskVerification(options);
++  const retained = await readFile(path.join(root, failed.artifact_path), "utf8");
++  await writeFile(path.join(root, "check.mjs"), "process.exit(0);");
++  const retry = await runDirectTaskVerification({ ...options, retry_artifact_key: "a".repeat(64) });
++  expect(retry.status).toBe("passed");
++  expect(retry.artifact_path).not.toBe(failed.artifact_path);
++  expect(await readFile(path.join(root, failed.artifact_path), "utf8")).toBe(retained);
++  const firstResult = await readFile(path.join(root, retry.artifact_path), "utf8");
++  const duplicate = vi.fn();
++  await expect(
++    runDirectTaskVerification({
++      ...options,
++      retry_artifact_key: "a".repeat(64),
++      run_process: duplicate,
++    }),
++  ).rejects.toThrow("pre-existing");
++  expect(duplicate).not.toHaveBeenCalled();
++  expect(await readFile(path.join(root, retry.artifact_path), "utf8")).toBe(firstResult);
++});
++
++it("rejects invalid retry identities before starting a check", async () => {
++  const root = await mkGitRepoRoot();
++  roots.push(root);
++  await writeFile(path.join(root, "check.mjs"), "throw new Error('must not run');");
++  for (const retry_artifact_key of ["", "../outside", "/tmp/outside", "A".repeat(64)]) {
++    await expect(
++      runDirectTaskVerification({
++        command: {
++          config: { paths: { workflow_dir: ".agentplane/tasks" } },
++          resolvedProject: { gitRoot: root },
++        } as never,
++        cwd: root,
++        task_id: "202610100440-WK8124",
++        task: { verify: ["node check.mjs"] },
++        retry_artifact_key,
++      }),
++    ).rejects.toThrow("Invalid verification retry");
++  }
++  await expect(
++    readFile(
++      path.join(root, ".agentplane/tasks/202610100440-WK8124/supervision/declared-checks.json"),
++    ),
++  ).rejects.toMatchObject({ code: "ENOENT" });
++});
++
++it("refuses a symlinked retry receipt directory without changing the target", async () => {
++  const root = await mkGitRepoRoot();
++  roots.push(root);
++  const task = ".agentplane/tasks/202610100440-WK8124/supervision";
++  await mkdir(path.join(root, task), { recursive: true });
++  await mkdir(path.join(root, "outside"));
++  await symlink(path.join(root, "outside"), path.join(root, task, "verification-retries"));
++  await writeFile(path.join(root, "check.mjs"), "process.exit(0);");
++  const execute = vi.fn();
++  await expect(
++    runDirectTaskVerification({
++      command: {
++        config: { paths: { workflow_dir: ".agentplane/tasks" } },
++        resolvedProject: { gitRoot: root },
++      } as never,
++      cwd: root,
++      task_id: "202610100440-WK8124",
++      task: { verify: ["node check.mjs"] },
++      retry_artifact_key: "b".repeat(64),
++      run_process: execute,
++    }),
++  ).rejects.toThrow("Unsafe verification retry artifact directory");
++  expect(execute).not.toHaveBeenCalled();
++  await expect(
++    readFile(path.join(root, "outside", "b".repeat(64), "declared-checks.json")),
++  ).rejects.toMatchObject({ code: "ENOENT" });
++});
+diff --git a/packages/agentplane/src/commands/task/direct-task-verification.ts b/packages/agentplane/src/commands/task/direct-task-verification.ts
+index f8258156e..29339795f 100644
+--- a/packages/agentplane/src/commands/task/direct-task-verification.ts
++++ b/packages/agentplane/src/commands/task/direct-task-verification.ts
+@@ -10,6 +10,7 @@ import path from "node:path";
+ import { verificationRedactor } from "./verification-observation.js";
+ import {
+   verificationImplementationIdentity,
++  preflightVerificationRetryArtifact,
+   executeObservedCheck,
+   verificationObservationEnv,
+   writeCheckArtifact,
+@@ -38,6 +39,11 @@ export {
+   type DirectTaskVerificationResult,
+ } from "./direct-task-verification-checks.js";
+ 
++type VerificationTask = Pick<
++  TaskData,
++  "verify" | "task_kind" | "mutation_scope" | "execution_contract" | "sections"
++>;
++
+ const BUN_UNMATCHED_FILTER_PATTERN = /following filters did not match any test files/iu;
+ const BUN_ZERO_TEST_PATTERNS = [
+   /\bno tests? (?:found|matched|ran|were run)\b/iu,
+@@ -67,9 +73,8 @@ async function verificationCheckout(
+   parsedSequence: readonly ParsedDirectTaskCheck[],
+   env: NodeJS.ProcessEnv,
+ ) {
+-  if (!requiresIsolatedQualificationCheckout(command, parsedSequence)) {
++  if (!requiresIsolatedQualificationCheckout(command, parsedSequence))
+     return { cwd, cleanup: () => Promise.resolve() };
+-  }
+   const checkout = await mkdtemp(path.join(os.tmpdir(), "agentplane-verification-"));
+   const added = await runProcess({
+     command: "git",
+@@ -182,10 +187,7 @@ function bunTestReportedZeroTests(opts: {
+ }
+ 
+ function directTaskVerificationCommands(
+-  task: Pick<
+-    TaskData,
+-    "verify" | "task_kind" | "mutation_scope" | "execution_contract" | "sections"
+-  >,
++  task: VerificationTask,
+   additionalCommands: readonly AdditionalDirectTaskCommand[] = [],
+ ): string[] {
+   const commands = [...(task.verify ?? [])];
+@@ -314,12 +316,10 @@ function resolvePlannerFallbackCommand(opts: {
+  */
+ export async function runDirectTaskVerification(opts: {
+   command: CommandContext;
+-  task: Pick<
+-    TaskData,
+-    "verify" | "task_kind" | "mutation_scope" | "execution_contract" | "sections"
+-  >;
++  task: VerificationTask;
+   task_id: string;
+   cwd: string;
++  retry_artifact_key?: string;
+   additional_commands?: readonly AdditionalDirectTaskCommand[];
+   additional_only?: boolean;
+   allow_empty?: boolean;
+@@ -331,6 +331,7 @@ export async function runDirectTaskVerification(opts: {
+   run_process?: typeof runProcess;
+   now?: () => number;
+ }): Promise<DirectTaskVerificationResult> {
++  await preflightVerificationRetryArtifact(opts);
+   const profile = taskCheckTimeoutProfile(verificationChildEnv());
+   const checks: DirectTaskCheck[] = [];
+   const commands = opts.additional_only
+@@ -356,8 +357,7 @@ export async function runDirectTaskVerification(opts: {
+       ? await readRootPackageInfo(opts.command.resolvedProject.gitRoot)
+       : null;
+   let missingRequiredCheckReason: string | null = null;
+-  const hasFullRegressionCommand = commands.some((command) => isFullRegressionCommand(command));
+-  if (requiresFullRegression && !hasFullRegressionCommand) {
++  if (requiresFullRegression && !commands.some(isFullRegressionCommand)) {
+     if (rootPackage?.scripts.has("ci:local:full")) {
+       commands.push(`${rootPackage.runner} run ci:local:full`);
+     } else if (rootPackage?.scripts.has("test")) {
+diff --git a/packages/agentplane/src/commands/task/external-agent-task-artifact-baseline.ts b/packages/agentplane/src/commands/task/external-agent-task-artifact-baseline.ts
+index 2a9df2286..2afa02064 100644
+--- a/packages/agentplane/src/commands/task/external-agent-task-artifact-baseline.ts
++++ b/packages/agentplane/src/commands/task/external-agent-task-artifact-baseline.ts
+@@ -3,28 +3,39 @@ import { lstat, readdir, readlink } from "node:fs/promises";
+ import path from "node:path";
+ 
+ import { CliError } from "../../shared/errors.js";
++import {
++  captureContainedPathChainIdentity,
++  assertContainedPathChainIdentityUnchanged,
++} from "../../shared/contained-stable-file.js";
+ import { readStableRegularFileNoFollow } from "../../shared/stable-file.js";
+ 
+ /** Observe protected task artifacts without following links outside the task directory. */
+ export async function captureExternalTaskArtifacts(
+   checkout: string,
+   taskId: string,
++  workflowDir = ".agentplane/tasks",
+ ): Promise<Record<string, string>> {
+-  const root = path.join(checkout, ".agentplane", "tasks", taskId);
+-  for (const parent of [path.join(checkout, ".agentplane"), path.dirname(root), root]) {
+-    try {
+-      const parentStat = await lstat(parent);
+-      if (!parentStat.isDirectory()) {
+-        throw new CliError({
+-          code: "E_VALIDATION",
+-          message: "Task artifact root is not a directory.",
+-        });
+-      }
+-    } catch (error) {
+-      if ((error as NodeJS.ErrnoException).code === "ENOENT") return {};
+-      throw error;
+-    }
+-  }
++  if (
++    !workflowDir.trim() ||
++    path.isAbsolute(workflowDir) ||
++    path.win32.isAbsolute(workflowDir) ||
++    workflowDir.replaceAll("\\", "/").split("/").includes("..")
++  )
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Task artifact workflow must be repository-relative.",
++    });
++  const root = path.resolve(checkout, workflowDir, taskId);
++  const chain = await captureContainedPathChainIdentity({
++    repository_root: checkout,
++    file_path: root,
++    label: "task artifact root",
++    path_policy: { target_kind: "file_or_directory", allow_missing_ancestors: true },
++  });
++  if (!chain.target_exists) return {};
++  const rootStat = await lstat(root);
++  if (!rootStat.isDirectory())
++    throw new CliError({ code: "E_VALIDATION", message: "Task artifact root is not a directory." });
+   const entries: Record<string, string> = {};
+   async function visit(directory: string): Promise<void> {
+     const names = await readdir(directory);
+@@ -52,5 +63,6 @@ export async function captureExternalTaskArtifacts(
+     }
+   }
+   await visit(root);
++  await assertContainedPathChainIdentityUnchanged(chain, "task artifact root");
+   return entries;
+ }
+diff --git a/packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts b/packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts
+index c5a8a45d9..0a721e2fa 100644
+--- a/packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts
++++ b/packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts
+@@ -6,6 +6,8 @@ import { fileURLToPath } from "node:url";
+ import { describe, expect, it } from "vitest";
+ import { configureGitUser, mockConfig, tempRepo } from "@agentplane/testkit";
+ import { makeTaskFixture } from "@agentplane/testkit/task";
++import { parseTaskReadme, taskKernel } from "@agentplaneorg/core/tasks";
++import { isRecord } from "../../shared/guards.js";
+ import { loadCommandContext } from "../shared/task-backend.js";
+ import { createCanonicalTask } from "./kernel-create.js";
+ import { cmdTaskComment } from "./comment.js";
+@@ -43,13 +45,42 @@ describe("canonical bookkeeping command routes", { timeout: 120_000 }, () => {
+     );
+     const body = "Exact audit value  \r\nsecond line\t\n" + String.raw`literal\n\nvalue` + "\n\n";
+     const bodyFile = path.join(repo.root, "audit-body.txt");
++    const readme = path.join(repo.root, ".agentplane", "tasks", taskId, "README.md");
+     await writeFile(bodyFile, body);
+     const cli = fileURLToPath(new URL("../../../bin/agentplane.js", import.meta.url));
+-    const run = async (args: string[]) =>
+-      await git(process.execPath, [cli, "task", ...args, "--root", repo.root], {
+-        cwd: repo.root,
+-        env: { ...process.env, AGENTPLANE_DEV_AUTO_BOOTSTRAP: "0" },
+-      });
++    const run = async (args: string[]) => {
++      try {
++        return await git(process.execPath, [cli, "task", ...args, "--root", repo.root], {
++          cwd: repo.root,
++          env: { ...process.env, AGENTPLANE_DEV_AUTO_BOOTSTRAP: "0" },
++        });
++      } catch (error) {
++        let diagnostic: Record<string, unknown> = { task_readme: "unavailable" };
++        try {
++          const parsed = parseTaskReadme(await readFile(readme, "utf8"));
++          const extensions = parsed.frontmatter.extensions;
++          const record = isRecord(extensions) ? extensions.task_kernel : null;
++          if (isRecord(record)) {
++            const { digest, ...contents } = record;
++            const comments = isRecord(record.aggregate) ? record.aggregate.audit_comments : null;
++            const observedBody =
++              Array.isArray(comments) && isRecord(comments[0]) ? comments[0].body : null;
++            diagnostic = {
++              stored_digest: digest,
++              observed_digest: taskKernel.kernelDigest(contents),
++              audit_body_exact: observedBody === body,
++              audit_body: typeof observedBody === "string" ? observedBody : null,
++            };
++          }
++        } catch {
++          // Keep the original command failure when its partial afterimage cannot be decoded.
++        }
++        throw new Error(
++          `${error instanceof Error ? error.message : String(error)}\nBody-file readback: ${JSON.stringify(diagnostic)}`,
++          { cause: error },
++        );
++      }
++    };
+     const coldRead = async () => {
+       const result = await run(["show", taskId]);
+       const observed: unknown = JSON.parse(result.stdout);
+@@ -73,7 +104,6 @@ describe("canonical bookkeeping command routes", { timeout: 120_000 }, () => {
+     expect(second.aggregate.revision).toBe(first.aggregate.revision + 1);
+     expect(second.aggregate.audit_comments).toHaveLength(2);
+     expect(second.aggregate.mutation_receipts[firstMutation]).toEqual(firstReceipt);
+-    const readme = path.join(repo.root, ".agentplane", "tasks", taskId, "README.md");
+     const beforeReplay = await readFile(readme);
+     await run(["comment", taskId, "--author", "ORCHESTRATOR", "--body-file", bodyFile]);
+     const replayed = await coldRead();
+diff --git a/packages/agentplane/src/commands/task/verification-retry-effect-recovery.test.ts b/packages/agentplane/src/commands/task/verification-retry-effect-recovery.test.ts
+new file mode 100644
+index 000000000..852efba3f
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/verification-retry-effect-recovery.test.ts
+@@ -0,0 +1,463 @@
++import { createHash } from "node:crypto";
++import type * as TaskBackendModule from "../shared/task-backend.js";
++import type * as KernelRecordModule from "../../adapters/task-backend/kernel-record.js";
++import type * as ImplementationRecoveryModule from "./external-agent-implementation-recovery.js";
++import type { cmdVerifyParsed } from "./verify-record.js";
++import { execFileSync } from "node:child_process";
++import { mkdir, readFile, rename, rm, symlink, writeFile } from "node:fs/promises";
++import path from "node:path";
++import { mkGitRepoRoot } from "@agentplane/testkit";
++import {
++  completeSupervisorExecutionEpisode,
++  createSupervisorExecutionEpisodeJournal,
++  startSupervisorExecutionEpisode,
++} from "@agentplaneorg/core/schemas";
++import {
++  mergeTaskDoc,
++  parseTaskReadme,
++  renderTaskReadme,
++  taskCentricDigest,
++} from "@agentplaneorg/core/tasks";
++import { taskDataToFrontmatter } from "../shared/task-backend.js";
++import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
++import { captureExternalTaskArtifacts } from "./external-agent-task-artifact-baseline.js";
++import { reconcileVerificationRetry } from "./verification-retry-effect-recovery.js";
++import { verificationRetryContractIdentity } from "./verification-retry-source-proof.js";
++import {
++  createSupervisorEpisodeStore,
++  resolveSupervisorExecutionEpisodePath,
++} from "../shared/supervisor-execution-episode.js";
++const mocks = vi.hoisted(() => ({
++  context: vi.fn(),
++  kernel: vi.fn(),
++  verification: vi.fn(),
++  persist: vi.fn(),
++  prSync: vi.fn(),
++}));
++vi.mock("../shared/task-backend.js", async (original) => ({
++  ...(await original<typeof TaskBackendModule>()),
++  loadCommandContext: mocks.context,
++}));
++vi.mock("../../adapters/task-backend/kernel-record.js", async (original) => ({
++  ...(await original<typeof KernelRecordModule>()),
++  readKernelRecord: mocks.kernel,
++}));
++vi.mock("./external-agent-implementation-recovery.js", async (original) => ({
++  ...(await original<typeof ImplementationRecoveryModule>()),
++  resolveImplementationVerificationTask: mocks.verification,
++}));
++vi.mock("./verify-record.js", () => ({ cmdVerifyParsed: mocks.persist }));
++vi.mock("./verify-record-pr-artifacts.js", () => ({
++  syncRecordedVerificationArtifacts: mocks.prSync,
++}));
++const roots: string[] = [];
++afterEach(async () => {
++  for (const root of roots.splice(0)) await rm(root, { recursive: true, force: true });
++});
++beforeEach(() => {
++  vi.clearAllMocks();
++  mocks.prSync.mockResolvedValue(undefined);
++});
++async function fixture(tail = "", workflow = ".agentplane/tasks") {
++  const root = await mkGitRepoRoot();
++  roots.push(root);
++  const taskId = "202610280001-RETRY1";
++  const prefix = `${workflow}/${taskId}`;
++  const failedRelative = `${prefix}/supervision/declared-checks.json`;
++  await mkdir(path.join(root, prefix, "supervision"), { recursive: true });
++  await mkdir(path.join(root, prefix, "quality"), { recursive: true });
++  const failed = {
++    schema_version: 1,
++    kind: "direct_task_declared_checks",
++    task_id: taskId,
++    status: "failed",
++    checks: [{ command: "node check.mjs", exit_code: 1 }],
++  };
++  await writeFile(path.join(root, failedRelative), JSON.stringify(failed));
++  await writeFile(
++    path.join(root, prefix, "README.md"),
++    "---\nid: " + taskId + "\n---\nFixture Task\n",
++  );
++  await writeFile(path.join(root, prefix, "quality/old-eval.json"), '{"historical":"retain"}');
++  await writeFile(
++    path.join(root, "check.mjs"),
++    "import{appendFileSync}from'node:fs';appendFileSync('.git/check-count','1');" + tail,
++  );
++  execFileSync("git", ["add", "."], { cwd: root });
++  execFileSync("git", ["commit", "-m", "retry fixture"], { cwd: root });
++  const pin = `sha256:${"a".repeat(64)}`;
++  const contractId = `sha256:${"c".repeat(64)}`;
++  const kernel = {
++    digest: pin,
++    repository_identity: pin,
++    aggregate: {
++      id: taskId,
++      state: "COMPLETED",
++      current_plan: {
++        state: "APPROVED",
++        work_items: [
++          {
++            optional: false,
++            contract_digest: contractId,
++            execution_requirements: { scope_roots: ["check.mjs"] },
++          },
++        ],
++      },
++    },
++    documents: { contracts: { [contractId]: { verification_commands: ["node check.mjs"] } } },
++  };
++  const task = {
++    id: taskId,
++    task_kind: "code",
++    mutation_scope: "code",
++    verify: ["node check.mjs"],
++    quality_review: { state: "pass", evaluated_sha: "old" },
++    verification: { state: "needs_rework" },
++    extensions: { task_kernel: kernel },
++  };
++  await mkdir(path.join(root, prefix, "pr"), { recursive: true });
++  const prMetaPath = path.join(root, prefix, "pr/meta.json");
++  const prBodyPath = path.join(root, prefix, "pr/github-body.md");
++  await writeFile(prMetaPath, "retained provider identity");
++  await writeFile(prBodyPath, "retained PR body");
++  execFileSync("git", ["add", "."], { cwd: root });
++  execFileSync("git", ["commit", "-m", "retained PR fixture"], { cwd: root });
++  const sourceHead = execFileSync("git", ["rev-parse", "HEAD"], {
++    cwd: root,
++    encoding: "utf8",
++  }).trim();
++  const command = {
++    memo: {},
++    config: { paths: { workflow_dir: workflow } },
++    resolvedProject: { gitRoot: root },
++    taskBackend: { getTask: vi.fn(() => Promise.resolve(task)) },
++  };
++  mocks.context.mockResolvedValue(command);
++  mocks.kernel.mockImplementation(() => ({ kind: "canonical", record: kernel, task }));
++  mocks.verification.mockImplementation(() =>
++    Promise.resolve({
++      task,
++      snapshot: {
++        evaluated_sha: sourceHead,
++        execution_contract: {},
++        changed_paths: ["check.mjs"],
++        inherited_paths: [],
++        repository_effects: ["source_code"],
++      },
++    }),
++  );
++  mocks.persist.mockImplementation(async (opts: Parameters<typeof cmdVerifyParsed>[0]) => {
++    expect(opts.projectionPolicy).toBe("task-only");
++    const next = { ...task, verification: { state: "ok", updated_at: "2026-10-28T09:00:00.000Z" } };
++    await opts.beforePersist!({ current: structuredClone(task) as never, next: next as never });
++    Object.assign(task, next);
++    const file = path.join(root, prefix, "README.md");
++    const readme = parseTaskReadme(await readFile(file, "utf8"));
++    const rendered = renderTaskReadme(
++      { ...readme.frontmatter, ...taskDataToFrontmatter(next as never) },
++      mergeTaskDoc(readme.body, ""),
++    );
++    await writeFile(file, rendered.endsWith("\n") ? rendered : `${rendered}\n`);
++    return 0;
++  });
++  const journalPath = await resolveSupervisorExecutionEpisodePath({
++    git_root: root,
++    task_id: taskId,
++  });
++  const created = createSupervisorExecutionEpisodeJournal({
++    task_id: taskId,
++    task_revision: 1,
++    state_fingerprint_digest: pin,
++    budget: {
++      max_episodes: 10,
++      max_agent_runs: null,
++      max_input_tokens: null,
++      max_output_tokens: null,
++      max_total_tokens: null,
++      max_wall_time_ms: null,
++      max_changed_files: null,
++      max_diff_lines: null,
++      max_no_progress_episodes: null,
++    },
++  });
++  const started = startSupervisorExecutionEpisode({
++    journal: created,
++    role: "EXECUTOR",
++    kind: "cli_operation",
++    operation_identity: { direct_task_operation: "task_verify" },
++    precondition_fingerprint_digest: pin,
++    authority_ref: "direct-task-supervisor:task_verify",
++    authority_digest: pin,
++    effect_ref: "task_verify",
++  });
++  if (started.status !== "started") throw new Error("fixture admission failed");
++  const journal = completeSupervisorExecutionEpisode({
++    journal: started.journal,
++    operation_key: started.operation_key,
++    result: {
++      direct_task_operation: "task_verify",
++      result: { verification: "needs_rework", declared_checks: failedRelative },
++    },
++  });
++  await createSupervisorEpisodeStore(journalPath).write(journal);
++  const request = {
++    schema_version: 1,
++    kind: "verification_retry_request",
++    task_id: taskId,
++    repository_identity: pin,
++    kernel_digest: pin,
++    source_sha: sourceHead,
++    head_sha: sourceHead,
++    check_contract_digest: verificationRetryContractIdentity(task as never),
++    failed_operation_key: started.operation_key,
++    failed_checks_digest: taskCentricDigest(failed),
++  };
++  const inputPath = path.join(root, ".git/retry-request.json");
++  await writeFile(inputPath, JSON.stringify(request));
++  const opts = {
++    command,
++    task_id: taskId,
++    input_path: inputPath,
++    canonical_record: kernel,
++    decide: () =>
++      Promise.resolve({
++        task: { id: taskId },
++        workflowMode: "branch_pr",
++        workspace: { taskWorktreePath: root },
++      }),
++  };
++  return {
++    root,
++    task,
++    opts: opts as never,
++    request,
++    inputPath,
++    kernel,
++    journalPath,
++    failedPath: path.join(root, failedRelative),
++    evalPath: path.join(root, prefix, "quality/old-eval.json"),
++    prMetaPath,
++    prBodyPath,
++  };
++}
++describe.each([".agentplane/tasks", "operations/native/tasks"])(
++  "verification retry in workflow %s",
++  (workflow) => {
++    it("runs real checks once and preserves terminal Kernel, failed journal, old checks and EVAL", async () => {
++      const f = await fixture("", workflow);
++      const before = await Promise.all([
++        readFile(f.journalPath, "utf8"),
++        readFile(f.failedPath, "utf8"),
++        readFile(f.evalPath, "utf8"),
++      ]);
++      const kernel = JSON.stringify(f.kernel);
++      const result = await reconcileVerificationRetry(f.opts);
++      expect(result.result).toMatchObject({ status: "passed", fresh_evaluator_required: true });
++      expect(f.task.verification.state).toBe("ok");
++      expect(JSON.stringify(f.kernel)).toBe(kernel);
++      expect(
++        await Promise.all([
++          readFile(f.journalPath, "utf8"),
++          readFile(f.failedPath, "utf8"),
++          readFile(f.evalPath, "utf8"),
++        ]),
++      ).toEqual(before);
++      const replay = await reconcileVerificationRetry(f.opts);
++      expect(replay.replay).toBe(true);
++      expect(await readFile(path.join(f.root, ".git/check-count"), "utf8")).toBe("1");
++      expect(mocks.persist).toHaveBeenCalledTimes(1);
++      expect(mocks.prSync).not.toHaveBeenCalled();
++      expect(await readFile(f.prMetaPath, "utf8")).toBe("retained provider identity");
++      expect(await readFile(f.prBodyPath, "utf8")).toBe("retained PR body");
++    });
++    it.each([
++      "source_sha",
++      "head_sha",
++      "kernel_digest",
++      "check_contract_digest",
++      "failed_operation_key",
++      "failed_checks_digest",
++    ])("refuses changed %s without running a check", async (field) => {
++      const f = await fixture("", workflow);
++      await writeFile(
++        f.inputPath,
++        JSON.stringify({
++          ...f.request,
++          [field]: field.endsWith("sha") ? "f".repeat(40) : `sha256:${"f".repeat(64)}`,
++        }),
++      );
++      await expect(reconcileVerificationRetry(f.opts)).rejects.toThrow();
++      expect(mocks.persist).not.toHaveBeenCalled();
++      await expect(readFile(path.join(f.root, ".git/check-count"))).rejects.toMatchObject({
++        code: "ENOENT",
++      });
++    });
++    it("does not execute again after an interruption before verification persistence", async () => {
++      const f = await fixture("", workflow);
++      mocks.persist.mockRejectedValue(new Error("interrupted persistence"));
++      await expect(reconcileVerificationRetry(f.opts)).rejects.toThrow("interrupted persistence");
++      await expect(reconcileVerificationRetry(f.opts)).rejects.toThrow("no final receipt");
++      expect(await readFile(path.join(f.root, ".git/check-count"), "utf8")).toBe("1");
++    });
++
++    it("retains a real failed retry and never promotes it to PASS", async () => {
++      const f = await fixture("process.exit(1);", workflow);
++      const result = await reconcileVerificationRetry(f.opts);
++      expect(result.result).toMatchObject({ status: "failed" });
++      expect(f.task.verification.state).toBe("needs_rework");
++      expect(mocks.persist).not.toHaveBeenCalled();
++      expect(mocks.prSync).not.toHaveBeenCalled();
++      expect(await readFile(f.prMetaPath, "utf8")).toBe("retained provider identity");
++      expect(await readFile(f.prBodyPath, "utf8")).toBe("retained PR body");
++      const replay = await reconcileVerificationRetry(f.opts);
++      expect(replay.replay).toBe(true);
++      expect(await readFile(path.join(f.root, ".git/check-count"), "utf8")).toBe("1");
++    });
++
++    it("admits one executor when two retry callers compete", async () => {
++      const f = await fixture("await new Promise(r=>setTimeout(r,300));", workflow);
++      const outcomes = await Promise.allSettled([
++        reconcileVerificationRetry(f.opts),
++        reconcileVerificationRetry(f.opts),
++      ]);
++      expect(outcomes.filter((item) => item.status === "fulfilled")).toHaveLength(1);
++      expect(outcomes.filter((item) => item.status === "rejected")).toHaveLength(1);
++      expect(await readFile(path.join(f.root, ".git/check-count"), "utf8")).toBe("1");
++    });
++
++    it.each(["commands", "verification", "old-eval"])(
++      "refuses a completed replay after %s drift",
++      async (kind) => {
++        const f = await fixture("", workflow);
++        await reconcileVerificationRetry(f.opts);
++        if (kind === "commands") f.task.verify = ["node --version"];
++        if (kind === "verification") f.task.verification = { state: "needs_rework" };
++        if (kind === "old-eval") await writeFile(f.evalPath, "changed historical review");
++        await expect(reconcileVerificationRetry(f.opts)).rejects.toThrow();
++        expect(await readFile(path.join(f.root, ".git/check-count"), "utf8")).toBe("1");
++      },
++    );
++
++    it("reconciles the durable prepared native afterimage after persistence interruption", async () => {
++      const f = await fixture("", workflow);
++      const persist = mocks.persist.getMockImplementation()!;
++      mocks.persist.mockImplementationOnce(async (opts) => {
++        await persist(opts);
++        throw new Error("interrupted AFTER native persistence");
++      });
++      await expect(reconcileVerificationRetry(f.opts)).rejects.toThrow("AFTER native persistence");
++      expect(f.task.verification.state).toBe("ok");
++      const recovered = await reconcileVerificationRetry(f.opts);
++      expect(recovered.replay).toBe(true);
++      expect(recovered.result).toMatchObject({ status: "passed", fresh_evaluator_required: true });
++      expect(await readFile(path.join(f.root, ".git/check-count"), "utf8")).toBe("1");
++      expect(mocks.persist).toHaveBeenCalledTimes(1);
++      expect(mocks.prSync).not.toHaveBeenCalled();
++      expect(await readFile(f.prMetaPath, "utf8")).toBe("retained provider identity");
++      expect(await readFile(f.prBodyPath, "utf8")).toBe("retained PR body");
++    });
++
++    it("does not treat a caller pin as approval for an added command", async () => {
++      const f = await fixture("", workflow);
++      f.task.verify = ["node check.mjs", "node --version"];
++      await writeFile(
++        f.inputPath,
++        JSON.stringify({
++          ...f.request,
++          check_contract_digest: verificationRetryContractIdentity(f.task as never),
++        }),
++      );
++      await expect(reconcileVerificationRetry(f.opts)).rejects.toThrow(
++        "immutable approved WorkItem contracts",
++      );
++      await expect(readFile(path.join(f.root, ".git/check-count"))).rejects.toMatchObject({
++        code: "ENOENT",
++      });
++    });
++
++    it.each(["meta", "body"])(
++      "refuses %s tampering after native persistence interruption without PR overwrite",
++      async (kind) => {
++        const f = await fixture("", workflow);
++        const persist = mocks.persist.getMockImplementation()!;
++        mocks.persist.mockImplementationOnce(async (opts) => {
++          await persist(opts);
++          throw new Error("interrupted AFTER native persistence");
++        });
++        await expect(reconcileVerificationRetry(f.opts)).rejects.toThrow(
++          "AFTER native persistence",
++        );
++        const file = kind === "meta" ? f.prMetaPath : f.prBodyPath;
++        const tampered =
++          kind === "meta" ? '{"provider":{"repository":"foreign"}}' : "foreign PR body";
++        await writeFile(file, tampered);
++        await expect(reconcileVerificationRetry(f.opts)).rejects.toThrow();
++        expect(await readFile(file, "utf8")).toBe(tampered);
++        expect(mocks.prSync).not.toHaveBeenCalled();
++        expect(mocks.persist).toHaveBeenCalledTimes(1);
++        expect(await readFile(path.join(f.root, ".git/check-count"), "utf8")).toBe("1");
++      },
++    );
++  },
++);
++
++const artifactTask = "202610280002-ARTF01";
++it.each([".agentplane/tasks", "operations/native/tasks"])(
++  "captures configured artifacts and missing roots: %s",
++  async (workflow) => {
++    const root = await mkGitRepoRoot();
++    roots.push(root);
++    expect(await captureExternalTaskArtifacts(root, artifactTask, workflow)).toEqual({});
++    const taskRoot = path.join(root, workflow, artifactTask);
++    await mkdir(taskRoot, { recursive: true });
++    await writeFile(path.join(taskRoot, "README.md"), "native artifact");
++    const entries = await captureExternalTaskArtifacts(root, artifactTask, workflow);
++    expect(entries["README.md"]).toMatch(/^file:[0-9]+:[a-f0-9]{64}$/u);
++  },
++);
++it.each(["../outside", "/absolute", "C:\\absolute", "nested/../../outside"])(
++  "refuses workflow escape before checks: %s",
++  async (workflow) => {
++    const root = await mkGitRepoRoot();
++    roots.push(root);
++    await expect(captureExternalTaskArtifacts(root, artifactTask, workflow)).rejects.toThrow();
++    await expect(readFile(path.join(root, ".git/check-count"))).rejects.toMatchObject({
++      code: "ENOENT",
++    });
++  },
++);
++it.each(["operations", "operations/native", "operations/native/tasks"])(
++  "refuses an intermediate workflow symlink: %s",
++  async (ancestor) => {
++    const root = await mkGitRepoRoot(),
++      outside = await mkGitRepoRoot();
++    roots.push(root, outside);
++    await mkdir(path.join(root, "operations/native/tasks", artifactTask), { recursive: true });
++    const held = path.join(outside, "held");
++    await rename(path.join(root, ancestor), held);
++    await symlink(held, path.join(root, ancestor), "dir");
++    await expect(
++      captureExternalTaskArtifacts(root, artifactTask, "operations/native/tasks"),
++    ).rejects.toThrow(/symlink/u);
++    await expect(readFile(path.join(root, ".git/check-count"))).rejects.toMatchObject({
++      code: "ENOENT",
++    });
++  },
++);
++it("hashes artifact symlink targets without traversing them", async () => {
++  const root = await mkGitRepoRoot(),
++    outside = await mkGitRepoRoot();
++  roots.push(root, outside);
++  const taskRoot = path.join(root, "operations/native/tasks", artifactTask);
++  await mkdir(taskRoot, { recursive: true });
++  const target = path.join(outside, "private.txt");
++  await writeFile(target, "unchanged private bytes");
++  await symlink(target, path.join(taskRoot, "linked.txt"));
++  await symlink(outside, path.join(taskRoot, "linked-directory"), "dir");
++  const entries = await captureExternalTaskArtifacts(root, artifactTask, "operations/native/tasks");
++  expect(entries["linked.txt"]).toMatch(
++    new RegExp(`^link:[0-9]+:${createHash("sha256").update(target).digest("hex")}$`, "u"),
++  );
++  expect(Object.keys(entries)).toEqual(["linked-directory", "linked.txt"]);
++  expect(await readFile(target, "utf8")).toBe("unchanged private bytes");
++});
+diff --git a/packages/agentplane/src/commands/task/verification-retry-effect-recovery.ts b/packages/agentplane/src/commands/task/verification-retry-effect-recovery.ts
+new file mode 100644
+index 000000000..6bee57a76
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/verification-retry-effect-recovery.ts
+@@ -0,0 +1,479 @@
++import { createHash } from "node:crypto";
++import { mkdir } from "node:fs/promises";
++import path from "node:path";
++import { z } from "zod";
++import {
++  mergeTaskDoc,
++  parseTaskReadme,
++  renderTaskReadme,
++  taskCentricDigest,
++} from "@agentplaneorg/core/tasks";
++import {
++  digestSupervisorEpisodeValue,
++  validateSupervisorExecutionEpisodeJournal,
++} from "@agentplaneorg/core/schemas";
++import { CliError } from "../../shared/errors.js";
++import { readKernelRecord } from "../../adapters/task-backend/kernel-record.js";
++import {
++  readStableRegularTextNoFollow,
++  writeNewStableRegularFileNoFollow,
++} from "../../shared/stable-file.js";
++import {
++  resolveCommandGitCommonDir,
++  loadCommandContext,
++  taskDataToFrontmatter,
++} from "../shared/task-backend.js";
++import {
++  resolveSupervisorExecutionEpisodePath,
++  tryAcquireSupervisorExecutionLease,
++} from "../shared/supervisor-execution-episode.js";
++import { captureExternalTaskArtifacts } from "./external-agent-task-artifact-baseline.js";
++import { resolveImplementationVerificationTask } from "./external-agent-implementation-recovery.js";
++import {
++  blockingWorkItemCommands,
++  runDirectTaskVerification,
++  renderDirectTaskVerificationDetails,
++} from "./direct-task-verification.js";
++import {
++  observeVerificationRetrySource,
++  verificationRetryContractIdentity,
++} from "./verification-retry-source-proof.js";
++import { prepareVerificationRetryArtifact } from "./direct-task-verification-observation.js";
++import { cmdVerifyParsed } from "./verify-record.js";
++import type { reconcileIntegrationEffect } from "./external-agent-workflow-recovery.js";
++
++const digest = z.string().regex(/^sha256:[a-f0-9]{64}$/u);
++const sha = z.string().regex(/^[a-f0-9]{40}(?:[a-f0-9]{24})?$/u);
++const requestSchema = z.strictObject({
++  schema_version: z.literal(1),
++  kind: z.literal("verification_retry_request"),
++  task_id: z.string().regex(/^[A-Za-z0-9_-]+$/u),
++  repository_identity: digest,
++  kernel_digest: digest,
++  source_sha: sha,
++  head_sha: sha,
++  check_contract_digest: digest,
++  failed_operation_key: digest,
++  failed_checks_digest: digest,
++});
++function refuse(message: string): never {
++  throw new CliError({ code: "E_VALIDATION", message: `Verification retry: ${message}` });
++}
++async function readJson(file: string) {
++  return JSON.parse(
++    await readStableRegularTextNoFollow(file, "verification retry evidence"),
++  ) as unknown;
++}
++async function optionalJson(file: string): Promise<unknown> {
++  try {
++    return await readJson(file);
++  } catch (error) {
++    if ((error as NodeJS.ErrnoException).code === "ENOENT") return null;
++    throw error;
++  }
++}
++
++/** One controller-owned attempt; this path never reopens or rewrites the terminal Kernel. */
++export async function reconcileVerificationRetry(
++  opts: Parameters<typeof reconcileIntegrationEffect>[0],
++) {
++  const parsed = requestSchema.safeParse(await readJson(opts.input_path));
++  if (!parsed.success) refuse("invalid typed request.");
++  const request = parsed.data;
++  const kernel = opts.canonical_record;
++  if (
++    kernel?.aggregate.state !== "COMPLETED" ||
++    request.task_id !== opts.task_id ||
++    kernel.aggregate.id !== opts.task_id ||
++    request.kernel_digest !== kernel.digest ||
++    request.repository_identity !== kernel.repository_identity ||
++    kernel.aggregate.current_plan?.state !== "APPROVED"
++  )
++    refuse("the exact approved terminal Kernel is unavailable or changed.");
++  const route = await opts.decide();
++  const checkout = route.workspace.taskWorktreePath;
++  if (route.task.id !== opts.task_id || route.workflowMode !== "branch_pr" || !checkout)
++    refuse("the authoritative branch task checkout is unavailable.");
++  const command = await loadCommandContext({ cwd: checkout, rootOverride: null });
++  const task = await command.taskBackend.getTask(opts.task_id);
++  const read = readKernelRecord(task, kernel.repository_identity);
++  if (!task || read.kind !== "canonical" || read.record.digest !== kernel.digest)
++    refuse("the controller and owner task records disagree.");
++  const common = await resolveCommandGitCommonDir(command);
++  const journalPath = await resolveSupervisorExecutionEpisodePath({
++    git_root: checkout,
++    common_git_dir: common,
++    task_id: opts.task_id,
++  });
++  const lease = await tryAcquireSupervisorExecutionLease({ journal_path: journalPath });
++  if (!lease) refuse("another supervisor owns the verification window.");
++  try {
++    const originalJournalText = await readStableRegularTextNoFollow(
++      journalPath,
++      "original supervisor journal",
++    );
++    const journal = validateSupervisorExecutionEpisodeJournal(JSON.parse(originalJournalText));
++    const failure = journal.operations.findLast((entry) => entry.effect_ref === "task_verify");
++    const workflow = command.config.paths.workflow_dir;
++    const failedRelative = path.join(workflow, opts.task_id, "supervision", "declared-checks.json");
++    const expectedFailure = {
++      direct_task_operation: "task_verify",
++      result: { verification: "needs_rework", declared_checks: failedRelative },
++    };
++    if (
++      journal.task_id !== opts.task_id ||
++      failure?.operation_key !== request.failed_operation_key ||
++      failure.authority_ref !== "direct-task-supervisor:task_verify" ||
++      failure.status !== "completed" ||
++      failure.result_digest !== digestSupervisorEpisodeValue(expectedFailure)
++    )
++      refuse("the exact retained supervisor-owned failed validation is unproven.");
++    const failedChecks = await readJson(path.join(checkout, failedRelative));
++    const checksSchema = z.object({
++      kind: z.literal("direct_task_declared_checks"),
++      task_id: z.literal(opts.task_id),
++      status: z.literal("failed"),
++      checks: z.array(z.object({ exit_code: z.number().nullable() })).min(1),
++    });
++    if (
++      !checksSchema.safeParse(failedChecks).success ||
++      taskCentricDigest(failedChecks) !== request.failed_checks_digest
++    )
++      refuse("the retained failed check receipt is unavailable or changed.");
++    const verification = await resolveImplementationVerificationTask({
++      command,
++      checkout,
++      task,
++      workflow: "branch_pr",
++    });
++    if (
++      verification.snapshot.evaluated_sha !== request.source_sha ||
++      verificationRetryContractIdentity(verification.task) !== request.check_contract_digest
++    )
++      refuse("source or approved check contract changed.");
++    const definitions = kernel.aggregate.current_plan.work_items.filter((item) => !item.optional);
++    const requiredCommands = definitions.flatMap(
++      (item) =>
++        (item.contract_digest
++          ? kernel.documents?.contracts[item.contract_digest]?.verification_commands
++          : undefined) ?? [],
++    );
++    const roots = definitions.flatMap((item) => item.execution_requirements.scope_roots);
++    const permittedPath = (name: string) =>
++      roots.some((root) => root === "." || name === root || name.startsWith(`${root}/`));
++    if (
++      requiredCommands.length === 0 ||
++      (verification.task.verify ?? []).length === 0 ||
++      verification.task.verify?.some((command) => !requiredCommands.includes(command)) ||
++      verification.snapshot.changed_paths
++        .filter((name) => !verification.snapshot.inherited_paths.includes(name))
++        .some((name) => !permittedPath(name)) ||
++      verification.task.execution_contract?.authority.writable_roots.some(
++        (root) => !permittedPath(root),
++      )
++    )
++      refuse("commands or scope exceed the immutable approved WorkItem contracts.");
++    const key = taskCentricDigest({
++      kernel: kernel.digest,
++      failure: request.failed_operation_key,
++    }).slice(7);
++    const directory = path.join(
++      common,
++      "agentplane",
++      "terminal-verification-retries",
++      opts.task_id,
++      key,
++    );
++    const intentPath = path.join(directory, "intent.json");
++    const preparedPath = path.join(directory, "prepared.json");
++    const resultPath = path.join(directory, "result.json");
++    const requestDigest = taskCentricDigest(request);
++    const sourceOptions = {
++      checkout,
++      task_id: opts.task_id,
++      workflow_dir: workflow,
++      source_sha: request.source_sha,
++      expected_head: request.head_sha,
++      failed_checks_digest: request.failed_checks_digest,
++    };
++    const prefix = path.join(workflow, opts.task_id);
++    const newPaths = [
++      path.join(prefix, "supervision", "verification-runs"),
++      path.join(prefix, "supervision", "verification-retries", key),
++      path.join(prefix, "verification"),
++    ];
++    const modifiedPaths = [path.join(prefix, "README.md")];
++    const finishPrepared = async (raw: unknown) => {
++      const envelope = z
++        .object({
++          payload: z
++            .object({
++              request_digest: z.literal(requestDigest),
++              task: z.unknown(),
++              artifacts: z.record(z.string(), z.string()),
++              checks: z
++                .object({ status: z.literal("passed"), artifact_path: z.string() })
++                .passthrough(),
++              original_review: digest,
++              original_journal: digest,
++            })
++            .passthrough(),
++          digest,
++        })
++        .safeParse(raw);
++      if (!envelope.success || taskCentricDigest(envelope.data.payload) !== envelope.data.digest)
++        refuse("prepared afterimage is invalid.");
++      const prepared = envelope.data.payload;
++      const observed = await command.taskBackend.getTask(opts.task_id);
++      const observedKernel = readKernelRecord(observed, kernel.repository_identity);
++      if (
++        !observed ||
++        taskCentricDigest(observed) !== taskCentricDigest(prepared.task) ||
++        observedKernel.kind !== "canonical" ||
++        observedKernel.record.digest !== kernel.digest ||
++        taskCentricDigest(observed.quality_review ?? null) !== prepared.original_review ||
++        taskCentricDigest(await readJson(journalPath)) !== prepared.original_journal
++      )
++        refuse("the prepared native afterimage is not durably observed; do not rerun checks.");
++      await observeVerificationRetrySource({
++        ...sourceOptions,
++        allowed_new_paths: newPaths,
++        allowed_modified_paths: modifiedPaths,
++      });
++      const artifacts = await captureExternalTaskArtifacts(checkout, opts.task_id, workflow);
++      if (taskCentricDigest(artifacts) !== taskCentricDigest(prepared.artifacts))
++        refuse("the prepared verification artifact afterimage changed.");
++      if (!observed.verification?.updated_at || observed.verification.state !== "ok")
++        refuse("the prepared native verification is not successful.");
++      const finalTask = await command.taskBackend.getTask(opts.task_id);
++      if (taskCentricDigest(finalTask) !== taskCentricDigest(prepared.task))
++        refuse("native Task afterimage changed.");
++      const outcome = {
++        kind: "terminal_verification_retry_result",
++        status: "passed",
++        request_digest: requestDigest,
++        adopted_source_for_verification: {
++          source_sha: request.source_sha,
++          head_sha: request.head_sha,
++        },
++        checks: prepared.checks,
++        task_digest: taskCentricDigest(finalTask),
++        artifacts,
++        original_review: prepared.original_review,
++        original_journal: prepared.original_journal,
++        fresh_evaluator_required: true,
++      };
++      await writeNewStableRegularFileNoFollow(
++        resultPath,
++        `${JSON.stringify({ payload: outcome, digest: taskCentricDigest(outcome) }, null, 2)}\n`,
++        "verification retry receipt",
++      );
++      return outcome;
++    };
++    const intent = await optionalJson(intentPath);
++    if (intent !== null) {
++      if (!z.object({ request_digest: z.literal(requestDigest) }).safeParse(intent).success)
++        refuse("a different request already owns this one-shot retry.");
++      const outcome = await optionalJson(resultPath);
++      if (outcome === null) {
++        const prepared = await optionalJson(preparedPath);
++        if (prepared === null)
++          refuse("the retained attempt has no final receipt; reconcile it without replay.");
++        return {
++          task_id: opts.task_id,
++          replay: true,
++          receipt: resultPath,
++          result: await finishPrepared(prepared),
++        };
++      }
++      const retained = z
++        .object({
++          payload: z
++            .object({
++              request_digest: z.literal(requestDigest),
++              status: z.enum(["passed", "failed"]),
++              artifacts: z.record(z.string(), z.string()),
++              task_digest: digest,
++              original_review: digest,
++              original_journal: digest,
++            })
++            .passthrough(),
++          digest,
++        })
++        .safeParse(outcome);
++      if (!retained.success || taskCentricDigest(retained.data.payload) !== retained.data.digest)
++        refuse("the retained retry receipt changed.");
++      const payload = retained.data.payload;
++      await observeVerificationRetrySource({
++        ...sourceOptions,
++        allowed_new_paths: newPaths,
++        allowed_modified_paths: modifiedPaths,
++      });
++      const current = await command.taskBackend.getTask(opts.task_id);
++      if (
++        taskCentricDigest(current) !== payload.task_digest ||
++        taskCentricDigest(current?.quality_review ?? null) !== payload.original_review ||
++        taskCentricDigest(await readJson(journalPath)) !== payload.original_journal ||
++        taskCentricDigest(await captureExternalTaskArtifacts(checkout, opts.task_id, workflow)) !==
++          taskCentricDigest(payload.artifacts)
++      )
++        refuse("the completed retry afterimage changed.");
++      return { task_id: opts.task_id, replay: true, receipt: resultPath, result: payload };
++    }
++    if (task.verification?.state !== "needs_rework")
++      refuse("the currently retained validation is not failed.");
++    const source = await observeVerificationRetrySource(sourceOptions);
++    await prepareVerificationRetryArtifact(command, opts.task_id, key);
++    const protectedArtifacts = await captureExternalTaskArtifacts(checkout, opts.task_id, workflow);
++    const originalJournal = taskCentricDigest(journal);
++    const originalReview = taskCentricDigest(task.quality_review ?? null);
++    await mkdir(directory, { recursive: true, mode: 0o700 });
++    await writeNewStableRegularFileNoFollow(
++      intentPath,
++      `${JSON.stringify({ kind: "terminal_verification_retry_intent", request_digest: requestDigest, request, source, protected_artifacts: protectedArtifacts, original_review: originalReview, original_journal: originalJournal, original_journal_receipt: originalJournalText, created_at: new Date().toISOString() }, null, 2)}\n`,
++      "verification retry intent",
++    );
++    const assertUnchanged = async () => {
++      await observeVerificationRetrySource({ ...sourceOptions, allowed_new_paths: newPaths });
++      const current = await command.taskBackend.getTask(opts.task_id);
++      const currentKernel = readKernelRecord(current, kernel.repository_identity);
++      if (
++        !current ||
++        currentKernel.kind !== "canonical" ||
++        currentKernel.record.digest !== kernel.digest ||
++        taskCentricDigest(current.quality_review ?? null) !== originalReview ||
++        taskCentricDigest(await readJson(journalPath)) !== originalJournal
++      )
++        refuse("protected Kernel, review or failed journal changed.");
++      const currentVerification = await resolveImplementationVerificationTask({
++        command,
++        checkout,
++        task: current,
++        workflow: "branch_pr",
++      });
++      if (
++        currentVerification.snapshot.evaluated_sha !== request.source_sha ||
++        verificationRetryContractIdentity(currentVerification.task) !==
++          request.check_contract_digest
++      )
++        refuse("source or check contract drifted during retry.");
++      return current;
++    };
++    await assertUnchanged();
++    const checks = await runDirectTaskVerification({
++      command,
++      cwd: checkout,
++      task: verification.task,
++      task_id: opts.task_id,
++      retry_artifact_key: key,
++      additional_commands: blockingWorkItemCommands({
++        checks: requiredCommands.map((command, index) => ({
++          id: `terminal-${String(index)}`,
++          command,
++          required: true,
++        })),
++        criteria: [],
++      }),
++    });
++    await observeVerificationRetrySource({
++      ...sourceOptions,
++      allowed_new_paths: [
++        path.join(workflow, opts.task_id, "supervision", "verification-runs"),
++        path.join(workflow, opts.task_id, "supervision", "verification-retries", key),
++      ],
++    });
++    await assertUnchanged();
++    const afterChecks = await captureExternalTaskArtifacts(checkout, opts.task_id, workflow);
++    for (const [name, value] of Object.entries(protectedArtifacts))
++      if (afterChecks[name] !== value) refuse(`historical artifact changed: ${name}`);
++    if (checks.status !== "passed") {
++      const outcome = {
++        kind: "terminal_verification_retry_result",
++        status: "failed",
++        request_digest: requestDigest,
++        checks,
++        artifacts: afterChecks,
++        task_digest: taskCentricDigest(await command.taskBackend.getTask(opts.task_id)),
++        original_review: originalReview,
++        original_journal: originalJournal,
++      };
++      await writeNewStableRegularFileNoFollow(
++        resultPath,
++        `${JSON.stringify({ payload: outcome, digest: taskCentricDigest(outcome) }, null, 2)}\n`,
++        "verification retry receipt",
++      );
++      return { task_id: opts.task_id, replay: false, receipt: resultPath, result: outcome };
++    }
++    const exitCode = await cmdVerifyParsed({
++      ctx: command,
++      cwd: checkout,
++      taskId: opts.task_id,
++      state: "ok",
++      by: "SUPERVISOR",
++      note: "Verified: admitted terminal retry executed all mandatory checks; fresh EVALUATOR review is required.",
++      details: renderDirectTaskVerificationDetails({
++        task: verification.task,
++        taskId: opts.task_id,
++        workflow: "branch_pr",
++        result: checks,
++      }),
++      verificationSnapshot: verification.snapshot,
++      beforePersist: async ({ current, next }) => {
++        await assertUnchanged();
++        if (taskCentricDigest(current) !== taskCentricDigest(task))
++          refuse("Task changed before prepared persistence.");
++        const nextKernel = readKernelRecord(next, kernel.repository_identity);
++        if (
++          nextKernel.kind !== "canonical" ||
++          nextKernel.record.digest !== kernel.digest ||
++          taskCentricDigest(next.quality_review ?? null) !== originalReview ||
++          next.verification?.state !== "ok"
++        )
++          refuse("prepared verification changes protected native identity.");
++        const artifacts = await captureExternalTaskArtifacts(checkout, opts.task_id, workflow);
++        for (const [name, value] of Object.entries(protectedArtifacts))
++          if (artifacts[name] !== value)
++            refuse(`protected evidence changed before persistence: ${name}`);
++        const readme = parseTaskReadme(
++          await readStableRegularTextNoFollow(
++            path.join(checkout, prefix, "README.md"),
++            "retry Task projection",
++          ),
++        );
++        const rendered = renderTaskReadme(
++          { ...readme.frontmatter, ...taskDataToFrontmatter(next) },
++          mergeTaskDoc(readme.body, next.doc ?? ""),
++        );
++        const bytes = rendered.endsWith("\n") ? rendered : `${rendered}\n`;
++        const mode = artifacts["README.md"]?.split(":")[1];
++        if (!mode) refuse("the prepared Task README is unavailable.");
++        artifacts["README.md"] = `file:${mode}:${createHash("sha256").update(bytes).digest("hex")}`;
++        const prepared = {
++          request_digest: requestDigest,
++          task: next,
++          artifacts,
++          checks,
++          original_review: originalReview,
++          original_journal: originalJournal,
++        };
++        await writeNewStableRegularFileNoFollow(
++          preparedPath,
++          `${JSON.stringify({ payload: prepared, digest: taskCentricDigest(prepared) }, null, 2)}\n`,
++          "prepared verification retry afterimage",
++        );
++      },
++      allowCanonicalProjection: true,
++      projectionPolicy: "task-only",
++      quiet: true,
++    });
++    if (exitCode !== 0) refuse("native verification persistence failed.");
++    return {
++      task_id: opts.task_id,
++      replay: false,
++      receipt: resultPath,
++      result: await finishPrepared(await readJson(preparedPath)),
++    };
++  } finally {
++    await lease.release();
++  }
++}
+diff --git a/packages/agentplane/src/commands/task/verification-retry-source-proof.test.ts b/packages/agentplane/src/commands/task/verification-retry-source-proof.test.ts
+new file mode 100644
+index 000000000..d1a262697
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/verification-retry-source-proof.test.ts
+@@ -0,0 +1,145 @@
++import { execFile } from "node:child_process";
++import { mkdir, rm, symlink, writeFile } from "node:fs/promises";
++import path from "node:path";
++import { promisify } from "node:util";
++import { mkGitRepoRoot } from "@agentplane/testkit";
++import { afterEach, expect, it } from "vitest";
++import { observeVerificationRetrySource } from "./verification-retry-source-proof.js";
++const exec = promisify(execFile);
++const roots: string[] = [];
++afterEach(async () => {
++  for (const root of roots.splice(0)) await rm(root, { recursive: true, force: true });
++});
++async function commit(root: string, name: string, body: string) {
++  await mkdir(path.dirname(path.join(root, name)), { recursive: true });
++  await writeFile(path.join(root, name), body);
++  await exec("git", ["add", "--", name], { cwd: root });
++  await exec("git", ["commit", "-m", "source proof fixture"], { cwd: root });
++  const observed = await exec("git", ["rev-parse", "HEAD"], { cwd: root });
++  return observed.stdout.trim();
++}
++it("accepts only managed descendants and rejects same-size source changes", async () => {
++  const root = await mkGitRepoRoot();
++  roots.push(root);
++  const source = await commit(root, "source.txt", "one");
++  const head = await commit(root, ".agentplane/tasks/T1/quality/review.json", "{}");
++  const opts = {
++    checkout: root,
++    task_id: "T1",
++    workflow_dir: ".agentplane/tasks",
++    source_sha: source,
++    expected_head: head,
++  };
++  const proof = await observeVerificationRetrySource(opts);
++  expect(proof.source_sha).toBe(source);
++  await writeFile(path.join(root, "source.txt"), "two");
++  await expect(observeVerificationRetrySource(opts)).rejects.toThrow("clean source");
++  const changed = await commit(root, "source.txt", "two");
++  await expect(observeVerificationRetrySource({ ...opts, expected_head: changed })).rejects.toThrow(
++    "non-managed",
++  );
++});
++it("rejects foreign task metadata, unexpected untracked paths and head drift", async () => {
++  const root = await mkGitRepoRoot();
++  roots.push(root);
++  const source = await commit(root, "source.txt", "one");
++  const opts = {
++    checkout: root,
++    task_id: "T1",
++    workflow_dir: ".agentplane/tasks",
++    source_sha: source,
++    expected_head: source,
++  };
++  await writeFile(path.join(root, "untracked.txt"), "unknown");
++  await expect(observeVerificationRetrySource(opts)).rejects.toThrow("clean source");
++  await rm(path.join(root, "untracked.txt"));
++  const head = await commit(root, ".agentplane/tasks/T2/quality/review.json", "{}");
++  await expect(observeVerificationRetrySource(opts)).rejects.toThrow("ancestry changed");
++  await expect(observeVerificationRetrySource({ ...opts, expected_head: head })).rejects.toThrow(
++    "non-managed",
++  );
++});
++
++it("refuses rewritten historical receipts even inside managed task paths", async () => {
++  const root = await mkGitRepoRoot();
++  roots.push(root);
++  const name = ".agentplane/tasks/T1/quality/old-eval.json";
++  const source = await commit(root, name, '{"status":"failed"}');
++  const head = await commit(root, name, '{"status":"passed"}');
++  await expect(
++    observeVerificationRetrySource({
++      checkout: root,
++      task_id: "T1",
++      workflow_dir: ".agentplane/tasks",
++      source_sha: source,
++      expected_head: head,
++    }),
++  ).rejects.toThrow("rewritten historical evidence");
++});
++it("refuses a newly committed managed symlink", async () => {
++  const root = await mkGitRepoRoot();
++  roots.push(root);
++  const source = await commit(root, "source.txt", "one");
++  const name = ".agentplane/tasks/T1/quality/eval.json";
++  await mkdir(path.dirname(path.join(root, name)), { recursive: true });
++  await symlink("../../../../source.txt", path.join(root, name));
++  await exec("git", ["add", "--", name], { cwd: root });
++  await exec("git", ["commit", "-m", "unsafe artifact fixture"], { cwd: root });
++  const observed = await exec("git", ["rev-parse", "HEAD"], { cwd: root });
++  const head = observed.stdout.trim();
++  await expect(
++    observeVerificationRetrySource({
++      checkout: root,
++      task_id: "T1",
++      workflow_dir: ".agentplane/tasks",
++      source_sha: source,
++      expected_head: head,
++    }),
++  ).rejects.toThrow("regular Git artifact");
++});
++it("does not interpret an arbitrary PR document rewrite as a native projection", async () => {
++  const root = await mkGitRepoRoot();
++  roots.push(root);
++  const name = ".agentplane/tasks/T1/pr/review.md";
++  const source = await commit(root, name, "old native review");
++  const head = await commit(root, name, "invented review");
++  await expect(
++    observeVerificationRetrySource({
++      checkout: root,
++      task_id: "T1",
++      workflow_dir: ".agentplane/tasks",
++      source_sha: source,
++      expected_head: head,
++    }),
++  ).rejects.toThrow();
++});
++it("allows only the authenticated failed receipt projection", async () => {
++  const { taskCentricDigest } = await import("@agentplaneorg/core/tasks");
++  const root = await mkGitRepoRoot();
++  roots.push(root);
++  const name = ".agentplane/tasks/T1/supervision/declared-checks.json";
++  const source = await commit(root, name, '{"status":"old"}');
++  const receipt = { status: "failed" };
++  const head = await commit(root, name, JSON.stringify(receipt));
++  const opts = {
++    checkout: root,
++    task_id: "T1",
++    workflow_dir: ".agentplane/tasks",
++    source_sha: source,
++    expected_head: head,
++  };
++  await expect(observeVerificationRetrySource(opts)).rejects.toThrow(
++    "rewritten historical evidence",
++  );
++  const proof = await observeVerificationRetrySource({
++    ...opts,
++    failed_checks_digest: taskCentricDigest(receipt),
++  });
++  expect(proof.head_sha).toBe(head);
++  await expect(
++    observeVerificationRetrySource({
++      ...opts,
++      failed_checks_digest: taskCentricDigest({ status: "passed" }),
++    }),
++  ).rejects.toThrow("failed verification projection changed");
++});
+diff --git a/packages/agentplane/src/commands/task/verification-retry-source-proof.ts b/packages/agentplane/src/commands/task/verification-retry-source-proof.ts
+new file mode 100644
+index 000000000..11f54258d
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/verification-retry-source-proof.ts
+@@ -0,0 +1,276 @@
++import {
++  gitCurrentBranch,
++  gitProofEnv,
++  gitDiffNames,
++  gitIsAncestor,
++  gitRevParse,
++  gitShowFile,
++} from "@agentplaneorg/core/git";
++import { parseTaskReadme, taskCentricDigest } from "@agentplaneorg/core/tasks";
++import path from "node:path";
++import { runProcess } from "@agentplaneorg/core/process";
++import {
++  validateTaskReadmeFrontmatter,
++  withTaskReadmeFrontmatterDefaults,
++} from "@agentplaneorg/core/schemas";
++import type { TaskRecord } from "@agentplaneorg/core/tasks";
++import { taskRecordToData } from "../../backends/task-backend/shared.js";
++import { readStableRegularTextNoFollow } from "../../shared/stable-file.js";
++import { readPrHandoffNotes } from "../pr/internal/note-store.js";
++import {
++  renderGithubPrBody,
++  renderPrReviewDocument,
++  renderPrAutoSummary,
++} from "../pr/internal/review-template.js";
++import {
++  buildVerifiedPrMeta,
++  parsePrMeta,
++  resolvePrBatchIncludedTaskIds,
++} from "../shared/pr-meta.js";
++import { digestPrDiffstatText } from "../pr/internal/freshness.js";
++import { isRecord } from "../../shared/guards.js";
++import type { TaskData } from "../../backends/task-backend.js";
++import { readDirectRepositoryStatus } from "./direct-task-finalization.js";
++import { taskReadmesPreserveRecoveryContract } from "./external-agent-implementation-recovery.js";
++import { isManagedTaskArtifact } from "../shared/quality-review-target.js";
++
++async function gitRegularFile(
++  checkout: string,
++  ref: string,
++  name: string,
++  optional = false,
++): Promise<string | null> {
++  const observed = await runProcess({
++    command: "git",
++    args: ["ls-tree", "-z", ref, "--", name],
++    cwd: checkout,
++    env: gitProofEnv(),
++    reject: false,
++  });
++  if (observed.exitCode !== 0)
++    throw new Error("Verification retry cannot observe the Git artifact identity.");
++  if (!observed.stdout && optional) return null;
++  if (
++    !/^(100644|100755) blob [a-f0-9]{40,64}\t/u.test(observed.stdout) ||
++    !observed.stdout.endsWith(`\t${name}\0`)
++  )
++    throw new Error("Verification retry requires a regular Git artifact.");
++  return await gitShowFile(checkout, ref, name);
++}
++
++/** Pin the approved command and scope inputs, excluding mutable check observations. */
++export function verificationRetryContractIdentity(task: TaskData): string {
++  return taskCentricDigest({
++    verify: task.verify ?? [],
++    task_kind: task.task_kind,
++    mutation_scope: task.mutation_scope,
++    execution_route: task.execution_route,
++    declaration: task.execution_contract?.declaration,
++    authority: task.execution_contract?.authority,
++    verification: task.execution_contract?.verification.contract,
++  });
++}
++
++/** Reproduce the native verification projection instead of trusting a metadata path. */
++async function auditedPrVerificationProjection(opts: {
++  checkout: string;
++  taskId: string;
++  prefix: string;
++  head: string;
++  before: string;
++  after: string;
++}) {
++  parsePrMeta(opts.before, opts.taskId);
++  parsePrMeta(opts.after, opts.taskId);
++  const before: unknown = JSON.parse(opts.before);
++  const after: unknown = JSON.parse(opts.after);
++  if (!isRecord(before) || !isRecord(after)) return false;
++  const readmeText = await gitRegularFile(opts.checkout, opts.head, `${opts.prefix}README.md`);
++  const diffstat = await gitRegularFile(opts.checkout, opts.head, `${opts.prefix}pr/diffstat.txt`);
++  if (!readmeText || diffstat === null) return false;
++  const verification = parseTaskReadme(readmeText).frontmatter.verification;
++  if (
++    !isRecord(verification) ||
++    !["ok", "needs_rework"].includes(String(verification.state)) ||
++    typeof verification.updated_at !== "string"
++  )
++    return false;
++  const updated = Date.parse(String(after.updated_at));
++  const previous = Date.parse(String(before.updated_at));
++  if (
++    !Number.isFinite(updated) ||
++    !Number.isFinite(previous) ||
++    updated < previous ||
++    updated > Date.now() ||
++    after.last_verified_at !== verification.updated_at ||
++    after.diffstat_sha256 !== digestPrDiffstatText(diffstat)
++  )
++    return false;
++  const branch = await gitCurrentBranch(opts.checkout);
++  const projected = buildVerifiedPrMeta({
++    meta: { ...before, branch, updated_at: after.updated_at } as Parameters<
++      typeof buildVerifiedPrMeta
++    >[0]["meta"],
++    at: verification.updated_at,
++    state: verification.state === "ok" ? "pass" : "fail",
++  });
++  return taskCentricDigest(projected) === taskCentricDigest(after);
++}
++
++async function auditedPrDocument(opts: {
++  checkout: string;
++  taskId: string;
++  prefix: string;
++  head: string;
++  name: string;
++  after: string;
++}) {
++  const readme = await gitRegularFile(opts.checkout, opts.head, `${opts.prefix}README.md`);
++  const metaText = await gitRegularFile(opts.checkout, opts.head, `${opts.prefix}pr/meta.json`);
++  const rawDiff = await gitRegularFile(opts.checkout, opts.head, `${opts.prefix}pr/diffstat.txt`);
++  if (!readme || !metaText || rawDiff === null) return false;
++  const parsed = parseTaskReadme(readme);
++  const frontmatter = validateTaskReadmeFrontmatter(
++    withTaskReadmeFrontmatterDefaults(parsed.frontmatter),
++  );
++  const task = taskRecordToData({
++    id: opts.taskId,
++    frontmatter: frontmatter as unknown as TaskRecord["frontmatter"],
++    body: parsed.body,
++    readmePath: path.join(opts.checkout, opts.prefix, "README.md"),
++  });
++  const meta = parsePrMeta(metaText, opts.taskId);
++  const diffstat = rawDiff.endsWith("\n") ? rawDiff.slice(0, -1) : rawDiff;
++  if (meta.diffstat_sha256 !== digestPrDiffstatText(rawDiff)) return false;
++  const notesPath = path.join(opts.checkout, opts.prefix, "pr/notes.jsonl");
++  const committedNotes = await gitRegularFile(
++    opts.checkout,
++    opts.head,
++    `${opts.prefix}pr/notes.jsonl`,
++    true,
++  );
++  let liveNotes: string | null;
++  try {
++    liveNotes = await readStableRegularTextNoFollow(notesPath, "retry native notes");
++  } catch (error) {
++    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
++    liveNotes = null;
++  }
++  if (committedNotes !== liveNotes) return false;
++  const handoffNotes = await readPrHandoffNotes(notesPath);
++  const branch = await gitCurrentBranch(opts.checkout);
++  const autoSummary = renderPrAutoSummary({ updatedAt: meta.updated_at, branch, diffstat });
++  const common = {
++    task,
++    relatedTaskIds: resolvePrBatchIncludedTaskIds(meta),
++    handoffNotes,
++    autoSummary,
++  };
++  const rendered =
++    opts.name === "pr/review.md"
++      ? renderPrReviewDocument({ ...common, createdAt: meta.created_at, branch })
++      : renderGithubPrBody(common);
++  return rendered === opts.after;
++}
++
++/** Only the current task's managed metadata may descend from the selected source. */
++export async function observeVerificationRetrySource(opts: {
++  checkout: string;
++  task_id: string;
++  workflow_dir: string;
++  source_sha: string;
++  expected_head: string;
++  failed_checks_digest?: string;
++  allowed_new_paths?: readonly string[];
++  allowed_modified_paths?: readonly string[];
++}) {
++  const sha = /^[a-f0-9]{40}(?:[a-f0-9]{24})?$/u;
++  if (!sha.test(opts.source_sha) || !sha.test(opts.expected_head))
++    throw new Error("Verification retry requires exact source and head identities.");
++  const head = await gitRevParse(opts.checkout, ["HEAD"]);
++  if (head !== opts.expected_head || !(await gitIsAncestor(opts.checkout, opts.source_sha, head)))
++    throw new Error("Verification retry source ancestry changed.");
++  const prefix = `${opts.workflow_dir.replaceAll("\\", "/").replace(/\/+$/u, "")}/${opts.task_id}/`;
++  const changed = await gitDiffNames(opts.checkout, opts.source_sha, head, { range: "two-dot" });
++  if (
++    changed.some(
++      (name) => !name.startsWith(prefix) || !isManagedTaskArtifact(name.slice(prefix.length)),
++    )
++  )
++    throw new Error("Verification retry descendant contains non-managed source changes.");
++  for (const name of changed) {
++    if (/[\r\n\0]/u.test(name)) throw new Error("Unsafe verification retry artifact name.");
++    await gitRegularFile(opts.checkout, head, name);
++    const before = await gitRegularFile(opts.checkout, opts.source_sha, name, true);
++    if (before === null) continue;
++    const relative = name.slice(prefix.length);
++    if (relative === "README.md") {
++      const after = await gitRegularFile(opts.checkout, head, name);
++      if (!after || !taskReadmesPreserveRecoveryContract(before, after, opts.source_sha))
++        throw new Error("Verification retry metadata changed the task contract.");
++    } else if (relative === "pr/meta.json") {
++      const after = await gitRegularFile(opts.checkout, head, name);
++      if (
++        !after ||
++        !(await auditedPrVerificationProjection({
++          checkout: opts.checkout,
++          taskId: opts.task_id,
++          prefix,
++          head,
++          before,
++          after,
++        }))
++      )
++        throw new Error("Verification retry PR metadata is not an audited native projection.");
++    } else if (["pr/github-body.md", "pr/review.md"].includes(relative)) {
++      const after = await gitRegularFile(opts.checkout, head, name);
++      if (
++        !after ||
++        !(await auditedPrDocument({
++          checkout: opts.checkout,
++          taskId: opts.task_id,
++          prefix,
++          head,
++          name: relative,
++          after,
++        }))
++      )
++        throw new Error("Verification retry document is not an audited native projection.");
++    } else if (relative === "supervision/declared-checks.json" && opts.failed_checks_digest) {
++      const after = await gitRegularFile(opts.checkout, head, name);
++      if (!after || taskCentricDigest(JSON.parse(after)) !== opts.failed_checks_digest)
++        throw new Error("Retained failed verification projection changed.");
++    } else {
++      throw new Error("Verification retry would accept rewritten historical evidence.");
++    }
++  }
++  const status = await readDirectRepositoryStatus(opts.checkout);
++  if (
++    !status ||
++    status.lines.some((line) => {
++      const name = line.slice(3);
++      // Do not reinterpret renames, quoted paths, ignored source or arbitrary task metadata.
++      return !(
++        (line.startsWith("??") &&
++          (opts.allowed_new_paths ?? []).some(
++            (allowed) => name === allowed || name.startsWith(`${allowed}/`),
++          )) ||
++        (line.startsWith(" M") && (opts.allowed_modified_paths ?? []).includes(name))
++      );
++    })
++  )
++    throw new Error("Verification retry requires a clean source and index.");
++  if ((await gitRevParse(opts.checkout, ["HEAD"])) !== head)
++    throw new Error("Verification retry head changed during observation.");
++  return {
++    kind: "adopted_source_for_verification" as const,
++    source_sha: opts.source_sha,
++    head_sha: head,
++    metadata_paths: changed.toSorted(),
++    digest: taskCentricDigest({
++      source_sha: opts.source_sha,
++      head_sha: head,
++      metadata_paths: changed.toSorted(),
++    }),
++  };
++}
+diff --git a/packages/agentplane/src/commands/task/verify-record-execute.ts b/packages/agentplane/src/commands/task/verify-record-execute.ts
+index 23c73ff18..995b076f1 100644
+--- a/packages/agentplane/src/commands/task/verify-record-execute.ts
++++ b/packages/agentplane/src/commands/task/verify-record-execute.ts
+@@ -6,12 +6,7 @@ import { mkdir, rm } from "node:fs/promises";
+ import path from "node:path";
+ import { gitRevParse } from "@agentplaneorg/core/git";
+ 
+-import {
+-  canonicalizeJson,
+-  taskCentricAggregateFromExtensions,
+-  taskExecutionBaseFromExtensions,
+-  withTaskCentricAggregate,
+-} from "@agentplaneorg/core/tasks";
++import { canonicalizeJson } from "@agentplaneorg/core/tasks";
+ 
+ import { mapBackendError } from "../../cli/error-map.js";
+ import { backendNotSupportedMessage, infoMessage, successMessage } from "../../cli/output.js";
+@@ -74,6 +69,7 @@ import {
+   appendDecisionContextReference,
+ } from "./verify-record-references.js";
+ import { syncRecordedVerificationArtifacts } from "./verify-record-pr-artifacts.js";
++import { projectVerificationExtensions } from "./verify-record-terminal-projection.js";
+ 
+ export { syncRecordedVerificationArtifacts } from "./verify-record-pr-artifacts.js";
+ 
+@@ -118,6 +114,7 @@ async function recordVerificationResult(opts: {
+   verificationSnapshot?: ExecuteVerifyRecordCommandOptions["verificationSnapshot"];
+   beforePersist?: ExecuteVerifyRecordCommandOptions["beforePersist"];
+   allowCanonicalProjection?: ExecuteVerifyRecordCommandOptions["allowCanonicalProjection"];
++  projectionPolicy?: ExecuteVerifyRecordCommandOptions["projectionPolicy"];
+ }): Promise<void> {
+   const initialCtx =
+     opts.ctx ??
+@@ -400,34 +397,11 @@ async function recordVerificationResult(opts: {
+           id: "verification-record",
+           result: opts.state === "ok" ? "pass" : "fail",
+         });
+-        const previousExecutionBase = taskExecutionBaseFromExtensions(current.extensions);
+-        const preserveExecutionSource =
+-          previousExecutionBase !== null &&
+-          previousExecutionBase.repository_identity !== null &&
+-          previousExecutionBase.base_ref === verificationExecutionContext.base_ref &&
+-          previousExecutionBase.base_sha === verificationExecutionContext.base_sha &&
+-          previousExecutionBase.source !== "legacy";
+-        let nextExtensions: Record<string, unknown> = {
+-          ...current.extensions,
+-          task_execution_context: {
+-            schema_version: 1,
+-            base_ref: verificationExecutionContext.base_ref,
+-            base_sha: verificationExecutionContext.base_sha,
+-            repository_identity: previousExecutionBase?.repository_identity ?? null,
+-            // Provenance belongs to the frozen identity, not a newly resolved verification base.
+-            ...(preserveExecutionSource ? { source: previousExecutionBase.source } : {}),
+-          },
+-        };
+-        if (opts.state !== "ok") {
+-          Reflect.deleteProperty(nextExtensions, "implementation_commit");
+-          const aggregate = taskCentricAggregateFromExtensions(nextExtensions);
+-          if (aggregate?.lifecycle === "COMPLETED") {
+-            nextExtensions = withTaskCentricAggregate(nextExtensions, {
+-              ...aggregate,
+-              lifecycle: "ACTIVE",
+-            });
+-          }
+-        }
++        const nextExtensions = projectVerificationExtensions({
++          task: current,
++          execution: verificationExecutionContext,
++          state: opts.state,
++        });
+         const reconciledContract = reconcileVerificationExecutionContract({
+           contract: {
+             ...observedExecutionContract,
+@@ -507,7 +481,8 @@ async function recordVerificationResult(opts: {
+     throw error;
+   }
+ 
+-  if (workflowMode === "branch_pr") await syncRecordedVerificationArtifacts({ ...opts, ctx, at });
++  if (workflowMode === "branch_pr" && opts.projectionPolicy !== "task-only")
++    await syncRecordedVerificationArtifacts({ ...opts, ctx, at });
+ 
+   let incidentSummary: string | null = null;
+   if (opts.collectIncidents === true) {
+@@ -589,6 +564,7 @@ export async function executeVerifyRecordCommand(
+       verificationSnapshot: opts.verificationSnapshot,
+       beforePersist: opts.beforePersist,
+       allowCanonicalProjection: opts.allowCanonicalProjection,
++      projectionPolicy: opts.projectionPolicy,
+     });
+     return 0;
+   } catch (err) {
+diff --git a/packages/agentplane/src/commands/task/verify-record-terminal-projection.ts b/packages/agentplane/src/commands/task/verify-record-terminal-projection.ts
+new file mode 100644
+index 000000000..cb28e8b96
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/verify-record-terminal-projection.ts
+@@ -0,0 +1,44 @@
++import {
++  taskCentricAggregateFromExtensions,
++  taskExecutionBaseFromExtensions,
++  withTaskCentricAggregate,
++} from "@agentplaneorg/core/tasks";
++import type { TaskData } from "../../backends/task-backend.js";
++import type { resolveTaskExecutionContext } from "../../runtime/task-execution-context/index.js";
++import type { VerifyState } from "./verify-record.types.js";
++
++export function projectVerificationExtensions(opts: {
++  task: TaskData;
++  execution: Pick<Awaited<ReturnType<typeof resolveTaskExecutionContext>>, "base_ref" | "base_sha">;
++  state: VerifyState;
++}): Record<string, unknown> {
++  const previousExecutionBase = taskExecutionBaseFromExtensions(opts.task.extensions);
++  const preserveExecutionSource =
++    previousExecutionBase !== null &&
++    previousExecutionBase.repository_identity !== null &&
++    previousExecutionBase.base_ref === opts.execution.base_ref &&
++    previousExecutionBase.base_sha === opts.execution.base_sha &&
++    previousExecutionBase.source !== "legacy";
++  let extensions: Record<string, unknown> = {
++    ...opts.task.extensions,
++    task_execution_context: {
++      schema_version: 1,
++      base_ref: opts.execution.base_ref,
++      base_sha: opts.execution.base_sha,
++      repository_identity: previousExecutionBase?.repository_identity ?? null,
++      // Provenance belongs to the frozen identity, not a newly resolved verification base.
++      ...(preserveExecutionSource ? { source: previousExecutionBase.source } : {}),
++    },
++  };
++  if (opts.state !== "ok") {
++    Reflect.deleteProperty(extensions, "implementation_commit");
++    const aggregate = taskCentricAggregateFromExtensions(extensions);
++    if (aggregate?.lifecycle === "COMPLETED") {
++      extensions = withTaskCentricAggregate(extensions, {
++        ...aggregate,
++        lifecycle: "ACTIVE",
++      });
++    }
++  }
++  return extensions;
++}
+diff --git a/packages/agentplane/src/commands/task/verify-record.ts b/packages/agentplane/src/commands/task/verify-record.ts
+index 61d3b11a4..a9605c098 100644
+--- a/packages/agentplane/src/commands/task/verify-record.ts
++++ b/packages/agentplane/src/commands/task/verify-record.ts
+@@ -140,6 +140,8 @@ export async function cmdVerifyParsed(opts: {
+   verificationSnapshot?: VerificationSnapshot;
+   beforePersist?: PreparedTaskMutationObserver;
+   allowCanonicalProjection?: boolean;
++  /** Internal controller policy. This is not a CLI flag or a persisted Task setting. */
++  projectionPolicy?: "task-only";
+ }): Promise<number> {
+   return await executeVerifyRecordCommand({
+     ...opts,
+diff --git a/packages/agentplane/src/commands/task/verify-record.types.ts b/packages/agentplane/src/commands/task/verify-record.types.ts
+index eaa06d626..5f9009996 100644
+--- a/packages/agentplane/src/commands/task/verify-record.types.ts
++++ b/packages/agentplane/src/commands/task/verify-record.types.ts
+@@ -53,4 +53,6 @@ export type ExecuteVerifyRecordCommandOptions = {
+   verificationSnapshot?: VerificationSnapshot;
+   beforePersist?: PreparedTaskMutationObserver;
+   allowCanonicalProjection?: boolean;
++  /** Internal controller policy. This is not a CLI flag or a persisted Task setting. */
++  projectionPolicy?: "task-only";
+ };
+diff --git a/packages/agentplane/src/commands/task/workflow-effect-recovery.ts b/packages/agentplane/src/commands/task/workflow-effect-recovery.ts
+index 80b0b1086..9e6147ed4 100644
+--- a/packages/agentplane/src/commands/task/workflow-effect-recovery.ts
++++ b/packages/agentplane/src/commands/task/workflow-effect-recovery.ts
+@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
+ 
+ import { CliError } from "../../shared/errors.js";
+ import { reconcileIntegrationEffect } from "./external-agent-workflow-recovery.js";
++import { reconcileVerificationRetry } from "./verification-retry-effect-recovery.js";
+ import { reconcileProviderUpdateEffect } from "./provider-update-effect-recovery.js";
+ 
+ export async function reconcileWorkflowEffect(
+@@ -14,6 +15,7 @@ export async function reconcileWorkflowEffect(
+   } catch {
+     throw new CliError({ code: "E_VALIDATION", message: "Invalid workflow recovery input." });
+   }
++  if (kind === "verification_retry_request") return await reconcileVerificationRetry(opts);
+   if (kind === "integration_effect_resolution") return await reconcileIntegrationEffect(opts);
+   if (kind === "provider_update_branch_effect_resolution") {
+     return await reconcileProviderUpdateEffect(opts);

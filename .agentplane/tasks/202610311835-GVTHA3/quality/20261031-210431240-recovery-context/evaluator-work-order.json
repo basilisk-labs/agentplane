@@ -1,0 +1,123 @@
+{
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202610311835-GVTHA3-678989d1267c0a470290e880",
+  "prepared_at": "2026-10-31T21:04:31.240Z",
+  "task": {
+    "id": "202610311835-GVTHA3",
+    "revision": 21,
+    "objective": "Deliver terminal verification retry from current canonical main\n\nThe user authorized all eight SB recovery items, native code fixes, PR/merge, deployment and live acceptance while preserving data, credentials and runtime guards. Deliver the already approved terminal verification retry feature from current canonical main f89d603f7fa9b70bca5896fef42212c4c1590fe8. The reviewed candidate is the exact 13-source-file diff from that base to 7e8a77981dd9ab67ac9f2771988e613017306831. Preserve original VPB Task 202610280840-VPBGBK, immutable completed Kernel 43c0045943740ec27078f9b25cf0e9a5168f011e6c2e01a1a712f0812b5405df, PR6957, failed native run015 and all source evidence. The old branch imports canonical Task artifacts relative to its older frozen base and the ownership guard refuses publication. Do not relax that guard, rebuild or reset the old branch, include unrelated Tasks in a fake batch, copy protected proofs, or assign a new result to the old Task. This is a genuine current-main implementation Task with its own source diff, tests, review and publication. Import source code only. Keep one typed verification_retry_request through the existing public task advance workflow recovery. Authenticate exact repository, approved completed Kernel and command contracts, source or audited metadata descendant, and retained real supervisor failure. Execute all mandatory real checks once under the existing lease. Preserve old Kernel, original failed journal, prior EVAL, PR artifacts and receipts. Reconcile interruption from exact durable before/afterimages. Refuse unknown outcomes, duplicate execution, source/command/scope drift, and provider or frozen-base guard changes. Require a fresh EVALUATOR after actual native success. Keep default and configured workflow directories, containment and symlink guards. Address the actual merged-candidate hotspots failure: verify-record-execute.ts has 602 lines against the existing 600-line limit. Do not waive budgets. Investigate the full-suite kernel-bookkeeping body-file cold-read readback_mismatch without weakening its exact CR/LF, two-write or duplicate-replay checks. Independent canonical and merged focused tests passed4 each, and related full-config tests passed60; those diagnostics are not native acceptance. Use full native CI and the current source review before canonical protected PR/merge. Do not modify Factory, SB runtime, credentials, global files, old worktrees, branches or archives. Native retirement of four historical Factory intents is a separate pending user scope decision and is excluded.",
+    "acceptance_criteria": [
+      "bun run ci:local:full",
+      "bun run test:fast packages/agentplane/src/commands/task/verification-retry-effect-recovery.test.ts packages/agentplane/src/commands/task/verification-retry-source-proof.test.ts packages/agentplane/src/commands/task/direct-task-verification.observability.test.ts packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts",
+      "bun run test:project cli-core packages/agentplane/src/cli/run-cli.core.workflow-recovery.verification-retry.test.ts",
+      "- In scope: The user authorized all eight SB recovery items, native code fixes, PR/merge, deployment and live acceptance while preserving data, credentials and runtime guards. Deliver the already approved terminal verification retry feature from current canonical main f89d603f7fa9b70bca5896fef42212c4c1590fe8. The reviewed candidate is the exact 13-source-file diff from that base to 7e8a77981dd9ab67ac9f2771988e613017306831. Preserve original VPB Task 202610280840-VPBGBK, immutable completed Kernel 43c0045943740ec27078f9b25cf0e9a5168f011e6c2e01a1a712f0812b5405df, PR6957, failed native run015 and all source evidence. The old branch imports canonical Task artifacts relative to its older frozen base and the ownership guard refuses publication. Do not relax that guard, rebuild or reset the old branch, include unrelated Tasks in a fake batch, copy protected proofs, or assign a new result to the old Task. This is a genuine current-main implementation Task with its own source diff, tests, review and publication. Import source code only. Keep one typed verification_retry_request through the existing public task advance workflow recovery. Authenticate exact repository, approved completed Kernel and command contracts, source or audited metadata descendant, and retained real supervisor failure. Execute all mandatory real checks once under the existing lease. Preserve old Kernel, original failed journal, prior EVAL, PR artifacts and receipts. Reconcile interruption from exact durable before/afterimages. Refuse unknown outcomes, duplicate execution, source/command/scope drift, and provider or frozen-base guard changes. Require a fresh EVALUATOR after actual native success. Keep default and configured workflow directories, containment and symlink guards. Address the actual merged-candidate hotspots failure: verify-record-execute.ts has 602 lines against the existing 600-line limit. Do not waive budgets. Investigate the full-suite kernel-bookkeeping body-file cold-read readback_mismatch without weakening its exact CR/LF, two-write or duplicate-replay checks. Independent canonical and merged focused tests passed4 each, and related full-config tests passed60; those diagnostics are not native acceptance. Use full native CI and the current source review before canonical protected PR/merge. Do not modify Factory, SB runtime, credentials, global files, old worktrees, branches or archives. Native retirement of four historical Factory intents is a separate pending user scope decision and is excluded.\n- Out of scope: unrelated refactors not required for \"Deliver terminal verification retry from current canonical main\".",
+      "1. Execute approved WorkItem deliver-current-main-terminal-retry.",
+      "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun run ci:local:full`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run test:fast packages/agentplane/src/commands/task/verification-retry-effect-recovery.test.ts packages/agentplane/src/commands/task/verification-retry-source-proof.test.ts packages/agentplane/src/commands/task/direct-task-verification.observability.test.ts packages/agentplane/src/commands/task/kernel-bookkeeping.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Run `bun run test:project cli-core packages/agentplane/src/cli/run-cli.core.workflow-recovery.verification-retry.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.\n4. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings."
+    ]
+  },
+  "evaluated_sha": "78e3cdcc5b6155f7f2efdbb66e7b0a75adfad1b8",
+  "diff_base_sha": "f89d603f7fa9b70bca5896fef42212c4c1590fe8",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "knowledge_request",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "packet": {
+    "manifest_path": ".agentplane/tasks/202610311835-GVTHA3/quality/20261031-210431240-recovery-context/evaluator-evidence-manifest.json",
+    "manifest_sha256": "sha256:213134bdf1ceb279a04a970efe1927a478f31e46ab19ad9b351faeecfdffa434",
+    "prompt_path": ".agentplane/tasks/202610311835-GVTHA3/quality/objects/sha256/23cfac5c3a394051eb543b0ad6c6cdcf4ad076d57f123f6cd3d1529aaf667796.md",
+    "result_schema_path": ".agentplane/tasks/202610311835-GVTHA3/quality/objects/sha256/9037cdf98253e70333ede9358d360264a85ee905be64a8723bbdd4ca71e02d4a.json"
+  },
+  "schema_version": 2,
+  "review_identity": {
+    "schema_version": 1,
+    "kind": "agentplane.native_quality_review_identity",
+    "task_id": "202610311835-GVTHA3",
+    "plan_digest": "sha256:247f128d7712b891668846042fe7cb8a73bfe27d51864be612710057379c769e",
+    "policy_digest": "sha256:c339edb6eb46ba89c4e5616e46bad5598c79d78bac2f2ff8f0eff2193a599755",
+    "capability_digest": "sha256:a64e0beb7f6b45ae1187ea64a0d480dbde87a33c72187aa1f47f6d5692275abb",
+    "checks_digest": "sha256:2b8bbcc05638abb269ef6e35fd320b2f60782658b818a1aa4894ef0b5568d10d",
+    "verification_input_digest": "sha256:b9d2262c87a0dba8c3619f77af5a8fc9857740b609b3c8f8c940899d465e624a",
+    "acceptance_digest": "sha256:f622332af8e37c4560f83a1f3c59d4d5a01fc81670b264ee07e6acda2c074fdc",
+    "implementation_sha": "78e3cdcc5b6155f7f2efdbb66e7b0a75adfad1b8",
+    "digest": "sha256:7e41656d1fddb5b275e3898ced5382a5c9633c080a3f7eb4e8ea032e98a13690"
+  },
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202610311835-GVTHA3/README.md",
+      "sha256": "sha256:98b5a3e75d5efa8a4128fe6f499e7d8ce6aa8f6431e247f8fdb0ec477b3af711",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202610311835-GVTHA3/quality/objects/sha256/7a3dce0eca3f2040af0783866f5e298aa1a709a3f3cea4befef95015fc29a780.patch",
+      "sha256": "sha256:7a3dce0eca3f2040af0783866f5e298aa1a709a3f3cea4befef95015fc29a780",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202610311835-GVTHA3/quality/objects/sha256/a6837cfcabc161078e68d712512f35752a9ad2741ac8df1c755528132029e4a5.json",
+      "sha256": "sha256:a6837cfcabc161078e68d712512f35752a9ad2741ac8df1c755528132029e4a5",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202610311835-GVTHA3/verification/20261031210358848-2da9cd74b9c3c03f.json",
+      "sha256": "sha256:faa47967162ffad96de77173e4e68306160b36529248a90cb99de98787362f2c",
+      "required": true
+    },
+    {
+      "id": "native-identity",
+      "kind": "plan",
+      "path": ".agentplane/tasks/202610311835-GVTHA3/quality/objects/sha256/86f1c159cfe392cb2144b4a565d1d5c4465bb1e2d5a542a1d10d626886033350.json",
+      "sha256": "sha256:86f1c159cfe392cb2144b4a565d1d5c4465bb1e2d5a542a1d10d626886033350",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:1790ed519386021a1204a7a568d50b673c02630db59c094c0edf82d981a47812",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:35a4c7a567a9b658a31feed9e096276ede95ad0c82198f362c302fe7bd20b612",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:6e5cb34ada84017778c43c3d057edcc68d3ccb60840c805e412f7dc6781070ee",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:d3dfd4eb0293213ab49d32c6f199066f2bc7c954cada6465aab458b1a9c7ee25",
+      "required": true
+    }
+  ]
+}
