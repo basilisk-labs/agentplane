@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202610310121-21Y197/fix-completed-scope-metadata-readers-across-node",
   "created_at": "2026-10-31T01:26:30.608Z",
-  "diffstat_sha256": "sha256:d5e769dd52804480695d4bdae118912f4e5abdcb448c65b11e1467632cb89aed",
+  "diffstat_sha256": "sha256:82325be8da224ee9abddbd55257c152114c0c8cd9719657606aff3cfe1be2610",
   "last_verified_at": null,
   "provider": {
     "hostname": "github.com",

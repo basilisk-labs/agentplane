@@ -15,7 +15,7 @@ import { getTaskStore } from "../shared/task-store.js";
 import { loadTaskForFinish } from "./finish-shared.js";
 
 export async function checkCompletedScopeFinish(ctx: CommandContext, id: string, before: TaskData) {
-  await checkHistoricalScope(before);
+  await checkHistoricalScope(before, (await ctx.taskBackend.getTask(id))!);
   const store = getTaskStore(ctx);
   const raw = await store.get(id);
   const identity = (raw.extensions!.task_kernel as { repository_identity: `sha256:${string}` })
@@ -50,7 +50,7 @@ export async function checkCompletedScopeFinish(ctx: CommandContext, id: string,
   );
 }
 
-async function checkHistoricalScope(before: TaskData) {
+async function checkHistoricalScope(before: TaskData, admitted: TaskData) {
   const repo = await tempRepo({ withDefaultConfig: true, branch: "main" });
   await configureGitUser(repo.root);
   await writeFile(path.join(repo.root, "seed.txt"), "unrelated repository\n");
@@ -67,4 +67,20 @@ async function checkHistoricalScope(before: TaskData) {
   expect(readKernelRecord(historical, own).kind).toBe("canonical");
   const current = await resolveLogicalRepositoryIdentity({ git_root: repo.root, task: {} });
   expect(readKernelRecord(historical, current as `sha256:${string}`).kind).toBe("malformed");
+  // A same-ID proof in the default store must not select a different namespace.
+  await command.taskBackend.writeTask(admitted);
+  const config = structuredClone(command.config);
+  config.paths.workflow_dir = "operations/native/tasks";
+  const custom = await loadCommandContext({ cwd: repo.root, config });
+  await custom.taskBackend.writeTask(before);
+  const foreign = new Proxy(custom.taskBackend, { getPrototypeOf: () => null });
+  const owner = await resolveTaskOwnerCommandContext({
+    ctx: { ...custom, taskBackend: foreign },
+    taskId: before.id,
+  });
+  expect(owner.taskBackend).toBe(foreign);
+  expect(owner.config.paths.workflow_dir).toBe("operations/native/tasks");
+  expect((await owner.taskBackend.getTask(before.id))!.extensions!.task_kernel).toEqual(
+    before.extensions!.task_kernel,
+  );
 }

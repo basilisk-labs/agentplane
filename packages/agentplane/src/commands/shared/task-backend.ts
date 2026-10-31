@@ -258,7 +258,7 @@ export async function resolveTaskOwnerCommandContext(opts: {
       "true";
   const localTask = compactHistory
     ? await new LocalBackend({
-        dir: path.join(opts.ctx.resolvedProject.gitRoot, ".agentplane/tasks"),
+        dir: path.join(opts.ctx.resolvedProject.gitRoot, opts.ctx.config.paths.workflow_dir),
       }).getTask(opts.taskId)
     : await backend.getTask(opts.taskId);
   if (
