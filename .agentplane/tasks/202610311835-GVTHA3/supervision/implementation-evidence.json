@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "command": "git diff --check f89d603f7fa9b70bca5896fef42212c4c1590fe8..a236843edf03fa1352e0f902dbb713b6d455d070",
+      "command": "git diff --check 884d33d9ee4bafb61b3dc67f0798e811d7a3b1d8..78e3cdcc5b6155f7f2efdbb66e7b0a75adfad1b8",
       "id": "committed-diff-check",
       "result": "pass",
       "stdout": []
@@ -13,33 +13,13 @@
       "stdout": []
     },
     {
-      "command": "git diff --name-status --diff-filter=ACDMRTUXB f89d603f7fa9b70bca5896fef42212c4c1590fe8..a236843edf03fa1352e0f902dbb713b6d455d070",
+      "command": "git diff --name-status --diff-filter=ACDMRTUXB 884d33d9ee4bafb61b3dc67f0798e811d7a3b1d8..78e3cdcc5b6155f7f2efdbb66e7b0a75adfad1b8",
       "id": "commit-paths",
       "result": "pass",
       "stdout": [
-        "A\t.agentplane/tasks/202610311835-GVTHA3/README.md",
-        "A\t.agentplane/tasks/202610311835-GVTHA3/pr/diffstat.txt",
-        "A\t.agentplane/tasks/202610311835-GVTHA3/pr/github-body.md",
-        "A\t.agentplane/tasks/202610311835-GVTHA3/pr/github-title.txt",
-        "A\t.agentplane/tasks/202610311835-GVTHA3/pr/meta.json",
-        "A\t.agentplane/tasks/202610311835-GVTHA3/pr/review.md",
-        "A\t.agentplane/tasks/202610311835-GVTHA3/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
-        "A\t.agentplane/tasks/202610311835-GVTHA3/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json",
-        "A\tpackages/agentplane/src/cli/run-cli.core.workflow-recovery.verification-retry.test.ts",
-        "M\tpackages/agentplane/src/commands/task/direct-task-verification-observation.ts",
-        "M\tpackages/agentplane/src/commands/task/direct-task-verification.observability.test.ts",
-        "M\tpackages/agentplane/src/commands/task/direct-task-verification.ts",
-        "M\tpackages/agentplane/src/commands/task/external-agent-task-artifact-baseline.ts",
-        "M\tpackages/agentplane/src/commands/task/kernel-bookkeeping.test.ts",
-        "A\tpackages/agentplane/src/commands/task/verification-retry-effect-recovery.test.ts",
-        "A\tpackages/agentplane/src/commands/task/verification-retry-effect-recovery.ts",
-        "A\tpackages/agentplane/src/commands/task/verification-retry-source-proof.test.ts",
-        "A\tpackages/agentplane/src/commands/task/verification-retry-source-proof.ts",
-        "M\tpackages/agentplane/src/commands/task/verify-record-execute.ts",
-        "A\tpackages/agentplane/src/commands/task/verify-record-terminal-projection.ts",
-        "M\tpackages/agentplane/src/commands/task/verify-record.ts",
-        "M\tpackages/agentplane/src/commands/task/verify-record.types.ts",
-        "M\tpackages/agentplane/src/commands/task/workflow-effect-recovery.ts"
+        "M\t.agentplane/tasks/202610311835-GVTHA3/pr/github-body.md",
+        "M\t.agentplane/tasks/202610311835-GVTHA3/pr/review.md",
+        "M\tpackages/agentplane/src/commands/task/direct-task-verification-observation.ts"
       ]
     },
     {
@@ -49,36 +29,15 @@
       "stdout": []
     }
   ],
-  "execution_base_commit": "f89d603f7fa9b70bca5896fef42212c4c1590fe8",
-  "implementation_commit": "a236843edf03fa1352e0f902dbb713b6d455d070",
+  "execution_base_commit": "884d33d9ee4bafb61b3dc67f0798e811d7a3b1d8",
+  "implementation_commit": "78e3cdcc5b6155f7f2efdbb66e7b0a75adfad1b8",
   "kind": "direct_task_implementation_evidence",
   "repository_status": {
-    "baseline": [
-      "?? .agentplane/tasks/202610311835-GVTHA3/README.md",
-      "?? .agentplane/tasks/202610311835-GVTHA3/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
-      "?? .agentplane/tasks/202610311835-GVTHA3/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
-    ],
-    "classification": [
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202610311835-GVTHA3/README.md"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202610311835-GVTHA3/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json"
-      },
-      {
-        "classification": "removed_during_execution",
-        "line": "?? .agentplane/tasks/202610311835-GVTHA3/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
-      }
-    ],
+    "baseline": [],
+    "classification": [],
     "final": [],
     "introduced_after_execution_baseline": [],
-    "removed_after_execution_baseline": [
-      "?? .agentplane/tasks/202610311835-GVTHA3/README.md",
-      "?? .agentplane/tasks/202610311835-GVTHA3/quality/objects/sha256/0f03fce1adcbdc1bccd34a4e6d04d763719afafc9b88139bf122a89deb9bca92.json",
-      "?? .agentplane/tasks/202610311835-GVTHA3/quality/objects/sha256/78dd518372ace9dcbe508e9366b5020456fbc1d869ce4e6ce802a4dd9ecd357a.json"
-    ],
+    "removed_after_execution_baseline": [],
     "unchanged_from_execution_baseline": []
   },
   "schema_version": 1,
