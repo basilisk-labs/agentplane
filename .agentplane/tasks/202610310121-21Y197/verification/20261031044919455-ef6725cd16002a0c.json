@@ -1,0 +1,226 @@
+{
+  "details": "Check: affected_unit_integration\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610310121-21Y197/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610310121-21Y197 Verification Contract check affected_unit_integration (1/3)\n\nCheck: affected_unit_integration\nCommand: bun run test:project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/finish.canonical-closure.unit.test.ts packages/agentplane/src/commands/task/kernel-worktree-routing.test.ts packages/agentplane/src/commands/task/kernel-adopted-pr-route.test.ts packages/agentplane/src/commands/task/kernel-hosted-head-evidence.test.ts packages/agentplane/src/commands/pr/adoption-request.test.ts packages/agentplane/src/commands/pr/adoption-store.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610310121-21Y197/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610310121-21Y197 Verification Contract check affected_unit_integration (2/3)\n\nCheck: affected_unit_integration\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: .agentplane/tasks/202610310121-21Y197/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610310121-21Y197 Verification Contract check affected_unit_integration (3/3)\n\nCheck: critical_paths\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610310121-21Y197/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610310121-21Y197 Verification Contract check critical_paths (1/3)\n\nCheck: critical_paths\nCommand: bun run test:project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/finish.canonical-closure.unit.test.ts packages/agentplane/src/commands/task/kernel-worktree-routing.test.ts packages/agentplane/src/commands/task/kernel-adopted-pr-route.test.ts packages/agentplane/src/commands/task/kernel-hosted-head-evidence.test.ts packages/agentplane/src/commands/pr/adoption-request.test.ts packages/agentplane/src/commands/pr/adoption-store.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610310121-21Y197/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610310121-21Y197 Verification Contract check critical_paths (2/3)\n\nCheck: critical_paths\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: .agentplane/tasks/202610310121-21Y197/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610310121-21Y197 Verification Contract check critical_paths (3/3)\n\nCheck: full_regression\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610310121-21Y197/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610310121-21Y197 Verification Contract check full_regression\n\nCheck: real_e2e\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610310121-21Y197/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610310121-21Y197 Verification Contract check real_e2e (1/3)\n\nCheck: real_e2e\nCommand: bun run test:project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/finish.canonical-closure.unit.test.ts packages/agentplane/src/commands/task/kernel-worktree-routing.test.ts packages/agentplane/src/commands/task/kernel-adopted-pr-route.test.ts packages/agentplane/src/commands/task/kernel-hosted-head-evidence.test.ts packages/agentplane/src/commands/pr/adoption-request.test.ts packages/agentplane/src/commands/pr/adoption-store.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610310121-21Y197/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610310121-21Y197 Verification Contract check real_e2e (2/3)\n\nCheck: real_e2e\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: .agentplane/tasks/202610310121-21Y197/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610310121-21Y197 Verification Contract check real_e2e (3/3)\n\nCheck: task_outcome\nCommand: bun run ci:local:full\nResult: pass\nEvidence: .agentplane/tasks/202610310121-21Y197/supervision/declared-checks.json#check-1\nScope: branch_pr task 202610310121-21Y197 Verification Contract check task_outcome (1/3)\n\nCheck: task_outcome\nCommand: bun run test:project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/finish.canonical-closure.unit.test.ts packages/agentplane/src/commands/task/kernel-worktree-routing.test.ts packages/agentplane/src/commands/task/kernel-adopted-pr-route.test.ts packages/agentplane/src/commands/task/kernel-hosted-head-evidence.test.ts packages/agentplane/src/commands/pr/adoption-request.test.ts packages/agentplane/src/commands/pr/adoption-store.test.ts\nResult: pass\nEvidence: .agentplane/tasks/202610310121-21Y197/supervision/declared-checks.json#check-2\nScope: branch_pr task 202610310121-21Y197 Verification Contract check task_outcome (2/3)\n\nCheck: task_outcome\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: .agentplane/tasks/202610310121-21Y197/supervision/declared-checks.json#check-3\nScope: branch_pr task 202610310121-21Y197 Verification Contract check task_outcome (3/3)",
+  "digest": "sha256:ef6725cd16002a0c3e819632964caab6852d4f294be69f9f5a70acdee4ab0820",
+  "implementation_sha": "b41f749e74f9fc98903c335f8af9e2df5d170043",
+  "input": {
+    "checked_input": {
+      "commands": {
+        "digest": "sha256:e13ab20ed6aa2ff7b7e38983fb0d1e793923605a284dbed46390bf1587fce5ea",
+        "entries": [
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "bun run test:project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/finish.canonical-closure.unit.test.ts packages/agentplane/src/commands/task/kernel-worktree-routing.test.ts packages/agentplane/src/commands/task/kernel-adopted-pr-route.test.ts packages/agentplane/src/commands/task/kernel-hosted-head-evidence.test.ts packages/agentplane/src/commands/pr/adoption-request.test.ts packages/agentplane/src/commands/pr/adoption-store.test.ts"
+          },
+          {
+            "check_id": "affected_unit_integration",
+            "command": "node .agentplane/policy/check-routing.mjs"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "bun run test:project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/finish.canonical-closure.unit.test.ts packages/agentplane/src/commands/task/kernel-worktree-routing.test.ts packages/agentplane/src/commands/task/kernel-adopted-pr-route.test.ts packages/agentplane/src/commands/task/kernel-hosted-head-evidence.test.ts packages/agentplane/src/commands/pr/adoption-request.test.ts packages/agentplane/src/commands/pr/adoption-store.test.ts"
+          },
+          {
+            "check_id": "critical_paths",
+            "command": "node .agentplane/policy/check-routing.mjs"
+          },
+          {
+            "check_id": "full_regression",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "real_e2e",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "real_e2e",
+            "command": "bun run test:project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/finish.canonical-closure.unit.test.ts packages/agentplane/src/commands/task/kernel-worktree-routing.test.ts packages/agentplane/src/commands/task/kernel-adopted-pr-route.test.ts packages/agentplane/src/commands/task/kernel-hosted-head-evidence.test.ts packages/agentplane/src/commands/pr/adoption-request.test.ts packages/agentplane/src/commands/pr/adoption-store.test.ts"
+          },
+          {
+            "check_id": "real_e2e",
+            "command": "node .agentplane/policy/check-routing.mjs"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run ci:local:full"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "bun run test:project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/finish.canonical-closure.unit.test.ts packages/agentplane/src/commands/task/kernel-worktree-routing.test.ts packages/agentplane/src/commands/task/kernel-adopted-pr-route.test.ts packages/agentplane/src/commands/task/kernel-hosted-head-evidence.test.ts packages/agentplane/src/commands/pr/adoption-request.test.ts packages/agentplane/src/commands/pr/adoption-store.test.ts"
+          },
+          {
+            "check_id": "task_outcome",
+            "command": "node .agentplane/policy/check-routing.mjs"
+          }
+        ]
+      },
+      "context": {
+        "digest": "sha256:0473bb9d71aca6f0286d65d878ac866b05eda7dabbcfa2bd6d92488c43a78eb6",
+        "paths": [
+          ".agentplane/WORKFLOW.md",
+          ".github/ISSUE_TEMPLATE/config.yml",
+          "bun.lock",
+          "depcruise.config.cjs",
+          "eslint.config.cjs",
+          "knip.json",
+          "package.json",
+          "packages/agentplane/package.json",
+          "packages/agentplane/src/cli/run-cli/commands/config.ts",
+          "packages/agentplane/src/runner/config.test.ts",
+          "packages/agentplane/src/runner/config.ts",
+          "packages/agentplane/tsconfig.json",
+          "packages/agentplane/tsup.config.ts",
+          "packages/core/package.json",
+          "packages/core/schemas/config.schema.json",
+          "packages/core/src/config/config.test.ts",
+          "packages/core/src/config/config.ts",
+          "packages/core/tsconfig.json",
+          "packages/core/tsup.config.ts",
+          "packages/recipes/package.json",
+          "packages/recipes/tsconfig.json",
+          "packages/recipes/tsup.config.ts",
+          "packages/spec/examples/config.json",
+          "packages/spec/package.json",
+          "packages/spec/schemas/config.schema.json",
+          "packages/testkit/package.json",
+          "packages/testkit/tsconfig.json",
+          "schemas/config.schema.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package-lock.json",
+          "scripts/baselines/m01-0.7.9-token-pilot-v1/previous-runtime/package.json",
+          "tsconfig.json",
+          "turbo.json",
+          "vitest.config.ts",
+          "vitest.workspace.ts"
+        ]
+      },
+      "digest": "sha256:9addc0b417cfa7455e492d154c755a3ed7153bdfeef2c417ce0e14a56e874a0f",
+      "environment": {
+        "digest": "sha256:5eaa920b58022e097fc5b5afbe1e8caca7cdf6d6ad34230c2ac8eadaf77c86f9",
+        "runtime": {
+          "architecture": "arm64",
+          "bun_major": null,
+          "node_major": "26",
+          "platform": "darwin"
+        }
+      },
+      "evidence": {
+        "details_digest": "sha256:d2407c52d7d230f8a21f4e165aec372f2c9ccb7e02cd0cbab2741b669696f805",
+        "digest": "sha256:d1c19e9f8d4d22bdb12937ade18ea07256287eeb455a1231b156af55afe1f149",
+        "references": [
+          {
+            "digest": "sha256:b5b2c390efda486b07aea222f73919e658e8a39e3406801937d1d2110f01f4a9",
+            "fragment": "check-1",
+            "path": ".agentplane/tasks/202610310121-21Y197/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610310121-21Y197/supervision/declared-checks.json#check-1",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:b5b2c390efda486b07aea222f73919e658e8a39e3406801937d1d2110f01f4a9",
+            "fragment": "check-2",
+            "path": ".agentplane/tasks/202610310121-21Y197/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610310121-21Y197/supervision/declared-checks.json#check-2",
+            "source": "filesystem"
+          },
+          {
+            "digest": "sha256:b5b2c390efda486b07aea222f73919e658e8a39e3406801937d1d2110f01f4a9",
+            "fragment": "check-3",
+            "path": ".agentplane/tasks/202610310121-21Y197/supervision/declared-checks.json",
+            "reference": ".agentplane/tasks/202610310121-21Y197/supervision/declared-checks.json#check-3",
+            "source": "filesystem"
+          }
+        ]
+      },
+      "implementation": {
+        "base_sha": "5610a273a43b8eeb06a2d776d12a3be03d2fc01d",
+        "digest": "sha256:c2b4e60d299afec5812a54407d3f24dd52e8062089c04375f1bc080ae4679017",
+        "strategy": "branch_diff",
+        "target_sha": "b41f749e74f9fc98903c335f8af9e2df5d170043"
+      }
+    },
+    "concurrency": {
+      "digest": "sha256:18570654e3d131d9d99ec039b7eb7a961c301bc2e7d5f271fda8a87d0c8b4947",
+      "execution": {
+        "authoritative_task_source": "task_worktree",
+        "base_ref": "main",
+        "base_sha": "5610a273a43b8eeb06a2d776d12a3be03d2fc01d",
+        "digest": "sha256:c83e7009afb866a9321707b150b2fd5ef4613a2df2b63255863b760a6d3de964",
+        "primary_task_id": "202610310121-21Y197",
+        "reason_codes": [
+          "agent_preferred_branch_pr",
+          "effect_publish",
+          "effect_security_boundary",
+          "repository_branch_pr_floor",
+          "reversibility_recovery_required"
+        ],
+        "repository_mode": "branch_pr",
+        "requested_mode": "branch_pr",
+        "route_source": "execution_contract",
+        "selected_mode": "branch_pr",
+        "task_ids": [
+          "202610310121-21Y197"
+        ]
+      },
+      "task": {
+        "capability": {
+          "digest": "sha256:f093eb45f645bdaf8729facf46b748b830d052f9c987fe61b8dd79167545f11b"
+        },
+        "checks": {
+          "digest": "sha256:dc3ccfbbd1f17182140d95ceb1752335cca61fc265c143ccd592c91251bd990e",
+          "required_check_ids": [
+            "affected_unit_integration",
+            "critical_paths",
+            "full_regression",
+            "real_e2e",
+            "task_outcome"
+          ],
+          "verification_contract_digest": "sha256:f6ef87ec227c590b447a6582060887b1a8dbb2b806e912ae5889f4a3a61902fc"
+        },
+        "digest": "sha256:ec172edf8d14886a1b70b11cc3edbe5986c31b15c224c2103bf07016cc1d3b3e",
+        "kind": "agentplane.native_task_identity",
+        "plan": {
+          "approval_state": "approved",
+          "approved_digest": "sha256:7143e074601b7b635a75d5aebc9cff3e76bd084d438a3828c024604762d45f3b",
+          "digest": "sha256:7143e074601b7b635a75d5aebc9cff3e76bd084d438a3828c024604762d45f3b",
+          "revision": 2
+        },
+        "policy": {
+          "digest": "sha256:35781f355aaa21293eb931f34639e0e5cad5380fea760bef8ef8e0fa5ae1c536"
+        },
+        "schema_version": 1,
+        "task_id": "202610310121-21Y197"
+      }
+    },
+    "digest": "sha256:c83852e1ee8f1e373b8dbbe4967b69d5e3bf95efdad8f50aeabdf0666efbacb4",
+    "kind": "task_verification_input",
+    "obligations": {
+      "digest": "sha256:f7746649084c7a9c39f64f66cf97cb423aac0085707d6d1c6cc1c0744ad927ff",
+      "required_check_ids": [
+        "affected_unit_integration",
+        "critical_paths",
+        "full_regression",
+        "real_e2e",
+        "task_outcome"
+      ],
+      "verification_contract_digest": "sha256:f6ef87ec227c590b447a6582060887b1a8dbb2b806e912ae5889f4a3a61902fc",
+      "verify_steps_digest": "sha256:96cbf08fab928715da19d78ffeacdc951079b2e3ba2dfde26f93e0ef63aca9f2"
+    },
+    "schema_version": 5
+  },
+  "kind": "task_verification_record",
+  "note": "Verified: canonical Task Kernel final checks passed.",
+  "recorded_at": "2026-10-31T04:49:19.455Z",
+  "result": "ok",
+  "schema_version": 2,
+  "scope": "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun run ci:local:full`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run test:project agentplane --run packages/agentplane/src/commands/task/scope-extend.command.test.ts packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/finish.canonical-closure.unit.test.ts packages/agentplane/src/commands/task/kernel-worktree-routing.test.ts packages/agentplane/src/commands/task/kernel-adopted-pr-route.test.ts packages/agentplane/src/commands/task/kernel-hosted-head-evidence.test.ts packages/agentplane/src/commands/pr/adoption-request.test.ts packages/agentplane/src/commands/pr/adoption-store.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Run `node .agentplane/policy/check-routing.mjs`. Expected: it succeeds and confirms the requested outcome for this task.\n4. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.",
+  "scope_digest": "sha256:96cbf08fab928715da19d78ffeacdc951079b2e3ba2dfde26f93e0ef63aca9f2",
+  "task_id": "202610310121-21Y197",
+  "verification_command": "agentplane verify 202610310121-21Y197 --ok --by SUPERVISOR",
+  "verifier": "SUPERVISOR"
+}
