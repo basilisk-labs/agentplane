@@ -1,10 +1,11 @@
 ---
 id: "202610311347-7CPDQV"
 title: "Qualify bounded native recovery with frozen branch_pr routing"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 27
 origin:
   system: "manual"
 depends_on:
@@ -46,6 +47,22 @@ quality_review:
     - "Doctor uses only native LocalBackend.historyRoot when the current source is absent, authenticates the same full native quarantine source/afterimage/backup/repository proof, and rechecks current absence. Invalid present current bytes cannot fall back to history. The public Node regression covers a real sparse registered Git worktree, valid retained history, an edited local source and a missing historical backup."
     - "Validated all thirteen required context blocks, all four required input digests, the native validation input binding and all four raw native manifest hashes. Fresh controller-observed full CI passed in1187.249sec; all153 focused tests in13files passed; generated CLI docs and routing passed. Manifests retain complete child evidence. No checks were invoked during this read-only review."
     - "The previously reviewed verification-floor and strictly source-bound projection recovery, explicit non-success quarantine and fenced exact rollback remain unchanged by this correction. No operational Task, Kernel history, provider state, credentials or runtime guards were changed. No blocking source finding remains."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:e88e78082b6e05ac431a382b611259ef7c80259cb2403f9f46e7ca1a4330c146"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-10-31T15:29:13.657Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -403,12 +420,15 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "cebb0d2fa8207c45dfe0c8afe2bd8bd2e51a587f"
-  message: "AgentPlane-owned canonical implementation commit"
+  hash: "f7e8ba0e9941b38dc252c195ed2e4d82d2b4eb16"
+  message: "🧩 7CPDQV task: refresh task artifacts after commit"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Blocked: Standard intake scans cannot authenticate an unrelated archived Task. This explicit new intent awaits exact native migration to Kernel planning. No implementation or verification has run. The earlier incomplete intake 202610311338-RWNBCR remains blocked and retained."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -416,9 +436,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-31T15:29:13.657Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "f7e8ba0e9941b38dc252c195ed2e4d82d2b4eb16"
 doc_version: 3
-doc_updated_at: "2026-10-31T15:24:18.009Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-10-31T15:29:13.657Z"
+doc_updated_by: "CODER"
 description: "Completed-scope observations can replace inherited verification coverage and leave an interrupted metadata projection unreadable. A legacy README and embedded aggregate revision split also prevents Factory Doctor and protected integration. Preserve inherited verification contracts, add exact source-bound recovery for the interrupted completed-scope projection, and extend existing kernel-migrate apply with guarded revision-split quarantine and byte-exact rollback. Preserve Kernel completion, original history, evidence, data, credentials and runtime guards. Confine source changes to the nineteen declared roots. Qualify public Node workflows, drift and interruption refusals, replay, retained-source diagnostics and rollback with full native CI and a fresh EVALUATOR before protected canonical PR and merge. Operational repair of original VPB, the ten Factory Tasks and sb remains a separate operator step after publication. Preserve all existing worktrees, branches, archives and unrelated user changes; no cleanup or host effects belong to this source Task."
 sections:
   Summary: "Completed-scope observations can replace inherited verification coverage and leave an interrupted metadata projection unreadable. A legacy README and embedded aggregate revision split also prevents Factory Doctor and protected integration. Preserve inherited verification contracts, add exact source-bound recovery for the interrupted completed-scope projection, and extend existing kernel-migrate apply with guarded revision-split quarantine and byte-exact rollback. Preserve Kernel completion, original history, evidence, data, credentials and runtime guards. Confine source changes to the nineteen declared roots. Qualify public Node workflows, drift and interruption refusals, replay, retained-source diagnostics and rollback with full native CI and a fresh EVALUATOR before protected canonical PR and merge. Operational repair of original VPB, the ten Factory Tasks and sb remains a separate operator step after publication. Preserve all existing worktrees, branches, archives and unrelated user changes; no cleanup or host effects belong to this source Task."
@@ -642,6 +670,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:9a440eae7434a40dfd040e85bb2225743758296cdcf4f1a0680c074fa7e89731"
     work_order_id: "sha256:2621c950fd6e61a9476f637af82012a4d497e6c9bba067f3583dfec9d89710da"
+  implementation_commit:
+    hash: "cebb0d2fa8207c45dfe0c8afe2bd8bd2e51a587f"
+    message: "🚧 7CPDQV task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "6f9a7aff02f8bea3823594154e23f251a56bc58f"
@@ -3090,3 +3121,16 @@ Preserve source, original Task records, protected journals and runtime state. Re
 The user authorized temporary canonical CLI5610a273 for this new Task only. Standard task new is blocked by unrelated archived source authentication. The supported single-record import and exact migration route was qualified in a private fixture. This intake grants no approval or execution result.
 
 The corrected intake declares the frozen branch_pr route in addition to its native-resolved execution contract. The earlier incomplete intake 202610311338-RWNBCR remains BLOCKED. No source code was changed there.
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:e88e78082b6e05ac431a382b611259ef7c80259cb2403f9f46e7ca1a4330c146`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-10-31T15:29:13.657Z`
