@@ -1,10 +1,11 @@
 ---
 id: "202610310121-21Y197"
 title: "Fix completed-scope metadata readers across Node command bundles"
+result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 53
+revision: 54
 origin:
   system: "manual"
 depends_on:
@@ -47,6 +48,22 @@ quality_review:
     - "Source inspection and the TypeScript matcher-chain comparison retain all155 original assertions and their literals; the only added assertion checks fixture admission success. The extracted reader helper uses the same four real backend read APIs and a fresh OS process. There is no synthetic proof or permission cache."
     - "Native-observed checks passed: full CI1493861ms, all77 tests in the required eight-file focus133125ms, and policy routing150ms. Manifest source bindings, complete child evidence, exit0 and absence of I/O errors were independently read back. The scope test file is938lines, below the unchanged1000line baseline."
     - "The owner worktree contains118 expected native Task artifact status entries and no unexpected source or unrelated changes. Existing completed work, failed attempt evidence, worktrees and protected checkout routing are preserved."
+token_usage:
+  agent_runs: 0
+  cached_input_observed_agent_runs: 0
+  cached_input_tokens: null
+  input_tokens: null
+  journal_digest: "sha256:7cdb5629bfd9b5d06ef9f2c25174b57b2bb9a114dce42f7e53a70a2995c398cc"
+  observed_agent_runs: 0
+  observed_by: "agentplane"
+  output_tokens: null
+  reasoning_tokens: null
+  schema_version: 1
+  source: "supervisor_journal"
+  state: "unavailable"
+  total_tokens: null
+  unavailable_reason: "no_supervised_agent_runs"
+  updated_at: "2026-10-31T05:27:19.529Z"
 execution_route:
   frozen: true
   reason_codes:
@@ -289,9 +306,12 @@ execution_contract:
       - "repository_effect:tests"
       - "task_outcome"
 commit:
-  hash: "b41f749e74f9fc98903c335f8af9e2df5d170043"
-  message: "AgentPlane-owned canonical implementation commit"
-comments: []
+  hash: "6f0e723446246d2f242ffdf4bb28bfec032c57fd"
+  message: "🧩 21Y197 task: refresh task artifacts after commit"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "verify"
@@ -305,9 +325,17 @@ events:
     author: "SUPERVISOR"
     state: "ok"
     note: "Verified: canonical Task Kernel final checks passed."
+  -
+    type: "status"
+    at: "2026-10-31T05:27:19.529Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+    commit: "6f0e723446246d2f242ffdf4bb28bfec032c57fd"
 doc_version: 3
-doc_updated_at: "2026-10-31T05:12:10.225Z"
-doc_updated_by: "SUPERVISOR"
+doc_updated_at: "2026-10-31T05:27:19.529Z"
+doc_updated_by: "CODER"
 description: "The user authorized all eight SB recovery items, native framework fixes, PR/merge and deployment with data credentials and guards preserved. Canonical MRJ561 is merged. Native finish must authenticate its exact captured TaskStore metadata without trusting a copied task object. Node command bundles must preserve proof authentication across distinct LocalBackend module instances without a global permit registry. Ordinary historical WorkItem metadata and pre-Kernel tasks must remain readable under their original contract. Genuine completed-scope admissions and the exact applied external legacy partial with COMPLETED Kernel must retain strict verification, source, history, partial and forged-copy refusals. Preserve all old native evidence and Tasks. Production Task checkout routing remains unchanged. Add regressions that preserve dedicated control checkout requirements for adopted qualification. Candidate seven-path proposal262 is review material, not an immutable implementation mandate. Cancelled9QW179 mandated a rejected private routing hypothesis; preserve it as CANCELLED with unfulfilled criteria. Unstarted0AEYYS has a stale pre-merge baseline; do not grant its inherited delta. This new Task starts from canonical561 and depends only on mergedMRJ. Use full native CI, focused tests, independent EVALUATOR and protected canonical GitHub PR/merge. No host, credentials, runtime, cleanup, historical Task rewrite or forced Git effect is authorized in this source Task."
 sections:
   Summary: |-
@@ -569,6 +597,9 @@ extensions:
     source: "task_kernel"
     verification_evidence_digest: "sha256:7065ab0a170f74b39dbd6431f52d12ed6a24682e76e89c23c9dcb78a2e2b6fc2"
     work_order_id: "sha256:bd69cb16e65571df5f6fc3be172be1e89a505195873d33eb41a554789fa1c39f"
+  implementation_commit:
+    hash: "b41f749e74f9fc98903c335f8af9e2df5d170043"
+    message: "🚧 21Y197 task: apply canonical agent result"
   task_execution_context:
     base_ref: "main"
     base_sha: "5610a273a43b8eeb06a2d776d12a3be03d2fc01d"
@@ -2370,3 +2401,16 @@ DecisionContextRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+## Token Usage
+
+- State: `unavailable`
+- Completeness: `0/0` agent runs
+- Input tokens: `unavailable`
+- Output tokens: `unavailable`
+- Reasoning tokens: `unavailable`
+- Total tokens: `unavailable`
+- Provenance: `supervisor_journal/agentplane`
+- Journal digest: `sha256:7cdb5629bfd9b5d06ef9f2c25174b57b2bb9a114dce42f7e53a70a2995c398cc`
+- Unavailable reason: `no_supervised_agent_runs`
+- Updated at: `2026-10-31T05:27:19.529Z`
