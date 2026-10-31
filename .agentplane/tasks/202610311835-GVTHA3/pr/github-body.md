@@ -16,7 +16,7 @@ The user authorized all eight SB recovery items, native code fixes, PR/merge, de
 ## Verification
 
 - State: ok
-- Note: Verified: canonical Task Kernel final checks passed.
+- Note: Verified: CLI-owned checks passed before independent EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 <details>
