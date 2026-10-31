@@ -5,6 +5,8 @@
   "diffstat_sha256": "sha256:0755ee572c03ef56117c401955fae444af84f4c0d1a855c79ef20fffa54d8741",
   "last_verified_at": "2026-10-31T15:24:17.316Z",
   "last_verified_diffstat_sha256": "sha256:0755ee572c03ef56117c401955fae444af84f4c0d1a855c79ef20fffa54d8741",
+  "pr_number": 6963,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6963",
   "provider": {
     "hostname": "github.com",
     "kind": "github",
@@ -14,8 +16,9 @@
     "target_project": "basilisk-labs/agentplane"
   },
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202610311347-7CPDQV",
-  "updated_at": "2026-10-31T13:55:43.107Z",
+  "updated_at": "2026-10-31T15:27:20.313Z",
   "verify": {
     "status": "pass"
   }
