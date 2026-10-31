@@ -57,6 +57,18 @@ export function makeRunTaskAdvanceHandler(deps: {
       });
     }
     const initialCommand = await deps.getContext("task advance", { includeRemote: parsed.remote });
+    if (parsed.workflowRecovery) {
+      const { recoverCompletedProjection } = await import("./completed-projection-recovery.js");
+      const recovered = await recoverCompletedProjection({
+        command: initialCommand,
+        task_id: parsed.taskId,
+        input_path: parsed.workflowRecovery,
+      });
+      if (recovered) {
+        createCliEmitter().json(recovered);
+        return 0;
+      }
+    }
     await recoverCanonicalControllerSuspensions({
       command: initialCommand,
       task_id: parsed.taskId,

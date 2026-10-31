@@ -1,0 +1,21 @@
+{
+  "base": "main",
+  "branch": "task/202610311347-7CPDQV/qualify-bounded-native-recovery-with-frozen-bran",
+  "created_at": "2026-10-31T13:55:43.107Z",
+  "diffstat_sha256": "sha256:aae4dba90b3cc36bbf57285819663356dd6938cad1979d913fde2b30483af5d2",
+  "last_verified_at": null,
+  "provider": {
+    "hostname": "github.com",
+    "kind": "github",
+    "remote": "origin",
+    "schema_version": 1,
+    "source_project": "basilisk-labs/agentplane",
+    "target_project": "basilisk-labs/agentplane"
+  },
+  "schema_version": 1,
+  "task_id": "202610311347-7CPDQV",
+  "updated_at": "2026-10-31T13:55:43.107Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

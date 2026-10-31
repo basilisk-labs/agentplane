@@ -39,8 +39,10 @@ import { loadCommandContext } from "../shared/task-backend.js";
 import { resolveLogicalRepositoryIdentity } from "./execution-authority-context.js";
 import { resolveExplicitExecutionContract } from "./execution-contract-intake.js";
 import { buildOpenedPrMeta, buildObservedChangeRequestMeta } from "../shared/pr-meta/builders.js";
-import { cmdVerifyParsed } from "./verify-record.js";
+import { recordFixtureVerification } from "./completed-fixture-verification.testkit.js";
+export { recordFixtureVerification } from "./completed-fixture-verification.testkit.js";
 import { projectKernelOperationalEvidence } from "./kernel-operational-projection.js";
+import { reconcileVerificationExecutionContract } from "./verify-record-observed-changes.js";
 
 export function git(root: string, ...args: string[]) {
   return execFileSync("git", args, { cwd: root, encoding: "utf8" }).trim();
@@ -290,6 +292,7 @@ export async function fixture(
   securityCi = false,
   leaveReviewDirty = false,
   historicalScope = false,
+  retainedCoverage = false,
 ) {
   const root = await mkGitRepoRootWithBranch("main");
   await configureGitUser(root);
@@ -365,12 +368,20 @@ export async function fixture(
   }
   const task = saved! as TaskData;
   if (!historicalScope) task.execution_contract = intake;
+  if (retainedCoverage)
+    task.execution_contract = reconcileVerificationExecutionContract({
+      contract: task.execution_contract!,
+      changed_paths: ["docs/inherited.md"],
+      inherited_paths: ["docs/inherited.md"],
+    });
   task.execution_route = {
     requested_mode: "branch_pr",
     selected_mode: "branch_pr",
     repository_mode: repositoryMode,
     schema_version: 1,
-    reason_codes: ["explicit_branch_pr"],
+    reason_codes: retainedCoverage
+      ? [...task.execution_contract!.reason_codes]
+      : ["explicit_branch_pr"],
     frozen: true,
   };
   task.verify = ["git diff --check"];
@@ -532,29 +543,6 @@ export async function fixture(
   } else await commitAll(root, "record review");
   const persisted = (await command.taskBackend.getTask(id))!;
   return { root, id, kernel: persisted.extensions?.task_kernel };
-}
-
-export async function recordFixtureVerification(root: string, id: string): Promise<void> {
-  git(root, "diff", "--check");
-  expect(
-    await cmdVerifyParsed({
-      ctx: await loadCommandContext({ cwd: root, rootOverride: null }),
-      cwd: root,
-      rootOverride: undefined,
-      taskId: id,
-      state: "ok",
-      by: "SUPERVISOR",
-      note: "Native fixture verification passed.",
-      details: ["affected_unit_integration", "critical_paths", "task_outcome"]
-        .map(
-          (check) =>
-            `Check: ${check}\nCommand: git diff --check\nResult: pass\nEvidence: actual fixture Git check passed\nScope: task implementation`,
-        )
-        .join("\n\n"),
-      quiet: true,
-      allowCanonicalProjection: true,
-    }),
-  ).toBe(0);
 }
 
 export async function expectMergedBaseReviewBindings(
