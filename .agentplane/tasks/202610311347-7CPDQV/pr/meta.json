@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:0755ee572c03ef56117c401955fae444af84f4c0d1a855c79ef20fffa54d8741",
   "pr_number": 6963,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/6963",
+  "pre_merge_closure": {
+    "basis_commit": "f7e8ba0e9941b38dc252c195ed2e4d82d2b4eb16",
+    "branch": "task/202610311347-7CPDQV/qualify-bounded-native-recovery-with-frozen-bran",
+    "pr_number": 6963,
+    "recorded_at": "2026-10-31T15:29:13.705Z",
+    "state": "closed_before_merge"
+  },
   "provider": {
     "hostname": "github.com",
     "kind": "github",
